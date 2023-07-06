@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -19,7 +20,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
+#include "base/types/expected.h"
 #include "dbus/dbus_export.h"
+#include "dbus/error.h"
 #include "dbus/object_path.h"
 
 namespace base {
@@ -28,10 +31,10 @@ class SequencedTaskRunner;
 
 namespace dbus {
 
-class Error;
 class ExportedObject;
 class ObjectManager;
 class ObjectProxy;
+class Response;
 
 // Bus is used to establish a connection with D-Bus, create object
 // proxies, and export objects.
@@ -449,9 +452,8 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   // TODO(crbug.com/1459945): Use base::expected<void, Error> to return error.
   //
   // BLOCKING CALL.
-  virtual DBusMessage* SendWithReplyAndBlock(DBusMessage* request,
-                                             int timeout_ms,
-                                             Error* error);
+  virtual base::expected<std::unique_ptr<Response>, Error>
+  SendWithReplyAndBlock(DBusMessage* request, int timeout_ms);
 
   // Requests to send a message to the bus. The reply is handled with
   // |pending_call| at a later time.

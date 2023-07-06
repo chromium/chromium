@@ -139,22 +139,19 @@ std::unique_ptr<Response> ObjectProxy::CallMethodAndBlockWithErrorDetails(
     return nullptr;
   }
 
-  DBusMessage* request_message = method_call->raw_message();
-
   // Send the message synchronously.
-  DBusMessage* response_message =
-      bus_->SendWithReplyAndBlock(request_message, timeout_ms, error);
-
+  auto result =
+      bus_->SendWithReplyAndBlock(method_call->raw_message(), timeout_ms);
   statistics::AddBlockingSentMethodCall(
       service_name_, method_call->GetInterface(), method_call->GetMember());
-
-  if (!response_message) {
+  if (!result.has_value()) {
     LogMethodCallFailure(method_call->GetInterface(), method_call->GetMember(),
-                         error->name(), error->message());
+                         result.error().name(), result.error().message());
+    *error = std::move(result.error());
     return nullptr;
   }
 
-  return Response::FromRawMessage(response_message);
+  return std::move(result.value());
 }
 
 std::unique_ptr<Response> ObjectProxy::CallMethodAndBlock(

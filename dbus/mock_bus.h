@@ -9,6 +9,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "dbus/bus.h"
+#include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -42,10 +43,10 @@ class MockBus : public Bus {
                                               ServiceOwnershipOptions options));
   MOCK_METHOD1(ReleaseOwnership, bool(const std::string& service_name));
   MOCK_METHOD0(SetUpAsyncOperations, bool());
-  MOCK_METHOD3(SendWithReplyAndBlock,
-               DBusMessage*(DBusMessage* request,
-                            int timeout_ms,
-                            Error* error));
+  MOCK_METHOD2(
+      SendWithReplyAndBlock,
+      base::expected<std::unique_ptr<Response>, Error>(DBusMessage* request,
+                                                       int timeout_ms));
   MOCK_METHOD3(SendWithReply, void(DBusMessage* request,
                                    DBusPendingCall** pending_call,
                                    int timeout_ms));

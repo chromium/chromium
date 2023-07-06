@@ -148,6 +148,11 @@ class Timeout {
   base::WeakPtrFactory<Timeout> weak_ptr_factory_{this};
 };
 
+// Converts DBusError into dbus::Error.
+Error ToError(const internal::ScopedDBusError& error) {
+  return error.is_set() ? Error(error.name(), error.message()) : Error();
+}
+
 }  // namespace
 
 Bus::Options::Options()
@@ -630,11 +635,10 @@ bool Bus::SetUpAsyncOperations() {
   return true;
 }
 
-DBusMessage* Bus::SendWithReplyAndBlock(DBusMessage* request,
-                                        int timeout_ms,
-                                        Error* error) {
+base::expected<std::unique_ptr<Response>, Error> Bus::SendWithReplyAndBlock(
+    DBusMessage* request,
+    int timeout_ms) {
   DCHECK(connection_);
-  DCHECK(error);
   AssertOnDBusThread();
 
   base::ElapsedTimer elapsed;
@@ -644,9 +648,6 @@ DBusMessage* Bus::SendWithReplyAndBlock(DBusMessage* request,
   internal::ScopedDBusError dbus_error;
   DBusMessage* reply = dbus_connection_send_with_reply_and_block(
       connection_, request, timeout_ms, dbus_error.get());
-  if (dbus_error.is_set()) {
-    *error = Error(dbus_error.name(), dbus_error.message());
-  }
   constexpr base::TimeDelta kLongCall = base::Seconds(1);
   LOG_IF(WARNING, elapsed.Elapsed() >= kLongCall)
       << "Bus::SendWithReplyAndBlock took "
@@ -656,7 +657,11 @@ DBusMessage* Bus::SendWithReplyAndBlock(DBusMessage* request,
       << ", interface=" << dbus_message_get_interface(request)
       << ", member=" << dbus_message_get_member(request);
 
-  return reply;
+  if (!reply) {
+    return base::unexpected(ToError(dbus_error));
+  }
+
+  return base::ok(Response::FromRawMessage(reply));
 }
 
 void Bus::SendWithReply(DBusMessage* request,
@@ -921,22 +926,17 @@ std::string Bus::GetServiceOwnerAndBlock(const std::string& service_name,
     return "";
   }
 
-  Error error;
-  DBusMessage* response_message =
-      SendWithReplyAndBlock(get_name_owner_call.raw_message(),
-                            ObjectProxy::TIMEOUT_USE_DEFAULT, &error);
-  if (!response_message) {
+  auto result = SendWithReplyAndBlock(get_name_owner_call.raw_message(),
+                                      ObjectProxy::TIMEOUT_USE_DEFAULT);
+  if (!result.has_value()) {
     if (options == REPORT_ERRORS) {
-      LOG(ERROR) << "Failed to get name owner. Got " << error.name() << ": "
-                 << error.message();
+      LOG(ERROR) << "Failed to get name owner. Got " << result.error().name()
+                 << ": " << result.error().message();
     }
     return "";
   }
 
-  std::unique_ptr<Response> response(
-      Response::FromRawMessage(response_message));
-  MessageReader reader(response.get());
-
+  MessageReader reader(result->get());
   std::string service_owner;
   if (!reader.PopString(&service_owner))
     service_owner.clear();
