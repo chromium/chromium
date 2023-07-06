@@ -195,6 +195,7 @@ fontVariantCaps
 fontVariantEastAsian
 fontVariantLigatures
 fontVariantNumeric
+fontVariantPosition
 fontVariationSettings
 fontWeight
 forcedColorAdjust

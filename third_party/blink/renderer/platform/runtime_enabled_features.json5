@@ -1774,8 +1774,7 @@
     },
     {
       name: "FontVariantPosition",
-      status: "experimental",
-      base_feature: "none",
+      status: "stable",
     },
     {
       // TODO(crbug.com/1231644): This flag is being kept (even though the
