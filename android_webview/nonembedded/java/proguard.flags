@@ -7,9 +7,15 @@
 }
 
 # Keep the factory and its public members; it's the main entry point used by the
-# framework.
+# framework. Also keep the factory's constructors as some things are using them
+# via reflection; crbug.com/1462346
 -keep class com.android.webview.chromium.WebViewChromiumFactoryProvider {
     public *;
+    <init>(...);
+}
+-keep class com.android.webview.chromium.WebViewChromiumFactoryProviderFor* {
+    public *;
+    <init>(...);
 }
 
 -keep class * implements android.webkit.WebViewFactoryProvider$Statics {
@@ -17,10 +23,6 @@
 }
 
 -keep class com.android.webview.chromium.ContentSettingsAdapter {
-    public *;
-}
-
--keep class com.android.webview.chromium.WebViewChromiumFactoryProviderFor* {
     public *;
 }
 
