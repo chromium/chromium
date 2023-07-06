@@ -4,7 +4,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<style include="oobe-common-styles">
+<style include="oobe-common-styles cros-color-overrides">
   :host {
     --cr-dialog-title-slot-padding-bottom:
         var(--oobe-modal-dialog-title-slot-padding-bottom, 8px);
@@ -13,6 +13,18 @@ found in the LICENSE file.
     --cr-secondary-text-color: var(--oobe-text-color);
     --cr-dialog-top-container-min-height : 0;
     flex: 1 1 auto;
+  }
+
+  :host-context(.jelly-enabled) {
+    --cr-dialog-border-radius: 20px;
+    /* Buttons paddings: */
+    --cr-dialog-button-container-padding-bottom: 28px;
+    --cr-dialog-button-container-padding-horizontal: 32px;
+    /* Title paddings: */
+    --cr-dialog-title-slot-padding-bottom: 16px;
+    --cr-dialog-title-slot-padding-end: 32px;
+    --cr-dialog-title-slot-padding-start: 32px;
+    --cr-dialog-title-slot-padding-top: 32px;
   }
 
   #modalDialogTitle {
@@ -36,6 +48,20 @@ found in the LICENSE file.
         var(--oobe-modal-dialog-content-slot-padding-end, 20px);
     padding-inline-start:
         var(--oobe-modal-dialog-content-slot-padding-start, 20px);
+  }
+
+  :host-context(.jelly-enabled) #contentContainer {
+    padding-bottom:
+        var(--oobe-modal-dialog-content-slot-padding-bottom, 16px);
+    padding-inline-end:
+        var(--oobe-modal-dialog-content-slot-padding-end, 32px);
+    padding-inline-start:
+        var(--oobe-modal-dialog-content-slot-padding-start, 32px);
+  }
+
+  :host([should-hide-title-row]):host-context(.jelly-enabled)
+      #contentContainer {
+    padding-top: 32px;
   }
 </style>
 <cr-dialog hide-backdrop$="[[shouldHideBackdrop]]" id="modalDialog"
