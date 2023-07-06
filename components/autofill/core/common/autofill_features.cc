@@ -432,15 +432,6 @@ BASE_FEATURE(kAutofillAlwaysParsePlaceholders,
              "AutofillAlwaysParsePlaceholders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the same 500ms threshold will be applied for accepting keyboard
-// enter strokes that is already applied to mouse and gesture events.
-// It will also be applied to tap events on popup menus on Android (but not the
-// keyboard accessory, at the screen is outside of the render surface).
-// TODO(crbug.com/1418364): Remove once launched.
-BASE_FEATURE(kAutofillPopupUseThresholdForKeyboardAndMobileAccept,
-             "AutofillPopupUseThresholdForKeyboardAndMobileAccept",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If the feature is enabled, FormTracker's probable-form-submission detection
 // is disabled and replaced with browser-side detection.
 // TODO(crbug/1117451): Remove once it works.

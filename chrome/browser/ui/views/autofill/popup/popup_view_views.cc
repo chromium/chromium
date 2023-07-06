@@ -285,12 +285,7 @@ bool PopupViewViews::AcceptSelectedCell(bool tab_key_pressed) {
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept)) {
-    controller_->AcceptSuggestion(index->first);
-  } else {
-    controller_->AcceptSuggestionWithoutThreshold(index->first);
-  }
+  controller_->AcceptSuggestion(index->first);
   return true;
 }
 

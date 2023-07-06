@@ -494,91 +494,41 @@ TEST_F(PopupViewViewsTest, MovingSelectionSkipsInsecureFormWarning) {
   EXPECT_FALSE(view().GetSelectedCell());
 }
 
-TEST_F(PopupViewViewsTest, FillContentOnEnter) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept);
-  CreateAndShowView(
-      {PopupItemId::kAddressEntry, PopupItemId::kAutofillOptions});
+class PopupViewViewsTestKeyboard : public PopupViewViewsTest {
+ public:
+  void SelectItem(size_t index) {
+    CreateAndShowView(
+        {PopupItemId::kAddressEntry, PopupItemId::kAutofillOptions});
+    // Select the `index`th item.
+    view().SetSelectedCell(CellIndex{index, CellType::kContent});
+    EXPECT_EQ(view().GetSelectedCell(),
+              absl::make_optional<CellIndex>(index, CellType::kContent));
+  }
 
-  // Select the first item.
-  view().SetSelectedCell(CellIndex{0u, CellType::kContent});
-  EXPECT_EQ(view().GetSelectedCell(),
-            absl::make_optional<CellIndex>(0u, CellType::kContent));
+  void SelectFirstSuggestion() { SelectItem(0); }
+};
 
-  // Because the first line is an autofillable entry, we expect that the tab
-  // key triggers autofill.
-  EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold(0));
-  SimulateKeyPress(ui::VKEY_RETURN);
-}
-
-TEST_F(PopupViewViewsTest, FillContentOnEnterUsesThresholdIfFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept};
-  CreateAndShowView(
-      {PopupItemId::kAddressEntry, PopupItemId::kAutofillOptions});
-
-  // Select the first item.
-  view().SetSelectedCell(CellIndex{0u, CellType::kContent});
-  EXPECT_EQ(view().GetSelectedCell(),
-            absl::make_optional<CellIndex>(0u, CellType::kContent));
-
-  // Because the first line is an autofillable entry, we expect that the tab
-  // key triggers autofill.
-  EXPECT_CALL(controller(), AcceptSuggestion);
+// Tests that hitting enter on a suggestion autofills it.
+TEST_F(PopupViewViewsTestKeyboard, FillOnEnter) {
+  SelectFirstSuggestion();
+  EXPECT_CALL(controller(), AcceptSuggestion(0));
   EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
   SimulateKeyPress(ui::VKEY_RETURN);
 }
 
-// Verify that pressing the tab key while an autofillable entry is selected
-// triggers the filling.
-TEST_F(PopupViewViewsTest, FillOnTabPressed) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept);
-  CreateAndShowView(
-      {PopupItemId::kAddressEntry, PopupItemId::kAutofillOptions});
-
-  // Select the first item.
-  view().SetSelectedCell(CellIndex{0u, CellType::kContent});
-  EXPECT_EQ(view().GetSelectedCell(),
-            absl::make_optional<CellIndex>(0u, CellType::kContent));
-
-  // Because the first line is an autofillable entry, we expect that the tab
-  // key triggers autofill.
-  EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold);
+// Tests that hitting tab on a suggestion autofills it.
+TEST_F(PopupViewViewsTestKeyboard, FillOnTabPressed) {
+  SelectFirstSuggestion();
+  EXPECT_CALL(controller(), AcceptSuggestion(0));
+  EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
   SimulateKeyPress(ui::VKEY_TAB);
 }
 
-TEST_F(PopupViewViewsTest, FillOnTabPressedUsesThresholdIfFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept};
-  CreateAndShowView(
-      {PopupItemId::kAddressEntry, PopupItemId::kAutofillOptions});
-
-  // Select the first item.
-  view().SetSelectedCell(CellIndex{0u, CellType::kContent});
-  EXPECT_EQ(view().GetSelectedCell(),
-            absl::make_optional<CellIndex>(0u, CellType::kContent));
-
-  // Because the first line is an autofillable entry, we expect that the tab
-  // key triggers autofill.
-  EXPECT_CALL(controller(), AcceptSuggestion);
-  SimulateKeyPress(ui::VKEY_TAB);
-}
-
-TEST_F(PopupViewViewsTest, NoFillOnTabPressedWithModifiers) {
-  CreateAndShowView(
-      {PopupItemId::kAddressEntry, PopupItemId::kAutofillOptions});
-
-  // Select the first item.
-  view().SetSelectedCell(CellIndex{0u, CellType::kContent});
-  EXPECT_EQ(view().GetSelectedCell(),
-            absl::make_optional<CellIndex>(0u, CellType::kContent));
-
-  // Because the first line is an autofillable entry, we expect that the tab
-  // key triggers autofill.
-  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
+// Tests that `tab` together with a modified (other than shift) does not
+// autofill a selected suggestion.
+TEST_F(PopupViewViewsTestKeyboard, NoFillOnTabPressedWithModifiers) {
+  SelectFirstSuggestion();
+  EXPECT_CALL(controller(), AcceptSuggestion(0)).Times(0);
   EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
   SimulateKeyPress(ui::VKEY_TAB, /*shift_modifier_pressed=*/false,
                    /*non_shift_modifier_pressed=*/true);

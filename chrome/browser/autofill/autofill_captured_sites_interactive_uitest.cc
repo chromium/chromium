@@ -195,7 +195,9 @@ class AutofillCapturedSitesInteractiveTest
       }
 
       // Press the down key to highlight the first choice in the autofill
-      // suggestion drop down.
+      // suggestion drop down. Once the popup is shown, wait for 500 ms to
+      // exceed the freeze period of the popup during which it ignores "Enter"
+      // keystrokes.
       test_delegate()->SetExpectations({ObservedUiEvents::kPreviewFormData},
                                        kAutofillWaitForActionInterval);
       SendKeyToPopup(frame, ui::DomKey::ARROW_DOWN);
@@ -206,6 +208,7 @@ class AutofillCapturedSitesInteractiveTest
                      << preview_shown.message();
         continue;
       }
+      DoNothingAndWait(base::Milliseconds(500));
 
       absl::optional<std::u16string> cvc = profile_controller_->cvc();
       // If CVC is available in the Action Recorder receipts and this is a

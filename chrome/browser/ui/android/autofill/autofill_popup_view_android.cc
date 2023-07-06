@@ -176,12 +176,7 @@ void AutofillPopupViewAndroid::SuggestionSelected(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept)) {
-    controller_->AcceptSuggestion(list_index);
-  } else {
-    controller_->AcceptSuggestionWithoutThreshold(list_index);
-  }
+  controller_->AcceptSuggestion(list_index);
 }
 
 void AutofillPopupViewAndroid::DeletionRequested(
