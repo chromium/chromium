@@ -221,6 +221,7 @@ export function createExtensionInfo(
         webStoreUrl: '',
         showSafeBrowsingAllowlistWarning: false,
         showAccessRequestsInToolbar: false,
+        acknowledgeSafetyCheckWarning: false,
       },
       properties || {});
 }

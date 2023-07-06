@@ -637,6 +637,12 @@ void DeveloperPrivateEventRouter::OnErrorAdded(const ExtensionError* error) {
                             error->extension_id());
 }
 
+void DeveloperPrivateEventRouter::OnExtensionConfigurationChanged(
+    const std::string& extension_id) {
+  BroadcastItemStateChanged(developer::EVENT_TYPE_CONFIGURATION_CHANGED,
+                            extension_id);
+}
+
 void DeveloperPrivateEventRouter::OnErrorsRemoved(
     const std::set<std::string>& removed_ids) {
   for (const std::string& id : removed_ids) {
@@ -1162,6 +1168,12 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
     ExtensionPrefs::Get(browser_context())
         ->SetBooleanPref(extension->id(), kPrefAcknowledgeSafetyCheckWarning,
                          *update.acknowledge_safety_check_warning);
+    DeveloperPrivateEventRouter* event_router =
+        DeveloperPrivateAPI::Get(browser_context())
+            ->developer_private_event_router();
+    if (event_router) {
+      event_router->OnExtensionConfigurationChanged(extension->id());
+    }
   }
 
   return RespondNow(NoArguments());

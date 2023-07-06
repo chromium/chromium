@@ -171,6 +171,13 @@ export class Service implements ServiceInterface {
         });
   }
 
+  setItemSafetyCheckWarningAcknowledged(id: string): Promise<void> {
+    return chrome.developerPrivate.updateExtensionConfiguration({
+      extensionId: id,
+      acknowledgeSafetyCheckWarning: true,
+    });
+  }
+
   setItemEnabled(id: string, isEnabled: boolean) {
     chrome.metricsPrivate.recordUserAction(
         isEnabled ? 'Extensions.ExtensionEnabled' :

@@ -16,6 +16,10 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {ItemDelegate} from './item.js';
 import {getTemplate} from './review_panel.html.js';
 
+export interface ReviewItemDelegate {
+  setItemSafetyCheckWarningAcknowledged(id: string): void;
+}
+
 export interface ExtensionsReviewPanelElement {
   $: {
     makeExceptionMenu: CrActionMenuElement,
@@ -95,6 +99,12 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * The latest id of an extension whose action menu (Keep the extension)
+       * was expanded.
+       * */
+      lastClickedExtensionId_: String,
     };
   }
 
@@ -102,7 +112,7 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
     return ['onExtensionsChanged_(extensions.*)'];
   }
 
-  delegate: ItemDelegate;
+  delegate: ItemDelegate&ReviewItemDelegate;
   extensions: chrome.developerPrivate.ExtensionInfo[];
   private hasChangeBeenMade_: boolean;
   private unsafeExtensions_: chrome.developerPrivate.ExtensionInfo[];
@@ -111,6 +121,7 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
   private unsafeExtensionsReviewListExpanded_: boolean;
   private shouldShowCompletionInfo_: boolean;
   private shouldShowUnsafeExtensions_: boolean;
+  private lastClickedExtensionId_: string;
 
   private async onExtensionsChanged_() {
     this.unsafeExtensions_ = this.getUnsafeExtensions_(this.extensions);
@@ -129,7 +140,8 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
         extension =>
             !!(extension.safetyCheckText &&
                extension.safetyCheckText.panelString &&
-               !extension.controlledInfo));
+               !extension.controlledInfo &&
+               extension.acknowledgeSafetyCheckWarning !== true));
   }
 
   /**
@@ -151,7 +163,9 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
   /**
    * Opens the extension action menu.
    */
-  private onMakeExceptionMenuClick_(e: Event) {
+  private onMakeExceptionMenuClick_(
+      e: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>) {
+    this.lastClickedExtensionId_ = e.model.item.id;
     this.$.makeExceptionMenu.showAt(e.target as HTMLElement);
   }
 
@@ -160,8 +174,12 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
    */
   private onKeepExtensionClick_() {
     this.$.makeExceptionMenu.close();
-    // TODO(crbug.com/1432194): Call the private API to keep the extension in
-    // pref.
+    if (this.lastClickedExtensionId_) {
+      this.delegate.setItemSafetyCheckWarningAcknowledged(
+          this.lastClickedExtensionId_);
+      this.hasChangeBeenMade_ = true;
+    }
+    this.hasChangeBeenMade_ = true;
   }
 
   private onRemoveExtensionClick_(
@@ -172,6 +190,7 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
 
   private onRemoveAllExtensions_(): void {
     // TODO(crbug.com/1432194): Call the private API to remove all extensions.
+    this.hasChangeBeenMade_ = true;
   }
 }
 

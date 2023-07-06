@@ -402,6 +402,15 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
       case EventType.UNINSTALLED:
         this.removeItem_(eventData.item_id);
         break;
+      case EventType.CONFIGURATION_CHANGED:
+        const index = this.getIndexInList_('extensions_', eventData.item_id);
+        this.updateItem_(
+            'extensions_', index,
+            Object.assign({}, this.getData_(eventData.item_id), {
+              acknowledgeSafetyCheckWarning:
+                  eventData.extensionInfo?.acknowledgeSafetyCheckWarning,
+            }));
+        break;
       default:
         assertNotReached();
     }

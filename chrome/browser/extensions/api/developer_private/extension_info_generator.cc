@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
+#include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/developer_private/inspectable_views_finder.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
@@ -640,6 +641,11 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   info->incognito_access.is_enabled = util::CanBeIncognitoEnabled(&extension);
   info->incognito_access.is_active =
       util::IsIncognitoEnabled(extension.id(), browser_context_);
+
+  // Safety check warning acknowledge status.
+  extension_prefs_->ReadPrefAsBoolean(
+      extension.id(), extensions::kPrefAcknowledgeSafetyCheckWarning,
+      &info->acknowledge_safety_check_warning);
 
   // Install warnings, but only if unpacked, the error console isn't enabled
   // (otherwise it shows these), and we're in developer mode (normal users don't

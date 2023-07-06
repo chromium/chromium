@@ -265,6 +265,7 @@ namespace developerPrivate {
     DOMString webStoreUrl;
     boolean showSafeBrowsingAllowlistWarning;
     boolean showAccessRequestsInToolbar;
+    boolean acknowledgeSafetyCheckWarning;
   };
 
   dictionary ProfileInfo {
@@ -487,7 +488,8 @@ namespace developerPrivate {
     COMMAND_REMOVED,
     PERMISSIONS_CHANGED,
     SERVICE_WORKER_STARTED,
-    SERVICE_WORKER_STOPPED
+    SERVICE_WORKER_STOPPED,
+    CONFIGURATION_CHANGED
   };
 
   dictionary PackDirectoryResponse {

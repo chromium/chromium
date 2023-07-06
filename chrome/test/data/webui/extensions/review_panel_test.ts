@@ -106,8 +106,8 @@ suite('ExtensionsReviewPanel', function() {
         'Alpha');
   });
 
-  test('CompletionStateShouldBeShown', async function() {
-    let completionTextContainer =
+  test('CompletionStateShouldBeShownAfterDeletingItems', async function() {
+    const completionTextContainer =
         element.shadowRoot!.querySelector('.completion-container');
     assertFalse(isVisible(completionTextContainer));
     class MockDeleteItemDelegate extends MockItemDelegate {
@@ -116,12 +116,54 @@ suite('ExtensionsReviewPanel', function() {
         element.extensions =
             element.extensions.filter(extension => extension.id !== id);
       }
+      setItemSafetyCheckWarningAcknowledged(): void {}
     }
     element.delegate = new MockDeleteItemDelegate();
     element.shadowRoot!.querySelector('cr-icon-button')?.click();
     flush();
-    completionTextContainer =
+    assertTrue(!!completionTextContainer);
+    assertTrue(isVisible(completionTextContainer));
+  });
+
+  test('CompletionStateShouldBeShownAfterKeepingItems', async function() {
+    const completionTextContainer =
         element.shadowRoot!.querySelector('.completion-container');
+    class MockKeepItemDelegate extends MockItemDelegate {
+      setItemSafetyCheckWarningAcknowledged(): void {
+        const extensionItems = [
+          createExtensionInfo({
+            name: 'Alpha',
+            id: 'a'.repeat(32),
+            safetyCheckText: {panelString: 'This extension contains malware.'},
+            acknowledgeSafetyCheckWarning: true,
+          }),
+          createExtensionInfo({name: 'Bravo', id: 'b'.repeat(32)}),
+          createExtensionInfo({name: 'Charlie', id: 'c'.repeat(29)}),
+        ];
+        element.extensions = extensionItems;
+      }
+    }
+    element.delegate = new MockKeepItemDelegate();
+    assertFalse(isVisible(completionTextContainer));
+    const extensionRowContainers =
+        element.shadowRoot!.querySelectorAll('.extension-row');
+    assertEquals(1, extensionRowContainers.length);
+    const menuButton = extensionRowContainers[0]!.querySelector<HTMLElement>(
+        '.icon-more-vert')!;
+    const actionMenu = element.$.makeExceptionMenu;
+    assertFalse(actionMenu.open);
+
+    // Open the three dots action menu.
+    menuButton.click();
+    // The three dots action menu should be open.
+    assertTrue(actionMenu.open);
+
+    // Click the Keep the Extension button.
+    actionMenu.querySelector('button')!.click();
+    await flushTasks();
+
+    // The extension row should be removed and the completion state should be
+    // shown.
     assertTrue(!!completionTextContainer);
     assertTrue(isVisible(completionTextContainer));
   });

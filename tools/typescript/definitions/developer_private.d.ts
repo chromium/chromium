@@ -252,6 +252,7 @@ declare global {
         webStoreUrl: string;
         showSafeBrowsingAllowlistWarning: boolean;
         showAccessRequestsInToolbar: boolean;
+        acknowledgeSafetyCheckWarning: boolean;
       }
 
       export interface ProfileInfo {
@@ -269,6 +270,7 @@ declare global {
         errorCollection?: boolean;
         hostAccess?: HostAccess;
         showAccessRequestsInToolbar?: boolean;
+        acknowledgeSafetyCheckWarning?: boolean;
       }
 
       export interface ProfileConfigurationUpdate {
@@ -326,6 +328,7 @@ declare global {
         PERMISSIONS_CHANGED = 'PERMISSIONS_CHANGED',
         SERVICE_WORKER_STARTED = 'SERVICE_WORKER_STARTED',
         SERVICE_WORKER_STOPPED = 'SERVICE_WORKER_STOPPED',
+        CONFIGURATION_CHANGED = 'CONFIGURATION_CHANGED',
       }
 
       export enum SiteSet {
