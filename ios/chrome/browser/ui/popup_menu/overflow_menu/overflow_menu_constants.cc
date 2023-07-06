@@ -71,6 +71,86 @@ std::string StringNameForDestination(Destination destination) {
       return "overflow_menu::Destination::SpotlightDebugger";
   }
 }
+// WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
+// very careful when updating this method to ensure all enums are accounted for.
+ActionType ActionTypeForStringName(std::string action) {
+  if (action == "Reload") {
+    return overflow_menu::ActionType::Reload;
+  } else if (action == "NewTab") {
+    return overflow_menu::ActionType::NewTab;
+  } else if (action == "NewIncognitoTab") {
+    return overflow_menu::ActionType::NewIncognitoTab;
+  } else if (action == "NewWindow") {
+    return overflow_menu::ActionType::NewWindow;
+  } else if (action == "PinTab") {
+    return overflow_menu::ActionType::PinTab;
+  } else if (action == "Follow") {
+    return overflow_menu::ActionType::Follow;
+  } else if (action == "Bookmark") {
+    return overflow_menu::ActionType::Bookmark;
+  } else if (action == "ReadingList") {
+    return overflow_menu::ActionType::ReadingList;
+  } else if (action == "ClearBrowsingData") {
+    return overflow_menu::ActionType::ClearBrowsingData;
+  } else if (action == "Translate") {
+    return overflow_menu::ActionType::Translate;
+  } else if (action == "DesktopSite") {
+    return overflow_menu::ActionType::DesktopSite;
+  } else if (action == "FindInPage") {
+    return overflow_menu::ActionType::FindInPage;
+  } else if (action == "TextZoom") {
+    return overflow_menu::ActionType::TextZoom;
+  } else if (action == "ReportAnIssue") {
+    return overflow_menu::ActionType::ReportAnIssue;
+  } else if (action == "Help") {
+    return overflow_menu::ActionType::Help;
+  } else if (action == "ShareChrome") {
+    return overflow_menu::ActionType::ShareChrome;
+  } else if (action == "EditActions") {
+    return overflow_menu::ActionType::EditActions;
+  } else {
+    NOTREACHED_NORETURN();
+  }
+}
+
+std::string StringNameForActionType(ActionType action) {
+  switch (action) {
+    case overflow_menu::ActionType::Reload:
+      return "Reload";
+    case overflow_menu::ActionType::NewTab:
+      return "NewTab";
+    case overflow_menu::ActionType::NewIncognitoTab:
+      return "NewIncognitoTab";
+    case overflow_menu::ActionType::NewWindow:
+      return "NewWindow";
+    case overflow_menu::ActionType::PinTab:
+      return "PinTab";
+    case overflow_menu::ActionType::Follow:
+      return "Follow";
+    case overflow_menu::ActionType::Bookmark:
+      return "Bookmark";
+    case overflow_menu::ActionType::ReadingList:
+      return "ReadingList";
+    case overflow_menu::ActionType::ClearBrowsingData:
+      return "ClearBrowsingData";
+    case overflow_menu::ActionType::Translate:
+      return "Translate";
+    case overflow_menu::ActionType::DesktopSite:
+      return "DesktopSite";
+    case overflow_menu::ActionType::FindInPage:
+      return "FindInPage";
+    case overflow_menu::ActionType::TextZoom:
+      return "TextZoom";
+    case overflow_menu::ActionType::ReportAnIssue:
+      return "ReportAnIssue";
+    case overflow_menu::ActionType::Help:
+      return "Help";
+    case overflow_menu::ActionType::ShareChrome:
+      return "ShareChrome";
+    case overflow_menu::ActionType::EditActions:
+      return "EditActions";
+  }
+}
 
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.

@@ -64,6 +64,7 @@ extern const char kOSLockdownModeEnabled[];
 extern const char kOverflowMenuDestinationUsageHistory[];
 extern const char kOverflowMenuNewDestinations[];
 extern const char kOverflowMenuDestinationsOrder[];
+extern const char kOverflowMenuActionsOrder[];
 extern const char kPrintingEnabled[];
 extern const char kSearchSuggestEnabled[];
 extern const char kTrackPricesOnTabsEnabled[];

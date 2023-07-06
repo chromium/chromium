@@ -38,10 +38,7 @@
                     self.baseViewController.traitCollection.verticalSizeClass
                                      highlightDestination:-1];
 
-  // Get actions from orderer and create model.
-  NSArray<OverflowMenuAction*>* actions = [self.menuOrderer pageActions];
-  _model = [[ActionCustomizationModel alloc] initWithActions:actions];
-
+  _model = self.menuOrderer.actionCustomizationModel;
   _viewController = [OverflowMenuViewProvider
       makeActionCustomizationViewControllerWithModel:_model
                                      uiConfiguration:_UIConfiguration];
@@ -80,6 +77,8 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  [self.menuOrderer commitActionsUpdate];
+
   id<OverflowMenuCustomizationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), OverflowMenuCustomizationCommands);
   [handler hideActionCustomization];

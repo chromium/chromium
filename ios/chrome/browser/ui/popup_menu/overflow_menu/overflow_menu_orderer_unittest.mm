@@ -9,12 +9,14 @@
 #endif
 
 #import "base/strings/string_number_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "testing/gtest_mac.h"
@@ -55,9 +57,28 @@ OverflowMenuDestination* CreateOverflowMenuDestination(
   return result;
 }
 
+OverflowMenuAction* CreateOverflowMenuAction(
+    overflow_menu::ActionType actionType) {
+  OverflowMenuAction* result =
+      [[OverflowMenuAction alloc] initWithName:@"Foobar"
+                                    symbolName:kSettingsSymbol
+                                  systemSymbol:YES
+                              monochromeSymbol:NO
+                       accessibilityIdentifier:@"Foobar"
+                            enterpriseDisabled:NO
+                           displayNewLabelIcon:NO
+                                       handler:^{
+                                           // Do nothing
+                                       }];
+
+  result.actionType = static_cast<NSInteger>(actionType);
+
+  return result;
+}
+
 }  // namespace
 
-// Fake provider for test purposes.
+// Fake destination provider for test purposes.
 @interface FakeOverflowMenuDestinationProvider
     : NSObject <OverflowMenuDestinationProvider>
 
@@ -91,6 +112,44 @@ OverflowMenuDestination* CreateOverflowMenuDestination(
 
 @end
 
+// Fake action provider for test purposes.
+@interface FakeOverflowMenuActionProvider
+    : NSObject <OverflowMenuActionProvider>
+
+@property(nonatomic, assign) ActionRanking basePageActions;
+
+// By default, the provider will create a standard `OverflowMenuAction`
+// and return that in `-actionForActionType:`. This will override
+// that to return a custom action.
+- (void)storeCustomAction:(OverflowMenuAction*)action
+            forActionType:(overflow_menu::ActionType)actionType;
+
+@end
+
+@implementation FakeOverflowMenuActionProvider {
+  std::map<overflow_menu::ActionType, OverflowMenuAction*> _actionMap;
+}
+
+- (void)storeCustomAction:(OverflowMenuAction*)action
+            forActionType:(overflow_menu::ActionType)actionType {
+  _actionMap[actionType] = action;
+}
+
+- (OverflowMenuAction*)actionForActionType:
+    (overflow_menu::ActionType)actionType {
+  if (_actionMap.contains(actionType)) {
+    return _actionMap[actionType];
+  }
+  return CreateOverflowMenuAction(actionType);
+}
+
+- (OverflowMenuAction*)customizationActionForActionType:
+    (overflow_menu::ActionType)actionType {
+  return [self actionForActionType:actionType];
+}
+
+@end
+
 class OverflowMenuOrdererTest : public PlatformTest {
  public:
   OverflowMenuOrdererTest() {}
@@ -98,6 +157,7 @@ class OverflowMenuOrdererTest : public PlatformTest {
  protected:
   void SetUp() override {
     destination_provider_ = [[FakeOverflowMenuDestinationProvider alloc] init];
+    action_provider_ = [[FakeOverflowMenuActionProvider alloc] init];
   }
 
   void TearDown() override {
@@ -115,6 +175,7 @@ class OverflowMenuOrdererTest : public PlatformTest {
     overflow_menu_orderer_.localStatePrefs = prefs_.get();
     overflow_menu_orderer_.visibleDestinationsCount = kVisibleDestinationsCount;
     overflow_menu_orderer_.destinationProvider = destination_provider_;
+    overflow_menu_orderer_.actionProvider = action_provider_;
   }
 
   void InitializeOverflowMenuOrdererWithRanking(BOOL isIncognito,
@@ -132,6 +193,8 @@ class OverflowMenuOrdererTest : public PlatformTest {
     prefs_->registry()->RegisterListPref(prefs::kOverflowMenuNewDestinations,
                                          PrefRegistry::LOSSY_PREF);
     prefs_->registry()->RegisterListPref(prefs::kOverflowMenuDestinationsOrder);
+    prefs_->registry()->RegisterDictionaryPref(
+        prefs::kOverflowMenuActionsOrder);
   }
 
   DestinationRanking SampleDestinations() {
@@ -147,13 +210,27 @@ class OverflowMenuOrdererTest : public PlatformTest {
     };
   }
 
+  ActionRanking SampleActions() {
+    return {
+        overflow_menu::ActionType::Follow,
+        overflow_menu::ActionType::Bookmark,
+        overflow_menu::ActionType::ReadingList,
+        overflow_menu::ActionType::ClearBrowsingData,
+        overflow_menu::ActionType::Translate,
+        overflow_menu::ActionType::DesktopSite,
+        overflow_menu::ActionType::FindInPage,
+        overflow_menu::ActionType::TextZoom,
+    };
+  }
+
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   OverflowMenuOrderer* overflow_menu_orderer_;
   FakeOverflowMenuDestinationProvider* destination_provider_;
+  FakeOverflowMenuActionProvider* action_provider_;
 };
 
-// Tests that the ranking pref gets populated after sorting once.
-TEST_F(OverflowMenuOrdererTest, StoresInitialRanking) {
+// Tests that the destination ranking pref gets populated after sorting once.
+TEST_F(OverflowMenuOrdererTest, StoresInitialDestinationRanking) {
   InitializeOverflowMenuOrderer(NO);
   DestinationRanking sample_destinations = SampleDestinations();
   destination_provider_.baseDestinations = sample_destinations;
@@ -169,7 +246,7 @@ TEST_F(OverflowMenuOrdererTest, StoresInitialRanking) {
 // dict containing both usage history and ranking) is correctly migrated to the
 // new format (kOverflowMenuDestinationUsageHistory containing just usage
 // history and kOverflowMenuDestinationsOrder containing ranking).
-TEST_F(OverflowMenuOrdererTest, MigratesRanking) {
+TEST_F(OverflowMenuOrdererTest, MigratesDestinationRanking) {
   CreatePrefs();
 
   base::Value::List old_ranking =
@@ -628,4 +705,20 @@ TEST_F(OverflowMenuOrdererTest, MovesBadgedDestinationsWithNoUsageHistory) {
   ASSERT_EQ(static_cast<overflow_menu::Destination>(
                 sorted_ranking[kNewDestinationsInsertionIndex + 1].destination),
             all_destinations[6]);
+}
+
+// Tests that the action ranking pref gets populated after sorting once.
+TEST_F(OverflowMenuOrdererTest, StoresInitialActionRanking) {
+  base::test::ScopedFeatureList features(kOverflowMenuCustomization);
+
+  InitializeOverflowMenuOrderer(NO);
+  ActionRanking sample_actions = SampleActions();
+  action_provider_.basePageActions = sample_actions;
+  [overflow_menu_orderer_ pageActions];
+
+  const base::Value::Dict& stored_ranking =
+      prefs_->GetDict(prefs::kOverflowMenuActionsOrder);
+
+  EXPECT_EQ(stored_ranking.size(), 2u);
+  EXPECT_EQ(stored_ranking.FindList("shown")->size(), sample_actions.size());
 }

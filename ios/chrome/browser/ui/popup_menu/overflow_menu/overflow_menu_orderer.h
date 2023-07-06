@@ -13,6 +13,7 @@ namespace overflow_menu {
 enum class Destination;
 enum class ActionType;
 }
+@class ActionCustomizationModel;
 @class OverflowMenuAction;
 @class OverflowMenuDestination;
 class PrefService;
@@ -42,6 +43,12 @@ class PrefService;
 - (OverflowMenuAction*)actionForActionType:
     (overflow_menu::ActionType)actionType;
 
+// Returns a representative `OverflowMenuAction` for the corresponding
+// `overflow_menu::ActionType` to display to the user when customizing the order
+// and show/hide state of the actions.
+- (OverflowMenuAction*)customizationActionForActionType:
+    (overflow_menu::ActionType)actionType;
+
 @end
 
 // Controls the order of all the items in the overflow menu.
@@ -63,6 +70,10 @@ class PrefService;
 
 @property(nonatomic, weak) id<OverflowMenuActionProvider> actionProvider;
 
+// Model object to be used for customizing (reordering, showing/hiding) actions.
+@property(nonatomic, readonly)
+    ActionCustomizationModel* actionCustomizationModel;
+
 // Release any C++ objects that can't be reference counted.
 - (void)disconnect;
 
@@ -74,6 +85,10 @@ class PrefService;
 
 // Returns the current ordering of active page actions.
 - (NSArray<OverflowMenuAction*>*)pageActions;
+
+// Tells the orderer that actions customization has finished using the current
+// data in `actionCustomizationModel`.
+- (void)commitActionsUpdate;
 
 @end
 

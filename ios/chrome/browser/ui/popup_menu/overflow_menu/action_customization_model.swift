@@ -9,20 +9,22 @@ import SwiftUI
 /// overflow menu.
 @objcMembers
 public class ActionCustomizationModel: NSObject, ObservableObject {
-  @Published public var shownActions: OverflowMenuActionGroup
-  @Published public var hiddenActions: OverflowMenuActionGroup
+  @Published public private(set) var shownActions: OverflowMenuActionGroup
+  @Published public private(set) var hiddenActions: OverflowMenuActionGroup
 
   /// Holds sinks for all the action observation.
   var cancellables: Set<AnyCancellable> = []
 
   public init(actions: [OverflowMenuAction]) {
-    let splitActions = Self.splitActions(actions)
-    let shownActions = OverflowMenuActionGroup(
-      groupName: "shown", actions: splitActions.shown, footer: nil)
-    shownActions.supportsReordering = true
-    self.shownActions = shownActions
+    let shownActions = actions.filter { $0.shown }
+    let hiddenActions = actions.filter { !$0.shown }
+
+    let shownActionsGroup = OverflowMenuActionGroup(
+      groupName: "shown", actions: shownActions, footer: nil)
+    shownActionsGroup.supportsReordering = true
+    self.shownActions = shownActionsGroup
     self.hiddenActions = OverflowMenuActionGroup(
-      groupName: "hidden", actions: splitActions.hidden, footer: nil)
+      groupName: "hidden", actions: hiddenActions, footer: nil)
 
     super.init()
 
@@ -33,24 +35,6 @@ public class ActionCustomizationModel: NSObject, ObservableObject {
         self?.toggle(action: action, newShown: newShown)
       }.store(in: &cancellables)
     }
-  }
-
-  /// Splits an initial actions array into separate arrays based on their
-  /// `.shown` value.
-  static func splitActions(_ actions: [OverflowMenuAction]) -> (
-    shown: [OverflowMenuAction], hidden: [OverflowMenuAction]
-  ) {
-    var shown: [OverflowMenuAction] = []
-    var hidden: [OverflowMenuAction] = []
-
-    for action in actions {
-      if action.shown {
-        shown.append(action)
-      } else {
-        hidden.append(action)
-      }
-    }
-    return (shown: shown, hidden: hidden)
   }
 
   /// Moves `action` to the correct group based on its new `shown`

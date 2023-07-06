@@ -110,32 +110,38 @@ typedef void (^Handler)(void);
 
 OverflowMenuAction* CreateOverflowMenuActionWithString(
     NSString* name,
+    overflow_menu::ActionType actionType,
     NSString* symbolName,
     bool systemSymbol,
     bool monochromeSymbol,
     NSString* accessibilityID,
     Handler handler) {
-  return [[OverflowMenuAction alloc] initWithName:name
-                                       symbolName:symbolName
-                                     systemSymbol:systemSymbol
-                                 monochromeSymbol:monochromeSymbol
-                          accessibilityIdentifier:accessibilityID
-                               enterpriseDisabled:NO
-                              displayNewLabelIcon:NO
-                                          handler:handler];
+  OverflowMenuAction* action =
+      [[OverflowMenuAction alloc] initWithName:name
+                                    symbolName:symbolName
+                                  systemSymbol:systemSymbol
+                              monochromeSymbol:monochromeSymbol
+                       accessibilityIdentifier:accessibilityID
+                            enterpriseDisabled:NO
+                           displayNewLabelIcon:NO
+                                       handler:handler];
+  action.actionType = static_cast<NSInteger>(actionType);
+  return action;
 }
 
-OverflowMenuAction* CreateOverflowMenuAction(int nameID,
-                                             NSString* symbolName,
-                                             bool systemSymbol,
-                                             bool monochromeSymbol,
-                                             NSString* accessibilityID,
-                                             Handler handler) {
+OverflowMenuAction* CreateOverflowMenuAction(
+    int nameID,
+    overflow_menu::ActionType actionType,
+    NSString* symbolName,
+    bool systemSymbol,
+    bool monochromeSymbol,
+    NSString* accessibilityID,
+    Handler handler) {
   NSString* name = l10n_util::GetNSString(nameID);
 
-  return CreateOverflowMenuActionWithString(name, symbolName, systemSymbol,
-                                            monochromeSymbol, accessibilityID,
-                                            handler);
+  return CreateOverflowMenuActionWithString(name, actionType, symbolName,
+                                            systemSymbol, monochromeSymbol,
+                                            accessibilityID, handler);
 }
 
 OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
@@ -589,45 +595,51 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   [self logTranslateAvailability];
 
   self.reloadAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_RELOAD, kArrowClockWiseSymbol, /*systemSymbol=*/NO,
+      IDS_IOS_TOOLS_MENU_RELOAD, overflow_menu::ActionType::Reload,
+      kArrowClockWiseSymbol, /*systemSymbol=*/NO,
       /*monochromeSymbol=*/NO, kToolsMenuReload, ^{
         [weakSelf reload];
       });
 
   self.stopLoadAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_STOP, kXMarkSymbol, /*systemSymbol=*/YES,
+      IDS_IOS_TOOLS_MENU_STOP, overflow_menu::ActionType::Reload, kXMarkSymbol,
+      /*systemSymbol=*/YES,
       /*monochromeSymbol=*/NO, kToolsMenuStop, ^{
         [weakSelf stopLoading];
       });
 
   self.openTabAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_NEW_TAB, kNewTabCircleActionSymbol,
+      IDS_IOS_TOOLS_MENU_NEW_TAB, overflow_menu::ActionType::NewTab,
+      kNewTabCircleActionSymbol,
       /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuNewTabId, ^{
         [weakSelf openTab];
       });
 
   self.openIncognitoTabAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, kIncognitoSymbol,
+      IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB,
+      overflow_menu::ActionType::NewIncognitoTab, kIncognitoSymbol,
       /*systemSymbol=*/NO, /*monochromeSymbol=*/NO, kToolsMenuNewIncognitoTabId,
       ^{
         [weakSelf openIncognitoTab];
       });
 
   self.openNewWindowAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_NEW_WINDOW, kNewWindowActionSymbol,
+      IDS_IOS_TOOLS_MENU_NEW_WINDOW, overflow_menu::ActionType::NewWindow,
+      kNewWindowActionSymbol,
       /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuNewWindowId, ^{
         [weakSelf openNewWindow];
       });
 
   self.pinTabAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_PIN_TAB, kPinSymbol,
+      IDS_IOS_TOOLS_MENU_PIN_TAB, overflow_menu::ActionType::PinTab, kPinSymbol,
       /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuPinTabId, ^{
         SetPinnedTabOverflowUsed();
         [weakSelf pinTab];
       });
 
   self.unpinTabAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_UNPIN_TAB, kPinSlashSymbol,
+      IDS_IOS_TOOLS_MENU_UNPIN_TAB, overflow_menu::ActionType::PinTab,
+      kPinSlashSymbol,
       /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuUnpinTabId, ^{
         SetPinnedTabOverflowUsed();
         [weakSelf unpinTab];
@@ -638,95 +650,67 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     self.unpinTabAction.displayNewLabelIcon = YES;
   }
 
-  self.clearBrowsingDataAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA, kTrashSymbol,
-      /*systemSymbol=*/YES, /*monochromeSymbol=*/NO,
-      kToolsMenuClearBrowsingData, ^{
-        [weakSelf openClearBrowsingData];
-      });
+  self.clearBrowsingDataAction = [self newClearBrowsingDataAction];
 
   if (GetFollowActionState(self.webState) != FollowActionStateHidden) {
-    OverflowMenuAction* action = CreateOverflowMenuActionWithString(
-        l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW, u""), kPlusSymbol,
-        /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuFollow,
-        ^{
-        });
+    OverflowMenuAction* action = [self newFollowAction];
 
     action.enabled = NO;
     self.followAction = action;
   }
 
-  self.addBookmarkAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, kAddBookmarkActionSymbol,
-      /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuAddToBookmarks,
-      ^{
-        [weakSelf addOrEditBookmark];
-      });
+  self.addBookmarkAction = [self newAddBookmarkAction];
 
   self.editBookmarkAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK, kEditActionSymbol,
+      IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK, overflow_menu::ActionType::Bookmark,
+      kEditActionSymbol,
       /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuEditBookmark, ^{
         [weakSelf addOrEditBookmark];
       });
 
-  self.readLaterAction = CreateOverflowMenuAction(
-      IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST, kReadLaterActionSymbol,
-      /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuReadLater, ^{
-        [weakSelf addToReadingList];
-      });
+  self.readLaterAction = [self newReadLaterAction];
 
-  self.translateAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_TRANSLATE, kTranslateSymbol,
-      /*systemSymbol=*/NO, /*monochromeSymbol=*/NO, kToolsMenuTranslateId, ^{
-        [weakSelf translatePage];
-      });
+  self.translateAction = [self newTranslateAction];
 
-  self.requestDesktopAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_REQUEST_DESKTOP_SITE, kDesktopSymbol,
-      /*systemSymbol=*/YES, /*monochromeSymbol=*/YES,
-      kToolsMenuRequestDesktopId, ^{
-        [weakSelf requestDesktopSite];
-      });
+  self.requestDesktopAction = [self newRequestDesktopAction];
 
   self.requestMobileAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_REQUEST_MOBILE_SITE, kIPhoneSymbol,
+      IDS_IOS_TOOLS_MENU_REQUEST_MOBILE_SITE,
+      overflow_menu::ActionType::DesktopSite, kIPhoneSymbol,
       /*systemSymbol=*/YES, /*monochromeSymbol=*/YES, kToolsMenuRequestMobileId,
       ^{
         [weakSelf requestMobileSite];
       });
 
-  self.findInPageAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_FIND_IN_PAGE, kFindInPageActionSymbol,
-      /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuFindInPageId, ^{
-        [weakSelf openFindInPage];
-      });
+  self.findInPageAction = [self newFindInPageAction];
 
-  self.textZoomAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_TEXT_ZOOM, kZoomTextActionSymbol,
-      /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuTextZoom, ^{
-        [weakSelf openTextZoom];
-      });
+  self.textZoomAction = [self newTextZoomAction];
 
   self.reportIssueAction = CreateOverflowMenuAction(
-      IDS_IOS_OPTIONS_REPORT_AN_ISSUE, kWarningSymbol, /*systemSymbol=*/YES,
+      IDS_IOS_OPTIONS_REPORT_AN_ISSUE, overflow_menu::ActionType::ReportAnIssue,
+      kWarningSymbol, /*systemSymbol=*/YES,
       /*monochromeSymbol=*/NO, kToolsMenuReportAnIssueId, ^{
         [weakSelf reportAnIssue];
       });
 
   self.helpAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_HELP_MOBILE, kHelpSymbol, /*systemSymbol=*/YES,
+      IDS_IOS_TOOLS_MENU_HELP_MOBILE, overflow_menu::ActionType::Help,
+      kHelpSymbol, /*systemSymbol=*/YES,
       /*monochromeSymbol=*/NO, kToolsMenuHelpId, ^{
         [weakSelf openHelp];
       });
 
   self.shareChromeAction = CreateOverflowMenuAction(
-      IDS_IOS_OVERFLOW_MENU_SHARE_CHROME, kShareSymbol, /*systemSymbol=*/YES,
+      IDS_IOS_OVERFLOW_MENU_SHARE_CHROME,
+      overflow_menu::ActionType::ShareChrome, kShareSymbol,
+      /*systemSymbol=*/YES,
       /*monochromeSymbol=*/NO, kToolsMenuShareChromeId, ^{
         [weakSelf shareChromeApp];
       });
 
   self.editActionsAction = CreateOverflowMenuAction(
-      IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS, nil, /*systemSymbol=*/NO,
+      IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS,
+      overflow_menu::ActionType::EditActions, nil, /*systemSymbol=*/NO,
       /*monochromeSymbol=*/NO, kToolsMenuEditActionsId, ^{
         [weakSelf beginActionEdit];
       });
@@ -771,6 +755,88 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   // -updateModel.
   return [[OverflowMenuModel alloc] initWithDestinations:@[]
                                             actionGroups:actionGroups];
+}
+
+- (OverflowMenuAction*)newFollowAction {
+  return CreateOverflowMenuActionWithString(
+      l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW, u""),
+      overflow_menu::ActionType::Follow, kPlusSymbol,
+      /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuFollow,
+      ^{
+      });
+}
+
+- (OverflowMenuAction*)newAddBookmarkAction {
+  __weak __typeof(self) weakSelf = self;
+  return CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS,
+                                  overflow_menu::ActionType::Bookmark,
+                                  kAddBookmarkActionSymbol,
+                                  /*systemSymbol=*/YES, /*monochromeSymbol=*/NO,
+                                  kToolsMenuAddToBookmarks, ^{
+                                    [weakSelf addOrEditBookmark];
+                                  });
+}
+
+- (OverflowMenuAction*)newReadLaterAction {
+  __weak __typeof(self) weakSelf = self;
+  return CreateOverflowMenuAction(
+      IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST,
+      overflow_menu::ActionType::ReadingList, kReadLaterActionSymbol,
+      /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuReadLater, ^{
+        [weakSelf addToReadingList];
+      });
+}
+
+- (OverflowMenuAction*)newClearBrowsingDataAction {
+  __weak __typeof(self) weakSelf = self;
+  return CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA,
+                                  overflow_menu::ActionType::ClearBrowsingData,
+                                  kTrashSymbol,
+                                  /*systemSymbol=*/YES, /*monochromeSymbol=*/NO,
+                                  kToolsMenuClearBrowsingData, ^{
+                                    [weakSelf openClearBrowsingData];
+                                  });
+}
+
+- (OverflowMenuAction*)newTranslateAction {
+  __weak __typeof(self) weakSelf = self;
+  return CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_TRANSLATE, overflow_menu::ActionType::Translate,
+      kTranslateSymbol,
+      /*systemSymbol=*/NO, /*monochromeSymbol=*/NO, kToolsMenuTranslateId, ^{
+        [weakSelf translatePage];
+      });
+}
+
+- (OverflowMenuAction*)newRequestDesktopAction {
+  __weak __typeof(self) weakSelf = self;
+  return CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_REQUEST_DESKTOP_SITE,
+      overflow_menu::ActionType::DesktopSite, kDesktopSymbol,
+      /*systemSymbol=*/YES, /*monochromeSymbol=*/YES,
+      kToolsMenuRequestDesktopId, ^{
+        [weakSelf requestDesktopSite];
+      });
+}
+
+- (OverflowMenuAction*)newFindInPageAction {
+  __weak __typeof(self) weakSelf = self;
+  return CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_FIND_IN_PAGE, overflow_menu::ActionType::FindInPage,
+      kFindInPageActionSymbol,
+      /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuFindInPageId, ^{
+        [weakSelf openFindInPage];
+      });
+}
+
+- (OverflowMenuAction*)newTextZoomAction {
+  __weak __typeof(self) weakSelf = self;
+  return CreateOverflowMenuAction(
+      IDS_IOS_TOOLS_MENU_TEXT_ZOOM, overflow_menu::ActionType::TextZoom,
+      kZoomTextActionSymbol,
+      /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuTextZoom, ^{
+        [weakSelf openTextZoom];
+      });
 }
 
 #pragma mark - Private
@@ -1093,11 +1159,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     return nil;
   }
 
-  OverflowMenuAction* action = CreateOverflowMenuActionWithString(
-      l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW, u""), kPlusSymbol,
-      /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuFollow,
-      ^{
-      });
+  OverflowMenuAction* action = [self newFollowAction];
   action.enabled = NO;
   return action;
 }
@@ -1336,7 +1398,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 - (ActionRanking)basePageActions {
   return {
       overflow_menu::ActionType::Follow,
-      overflow_menu::ActionType::Bookmarks,
+      overflow_menu::ActionType::Bookmark,
       overflow_menu::ActionType::ReadingList,
       overflow_menu::ActionType::ClearBrowsingData,
       overflow_menu::ActionType::Translate,
@@ -1349,6 +1411,16 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 - (OverflowMenuAction*)actionForActionType:
     (overflow_menu::ActionType)actionType {
   switch (actionType) {
+    case overflow_menu::ActionType::Reload:
+      return ([self isPageLoading]) ? self.stopLoadAction : self.reloadAction;
+    case overflow_menu::ActionType::NewTab:
+      return self.openTabAction;
+    case overflow_menu::ActionType::NewIncognitoTab:
+      return self.openIncognitoTabAction;
+    case overflow_menu::ActionType::NewWindow:
+      return self.openNewWindowAction;
+    case overflow_menu::ActionType::PinTab:
+      return self.pinTabAction;
     case overflow_menu::ActionType::Follow: {
       // Try to create the followAction if there isn't one. It's possible that
       // sometimes when creating the model the followActionState is hidden so
@@ -1368,7 +1440,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       }
       return self.followAction;
     }
-    case overflow_menu::ActionType::Bookmarks: {
+    case overflow_menu::ActionType::Bookmark: {
       BOOL pageIsBookmarked =
           self.webState && self.localOrSyncableBookmarkModel &&
           bookmark_utils_ios::IsBookmarked(self.webState->GetVisibleURL(),
@@ -1392,6 +1464,52 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       return self.findInPageAction;
     case overflow_menu::ActionType::TextZoom:
       return self.textZoomAction;
+    case overflow_menu::ActionType::ReportAnIssue:
+      return self.reportIssueAction;
+    case overflow_menu::ActionType::Help:
+      return self.helpAction;
+    case overflow_menu::ActionType::ShareChrome:
+      return self.shareChromeAction;
+    case overflow_menu::ActionType::EditActions:
+      return self.editActionsAction;
+  }
+}
+
+// Returns an action for the given `actionType` suitable for displaying in a
+// customization UI. This means that it should not depend on any page state
+// for things like choosing which variant of an action to show (e.g. Add to
+// Bookmarks vs Edit Bookmarks) and shouldn't be enabled based on page state.
+- (OverflowMenuAction*)customizationActionForActionType:
+    (overflow_menu::ActionType)actionType {
+  switch (actionType) {
+    // These actions should not be customizable.
+    case overflow_menu::ActionType::Reload:
+    case overflow_menu::ActionType::NewTab:
+    case overflow_menu::ActionType::NewIncognitoTab:
+    case overflow_menu::ActionType::NewWindow:
+    case overflow_menu::ActionType::PinTab:
+    case overflow_menu::ActionType::ReportAnIssue:
+    case overflow_menu::ActionType::Help:
+    case overflow_menu::ActionType::ShareChrome:
+    case overflow_menu::ActionType::EditActions:
+      NOTREACHED();
+      return nil;
+    case overflow_menu::ActionType::Follow:
+      return [self newFollowAction];
+    case overflow_menu::ActionType::Bookmark:
+      return [self newAddBookmarkAction];
+    case overflow_menu::ActionType::ReadingList:
+      return [self newReadLaterAction];
+    case overflow_menu::ActionType::ClearBrowsingData:
+      return [self newClearBrowsingDataAction];
+    case overflow_menu::ActionType::Translate:
+      return [self newTranslateAction];
+    case overflow_menu::ActionType::DesktopSite:
+      return [self newRequestDesktopAction];
+    case overflow_menu::ActionType::FindInPage:
+      return [self newFindInPageAction];
+    case overflow_menu::ActionType::TextZoom:
+      return [self newTextZoomAction];
   }
 }
 

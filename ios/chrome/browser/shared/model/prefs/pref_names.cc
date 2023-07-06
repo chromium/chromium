@@ -259,6 +259,10 @@ const char kOverflowMenuNewDestinations[] = "overflow_menu.new_destinations";
 const char kOverflowMenuDestinationsOrder[] =
     "overflow_menu.destinations_order";
 
+// Dict preference which tracks the current elements and order of the overflow
+// menu's actions.
+const char kOverflowMenuActionsOrder[] = "overflow_menu.actions_order";
+
 // Boolean that is true when Suggest support is enabled.
 const char kSearchSuggestEnabled[] = "search.suggest_enabled";
 

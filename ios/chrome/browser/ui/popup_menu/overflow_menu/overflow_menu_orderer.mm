@@ -23,6 +23,12 @@ namespace {
 // The dictionary key used for storing rankings.
 const char kRankingKey[] = "ranking";
 
+// The dictionary key used for storing the shown action ordering.
+const char kShownActionsKey[] = "shown";
+
+// The dictionary key used for storing the hidden action ordering.
+const char kHiddenActionsKey[] = "hidden";
+
 // Ingests base::Value::List of destination names (strings) (`from` list),
 // converts each string to an overflow_menu::Destination, then appends each
 // destination to a vector (`to` vector). Skips over invalid or malformed list
@@ -65,6 +71,14 @@ void InsertDestination(overflow_menu::Destination destination,
 
   destinationsToAdd.erase(destination);
 }
+
+// Simple data struct to bundle the two lists of actions together.
+struct ActionOrderData {
+  ActionRanking shownActions;
+  ActionRanking hiddenActions;
+
+  bool empty() const { return shownActions.empty() && hiddenActions.empty(); }
+};
 }  // namespace
 
 using DestinationLookup =
@@ -88,7 +102,12 @@ using DestinationLookup =
   // New destinations recently added to the overflow menu carousel that have not
   // yet been clicked by the user.
   std::set<overflow_menu::Destination> _untappedDestinations;
+
+  // The data for the current actions ordering and show/hide state.
+  ActionOrderData _actionOrderData;
 }
+
+@synthesize actionCustomizationModel = _actionCustomizationModel;
 
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito {
   if (self = [super init]) {
@@ -113,7 +132,8 @@ using DestinationLookup =
     self.destinationUsageHistory.visibleDestinationsCount =
         self.visibleDestinationsCount;
     [self.destinationUsageHistory start];
-    [self loadDataFromPrefs];
+    [self loadDestinationsFromPrefs];
+    [self loadActionsFromPrefs];
   }
 }
 
@@ -121,6 +141,34 @@ using DestinationLookup =
   _visibleDestinationsCount = visibleDestinationsCount;
   self.destinationUsageHistory.visibleDestinationsCount =
       self.visibleDestinationsCount;
+}
+
+// Lazily create customization model.
+- (ActionCustomizationModel*)actionCustomizationModel {
+  if (_actionCustomizationModel) {
+    return _actionCustomizationModel;
+  }
+
+  [self initializeActionOrderDataIfEmpty];
+
+  NSMutableArray<OverflowMenuAction*>* actions = [[NSMutableArray alloc] init];
+  for (overflow_menu::ActionType action : _actionOrderData.shownActions) {
+    if (OverflowMenuAction* overflowMenuAction =
+            [self.actionProvider customizationActionForActionType:action]) {
+      [actions addObject:overflowMenuAction];
+    }
+  }
+  for (overflow_menu::ActionType action : _actionOrderData.hiddenActions) {
+    if (OverflowMenuAction* overflowMenuAction =
+            [self.actionProvider customizationActionForActionType:action]) {
+      overflowMenuAction.shown = NO;
+      [actions addObject:overflowMenuAction];
+    }
+  }
+
+  _actionCustomizationModel =
+      [[ActionCustomizationModel alloc] initWithActions:actions];
+  return _actionCustomizationModel;
 }
 
 #pragma mark - Public
@@ -146,7 +194,7 @@ using DestinationLookup =
         sortedDestinationsFromCurrentRanking:_ranking
                        availableDestinations:availableDestinations];
 
-    [self flushToPrefs];
+    [self flushDestinationsToPrefs];
   }
 
   [self applyBadgeOrderingToRankingWithAvailableDestinations:
@@ -178,13 +226,29 @@ using DestinationLookup =
 }
 
 - (NSArray<OverflowMenuAction*>*)pageActions {
-  ActionRanking availableActions = [self.actionProvider basePageActions];
+  if (!IsOverflowMenuCustomizationEnabled()) {
+    ActionRanking availableActions = [self.actionProvider basePageActions];
+    // Convert back to Objective-C array for returning. This step also filters
+    // out any actions that are not supported on the current page.
+    NSMutableArray<OverflowMenuAction*>* sortedActions =
+        [[NSMutableArray alloc] init];
+    for (overflow_menu::ActionType action : availableActions) {
+      if (OverflowMenuAction* overflowMenuAction =
+              [self.actionProvider actionForActionType:action]) {
+        [sortedActions addObject:overflowMenuAction];
+      }
+    }
+
+    return sortedActions;
+  }
+
+  [self initializeActionOrderDataIfEmpty];
 
   // Convert back to Objective-C array for returning. This step also filters out
   // any actions that are not supported on the current page.
   NSMutableArray<OverflowMenuAction*>* sortedActions =
       [[NSMutableArray alloc] init];
-  for (overflow_menu::ActionType action : availableActions) {
+  for (overflow_menu::ActionType action : _actionOrderData.shownActions) {
     if (OverflowMenuAction* overflowMenuAction =
             [self.actionProvider actionForActionType:action]) {
       [sortedActions addObject:overflowMenuAction];
@@ -194,9 +258,28 @@ using DestinationLookup =
   return sortedActions;
 }
 
+- (void)commitActionsUpdate {
+  ActionOrderData actionOrderData;
+  for (OverflowMenuAction* action in self.actionCustomizationModel.shownActions
+           .actions) {
+    actionOrderData.shownActions.push_back(
+        static_cast<overflow_menu::ActionType>(action.actionType));
+  }
+
+  for (OverflowMenuAction* action in self.actionCustomizationModel.hiddenActions
+           .actions) {
+    actionOrderData.hiddenActions.push_back(
+        static_cast<overflow_menu::ActionType>(action.actionType));
+  }
+
+  _actionOrderData = actionOrderData;
+  [self flushActionsToPrefs];
+}
+
 #pragma mark - Private
 
-- (void)loadDataFromPrefs {
+// Load the stored destinations data from local prefs/disk.
+- (void)loadDestinationsFromPrefs {
   // Fetch the stored list of newly-added, unclicked destinations, then update
   // `_untappedDestinations` with its data.
   AddDestinationsToSet(
@@ -226,12 +309,47 @@ using DestinationLookup =
   storedUsageHistoryUpdate->Remove(kRankingKey);
 }
 
-- (void)flushToPrefs {
+// Load the stored actions data from local prefs/disk.
+- (void)loadActionsFromPrefs {
+  const base::Value::Dict& storedActions =
+      _localStatePrefs->GetDict(prefs::kOverflowMenuActionsOrder);
+  ActionOrderData actionOrderData;
+
+  const base::Value::List* shownActions =
+      storedActions.FindList(kShownActionsKey);
+  if (shownActions) {
+    for (const auto& value : *shownActions) {
+      if (!value.is_string()) {
+        continue;
+      }
+
+      actionOrderData.shownActions.push_back(
+          overflow_menu::ActionTypeForStringName(value.GetString()));
+    }
+  }
+
+  const base::Value::List* hiddenActions =
+      storedActions.FindList(kHiddenActionsKey);
+  if (hiddenActions) {
+    for (const auto& value : *hiddenActions) {
+      if (!value.is_string()) {
+        continue;
+      }
+
+      actionOrderData.hiddenActions.push_back(
+          overflow_menu::ActionTypeForStringName(value.GetString()));
+    }
+  }
+  _actionOrderData = actionOrderData;
+}
+
+// Write stored destination data back to local prefs/disk.
+- (void)flushDestinationsToPrefs {
   if (!_localStatePrefs) {
     return;
   }
 
-  // Flush the new ranking to Prefs.
+  // Flush the new destinations ranking to Prefs.
   base::Value::List ranking;
 
   for (overflow_menu::Destination destination : _ranking) {
@@ -251,6 +369,27 @@ using DestinationLookup =
     untappedDestinationsUpdate->Append(
         overflow_menu::StringNameForDestination(untappedDestination));
   }
+}
+
+// Write stored action data back to local prefs/disk.
+- (void)flushActionsToPrefs {
+  base::Value::Dict storedActions;
+
+  base::Value::List shownActions;
+  for (overflow_menu::ActionType action : _actionOrderData.shownActions) {
+    shownActions.Append(overflow_menu::StringNameForActionType(action));
+  }
+
+  base::Value::List hiddenActions;
+  for (overflow_menu::ActionType action : _actionOrderData.hiddenActions) {
+    hiddenActions.Append(overflow_menu::StringNameForActionType(action));
+  }
+
+  storedActions.Set(kShownActionsKey, std::move(shownActions));
+  storedActions.Set(kHiddenActionsKey, std::move(hiddenActions));
+
+  _localStatePrefs->SetDict(prefs::kOverflowMenuActionsOrder,
+                            std::move(storedActions));
 }
 
 // Creates a map from overflow_menu::Destination : OverflowMenuDestination*
@@ -387,7 +526,21 @@ using DestinationLookup =
   // Set the new ranking.
   _ranking = sortedDestinations;
 
-  [self flushToPrefs];
+  [self flushDestinationsToPrefs];
+}
+
+// Uses the current `actionProvider` to get the initial order of actions for new
+// users without an ordering.
+- (void)initializeActionOrderDataIfEmpty {
+  ActionRanking availableActions = [self.actionProvider basePageActions];
+
+  if (_actionOrderData.empty()) {
+    ActionOrderData initialOrderData;
+    initialOrderData.shownActions = availableActions;
+    _actionOrderData = initialOrderData;
+
+    [self flushActionsToPrefs];
+  }
 }
 
 @end

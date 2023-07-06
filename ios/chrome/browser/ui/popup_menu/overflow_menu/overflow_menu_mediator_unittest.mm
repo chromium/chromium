@@ -7,7 +7,6 @@
 #import "base/files/scoped_temp_dir.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/time/default_clock.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
@@ -230,6 +229,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
         prefs::kOverflowMenuDestinationUsageHistory, PrefRegistry::LOSSY_PREF);
     localStatePrefs_->registry()->RegisterListPref(
         prefs::kOverflowMenuDestinationsOrder);
+    localStatePrefs_->registry()->RegisterDictionaryPref(
+        prefs::kOverflowMenuActionsOrder);
   }
 
   void SetUpBookmarks() {
