@@ -22,7 +22,9 @@ struct hb_language_impl_t;
 
 namespace blink {
 
-enum class LineBreakStrictness { kDefault, kNormal, kStrict, kLoose };
+// A Unicode Line Break Style Identifier (key "lb".)
+// https://www.unicode.org/reports/tr35/#UnicodeLineBreakStyleIdentifier
+enum class LineBreakStrictness : uint8_t { kDefault, kNormal, kStrict, kLoose };
 
 class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   USING_FAST_MALLOC(LayoutLocale);

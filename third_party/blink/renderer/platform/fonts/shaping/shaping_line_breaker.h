@@ -18,7 +18,6 @@ class ShapeResult;
 class ShapeResultView;
 class Hyphenation;
 class LazyLineBreakIterator;
-enum class LineBreakType;
 
 // Shapes a line of text by finding the ideal break position as indicated by the
 // available space and the shape results for the entire paragraph. Once an ideal

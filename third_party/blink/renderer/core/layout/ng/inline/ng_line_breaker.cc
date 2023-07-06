@@ -37,6 +37,23 @@ namespace blink {
 
 namespace {
 
+inline LineBreakStrictness StrictnessFromLineBreak(LineBreak line_break) {
+  switch (line_break) {
+    case LineBreak::kAuto:
+    case LineBreak::kAfterWhiteSpace:
+    case LineBreak::kAnywhere:
+      return LineBreakStrictness::kDefault;
+    case LineBreak::kNormal:
+      return LineBreakStrictness::kNormal;
+    case LineBreak::kStrict:
+      return LineBreakStrictness::kStrict;
+    case LineBreak::kLoose:
+      return LineBreakStrictness::kLoose;
+  }
+  NOTREACHED();
+  return LineBreakStrictness::kDefault;
+}
+
 // Returns smallest negative left and right bearing in `box_fragment`.
 // This function is used for calculating side bearing.
 NGLineBoxStrut ComputeNegativeSideBearings(
@@ -3390,32 +3407,38 @@ const ComputedStyle& NGLineBreaker::ComputeCurrentStyle(
 
 void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
   if (&style == current_style_.get()) {
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
     // Check that cache fields are already setup correctly.
     DCHECK_EQ(auto_wrap_, ShouldAutoWrap(style));
     if (auto_wrap_) {
       DCHECK_EQ(break_iterator_.IsSoftHyphenEnabled(),
                 style.GetHyphens() != Hyphens::kNone);
-      DCHECK_EQ(break_iterator_.Locale(), style.LocaleForLineBreakIterator());
+      DCHECK_EQ(break_iterator_.Locale(), style.GetFontDescription().Locale());
     }
     ShapeResultSpacing<String> spacing(spacing_.Text(), is_svg_text_);
     spacing.SetSpacing(style.GetFont().GetFontDescription());
     DCHECK_EQ(spacing.LetterSpacing(), spacing_.LetterSpacing());
     DCHECK_EQ(spacing.WordSpacing(), spacing_.WordSpacing());
-#endif
+#endif  //  EXPENSIVE_DCHECKS_ARE_ON()
     return;
   }
   current_style_ = &style;
 
+  const FontDescription& font_description = style.GetFontDescription();
+  spacing_.SetSpacing(font_description);
+
   auto_wrap_ = ShouldAutoWrap(style);
   if (auto_wrap_) {
     DCHECK(!is_text_combine_);
-    LineBreakType line_break_type;
+    break_iterator_.SetLocale(font_description.Locale());
     const LineBreak line_break = style.GetLineBreak();
     if (UNLIKELY(line_break == LineBreak::kAnywhere)) {
-      line_break_type = LineBreakType::kBreakCharacter;
+      break_iterator_.SetStrictness(LineBreakStrictness::kDefault);
+      break_iterator_.SetBreakType(LineBreakType::kBreakCharacter);
       break_anywhere_if_overflow_ = false;
     } else {
+      break_iterator_.SetStrictness(StrictnessFromLineBreak(line_break));
+      LineBreakType line_break_type;
       switch (style.WordBreak()) {
         case EWordBreak::kNormal:
           line_break_type = LineBreakType::kNormal;
@@ -3446,8 +3469,8 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
       if (UNLIKELY(override_break_anywhere_ && break_anywhere_if_overflow_)) {
         line_break_type = LineBreakType::kBreakCharacter;
       }
+      break_iterator_.SetBreakType(line_break_type);
     }
-    break_iterator_.SetBreakType(line_break_type);
 
     break_iterator_.EnableSoftHyphen(style.GetHyphens() != Hyphens::kNone);
     hyphenation_ = style.GetHyphenationWithLimits();
@@ -3458,11 +3481,7 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
     } else {
       break_iterator_.SetBreakSpace(BreakSpaceType::kAfterSpaceRun);
     }
-
-    break_iterator_.SetLocale(style.LocaleForLineBreakIterator(line_break));
   }
-
-  spacing_.SetSpacing(style.GetFont().GetFontDescription());
 }
 
 bool NGLineBreaker::IsPreviousItemOfType(NGInlineItem::NGInlineItemType type) {

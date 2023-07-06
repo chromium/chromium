@@ -1700,36 +1700,6 @@ const CounterDirectives ComputedStyle::GetCounterDirectives(
   return CounterDirectives();
 }
 
-AtomicString ComputedStyle::LocaleForLineBreakIterator() const {
-  return LocaleForLineBreakIterator(GetLineBreak());
-}
-
-AtomicString ComputedStyle::LocaleForLineBreakIterator(
-    LineBreak line_break) const {
-  switch (line_break) {
-    case LineBreak::kAuto:
-    case LineBreak::kAfterWhiteSpace:
-    case LineBreak::kAnywhere:
-      return Locale();
-    case LineBreak::kNormal:
-      return LocaleForLineBreakIterator(LineBreakStrictness::kNormal);
-    case LineBreak::kStrict:
-      return LocaleForLineBreakIterator(LineBreakStrictness::kStrict);
-    case LineBreak::kLoose:
-      return LocaleForLineBreakIterator(LineBreakStrictness::kLoose);
-  }
-  NOTREACHED();
-  return LocaleForLineBreakIterator(LineBreakStrictness::kDefault);
-}
-
-AtomicString ComputedStyle::LocaleForLineBreakIterator(
-    LineBreakStrictness strictness) const {
-  if (const LayoutLocale* locale = GetFontDescription().Locale()) {
-    return locale->LocaleWithBreakKeyword(strictness);
-  }
-  return Locale();
-}
-
 Hyphenation* ComputedStyle::GetHyphenation() const {
   if (GetHyphens() != Hyphens::kAuto) {
     return nullptr;

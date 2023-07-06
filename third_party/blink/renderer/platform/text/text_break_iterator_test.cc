@@ -106,6 +106,22 @@ TEST_P(BreakTypeTest, EmptyNullString) {
   EXPECT_TRUE(iterator.IsBreakable(0));
 }
 
+TEST_F(TextBreakIteratorTest, Strictness) {
+  scoped_refptr<LayoutLocale> locale =
+      LayoutLocale::CreateForTesting(AtomicString("ja"));
+  LazyLineBreakIterator iterator(String(u"あーあ"), locale.get());
+  EXPECT_EQ(iterator.NextBreakOpportunity(0), 1u);
+  EXPECT_EQ(iterator.LocaleWithKeyword(), "ja");
+
+  iterator.SetStrictness(LineBreakStrictness::kStrict);
+  EXPECT_EQ(iterator.NextBreakOpportunity(0), 2u);
+  EXPECT_EQ(iterator.LocaleWithKeyword(), "ja@lb=strict");
+
+  iterator.SetLocale(nullptr);
+  EXPECT_EQ(iterator.NextBreakOpportunity(0), 1u);
+  EXPECT_EQ(iterator.LocaleWithKeyword(), "");
+}
+
 TEST_F(TextBreakIteratorTest, Basic) {
   SetTestString("a b  c");
   MatchLineBreaks(LineBreakType::kNormal, {2, 5, 6});

@@ -898,9 +898,6 @@ class ComputedStyle : public ComputedStyleBase,
   const AtomicString& Locale() const {
     return LayoutLocale::LocaleString(GetFontDescription().Locale());
   }
-  AtomicString LocaleForLineBreakIterator() const;
-  AtomicString LocaleForLineBreakIterator(LineBreak) const;
-  AtomicString LocaleForLineBreakIterator(LineBreakStrictness) const;
 
   // letter-spacing
   float LetterSpacing() const { return GetFontDescription().LetterSpacing(); }
