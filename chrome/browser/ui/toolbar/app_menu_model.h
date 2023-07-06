@@ -97,7 +97,7 @@ enum AppMenuAction {
   LIMIT_MENU_ACTION
 };
 
-enum class AlertMenuItem { kNone, kReopenTabs, kPerformance };
+enum class AlertMenuItem { kNone, kReopenTabs, kPerformance, kPasswordManager };
 
 // Function to record WrenchMenu.MenuAction histogram
 void LogWrenchMenuAction(AppMenuAction action_id);
