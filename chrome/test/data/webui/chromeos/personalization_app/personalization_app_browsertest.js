@@ -232,12 +232,21 @@ TEST_F(
       mocha.run();
     });
 
+// TODO(b/282050032): Remove this class and its associated tests when Jelly
+// launches.
 class PersonalizationAppAmbientModeDisallowedBrowserTest extends
     PersonalizationAppBrowserTest {
   /** @override */
   get testGenPreamble() {
     return () => {
       GEN('ash::AmbientClient::Get()->SetAmbientModeAllowedForTesting(false);');
+    };
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      disabled: ['chromeos::features::kJelly'],
     };
   }
 }
