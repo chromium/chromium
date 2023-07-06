@@ -31,14 +31,8 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Item
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.ALPHA_NUMERIC_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.EMAIL_ADDRESS_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PERSON_NAME_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PHONE_NUMBER_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PLAIN_TEXT_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.STREET_ADDRESS_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.validateForm;
 
@@ -123,44 +117,44 @@ class AddressEditorMediator {
         // Don't use REGION_INPUT to avoid capitalizing all characters.
         addressFields.put(ServerFieldType.ADDRESS_HOME_STATE,
                 new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                        .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_STATE)
                         .build());
 
         // City, dependent locality, and organization don't have any special formatting hints.
         addressFields.put(ServerFieldType.ADDRESS_HOME_CITY,
                 new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                        .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_CITY)
                         .build());
         addressFields.put(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
                 new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                        .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY)
                         .build());
         addressFields.put(ServerFieldType.COMPANY_NAME,
                 new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                        .with(TEXT_FIELD_TYPE, ServerFieldType.COMPANY_NAME)
                         .build());
 
         // Sorting code and postal code (a.k.a. ZIP code) should show both letters and digits on
         // the keyboard, if possible.
         addressFields.put(ServerFieldType.ADDRESS_HOME_SORTING_CODE,
                 new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_INPUT_TYPE, ALPHA_NUMERIC_INPUT)
+                        .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_SORTING_CODE)
                         .build());
         addressFields.put(ServerFieldType.ADDRESS_HOME_ZIP,
                 new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_INPUT_TYPE, ALPHA_NUMERIC_INPUT)
+                        .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_ZIP)
                         .build());
 
         // Street line field can contain \n to indicate line breaks.
         addressFields.put(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS,
                 new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_INPUT_TYPE, STREET_ADDRESS_INPUT)
+                        .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_STREET_ADDRESS)
                         .build());
 
         // Android has special formatting rules for names.
         addressFields.put(ServerFieldType.NAME_FULL,
                 new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_INPUT_TYPE, PERSON_NAME_INPUT)
+                        .with(TEXT_FIELD_TYPE, ServerFieldType.NAME_FULL)
                         .build());
 
         return addressFields;
@@ -205,7 +199,7 @@ class AddressEditorMediator {
         mHonorificField = ChromeFeatureList.isEnabled(
                                   ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES)
                 ? new PropertyModel.Builder(TEXT_ALL_KEYS)
-                          .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                          .with(TEXT_FIELD_TYPE, ServerFieldType.NAME_HONORIFIC_PREFIX)
                           .with(LABEL,
                                   mContext.getString(
                                           R.string.autofill_profile_editor_honorific_prefix))
@@ -220,7 +214,7 @@ class AddressEditorMediator {
         // Phone number is present for all countries.
         mPhoneField =
                 new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_INPUT_TYPE, PHONE_NUMBER_INPUT)
+                        .with(TEXT_FIELD_TYPE, ServerFieldType.PHONE_HOME_WHOLE_NUMBER)
                         .with(LABEL,
                                 mContext.getString(R.string.autofill_profile_editor_phone_number))
                         .with(TEXT_FORMATTER, mPhoneFormatter)
@@ -229,7 +223,7 @@ class AddressEditorMediator {
         // Phone number is present for all countries.
         mEmailField =
                 new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_INPUT_TYPE, EMAIL_ADDRESS_INPUT)
+                        .with(TEXT_FIELD_TYPE, ServerFieldType.EMAIL_ADDRESS)
                         .with(LABEL,
                                 mContext.getString(R.string.autofill_profile_editor_email_address))
                         .with(VALIDATOR, getEmailValidator())
@@ -240,7 +234,7 @@ class AddressEditorMediator {
                 ChromeFeatureList.isEnabled(
                         ChromeFeatureList.AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT)
                 ? new PropertyModel.Builder(TEXT_ALL_KEYS)
-                          .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                          .with(TEXT_FIELD_TYPE, ServerFieldType.UNKNOWN_TYPE)
                           .with(LABEL, "Label")
                           .with(IS_REQUIRED, false)
                           .build()

@@ -105,33 +105,6 @@ public class EditorProperties {
         int TEXT_INPUT = 2;
     }
 
-    @IntDef({
-            TextInputType.PLAIN_TEXT_INPUT,
-            TextInputType.PHONE_NUMBER_INPUT,
-            TextInputType.EMAIL_ADDRESS_INPUT,
-            TextInputType.STREET_ADDRESS_INPUT,
-            TextInputType.PERSON_NAME_INPUT,
-            TextInputType.ALPHA_NUMERIC_INPUT,
-            TextInputType.REGION_INPUT,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface TextInputType {
-        // All symbols are allowed.
-        int PLAIN_TEXT_INPUT = 1;
-        // Only numbers and phone related symbols should be entered.
-        int PHONE_NUMBER_INPUT = 2;
-        // Text with email address symbols should be entered.
-        int EMAIL_ADDRESS_INPUT = 3;
-        // Text with numbers should be entered.
-        int STREET_ADDRESS_INPUT = 4;
-        // Only text symbols should be entered.
-        int PERSON_NAME_INPUT = 5;
-        // Text symbols and number should be entered.
-        int ALPHA_NUMERIC_INPUT = 6;
-        // All letters will be capitalized.
-        int REGION_INPUT = 7;
-    }
-
     /**
      * A convenience class for displaying keyed values in a dropdown.
      */
@@ -204,15 +177,15 @@ public class EditorProperties {
      * Properties specific for the text fields.
      */
     public static class TextFieldProperties {
-        public static final PropertyModel.ReadableIntPropertyKey TEXT_INPUT_TYPE =
-                new PropertyModel.ReadableIntPropertyKey("text_input_type");
+        public static final PropertyModel.ReadableIntPropertyKey TEXT_FIELD_TYPE =
+                new PropertyModel.ReadableIntPropertyKey("field_type");
         public static final PropertyModel.WritableObjectPropertyKey<List<String>> TEXT_SUGGESTIONS =
                 new PropertyModel.WritableObjectPropertyKey<>("suggestions");
         public static final PropertyModel.ReadableObjectPropertyKey<TextWatcher> TEXT_FORMATTER =
                 new PropertyModel.ReadableObjectPropertyKey<>("formatter");
 
         public static final PropertyKey[] TEXT_SPECIFIC_KEYS = {
-                TEXT_INPUT_TYPE,
+                TEXT_FIELD_TYPE,
                 TEXT_SUGGESTIONS,
                 TEXT_FORMATTER,
         };

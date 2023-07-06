@@ -8,16 +8,9 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.ALPHA_NUMERIC_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.EMAIL_ADDRESS_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PERSON_NAME_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PHONE_NUMBER_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.REGION_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.STREET_ADDRESS_INPUT;
 
 import android.content.Context;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -181,40 +174,7 @@ class TextFieldView extends FrameLayout implements FieldView {
     }
 
     void setTextInputType(int textInputType) {
-        switch (textInputType) {
-            case PHONE_NUMBER_INPUT:
-                // Show the keyboard with numbers and phone-related symbols.
-                mInput.setInputType(InputType.TYPE_CLASS_PHONE);
-                break;
-            case EMAIL_ADDRESS_INPUT:
-                mInput.setInputType(
-                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                break;
-            case STREET_ADDRESS_INPUT:
-                // TODO(rouslan): Provide a hint to the keyboard that the street lines are
-                // likely to have numbers.
-                mInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS
-                        | InputType.TYPE_TEXT_FLAG_MULTI_LINE
-                        | InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS);
-                break;
-            case PERSON_NAME_INPUT:
-                mInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS
-                        | InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
-                break;
-            case ALPHA_NUMERIC_INPUT:
-            // Intentionally fall through.
-            // TODO(rouslan): Provide a hint to the keyboard that postal code and sorting
-            // code are likely to have numbers.
-            case REGION_INPUT:
-                mInput.setInputType(InputType.TYPE_CLASS_TEXT
-                        | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
-                        | InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS);
-                break;
-            default:
-                mInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS
-                        | InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS);
-                break;
-        }
+        mInput.setInputType(textInputType);
     }
 
     void setTextSuggestions(@Nullable List<String> suggestions) {

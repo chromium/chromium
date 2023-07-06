@@ -18,12 +18,9 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_SUGGESTIONS;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.EMAIL_ADDRESS_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PERSON_NAME_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PHONE_NUMBER_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.validateForm;
 
@@ -43,6 +40,7 @@ import org.chromium.chrome.browser.autofill.editors.EditorBase;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
+import org.chromium.components.autofill.ServerFieldType;
 import org.chromium.payments.mojom.PayerErrors;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -218,7 +216,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
         final String nameCustomErrorMessage = mPayerErrors != null ? mPayerErrors.name : null;
         mNameField = Optional.ofNullable(mRequestPayerName
                         ? new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                  .with(TEXT_INPUT_TYPE, PERSON_NAME_INPUT)
+                                  .with(TEXT_FIELD_TYPE, ServerFieldType.NAME_FULL)
                                   .with(LABEL,
                                           mContext.getString(
                                                   R.string.payments_name_field_in_contact_details))
@@ -236,7 +234,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
 
         mPhoneField = Optional.ofNullable(mRequestPayerPhone
                         ? new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                  .with(TEXT_INPUT_TYPE, PHONE_NUMBER_INPUT)
+                                  .with(TEXT_FIELD_TYPE, ServerFieldType.PHONE_HOME_WHOLE_NUMBER)
                                   .with(LABEL,
                                           mContext.getString(
                                                   R.string.autofill_profile_editor_phone_number))
@@ -251,7 +249,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
 
         mEmailField = Optional.ofNullable(mRequestPayerEmail
                         ? new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                  .with(TEXT_INPUT_TYPE, EMAIL_ADDRESS_INPUT)
+                                  .with(TEXT_FIELD_TYPE, ServerFieldType.EMAIL_ADDRESS)
                                   .with(LABEL,
                                           mContext.getString(
                                                   R.string.autofill_profile_editor_email_address))

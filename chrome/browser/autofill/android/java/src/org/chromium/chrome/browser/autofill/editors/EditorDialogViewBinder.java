@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getInputTypeForField;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALLOW_DELETE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
@@ -24,8 +25,8 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_SUGGESTIONS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
 
@@ -91,12 +92,12 @@ public class EditorDialogViewBinder {
             view.setErrorMessage(model.get(ERROR_MESSAGE));
         } else if (key == VALUE) {
             view.setValue(model.get(VALUE));
-        } else if (key == TEXT_INPUT_TYPE) {
+        } else if (key == TEXT_FIELD_TYPE) {
             // Setting text input triggers TextWatcher, which overwrites the
             // model's text value. Always set value before the text input type
             // to avoid loosing the text value.
             view.setValue(model.get(VALUE));
-            view.setTextInputType(model.get(TEXT_INPUT_TYPE));
+            view.setTextInputType(getInputTypeForField(model.get(TEXT_FIELD_TYPE)));
         } else if (key == TEXT_SUGGESTIONS) {
             view.setTextSuggestions(model.get(TEXT_SUGGESTIONS));
         } else if (key == TEXT_FORMATTER) {
