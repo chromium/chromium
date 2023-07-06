@@ -6,20 +6,20 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "xhyuoquVvBTcJelgRjMKZeoBVSQRjB7pLVJPt5C9saIC"
+  version: "jyllFQutkgCJPjALrVoBHl7mJBbY-S8alvqzqK93LFMC"  # 32.1.14
   dest_path: "generic_android28"
 }
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-28/google_apis/x86"
-  version: "LDa0XkTjgGYx7Amzg5qjIRgCfc4F_pq7rKMJVdACYx8C"
+  version: "n5ghWmdJtOyffzCTuQwcIHCz34tTB6Cac9gJGU5pCMAC"  # r12, PSR1.180720.122
   dest_path: "generic_android28"
 }
 system_image_name: "system-images;android-28;google_apis;x86"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-28/google_apis/x86"
-  version: "WTz-I74ingG51r_ChkqEoPrerAHf8vqjqcaEnvg8b54C"
+  version: "wG0c8GGEs5H4HIeEpQLeT64BWkUqIhXquUqSp3fafoQC"
   dest_path: "generic_android28"
 }
 avd_name: "android_28_google_apis_x86"
