@@ -3651,7 +3651,12 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_STORAGE_ACCESS_PERMISSION_BUBBLE_MESSAGE" desc="Text displayed in the omnibox bubble for the StorageAccess permission." translateable="false">
         These sites can use info they’ve saved about you as you browse <ph name="HOST">$1<ex>example.com</ex></ph>.
       </message>
-
+      <message name="IDS_STORAGE_ACCESS_PERMISSION_ALLOWED_TOOLTIP" desc="Tooltip text when storage access for a page is allowed." translateable="false">
+        An embedded service on this site can use info they’ve saved about you
+      </message>
+      <message name="IDS_STORAGE_ACCESS_PERMISSION_BLOCKED_TOOLTIP" desc="Tooltip text when storage access for a page is not allowed." translateable="false">
+        An embedded service on this site can not use info they’ve saved about you
+      </message>
 
       <!-- Cookie controls strings. -->
       <message name="IDS_COOKIE_CONTROLS_DIALOG_TITLE" desc="Title of the dialog that allows users to control cookie blocking.">

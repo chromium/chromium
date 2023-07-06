@@ -1217,7 +1217,9 @@ bool ContentSettingStorageAccessImageModel::UpdateAndGetVisibility(
   // TODO(crbug.com/1433644): Update icon and tooltips.
   SetIcon(ContentSettingsType::COOKIES, /*blocked=*/has_blocked_requests);
   // set_explanatory_string_id(IDS_BLOCKED_POPUPS_EXPLANATORY_TEXT);
-  // set_tooltip(l10n_util::GetStringUTF16(IDS_BLOCKED_POPUPS_TOOLTIP));
+  set_tooltip(l10n_util::GetStringUTF16(
+      has_blocked_requests ? IDS_STORAGE_ACCESS_PERMISSION_BLOCKED_TOOLTIP
+                           : IDS_STORAGE_ACCESS_PERMISSION_ALLOWED_TOOLTIP));
   return true;
 }
 
