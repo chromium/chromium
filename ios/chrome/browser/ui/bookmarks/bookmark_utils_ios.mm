@@ -32,6 +32,7 @@
 #import "components/query_parser/query_parser.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -188,8 +189,7 @@ bool AreAllAvailableBookmarkModelsLoaded(
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model) {
   DCHECK(profile_model);
-  if (!base::FeatureList::IsEnabled(
-          bookmarks::kEnableBookmarksAccountStorage)) {
+  if (!base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
     return profile_model->loaded();
   }
   DCHECK(account_model);
@@ -197,8 +197,7 @@ bool AreAllAvailableBookmarkModelsLoaded(
 }
 
 bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
-  if (!base::FeatureList::IsEnabled(
-          bookmarks::kEnableBookmarksAccountStorage)) {
+  if (!base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
     return false;
   }
   if (sync_service->GetAccountInfo().IsEmpty()) {
@@ -433,7 +432,7 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
   [wrapper resetUndoManagerChanged];
 
   NSString* text = nil;
-  if (base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage)) {
+  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
     text = base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
         IDS_IOS_BOOKMARK_DELETED_BOOKMARKS, node_count));
   } else if (node_count == 1) {

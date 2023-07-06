@@ -5,6 +5,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
@@ -61,9 +62,9 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
-      reading_list::switches::kReadingListEnableDualReadingListModel);
+      syncer::kReadingListEnableDualReadingListModel);
   config.features_enabled.push_back(
-      reading_list::switches::kReadingListEnableSyncTransportModeUponSignIn);
+      syncer::kReadingListEnableSyncTransportModeUponSignIn);
   return config;
 }
 

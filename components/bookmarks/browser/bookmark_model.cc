@@ -1038,8 +1038,6 @@ void BookmarkModel::ClearStore() {
 // static
 void BookmarkModel::WipeAccountStorageForRollback(
     const base::FilePath& profile_path) {
-  CHECK(
-      !base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage));
   CHECK(base::FeatureList::IsEnabled(
       bookmarks::kRollbackBookmarksAccountStorage));
 

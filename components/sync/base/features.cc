@@ -156,4 +156,17 @@ BASE_FEATURE(kReplaceSyncPromosWithSignInPromos,
 BASE_FEATURE(kSyncAvoidReconfigurationIfAlreadyStopping,
              "SyncAvoidReconfigurationIfAlreadyStopping",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableBookmarksAccountStorage,
+             "EnableBookmarksAccountStorage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReadingListEnableDualReadingListModel,
+             "ReadingListEnableDualReadingListModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn,
+             "ReadingListEnableSyncTransportModeUponSignIn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace syncer

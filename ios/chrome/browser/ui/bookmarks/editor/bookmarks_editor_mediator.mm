@@ -10,6 +10,7 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/prefs/pref_service.h"
+#import "components/sync/base/features.h"
 #import "components/url_formatter/url_fixer.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
@@ -60,8 +61,7 @@
   if (self) {
     DCHECK(profileBookmarkModel);
     DCHECK(profileBookmarkModel->loaded());
-    if (base::FeatureList::IsEnabled(
-            bookmarks::kEnableBookmarksAccountStorage)) {
+    if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
       DCHECK(accountBookmarkModel);
       DCHECK(accountBookmarkModel->loaded());
     } else {

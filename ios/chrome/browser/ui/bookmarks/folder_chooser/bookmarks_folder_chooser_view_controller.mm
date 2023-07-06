@@ -15,6 +15,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -148,7 +149,7 @@ using bookmarks::BookmarkNode;
       // the parent folder.
       const BookmarkNode* parentNode = nullptr;
       if (!base::FeatureList::IsEnabled(
-              bookmarks::kEnableBookmarksAccountStorage)) {
+              syncer::kEnableBookmarksAccountStorage)) {
         parentNode = [_dataSource selectedFolderNode];
       }
       if (!parentNode) {

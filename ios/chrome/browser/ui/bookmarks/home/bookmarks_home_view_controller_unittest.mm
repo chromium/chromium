@@ -8,6 +8,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -31,7 +32,7 @@ class BookmarksHomeViewControllerTest
  protected:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureState(
-        bookmarks::kEnableBookmarksAccountStorage, IsAccountStorageEnabled());
+        syncer::kEnableBookmarksAccountStorage, IsAccountStorageEnabled());
     BookmarkIOSUnitTestSupport::SetUp();
   }
 

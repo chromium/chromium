@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/reading_list/features/reading_list_switches.h"
+#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
@@ -540,11 +541,11 @@ enum AuthenticationState {
 // sign-in flow.
 - (void)optInBookmarkReadingListAccountStorage {
   bool bookmarksAccountStorageEnabled =
-      base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage);
+      base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage);
   bool dualReadingListModelEnabled = base::FeatureList::IsEnabled(
-      reading_list::switches::kReadingListEnableDualReadingListModel);
+      syncer::kReadingListEnableDualReadingListModel);
   bool readingListTransportUponSignInEnabled = base::FeatureList::IsEnabled(
-      reading_list::switches::kReadingListEnableSyncTransportModeUponSignIn);
+      syncer::kReadingListEnableSyncTransportModeUponSignIn);
   CHECK(bookmarksAccountStorageEnabled ||
         (dualReadingListModelEnabled && readingListTransportUponSignInEnabled))
       << "bookmarksAccountStorageEnabled: " << bookmarksAccountStorageEnabled

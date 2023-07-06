@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "components/bookmarks/common/bookmark_features.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "components/sync/base/features.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "ios/chrome/browser/bookmarks/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
@@ -42,8 +43,7 @@ AccountBookmarkSyncServiceFactory::~AccountBookmarkSyncServiceFactory() =
 std::unique_ptr<KeyedService>
 AccountBookmarkSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!base::FeatureList::IsEnabled(
-          bookmarks::kEnableBookmarksAccountStorage)) {
+  if (!base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
     return nullptr;
   }
 

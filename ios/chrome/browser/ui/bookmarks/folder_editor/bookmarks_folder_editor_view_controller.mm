@@ -19,6 +19,7 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -116,7 +117,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                          browser:(Browser*)browser {
   DCHECK(profileBookmarkModel);
   DCHECK(profileBookmarkModel->loaded());
-  if (base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage)) {
+  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
     DCHECK(accountBookmarkModel);
     DCHECK(accountBookmarkModel->loaded());
   } else {

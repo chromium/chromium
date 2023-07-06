@@ -13,6 +13,7 @@
 #include "components/bookmarks/common/storage_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/features.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "ios/chrome/browser/bookmarks/account_bookmark_sync_service_factory.h"
 #include "ios/chrome/browser/bookmarks/bookmark_client_impl.h"
@@ -32,8 +33,7 @@ namespace {
 std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  if (!base::FeatureList::IsEnabled(
-          bookmarks::kEnableBookmarksAccountStorage)) {
+  if (!base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
     if (base::FeatureList::IsEnabled(
             bookmarks::kRollbackBookmarksAccountStorage)) {
       // Try deleting the file that was used by the account storage. This is a

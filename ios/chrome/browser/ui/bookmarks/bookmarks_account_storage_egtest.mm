@@ -8,6 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -44,7 +45,7 @@ using chrome_test_util::SecondarySignInButton;
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(bookmarks::kEnableBookmarksAccountStorage);
+  config.features_enabled.push_back(syncer::kEnableBookmarksAccountStorage);
   return config;
 }
 

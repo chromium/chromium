@@ -12,6 +12,9 @@ source_set("flags") {
     "reading_list_switches.cc",
     "reading_list_switches.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/sync/base:features",
+  ]
   public_deps = [ "//components/reading_list/features:reading_list_buildflags" ]
 }

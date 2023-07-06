@@ -186,6 +186,21 @@ BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSignInPromos);
 
 // Flag to stop call to reconfiguration of datatypes if it's already stopping.
 BASE_DECLARE_FEATURE(kSyncAvoidReconfigurationIfAlreadyStopping);
+
+// If enabled, there will be two different BookmarkModel instances per profile:
+// one instance for "profile" bookmarks and another instance for "account"
+// bookmarks. See https://crbug.com/1404250 for details.
+BASE_DECLARE_FEATURE(kEnableBookmarksAccountStorage);
+
+// Feature flag that controls a technical rollout of a new codepath that doesn't
+// itself cause user-facing changes but sets the foundation for later rollouts
+// namely, `kReadingListEnableSyncTransportModeUponSignIn` below).
+BASE_DECLARE_FEATURE(kReadingListEnableDualReadingListModel);
+
+// Feature flag used for enabling sync (transport mode) for signed-in users that
+// haven't turned on full sync.
+BASE_DECLARE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

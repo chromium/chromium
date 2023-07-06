@@ -16,6 +16,7 @@
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/reading_list/core/reading_list_model_storage_impl.h"
 #import "components/reading_list/features/reading_list_switches.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/storage_type.h"
 #import "components/sync/model/model_type_store_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
@@ -64,7 +65,7 @@ std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
       std::move(storage), syncer::StorageType::kUnspecified,
       base::DefaultClock::GetInstance());
   if (!base::FeatureList::IsEnabled(
-          reading_list::switches::kReadingListEnableDualReadingListModel)) {
+          syncer::kReadingListEnableDualReadingListModel)) {
     return reading_list_model;
   }
 

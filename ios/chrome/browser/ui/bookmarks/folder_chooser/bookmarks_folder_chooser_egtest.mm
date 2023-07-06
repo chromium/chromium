@@ -12,6 +12,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
@@ -52,13 +53,11 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector
             (testCreateNewProfileFolderDefaultDestination)]) {
-    config.features_enabled.push_back(
-        bookmarks::kEnableBookmarksAccountStorage);
+    config.features_enabled.push_back(syncer::kEnableBookmarksAccountStorage);
   } else if ([self isRunningTest:@selector
                    (testCreateNewFolderDefaultDestinationLegacy)]) {
     // Legacy test verifies pre-EnableBookmarksAccountStorage behavior.
-    config.features_disabled.push_back(
-        bookmarks::kEnableBookmarksAccountStorage);
+    config.features_disabled.push_back(syncer::kEnableBookmarksAccountStorage);
   }
   return config;
 }

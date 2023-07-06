@@ -202,8 +202,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       [self isRunningTest:@selector(testSigninPromoClosedWhenSyncOff)] ||
       [self isRunningTest:@selector(testSigninPromoWhenSyncOff)]) {
     // TODO(crbug.com/1455018): Re-enable the flag for non-legacy tests.
-    config.features_disabled.push_back(
-        bookmarks::kEnableBookmarksAccountStorage);
+    config.features_disabled.push_back(syncer::kEnableBookmarksAccountStorage);
   }
 
   if ([self isRunningTest:@selector(testOpenSignInAndSyncFromNTP)] ||

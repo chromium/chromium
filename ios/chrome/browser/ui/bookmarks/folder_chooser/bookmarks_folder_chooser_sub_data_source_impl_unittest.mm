@@ -13,6 +13,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -97,7 +98,7 @@ class BookmarksFolderChooserSubDataSourceImplTest
     // `scoped_feature_list_` should be initialized before creating the
     // `model_`. Otherwise `AccountBookmarkModelFactory` will return `nullptr`.
     scoped_feature_list_.InitAndEnableFeature(
-        bookmarks::kEnableBookmarksAccountStorage);
+        syncer::kEnableBookmarksAccountStorage);
     model_ = GetParam() == TestParam::kAccountModel
                  ? ios::AccountBookmarkModelFactory::GetForBrowserState(
                        browser_state_.get())

@@ -12,6 +12,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -69,8 +70,7 @@
                     presenter:presenter
            baseViewController:baseViewController];
     _signinPromoViewMediator.consumer = self;
-    if (base::FeatureList::IsEnabled(
-            bookmarks::kEnableBookmarksAccountStorage)) {
+    if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
       [_signinPromoViewMediator
           setDataTypeToWaitForInitialSync:syncer::ModelType::BOOKMARKS];
     }
@@ -121,8 +121,7 @@
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(browserState);
   if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    if (base::FeatureList::IsEnabled(
-            bookmarks::kEnableBookmarksAccountStorage)) {
+    if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
       PrefService* prefs = browserState->GetPrefs();
       const std::string lastSignedInGaiaId =
           prefs->GetString(prefs::kGoogleServicesLastGaiaId);
@@ -173,7 +172,7 @@
 // Called when a user changes the syncing state.
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  if (base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage)) {
+  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
     // The account storage promo is not shown if the user is signed-in, so
     // events with sign-in consent level should be captured and handled.
     [self handlePrimaryAccountChange:event

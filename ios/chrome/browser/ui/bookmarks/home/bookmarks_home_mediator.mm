@@ -16,6 +16,7 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
@@ -122,8 +123,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 
     _browser = browser->AsWeakPtr();
     _profileBookmarkModel = profileBookmarkModel->AsWeakPtr();
-    if (base::FeatureList::IsEnabled(
-            bookmarks::kEnableBookmarksAccountStorage)) {
+    if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
       _accountBookmarkModel = accountBookmarkModel->AsWeakPtr();
     }
     _displayedNode = displayedNode;
@@ -139,7 +139,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   ChromeBrowserState* browserState = [self originalBrowserState];
   _profileBookmarkModelBridge =
       std::make_unique<BookmarkModelBridge>(self, _profileBookmarkModel.get());
-  if (base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage)) {
+  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
     _accountBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
         self, _accountBookmarkModel.get());
   }
@@ -395,7 +395,7 @@ bool IsABookmarkNodeSectionForIdentifier(
             initWithType:BookmarksHomeItemTypePromo];
     signinPromoItem.configurator = [signinPromoViewMediator createConfigurator];
     signinPromoItem.text =
-        base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage)
+        base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)
             ? l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS)
             : l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS_WITH_UNITY);
     signinPromoItem.delegate = signinPromoViewMediator;

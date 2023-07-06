@@ -16,6 +16,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
+#import "components/sync/base/features.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -42,7 +43,7 @@ class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTestSupport,
  protected:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureState(
-        bookmarks::kEnableBookmarksAccountStorage, IsAccountStorageEnabled());
+        syncer::kEnableBookmarksAccountStorage, IsAccountStorageEnabled());
     BookmarkIOSUnitTestSupport::SetUp();
   }
 

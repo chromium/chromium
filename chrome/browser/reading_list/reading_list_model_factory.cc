@@ -23,6 +23,7 @@
 #include "components/reading_list/core/reading_list_model_storage_impl.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/reading_list/features/reading_list_switches.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -41,7 +42,7 @@ std::unique_ptr<KeyedService> BuildReadingListModel(
       base::DefaultClock::GetInstance());
 
   if (!base::FeatureList::IsEnabled(
-          reading_list::switches::kReadingListEnableDualReadingListModel)) {
+          syncer::kReadingListEnableDualReadingListModel)) {
     return reading_list_model;
   }
 

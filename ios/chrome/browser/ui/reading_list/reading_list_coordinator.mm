@@ -17,6 +17,7 @@
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -619,10 +620,9 @@
 - (void)updateSignInPromoVisibility {
   BOOL areAccountStorageAndPromoEnabled =
       base::FeatureList::IsEnabled(
-          reading_list::switches::kReadingListEnableDualReadingListModel) &&
+          syncer::kReadingListEnableDualReadingListModel) &&
       base::FeatureList::IsEnabled(
-          reading_list::switches::
-              kReadingListEnableSyncTransportModeUponSignIn);
+          syncer::kReadingListEnableSyncTransportModeUponSignIn);
   if (!areAccountStorageAndPromoEnabled || self.isSyncDisabledByAdministrator) {
     self.shouldShowSignInPromo = NO;
     return;
