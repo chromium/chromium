@@ -86,6 +86,12 @@ class MEDIA_EXPORT AudioManagerWin : public AudioManagerBase {
 
   // Listen for output device changes.
   std::unique_ptr<AudioDeviceListenerWin> output_device_listener_;
+
+  // Used to invalidate pending `output_device_listener_` callbacks on shutdow.
+  // `audio_weak_factory_` must be invalidated on the audio thread as part of
+  // shutdown, before it is destroyed on whichever thread owns `this`.
+  base::WeakPtr<AudioManagerWin> weak_this_on_audio_thread_;
+  base::WeakPtrFactory<AudioManagerWin> weak_factory_on_audio_thread_{this};
 };
 
 }  // namespace media
