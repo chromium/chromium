@@ -456,11 +456,27 @@ class AccountSelectionMediator {
         return mWasDismissed;
     }
 
+    /**
+     * Event listener for when the user taps on an account or the continue button of the
+     * bottomsheet, when it is an IdP sign-in sheet.
+     */
+    void onSignInToIdp(Account account) {
+        // This method only has an Account to match the type of the event listener.
+        assert account == null;
+        if (!shouldInputBeProcessed()) return;
+        mDelegate.onSignInToIdp();
+    }
+
+    /**
+     * Event listener for when the user taps on an account or the continue button of the
+     * bottomsheet.
+     *
+     * @param selectedAccount is the account that the user tapped on. If the user instead tapped on
+     *         the continue button, it is the account displayed if this was the single account
+     *         chooser.
+     */
     void onClickAccountSelected(Account selectedAccount) {
         if (!shouldInputBeProcessed()) return;
-        // TODO(crbug.com/1456368): implement continue button for sign in to IDP case.
-        if (selectedAccount == null) return;
-
         onAccountSelected(selectedAccount);
     }
 
@@ -499,7 +515,8 @@ class AccountSelectionMediator {
         return new PropertyModel.Builder(ContinueButtonProperties.ALL_KEYS)
                 .with(ContinueButtonProperties.IDP_METADATA, idpMetadata)
                 .with(ContinueButtonProperties.ACCOUNT, account)
-                .with(ContinueButtonProperties.ON_CLICK_LISTENER, this::onClickAccountSelected)
+                .with(ContinueButtonProperties.ON_CLICK_LISTENER,
+                        account != null ? this::onClickAccountSelected : this::onSignInToIdp)
                 .build();
     }
 

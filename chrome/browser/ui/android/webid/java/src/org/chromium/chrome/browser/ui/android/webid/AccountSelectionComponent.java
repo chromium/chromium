@@ -8,6 +8,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -33,6 +34,11 @@ public interface AccountSelectionComponent {
          * was selected.
          */
         void onDismissed(@IdentityRequestDialogDismissReason int dismissReason);
+
+        /**
+         * Called when the user clicks on the button to sign in to the IDP.
+         */
+        void onSignInToIdp();
     }
 
     /**
@@ -80,4 +86,15 @@ public interface AccountSelectionComponent {
      * Gets the sheet's subtitle, if any, or null..
      */
     String getSubtitle();
+
+    /**
+     * Shows a modal dialog with the given url. Returns the WebContents of the new dialog.
+     * @param url The URL to be loaded in the dialog.
+     */
+    WebContents showModalDialog(GURL url);
+
+    /**
+     * Closes a modal dialog, if one is opened.
+     */
+    void closeModalDialog();
 }

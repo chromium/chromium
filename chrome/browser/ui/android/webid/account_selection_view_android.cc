@@ -221,12 +221,16 @@ absl::optional<std::string> AccountSelectionViewAndroid::GetSubtitle() const {
 
 content::WebContents* AccountSelectionViewAndroid::ShowModalDialog(
     const GURL& url) {
-  // TODO(crbug.com/1429083): Support the AuthZ modal dialog on Android.
-  return nullptr;
+  JNIEnv* env = AttachCurrentThread();
+  return content::WebContents::FromJavaWebContents(
+      Java_AccountSelectionBridge_showModalDialog(
+          env, java_object_internal_,
+          url::GURLAndroid::FromNativeGURL(env, url)));
 }
 
 void AccountSelectionViewAndroid::CloseModalDialog() {
-  // TODO(crbug.com/1430830): Support IDP sign-in modal dialog on Android.
+  JNIEnv* env = AttachCurrentThread();
+  Java_AccountSelectionBridge_closeModalDialog(env, java_object_internal_);
 }
 
 void AccountSelectionViewAndroid::OnAccountSelected(
@@ -248,6 +252,10 @@ void AccountSelectionViewAndroid::OnAccountSelected(
 
 void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env, jint dismiss_reason) {
   delegate_->OnDismiss(static_cast<DismissReason>(dismiss_reason));
+}
+
+void AccountSelectionViewAndroid::OnSignInToIdp(JNIEnv* env) {
+  delegate_->OnSigninToIdP();
 }
 
 bool AccountSelectionViewAndroid::RecreateJavaObject() {

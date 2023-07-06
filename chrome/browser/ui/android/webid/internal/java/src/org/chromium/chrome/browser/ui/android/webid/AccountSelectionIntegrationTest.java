@@ -41,11 +41,17 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
@@ -105,7 +111,8 @@ public class AccountSelectionIntegrationTest {
             mBottomSheetController = BottomSheetControllerProvider.from(
                     mActivityTestRule.getActivity().getWindowAndroid());
             mAccountSelection = new AccountSelectionCoordinator(
-                    mActivityTestRule.getActivity(), mBottomSheetController, mMockBridge);
+                    mActivityTestRule.getActivity().getWindowAndroid(), mBottomSheetController,
+                    mMockBridge);
         });
 
         mTestUrlTermsOfService =
@@ -218,6 +225,32 @@ public class AccountSelectionIntegrationTest {
 
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testShowModalDialog() throws Exception {
+        final TabModelSelector tabSelector = mActivityTestRule.getActivity().getTabModelSelector();
+
+        final CallbackHelper openTabHelper = new CallbackHelper();
+        final CallbackHelper closeTabHelper = new CallbackHelper();
+        runOnUiThreadBlocking(() -> {
+            tabSelector.getModel(false).addObserver(new TabModelObserver() {
+                @Override
+                public void didAddTab(Tab tab, @TabLaunchType int type,
+                        @TabCreationState int creationState, boolean markedForSelection) {
+                    openTabHelper.notifyCalled();
+                    mAccountSelection.closeModalDialog();
+                }
+                @Override
+                public void onFinishingTabClosure(Tab tab) {
+                    closeTabHelper.notifyCalled();
+                }
+            });
+            mAccountSelection.showModalDialog(new GURL(EXAMPLE_ETLD_PLUS_ONE));
+        });
+        openTabHelper.waitForCallback(0, 1);
+        closeTabHelper.waitForCallback(0, 1);
     }
 
     public static <T> T waitForEvent(T mock) {

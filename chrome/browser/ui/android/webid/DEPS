@@ -3,4 +3,5 @@ include_rules = [
   "+components/browser_ui/bottomsheet/android",
   "+components/favicon/android",
   "+components/image_fetcher/android",
+  "+content/public/android/java",
 ]

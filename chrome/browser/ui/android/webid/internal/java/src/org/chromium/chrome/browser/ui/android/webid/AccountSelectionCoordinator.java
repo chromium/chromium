@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +16,12 @@ import androidx.annotation.Px;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
@@ -25,10 +31,14 @@ import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -39,16 +49,17 @@ import java.util.List;
 public class AccountSelectionCoordinator implements AccountSelectionComponent {
     private static final int MAX_IMAGE_CACHE_SIZE = 500 * ConversionUtils.BYTES_PER_KILOBYTE;
 
-    private Context mContext;
+    private WindowAndroid mWindowAndroid;
     private BottomSheetController mBottomSheetController;
     private AccountSelectionBottomSheetContent mBottomSheetContent;
     private AccountSelectionMediator mMediator;
     private RecyclerView mSheetItemListView;
 
-    public AccountSelectionCoordinator(Context context, BottomSheetController sheetController,
-            AccountSelectionComponent.Delegate delegate) {
+    public AccountSelectionCoordinator(WindowAndroid windowAndroid,
+            BottomSheetController sheetController, AccountSelectionComponent.Delegate delegate) {
         mBottomSheetController = sheetController;
-        mContext = context;
+        mWindowAndroid = windowAndroid;
+        Context context = mWindowAndroid.getContext().get();
 
         PropertyModel model =
                 new PropertyModel.Builder(AccountSelectionProperties.ItemProperties.ALL_KEYS)
@@ -145,5 +156,28 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
         TextView subtitle = mBottomSheetContent.getContentView().findViewById(R.id.header_subtitle);
         if (subtitle == null || subtitle.getText().length() == 0) return null;
         return String.valueOf(subtitle.getText());
+    }
+
+    @Override
+    public WebContents showModalDialog(GURL url) {
+        Activity activity = mWindowAndroid.getActivity().get();
+        if (!(activity instanceof ChromeTabbedActivity)) {
+            return null;
+        }
+        ChromeTabbedActivity chromeTabbedActivity = (ChromeTabbedActivity) activity;
+        ChromeTabCreator chromeTabCreator = chromeTabbedActivity.getCurrentTabCreator();
+        Tab newTab = chromeTabCreator.createNewTab(
+                new LoadUrlParams(url), TabLaunchType.FROM_LINK, null);
+        return newTab.getWebContents();
+    }
+
+    @Override
+    public void closeModalDialog() {
+        Activity activity = mWindowAndroid.getActivity().get();
+        if (!(activity instanceof ChromeTabbedActivity)) {
+            return;
+        }
+        ChromeTabbedActivity chromeTabbedActivity = (ChromeTabbedActivity) activity;
+        TabModelUtils.closeCurrentTab(chromeTabbedActivity.getCurrentTabModel());
     }
 }

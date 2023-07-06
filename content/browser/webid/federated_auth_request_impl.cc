@@ -2030,7 +2030,12 @@ void FederatedAuthRequestImpl::SetDialogControllerForTests(
 }
 
 void FederatedAuthRequestImpl::NotifyClose() {
-  request_dialog_controller_->CloseModalDialog();
+  // TODO(crbug.com/1456368): Fix Android UI such that token request survives
+  // the tab becoming hidden, so that |request_dialog_controller_| is always
+  // non-null.
+  if (request_dialog_controller_) {
+    request_dialog_controller_->CloseModalDialog();
+  }
 }
 
 bool FederatedAuthRequestImpl::NotifyResolve(const std::string& token) {

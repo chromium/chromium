@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -39,8 +40,8 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     private AccountSelectionBridge(long nativeView, WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController) {
         mNativeView = nativeView;
-        mAccountSelectionComponent = new AccountSelectionCoordinator(
-                windowAndroid.getContext().get(), bottomSheetController, this);
+        mAccountSelectionComponent =
+                new AccountSelectionCoordinator(windowAndroid, bottomSheetController, this);
     }
 
     @CalledByNative
@@ -125,6 +126,16 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
         return mAccountSelectionComponent.getSubtitle();
     }
 
+    @CalledByNative
+    private WebContents showModalDialog(GURL url) {
+        return mAccountSelectionComponent.showModalDialog(url);
+    }
+
+    @CalledByNative
+    private void closeModalDialog() {
+        mAccountSelectionComponent.closeModalDialog();
+    }
+
     @Override
     public void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {
         if (mNativeView != 0) {
@@ -144,6 +155,13 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
         }
     }
 
+    @Override
+    public void onSignInToIdp() {
+        if (mNativeView != 0) {
+            AccountSelectionBridgeJni.get().onSignInToIdp(mNativeView);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onAccountSelected(long nativeAccountSelectionViewAndroid, GURL idpConfigUrl,
@@ -151,5 +169,6 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
                 boolean isSignedIn);
         void onDismiss(long nativeAccountSelectionViewAndroid,
                 @IdentityRequestDialogDismissReason int dismissReason);
+        void onSignInToIdp(long nativeAccountSelectionViewAndroid);
     }
 }

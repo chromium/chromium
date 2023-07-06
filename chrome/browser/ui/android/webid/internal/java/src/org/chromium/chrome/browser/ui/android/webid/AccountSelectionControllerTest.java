@@ -503,6 +503,7 @@ public class AccountSelectionControllerTest {
 
     @Test
     public void testShowFailureDialog() {
+        int count = 0;
         for (String rpContext : RP_CONTEXTS) {
             when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
                     .thenReturn(true);
@@ -518,6 +519,16 @@ public class AccountSelectionControllerTest {
             String idpEtldPlusOne =
                     mModel.get(ItemProperties.IDP_SIGNIN).get(IdpSignInProperties.IDP_FOR_DISPLAY);
             assertEquals("Incorrect provider ETLD+1", TEST_ETLD_PLUS_ONE_2, idpEtldPlusOne);
+
+            assertNotNull(mModel.get(ItemProperties.CONTINUE_BUTTON)
+                                  .get(ContinueButtonProperties.ON_CLICK_LISTENER));
+
+            // Do not let test inputs be ignored.
+            mMediator.setComponentShowTime(-1000);
+            mModel.get(ItemProperties.CONTINUE_BUTTON)
+                    .get(ContinueButtonProperties.ON_CLICK_LISTENER)
+                    .onResult(null);
+            verify(mMockDelegate, times(++count)).onSignInToIdp();
         }
     }
 
