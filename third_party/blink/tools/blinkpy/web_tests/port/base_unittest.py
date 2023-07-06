@@ -1632,7 +1632,8 @@ class PortTest(LoggingTestCase):
             ' "args": ["-c"], "expires": "never"}'
             ']')
         fs.write_text_file(fs.join(web_tests_dir, 'test', 'test.html'), '')
-        self.assertTrue("virtual/v1/test/test.html" not in port.tests())
+        # expires won't have an effect when loading the tests
+        self.assertTrue("virtual/v1/test/test.html" in port.tests())
         self.assertTrue("virtual/v2/test/test.html" in port.tests())
         self.assertTrue("virtual/v3/test/test.html" in port.tests())
 
