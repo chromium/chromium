@@ -19,13 +19,20 @@
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/execution_status.h"
 #include "components/optimization_guide/core/model_enums.h"
-#include "components/optimization_guide/core/model_execution_timeout_watchdog.h"
 #include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
+
+// TODO(b/283522287): MediaPipe will probably not support the timeout watchdog,
+// so we should make the watchdog more generic so that it does not need to rely
+// on a build flag.
+#if !BUILDFLAG(BUILD_WITH_MEDIAPIPE_LIB)
+#include "components/optimization_guide/core/model_execution_timeout_watchdog.h"
+#endif  // !BUILDFLAG(BUILD_WITH_MEDIAPIPE_LIB)
 
 namespace optimization_guide {
 
@@ -72,7 +79,12 @@ class ScopedExecutionStatusResultRecorder {
 // to keep memory usage of the browser process down, but does delay model
 // execution by the time it takes to load the model (about 50ms in practice).
 // See |SetShouldUnloadModelOnComplete| to override this behavior.
-template <class OutputType, class InputType>
+template <class OutputType,
+          class InputType,
+          // TODO(b/283522287): Remove this once all usage of TFLite Task
+          // Support are replaced by MediaPipe.
+          class ModelExecutionTaskType =
+              tflite::task::core::BaseTaskApi<OutputType, InputType>>
 class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
  public:
   TFLiteModelExecutor()
@@ -97,6 +109,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     optimization_target_ = optimization_target;
     execution_task_runner_ = execution_task_runner;
     reply_task_runner_ = reply_task_runner;
+#if !BUILDFLAG(BUILD_WITH_MEDIAPIPE_LIB)
     if (features::IsModelExecutionWatchdogEnabled()) {
       // The sequence |watchdog_sequence| is used to run watchdog's task. The
       // watchdog must be deleted on that sequence to guarantee that pending
@@ -111,6 +124,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
                   features::ModelExecutionWatchdogDefaultTimeout())),
           base::OnTaskRunnerDeleter(watchdog_sequence));
     }
+#endif  // !BUILDFLAG(BUILD_WITH_MEDIAPIPE_LIB)
   }
 
   // Called when a model file is available to load. Immediately loads model into
@@ -245,11 +259,13 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
 
     for (const InputType& input : inputs) {
       ScopedExecutionStatusResultRecorder status_recorder(optimization_target_);
-      // IMPORTANT: Once the arm method is called, disarm must be called when
-      // the model execution finishes. Do NOT early-return in this next block.
+// IMPORTANT: Once the arm method is called, disarm must be called when
+// the model execution finishes. Do NOT early-return in this next block.
+#if !BUILDFLAG(BUILD_WITH_MEDIAPIPE_LIB)
       if (watchdog_) {
         watchdog_->ArmWithTask(loaded_model_.get());
       }
+#endif  // !BUILDFLAG(BUILD_WITH_MEDIAPIPE_LIB)
       {
         TRACE_EVENT1("browser", "OptGuideModelExecutor::Execute",
                      "OptimizationTarget",
@@ -277,9 +293,11 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
                 GetStringNameForOptimizationTarget(optimization_target_),
             execution_timer.Elapsed());
       }
+#if !BUILDFLAG(BUILD_WITH_MEDIAPIPE_LIB)
       if (watchdog_) {
         watchdog_->DisarmOnExecutionComplete();
       }
+#endif  //  !BUILDFLAG(BUILD_WITH_MEDIAPIPE_LIB)
     }
 
     DCHECK(callback_on_complete);
@@ -298,12 +316,13 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
 
   // Executes the model using |execution_task| on |args|, returning the model
   // output and setting |out_status| with the status of the execution attempt.
-  virtual absl::optional<OutputType> Execute(ModelExecutionTask* execution_task,
-                                             ExecutionStatus* out_status,
-                                             InputType args) = 0;
+  virtual absl::optional<OutputType> Execute(
+      ModelExecutionTaskType* execution_task,
+      ExecutionStatus* out_status,
+      InputType args) = 0;
 
   // Builds a model execution task using |model_file|.
-  virtual std::unique_ptr<ModelExecutionTask> BuildModelExecutionTask(
+  virtual std::unique_ptr<ModelExecutionTaskType> BuildModelExecutionTask(
       base::MemoryMappedFile* model_file,
       ExecutionStatus* out_status) = 0;
 
@@ -375,9 +394,11 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
 
   bool should_unload_model_on_complete_ = true;
 
+#if !BUILDFLAG(BUILD_WITH_MEDIAPIPE_LIB)
   std::unique_ptr<ModelExecutionTimeoutWatchdog<OutputType, InputType>,
                   base::OnTaskRunnerDeleter>
       watchdog_;
+#endif  // !BUILDFLAG(BUILD_WITH_MEDIAPIPE_LIB)
 
   scoped_refptr<base::SequencedTaskRunner> execution_task_runner_;
 
@@ -397,7 +418,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   // lifetime, being set in |LoadModelFile()| and being destroyed in
   // |ResetModelFile()|.
 
-  std::unique_ptr<ModelExecutionTask> loaded_model_
+  std::unique_ptr<ModelExecutionTaskType> loaded_model_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // This will only be non-null when |model_file_path_| is set, and while the

@@ -10,6 +10,7 @@ if (is_android) {
 import("//build/buildflag_header.gni")
 import("//components/optimization_guide/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/mediapipe/features.gni")
 import("//third_party/tflite/features.gni")
 
 static_library("bloomfilter") {
@@ -64,10 +65,20 @@ static_library("model_executor") {
     ]
   }
 
+  if (build_with_mediapipe_lib) {
+    assert(build_with_tflite_lib)
+
+    sources += [
+      "mediapipe_text_model_executor.cc",
+      "mediapipe_text_model_executor.h",
+    ]
+  }
+
   public_deps = [
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//third_party/re2",
   ]
+
   deps = [
     ":features",
     "//base",
@@ -86,6 +97,12 @@ static_library("model_executor") {
       "//third_party/tflite_support:tflite_support_proto",
     ]
     deps += [ ":machine_learning" ]
+  }
+
+  if (build_with_mediapipe_lib) {
+    assert(build_with_tflite_lib)
+
+    public_deps += [ "//third_party/mediapipe" ]
   }
 }
 
@@ -419,6 +436,12 @@ source_set("unit_tests") {
     }
   }
 
+  if (build_with_mediapipe_lib) {
+    assert(build_with_tflite_lib)
+
+    sources += [ "mediapipe_text_model_executor_unittest.cc" ]
+  }
+
   deps = [
     ":bloomfilter",
     ":core",
@@ -459,6 +482,12 @@ source_set("unit_tests") {
       "//third_party/tflite_support",
       "//third_party/tflite_support:tflite_support_proto",
     ]
+  }
+
+  if (build_with_mediapipe_lib) {
+    assert(build_with_tflite_lib)
+
+    deps += [ "//third_party/mediapipe" ]
   }
 }
 

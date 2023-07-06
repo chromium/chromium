@@ -421,7 +421,6 @@ static_library("mediapipe_core") {
     "//third_party/re2",
     "//third_party/tensorflow-text",
     "//third_party/tflite",
-    "//third_party/tflite:tflite_builtin_op_resolver",
     "//third_party/zlib",
     "//third_party/zlib:minizip",
   ]
@@ -457,7 +456,6 @@ static_library("mediapipe_core_api2") {
     "//third_party/re2",
     "//third_party/tensorflow-text",
     "//third_party/tflite",
-    "//third_party/tflite:tflite_builtin_op_resolver",
     "//third_party/zlib",
     "//third_party/zlib:minizip",
   ]
@@ -539,7 +537,6 @@ static_library("mediapipe_tasks") {
     "//third_party/re2",
     "//third_party/sentencepiece",
     "//third_party/tensorflow-text",
-    "//third_party/tflite:tflite_builtin_op_resolver",
     "//third_party/zlib",
     "//third_party/zlib:minizip",
   ]

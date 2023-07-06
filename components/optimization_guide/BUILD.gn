@@ -1,10 +1,12 @@
 import("//build/buildflag_header.gni")
 import("//components/optimization_guide/features.gni")
+import("//third_party/mediapipe/features.gni")
 import("//third_party/tflite/features.gni")
 
 buildflag_header("machine_learning_tflite_buildflags") {
   header = "machine_learning_tflite_buildflags.h"
   flags = [
+    "BUILD_WITH_MEDIAPIPE_LIB=$build_with_mediapipe_lib",
     "BUILD_WITH_TFLITE_LIB=$build_with_tflite_lib",
     "BUILD_TFLITE_WITH_XNNPACK=$build_tflite_with_xnnpack",
   ]
