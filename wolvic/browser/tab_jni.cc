@@ -10,7 +10,7 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 #include "wolvic/wolvic_browser_context.h"
-#include "wolvic/wolvic_content_main_delegate.h"
+#include "wolvic/wolvic_content_browser_client.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -20,12 +20,12 @@ namespace content {
 
 ScopedJavaLocalRef<jobject> JNI_Tab_CreateWebContents(JNIEnv* env) {
   // TODO(wolvic-chromium#6): Consider handling browser profiles.
-  auto* delegate = content::WolvicContentMainDelegate::Get();
-  CHECK(delegate->browser_context() != nullptr);
+  auto* browser_client = content::WolvicContentBrowserClient::Get();
+  CHECK(browser_client->GetBrowserContext() != nullptr);
 
   std::unique_ptr<WebContents> web_contents =
       WebContents::Create(content::WebContents::CreateParams(
-          static_cast<BrowserContext*>(delegate->browser_context())));
+          browser_client->GetBrowserContext()));
 
   return web_contents.release()->GetJavaWebContents();
 }

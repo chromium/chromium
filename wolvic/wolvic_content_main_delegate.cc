@@ -388,8 +388,5 @@ void WolvicContentMainDelegate::SetUpFieldTrials() {
       /*low_entropy_source_value=*/false);
 }
 
-WolvicBrowserContext* WolvicContentMainDelegate::browser_context() {
-  return browser_client_->browser_context();
-}
 
 }  // namespace content

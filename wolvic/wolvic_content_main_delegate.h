@@ -19,7 +19,6 @@ class PrefService;
 
 namespace content {
 class WebContents;
-class WolvicBrowserContext;
 class WolvicContentBrowserClient;
 class WolvicContentClient;
 class WolvicContentMainDelegate;
@@ -53,8 +52,6 @@ class WolvicContentMainDelegate : public ContentMainDelegate {
   ContentUtilityClient* CreateContentUtilityClient() override;
 
   static void InitializeResourceBundle();
-
-  WolvicBrowserContext* browser_context();
 
   PrefService* GetPrefs() { return local_state_.get(); }
 

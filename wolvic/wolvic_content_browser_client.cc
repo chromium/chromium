@@ -6,15 +6,36 @@
 
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
+#include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_main_delegate.h"
 #include "wolvic/wolvic_main_parts.h"
 
 namespace content {
 
-WolvicContentBrowserClient::WolvicContentBrowserClient()
-    : browser_main_parts_(nullptr) {}
+namespace {
 
-WolvicContentBrowserClient::~WolvicContentBrowserClient() {}
+WolvicContentBrowserClient* g_instance = nullptr;
+
+}  // namespace
+
+WolvicContentBrowserClient::WolvicContentBrowserClient()
+    : browser_main_parts_(nullptr) {
+  DCHECK(!g_instance);
+  g_instance = this;
+}
+
+WolvicContentBrowserClient::~WolvicContentBrowserClient() {
+  g_instance = nullptr;
+}
+
+// static
+WolvicContentBrowserClient* WolvicContentBrowserClient::Get() {
+  return g_instance;
+}
+
+content::BrowserContext* WolvicContentBrowserClient::GetBrowserContext() {
+  return browser_main_parts_->browser_context();
+}
 
 std::unique_ptr<BrowserMainParts>
 WolvicContentBrowserClient::CreateBrowserMainParts(
@@ -33,10 +54,6 @@ XrIntegrationClient* WolvicContentBrowserClient::GetXrIntegrationClient() {
   return xr_integration_client_.get();
 }
 #endif
-
-WolvicBrowserContext* WolvicContentBrowserClient::browser_context() {
-  return browser_main_parts_->browser_context();
-}
 
 std::string WolvicContentBrowserClient::GetUserAgent() {
   return embedder_support::GetUserAgent();
