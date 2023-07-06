@@ -25,7 +25,7 @@
 #endif
 
 using chrome_test_util::GoogleSyncSettingsButton;
-using chrome_test_util::SettingsSignInAndEnableSyncRowMatcher;
+using chrome_test_util::SettingsSignInRowMatcher;
 
 @interface SigninSettingsWithoutLegacyPromoTestCase : ChromeTestCase
 @end
@@ -57,10 +57,10 @@ using chrome_test_util::SettingsSignInAndEnableSyncRowMatcher;
 
   [[EarlGrey selectElementWithMatcher:GoogleSyncSettingsButton()]
       assertWithMatcher:grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:SettingsSignInAndEnableSyncRowMatcher()]
+  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey selectElementWithMatcher:SettingsSignInAndEnableSyncRowMatcher()]
+  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
       performAction:grey_tap()];
 
   [[EarlGrey
@@ -79,10 +79,10 @@ using chrome_test_util::SettingsSignInAndEnableSyncRowMatcher;
 
   [[EarlGrey selectElementWithMatcher:GoogleSyncSettingsButton()]
       assertWithMatcher:grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:SettingsSignInAndEnableSyncRowMatcher()]
+  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey selectElementWithMatcher:SettingsSignInAndEnableSyncRowMatcher()]
+  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
       performAction:grey_tap()];
 
   [[EarlGrey
@@ -149,7 +149,7 @@ using chrome_test_util::SettingsSignInAndEnableSyncRowMatcher;
 
   [ChromeEarlGreyUI openSettingsMenu];
 
-  [[EarlGrey selectElementWithMatcher:SettingsSignInAndEnableSyncRowMatcher()]
+  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
       assertWithMatcher:grey_notVisible()];
   [[EarlGrey selectElementWithMatcher:GoogleSyncSettingsButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -174,7 +174,7 @@ using chrome_test_util::SettingsSignInAndEnableSyncRowMatcher;
   // bottom sheet.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
 
-  [[EarlGrey selectElementWithMatcher:SettingsSignInAndEnableSyncRowMatcher()]
+  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
       assertWithMatcher:grey_notVisible()];
   [[EarlGrey selectElementWithMatcher:GoogleSyncSettingsButton()]
       assertWithMatcher:grey_sufficientlyVisible()];

@@ -68,7 +68,7 @@ using chrome_test_util::SettingsImportDataContinueButton;
 using chrome_test_util::SettingsImportDataImportButton;
 using chrome_test_util::SettingsImportDataKeepSeparateButton;
 using chrome_test_util::SettingsLink;
-using chrome_test_util::SettingsSignInAndEnableSyncRowMatcher;
+using chrome_test_util::SettingsSignInRowMatcher;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
 using l10n_util::GetNSString;
 using l10n_util::GetNSStringF;
@@ -134,8 +134,7 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
 
   // Sign in with `fakeIdentity2`.
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:SettingsSignInAndEnableSyncRowMatcher()];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsSignInRowMatcher()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kIdentityButtonControlIdentifier)]
       performAction:grey_tap()];
@@ -692,8 +691,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   switch (openSigninMethod) {
     case OpenSigninMethodFromSettings:
       [ChromeEarlGreyUI openSettingsMenu];
-      [ChromeEarlGreyUI
-          tapSettingsMenuButton:SettingsSignInAndEnableSyncRowMatcher()];
+      [ChromeEarlGreyUI tapSettingsMenuButton:SettingsSignInRowMatcher()];
       break;
     case OpenSigninMethodFromBookmarks:
       [ChromeEarlGreyUI openToolsMenu];

@@ -54,7 +54,7 @@ id<GREYMatcher> UpgradeSigninPromoMatcher() {
   return grey_accessibilityID(kUnifiedConsentScrollViewIdentifier);
 }
 
-id<GREYMatcher> SettingsSignInAndEnableSyncRowMatcher() {
+id<GREYMatcher> SettingsSignInRowMatcher() {
   return grey_allOf(grey_accessibilityID(kSettingsSignInCellId),
                     grey_sufficientlyVisible(), nil);
 }

@@ -43,7 +43,7 @@ using chrome_test_util::SettingsCollectionView;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
-using chrome_test_util::SettingsSignInAndEnableSyncRowMatcher;
+using chrome_test_util::SettingsSignInRowMatcher;
 
 namespace {
 
@@ -334,8 +334,8 @@ id<GREYMatcher> ClearBrowsingDataCell() {
                  @"Settings should register key commands when presented.");
 
   // Present the Sign-in UI.
-  id<GREYMatcher> matcher = grey_allOf(SettingsSignInAndEnableSyncRowMatcher(),
-                                       grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> matcher =
+      grey_allOf(SettingsSignInRowMatcher(), grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
   // Wait for UI to finish loading the Sign-in screen.
   [ChromeEarlGreyUI waitForAppToIdle];
