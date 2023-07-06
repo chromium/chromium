@@ -26,12 +26,14 @@
 //components/test/data/viz/backdrop_filter_invalid.png
 //components/test/data/viz/backdrop_filter_masked.png
 //components/test/data/viz/backdrop_filter_masked_sw.png
+//components/test/data/viz/backdrop_filter_offset.png
 //components/test/data/viz/backdrop_filter_on_scaled_layer_skia_gl.png
 //components/test/data/viz/backdrop_filter_on_scaled_layer_skia_vk.png
 //components/test/data/viz/backdrop_filter_on_scaled_layer_sw.png
 //components/test/data/viz/backdrop_filter_rotated_skia_gl.png
 //components/test/data/viz/backdrop_filter_rotated_skia_vk.png
 //components/test/data/viz/backdrop_filter_rotated_sw.png
+//components/test/data/viz/backdrop_filter_zoom.png
 //components/test/data/viz/black.png
 //components/test/data/viz/blue_yellow.png
 //components/test/data/viz/blue_yellow_alpha.png

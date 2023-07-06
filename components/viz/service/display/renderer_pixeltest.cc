@@ -3459,6 +3459,13 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCornerMultiRadii) {
 
 class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
  protected:
+  void SetUp() override {
+    VizPixelTestWithParam::SetUp();
+    filter_pass_layer_rect_ = gfx::Rect(device_viewport_size_);
+    filter_pass_layer_rect_.Inset(gfx::Insets::TLBR(14, 12, 18, 16));
+    backdrop_filter_bounds_ = gfx::RRectF(gfx::RectF(filter_pass_layer_rect_));
+  }
+
   void SetUpRenderPassList() {
     gfx::Rect device_viewport_rect(this->device_viewport_size_);
 
@@ -3623,35 +3630,49 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::ValuesIn(GetRendererTypes()),
                          testing::PrintToStringParamName());
 
+TEST_P(RendererPixelTestWithBackdropFilter, ZoomFilter) {
+  if (is_software_renderer()) {
+    GTEST_SKIP() << "SoftwareRenderer doesn't support zoom filter";
+  }
+
+  backdrop_filters_.Append(cc::FilterOperation::CreateZoomFilter(2.0f, 20));
+  SetUpRenderPassList();
+  EXPECT_TRUE(RunPixelTest(
+      &pass_list_,
+      base::FilePath(FILE_PATH_LITERAL("backdrop_filter_zoom.png")),
+      cc::ExactPixelComparator()));
+}
+
+TEST_P(RendererPixelTestWithBackdropFilter, OffsetFilter) {
+  backdrop_filters_.Append(
+      cc::FilterOperation::CreateOffsetFilter(gfx::Point(5, 5)));
+  SetUpRenderPassList();
+  EXPECT_TRUE(RunPixelTest(
+      &pass_list_,
+      base::FilePath(FILE_PATH_LITERAL("backdrop_filter_offset.png")),
+      cc::ExactPixelComparator()));
+}
+
 TEST_P(RendererPixelTestWithBackdropFilter, InvertFilter) {
-  this->backdrop_filters_.Append(cc::FilterOperation::CreateInvertFilter(1.f));
-  this->filter_pass_layer_rect_ = gfx::Rect(this->device_viewport_size_);
-  this->filter_pass_layer_rect_.Inset(gfx::Insets::TLBR(14, 12, 18, 16));
-  this->backdrop_filter_bounds_ =
-      gfx::RRectF(gfx::RectF(this->filter_pass_layer_rect_));
-  this->SetUpRenderPassList();
-  EXPECT_TRUE(this->RunPixelTest(
-      &this->pass_list_,
-      base::FilePath(FILE_PATH_LITERAL("backdrop_filter.png")),
+  backdrop_filters_.Append(cc::FilterOperation::CreateInvertFilter(1.f));
+  SetUpRenderPassList();
+  EXPECT_TRUE(RunPixelTest(
+      &pass_list_, base::FilePath(FILE_PATH_LITERAL("backdrop_filter.png")),
       cc::AlphaDiscardingExactPixelComparator()));
 }
 
 TEST_P(RendererPixelTestWithBackdropFilter, InvertFilterWithMask) {
-  this->backdrop_filters_.Append(cc::FilterOperation::CreateInvertFilter(1.f));
-  this->filter_pass_layer_rect_ = gfx::Rect(this->device_viewport_size_);
-  this->filter_pass_layer_rect_.Inset(gfx::Insets::TLBR(14, 12, 18, 16));
-  this->backdrop_filter_bounds_ =
-      gfx::RRectF(gfx::RectF(this->filter_pass_layer_rect_));
-  this->include_backdrop_mask_ = true;
-  this->SetUpRenderPassList();
+  backdrop_filters_.Append(cc::FilterOperation::CreateInvertFilter(1.f));
+  include_backdrop_mask_ = true;
+  SetUpRenderPassList();
 
   base::FilePath expected_path(
       is_software_renderer()
           ? FILE_PATH_LITERAL("backdrop_filter_masked_sw.png")
           : FILE_PATH_LITERAL("backdrop_filter_masked.png"));
 
-  EXPECT_TRUE(this->RunPixelTest(&this->pass_list_, expected_path,
-                                 cc::FuzzyPixelOffByOneComparator()));
+  EXPECT_TRUE(RunPixelTest(&pass_list_, expected_path,
+                           cc::FuzzyPixelOffByOneComparator()));
 }
 
 // Software renderer does not support anti-aliased edges.
