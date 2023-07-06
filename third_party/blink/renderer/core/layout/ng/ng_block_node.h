@@ -220,9 +220,6 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   // legacy.
   void StoreColumnSizeAndCount(LayoutUnit inline_size, int count);
 
-  static bool CanUseNewLayout(const LayoutBox&);
-  bool CanUseNewLayout() const;
-
   bool ShouldApplyLayoutContainment() const {
     return box_->ShouldApplyLayoutContainment();
   }

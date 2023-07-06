@@ -46,14 +46,13 @@ namespace blink {
 namespace {
 
 // TODO(yoichio): Share condition between NGOffsetMapping::AcceptsPosition.
+// TODO(1229581): Do we need this function anymore?
 bool ShouldUseLayoutNGTextContent(const Node& node) {
   LayoutObject* layout_object = node.GetLayoutObject();
   DCHECK(layout_object);
   if (layout_object->IsInline())
     return layout_object->IsInLayoutNGInlineFormattingContext();
-  if (auto* block_flow = DynamicTo<LayoutBlockFlow>(layout_object))
-    return NGBlockNode::CanUseNewLayout(*block_flow);
-  return false;
+  return IsA<LayoutBlockFlow>(layout_object);
 }
 
 }  // namespace

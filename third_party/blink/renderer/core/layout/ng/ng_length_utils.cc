@@ -1493,7 +1493,6 @@ NGFragmentGeometry CalculateInitialFragmentGeometry(
     const NGBlockNode& node,
     const NGBlockBreakToken* break_token,
     bool is_intrinsic) {
-  DCHECK(is_intrinsic || node.CanUseNewLayout());
   const ComputedStyle& style = node.Style();
 
   if (node.IsFrameSet()) {

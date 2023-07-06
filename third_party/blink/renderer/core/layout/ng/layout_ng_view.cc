@@ -104,9 +104,8 @@ MinMaxSizes LayoutNGView::ComputeIntrinsicLogicalWidths() const {
                                /* is_new_fc */ true)
           .ToConstraintSpace();
 
-  NGBlockNode node(const_cast<LayoutNGView*>(this));
-  DCHECK(node.CanUseNewLayout());
-  return node.ComputeMinMaxSizes(writing_mode, MinMaxSizesType::kContent, space)
+  return NGBlockNode(const_cast<LayoutNGView*>(this))
+      .ComputeMinMaxSizes(writing_mode, MinMaxSizesType::kContent, space)
       .sizes;
 }
 

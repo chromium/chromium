@@ -501,21 +501,12 @@ void EnqueueAutofocus(Element& element) {
   top_document.EnqueueAutofocusCandidate(element);
 }
 
-// For container query containers, we may skip the style recalc of the
-// container's descendants during regular style recalc, with the expectation
-// that we will recalc the style of those elements during `NGBlockNode::Layout`.
-// If a given LayoutObject isn't guaranteed to actually enter
-// `NGBlockNode::Layout`, then we recalc the skipped descendants during
-// layout-tree building instead.
-bool IsGuaranteedToEnterNGBlockNodeLayout(const LayoutObject& layout_object) {
-  auto* box = DynamicTo<LayoutBox>(layout_object);
-  if (!box) {
-    return false;
-  }
-  if (!NGBlockNode::CanUseNewLayout(*box)) {
-    return false;
-  }
-  return true;
+bool WillUpdateSizeContainerDuringLayout(const LayoutObject& layout_object) {
+  // When a size-container LayoutObject is marked as needs layout,
+  // NGBlockNode::Layout() will resume style recalc with an up-to-date size in
+  // StyleEngine::UpdateStyleAndLayoutTreeForContainer().
+  return layout_object.SelfNeedsLayout() &&
+         layout_object.IsEligibleForSizeContainment();
 }
 
 bool IsValidShadowHostName(const QualifiedName& tag_name) {
@@ -3162,9 +3153,8 @@ bool Element::SkipStyleRecalcForContainer(
 
   if (!child_change.ReattachLayoutTree()) {
     LayoutObject* layout_object = GetLayoutObject();
-    if (!layout_object || !layout_object->SelfNeedsLayout() ||
-        !layout_object->IsEligibleForSizeContainment() ||
-        !IsGuaranteedToEnterNGBlockNodeLayout(*layout_object)) {
+    if (!layout_object ||
+        !WillUpdateSizeContainerDuringLayout(*layout_object)) {
       return false;
     }
   }

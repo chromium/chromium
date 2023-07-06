@@ -125,12 +125,9 @@ MinMaxSizes LayoutNGMixin<Base>::ComputeIntrinsicLogicalWidths() const {
   Base::CheckIsNotDestroyed();
   DCHECK(!Base::IsTableCell());
 
-  NGBlockNode node(const_cast<LayoutNGMixin<Base>*>(this));
-  CHECK(node.CanUseNewLayout());
-
   NGConstraintSpace space = ConstraintSpaceForMinMaxSizes();
-  return node
-      .ComputeMinMaxSizes(node.Style().GetWritingMode(),
+  return NGBlockNode(const_cast<LayoutNGMixin<Base>*>(this))
+      .ComputeMinMaxSizes(Base::StyleRef().GetWritingMode(),
                           MinMaxSizesType::kContent, space)
       .sizes;
 }
