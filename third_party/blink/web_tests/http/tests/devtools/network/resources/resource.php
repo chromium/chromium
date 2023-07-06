@@ -21,7 +21,7 @@
         usleep($wait * 1000);
 
     # Exit early if we return 304 code.
-    if ($cached && $_SERVER["HTTP_IF_MODIFIED_SINCE"]) {
+    if ($cached && isset($_SERVER["HTTP_IF_MODIFIED_SINCE"])) {
         header("HTTP/1.0 304 Not Modified");
         exit;
     }
@@ -111,7 +111,9 @@ __foo(<?php echo($jsdelay)?>);
         print($data);
         if ($size) {
             if ($chunked) {
-                ob_flush();
+                if (ob_get_level() > 0){
+                    ob_flush();
+                }
                 flush();
             }
             for ($i = 0; $size && $i < $size - $data_len; ++$i)
@@ -124,7 +126,9 @@ __foo(<?php echo($jsdelay)?>);
             $str = $body_pattern ? $body_pattern : "*";
             for ($i = 0; $i < $size; ++$i) {
                 if ($chunked && (1 == $i)) {
-                    ob_flush();
+                    if (ob_get_level() > 0){
+                        ob_flush();
+                    }
                     flush();
                 }
                 echo($str[$i % strlen($str)]);
@@ -132,7 +136,9 @@ __foo(<?php echo($jsdelay)?>);
         } else {
             echo("Hello ");
             if ($chunked) {
-                ob_flush();
+                if (ob_get_level() > 0){
+                    ob_flush();
+                }
                 flush();
             }
             echo("world");
@@ -143,7 +149,9 @@ __foo(<?php echo($jsdelay)?>);
     # Useful in some download-related tests
     if ($tail_wait) {
         flush();
-        ob_flush();
+        if (ob_get_level() > 0){
+            ob_flush();
+        }
         usleep($tail_wait * 1000);
     }
 ?>

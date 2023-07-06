@@ -1,4 +1,0 @@
-Tests download is canceled when behavior is set to deny.
-Downloading via a navigation: 
-Error while evaluating 'location.href = "/devtools/network/resources/resource.php?download=1"': {"code":-32000,"message":"Inspected target navigated or closed"}
-

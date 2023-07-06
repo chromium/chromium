@@ -1,9 +1,0 @@
-Tests interception to ensure if subrequest's content is not ready and we continue the renderer does not crash see: crbug.com/785502.
-Network agent enabled
-Request Intercepted: resource.php?send=300
-
-Body content received by renderer:
-Error while executing test script: TypeError: Cannot read properties of undefined (reading 'base64Encoded')
-TypeError: Cannot read properties of undefined (reading 'base64Encoded')
-    at eval (http://127.0.0.1:8000/inspector-protocol/network/response-interception-no-change-content-not-ready.js:36:32)
-
