@@ -5,9 +5,6 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
-#include "base/json/json_reader.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"

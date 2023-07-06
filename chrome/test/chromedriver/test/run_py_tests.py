@@ -704,6 +704,10 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     close_returned_handles = self._driver.CloseWindow()
     self.assertRaises(chromedriver.NoSuchWindow,
                       self._driver.GetCurrentWindowHandle)
+    with self.assertRaises(chromedriver.NoSuchWindow):
+      self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    with self.assertRaises(chromedriver.NoSuchWindow):
+      self._driver.FindElement('css selector', '#link')
     new_handles = self._driver.GetWindowHandles()
     self.assertEqual(close_returned_handles, new_handles)
     for old_handle in old_handles:
@@ -730,6 +734,10 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.ExecuteScript('window.close()')
     with self.assertRaises(chromedriver.NoSuchWindow):
       self._driver.GetTitle()
+    with self.assertRaises(chromedriver.NoSuchWindow):
+      self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    with self.assertRaises(chromedriver.NoSuchWindow):
+      self._driver.FindElement('css selector', '#link')
 
   def testGetWindowHandles(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/page_test.html'))
@@ -3580,6 +3588,45 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
                                    '--headless',
                                    '--user-data-dir=%s' % temp_dir,
                                ])
+
+  def testFindElementWhileNavigating(self):
+    """A regression test for chromedriver:4459.
+       The error manifests itself in flakiness rate >= 75%.
+       This test creates a situation where a page keeps navigating
+       while the client tries to find an element that will only appear
+       after the last navigation. All such attempts to find an element
+       must fail with NoSuchElement error. Other error codes,
+       like NoSuchWindow, indicate a bug in ChromeDriver.
+    """
+    # iteration_count >= ceil(log(1 - 0.75) / log(1 - p))
+    # where 'p' - probability of the iteration failure, found experimentally.
+    iteration_count = 8
+    for k in range(0, iteration_count):
+      self._http_server.SetDataForPath('/page_%d.html' % k,
+       bytes("""
+       <html><body>
+       <script>
+         let index = %d;
+         let url_base = "%s";
+         let iteration_count = %d;
+         if (index < iteration_count - 1) {
+           let url = url_base + "/page_" + (index + 1) + ".html";
+           setTimeout(()=>{location.assign(url)}, 300);
+         } else {
+           let div = document.createElement("div");
+           div.id = "done";
+           document.body.appendChild(div);
+         }
+       </script>
+       </body></html>""" % (k, self._http_server.GetUrl(), iteration_count),
+       'utf-8'))
+    self._driver.Load(self.GetHttpUrlForFile('/page_0.html'))
+    while True:
+      try:
+        self._driver.FindElement('css selector', '#done')
+        break
+      except chromedriver.NoSuchElement:
+        pass
 
 
 class ChromeDriverBackgroundTest(ChromeDriverBaseTestWithWebServer):
