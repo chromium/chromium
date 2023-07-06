@@ -1139,6 +1139,24 @@ if (is_win) {
     ]
   }
 
+  # Limit the exported symbols of the framework library.
+  config("chrome_dll_symbol_exports") {
+    inputs = [ rebase_path("app/framework.exports") ]
+    ldflags = [
+      "-Wl,-exported_symbols_list",
+      "-Wl," + rebase_path("app/framework.exports", root_build_dir),
+    ]
+  }
+
+  # Control the order of exported symbols in the framework library.
+  config("chrome_dll_symbol_order") {
+    inputs = [ rebase_path("app/framework.order") ]
+    ldflags = [
+      "-Wl,-order_file",
+      "-Wl," + rebase_path("app/framework.order", root_build_dir),
+    ]
+  }
+
   # On Mac, speed up the component build by not re-bundling the framework
   # every time it changes. Instead, place all the sources and their deps in
   # a library that the bundled framework links (and re-exports). That way
@@ -1186,16 +1204,16 @@ if (is_win) {
       frameworks = [ "Carbon.framework" ]
     }
 
-    ldflags = [
-      "-Wl,-order_file",
-      "-Wl," + rebase_path("app/framework.order", root_build_dir),
-      "-ObjC",
-    ]
+    ldflags = [ "-ObjC" ]
 
     configs += [
+      ":chrome_dll_symbol_order",
       "//build/config/compiler:enable_arc",
       "//build/config/compiler:wexit_time_destructors",
     ]
+    if (!is_component_build && !using_sanitizer) {
+      configs += [ ":chrome_dll_symbol_exports" ]
+    }
   }
 
   mac_framework_bundle("chrome_framework") {
@@ -1248,12 +1266,16 @@ if (is_win) {
       bundle_deps += [ ":preinstalled_apps" ]
     }
 
+    configs += [ ":chrome_dll_symbol_order" ]
+    if (!is_component_build && !using_sanitizer) {
+      configs += [ ":chrome_dll_symbol_exports" ]
+    }
+
     ldflags = [
       "-compatibility_version",
       chrome_dylib_version,
       "-current_version",
       chrome_dylib_version,
-      "-Wl,-order_file," + rebase_path("app/framework.order", root_build_dir),
     ]
 
     if (!is_component_build) {

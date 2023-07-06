@@ -23,8 +23,3 @@ _ChromeAppModeStart_v7
 
 # _ChromeMain must be listed last.  That's the whole point of this file.
 _ChromeMain
-
-# For coverage builds.
-_lprofDirMode
-___llvm_profile_filename
-___llvm_profile_raw_version
