@@ -8165,7 +8165,7 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
   EXPECT_TRUE(result.has_value());
 
   auto key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-                        '0', EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+                        0x12, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
                         EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
                         .value();
   auto ohttp_gateway =
