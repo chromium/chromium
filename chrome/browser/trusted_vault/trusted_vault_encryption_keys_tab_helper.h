@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SYNC_TRUSTED_VAULT_ENCRYPTION_KEYS_TAB_HELPER_H_
-#define CHROME_BROWSER_SYNC_TRUSTED_VAULT_ENCRYPTION_KEYS_TAB_HELPER_H_
+#ifndef CHROME_BROWSER_TRUSTED_VAULT_TRUSTED_VAULT_ENCRYPTION_KEYS_TAB_HELPER_H_
+#define CHROME_BROWSER_TRUSTED_VAULT_TRUSTED_VAULT_ENCRYPTION_KEYS_TAB_HELPER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
@@ -23,7 +23,6 @@ class TrustedVaultService;
 // TrustedVaultEncryptionKeysTabHelper is responsible for installing Mojo API in
 // order to receive client encryption keys for //components/trusted_vault from
 // the renderer process.
-// TODO(crbug.com/1434661): move under chrome/browser/trusted_vault.
 class TrustedVaultEncryptionKeysTabHelper
     : public content::WebContentsUserData<TrustedVaultEncryptionKeysTabHelper>,
       public content::WebContentsObserver {
@@ -68,4 +67,4 @@ class TrustedVaultEncryptionKeysTabHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-#endif  // CHROME_BROWSER_SYNC_TRUSTED_VAULT_ENCRYPTION_KEYS_TAB_HELPER_H_
+#endif  // CHROME_BROWSER_TRUSTED_VAULT_TRUSTED_VAULT_ENCRYPTION_KEYS_TAB_HELPER_H_

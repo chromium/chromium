@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/trusted_vault_encryption_keys_tab_helper.h"
+#include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
