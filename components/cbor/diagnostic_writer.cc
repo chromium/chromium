@@ -134,7 +134,9 @@ static bool Serialize(const Value& node,
           break;
       }
       break;
-
+    case Value::Type::FLOAT_VALUE:
+      s->append(base::NumberToString(node.GetDouble()));
+      break;
     case Value::Type::NONE:
       s->append("none");
       break;

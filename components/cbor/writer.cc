@@ -4,9 +4,11 @@
 
 #include "components/cbor/writer.h"
 
+#include <cstdint>
 #include <ostream>
 #include <string>
 
+#include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -135,6 +137,49 @@ bool Writer::EncodeCBOR(const Value& node,
       StartItem(Value::Type::SIMPLE_VALUE,
                 base::checked_cast<uint64_t>(simple_value));
       return true;
+    }
+
+    case Value::Type::FLOAT_VALUE: {
+      const double float_value = node.GetDouble();
+      encoded_cbor_->push_back(base::checked_cast<uint8_t>(
+          static_cast<unsigned>(Value::Type::SIMPLE_VALUE)
+          << constants::kMajorTypeBitShift));
+      {
+        uint16_t value_16 = EncodeHalfPrecisionFloat(float_value);
+        const double decoded_float_16 = DecodeHalfPrecisionFloat(value_16);
+        if (decoded_float_16 == float_value ||
+            (std::isnan(decoded_float_16) && std::isnan(float_value))) {
+          // We can encode it in 16 bits.
+
+          SetAdditionalInformation(constants::kAdditionalInformation2Bytes);
+          for (int shift = 1; shift >= 0; shift--) {
+            encoded_cbor_->push_back(0xFF & (value_16 >> (shift * 8)));
+          }
+          return true;
+        }
+      }
+      {
+        const float float_value_32 = float_value;
+        if (float_value == float_value_32) {
+          // We can encode it in 32 bits.
+
+          SetAdditionalInformation(constants::kAdditionalInformation4Bytes);
+          uint32_t value_32 = base::bit_cast<uint32_t>(float_value_32);
+          for (int shift = 3; shift >= 0; shift--) {
+            encoded_cbor_->push_back(0xFF & (value_32 >> (shift * 8)));
+          }
+          return true;
+        }
+      }
+      {
+        // We can always encode it in 64 bits.
+        SetAdditionalInformation(constants::kAdditionalInformation8Bytes);
+        uint64_t value_64 = base::bit_cast<uint64_t>(float_value);
+        for (int shift = 7; shift >= 0; shift--) {
+          encoded_cbor_->push_back(0xFF & (value_64 >> (shift * 8)));
+        }
+        return true;
+      }
     }
   }
 }

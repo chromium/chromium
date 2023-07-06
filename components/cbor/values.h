@@ -103,6 +103,9 @@ class CBOR_EXPORT Value {
     MAP = 5,
     TAG = 6,
     SIMPLE_VALUE = 7,
+    // In CBOR floating types also have major type 7, but we separate them here
+    // for simplicity.
+    FLOAT_VALUE = 70,
     NONE = -1,
     INVALID_UTF8 = -2,
   };
@@ -126,6 +129,7 @@ class CBOR_EXPORT Value {
 
   explicit Value(SimpleValue in_simple);
   explicit Value(bool boolean_value);
+  explicit Value(double in_float);
 
   explicit Value(int integer_value);
   explicit Value(int64_t integer_value);
@@ -167,6 +171,7 @@ class CBOR_EXPORT Value {
     return is_simple() && (simple_value_ == SimpleValue::TRUE_VALUE ||
                            simple_value_ == SimpleValue::FALSE_VALUE);
   }
+  bool is_double() const { return type() == Type::FLOAT_VALUE; }
   bool is_unsigned() const { return type() == Type::UNSIGNED; }
   bool is_negative() const { return type() == Type::NEGATIVE; }
   bool is_integer() const { return is_unsigned() || is_negative(); }
@@ -178,6 +183,7 @@ class CBOR_EXPORT Value {
   // These will all fatally assert if the type doesn't match.
   SimpleValue GetSimpleValue() const;
   bool GetBool() const;
+  double GetDouble() const;
   const int64_t& GetInteger() const;
   const int64_t& GetUnsigned() const;
   const int64_t& GetNegative() const;
@@ -200,6 +206,7 @@ class CBOR_EXPORT Value {
   union {
     SimpleValue simple_value_;
     int64_t integer_value_;
+    double float_value_;
     BinaryValue bytestring_value_;
     std::string string_value_;
     ArrayValue array_value_;
