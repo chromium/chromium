@@ -31,6 +31,7 @@ SavedTabGroupOverflowButton::SavedTabGroupOverflowButton(
       l10n_util::GetStringUTF16(IDS_ACCNAME_SAVED_TAB_GROUPS_CHEVRON));
   SetTooltipText(
       l10n_util::GetStringUTF16(IDS_SAVED_TAB_GROUPS_OVERFLOW_BUTTON_TOOLTIP));
+  SetFlipCanvasOnPaintForRTLUI(true);
   ConfigureInkDropForToolbar(this);
   SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
