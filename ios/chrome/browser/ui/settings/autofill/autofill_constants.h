@@ -24,4 +24,7 @@ extern NSString* const kAutofillCreditCardEditTableViewId;
 extern NSString* const kAutofillCountrySelectionTableViewId;
 extern NSString* const kAutofillCountrySelectionSearchScrimId;
 
+// Accessibility identifier for the migrate to account button.
+extern NSString* const kAutofillAddressMigrateToAccountButtonId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_AUTOFILL_CONSTANTS_H_

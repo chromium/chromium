@@ -143,6 +143,7 @@ source_set("eg2_tests") {
     "//base",
     "//components/autofill/core/browser:test_support",
     "//components/strings",
+    "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/elements:eg_test_support+eg2",
     "//ios/chrome/browser/signin:fake_system_identity",

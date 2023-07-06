@@ -31,3 +31,6 @@ NSString* const kAutofillCountrySelectionTableViewId =
     @"kAutofillCountrySelectionTableViewId";
 NSString* const kAutofillCountrySelectionSearchScrimId =
     @"kAutofillCountrySelectionSearchScrimId";
+
+NSString* const kAutofillAddressMigrateToAccountButtonId =
+    @"kAutofillAddressMigrateToAccountButtonId";

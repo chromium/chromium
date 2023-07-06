@@ -8,6 +8,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -46,6 +47,10 @@ struct DisplayStringIDToExpectedResult {
 
 // Will be used to test the country selection logic.
 NSString* const kCountryForSelection = @"Germany";
+
+constexpr base::TimeDelta kSnackbarAppearanceTimeout = base::Seconds(5);
+// kSnackbarDisappearanceTimeout = MDCSnackbarMessageDurationMax + 1
+constexpr base::TimeDelta kSnackbarDisappearanceTimeout = base::Seconds(10 + 1);
 
 const DisplayStringIDToExpectedResult kExpectedFields[] = {
     {IDS_IOS_AUTOFILL_FULLNAME, @"John H. Doe"},
@@ -116,6 +121,11 @@ id<GREYMatcher> SearchBarScrim() {
   return grey_accessibilityID(kAutofillCountrySelectionSearchScrimId);
 }
 
+// Matcher for migrate to account button.
+id<GREYMatcher> MigrateToAccountButton() {
+  return grey_accessibilityID(kAutofillAddressMigrateToAccountButtonId);
+}
+
 }  // namespace
 
 // Various tests for the Autofill profiles section of the settings.
@@ -146,6 +156,17 @@ id<GREYMatcher> SearchBarScrim() {
       [self isRunningTest:@selector(testFooterWithMultipleErrors)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAccountProfilesUnionView);
+  }
+
+  if ([self isRunningTest:@selector(testMigrateToAccount)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAccountProfilesUnionView);
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAccountProfileStorage);
+    config.features_enabled.push_back(
+        autofill::features::kAutofillRequireNameForProfileImport);
+    config.features_enabled.push_back(
+        syncer::kSyncEnableContactInfoDataTypeInTransportMode);
   }
 
   // Either the test is a duplicate or incompatible with the feature.
@@ -181,6 +202,13 @@ id<GREYMatcher> SearchBarScrim() {
       performAction:grey_tap()];
   // Wait for UI components to finish loading.
   [ChromeEarlGreyUI waitForAppToIdle];
+}
+
+// Scroll to the bottom.
+- (void)scrollDownWithMatcher:(id<GREYMatcher>)scrollViewMatcher {
+  [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
+      performAction:grey_scrollToContentEdgeWithStartPoint(
+                        kGREYContentEdgeBottom, 0.1f, 0.1f)];
 }
 
 // Helper to open the settings page for the Autofill profile card list in edit
@@ -691,6 +719,68 @@ id<GREYMatcher> SearchBarScrim() {
   [[EarlGrey
       selectElementWithMatcher:[self footerWithCountOfEmptyRequiredFields:2]]
       assertWithMatcher:grey_nil()];
+  [SigninEarlGrey signOut];
+}
+
+// Tests that the local profile is migrated to account.
+- (void)testMigrateToAccount {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+  [AutofillAppInterface saveExampleProfile];
+  [self openEditProfile:kProfileLabel];
+
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // Scroll to the bottom for ipad.
+    [self scrollDownWithMatcher:grey_accessibilityID(
+                                    kAutofillProfileEditTableViewId)];
+  }
+
+  [[EarlGrey selectElementWithMatcher:MigrateToAccountButton()]
+      performAction:grey_tap()];
+  // Wait for the snackbar to appear.
+  id<GREYMatcher> snackbar_matcher =
+      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier");
+  ConditionBlock wait_for_appearance = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:snackbar_matcher]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 kSnackbarAppearanceTimeout, wait_for_appearance),
+             @"Snackbar did not appear.");
+
+  // Wait for the snackbar to disappear.
+  ConditionBlock wait_for_disappearance = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:snackbar_matcher]
+        assertWithMatcher:grey_nil()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 kSnackbarDisappearanceTimeout, wait_for_disappearance),
+             @"Snackbar did not disappear.");
+
+  // Go back to the list view page.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
+      performAction:grey_tap()];
+  // Open the profile view.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(kProfileLabel)]
+      performAction:grey_tap()];
+
+  id<GREYMatcher> accountProfileFooterMatcher =
+      grey_text(l10n_util::GetNSStringF(
+          IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
+          u"foo1@gmail.com"));
+
+  // Switch on edit mode to make sure the page has opened.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:accountProfileFooterMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
   [SigninEarlGrey signOut];
 }
 
