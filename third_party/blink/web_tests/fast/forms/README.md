@@ -27,7 +27,7 @@ to fast/dom/HTML*Element/ for HTML forms.
 
 *   date/
 
-    `<input type=date>`
+    `<input type=date>` and common behavior of date-like input types.
 
 *   date-multiple-fields/
 

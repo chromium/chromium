@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<style>
+input {
+    writing-mode: vertical-lr;
+}
+.appearance-none {
+    appearance: none;
+}
+.rtl {
+    direction: rtl;
+}
+</style>
+<p>This test is a basic check for using vertical-lr writing mode.</p>
+
+<p>When appearance is auto:</p>
+<input type="date" value="2018-07-22" min="2018-01-01" max="2018-12-31">
+<input type="datetime-local" value="2018-06-10T19:30" min="2018-06-07T00:00" max="2018-06-14T00:00">
+<input type="month" min="2018-03" value="2018-04" max="2018-05">
+<input type="time" min="09:00" max="18:00" value="08:00">
+<input type="week" min="2018-W18" max="2018-W26" value="2018-W10">
+<input type="date" class="rtl" value="2018-07-22" min="2018-01-01" max="2018-12-31">
+<input type="datetime-local" class="rtl" value="2018-06-10T19:30" min="2018-06-07T00:00" max="2018-06-14T00:00">
+<input type="month" class="rtl" min="2018-03" value="2018-04" max="2018-05">
+<input type="time" class="rtl" min="09:00" max="18:00" value="08:00">
+<input type="week" class="rtl" min="2018-W18" max="2018-W26" value="2018-W10">
+<br>
+
+<p>When appearance is none:</p>
+<input type="date" class="appearance-none" value="2018-07-22" min="2018-01-01" max="2018-12-31">
+<input type="datetime-local" class="appearance-none" value="2018-06-10T19:30" min="2018-06-07T00:00" max="2018-06-14T00:00">
+<input type="month" class="appearance-none" min="2018-03" value="2018-04" max="2018-05">
+<input type="time" class="appearance-none" min="09:00" max="18:00" value="08:00">
+<input type="week" class="appearance-none" min="2018-W18" max="2018-W26" value="2018-W10">
+<input type="date" class="appearance-none rtl" value="2018-07-22" min="2018-01-01" max="2018-12-31">
+<input type="datetime-local" class="appearance-none rtl" value="2018-06-10T19:30" min="2018-06-07T00:00" max="2018-06-14T00:00">
+<input type="month" class="appearance-none rtl" min="2018-03" value="2018-04" max="2018-05">
+<input type="time" class="appearance-none rtl" min="09:00" max="18:00" value="08:00">
+<input type="week" class="appearance-none rtl" min="2018-W18" max="2018-W26" value="2018-W10">
+<br>

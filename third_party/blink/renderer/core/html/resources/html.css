@@ -407,11 +407,6 @@ button {
     appearance: auto;
 }
 
-/* Feature FormControlsVerticalWritingModeSupport: We are working on making form controls go vertical. */
-input:not([type="range" i], [type="color" i], [type="button" i], [type="reset" i], [type="submit" i], [type="file" i], [type="email" i], [type="number" i], [type="password" i], [type="search" i], [type="tel" i], [type="text" i], [type="url" i]) {
-    writing-mode: horizontal-tb !important;
-}
-
 input, textarea, select, button {
     margin: 0__qem;
     font: -webkit-small-control;
@@ -867,9 +862,10 @@ input[type="color" i][list]::-webkit-color-swatch {
 
 input::-webkit-calendar-picker-indicator {
     display: inline-block;
-    width: 0.66em;
-    height: 0.66em;
-    padding: 0.17em 0.34em;
+    inline-size: 0.66em;
+    block-size: 0.66em;
+    padding-block: 0.17em;
+    padding-inline: 0.34em;
     -webkit-user-modify: read-only !important;
     opacity: 0;
     cursor: default;
@@ -1226,8 +1222,8 @@ input[type="week" i]::-webkit-calendar-picker-indicator {
   background-origin: content-box;
   background-repeat: no-repeat;
   background-size: contain;
-  height: 1.0em;
-  width: 1.0em;
+  block-size: 1.0em;
+  inline-size: 1.0em;
   opacity: 1;
   outline: none;
   padding: 2px;
@@ -1246,15 +1242,14 @@ input[type="time" i]::-webkit-calendar-picker-indicator {
   background-origin: content-box;
   background-repeat: no-repeat;
   background-size: contain;
-  height: 1.05em;
-  margin-inline-start: 8px;
   opacity: 1;
   outline: none;
-  padding-bottom: 3px;
+  margin-inline-start: 8px;
   padding-inline-start: 3px;
   padding-inline-end: 3px;
-  padding-top: 3px;
-  width: 1.05em;
+  padding-block: 3px;
+  block-size: 1.05em;
+  inline-size: 1.05em;
 }
 
 input[type="time" i]::-webkit-calendar-picker-indicator:focus-visible {

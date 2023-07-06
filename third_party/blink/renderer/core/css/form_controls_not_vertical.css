@@ -11,19 +11,7 @@
 
 /* TODO(crbug.com/681917): These form controls don't go vertical if
    FormControlsVerticalWritingModeSupport is disabled. */
-input[type="range" i],
-input[type="color" i],
-input[type="button" i],
-input[type="submit" i],
-input[type="reset" i],
-input[type="file" i],
-input[type="email" i],
-input[type="number" i],
-input[type="password" i],
-input[type="search" i],
-input[type="tel" i],
-input[type="text" i],
-input[type="url" i],
+input,
 textarea,
 select,
 meter,
