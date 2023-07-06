@@ -8,7 +8,8 @@
 
 namespace {
 
-static bool has_android_location_permission_ = false;
+static bool has_android_coarse_location_permission_ = false;
+static bool has_android_fine_location_permission_ = false;
 static bool is_system_location_setting_enabled_ = false;
 static bool can_prompt_for_android_location_permission_ = false;
 static bool location_settings_dialog_enabled_ = false;
@@ -27,9 +28,12 @@ MockLocationSettings::MockLocationSettings() : LocationSettings() {}
 MockLocationSettings::~MockLocationSettings() = default;
 
 void MockLocationSettings::SetLocationStatus(
-    bool has_android_location_permission,
+    bool has_android_coarse_location_permission,
+    bool has_android_fine_location_permission,
     bool is_system_location_setting_enabled) {
-  has_android_location_permission_ = has_android_location_permission;
+  has_android_coarse_location_permission_ =
+      has_android_coarse_location_permission;
+  has_android_fine_location_permission_ = has_android_fine_location_permission;
   is_system_location_setting_enabled_ = is_system_location_setting_enabled;
 }
 
@@ -63,7 +67,12 @@ void MockLocationSettings::ResolveAsyncLocationSettingsDialog() {
 }
 
 bool MockLocationSettings::HasAndroidLocationPermission() {
-  return has_android_location_permission_;
+  return has_android_coarse_location_permission_ ||
+         has_android_fine_location_permission_;
+}
+
+bool MockLocationSettings::HasAndroidFineLocationPermission() {
+  return has_android_fine_location_permission_;
 }
 
 bool MockLocationSettings::CanPromptForAndroidLocationPermission(

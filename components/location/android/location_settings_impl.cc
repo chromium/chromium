@@ -23,6 +23,11 @@ bool LocationSettingsImpl::HasAndroidLocationPermission() {
   return Java_LocationSettings_hasAndroidLocationPermission(env);
 }
 
+bool LocationSettingsImpl::HasAndroidFineLocationPermission() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_LocationSettings_hasAndroidFineLocationPermission(env);
+}
+
 bool LocationSettingsImpl::CanPromptForAndroidLocationPermission(
     ui::WindowAndroid* window) {
   if (window == nullptr)

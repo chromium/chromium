@@ -69,8 +69,8 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
 
   // Create default permission contexts initially.
   permissions::PermissionManager::PermissionContextMap permission_contexts =
-      embedder_support::CreateDefaultPermissionContexts(profile,
-                                                        std::move(delegates));
+      embedder_support::CreateDefaultPermissionContexts(
+          profile, profile->IsRegularProfile(), std::move(delegates));
 
   // Add additional Chrome specific permission contexts. Please add a comment
   // when adding new contexts here explaining why it can't be shared with other

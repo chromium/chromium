@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Geolocation.Android.LocationPermissionState"
+    enum="AndroidLocationPermissionState" expires_after="2023-12-23">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Android location permission state, recorded when the geolocation permission
+    context is initialized.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.AuthorizationActionExistingUser"
     enum="GeolocationAuthorizationAction" expires_after="2022-10-16">
   <owner>mattreynolds@chromium.org</owner>

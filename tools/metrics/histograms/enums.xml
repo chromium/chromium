@@ -2447,6 +2447,16 @@ Unknown properties are collapsed to zero. -->
   <int value="327695" label="5.15"/>
 </enum>
 
+<enum name="AndroidLocationPermissionState">
+  <int value="0" label="NoAccess">No location permissions are granted.</int>
+  <int value="1" label="AccessCoarse">
+    Permission to access approximate location (ACCESS_COARSE_LOCATION).
+  </int>
+  <int value="2" label="AccessFine">
+    Permission to access precise location (ACCESS_FINE_LOCATION).
+  </int>
+</enum>
+
 <enum name="AndroidMemoryNotificationBackground">
   <obsolete>
     Deprecated as of 04/2018 (M67).

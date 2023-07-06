@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/location/android/location_settings.h"
 #include "components/location/android/location_settings_impl.h"
 #include "components/permissions/android/android_permission_util.h"
@@ -31,6 +32,20 @@ base::Time GetTimeNow() {
   return base::Time::Now() + base::Days(g_day_offset_for_testing);
 }
 
+// These values are recorded in histograms. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AndroidLocationPermissionState {
+  kNoAccess = 0,
+  kAccessCoarse = 1,
+  kAccessFine = 2,
+  kMaxValue = kAccessFine,
+};
+
+void RecordUmaPermissionState(AndroidLocationPermissionState state) {
+  base::UmaHistogramEnumeration("Geolocation.Android.LocationPermissionState",
+                                state);
+}
+
 }  // namespace
 
 // static
@@ -44,12 +59,28 @@ void GeolocationPermissionContextAndroid::RegisterProfilePrefs(
 
 GeolocationPermissionContextAndroid::GeolocationPermissionContextAndroid(
     content::BrowserContext* browser_context,
-    std::unique_ptr<Delegate> delegate)
+    std::unique_ptr<Delegate> delegate,
+    bool is_regular_profile,
+    std::unique_ptr<LocationSettings> settings_override_for_test)
     : GeolocationPermissionContext(browser_context, std::move(delegate)),
-      location_settings_(std::make_unique<LocationSettingsImpl>()),
+      location_settings_(std::move(settings_override_for_test)),
       location_settings_dialog_request_id_(
           content::GlobalRenderFrameHostId(0, 0),
-          PermissionRequestID::RequestLocalId()) {}
+          PermissionRequestID::RequestLocalId()) {
+  if (!location_settings_) {
+    location_settings_ = std::make_unique<LocationSettingsImpl>();
+  }
+  if (is_regular_profile) {
+    // Record the initial system permission state.
+    if (location_settings_->HasAndroidFineLocationPermission()) {
+      RecordUmaPermissionState(AndroidLocationPermissionState::kAccessFine);
+    } else if (location_settings_->HasAndroidLocationPermission()) {
+      RecordUmaPermissionState(AndroidLocationPermissionState::kAccessCoarse);
+    } else {
+      RecordUmaPermissionState(AndroidLocationPermissionState::kNoAccess);
+    }
+  }
+}
 
 GeolocationPermissionContextAndroid::~GeolocationPermissionContextAndroid() =
     default;

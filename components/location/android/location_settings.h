@@ -19,8 +19,11 @@ class LocationSettings {
  public:
   virtual ~LocationSettings() = default;
 
-  // Returns true if Chrome has location permission.
+  // Returns true if Chrome has any permission to access location.
   virtual bool HasAndroidLocationPermission() = 0;
+
+  // Returns true if Chrome has permission to access precise location.
+  virtual bool HasAndroidFineLocationPermission() = 0;
 
   // Returns true if Chrome can prompt to get location permission.
   virtual bool CanPromptForAndroidLocationPermission(

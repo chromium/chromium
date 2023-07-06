@@ -59,7 +59,10 @@ class GeolocationPermissionContextDelegateTests
             ->GetPermissionContextForTesting(ContentSettingsType::GEOLOCATION))
         ->SetLocationSettingsForTesting(
             std::make_unique<MockLocationSettings>());
-    MockLocationSettings::SetLocationStatus(true, true);
+    MockLocationSettings::SetLocationStatus(
+        /*has_android_coarse_location_permission=*/true,
+        /*has_android_fine_location_permission=*/true,
+        /*is_system_location_setting_enabled=*/true);
     MockLocationSettings::SetCanPromptForAndroidPermission(true);
     MockLocationSettings::SetLocationSettingsDialogStatus(false /* enabled */,
                                                           GRANTED);
