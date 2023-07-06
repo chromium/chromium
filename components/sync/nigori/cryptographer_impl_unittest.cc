@@ -8,6 +8,8 @@
 
 #include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
+#include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/nigori/nigori_key_bag.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -171,6 +173,24 @@ TEST(CryptographerImplTest, ShouldEmplaceKeyPair) {
   cryptographer->EmplaceKeyPair(std::move(key_pair), 0);
 
   EXPECT_TRUE(cryptographer->HasKeyPair(0));
+}
+
+TEST(CryptographerImplTest, ShouldEmplaceKeysFrom) {
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+  ASSERT_THAT(cryptographer, NotNull());
+  NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();
+  const std::string key_name_1 = key_bag.AddKey(Nigori::CreateByDerivation(
+      KeyDerivationParams::CreateForPbkdf2(), "password1"));
+  const std::string key_name_2 = key_bag.AddKey(Nigori::CreateByDerivation(
+      KeyDerivationParams::CreateForPbkdf2(), "password2"));
+  ASSERT_FALSE(cryptographer->HasKey(key_name_1));
+  ASSERT_FALSE(cryptographer->HasKey(key_name_2));
+
+  cryptographer->EmplaceKeysFrom(key_bag);
+
+  EXPECT_TRUE(cryptographer->HasKey(key_name_1));
+  EXPECT_TRUE(cryptographer->HasKey(key_name_2));
 }
 
 TEST(CryptographerImplTest, ShouldEmplaceExistingKeyPair) {
