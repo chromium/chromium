@@ -382,13 +382,13 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
     auto it = registration_id_cache_.Get(std::make_pair(*matched_scope, key));
     if (it != registration_id_cache_.end()) {
       int64_t registration_id = it->second;
-      scoped_refptr<ServiceWorkerRegistration> registration =
-          context_->GetLiveRegistration(registration_id);
+      absl::optional<scoped_refptr<ServiceWorkerRegistration>> registration =
+          FindFromLiveRegistrationsForId(registration_id);
       if (registration) {
         FindRegistrationForClientUrlTraceEventBegin(trace_event_id, client_url);
         FindRegistrationForClientUrlTraceEventEnd(
             trace_event_id, blink::ServiceWorkerStatusCode::kOk, absl::nullopt);
-        CompleteFindNow(std::move(registration),
+        CompleteFindNow(std::move(*registration),
                         blink::ServiceWorkerStatusCode::kOk,
                         std::move(callback));
         return;
