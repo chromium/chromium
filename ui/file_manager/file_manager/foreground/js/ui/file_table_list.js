@@ -491,23 +491,6 @@ filelist.renderFileNameLabel = (doc, entry, locationInfo) => {
 };
 
 /**
- * Renders the drive encryption status (CSE files) in the detail table.
- * @param {!Document} doc Owner document.
- * @return {!HTMLDivElement} Created element.
- */
-filelist.renderEncryptionStatus = (doc) => {
-  const box = /** @type {!HTMLDivElement} */ (doc.createElement('div'));
-  box.className = 'encryption-status';
-
-  const encryptedIcon = doc.createElement('xf-icon');
-  encryptedIcon.size = 'extra_small';
-  encryptedIcon.type = 'encrypted';
-  box.appendChild(encryptedIcon);
-
-  return box;
-};
-
-/**
  * Renders the drive inline status in the detail table.
  * @param {!Document} doc Owner document.
  * @return {!HTMLDivElement} Created element.
@@ -554,9 +537,6 @@ filelist.updateListItemExternalProps =
       }
 
       li.classList.toggle('pinned', externalProps.pinned);
-      li.classList.toggle(
-          'encrypted',
-          FileType.isEncrypted(entry, externalProps.contentMimeType));
       li.classList.toggle('shortcut', !!externalProps.shortcut);
 
       const iconDiv = li.querySelector('.detail-icon');

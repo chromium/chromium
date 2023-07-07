@@ -160,7 +160,6 @@ constants.ICON_TYPES = {
   DRIVE_RECENT: 'drive_recent',
   DRIVE_SHARED_WITH_ME: 'drive_shared_with_me',
   DRIVE: 'drive',
-  ENCRYPTED: 'encrypted',
   ERROR: 'error',
   ERROR_BANNER: 'error_banner',
   EXCEL: 'excel',
