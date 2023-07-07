@@ -3,7 +3,9 @@ Short Name: stringencoders
 URL: https://github.com/client9/stringencoders
 Version: unknown
 License: BSD
+License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 The source code was modified from upstream as follows:
