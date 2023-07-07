@@ -32,10 +32,12 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningMediator.MigrationWarningOptionsHandler;
+import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningMediator.PasswordMigrationWarningUserActions;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.MigrationOption;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -137,6 +139,40 @@ public class PasswordMigrationWarningMediatorTest {
     }
 
     @Test
+    public void testOnDismissedFromIntroScreenRecordsUserAction() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(PasswordMigrationWarningMediator
+                                                 .PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                                PasswordMigrationWarningUserActions.DISMISS_INTRODUCTION)
+                        .build();
+
+        mModel.set(VISIBLE, true);
+        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+        mMediator.showWarning(ScreenType.INTRO_SCREEN);
+        mMediator.onDismissed(StateChangeReason.SWIPE);
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testOnDismissedFromMoreOptionsScreenRecordsUserAction() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(PasswordMigrationWarningMediator
+                                                 .PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                                PasswordMigrationWarningUserActions.DISMISS_MORE_OPTIONS)
+                        .build();
+
+        mModel.set(VISIBLE, true);
+        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+        mMediator.showWarning(ScreenType.OPTIONS_SCREEN);
+        mMediator.onDismissed(StateChangeReason.SWIPE);
+
+        histogram.assertExpected();
+    }
+
+    @Test
     public void testDismissHandlerHidesTheSheet() {
         assertNotNull(mModel.get(DISMISS_HANDLER));
         mModel.set(VISIBLE, true);
@@ -153,11 +189,42 @@ public class PasswordMigrationWarningMediatorTest {
     }
 
     @Test
+    public void testOnMoreOptionsRecordsUserAction() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(PasswordMigrationWarningMediator
+                                                 .PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                                PasswordMigrationWarningUserActions.MORE_OPTIONS)
+                        .build();
+
+        mModel.set(VISIBLE, true);
+        mModel.set(CURRENT_SCREEN, ScreenType.INTRO_SCREEN);
+        mMediator.onMoreOptions();
+
+        histogram.assertExpected();
+    }
+
+    @Test
     public void testOnAcknowledgeHidesTheSheet() {
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
         mModel.set(VISIBLE, true);
         mMediator.onAcknowledge(mBottomSheetController);
         assertFalse(mModel.get(VISIBLE));
+    }
+
+    @Test
+    public void testOnAcknowledgeRecordsUserAction() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(PasswordMigrationWarningMediator
+                                                 .PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                                PasswordMigrationWarningUserActions.GOT_IT)
+                        .build();
+
+        when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
+        mMediator.onAcknowledge(mBottomSheetController);
+
+        histogram.assertExpected();
     }
 
     @Test
@@ -173,6 +240,20 @@ public class PasswordMigrationWarningMediatorTest {
         mModel.set(VISIBLE, true);
         mMediator.onCancel(mBottomSheetController);
         assertFalse(mModel.get(VISIBLE));
+    }
+
+    @Test
+    public void testOnCancelRecordsUserAction() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(PasswordMigrationWarningMediator
+                                                 .PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                                PasswordMigrationWarningUserActions.CANCEL)
+                        .build();
+
+        mMediator.onCancel(mBottomSheetController);
+
+        histogram.assertExpected();
     }
 
     @Test
@@ -195,6 +276,34 @@ public class PasswordMigrationWarningMediatorTest {
         when(mSyncService.getSelectedTypes()).thenReturn(Collections.EMPTY_SET);
         mMediator.onNext(MigrationOption.SYNC_PASSWORDS, mFragmentManager);
         verify(mOptionsHandler).openSyncSettings();
+    }
+
+    @Test
+    public void testOnNextRecordsSyncUserAction() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(PasswordMigrationWarningMediator
+                                                 .PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                                PasswordMigrationWarningUserActions.SYNC)
+                        .build();
+
+        mMediator.onNext(MigrationOption.SYNC_PASSWORDS, mFragmentManager);
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testOnNextRecordsExportUserAction() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(PasswordMigrationWarningMediator
+                                                 .PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                                PasswordMigrationWarningUserActions.EXPORT)
+                        .build();
+
+        mMediator.onNext(MigrationOption.EXPORT_AND_DELETE, mFragmentManager);
+
+        histogram.assertExpected();
     }
 
     @Test

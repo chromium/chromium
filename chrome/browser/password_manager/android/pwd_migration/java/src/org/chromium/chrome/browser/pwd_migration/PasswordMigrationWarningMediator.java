@@ -8,8 +8,11 @@ import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarning
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.VISIBLE;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentManager;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.password_manager.settings.PasswordListObserver;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -30,12 +33,42 @@ import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Contains the logic for the local passwords migration warning. It sets the state of the model and
  * reacts to events.
  */
 class PasswordMigrationWarningMediator
         implements PasswordMigrationWarningOnClickHandler, PasswordListObserver {
+    /**
+     * The action users take on the password migration warning sheet.
+     *
+     * Entries should not be renumbered and numeric values should never be reused. Needs to stay
+     * in sync with PasswordMigrationWarningUserActions in enums.xml.
+     */
+    @IntDef({PasswordMigrationWarningUserActions.GOT_IT,
+            PasswordMigrationWarningUserActions.MORE_OPTIONS,
+            PasswordMigrationWarningUserActions.SYNC, PasswordMigrationWarningUserActions.EXPORT,
+            PasswordMigrationWarningUserActions.CANCEL,
+            PasswordMigrationWarningUserActions.DISMISS_INTRODUCTION,
+            PasswordMigrationWarningUserActions.DISMISS_MORE_OPTIONS,
+            PasswordMigrationWarningUserActions.COUNT})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface PasswordMigrationWarningUserActions {
+        int GOT_IT = 0;
+        int MORE_OPTIONS = 1;
+        int SYNC = 2;
+        int EXPORT = 3;
+        int CANCEL = 4;
+        int DISMISS_INTRODUCTION = 5;
+        int DISMISS_MORE_OPTIONS = 6;
+        int COUNT = 7;
+    }
+    @VisibleForTesting
+    static final String PASSWORD_MIGRATION_WARNING_USER_ACTIONS =
+            "PasswordManager.PasswordMigrationWarning.UserAction";
     private PropertyModel mModel;
     private Profile mProfile;
     private MigrationWarningOptionsHandler mOptionsHandler;
@@ -90,6 +123,16 @@ class PasswordMigrationWarningMediator
     void onDismissed(@StateChangeReason int reason) {
         if (!mModel.get(VISIBLE)) return; // Dismiss only if not dismissed yet.
         mModel.set(VISIBLE, false);
+
+        if (reason == StateChangeReason.SWIPE || reason == StateChangeReason.BACK_PRESS
+                || reason == StateChangeReason.TAP_SCRIM
+                || reason == StateChangeReason.OMNIBOX_FOCUS) {
+            RecordHistogram.recordEnumeratedHistogram(PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                    mModel.get(CURRENT_SCREEN) == ScreenType.INTRO_SCREEN
+                            ? PasswordMigrationWarningUserActions.DISMISS_INTRODUCTION
+                            : PasswordMigrationWarningUserActions.DISMISS_MORE_OPTIONS,
+                    PasswordMigrationWarningUserActions.COUNT);
+        }
     }
 
     @Override
@@ -98,12 +141,20 @@ class PasswordMigrationWarningMediator
 
         PrefService prefService = UserPrefs.get(mProfile);
         prefService.setBoolean(Pref.USER_ACKNOWLEDGED_LOCAL_PASSWORDS_MIGRATION_WARNING, true);
+
+        RecordHistogram.recordEnumeratedHistogram(PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                PasswordMigrationWarningUserActions.GOT_IT,
+                PasswordMigrationWarningUserActions.COUNT);
     }
 
     @Override
     public void onMoreOptions() {
         assert mModel.get(VISIBLE);
         mModel.set(CURRENT_SCREEN, ScreenType.OPTIONS_SCREEN);
+
+        RecordHistogram.recordEnumeratedHistogram(PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                PasswordMigrationWarningUserActions.MORE_OPTIONS,
+                PasswordMigrationWarningUserActions.COUNT);
     }
 
     @Override
@@ -111,8 +162,16 @@ class PasswordMigrationWarningMediator
         if (selectedOption == MigrationOption.SYNC_PASSWORDS) {
             mModel.set(VISIBLE, false);
             startSyncFlow();
+
+            RecordHistogram.recordEnumeratedHistogram(PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                    PasswordMigrationWarningUserActions.SYNC,
+                    PasswordMigrationWarningUserActions.COUNT);
         } else {
             mOptionsHandler.startExportFlow(fragmentManager, mPasswordsAvailable);
+
+            RecordHistogram.recordEnumeratedHistogram(PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                    PasswordMigrationWarningUserActions.EXPORT,
+                    PasswordMigrationWarningUserActions.COUNT);
         }
         // TODO(crbug.com/1445065): Launch the password Export flow.
     }
@@ -120,6 +179,10 @@ class PasswordMigrationWarningMediator
     @Override
     public void onCancel(BottomSheetController bottomSheetController) {
         mModel.set(VISIBLE, false);
+
+        RecordHistogram.recordEnumeratedHistogram(PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                PasswordMigrationWarningUserActions.CANCEL,
+                PasswordMigrationWarningUserActions.COUNT);
     }
 
     private String getAccountDisplayName(Profile profile) {

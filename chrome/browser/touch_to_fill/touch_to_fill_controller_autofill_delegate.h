@@ -15,6 +15,7 @@
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller_delegate.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -40,8 +41,10 @@ class TouchToFillControllerAutofillDelegate
     : public TouchToFillControllerDelegate {
  public:
   using ShowHybridOption = base::StrongAlias<struct ShowHybridOptionTag, bool>;
-  using ShowPasswordMigrationWarningCallback =
-      base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>;
+  using ShowPasswordMigrationWarningCallback = base::RepeatingCallback<void(
+      gfx::NativeWindow,
+      Profile*,
+      password_manager::metrics_util::PasswordMigrationWarningTriggers)>;
 
   // The action a user took when interacting with the Touch To Fill sheet.
   //

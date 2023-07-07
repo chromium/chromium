@@ -12,6 +12,7 @@
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
@@ -38,8 +39,10 @@ class AllPasswordsBottomSheetController
  public:
   using RequestsToFillPassword =
       base::StrongAlias<struct RequestsToFillPasswordTag, bool>;
-  using ShowMigrationWarningCallback =
-      base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>;
+  using ShowMigrationWarningCallback = base::RepeatingCallback<void(
+      gfx::NativeWindow,
+      Profile*,
+      password_manager::metrics_util::PasswordMigrationWarningTriggers)>;
   // No-op constructor for tests.
   AllPasswordsBottomSheetController(
       base::PassKey<class AllPasswordsBottomSheetControllerTest>,

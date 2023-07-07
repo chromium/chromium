@@ -384,7 +384,10 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
   createAllPasswordsController(FocusedFieldType::kFillablePasswordField);
-  EXPECT_CALL(show_migration_warning_callback(), Run);
+  EXPECT_CALL(show_migration_warning_callback(),
+              Run(_, _,
+                  password_manager::metrics_util::
+                      PasswordMigrationWarningTriggers::kAllPasswords));
   all_passwords_controller()->OnCredentialSelected(
       kUsername1, kPassword, RequestsToFillPassword(true));
 }

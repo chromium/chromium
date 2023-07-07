@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -113,7 +114,10 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
       gfx::NativeView container_view,
       const gfx::RectF& element_bounds,
       base::i18n::TextDirection text_direction,
-      base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>
+      base::RepeatingCallback<void(
+          gfx::NativeWindow,
+          Profile*,
+          password_manager::metrics_util::PasswordMigrationWarningTriggers)>
           show_pwd_migration_warning_callback);
   ~AutofillPopupControllerImpl() override;
 
@@ -249,7 +253,10 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // Callback invoked to try to show the password migration warning on Android.
   // Used to facilitate testing.
   // TODO(crbug.com/1454469): Remove when the warning isn't needed anymore.
-  base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>
+  base::RepeatingCallback<void(
+      gfx::NativeWindow,
+      Profile*,
+      password_manager::metrics_util::PasswordMigrationWarningTriggers)>
       show_pwd_migration_warning_callback_;
 
   // AutofillPopupControllerImpl deletes itself. To simplify memory management,
