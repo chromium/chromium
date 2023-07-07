@@ -30,6 +30,7 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -146,6 +147,7 @@ public class SearchResumptionModuleUtilsUnitTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1462894")
     // clang-format off
     public void testShouldShowSearchResumptionModule() {
         // clang-format on
@@ -182,6 +184,7 @@ public class SearchResumptionModuleUtilsUnitTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1462877")
     public void testIsTabToTrackValid() {
         doReturn(true).when(mTabToTrack).isNativePage();
         Assert.assertFalse(SearchResumptionModuleUtils.isTabToTrackValid(mTabToTrack));
@@ -249,6 +252,7 @@ public class SearchResumptionModuleUtilsUnitTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1462879")
     // clang-format off
     public void testMayGetCachedResults() {
         // clang-format on
