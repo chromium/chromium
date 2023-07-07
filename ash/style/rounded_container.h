@@ -24,9 +24,15 @@ class ASH_EXPORT RoundedContainer : public views::View {
   // The default empty border insets.
   static constexpr gfx::Insets kBorderInsets = gfx::Insets::VH(8, 0);
 
+  // The default corner radius for rounded corner and non-rounded corner.
+  static constexpr int kNonRoundedSideRadius = 4;
+  static constexpr int kRoundedSideRadius = 16;
+
   enum class Behavior { kNotRounded, kTopRounded, kBottomRounded, kAllRounded };
 
-  explicit RoundedContainer(Behavior corner_behavior = Behavior::kAllRounded);
+  explicit RoundedContainer(Behavior corner_behavior = Behavior::kAllRounded,
+                            int non_rounded_radius = kNonRoundedSideRadius,
+                            int rounded_radius = kRoundedSideRadius);
   RoundedContainer(const RoundedContainer& other) = delete;
   RoundedContainer& operator=(const RoundedContainer& other) = delete;
   ~RoundedContainer() override;
@@ -43,6 +49,9 @@ class ASH_EXPORT RoundedContainer : public views::View {
 
   // The shape of this container. Defaults to `kAllRounded`.
   Behavior corner_behavior_;
+
+  const float non_rounded_radius_;
+  const float rounded_radius_;
 };
 
 }  // namespace ash

@@ -6,22 +6,36 @@
 
 #include <memory>
 
+#include "ash/bubble/bubble_utils.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/app_types_util.h"
-#include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/pill_button.h"
+#include "ash/style/rounded_container.h"
+#include "ash/style/style_util.h"
+#include "ash/style/switch.h"
+#include "ash/style/typography.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -68,6 +82,136 @@ std::unique_ptr<FeaturePodIconButton> CreateIconButton(
 
 }  // namespace
 
+// -----------------------------------------------------------------------------
+// GameDashboardMainMenuView::FeatureDetailsRow:
+
+// Feature details row includes feature icon, title and sub-title, drill in
+// arrow icon as the tail view or customized tail view. The row looks like:
+// +----------------------------------+
+// | |icon|  |title|       |tail_view||
+// |         |sub-title|              |
+// +----------------------------------+
+class GameDashboardMainMenuView::FeatureDetailsRow : public views::Button {
+ public:
+  FeatureDetailsRow(base::RepeatingCallback<void()> callback,
+                    RoundedContainer::Behavior corner_behavior,
+                    bool default_drill_in_arrow,
+                    const gfx::VectorIcon& icon,
+                    const std::u16string& title)
+      : Button(callback) {
+    SetAccessibleName(title);
+    SetTooltipText(title);
+    SetUseDefaultFillLayout(true);
+
+    // Create 1x3 table. TableLayout is used because the first two columns are
+    // aligned to left and the last column is aligned to right.
+    auto* container = AddChildView(std::make_unique<RoundedContainer>(
+        corner_behavior, /*non_rounded_radius=*/0));
+    container->SetLayoutManager(std::make_unique<views::TableLayout>())
+        ->AddColumn(/*h_align=*/views::LayoutAlignment::kStart,
+                    /*v_align=*/views::LayoutAlignment::kCenter,
+                    /*horizontal_resize=*/views::TableLayout::kFixedSize,
+                    /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
+                    /*fixed_width=*/0, /*min_width=*/0)
+        .AddPaddingColumn(/*horizontal_resize=*/views::TableLayout::kFixedSize,
+                          /*width=*/16)
+        .AddColumn(/*h_align=*/views::LayoutAlignment::kStretch,
+                   /*v_align=*/views::LayoutAlignment::kCenter,
+                   /*horizontal_resize=*/1.0f,
+                   /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
+                   /*fixed_width=*/0, /*min_width=*/0)
+        .AddColumn(/*h_align=*/views::LayoutAlignment::kEnd,
+                   /*v_align=*/views::LayoutAlignment::kCenter,
+                   /*horizontal_resize=*/views::TableLayout::kFixedSize,
+                   /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
+                   /*fixed_width=*/0, /*min_width=*/0)
+        .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize);
+    container->SetBorderInsets(gfx::Insets::VH(16, 14));
+
+    views::HighlightPathGenerator::Install(
+        this, std::make_unique<views::RoundRectHighlightPathGenerator>(
+                  gfx::Insets(), container->layer()->rounded_corner_radii()));
+
+    // Add icon.
+    auto* icon_container =
+        container->AddChildView(std::make_unique<views::View>());
+    icon_container->SetLayoutManager(std::make_unique<views::FillLayout>());
+    icon_container->SetBackground(views::CreateThemedRoundedRectBackground(
+        cros_tokens::kCrosSysSystemOnBase, /*radius=*/12));
+    icon_container->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(6, 6)));
+    icon_container->AddChildView(
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            icon, cros_tokens::kCrosSysOnSurface, 20)));
+
+    // Add title and sub-title.
+    auto* tag_container =
+        container->AddChildView(std::make_unique<views::BoxLayoutView>());
+    tag_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
+    tag_container->SetCrossAxisAlignment(
+        views::BoxLayout::CrossAxisAlignment::kStart);
+    // Add title.
+    auto* feature_title =
+        tag_container->AddChildView(std::make_unique<views::Label>(title));
+    feature_title->SetAutoColorReadabilityEnabled(false);
+    feature_title->SetEnabledColorId(cros_tokens::kCrosRefNeutral100);
+    feature_title->SetFontList(
+        TypographyProvider::Get()->ResolveTypographyToken(
+            TypographyToken::kCrosTitle2));
+    // Add sub-title.
+    sub_title_ = tag_container->AddChildView(
+        bubble_utils::CreateLabel(TypographyToken::kCrosAnnotation2, u"",
+                                  cros_tokens::kCrosSysOnSurfaceVariant));
+
+    // Add tail view.
+    tail_container_ = container->AddChildView(std::make_unique<views::View>());
+    tail_container_->SetUseDefaultFillLayout(true);
+    if (default_drill_in_arrow) {
+      tail_container_->AddChildView(
+          std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+              kQuickSettingsRightArrowIcon, cros_tokens::kCrosSysOnSurface)));
+    }
+  }
+
+  FeatureDetailsRow(const FeatureDetailsRow&) = delete;
+  FeatureDetailsRow& operator=(const FeatureDetailsRow) = delete;
+  ~FeatureDetailsRow() override = default;
+
+  void SetSubtitle(const std::u16string& sub_title) {
+    sub_title_->SetText(sub_title);
+  }
+
+  template <typename T>
+  T* AddCustomizedTailView(std::unique_ptr<T> view) {
+    tail_container_->RemoveAllChildViews();
+    return tail_container_->AddChildView(std::move(view));
+  }
+
+ private:
+  // views::View:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+
+    // Set up highlight and focus ring for the whole row.
+    StyleUtil::SetUpInkDropForButton(
+        /*host=*/this, gfx::Insets(), /*highlight_on_hover=*/true,
+        /*highlight_on_focus=*/true, /*background_color=*/
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysHoverOnSubtle));
+
+    // `StyleUtil::SetUpInkDropForButton()` reinstalls the focus ring, so it
+    // needs to set the focus ring size after calling
+    // `StyleUtil::SetUpInkDropForButton()`.
+    auto* focus_ring = views::FocusRing::Get(this);
+    focus_ring->SetHaloInset(-4);
+    focus_ring->SetHaloThickness(2);
+  }
+
+  raw_ptr<views::Label> sub_title_ = nullptr;
+  raw_ptr<views::View> tail_container_ = nullptr;
+};
+
+// -----------------------------------------------------------------------------
+// GameDashboardMainMenuView:
+
 GameDashboardMainMenuView::GameDashboardMainMenuView(
     GameDashboardContext* context)
     : context_(context) {
@@ -87,11 +231,7 @@ GameDashboardMainMenuView::GameDashboardMainMenuView(
       gfx::Insets::VH(kPaddingHeight, kPaddingWidth), kCenterPadding));
 
   AddShortcutTilesRow();
-
-  // TODO(b/273641402): Add in Game Controls row.
-
-  MaybeAddScreenSizeSettingsRow();
-
+  AddFeatureDetailsRows();
   AddUtilityClusterRow();
 
   SizeToPreferredSize();
@@ -101,10 +241,6 @@ GameDashboardMainMenuView::~GameDashboardMainMenuView() = default;
 
 void GameDashboardMainMenuView::OnToolbarTilePressed() {
   context_->ToggleToolbar();
-}
-
-void GameDashboardMainMenuView::OnGameControlsTilePressed() {
-  // TODO(b/275380943): Add support when controls tile is pressed.
 }
 
 void GameDashboardMainMenuView::OnRecordGameTilePressed() {
@@ -118,6 +254,22 @@ void GameDashboardMainMenuView::OnScreenshotTilePressed() {
   GetWidget()->Close();
   CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(
       context_->game_window());
+}
+
+void GameDashboardMainMenuView::OnGameControlsTilePressed() {
+  // TODO(b/275380943): Add support when controls tile is pressed.
+}
+
+void GameDashboardMainMenuView::OnGameControlsDetailsPressed() {
+  // TODO(b/275380943): Implement the function.
+}
+
+void GameDashboardMainMenuView::OnGameControlsSetUpButtonPressed() {
+  // TODO(b/275380943): Implement the function.
+}
+
+void GameDashboardMainMenuView::OnGameControlsHintSwitchButtonPressed() {
+  // TODO(b/275380943): Implement the function.
 }
 
 void GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed() {
@@ -172,18 +324,22 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
           IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE)));
 }
 
+void GameDashboardMainMenuView::AddFeatureDetailsRows() {
+  auto* feature_details_container =
+      AddChildView(std::make_unique<views::View>());
+  feature_details_container->SetLayoutManager(
+      std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical,
+          /*inside_border_insets=*/gfx::Insets(),
+          /*between_child_spacing=*/2));
+  MaybeAddGameControlsDetailsRow(feature_details_container);
+  MaybeAddScreenSizeSettingsRow(feature_details_container);
+}
+
 void GameDashboardMainMenuView::MaybeAddGameControlsTile(
     views::View* container) {
-  if (!IsArcWindow(context_->game_window())) {
-    return;
-  }
-
-  const ArcGameControlsFlag flags =
-      context_->game_window()->GetProperty(kArcGameControlsFlagsKey);
-  DCHECK(game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kKnown));
-
-  if (!game_dashboard_utils::IsFlagSet(flags,
-                                       ArcGameControlsFlag::kAvailable)) {
+  ArcGameControlsFlag flags = static_cast<ArcGameControlsFlag>(0);
+  if (!IsGameControlsAvailable(flags)) {
     return;
   }
 
@@ -203,16 +359,96 @@ void GameDashboardMainMenuView::MaybeAddGameControlsTile(
   }
 }
 
-void GameDashboardMainMenuView::MaybeAddScreenSizeSettingsRow() {
+void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
+    views::View* container) {
+  ArcGameControlsFlag flags = static_cast<ArcGameControlsFlag>(0);
+  if (!IsGameControlsAvailable(flags)) {
+    return;
+  }
+
+  auto* game_controls_details =
+      container->AddChildView(std::make_unique<FeatureDetailsRow>(
+          base::BindRepeating(
+              &GameDashboardMainMenuView::OnGameControlsDetailsPressed,
+              base::Unretained(this)),
+          RoundedContainer::Behavior::kTopRounded,
+          /*default_drill_in_arrow=*/false,
+          /*icon=*/kGdGameControlsIcon, /*title=*/
+          l10n_util::GetStringUTF16(
+              IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE)));
+  game_controls_details->SetID(VIEW_ID_GD_CONTROLS_DETAILS_ROW);
+
+  const bool is_enabled =
+      game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEnabled);
+  // TODO(b/279117180): Include application name in the subtitle.
+  // TODO(b/274690042): Replace the strings with localized strings.
+  game_controls_details->SetSubtitle(is_enabled ? u"On" : u"Off");
+  game_controls_details->SetEnabled(is_enabled);
+
+  if (game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEmpty)) {
+    // Add "Set up" button for empty state.
+    // TODO(b/274690042): Replace the strings with localized strings.
+    auto* setup_button = game_controls_details->AddCustomizedTailView(
+        std::make_unique<PillButton>(
+            base::BindRepeating(
+                &GameDashboardMainMenuView::OnGameControlsSetUpButtonPressed,
+                base::Unretained(this)),
+            u"Set up", PillButton::Type::kPrimaryWithoutIcon,
+            /*icon=*/nullptr));
+    setup_button->SetID(VIEW_ID_GD_CONTROLS_SETUP_BUTTON);
+    setup_button->SetProperty(views::kMarginsKey,
+                              gfx::Insets::TLBR(0, 20, 0, 0));
+    setup_button->SetEnabled(is_enabled);
+  } else {
+    // Add toggle button and arrow icon for non-empty state.
+    auto* edit_container = game_controls_details->AddCustomizedTailView(
+        std::make_unique<views::View>());
+    edit_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal,
+        /*inside_border_insets=*/gfx::Insets(),
+        /*between_child_spacing=*/18));
+    edit_container->SetProperty(views::kMarginsKey,
+                                gfx::Insets::TLBR(0, 8, 0, 0));
+
+    // Add switch_button to show or hide input mapping hints.
+    auto* switch_button = edit_container->AddChildView(
+        std::make_unique<Switch>(base::BindRepeating(
+            &GameDashboardMainMenuView::OnGameControlsHintSwitchButtonPressed,
+            base::Unretained(this))));
+    switch_button->SetID(VIEW_ID_GD_CONTROLS_HINT_SWITCH);
+    // TODO(b/279117180): Update the accessibility name.
+    switch_button->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
+    switch_button->SetProperty(views::kMarginsKey,
+                               gfx::Insets::TLBR(0, 0, 0, 18));
+    switch_button->SetEnabled(is_enabled);
+    switch_button->SetIsOn(is_enabled ? game_dashboard_utils::IsFlagSet(
+                                            flags, ArcGameControlsFlag::kHint)
+                                      : false);
+    // Add arrow icon.
+    edit_container->AddChildView(
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            kQuickSettingsRightArrowIcon, cros_tokens::kCrosSysOnSurface)));
+  }
+}
+
+void GameDashboardMainMenuView::MaybeAddScreenSizeSettingsRow(
+    views::View* container) {
   if (IsArcWindow(context_->game_window())) {
-    AddChildView(CreateTile(
+    auto* details = container->AddChildView(std::make_unique<FeatureDetailsRow>(
         base::BindRepeating(
             &GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed,
             base::Unretained(this)),
-        /*is_togglable=*/false, FeatureTile::TileType::kPrimary,
-        VIEW_ID_GD_SCREEN_SIZE_TILE, vector_icons::kSelectWindowIcon,
+        RoundedContainer::Behavior::kBottomRounded,
+        /*default_drill_in_arrow=*/true,
+        /*icon=*/vector_icons::kSelectWindowIcon, /*title=*/
         l10n_util::GetStringUTF16(
             IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_TITLE)));
+
+    details->SetID(VIEW_ID_GD_SCREEN_SIZE_TILE);
+    // TODO(b/286455407): Update with final localized string.
+    // TODO(b/286917169): Dynamically updating the sub-title.
+    details->SetSubtitle(u"Landscape");
   }
 }
 
@@ -242,6 +478,20 @@ void GameDashboardMainMenuView::AddUtilityClusterRow() {
                           base::Unretained(this)),
       VIEW_ID_GD_GENERAL_SETTINGS_BUTTON, vector_icons::kSettingsIcon,
       l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_SETTINGS_TOOLTIP)));
+}
+
+bool GameDashboardMainMenuView::IsGameControlsAvailable(
+    ArcGameControlsFlag& flags) const {
+  auto* window = context_->game_window();
+  if (!IsArcWindow(window)) {
+    return false;
+  }
+
+  flags = window->GetProperty(kArcGameControlsFlagsKey);
+  CHECK(game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kKnown));
+
+  return game_dashboard_utils::IsFlagSet(flags,
+                                         ArcGameControlsFlag::kAvailable);
 }
 
 BEGIN_METADATA(GameDashboardMainMenuView, views::BubbleDialogDelegateView)

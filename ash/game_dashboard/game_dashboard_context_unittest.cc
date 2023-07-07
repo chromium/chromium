@@ -18,6 +18,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/switch.h"
 #include "ash/system/unified/feature_tile.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
@@ -78,24 +79,57 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     DCHECK(game_context_);
   }
 
-  // Opens the menu and checks whether the feature tile with `tile_id` is
-  // `expect_exists`, `expect_enabled` and `expect_toggled`. Then closes the
-  // menu in the end.
-  void OpenMenuCheckFeatureTileState(ViewID tile_id,
-                                     bool expect_exists,
-                                     bool expect_enabled = false,
-                                     bool expect_toggled = false) {
+  // Opens the menu and checks Game Controls UI states. Then closes the menu in
+  // the end.
+  // `tile_states` is about feature tile states, {expect_exists, expect_enabled,
+  // expect_toggled}.
+  // `details_row_states` is about Game Controls details row, {expect_exist,
+  // expect_enabled}.
+  // `hint_states` is about hint switch button states, {expect_exists,
+  // expect_enabled, expect_on}.
+  // `setup_exists` shows if setup button exists.
+  void OpenMenuCheckGameControlsUIState(std::array<bool, 3> tile_states,
+                                        std::array<bool, 2> details_row_states,
+                                        std::array<bool, 3> hint_states,
+                                        bool setup_exist) {
     auto* menu_button = GetMainMenuButtonWidget()->GetContentsView();
     // Opens the main menu.
     LeftClickOn(menu_button);
 
-    auto* tile = static_cast<FeatureTile*>(GetMainMenuViewById(tile_id));
-    if (expect_exists) {
+    auto* tile = static_cast<FeatureTile*>(
+        GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
+    if (tile_states[0]) {
       EXPECT_TRUE(tile);
-      EXPECT_EQ(expect_enabled, tile->GetEnabled());
-      EXPECT_EQ(expect_toggled, tile->IsToggled());
+      EXPECT_EQ(tile_states[1], tile->GetEnabled());
+      EXPECT_EQ(tile_states[2], tile->IsToggled());
     } else {
       EXPECT_FALSE(tile);
+    }
+
+    auto* details_row = GetMainMenuViewById(VIEW_ID_GD_CONTROLS_DETAILS_ROW);
+    if (details_row_states[0]) {
+      EXPECT_TRUE(details_row);
+      EXPECT_EQ(details_row_states[1], details_row->GetEnabled());
+    } else {
+      EXPECT_FALSE(details_row);
+    }
+
+    auto* switch_button = static_cast<Switch*>(
+        GetMainMenuViewById(VIEW_ID_GD_CONTROLS_HINT_SWITCH));
+    if (hint_states[0]) {
+      EXPECT_TRUE(switch_button);
+      EXPECT_EQ(hint_states[1], switch_button->GetEnabled());
+      EXPECT_EQ(hint_states[2], switch_button->GetIsOn());
+    } else {
+      EXPECT_FALSE(switch_button);
+    }
+
+    auto* setup_button = static_cast<PillButton*>(
+        GetMainMenuViewById(VIEW_ID_GD_CONTROLS_SETUP_BUTTON));
+    if (setup_exist) {
+      EXPECT_TRUE(setup_button);
+    } else {
+      EXPECT_FALSE(setup_button);
     }
 
     // Closes the main menu.
@@ -136,47 +170,48 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 // - The tile is disabled if Game Controls has empty actions.
 // - The tile can only be toggled when Game Controls has at least one action and
 //   Game Controls feature is enabled.
-TEST_F(GameDashboardContextTest, GameControlsTileState) {
+TEST_F(GameDashboardContextTest, GameControlsMenuState) {
   CreateGameWindow(/*is_arc_window=*/true);
 
   // Game controls is not available.
   game_window_->SetProperty(kArcGameControlsFlagsKey,
                             ArcGameControlsFlag::kKnown);
-  OpenMenuCheckFeatureTileState(VIEW_ID_GD_CONTROLS_TILE,
-                                /*expect_exists=*/false);
+  OpenMenuCheckGameControlsUIState(
+      /*tile_states=*/{/*expect_exists=*/false, /*expect_enabled=*/false,
+                       /*expect_toggled=*/false},
+      /*details_row_states=*/
+      {/*expect_exists=*/false, /*expect_enabled=*/false},
+      /*hint_states=*/
+      {/*expect_exists=*/false, /*expect_enabled=*/false, /*expect_on=*/false},
+      /*setup_exists=*/false);
 
   // Game controls is available, not empty, but not enabled.
   game_window_->SetProperty(
       kArcGameControlsFlagsKey,
       static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
                                        ArcGameControlsFlag::kAvailable));
-  OpenMenuCheckFeatureTileState(VIEW_ID_GD_CONTROLS_TILE,
-                                /*expect_exists=*/true,
-                                /*expect_enabled=*/true,
-                                /*expect_toggled=*/false);
-
-  // Game controls is available, but empty.
-  game_window_->SetProperty(
-      kArcGameControlsFlagsKey,
-      static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
-                                       ArcGameControlsFlag::kAvailable |
-                                       ArcGameControlsFlag::kEmpty));
-  OpenMenuCheckFeatureTileState(VIEW_ID_GD_CONTROLS_TILE,
-                                /*expect_exists=*/true,
-                                /*expect_enabled=*/false,
-                                /*expect_toggled=*/false);
+  OpenMenuCheckGameControlsUIState(
+      /*tile_states=*/{/*expect_exists=*/true, /*expect_enabled=*/true,
+                       /*expect_toggled=*/false},
+      /*details_row_states=*/{/*expect_exists=*/true, /*expect_enabled=*/false},
+      /*hint_states=*/
+      {/*expect_exists=*/true, /*expect_enabled=*/false, /*expect_on=*/false},
+      /*setup_exists=*/false);
 
   // Game controls is available, but empty. Even Game controls is set enabled,
-  // the tile can't be toggled.
+  // the tile is disabled and can't be toggled.
   game_window_->SetProperty(
       kArcGameControlsFlagsKey,
       static_cast<ArcGameControlsFlag>(
           ArcGameControlsFlag::kKnown | ArcGameControlsFlag::kAvailable |
           ArcGameControlsFlag::kEmpty | ArcGameControlsFlag::kEnabled));
-  OpenMenuCheckFeatureTileState(VIEW_ID_GD_CONTROLS_TILE,
-                                /*expect_exists=*/true,
-                                /*expect_enabled=*/false,
-                                /*expect_toggled=*/false);
+  OpenMenuCheckGameControlsUIState(
+      /*tile_states=*/{/*expect_exists=*/true, /*expect_enabled=*/false,
+                       /*expect_toggled=*/false},
+      /*details_row_states=*/{/*expect_exists=*/true, /*expect_enabled=*/true},
+      /*hint_states=*/
+      {/*expect_exists=*/false, /*expect_enabled=*/false, /*expect_on=*/false},
+      /*setup_states=*/true);
 
   // Game controls is available, not empty and enabled.
   game_window_->SetProperty(
@@ -184,10 +219,13 @@ TEST_F(GameDashboardContextTest, GameControlsTileState) {
       static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
                                        ArcGameControlsFlag::kAvailable |
                                        ArcGameControlsFlag::kEnabled));
-  OpenMenuCheckFeatureTileState(VIEW_ID_GD_CONTROLS_TILE,
-                                /*expect_exists=*/true,
-                                /*expect_enabled=*/true,
-                                /*expect_toggled=*/true);
+  OpenMenuCheckGameControlsUIState(
+      /*tile_states=*/{/*expect_exists=*/true, /*expect_enabled=*/true,
+                       /*expect_toggled=*/true},
+      /*details_row_states=*/{/*expect_exists=*/true, /*expect_enabled=*/true},
+      /*hint_states=*/
+      {/*expect_exists=*/true, /*expect_enabled=*/true, /*expect_on=*/false},
+      /*setup_states=*/false);
 }
 
 // -----------------------------------------------------------------------------

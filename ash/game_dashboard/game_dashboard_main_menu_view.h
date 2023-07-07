@@ -5,6 +5,7 @@
 #ifndef ASH_GAME_DASHBOARD_GAME_DASHBOARD_MAIN_MENU_VIEW_H_
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_MAIN_MENU_VIEW_H_
 
+#include "ash/public/cpp/arc_game_controls_flag.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -20,21 +21,31 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(GameDashboardMainMenuView);
 
   explicit GameDashboardMainMenuView(GameDashboardContext* context);
+
+  GameDashboardMainMenuView(views::Widget* main_menu_button_widget,
+                            aura::Window* game_window);
   GameDashboardMainMenuView(const GameDashboardMainMenuView&) = delete;
   GameDashboardMainMenuView& operator=(const GameDashboardMainMenuView) =
       delete;
   ~GameDashboardMainMenuView() override;
 
  private:
+  class FeatureDetailsRow;
+
   // Callbacks for the tiles and buttons in the main menu view.
   // Handles showing and hiding the toolbar.
   void OnToolbarTilePressed();
-  // Handles disable or enable Game Controls.
-  void OnGameControlsTilePressed();
   // Handles toggling the game recording.
   void OnRecordGameTilePressed();
   // Handles taking a screenshot of the game window when pressed.
   void OnScreenshotTilePressed();
+
+  // Handles functions for Game Controls buttons.
+  void OnGameControlsTilePressed();
+  void OnGameControlsDetailsPressed();
+  void OnGameControlsSetUpButtonPressed();
+  void OnGameControlsHintSwitchButtonPressed();
+
   // Handles when the Screen Size Settings is pressed.
   void OnScreenSizeSettingsButtonPressed();
   // Opens the feedback form with preset information.
@@ -48,17 +59,27 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
   // access common functionality.
   void AddShortcutTilesRow();
 
+  // Adds feature details rows, for example, including Game Controls or window
+  // size.
+  void AddFeatureDetailsRows();
+
   // Adds Game Controls feature tile in `container` if it is the ARC game window
   // and Game Controls is available.
   void MaybeAddGameControlsTile(views::View* container);
 
+  // Adds menu controls row for Game Controls.
+  void MaybeAddGameControlsDetailsRow(views::View* container);
+
   // Adds a row to access a settings page controlling the screen size if the
   // given game window is an ARC app.
-  void MaybeAddScreenSizeSettingsRow();
+  void MaybeAddScreenSizeSettingsRow(views::View* container);
 
   // Adds the dashboard cluster (containing feedback, settings, and help
   // buttons) to the Game Controls tile view.
   void AddUtilityClusterRow();
+
+  // Returns true if Game Controls is available and saves the flags in `flags`.
+  bool IsGameControlsAvailable(ArcGameControlsFlag& flags) const;
 
   // Allows this class to access `GameDashboardContext` owned functions/objects.
   const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
