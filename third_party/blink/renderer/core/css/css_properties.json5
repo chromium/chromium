@@ -5695,17 +5695,6 @@
       typedom_types: ["Keyword", "Length"],
     },
     {
-      name: "-webkit-highlight",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      inherited: true,
-      field_group: "*",
-      field_template: "external",
-      include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
-      default_value: "g_null_atom",
-      type_name: "AtomicString",
-      converter: "ConvertString<CSSValueID::kNone>",
-    },
-    {
       name: "hyphenate-character",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,

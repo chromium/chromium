@@ -14,7 +14,6 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 -webkit-box-pack: start
 -webkit-box-reflect: none
 -webkit-font-smoothing: auto
--webkit-highlight: none
 -webkit-line-break: auto
 -webkit-line-clamp: none
 -webkit-locale: auto

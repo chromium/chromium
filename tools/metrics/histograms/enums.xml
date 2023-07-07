@@ -69060,7 +69060,7 @@ Called by update_use_counter_css.py.-->
   <int value="248" label="grid-column"/>
   <int value="249" label="grid-row"/>
   <int value="250" label="grid-auto-flow"/>
-  <int value="251" label="webkit-highlight"/>
+  <int value="251" label="webkit-highlight (obsolete)"/>
   <int value="252" label="alias-webkit-hyphenate-character"/>
   <int value="253" label="webkit-hyphenate-limit-after (obsolete)"/>
   <int value="254" label="webkit-hyphenate-limit-before (obsolete)"/>

@@ -414,7 +414,6 @@
         "-webkit-margin-collapse",
         "text-orientation",
         "-webkit-hyphenate-character",
-        "-webkit-highlight",
         "padding-block-start",
         "cx",
         "padding-block-end",

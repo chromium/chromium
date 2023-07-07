@@ -303,7 +303,7 @@ enum CSSSampleId {
     kGridColumn = 248,
     kGridRow = 249,
     kGridAutoFlow = 250,
-    kWebkitHighlight = 251,
+    // kWebkitHighlight = 251,
     kAliasWebkitHyphenateCharacter = 252,
     // kWebkitHyphenateLimitAfter = 253,
     // kWebkitHyphenateLimitBefore = 254,

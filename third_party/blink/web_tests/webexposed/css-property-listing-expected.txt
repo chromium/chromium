@@ -14,7 +14,6 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-box-pack
     -webkit-box-reflect
     -webkit-font-smoothing
-    -webkit-highlight
     -webkit-line-break
     -webkit-line-clamp
     -webkit-locale
