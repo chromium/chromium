@@ -30,6 +30,9 @@ class WebStateList;
 // The bottom sheet suggestions consumer.
 @property(nonatomic, weak) id<PaymentsSuggestionBottomSheetConsumer> consumer;
 
+// Whether the bottom sheet has any credit cards to display.
+@property(nonatomic, readonly) BOOL hasCreditCards;
+
 // Disconnects the mediator.
 - (void)disconnect;
 

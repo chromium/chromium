@@ -81,11 +81,18 @@
   bool _needsRefocus;
 }
 
+#pragma mark - Properties
+
+@synthesize hasCreditCards = _hasCreditCards;
+
+#pragma mark - Initialization
+
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                  personalDataManager:
                      (autofill::PersonalDataManager*)personalDataManager {
   if (self = [super init]) {
     _needsRefocus = true;
+    _hasCreditCards = NO;
     _webStateList = webStateList;
     _personalDataManager = personalDataManager;
 
@@ -110,6 +117,10 @@
   CHECK(_personalDataManager);
   return _personalDataManager->GetCreditCardByGUID(
       base::SysNSStringToUTF8(identifier));
+}
+
+- (BOOL)hasCreditCards {
+  return _hasCreditCards;
 }
 
 #pragma mark - Accessors
@@ -145,6 +156,7 @@
   }
 
   [consumer setCreditCardData:creditCardData showGooglePayLogo:hasNonLocalCard];
+  _hasCreditCards = YES;
 }
 
 #pragma mark - PaymentsSuggestionBottomSheetDelegate

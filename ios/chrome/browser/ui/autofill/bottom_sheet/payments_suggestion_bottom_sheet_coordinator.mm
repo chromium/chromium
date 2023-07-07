@@ -63,6 +63,16 @@
                                                                        URL:URL];
   self.mediator.consumer = self.viewController;
   self.viewController.delegate = self.mediator;
+
+  // This is a fallback since the code enabling the bottom sheet happens earlier
+  // than the code which retrieves credit card suggestions for the bottom sheet
+  // and other operations which may modify the list of available credit cards
+  // can happen between these two operations.
+  if (!self.mediator.hasCreditCards) {
+    [self.mediator disableBottomSheet];
+    return;
+  }
+
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
                                       completion:nil];
