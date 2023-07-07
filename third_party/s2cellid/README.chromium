@@ -3,8 +3,9 @@ Short Name: s2cellid
 URL: https://github.com/google/s2geometry
 Version: 0
 License: License: Apache Version 2.0
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 License Android Compatible: yes
 
 Description:
