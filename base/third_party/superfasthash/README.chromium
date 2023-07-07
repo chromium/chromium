@@ -6,6 +6,7 @@ Date: 2012-02-21
 License: BSD
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 A fast string hashing algorithm.
