@@ -351,8 +351,6 @@ HttpNetworkSessionParams SpdySessionDependencies::CreateSessionParams(
   params.enable_user_alternate_protocol_ports =
       session_deps->enable_user_alternate_protocol_ports;
   params.enable_quic = session_deps->enable_quic;
-  params.enable_server_push_cancellation =
-      session_deps->enable_server_push_cancellation;
   params.spdy_session_max_recv_window_size =
       session_deps->session_max_recv_window_size;
   params.spdy_session_max_queued_capped_frames =

@@ -491,18 +491,6 @@ void SpdyStream::OnHeadersReceived(
   }
 }
 
-void SpdyStream::OnPushPromiseHeadersReceived(spdy::Http2HeaderBlock headers,
-                                              GURL url) {
-  CHECK(!request_headers_valid_);
-  CHECK_EQ(io_state_, STATE_IDLE);
-  CHECK_EQ(type_, SPDY_PUSH_STREAM);
-  DCHECK(!delegate_);
-
-  io_state_ = STATE_RESERVED_REMOTE;
-  request_headers_ = std::move(headers);
-  request_headers_valid_ = true;
-}
-
 void SpdyStream::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
   DCHECK(session_->IsStreamActive(stream_id_));
 

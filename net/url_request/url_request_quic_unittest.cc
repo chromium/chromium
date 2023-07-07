@@ -108,7 +108,6 @@ class URLRequestQuicTest
         HostPortPair(kTestServerHost, 443));
     context_builder_->set_quic_context(std::move(quic_context));
     params.enable_quic = true;
-    params.enable_server_push_cancellation = true;
     context_builder_->set_host_resolver(std::move(host_resolver_));
     context_builder_->set_http_network_session_params(params);
     context_builder_->SetCertVerifier(std::move(cert_verifier));

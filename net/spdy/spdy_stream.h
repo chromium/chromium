@@ -269,11 +269,6 @@ class NET_EXPORT_PRIVATE SpdyStream {
                          base::Time response_time,
                          base::TimeTicks recv_first_byte_time);
 
-  // Called by the SpdySession when a frame carrying request headers opening a
-  // push stream is received. Stream transits to STATE_RESERVED_REMOTE state.
-  // TODO(https://crbug.com/1426477): Remove.
-  void OnPushPromiseHeadersReceived(spdy::Http2HeaderBlock headers, GURL url);
-
   // Called by the SpdySession when response data has been received
   // for this stream.  This callback may be called multiple times as
   // data arrives from the network, and will never be called prior to

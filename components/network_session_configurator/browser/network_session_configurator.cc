@@ -489,13 +489,6 @@ quic::ParsedQuicVersionVector GetQuicVersions(
   return filtered_versions;
 }
 
-bool ShouldEnableServerPushCancelation(
-    const VariationParameters& quic_trial_params) {
-  return base::EqualsCaseInsensitiveASCII(
-      GetVariationParam(quic_trial_params, "enable_server_push_cancellation"),
-      "true");
-}
-
 bool AreQuicParamsValid(const base::CommandLine& command_line,
                         base::StringPiece quic_trial_group,
                         const VariationParameters& quic_trial_params) {
@@ -552,9 +545,6 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
     // Skip parsing of invalid params.
     return;
   }
-
-  params->enable_server_push_cancellation =
-      ShouldEnableServerPushCancelation(quic_trial_params);
 
   quic_params->retry_without_alt_svc_on_quic_errors =
       ShouldRetryWithoutAltSvcOnQuicErrors(quic_trial_params);

@@ -78,7 +78,6 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_EQ(1250u, quic_params_.max_packet_length);
   EXPECT_EQ(quic::QuicTagVector(), quic_params_.connection_options);
   EXPECT_EQ(quic::QuicTagVector(), quic_params_.client_connection_options);
-  EXPECT_FALSE(params_.enable_server_push_cancellation);
   EXPECT_FALSE(quic_params_.close_sessions_on_ip_change);
   EXPECT_FALSE(quic_params_.goaway_sessions_on_ip_change);
   EXPECT_EQ(net::kIdleConnectionTimeout, quic_params_.idle_connection_timeout);
@@ -409,17 +408,6 @@ TEST_F(NetworkSessionConfiguratorTest,
   ParseFieldTrials();
   EXPECT_EQ(base::Seconds(quic::kInitialIdleTimeoutSecs),
             quic_params_.max_idle_time_before_crypto_handshake);
-}
-
-TEST_F(NetworkSessionConfiguratorTest, EnableServerPushCancellation) {
-  std::map<std::string, std::string> field_trial_params;
-  field_trial_params["enable_server_push_cancellation"] = "true";
-  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
-  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
-
-  ParseFieldTrials();
-
-  EXPECT_TRUE(params_.enable_server_push_cancellation);
 }
 
 TEST_F(NetworkSessionConfiguratorTest, QuicEstimateInitialRtt) {

@@ -86,8 +86,6 @@ struct NET_EXPORT HttpNetworkSessionParams {
   HttpNetworkSessionParams(const HttpNetworkSessionParams& other);
   ~HttpNetworkSessionParams();
 
-  // TODO(https://crbug.com/1426477): Remove.
-  bool enable_server_push_cancellation = false;
   HostMappingRules host_mapping_rules;
   bool ignore_certificate_errors = false;
   uint16_t testing_fixed_http_port = 0;
