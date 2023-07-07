@@ -52,8 +52,6 @@ import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Set;
 
 /**
@@ -419,18 +417,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
      */
     @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     private String getClientPackageNameFromIdentitySharing() {
-        if (!BuildCompat.isAtLeastU()) return null;
-
-        // Activity.getLaunchedFromPackage()
-        // TODO(crbug.com/1423489): Replace the reflection with the normal API.
-        try {
-            Method method = Activity.class.getMethod("getLaunchedFromPackage");
-            return (String) method.invoke(mActivity);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            Log.e(TAG, "Reflection failure: " + e);
-            assert false : "Activity.getLaunchedFromPackage() failed.";
-        }
-        return null;
+        return BuildCompat.isAtLeastU() ? mActivity.getLaunchedFromPackage() : null;
     }
 
     /**
