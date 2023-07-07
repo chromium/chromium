@@ -6,6 +6,7 @@ Revision: 9108981ca80b3c6788fa598708dcf3cb10220ad7
 License: MIT
 License File: LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 This project contains a header file (webauthn.h) for the native Windows 10 & 11
