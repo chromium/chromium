@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Telemetry Services are ash-chrome only")
+
+source_set("routines") {
+  sources = [
+    "telemetry_diagnostic_routine_service_ash.cc",
+    "telemetry_diagnostic_routine_service_ash.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/crosapi/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}

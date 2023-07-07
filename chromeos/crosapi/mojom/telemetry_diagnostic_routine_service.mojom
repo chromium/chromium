@@ -1,0 +1,23 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// API and definitions exposed by the Telemetry Routine Services. This API is
+// normally consumed by the Telemetry Extension APIs implementation.
+
+// Note: this is a subset of the cros_healthd routine service interface which is
+// located in
+// //chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom
+// This interface serves as PII filtering and data post-processing service
+// between the source (cros_healthd) and the clients
+// (third-party telemetry extensions).
+
+module crosapi.mojom;
+
+import "chromeos/crosapi/mojom/telemetry_extension_exception.mojom";
+
+// Diagnostic Routines interface exposed to Lacros, implemented in Ash.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable, Uuid="0c7a9109-17eb-459d-82cd-60903bba315d"]
+interface TelemetryDiagnosticRoutinesService {};

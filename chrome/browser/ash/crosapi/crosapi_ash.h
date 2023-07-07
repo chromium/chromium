@@ -17,6 +17,7 @@
 #include "chromeos/crosapi/mojom/emoji_picker.mojom-forward.h"
 #include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "media/gpu/buildflags.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -31,6 +32,7 @@ namespace ash {
 class DiagnosticsServiceAsh;
 class ProbeServiceAsh;
 class SmartReaderManagerAsh;
+class TelemetryDiagnosticsRoutineServiceAsh;
 class TelemetryEventServiceAsh;
 class VideoConferenceManagerAsh;
 }  // namespace ash
@@ -327,6 +329,9 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::SyncService> receiver) override;
   void BindTaskManager(
       mojo::PendingReceiver<mojom::TaskManager> receiver) override;
+  void BindTelemetryDiagnosticRoutinesService(
+      mojo::PendingReceiver<mojom::TelemetryDiagnosticRoutinesService> receiver)
+      override;
   void BindTelemetryEventService(
       mojo::PendingReceiver<mojom::TelemetryEventService> receiver) override;
   void BindTelemetryProbeService(
@@ -596,6 +601,8 @@ class CrosapiAsh : public mojom::Crosapi {
 #if BUILDFLAG(USE_CUPS)
   std::unique_ptr<PrintingMetricsAsh> printing_metrics_ash_;
 #endif  // BUILDFLAG(USE_CUPS)
+  std::unique_ptr<ash::TelemetryDiagnosticsRoutineServiceAsh>
+      telemetry_diagnostic_routine_service_ash_;
   std::unique_ptr<ash::TelemetryEventServiceAsh> telemetry_event_service_ash_;
   std::unique_ptr<ash::ProbeServiceAsh> probe_service_ash_;
   std::unique_ptr<RemotingAsh> remoting_ash_;
