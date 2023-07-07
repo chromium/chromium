@@ -7,6 +7,7 @@ Revision: e0820dcfebfb4df925be2e37ad8f56c00dc624f5
 License: Chromium OS BSD
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 License Android Compatible: yes
 
 Description:
