@@ -6911,15 +6911,6 @@
                     "enable_features": [
                         "BringYourOwnTabsIOS"
                     ]
-                },
-                {
-                    "name": "EnabledWithBottomMessage",
-                    "params": {
-                        "bottom-message": "true"
-                    },
-                    "enable_features": [
-                        "BringYourOwnTabsIOS"
-                    ]
                 }
             ]
         }
