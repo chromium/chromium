@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
@@ -40,9 +41,12 @@ std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
 
 }  // namespace
 
-GameDashboardToolbarView::GameDashboardToolbarView(aura::Window* game_window)
-    : game_window_(game_window) {
-  DCHECK(game_window_);
+GameDashboardToolbarView::GameDashboardToolbarView(
+    GameDashboardContext* context)
+    : context_(context) {
+  DCHECK(context_);
+  DCHECK(context_->game_window());
+
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   SetOrientation(views::BoxLayout::Orientation::kVertical);
@@ -56,7 +60,13 @@ GameDashboardToolbarView::GameDashboardToolbarView(aura::Window* game_window)
 GameDashboardToolbarView::~GameDashboardToolbarView() = default;
 
 void GameDashboardToolbarView::OnGamepadButtonPressed() {
-  // TODO(b/283981592): Toggle toolbar expansion support.
+  is_expanded_ = !is_expanded_;
+  for (View* child : children()) {
+    if (child != gamepad_button_) {
+      child->SetVisible(is_expanded_);
+    }
+  }
+  context_->MaybeUpdateToolbarWidgetBounds();
 }
 
 void GameDashboardToolbarView::OnRecordButtonPressed() {
@@ -64,11 +74,13 @@ void GameDashboardToolbarView::OnRecordButtonPressed() {
 }
 
 void GameDashboardToolbarView::OnScreenshotButtonPressed() {
-  CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(game_window_);
+  CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(
+      context_->game_window());
 }
 
 void GameDashboardToolbarView::AddShortcutTiles() {
-  AddChildView(CreateIconButton(
+  // The gamepad button should always be the first icon added to the toolbar.
+  gamepad_button_ = AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardToolbarView::OnGamepadButtonPressed,
                           base::Unretained(this)),
       &vector_icons::kVideogameAssetOutlineIcon,
@@ -78,7 +90,7 @@ void GameDashboardToolbarView::AddShortcutTiles() {
 
   // TODO(b/273641467): Add toggle Game Controls support.
 
-  // TODO(b/273641132): Filter out record game button based on device info.
+  // TODO(b/273641250): Filter out record game button based on device info.
   AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardToolbarView::OnRecordButtonPressed,
                           base::Unretained(this)),

@@ -26,9 +26,7 @@
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "extensions/common/constants.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
-#include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/widget/widget.h"
 
@@ -107,6 +105,17 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   IconButton* GetToolbarScreenshotButton() {
     return GetToolbarViewById(base::to_underlying(
         GameDashboardToolbarView::ToolbarViewId::kScreenshotButton));
+  }
+
+  IconButton* GetToolbarGamepadButton() {
+    return GetToolbarViewById(base::to_underlying(
+        GameDashboardToolbarView::ToolbarViewId::kGamepadButton));
+  }
+
+  int GetToolbarHeight() {
+    CHECK(GetToolbarWidget()) << "The toolbar must be opened first before "
+                                 "trying to retrieve its height.";
+    return GetToolbarWidget()->GetContentsView()->GetPreferredSize().height();
   }
 
  protected:
@@ -418,6 +427,39 @@ TEST_P(GameTypeGameDashboardContextTest, TakeScreenshotFromToolbar) {
   const auto file_path = WaitForCaptureFileToBeSaved();
   const gfx::Image image = ReadAndDecodeImageFile(file_path);
   EXPECT_EQ(image.Size(), game_window_->GetBoundsInScreen().size());
+}
+
+// Verifies clicking the toolbar's gamepad button will expand and collapse the
+// toolbar.
+TEST_P(GameTypeGameDashboardContextTest, CollapseAndExpandToolbarWidget) {
+  if (IsArcGame()) {
+    game_window_->SetProperty(kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
+  // Retrieve the toolbar via the main menu.
+  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
+  LeftClickOn(
+      static_cast<FeatureTile*>(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE)));
+  ASSERT_TRUE(GetToolbarWidget());
+  const int initial_height = GetToolbarHeight();
+  EXPECT_NE(initial_height, 0);
+
+  // Click on the gamepad button within the toolbar.
+  IconButton* gamepad_button = GetToolbarGamepadButton();
+  ASSERT_TRUE(gamepad_button);
+  LeftClickOn(gamepad_button);
+  int updated_height = GetToolbarHeight();
+
+  // Verify that the initial y coordinate of the toolbar was larger than the
+  // updated y value.
+  EXPECT_GT(initial_height, updated_height);
+
+  // Click on the gamepad button within the toolbar again.
+  LeftClickOn(gamepad_button);
+  updated_height = GetToolbarHeight();
+
+  // Verify that the toolbar is back to its initially expanded height.
+  EXPECT_EQ(initial_height, updated_height);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

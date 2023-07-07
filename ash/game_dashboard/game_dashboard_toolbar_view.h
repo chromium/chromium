@@ -9,6 +9,9 @@
 
 namespace ash {
 
+class GameDashboardContext;
+class IconButton;
+
 // GameDashboardToolbarView is the movable toolbar that's attached to the game
 // window. It contains various quick action tiles for users to access without
 // having to open the entire main menu view.
@@ -16,7 +19,7 @@ class GameDashboardToolbarView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(GameDashboardToolbarView);
 
-  explicit GameDashboardToolbarView(aura::Window* game_window);
+  explicit GameDashboardToolbarView(GameDashboardContext* context);
   GameDashboardToolbarView(const GameDashboardToolbarView&) = delete;
   GameDashboardToolbarView& operator=(const GameDashboardToolbarView) = delete;
   ~GameDashboardToolbarView() override;
@@ -33,7 +36,9 @@ class GameDashboardToolbarView : public views::BoxLayoutView {
   friend class GameDashboardContextTest;
 
   // Callbacks for the tiles and buttons in the toolbar view.
-  // Expands or collapses the toolbar.
+  // Expands or collapses the toolbar by iterating through the toolbar's
+  // children and updating their visibility. The `gamepad_button_` is always
+  // visible since it expands/collapses the toolbar.
   void OnGamepadButtonPressed();
   // Starts or stops recording the game window.
   void OnRecordButtonPressed();
@@ -43,7 +48,14 @@ class GameDashboardToolbarView : public views::BoxLayoutView {
   // Adds a list of shortcut tiles to the toolbar view.
   void AddShortcutTiles();
 
-  const raw_ptr<aura::Window, ExperimentalAsh> game_window_;
+  // The topmost `IconButton` in the toolbar's collection, which stays visible
+  // in both the expanded and collapsed toolbar states.
+  raw_ptr<IconButton, ExperimentalAsh> gamepad_button_;
+
+  // The current state indicating if the toolbar view is expanded or collapsed.
+  bool is_expanded_ = true;
+
+  const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
 };
 
 }  // namespace ash

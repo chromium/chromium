@@ -43,6 +43,10 @@ class GameDashboardContext {
   // Toggles the creation/deletion of the toolbar within the game window.
   void ToggleToolbar();
 
+  // Conditionally, updates the toolbar widget's bounds and location, relative
+  // to the `game_window_`.
+  void MaybeUpdateToolbarWidgetBounds();
+
  private:
   // Indicator for the 4 quadrants that the toolbar is able to be placed.
   enum ToolbarSnapLocation { kTopLeft, kTopRight, kBottomLeft, kBottomRight };
@@ -64,10 +68,6 @@ class GameDashboardContext {
   // Determines the toolbar's physical location on screen based on the
   // `toolbar_snap_location_` value.
   const gfx::Rect CalculateToolbarWidgetBounds();
-
-  // Conditionally, updates the toolbar widget's bounds and location, relative
-  // to the `game_window_`.
-  void MaybeUpdateToolbarWidgetBounds();
 
   const raw_ptr<aura::Window, ExperimentalAsh> game_window_;
 

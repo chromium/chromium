@@ -95,13 +95,19 @@ void GameDashboardContext::ToggleToolbar() {
   if (!toolbar_widget_) {
     toolbar_widget_ = CreateTransientChildWidget(
         game_window_, "GameDashboardToolbar",
-        std::make_unique<GameDashboardToolbarView>(game_window_));
+        std::make_unique<GameDashboardToolbarView>(this));
     DCHECK_EQ(game_window_,
               wm::GetTransientParent(toolbar_widget_->GetNativeWindow()));
     MaybeUpdateToolbarWidgetBounds();
     toolbar_widget_->Show();
   } else {
     toolbar_widget_.reset();
+  }
+}
+
+void GameDashboardContext::MaybeUpdateToolbarWidgetBounds() {
+  if (toolbar_widget_) {
+    toolbar_widget_->SetBounds(CalculateToolbarWidgetBounds());
   }
 }
 
@@ -181,12 +187,6 @@ const gfx::Rect GameDashboardContext::CalculateToolbarWidgetBounds() {
   }
 
   return gfx::Rect(origin, preferred_size);
-}
-
-void GameDashboardContext::MaybeUpdateToolbarWidgetBounds() {
-  if (toolbar_widget_) {
-    toolbar_widget_->SetBounds(CalculateToolbarWidgetBounds());
-  }
 }
 
 }  // namespace ash
