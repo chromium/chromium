@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_router_condition.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_router_rule.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_router_source_enum.h"
+#include "third_party/blink/renderer/core/fetch/request_util.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -67,95 +68,14 @@ RouterRequestConditionToBlink(blink::RouterCondition* v8_condition) {
                          AtomicString(v8_condition->requestMethod()))
                          .Latin1();
   }
-  // TODO(crbug.com/1371756): move the following conversion to the shared
-  // location.
-  // See:
-  // https://chromium-review.googlesource.com/c/chromium/src/+/4659636/comment/b7bb1d12_c0272e11/
   if (v8_condition->hasRequestMode()) {
     request_condition_exist = true;
-    switch (v8_condition->requestMode().AsEnum()) {
-      case blink::V8RequestMode::Enum::kSameOrigin:
-        request.mode = network::mojom::RequestMode::kSameOrigin;
-        break;
-      case blink::V8RequestMode::Enum::kNoCors:
-        request.mode = network::mojom::RequestMode::kNoCors;
-        break;
-      case blink::V8RequestMode::Enum::kCors:
-        request.mode = network::mojom::RequestMode::kCors;
-        break;
-      case blink::V8RequestMode::Enum::kNavigate:
-        request.mode = network::mojom::RequestMode::kNavigate;
-        break;
-    }
+    request.mode = V8RequestModeToMojom(v8_condition->requestMode());
   }
-  // TODO(crbug.com/1371756): move the following conversion to the shared
-  // location.
-  // See:
-  // https://chromium-review.googlesource.com/c/chromium/src/+/4659636/comment/b7bb1d12_c0272e11/
   if (v8_condition->hasRequestDestination()) {
     request_condition_exist = true;
-    switch (v8_condition->requestDestination().AsEnum()) {
-      case blink::V8RequestDestination::Enum::k:
-        request.destination = network::mojom::RequestDestination::kEmpty;
-        break;
-      case blink::V8RequestDestination::Enum::kAudio:
-        request.destination = network::mojom::RequestDestination::kAudio;
-        break;
-      case blink::V8RequestDestination::Enum::kAudioworklet:
-        request.destination = network::mojom::RequestDestination::kAudioWorklet;
-        break;
-      case blink::V8RequestDestination::Enum::kDocument:
-        request.destination = network::mojom::RequestDestination::kDocument;
-        break;
-      case blink::V8RequestDestination::Enum::kEmbed:
-        request.destination = network::mojom::RequestDestination::kEmbed;
-        break;
-      case blink::V8RequestDestination::Enum::kFont:
-        request.destination = network::mojom::RequestDestination::kFont;
-        break;
-      case blink::V8RequestDestination::Enum::kFrame:
-        request.destination = network::mojom::RequestDestination::kFrame;
-        break;
-      case blink::V8RequestDestination::Enum::kIFrame:
-        request.destination = network::mojom::RequestDestination::kIframe;
-        break;
-      case blink::V8RequestDestination::Enum::kImage:
-        request.destination = network::mojom::RequestDestination::kImage;
-        break;
-      case blink::V8RequestDestination::Enum::kManifest:
-        request.destination = network::mojom::RequestDestination::kManifest;
-        break;
-      case blink::V8RequestDestination::Enum::kObject:
-        request.destination = network::mojom::RequestDestination::kObject;
-        break;
-      case blink::V8RequestDestination::Enum::kPaintworklet:
-        request.destination = network::mojom::RequestDestination::kPaintWorklet;
-        break;
-      case blink::V8RequestDestination::Enum::kReport:
-        request.destination = network::mojom::RequestDestination::kReport;
-        break;
-      case blink::V8RequestDestination::Enum::kScript:
-        request.destination = network::mojom::RequestDestination::kScript;
-        break;
-      case blink::V8RequestDestination::Enum::kSharedworker:
-        request.destination = network::mojom::RequestDestination::kSharedWorker;
-        break;
-      case blink::V8RequestDestination::Enum::kStyle:
-        request.destination = network::mojom::RequestDestination::kStyle;
-        break;
-      case blink::V8RequestDestination::Enum::kTrack:
-        request.destination = network::mojom::RequestDestination::kTrack;
-        break;
-      case blink::V8RequestDestination::Enum::kVideo:
-        request.destination = network::mojom::RequestDestination::kVideo;
-        break;
-      case blink::V8RequestDestination::Enum::kWorker:
-        request.destination = network::mojom::RequestDestination::kWorker;
-        break;
-      case blink::V8RequestDestination::Enum::kXslt:
-        request.destination = network::mojom::RequestDestination::kXslt;
-        break;
-    }
+    request.destination =
+        V8RequestDestinationToMojom(v8_condition->requestDestination());
   }
 
   if (!request_condition_exist) {
