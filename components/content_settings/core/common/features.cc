@@ -30,7 +30,7 @@ namespace features {
 // Enables unused site permission module in Safety Check.
 BASE_FEATURE(kSafetyCheckUnusedSitePermissions,
              "SafetyCheckUnusedSitePermissions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta>
     kSafetyCheckUnusedSitePermissionsRepeatedUpdateInterval{
