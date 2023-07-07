@@ -274,27 +274,6 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, AddContentScriptWithCode) {
       base::Value(GetTestUrl("empty.html").spec())));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Incognito on CrOS is tested by the usual AddContentScript - OOBE context is
-// running inside incognito (signin) profile.
-
-// TODO(crbug.com/662673) Flaky
-#define MAYBE_AddContentScriptIncognito DISABLED_AddContentScriptIncognito
-// Right now we only have incognito WebUI on CrOS, but this should
-// theoretically work for all platforms.
-IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest,
-                       MAYBE_AddContentScriptIncognito) {
-  Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GetWebViewEnabledWebUIURL());
-
-  SetWebUIInstance(
-      incognito_browser->tab_strip_model()->GetActiveWebContents()->GetWebUI());
-
-  ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
-      "testAddContentScript", base::Value(GetTestUrl("empty.html").spec())));
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, ContextMenuInspectElement) {
   content::ContextMenuParams params;
   content::WebContents* web_contents =
