@@ -667,7 +667,7 @@ void DIPSWebContentsObserver::OnServiceWorkerAccessed(
 
   const absl::optional<GURL> fpu = GetFirstPartyURL(render_frame_host);
   if (fpu.has_value()) {
-    detector_.OnServiceWorkerAccessed(fpu.value());
+    detector_.OnWorkerInitialized(fpu.value());
   }
 }
 
@@ -684,10 +684,43 @@ void DIPSWebContentsObserver::OnServiceWorkerAccessed(
     return;
   }
 
-  detector_.OnServiceWorkerAccessed(fpu.value());
+  detector_.OnWorkerInitialized(fpu.value());
 }
 
-void DIPSBounceDetector::OnServiceWorkerAccessed(const GURL& url) {
+void DIPSWebContentsObserver::OnClientAdded(
+    const blink::SharedWorkerToken& token,
+    content::GlobalRenderFrameHostId render_frame_host_id) {
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromID(render_frame_host_id);
+
+  if (!IsInPrimaryPage(render_frame_host)) {
+    return;
+  }
+
+  const absl::optional<GURL> fpu = GetFirstPartyURL(render_frame_host);
+  if (fpu.has_value()) {
+    detector_.OnWorkerInitialized(fpu.value());
+  }
+}
+
+void DIPSWebContentsObserver::OnWorkerCreated(
+    const blink::DedicatedWorkerToken& worker_token,
+    int worker_process_id,
+    content::GlobalRenderFrameHostId ancestor_render_frame_host_id) {
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromID(ancestor_render_frame_host_id);
+
+  if (!IsInPrimaryPage(render_frame_host)) {
+    return;
+  }
+
+  const absl::optional<GURL> fpu = GetFirstPartyURL(render_frame_host);
+  if (fpu.has_value()) {
+    detector_.OnWorkerInitialized(fpu.value());
+  }
+}
+
+void DIPSBounceDetector::OnWorkerInitialized(const GURL& url) {
   delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, clock_->Now());
 }
 

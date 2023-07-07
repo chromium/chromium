@@ -24,6 +24,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -133,7 +134,9 @@ void AppendSitesInReport(std::vector<std::string>* reports,
 class WCOCallbackLogger
     : public content_settings::PageSpecificContentSettings::SiteDataObserver,
       public content::WebContentsObserver,
-      public content::WebContentsUserData<WCOCallbackLogger> {
+      public content::WebContentsUserData<WCOCallbackLogger>,
+      public content::SharedWorkerService::Observer,
+      public content::DedicatedWorkerService::Observer {
  public:
   WCOCallbackLogger(const WCOCallbackLogger&) = delete;
   WCOCallbackLogger& operator=(const WCOCallbackLogger&) = delete;
@@ -169,6 +172,36 @@ class WCOCallbackLogger
       const content_settings::AccessDetails& access_details) override;
   void OnStatefulBounceDetected() override;
   // End SiteDataObserver overrides.
+
+  // Start SharedWorkerService.Observer overrides:
+  void OnClientAdded(
+      const blink::SharedWorkerToken& token,
+      content::GlobalRenderFrameHostId render_frame_host_id) override;
+  void OnWorkerCreated(const blink::SharedWorkerToken& token,
+                       int worker_process_id,
+                       const base::UnguessableToken& dev_tools_token) override {
+  }
+  void OnBeforeWorkerDestroyed(const blink::SharedWorkerToken& token) override {
+  }
+  void OnClientRemoved(
+      const blink::SharedWorkerToken& token,
+      content::GlobalRenderFrameHostId render_frame_host_id) override {}
+  using content::SharedWorkerService::Observer::OnFinalResponseURLDetermined;
+  // End SharedWorkerService.Observer overrides.
+
+  // Start DedicatedWorkerService.Observer overrides:
+  void OnWorkerCreated(
+      const blink::DedicatedWorkerToken& worker_token,
+      int worker_process_id,
+      content::GlobalRenderFrameHostId ancestor_render_frame_host_id) override;
+  void OnBeforeWorkerDestroyed(
+      const blink::DedicatedWorkerToken& worker_token,
+      content::GlobalRenderFrameHostId ancestor_render_frame_host_id) override {
+  }
+  void OnFinalResponseURLDetermined(
+      const blink::DedicatedWorkerToken& worker_token,
+      const GURL& url) override {}
+  // End DedicatedWorkerService.Observer overrides.
 
   std::vector<std::string> log_;
 
@@ -228,6 +261,29 @@ void WCOCallbackLogger::OnServiceWorkerAccessed(
   log_.push_back(
       base::StringPrintf("OnServiceWorkerAccessed(NavigationHandle: %s)",
                          FormatURL(scope).c_str()));
+}
+
+void WCOCallbackLogger::OnClientAdded(
+    const blink::SharedWorkerToken& token,
+    content::GlobalRenderFrameHostId render_frame_host_id) {
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromID(render_frame_host_id);
+  GURL scope = GetFirstPartyURL(render_frame_host).value_or(GURL());
+
+  log_.push_back(base::StringPrintf("OnSharedWorkerClientAdded(%s)",
+                                    FormatURL(scope).c_str()));
+}
+
+void WCOCallbackLogger::OnWorkerCreated(
+    const blink::DedicatedWorkerToken& worker_token,
+    int worker_process_id,
+    content::GlobalRenderFrameHostId ancestor_render_frame_host_id) {
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromID(ancestor_render_frame_host_id);
+  GURL scope = GetFirstPartyURL(render_frame_host).value_or(GURL());
+
+  log_.push_back(base::StringPrintf("OnDedicatedWorkerCreated(%s)",
+                                    FormatURL(scope).c_str()));
 }
 
 void WCOCallbackLogger::DidFinishNavigation(
@@ -2052,4 +2108,136 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                                      "127.0.0.1/service_worker/)",
                                      "OnServiceWorkerAccessed(NavigationHandle:"
                                      " 127.0.0.1/service_worker/)"}));
+}
+
+// TODO(crbug.com/154571): Shared workers are not available on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SharedWorkerAccess_Storages DISABLED_SharedWorkerAccess_Storages
+#else
+#define MAYBE_SharedWorkerAccess_Storages SharedWorkerAccess_Storages
+#endif
+// Verifies that adding a shared worker to a frame is tracked as a storage
+// access.
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       MAYBE_SharedWorkerAccess_Storages) {
+  // Start logging `WebContentsObserver` callbacks.
+  WCOCallbackLogger::CreateForWebContents(GetActiveWebContents());
+  auto* logger = WCOCallbackLogger::FromWebContents(GetActiveWebContents());
+
+  // Add the WCOCallbackLogger as an observer of SharedWorkerService events.
+  GetActiveWebContents()
+      ->GetBrowserContext()
+      ->GetDefaultStoragePartition()
+      ->GetSharedWorkerService()
+      ->AddObserver(logger);
+
+  // Navigate to URL for shared worker.
+  ASSERT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      embedded_test_server()->GetURL("a.test",
+                                     "/local_network_access/no-favicon.html")));
+
+  // Create and start a shared worker on the current page.
+  ASSERT_EQ(true, content::EvalJs(GetActiveWebContents(),
+                                  content::JsReplace(
+                                      R"(
+    (async () => {
+      const worker = await new Promise((resolve, reject) => {
+        const worker =
+            new SharedWorker("/workers/shared_fetcher_treat_as_public.js");
+        worker.port.addEventListener("message", () => resolve(worker));
+        worker.addEventListener("error", reject);
+        worker.port.start();
+      });
+
+      const messagePromise = new Promise((resolve) => {
+        const listener = (event) => resolve(event.data);
+        worker.port.addEventListener("message", listener, { once: true });
+      });
+
+      worker.port.postMessage($1);
+
+      const { error, ok } = await messagePromise;
+      if (error !== undefined) {
+        throw(error);
+      }
+
+      return ok;
+    })();
+  )",
+                                      embedded_test_server()->GetURL(
+                                          "b.test", "/cors-ok.txt"))));
+
+  // Validate that the expected callback to SharedWorkerService.Observer was
+  // made.
+  EXPECT_THAT(logger->log(),
+              testing::Contains("OnSharedWorkerClientAdded(a.test/"
+                                "local_network_access/no-favicon.html)"));
+
+  // Clean up the observer to avoid a dangling ptr.
+  GetActiveWebContents()
+      ->GetBrowserContext()
+      ->GetDefaultStoragePartition()
+      ->GetSharedWorkerService()
+      ->RemoveObserver(logger);
+}
+
+// Verifies that adding a dedicated worker to a frame is tracked as a storage
+// access.
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       DedicatedWorkerAccess_Storages) {
+  // Start logging `WebContentsObserver` callbacks.
+  WCOCallbackLogger::CreateForWebContents(GetActiveWebContents());
+  auto* logger = WCOCallbackLogger::FromWebContents(GetActiveWebContents());
+
+  // Add the WCOCallbackLogger as an observer of DedicatedWorkerService events.
+  GetActiveWebContents()
+      ->GetBrowserContext()
+      ->GetDefaultStoragePartition()
+      ->GetDedicatedWorkerService()
+      ->AddObserver(logger);
+
+  // Navigate to URL for dedicated worker.
+  ASSERT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      embedded_test_server()->GetURL("a.test",
+                                     "/local_network_access/no-favicon.html")));
+
+  // Create and start a dedicated worker on the current page.
+  ASSERT_EQ(true, content::EvalJs(GetActiveWebContents(),
+                                  content::JsReplace(
+                                      R"(
+    (async () => {
+      const worker = new Worker("/workers/fetcher_treat_as_public.js");
+
+      const messagePromise = new Promise((resolve) => {
+        const listener = (event) => resolve(event.data);
+        worker.addEventListener("message", listener, { once: true });
+      });
+
+      worker.postMessage($1);
+
+      const { error, ok } = await messagePromise;
+      if (error !== undefined) {
+        throw(error);
+      }
+
+      return ok;
+    })();
+  )",
+                                      embedded_test_server()->GetURL(
+                                          "b.test", "/cors-ok.txt"))));
+
+  // Validate that the expected callback to DedicatedWorkerService.Observer was
+  // made.
+  EXPECT_THAT(logger->log(),
+              testing::Contains("OnDedicatedWorkerCreated(a.test/"
+                                "local_network_access/no-favicon.html)"));
+
+  // Clean up the observer to avoid a dangling ptr.
+  GetActiveWebContents()
+      ->GetBrowserContext()
+      ->GetDefaultStoragePartition()
+      ->GetDedicatedWorkerService()
+      ->RemoveObserver(logger);
 }
