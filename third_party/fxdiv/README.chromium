@@ -6,6 +6,7 @@ Date: 2022-04-22
 License: MIT
 License File: src/LICENSE
 Security Critical: Yes
+Shipped: yes
 
 Description:
 Header-only library for division via fixed-point multiplication by inverse. This
