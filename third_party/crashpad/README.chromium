@@ -6,6 +6,7 @@ Revision: 00ce1f9f8f4585d82caa0ff17deb35f8608416bf
 License: Apache 2.0
 License File: crashpad/LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 Crashpad is a crash-reporting system. It’s the successor to Breakpad.
