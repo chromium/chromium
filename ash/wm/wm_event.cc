@@ -100,6 +100,10 @@ bool WMEvent::IsSnapEvent() const {
   return false;
 }
 
+const SetBoundsWMEvent* WMEvent::AsSetBoundsWMEvent() const {
+  return nullptr;
+}
+
 const DisplayMetricsChangedWMEvent* WMEvent::AsDisplayMetricsChangedWMEvent()
     const {
   DCHECK_EQ(type(), WM_EVENT_DISPLAY_BOUNDS_CHANGED);
@@ -130,6 +134,10 @@ SetBoundsWMEvent::SetBoundsWMEvent(const gfx::Rect& requested_bounds,
       animate_(false) {}
 
 SetBoundsWMEvent::~SetBoundsWMEvent() = default;
+
+const SetBoundsWMEvent* SetBoundsWMEvent::AsSetBoundsWMEvent() const {
+  return this;
+}
 
 DisplayMetricsChangedWMEvent::DisplayMetricsChangedWMEvent(int changed_metrics)
     : WMEvent(WM_EVENT_DISPLAY_BOUNDS_CHANGED),

@@ -208,8 +208,7 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
   auto* const window = window_state->window();
   switch (event->type()) {
     case WM_EVENT_SET_BOUNDS: {
-      const auto* set_bounds_event =
-          static_cast<const SetBoundsWMEvent*>(event);
+      const auto* set_bounds_event = event->AsSetBoundsWMEvent();
       const gfx::Rect& bounds = set_bounds_event->requested_bounds();
       if (set_bounds_locally_) {
         // Don’t preempt on-going animation (e.g. tucking) for floated windows.

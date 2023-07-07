@@ -53,13 +53,9 @@ class FakeWindowState : public WindowState::State {
 
   // WindowState::State overrides:
   void OnWMEvent(WindowState* window_state, const WMEvent* event) override {
-    if (event->IsBoundsEvent()) {
-      if (event->type() == WM_EVENT_SET_BOUNDS) {
-        const auto* set_bounds_event =
-            static_cast<const SetBoundsWMEvent*>(event);
-        last_bounds_ = set_bounds_event->requested_bounds();
-        last_window_state_ = window_state;
-      }
+    if (event->type() == WM_EVENT_SET_BOUNDS) {
+      last_bounds_ = event->AsSetBoundsWMEvent()->requested_bounds();
+      last_window_state_ = window_state;
     }
   }
   WindowStateType GetType() const override { return state_type_; }

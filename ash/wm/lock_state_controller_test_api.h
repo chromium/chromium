@@ -25,9 +25,6 @@ class LockStateControllerTestApi {
     controller_->shutdown_controller_ = shutdown_controller;
   }
 
-  bool lock_fail_timer_is_running() const {
-    return controller_->lock_fail_timer_.IsRunning();
-  }
   bool shutdown_timer_is_running() const {
     return controller_->pre_shutdown_timer_.IsRunning();
   }
@@ -36,10 +33,6 @@ class LockStateControllerTestApi {
   }
   bool is_animating_lock() const { return controller_->animating_lock_; }
 
-  void trigger_lock_fail_timeout() {
-    controller_->OnLockFailTimeout();
-    controller_->lock_fail_timer_.Stop();
-  }
   void trigger_shutdown_timeout() {
     controller_->OnPreShutdownAnimationTimeout();
     controller_->pre_shutdown_timer_.Stop();

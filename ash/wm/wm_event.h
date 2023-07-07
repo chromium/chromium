@@ -164,6 +164,7 @@ class ASH_EXPORT WMEvent {
   bool IsSnapEvent() const;
 
   // Utility methods to downcast to specific WMEvent types.
+  virtual const SetBoundsWMEvent* AsSetBoundsWMEvent() const;
   virtual const DisplayMetricsChangedWMEvent* AsDisplayMetricsChangedWMEvent()
       const;
   virtual const WindowFloatWMEvent* AsFloatEvent() const;
@@ -186,6 +187,9 @@ class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
   SetBoundsWMEvent& operator=(const SetBoundsWMEvent&) = delete;
 
   ~SetBoundsWMEvent() override;
+
+  // WMevent:
+  const SetBoundsWMEvent* AsSetBoundsWMEvent() const override;
 
   const gfx::Rect& requested_bounds() const { return requested_bounds_; }
 

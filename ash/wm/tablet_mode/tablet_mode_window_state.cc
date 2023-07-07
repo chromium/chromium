@@ -365,7 +365,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       break;
     case WM_EVENT_SET_BOUNDS: {
       gfx::Rect bounds_in_parent =
-          (static_cast<const SetBoundsWMEvent*>(event))->requested_bounds();
+          event->AsSetBoundsWMEvent()->requested_bounds();
       if (bounds_in_parent.IsEmpty())
         break;
 
@@ -392,12 +392,12 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
         // requested bounds and center it to a fully visible area on the screen.
         bounds_in_parent = GetCenteredBounds(bounds_in_parent, window_state);
         if (bounds_in_parent != window_state->window()->bounds()) {
-          const SetBoundsWMEvent* bounds_event =
-              static_cast<const SetBoundsWMEvent*>(event);
-          if (window_state->window()->IsVisible() && bounds_event->animate())
+          if (window_state->window()->IsVisible() &&
+              event->AsSetBoundsWMEvent()->animate()) {
             window_state->SetBoundsDirectAnimated(bounds_in_parent);
-          else
+          } else {
             window_state->SetBoundsDirect(bounds_in_parent);
+          }
         }
       }
       break;

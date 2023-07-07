@@ -71,9 +71,8 @@ void LockWindowState::OnWMEvent(WindowState* window_state,
       if (window_state->IsMaximized() || window_state->IsFullscreen()) {
         UpdateBounds(window_state);
       } else {
-        const SetBoundsWMEvent* bounds_event =
-            static_cast<const SetBoundsWMEvent*>(event);
-        window_state->SetBoundsConstrained(bounds_event->requested_bounds());
+        window_state->SetBoundsConstrained(
+            event->AsSetBoundsWMEvent()->requested_bounds());
       }
       break;
     case WM_EVENT_ADDED_TO_WORKSPACE:
