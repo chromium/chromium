@@ -3,8 +3,9 @@ Short Name: hamcrest
 URL: http://hamcrest.org/JavaHamcrest/
 Version: 1.3
 License: BSD 3-Clause
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 License Android Compatible: yes
 
 Description:
