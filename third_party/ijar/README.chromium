@@ -2,8 +2,9 @@ Name: ijar
 URL: https://github.com/bazelbuild/bazel
 Version: fed23d5a08cecbdcc4725adf77824a6c5bde1b4e
 License: Apache 2.0
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: No
+Shipped: no
 
 Description:
 A tool for generating interface .jars from normal .jars.
