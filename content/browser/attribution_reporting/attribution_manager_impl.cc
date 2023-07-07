@@ -183,10 +183,11 @@ bool IsStorageKeySessionOnly(
 }
 
 void RecordStoreSourceStatus(StoreSourceResult result) {
-  static_assert(StorableSource::Result::kMaxValue ==
-                    StorableSource::Result::kDestinationBothLimitsReached,
-                "Bump version of Conversions.SourceStoredStatus3 histogram.");
-  base::UmaHistogramEnumeration("Conversions.SourceStoredStatus3",
+  static_assert(
+      StorableSource::Result::kMaxValue ==
+          StorableSource::Result::kReportingOriginsPerSiteLimitReached,
+      "Bump version of Conversions.SourceStoredStatus4 histogram.");
+  base::UmaHistogramEnumeration("Conversions.SourceStoredStatus4",
                                 result.status);
 }
 

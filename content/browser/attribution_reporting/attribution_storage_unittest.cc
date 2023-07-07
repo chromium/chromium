@@ -3676,17 +3676,20 @@ TEST_F(AttributionStorageTest, MaxSourceReportingOriginsPerSite) {
       }));
 
   auto store_source = [&](std::string source, std::string reporting) {
-    storage()->StoreSource(
-        SourceBuilder()
-            .SetSourceOrigin(*SuitableOrigin::Deserialize(source))
-            .SetReportingOrigin(*SuitableOrigin::Deserialize(reporting))
-            .SetExpiry(base::Days(2))
-            .Build());
+    return storage()
+        ->StoreSource(
+            SourceBuilder()
+                .SetSourceOrigin(*SuitableOrigin::Deserialize(source))
+                .SetReportingOrigin(*SuitableOrigin::Deserialize(reporting))
+                .SetExpiry(base::Days(2))
+                .Build())
+        .status;
   };
   store_source("https://a.test", "https://reporter.test");
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
-  store_source("https://a.test", "https://a.reporter.test");
+  EXPECT_EQ(store_source("https://a.test", "https://a.reporter.test"),
+            StorableSource::Result::kReportingOriginsPerSiteLimitReached);
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   store_source("https://b.test", "https://a.reporter.test");
@@ -3703,7 +3706,8 @@ TEST_F(AttributionStorageTest, MaxSourceReportingOriginsPerSite) {
 
   // The reporter used on the first day can't be used even though it is
   // repeated.
-  store_source("https://a.test", "https://reporter.test");
+  EXPECT_EQ(store_source("https://a.test", "https://reporter.test"),
+            StorableSource::Result::kReportingOriginsPerSiteLimitReached);
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(4));
 }
 

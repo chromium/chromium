@@ -20065,6 +20065,7 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="Excessive destinations (per-reporting rate-limit)"/>
   <int value="8" label="Excessive destinations (global rate-limit)"/>
   <int value="9" label="Excessive destinations (both rate-limits)"/>
+  <int value="10" label="Excessive reporting origins per site limit"/>
 </enum>
 
 <enum name="ConversionStorageSqlInitStatus">

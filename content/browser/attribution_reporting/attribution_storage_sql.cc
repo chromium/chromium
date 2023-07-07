@@ -763,11 +763,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
-      // TODO(https://crbug.com/1448330): Report a different result
-      // type for this limit to avoid overlap with the other reporting
-      // origin limit.
       return StoreSourceResult(
-          StorableSource::Result::kExcessiveReportingOrigins);
+          StorableSource::Result::kReportingOriginsPerSiteLimitReached);
     case RateLimitResult::kError:
       return StoreSourceResult(StorableSource::Result::kInternalError);
   }

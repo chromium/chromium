@@ -19,4 +19,5 @@ enum StoreSourceResult {
   kDestinationReportingLimitReached = 7,
   kDestinationGlobalLimitReached = 8,
   kDestinationBothLimitsReached = 9,
+  kReportingOriginsPerSiteLimitReached = 10,
 };

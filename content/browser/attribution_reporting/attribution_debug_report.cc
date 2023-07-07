@@ -83,14 +83,13 @@ absl::optional<DebugDataType> GetReportDataType(StorableSource::Result result,
     case StorableSource::Result::kProhibitedByBrowserPolicy:
       return absl::nullopt;
     case StorableSource::Result::kSuccess:
-    // `kSourceSuccess` is sent for unattributed reporting origin limit and max
-    // unique destinations per source site to mitigate the security concerns on
-    // reporting these errors. Because `kDestinationGlobalLimitReached` and
-    // `kExcessiveReportingOrigins` are thrown based on information across
-    // reporting origins, reporting on them would violate the same-origin
-    // policy.
+    // `kSourceSuccess` is sent for a few errors as well to mitigate the
+    // security concerns on reporting these errors. Because these errors are
+    // thrown based on information across reporting origins, reporting on them
+    // would violate the same-origin policy.
     case StorableSource::Result::kExcessiveReportingOrigins:
     case StorableSource::Result::kDestinationGlobalLimitReached:
+    case StorableSource::Result::kReportingOriginsPerSiteLimitReached:
       return DataTypeIfCookieSet(DebugDataType::kSourceSuccess,
                                  is_debug_cookie_set);
     case StorableSource::Result::kInsufficientUniqueDestinationCapacity:

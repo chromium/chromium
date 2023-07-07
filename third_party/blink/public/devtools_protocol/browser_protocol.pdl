@@ -9711,6 +9711,7 @@ experimental domain Storage
       destinationReportingLimitReached
       destinationGlobalLimitReached
       destinationBothLimitsReached
+      reportingOriginsPerSiteLimitReached
 
   # TODO(crbug.com/1458532): Add other Attribution Reporting events, e.g.
   # trigger registration.

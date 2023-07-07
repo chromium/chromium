@@ -987,6 +987,8 @@ function sourceRegistrationStatusToText(status: SourceStatus): string {
         return 'Rejected: destination global limit reached';
       case StoreSourceResult.kDestinationBothLimitsReached:
         return 'Rejected: destination both limits reached';
+      case StoreSourceResult.kReportingOriginsPerSiteLimitReached:
+        return 'Rejected: excessive reporting origins per source and reporting site';
       default:
         return status.toString();
     }

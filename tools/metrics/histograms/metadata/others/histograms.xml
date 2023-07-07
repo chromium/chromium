@@ -4055,7 +4055,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourceStoredStatus3"
+<histogram name="Conversions.SourceStoredStatus4"
     enum="ConversionStorageSourceStatus" expires_after="M121">
   <owner>tquintanilla@chromium.org</owner>
   <owner>anthonygarant@chromium.org</owner>
