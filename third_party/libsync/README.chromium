@@ -3,7 +3,9 @@ URL: http://source.android.com
 Description: libsync helper library.
 Version: f4f4387b6bf2387efbcfd1453af4892e8982faf6
 Security Critical: yes
+Shipped: yes
 License: Apache 2.0
+License File: LICENSE
 
 Modifications:
 - Added strlcpy.c
