@@ -134,7 +134,7 @@ async function runBasicFledgeTestExpectingNoWinner(test, testConfig) {
 // Test helper for report phase of auctions that lets the caller insert code
 // into the body of each worklet function.
 //
-// See third_party/blink/web_tests/external/wpt/fledge for a more general
+// See fledge for a more general
 // function.
 async function runReportTest(test, codeToInsert) {
   const uuid = generateUuid(test);

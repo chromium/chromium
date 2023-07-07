@@ -1128,6 +1128,13 @@
        null,
        {}
       ]
+     ],
+     "scope-declaration-list-crash.html": [
+      "c459da053a1a601c3b1c2edaa0ef9c7688261bc0",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "css-contain": {
@@ -1768,6 +1775,13 @@
      ]
     },
     "css-flexbox": {
+     "button-column-wrap-crash.html": [
+      "0741735d4e357af037169937229c96209c457ac7",
+      [
+       null,
+       {}
+      ]
+     ],
      "column-intrinsic-size-aspect-ratio-crash.html": [
       "595324845a2fee18427d9d7fdf813162ec43a5db",
       [
@@ -1935,6 +1949,13 @@
      ],
      "font-features-two-stylesheets-crash.html": [
       "0e6490974c27afe7aff29a22418107890eef45e2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "font-size-adjust-generic-font-fallback-crash.html": [
+      "b2884e975a114a40c9986fac38a45527954c3691",
       [
        null,
        {}
@@ -121990,6 +122011,32 @@
        {}
       ]
      ],
+     "gap-020.html": [
+      "2f0c02dfc1983583b1092e7ada827d499e632ef5",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "gap-021.html": [
+      "5f37e94136f2ebc32b3dc4fcebac9efd9815d6d8",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "grandchild-span-height.html": [
       "c087edb68d48036f5b3a45114a62d9db03a5a86e",
       [
@@ -136989,6 +137036,19 @@
      ]
     },
     "css-highlight-api": {
+     "highlight-priority-painting.html": [
+      "89ae87359250001fb4105142e174f15b0c5896da",
+      [
+       null,
+       [
+        [
+         "/css/css-highlight-api/highlight-priority-painting-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "painting": {
       "css-highlight-painting-underline-offset-001.html": [
        "534438089ca0afd4a565e615f43cd964db3a0eb6",
@@ -143620,6 +143680,19 @@
         [
          [
           "/css/css-inline/text-box-trim/text-box-trim-half-leading-inline-box-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-half-leading-inline-box-003.html": [
+       "4c7e33663b53fa22fa3578c3260701692d48f8b8",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-half-leading-inline-box-003-ref.html",
           "=="
          ]
         ],
@@ -226984,6 +227057,65 @@
        }
       ]
      ],
+     "capture-with-opacity-zero-child.html": [
+      "adcef1b4c5a528481521edc48b53d0f0b9f8c217",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/capture-with-visibility-hidden-child-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "capture-with-visibility-hidden-child.html": [
+      "5f4e73e6a60e21b936dc8b32442cc1cd53bca5fb",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/capture-with-visibility-hidden-child-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "capture-with-visibility-mixed-descendants.html": [
+      "fa9a40bf07748f6de782cc567981a24ce1d7c0e7",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/capture-with-visibility-mixed-descendants-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          [
+           "/css/css-view-transitions/capture-with-visibility-mixed-descendants.html",
+           "/css/css-view-transitions/capture-with-visibility-mixed-descendants-ref.html",
+           "=="
+          ],
+          [
+           [
+            0,
+            5
+           ],
+           [
+            0,
+            500
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
      "content-smaller-than-box-size.html": [
       "d2b8f63ca068ffc744b7b1a7b0ca8d1c25a32854",
       [
@@ -229913,6 +230045,19 @@
          ]
         ]
        }
+      ]
+     ],
+     "writing-mode-container-resize.html": [
+      "359baaf5e855e67926ea55c214924dd747acad32",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/writing-mode-container-resize-ref.html",
+         "=="
+        ]
+       ],
+       {}
       ]
      ]
     },
@@ -237686,6 +237831,74 @@
          ],
          [
           "/css/css-writing-modes/forms/color-input-appearance-native-horizontal.optional.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "date-input-appearance-native-horizontal.optional.html": [
+       "10510d7ea10542445cb6e6b4cfafaaa746c2cdea",
+       [
+        null,
+        [
+         [
+          "/css/css-writing-modes/forms/date-input-appearance-native-vertical.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/date-input-appearance-none-vertical.optional.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "date-input-appearance-native-vertical.optional.html": [
+       "02b05748c1ef0c16d1b06a0a5771418dda125274",
+       [
+        null,
+        [
+         [
+          "/css/css-writing-modes/forms/date-input-appearance-native-horizontal.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/date-input-appearance-none-horizontal.optional.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "date-input-appearance-none-horizontal.optional.html": [
+       "6115e6f33ba12796f6c1a530ddaa81f176023fcf",
+       [
+        null,
+        [
+         [
+          "/css/css-writing-modes/forms/date-input-appearance-none-vertical.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/date-input-appearance-native-vertical.optional.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "date-input-appearance-none-vertical.optional.html": [
+       "e608ead51b7afbce992d15595664f791b977d5d1",
+       [
+        null,
+        [
+         [
+          "/css/css-writing-modes/forms/date-input-appearance-none-horizontal.optional.html",
+          "!="
+         ],
+         [
+          "/css/css-writing-modes/forms/date-input-appearance-native-horizontal.optional.html",
           "!="
          ]
         ],
@@ -252230,13 +252443,13 @@
    "custom-elements": {
     "form-associated": {
      "ElementInternals-reportValidity-bubble.html": [
-      "6ada4b473ab319fa57d83432c321e2d24b22ab87",
+      "adad00d90e0d391891fffb812f16084f04c62b8a",
       [
        null,
        [
         [
-         "/custom-elements/form-associated/ElementInternals-reportValidity-bubble-ref.html",
-         "=="
+         "/custom-elements/form-associated/ElementInternals-reportValidity-bubble-notref.html",
+         "!="
         ]
        ],
        {}
@@ -253478,6 +253691,84 @@
          [
           [
            "/html/canvas/element/drawing-text-to-the-canvas/reference/direction-rtl-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-1.html": [
+        "3240476ad0f03e9a1b3f37a242fe781b2a46d613",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/drawing-text-to-the-canvas/reference/fontVariantCaps-1-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-2.html": [
+        "cbcb73b231ce9051cb1386e366a241dc980bc05c",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/drawing-text-to-the-canvas/reference/fontVariantCaps-2-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-3.html": [
+        "8c0761121efb0bfbdda0871d7d735ceeb5105cd3",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/drawing-text-to-the-canvas/reference/fontVariantCaps-3-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-4.html": [
+        "62fe241838b2a9ab5d1656a4165266232fb4ec0d",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/drawing-text-to-the-canvas/reference/fontVariantCaps-3-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-5.html": [
+        "a21169f8bb64781ca5235cfedcde562a3c8f85e3",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/drawing-text-to-the-canvas/reference/fontVariantCaps-1-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-6.html": [
+        "6126c4e7b2f3ebf17e1fa8e79947750be1728beb",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/drawing-text-to-the-canvas/reference/fontVariantCaps-2-ref.html",
            "=="
           ]
          ],
@@ -256060,6 +256351,86 @@
          [
           [
            "/html/canvas/offscreen/layers/2d.layer.unclosed-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ]
+      },
+      "text": {
+       "fontVariantCaps-1.html": [
+        "aed6f6603846d1e56e3eab775c72789102fe9f51",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/text/reference/fontVariantCaps-1-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-2.html": [
+        "7d8fc08cfe694a287ad5782ecddf6f297389f746",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/text/reference/fontVariantCaps-2-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-3.html": [
+        "8e9ddd464a0b4493e130255e9977c93d32a45129",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/text/reference/fontVariantCaps-3-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-4.html": [
+        "d2f4439897d30f2810afaed39156232a14d8caa7",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/text/reference/fontVariantCaps-3-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-5.html": [
+        "57b6ca70776863d7f8fea40f0627582069e9ead4",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/text/reference/fontVariantCaps-1-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fontVariantCaps-6.html": [
+        "09ff6fab0c608935a37785f3be3ef72b05645f2c",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/text/reference/fontVariantCaps-2-ref.html",
            "=="
           ]
          ],
@@ -269675,6 +270046,19 @@
         {}
        ]
       ],
+      "pattern-transform-01.svg": [
+       "e3db18f2ed2762bd24a3cc51b7304888f4b0a53c",
+       [
+        null,
+        [
+         [
+          "/svg/pservers/reftests/reference/pattern-transform-01-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "pattern-viewbox-01.svg": [
        "618b8fc29e69d2624d5556d6bbcdba600ce21a4a",
        [
@@ -274518,11 +274902,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "7ba5f09f4f61db5c2c49f6112a0b81cf621dc758",
+     "37610f658b2e5d00af50901143572b59fd455564",
      []
     ],
     "mtime.json": [
-     "9c9ddf7fac86fccf5848b2a7c50bbe2f5582fa50",
+     "2d7de7ed233695f610cfbfd9628ee2e4736c9b1d",
      []
     ]
    },
@@ -274575,11 +274959,19 @@
     },
     "private-aggregation": {
      "debug": {
+      "report-protected-audience": [
+       "7ffdb70773d47d2e5943253d27520b5cece907ba",
+       []
+      ],
       "report-shared-storage": [
        "7ffdb70773d47d2e5943253d27520b5cece907ba",
        []
       ]
      },
+     "report-protected-audience": [
+      "7ffdb70773d47d2e5943253d27520b5cece907ba",
+      []
+     ],
      "report-shared-storage": [
       "7ffdb70773d47d2e5943253d27520b5cece907ba",
       []
@@ -277650,6 +278042,18 @@
      ],
      "clear-site-data-cache.https.html.ini": [
       "ff33d2dca3bbc5513d13c70d6a994d19ed3ad74a",
+      []
+     ],
+     "clear-site-data-client-hints.https-expected.txt": [
+      "f7469d726f3d91407e880a870d11baa160c6d200",
+      []
+     ],
+     "clear-site-data-client-hints.https.html.headers": [
+      "226bb1c3b10489842901a1184b2b8822d2976075",
+      []
+     ],
+     "clear-site-data-client-hints.https.html.ini": [
+      "6d1103743d592f49112e5ae636dfd6984f243906",
       []
      ],
      "clear-site-data-cookies.https-expected.txt": [
@@ -283485,6 +283889,10 @@
       ],
       "border-applies-to-004.xht.ini": [
        "555871803c8815bba285f2873a55b768e7d02ceb",
+       []
+      ],
+      "border-applies-to-005.xht.ini": [
+       "9b911fd1374000859e5f3da23a26388a46fd6377",
        []
       ],
       "border-applies-to-007.xht.ini": [
@@ -309118,7 +309526,7 @@
        []
       ],
       "positioned-grid-items-025-ref.html": [
-       "803539a069c21f3979821984188187412002c8a3",
+       "b9e30e42863b159507a26918f2ca11c7b5f85514",
        []
       ],
       "positioned-grid-items-negative-indices-001-ref.html": [
@@ -310700,6 +311108,10 @@
      ],
      "HighlightRegistry-maplike-tampered-Map-prototype.html.ini": [
       "8eac6548c7bb90a0a5a067057e851a5594c31f8b",
+      []
+     ],
+     "highlight-priority-painting-ref.html": [
+      "1865f1e104917ebeb3d6e9cb53de06977ea8623c",
       []
      ],
      "painting": {
@@ -312849,6 +313261,10 @@
       ],
       "text-box-trim-half-leading-inline-box-002.html.ini": [
        "d9f0acbe27198d86a0930c20aa6978a4c80680ca",
+       []
+      ],
+      "text-box-trim-half-leading-inline-box-003-ref.html": [
+       "bf0fb3283d353a06707542838a15938837e7a025",
        []
       ]
      }
@@ -320288,7 +320704,7 @@
        []
       ],
       "common.js": [
-       "b380fe80c88ebf4146c8048c3ce6ae4ea33a0d4b",
+       "84891432796486cac6aefd5b6f4416e9070772a8",
        []
       ],
       "scroll-target-align-001-iframe.html": [
@@ -336168,6 +336584,14 @@
       "859abdfb5f259021120d3810fa3fadce8be968c5",
       []
      ],
+     "capture-with-visibility-hidden-child-ref.html": [
+      "10067cc5212f467b6d6b62d7344d3b3a8c4dcaac",
+      []
+     ],
+     "capture-with-visibility-mixed-descendants-ref.html": [
+      "c47b31e4d5a3a2121bf8191c1e612b5a5f2f1663",
+      []
+     ],
      "content-object-fit-fill-ref.html": [
       "b86e0a95a172bcc191f17d954b2cf6bd710a1fd1",
       []
@@ -336724,6 +337148,10 @@
      ],
      "web-animations-api-ref.html": [
       "ab66e7d16df6acf73a4a4b88bd74a727876c966c",
+      []
+     ],
+     "writing-mode-container-resize-ref.html": [
+      "3f8835ef94e6cda8718b61f31379c5dec5421104",
       []
      ]
     },
@@ -342955,7 +343383,7 @@
       []
      ],
      "computed-testcommon.js": [
-      "831baf311a308ad30f93755ac69d698767254ebb",
+      "31bf451ecf371ec1e45f11ea404ab4d0ea607b24",
       []
      ],
      "delete-other-rule-crash.css": [
@@ -342991,7 +343419,7 @@
       []
      ],
      "numeric-testcommon.js": [
-      "3a39e2a973a6f7ab688379635f8fe714027c863d",
+      "ea1762e7fd7ab6f7317bab2caa67b72146932fe7",
       []
      ],
      "parsing-testcommon.js": [
@@ -343248,8 +343676,8 @@
      ]
     },
     "form-associated": {
-     "ElementInternals-reportValidity-bubble-ref.html": [
-      "54a438245c8ea807a71d35d449893b016a51d9a4",
+     "ElementInternals-reportValidity-bubble-notref.html": [
+      "dda233296569d8ec855855434a4947d8a847a2c6",
       []
      ],
      "ElementInternals-reportValidity-bubble.html.ini": [
@@ -354721,7 +355149,7 @@
       []
      ],
      "embedding.tentative.https.window.js.ini": [
-      "32cfa2ad829304386ef42a3fc490f21abf1626cb",
+      "3007d7e77307d9b74a80f17918d7b28afda0418e",
       []
      ],
      "fenced-frame-bypass.tentative.https.window-expected.txt": [
@@ -358012,6 +358440,14 @@
         "850216c2612f39dd7c07a372332fc7b0a788547d",
         []
        ],
+       "fontVariantCaps-3.html.ini": [
+        "89e2b31be5c09c37ae3d1cb261a64f929f7a2c7d",
+        []
+       ],
+       "fontVariantCaps-4.html.ini": [
+        "bd95cda9bd5d5ee94b10c816bef6ce499e364670",
+        []
+       ],
        "reference": {
         "direction-default-ref.html": [
          "cef6df259c4801e93e7ce8dd1692e6f3157d77bc",
@@ -358019,6 +358455,18 @@
         ],
         "direction-rtl-ref.html": [
          "010526d667b0746a014aa5706b19c001cd16d67e",
+         []
+        ],
+        "fontVariantCaps-1-ref.html": [
+         "8ea3c22be13dd3bf1421c3f80b121edcc8b2d3bc",
+         []
+        ],
+        "fontVariantCaps-2-ref.html": [
+         "c64f5d0ec2aea8307ea4ba5257498f2f236186e6",
+         []
+        ],
+        "fontVariantCaps-3-ref.html": [
+         "069fbfba8823e3e0f5fcf7ada4bd600b6dce1bbd",
          []
         ]
        }
@@ -359696,7 +360144,7 @@
          []
         ],
         "offscreencanvas.transfer.to.imagebitmap.w.html.ini": [
-         "6db111198f8ce28b56f9082ac3163ff51ea35d2c",
+         "fdc1059f0051b63f34da77ca1b681afbefe36014",
          []
         ],
         "offscreencanvas.transferrable.w.html.ini": [
@@ -359847,7 +360295,29 @@
        "2d.text.measure.baselines.worker.js.ini": [
         "72ccb51cf20ec741d2f9f97799d226d2aea755e3",
         []
-       ]
+       ],
+       "fontVariantCaps-3.html.ini": [
+        "89e2b31be5c09c37ae3d1cb261a64f929f7a2c7d",
+        []
+       ],
+       "fontVariantCaps-4.html.ini": [
+        "bd95cda9bd5d5ee94b10c816bef6ce499e364670",
+        []
+       ],
+       "reference": {
+        "fontVariantCaps-1-ref.html": [
+         "942bcdec9cb938536738ef1f71a60cd1c85c9086",
+         []
+        ],
+        "fontVariantCaps-2-ref.html": [
+         "dbcb8abd76a544d8a5ab48b1f477fc54c7ba008f",
+         []
+        ],
+        "fontVariantCaps-3-ref.html": [
+         "8d96d0ab0320ea8412e0045f59b6a3ca18260242",
+         []
+        ]
+       }
       }
      },
      "resources": {
@@ -368201,7 +368671,7 @@
           []
          ],
          "track-cues-cuechange.html.ini": [
-          "f278858d12f6ded64018292b3b23c51c4aa54ccd",
+          "fd3e4ffee548fd0b82665da1b14808d0e47ca249",
           []
          ],
          "track-cues-enter-exit.html.ini": [
@@ -371603,6 +372073,18 @@
         ],
         "missing-export.js": [
          "e6f5746eb743a338ad6fbd401715fed368e4cf74",
+         []
+        ],
+        "module-import-referrer-expected.txt": [
+         "e69ffcf09439f1c4309330b86e00e7631ff080a0",
+         []
+        ],
+        "module-import-referrer.html.ini": [
+         "a7f54a8281a9573f30ca43211d44d90ec141fcc5",
+         []
+        ],
+        "module-import-referrer.js": [
+         "8710f5c6213e0494e372a03cc1d8346da3f29622",
          []
         ],
         "module-in-xhtml.xhtml.ini": [
@@ -375272,7 +375754,7 @@
      []
     ],
     "inert-node-is-uneditable-expected.txt": [
-     "1b582cb4fb28610c05adcfd5eba3264ebe91498f",
+     "02238c63ff0141bde7a43fc62a75e47d40083961",
      []
     ]
    },
@@ -377481,7 +377963,7 @@
     ]
    },
    "lint.ignore": [
-    "0aa529180668e8de05116192c2d170048e9e555c",
+    "457c93c2149bad23ff39cf176e145419e3c6dabb",
     []
    ],
    "loading": {
@@ -377768,7 +378250,7 @@
      []
     ],
     "longtask-attributes.html.ini": [
-     "8b52ce00823e87883cd3ca00e821daabd90b5e2d",
+     "8c624159f35ac0122649331dd8b1129150179d06",
      []
     ],
     "longtask-in-sibling-iframe-crossorigin.html.ini": [
@@ -383728,7 +384210,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "2d51018c7948ab11b15453df3e38c19cd06857f3",
+     "7b2e6411b20ca917215c93e5c3e9bddcf0ac3c1f",
      []
     ],
     "modulepreload-expected.txt": [
@@ -384135,7 +384617,7 @@
     ],
     "resources": {
      "protected-audience-helper-module.js": [
-      "0cf9e89e7b0d6bee1c46ea28fb29b5d9c3986fa6",
+      "d3df838de50b7bb2ea7c84dbdcefa06887e78cfe",
       []
      ],
      "reports.py": [
@@ -392657,7 +393139,7 @@
       []
      ],
      "service-workers.https.html.ini": [
-      "a7d0de98628a48b54b78bb780f76d24de56cb505",
+      "7519375bfb7da8d0058cb8243d5693a3f24c7d80",
       []
      ],
      "session-history-activation.https.html.ini": [
@@ -393697,6 +394179,38 @@
     ],
     "interact": {
      "scripted": {
+      "async-01-expected.txt": [
+       "821e2463cb5107d4e3723652ea77cadb5fc02e22",
+       []
+      ],
+      "async-01.svg.ini": [
+       "1edc6c489963804fcb26a2be10a076f91903d85d",
+       []
+      ],
+      "defer-01-expected.txt": [
+       "592e0360768654bf789dcfdf43ba74f794a014fc",
+       []
+      ],
+      "defer-01.svg.ini": [
+       "f367c06feddcd862172c661ae180b4bac0531c9a",
+       []
+      ],
+      "defer.js": [
+       "0c0bfb1c23ea783b2ac695a6f3282e50b3e5b5c0",
+       []
+      ],
+      "log.py": [
+       "2a6cc3302962e4bc4fe1c180aea76bbf09ca68a4",
+       []
+      ],
+      "module-01-expected.txt": [
+       "e828b11fb2d462ce1d0f64cd8a594b9a1d547b77",
+       []
+      ],
+      "module-01.svg.ini": [
+       "4fc842df8f8ca7b07cb42397de5c47fb99a243e9",
+       []
+      ],
       "resources": {
        "blank.htm": [
         "18ecdcb795c33d6ab7bbb43f647947defca5634d",
@@ -394300,6 +394814,10 @@
        ],
        "pattern-opacity-01-ref.svg": [
         "1c9c68bd9d5becec895d4cacac93082bc2defcec",
+        []
+       ],
+       "pattern-transform-01-ref.svg": [
+        "9ac036177b71a819f1451639c83acc5adf56fb39",
         []
        ],
        "pattern-viewbox-01-ref.svg": [
@@ -398622,7 +399140,7 @@
      []
     ],
     "README.md": [
-     "accbcd438bf8131a019c0df630ecd05f240c6339",
+     "0a1324a1ac46c77aacfbec1691192f728c7bcd6e",
      []
     ],
     "audio-data.crossOriginIsolated.https.any.js.headers": [
@@ -398722,7 +399240,7 @@
      []
     ],
     "full-cycle-test.https.any.js.ini": [
-     "cf77f1b44a02f93b7e5471791466fa64ca5e5fc5",
+     "d556985063a11426c733cf480786e1081e495234",
      []
     ],
     "h264.annexb": [
@@ -398731,6 +399249,14 @@
     ],
     "h264.mp4": [
      "e0d6a6bedcf12dad5ec45a768f638bf1cb1ec1e7",
+     []
+    ],
+    "h265.annexb": [
+     "7f613c5e9cdc8479fea13525d8dc1e83efd89f49",
+     []
+    ],
+    "h265.mp4": [
+     "1c1adb07630704920efd0721ac85f474ab7cbd6a",
      []
     ],
     "idlharness.https.any-expected.txt": [
@@ -398758,7 +399284,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "8731a7e513e5aab903b71bb4af391abb7982dcb9",
+     "8542eee90703d4efd08a3794768a6555e237189d",
      []
     ],
     "sfx-aac.mp4": [
@@ -398818,7 +399344,7 @@
      []
     ],
     "videoDecoder-codec-specific.https.any.js.ini": [
-     "e0d5895a85a79dd82e89e47d758abd6d259bd531",
+     "0aa2f53c4cc4bcfca80b1af268895145e63febd4",
      []
     ],
     "videoDecoder-codec-specific.https.any.worker_av1-expected.txt": [
@@ -398830,6 +399356,14 @@
      []
     ],
     "videoDecoder-codec-specific.https.any.worker_h264_avc-expected.txt": [
+     "553b3f0f60902e1ebb477c1c9cea880dfa3835af",
+     []
+    ],
+    "videoDecoder-codec-specific.https.any.worker_h265_annexb-expected.txt": [
+     "553b3f0f60902e1ebb477c1c9cea880dfa3835af",
+     []
+    ],
+    "videoDecoder-codec-specific.https.any.worker_h265_hevc-expected.txt": [
      "553b3f0f60902e1ebb477c1c9cea880dfa3835af",
      []
     ],
@@ -398850,6 +399384,14 @@
      []
     ],
     "videoDecoder-codec-specific.https.any_h264_avc-expected.txt": [
+     "553b3f0f60902e1ebb477c1c9cea880dfa3835af",
+     []
+    ],
+    "videoDecoder-codec-specific.https.any_h265_annexb-expected.txt": [
+     "553b3f0f60902e1ebb477c1c9cea880dfa3835af",
+     []
+    ],
+    "videoDecoder-codec-specific.https.any_h265_hevc-expected.txt": [
      "553b3f0f60902e1ebb477c1c9cea880dfa3835af",
      []
     ],
@@ -399241,7 +399783,7 @@
       },
       "perform_actions": {
        "__init__.py": [
-        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "af87e197d2c8489ff27659a91d256cf69d4b097d",
         []
        ],
        "conftest.py": [
@@ -399384,11 +399926,11 @@
        []
       ],
       "fixtures.py": [
-       "957be6b0f462b1a7f1b61bcfb48cadb01c5f8f7d",
+       "6033e243552c91f8c9e4b55777232e6c5ac04b41",
        []
       ],
       "fixtures_bidi.py": [
-       "6e53bf7c24390d4bf24b019ddd6a9cbbb209e699",
+       "a4eab79ff87c4f31373a0cba0ec45494953f9029",
        []
       ],
       "fixtures_http.py": [
@@ -430402,28 +430944,35 @@
     ],
     "clear-site-data": {
      "clear-site-data-all.https.html": [
-      "4abc620c9dc3e8586f715d43a4f839c9821133fe",
+      "a371f07fedf9fa4651e749a230266d76cbb53976",
       [
        null,
        {}
       ]
      ],
      "clear-site-data-cache.https.html": [
-      "bb1f8aa43e7930d0484e5cc8c18e2ba1c6b22d34",
+      "1be71bf8b03471ba954cc4b5242bf091a3480c13",
+      [
+       null,
+       {}
+      ]
+     ],
+     "clear-site-data-client-hints.https.html": [
+      "d37f62af8f8bd247d7ffd22d09518888393ea5b1",
       [
        null,
        {}
       ]
      ],
      "clear-site-data-cookies.https.html": [
-      "72b7f6794e9fceed910dfe0b309aa1fb16e5559f",
+      "e506b717e1bfde746289c22bb6dc66c6e62f73b1",
       [
        null,
        {}
       ]
      ],
      "clear-site-data-storage.https.html": [
-      "49578134f56767923415287c5ce60b8713713066",
+      "19bce9e91ee97da8d83d3e7a348faac117917bb4",
       [
        null,
        {}
@@ -444570,6 +445119,41 @@
        {}
       ]
      ],
+     "position-fallback-bounds-001.html": [
+      "7735115e592dca0168cc3ac41e6762534de9bfa9",
+      [
+       null,
+       {}
+      ]
+     ],
+     "position-fallback-bounds-002.html": [
+      "7bd71216e7df9625d9901083151d1f1408de301f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "position-fallback-bounds-003.html": [
+      "0e0e243a16e8637160738e0a2a17c1c37e017f0a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "position-fallback-bounds-004.html": [
+      "ff982ea93e49f666a254ea6704332c576c7842bc",
+      [
+       null,
+       {}
+      ]
+     ],
+     "position-fallback-bounds-005.html": [
+      "deb546a1e2eca11f9928cdbbf85299cc0bdce29c",
+      [
+       null,
+       {}
+      ]
+     ],
      "position-fallback-bounds-basics.html": [
       "3b8b67bd978f3361512222f75cd71f08143007b1",
       [
@@ -447452,7 +448036,7 @@
       ]
      ],
      "scope-nesting.html": [
-      "34a13a1cb1805f036afb9212dcd29d46ac5fbc97",
+      "05cdac9fc9457cd1b8e6b8f3434cbbd118aa3d1a",
       [
        null,
        {}
@@ -447488,6 +448072,13 @@
      ],
      "scope-supports.html": [
       "9be41de0e90c17fba3698f69836db9d750023abf",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scope-visited-cssom.html": [
+      "aba4b752b2f04d84e6816df83a08ba0b282e1a6f",
       [
        null,
        {}
@@ -447611,7 +448202,7 @@
        ]
       ],
       "color-computed-rgb.html": [
-       "1205d005125e25c2472330993367f71c8074d924",
+       "3b6fa2005681a1c4edf3cf8ffea6515bae35dc7b",
        [
         null,
         {}
@@ -447758,7 +448349,7 @@
        ]
       ],
       "color-valid-rgb.html": [
-       "eb50db02cb2c18f3838921881e0b3aa290715112",
+       "22054a18f90b2e0df6e60568bf48845809ca71e4",
        [
         null,
         {}
@@ -456621,6 +457212,13 @@
        {}
       ]
      ],
+     "highlight-priority.html": [
+      "ac0ef8a6cd35dd6e3d06267c9184b2fd455d037c",
+      [
+       null,
+       {}
+      ]
+     ],
      "highlight-pseudo-computed.html": [
       "e50f1801b0c0d0fb4f357f77f0a6cddd940bf389",
       [
@@ -461654,7 +462252,7 @@
      ],
      "input": {
       "keyboard.html": [
-       "187ac0fb9e3ee5b12e73ec75d3cd4f465e6b319e",
+       "86e6143e81d8e082e829038df5170dd8b6042644",
        [
         null,
         {
@@ -473136,7 +473734,7 @@
       ]
      ],
      "round-mod-rem-computed.html": [
-      "2210f6e1fb57591974cb14cfdd1b10d6f5400068",
+      "c5d05f18650422fc266781590cd99619393e82dc",
       [
        null,
        {}
@@ -483782,7 +484380,7 @@
     },
     "parts": {
      "basic-dom-part-objects.tentative.html": [
-      "fe992e2c79602014f00ab7a924953dd86a233dd7",
+      "b226c40efd9f1941aa1ac1d3d4cf2a86d6e68724",
       [
        null,
        {}
@@ -505821,7 +506419,7 @@
        ]
       ],
       "cors-keepalive.any.js": [
-       "2df0c08b17f24adb83986530171b96796a5f9d18",
+       "f68d90ef9aaba9953d02eedbf8f6a9cb4909f126",
        [
         "fetch/api/cors/cors-keepalive.any.html",
         {
@@ -505829,6 +506427,10 @@
           [
            "global",
            "window"
+          ],
+          [
+           "timeout",
+           "long"
           ],
           [
            "title",
@@ -505858,7 +506460,8 @@
            "script",
            "../resources/utils.js"
           ]
-         ]
+         ],
+         "timeout": "long"
         }
        ]
       ],
@@ -550793,7 +551396,7 @@
         ]
        ],
        "the-anchor-attribute-003.tentative.html": [
-        "31cc4995554c9b74f1fbaaa9f5dd20afc30dae53",
+        "fe4657aabb33e63f58d7b623d1fd27d55e38b7c6",
         [
          null,
          {}
@@ -562746,7 +563349,7 @@
         ]
        ],
        "dialog-cancel-events.html": [
-        "03caab54ba5396a023334dc748d5f21f95185991",
+        "7133ce3ca04ec4c874e93a618ecf0e72065e7fd5",
         [
          null,
          {
@@ -563579,7 +564182,7 @@
        ]
       ],
       "popover-light-dismiss.html": [
-       "009d10609b09bb84733dd379fef72bb068d78396",
+       "eb148941fbf30073d0285be97117185923cfa604",
        [
         null,
         {
@@ -563696,7 +564299,7 @@
        ]
       ],
       "togglePopover.html": [
-       "115db8e2ac02c3610288a4b708b87f88828f8f34",
+       "388617fccc1081c4edcf9ac607ef82e007592119",
        [
         null,
         {}
@@ -566618,6 +567221,13 @@
           {}
          ]
         ],
+        "module-import-referrer.html": [
+         "7348b88075ee54572b9fbce9ca58b6c38dab55ef",
+         [
+          null,
+          {}
+         ]
+        ],
         "module-in-xhtml.xhtml": [
          "1655e61a7c54e36ba119b8d8a31dc4c4db8ad344",
          [
@@ -566669,6 +567279,13 @@
         ],
         "referrer-origin.sub.html": [
          "a554fb4b0c465136d636839eb96b463bec4f5c2b",
+         [
+          null,
+          {}
+         ]
+        ],
+        "referrer-policy-for-descendants.sub.html": [
+         "cf8a3dce014efb4349d2f3bfcf49ae48b9ac78e8",
          [
           null,
           {}
@@ -573945,7 +574562,7 @@
      ]
     ],
     "inert-node-is-uneditable.html": [
-     "23182b937cde52e8d55a88dbc8b440219d07f34f",
+     "983831a89fc93f75b8114626832d00fbaae73bc6",
      [
       null,
       {
@@ -578095,7 +578712,7 @@
       ]
      ],
      "loaf-script-window-attribution.html": [
-      "f54a1f23cb85c0296efe90df378429f8640c09e2",
+      "9602cdadd4b3b0e2c08f3ffe81b814042a6807a6",
       [
        null,
        {
@@ -592913,7 +593530,7 @@
    },
    "private-aggregation": {
     "protected-audience-surface-success.https.html": [
-     "417a6b145d6e06376ae1bf26b62cc9d1f7006386",
+     "b1c14a17ab996d3792dda72f024b7c57845f6ff4",
      [
       null,
       {}
@@ -619122,7 +619739,7 @@
       ]
      ],
      "service-workers.https.html": [
-      "f8ba64df34a5587b1350ea159ad065ffbff0424b",
+      "0f907c35aa10ef62bb4d5bbded5a72721ea740a2",
       [
        null,
        {
@@ -622293,30 +622910,14 @@
       ]
      ],
      "from.any.js": [
-      "04a03545ad5fe3ae18be591d8482cf3590ee02c5",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ]
-        ]
-       }
-      ],
+      "d53206d4aec0c8f93aa3b82e0897a64159d17359",
       [
        "streams/readable-streams/from.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -622331,7 +622932,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -622346,7 +622947,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -622361,7 +622962,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -626606,8 +627207,24 @@
       ]
      ],
      "scripted": {
+      "async-01.svg": [
+       "a56ef34ae547ac0f696b52f1d89cc25c3a826a80",
+       [
+        null,
+        {
+         "timeout": "long"
+        }
+       ]
+      ],
       "composed.window.svg": [
        "b63dcf024439446e0624f98cfa9f7ceb01544524",
+       [
+        null,
+        {}
+       ]
+      ],
+      "defer-01.svg": [
+       "93e54c3f0ef644b5e447ec771b20dff43c2a07fc",
        [
         null,
         {}
@@ -626629,6 +627246,13 @@
       ],
       "focus-tabindex-default-value.svg": [
        "3af1acffd8de01618fb1dc9e8a753bcbb0357f1c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "module-01.svg": [
+       "ea70391e922aaa4a65826d28ed3bb7bb5c1a2dd0",
        [
         null,
         {}
@@ -639920,7 +640544,7 @@
        ]
       ],
       "audiocontext-sinkid-constructor.https.html": [
-       "2dedd6cd36d2874325e0a991ac7fc45d4a6632be",
+       "d2dc54aee6a7f93e846244e1f3ab88c3774cf917",
        [
         null,
         {}
@@ -642678,7 +643302,7 @@
      ]
     ],
     "full-cycle-test.https.any.js": [
-     "7428f6074807f35e75e357909131b99f062b14f0",
+     "56671e683610ff412d08ba7999843246554ac7f4",
      [
       "webcodecs/full-cycle-test.https.any.html?av1",
       {
@@ -642714,6 +643338,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -642753,6 +643385,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -642792,6 +643432,108 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/full-cycle-test.https.any.html?h265_annexb",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?vp9_p2"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/full-cycle-test.https.any.html?h265_hevc",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?vp9_p2"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -642831,6 +643573,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -642870,6 +643620,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -642909,6 +643667,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -642948,6 +643714,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -642987,6 +643761,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -643026,6 +643808,108 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/full-cycle-test.https.any.worker.html?h265_annexb",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?vp9_p2"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/full-cycle-test.https.any.worker.html?h265_hevc",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?vp9_p2"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -643065,6 +643949,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -643104,6 +643996,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -643143,6 +644043,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -644382,7 +645290,7 @@
      ]
     ],
     "videoDecoder-codec-specific.https.any.js": [
-     "31e14d81f3418879c5defd6f4953f7521ef5baaa",
+     "09e20379898aad8035f683f6f0065b977ed14436",
      [
       "webcodecs/videoDecoder-codec-specific.https.any.html?av1",
       {
@@ -644410,6 +645318,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -644441,6 +645357,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -644472,6 +645396,92 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/videoDecoder-codec-specific.https.any.html?h265_annexb",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/videoDecoder-codec-specific.https.any.html?h265_hevc",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -644503,6 +645513,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -644534,6 +645552,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -644565,6 +645591,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -644596,6 +645630,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -644627,6 +645669,92 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_annexb",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -644658,6 +645786,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -644689,6 +645825,14 @@
         [
          "variant",
          "?h264_annexb"
+        ],
+        [
+         "variant",
+         "?h265_hevc"
+        ],
+        [
+         "variant",
+         "?h265_annexb"
         ]
        ]
       }
@@ -644727,7 +645871,7 @@
      ]
     ],
     "videoFrame-construction.any.js": [
-     "a443cd66f23056e9d813d216a9bea09279119f2e",
+     "8e8a3eac18b74f3b5efd09c9fff6eb14be9a0c6a",
      [
       "webcodecs/videoFrame-construction.any.html",
       {
@@ -645227,7 +646371,7 @@
       ]
      ],
      "class-string-iterator-prototype-object.any.js": [
-      "f878eb7b35b0834accbfd24ddc7d0557334e094f",
+      "5ca549d69cff81521aa9fbc7a4ca6188f38c8e4f",
       [
        "webidl/ecmascript-binding/class-string-iterator-prototype-object.any.html",
        {}
@@ -687625,8 +688769,17 @@
        ]
       },
       "perform_actions": {
+       "invalid.py": [
+        "6c3f134140565dd4319bde7c092703227f2ff888",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
        "key.py": [
-        "6c34452082aebbfe2f83a879bea44a75ed2bea1f",
+        "7809fcd01a9a07d8842bf4c8d8a2e38fd0e59d0f",
         [
          null,
          {}
@@ -687663,7 +688816,14 @@
         ]
        ],
        "none.py": [
-        "4fadec40a45cd685ac856551f557b9178abb6040",
+        "b94a8f162d736b858e4564dde3b13a40ef7595c2",
+        [
+         null,
+         {}
+        ]
+       ],
+       "perform.py": [
+        "30333942189c6f01ece57e49e45be9c5a5412e70",
         [
          null,
          {}
@@ -687691,7 +688851,7 @@
         ]
        ],
        "pointer_mouse.py": [
-        "31d08491ccb832e951bcc7598f3795ec4a38a796",
+        "152447aeefdf143bf5643d836ca35b47f383b9da",
         [
          null,
          {
@@ -687714,7 +688874,7 @@
         ]
        ],
        "pointer_pen.py": [
-        "e9cd103301ee7ab965098e7ba048917014b057d7",
+        "fcd1aba9474eb44e066dde3e755058a939d1d87f",
         [
          null,
          {
@@ -687723,7 +688883,7 @@
         ]
        ],
        "pointer_touch.py": [
-        "7f940f6203c16a7f7bc019f3fe06af3da8330f59",
+        "6c8e2f3fa6e2a9cb909ba8a0865d9f3d720003d4",
         [
          null,
          {
@@ -687748,7 +688908,7 @@
         ]
        ],
        "user_prompts.py": [
-        "820edbe32cbe0ade5fd63966002003e841f67dd4",
+        "872325bb313dc92359bfaf813f84ac14cfd3a943",
         [
          null,
          {
@@ -687756,15 +688916,8 @@
          }
         ]
        ],
-       "validity.py": [
-        "9c056b197d25808864e36dd7a58040a0dbff4abc",
-        [
-         null,
-         {}
-        ]
-       ],
        "wheel.py": [
-        "7ee0ae79f773ecf3b5fd0ef1a23ebea51ea0900e",
+        "c83c90df3dea93f150666b7d6ac7bd774c541cc5",
         [
          null,
          {}

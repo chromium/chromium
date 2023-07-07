@@ -74,11 +74,34 @@ function waitForWheelEvent(eventTarget) {
   return waitForEvent(eventTarget, 'wheel');
 }
 
-// TODO: Update tests to replace call to this method with calls to
-// waitForScrollTo, since this method does not test that scrolling has in fact
-// stopped.
-function waitForScrollEnd(eventTarget, getValue, targetValue) {
-  return waitForScrollTo(eventTarget, getValue, targetValue);
+// Return a Promise which will be resolved where there's no scroll event
+// observed during 15 frames.
+//
+// TODO: This function should be written with `scrollend` event.
+function waitForScrollEnd(eventTarget) {
+  const MAX_UNCHANGED_FRAMES = 15;
+
+  return new Promise(resolve => {
+    let unchanged_frames = 0;
+    let lastScrollEventTime;
+
+    const scrollListener = () => {
+      lastScrollEventTime = document.timeline.currentTime;
+    };
+    eventTarget.addEventListener('scroll', scrollListener);
+
+    const animationFrame = () => {
+      if (lastScrollEventTime == document.timeline.currentTime) {
+        unchanged_frames = 0;
+      } else if (++unchanged_frames >= MAX_UNCHANGED_FRAMES) {
+        eventTarget.removeEventListener('scroll', scrollListener);
+        resolve();
+        return;
+      }
+      requestAnimationFrame(animationFrame); // wait another frame
+    }
+    requestAnimationFrame(animationFrame);
+  });
 }
 
 function waitForScrollTo(eventTarget, getValue, targetValue) {

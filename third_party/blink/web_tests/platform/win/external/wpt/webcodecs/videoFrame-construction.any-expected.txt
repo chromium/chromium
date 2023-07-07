@@ -21,7 +21,7 @@ PASS Test invalid buffer constructed VideoFrames
 PASS Test Uint8Array(ArrayBuffer) constructed I420 VideoFrame
 PASS Test ArrayBuffer constructed I420 VideoFrame
 PASS Test planar constructed I420 VideoFrame with colorSpace
-PASS Test planar constructed I420 VideoFrame with null colorSpace values
+PASS Test planar can construct I420 VideoFrame with null colorSpace values
 PASS Test buffer constructed I420+Alpha VideoFrame
 PASS Test buffer constructed NV12 VideoFrame
 PASS Test buffer constructed RGB VideoFrames
