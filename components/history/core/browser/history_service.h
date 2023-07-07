@@ -636,8 +636,9 @@ class HistoryService : public KeyedService,
       base::OnceClosure callback,
       base::CancelableTaskTracker* tracker);
 
-  // Sets scores of cluster visits to 0 to hide them from the webUI. Virtual for
-  // testing.
+  // Sets scores of cluster visits to 0 to hide them from the webUI. Use
+  // `UpdateVisitsInteractionState` instead to preserve the visits' scores.
+  //  Virtual for testing.
   virtual base::CancelableTaskTracker::TaskId HideVisits(
       const std::vector<VisitID>& visit_ids,
       base::OnceClosure callback,
@@ -647,6 +648,13 @@ class HistoryService : public KeyedService,
   // ID as `new_cluster_visit`.
   virtual base::CancelableTaskTracker::TaskId UpdateClusterVisit(
       const history::ClusterVisit& new_cluster_visit,
+      base::OnceClosure callback,
+      base::CancelableTaskTracker* tracker);
+
+  // Updates the interaction state of cluster visits.
+  virtual base::CancelableTaskTracker::TaskId UpdateVisitsInteractionState(
+      const std::vector<VisitID>& visit_ids,
+      const ClusterVisit::InteractionState interaction_state,
       base::OnceClosure callback,
       base::CancelableTaskTracker* tracker);
 

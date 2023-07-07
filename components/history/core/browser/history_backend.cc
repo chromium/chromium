@@ -2445,6 +2445,16 @@ void HistoryBackend::UpdateClusterVisit(
   db_->UpdateClusterVisit(cluster_id, cluster_visit);
 }
 
+void HistoryBackend::UpdateVisitsInteractionState(
+    const std::vector<VisitID>& visit_ids,
+    const ClusterVisit::InteractionState interaction_state) {
+  TRACE_EVENT0("browser", "HistoryBackend::UpdateVisitsInteractionState");
+  if (!db_) {
+    return;
+  }
+  db_->UpdateVisitsInteractionState(visit_ids, interaction_state);
+}
+
 std::vector<Cluster> HistoryBackend::GetMostRecentClusters(
     base::Time inclusive_min_time,
     base::Time exclusive_max_time,

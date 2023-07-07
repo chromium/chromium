@@ -144,6 +144,11 @@ class VisitAnnotationsDatabase {
   // Delete `Cluster`s from the table.
   void DeleteClusters(const std::vector<int64_t>& cluster_ids);
 
+  // Update the interaction state of cluster visits.
+  void UpdateVisitsInteractionState(
+      const std::vector<VisitID>& visit_ids,
+      ClusterVisit::InteractionState interaction_state);
+
  protected:
   // Returns the database for the functions in this interface.
   virtual sql::Database& GetDB() = 0;

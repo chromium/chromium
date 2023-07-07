@@ -673,4 +673,20 @@ TEST_F(VisitAnnotationsDatabaseTest, AddClusters_DeleteClusters) {
   EXPECT_TRUE(GetClusterKeywords(4).empty());
 }
 
+TEST_F(VisitAnnotationsDatabaseTest, AddClusters_UpdateVisitsInteractionState) {
+  const std::vector<VisitID>& kSampleVisitIds = {3, 2, 5};
+  auto clusters = CreateClusters({kSampleVisitIds});
+  AddClusters(clusters);
+
+  EXPECT_EQ(GetClusterVisit(kSampleVisitIds.front()).interaction_state,
+            ClusterVisit::InteractionState::kDefault);
+
+  UpdateVisitsInteractionState(kSampleVisitIds,
+                               ClusterVisit::InteractionState::kDone);
+  for (auto visit_id : kSampleVisitIds) {
+    EXPECT_EQ(GetClusterVisit(visit_id).interaction_state,
+              ClusterVisit::InteractionState::kDone);
+  }
+}
+
 }  // namespace history
