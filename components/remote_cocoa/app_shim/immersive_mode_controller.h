@@ -11,6 +11,10 @@
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom-shared.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @class ClearTitlebarViewController;
 @class ImmersiveModeMapper;
 @class ImmersiveModeTitlebarObserver;
@@ -115,10 +119,27 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   // complete.
   bool fullscreen_transition_complete_ = false;
 
-  // TODO(https://crbug.com/1280317): Merge the contents back into the header
-  // file once all files that include this header are compiled with ARC.
-  struct ObjCStorage;
-  std::unique_ptr<ObjCStorage> objc_storage_;
+  NSWindow* __weak browser_window_;
+  NSWindow* __weak overlay_window_;
+  BridgedContentView* __weak overlay_content_view_;
+
+  // A controller for top chrome.
+  ImmersiveModeTitlebarViewController* __strong
+      immersive_mode_titlebar_view_controller_;
+
+  // A controller that keeps a small portion (0.5px) of the fullscreen AppKit
+  // NSWindow on screen.
+  // This controller is used as a workaround for an AppKit bug that displays a
+  // black bar when changing a NSTitlebarAccessoryViewController's
+  // fullScreenMinHeight from zero to non-zero.
+  // TODO(https://crbug.com/1369643): Remove when fixed by Apple.
+  NSTitlebarAccessoryViewController* __strong thin_titlebar_view_controller_;
+
+  ImmersiveModeMapper* __strong immersive_mode_mapper_;
+  ImmersiveModeTitlebarObserver* __strong immersive_mode_titlebar_observer_;
+
+  // Keeps track of which windows have received titlebar and reveal locks.
+  std::set<NSWindow*> window_lock_received_;
 
   base::WeakPtrFactory<ImmersiveModeController> weak_ptr_factory_;
 };
