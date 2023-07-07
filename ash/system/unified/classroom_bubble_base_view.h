@@ -9,6 +9,8 @@
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
+class GURL;
+
 namespace views {
 class Combobox;
 }
@@ -39,6 +41,9 @@ class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble {
   // Handles press on the "See all" button in `GlanceablesListFooterView`. Opens
   // classroom web UI based on the selected menu option.
   virtual void OnSeeAllPressed() = 0;
+
+  // Opens classroom url.
+  void OpenUrl(const GURL& url) const;
 
   // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> header_view_ = nullptr;

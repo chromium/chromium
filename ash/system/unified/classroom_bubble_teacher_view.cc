@@ -17,11 +17,11 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/notreached.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/combobox/combobox.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -53,6 +53,11 @@ constexpr auto kTeacherAssignmentsListTypeToLabel =
          {TeacherAssignmentsListType::kRecentlyDue, "Recently Due"},
          {TeacherAssignmentsListType::kNoDueDate, "No Due Date"},
          {TeacherAssignmentsListType::kGraded, "Graded"}});
+
+constexpr char kClassroomWebUIToReviewUrl[] =
+    "https://classroom.google.com/u/0/ta/not-reviewed/all";
+constexpr char kClassroomWebUIReviewedUrl[] =
+    "https://classroom.google.com/u/0/ta/reviewed/all";
 
 class ClassroomTeacherComboboxModel : public ui::ComboboxModel {
  public:
@@ -95,7 +100,19 @@ ClassroomBubbleTeacherView::ClassroomBubbleTeacherView(
 ClassroomBubbleTeacherView::~ClassroomBubbleTeacherView() = default;
 
 void ClassroomBubbleTeacherView::OnSeeAllPressed() {
-  NOTIMPLEMENTED();
+  CHECK(combo_box_view_->GetSelectedIndex());
+  const auto selected_index = combo_box_view_->GetSelectedIndex().value();
+  CHECK(selected_index >= 0 ||
+        selected_index < kTeacherAssignmentsListTypeOrdered.size());
+
+  switch (kTeacherAssignmentsListTypeOrdered[selected_index]) {
+    case TeacherAssignmentsListType::kDueSoon:
+    case TeacherAssignmentsListType::kRecentlyDue:
+    case TeacherAssignmentsListType::kNoDueDate:
+      return OpenUrl(GURL(kClassroomWebUIToReviewUrl));
+    case TeacherAssignmentsListType::kGraded:
+      return OpenUrl(GURL(kClassroomWebUIReviewedUrl));
+  }
 }
 
 void ClassroomBubbleTeacherView::OnGetTeacherAssignments(
@@ -106,7 +123,9 @@ void ClassroomBubbleTeacherView::OnGetTeacherAssignments(
   for (const auto& assignment : assignments) {
     list_container_view_
         ->AddChildView(std::make_unique<GlanceablesClassroomTeacherItemView>(
-            assignment.get()))
+            assignment.get(),
+            base::BindRepeating(&ClassroomBubbleTeacherView::OpenUrl,
+                                base::Unretained(this), assignment->link)))
         ->SetProperty(views::kMarginsKey, kIndividualItemViewMargin);
 
     if (list_container_view_->children().size() >= kMaxAssignments) {

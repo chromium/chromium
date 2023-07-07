@@ -20,6 +20,8 @@
 #include "google_apis/common/request_sender.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class GURL;
+
 namespace google_apis::classroom {
 class Courses;
 class CourseWork;
@@ -69,6 +71,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       GetTeacherAssignmentsCallback callback) override;
   void GetGradedTeacherAssignments(
       GetTeacherAssignmentsCallback callback) override;
+  void OpenUrl(const GURL& url) const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest, FetchCourses);

@@ -4,6 +4,7 @@
 
 #include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
@@ -18,6 +19,7 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "base/check.h"
+#include "base/functional/callback_forward.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -28,6 +30,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -175,13 +178,19 @@ std::unique_ptr<views::BoxLayoutView> BuildDueLabels(
 }  // namespace
 
 GlanceablesClassroomItemView::GlanceablesClassroomItemView(
-    const GlanceablesClassroomStudentAssignment* assignment) {
+    const GlanceablesClassroomStudentAssignment* assignment,
+    base::RepeatingClosure pressed_callback)
+    : views::Button(std::move(pressed_callback)) {
   CHECK(assignment);
 
+  auto* const layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  layout->SetInteriorMargin(kInteriorMargin);
+
+  // TODO(b/283370862): update accessible name.
+  SetAccessibleName(base::UTF8ToUTF16(assignment->course_work_title));
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kBackgroundRadius));
-  SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  SetInteriorMargin(kInteriorMargin);
 
   AddChildView(BuildIcon());
   AddChildView(BuildAssignmentTitleLabels(assignment));
@@ -196,14 +205,16 @@ BEGIN_METADATA(GlanceablesClassroomItemView, views::View)
 END_METADATA
 
 GlanceablesClassroomTeacherItemView::GlanceablesClassroomTeacherItemView(
-    const GlanceablesClassroomTeacherAssignment* assignment)
+    const GlanceablesClassroomTeacherAssignment* assignment,
+    base::RepeatingClosure pressed_callback)
     : GlanceablesClassroomItemView(
           std::make_unique<GlanceablesClassroomStudentAssignment>(
               assignment->course_title,
               assignment->course_work_title,
               assignment->link,
               assignment->due)
-              .get()) {
+              .get(),
+          std::move(pressed_callback)) {
   // TODO(b/283371064): Add grading/submission status for assignments in teacher
   // glanceable UI
 }

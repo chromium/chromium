@@ -17,10 +17,10 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/notreached.h"
 #include "base/strings/string_piece_forward.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/combobox/combobox.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -53,7 +53,12 @@ constexpr auto kStudentAssignmentsListTypeToLabel =
          {StudentAssignmentsListType::kMissing, "Missing"},
          {StudentAssignmentsListType::kDone, "Done"}});
 
-}  // namespace
+constexpr char kClassroomWebUIAssignedUrl[] =
+    "https://classroom.google.com/u/0/a/not-turned-in/all";
+constexpr char kClassroomWebUIMissingUrl[] =
+    "https://classroom.google.com/u/0/a/missing/all";
+constexpr char kClassroomWebUIDoneUrl[] =
+    "https://classroom.google.com/u/0/a/turned-in/all";
 
 class ClassroomStudentComboboxModel : public ui::ComboboxModel {
  public:
@@ -80,6 +85,8 @@ class ClassroomStudentComboboxModel : public ui::ComboboxModel {
   absl::optional<size_t> GetDefaultIndex() const override { return 0; }
 };
 
+}  // namespace
+
 ClassroomBubbleStudentView::ClassroomBubbleStudentView(
     DetailedViewDelegate* delegate)
     : ClassroomBubbleBaseView(
@@ -94,7 +101,20 @@ ClassroomBubbleStudentView::ClassroomBubbleStudentView(
 ClassroomBubbleStudentView::~ClassroomBubbleStudentView() = default;
 
 void ClassroomBubbleStudentView::OnSeeAllPressed() {
-  NOTIMPLEMENTED();
+  CHECK(combo_box_view_->GetSelectedIndex());
+  const auto selected_index = combo_box_view_->GetSelectedIndex().value();
+  CHECK(selected_index >= 0 ||
+        selected_index < kStudentAssignmentsListTypeOrdered.size());
+
+  switch (kStudentAssignmentsListTypeOrdered[selected_index]) {
+    case StudentAssignmentsListType::kAssigned:
+    case StudentAssignmentsListType::kNoDueDate:
+      return OpenUrl(GURL(kClassroomWebUIAssignedUrl));
+    case StudentAssignmentsListType::kMissing:
+      return OpenUrl(GURL(kClassroomWebUIMissingUrl));
+    case StudentAssignmentsListType::kDone:
+      return OpenUrl(GURL(kClassroomWebUIDoneUrl));
+  }
 }
 
 void ClassroomBubbleStudentView::OnGetStudentAssignments(
@@ -104,8 +124,10 @@ void ClassroomBubbleStudentView::OnGetStudentAssignments(
 
   for (const auto& assignment : assignments) {
     list_container_view_
-        ->AddChildView(
-            std::make_unique<GlanceablesClassroomItemView>(assignment.get()))
+        ->AddChildView(std::make_unique<GlanceablesClassroomItemView>(
+            assignment.get(),
+            base::BindRepeating(&ClassroomBubbleStudentView::OpenUrl,
+                                base::Unretained(this), assignment->link)))
         ->SetProperty(views::kMarginsKey, kIndividualItemViewMargin);
 
     if (list_container_view_->children().size() >= kMaxAssignments) {

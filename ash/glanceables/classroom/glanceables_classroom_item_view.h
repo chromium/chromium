@@ -7,7 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
-#include "ui/views/layout/flex_layout_view.h"
+#include "base/functional/callback_forward.h"
+#include "ui/views/controls/button/button.h"
 
 namespace ash {
 
@@ -15,12 +16,13 @@ struct GlanceablesClassroomStudentAssignment;
 
 // A view which shows information about a single assignment in the classroom
 // glanceable.
-class ASH_EXPORT GlanceablesClassroomItemView : public views::FlexLayoutView {
+class ASH_EXPORT GlanceablesClassroomItemView : public views::Button {
  public:
   METADATA_HEADER(GlanceablesClassroomItemView);
 
-  explicit GlanceablesClassroomItemView(
-      const GlanceablesClassroomStudentAssignment* assignment);
+  GlanceablesClassroomItemView(
+      const GlanceablesClassroomStudentAssignment* assignment,
+      base::RepeatingClosure pressed_callback);
   GlanceablesClassroomItemView(const GlanceablesClassroomItemView&) = delete;
   GlanceablesClassroomItemView& operator=(const GlanceablesClassroomItemView&) =
       delete;
@@ -34,8 +36,9 @@ class ASH_EXPORT GlanceablesClassroomTeacherItemView
  public:
   METADATA_HEADER(GlanceablesClassroomTeacherItemView);
 
-  explicit GlanceablesClassroomTeacherItemView(
-      const GlanceablesClassroomTeacherAssignment* assignment);
+  GlanceablesClassroomTeacherItemView(
+      const GlanceablesClassroomTeacherAssignment* assignment,
+      base::RepeatingClosure pressed_callback);
   GlanceablesClassroomTeacherItemView(
       const GlanceablesClassroomTeacherItemView&) = delete;
   GlanceablesClassroomTeacherItemView& operator=(

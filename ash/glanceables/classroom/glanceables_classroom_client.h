@@ -11,6 +11,8 @@
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
 
+class GURL;
+
 namespace ash {
 
 struct GlanceablesClassroomStudentAssignment;
@@ -58,6 +60,9 @@ class ASH_EXPORT GlanceablesClassroomClient {
       GetTeacherAssignmentsCallback callback) = 0;
   virtual void GetGradedTeacherAssignments(
       GetTeacherAssignmentsCallback callback) = 0;
+
+  // Opens classroom url.
+  virtual void OpenUrl(const GURL& url) const = 0;
 };
 
 }  // namespace ash

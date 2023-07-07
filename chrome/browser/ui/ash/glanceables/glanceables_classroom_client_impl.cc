@@ -19,6 +19,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "google_apis/classroom/classroom_api_course_work_response_types.h"
@@ -32,6 +33,7 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -305,6 +307,10 @@ void GlanceablesClassroomClientImpl::GetGradedTeacherAssignments(
       &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
       weak_factory_.GetWeakPtr(), std::move(due_predicate), /*graded=*/true,
       std::move(callback)));
+}
+
+void GlanceablesClassroomClientImpl::OpenUrl(const GURL& url) const {
+  NOTIMPLEMENTED() << " " << url;
 }
 
 void GlanceablesClassroomClientImpl::FetchStudentCourses(

@@ -6,9 +6,12 @@
 
 #include <memory>
 
+#include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
+#include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -23,6 +26,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -91,6 +95,18 @@ void ClassroomBubbleBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
   node_data->role = ax::mojom::Role::kListBox;
   node_data->SetName(u"Glanceables Bubble Classroom View Accessible Name");
+}
+
+void ClassroomBubbleBaseView::OpenUrl(const GURL& url) const {
+  if (!url.is_valid()) {
+    return;
+  }
+
+  const auto* const client =
+      Shell::Get()->glanceables_v2_controller()->GetClassroomClient();
+  if (client) {
+    client->OpenUrl(url);
+  }
 }
 
 BEGIN_METADATA(ClassroomBubbleBaseView, views::View)
