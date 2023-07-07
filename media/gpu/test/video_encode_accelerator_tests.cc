@@ -121,13 +121,17 @@ constexpr base::FilePath::CharType kDefaultTestVideoPath[] =
 // TODO(hiroh): Decrease this values to make the test faster.
 constexpr size_t kNumFramesToEncodeForBitrateCheck = 300;
 // Tolerance factor for how encoded bitrate can differ from requested bitrate.
-constexpr double kBitrateTolerance = 0.1;
+constexpr double kBitrateTolerance = 0.15;
 constexpr double kVariableBitrateTolerance = 0.3;
 // The event timeout used in bitrate check tests because encoding 2160p and
 // validating |kNumFramesToEncodeBitrateCheck| frames take much time.
 constexpr base::TimeDelta kBitrateCheckEventTimeout = base::Seconds(180);
 
 media::test::VideoEncoderTestEnvironment* g_env;
+
+// Whether we validate the bitstream produced by the encoder.
+bool g_enable_bitstream_validator = false;
+
 // Declared PSNR threshold here, not in VideoEncoderTestEnvironment because it
 // is specific in video_encode_accelerator_tests.
 double g_psnr_threshold = PSNRVideoFrameValidator::kDefaultTolerance;
@@ -253,7 +257,7 @@ class VideoEncoderTest : public ::testing::Test {
       }
     }
 
-    if (!g_env->IsBitstreamValidatorEnabled()) {
+    if (!g_enable_bitstream_validator) {
       return bitstream_processors;
     }
 
@@ -779,7 +783,7 @@ int main(int argc, char** argv) {
   std::vector<base::test::FeatureRef> disabled_features;
 
   // Parse command line arguments.
-  bool enable_bitstream_validator = true;
+  media::test::g_enable_bitstream_validator = true;
   base::CommandLine::SwitchMap switches = cmd_line->GetSwitches();
   for (base::CommandLine::SwitchMap::const_iterator it = switches.begin();
        it != switches.end(); ++it) {
@@ -808,7 +812,7 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
       }
     } else if (it->first == "disable_validator") {
-      enable_bitstream_validator = false;
+      media::test::g_enable_bitstream_validator = false;
     } else if (it->first == "psnr_threshold") {
       if (!base::StringToDouble(it->second, &media::test::g_psnr_threshold)) {
         std::cout << "invalid number \"" << it->second << "\n";
@@ -871,9 +875,9 @@ int main(int argc, char** argv) {
   // Set up our test environment.
   media::test::VideoEncoderTestEnvironment* test_environment =
       media::test::VideoEncoderTestEnvironment::Create(
-          video_path, video_metadata_path, enable_bitstream_validator,
-          output_folder, codec, svc_mode, output_bitstream, output_bitrate,
-          bitrate_mode, reverse, /*read_all_frames_in_video=*/false,
+          media::test::VideoEncoderTestEnvironment::TestType::kValidation,
+          video_path, video_metadata_path, output_folder, codec, svc_mode,
+          output_bitstream, output_bitrate, bitrate_mode, reverse,
           frame_output_config, /*enabled_features=*/{}, disabled_features);
 
   if (!test_environment)

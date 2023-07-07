@@ -111,15 +111,6 @@ constexpr base::FilePath::CharType kDefaultTestVideoPath[] =
 
 media::test::VideoEncoderTestEnvironment* g_env;
 
-enum class EncoderPerfTestMode {
-  kQuality,  // Measure the quality performance.
-  kSpeed,    // Measure the speed performance.
-};
-
-// TODO(b/282878066): Make this non absl::optional and force a user to specify
-// --measure-quality or --measure-speed once we change video.EncodeAccelPerf.
-absl::optional<media::test::EncoderPerfTestMode> g_test_mode;
-
 constexpr size_t kNumEncodeFramesForSpeedPerformance = 300;
 
 // We use a longer event timeout because it takes much longer to encode,
@@ -804,8 +795,8 @@ class VideoEncoderTest : public ::testing::Test {
 // possible, and gives an idea about the maximum output of the
 // encoder.
 TEST_F(VideoEncoderTest, MeasureUncappedPerformance) {
-  if (g_test_mode &&
-      (*g_test_mode == media::test::EncoderPerfTestMode::kQuality)) {
+  if (g_env->RunTestType() ==
+      media::test::VideoEncoderTestEnvironment::TestType::kQualityPerformance) {
     GTEST_SKIP()
         << "Skip because this test case is to measure speed performance";
   }
@@ -831,8 +822,8 @@ TEST_F(VideoEncoderTest, MeasureUncappedPerformance) {
 // then decide how to aggregate/report those metrics.
 TEST_F(VideoEncoderTest,
        MeasureUncappedPerformance_MultipleConcurrentEncoders) {
-  if (g_test_mode &&
-      (*g_test_mode == media::test::EncoderPerfTestMode::kQuality)) {
+  if (g_env->RunTestType() ==
+      media::test::VideoEncoderTestEnvironment::TestType::kQualityPerformance) {
     GTEST_SKIP()
         << "Skip because this test case is to measure speed performance";
   }
@@ -873,8 +864,8 @@ TEST_F(VideoEncoderTest,
 // 30fps. This test can be used to measure the cpu metrics during
 // encoding.
 TEST_F(VideoEncoderTest, DISABLED_MeasureCappedPerformance) {
-  if (g_test_mode &&
-      (*g_test_mode == media::test::EncoderPerfTestMode::kQuality)) {
+  if (g_env->RunTestType() ==
+      media::test::VideoEncoderTestEnvironment::TestType::kQualityPerformance) {
     GTEST_SKIP()
         << "Skip because this test case is to measure speed performance";
   }
@@ -897,13 +888,16 @@ TEST_F(VideoEncoderTest, DISABLED_MeasureCappedPerformance) {
 }
 
 TEST_F(VideoEncoderTest, MeasureProducedBitstreamQuality) {
-  const size_t num_frames = g_test_mode ? g_env->Video()->NumFrames()
-                                        : kNumEncodeFramesForSpeedPerformance;
-  if (g_test_mode &&
-      (*g_test_mode == media::test::EncoderPerfTestMode::kSpeed)) {
+  if (g_env->RunTestType() ==
+      media::test::VideoEncoderTestEnvironment::TestType::kSpeedPerformance) {
     GTEST_SKIP()
         << "Skip because this test case is to measure quality performance";
   }
+  const size_t num_frames = g_env->RunTestType() ==
+                                    media::test::VideoEncoderTestEnvironment::
+                                        TestType::kQualityPerformance
+                                ? g_env->Video()->NumFrames()
+                                : kNumEncodeFramesForSpeedPerformance;
 
   auto encoder = CreateVideoEncoder(/*encode_rate=*/absl::nullopt,
                                     /*measure_quality=*/true,
@@ -958,6 +952,8 @@ int main(int argc, char** argv) {
 
   // Check if a video was specified on the command line.
   base::CommandLine::StringVector args = cmd_line->GetArgs();
+  media::test::VideoEncoderTestEnvironment::TestType test_type =
+      media::test::VideoEncoderTestEnvironment::TestType::kGeneralPerformance;
   base::FilePath video_path =
       (args.size() >= 1) ? base::FilePath(args[0])
                          : base::FilePath(media::test::kDefaultTestVideoPath);
@@ -1017,9 +1013,11 @@ int main(int argc, char** argv) {
     } else if (it->first == "disable_vaapi_lock") {
       disabled_features.push_back(media::kGlobalVaapiLock);
     } else if (it->first == "speed") {
-      media::test::g_test_mode = media::test::EncoderPerfTestMode::kSpeed;
+      test_type =
+          media::test::VideoEncoderTestEnvironment::TestType::kSpeedPerformance;
     } else if (it->first == "quality") {
-      media::test::g_test_mode = media::test::EncoderPerfTestMode::kQuality;
+      test_type = media::test::VideoEncoderTestEnvironment::TestType::
+          kQualityPerformance;
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
                 << media::test::usage_msg;
@@ -1032,12 +1030,9 @@ int main(int argc, char** argv) {
   // Set up our test environment.
   media::test::VideoEncoderTestEnvironment* test_environment =
       media::test::VideoEncoderTestEnvironment::Create(
-          video_path, video_metadata_path, false, base::FilePath(output_folder),
-          codec, svc_mode, output_bitstream, encode_bitrate, bitrate_mode,
-          reverse,
-          media::test::g_test_mode &&
-              (*media::test::g_test_mode ==
-               media::test::EncoderPerfTestMode::kQuality),
+          test_type, video_path, video_metadata_path,
+          base::FilePath(output_folder), codec, svc_mode, output_bitstream,
+          encode_bitrate, bitrate_mode, reverse,
           media::test::FrameOutputConfig(),
           /*enabled_features=*/{}, disabled_features);
   if (!test_environment)
