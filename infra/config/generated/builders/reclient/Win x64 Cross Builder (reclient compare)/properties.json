@@ -42,6 +42,7 @@
   },
   "$build/reclient": {
     "bootstrap_env": {
+      "GOMA_DEPS_CACHE_TABLE_THRESHOLD": "40000",
       "RBE_fast_log_collection": "true"
     },
     "disable_bq_upload": true,
