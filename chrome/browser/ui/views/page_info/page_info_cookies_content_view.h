@@ -13,6 +13,10 @@
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/view.h"
 
+namespace views {
+class Label;
+}  // namespace views
+
 // The view that is used as a content view of the Cookies subpage in page info.
 // It contains information about cookies (short description, how many sites
 // are allowed).
@@ -47,6 +51,9 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   //  so does it  and sets its info.
   void SetBlockingThirdPartyCookiesInfo(const CookiesNewInfo& cookie_info);
 
+  // Updates the new third-party cookies section using |cookie_info|.
+  void SetThirdPartyCookiesInfo(const CookiesNewInfo& cookie_info);
+
   // Updates toggles state according to info.
   void UpdateBlockingThirdPartyCookiesToggle(bool are_cookies_blocked);
 
@@ -68,9 +75,14 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // placeholder information if necessary.
   void InitFpsButton(bool is_managed);
 
+  // Initializes the new third-party cookies section. The section starts out
+  // hidden and is only shown when third-party cookies are blocked or there is
+  // an active exception.
+  void AddThirdPartyCookiesContainer();
+
   base::OnceClosure initialized_callback_ = base::NullCallback();
 
-  raw_ptr<PageInfo, DanglingUntriaged> presenter_;
+  raw_ptr<PageInfo, DanglingUntriaged> presenter_ = nullptr;
 
   // The view that contains the fps_button and cookies_dialog_button.
   raw_ptr<views::View> cookies_buttons_container_view_ = nullptr;
@@ -102,6 +114,12 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // FPS info histogram. Needed to not record the histogram each time page info
   // status changed.
   bool fps_histogram_recorded_ = false;
+
+  // Third-party cookies section which contains a title, a description and a
+  // toggle row view.
+  raw_ptr<views::View> third_party_cookies_container_ = nullptr;
+  raw_ptr<views::Label> third_party_cookies_title_ = nullptr;
+  raw_ptr<views::Label> third_party_cookies_description_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_COOKIES_CONTENT_VIEW_H_
