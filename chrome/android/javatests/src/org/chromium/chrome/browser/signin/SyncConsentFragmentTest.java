@@ -574,6 +574,7 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    @DisabledTest(message = "crbug.com/1462981")
     public void testClickingSettingsDoesNotSetInitialSyncFeatureSetupComplete() {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
@@ -607,6 +608,7 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    @DisabledTest(message = "crbug.com/1462981")
     public void testClickingSettingsDoesNotSetInitialSyncFeatureSetupCompleteWithTangibleSync() {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
