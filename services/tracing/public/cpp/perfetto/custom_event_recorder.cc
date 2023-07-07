@@ -39,6 +39,11 @@ using perfetto::protos::pbzero::ChromeProcessDescriptor;
 namespace tracing {
 namespace {
 
+constexpr char kHistogramSamplesCategory[] =
+    TRACE_DISABLED_BY_DEFAULT("histogram_samples");
+constexpr char kUserActionSamplesCategory[] =
+    TRACE_DISABLED_BY_DEFAULT("user_action_samples");
+
 base::SequencedTaskRunner* GetTaskRunner() {
   return PerfettoTracedProcess::Get()
       ->GetTaskRunner()
@@ -135,10 +140,9 @@ void CustomEventRecorder::WillClearIncrementalState(
 
 void CustomEventRecorder::OnStartupTracingStarted(
     const TraceConfig& trace_config,
-    bool privacy_filtering_enabled) {
+    bool /*privacy_filtering_enabled*/) {
   DCHECK(monitored_histograms_.empty());
-  if (trace_config.IsCategoryGroupEnabled(
-          TRACE_DISABLED_BY_DEFAULT("histogram_samples")) &&
+  if (trace_config.IsCategoryGroupEnabled(kHistogramSamplesCategory) &&
       trace_config.histogram_names().empty()) {
     // The global callback can be added early at startup before main message
     // loop is created. But histogram specific observers need task runner and
@@ -146,15 +150,8 @@ void CustomEventRecorder::OnStartupTracingStarted(
     base::StatisticsRecorder::SetGlobalSampleCallback(
         &CustomEventRecorder::OnMetricsSampleCallback);
   }
-  {
-    base::AutoLock lock(lock_);
-    privacy_filtering_enabled_ = privacy_filtering_enabled;
-  }
 }
 
-// TODO(b/237761718): Support multiple simultaneous tracing sessions.
-// * Read privacy_filtering_enabled from EventContext.
-// * Make monitored_histograms_ a map keyed on session ID.
 // TODO(khokhlov): In SDK build, this method can be called at startup, before
 // the task runner is created. Factor out the parts that can be called early
 // into OnStartupTracingStarted, and make sure each part is called at the
@@ -166,19 +163,10 @@ void CustomEventRecorder::OnTracingStarted(
   auto trace_config =
       TraceConfig(data_source_config.chrome_config().trace_config());
 
-  bool privacy_filtering_enabled =
-      data_source_config.chrome_config().privacy_filtering_enabled();
-  {
-    base::AutoLock lock(lock_);
-    privacy_filtering_enabled_ = privacy_filtering_enabled;
-  }
-
   EmitRecurringUpdates();
   ResetHistograms(trace_config);
 
-  DCHECK(monitored_histograms_.empty());
-  if (trace_config.IsCategoryGroupEnabled(
-          TRACE_DISABLED_BY_DEFAULT("histogram_samples"))) {
+  if (trace_config.IsCategoryGroupEnabled(kHistogramSamplesCategory)) {
     if (trace_config.histogram_names().empty() &&
         !base::StatisticsRecorder::global_sample_callback()) {
       // Add the global callback if it wasn't already.
@@ -186,21 +174,26 @@ void CustomEventRecorder::OnTracingStarted(
           &CustomEventRecorder::OnMetricsSampleCallback);
     }
     for (const std::string& histogram_name : trace_config.histogram_names()) {
-      monitored_histograms_.emplace_back(
-          std::make_unique<
-              base::StatisticsRecorder::ScopedHistogramSampleObserver>(
-              histogram_name,
-              base::BindRepeating(
-                  &CustomEventRecorder::OnMetricsSampleCallback)));
+      if (monitored_histograms_.count(histogram_name)) {
+        continue;
+      }
+      monitored_histograms_[histogram_name] = std::make_unique<
+          base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+          histogram_name,
+          base::BindRepeating(&CustomEventRecorder::OnMetricsSampleCallback));
     }
   }
 
-  if (trace_config.IsCategoryGroupEnabled(
-          TRACE_DISABLED_BY_DEFAULT("user_action_samples"))) {
+  if (trace_config.IsCategoryGroupEnabled(kUserActionSamplesCategory)) {
     auto task_runner = base::GetRecordActionTaskRunner();
     if (task_runner) {
       task_runner->PostTask(
           FROM_HERE, base::BindOnce([]() {
+            // Attempt to remove an existing callback (this will do nothing if
+            // there's no callback), to ensure that at most one callback is
+            // registered in the presence of multiple active tracing sessions.
+            base::RemoveActionCallback(
+                CustomEventRecorder::GetInstance()->user_action_callback_);
             base::AddActionCallback(
                 CustomEventRecorder::GetInstance()->user_action_callback_);
           }));
@@ -215,29 +208,32 @@ void CustomEventRecorder::OnTracingStopped(
   // Write metadata events etc.
   LogHistograms();
 
-  base::StatisticsRecorder::SetGlobalSampleCallback(nullptr);
-  monitored_histograms_.clear();
-
-  auto task_runner = base::GetRecordActionTaskRunner();
-  if (task_runner) {
-    task_runner->PostTask(
-        FROM_HERE, base::BindOnce([]() {
-          base::RemoveActionCallback(
-              CustomEventRecorder::GetInstance()->user_action_callback_);
-        }));
-  }
-
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   // We have to flush explicitly because we're using the asynchronous stop
   // mechanism.
   base::TrackEvent::Flush();
   std::move(stop_complete_callback).Run();
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-}
 
-bool CustomEventRecorder::IsPrivacyFilteringEnabled() {
-  base::AutoLock lock(lock_);
-  return privacy_filtering_enabled_;
+  // Clean up callbacks if no tracing sessions are recording samples.
+  bool enabled;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED(kHistogramSamplesCategory, &enabled);
+  if (!enabled) {
+    base::StatisticsRecorder::SetGlobalSampleCallback(nullptr);
+    monitored_histograms_.clear();
+  }
+
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED(kUserActionSamplesCategory, &enabled);
+  if (!enabled) {
+    auto task_runner = base::GetRecordActionTaskRunner();
+    if (task_runner) {
+      task_runner->PostTask(
+          FROM_HERE, base::BindOnce([]() {
+            base::RemoveActionCallback(
+                CustomEventRecorder::GetInstance()->user_action_callback_);
+          }));
+    }
+  }
 }
 
 void CustomEventRecorder::OnUserActionSampleCallback(
@@ -245,14 +241,12 @@ void CustomEventRecorder::OnUserActionSampleCallback(
     base::TimeTicks action_time) {
   constexpr uint64_t kGlobalInstantTrackId = 0;
   TRACE_EVENT_INSTANT(
-      TRACE_DISABLED_BY_DEFAULT("user_action_samples"), "UserAction",
+      kUserActionSamplesCategory, "UserAction",
       perfetto::Track::Global(kGlobalInstantTrackId),
       [&](perfetto::EventContext ctx) {
-        bool privacy_filtering_enabled =
-            CustomEventRecorder::GetInstance()->IsPrivacyFilteringEnabled();
         perfetto::protos::pbzero::ChromeUserEvent* new_sample =
             ctx.event()->set_chrome_user_event();
-        if (!privacy_filtering_enabled) {
+        if (!ctx.ShouldFilterDebugAnnotations()) {
           new_sample->set_action(action);
         }
         new_sample->set_action_hash(base::HashMetricName(action));
@@ -317,15 +311,13 @@ void CustomEventRecorder::OnMetricsSampleCallback(
     uint64_t name_hash,
     base::HistogramBase::Sample sample) {
   TRACE_EVENT_INSTANT(
-      TRACE_DISABLED_BY_DEFAULT("histogram_samples"), "HistogramSample",
+      kHistogramSamplesCategory, "HistogramSample",
       [&](perfetto::EventContext ctx) {
-        bool privacy_filtering_enabled =
-            CustomEventRecorder::GetInstance()->IsPrivacyFilteringEnabled();
         perfetto::protos::pbzero::ChromeHistogramSample* new_sample =
             ctx.event()->set_chrome_histogram_sample();
         new_sample->set_name_hash(name_hash);
         new_sample->set_sample(sample);
-        if (!privacy_filtering_enabled) {
+        if (!ctx.ShouldFilterDebugAnnotations()) {
           size_t iid = InternedHistogramName::Get(&ctx, histogram_name);
           new_sample->set_name_iid(iid);
         }

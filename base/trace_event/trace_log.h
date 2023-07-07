@@ -120,7 +120,7 @@ class BASE_EXPORT TraceLog :
     // OnSetup call, so we can't guarantee that we know the config by the time
     // TrackEvent::IsEnabled() is true.
     AutoLock lock(track_event_lock_);
-    return track_event_enabled_;
+    return track_event_sessions_.size() > 0;
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     AutoLock lock(lock_);
     return enabled_;
@@ -422,6 +422,18 @@ class BASE_EXPORT TraceLog :
   void SetTraceBufferForTesting(std::unique_ptr<TraceBuffer> trace_buffer);
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  struct TrackEventSession {
+    uint32_t internal_instance_index;
+    perfetto::DataSourceConfig config;
+    perfetto::BackendType backend_type = perfetto::kUnspecifiedBackend;
+  };
+  std::vector<TrackEventSession> GetTrackEventSessions() const;
+
+  // DEPRECATED. In the presence of multiple simultaneous sessions, this method
+  // returns only the first session's config. When no tracing sessions are
+  // active, returns an empty config for compatibility with legacy code.
+  // TODO(khokhlov): Remove this method and migrate all its uses to
+  // GetTrackEventSessions().
   perfetto::DataSourceConfig GetCurrentTrackEventDataSourceConfig() const;
   void InitializePerfettoIfNeeded();
   bool IsPerfettoInitializedByTraceLog() const;
@@ -621,8 +633,9 @@ class BASE_EXPORT TraceLog :
   std::unique_ptr<::base::tracing::PerfettoPlatform> perfetto_platform_;
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
   perfetto::TraceConfig perfetto_config_;
-  perfetto::DataSourceConfig track_event_config_ GUARDED_BY(track_event_lock_);
-  bool track_event_enabled_ GUARDED_BY(track_event_lock_) = false;
+  std::vector<TrackEventSession> track_event_sessions_
+      GUARDED_BY(track_event_lock_);
+  int active_track_event_sessions_ = 0;
   mutable Lock track_event_lock_;
 #if !BUILDFLAG(IS_NACL)
   std::unique_ptr<perfetto::trace_processor::TraceProcessorStorage>

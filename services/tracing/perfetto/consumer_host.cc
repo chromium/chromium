@@ -673,6 +673,11 @@ void ConsumerHost::EnableTracing(
   perfetto::base::ScopedFile file(output_file.TakePlatformFile());
 #endif
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  tracing_session_ = std::make_unique<TracingSession>(
+      this, std::move(tracing_session_host), std::move(tracing_session_client),
+      trace_config, std::move(file), priority);
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   // We create our new TracingSession async, if the PerfettoService allows
   // us to, after it's stopped any currently running lower or equal priority
   // tracing sessions.
@@ -699,6 +704,7 @@ void ConsumerHost::EnableTracing(
                     weak_factory_.GetWeakPtr(), std::move(tracing_session_host),
                     std::move(tracing_session_client), trace_config,
                     std::move(file), priority));
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 void ConsumerHost::OnConnect() {}

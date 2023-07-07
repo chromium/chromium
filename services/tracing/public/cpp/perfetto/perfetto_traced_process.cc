@@ -304,7 +304,6 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   init_args.platform = platform_.get();
   init_args.custom_backend = tracing_backend_.get();
   init_args.backends |= perfetto::kCustomBackend;
-  init_args.supports_multiple_data_source_instances = false;
   init_args.shmem_batch_commits_duration_ms = 1000;
   init_args.use_monotonic_clock = true;
   init_args.disallow_merging_with_system_tracks = true;

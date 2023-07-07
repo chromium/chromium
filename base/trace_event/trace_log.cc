@@ -946,7 +946,10 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
 perfetto::DataSourceConfig TraceLog::GetCurrentTrackEventDataSourceConfig()
     const {
   AutoLock lock(track_event_lock_);
-  return track_event_config_;
+  if (track_event_sessions_.empty()) {
+    return perfetto::DataSourceConfig();
+  }
+  return track_event_sessions_[0].config;
 }
 
 void TraceLog::InitializePerfettoIfNeeded() {
@@ -2194,11 +2197,18 @@ tracing::PerfettoPlatform* TraceLog::GetOrCreatePerfettoPlatform() {
 
 void TraceLog::OnSetup(const perfetto::DataSourceBase::SetupArgs& args) {
   AutoLock lock(track_event_lock_);
-  track_event_config_ = *args.config;
-  track_event_enabled_ = true;
+  track_event_sessions_.emplace_back(args.internal_instance_index, *args.config,
+                                     args.backend_type);
 }
 
 void TraceLog::OnStart(const perfetto::DataSourceBase::StartArgs&) {
+  ++active_track_event_sessions_;
+  // Legacy observers don't support multiple tracing sessions. So we only
+  // notify them about the first one.
+  if (active_track_event_sessions_ > 1) {
+    return;
+  }
+
   AutoLock lock(observers_lock_);
   for (EnabledStateObserver* observer : enabled_state_observers_)
     observer->OnTraceLogEnabled();
@@ -2209,16 +2219,27 @@ void TraceLog::OnStart(const perfetto::DataSourceBase::StartArgs&) {
   }
 }
 
-void TraceLog::OnStop(const perfetto::DataSourceBase::StopArgs&) {
-  AutoLock lock(observers_lock_);
+void TraceLog::OnStop(const perfetto::DataSourceBase::StopArgs& args) {
   {
     // We can't use |lock_| because OnStop() can be called from within
     // SetDisabled(). We also can't use |observers_lock_|, because observers
     // below can call into IsEnabled(), which needs to access
-    // |track_event_enabled_|. So we use a separate lock.
+    // |track_event_sessions_|. So we use a separate lock.
     AutoLock track_event_lock(track_event_lock_);
-    track_event_enabled_ = false;
+    std::erase_if(track_event_sessions_, [&args](
+                                             const TrackEventSession& session) {
+      return session.internal_instance_index == args.internal_instance_index;
+    });
   }
+
+  --active_track_event_sessions_;
+  // Legacy observers don't support multiple tracing sessions. So we only
+  // notify them when the last one stopped.
+  if (active_track_event_sessions_ > 0) {
+    return;
+  }
+
+  AutoLock lock(observers_lock_);
   for (auto* it : enabled_state_observers_)
     it->OnTraceLogDisabled();
   for (const auto& it : async_observers_) {

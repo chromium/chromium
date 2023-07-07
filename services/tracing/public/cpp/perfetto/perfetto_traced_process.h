@@ -157,6 +157,8 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
     void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
 
+    static constexpr bool kSupportsMultipleInstances = false;
+
    private:
     // This field is not a raw_ptr<> because it was filtered by the rewriter
     // for: #addr-of
