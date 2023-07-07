@@ -5,6 +5,7 @@ CPEPrefix: cpe:/a:hunspell_project:hunspell:1.6.0
 License: MPL 1.1/GPL 2.0/LGPL 2.1
 License File: COPYING.MPL
 Security Critical: yes
+Shipped: yes
 
 Description:
 This is a partial copy of Hunspell 1.6.0 with the following changes:
