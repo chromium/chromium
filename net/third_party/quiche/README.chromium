@@ -4,6 +4,7 @@ Version: git
 License: BSD
 License File: src/LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 This is QUICHE, Google's implementation of QUIC, HTTP/2 and SPDY protocols.
