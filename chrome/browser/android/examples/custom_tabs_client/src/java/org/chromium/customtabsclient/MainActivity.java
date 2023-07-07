@@ -99,6 +99,7 @@ public class MainActivity
     private static final String SHARED_PREF_DISCONNECT_BUTTON = "DisconnectButton";
     private static final String SHARED_PREF_WARMUP_BUTTON = "WarmupButton";
     private static final String SHARED_PREF_MAY_LAUNCH_BUTTON = "MayLaunchButton";
+    private static final String SHARED_PREF_ENGAGEMENT_SIGNALS_BUTTON = "EngagementSignalsButton";
     private static final int CLOSE_ICON_X = 0;
     private static final int CLOSE_ICON_BACK = 1;
     private static final int CLOSE_ICON_CHECK = 2;
@@ -134,6 +135,7 @@ public class MainActivity
     private Button mMayLaunchButton;
     private Button mWarmupButton;
     private Button mLaunchButton;
+    private Button mEngagementSignalsButton;
     private MediaPlayer mMediaPlayer;
     private MaterialButtonToggleGroup mCloseButtonPositionToggle;
     private MaterialButtonToggleGroup mCloseButtonIcon;
@@ -651,11 +653,13 @@ public class MainActivity
         mWarmupButton = (Button) findViewById(R.id.warmup_button);
         mMayLaunchButton = (Button) findViewById(R.id.may_launch_button);
         mLaunchButton = (Button) findViewById(R.id.launch_button);
+        mEngagementSignalsButton = (Button) findViewById(R.id.engagement_signals_button);
         mConnectButton.setOnClickListener(this);
         mDisconnectButton.setOnClickListener(this);
         mWarmupButton.setOnClickListener(this);
         mMayLaunchButton.setOnClickListener(this);
         mLaunchButton.setOnClickListener(this);
+        mEngagementSignalsButton.setOnClickListener(this);
         if (configChange) {
             mConnectButton.setEnabled(mSharedPref.getBoolean(SHARED_PREF_CONNECT_BUTTON, true));
             mDisconnectButton.setEnabled(
@@ -663,6 +667,8 @@ public class MainActivity
             mWarmupButton.setEnabled(mSharedPref.getBoolean(SHARED_PREF_WARMUP_BUTTON, false));
             mMayLaunchButton.setEnabled(
                     mSharedPref.getBoolean(SHARED_PREF_MAY_LAUNCH_BUTTON, false));
+            mEngagementSignalsButton.setEnabled(
+                    mSharedPref.getBoolean(SHARED_PREF_ENGAGEMENT_SIGNALS_BUTTON, false));
         }
         findViewById(R.id.test_asm_button).setOnClickListener(this);
     }
@@ -752,6 +758,8 @@ public class MainActivity
             editor.putBoolean(SHARED_PREF_DISCONNECT_BUTTON, mDisconnectButton.isEnabled());
             editor.putBoolean(SHARED_PREF_WARMUP_BUTTON, mWarmupButton.isEnabled());
             editor.putBoolean(SHARED_PREF_MAY_LAUNCH_BUTTON, mMayLaunchButton.isEnabled());
+            editor.putBoolean(
+                    SHARED_PREF_ENGAGEMENT_SIGNALS_BUTTON, mEngagementSignalsButton.isEnabled());
             editor.apply();
         }
         super.onDestroy();
@@ -792,6 +800,7 @@ public class MainActivity
         mConnectButton.setEnabled(true);
         mDisconnectButton.setEnabled(false);
         mWarmupButton.setEnabled(false);
+        mEngagementSignalsButton.setEnabled(false);
 
         if (mConnection == null) return;
         unbindService(mConnection);
@@ -824,6 +833,12 @@ public class MainActivity
         } else if (viewId == R.id.launch_button) {
             updateUrlsList();
             launchCct(url, editor);
+        } else if (viewId == R.id.engagement_signals_button) {
+            try {
+                getSession().setEngagementSignalsCallback(new EngagementCallback(), Bundle.EMPTY);
+            } catch (RemoteException e) {
+                Log.w(TAG, "The Service died while responding to the request.", e);
+            }
         }
     }
 
@@ -1074,7 +1089,7 @@ public class MainActivity
         mMayLaunchButton.setEnabled(true);
         try {
             if (getSession().isEngagementSignalsApiAvailable(Bundle.EMPTY)) {
-                getSession().setEngagementSignalsCallback(new EngagementCallback(), Bundle.EMPTY);
+                mEngagementSignalsButton.setEnabled(true);
             }
         } catch (RemoteException e) {
             Log.w(TAG, "The Service died while responding to the request.", e);
@@ -1088,6 +1103,7 @@ public class MainActivity
         mConnectButton.setEnabled(true);
         mWarmupButton.setEnabled(false);
         mMayLaunchButton.setEnabled(false);
+        mEngagementSignalsButton.setEnabled(false);
         sClient = null;
     }
 
