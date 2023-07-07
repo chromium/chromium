@@ -157,7 +157,8 @@ class PasswordStoreAndroidBackend
       std::unordered_map<JobId, JobReturnHandler, JobId::Hasher>>;
 
   // Implements PasswordStoreBackend interface.
-  void InitBackend(RemoteChangesReceived remote_form_changes_received,
+  void InitBackend(AffiliatedMatchHelper* affiliated_match_helper,
+                   RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;
@@ -344,6 +345,8 @@ class PasswordStoreAndroidBackend
   std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper_;
 
   raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
+
+  base::raw_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
 
   // Delegate to handle sync events.
   std::unique_ptr<PasswordSyncControllerDelegateAndroid>

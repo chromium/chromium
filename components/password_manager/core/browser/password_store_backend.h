@@ -24,6 +24,7 @@ namespace password_manager {
 
 struct PasswordForm;
 
+class AffiliatedMatchHelper;
 class FieldInfoStore;
 class SmartBubbleStatsStore;
 
@@ -59,7 +60,8 @@ class PasswordStoreBackend {
 
   // TODO(crbug.bom/1226042): Rename this to Init after PasswordStoreImpl no
   // longer inherits PasswordStore.
-  virtual void InitBackend(RemoteChangesReceived remote_form_changes_received,
+  virtual void InitBackend(AffiliatedMatchHelper* affiliated_match_helper,
+                           RemoteChangesReceived remote_form_changes_received,
                            base::RepeatingClosure sync_enabled_or_disabled_cb,
                            base::OnceCallback<void(bool)> completion) = 0;
 

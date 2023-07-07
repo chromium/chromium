@@ -87,6 +87,7 @@ PasswordStoreProxyBackend::PasswordStoreProxyBackend(
 PasswordStoreProxyBackend::~PasswordStoreProxyBackend() = default;
 
 void PasswordStoreProxyBackend::InitBackend(
+    AffiliatedMatchHelper* affiliated_match_helper,
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
@@ -99,6 +100,7 @@ void PasswordStoreProxyBackend::InitBackend(
   // backend is unnecessary and won't work since the sync status may not be
   // available yet.
   built_in_backend_->InitBackend(
+      affiliated_match_helper,
       base::BindRepeating(
           &PasswordStoreProxyBackend::OnRemoteFormChangesReceived,
           weak_ptr_factory_.GetWeakPtr(),
@@ -110,6 +112,7 @@ void PasswordStoreProxyBackend::InitBackend(
       base::BindOnce(pending_initialization_calls));
 
   android_backend_->InitBackend(
+      affiliated_match_helper,
       base::BindRepeating(
           &PasswordStoreProxyBackend::OnRemoteFormChangesReceived,
           weak_ptr_factory_.GetWeakPtr(),

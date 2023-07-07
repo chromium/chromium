@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_store_built_in_backend.h"
 
+#include <cstddef>
 #include <memory>
 #include <utility>
 
@@ -123,7 +124,8 @@ class PasswordStoreBuiltInBackendTest : public testing::Test {
         std::make_unique<LoginDatabase>(test_login_db_file_path(),
                                         IsAccountStore(false)));
     PasswordStoreBackend* backend = store_.get();
-    backend->InitBackend(/*remote_form_changes_received=*/base::DoNothing(),
+    backend->InitBackend(/*affiliated_match_helper=*/nullptr,
+                         /*remote_form_changes_received=*/base::DoNothing(),
                          /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
                          /*completion=*/base::DoNothing());
     RunUntilIdle();
@@ -134,7 +136,8 @@ class PasswordStoreBuiltInBackendTest : public testing::Test {
       std::unique_ptr<LoginDatabase> database) {
     store_ = std::make_unique<PasswordStoreBuiltInBackend>(std::move(database));
     PasswordStoreBackend* backend = store_.get();
-    backend->InitBackend(/*remote_form_changes_received=*/base::DoNothing(),
+    backend->InitBackend(/*affiliated_match_helper=*/nullptr,
+                         /*remote_form_changes_received=*/base::DoNothing(),
                          /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
                          /*completion=*/base::DoNothing());
     RunUntilIdle();

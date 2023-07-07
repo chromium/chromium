@@ -48,7 +48,8 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
 
  private:
   // Implements PasswordStoreBackend interface.
-  void InitBackend(RemoteChangesReceived remote_form_changes_received,
+  void InitBackend(AffiliatedMatchHelper* affiliated_match_helper,
+                   RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;
@@ -115,6 +116,8 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   // along with all its in-flight tasks.
   std::unique_ptr<LoginDatabaseAsyncHelper> helper_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::raw_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
 
   // TaskRunner for all the background operations.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_

@@ -126,6 +126,7 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
 }
 
 void PasswordStoreBackendMigrationDecorator::InitBackend(
+    AffiliatedMatchHelper* affiliated_match_helper,
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
@@ -147,9 +148,9 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
       std::move(handle_sync_status_change_on_main_thread)
           .Then(std::move(sync_enabled_or_disabled_cb));
 
-  active_backend_->InitBackend(std::move(remote_form_changes_received),
-                               std::move(sync_enabled_or_disabled_cb),
-                               std::move(completion));
+  active_backend_->InitBackend(
+      affiliated_match_helper, std::move(remote_form_changes_received),
+      std::move(sync_enabled_or_disabled_cb), std::move(completion));
 
   // Create a migrator only if the current experiment stage allows it.
   if (!features::RequiresMigrationForUnifiedPasswordManager())

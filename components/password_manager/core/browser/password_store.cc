@@ -92,6 +92,7 @@ void PasswordStore::Init(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "passwords", "PasswordStore::InitOnBackgroundSequence", this);
   backend_->InitBackend(
+      affiliated_match_helper_.get(),
       base::BindRepeating(&PasswordStore::NotifyLoginsChangedOnMainSequence,
                           this, LoginsChangedTrigger::ExternalUpdate),
       base::BindPostTask(
@@ -364,15 +365,15 @@ void PasswordStore::ShutdownOnUIThread() {
   // after shutdown.
   sync_enabled_or_disabled_cbs_.reset();
 
-  // The AffiliationService must be destroyed from the main sequence.
-  affiliated_match_helper_.reset();
-
   if (backend_) {
     backend_->Shutdown(base::BindOnce(
         [](std::unique_ptr<PasswordStoreBackend> backend) { backend.reset(); },
         std::move(backend_)));
     // Now, backend_ == nullptr (guaranteed by move).
   }
+
+  // The AffiliationService must be destroyed from the main sequence.
+  affiliated_match_helper_.reset();
 }
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
