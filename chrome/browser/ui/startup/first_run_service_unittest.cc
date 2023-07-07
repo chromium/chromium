@@ -16,7 +16,6 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/startup/first_run_test_util.h"
 #include "chrome/common/chrome_paths.h"
@@ -203,33 +202,32 @@ TEST_F(FirstRunServiceTest, ShouldOpenFirstRun) {
 TEST_F(FirstRunServiceTest, ShouldPopulateProfileNameFromPrimaryAccount) {
   base::test::ScopedFeatureList feature_list{kForYouFre};
 
+  signin::IdentityTestEnvironment identity_test_env;
   TestingProfileManager testing_profile_manager{
       TestingBrowserProcess::GetGlobal()};
   ASSERT_TRUE(testing_profile_manager.SetUp());
 
-  Profile* profile = testing_profile_manager.CreateTestingProfile(
-      "Test Profile", IdentityTestEnvironmentProfileAdaptor::
-                          GetIdentityTestEnvironmentFactories());
-  IdentityTestEnvironmentProfileAdaptor env_adaptor{profile};
-  signin::IdentityTestEnvironment* identity_test_env =
-      env_adaptor.identity_test_env();
+  Profile* profile =
+      testing_profile_manager.CreateTestingProfile("Test Profile");
 
-  AccountInfo primary_account_info = identity_test_env->MakeAccountAvailable(
+  AccountInfo primary_account_info = identity_test_env.MakeAccountAvailable(
       "primary@gmail.com",
       {.primary_account_consent_level = signin::ConsentLevel::kSync});
   AccountInfo secondary_account_info =
-      identity_test_env->MakeAccountAvailable("secondary@gmail.com");
+      identity_test_env.MakeAccountAvailable("secondary@gmail.com");
 
   ProfileNameChangeFuture profile_name_future(
       testing_profile_manager.profile_manager()->GetProfileAttributesStorage(),
       profile->GetPath());
 
-  auto* first_run_service =
-      FirstRunServiceFactory::GetForBrowserContext(profile);
+  // Note: the identity manager is not connected to the profile, but for this
+  // test, it's not necessary.
+  auto first_run_service =
+      FirstRunService(*profile, *identity_test_env.identity_manager());
 
   // Run and complete the first run.
   base::RunLoop fre_completion_loop;
-  first_run_service->TryMarkFirstRunAlreadyFinished(
+  first_run_service.TryMarkFirstRunAlreadyFinished(
       fre_completion_loop.QuitClosure());
   fre_completion_loop.Run();
   EXPECT_FALSE(ShouldOpenFirstRun(profile));
@@ -238,9 +236,9 @@ TEST_F(FirstRunServiceTest, ShouldPopulateProfileNameFromPrimaryAccount) {
   EXPECT_FALSE(profile_name_future.IsReady());
 
   // Send extended account info, starting with the secondary account.
-  identity_test_env->UpdateAccountInfoForAccount(
+  identity_test_env.UpdateAccountInfoForAccount(
       signin::WithGeneratedUserInfo(secondary_account_info, "Secondary"));
-  identity_test_env->UpdateAccountInfoForAccount(
+  identity_test_env.UpdateAccountInfoForAccount(
       signin::WithGeneratedUserInfo(primary_account_info, "Primary"));
 
   // The profile name should now be resolved.

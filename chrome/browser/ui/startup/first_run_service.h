@@ -31,6 +31,10 @@ namespace version_info {
 enum class Channel;
 }
 
+namespace signin {
+class IdentityManager;
+}
+
 // Task to run after the FRE is exited, with `proceed` indicating whether it
 // should be aborted or resumed.
 using ResumeTaskCallback = base::OnceCallback<void(bool proceed)>;
@@ -90,7 +94,6 @@ class FirstRunService : public KeyedService {
   static void EnsureStickToFirstRunCohort();
 #endif
 
-  explicit FirstRunService(Profile* profile);
   ~FirstRunService() override;
 
   // Runs `::ShouldOpenFirstRun(Profile*)` with the profile associated with this
@@ -126,6 +129,8 @@ class FirstRunService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(FirstRunCohortSetupTest, JoinFirstRunCohort);
   FRIEND_TEST_ALL_PREFIXES(FirstRunServiceTest,
                            ShouldPopulateProfileNameFromPrimaryAccount);
+
+  FirstRunService(Profile& profile, signin::IdentityManager& identity_manager);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Internal interface for `SetUpClientSideFieldTrialIfNeeded()`, exposed to
@@ -180,7 +185,10 @@ class FirstRunService : public KeyedService {
 #endif
 
   // Owns of this instance via the KeyedService mechanism.
-  const raw_ptr<Profile> profile_;
+  const raw_ref<Profile> profile_;
+
+  // KeyedService(s) this service depends on:
+  const raw_ref<signin::IdentityManager> identity_manager_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<SilentSyncEnabler> silent_sync_enabler_;

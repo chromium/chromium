@@ -24,7 +24,8 @@ class Profile;
 // Intended to be used when migrating previously syncing profiles to Lacros.
 class SilentSyncEnabler : public signin::IdentityManager::Observer {
  public:
-  explicit SilentSyncEnabler(Profile* profile);
+  explicit SilentSyncEnabler(Profile& profile,
+                             signin::IdentityManager& identity_manager);
   ~SilentSyncEnabler() override;
 
   SilentSyncEnabler(const SilentSyncEnabler&) = delete;
@@ -48,7 +49,9 @@ class SilentSyncEnabler : public signin::IdentityManager::Observer {
   // signin::IdentityManager::Observer:
   void OnRefreshTokensLoaded() override;
 
-  raw_ptr<Profile> profile_;
+  const raw_ref<Profile> profile_;
+  const raw_ref<signin::IdentityManager> identity_manager_;
+
   base::OnceClosure callback_;
 
   base::ScopedObservation<signin::IdentityManager,

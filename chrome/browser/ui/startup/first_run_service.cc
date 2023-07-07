@@ -189,11 +189,13 @@ void FirstRunService::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kFirstRunStudyGroup, "");
 }
 
-FirstRunService::FirstRunService(Profile* profile) : profile_(profile) {}
+FirstRunService::FirstRunService(Profile& profile,
+                                 signin::IdentityManager& identity_manager)
+    : profile_(profile), identity_manager_(identity_manager) {}
 FirstRunService::~FirstRunService() = default;
 
 bool FirstRunService::ShouldOpenFirstRun() const {
-  return ::ShouldOpenFirstRun(profile_);
+  return ::ShouldOpenFirstRun(&profile_.get());
 }
 
 void FirstRunService::TryMarkFirstRunAlreadyFinished(
@@ -210,17 +212,16 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
     return;
   }
 
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   bool has_set_up_profile =
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       // Indicates that the profile was likely migrated from pre-Lacros Ash.
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
 #else
       // The Dice FRE focuses on identity and offering the user to sign in. If
       // the profile already has an account (e.g. the sentinel file was deleted
       // or `--force-first-run` was passed), this ensures we still skip it and
       // avoid having to handle too strange states later.
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 #endif
   if (has_set_up_profile) {
     FinishFirstRun(FinishedReason::kProfileAlreadySetUp);
@@ -232,12 +233,13 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   switch (policy_effect) {
     case PolicyEffect::kDisabled:
-      if (!chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
+      if (!chrome::enterprise_util::UserAcceptedAccountManagement(
+              &profile_.get())) {
         // Management had to be accepted to create the session. Normally this
         // gets set during the FRE (TurnSyncOn flow), but since it is skipped,
         // set the flag here.
-        chrome::enterprise_util::SetUserAcceptedAccountManagement(profile_,
-                                                                  true);
+        chrome::enterprise_util::SetUserAcceptedAccountManagement(
+            &profile_.get(), true);
       }
       break;
     case PolicyEffect::kSilenced:
@@ -266,7 +268,8 @@ void FirstRunService::StartSilentSync(base::OnceClosure callback) {
 
   auto reset_enabler_callback = base::BindOnce(
       &FirstRunService::ClearSilentSyncEnabler, weak_ptr_factory_.GetWeakPtr());
-  silent_sync_enabler_ = std::make_unique<SilentSyncEnabler>(profile_);
+  silent_sync_enabler_ =
+      std::make_unique<SilentSyncEnabler>(*profile_, *identity_manager_);
   silent_sync_enabler_->StartAttempt(
       callback ? std::move(reset_enabler_callback).Then(std::move(callback))
                : std::move(reset_enabler_callback));
@@ -347,13 +350,12 @@ void FirstRunService::FinishFirstRun(FinishedReason reason) {
   }
 #endif
 
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // Noting that we expect that the name should already be available, as
     // after sign-in, the extended info is fetched and used for the sync
     // opt-in screen.
     profile_name_resolver_ =
-        std::make_unique<ProfileNameResolver>(identity_manager);
+        std::make_unique<ProfileNameResolver>(&identity_manager_.get());
     profile_name_resolver_->RunWithProfileName(base::BindOnce(
         &FirstRunService::FinishProfileSetUp, weak_ptr_factory_.GetWeakPtr()));
   } else if (reason == FinishedReason::kSkippedByPolicies) {
@@ -368,7 +370,8 @@ void FirstRunService::FinishProfileSetUp(std::u16string profile_name) {
 
   profile_name_resolver_.reset();
   DCHECK(!profile_name.empty());
-  FinalizeNewProfileSetup(profile_, profile_name, /*is_default_name=*/false);
+  FinalizeNewProfileSetup(&profile_.get(), profile_name,
+                          /*is_default_name=*/false);
 }
 
 void FirstRunService::OpenFirstRunIfNeeded(EntryPoint entry_point,
@@ -478,7 +481,8 @@ KeyedService* FirstRunServiceFactory::BuildServiceInstanceFor(
   }
 #endif
 
-  auto* instance = new FirstRunService(profile);
+  auto* instance = new FirstRunService(
+      *profile, *IdentityManagerFactory::GetForProfile(profile));
   base::UmaHistogramBoolean("ProfilePicker.FirstRun.ServiceCreated", true);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
