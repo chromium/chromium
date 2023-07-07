@@ -219,13 +219,19 @@ void SavedTabGroupSyncBridge::SavedTabGroupRemovedLocally(
       store_->CreateWriteBatch();
 
   RemoveEntitySpecific(removed_group->saved_guid(), write_batch.get());
-  for (const SavedTabGroupTab& tab : removed_group->saved_tabs())
+  for (const SavedTabGroupTab& tab : removed_group->saved_tabs()) {
     RemoveEntitySpecific(tab.saved_tab_guid(), write_batch.get());
+  }
 
   store_->CommitWriteBatch(
       std::move(write_batch),
       base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseSave,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  // Update the ModelTypeStore (local storage) and sync with the new positions 
+  // of all the groups after a remove has occurred so the positions are 
+  // preserved on browser restart. See crbug/1462443.
+  SavedTabGroupReorderedLocally();
 }
 
 void SavedTabGroupSyncBridge::SavedTabGroupUpdatedLocally(
