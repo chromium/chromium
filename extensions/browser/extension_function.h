@@ -597,7 +597,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Id of this request, used to map the response back to the caller.
   int request_id_ = -1;
 
-  // UUID for this request. Currently only set for worker calls.
+  // UUID for this request.
   // TODO(crbug.com/1444561): Replace `request_id_` with this.
   base::Uuid request_uuid_;
 

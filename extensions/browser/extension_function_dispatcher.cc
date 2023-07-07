@@ -636,20 +636,22 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
 
   // Increment the keepalive to ensure the extension doesn't shut down while
   // it's executing an API function.
+  base::Uuid request_uuid;
   if (IsRequestFromServiceWorker(params)) {
     CHECK(function->worker_id());
     const content::ServiceWorkerExternalRequestTimeoutType timeout_type =
         function->ShouldKeepWorkerAliveIndefinitely()
             ? content::ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout
             : content::ServiceWorkerExternalRequestTimeoutType::kDefault;
-    base::Uuid uuid = process_manager->IncrementServiceWorkerKeepaliveCount(
+    request_uuid = process_manager->IncrementServiceWorkerKeepaliveCount(
         *function->worker_id(), timeout_type, Activity::API_FUNCTION,
         function->name());
-    function->set_request_uuid(std::move(uuid));
   } else {
     process_manager->IncrementLazyKeepaliveCount(
         function->extension(), Activity::API_FUNCTION, function->name());
+    request_uuid = base::Uuid::GenerateRandomV4();
   }
+  function->set_request_uuid(std::move(request_uuid));
 }
 
 void ExtensionFunctionDispatcher::RemoveWorkerCallbacksForProcess(

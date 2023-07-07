@@ -36,19 +36,20 @@ void LoggedExtensionFunction::OnResponded() {
 
   drive::EventLogger* logger = file_manager::util::GetLogger(
       Profile::FromBrowserContext(browser_context()));
+  std::string request_id_str = request_uuid().AsLowercaseString();
   if (logger && log_on_completion_) {
     DCHECK(response_type());
     bool success = *response_type() == SUCCEEDED;
-    logger->Log(logging::LOG_INFO, "%s[%d] %s. (elapsed time: %" PRId64 "ms)",
-                name(), request_id(), success ? "succeeded" : "failed",
-                elapsed.InMilliseconds());
+    logger->Log(logging::LOG_INFO, "%s[%s] %s. (elapsed time: %" PRId64 "ms)",
+                name(), request_id_str.c_str(),
+                success ? "succeeded" : "failed", elapsed.InMilliseconds());
   }
 
   // Log performance issues separately from completion.
   if (elapsed >= very_slow_threshold_) {
     auto log_message = base::StringPrintf(
-        "%s[%d] was VERY slow. (elapsed time: %" PRId64 "ms)", name(),
-        request_id(), elapsed.InMilliseconds());
+        "%s[%s] was VERY slow. (elapsed time: %" PRId64 "ms)", name(),
+        request_id_str.c_str(), elapsed.InMilliseconds());
     LOG(WARNING) << log_message;
     if (logger) {
       logger->LogRawString(logging::LOG_ERROR,
@@ -56,9 +57,9 @@ void LoggedExtensionFunction::OnResponded() {
     }
   } else if (logger && elapsed >= slow_threshold_) {
     logger->Log(logging::LOG_WARNING,
-                "PERFORMANCE WARNING: %s[%d] was slow. (elapsed time: %" PRId64
+                "PERFORMANCE WARNING: %s[%s] was slow. (elapsed time: %" PRId64
                 "ms)",
-                name(), request_id(), elapsed.InMilliseconds());
+                name(), request_id_str.c_str(), elapsed.InMilliseconds());
   }
   ExtensionFunction::OnResponded();
 }

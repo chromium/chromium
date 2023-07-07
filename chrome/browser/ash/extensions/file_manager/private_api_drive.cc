@@ -697,8 +697,8 @@ FileManagerPrivateSearchDriveMetadataFunction::Run() {
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   if (drive::EventLogger* logger = file_manager::util::GetLogger(profile)) {
     logger->Log(
-        logging::LOG_INFO, "%s[%d] called. (types: '%s', maxResults: '%d')",
-        name(), request_id(),
+        logging::LOG_INFO, "%s[%s] called. (types: '%s', maxResults: '%d')",
+        name(), request_uuid().AsLowercaseString().c_str(),
         api::file_manager_private::ToString(params->search_params.types),
         params->search_params.max_results);
   }
