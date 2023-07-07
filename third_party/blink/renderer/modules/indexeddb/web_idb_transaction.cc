@@ -84,9 +84,8 @@ void WebIDBTransaction::Put(int64_t object_store_id,
                                   WTF::Unretained(this), std::move(callbacks)));
 
   recordreplay::Assert(
-      "[RUN-1806-2265] WebIDBTransaction::Put %lld %lld %zu %zu %zu",
-      transaction_id_, object_store_id, value->DataSize(),
-      primary_key->SizeEstimate(), index_keys_size);
+      "[RUN-1806-2265] WebIDBTransaction::Put %lld %lld %zu",
+      transaction_id_, object_store_id, arg_size);
 }
 
 void WebIDBTransaction::PutCallback(
