@@ -415,6 +415,12 @@ crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 # New validation was not implemented on the validating command decoder.
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
 
+# Need to update timer query object validation per https://github.com/KhronosGroup/WebGL/pull/3541 .
+crbug.com/1462739 [ android ] conformance/extensions/ext-disjoint-timer-query.html [ Failure ]
+crbug.com/1462739 [ linux ] conformance/extensions/ext-disjoint-timer-query.html [ Failure ]
+crbug.com/1462739 [ mac ] conformance/extensions/ext-disjoint-timer-query.html [ Failure ]
+crbug.com/1462739 [ win ] conformance/extensions/ext-disjoint-timer-query.html [ Failure ]
+
 
 ####################
 # Fuchsia failures #
