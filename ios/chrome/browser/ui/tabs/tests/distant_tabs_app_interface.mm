@@ -41,6 +41,7 @@ synced_sessions::DistantSession& CreateDistantSession(
     std::string session_name,
     base::Time modified_time) {
   static synced_sessions::DistantSession distant_session;
+  distant_session.tabs.clear();
   distant_session.tag = session_name;
   distant_session.name = session_name;
   distant_session.modified_time = modified_time;

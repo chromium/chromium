@@ -23,6 +23,8 @@
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_app_interface.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
+#import "ios/chrome/browser/ui/tabs/tests/distant_tabs_app_interface.h"
+#import "ios/chrome/browser/ui/tabs/tests/fake_distant_tab.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -31,6 +33,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -40,10 +43,31 @@
 using chrome_test_util::RecentTabsDestinationButton;
 
 namespace {
+
 const char kURLOfTestPage[] = "http://testPage";
 const char kHTMLOfTestPage[] =
     "<head><title>TestPageTitle</title></head><body>hello</body>";
 NSString* const kTitleOfTestPage = @"TestPageTitle";
+
+// Timeout in seconds to wait for asynchronous sync operations.
+constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
+
+// Sign in and sync using a fake identity.
+void SignInAndSync() {
+  FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fake_identity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fake_identity enableSync:YES];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+}
+
+// Sign out and clear sync data.
+void SignOut() {
+  [SigninEarlGrey signOut];
+  [ChromeEarlGrey waitForSyncEngineInitialized:NO
+                                   syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey clearSyncServerData];
+}
 
 // Makes sure at least one tab is opened and opens the recent tab panel.
 void OpenRecentTabsPanel() {
@@ -318,6 +342,104 @@ GURL TestPageURL() {
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts
                            closeButton:NO];
+}
+
+// Tests that the distant session is correctly displayed and tapping on a
+// distant tab correctly open it.
+- (void)testOtherDevicesWithOneDistantSession {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  SignInAndSync();
+
+  NSString* sessionName = @"Desktop";
+  NSUInteger numberOfTabs = 4;
+
+  // Create a distant session with 4 tabs.
+  [DistantTabsAppInterface
+      addSessionToFakeSyncServer:sessionName
+               modifiedTimeDelta:base::Minutes(5)
+                            tabs:[FakeDistantTab
+                                     createFakeTabsForServerURL:self.testServer
+                                                                    ->base_url()
+                                                   numberOfTabs:numberOfTabs]];
+  [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
+
+  OpenRecentTabsPanel();
+
+  // The illustrated cell should not be visible.
+  id<GREYInteraction> illustratedCell = [EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_accessibilityID(
+                  kRecentTabsOtherDevicesIllustratedCellAccessibilityIdentifier),
+              grey_sufficientlyVisible(), nil)];
+  [illustratedCell assertWithMatcher:grey_nil()];
+
+  // Check that the distant session is displayed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(sessionName)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that all distant tabs are displayed.
+  for (NSUInteger i = 0; i < numberOfTabs; ++i) {
+    // Check that the session header is displayed.
+    NSString* tabName = [NSString stringWithFormat:@"Tab %ld", i];
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(tabName)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
+
+  // Open a distant tab and check that the location bar shows the distant tab
+  // URL in a short form.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Tab 0")]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      assertWithMatcher:chrome_test_util::LocationViewContainingText(
+                            self.testServer->base_url().host())];
+
+  SignOut();
+}
+
+// Tests that all the distant sessions are correctly displayed.
+- (void)testOtherDevicesWithMultipleDistantSessions {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  SignInAndSync();
+
+  NSArray<NSString*>* sessionNames =
+      @[ @"Desktop", @"Phone", @"Tablet", @"iPad", @"iPhone", @"MacBook" ];
+  NSUInteger numberOfTabs = 4;
+
+  // Create distant sessions.
+  for (NSUInteger i = 0; i < sessionNames.count; ++i) {
+    NSString* sessionName = sessionNames[i];
+    [DistantTabsAppInterface
+        addSessionToFakeSyncServer:sessionName
+                 modifiedTimeDelta:base::Minutes(5)
+                              tabs:
+                                  [FakeDistantTab
+                                      createFakeTabsForServerURL:
+                                          self.testServer->base_url()
+                                                    numberOfTabs:numberOfTabs]];
+  }
+  [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
+
+  OpenRecentTabsPanel();
+
+  // The illustrated cell should not be visible.
+  id<GREYInteraction> illustratedCell = [EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_accessibilityID(
+                  kRecentTabsOtherDevicesIllustratedCellAccessibilityIdentifier),
+              grey_sufficientlyVisible(), nil)];
+  [illustratedCell assertWithMatcher:grey_nil()];
+
+  // Check that all distant sessions are displayed.
+  for (NSUInteger i = sessionNames.count - 1; i > 0; --i) {
+    NSString* sessionName = sessionNames[i];
+    // Tap the session header to collapse the section.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(sessionName)]
+        performAction:grey_tap()];
+  }
+
+  SignOut();
 }
 
 // Tests the Copy Link action on a recent tab's context menu.
