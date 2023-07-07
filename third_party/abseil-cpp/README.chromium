@@ -6,6 +6,7 @@ License File: LICENSE
 Version: 0
 Revision: b1fb259ef793de57c2acefeeec07a6e3286ab9bc
 Security Critical: yes
+Shipped: yes
 
 Description:
 This directory contains the source code of Abseil for C++. This can be used by
