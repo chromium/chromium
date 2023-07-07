@@ -198,8 +198,6 @@
         label="$i18n{spellAndGrammarCheckTitle}"
         sub-label="$i18n{spellAndGrammarCheckDescription}"
         pref="{{prefs.browser.enable_spellchecking}}" no-set-pref
-        disabled="[[isEnableSpellcheckingDisabled_(
-            spellCheckLanguages_.length)]]"
         on-settings-boolean-control-change="onSpellcheckToggleChange_"
         deep-link-focus-id$="[[Setting.kSpellCheck]]"
         aria-describedby="spellAndGrammarCheckDescription">
@@ -213,17 +211,14 @@
     <settings-toggle-button id="enableSpellcheckingToggle" class="hr"
         label="$i18n{spellCheckTitle}"
         pref="{{prefs.browser.enable_spellchecking}}" no-set-pref
-        disabled="[[isEnableSpellcheckingDisabled_(
-            spellCheckLanguages_.length)]]"
         on-settings-boolean-control-change="onSpellcheckToggleChange_"
         deep-link-focus-id$="[[Setting.kSpellCheck]]">
     </settings-toggle-button>
   </template>
-  <iron-collapse class="subsection" opened="[[isCollapseOpened_(
-      prefs.browser.enable_spellchecking.value)]]">
+  <iron-collapse class="subsection" opened="[[
+      prefs.browser.enable_spellchecking.value]]">
     <template is="dom-if" if="[[!onDeviceGrammarCheckEnabled_]]">
       <settings-toggle-button id="enhancedSpellCheckToggle"
-          class="[[getEnhancedSpellCheckClass_()]]"
           label="$i18n{spellCheckEnhancedLabel}"
           pref="{{prefs.spellcheck.use_spelling_service}}"
           disabled="[[!prefs.browser.enable_spellchecking.value]]">

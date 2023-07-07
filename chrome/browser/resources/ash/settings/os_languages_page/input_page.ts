@@ -581,25 +581,6 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
         routes.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY);
   }
 
-  /**
-   * Gets the appropriate CSS class for the Enhanced spell check toggle
-   * depending on whether Update 2 is enabled or not.
-   */
-  private getEnhancedSpellCheckClass_(): '' {
-    // TODO: b/263823772 - Inline this variable.
-    return '';
-  }
-
-  private isEnableSpellcheckingDisabled_(): false {
-    // TODO: b/263823772 - Inline this variable.
-    return false;
-  }
-
-  private isCollapseOpened_(spellCheckOn: boolean): boolean {
-    // TODO: b/263823772 - Inline this variable.
-    return spellCheckOn;
-  }
-
   private onLanguagePackNoticeLinkClick_(): void {
     this.languagesMetricsProxy_.recordInteraction(
         LanguagesPageInteraction.OPEN_LANGUAGE_PACKS_LEARN_MORE);
