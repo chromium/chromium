@@ -682,6 +682,10 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     default_args.extend([
         cba.ENABLE_LOGGING,
         cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
+        # --test-type=gpu is used to suppress the "stability and security will
+        # suffer" infobar caused by --enable-gpu-benchmarking which can
+        # interfere with these tests.
+        cba.TEST_TYPE_GPU,
     ])
     return default_args
 
