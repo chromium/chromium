@@ -4,6 +4,7 @@
 
 #include "chrome/browser/dips/dips_test_utils.h"
 
+#include "base/test/bind.h"
 #include "chrome/browser/dips/dips_cleanup_service_factory.h"
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service_factory.h"
@@ -47,6 +48,41 @@ void AccessCookieViaJSIn(content::WebContents* web_contents,
   ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   observer.Wait();
+}
+
+void BlockUntilHelperProcessesPendingRequests(
+    content::WebContents* web_contents) {
+  base::SequenceBound<DIPSStorage>* storage =
+      DIPSServiceFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext())
+          ->storage();
+  storage->FlushPostedTasksForTesting();
+}
+
+void StateForURL(content::WebContents* web_contents,
+                 const GURL& url,
+                 StateForURLCallback callback) {
+  DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
+      web_contents->GetBrowserContext());
+  dips_service->storage()
+      ->AsyncCall(&DIPSStorage::Read)
+      .WithArgs(url)
+      .Then(std::move(callback));
+}
+
+absl::optional<StateValue> GetDIPSState(content::WebContents* web_contents,
+                                        const GURL& url) {
+  absl::optional<StateValue> state;
+
+  StateForURL(web_contents, url,
+              base::BindLambdaForTesting([&](DIPSState loaded_state) {
+                if (loaded_state.was_loaded()) {
+                  state = loaded_state.ToStateValue();
+                }
+              }));
+  BlockUntilHelperProcessesPendingRequests(web_contents);
+
+  return state;
 }
 
 URLCookieAccessObserver::URLCookieAccessObserver(WebContents* web_contents,

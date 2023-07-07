@@ -104,6 +104,18 @@ base::expected<content::WebContents*, std::string> OpenInNewTab(
 void AccessCookieViaJSIn(content::WebContents* web_contents,
                          content::RenderFrameHost* frame);
 
+// Helper function to block until all DIPS storage requests are complete.
+void BlockUntilHelperProcessesPendingRequests(
+    content::WebContents* web_contents);
+
+void StateForURL(content::WebContents* web_contents,
+                 const GURL& url,
+                 StateForURLCallback callback);
+
+// Helper function to query the `url` state from DIPS storage.
+absl::optional<StateValue> GetDIPSState(content::WebContents* web_contents,
+                                        const GURL& url);
+
 class URLCookieAccessObserver : public content::WebContentsObserver {
  public:
   URLCookieAccessObserver(content::WebContents* web_contents,
