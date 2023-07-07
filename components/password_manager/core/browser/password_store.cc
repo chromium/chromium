@@ -27,7 +27,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_service.h"
-#include "components/password_manager/core/browser/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -37,7 +36,6 @@
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "components/password_manager/core/browser/password_store_util.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
-#include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -47,11 +45,6 @@
 namespace password_manager {
 
 namespace {
-
-bool FormSupportsPSL(const PasswordFormDigest& digest) {
-  return digest.scheme == PasswordForm::Scheme::kHtml &&
-         !GetRegistryControlledDomain(GURL(digest.signon_realm)).empty();
-}
 
 // Helper function which invokes |notifying_callback| and |completion_callback|
 // when changes are received.
@@ -277,23 +270,10 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("passwords", "PasswordStore::GetLogins",
                                     consumer.get());
 
-  auto consumer_reply = base::BindOnce(
-      &PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom, consumer,
-      base::RetainedRef(this));
-
-  auto affiliation_injection =
-      base::BindOnce(&PasswordStore::InjectAffiliationAndBrandingInformation,
-                     this, std::move(consumer_reply));
-
-  if (affiliated_match_helper_) {
-    GetLoginsWithAffiliationsRequestHandler(std::move(form), backend_.get(),
-                                            affiliated_match_helper_.get(),
-                                            std::move(affiliation_injection));
-    return;
-  }
-
-  backend_->FillMatchingLoginsAsync(std::move(affiliation_injection),
-                                    FormSupportsPSL(form), {form});
+  backend_->GetGroupedMatchingLoginsAsync(
+      form, base::BindOnce(
+                &PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom,
+                consumer, base::RetainedRef(this)));
 }
 
 void PasswordStore::GetAutofillableLogins(

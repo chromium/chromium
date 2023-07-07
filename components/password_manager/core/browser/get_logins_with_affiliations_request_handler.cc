@@ -63,6 +63,20 @@ LoginsResultOrError ProccessExactAndPSLForms(
   return logins_or_error;
 }
 
+void InjectAffiliationAndBrandingInformation(
+    AffiliatedMatchHelper* affiliated_match_helper,
+    LoginsOrErrorReply callback,
+    LoginsResultOrError forms_or_error) {
+  if (!affiliated_match_helper ||
+      absl::holds_alternative<PasswordStoreBackendError>(forms_or_error) ||
+      absl::get<LoginsResult>(forms_or_error).empty()) {
+    std::move(callback).Run(std::move(forms_or_error));
+    return;
+  }
+  affiliated_match_helper->InjectAffiliationAndBrandingInformation(
+      std::move(absl::get<LoginsResult>(forms_or_error)), std::move(callback));
+}
+
 class GetLoginsHelper : public base::RefCounted<GetLoginsHelper> {
  public:
   GetLoginsHelper(PasswordFormDigest requested_digest,
@@ -102,13 +116,25 @@ class GetLoginsHelper : public base::RefCounted<GetLoginsHelper> {
 
 void GetLoginsHelper::Init(AffiliatedMatchHelper* affiliated_match_helper,
                            LoginsOrErrorReply callback) {
+  if (!affiliated_match_helper) {
+    // If |affiliated_match_helper| is unavailable return only exact and PSL
+    // matches.
+    backend_->FillMatchingLoginsAsync(
+        base::BindOnce(&ProccessExactAndPSLForms, requested_digest_)
+            .Then(std::move(callback)),
+        FormSupportsPSL(requested_digest_), {requested_digest_});
+    return;
+  }
   // Number of time 'forms_received_' closure should be called before executing.
   // Once for perfect matches and once for affiliations.
   const int kCallsNumber = 2;
 
+  auto affiliation_info_injection =
+      base::BindOnce(&InjectAffiliationAndBrandingInformation,
+                     affiliated_match_helper, std::move(callback));
   auto forms_received_callback = base::BarrierCallback<LoginsResultOrError>(
       kCallsNumber, base::BindOnce(&GetLoginsHelper::MergeResults, this)
-                        .Then(std::move(callback)));
+                        .Then(std::move(affiliation_info_injection)));
 
   backend_->FillMatchingLoginsAsync(
       base::BindOnce(&ProccessExactAndPSLForms, requested_digest_)

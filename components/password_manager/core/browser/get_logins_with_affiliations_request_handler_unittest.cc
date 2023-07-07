@@ -132,7 +132,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliatedMatchesOnlyTest) {
   facets.emplace_back(
       FacetURI::FromPotentiallyInvalidSpec(kAffiliatedAndroidApp));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(RunOnceCallback<2>(facets, true));
+      .WillRepeatedly(RunOnceCallback<2>(facets, true));
 
   PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
   base::MockCallback<LoginsOrErrorReply> result_callback;
@@ -146,6 +146,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliatedMatchesOnlyTest) {
   expected_forms.push_back(
       CreateForm(kAffiliatedAndroidApp, u"username2", u"password"));
   expected_forms.back()->is_affiliation_based_match = true;
+  expected_forms.back()->affiliated_web_realm = kAffiliatedWebURL;
 
   EXPECT_CALL(result_callback, Run(LoginsResultsOrErrorAre(&expected_forms)));
   RunUntilIdle();
@@ -170,7 +171,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   facets.emplace_back(
       FacetURI::FromPotentiallyInvalidSpec(kAffiliatedAndroidApp));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(RunOnceCallback<2>(facets, true));
+      .WillRepeatedly(RunOnceCallback<2>(facets, true));
 
   PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
   base::MockCallback<LoginsOrErrorReply> result_callback;
@@ -187,6 +188,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   expected_forms.push_back(
       CreateForm(kAffiliatedAndroidApp, u"username4", u"password"));
   expected_forms.back()->is_affiliation_based_match = true;
+  expected_forms.back()->affiliated_web_realm = kAffiliatedWebURL;
 
   EXPECT_CALL(result_callback, Run(LoginsResultsOrErrorAre(&expected_forms)));
   RunUntilIdle();
@@ -266,7 +268,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   facets.emplace_back(
       FacetURI::FromPotentiallyInvalidSpec(kAffiliatedAndroidApp));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(RunOnceCallback<2>(facets, true));
+      .WillRepeatedly(RunOnceCallback<2>(facets, true));
 
   GroupedFacets group;
   group.facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
@@ -286,9 +288,34 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
       CreateForm(kAffiliatedAndroidApp, u"username1", u"password"));
   expected_forms.back()->is_affiliation_based_match = true;
   expected_forms.back()->is_grouped_match = true;
+  expected_forms.back()->affiliated_web_realm = kTestWebURL;
   expected_forms.push_back(CreateForm(kGroupWebURL, u"username2", u"password"));
   expected_forms.back()->is_grouped_match = true;
   expected_forms.back()->is_affiliation_based_match = true;
+
+  EXPECT_CALL(result_callback, Run(LoginsResultsOrErrorAre(&expected_forms)));
+  RunUntilIdle();
+}
+
+TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliatedMatchHelperNull) {
+  backend()->AddLoginAsync(*CreateForm(kTestWebURL, u"username1", u"password"),
+                           base::DoNothing());
+  backend()->AddLoginAsync(*CreateForm(kTestPSLURL, u"username2", u"password"),
+                           base::DoNothing());
+  RunUntilIdle();
+
+  EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding).Times(0);
+
+  base::MockCallback<LoginsOrErrorReply> result_callback;
+  PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
+  GetLoginsWithAffiliationsRequestHandler(observed_form, backend(),
+                                          /*affiliated_match_helper=*/nullptr,
+                                          result_callback.Get());
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_forms;
+  expected_forms.push_back(CreateForm(kTestWebURL, u"username1", u"password"));
+  expected_forms.push_back(CreateForm(kTestPSLURL, u"username2", u"password"));
+  expected_forms.back()->is_public_suffix_match = true;
 
   EXPECT_CALL(result_callback, Run(LoginsResultsOrErrorAre(&expected_forms)));
   RunUntilIdle();

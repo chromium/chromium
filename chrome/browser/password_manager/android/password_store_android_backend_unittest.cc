@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -24,10 +25,13 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
+#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
+#include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_android_backend_api_error_codes.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -55,6 +59,8 @@ const std::u16string kTestPassword(u"S3cr3t");
 constexpr char kTestUrl[] = "https://example.com";
 constexpr base::Time kTestDateCreated = base::Time::FromTimeT(1500);
 constexpr base::TimeDelta kTestLatencyDelta = base::Milliseconds(123u);
+constexpr const char kTestAndroidRealm[] =
+    "android://hash@com.example.android/";
 constexpr char kBackendErrorCodeMetric[] =
     "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
 constexpr char kUnenrollmentHistogram[] =
@@ -1454,6 +1460,63 @@ TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsWithSchemeMismatch) {
   EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
 
   consumer().OnCompleteWithLogins(kFirstJobId, {exact_match, psl_match});
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidBackendTest, GetGroupedMatchingLoginsAsync) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kFillingAcrossGroupedSites,
+                             features::kFillingAcrossAffiliatedWebsites});
+
+  FakeAffiliationService fake_affiliation_service;
+  MockAffiliatedMatchHelper mock_affiliated_match_helper(
+      &fake_affiliation_service);
+  backend().InitBackend(&mock_affiliated_match_helper,
+                        PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+
+  const JobId kFirstJobId{1337};
+  const JobId kSecondJobId{2903};
+  EXPECT_CALL(*bridge_helper(), GetLoginsForSignonRealm("test.com", _))
+      .WillOnce(Return(kFirstJobId));
+  EXPECT_CALL(*bridge_helper(), GetLoginsForSignonRealm(kTestAndroidRealm, _))
+      .WillOnce(Return(kSecondJobId));
+
+  std::string TestURL1("https://a.test.com/");
+  PasswordFormDigest form_digest(PasswordForm::Scheme::kHtml, TestURL1,
+                                 GURL(TestURL1));
+
+  std::vector<std::string> affiliated_android_realms;
+  affiliated_android_realms.push_back(kTestAndroidRealm);
+  mock_affiliated_match_helper.ExpectCallToGetAffiliatedAndGrouped(
+      form_digest, affiliated_android_realms);
+  mock_affiliated_match_helper
+      .ExpectCallToInjectAffiliationAndBrandingInformation({});
+  backend().GetGroupedMatchingLoginsAsync(form_digest, mock_reply.Get());
+
+  // Imitate login retrieval.
+  PasswordForm exact_match = CreateTestLogin(
+      kTestUsername, kTestPassword, "https://a.test.com/", kTestDateCreated);
+  PasswordForm psl_match = CreateTestLogin(
+      kTestUsername, kTestPassword, "https://b.test.com/", kTestDateCreated);
+  PasswordForm android_match = CreateTestLogin(
+      kTestUsername, kTestPassword, kTestAndroidRealm, kTestDateCreated);
+
+  // Retrieving logins for the last form should trigger the final callback.
+  LoginsResult expected_logins;
+  expected_logins.push_back(std::make_unique<PasswordForm>(exact_match));
+  expected_logins.push_back(std::make_unique<PasswordForm>(psl_match));
+  expected_logins.back()->is_public_suffix_match = true;
+  expected_logins.push_back(std::make_unique<PasswordForm>(android_match));
+  expected_logins.back()->is_affiliation_based_match = true;
+
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+
+  consumer().OnCompleteWithLogins(kFirstJobId, {exact_match, psl_match});
+  consumer().OnCompleteWithLogins(kSecondJobId, {android_match});
   RunUntilIdle();
 }
 
