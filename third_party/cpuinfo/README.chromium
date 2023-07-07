@@ -6,6 +6,7 @@ Date: 2023/06/29
 License: BSD
 License File: src/LICENSE
 Security Critical: Yes
+Shipped: yes
 
 Description:
 cpuinfo is a library to detect essential for performance optimization
