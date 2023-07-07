@@ -6,6 +6,7 @@ Date: 2023/04/12
 License: BSD
 License File: src/LICENSE
 Security Critical: Yes
+Shipped: yes
 
 Description:
 XNNPACK is a highly optimized library of floating-point neural network inference
