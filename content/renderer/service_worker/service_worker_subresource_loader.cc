@@ -215,9 +215,18 @@ bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
     return false;
   }
 
+  // Create URLLoader related assets to handle the request triggered by
+  // RaceNetworkRequset.
+  mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client;
+  forwarded_race_network_request_url_loader_factory_ = std::make_unique<
+      ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>(
+      forwarding_client.InitWithNewPipeAndPassReceiver(),
+      resource_request_.url);
+
   DCHECK(!race_network_request_loader_client_);
   race_network_request_loader_client_.emplace(
-      resource_request_, weak_factory_.GetWeakPtr(), absl::nullopt,
+      resource_request_, weak_factory_.GetWeakPtr(),
+      std::move(forwarding_client),
       network::features::GetDataPipeDefaultAllocationSize(
           network::features::DataPipeAllocationSize::kLargerSizeIfPossible));
 
@@ -227,6 +236,10 @@ bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
       ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kWaitForBody) {
     return false;
   }
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> remote_factory;
+  forwarded_race_network_request_url_loader_factory_->Clone(
+      remote_factory.InitWithNewPipeAndPassReceiver());
 
   mojo::PendingRemote<network::mojom::URLLoaderClient> client_to_pass;
   race_network_request_loader_client_->Bind(&client_to_pass);
@@ -248,8 +261,11 @@ bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
   // in the service worker.
   DCHECK(!race_network_request_url_loader_factory_);
   DCHECK(!race_network_request_url_loader_);
+  CHECK(!remote_forwarded_race_network_request_url_loader_factory_);
   race_network_request_url_loader_factory_ = std::move(factory);
   race_network_request_url_loader_ = std::move(url_loader);
+  remote_forwarded_race_network_request_url_loader_factory_ =
+      std::move(remote_factory);
 
   return true;
 }
@@ -442,6 +458,12 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEventForSubresource() {
   params->request = blink::mojom::FetchAPIRequest::From(resource_request_);
   params->client_id = controller_connector_->client_id();
   params->did_start_race_network_request = did_start_race_network_request_;
+  if (params->did_start_race_network_request) {
+    params->race_network_request_loader_factory =
+        std::move(remote_forwarded_race_network_request_url_loader_factory_);
+    params->request->service_worker_race_network_request_token =
+        base::UnguessableToken::Create();
+  }
 
   // TODO(falken): Grant the controller service worker's process access to files
   // in the body, like ServiceWorkerFetchDispatcher::DispatchFetchEvent() does.

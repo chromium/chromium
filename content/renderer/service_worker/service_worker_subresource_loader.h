@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
+#include "content/common/service_worker/forwarded_race_network_request_url_loader_factory.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
@@ -280,6 +281,10 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
       race_network_request_url_loader_;
   absl::optional<ServiceWorkerRaceNetworkRequestURLLoaderClient>
       race_network_request_loader_client_;
+  std::unique_ptr<ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>
+      forwarded_race_network_request_url_loader_factory_;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+      remote_forwarded_race_network_request_url_loader_factory_;
 
   base::WeakPtrFactory<ServiceWorkerSubresourceLoader> weak_factory_{this};
 };

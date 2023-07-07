@@ -5826,6 +5826,31 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                    "response.text())"));
 }
 
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       Subresource_FetchHandler_PassThrough) {
+  SetupAndRegisterServiceWorker();
+  WorkerRunningStatusObserver observer(public_context());
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  observer.WaitUntilRunning();
+
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_pass_through";
+  EXPECT_TRUE(ExecJs(GetPrimaryMainFrame(), "fetch('" + relative_url + "')"));
+
+  // Request count should be 1. RaceNetworkRequest + pass through request from
+  // fetch handler but the fetch handler request will reuse the response from
+  // RaceNetworkRequest.
+  //
+  // TODO(crbug.com/1420517) Add the mechanism to wait for the fetch handler
+  // completion signal to ensure the request count is exactly not incremented
+  // anymore. Currently we don't record the UMA for the fetch handler
+  // completion if the RaceNetworkRequest wins.
+  while (GetRequestCount(relative_url) != 1) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
 class ServiceWorkerRaceNetworkRequestOriginTrialBrowserTest
     : public ServiceWorkerRaceNetworkRequestBrowserTest {
  public:
