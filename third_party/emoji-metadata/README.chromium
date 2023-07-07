@@ -7,6 +7,7 @@ Revision: 9d8e5cfe52ee763b7dd91e33e5a50250efbf7135
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 This is an import of the emoji metadata repository from the source URL above.
