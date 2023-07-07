@@ -8849,9 +8849,13 @@ Element* Element::ImplicitAnchorElement() {
       return select_menu;
     }
   } else if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(this)) {
-    PseudoId pseudo_id = pseudo_element->GetPseudoId();
-    if (pseudo_id == kPseudoIdBefore || pseudo_id == kPseudoIdAfter) {
-      return pseudo_element->OriginatingElement()->ImplicitAnchorElement();
+    switch (pseudo_element->GetPseudoId()) {
+      case kPseudoIdBefore:
+      case kPseudoIdAfter:
+      case kPseudoIdBackdrop:
+        return pseudo_element->OriginatingElement()->ImplicitAnchorElement();
+      default:
+        return nullptr;
     }
   }
   return nullptr;
