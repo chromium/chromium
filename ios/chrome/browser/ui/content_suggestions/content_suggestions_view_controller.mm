@@ -891,6 +891,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       content_suggestions::ShouldShowWiderMagicStackLayer(self.traitCollection,
                                                           self.view.window);
   _magicStackScrollView.delegate = self;
+  _magicStackScrollView.decelerationRate = UIScrollViewDecelerationRateFast;
   _magicStackScrollView.accessibilityIdentifier =
       kMagicStackScrollViewAccessibilityIdentifier;
   [self addUIElement:_magicStackScrollView
