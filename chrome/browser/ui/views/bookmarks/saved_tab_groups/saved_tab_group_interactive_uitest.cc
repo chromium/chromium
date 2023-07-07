@@ -419,6 +419,3 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       SavedTabGroupServiceFactory::GetForProfile(browser()->profile())->model();
   EXPECT_EQ(1, model->GetIndexOf(group_id_1).value());
 }
-
-// TODO(dljames): Write a test to unsave a group from a saved group button's
-// context menu in the bookmarks bar.
