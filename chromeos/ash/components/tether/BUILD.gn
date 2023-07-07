@@ -80,7 +80,6 @@ static_library("tether") {
     "persistent_host_scan_cache.h",
     "persistent_host_scan_cache_impl.cc",
     "persistent_host_scan_cache_impl.h",
-    "pref_names.cc",
     "pref_names.h",
     "synchronous_shutdown_object_container.h",
     "synchronous_shutdown_object_container_impl.cc",
