@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_TELEMETRY_TELEMETRY_API_CONVERTERS_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_TELEMETRY_TELEMETRY_API_CONVERTERS_H_
 
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -142,11 +143,15 @@ std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {
   return output;
 }
 
-template <class OutputT, class InputT, class... Types>
+template <class InputT,
+          class... Types,
+          class OutputT = decltype(unchecked::UncheckedConvertPtr(
+              std::declval<InputT>(),
+              std::declval<Types>()...)),
+          class = std::enable_if_t<std::is_default_constructible_v<OutputT>>>
 OutputT ConvertPtr(InputT input, Types... args) {
-  return (!input.is_null())
-             ? unchecked::UncheckedConvertPtr(std::move(input), args...)
-             : OutputT();
+  return (input) ? unchecked::UncheckedConvertPtr(std::move(input), args...)
+                 : OutputT();
 }
 
 }  // namespace converters

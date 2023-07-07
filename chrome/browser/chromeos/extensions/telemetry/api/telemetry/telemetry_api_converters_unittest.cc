@@ -42,7 +42,7 @@ TEST(TelemetryApiConverters, AudioInputNodeInfo) {
   input->active = crosapi::BoolValue::New(kActive);
   input->node_gain = crosapi::UInt8Value::New(kNodeGain);
 
-  auto result = ConvertPtr<cx_telem::AudioInputNodeInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
 
   ASSERT_TRUE(result.id);
   EXPECT_EQ(kId, static_cast<uint64_t>(*result.id));
@@ -74,7 +74,7 @@ TEST(TelemetryApiConverters, AudioOutputNodeInfo) {
   input->active = crosapi::BoolValue::New(kActive);
   input->node_volume = crosapi::UInt8Value::New(kNodeVolume);
 
-  auto result = ConvertPtr<cx_telem::AudioOutputNodeInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
 
   ASSERT_TRUE(result.id);
   EXPECT_EQ(kId, static_cast<uint64_t>(*result.id));
@@ -136,7 +136,7 @@ TEST(TelemetryApiConverters, AudioInfo) {
   input->output_nodes = std::move(output_node_info);
   input->input_nodes = std::move(input_node_info);
 
-  auto result = ConvertPtr<cx_telem::AudioInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
 
   ASSERT_TRUE(result.output_mute);
   EXPECT_EQ(kOutputMute, *result.output_mute);
@@ -207,7 +207,7 @@ TEST(TelemetryApiConverters, CpuCStateInfo) {
   auto input = crosapi::ProbeCpuCStateInfo::New(
       kName, crosapi::UInt64Value::New(kTimeInStateSinceLastBootUs));
 
-  auto result = ConvertPtr<cx_telem::CpuCStateInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   ASSERT_TRUE(result.name);
   EXPECT_EQ(kName, *result.name);
 
@@ -237,7 +237,7 @@ TEST(TelemetryApiConverters, LogicalCpuInfo) {
       crosapi::UInt64Value::New(kIdleTime), std::move(expected_c_states),
       crosapi::UInt32Value::New(kCoreId));
 
-  auto result = ConvertPtr<cx_telem::LogicalCpuInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   ASSERT_TRUE(result.max_clock_speed_khz);
   EXPECT_EQ(kMaxClockSpeedKhz,
             static_cast<uint32_t>(*result.max_clock_speed_khz));
@@ -292,7 +292,7 @@ TEST(TelemetryApiConverters, PhysicalCpuInfo) {
   auto input =
       crosapi::ProbePhysicalCpuInfo::New(kModelName, std::move(logical_cpus));
 
-  auto result = ConvertPtr<cx_telem::PhysicalCpuInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   ASSERT_TRUE(result.model_name);
   EXPECT_EQ(kModelName, *result.model_name);
 
@@ -355,8 +355,8 @@ TEST(TelemetryApiConverters, BatteryInfoWithoutSerialNumberPermission) {
       crosapi::DoubleValue::New(kCurrentNow), kTechnology, kStatus,
       kManufacturerDate, crosapi::UInt64Value::New(kTemperature));
 
-  auto result = ConvertPtr<cx_telem::BatteryInfo>(
-      std::move(input), /* has_serial_number_permission= */ false);
+  auto result =
+      ConvertPtr(std::move(input), /* has_serial_number_permission= */ false);
   ASSERT_TRUE(result.cycle_count);
   EXPECT_EQ(kCycleCount, static_cast<int64_t>(*result.cycle_count));
 
@@ -407,8 +407,8 @@ TEST(TelemetryApiConverters, BatteryInfoWithSerialNumberPermission) {
   crosapi::ProbeBatteryInfoPtr input = crosapi::ProbeBatteryInfo::New();
   input->serial_number = kSerialNumber;
 
-  auto result = ConvertPtr<cx_telem::BatteryInfo>(
-      std::move(input), /* has_serial_number_permission= */ true);
+  auto result =
+      ConvertPtr(std::move(input), /* has_serial_number_permission= */ true);
 
   ASSERT_TRUE(result.serial_number);
   EXPECT_EQ(kSerialNumber, result.serial_number);
@@ -466,7 +466,7 @@ TEST(TelemetryApiConverters, OsVersion) {
   auto input = crosapi::ProbeOsVersion::New(kReleaseMilestone, kBuildNumber,
                                             kPatchNumber, kReleaseChannel);
 
-  auto result = ConvertPtr<cx_telem::OsVersionInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   ASSERT_TRUE(result.release_milestone);
   EXPECT_EQ(*result.release_milestone, kReleaseMilestone);
 
@@ -489,7 +489,7 @@ TEST(TelemetryApiConverters, StatefulPartitionInfo) {
           crosapi::UInt64Value::New(kAvailableSpace),
           crosapi::UInt64Value::New(kTotalSpace));
 
-  auto result = ConvertPtr<cx_telem::StatefulPartitionInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   ASSERT_TRUE(result.available_space);
   EXPECT_EQ(kAvailableSpace, *result.available_space);
 
@@ -503,7 +503,7 @@ TEST(TelemetryApiConverters, StatefulPartitionInfoNullFields) {
                                                crosapi::UInt64ValuePtr>(
           nullptr, nullptr);
 
-  auto result = ConvertPtr<cx_telem::StatefulPartitionInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   ASSERT_FALSE(result.available_space);
   ASSERT_FALSE(result.total_space);
 }
@@ -567,8 +567,8 @@ TEST(TelemetryApiConverters, NetworkInfoWithoutPermission) {
   input->signal_strength =
       chromeos::network_health::mojom::UInt32Value::New(kSignalStrength);
 
-  auto result = ConvertPtr<cx_telem::NetworkInfo>(
-      std::move(input), /* has_mac_address_permission= */ false);
+  auto result =
+      ConvertPtr(std::move(input), /* has_mac_address_permission= */ false);
   EXPECT_EQ(result.type, cx_telem::NetworkType::kWifi);
   EXPECT_EQ(result.state, cx_telem::NetworkState::kOnline);
 
@@ -591,8 +591,8 @@ TEST(TelemetryApiConverters, NetworkInfoWithPermission) {
   auto input = chromeos::network_health::mojom::Network::New();
   input->mac_address = kMacAddress;
 
-  auto result = ConvertPtr<cx_telem::NetworkInfo>(
-      std::move(input), /* has_mac_address_permission= */ true);
+  auto result =
+      ConvertPtr(std::move(input), /* has_mac_address_permission= */ true);
 
   ASSERT_TRUE(result.mac_address);
   EXPECT_EQ(*result.mac_address, kMacAddress);
@@ -618,8 +618,8 @@ TEST(TelemetryApiConverters, InternetConnectivityInfoWithoutPermission) {
   auto input = chromeos::network_health::mojom::NetworkHealthState::New();
   input->networks.push_back(std::move(network));
 
-  auto result = ConvertPtr<cx_telem::InternetConnectivityInfo>(
-      std::move(input), /* has_mac_address_permission= */ false);
+  auto result =
+      ConvertPtr(std::move(input), /* has_mac_address_permission= */ false);
   ASSERT_EQ(result.networks.size(), 1UL);
 
   auto result_network = std::move(result.networks.front());
@@ -673,8 +673,8 @@ TEST(TelemetryApiConverters, InternetConnectivityInfoWithPermission) {
   input->networks.push_back(std::move(invalid_network));
   input->networks.push_back(std::move(network));
 
-  auto result = ConvertPtr<cx_telem::InternetConnectivityInfo>(
-      std::move(input), /* has_mac_address_permission= */ true);
+  auto result =
+      ConvertPtr(std::move(input), /* has_mac_address_permission= */ true);
   ASSERT_EQ(result.networks.size(), 1UL);
 
   auto result_network = std::move(result.networks.front());
@@ -712,7 +712,7 @@ TEST(TelemetryApiConverters, TpmVersion) {
   input->firmware_version = crosapi::UInt64Value::New(kFirmwareVersion);
   input->vendor_specific = kVendorSpecific;
 
-  auto result = ConvertPtr<cx_telem::TpmVersion>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   EXPECT_EQ(cx_telem::TpmGSCVersion::kCr50, result.gsc_version);
   ASSERT_TRUE(result.family);
   EXPECT_EQ(kFamily, static_cast<uint32_t>(*result.family));
@@ -739,7 +739,7 @@ TEST(TelemetryApiConverters, TpmStatus) {
   input->owner_password_is_present =
       crosapi::BoolValue::New(kOwnerPasswortIsPresent);
 
-  auto result = ConvertPtr<cx_telem::TpmStatus>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   ASSERT_TRUE(result.enabled);
   EXPECT_EQ(kEnabled, *result.enabled);
   ASSERT_TRUE(result.owned);
@@ -761,7 +761,7 @@ TEST(TelemetryApiConverters, TpmDictionaryAttack) {
   input->lockout_seconds_remaining =
       crosapi::UInt32Value::New(kLockoutSecondsRemaining);
 
-  auto result = ConvertPtr<cx_telem::TpmDictionaryAttack>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   ASSERT_TRUE(result.counter);
   EXPECT_EQ(kCounter, static_cast<uint32_t>(*result.counter));
   ASSERT_TRUE(result.threshold);
@@ -821,7 +821,7 @@ TEST(TelemetryApiConverters, TpmInfo) {
   input->status = std::move(tpm_status);
   input->dictionary_attack = std::move(dictionary_attack);
 
-  auto result = ConvertPtr<cx_telem::TpmInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
 
   auto version_result = std::move(result.version);
   EXPECT_EQ(cx_telem::TpmGSCVersion::kCr50, version_result.gsc_version);
@@ -942,8 +942,7 @@ TEST(TelemetryApiConverters, FwupdFirmwareVersionInfo) {
   auto input = crosapi::ProbeFwupdFirmwareVersionInfo::New(
       kVersion, crosapi::ProbeFwupdVersionFormat::kHex);
 
-  auto result =
-      ConvertPtr<cx_telem::FwupdFirmwareVersionInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
 
   EXPECT_EQ(result.version, kVersion);
   EXPECT_EQ(result.version_format, cx_telem::FwupdVersionFormat::kHex);
@@ -961,7 +960,7 @@ TEST(TelemetryApiConverters, UsbBusInterfaceInfo) {
       crosapi::UInt8Value::New(kClassId), crosapi::UInt8Value::New(kSubclassId),
       crosapi::UInt8Value::New(kProtocolId), kDriver);
 
-  auto result = ConvertPtr<cx_telem::UsbBusInterfaceInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
 
   ASSERT_TRUE(result.interface_number);
   EXPECT_EQ(static_cast<uint8_t>(*result.interface_number), kInterfaceNumber);
@@ -1011,7 +1010,7 @@ TEST(TelemetryApiConverters, UsbBusInfo) {
   input->version = crosapi::ProbeUsbVersion::kUsb3;
   input->spec_speed = crosapi::ProbeUsbSpecSpeed::k20Gbps;
 
-  auto result = ConvertPtr<cx_telem::UsbBusInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
 
   ASSERT_TRUE(result.class_id);
   EXPECT_EQ(static_cast<uint8_t>(*result.class_id), kClassId);
@@ -1061,8 +1060,8 @@ TEST(TelemetryApiConverters, VpdInfoWithoutPermission) {
   input->sku_number = kSkuNumber;
   input->serial_number = kSerialNumber;
 
-  auto result = ConvertPtr<cx_telem::VpdInfo>(
-      std::move(input), /* has_serial_number_permission= */ false);
+  auto result =
+      ConvertPtr(std::move(input), /* has_serial_number_permission= */ false);
 
   ASSERT_TRUE(result.activate_date);
   EXPECT_EQ(*result.activate_date, kFirstPowerDate);
@@ -1083,8 +1082,8 @@ TEST(TelemetryApiConverters, VpdInfoWithPermission) {
   auto input = crosapi::ProbeCachedVpdInfo::New();
   input->serial_number = kSerialNumber;
 
-  auto result = ConvertPtr<cx_telem::VpdInfo>(
-      std::move(input), /* has_serial_number_permission= */ true);
+  auto result =
+      ConvertPtr(std::move(input), /* has_serial_number_permission= */ true);
 
   ASSERT_TRUE(result.serial_number);
   EXPECT_EQ(*result.serial_number, kSerialNumber);
@@ -1169,7 +1168,7 @@ TEST(TelemetryApiConverters, DisplayInfo) {
     input->dp_infos = std::move(external_displays);
   }
 
-  auto result = ConvertPtr<cx_telem::DisplayInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
 
   const auto& edp_info = result.edp_info;
   const auto& dp_infos = result.dp_infos;

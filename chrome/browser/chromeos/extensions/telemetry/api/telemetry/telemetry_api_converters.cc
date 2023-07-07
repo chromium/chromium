@@ -241,8 +241,8 @@ cx_telem::InternetConnectivityInfo UncheckedConvertPtr(
     bool has_mac_address_permission) {
   cx_telem::InternetConnectivityInfo result;
   for (auto& network : input->networks) {
-    auto converted_network = converters::ConvertPtr<cx_telem::NetworkInfo>(
-        std::move(network), has_mac_address_permission);
+    auto converted_network =
+        ConvertPtr(std::move(network), has_mac_address_permission);
 
     // Don't include networks with an undefined type.
     if (converted_network.type != cx_telem::NetworkType::kNone) {
@@ -317,15 +317,13 @@ cx_telem::TpmInfo UncheckedConvertPtr(crosapi::ProbeTpmInfoPtr input) {
   cx_telem::TpmInfo result;
 
   if (input->version) {
-    result.version =
-        ConvertPtr<cx_telem::TpmVersion>(std::move(input->version));
+    result.version = ConvertPtr(std::move(input->version));
   }
   if (input->status) {
-    result.status = ConvertPtr<cx_telem::TpmStatus>(std::move(input->status));
+    result.status = ConvertPtr(std::move(input->status));
   }
   if (input->dictionary_attack) {
-    result.dictionary_attack = ConvertPtr<cx_telem::TpmDictionaryAttack>(
-        std::move(input->dictionary_attack));
+    result.dictionary_attack = ConvertPtr(std::move(input->dictionary_attack));
   }
 
   return result;
@@ -385,8 +383,7 @@ cx_telem::UsbBusInfo UncheckedConvertPtr(crosapi::ProbeUsbBusInfoPtr input) {
         std::move(input->interfaces.value()));
   }
   result.fwupd_firmware_version_info =
-      ConvertPtr<cx_telem::FwupdFirmwareVersionInfo>(
-          std::move(input->fwupd_firmware_version_info));
+      ConvertPtr(std::move(input->fwupd_firmware_version_info));
   result.version = Convert(input->version);
   result.spec_speed = Convert(input->spec_speed);
 
@@ -412,8 +409,7 @@ chromeos::api::os_telemetry::VpdInfo UncheckedConvertPtr(
 cx_telem::DisplayInfo UncheckedConvertPtr(crosapi::ProbeDisplayInfoPtr input) {
   cx_telem::DisplayInfo result;
 
-  result.edp_info = converters::ConvertPtr<cx_telem::EmbeddedDisplayInfo>(
-      std::move(input->edp_info));
+  result.edp_info = converters::ConvertPtr(std::move(input->edp_info));
   if (input->dp_infos.has_value()) {
     result.dp_infos =
         converters::ConvertPtrVector<cx_telem::ExternalDisplayInfo>(

@@ -67,8 +67,7 @@ void OsTelemetryGetAudioInfoFunction::OnResult(
   }
   auto& audio_info = ptr->audio_result->get_audio_info();
 
-  auto result =
-      converters::ConvertPtr<cx_telem::AudioInfo>(std::move(audio_info));
+  auto result = converters::ConvertPtr(std::move(audio_info));
 
   Respond(ArgumentList(cx_telem::GetAudioInfo::Results::Create(result)));
 }
@@ -93,8 +92,8 @@ void OsTelemetryGetBatteryInfoFunction::OnResult(
   const bool has_permission = extension()->permissions_data()->HasAPIPermission(
       extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber);
 
-  cx_telem::BatteryInfo result = converters::ConvertPtr<cx_telem::BatteryInfo>(
-      std::move(battery_info), has_permission);
+  cx_telem::BatteryInfo result =
+      converters::ConvertPtr(std::move(battery_info), has_permission);
 
   Respond(ArgumentList(cx_telem::GetBatteryInfo::Results::Create(result)));
 }
@@ -176,7 +175,7 @@ void OsTelemetryGetDisplayInfoFunction::OnResult(
   }
 
   cx_telem::DisplayInfo result;
-  result = converters::ConvertPtr<cx_telem::DisplayInfo>(
+  result = converters::ConvertPtr(
       std::move(ptr->display_result->get_display_info()));
 
   Respond(ArgumentList(cx_telem::GetDisplayInfo::Results::Create(result)));
@@ -203,8 +202,7 @@ void OsTelemetryGetInternetConnectivityInfoFunction::OnResult(
 
   const bool has_permission = extension()->permissions_data()->HasAPIPermission(
       extensions::mojom::APIPermissionID::kChromeOSTelemetryNetworkInformation);
-  auto result = converters::ConvertPtr<cx_telem::InternetConnectivityInfo>(
-      std::move(network_info), has_permission);
+  auto result = converters::ConvertPtr(std::move(network_info), has_permission);
 
   Respond(ArgumentList(
       cx_telem::GetInternetConnectivityInfo::Results::Create(result)));
@@ -331,8 +329,7 @@ void OsTelemetryGetOsVersionInfoFunction::OnResult(
   }
 
   cx_telem::OsVersionInfo result =
-      converters::ConvertPtr<cx_telem::OsVersionInfo>(
-          std::move(system_info->os_info->os_version));
+      converters::ConvertPtr(std::move(system_info->os_info->os_version));
 
   Respond(ArgumentList(cx_telem::GetOsVersionInfo::Results::Create(result)));
 }
@@ -358,8 +355,7 @@ void OsTelemetryGetStatefulPartitionInfoFunction::OnResult(
       ptr->stateful_partition_result->get_partition_info();
 
   cx_telem::StatefulPartitionInfo result =
-      converters::ConvertPtr<cx_telem::StatefulPartitionInfo>(
-          std::move(stateful_part_info));
+      converters::ConvertPtr(std::move(stateful_part_info));
 
   Respond(ArgumentList(
       cx_telem::GetStatefulPartitionInfo::Results::Create(result)));
@@ -382,8 +378,7 @@ void OsTelemetryGetTpmInfoFunction::OnResult(
   }
   auto& tpm_info = ptr->tpm_result->get_tpm_info();
 
-  cx_telem::TpmInfo result =
-      converters::ConvertPtr<cx_telem::TpmInfo>(std::move(tpm_info));
+  cx_telem::TpmInfo result = converters::ConvertPtr(std::move(tpm_info));
 
   Respond(ArgumentList(cx_telem::GetTpmInfo::Results::Create(result)));
 }
@@ -417,8 +412,8 @@ void OsTelemetryGetUsbBusInfoFunction::OnResult(
   auto bus_infos = std::move(ptr->bus_result->get_bus_devices_info());
   for (auto& info : bus_infos) {
     if (info->is_usb_bus_info()) {
-      result.devices.push_back(converters::ConvertPtr<cx_telem::UsbBusInfo>(
-          std::move(info->get_usb_bus_info())));
+      result.devices.push_back(
+          converters::ConvertPtr(std::move(info->get_usb_bus_info())));
     }
   }
 
@@ -443,7 +438,7 @@ void OsTelemetryGetVpdInfoFunction::OnResult(
 
   const bool has_permission = extension()->permissions_data()->HasAPIPermission(
       extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber);
-  auto result = converters::ConvertPtr<cx_telem::VpdInfo>(
+  auto result = converters::ConvertPtr(
       std::move(ptr->vpd_result->get_vpd_info()), has_permission);
 
   Respond(ArgumentList(cx_telem::GetVpdInfo::Results::Create(result)));
