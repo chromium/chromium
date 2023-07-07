@@ -3754,11 +3754,11 @@ String AXNodeObject::TextAlternative(
   // which may not be offscreen in some cases.
   Page* page = GetNode() ? GetNode()->GetDocument().GetPage() : nullptr;
   if (page && page->InsidePortal()) {
-    LayoutRect bounds = GetBoundsInFrameCoordinates();
+    PhysicalRect bounds = GetBoundsInFrameCoordinates();
     gfx::Size document_size =
         GetNode()->GetDocument().GetLayoutView()->GetLayoutSize();
-    bool is_visible =
-        bounds.Intersects(LayoutRect(gfx::Point(), document_size));
+    bool is_visible = bounds.Intersects(
+        PhysicalRect(PhysicalOffset(), PhysicalSize(document_size)));
     if (!is_visible)
       return String();
   }

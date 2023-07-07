@@ -4790,7 +4790,7 @@ void AXObjectCacheImpl::OnTouchAccessibilityHover(const gfx::Point& location) {
 
 void AXObjectCacheImpl::SetCanvasObjectBounds(HTMLCanvasElement* canvas,
                                               Element* element,
-                                              const LayoutRect& rect) {
+                                              const PhysicalRect& rect) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 
   AXObject* obj = GetOrCreate(element);

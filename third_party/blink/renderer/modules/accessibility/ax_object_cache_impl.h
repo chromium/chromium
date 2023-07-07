@@ -261,7 +261,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void SetCanvasObjectBounds(HTMLCanvasElement*,
                              Element*,
-                             const LayoutRect&) override;
+                             const PhysicalRect&) override;
 
   void InlineTextBoxesUpdated(LayoutObject*) override;
   // Called during the accessibility lifecycle to refresh the AX tree.

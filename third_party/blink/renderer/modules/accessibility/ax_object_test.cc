@@ -1298,8 +1298,8 @@ TEST_F(AccessibilityTest, GetBoundsInFrameCoordinatesSvgText) {
   ASSERT_NE(text1, nullptr);
   AXObject* text2 = GetAXObjectByElementId("t2");
   ASSERT_NE(text2, nullptr);
-  LayoutRect bounds1 = text1->GetBoundsInFrameCoordinates();
-  LayoutRect bounds2 = text2->GetBoundsInFrameCoordinates();
+  PhysicalRect bounds1 = text1->GetBoundsInFrameCoordinates();
+  PhysicalRect bounds2 = text2->GetBoundsInFrameCoordinates();
 
   // Check if bounding boxes for SVG <text> respect to positioning
   // attributes such as 'x'.

@@ -42,10 +42,10 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/inspector/protocol/accessibility.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_enums.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -901,11 +901,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   gfx::RectF LocalBoundingBoxRectForAccessibility();
 
-  // Get the bounds in frame-relative coordinates as a LayoutRect.
-  LayoutRect GetBoundsInFrameCoordinates() const;
+  // Get the bounds in frame-relative coordinates as a PhysicalRect.
+  PhysicalRect GetBoundsInFrameCoordinates() const;
 
   // Explicitly set an object's bounding rect and offset container.
-  void SetElementRect(LayoutRect r, AXObject* container) {
+  void SetElementRect(const PhysicalRect& r, AXObject* container) {
     explicit_element_rect_ = r;
     explicit_container_id_ = container->AXObjectID();
   }
@@ -1392,7 +1392,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // The final role, taking into account the ARIA role and native role.
   ax::mojom::blink::Role role_;
 
-  LayoutRect explicit_element_rect_;
+  PhysicalRect explicit_element_rect_;
   AXID explicit_container_id_;
 
   virtual void AddChildren() = 0;

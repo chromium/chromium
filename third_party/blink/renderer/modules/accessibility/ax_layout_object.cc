@@ -1279,9 +1279,11 @@ AXObject* AXLayoutObject::AccessibilityImageMapHitTest(
   if (!parent)
     return nullptr;
 
+  PhysicalOffset physical_point(point);
   for (const auto& child : parent->ChildrenIncludingIgnored()) {
-    if (child->GetBoundsInFrameCoordinates().Contains(LayoutPoint(point)))
+    if (child->GetBoundsInFrameCoordinates().Contains(physical_point)) {
       return child.Get();
+    }
   }
 
   return nullptr;

@@ -55,9 +55,9 @@ class HTMLTableElement;
 class HTMLFrameOwnerElement;
 class HTMLSelectElement;
 class LayoutBlockFlow;
-class LayoutRect;
 class LocalFrameView;
 class NGAbstractInlineTextBox;
+struct PhysicalRect;
 
 class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
  public:
@@ -170,7 +170,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 
   virtual void SetCanvasObjectBounds(HTMLCanvasElement*,
                                      Element*,
-                                     const LayoutRect&) = 0;
+                                     const PhysicalRect&) = 0;
 
   virtual void InlineTextBoxesUpdated(LayoutObject*) = 0;
 

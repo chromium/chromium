@@ -5083,10 +5083,12 @@ bool AXObject::ContainerLiveRegionBusy() const {
 
 AXObject* AXObject::ElementAccessibilityHitTest(const gfx::Point& point) const {
   // Check if there are any mock elements that need to be handled.
+  PhysicalOffset physical_point(point);
   for (const auto& child : ChildrenIncludingIgnored()) {
     if (child->IsMockObject() &&
-        child->GetBoundsInFrameCoordinates().Contains(LayoutPoint(point)))
+        child->GetBoundsInFrameCoordinates().Contains(physical_point)) {
       return child->ElementAccessibilityHitTest(point);
+    }
   }
 
   return const_cast<AXObject*>(this);
@@ -6368,7 +6370,7 @@ gfx::RectF AXObject::LocalBoundingBoxRectForAccessibility() {
   return cached_local_bounding_box_rect_for_accessibility_;
 }
 
-LayoutRect AXObject::GetBoundsInFrameCoordinates() const {
+PhysicalRect AXObject::GetBoundsInFrameCoordinates() const {
   AXObject* container = nullptr;
   gfx::RectF bounds;
   gfx::Transform transform;
@@ -6383,7 +6385,7 @@ LayoutRect AXObject::GetBoundsInFrameCoordinates() const {
     computed_bounds = transform.MapRect(computed_bounds);
     container->GetRelativeBounds(&container, bounds, transform);
   }
-  return LayoutRect(computed_bounds);
+  return PhysicalRect::FastAndLossyFromRectF(computed_bounds);
 }
 
 //

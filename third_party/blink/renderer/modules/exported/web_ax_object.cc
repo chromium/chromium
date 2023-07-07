@@ -417,14 +417,15 @@ WebAXObject WebAXObject::HitTest(const gfx::Point& point) const {
     return WebAXObject(hit);
 
   if (private_->GetBoundsInFrameCoordinates().Contains(
-          LayoutPoint(contents_point)))
+          PhysicalOffset(contents_point))) {
     return *this;
+  }
 
   return WebAXObject();
 }
 
 gfx::Rect WebAXObject::GetBoundsInFrameCoordinates() const {
-  LayoutRect rect = private_->GetBoundsInFrameCoordinates();
+  PhysicalRect rect = private_->GetBoundsInFrameCoordinates();
   return ToEnclosingRect(rect);
 }
 
