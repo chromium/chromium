@@ -6,6 +6,7 @@ License: MIT
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: yes
+Shipped: yes
 
 Description:
 Animal Sniffer Annotations allow marking methods which Animal Sniffer should ignore signature violations of.
