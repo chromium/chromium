@@ -417,13 +417,6 @@ void RecordOnDemandSegmentSelectionDuration(
       base::StrCat({"SegmentationPlatform.SegmentSelectionOnDemand.Duration.",
                     config.segmentation_uma_name});
   base::UmaHistogramTimes(base::StrCat({histogram_prefix, "Any"}), duration);
-
-  std::string histogram_name =
-      base::StrCat({histogram_prefix,
-                    result.segment.has_value()
-                        ? SegmentIdToHistogramVariant(result.segment.value())
-                        : "None"});
-  base::UmaHistogramTimes(histogram_name, duration);
 }
 
 void RecordModelExecutionResult(

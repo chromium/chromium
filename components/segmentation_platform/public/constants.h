@@ -125,6 +125,7 @@ constexpr char kVariationsParamNameUnknownSelectionTTLDays[] =
 const char kSubsegmentDiscreteMappingSuffix[] = "_subsegment";
 
 // Returns an UMA histogram variant for the given segment_id.
+// TODO(ssid): Move this to stats.cc since, no need to be in public.
 std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id);
 
 // Returns Subsegment key for the given `segmentation_key`.

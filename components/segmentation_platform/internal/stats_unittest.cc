@@ -285,10 +285,9 @@ TEST(StatsTest, RecordModelExecutionResult) {
   stats::RecordModelExecutionResult(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER, 75,
       proto::SegmentationModelMetadata::RETURN_TYPE_MULTISEGMENT);
-  EXPECT_EQ(
-      1,
-      tester.GetBucketCount(
-          "SegmentationPlatform.ModelExecution.Result.SearchUserSegment", 75));
+  EXPECT_EQ(1,
+            tester.GetBucketCount(
+                "SegmentationPlatform.ModelExecution.Result.SearchUser", 75));
 
   // Test segments that returns an unbound float result, which should be
   // recorded as int.
@@ -333,6 +332,22 @@ TEST(StatsTest, RecordModelExecutionResultForMultiOutput) {
       1,
       tester.GetBucketCount(
           "SegmentationPlatform.ModelExecution.Result.0.PowerUserSegment", 5));
+}
+
+TEST(StatsTest, SegmentIdToHistogramVariant) {
+  EXPECT_EQ("CrossDeviceUserSegment",
+            SegmentIdToHistogramVariant(SegmentId::CROSS_DEVICE_USER_SEGMENT));
+  EXPECT_EQ("NewTab", SegmentIdToHistogramVariant(
+                          SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
+  EXPECT_EQ(
+      "ChromeStartAndroidV2",
+      SegmentIdToHistogramVariant(
+          SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2));
+  EXPECT_EQ("WebAppInstallationPromo",
+            SegmentIdToHistogramVariant(
+                SegmentId::OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO));
+  EXPECT_EQ("Other", SegmentIdToHistogramVariant(
+                         proto::SegmentId::OPTIMIZATION_TARGET_UNKNOWN));
 }
 
 }  // namespace stats

@@ -685,9 +685,8 @@ TEST_F(SegmentSelectorTest, SubsegmentRecording) {
           std::make_tuple(
               base::StringPiece("Segmentation_TestKey_NewTab"),
               proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 0),
-          std::make_tuple(
-              base::StringPiece("Segmentation_TestKey_FeedUserSegment"),
-              kSubsegmentEnabledTarget, 3)));
+          std::make_tuple(base::StringPiece("Segmentation_TestKey_FeedUser"),
+                          kSubsegmentEnabledTarget, 3)));
 }
 
 }  // namespace segmentation_platform
