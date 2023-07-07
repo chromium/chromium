@@ -5678,7 +5678,13 @@ class ColorTransformPixelTest
   bool premultiplied_alpha_ = false;
 };
 
-TEST_P(ColorTransformPixelTest, Basic) {
+// TODO(https://crbug.com/1462855): use-of-uninitialized-value
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_Basic DISABLED_Basic
+#else
+#define MAYBE_Basic Basic
+#endif
+TEST_P(ColorTransformPixelTest, MAYBE_Basic) {
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
   // Test is flaking with failed large allocations under TSAN when using
   // SkiaRenderer with GL backend. See https://crbug.com/1320955.
