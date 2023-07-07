@@ -17,7 +17,6 @@ source_set("ash") {
     "keyboard_capability.h",
     "keyboard_layout_util.cc",
     "keyboard_layout_util.h",
-    "pref_names.cc",
     "pref_names.h",
   ]
   deps = [
