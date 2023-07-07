@@ -55,6 +55,9 @@ extern const char kAcceleratedVideoEncodeDescription[];
 extern const char kAccessiblePDFFormName[];
 extern const char kAccessiblePDFFormDescription[];
 
+extern const char kPdfPortfolioName[];
+extern const char kPdfPortfolioDescription[];
+
 extern const char kPdfUseSkiaRendererName[];
 extern const char kPdfUseSkiaRendererDescription[];
 #endif
