@@ -309,8 +309,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_STORAGE_ACCESS,
       id: Id.STORAGE_ACCESS,
       label: 'siteSettingsStorageAccess',
-      // TODO(b/276716832): Change icon to the final SAA.
-      icon: 'settings:cookie',
+      icon: 'settings:storage-access',
       enabledLabel: 'storageAccessAllowed',
       disabledLabel: 'storageAccessBlocked',
       shouldShow: () =>
