@@ -4,12 +4,9 @@
 
 #include "services/accessibility/android/android_accessibility_util.h"
 
-#include "ash/public/cpp/app_types_util.h"
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "services/accessibility/android/accessibility_info_data_wrapper.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom-shared.h"
-#include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
@@ -20,22 +17,11 @@ using AXEventIntProperty = mojom::AccessibilityEventIntProperty;
 using AXIntProperty = mojom::AccessibilityIntProperty;
 using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
 
-absl::optional<ax::mojom::Event> FromContentChangeTypesToAXEvent(
-    const std::vector<int32_t>& arc_content_change_types) {
-  if (base::Contains(
-          arc_content_change_types,
-          static_cast<int32_t>(mojom::ContentChangeType::STATE_DESCRIPTION))) {
-    return ax::mojom::Event::kAriaAttributeChanged;
-  }
-  return absl::nullopt;
-}
-
-ax::mojom::Event ToAXEvent(
-    mojom::AccessibilityEventType arc_event_type,
-    const absl::optional<std::vector<int>>& arc_content_change_types,
+absl::optional<ax::mojom::Event> ToAXEvent(
+    mojom::AccessibilityEventType android_event_type,
     AccessibilityInfoDataWrapper* source_node,
     AccessibilityInfoDataWrapper* focused_node) {
-  switch (arc_event_type) {
+  switch (android_event_type) {
     case mojom::AccessibilityEventType::VIEW_FOCUSED:
     case mojom::AccessibilityEventType::VIEW_ACCESSIBILITY_FOCUSED:
       return ax::mojom::Event::kFocus;
@@ -43,17 +29,10 @@ ax::mojom::Event ToAXEvent(
     case mojom::AccessibilityEventType::VIEW_LONG_CLICKED:
       return ax::mojom::Event::kClicked;
     case mojom::AccessibilityEventType::VIEW_TEXT_CHANGED:
-      return ax::mojom::Event::kAriaAttributeChanged;
+      return absl::nullopt;
     case mojom::AccessibilityEventType::VIEW_TEXT_SELECTION_CHANGED:
       return ax::mojom::Event::kTextSelectionChanged;
     case mojom::AccessibilityEventType::WINDOW_STATE_CHANGED: {
-      if (source_node && arc_content_change_types.has_value()) {
-        const absl::optional<ax::mojom::Event> event_or_null =
-            FromContentChangeTypesToAXEvent(arc_content_change_types.value());
-        if (event_or_null.has_value()) {
-          return event_or_null.value();
-        }
-      }
       if (focused_node) {
         return ax::mojom::Event::kFocus;
       } else {
@@ -63,13 +42,6 @@ ax::mojom::Event ToAXEvent(
     case mojom::AccessibilityEventType::NOTIFICATION_STATE_CHANGED:
       return ax::mojom::Event::kLayoutComplete;
     case mojom::AccessibilityEventType::WINDOW_CONTENT_CHANGED:
-      if (source_node && arc_content_change_types.has_value()) {
-        const absl::optional<ax::mojom::Event> event_or_null =
-            FromContentChangeTypesToAXEvent(arc_content_change_types.value());
-        if (event_or_null.has_value()) {
-          return event_or_null.value();
-        }
-      }
       int live_region_type_int;
       if (source_node && source_node->GetNode() &&
           GetProperty(source_node->GetNode()->int_properties,
@@ -92,7 +64,7 @@ ax::mojom::Event ToAXEvent(
           return ax::mojom::Event::kLiveRegionChanged;
         }
       }
-      return ax::mojom::Event::kLayoutComplete;
+      return absl::nullopt;
     case mojom::AccessibilityEventType::WINDOWS_CHANGED:
       return ax::mojom::Event::kLayoutComplete;
     case mojom::AccessibilityEventType::VIEW_HOVER_ENTER:
@@ -107,10 +79,10 @@ ax::mojom::Event ToAXEvent(
       return ax::mojom::Event::kScrollPositionChanged;
     case mojom::AccessibilityEventType::VIEW_SELECTED: {
       // VIEW_SELECTED event is not selection event in Chrome.
-      // See the comment on AXTreeSourceAndroid::NotifyAccessibilityEvent.
+      // See the comment on AXTreeSourceAndroid::UpdateAndroidFocusedId.
       if (source_node && source_node->IsNode() &&
           source_node->GetNode()->range_info) {
-        return ax::mojom::Event::kAriaAttributeChanged;
+        return absl::nullopt;
       } else {
         return ax::mojom::Event::kFocus;
       }
@@ -126,11 +98,11 @@ ax::mojom::Event ToAXEvent(
     case mojom::AccessibilityEventType::TOUCH_INTERACTION_END:
     case mojom::AccessibilityEventType::VIEW_CONTEXT_CLICKED:
     case mojom::AccessibilityEventType::ASSIST_READING_CONTEXT:
-      return ax::mojom::Event::kChildrenChanged;
+      return absl::nullopt;
     default:
-      return ax::mojom::Event::kChildrenChanged;
+      return absl::nullopt;
   }
-  return ax::mojom::Event::kChildrenChanged;
+  return absl::nullopt;
 }
 
 absl::optional<mojom::AccessibilityActionType> ConvertToAndroidAction(

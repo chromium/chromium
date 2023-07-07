@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/dcheck_is_on.h"
 #include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
 #include "services/accessibility/android/accessibility_window_info_data_wrapper.h"
@@ -236,26 +235,25 @@ void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
       android_focused_id_.has_value() ? GetFromId(*android_focused_id_)
                                       : nullptr;
   std::vector<ui::AXEvent> events;
-  ui::AXEvent event;
-  event.event_type = ToAXEvent(
-      event_data.event_type,
-      GetPropertyOrNull(event_data.int_list_properties,
-                        ax::android::mojom::AccessibilityEventIntListProperty::
-                            CONTENT_CHANGE_TYPES),
-      GetFromId(event_data.source_id), focused_node);
-  event.id = event_data.source_id;
+  const absl::optional<ax::mojom::Event> event_type = ToAXEvent(
+      event_data.event_type, GetFromId(event_data.source_id), focused_node);
+  if (event_type) {
+    ui::AXEvent event;
+    event.event_type = event_type.value();
+    event.id = event_data.source_id;
 
-  int event_from_action;
-  if (GetProperty(event_data.int_properties,
-                  ax::android::mojom::AccessibilityEventIntProperty::ACTION,
-                  &event_from_action)) {
-    event.event_from = ax::mojom::EventFrom::kAction;
+    int event_from_action;
+    if (GetProperty(event_data.int_properties,
+                    ax::android::mojom::AccessibilityEventIntProperty::ACTION,
+                    &event_from_action)) {
+      event.event_from = ax::mojom::EventFrom::kAction;
 
-    event.event_from_action = ConvertToChromeAction(
-        static_cast<mojom::AccessibilityActionType>(event_from_action));
+      event.event_from_action = ConvertToChromeAction(
+          static_cast<mojom::AccessibilityActionType>(event_from_action));
+    }
+
+    events.push_back(std::move(event));
   }
-
-  events.push_back(std::move(event));
 
   // On event type of WINDOW_STATE_CHANGED, update the entire tree so that
   // window location is correctly calculated.

@@ -59,8 +59,14 @@ class MockAutomationEventRouter
                                    const gfx::Point& mouse_location,
                                    std::vector<ui::AXEvent> events) override {
     for (auto&& event : events) {
+      ASSERT_NE(event.event_type, ax::mojom::Event::kNone);
       event_count_[event.event_type]++;
     }
+    if (events.size() == 0) {
+      // In order to validate a case where |events| is empty:
+      event_count_[ax::mojom::Event::kNone]++;
+    }
+
     last_dispatched_events_ = std::move(events);
 
     for (const auto& update : updates) {
@@ -693,11 +699,10 @@ TEST_F(AXTreeSourceAndroidTest, OnViewSelectedEvent) {
   SetProperty(item, AXBooleanProperty::IMPORTANCE, true);
   SetProperty(item, AXBooleanProperty::VISIBLE_TO_USER, true);
 
-  // A selected event from Slider is kAriaAttributeChanged.
+  // A selected event from Slider doesn't have any specific event type.
   event->source_id = slider->id;
   CallNotifyAccessibilityEvent(event.get());
-  EXPECT_EQ(1,
-            GetDispatchedEventCount(ax::mojom::Event::kAriaAttributeChanged));
+  EXPECT_EQ(1, GetDispatchedEventCount(ax::mojom::Event::kNone));
 
   // A selected event from a collection. In Android, these event properties are
   // populated by AdapterView.
@@ -1283,7 +1288,7 @@ TEST_F(AXTreeSourceAndroidTest, StateDescriptionChangedEvent) {
   auto event = AXEventData::New();
   event->source_id = 10;
   event->task_id = 1;
-  event->event_type = AXEventType::WINDOW_STATE_CHANGED;
+  event->event_type = AXEventType::WINDOW_CONTENT_CHANGED;
 
   event->window_data = std::vector<mojom::AccessibilityWindowInfoDataPtr>();
   event->window_data->push_back(AXWindowInfoData::New());
@@ -1303,13 +1308,7 @@ TEST_F(AXTreeSourceAndroidTest, StateDescriptionChangedEvent) {
   SetProperty(event.get(), AXEventIntListProperty::CONTENT_CHANGE_TYPES,
               content_change_types);
   CallNotifyAccessibilityEvent(event.get());
-  EXPECT_EQ(ax::mojom::Event::kAriaAttributeChanged,
-            last_dispatched_events()[0].event_type);
-
-  event->event_type = AXEventType::WINDOW_CONTENT_CHANGED;
-  CallNotifyAccessibilityEvent(event.get());
-  EXPECT_EQ(ax::mojom::Event::kAriaAttributeChanged,
-            last_dispatched_events()[0].event_type);
+  EXPECT_TRUE(last_dispatched_events().empty());
 
   // State description changed event from non range widget.
   event->node_data.push_back(AXNodeInfoData::New());
@@ -1317,15 +1316,8 @@ TEST_F(AXTreeSourceAndroidTest, StateDescriptionChangedEvent) {
   not_range_widget->id = 11;
 
   event->source_id = 11;
-  event->event_type = AXEventType::WINDOW_STATE_CHANGED;
   CallNotifyAccessibilityEvent(event.get());
-  EXPECT_EQ(ax::mojom::Event::kAriaAttributeChanged,
-            last_dispatched_events()[0].event_type);
-
-  event->event_type = AXEventType::WINDOW_CONTENT_CHANGED;
-  CallNotifyAccessibilityEvent(event.get());
-  EXPECT_EQ(ax::mojom::Event::kAriaAttributeChanged,
-            last_dispatched_events()[0].event_type);
+  EXPECT_TRUE(last_dispatched_events().empty());
 }
 
 TEST_F(AXTreeSourceAndroidTest, EventWithWrongSourceId) {

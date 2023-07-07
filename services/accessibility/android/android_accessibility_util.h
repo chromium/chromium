@@ -19,14 +19,10 @@ namespace ax::android {
 
 class AccessibilityInfoDataWrapper;
 
-// This function is only called when EventType is WINDOW_STATE_CHANGED or
-// WINDOW_CONTENT_CHANGED.
-absl::optional<ax::mojom::Event> FromContentChangeTypesToAXEvent(
-    const std::vector<int>& arc_content_change_types);
-
-ax::mojom::Event ToAXEvent(
-    mojom::AccessibilityEventType arc_event_type,
-    const absl::optional<std::vector<int>>& arc_content_change_types,
+// Returns Chrome accessibility event type if we need to dispatch some event
+// explicitly. Otherwise returns nullopt.
+absl::optional<ax::mojom::Event> ToAXEvent(
+    mojom::AccessibilityEventType android_event_type,
     AccessibilityInfoDataWrapper* source_node,
     AccessibilityInfoDataWrapper* focused_node);
 
@@ -80,17 +76,6 @@ bool GetProperty(const PropMTypeMap& properties,
 
   *out_value = it->second;
   return true;
-}
-
-template <class PropType, class OutType>
-absl::optional<OutType> GetPropertyOrNull(
-    const absl::optional<base::flat_map<PropType, OutType>>& properties,
-    const PropType prop) {
-  OutType out_value;
-  if (GetProperty(properties, prop, &out_value)) {
-    return out_value;
-  }
-  return absl::nullopt;
 }
 
 template <class InfoDataType, class PropType>
