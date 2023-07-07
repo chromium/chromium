@@ -1443,8 +1443,11 @@ body.files-ng #default-tasks-list {
 }
 
 #default-tasks-list > li > .label {
-  padding-inline-start: 52px;
+  left: 52px;
+  overflow: hidden;
   position: absolute;
+  right: 52px;
+  text-overflow: ellipsis;
 }
 
 html[dir='rtl'] #default-tasks-list > li > .icon {
@@ -1481,20 +1484,19 @@ body.files-ng #default-tasks-list > li[selected] {
 
 body.files-ng #default-tasks-list li[selected]::after {
   -webkit-mask-image: url(../images/common/ic_selected.svg);
-  -webkit-mask-position: right;
+  -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   background-color: var(--cros-sys-on_primary_container);
   content: ' ';
   height: 40px;
   position: absolute;
-  right: 16px;
+  right: 6px;
   top: 0;
   width: 40px;
 }
 
 html[dir='rtl'] body.files-ng #default-tasks-list li[selected]::after {
-  background-position: left;
-  left: 16px;
+  left: 6px;
   right: unset;
 }
 
