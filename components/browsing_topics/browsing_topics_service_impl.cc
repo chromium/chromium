@@ -390,7 +390,8 @@ bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
   if (observe) {
     // Track the API usage context after the permissions check.
     BrowsingTopicsPageLoadDataTracker::GetOrCreateForPage(main_frame->GetPage())
-        ->OnBrowsingTopicsApiUsed(hashed_context_domain, history_service_);
+        ->OnBrowsingTopicsApiUsed(hashed_context_domain, context_domain,
+                                  history_service_);
   }
 
   if (!get_topics) {

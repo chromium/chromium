@@ -30,6 +30,7 @@ class BrowsingTopicsPageLoadDataTracker
 
   // Called when the document.browsingTopics() API is used in the page.
   void OnBrowsingTopicsApiUsed(const HashedDomain& hashed_context_domain,
+                               const std::string& context_domain,
                                history::HistoryService* history_service);
 
  private:

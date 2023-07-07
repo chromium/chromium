@@ -542,7 +542,7 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
 
     // Add some API usage contexts data.
     site_data_manager->OnBrowsingTopicsApiUsed(
-        HashMainFrameHostForStorage("foo1.com"), {HashedDomain(1)},
+        HashMainFrameHostForStorage("foo1.com"), HashedDomain(1), "foo1.com",
         base::Time::Now());
 
     // Initialize the `BrowsingTopicsState`.

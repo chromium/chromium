@@ -45,8 +45,8 @@ class CONTENT_EXPORT BrowsingTopicsSiteDataManager {
   // usage is detected in a context on a page.
   virtual void OnBrowsingTopicsApiUsed(
       const browsing_topics::HashedHost& hashed_main_frame_host,
-      const base::flat_set<browsing_topics::HashedDomain>&
-          hashed_context_domains,
+      const browsing_topics::HashedDomain& hashed_context_domain,
+      const std::string& context_domain,
       base::Time time) = 0;
 };
 

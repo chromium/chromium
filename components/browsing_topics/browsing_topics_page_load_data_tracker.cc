@@ -70,6 +70,7 @@ BrowsingTopicsPageLoadDataTracker::BrowsingTopicsPageLoadDataTracker(
 
 void BrowsingTopicsPageLoadDataTracker::OnBrowsingTopicsApiUsed(
     const HashedDomain& hashed_context_domain,
+    const std::string& context_domain,
     history::HistoryService* history_service) {
   if (!eligible_to_commit_)
     return;
@@ -122,8 +123,8 @@ void BrowsingTopicsPageLoadDataTracker::OnBrowsingTopicsApiUsed(
       .GetBrowserContext()
       ->GetDefaultStoragePartition()
       ->GetBrowsingTopicsSiteDataManager()
-      ->OnBrowsingTopicsApiUsed(hashed_main_frame_host_,
-                                {hashed_context_domain}, base::Time::Now());
+      ->OnBrowsingTopicsApiUsed(hashed_main_frame_host_, hashed_context_domain,
+                                context_domain, base::Time::Now());
 }
 
 PAGE_USER_DATA_KEY_IMPL(BrowsingTopicsPageLoadDataTracker);

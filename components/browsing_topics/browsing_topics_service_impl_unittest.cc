@@ -544,7 +544,7 @@ TEST_F(
   // Add some arbitrary data to site data storage. The intent is just to test
   // data deletion.
   topics_site_data_manager()->OnBrowsingTopicsApiUsed(
-      HashMainFrameHostForStorage("a.com"), {HashedDomain(1)},
+      HashMainFrameHostForStorage("a.com"), HashedDomain(1), "a.com",
       base::Time::Now());
 
   task_environment()->FastForwardBy(base::Microseconds(1));
@@ -732,7 +732,7 @@ TEST_F(
   // Add some arbitrary data to site data storage. The intent is just to test
   // data deletion.
   topics_site_data_manager()->OnBrowsingTopicsApiUsed(
-      HashMainFrameHostForStorage("a.com"), {HashedDomain(1)},
+      HashMainFrameHostForStorage("a.com"), HashedDomain(1), "a.com",
       base::Time::Now());
 
   EXPECT_EQ(browsing_topics_state().epochs().size(), 2u);
@@ -2103,7 +2103,6 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearTopic) {
   // Clearing topic 7 should clear child topic 8 as well.
   browsing_topics_service_->ClearTopic(
       privacy_sandbox::CanonicalTopic(Topic(7), /*taxonomy_version=*/1));
-
   std::vector<privacy_sandbox::CanonicalTopic> result =
       browsing_topics_service_->GetTopTopicsForDisplay();
 
@@ -2241,7 +2240,10 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearAllTopicsData) {
   // Add some arbitrary data to site data storage. The intent is just to test
   // data deletion.
   topics_site_data_manager()->OnBrowsingTopicsApiUsed(
-      HashMainFrameHostForStorage("a.com"), {HashedDomain(1), HashedDomain(2)},
+      HashMainFrameHostForStorage("a.com"), HashedDomain(1), "a1.com",
+      base::Time::Now());
+  topics_site_data_manager()->OnBrowsingTopicsApiUsed(
+      HashMainFrameHostForStorage("a.com"), HashedDomain(2), "a2.com",
       base::Time::Now());
 
   EXPECT_EQ(
@@ -2301,8 +2303,11 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearTopicsDataForOrigin) {
   // Add some arbitrary data to site data storage. The intent is just to test
   // data deletion.
   topics_site_data_manager()->OnBrowsingTopicsApiUsed(
-      HashMainFrameHostForStorage("d.com"),
-      {GetHashedDomain("b.com"), GetHashedDomain("c.com")}, base::Time::Now());
+      HashMainFrameHostForStorage("d.com"), GetHashedDomain("c.com"), "c.com",
+      base::Time::Now());
+  topics_site_data_manager()->OnBrowsingTopicsApiUsed(
+      HashMainFrameHostForStorage("d.com"), GetHashedDomain("b.com"), "b.com, ",
+      base::Time::Now());
 
   // The data is from both the manual `OnBrowsingTopicsApiUsed` call and the
   // usage tracking due to the previous `HandleTopicsWebApi`.
