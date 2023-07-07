@@ -3,9 +3,10 @@ Short Name: dalvik-dx
 URL: 
 Version: 13.0.0_r24
 License: Apache License Version 2.0
-License File: NOT_SHIPPED
+License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no
+Shipped: no
 
 Description:
 A standalone packaging of AOSP's platform/dalvik dx library.
