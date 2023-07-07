@@ -33,12 +33,12 @@
 
 namespace blink {
 
+class ComputedStyle;
+class Element;
 class ExceptionState;
 class ExecutionContext;
 class LayoutObject;
 class MutableCSSPropertyValueSet;
-class Node;
-class ComputedStyle;
 
 class CORE_EXPORT CSSComputedStyleDeclaration final
     : public CSSStyleDeclaration {
@@ -46,9 +46,9 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
   static const Vector<const CSSProperty*>& ComputableProperties(
       const ExecutionContext*);
 
-  CSSComputedStyleDeclaration(Node*,
-                              bool allow_visited_style = false,
-                              const String& = String());
+  explicit CSSComputedStyleDeclaration(Element*,
+                                       bool allow_visited_style = false,
+                                       const String& = String());
   ~CSSComputedStyleDeclaration() override;
 
   String GetPropertyValue(CSSPropertyID) const;
@@ -75,12 +75,9 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
   void Trace(Visitor*) const override;
 
  private:
-  // The styled node is either the node passed into getComputedStyle, or the
-  // PseudoElement for :before and :after if they exist.
-  // FIXME: This should be styledElement since in JS getComputedStyle only works
-  // on Elements, but right now editing creates these for text nodes. We should
-  // fix that.
-  Node* StyledNode() const;
+  // The styled element is either the element passed into getComputedStyle, or
+  // the PseudoElement for the ::before, ::after, etc if they exist.
+  Element* StyledElement() const;
 
   // The styled layout object is the layout object corresponding to the node
   // being queried, if any.
@@ -131,7 +128,7 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
   bool CssPropertyMatches(CSSPropertyID, const CSSValue&) const override;
 
   AtomicString pseudo_argument_;
-  Member<Node> node_;
+  Member<Element> element_;
   PseudoId pseudo_element_specifier_;
   bool allow_visited_style_;
 };

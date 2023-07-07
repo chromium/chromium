@@ -556,6 +556,22 @@ static bool IsRedundantTextAlign(MutableCSSPropertyValueSet* style,
   return false;
 }
 
+namespace {
+
+Element* ElementFromStyledNode(Node* node) {
+  if (Element* element = DynamicTo<Element>(node)) {
+    return element;
+  }
+  if (node) {
+    // This should probably be FlatTreeTraversal::ParentElement() instead, but
+    // it breaks tests.
+    return node->ParentOrShadowHostElement();
+  }
+  return nullptr;
+}
+
+}  // namespace
+
 void EditingStyle::Init(Node* node, PropertiesToInclude properties_to_include) {
   if (IsTabHTMLSpanElementTextNode(node))
     node = TabSpanElement(node)->parentNode();
@@ -563,7 +579,8 @@ void EditingStyle::Init(Node* node, PropertiesToInclude properties_to_include) {
     node = node->parentNode();
   node_ = node;
   auto* computed_style_at_position =
-      MakeGarbageCollected<CSSComputedStyleDeclaration>(node);
+      MakeGarbageCollected<CSSComputedStyleDeclaration>(
+          ElementFromStyledNode(node));
   mutable_style_ =
       properties_to_include == kAllProperties && computed_style_at_position
           ? computed_style_at_position->CopyProperties()
@@ -963,8 +980,8 @@ EditingTriState EditingStyle::TriStateOfStyle(
   bool node_is_start = true;
   for (Node& node : NodeTraversal::StartsAt(*selection.Start().AnchorNode())) {
     if (node.GetLayoutObject() && IsEditable(node)) {
-      auto* computed_style =
-          MakeGarbageCollected<CSSComputedStyleDeclaration>(&node);
+      auto* computed_style = MakeGarbageCollected<CSSComputedStyleDeclaration>(
+          ElementFromStyledNode(&node));
       CSSStyleDeclaration* node_style = computed_style;
       if (computed_style) {
         // If the selected element has <sub> or <sup> ancestor element, apply
@@ -1251,10 +1268,10 @@ bool EditingStyle::ExtractConflictingImplicitStyleOfAttributes(
 
 bool EditingStyle::StyleIsPresentInComputedStyleOfNode(Node* node) const {
   return !mutable_style_ ||
-         GetPropertiesNotIn(
-             mutable_style_.Get(), node,
-             MakeGarbageCollected<CSSComputedStyleDeclaration>(node),
-             node->GetExecutionContext()->GetSecureContextMode())
+         GetPropertiesNotIn(mutable_style_.Get(), node,
+                            MakeGarbageCollected<CSSComputedStyleDeclaration>(
+                                ElementFromStyledNode(node)),
+                            node->GetExecutionContext()->GetSecureContextMode())
              ->IsEmpty();
 }
 
