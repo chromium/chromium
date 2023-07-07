@@ -1,5 +1,8 @@
 import readline from "readline";
-import { toNumber, spawnChecked } from "./common.mjs";
+import { spawn } from "child_process";
+import * as path from "path";
+
+import { toNumber, getBackendDir } from "./common.mjs";
 
 export async function readSymbols(file, pdbFile) {
   const symbols = {};
@@ -9,15 +12,12 @@ export async function readSymbols(file, pdbFile) {
     }
     const textStart = getTextSectionAddress(pdbFile);
 
-    const process = spawn(`${__dirname}\\..\\..\\lib\\llvm-pdbutil.exe`, [
-      "dump",
-      "-symbols",
-      pdbFile,
-    ]);
-    // We use readline here instead of streamToLineIterator so that we can
-    // keep the dependencies of this file to a minimum since this is also
-    // used to build the linker and rebuilding the linker every time anything
-    // in shared/ changes would be really slow.
+    const pdbPath = path.join(getBackendDir(), "lib", "llvm-pdbutil.exe");
+    const process = spawn(pdbPath, ["dump", "-symbols", pdbFile]);
+    process.on("error", (error) => {
+      console.error(`spawn error: ${error}`);
+    });
+
     const lines = readline.createInterface({
       input: process.stdout,
       crlfDelay: Infinity,
@@ -39,9 +39,23 @@ export async function readSymbols(file, pdbFile) {
       }
     }
   } else {
-    const lines = spawnChecked("/usr/bin/nm", [file], { maxBuffer: 1e100 })
-      .stdout.toString()
-      .split("\n");
+    const nmProcess = spawn("/usr/bin/nm", [file], { maxBuffer: 1e100 });
+
+    nmProcess.on("error", (error) => {
+      console.error(`spawn error: ${error}`);
+    });
+
+    let stdout = "";
+    nmProcess.stdout.on("data", (data) => {
+      stdout += data;
+    });
+
+    await new Promise((resolve, reject) => {
+      nmProcess.on("exit", resolve);
+      nmProcess.on("error", reject);
+    });
+
+    const lines = stdout.split("\n");
     for (const line of lines) {
       const arr = /^(.*?) [t|T|W] (.*)/.exec(line);
       if (arr) {
@@ -58,14 +72,25 @@ export async function readSymbols(file, pdbFile) {
 
 // Get the start virtual address of the text section from a PDB file.
 // Symbol addresses are relative to the start of this section.
-function getTextSectionAddress(pdbFile) {
-  const lines = spawnChecked(`${__dirname}\\..\\..\\lib\\llvm-pdbutil.exe`, [
-    "dump",
-    "-section-headers",
-    pdbFile,
-  ])
-    .stdout.toString()
-    .split("\n");
+async function getTextSectionAddress(pdbFile) {
+  const pdbPath = path.join(getBackendDir(), "lib", "llvm-pdbutil.exe");
+  const pdbProcess = spawn(pdbPath, ["dump", "-section-headers", pdbFile]);
+
+  pdbProcess.on("error", (error) => {
+    console.error(`spawn error: ${error}`);
+  });
+
+  let stdout = "";
+  pdbProcess.stdout.on("data", (data) => {
+    stdout += data;
+  });
+
+  await new Promise((resolve, reject) => {
+    pdbProcess.on("exit", resolve);
+    pdbProcess.on("error", reject);
+  });
+
+  const lines = stdout.toString().split("\n");
 
   let inTextSection = false;
   for (const line of lines) {

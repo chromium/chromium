@@ -59,6 +59,7 @@ steps:
     env:
       GOMA_SERVER_HOST: simpsonite.goma.engflow.com
       GOMACTL_USE_PROXY: false
+      RECORD_REPLAY_BACKEND_DIR: "C:\\Users\\Administrator\\backend"
     agents:
       - "runtimeType=chromiumbuild"
       - "os=windows"

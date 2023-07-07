@@ -1,6 +1,12 @@
 import { spawnSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+// NOTE(dmiller): see https://stackoverflow.com/a/62892482 for explanation
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export function spawnChecked(cmd, args, options) {
   const prettyCmd = [cmd].concat(args).join(" ");
@@ -140,4 +146,10 @@ function getChromiumDeps() {
   results.boringssl = match[1];
 
   return results;
+}
+
+export function getBackendDir() {
+  return path.resolve(
+    process.env.RECORD_REPLAY_BACKEND_DIR || path.join(__dirname, "..", "..")
+  );
 }

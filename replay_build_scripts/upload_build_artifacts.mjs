@@ -7,6 +7,7 @@ import {
   spawnChecked,
   Platform,
   outputArchitecture,
+  getBackendDir,
 } from "./common.mjs";
 import { readSymbols } from "./symbolication.mjs";
 
@@ -130,20 +131,19 @@ function prepareWindowsBinaries(buildId) {
   const buildArchive = `${buildId}.zip`;
   fs.rmSync("replay-chromium", { force: true, recursive: true });
   fs.mkdirSync("replay-chromium");
-  spawnChecked(
-    "node",
-    [copyBuild, "out\\Release", path.join(process.cwd(), "replay-chromium")],
-    { cwd: chromium, stdio: "inherit" }
-  );
+
+  copyBuildFiles(path.join("out", "Release"), "replay-chromium");
+
   // On windows we need to add a couple OpenSSL DLLs to the archive so that the driver will run.
   // This needs to be fixed, see https://github.com/RecordReplay/backend/issues/2847
   for (const dll of ["libssl-1_1-x64.dll", "libcrypto-1_1-x64.dll"]) {
     fs.copyFileSync(
-      path.join(backend, "lib", dll),
+      path.join(getBackendDir(), "lib", dll),
       path.join("replay-chromium", dll)
     );
   }
   spawnChecked(
+    // TODO(dmiller): this is gross, we should control this build dependency
     "C:\\mozilla-build\\bin\\zip.exe",
     ["-r", buildArchive, "replay-chromium"],
     {
