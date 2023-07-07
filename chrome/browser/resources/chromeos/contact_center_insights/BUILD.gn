@@ -12,7 +12,6 @@ reporting_proto_js_dir =
 # purposes
 js_library("reporting_protos") {
   extra_deps = [
-    "//components/reporting/proto:crash_proto",
     "//components/reporting/proto:health_proto",
     "//components/reporting/proto:metric_data_proto",
     "//components/reporting/proto:record_constants",
@@ -25,7 +24,6 @@ js_library("reporting_protos") {
 
   sources = [
     # Include all generated proto files
-    "${reporting_proto_js_dir}/crash.js",
     "${reporting_proto_js_dir}/health.js",
     "${reporting_proto_js_dir}/metric_data.js",
     "${reporting_proto_js_dir}/record.js",
