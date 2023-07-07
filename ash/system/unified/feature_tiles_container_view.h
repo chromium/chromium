@@ -36,9 +36,6 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
   ~FeatureTilesContainerView() override;
 
   // Adds feature tiles to display in the tiles container.
-  // This function temporarily adds a primary and a compact tile along with
-  // other empty FeatureTile placeholders.
-  // TODO(b/252871301): Apply each feature tile.
   void AddTiles(std::vector<std::unique_ptr<FeatureTile>> tiles);
 
   // Lays out the existing tiles into rows. Used when the visibility of a tile

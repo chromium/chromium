@@ -726,7 +726,6 @@ void UnifiedSystemTrayController::InitFeaturePods() {
 }
 
 void UnifiedSystemTrayController::InitFeatureTiles() {
-  // TODO(b/252871301): Create each feature's tile.
   std::vector<std::unique_ptr<FeatureTile>> tiles;
 
   auto create_tile =
