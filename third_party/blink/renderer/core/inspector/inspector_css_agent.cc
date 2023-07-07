@@ -1006,6 +1006,9 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
 
   PseudoId element_pseudo_id = kPseudoIdNone;
   AtomicString view_transition_name = g_null_atom;
+  // If the requested element is a pseudo element, `element` becomes
+  // the first non-pseudo parent element or shadow host element
+  // after `GetPseudoIdAndTag` call below.
   element = GetPseudoIdAndTag(element, element_pseudo_id, view_transition_name);
   if (!element)
     return protocol::Response::ServerError("Pseudo element has no parent");
@@ -1048,6 +1051,8 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
     }
     inherited_entries->fromJust()->emplace_back(std::move(entry));
   }
+
+  *css_keyframes_rules = AnimationsForNode(element, animating_element);
 
   // Pseudo elements.
   if (element_pseudo_id)
@@ -1107,7 +1112,6 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
         std::move(inherited_pseudo_element_matches));
   }
 
-  *css_keyframes_rules = AnimationsForNode(element, animating_element);
   *css_position_fallback_rules = PositionFallbackRulesForNode(element);
 
   auto* parentLayoutNode = LayoutTreeBuilderTraversal::LayoutParent(*element);
@@ -1247,8 +1251,10 @@ InspectorCSSAgent::AnimationsForNode(Element* element,
       std::make_unique<protocol::Array<protocol::CSS::CSSKeyframesRule>>();
   Document& document = element->GetDocument();
   DCHECK(!document.NeedsLayoutTreeUpdateForNode(*element));
-
-  const ComputedStyle* style = element->EnsureComputedStyle();
+  // We want to match the animation name of the animating element not the parent
+  // element's animation names for pseudo elements. When the `element` is a
+  // non-pseudo element then `animating_element` and the `element` are the same.
+  const ComputedStyle* style = animating_element->EnsureComputedStyle();
   if (!style)
     return css_keyframes_rules;
   const CSSAnimationData* animation_data = style->Animations();

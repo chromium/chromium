@@ -1,0 +1,32 @@
+The test verifies functionality of querying keyframe information for view-transition pseudo elements
+Dumping animations for : ::view-transition with id undefined
+Dumping CSS keyframed animations: 
+Dumping animations for : ::view-transition-group with id root
+Dumping CSS keyframed animations: 
+Dumping animations for : ::view-transition-image-pair with id root
+Dumping CSS keyframed animations: 
+Dumping animations for : ::view-transition-old with id root
+Dumping CSS keyframed animations: 
+@keyframes foo {
+    0% {
+        opacity: 0.5; @[1:36-1:49]
+        opacity: 0.5; @[undefined-undefined]
+    }
+}
+Dumping animations for : ::view-transition-new with id root
+Dumping CSS keyframed animations: 
+Dumping animations for : ::view-transition-group with id shared
+Dumping CSS keyframed animations: 
+Dumping animations for : ::view-transition-image-pair with id shared
+Dumping CSS keyframed animations: 
+Dumping animations for : ::view-transition-old with id shared
+Dumping CSS keyframed animations: 
+@keyframes foo {
+    0% {
+        opacity: 0.5; @[1:36-1:49]
+        opacity: 0.5; @[undefined-undefined]
+    }
+}
+Dumping animations for : ::view-transition-new with id shared
+Dumping CSS keyframed animations: 
+

@@ -1905,6 +1905,8 @@ The test verifies functionality of querying style information for view-transitio
 Dumping styles for : ::view-transition with id undefined{
     id : <number>
     result : {
+        cssKeyframesRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -1978,6 +1980,8 @@ Dumping styles for : ::view-transition with id undefined{
 Dumping styles for : ::view-transition-group with id root{
     id : <number>
     result : {
+        cssKeyframesRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -2133,6 +2137,8 @@ Dumping styles for : ::view-transition-group with id root{
 Dumping styles for : ::view-transition-image-pair with id root{
     id : <number>
     result : {
+        cssKeyframesRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -2296,6 +2302,8 @@ Dumping styles for : ::view-transition-image-pair with id root{
 Dumping styles for : ::view-transition-old with id root{
     id : <number>
     result : {
+        cssKeyframesRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -2616,6 +2624,8 @@ Dumping styles for : ::view-transition-old with id root{
 Dumping styles for : ::view-transition-new with id root{
     id : <number>
     result : {
+        cssKeyframesRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -2783,6 +2793,8 @@ Dumping styles for : ::view-transition-new with id root{
 Dumping styles for : ::view-transition-group with id shared{
     id : <number>
     result : {
+        cssKeyframesRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -3005,6 +3017,8 @@ Dumping styles for : ::view-transition-group with id shared{
 Dumping styles for : ::view-transition-image-pair with id shared{
     id : <number>
     result : {
+        cssKeyframesRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -3168,6 +3182,8 @@ Dumping styles for : ::view-transition-image-pair with id shared{
 Dumping styles for : ::view-transition-old with id shared{
     id : <number>
     result : {
+        cssKeyframesRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
@@ -3488,6 +3504,8 @@ Dumping styles for : ::view-transition-old with id shared{
 Dumping styles for : ::view-transition-new with id shared{
     id : <number>
     result : {
+        cssKeyframesRules : [
+        ]
         inherited : [
         ]
         matchedCSSRules : [
