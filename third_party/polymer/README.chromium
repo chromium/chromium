@@ -6,6 +6,7 @@ Revision: N/A
 License: BSD
 License File: LICENSE.polymer
 Security Critical: no
+Shipped: yes
 
 Description:
 This directory contains a copy of the Polymer framework and some elements from
