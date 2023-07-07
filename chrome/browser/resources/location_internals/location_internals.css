@@ -2,14 +2,6 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  padding-inline-end: 20px;
-  padding-inline-start: 20px;
-}
-
 #refresh-status {
   position: absolute;
   top: 0;

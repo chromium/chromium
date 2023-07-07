@@ -4,6 +4,7 @@
 
 import {assert} from '//resources/js/assert_ts.js';
 import {CustomElement} from '//resources/js/custom_element.js';
+import {getTrustedHTML} from '//resources/js/static_types.js';
 
 import {getTemplate} from './diagnose_info_table.html.js';
 
@@ -27,29 +28,28 @@ export class DiagnoseInfoTableElement extends CustomElement {
     this.tableCaption_ = this.getRequiredElement<HTMLElement>('caption');
   }
 
-  createTableData(input: Array<Record<string, string>>) {
-    assert(input.length > 0);
+  updateTable(tableName: string, entries: Array<Record<string, string>>) {
+    assert(entries.length > 0);
+    this.tableHead_.innerHTML = getTrustedHTML``;
+    this.tableBody_.innerHTML = getTrustedHTML``;
+    this.tableCaption_.textContent = tableName;
     const tableHeadFirstRow = document.createElement('tr');
     this.tableHead_.appendChild(tableHeadFirstRow);
-    for (let i: number = 0; i < input.length; i++) {
-      const object = input[i];
+    for (let i: number = 0; i < entries.length; i++) {
+      const entry = entries[i];
       const tableBodyRow = document.createElement('tr');
-      for (const name in object) {
+      for (const fieldName in entry) {
         if (i === 0) {
           const nameCell = document.createElement('th');
-          nameCell.textContent = name;
+          nameCell.textContent = fieldName;
           tableHeadFirstRow.appendChild(nameCell);
         }
         const valueCell = document.createElement('td');
-        valueCell.textContent = object[name]!;
+        valueCell.textContent = entry[fieldName]!;
         tableBodyRow.appendChild(valueCell);
       }
       this.tableBody_.appendChild(tableBodyRow);
     }
-  }
-
-  updateCaption(name: string) {
-    this.tableCaption_.textContent = name;
   }
 }
 
