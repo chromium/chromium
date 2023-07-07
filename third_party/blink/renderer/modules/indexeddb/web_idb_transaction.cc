@@ -64,9 +64,6 @@ void WebIDBTransaction::Put(int64_t object_store_id,
   size_t arg_size =
       value->DataSize() + primary_key->SizeEstimate() + index_keys_size;
 
-  recordreplay::Assert("[RUN-1806-2265] WebIDBTransaction::Put %lld %lld %zu",
-                       transaction_id_, object_store_id, arg_size);
-
   if (arg_size >= max_put_value_size_) {
     callbacks->Error(
         mojom::blink::IDBException::kUnknownError,
@@ -85,6 +82,11 @@ void WebIDBTransaction::Put(int64_t object_store_id,
                     put_mode, std::move(index_keys),
                     WTF::BindOnce(&WebIDBTransaction::PutCallback,
                                   WTF::Unretained(this), std::move(callbacks)));
+
+  recordreplay::Assert(
+      "[RUN-1806-2265] WebIDBTransaction::Put %lld %lld %zu %zu %zu",
+      transaction_id_, object_store_id, value->DataSize(),
+      primary_key->SizeEstimate(), index_keys_size);
 }
 
 void WebIDBTransaction::PutCallback(
