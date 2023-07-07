@@ -3,9 +3,10 @@ Short Name: nativeruntime-dist-compat
 URL: https://source.android.com/
 Version: 1.0.1
 License: MIT
-License File: NOT_SHIPPED
+License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no
+Shipped: no
 
 Description:
 Robolectric Nativeruntime Distribution Compat
