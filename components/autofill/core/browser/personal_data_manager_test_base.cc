@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_callback_support.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -14,10 +15,6 @@ namespace {
 
 const char kPrimaryAccountEmail[] = "syncuser@example.com";
 const char kSyncTransportAccountEmail[] = "transport@example.com";
-
-ACTION_P(QuitMessageLoop, loop) {
-  loop->Quit();
-}
 
 }  // anonymous namespace
 
@@ -128,7 +125,7 @@ void PersonalDataManagerTestBase::RemoveByGUIDFromPersonalDataManager(
     PersonalDataManager* personal_data) {
   base::RunLoop run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-      .WillOnce(QuitMessageLoop(&run_loop));
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
       .Times(testing::AnyNumber());
 
@@ -145,7 +142,7 @@ void PersonalDataManagerTestBase::SetServerCards(
 void PersonalDataManagerTestBase::WaitOnceForOnPersonalDataChanged() {
   base::RunLoop run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-      .WillOnce(QuitMessageLoop(&run_loop));
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(1);
   run_loop.Run();
 }
@@ -154,7 +151,7 @@ void PersonalDataManagerTestBase::WaitOnceForOnPersonalDataChanged() {
 void PersonalDataManagerTestBase::WaitForOnPersonalDataChanged() {
   base::RunLoop run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-      .WillOnce(QuitMessageLoop(&run_loop));
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
       .Times(testing::AnyNumber());
   run_loop.Run();
@@ -164,7 +161,7 @@ void PersonalDataManagerTestBase::WaitForOnPersonalDataChanged() {
 void PersonalDataManagerTestBase::WaitForOnPersonalDataChangedRepeatedly() {
   base::RunLoop run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-      .WillRepeatedly(QuitMessageLoop(&run_loop));
+      .WillRepeatedly(base::test::RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
       .Times(testing::AnyNumber());
   run_loop.Run();

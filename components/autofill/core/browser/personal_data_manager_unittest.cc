@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -76,10 +77,6 @@ enum UserMode { USER_MODE_NORMAL, USER_MODE_INCOGNITO };
 const base::Time kArbitraryTime = base::Time::FromDoubleT(25);
 const base::Time kSomeLaterTime = base::Time::FromDoubleT(1000);
 const base::Time kMuchLaterTime = base::Time::FromDoubleT(5000);
-
-ACTION_P(QuitMessageLoop, loop) {
-  loop->Quit();
-}
 
 class PersonalDataManagerMock : public PersonalDataManager {
  public:
@@ -296,7 +293,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
   void AddProfileToPersonalDataManager(const AutofillProfile& profile) {
     base::RunLoop run_loop;
     EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-        .WillOnce(QuitMessageLoop(&run_loop));
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
     EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
         .Times(testing::AnyNumber());
     personal_data_->AddProfile(profile);
@@ -306,7 +303,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
   void UpdateProfileOnPersonalDataManager(const AutofillProfile& profile) {
     base::RunLoop run_loop;
     EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-        .WillOnce(QuitMessageLoop(&run_loop));
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
     EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
         .Times(testing::AnyNumber());
 
@@ -331,7 +328,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
       const AutofillProfile& profile) {
     base::RunLoop run_loop;
     EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-        .WillOnce(QuitMessageLoop(&run_loop));
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
     EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
         .Times(testing::AnyNumber());
     personal_data_->SaveImportedProfile(profile);
@@ -423,7 +420,7 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
     base::RunLoop run_loop;
 
     EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-        .WillOnce(QuitMessageLoop(&run_loop));
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
     EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
         .Times(testing::AnyNumber());
 
@@ -436,7 +433,7 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
     base::RunLoop run_loop;
 
     EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-        .WillOnce(QuitMessageLoop(&run_loop));
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
     EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
         .Times(testing::AnyNumber());
 
@@ -464,7 +461,7 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
         .Times(testing::AnyNumber());
     EXPECT_CALL(*personal_data_, FetchImagesForURLs(testing::_))
         .Times(1)
-        .WillOnce(QuitMessageLoop(&run_loop));
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -1976,7 +1973,7 @@ TEST_F(PersonalDataManagerMockTest, GetAutofillOffers_WalletImportDisabled) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-      .WillOnce(QuitMessageLoop(&run_loop));
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   ASSERT_EQ(2U, personal_data_->GetAutofillOffers().size());
 
@@ -2040,7 +2037,7 @@ TEST_F(PersonalDataManagerMockTest,
 
   base::RunLoop run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-      .WillOnce(QuitMessageLoop(&run_loop));
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   ASSERT_EQ(1U, personal_data_
                     ->GetActiveAutofillPromoCodeOffersForOrigin(
@@ -3577,7 +3574,7 @@ TEST_F(PersonalDataManagerTest, RecordUseOf) {
   // Use |profile|, then verify usage stats.
   base::RunLoop profile_run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-      .WillOnce(QuitMessageLoop(&profile_run_loop));
+      .WillOnce(base::test::RunClosure(profile_run_loop.QuitClosure()));
   EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(1);
   personal_data_->RecordUseOf(&profile);
   profile_run_loop.Run();
@@ -3592,7 +3589,7 @@ TEST_F(PersonalDataManagerTest, RecordUseOf) {
   // Use |credit_card|, then verify usage stats.
   base::RunLoop credit_card_run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-      .WillOnce(QuitMessageLoop(&credit_card_run_loop));
+      .WillOnce(base::test::RunClosure(credit_card_run_loop.QuitClosure()));
   EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(1);
   personal_data_->RecordUseOf(&credit_card);
   credit_card_run_loop.Run();
