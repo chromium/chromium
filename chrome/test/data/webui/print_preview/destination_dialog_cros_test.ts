@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationStore, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl, PrintPreviewDestinationDialogCrosElement, RecentDestination} from 'chrome://print/print_preview.js';
+import {Destination, DestinationStore, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl, PrinterSetupInfoMessageType, PrintPreviewDestinationDialogCrosElement, PrintPreviewPrinterSetupInfoCrosElement, RecentDestination} from 'chrome://print/print_preview.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -280,9 +280,14 @@ suite(destination_dialog_cros_test.suiteName, function() {
 
         // Printer setup element should be displayed when there are no valid
         // destinations.
-        const printerSetupInfo = dialog.shadowRoot!.querySelector<HTMLElement>(
-            'print-preview-printer-setup-info-cros')!;
+        const printerSetupInfo =
+            dialog.shadowRoot!
+                .querySelector<PrintPreviewPrinterSetupInfoCrosElement>(
+                    PrintPreviewPrinterSetupInfoCrosElement.is)!;
         assertFalse(printerSetupInfo.hidden);
+        assertEquals(
+            PrinterSetupInfoMessageType.NO_PRINTERS,
+            printerSetupInfo!.messageType);
 
         // Destination list should be hidden if there are no valid destinations.
         const destinationList =

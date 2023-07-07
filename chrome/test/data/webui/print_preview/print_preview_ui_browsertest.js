@@ -689,14 +689,21 @@ TEST_F('PrintPreviewPrinterSetupInfoCrosTest', 'ElementDisplays', function() {
   this.runMochaTest(printer_setup_info_cros_test.TestNames.ElementDisplays);
 });
 
-TEST_F('PrintPreviewPrinterSetupInfoCrosTest', 'ElementLocalized', function() {
-  this.runMochaTest(printer_setup_info_cros_test.TestNames.ElementLocalized);
+TEST_F('PrintPreviewPrinterSetupInfoCrosTest', 'ButtonLocalized', function() {
+  this.runMochaTest(printer_setup_info_cros_test.TestNames.ButtonLocalized);
 });
 
 TEST_F(
     'PrintPreviewPrinterSetupInfoCrosTest', 'ManagePrintersButton', function() {
       this.runMochaTest(
           printer_setup_info_cros_test.TestNames.ManagePrintersButton);
+    });
+
+TEST_F(
+    'PrintPreviewPrinterSetupInfoCrosTest', 'MessageMatchesMessageType',
+    function() {
+      this.runMochaTest(
+          printer_setup_info_cros_test.TestNames.MessageMatchesMessageType);
     });
 GEN('#endif')
 

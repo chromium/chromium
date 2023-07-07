@@ -38,6 +38,7 @@ import {getTemplate} from './destination_dialog_cros.html.js';
 import {PrintPreviewDestinationListItemElement} from './destination_list_item_cros.js';
 import {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
 import {PrintPreviewProvisionalDestinationResolverElement} from './provisional_destination_resolver.js';
+import {PrinterSetupInfoMessageType} from './printer_setup_info_cros.js';
 
 interface PrintServersChangedEventDetail {
   printServerNames: string[];
@@ -131,6 +132,12 @@ export class PrintPreviewDestinationDialogCrosElement extends
             'computeIsShowingPrinterSetupAssistance(destinations_.length, ' +
             'isPrintPreviewSetupAssistanceEnabled_)',
         reflectToAttribute: true,
+      },
+
+      noPrinters_: {
+        type: Number,
+        value: PrinterSetupInfoMessageType.NO_PRINTERS,
+        readOnly: true,
       },
     };
   }

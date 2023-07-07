@@ -4,6 +4,9 @@
 
 import {Destination, DestinationOrigin, Error, Margins, MeasurementSystem, MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, PreviewAreaState, PrintPreviewPreviewAreaElement, Size, State} from 'chrome://print/print_preview.js';
 // <if expr="is_chromeos">
+// clang-format off
+import {PrinterSetupInfoMessageType, PrintPreviewPrinterSetupInfoCrosElement} from 'chrome://print/print_preview.js';
+// clang-format on
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // </if>
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -168,8 +171,13 @@ suite(preview_area_test.suiteName, function() {
           previewArea.shadowRoot!.querySelector('.preview-area-overlay-layer')!
               .classList.contains('invisible'));
       assertFalse(isChildVisible(previewArea, '.preview-area-message > span'));
-      assertTrue(
-          isChildVisible(previewArea, 'print-preview-printer-setup-info-cros'));
+      assertTrue(isChildVisible(
+          previewArea, PrintPreviewPrinterSetupInfoCrosElement.is));
+      assertEquals(
+          PrinterSetupInfoMessageType.PRINTER_OFFLINE,
+          previewArea.shadowRoot!
+              .querySelector(
+                  PrintPreviewPrinterSetupInfoCrosElement.is)!.messageType);
     });
   });
   // </if>

@@ -230,6 +230,14 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"printDestinationsTitle", IDS_PRINT_PREVIEW_PRINT_DESTINATIONS_TITLE},
     {"printPagesLabel", IDS_PRINT_PREVIEW_PRINT_PAGES_LABEL},
 #if BUILDFLAG(IS_CHROMEOS)
+    {"printerSetupInfoMessageDetailNoPrintersText",
+     IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_DETAIL_NO_PRINTERS_TEXT},
+    {"printerSetupInfoMessageDetailPrinterOfflineText",
+     IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_DETAIL_PRINTER_OFFLINE_TEXT},
+    {"printerSetupInfoMessageHeadingNoPrintersText",
+     IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_HEADING_NO_PRINTERS_TEXT},
+    {"printerSetupInfoMessageHeadingPrinterOfflineText",
+     IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_HEADING_PRINTER_OFFLINE_TEXT},
     {"printToGoogleDrive", IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE},
 #endif
     {"printToPDF", IDS_PRINT_PREVIEW_PRINT_TO_PDF},

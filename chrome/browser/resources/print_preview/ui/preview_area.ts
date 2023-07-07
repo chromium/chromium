@@ -33,6 +33,9 @@ import {areRangesEqual} from '../print_preview_utils.js';
 import {MARGIN_KEY_MAP, PrintPreviewMarginControlContainerElement} from './margin_control_container.js';
 import {PluginProxy, PluginProxyImpl} from './plugin_proxy.js';
 import {getTemplate} from './preview_area.html.js';
+// <if expr="is_chromeos">
+import {PrinterSetupInfoMessageType} from './printer_setup_info_cros.js';
+// </if>
 import {SettingsMixin} from './settings_mixin.js';
 
 export type PreviewTicket = Ticket&{
@@ -116,6 +119,12 @@ export class PrintPreviewPreviewAreaElement extends
           return loadTimeData.getBoolean(
               'isPrintPreviewSetupAssistanceEnabled');
         },
+        readOnly: true,
+      },
+
+      printerOffline_: {
+        type: Number,
+        value: PrinterSetupInfoMessageType.PRINTER_OFFLINE,
         readOnly: true,
       },
       // </if>
