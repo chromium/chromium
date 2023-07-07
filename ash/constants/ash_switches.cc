@@ -726,6 +726,50 @@ const char kLacrosMojoSocketForTesting[] = "lacros-mojo-socket-for-testing";
 // When this flag is set, the lacros-selection policy is ignored.
 const char kLacrosSelectionPolicyIgnore[] = "lacros-selection-policy-ignore";
 
+// If set, it passes the ids of additional extensions allowed to run in
+// both ash and lacros when lacros is enabled. The ids are separated by ",".
+// This should only used for testing.
+// Note: The ids passed to this switch and the ids passed to
+// kExtensionsRunInAshOnly should be mutually exclusive, i.e., without overlaps.
+// If any extension passed to this switch are to be published to app service,
+// it must be listed in one of the app service block switches so that
+// it won't be published to app service in both ash and lacros. Currently,
+// we don't have any use case with an extension running in both ash and lacros
+// to be published to app service, therefore, we haven't defined the app service
+// block switch for extensions.
+const char kExtensionsRunInBothAshAndLacros[] =
+    "extensions-run-in-ash-and-lacros";
+
+// If set, it passes the ids of additional extension apps allowed to run in
+// in both ash and lacros when lacros is enabled. The ids are separated by ",".
+// This should only used for testing.
+// Note: The ids passed to this switch and the ids passed to
+// kExtensionAppsRunInAshOnly should be mutually exclusive, i.e., without
+// overlaps. If any extension app passed to this switch are to be publisedh to
+// app service, it must be listed in one of the app service block switches so
+// that it won't be published to app service in both ash and lacros. Currently,
+// we only have the use case of an extension app running in both ash and lacros
+// to be published to app service in lacros only, therefore, we only add the
+// kExtensionAppsBlockForAppServiceInAsh switch.
+const char kExtensionAppsRunInBothAshAndLacros[] =
+    "extension-apps-run-in-ash-and-lacros";
+
+// If set, it passes the ids of the additional extensions allowed to run in
+// ash only when lacros is enabled. The ids are separated by ",".
+// This should only used for testing.
+const char kExtensionsRunInAshOnly[] = "extensions-run-in-ash-only";
+
+// If set, it passes the ids of the additional extension apps allowed to run in
+// ash only when lacros is enabled. The ids are separated by ",".
+// This should only used for testing.
+const char kExtensionAppsRunInAshOnly[] = "extension-apps-run-in-ash-only";
+
+// If set, it passes the ids of the extension apps blocked for app service
+// in ash when lacros is enabled. The ids are separated by ",".
+// This should only used for testing.
+const char kExtensionAppsBlockForAppServiceInAsh[] =
+    "extension-apps-block-for-app-service-in-ash";
+
 // Start Chrome in RMA mode. Launches RMA app automatically.
 // kRmaNotAllowed switch takes priority over this one.
 const char kLaunchRma[] = "launch-rma";

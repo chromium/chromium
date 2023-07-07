@@ -7,16 +7,19 @@
 #include <stddef.h>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/common/constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/input_method/component_extension_ime_manager_delegate_impl.h"
@@ -31,6 +34,23 @@ namespace extensions {
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
+// Additional ids of extensions and extension apps used for testing
+// can be passed by ash commandline switches, but this is ONLY allowed
+// for testing use.
+std::vector<std::string> GetIdsFromCmdlineSwitch(
+    const base::StringPiece ash_switch) {
+  std::vector<std::string> ids;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(ash_switch)) {
+    ids = base::SplitString(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(ash_switch),
+        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  }
+  return ids;
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_DEVICE)
+
 // For any extension running in both Ash and Lacros, if it needs to be published
 // in app service, it must be added to one of app service block lists (Ash or
 // Lacros), so that it won't be published by both.
@@ -288,6 +308,30 @@ crosapi::mojom::ExtensionKeepListPtr BuildExtensionKeeplistInitParam() {
     keep_list_param->extensions_run_in_os_only.push_back(std::string(id));
   }
 
+#if !BUILDFLAG(IS_CHROMEOS_DEVICE)  // IN-TEST
+  // Append additional ids of the testing extensions and extension apps.
+  std::vector<std::string> ids = GetIdsFromCmdlineSwitch(
+      ash::switches::kExtensionAppsRunInBothAshAndLacros);
+  keep_list_param->extension_apps_run_in_os_and_standalonebrowser.insert(
+      keep_list_param->extension_apps_run_in_os_and_standalonebrowser.end(),
+      ids.begin(), ids.end());
+
+  ids = GetIdsFromCmdlineSwitch(ash::switches::kExtensionAppsRunInAshOnly);
+  keep_list_param->extension_apps_run_in_os_only.insert(
+      keep_list_param->extension_apps_run_in_os_only.end(), ids.begin(),
+      ids.end());
+
+  ids =
+      GetIdsFromCmdlineSwitch(ash::switches::kExtensionsRunInBothAshAndLacros);
+  keep_list_param->extensions_run_in_os_and_standalonebrowser.insert(
+      keep_list_param->extensions_run_in_os_and_standalonebrowser.end(),
+      ids.begin(), ids.end());
+
+  ids = GetIdsFromCmdlineSwitch(ash::switches::kExtensionsRunInAshOnly);
+  keep_list_param->extensions_run_in_os_only.insert(
+      keep_list_param->extensions_run_in_os_only.end(), ids.begin(), ids.end());
+#endif  // !BUILDFLAG(IS_CHROMEOS_DEVICE)
+
   return keep_list_param;
 }
 
@@ -341,14 +385,30 @@ base::span<const base::StringPiece> GetExtensionsRunInOSOnly() {
 
 bool ExtensionRunsInBothOSAndStandaloneBrowser(
     const std::string& extension_id) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_DEVICE)
   return base::Contains(GetExtensionsRunInOSAndStandaloneBrowser(),
                         extension_id);
+#else
+  return base::Contains(GetExtensionsRunInOSAndStandaloneBrowser(),
+                        extension_id) ||
+         base::Contains(GetIdsFromCmdlineSwitch(  // IN-TEST
+                            ash::switches::kExtensionsRunInBothAshAndLacros),
+                        extension_id);
+#endif
 }
 
 bool ExtensionAppRunsInBothOSAndStandaloneBrowser(
     const std::string& extension_id) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_DEVICE)
   return base::Contains(GetExtensionAppsRunInOSAndStandaloneBrowser(),
                         extension_id);
+#else
+  return base::Contains(GetExtensionAppsRunInOSAndStandaloneBrowser(),
+                        extension_id) ||
+         base::Contains(GetIdsFromCmdlineSwitch(  // IN-TEST
+                            ash::switches::kExtensionAppsRunInBothAshAndLacros),
+                        extension_id);
+#endif
 }
 
 bool ExtensionRunsInOS(const std::string& extension_id) {
@@ -371,11 +431,25 @@ bool ExtensionAppRunsInOS(const std::string& app_id) {
 }
 
 bool ExtensionAppRunsInOSOnly(base::StringPiece app_id) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_DEVICE)
   return base::Contains(GetExtensionAppsRunInOSOnly(), app_id);
+#else
+  return base::Contains(GetExtensionAppsRunInOSOnly(), app_id) ||
+         base::Contains(  // IN-TEST
+             GetIdsFromCmdlineSwitch(ash::switches::kExtensionAppsRunInAshOnly),
+             app_id);
+#endif
 }
 
 bool ExtensionRunsInOSOnly(base::StringPiece extension_id) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_DEVICE)
   return base::Contains(GetExtensionsRunInOSOnly(), extension_id);
+#else
+  return base::Contains(GetExtensionsRunInOSOnly(), extension_id) ||
+         base::Contains(  // IN-TEST
+             GetIdsFromCmdlineSwitch(ash::switches::kExtensionsRunInAshOnly),
+             extension_id);
+#endif
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -408,7 +482,15 @@ void SetEmptyAshKeeplistForTest() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool ExtensionAppBlockListedForAppServiceInOS(base::StringPiece app_id) {
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
   return base::Contains(ExtensionAppsAppServiceBlocklistInOS(), app_id);
+#else
+  return base::Contains(ExtensionAppsAppServiceBlocklistInOS(), app_id) ||
+         base::Contains(  // IN-TEST
+             GetIdsFromCmdlineSwitch(
+                 ash::switches::kExtensionAppsBlockForAppServiceInAsh),
+             app_id);
+#endif
 }
 
 bool ExtensionBlockListedForAppServiceInOS(base::StringPiece extension_id) {

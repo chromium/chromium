@@ -235,6 +235,16 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLacrosChromePath[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLacrosMojoSocketForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLacrosSelectionPolicyIgnore[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kExtensionsRunInBothAshAndLacros[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kExtensionAppsRunInBothAshAndLacros[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kExtensionsRunInAshOnly[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kExtensionAppsRunInAshOnly[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kExtensionAppsBlockForAppServiceInAsh[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLaunchRma[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLoginManager[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLoginProfile[];

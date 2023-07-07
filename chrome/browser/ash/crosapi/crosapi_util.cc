@@ -182,6 +182,9 @@ constexpr char kSharedStoragePrefsCapability[] = "b/231890240";
 constexpr char kExtensionControlledPrefObserversCapability[] = "crbug/1334985";
 // Capability to always use ConfirmComposition for input methods.
 constexpr char kAlwaysConfirmCompositionCapability[] = "b/265853952";
+// Capability to pass testing ash extension keeplist data via ash
+// commandline switch.
+constexpr char kAshExtensionKeeplistCmdlineSwitchCapability[] = "crbug/1409199";
 
 // Returns the vector containing policy data of the device account. In case of
 // an error, returns nullopt.
@@ -584,6 +587,7 @@ void InjectBrowserInitParams(
       kBrowserManagerReloadBrowserCapability,
       kSharedStoragePrefsCapability,
       kExtensionControlledPrefObserversCapability,
+      kAshExtensionKeeplistCmdlineSwitchCapability,
   };
   // TODO(b/265853952): Remove this once kAlwaysConfirmComposition is enabled by
   // default.

@@ -908,7 +908,14 @@ void InProcessBrowserTest::StartUniqueAshChrome(
   ash_cmdline.AppendSwitch(
       variations::switches::kEnableFieldTrialTestingConfig);
   for (const std::string& cmdline_switch : additional_cmdline_switches) {
-    ash_cmdline.AppendSwitch(cmdline_switch);
+    size_t pos = cmdline_switch.find("=");
+    if (pos == std::string::npos) {
+      ash_cmdline.AppendSwitch(cmdline_switch);
+    } else {
+      CHECK_GT(pos, 0u);
+      ash_cmdline.AppendSwitchASCII(cmdline_switch.substr(0, pos),
+                                    cmdline_switch.substr(pos + 1));
+    }
   }
 
   std::vector<std::string> all_enabled_features = {
