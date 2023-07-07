@@ -106,6 +106,19 @@ CGFloat const kCreditCardIconCornerRadius = 5;
   }
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  if (_creditCardData.count) {
+    [self.view layoutIfNeeded];
+    CGFloat fullHeight = [self tableViewHeight];
+    if (fullHeight > 0) {
+      // Update height constraint for the table view.
+      _heightConstraint.constant = fullHeight;
+    }
+  }
+
+  [super viewWillAppear:animated];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
   [self.delegate disableBottomSheet];
 }
