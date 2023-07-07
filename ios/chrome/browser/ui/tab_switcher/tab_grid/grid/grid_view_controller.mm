@@ -1288,19 +1288,26 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [self.collectionView insertItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
   };
 
+  __weak __typeof(self) weakSelf = self;
   auto completion = ^(BOOL finished) {
-    [self deselectAllCollectionViewItemsAnimated:NO];
-    [self selectCollectionViewItemWithID:self.selectedItemID animated:YES];
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    [strongSelf deselectAllCollectionViewItemsAnimated:NO];
+    [strongSelf selectCollectionViewItemWithID:strongSelf.selectedItemID
+                                      animated:YES];
 
-    [self.delegate gridViewController:self didChangeItemCount:self.items.count];
+    [strongSelf.delegate gridViewController:strongSelf
+                         didChangeItemCount:strongSelf.items.count];
 
-    // Check `index` boundaries in order to filter out possible race
-    // conditions while mutating the collection.
-    if (index == NSNotFound || index >= self.items.count) {
+    // Check `index` boundaries in order to filter out possible race conditions
+    // while mutating the collection.
+    if (index == NSNotFound || index >= strongSelf.items.count) {
       return;
     }
 
-    [self.collectionView
+    [strongSelf.collectionView
         scrollToItemAtIndexPath:CreateIndexPath(index)
                atScrollPosition:UICollectionViewScrollPositionCenteredVertically
                        animated:YES];
@@ -1339,16 +1346,21 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   __weak __typeof(self) weakSelf = self;
   auto completion = ^(BOOL finished) {
-    if (weakSelf.items.count > 0) {
-      [self deselectAllCollectionViewItemsAnimated:NO];
-      [self selectCollectionViewItemWithID:weakSelf.selectedItemID
-                                  animated:NO
-                            scrollPosition:UICollectionViewScrollPositionNone];
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
     }
-    [weakSelf.delegate gridViewController:weakSelf
-                       didChangeItemCount:weakSelf.items.count];
-    [weakSelf.delegate gridViewController:weakSelf
-                      didRemoveItemWIthID:removedItemID];
+    if (strongSelf.items.count > 0) {
+      [strongSelf deselectAllCollectionViewItemsAnimated:NO];
+      [strongSelf
+          selectCollectionViewItemWithID:strongSelf.selectedItemID
+                                animated:NO
+                          scrollPosition:UICollectionViewScrollPositionNone];
+    }
+    [strongSelf.delegate gridViewController:strongSelf
+                         didChangeItemCount:strongSelf.items.count];
+    [strongSelf.delegate gridViewController:strongSelf
+                        didRemoveItemWIthID:removedItemID];
   };
 
   [self performModelUpdates:modelUpdates
@@ -1413,35 +1425,36 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   __weak __typeof(self) weakSelf = self;
   auto completion = ^(BOOL finished) {
-    if (!weakSelf) {
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
       return;
     }
 
-    [weakSelf.delegate gridViewController:weakSelf
-                        didMoveItemWithID:itemID
-                                  toIndex:toIndex];
+    [strongSelf.delegate gridViewController:strongSelf
+                          didMoveItemWithID:itemID
+                                    toIndex:toIndex];
 
     // Bring back selected halo only for the moved cell, which lost it during
     // the move (drag & drop).
-    if (weakSelf.selectedIndex != toIndex) {
+    if (strongSelf.selectedIndex != toIndex) {
       return;
     }
     // Force reload of the selected cell now to avoid extra delay for the
     // blue halo to appear. Bring the halo in 100ms.
-    [UIView animateWithDuration:0.1
-                     animations:^{
-                       [weakSelf.collectionView reloadItemsAtIndexPaths:@[
-                         CreateIndexPath(weakSelf.selectedIndex)
-                       ]];
-                       [self deselectAllCollectionViewItemsAnimated:NO];
-                       [self
-                           selectCollectionViewItemWithID:weakSelf
-                                                              .selectedItemID
-                                                 animated:NO
-                                           scrollPosition:
-                                               UICollectionViewScrollPositionNone];
-                     }
-                     completion:nil];
+    [UIView
+        animateWithDuration:0.1
+                 animations:^{
+                   [strongSelf.collectionView reloadItemsAtIndexPaths:@[
+                     CreateIndexPath(strongSelf.selectedIndex)
+                   ]];
+                   [self deselectAllCollectionViewItemsAnimated:NO];
+                   [self
+                       selectCollectionViewItemWithID:strongSelf.selectedItemID
+                                             animated:NO
+                                       scrollPosition:
+                                           UICollectionViewScrollPositionNone];
+                 }
+                 completion:nil];
   };
   [self performModelUpdates:modelUpdates
                 collectionViewUpdates:collectionViewUpdates
@@ -1549,15 +1562,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                               scrollPosition:scrollPosition];
 }
 
-// Selects the collection view's item with `itemID`.
+// Selects the collection view's item with `itemID` and scrolls to have it at
+// the top.
 - (void)selectCollectionViewItemWithID:(NSString*)itemID
                               animated:(BOOL)animated {
-  UICollectionViewScrollPosition scrollPosition =
-      UICollectionViewScrollPositionTop;
-
   [self selectCollectionViewItemWithID:itemID
                               animated:animated
-                        scrollPosition:scrollPosition];
+                        scrollPosition:UICollectionViewScrollPositionTop];
 }
 
 // Deselects all the collection view items.
