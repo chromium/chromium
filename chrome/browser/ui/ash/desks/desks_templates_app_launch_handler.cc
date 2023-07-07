@@ -306,8 +306,7 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
     int windows_count = 0;
 
     for (const auto& [restore_window_id, app_restore_data] : iter.second) {
-      if (!app_restore_data->active_tab_index.has_value() ||
-          app_restore_data->urls.empty()) {
+      if (app_restore_data->urls.empty()) {
         continue;
       }
 
@@ -323,7 +322,7 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
           chromeos::ToWindowShowState(
               app_restore_data->window_state_type.value_or(
                   chromeos::WindowStateType::kDefault)),
-          app_restore_data->active_tab_index.value(),
+          app_restore_data->active_tab_index.value_or(0),
           // Values of 0 will be ignored, other type constraints are
           // enforced on the browser side.
           app_restore_data->first_non_pinned_tab_index.value_or(0),
