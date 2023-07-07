@@ -5,6 +5,7 @@ Version: 1.23
 License: New BSD
 License File: src/LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 Alternative to SQLite.
