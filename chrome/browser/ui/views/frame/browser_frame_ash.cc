@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/app_restore_info.h"
@@ -199,9 +200,16 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
   // This is only needed for ash. For lacros, Exo tags the associated
   // ShellSurface as being of AppType::LACROS.
   bool is_app = browser->is_type_app() || browser->is_type_app_popup();
-  params.init_properties_container.SetProperty(
-      aura::client::kAppType, static_cast<int>(is_app ? ash::AppType::CHROME_APP
-                                                      : ash::AppType::BROWSER));
+  web_app::AppBrowserController* controller = browser->app_controller();
+  if (controller && controller->system_app()) {
+    params.init_properties_container.SetProperty(
+        aura::client::kAppType, static_cast<int>(ash::AppType::SYSTEM_APP));
+  } else {
+    params.init_properties_container.SetProperty(
+        aura::client::kAppType,
+        static_cast<int>(is_app ? ash::AppType::CHROME_APP
+                                : ash::AppType::BROWSER));
+  }
 
   app_restore::ModifyWidgetParams(restore_id, &params);
   // Override session restore bounds with Full Restore bounds if they exist.
