@@ -118,21 +118,23 @@
 
 namespace partition_alloc::internal {
 
+static constexpr size_t kDebugKeyMaxLength = 8ull;
+
 // Used for PA_DEBUG_DATA_ON_STACK, below.
 struct PA_DEBUGKV_ALIGN DebugKv {
   // 16 bytes object aligned on 16 bytes, to make it easier to see in crash
   // reports.
-  char k[8] = {};  // Not necessarily 0-terminated.
+  char k[kDebugKeyMaxLength] = {};  // Not necessarily 0-terminated.
   uint64_t v = 0;
 
   DebugKv(const char* key, uint64_t value) : v(value) {
     // Fill with ' ', so that the stack dump is nicer to read.  Not using
     // memset() on purpose, this header is included from *many* places.
-    for (int index = 0; index < 8; index++) {
+    for (size_t index = 0; index < sizeof k; index++) {
       k[index] = ' ';
     }
 
-    for (int index = 0; index < 8; index++) {
+    for (size_t index = 0; index < sizeof k; index++) {
       k[index] = key[index];
       if (key[index] == '\0') {
         break;
@@ -166,6 +168,8 @@ struct PA_DEBUGKV_ALIGN DebugKv {
 // x/8g <STACK_POINTER>
 // to see the data. With lldb, "x <STACK_POINTER> <FRAME_POJNTER>" can be used.
 #define PA_DEBUG_DATA_ON_STACK(name, value)                               \
+  static_assert(sizeof name <=                                            \
+                ::partition_alloc::internal::kDebugKeyMaxLength + 1);     \
   ::partition_alloc::internal::DebugKv PA_DEBUG_UNIQUE_NAME{name, value}; \
   ::partition_alloc::internal::base::debug::Alias(&PA_DEBUG_UNIQUE_NAME);
 

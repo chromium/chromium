@@ -711,7 +711,7 @@ void PartitionAllocThreadIsolationInit(ThreadIsolationOption thread_isolation) {
   // stacks, and other allocators will also consume address space).
   const size_t kReasonableVirtualSize = (is_wow_64 ? 2800 : 1024) * 1024 * 1024;
   // Make it obvious whether we are running on 64-bit Windows.
-  PA_DEBUG_DATA_ON_STACK("is_wow_64", static_cast<size_t>(is_wow_64));
+  PA_DEBUG_DATA_ON_STACK("iswow64", static_cast<size_t>(is_wow_64));
 #else
   constexpr size_t kReasonableVirtualSize =
       // 1.5GiB elsewhere, since address space is typically 3GiB.
