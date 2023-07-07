@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
@@ -18,8 +19,21 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/common/features.h"
 
 namespace signin {
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+namespace {
+bool IsAccountSupervised(IdentityManager* identity_manager) {
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  return account_info.capabilities.is_subject_to_parental_controls() ==
+         signin::Tribool::kTrue;
+}
+}  // namespace
+#endif
 
 // Revokes tokens for all accounts in chrome_accounts but the primary account.
 void RevokeAllSecondaryTokens(
@@ -191,6 +205,16 @@ bool DiceAccountReconcilorDelegate::
 
 ConsentLevel DiceAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
     const {
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  // A supervised user regardless of consent should not be signed out in certain
+  // cases such as clearing browsing data. In this instance the account
+  // reconciler should not remove the primary account.
+  if (IsAccountSupervised(identity_manager_) &&
+      base::FeatureList::IsEnabled(
+          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
+    return ConsentLevel::kSignin;
+  }
+#endif
   // In some cases, clearing the primary account is not allowed regardless of
   // the consent level (e.g. cloud-managed profiles). In these cases, the dice
   // account reconcilor delegate should never remove the primary account
@@ -322,8 +346,16 @@ void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction(
       signin_metrics::ProfileSignout::kUserDeletedAccountCookies,
       /*revoke_only_if_in_error=*/false);
 
-  if (!identity_manager_->HasPrimaryAccount(consent_level))
+  if (!identity_manager_->HasPrimaryAccount(consent_level)) {
     return;
+  }
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  if (IsAccountSupervised(identity_manager_) &&
+      base::FeatureList::IsEnabled(
+          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
+    return;
+  }
+#endif
 
   if (synced_data_deletion_in_progress &&
       identity_manager_->HasPrimaryAccount(ConsentLevel::kSync)) {

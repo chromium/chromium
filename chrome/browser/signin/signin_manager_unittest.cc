@@ -6,15 +6,19 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -645,5 +649,60 @@ TEST_F(SigninManagerTest, SigninCompletedMetric) {
   histogram_tester.ExpectUniqueSample("Signin.SigninManager.SigninAccessPoint",
                                       access_point, 1);
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_SUPERVISED_USERS)
+class SigninManagerSupervisedUserTest : public SigninManagerTest {
+ public:
+  SigninManagerSupervisedUserTest() = default;
+  ~SigninManagerSupervisedUserTest() override = default;
+
+  void AddSupervisedAccount(ConsentLevel level) {
+    AccountInfo account;
+    if (level == ConsentLevel::kSignin) {
+      account = MakeAccountAvailableWithCookies(kTestEmail);
+    } else {
+      account = MakeSyncAccountAvailableWithCookies(kTestEmail);
+    }
+    AccountCapabilitiesTestMutator mutator(&account.capabilities);
+    mutator.set_is_subject_to_parental_controls(true);
+    signin::UpdateAccountInfoForAccount(identity_manager(), account);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SigninManagerSupervisedUserTest, SignoutOnCookiesDeletedNotAllowed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeature(
+      supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
+  AddSupervisedAccount(ConsentLevel::kSignin);
+  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  ASSERT_EQ(1U, observer().events().size());
+  observer().Reset();
+
+  // Remove the cookie, the account shouldn't be cleared when flag is disabled.
+  identity_test_env()->SetCookieAccounts({});
+  EXPECT_EQ(0U, observer().events().size());
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+}
+
+TEST_F(SigninManagerSupervisedUserTest, SignoutOnCookiesDeletedAllowed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndDisableFeature(
+      supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
+  AddSupervisedAccount(ConsentLevel::kSignin);
+  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  ASSERT_EQ(1U, observer().events().size());
+  observer().Reset();
+
+  // Remove the cookie, the account should be cleared.
+  identity_test_env()->SetCookieAccounts({});
+  EXPECT_EQ(1U, observer().events().size());
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 }  // namespace signin

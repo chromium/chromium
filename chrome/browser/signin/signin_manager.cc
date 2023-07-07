@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,6 +19,8 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/signin_helper_lacros.h"
@@ -206,6 +209,23 @@ CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
   if (!signin_allowed_.GetValue()) {
     return CoreAccountInfo();
   }
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  AccountInfo extended_account_info =
+      identity_manager_->FindExtendedAccountInfo(current_primary_account);
+  bool is_subject_to_parental_controls =
+      extended_account_info.capabilities.is_subject_to_parental_controls() ==
+      signin::Tribool::kTrue;
+  if (is_subject_to_parental_controls &&
+      IsValidUnconsentedPrimaryAccount(current_primary_account) &&
+      base::FeatureList::IsEnabled(
+          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
+    // For supervised users, in some cases like clear browsing data including
+    // cookies, they shouldn't be signed out. If the refresh token is valid and
+    // not in error state, the account reconcilor will rebuild cookies.
+    return current_primary_account;
+  }
+#endif
 
   signin::AccountsInCookieJarInfo cookie_info =
       identity_manager_->GetAccountsInCookieJar();

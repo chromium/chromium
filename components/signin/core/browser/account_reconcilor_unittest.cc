@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
@@ -32,11 +33,14 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
+#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -1402,6 +1406,92 @@ TEST_F(AccountReconcilorDiceTest, DeleteCookie) {
                   .GetInvalidGaiaCredentialsReason());
   }
 }
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+class AccountReconcilorDiceTestForSupervisedUsers
+    : public AccountReconcilorDiceTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  AccountReconcilorDiceTestForSupervisedUsers() {
+    if (is_signout_disallowed_on_cookies_cleared()) {
+      feature_list_.InitAndEnableFeature(
+          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn);
+    }
+  }
+
+  ~AccountReconcilorDiceTestForSupervisedUsers() override = default;
+
+  bool is_signout_disallowed_on_cookies_cleared() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(AccountReconcilorDiceTestForSupervisedUsers,
+                         AccountReconcilorDiceTestForSupervisedUsers,
+                         ::testing::Bool());
+
+TEST_P(AccountReconcilorDiceTestForSupervisedUsers,
+       DeleteCookieForNonSyncingSupervisedUsers) {
+  auto* identity_manager = identity_test_env()->identity_manager();
+  signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
+                                            &test_url_loader_factory_);
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      kFakeEmail, signin::ConsentLevel::kSignin);
+
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_is_subject_to_parental_controls(true);
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+
+  ASSERT_TRUE(
+      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+  ASSERT_FALSE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          account_info.account_id));
+
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  reconcilor->OnAccountsCookieDeletedByUserAction();
+
+  EXPECT_EQ(
+      is_signout_disallowed_on_cookies_cleared(),
+      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+  EXPECT_FALSE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          account_info.account_id));
+}
+
+TEST_P(AccountReconcilorDiceTestForSupervisedUsers,
+       DeleteCookieForSyncingSupervisedUsers) {
+  auto* identity_manager = identity_test_env()->identity_manager();
+  signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
+                                            &test_url_loader_factory_);
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      kFakeEmail, signin::ConsentLevel::kSync);
+
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_is_subject_to_parental_controls(true);
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+
+  ASSERT_TRUE(
+      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+  ASSERT_FALSE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          account_info.account_id));
+
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+
+  reconcilor->OnAccountsCookieDeletedByUserAction();
+
+  EXPECT_TRUE(
+      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
+  EXPECT_NE(is_signout_disallowed_on_cookies_cleared(),
+            identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+                account_info.account_id));
+}
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
