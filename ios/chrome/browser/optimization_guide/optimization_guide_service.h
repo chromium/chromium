@@ -42,11 +42,6 @@ class OptimizationGuideLogger;
 class OptimizationGuideNavigationData;
 class PrefService;
 
-namespace web {
-class BrowserState;
-class NavigationContext;
-}  // namespace web
-
 // A BrowserState keyed service that is used to own the underlying Optimization
 // Guide components. This is a rough copy of the OptimizationGuideKeyedService
 // in //chrome/browser that is used for non-iOS. It cannot be directly used due
@@ -94,31 +89,16 @@ class OptimizationGuideService
           optimization_types) override;
 
   // optimization_guide::NewOptimizationGuideDecider implementation:
-  // WARNING: This API is not quite ready for general use. Use
-  // CanApplyOptimizationAsync or CanApplyOptimization using NavigationHandle
-  // instead.
   void CanApplyOptimization(
       const GURL& url,
       optimization_guide::proto::OptimizationType optimization_type,
       optimization_guide::OptimizationGuideDecisionCallback callback) override;
-
-  // Returns whether `optimization_type` can be applied for `url`. This should
-  // only be called for main frame navigations or future main frame navigations.
   optimization_guide::OptimizationGuideDecision CanApplyOptimization(
       const GURL& url,
       optimization_guide::proto::OptimizationType optimization_type,
       optimization_guide::OptimizationMetadata* optimization_metadata) override;
 
-  // Invokes `callback` with the decision for the URL contained in
-  // `navigation_context` and `optimization_type`, when sufficient information
-  // has been collected to make the decision. This should only be called for
-  // main frame navigations.
-  void CanApplyOptimizationAsync(
-      web::NavigationContext* navigation_context,
-      optimization_guide::proto::OptimizationType optimization_type,
-      optimization_guide::OptimizationGuideDecisionCallback callback);
-
-  // optimization_guide::OptimizationGuideModelProvider implementation
+  // optimization_guide::OptimizationGuideModelProvider implementation:
   void AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget optimization_target,
       const absl::optional<optimization_guide::proto::Any>& model_metadata,

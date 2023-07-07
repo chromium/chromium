@@ -60,11 +60,14 @@ void OptimizationGuideValidationTabHelper::DidFinishNavigation(
   if (!optimization_guide_service)
     return;
 
-  optimization_guide_service->CanApplyOptimizationAsync(
-      navigation_context, optimization_guide::proto::METADATA_FETCH_VALIDATION,
+  // Async.
+  optimization_guide_service->CanApplyOptimization(
+      navigation_context->GetUrl(),
+      optimization_guide::proto::METADATA_FETCH_VALIDATION,
       base::BindOnce(&OptimizationGuideValidationTabHelper::
                          OnMetadataFetchValidationDecisionReceived,
                      weak_factory_.GetWeakPtr(), navigation_context->GetUrl()));
+  // Sync.
   optimization_guide_service->CanApplyOptimization(
       navigation_context->GetUrl(),
       optimization_guide::proto::BLOOM_FILTER_VALIDATION,

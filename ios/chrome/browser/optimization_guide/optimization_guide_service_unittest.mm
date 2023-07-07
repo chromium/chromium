@@ -192,8 +192,8 @@ class OptimizationGuideServiceTest : public PlatformTest {
       NavigationContextAndData* context_and_data,
       base::OnceClosure on_decision_callback,
       optimization_guide::OptimizationGuideDecision expected_decision) {
-    optimization_guide_service()->CanApplyOptimizationAsync(
-        context_and_data->navigation_context_.get(),
+    optimization_guide_service()->CanApplyOptimization(
+        context_and_data->navigation_context_.get()->GetUrl(),
         optimization_guide::proto::NOSCRIPT,
         base::BindOnce(
             [](base::OnceClosure on_decision_callback,

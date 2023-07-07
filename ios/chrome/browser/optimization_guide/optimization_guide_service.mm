@@ -230,9 +230,6 @@ void OptimizationGuideService::RegisterOptimizationTypes(
   hints_manager_->RegisterOptimizationTypes(optimization_types);
 }
 
-// WARNING: This API is not quite ready for general use. Use
-// CanApplyOptimizationAsync or CanApplyOptimization using NavigationHandle
-// instead.
 void OptimizationGuideService::CanApplyOptimization(
     const GURL& url,
     optimization_guide::proto::OptimizationType optimization_type,
@@ -258,16 +255,6 @@ OptimizationGuideService::CanApplyOptimization(
   return optimization_guide::HintsManager::
       GetOptimizationGuideDecisionFromOptimizationTypeDecision(
           optimization_type_decision);
-}
-
-void OptimizationGuideService::CanApplyOptimizationAsync(
-    web::NavigationContext* navigation_context,
-    optimization_guide::proto::OptimizationType optimization_type,
-    optimization_guide::OptimizationGuideDecisionCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  hints_manager_->CanApplyOptimizationAsync(
-      navigation_context->GetUrl(), optimization_type, std::move(callback));
 }
 
 void OptimizationGuideService::CanApplyOptimizationOnDemand(
