@@ -232,6 +232,13 @@ suite(destination_dialog_cros_test.suiteName, function() {
         const destinationList =
             dialog.shadowRoot!.querySelector<HTMLElement>('#printList');
         assertTrue(isVisible(destinationList));
+
+        // Destination search box should be shown if there are valid
+        // destinations.
+        const searchBox = dialog.shadowRoot!.querySelector<HTMLElement>(
+            'print-preview-search-box');
+        assertTrue(isVisible(searchBox));
+
       });
 
   // Test that the correct elements are displayed when the printer setup
@@ -281,5 +288,11 @@ suite(destination_dialog_cros_test.suiteName, function() {
         const destinationList =
             dialog.shadowRoot!.querySelector<HTMLElement>('#printList');
         assertFalse(isVisible(destinationList));
+
+        // Destination search box should be hidden if there are no valid
+        // destinations.
+        const searchBox = dialog.shadowRoot!.querySelector<HTMLElement>(
+            'print-preview-search-box');
+        assertFalse(isVisible(searchBox));
       });
 });

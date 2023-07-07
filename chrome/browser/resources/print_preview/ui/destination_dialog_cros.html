@@ -37,6 +37,7 @@
       </div>
     </div>
     <print-preview-search-box id="searchBox"
+        hidden$="[[isShowingPrinterSetupAssistance]]"
         label="$i18n{searchBoxPlaceholder}" search-query="{{searchQuery_}}"
         autofocus>
     </print-preview-search-box>
