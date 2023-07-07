@@ -5,14 +5,13 @@
 #include <d3d11.h>
 #include <wrl.h>
 
-#include <numeric>
-
-#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/command_recorder.h"
 #include "services/webnn/dml/error.h"
+#include "services/webnn/dml/tensor_desc.h"
 #include "services/webnn/dml/test_base.h"
+#include "services/webnn/dml/utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_angle_util_win.h"
 
@@ -29,61 +28,6 @@ D3D12_RESOURCE_BARRIER CreateTransitionBarrier(ID3D12Resource* resource,
                          .Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES,
                          .StateBefore = before,
                          .StateAfter = after}};
-}
-
-size_t CalculateDMLBufferTensorSize(DML_TENSOR_DATA_TYPE data_type,
-                                    const std::vector<uint32_t>& dimensions) {
-  size_t element_size;
-  switch (data_type) {
-    case DML_TENSOR_DATA_TYPE_FLOAT32:
-    case DML_TENSOR_DATA_TYPE_UINT32:
-    case DML_TENSOR_DATA_TYPE_INT32:
-      element_size = 4;
-      break;
-    case DML_TENSOR_DATA_TYPE_FLOAT16:
-    case DML_TENSOR_DATA_TYPE_UINT16:
-    case DML_TENSOR_DATA_TYPE_INT16:
-      element_size = 2;
-      break;
-    case DML_TENSOR_DATA_TYPE_UINT8:
-    case DML_TENSOR_DATA_TYPE_INT8:
-      element_size = 1;
-      break;
-    case DML_TENSOR_DATA_TYPE_FLOAT64:
-    case DML_TENSOR_DATA_TYPE_UINT64:
-    case DML_TENSOR_DATA_TYPE_INT64:
-      element_size = 8;
-      break;
-    default:
-      NOTREACHED_NORETURN();
-  }
-  const size_t buffer_tensor_size =
-      std::accumulate(dimensions.begin(), dimensions.end(), 1,
-                      std::multiplies<uint32_t>()) *
-      element_size;
-
-  // DirectML requires buffer tensor size to be DWORD aligned.
-  const size_t alignment = sizeof(DWORD);
-  size_t aligned_buffer_tensor_size =
-      buffer_tensor_size % alignment == 0
-          ? buffer_tensor_size
-          : (buffer_tensor_size / alignment + 1) * alignment;
-
-  return aligned_buffer_tensor_size;
-}
-
-// The `dimensions` should outlive the returned `DML_BUFFER_TENSOR_DESC`.
-DML_BUFFER_TENSOR_DESC CreateDMLBufferTensorDesc(
-    DML_TENSOR_DATA_TYPE data_type,
-    const std::vector<uint32_t>& dimensions,
-    DML_TENSOR_FLAGS flags = DML_TENSOR_FLAG_NONE) {
-  return {.DataType = data_type,
-          .Flags = flags,
-          .DimensionCount = base::checked_cast<uint32_t>(dimensions.size()),
-          .Sizes = dimensions.data(),
-          .Strides = nullptr,
-          .TotalTensorSizeInBytes =
-              CalculateDMLBufferTensorSize(data_type, dimensions)};
 }
 
 }  // namespace
@@ -322,14 +266,10 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteReluOperator) {
   // Test initializing and executing a DirectML Relu operator.
   //
   // Create a Relu operator.
-  const std::vector<uint32_t> dimensions({1, 1, 2, 2});
-  DML_BUFFER_TENSOR_DESC buffer_tensor_desc =
-      CreateDMLBufferTensorDesc(DML_TENSOR_DATA_TYPE_FLOAT32, dimensions);
-  DML_TENSOR_DESC tensor_desc{.Type = DML_TENSOR_TYPE_BUFFER,
-                              .Desc = &buffer_tensor_desc};
-
+  TensorDesc input_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 1, 2, 2});
   DML_ACTIVATION_RELU_OPERATOR_DESC relu_operator_desc{
-      .InputTensor = &tensor_desc, .OutputTensor = &tensor_desc};
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &input_tensor_desc.GetDMLTensorDesc()};
   DML_OPERATOR_DESC operator_desc{.Type = DML_OPERATOR_ACTIVATION_RELU,
                                   .Desc = &relu_operator_desc};
   ComPtr<IDMLOperator> dml_operator;
@@ -363,8 +303,7 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteReluOperator) {
 
   // Create input and output resources that will be bound for operator for
   // execution.
-  const uint32_t buffer_size =
-      CalculateDMLBufferTensorSize(DML_TENSOR_DATA_TYPE_FLOAT32, dimensions);
+  const uint64_t buffer_size = input_tensor_desc.GetTotalTensorSizeInBytes();
   ComPtr<ID3D12Resource> input_buffer;
   ASSERT_HRESULT_SUCCEEDED(
       adapter_->CreateDefaultBuffer(buffer_size, input_buffer));
@@ -408,14 +347,10 @@ TEST_F(WebNNCommandRecorderTest, ExecuteReluOperatorForMultipleBindings) {
   // output bindings before waiting for GPU work to complete.
   //
   // Create a Relu operator.
-  const std::vector<uint32_t> dimensions({1, 1, 2, 2});
-  DML_BUFFER_TENSOR_DESC buffer_tensor_desc =
-      CreateDMLBufferTensorDesc(DML_TENSOR_DATA_TYPE_FLOAT32, dimensions);
-  DML_TENSOR_DESC tensor_desc{.Type = DML_TENSOR_TYPE_BUFFER,
-                              .Desc = &buffer_tensor_desc};
-
+  TensorDesc input_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 1, 2, 2});
   DML_ACTIVATION_RELU_OPERATOR_DESC relu_operator_desc{
-      .InputTensor = &tensor_desc, .OutputTensor = &tensor_desc};
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &input_tensor_desc.GetDMLTensorDesc()};
   DML_OPERATOR_DESC operator_desc{.Type = DML_OPERATOR_ACTIVATION_RELU,
                                   .Desc = &relu_operator_desc};
   ComPtr<IDMLOperator> dml_operator;
@@ -449,8 +384,7 @@ TEST_F(WebNNCommandRecorderTest, ExecuteReluOperatorForMultipleBindings) {
 
   // Create input and output resources that will be bound for the two operator
   // executions.
-  const uint32_t buffer_size =
-      CalculateDMLBufferTensorSize(DML_TENSOR_DATA_TYPE_FLOAT32, dimensions);
+  const uint64_t buffer_size = input_tensor_desc.GetTotalTensorSizeInBytes();
   ComPtr<ID3D12Resource> input_buffers[2];
   ASSERT_HRESULT_SUCCEEDED(
       adapter_->CreateDefaultBuffer(buffer_size, input_buffers[0]));
@@ -568,26 +502,12 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteConvolutionOperator) {
   // resources.
   //
   // Create a Convolution operator.
-  const std::vector<uint32_t> input_dimensions({1, 1, 3, 3});
-  DML_BUFFER_TENSOR_DESC input_buffer_tensor_desc =
-      CreateDMLBufferTensorDesc(DML_TENSOR_DATA_TYPE_FLOAT32, input_dimensions);
-  DML_TENSOR_DESC input_tensor_desc{.Type = DML_TENSOR_TYPE_BUFFER,
-                                    .Desc = &input_buffer_tensor_desc};
-
+  TensorDesc input_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 1, 3, 3});
   // Set DML_TENSOR_FLAG_OWNED_BY_DML flag to filter tensor, so that its
   // resource should be bound for operator initializer.
-  const std::vector<uint32_t> filter_dimensions({1, 1, 2, 2});
-  DML_BUFFER_TENSOR_DESC filter_buffer_tensor_desc =
-      CreateDMLBufferTensorDesc(DML_TENSOR_DATA_TYPE_FLOAT32, filter_dimensions,
-                                DML_TENSOR_FLAG_OWNED_BY_DML);
-  DML_TENSOR_DESC filter_tensor_desc{.Type = DML_TENSOR_TYPE_BUFFER,
-                                     .Desc = &filter_buffer_tensor_desc};
-
-  const std::vector<uint32_t> output_dimensions({1, 1, 2, 2});
-  DML_BUFFER_TENSOR_DESC output_buffer_tensor_desc = CreateDMLBufferTensorDesc(
-      DML_TENSOR_DATA_TYPE_FLOAT32, output_dimensions);
-  DML_TENSOR_DESC output_tensor_desc{.Type = DML_TENSOR_TYPE_BUFFER,
-                                     .Desc = &output_buffer_tensor_desc};
+  TensorDesc filter_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32,
+                                DML_TENSOR_FLAG_OWNED_BY_DML, {1, 1, 2, 2});
+  TensorDesc output_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 1, 2, 2});
 
   const std::vector<uint32_t> strides({1, 1});
   const std::vector<uint32_t> dilations({1, 1});
@@ -595,10 +515,10 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteConvolutionOperator) {
   const std::vector<uint32_t> end_padding({0, 0});
   const std::vector<uint32_t> output_padding({0, 0});
   DML_CONVOLUTION_OPERATOR_DESC conv_operator_desc{
-      .InputTensor = &input_tensor_desc,
-      .FilterTensor = &filter_tensor_desc,
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .FilterTensor = &filter_tensor_desc.GetDMLTensorDesc(),
       .BiasTensor = nullptr,
-      .OutputTensor = &output_tensor_desc,
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
       .Mode = DML_CONVOLUTION_MODE_CROSS_CORRELATION,
       .Direction = DML_CONVOLUTION_DIRECTION_FORWARD,
       .DimensionCount = 2,
@@ -623,8 +543,8 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteConvolutionOperator) {
 
   // Create filter resource that will be bound for operator initializer.
   ComPtr<ID3D12Resource> filter_buffer;
-  const size_t filter_buffer_size = CalculateDMLBufferTensorSize(
-      DML_TENSOR_DATA_TYPE_FLOAT32, filter_dimensions);
+  const uint64_t filter_buffer_size =
+      filter_tensor_desc.GetTotalTensorSizeInBytes();
   ASSERT_HRESULT_SUCCEEDED(
       adapter_->CreateDefaultBuffer(filter_buffer_size, filter_buffer));
 
@@ -687,13 +607,13 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteConvolutionOperator) {
 
   // Create input and output resources that will be bound for operator for
   // execution.
-  const uint32_t input_buffer_size = CalculateDMLBufferTensorSize(
-      DML_TENSOR_DATA_TYPE_FLOAT32, input_dimensions);
+  const uint64_t input_buffer_size =
+      input_tensor_desc.GetTotalTensorSizeInBytes();
   ComPtr<ID3D12Resource> input_buffer;
   ASSERT_HRESULT_SUCCEEDED(
       adapter_->CreateDefaultBuffer(input_buffer_size, input_buffer));
-  const uint32_t output_buffer_size = CalculateDMLBufferTensorSize(
-      DML_TENSOR_DATA_TYPE_FLOAT32, output_dimensions);
+  const uint64_t output_buffer_size =
+      output_tensor_desc.GetTotalTensorSizeInBytes();
   ComPtr<ID3D12Resource> output_buffer;
   ASSERT_HRESULT_SUCCEEDED(
       adapter_->CreateDefaultBuffer(output_buffer_size, output_buffer));

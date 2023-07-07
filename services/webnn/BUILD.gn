@@ -27,6 +27,10 @@ source_set("webnn") {
       "dml/error.h",
       "dml/platform_functions.cc",
       "dml/platform_functions.h",
+      "dml/tensor_desc.cc",
+      "dml/tensor_desc.h",
+      "dml/utils.cc",
+      "dml/utils.h",
     ]
   }
 
@@ -52,6 +56,7 @@ source_set("tests") {
       "dml/command_queue_test.cc",
       "dml/command_recorder_test.cc",
       "dml/platform_functions_test.cc",
+      "dml/tensor_desc_test.cc",
       "dml/test_base.cc",
       "dml/test_base.h",
     ]
