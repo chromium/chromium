@@ -5081,17 +5081,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Pip.AndroidPipUseTime" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2024-01-06">
   <owner>takise@chromium.org</owner>
   <owner>linben@chromium.org</owner>
-  <summary>How long Android PIP was used for, upon ending the session.</summary>
+  <summary>
+    How long Android PIP was used for, upon ending the session.
+
+    This metric was expired between April 2022 and July 2023 and may be missing
+    data.
+  </summary>
 </histogram>
 
-<histogram name="Ash.Pip.Events" enum="AshPipEvents" expires_after="2022-04-17">
+<histogram name="Ash.Pip.Events" enum="AshPipEvents" expires_after="2024-01-06">
   <owner>takise@chromium.org</owner>
   <owner>linben@chromium.org</owner>
   <summary>
     Various individiual Picture-in-picture related events. See AshPipEvents.
+
+    This metric was expired between April 2022 and July 2023 and may be missing
+    data.
   </summary>
 </histogram>
 
