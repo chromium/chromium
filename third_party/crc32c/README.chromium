@@ -5,6 +5,7 @@ Version: 1.0.7.git-5998f8451548244de8cde7fab387a550e7c4497d
 License: New BSD
 License File: src/LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 CRC32C implementation with support for CPU-specific acceleration instructions
