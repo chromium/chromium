@@ -1120,6 +1120,7 @@ TEST_F(WindowCycleControllerTest, MouseEventWhenCycleViewDoesNotExist) {
 // If a user clicks on an item, it should complete cycling and activate
 // the hovered item.
 TEST_F(WindowCycleControllerTest, MouseHoverAndSelect) {
+  UpdateDisplay("1200x800");
   std::unique_ptr<Window> w0 = CreateTestWindow();
   std::unique_ptr<Window> w1 = CreateTestWindow();
   std::unique_ptr<Window> w2 = CreateTestWindow();
@@ -1292,6 +1293,7 @@ TEST_F(WindowCycleControllerTest, RapidConfirmSelection) {
 // preventing the mouse from unexpectedly triggering events.
 // See crbug.com/1143275.
 TEST_F(WindowCycleControllerTest, FilterMouseEventsUntilUsed) {
+  UpdateDisplay("1200x800");
   std::unique_ptr<Window> w0 = CreateTestWindow();
   std::unique_ptr<Window> w1 = CreateTestWindow();
   std::unique_ptr<Window> w2 = CreateTestWindow();
@@ -1546,6 +1548,7 @@ TEST_F(WindowCycleControllerTest, VerticalScroll) {
 
 // Tests that touch continuous scrolls for the window cycle list.
 TEST_F(WindowCycleControllerTest, TouchScroll) {
+  UpdateDisplay("900x600");
   const gfx::Rect bounds(0, 0, 200, 200);
   std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
   std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
