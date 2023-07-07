@@ -182,9 +182,10 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
         if (blockingEnabled) {
             mThirdPartyCookiesTitle.setTitle(
                     getContext().getString(R.string.page_info_cookies_site_not_working_title));
-            // TODO(crbug.com/1446230): Check the flag param for temporary/permanent exception.
             mThirdPartyCookiesSummary.setSummary(getContext().getString(
-                    R.string.page_info_cookies_site_not_working_description_temporary));
+                    willCreatePermanentException()
+                            ? R.string.page_info_cookies_site_not_working_description_permanent
+                            : R.string.page_info_cookies_site_not_working_description_temporary));
         } else if (permanentException) {
             mThirdPartyCookiesTitle.setTitle(
                     getContext().getString(R.string.page_info_cookies_permanent_allowed_title));
@@ -296,5 +297,9 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
                                     R.plurals.page_info_sites_allowed, mAllowedSites, mAllowedSites)
                             : null);
         }
+    }
+
+    private boolean willCreatePermanentException() {
+        return "0d".equals(PageInfoFeatures.getUserBypassExpiration());
     }
 }

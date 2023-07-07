@@ -26,6 +26,12 @@ public class PageInfoFeatures extends Features {
 
     private final int mOrdinal;
 
+    private static final String PARAM_EXPIRATION = "expiration";
+
+    public static String getUserBypassExpiration() {
+        return USER_BYPASS_UI.getFieldTrialParamByFeatureAsString(PARAM_EXPIRATION);
+    }
+
     private PageInfoFeatures(int ordinal, String name) {
         super(name);
         mOrdinal = ordinal;
