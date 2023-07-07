@@ -2162,7 +2162,10 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
   overflow_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(
-          touch_ui ? kBookmarkbarTouchOverflowIcon : kOverflowChevronIcon,
+          features::IsChromeRefresh2023()
+              ? kBookmarkbarOverflowRefreshIcon
+              : (touch_ui ? kBookmarkbarTouchOverflowIcon
+                          : kOverflowChevronIcon),
           overflow_color));
 
   // Redraw the background.
