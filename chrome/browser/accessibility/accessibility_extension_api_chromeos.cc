@@ -842,10 +842,10 @@ AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
   if (properties.hints) {
     std::vector<ash::DictationBubbleHintType> converted_hints;
     for (size_t i = 0; i < (*properties.hints).size(); ++i) {
-      converted_hints.push_back(
+      converted_hints.emplace_back(
           ConvertDictationHintType((*properties.hints)[i]));
     }
-    hints = converted_hints;
+    hints = std::move(converted_hints);
   }
 
   if (hints.has_value() && hints.value().size() > 5)
