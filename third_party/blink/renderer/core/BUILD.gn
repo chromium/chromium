@@ -1629,6 +1629,7 @@ fuzzer_test("html_preload_scanner_fuzzer") {
   seed_corpus = "//third_party/blink/web_tests/fast/parser"
   deps = [
     ":core",
+    ":element_locator_proto",
     "../platform:blink_fuzzer_test_support",
   ]
 }

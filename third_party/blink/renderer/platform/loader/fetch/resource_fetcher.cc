@@ -465,7 +465,8 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
     mojom::blink::ScriptType script_type,
     bool is_link_preload,
     const absl::optional<float> resource_width,
-    const absl::optional<float> resource_height) {
+    const absl::optional<float> resource_height,
+    bool is_potentially_lcp_element) {
   DCHECK(!resource_request.PriorityHasBeenSet() ||
          type == ResourceType::kImage);
   ResourceLoadPriority priority = TypeToPriority(type);
@@ -473,6 +474,14 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
   // Visible resources (images in practice) get a boost to High priority.
   if (visibility == ResourcePriority::kVisible)
     priority = ResourceLoadPriority::kHigh;
+
+  // LCP Critical Path Predictor identified previous LCP images get a boost
+  // to VeryHigh priority.
+  // Note: The `priority` set here may be overridden by the logic below,
+  //       while that is not the case as of July 2023.
+  if (is_potentially_lcp_element) {
+    priority = ResourceLoadPriority::kVeryHigh;
+  }
 
   // Resources before the first image are considered "early" in the document and
   // resources after the first image are "late" in the document.  Important to
@@ -1061,7 +1070,8 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
         ResourcePriority::kNotVisible, params.Defer(),
         params.GetSpeculativePreloadType(), params.GetRenderBlockingBehavior(),
         params.GetScriptType(), params.IsLinkPreload(),
-        params.GetResourceWidth(), params.GetResourceHeight());
+        params.GetResourceWidth(), params.GetResourceHeight(),
+        params.IsPotentiallyLCPElement());
   }
 
   DCHECK_NE(computed_load_priority, ResourceLoadPriority::kUnresolved);

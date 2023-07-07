@@ -1504,6 +1504,29 @@ TEST_F(ResourceFetcherTest, BoostImagePriority) {
   }
 }
 
+TEST_F(ResourceFetcherTest, IsPotentiallyLCPElement) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBoostImagePriority);
+  auto& properties = *MakeGarbageCollected<TestResourceFetcherProperties>();
+  auto* fetcher = CreateFetcher(properties);
+  ResourceRequest request(KURL("https://www.example.com/"));
+
+  // Resources for Potentially LCP Elements get VeryHigh priority.
+  {
+    properties.SetIsOutermostMainFrame(true);
+    properties.SetIsSubframeDeprioritizationEnabled(false);
+    const auto priority = fetcher->ComputeLoadPriorityForTesting(
+        ResourceType::kImage, request, ResourcePriority::kNotVisible,
+        FetchParameters::DeferOption::kNoDefer,
+        FetchParameters::SpeculativePreloadType::kInDocument,
+        RenderBlockingBehavior::kNonBlocking,
+        mojom::blink::ScriptType::kClassic, /* is_link_preload=*/false,
+        /* resource_width=*/10, /* resource_height=*/10,
+        /* is_potentially_lcp_element=*/true);
+    EXPECT_EQ(priority, ResourceLoadPriority::kVeryHigh);
+  }
+}
+
 TEST_F(ResourceFetcherTest, Detach) {
   DetachableResourceFetcherProperties& properties =
       MakeGarbageCollected<TestResourceFetcherProperties>()->MakeDetachable();

@@ -315,11 +315,13 @@ class PLATFORM_EXPORT ResourceFetcher
       mojom::blink::ScriptType script_type,
       bool is_link_preload,
       const absl::optional<float> resource_width = absl::nullopt,
-      const absl::optional<float> resource_height = absl::nullopt) {
-    return ComputeLoadPriority(
-        type, request, visibility_statue, defer_option,
-        speculative_preload_type, render_blocking_behavior, script_type,
-        is_link_preload, resource_width, resource_height);
+      const absl::optional<float> resource_height = absl::nullopt,
+      bool is_potentially_lcp_element = false) {
+    return ComputeLoadPriority(type, request, visibility_statue, defer_option,
+                               speculative_preload_type,
+                               render_blocking_behavior, script_type,
+                               is_link_preload, resource_width, resource_height,
+                               is_potentially_lcp_element);
   }
 
   bool ShouldLoadIncrementalForTesting(ResourceType type) {
@@ -388,7 +390,8 @@ class PLATFORM_EXPORT ResourceFetcher
       mojom::blink::ScriptType script_type = mojom::blink::ScriptType::kClassic,
       bool is_link_preload = false,
       const absl::optional<float> resource_width = absl::nullopt,
-      const absl::optional<float> resource_height = absl::nullopt);
+      const absl::optional<float> resource_height = absl::nullopt,
+      bool is_potentially_lcp_element = false);
   ResourceLoadPriority AdjustImagePriority(
       ResourceLoadPriority priority_so_far,
       ResourceType type,

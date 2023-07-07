@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_resource_preloader.h"
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
 #include "third_party/blink/renderer/core/html/parser/preload_request.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
@@ -107,6 +108,12 @@ struct AttributionSrcTestCase {
   network::mojom::AttributionReportingEligibility expected_eligibility;
   network::mojom::AttributionSupport attribution_support =
       network::mojom::AttributionSupport::kWeb;
+};
+
+struct TokenStreamMatcherTestCase {
+  ElementLocator locator;
+  const char* input_html;
+  const char* potentially_lcp_preload_url;
 };
 
 class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
@@ -264,6 +271,11 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
               resource->GetResourceRequest().GetAttributionReportingSupport());
   }
 
+  void IsPotentiallyLCPElementFlagVerification(bool expected) {
+    EXPECT_EQ(expected, preload_request_->IsPotentiallyLCPElement())
+        << preload_request_->ResourceURL();
+  }
+
  protected:
   void Preload(std::unique_ptr<PreloadRequest> preload_request) override {
     preload_request_ = std::move(preload_request);
@@ -308,7 +320,8 @@ class HTMLPreloadScannerTest : public PageTestBase {
                 PreloadState preload_state = kPreloadEnabled,
                 network::mojom::ReferrerPolicy document_referrer_policy =
                     network::mojom::ReferrerPolicy::kDefault,
-                bool use_secure_document_url = false) {
+                bool use_secure_document_url = false,
+                Vector<ElementLocator> locators = {}) {
     HTMLParserOptions options(&GetDocument());
     KURL document_url = KURL("http://whatever.test/");
     if (use_secure_document_url)
@@ -325,7 +338,9 @@ class HTMLPreloadScannerTest : public PageTestBase {
         std::make_unique<HTMLTokenizer>(options), document_url,
         std::make_unique<CachedDocumentParameters>(&GetDocument()),
         CreateMediaValuesData(),
-        TokenPreloadScanner::ScannerType::kMainDocument, nullptr);
+        TokenPreloadScanner::ScannerType::kMainDocument,
+        /* script_token_scanner=*/nullptr,
+        /* take_preload=*/HTMLPreloadScanner::TakePreloadFn(), locators);
   }
 
   void SetUp() override {
@@ -448,6 +463,25 @@ class HTMLPreloadScannerTest : public PageTestBase {
     preloader.AttributionSrcRequestVerification(&GetDocument(),
                                                 test_case.expected_eligibility,
                                                 test_case.attribution_support);
+  }
+
+  void Test(TokenStreamMatcherTestCase test_case) {
+    SCOPED_TRACE(test_case.input_html);
+    RunSetUp(kViewportEnabled, kPreloadEnabled,
+             network::mojom::ReferrerPolicy::kDefault,
+             /* use_secure_document_url=*/true, {test_case.locator});
+    scanner_->AppendToEnd(String(test_case.input_html));
+    std::unique_ptr<PendingPreloadData> preload_data =
+        scanner_->Scan(GetDocument().Url());
+    int count = 0;
+    for (const auto& request_ptr : preload_data->requests) {
+      if (request_ptr->IsPotentiallyLCPElement()) {
+        EXPECT_EQ(request_ptr->ResourceURL(),
+                  String(test_case.potentially_lcp_preload_url));
+        count++;
+      }
+    }
+    EXPECT_EQ(1, count);
   }
 
  private:
@@ -1608,6 +1642,23 @@ TEST_F(HTMLPreloadScannerTest, PreloadLayeredImport) {
 
   for (const auto& test : test_cases)
     Test(test);
+}
+
+TEST_F(HTMLPreloadScannerTest, TokenStreamMatcher) {
+  ElementLocator locator;
+  auto* c = locator.add_components()->mutable_id();
+  c->set_id_attr("target");
+
+  TokenStreamMatcherTestCase test_case = {locator,
+                                          R"HTML(
+    <div>
+      <img src="not-interesting.jpg">
+      <img src="super-interesting.jpg" id="target">
+      <img src="not-interesting2.jpg">
+    </div>
+    )HTML",
+                                          "super-interesting.jpg"};
+  Test(test_case);
 }
 
 }  // namespace blink

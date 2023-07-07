@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/html_tokenizer_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/keywords.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
@@ -167,6 +168,8 @@ void CoreInitializer::Initialize() {
   FontGlobalContext::Init();
 
   CSSDefaultStyleSheets::Init();
+
+  element_locator::TokenStreamMatcher::InitSets();
 }
 
 }  // namespace blink

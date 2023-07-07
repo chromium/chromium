@@ -51,6 +51,8 @@ class CORE_EXPORT TokenStreamMatcher {
   explicit TokenStreamMatcher(Vector<ElementLocator>);
   ~TokenStreamMatcher();
 
+  static void InitSets();
+
   // Observe a start tag token and returns `true` iff any of the `locators_`
   // match.
   bool ObserveStartTagAndReportMatch(const StringImpl* tag_name,

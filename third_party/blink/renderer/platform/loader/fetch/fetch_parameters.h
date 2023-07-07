@@ -212,6 +212,12 @@ class PLATFORM_EXPORT FetchParameters {
 
   base::TimeTicks DiscoveryTime() { return discovery_time_; }
 
+  void SetIsPotentiallyLCPElement(bool flag) {
+    is_potentially_lcp_element_ = flag;
+  }
+
+  bool IsPotentiallyLCPElement() const { return is_potentially_lcp_element_; }
+
  private:
   ResourceRequest resource_request_;
   // |decoder_options_|'s ContentType is set to |kPlainTextContent| in
@@ -231,6 +237,7 @@ class PLATFORM_EXPORT FetchParameters {
   RenderBlockingBehavior render_blocking_behavior_ =
       RenderBlockingBehavior::kUnset;
   base::TimeTicks discovery_time_;
+  bool is_potentially_lcp_element_ = false;
 };
 
 }  // namespace blink

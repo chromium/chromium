@@ -87,71 +87,74 @@ void HTMLStackItem::IncrementChildrenCount(
   }
 }
 
-TokenStreamMatcher::TokenStreamMatcher(Vector<ElementLocator> locators)
-    : locators_(locators) {}
-
-TokenStreamMatcher::~TokenStreamMatcher() = default;
-
 namespace {
 
 // Set of element tag names that needs to run a "close a p element" step in
 // https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody
-const HashSet<const StringImpl*>& ClosePElementSet() {
-  DEFINE_STATIC_LOCAL(HashSet<const StringImpl*>, s_close_p_element_set, ());
-  if (s_close_p_element_set.empty()) {
-    s_close_p_element_set.insert(html_names::kAddressTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kArticleTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kAsideTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kBlockquoteTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kCenterTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kDetailsTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kDirTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kDivTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kDlTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kFieldsetTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kFigcaptionTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kFigureTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kFooterTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kHeaderTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kHgroupTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kMainTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kMenuTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kNavTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kOlTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kPTag.LocalName().Impl());
-
-    // The spec says that we should run the step for the "search" tag as well,
-    // but we don't have the implementation in Blink yet.
-    // s_close_p_element_set.insert(html_names::kSearchTag.LocalName().Impl());
-
-    s_close_p_element_set.insert(html_names::kSectionTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kSummaryTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kUlTag.LocalName().Impl());
-
-    s_close_p_element_set.insert(html_names::kH1Tag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kH2Tag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kH3Tag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kH4Tag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kH5Tag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kH6Tag.LocalName().Impl());
-
-    s_close_p_element_set.insert(html_names::kPreTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kListingTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kFormTag.LocalName().Impl());
-    s_close_p_element_set.insert(html_names::kPlaintextTag.LocalName().Impl());
-
-    s_close_p_element_set.insert(html_names::kXmpTag.LocalName().Impl());
-  }
-  return s_close_p_element_set;
+HashSet<const StringImpl*>& ClosePElementSet() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<const StringImpl*>, set, ());
+  return set;
 }
 
 // The list of tags that their start tag tokens need to be closed immediately,
 // with the following spec text:
 // <spec>Insert an HTML element for the token. Immediately pop the current node
 // off the stack of open elements.</spec>
-const HashSet<const StringImpl*>& ImmediatelyPopTheCurrentNodeTags() {
-  DEFINE_STATIC_LOCAL(HashSet<const StringImpl*>, set, ());
-  if (set.empty()) {
+HashSet<const StringImpl*>& ImmediatelyPopTheCurrentNodeTags() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<const StringImpl*>, set, ());
+  return set;
+}
+
+}  // namespace
+
+void TokenStreamMatcher::InitSets() {
+  {
+    HashSet<const StringImpl*>& set = ClosePElementSet();
+    set.insert(html_names::kAddressTag.LocalName().Impl());
+    set.insert(html_names::kArticleTag.LocalName().Impl());
+    set.insert(html_names::kAsideTag.LocalName().Impl());
+    set.insert(html_names::kBlockquoteTag.LocalName().Impl());
+    set.insert(html_names::kCenterTag.LocalName().Impl());
+    set.insert(html_names::kDetailsTag.LocalName().Impl());
+    set.insert(html_names::kDirTag.LocalName().Impl());
+    set.insert(html_names::kDivTag.LocalName().Impl());
+    set.insert(html_names::kDlTag.LocalName().Impl());
+    set.insert(html_names::kFieldsetTag.LocalName().Impl());
+    set.insert(html_names::kFigcaptionTag.LocalName().Impl());
+    set.insert(html_names::kFigureTag.LocalName().Impl());
+    set.insert(html_names::kFooterTag.LocalName().Impl());
+    set.insert(html_names::kHeaderTag.LocalName().Impl());
+    set.insert(html_names::kHgroupTag.LocalName().Impl());
+    set.insert(html_names::kMainTag.LocalName().Impl());
+    set.insert(html_names::kMenuTag.LocalName().Impl());
+    set.insert(html_names::kNavTag.LocalName().Impl());
+    set.insert(html_names::kOlTag.LocalName().Impl());
+    set.insert(html_names::kPTag.LocalName().Impl());
+
+    // The spec says that we should run the step for the "search" tag as well,
+    // but we don't have the implementation in Blink yet.
+    // set.insert(html_names::kSearchTag.LocalName().Impl());
+
+    set.insert(html_names::kSectionTag.LocalName().Impl());
+    set.insert(html_names::kSummaryTag.LocalName().Impl());
+    set.insert(html_names::kUlTag.LocalName().Impl());
+
+    set.insert(html_names::kH1Tag.LocalName().Impl());
+    set.insert(html_names::kH2Tag.LocalName().Impl());
+    set.insert(html_names::kH3Tag.LocalName().Impl());
+    set.insert(html_names::kH4Tag.LocalName().Impl());
+    set.insert(html_names::kH5Tag.LocalName().Impl());
+    set.insert(html_names::kH6Tag.LocalName().Impl());
+
+    set.insert(html_names::kPreTag.LocalName().Impl());
+    set.insert(html_names::kListingTag.LocalName().Impl());
+    set.insert(html_names::kFormTag.LocalName().Impl());
+    set.insert(html_names::kPlaintextTag.LocalName().Impl());
+
+    set.insert(html_names::kXmpTag.LocalName().Impl());
+  }
+  {
+    HashSet<const StringImpl*>& set = ImmediatelyPopTheCurrentNodeTags();
     set.insert(html_names::kAreaTag.LocalName().Impl());
     set.insert(html_names::kBrTag.LocalName().Impl());
     set.insert(html_names::kEmbedTag.LocalName().Impl());
@@ -164,8 +167,13 @@ const HashSet<const StringImpl*>& ImmediatelyPopTheCurrentNodeTags() {
     set.insert(html_names::kTrackTag.LocalName().Impl());
     set.insert(html_names::kHrTag.LocalName().Impl());
   }
-  return set;
 }
+
+TokenStreamMatcher::TokenStreamMatcher(Vector<ElementLocator> locators)
+    : locators_(locators) {}
+
+TokenStreamMatcher::~TokenStreamMatcher() = default;
+namespace {
 
 bool MatchLocator(const ElementLocator& locator,
                   base::span<const HTMLStackItem> stack) {
@@ -289,6 +297,7 @@ bool TokenStreamMatcher::ObserveStartTagAndReportMatch(
 
   // <spec>If the stack of open elements has a p element in button scope,
   // then close a p element.</spec>
+  DCHECK(!ClosePElementSet().empty());
   if (ClosePElementSet().Contains(tag_name)) {
     ObserveEndTag(html_names::kPTag.LocalName().Impl());
   }
@@ -309,6 +318,7 @@ bool TokenStreamMatcher::ObserveStartTagAndReportMatch(
     }
   }
 
+  DCHECK(!ImmediatelyPopTheCurrentNodeTags().empty());
   if (ImmediatelyPopTheCurrentNodeTags().Contains(tag_name)) {
     ObserveEndTag(tag_name);
   }
