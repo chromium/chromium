@@ -232,7 +232,6 @@ source_set("preferred_apps") {
     ":app_types",
     ":intents",
     "//base",
-    "//content/public/browser",
     "//url",
   ]
 }
