@@ -6,6 +6,7 @@ Revision: 00b9287e8c1255b5922ef90e304d5287361b2c2a
 License: MIT
 License File: COPYING
 Security Critical: yes
+Shipped: yes
 
 Description:
 Provides high-quality (but non-cryptographic) hash functions for strings.

@@ -2,7 +2,8 @@ Name: ICU
 URL: http://site.icu-project.org/
 Version: 60
 License: Unicode
-License File: NOT_SHIPPED
+License File: LICENSE
+Shipped: no
 
 This file has the relevant components from ICU copied to handle basic UTF8/16/32
 conversions. Components are copied from umachine.h, utf.h, utf8.h, and utf16.h

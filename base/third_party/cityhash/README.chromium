@@ -5,6 +5,7 @@ Revision: 8af9b8c
 License: MIT
 License File: COPYING
 Security Critical: yes
+Shipped: yes
 
 Description:
 This is a fast non-cryptographic hash function.

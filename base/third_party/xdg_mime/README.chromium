@@ -3,6 +3,8 @@ URL: https://gitlab.freedesktop.org/xdg/xdgmime
 Version: 722325fba8968a26eb243642cbe89a044d6dfd6c
 CPEPrefix: unknown
 License: Academic Free License version 2.0 or LGPL v2
+License File: LICENSE
+Shipped: yes
 Security critical: yes
 
 Run //base/third_party/xdg_mime/roll.py to update this dependency.
