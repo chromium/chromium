@@ -453,7 +453,8 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     // Verifies there is one data series per stats name.
     const base::Value::Dict* data_series_dump = pc_dump->FindDict("stats");
     ASSERT_TRUE(data_series_dump);
-    EXPECT_EQ(stats.values.size(), data_series_dump->size());
+    // The timestamp is considered an additional data series.
+    EXPECT_EQ(stats.values.size() + 1, data_series_dump->size());
   }
 };
 

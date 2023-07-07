@@ -184,6 +184,10 @@ export function drawSingleReport(
     }
     graphViews[graphViewId].updateEndDate();
   }
+  // Add a synthetic data series for the timestamp.
+  addDataSeriesPoints(
+    peerConnectionElement, reportType, reportId + '-timestamp',
+    reportId + '-timestamp', [stats.timestamp], [stats.timestamp]);
 
   const childrenAfter = peerConnectionElement.hasChildNodes() ?
       Array.from(peerConnectionElement.childNodes) :
