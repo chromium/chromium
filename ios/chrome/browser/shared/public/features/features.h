@@ -135,6 +135,17 @@ bool IsNewTabGridTransitionsEnabled();
 // Feature to enable multiline gradient support in fade truncating label.
 BASE_DECLARE_FEATURE(kMultilineFadeTruncatingLabel);
 
+// Feature flag to control the maximum amount of non-modal DB promo impressions
+// server-side. Enabled by default to always have a default impression limit
+// value.
+BASE_DECLARE_FEATURE(kNonModalDefaultBrowserPromoImpressionLimit);
+
+// The default param value for the non-modal DB promo impression limit,
+// overridable through Finch. The associated histogram supports a maximum of 10
+// impressions.
+extern const base::FeatureParam<int>
+    kNonModalDefaultBrowserPromoImpressionLimitParam;
+
 // Flag to enable push notification settings menu item.
 BASE_DECLARE_FEATURE(kNotificationSettingsMenuItem);
 

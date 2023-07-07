@@ -39,9 +39,6 @@ constexpr base::TimeDelta kShowPromoWebpageLoadWaitTime = base::Seconds(3);
 // completed.
 constexpr base::TimeDelta kShowPromoPostShareWaitTime = base::Seconds(1);
 
-// Number of times to show the promo to a user.
-const int kPromoShownTimesLimit = 3;
-
 // Timeout before the promo is dismissed.
 constexpr base::TimeDelta kPromoTimeout = base::Seconds(45);
 
@@ -59,7 +56,7 @@ bool PromoCanBeDisplayed() {
   }
 
   NSInteger count = UserInteractionWithNonModalPromoCount();
-  return count < kPromoShownTimesLimit;
+  return count < GetNonModalDefaultBrowserPromoImpressionLimit();
 }
 
 typedef NS_ENUM(NSUInteger, PromoReason) {

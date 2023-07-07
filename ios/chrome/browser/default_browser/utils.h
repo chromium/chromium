@@ -218,6 +218,9 @@ bool UserInPromoCooldown();
 // in the NSDictionary stored under `kBrowserDefaultsKey`.
 const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting();
 
+// Returns the impression limit for the non-modal default browser promo.
+int GetNonModalDefaultBrowserPromoImpressionLimit();
+
 // Returns YES if the app has launched on cold start under
 // `kTimestampAppLaunchOnColdStart`.
 bool HasAppLaunchedOnColdStartAndRecordsLaunch();

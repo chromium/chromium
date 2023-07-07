@@ -770,6 +770,17 @@ const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting() {
   return keysForTesting;
 }
 
+int GetNonModalDefaultBrowserPromoImpressionLimit() {
+  int limit = kNonModalDefaultBrowserPromoImpressionLimitParam.Get();
+
+  // The histogram only supports up to 10 impressions.
+  if (limit > 10) {
+    limit = 10;
+  }
+
+  return limit;
+}
+
 bool HasAppLaunchedOnColdStartAndRecordsLaunch() {
   if (HasRecordedEventForKeyLessThanDelay(
           kTimestampAppLaunchOnColdStart,

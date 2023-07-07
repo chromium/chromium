@@ -176,6 +176,15 @@ BASE_FEATURE(kMultilineFadeTruncatingLabel,
              "MultilineFadeTruncatingLabel",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNonModalDefaultBrowserPromoImpressionLimit,
+             "NonModalDefaultBrowserPromoImpressionLimit",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int>
+    kNonModalDefaultBrowserPromoImpressionLimitParam{
+        &kNonModalDefaultBrowserPromoImpressionLimit,
+        /*name=*/"impression-limit", /*default_value=*/3};
+
 BASE_FEATURE(kNotificationSettingsMenuItem,
              "NotificationSettingsMenuItem",
              base::FEATURE_DISABLED_BY_DEFAULT);

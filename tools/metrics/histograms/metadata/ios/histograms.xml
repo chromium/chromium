@@ -545,14 +545,23 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.DefaultBrowserPromo.NonModal.{Impression}"
     enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2023-12-01">
   <owner>sebsg@chromium.org</owner>
+  <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
     Logged when an action happens on the {Impression} impression of a non modal
     promo. Records the action of the promo. iOS only.
   </summary>
   <token key="Impression">
+    <variant name="EighthImpression" summary="eighth"/>
+    <variant name="FifthImpression" summary="fifth"/>
     <variant name="FirstImpression" summary="first"/>
+    <variant name="FourthImpression" summary="fourth"/>
+    <variant name="NinthImpression" summary="ninth"/>
     <variant name="SecondImpression" summary="second"/>
+    <variant name="SeventhImpression" summary="seventh"/>
+    <variant name="SixthImpression" summary="sixth"/>
+    <variant name="TenthImpression" summary="tenth"/>
+    <variant name="ThirdImpression" summary="third"/>
   </token>
 </histogram>
 
