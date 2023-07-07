@@ -111,7 +111,7 @@ class ShortcutsProvider : public AutocompleteProvider,
   static const int kShortcutsProviderDefaultMaxRelevance;
 
   raw_ptr<AutocompleteProviderClient> client_ = nullptr;
-  scoped_refptr<ShortcutsBackend> backend_{};
+  scoped_refptr<ShortcutsBackend> backend_;
   bool initialized_{};
 };
 
