@@ -883,7 +883,6 @@ public class TabsTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
-    @DisabledTest(message = "https://crbug.com/1424109")
     public void testLastClosedUndoableTabGetsHidden() {
         final TabModel model =
                 sActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
