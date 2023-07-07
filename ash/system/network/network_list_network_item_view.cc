@@ -249,11 +249,6 @@ NetworkListNetworkItemView::~NetworkListNetworkItemView() {
 
 void NetworkListNetworkItemView::UpdateViewForNetwork(
     const NetworkStatePropertiesPtr& network_properties) {
-  const bool was_connecting = network_properties_
-                                  ? network_properties_->connection_state ==
-                                        chromeos::network_config::mojom::
-                                            ConnectionStateType::kConnecting
-                                  : false;
   network_properties_ = mojo::Clone(network_properties);
 
   Reset();
@@ -301,9 +296,9 @@ void NetworkListNetworkItemView::UpdateViewForNetwork(
       network_properties_->connection_state ==
       chromeos::network_config::mojom::ConnectionStateType::kConnecting;
 
-  if (!was_connecting && is_connecting) {
+  if (is_connecting) {
     network_icon::NetworkIconAnimation::GetInstance()->AddObserver(this);
-  } else if (is_connecting) {
+  } else {
     network_icon::NetworkIconAnimation::GetInstance()->RemoveObserver(this);
   }
 
