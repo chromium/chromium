@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Action.WithDisposition.{DispositionType}"
-    enum="PermissionAction" expires_after="2023-08-01">
+    enum="PermissionAction" expires_after="2024-08-01">
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
