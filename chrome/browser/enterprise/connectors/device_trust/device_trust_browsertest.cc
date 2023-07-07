@@ -42,7 +42,12 @@
 #else
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/scoped_key_rotation_command_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/device_signals/core/browser/pref_names.h"
+#include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
+#include "ui/base/interaction/element_identifier.h"
 #endif
 
 using content::NavigationHandle;
@@ -428,5 +433,134 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustDisabledCreateKeyBrowserTest,
 }
 
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+class DeviceTrustConsentUiTest
+    : public InteractiveBrowserTestT<DeviceTrustBrowserTest>,
+      public testing::WithParamInterface<
+          /* Five boolean variables that define the general consent:
+          - if the managed profile and device are affiliated
+          - if user-level inline flow is enabled
+          - if the device is managed
+          - if device-level inline flow is enabled
+          - if UnmanagedDeviceSignalsConsentFlowEnabled policy is enabled */
+          testing::tuple<bool, bool, bool, bool, bool>> {
+ protected:
+  DeviceTrustConsentUiTest()
+      : InteractiveBrowserTestT(DeviceTrustConnectorState({
+            .affiliated = testing::get<0>(GetParam()),
+            .cloud_user_management_level = DeviceTrustManagementLevel({
+                .is_managed = true,
+                .is_inline_policy_enabled = testing::get<1>(GetParam()),
+            }),
+            .cloud_machine_management_level = DeviceTrustManagementLevel({
+                .is_managed = testing::get<2>(GetParam()),
+                .is_inline_policy_enabled = testing::get<3>(GetParam()),
+            }),
+        })) {
+    scoped_feature_list_.InitWithFeatureState(
+        enterprise_signals::features::kDeviceSignalsConsentDialog, true);
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTestT::SetUpOnMainThread();
+
+    browser()->profile()->GetPrefs()->SetBoolean(
+        device_signals::prefs::kUnmanagedDeviceSignalsConsentFlowEnabled,
+        is_consent_policy_enabled());
+  }
+
+  void NavigateWithUserGesture() {
+    GURL redirect_url = GetRedirectUrl();
+    pending_navigation_.emplace(web_contents(), redirect_url);
+
+    content::NavigationController::LoadURLParams params(redirect_url);
+    params.transition_type =
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED);
+    params.has_user_gesture = true;
+    web_contents()->GetController().LoadURLWithParams(params);
+  }
+
+  void WaitForNavigation() {
+    ASSERT_TRUE(pending_navigation_);
+    ASSERT_TRUE(pending_navigation_->WaitForNavigationFinished());
+  }
+
+  bool is_affiliated() { return testing::get<0>(GetParam()); }
+  bool is_user_inline_flow_enabled() { return testing::get<1>(GetParam()); }
+  bool is_device_managed() { return testing::get<2>(GetParam()); }
+  bool is_device_inline_flow_enabled() { return testing::get<3>(GetParam()); }
+  bool is_consent_policy_enabled() { return testing::get<4>(GetParam()); }
+
+  bool ShouldTriggerConsent() {
+    if (is_device_managed() && is_affiliated()) {
+      return false;
+    }
+    return ((is_consent_policy_enabled() && !is_device_managed()) ||
+            is_user_inline_flow_enabled());
+  }
+
+  bool ShouldTriggerAttestation() {
+    return (is_user_inline_flow_enabled() || is_device_inline_flow_enabled());
+  }
+
+  absl::optional<content::TestNavigationManager> pending_navigation_;
+};
+
+IN_PROC_BROWSER_TEST_P(DeviceTrustConsentUiTest,
+                       ConsentDialogWithPolicyAndAttestation) {
+  NavigateWithUserGesture();
+  // Wait for the consent dialog to be entirely ready
+  base::RunLoop().RunUntilIdle();
+
+  DTAttestationResult success_result =
+      is_device_inline_flow_enabled()
+          ? DTAttestationResult::kSuccess
+          : DTAttestationResult::kSuccessNoSignature;
+
+  if (ShouldTriggerConsent()) {
+    RunTestSequence(
+        InAnyContext(WaitForShow(kDeviceSignalsConsentOkButtonElementId)),
+        InSameContext(
+            Steps(PressButton(kDeviceSignalsConsentOkButtonElementId),
+                  WaitForHide(kDeviceSignalsConsentOkButtonElementId))));
+
+    WaitForNavigation();
+
+    if (ShouldTriggerAttestation()) {
+      VerifyAttestationFlowSuccessful(success_result);
+    }
+    ResetState();
+    NavigateWithUserGesture();
+  }
+
+  RunTestSequence(EnsureNotPresent(kDeviceSignalsConsentOkButtonElementId));
+  WaitForNavigation();
+
+  if (ShouldTriggerAttestation()) {
+    VerifyAttestationFlowSuccessful(success_result);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ManagedUserAndUnmanagedDevice,
+    DeviceTrustConsentUiTest,
+    testing::Combine(/*is_affiliated=*/testing::Values(true),
+                     /*is_user_inline_flow_enabled=*/testing::Bool(),
+                     /*is_device_managed=*/testing::Values(false),
+                     /*is_device_inline_flow_enabled=*/testing::Values(false),
+                     /*is_consent_policy_enabled=*/testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManagedUserAndManagedDevice,
+    DeviceTrustConsentUiTest,
+    testing::Combine(/*is_affiliated=*/testing::Bool(),
+                     /*is_user_inline_flow_enabled=*/testing::Bool(),
+                     /*is_device_managed=*/testing::Values(true),
+                     /*is_device_inline_flow_enabled=*/testing::Bool(),
+                     /*is_consent_policy_enabled=*/testing::Bool()));
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace enterprise_connectors::test
