@@ -296,8 +296,8 @@ def GroupTestsForShard(test_list):
     test_list: A list of the test names.
 
   Return:
-    Returns a tuple containing the number of unique sdks and a list of
-    test lists.
+    Returns a list of lists. Each list contains tests that should be run
+    as a job together.
   """
   tests_by_sdk = defaultdict(set)
   for test in test_list:
