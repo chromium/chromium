@@ -55,29 +55,6 @@ suite('input page', () => {
                   'browser.enable_spellchecking', false, '', () => {});
             }
             break;
-
-          case 'intl.accept_languages':
-            // Emulate SpellcheckService::OnAcceptLanguagesChanged:
-            // Filter spellcheck.dictionaries and remove all dictionaries not
-            // in intl.accept_languages. We won't "normalize" it here as it is
-            // extremely difficult to do in JavaScript, and should not matter
-            // for tests.
-            // Disabled for LSV2 Update 2.
-            if (inputPage.languageSettingsV2Update2Enabled_) {
-              break;
-            }
-
-            // Normally, getting prefs is an asynchronous action with callbacks,
-            // but we can cheat in tests using FakeSettingsPrivate.
-            const dictionaries =
-                settingsPrivate.prefs['spellcheck.dictionaries'].value;
-            const acceptLanguages = new Set(pref.value.split(','));
-
-            const filteredDictionaries = dictionaries.filter(
-                dictionary => acceptLanguages.has(dictionary));
-            settingsPrivate.setPref(
-                'spellcheck.dictionaries', filteredDictionaries, '', () => {});
-            break;
         }
       }
     }

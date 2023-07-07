@@ -90,7 +90,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
       spellCheckLanguages_: {
         type: Array,
-        computed: `getSpellCheckLanguages_(languageSettingsV2Update2Enabled_,
+        computed: `getSpellCheckLanguages_(
             languages.spellCheckOnLanguages.*, languages.enabled.*)`,
       },
 
@@ -118,8 +118,6 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
           Setting.kSpellCheck,
         ]),
       },
-
-      languageSettingsV2Update2Enabled_: Boolean,
 
       languageSettingsJapaneseEnabled_: {
         type: Boolean,
@@ -203,13 +201,11 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   // loadTimeData flags.
   private onDeviceGrammarCheckEnabled_: boolean;
-  // TODO: b/263823772 - Inline this variable.
-  private languageSettingsV2Update2Enabled_ = true;
   private languageSettingsJapaneseEnabled_: boolean;
   private shouldShowLanguagePacksNotice_: boolean;
 
   // Computed properties.
-  private spellCheckLanguages_?: Array<LanguageState|SpellCheckLanguageState>;
+  private spellCheckLanguages_: SpellCheckLanguageState[]|undefined;
   private showLastUsedImeShortcutReminder_: boolean;
   private showNextImeShortcutReminder_: boolean;
   // This is passed into a <keyboard-shortcut-banner> as a `body`, but that
@@ -446,16 +442,16 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
     this.languagesMetricsProxy_.recordToggleSpellCheck(toggle.checked);
 
-    if (this.languageSettingsV2Update2Enabled_ && toggle.checked &&
+    if (toggle.checked &&
         // This assertion of `this.languages` is potentially unsafe and could
         // fail.
         // TODO(b/265553377): Prove that this assertion is safe, or rewrite this
         // to avoid this assertion.
         this.languages!.spellCheckOnLanguages.length === 0) {
-      // In LSV2 Update 2, we never want to enable spell check without the user
-      // having a spell check language. When this happens, we try estimating
-      // their expected spell check language (their device language, assuming
-      // that the user has an input method which supports that language).
+      // We never want to enable spell check without the user having a spell
+      // check language. When this happens, we try estimating their expected
+      // spell check language (their device language, assuming that the user has
+      // an input method which supports that language).
       // If that doesn't work, we fall back on prompting the user to enable a
       // spell check language and immediately disable spell check before this
       // happens. If the user then adds a spell check language, we finally
@@ -509,35 +505,14 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   /**
    * Returns an array of spell check languages for the UI.
    */
-  private getSpellCheckLanguages_():
-      Array<LanguageState|SpellCheckLanguageState>|undefined {
+  private getSpellCheckLanguages_(): SpellCheckLanguageState[]|undefined {
     if (this.languages === undefined) {
       return undefined;
     }
-    if (this.languageSettingsV2Update2Enabled_) {
-      const languages = [...this.languages.spellCheckOnLanguages];
-      languages.sort(
-          (a, b) =>
-              a.language.displayName.localeCompare(b.language.displayName));
-      return languages;
-    }
-    const enabledLanguages: Array<LanguageState|SpellCheckLanguageState> =
-        this.languages.enabled;
-    const combinedLanguages =
-        enabledLanguages.concat(this.languages.spellCheckOnLanguages);
-    const supportedSpellcheckLanguagesSet = new Set<string>();
-    const supportedSpellcheckLanguages:
-        Array<LanguageState|SpellCheckLanguageState> = [];
-
-    combinedLanguages.forEach(languageState => {
-      if (!supportedSpellcheckLanguagesSet.has(languageState.language.code) &&
-          languageState.language.supportsSpellcheck) {
-        supportedSpellcheckLanguages.push(languageState);
-        supportedSpellcheckLanguagesSet.add(languageState.language.code);
-      }
-    });
-
-    return supportedSpellcheckLanguages;
+    const languages = [...this.languages.spellCheckOnLanguages];
+    languages.sort(
+        (a, b) => a.language.displayName.localeCompare(b.language.displayName));
+    return languages;
   }
 
   /**
@@ -610,18 +585,19 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
    * Gets the appropriate CSS class for the Enhanced spell check toggle
    * depending on whether Update 2 is enabled or not.
    */
-  private getEnhancedSpellCheckClass_(): ''|'hr' {
-    return this.languageSettingsV2Update2Enabled_ ? '' : 'hr';
+  private getEnhancedSpellCheckClass_(): '' {
+    // TODO: b/263823772 - Inline this variable.
+    return '';
   }
 
-  private isEnableSpellcheckingDisabled_(): boolean {
-    return !this.languageSettingsV2Update2Enabled_ &&
-        (!!this.spellCheckLanguages_ && this.spellCheckLanguages_.length === 0);
+  private isEnableSpellcheckingDisabled_(): false {
+    // TODO: b/263823772 - Inline this variable.
+    return false;
   }
 
-  private isCollapseOpened_(update2Enabled: boolean, spellCheckOn: boolean):
-      boolean {
-    return !update2Enabled || spellCheckOn;
+  private isCollapseOpened_(spellCheckOn: boolean): boolean {
+    // TODO: b/263823772 - Inline this variable.
+    return spellCheckOn;
   }
 
   private onLanguagePackNoticeLinkClick_(): void {
@@ -661,11 +637,10 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   }
 
   private shouldShowShortcutReminder_(): boolean {
-    return this.languageSettingsV2Update2Enabled_ &&
-        // `this.shortcutReminderBody_` should always be truthy here.
-        // TODO(b/238031866): Remove `this.shortcutReminderBody_` here, or
-        // investigate why removing it does not work.
-        this.shortcutReminderBody_ && this.shortcutReminderBody_.length > 0;
+    // `this.shortcutReminderBody_` should always be truthy here.
+    // TODO(b/238031866): Remove `this.shortcutReminderBody_` here, or
+    // investigate why removing it does not work.
+    return this.shortcutReminderBody_ && this.shortcutReminderBody_.length > 0;
   }
 
   private onShortcutReminderDismiss_(): void {
