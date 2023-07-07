@@ -2886,6 +2886,7 @@
 <translation id="3429160811076349561">ट्रायल सुविधाहरू अफ गरिएका छन्</translation>
 <translation id="3429271624041785769">वेब सामग्रीका भाषाहरू</translation>
 <translation id="3429275422858276529">यो पृष्ठलाई पछि सजिलैसँग फेला पार्नका लागि यसमा पुस्तक चिन्ह लगाउनुहोस्</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> खाली गरिएको छ</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Lock-on-leave</translation>
 <translation id="3433621910545056227">ओहो!  प्रणालीले यन्त्र स्थापना-समय विशेषण लक स्थापना गर्न असफल भयो।</translation>
@@ -9727,7 +9728,6 @@
 <translation id="992256792861109788">गुलाबी</translation>
 <translation id="992592832486024913">ChromeVox असक्षम गर्नुहोस् (बोली पृष्ठपोषण)</translation>
 <translation id="992778845837390402">हाल Linux को ब्याकअप हुँदै छ</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> बचत गरिएको छ</translation>
 <translation id="993540765962421562">स्थापना गर्ने कार्य जारी छ</translation>
 <translation id="994289308992179865">&amp;लुप</translation>
 <translation id="995755448277384931">IBAN हाल्नुहोस्</translation>

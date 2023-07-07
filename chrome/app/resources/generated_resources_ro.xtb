@@ -2889,6 +2889,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3429160811076349561">Funcțiile de încercare sunt dezactivate</translation>
 <translation id="3429271624041785769">Limbile conținutului web</translation>
 <translation id="3429275422858276529">Marchează această pagină pentru a o găsi ușor mai târziu</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – memorie eliberată <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Blochează la plecare</translation>
 <translation id="3433621910545056227">Hopa! Sistemul nu a reușit să blocheze atributele la instalarea pe gadget.</translation>
@@ -9736,7 +9737,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="992256792861109788">Roz</translation>
 <translation id="992592832486024913">Dezactivați ChromeVox (feedback rostit)</translation>
 <translation id="992778845837390402">Se face backup pentru Linux</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> – Salvat: <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Instalare în curs</translation>
 <translation id="994289308992179865">&amp;Redă în buclă</translation>
 <translation id="995755448277384931">Adaugă codul IBAN</translation>

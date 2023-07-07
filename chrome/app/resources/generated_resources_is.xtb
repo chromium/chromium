@@ -2904,6 +2904,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3429160811076349561">Slökkt er á prufueiginleikum</translation>
 <translation id="3429271624041785769">Tungumál vefefnis</translation>
 <translation id="3429275422858276529">Settu þessa síðu í bókamerki til að auðvelt sé að finna hana síðar</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> losað/losuð</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Læsa við brottför</translation>
 <translation id="3433621910545056227">Úbbs! Kerfinu mistókst að koma á eigindalás við uppsetningu tækisins.</translation>
@@ -9751,7 +9752,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="992256792861109788">Bleikur</translation>
 <translation id="992592832486024913">Gera ChromeVox (raddsvörun) óvirkt</translation>
 <translation id="992778845837390402">Endurheimt Linux stendur yfir</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - Sparað <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Uppsetning stendur yfir</translation>
 <translation id="994289308992179865">&amp;Lykkja</translation>
 <translation id="995755448277384931">Bæta við IBAN</translation>

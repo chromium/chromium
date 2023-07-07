@@ -2888,6 +2888,7 @@
 <translation id="3429160811076349561">試用功能已關閉</translation>
 <translation id="3429271624041785769">網路內容語言</translation>
 <translation id="3429275422858276529">將這個網頁加入書籤，方便日後查看</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - 已釋出 <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">離開時鎖定</translation>
 <translation id="3433621910545056227">糟糕！系統無法鎖定裝置安裝時的屬性。</translation>
@@ -9721,7 +9722,6 @@
 <translation id="992256792861109788">粉紅色</translation>
 <translation id="992592832486024913">停用 ChromeVox (互動朗讀)</translation>
 <translation id="992778845837390402">目前正在執行 Linux 備份作業</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - 已節省 <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">正在進行安裝程序</translation>
 <translation id="994289308992179865">循環播放(&amp;L)</translation>
 <translation id="995755448277384931">新增 IBAN</translation>

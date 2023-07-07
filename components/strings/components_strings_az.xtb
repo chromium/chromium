@@ -305,6 +305,7 @@
 <translation id="1593359183944365958">270 dərəcə</translation>
 <translation id="1594030484168838125">Seçin</translation>
 <translation id="1596296697375291157">Triller, cinayət və sirr filmləri</translation>
+<translation id="1597473228022844713">Bu məhsulu izləyirsiniz. Bu səhifə <ph name="LAST_BOOKMARKS_FOLDER" /> qovluğunda saxlanıb</translation>
 <translation id="1599199147673445968">Yeni kart? <ph name="BEGIN_LINK" />Kart Detallarını daxil edin<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome'da Dinozavr Qaçış oyununu oynayın</translation>
 <translation id="161042844686301425">Firuzəyi</translation>
@@ -475,7 +476,6 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> böyük həcmli datanı həmişəlik lokal kompüterinizdə yadda saxlamaq istəyir</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{və daha 1}other{və daha #}}</translation>
-<translation id="2001469757375372617">Xəta oldu. Dəyişiklik yadda saxlanmadı.</translation>
 <translation id="2003709556000175978">Parolu indi sıfırlayın</translation>
 <translation id="2003775180883135320">Yuxarıdan dördlü deşik açın</translation>
 <translation id="2009942480257059311">"Tədbir yaradın" düyməsi, aktivləşdirərək Google Calendar-da cəld yeni tədbir yaradın</translation>
@@ -1471,7 +1471,6 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Maykalar</translation>
 <translation id="4253168017788158739">Qeyd</translation>
-<translation id="4255487295905690262">Hansısa saytda qiymət enərsə, e-poçt xəbərdarlığı alacaqsınız.</translation>
 <translation id="425582637250725228">Etdiyiniz dəyişikliklər yadda saxlanıla bilməz.</translation>
 <translation id="4258748452823770588">Yanlış imza</translation>
 <translation id="4261046003697461417">Qorunan sənədlərdə annotasiya mümkün deyil</translation>
@@ -2318,6 +2317,7 @@
 <translation id="6157754950574419155">Tarixçədən hamısını silin</translation>
 <translation id="6157877588268064908">Göndərmə üsulları və tələblərinə baxın, ünvan seçin</translation>
 <translation id="6159554577634054750">Ziyanvericilərə nəzarət</translation>
+<translation id="6160391204859821737">Reklam məxfiliyi funksiyasını aktiv edin</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6167577165590485365">Son əldə etmə cəhdi:</translation>
 <translation id="6169916984152623906">İndi şəxsi axtarış edə bilərsiniz və bu cihazı istifadə edən digər şəxslər fəaliyyətinizi görməyəcək. Lakin endirmələr və əlfəcinlər yadda saxlanacaq.</translation>
@@ -2741,6 +2741,7 @@
 <translation id="7108819624672055576">Artırma tərəfindən icazə verildi</translation>
 <translation id="7109510814665441393">Sürücülük və yarış oyunları</translation>
 <translation id="7110116949943042888">Müvəqqəti və mövsümi işlər</translation>
+<translation id="7110553203952632623">Hansısa saytda qiymət enərsə, e-poçt xəbərdarlığı alacaqsınız</translation>
 <translation id="7111012039238467737">(Düzgün)</translation>
 <translation id="7111507312244504964">Mülk yoxlama və qiymətləndirmə</translation>
 <translation id="7112327784801341716">Cari məlumatlarınızı görmürsünüz? Yeniləmək üçün bankınızla əlaqə saxlayın.</translation>
@@ -3232,6 +3233,7 @@
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" kompüter və ya şəbəkənizdə düzgün quraşdırılmayıb. IT administratorunuzdan bu problemi həll etməyi tələb edin.</translation>
 <translation id="8131740175452115882">Təsdiq edin</translation>
 <translation id="8134058435519644366">İşə qəbul və iş heyəti</translation>
+<translation id="8144303576836498784">Xəta oldu. Dəyişiklik yadda saxlanmadı</translation>
 <translation id="8148608574971654810">PDF versiyası:</translation>
 <translation id="8149426793427495338">Kompüteriniz yatmağa getdi.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> linkində olan fayl oxunmur. O, silinmiş, köçürülmüş ola bilər və ya fayl icazələri girişin qarşısını alıb.</translation>
@@ -3378,6 +3380,7 @@
 <translation id="8449836157089738489">Hamısını yeni tab qrupunda açın</translation>
 <translation id="8457125768502047971">Qeyri-müəyyən</translation>
 <translation id="8458202188076138974">Məktub Ekstra</translation>
+<translation id="8460854335417802511">Aktiv edin</translation>
 <translation id="8461694314515752532">Sinxronizasiya parolunuz ilə sinxronizasiya edilmiş datanı şifrələyin</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredit kartı}other{# kredit kartı}}</translation>
 <translation id="8468358362970107653">Zərf C3</translation>

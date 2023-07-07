@@ -2892,6 +2892,7 @@
 <translation id="3429160811076349561">අත්හදා බැලීමේ විශේෂාංග ක්‍රියාවිරහිතයි</translation>
 <translation id="3429271624041785769">වෙබ් අන්තර්ගත භාෂා</translation>
 <translation id="3429275422858276529">පහසුවෙන් පසුව සොයා ගැනීමට මෙම පිටුව පිටුසන් කරන්න</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> නිදහස් කර ඇත</translation>
 <translation id="3432762828853624962">හවුල් වැඩකරුවන්</translation>
 <translation id="3433507769937235446">හැර යන විට අගුලු දමන්න</translation>
 <translation id="3433621910545056227">අපොයි!  පද්ධතිය උපාංගයේ ස්ථාපන-කාල උපලක්ෂණ අගුල පිහිටුවීමට අසමත් විය.</translation>
@@ -9737,7 +9738,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="992256792861109788">රෝස</translation>
 <translation id="992592832486024913">ChromeVox (කථා කළ අදහස්) අක්‍රිය කරන්න</translation>
 <translation id="992778845837390402">ලිනක්ස් උපස්ථය සිදු වෙමින් පවතියි</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> ඉතිරි කරන ලදි</translation>
 <translation id="993540765962421562">ස්ථාපනය කෙරෙමින් පවතී</translation>
 <translation id="994289308992179865">නැවත නැවතත් වාදනය</translation>
 <translation id="995755448277384931">IBAN එක් කරන්න</translation>

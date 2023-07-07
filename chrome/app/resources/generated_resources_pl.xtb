@@ -2875,6 +2875,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3429160811076349561">Funkcje próbne są wyłączone</translation>
 <translation id="3429271624041785769">Języki treści internetowych</translation>
 <translation id="3429275422858276529">Dodaj tę stronę do zakładek, by później łatwo ją znaleźć</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – zwolniono <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Blokuj, gdy odchodzę od urządzenia</translation>
 <translation id="3433621910545056227">Ups! System nie mógł ustanowić blokady atrybutów urządzenia na czas instalacji.</translation>
@@ -9714,7 +9715,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="992256792861109788">Różowy</translation>
 <translation id="992592832486024913">Wyłącz ChromeVox (komunikaty głosowe)</translation>
 <translation id="992778845837390402">Trwa tworzenie kopii zapasowej Linuksa</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> – zaoszczędzono <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Instaluję</translation>
 <translation id="994289308992179865">&amp;Powtarzaj</translation>
 <translation id="995755448277384931">Dodaj numer IBAN</translation>

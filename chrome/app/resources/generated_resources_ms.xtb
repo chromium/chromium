@@ -2903,6 +2903,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3429160811076349561">Ciri percubaan dimatikan</translation>
 <translation id="3429271624041785769">Bahasa kandungan web</translation>
 <translation id="3429275422858276529">Tandai halaman ini agar mudah dicari kemudian</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> dikosongkan</translation>
 <translation id="3432762828853624962">Pekerja Kongsi</translation>
 <translation id="3433507769937235446">Kunci apabila jauh</translation>
 <translation id="3433621910545056227">Op! Sistem gagal mewujudkan kunci atribut masa pemasangan peranti.</translation>
@@ -9749,7 +9750,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="992256792861109788">Merah Jambu</translation>
 <translation id="992592832486024913">Lumpuhkan ChromeVox (maklum balas dituturkan)</translation>
 <translation id="992778845837390402">Penyandaran Linux sedang dijalankan</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> dijimatkan</translation>
 <translation id="993540765962421562">Pemasangan sedang berlangsung</translation>
 <translation id="994289308992179865">&amp;Gelung</translation>
 <translation id="995755448277384931">Tambah IBAN</translation>

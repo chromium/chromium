@@ -2905,6 +2905,7 @@
 <translation id="3429160811076349561">무료 체험 기능 사용 안함</translation>
 <translation id="3429271624041785769">웹 콘텐츠 언어</translation>
 <translation id="3429275422858276529">이 페이지를 북마크에 추가하여 나중에 쉽게 찾으세요.</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> 확보됨</translation>
 <translation id="3432762828853624962">공유 작업자</translation>
 <translation id="3433507769937235446">두고 가면 잠그기</translation>
 <translation id="3433621910545056227">시스템이 기기 설치 시간 속성 잠금을 설정하는 데 실패했습니다.</translation>
@@ -9748,7 +9749,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="992256792861109788">분홍색</translation>
 <translation id="992592832486024913">ChromeVox(음성 피드백) 사용 중지</translation>
 <translation id="992778845837390402">현재 Linux 백업이 진행 중입니다.</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> 저장됨</translation>
 <translation id="993540765962421562">설치 진행 중</translation>
 <translation id="994289308992179865">루프(&amp;L)</translation>
 <translation id="995755448277384931">IBAN 추가</translation>

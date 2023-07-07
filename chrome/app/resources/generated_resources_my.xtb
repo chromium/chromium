@@ -2901,6 +2901,7 @@
 <translation id="3429160811076349561">အစမ်းသုံးလုပ်ဆောင်ချက်များကို ပိတ်ထားသည်</translation>
 <translation id="3429271624041785769">ဝဘ်အကြောင်းအရာ ဘာသာစကားများ</translation>
 <translation id="3429275422858276529">နောင်တွင် အလွယ်တကူပြန်ရှာနိုင်ရန် ဤစာမျက်နှာ၏လိပ်စာကို မှတ်ထားပါ</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> နေရာလွတ်သွားသည်</translation>
 <translation id="3432762828853624962">မျှဝေထားသော လုပ်သားများ</translation>
 <translation id="3433507769937235446">ထွက်သွားချိန် လော့ခ်ချခြင်း</translation>
 <translation id="3433621910545056227">အို၊ သော့ချရန် လိုအပ်သည့် စက်ပစ္စည်းတပ်ဆင်ချိန်အား စနစ်မှ မစတင်နိုင်ပါ။</translation>
@@ -9742,7 +9743,6 @@
 <translation id="992256792861109788">ပန်းရောင်</translation>
 <translation id="992592832486024913">ChromeVox (နှုတ်ပြော အကြံပြုချက်)</translation>
 <translation id="992778845837390402">Linux အရန်သိမ်းခြင်းကို လောလောဆယ် လုပ်ဆောင်နေသည်</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> ချွေတာလိုက်သည်</translation>
 <translation id="993540765962421562">ထည့်သွင်းနေဆဲဖြစ်သည်</translation>
 <translation id="994289308992179865">&amp;လည်ပတ်</translation>
 <translation id="995755448277384931">IBAN ထည့်ခြင်း</translation>

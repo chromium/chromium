@@ -2888,6 +2888,7 @@
 <translation id="3429160811076349561">ฟีเจอร์ช่วงทดลองใช้ปิดอยู่</translation>
 <translation id="3429271624041785769">ภาษาของเนื้อหาเว็บ</translation>
 <translation id="3429275422858276529">บุ๊กมาร์กหน้านี้เพื่อให้หาเจอง่ายในภายหลัง</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - เพิ่มพื้นที่ว่าง <ph name="MEMORY_VALUE" /> แล้ว</translation>
 <translation id="3432762828853624962">คนทำงานที่แชร์</translation>
 <translation id="3433507769937235446">ล็อกเมื่อไม่อยู่หน้าจอ</translation>
 <translation id="3433621910545056227">อ๊ะ! ระบบไม่สามารถสร้างการล็อกแอตทริบิวต์เวลาการติดตั้งของอุปกรณ์ได้</translation>
@@ -9728,7 +9729,6 @@
 <translation id="992256792861109788">สีชมพู</translation>
 <translation id="992592832486024913">ปิดใช้ ChromeVox (การตอบสนองด้วยเสียง)</translation>
 <translation id="992778845837390402">กำลังดำเนินการสำรองข้อมูล Linux</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - ช่วยเพิ่มพื้นที่ <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">กำลังดำเนินการติดตั้ง</translation>
 <translation id="994289308992179865">ว&amp;นกลับ</translation>
 <translation id="995755448277384931">เพิ่ม IBAN</translation>

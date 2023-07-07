@@ -2904,6 +2904,7 @@
 <translation id="3429160811076349561">ट्रायल की सुविधाएं बंद हैं</translation>
 <translation id="3429271624041785769">वेब कॉन्टेंट की भाषाएं</translation>
 <translation id="3429275422858276529">बाद में इस पेज को आसानी से पाने के लिए इसे बुकमार्क करें</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> मेमोरी खाली की गई</translation>
 <translation id="3432762828853624962">शेयर किए गए वर्कर</translation>
 <translation id="3433507769937235446">Lock-on-leave</translation>
 <translation id="3433621910545056227">ओह!  सिस्टम डिवाइस इंस्टॉलेशन-समय विशेषता लॉक स्थापित नहीं कर पाया.</translation>
@@ -9749,7 +9750,6 @@
 <translation id="992256792861109788">गुलाबी</translation>
 <translation id="992592832486024913">ChromeVox (बोला गया फ़ीडबैक) बंद करें</translation>
 <translation id="992778845837390402">फ़िलहाल, Linux की बैकअप की प्रक्रिया जारी है</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> मेमोरी सेव की गई</translation>
 <translation id="993540765962421562">इंस्टॉल किया जा रहा है</translation>
 <translation id="994289308992179865">&amp;लूप</translation>
 <translation id="995755448277384931">IBAN जोड़ें</translation>

@@ -63,6 +63,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="1291506870746876680">Los permisos de <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> se desactivarán cuando abandones este sitio.</translation>
 <translation id="1305822519689023679">Para asegurarte de que siempre puedas usar las contraseñas en tu Cuenta de Google, verifica tu identidad.</translation>
 <translation id="1312721752506309252">Se activó la protección mejorada</translation>
+<translation id="1316466854070752597">Ver todas las pestañas abiertas</translation>
 <translation id="1321993286294231467">Se produjo un error al guardar la imagen.</translation>
 <translation id="1322735045095424339">Tu organización requiere que utilices el modo Incógnito</translation>
 <translation id="1323735185997015385">Borrar</translation>
@@ -659,7 +660,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5150492518600715772">Enviar al dispositivo</translation>
 <translation id="5168414296986405587">Diseñado para iPadOS</translation>
 <translation id="5173088371991956744">La Sincronización necesita verificar tu identidad</translation>
-<translation id="5173493422621051500">Usar teclado</translation>
 <translation id="5176312250994681348">Conservar la contraseña reciente</translation>
 <translation id="5181140330217080051">Descargando...</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>

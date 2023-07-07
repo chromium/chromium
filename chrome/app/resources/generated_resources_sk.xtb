@@ -2890,6 +2890,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3429160811076349561">Skúšobné funkcie sú vypnuté</translation>
 <translation id="3429271624041785769">Jazyky internetového obsahu</translation>
 <translation id="3429275422858276529">Uložte si túto stránku ako záložku, aby ste ju neskôr ľahko našli</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> uvoľneného priestoru</translation>
 <translation id="3432762828853624962">Zdieľaní pracovníci</translation>
 <translation id="3433507769937235446">Uzamknúť, keď odídete</translation>
 <translation id="3433621910545056227">Ojoj! Systému sa nepodarilo nastaviť zámku pre inštaláciu atribútov v zariadení.</translation>
@@ -9739,7 +9740,6 @@ Na tento účet sa môžu vzťahovať povolenia, ktoré ste už udelili webom a�
 <translation id="992256792861109788">Ružová</translation>
 <translation id="992592832486024913">Zakázať funkciu ChromeVox (hlasovú spätnú väzbu)</translation>
 <translation id="992778845837390402">Prebieha zálohovanie systému Linux</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> – ušetrili ste <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Inštaluje sa</translation>
 <translation id="994289308992179865">Opa&amp;kovať</translation>
 <translation id="995755448277384931">Pridanie čísla IBAN</translation>

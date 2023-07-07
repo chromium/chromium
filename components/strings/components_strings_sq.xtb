@@ -305,6 +305,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1593359183944365958">270 gradë</translation>
 <translation id="1594030484168838125">Zgjidh</translation>
 <translation id="1596296697375291157">Filmat melodramë, krim dhe mister</translation>
+<translation id="1597473228022844713">Po e monitoron këtë produkt. Kjo faqe është ruajtur te <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1599199147673445968">Kartë e re? <ph name="BEGIN_LINK" />Fut detajet e kartës<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Luaj lojën Dino Run në Chrome</translation>
 <translation id="161042844686301425">E bruztë</translation>
@@ -475,7 +476,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> kërkon të ruajë të dhëna të mëdha në mënyrë të përhershme në kompjuterin tënd lokal</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{dhe 1 tjetër}other{dhe # të tjera}}</translation>
-<translation id="2001469757375372617">Ndodhi një gabim. Ndryshimi yt nuk u ruajt.</translation>
 <translation id="2003709556000175978">Rivendos fjalëkalimin tënd tani</translation>
 <translation id="2003775180883135320">Katër shpime lart</translation>
 <translation id="2009942480257059311">Butoni "Krijo ngjarje". Aktivizoje për të krijuar me shpejtësi një ngjarje të re te "Kalendari i Google"</translation>
@@ -1475,7 +1475,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Bluza</translation>
 <translation id="4253168017788158739">Shënim</translation>
-<translation id="4255487295905690262">Do të marrësh sinjalizime me email nëse ulet çmimi në ndonjë sajt.</translation>
 <translation id="425582637250725228">Ndryshimet që ke bërë mund të mos ruhen.</translation>
 <translation id="4258748452823770588">Nënshkrim i gabuar</translation>
 <translation id="4261046003697461417">Dokumentet e mbrojtura nuk mund të shënohen</translation>
@@ -2321,6 +2320,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6157754950574419155">Hiqi të gjitha nga historiku</translation>
 <translation id="6157877588268064908">Për të parë mënyrat dhe kërkesat e dërgimit, zgjidh një adresë</translation>
 <translation id="6159554577634054750">Kontroll për parazitë</translation>
+<translation id="6160391204859821737">Aktivizo veçorinë e privatësisë së reklamave</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6167577165590485365">Përpjekja e fundit për nxjerrje:</translation>
 <translation id="6169916984152623906">Tani mund të shfletosh në mënyrë private dhe personat e tjerë që përdorin këtë pajisje nuk do të shikojnë aktivitetin tënd. Sidoqoftë, shkarkimet dhe faqeshënuesit do të ruhen.</translation>
@@ -2744,6 +2744,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7108819624672055576">Lejuar nga një shtesë</translation>
 <translation id="7109510814665441393">Lojëra me gara makinash</translation>
 <translation id="7110116949943042888">Punë të përkohshme dhe sezonale</translation>
+<translation id="7110553203952632623">Do të marrësh sinjalizime me email nëse ulet çmimi në ndonjë sajt</translation>
 <translation id="7111012039238467737">(E vlefshme)</translation>
 <translation id="7111507312244504964">Inspektime dhe vlerësime pronash</translation>
 <translation id="7112327784801341716">Nuk shfaqen informacionet aktuale? Kontakto bankën për t'i përditësuar ato.</translation>
@@ -3235,6 +3236,7 @@ Detaje shtesë:
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" nuk është instaluar mirë në kompjuter ose në rrjet. Kërkoji administratorit të TI-së që të zgjidhë këtë problem.</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
 <translation id="8134058435519644366">Rekrutimi i personelit</translation>
+<translation id="8144303576836498784">Ndodhi një gabim. Ndryshimi yt nuk është ruajtur</translation>
 <translation id="8148608574971654810">Versioni i PDF-së:</translation>
 <translation id="8149426793427495338">Kompjuteri yt kaloi në gjumë.</translation>
 <translation id="8150722005171944719">Skedari në <ph name="URL" /> nuk është i lexueshëm: mund të jetë hequr, lëvizur ose lejet e tij mund të pengojnë qasjen.</translation>
@@ -3381,6 +3383,7 @@ Detaje shtesë:
 <translation id="8449836157089738489">Hapi të gjitha në një grup të ri skedash</translation>
 <translation id="8457125768502047971">E papërcaktuar</translation>
 <translation id="8458202188076138974">Letër shtesë</translation>
+<translation id="8460854335417802511">Aktivizoje</translation>
 <translation id="8461694314515752532">Enkripto të dhënat e sinkronizuara me frazën tënde të kalimit për sinkronizimin</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kartë krediti}other{# karta krediti}}</translation>
 <translation id="8468358362970107653">Zarf C3</translation>

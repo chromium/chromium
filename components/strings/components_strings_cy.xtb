@@ -305,6 +305,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1593359183944365958">270 gradd</translation>
 <translation id="1594030484168838125">Dewis</translation>
 <translation id="1596296697375291157">Ffilmiau cyffro, trosedd a dirgelwch</translation>
+<translation id="1597473228022844713">Rydych yn olrhain y cynnyrch hwn. Mae'r dudalen hon wedi'i chadw yn <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1599199147673445968">Cerdyn newydd? <ph name="BEGIN_LINK" />Rhowch Fanylion y Cerdyn<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chwarae'r gêm Dino Run yn Chrome</translation>
 <translation id="161042844686301425">Gwyrddlas</translation>
@@ -475,7 +476,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">Mae <ph name="URL" /> eisiau storio data mawr ar eich cyfrifiadur lleol yn barhaol</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{ac 1 arall}zero{a # arall}two{a # arall}few{a # arall}many{a # arall}other{a # arall}}</translation>
-<translation id="2001469757375372617">Aeth rhywbeth o'i le. Ni chafodd eich newid ei gadw.</translation>
 <translation id="2003709556000175978">Ailosod eich cyfrinair nawr</translation>
 <translation id="2003775180883135320">Pedair stapl ar y brig</translation>
 <translation id="2009942480257059311">Botwm creu digwyddiad, gweithredwch i greu digwyddiad newydd yn Google Calendar yn gyflym</translation>
@@ -1475,7 +1475,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Crysau-T</translation>
 <translation id="4253168017788158739">Nodyn</translation>
-<translation id="4255487295905690262">Byddwch yn cael rhybudd e-byst os bydd y pris yn gostwng ar unrhyw wefan.</translation>
 <translation id="425582637250725228">Mae'n bosib na fydd newidiadau a wnaethoch yn cael eu cadw.</translation>
 <translation id="4258748452823770588">Llofnod gwael</translation>
 <translation id="4261046003697461417">Ni allwch anodi dogfennau sydd wedi'u gwarchod</translation>
@@ -2322,6 +2321,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6157754950574419155">Tynnu pob un o hanes</translation>
 <translation id="6157877588268064908">I weld dulliau anfon a gofynion, dewiswch gyfeiriad</translation>
 <translation id="6159554577634054750">Rheoli Plâu</translation>
+<translation id="6160391204859821737">Trowch y nodwedd preifatrwydd hysbysebion ymlaen</translation>
 <translation id="6165508094623778733">Dysgu rhagor</translation>
 <translation id="6167577165590485365">Ceisiwyd nôl ddiwethaf:</translation>
 <translation id="6169916984152623906">Nawr gallwch bori'n breifat, a ni fydd pobl eraill sy'n defnyddio'r ddyfais hon yn gweld eich gweithgarwch. Fodd bynnag, bydd lawrlwythiadau a nodau tudalen yn cael eu cadw.</translation>
@@ -2745,6 +2745,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7108819624672055576">Caniateir gan estyniad</translation>
 <translation id="7109510814665441393">Gemau Gyrru a Rasio</translation>
 <translation id="7110116949943042888">Swyddi Dros Dro a Thymhorol</translation>
+<translation id="7110553203952632623">Byddwch yn cael hysbysiadau drwy e-bost os bydd y pris yn gostwng ar unrhyw wefan</translation>
 <translation id="7111012039238467737">(Dilys)</translation>
 <translation id="7111507312244504964">Archwiliadau ac Arfarniadau Eiddo</translation>
 <translation id="7112327784801341716">Ddim yn gweld eich gwybodaeth gyfredol? Cysylltwch â'ch banc i'w diweddaru.</translation>
@@ -3236,6 +3237,7 @@ Manylion ychwanegol:
 <translation id="8127301229239896662">Ni osodwyd "<ph name="SOFTWARE_NAME" />" yn iawn ar eich cyfrifiadur na'ch rhwydwaith. Gofynnwch i'ch gweinyddwr TG ddatrys y broblem hon.</translation>
 <translation id="8131740175452115882">Cadarnhau</translation>
 <translation id="8134058435519644366">Recriwtio a Staffio</translation>
+<translation id="8144303576836498784">Aeth rhywbeth o'i le. Ni chafodd eich newid ei gadw</translation>
 <translation id="8148608574971654810">Fersiwn y PDF:</translation>
 <translation id="8149426793427495338">Aeth eich cyfrifiadur i gysgu.</translation>
 <translation id="8150722005171944719">Nid oes modd darllen y ffeil yn <ph name="URL" />.  Mae'n bosib ei bod wedi cael ei thynnu, ei symud neu gallai caniatadau ffeil rwystro mynediad iddi.</translation>
@@ -3382,6 +3384,7 @@ Manylion ychwanegol:
 <translation id="8449836157089738489">Agor pob un mewn grŵp tabiau newydd</translation>
 <translation id="8457125768502047971">Amhenodol</translation>
 <translation id="8458202188076138974">Llythyren Ychwanegol</translation>
+<translation id="8460854335417802511">Troi ymlaen</translation>
 <translation id="8461694314515752532">Amgryptio data sydd wedi'u cysoni gyda'ch cyfrinymadrodd cysoni eich hun</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 cerdyn credyd}zero{# cerdyn credyd}two{# gerdyn credyd}few{# cherdyn credyd}many{# cherdyn credyd}other{# cerdyn credyd}}</translation>
 <translation id="8468358362970107653">Amlen C3</translation>

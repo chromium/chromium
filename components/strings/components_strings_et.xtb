@@ -305,6 +305,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1593359183944365958">270 kraadi</translation>
 <translation id="1594030484168838125">Vali</translation>
 <translation id="1596296697375291157">Põnevus-, krimi- ja müsteeriumfilmid</translation>
+<translation id="1597473228022844713">Jälgite seda toodet. See leht salvestatakse kausta <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1599199147673445968">Kas see on uus kaart? <ph name="BEGIN_LINK" />Sisestage kaardi üksikasjad.<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome'is mängu Dino Run mängimine</translation>
 <translation id="161042844686301425">Tsüaan</translation>
@@ -475,7 +476,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> soovib suure hulga andmeid alaliselt teie kohalikku arvutisse salvestada</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{ja veel 1}other{ja veel #}}</translation>
-<translation id="2001469757375372617">Midagi läks valesti. Teie muudatust ei salvestatud.</translation>
 <translation id="2003709556000175978">Lähtestage oma parool kohe</translation>
 <translation id="2003775180883135320">Neli auku ülal</translation>
 <translation id="2009942480257059311">Nupp Loo sündmus, aktiveerige nupp, et luua Google'i kalendris kiiresti uus sündmus</translation>
@@ -1475,7 +1475,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4250716950689692560">A4 × 4</translation>
 <translation id="4250937007454749162">T-särgid</translation>
 <translation id="4253168017788158739">Märkus</translation>
-<translation id="4255487295905690262">Teile saadetakse meilimärguandeid, kui hind mõnel saidil langeb.</translation>
 <translation id="425582637250725228">Tehtud muudatusi ei pruugita salvestada.</translation>
 <translation id="4258748452823770588">Sobimatu allkiri</translation>
 <translation id="4261046003697461417">Kaitstud dokumentidele ei saa märkusi lisada</translation>
@@ -2322,6 +2321,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6157754950574419155">Eemalda kõik ajaloost</translation>
 <translation id="6157877588268064908">Tarneviiside ja nõuete nägemiseks valige aadress</translation>
 <translation id="6159554577634054750">Kahjuritõrje</translation>
+<translation id="6160391204859821737">Reklaamiprivaatsusfunktsiooni sisselülitamine</translation>
 <translation id="6165508094623778733">Lisateave</translation>
 <translation id="6167577165590485365">Viimane toomiskatse:</translation>
 <translation id="6169916984152623906">Nüüd saate sirvida privaatselt ja teised seadme kasutajad ei näe teie tegevusi. Allalaaditud failid ja järjehoidjad siiski salvestatakse.</translation>
@@ -2745,6 +2745,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7108819624672055576">Lubas laiendus</translation>
 <translation id="7109510814665441393">Autosõidu- ja rallimängud</translation>
 <translation id="7110116949943042888">Ajutised ja hooajalised töökohad</translation>
+<translation id="7110553203952632623">Teile saadetakse meilimärguandeid, kui hind mõnel saidil langeb</translation>
 <translation id="7111012039238467737">(Kehtiv)</translation>
 <translation id="7111507312244504964">Kinnisvara ülevaatamine ja hindamine</translation>
 <translation id="7112327784801341716">Kas kuvatav teave ei ole ajakohane? Võtke värskendamiseks ühendust pangaga.</translation>
@@ -3236,6 +3237,7 @@ Lisateave:
 <translation id="8127301229239896662">Tarkvara „<ph name="SOFTWARE_NAME" />” ei installitud teie arvutisse või võrku korralikult. Paluge IT-administraatoril see probleem lahendada.</translation>
 <translation id="8131740175452115882">Kinnita</translation>
 <translation id="8134058435519644366">Töölevõtmine ja värbamine</translation>
+<translation id="8144303576836498784">Midagi läks valesti. Teie muudatust ei salvestatud</translation>
 <translation id="8148608574971654810">PDF-i versioon:</translation>
 <translation id="8149426793427495338">Teie arvuti lülitus unerežiimile.</translation>
 <translation id="8150722005171944719">Fail <ph name="URL" /> ei ole loetav. Võimalik, et see on eemaldatud, teisaldatud või faili load takistavad juurdepääsu.</translation>
@@ -3382,6 +3384,7 @@ Lisateave:
 <translation id="8449836157089738489">Ava kõik uues vahelehegrupis</translation>
 <translation id="8457125768502047971">Määramata</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Jah, nõustun</translation>
 <translation id="8461694314515752532">Krüpteeri sünkroonitud andmed sünkroonimisparooliga</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 krediitkaart}other{# krediitkaarti}}</translation>
 <translation id="8468358362970107653">Ümbrik C3</translation>

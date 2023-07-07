@@ -2903,6 +2903,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3429160811076349561">Provfunktionerna är inaktiverade</translation>
 <translation id="3429271624041785769">Språk för webbinnehåll</translation>
 <translation id="3429275422858276529">Lägg till ett bokmärke för den här sidan så att du enkelt kan hitta tillbaka till den</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> har frigjorts</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Lås skärmen när du går ifrån den</translation>
 <translation id="3433621910545056227">Hoppsan! Det gick inte att fastställa enhetens attributlås för installationstid.</translation>
@@ -9748,7 +9749,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="992256792861109788">Rosa</translation>
 <translation id="992592832486024913">Inaktivera ChromeVox (talad feedback)</translation>
 <translation id="992778845837390402">Säkerhetskopiering av Linux pågår</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> sparades</translation>
 <translation id="993540765962421562">Installationen pågår</translation>
 <translation id="994289308992179865">&amp;Repetera</translation>
 <translation id="995755448277384931">Lägg till IBAN</translation>

@@ -2903,6 +2903,7 @@
 <translation id="3429160811076349561">சோதனையிலுள்ள அம்சங்கள் முடக்கப்பட்டுள்ளன</translation>
 <translation id="3429271624041785769">இணைய உள்ளடக்கத்திற்கான மொழிகள்</translation>
 <translation id="3429275422858276529">இந்தப் பக்கத்தைப் பிறகு எளிதாகக் கண்டறிய, புத்தகக்குறியிடவும்</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> காலியாக்கப்பட்டது</translation>
 <translation id="3432762828853624962">ஷேர்டு வொர்க்கர்ஸ்</translation>
 <translation id="3433507769937235446">விலகிச் சென்றால் லாக் செய்</translation>
 <translation id="3433621910545056227">அச்சச்சோ!  சாதன நிறுவல்-நேர பண்புக்கூறுகளைப் பூட்டுவதில் முறைமை தோல்வியடைந்தது.</translation>
@@ -9749,7 +9750,6 @@
 <translation id="992256792861109788">பிங்க்</translation>
 <translation id="992592832486024913">ChromeVox (பேச்சுவடிவ கருத்து) ஐ முடக்கு</translation>
 <translation id="992778845837390402">Linux காப்புப் பிரதி செயலில் உள்ளது</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> சேமிக்கப்பட்டுள்ளது</translation>
 <translation id="993540765962421562">நிறுவுகிறது</translation>
 <translation id="994289308992179865">&amp;சுழற்சி</translation>
 <translation id="995755448277384931">IBANனைச் சேர்த்தல்</translation>

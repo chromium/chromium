@@ -2891,6 +2891,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3429160811076349561">Probne značajke su isključene</translation>
 <translation id="3429271624041785769">Jezici web-sadržaja</translation>
 <translation id="3429275422858276529">Označite ovu stranicu da biste je kasnije lakše pronašli</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – oslobodili ste <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Zaključavanje prilikom odlaska</translation>
 <translation id="3433621910545056227">Ups! Sustav nije uspješno uspostavio zaključavanje atributa vremena instalacije uređaja.</translation>
@@ -9738,7 +9739,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="992256792861109788">Ružičasta</translation>
 <translation id="992592832486024913">Onemogući ChromeVox (govorne povratne informacije)</translation>
 <translation id="992778845837390402">U tijeku je sigurnosno kopiranje Linuxa</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" />— <ph name="MEMORY_VALUE" /> ušteđeno</translation>
 <translation id="993540765962421562">Instalacija u tijeku</translation>
 <translation id="994289308992179865">&amp;Petlja</translation>
 <translation id="995755448277384931">Dodavanje IBAN-a</translation>

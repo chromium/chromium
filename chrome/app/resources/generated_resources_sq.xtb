@@ -2886,6 +2886,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3429160811076349561">Veçoritë e provës janë joaktive</translation>
 <translation id="3429271624041785769">Gjuhët e përmbajtjes së uebit</translation>
 <translation id="3429275422858276529">Shënoje këtë faqe për ta gjetur me lehtësi më vonë</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> nemorie e liruar</translation>
 <translation id="3432762828853624962">Punëtorët e përbashkët</translation>
 <translation id="3433507769937235446">Kyç kur largohesh</translation>
 <translation id="3433621910545056227">Gabim! Sistemi dështoi në vendosjen e kyçjes së cilësive të instalimit në kohë të pajisjes.</translation>
@@ -9728,7 +9729,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="992256792861109788">Rozë</translation>
 <translation id="992592832486024913">Çaktivizo ChromeVox (koment me të folur)</translation>
 <translation id="992778845837390402">Rezervimi i Linux aktualisht në vazhdim</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - U kursye: <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Instalimi po kryhet</translation>
 <translation id="994289308992179865">&amp;Pambarimisht</translation>
 <translation id="995755448277384931">Shto numrin IBAN</translation>

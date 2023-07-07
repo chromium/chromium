@@ -2890,6 +2890,7 @@
 <translation id="3429160811076349561">Փորձնական գործառույթներն անջատված են</translation>
 <translation id="3429271624041785769">Վեբ բովանդակության լեզուներ</translation>
 <translation id="3429275422858276529">Էջանշեք այս կայքէջը՝ ավելի ուշ այն հեշտությամբ գտնելու համար</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – ազատվել է <ph name="MEMORY_VALUE" /> տարածք</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Կողպել, եթե մոտ չեք</translation>
 <translation id="3433621910545056227">Համակարգին չհաջողվեց կողպել սարքի հատկությունները՝ տեղադրման ժամանակ:</translation>
@@ -9733,7 +9734,6 @@
 <translation id="992256792861109788">Վարդագույն</translation>
 <translation id="992592832486024913">Անջատել ChromeVox-ը (ձայնային ուղեկցում)</translation>
 <translation id="992778845837390402">Լինուքսի պահուստավորումն ընթացքի մեջ է</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> – Ազատվել է <ph name="MEMORY_VALUE" /> տարածք</translation>
 <translation id="993540765962421562">Տեղադրվում է</translation>
 <translation id="994289308992179865">&amp;Կրկնություն</translation>
 <translation id="995755448277384931">IBAN-ի ավելացում</translation>

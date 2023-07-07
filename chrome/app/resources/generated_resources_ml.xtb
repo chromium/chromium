@@ -2887,6 +2887,7 @@
 <translation id="3429160811076349561">ട്രയൽ ഫീച്ചറുകൾ ഓഫാണ്</translation>
 <translation id="3429271624041785769">വെബ് ഉള്ളടക്കം ലഭ്യമായ ഭാഷകൾ</translation>
 <translation id="3429275422858276529">പിന്നീട് ഈ പേജ് എളുപ്പത്തിൽ കണ്ടെത്താൻ ബുക്ക്‌മാർക്ക് ചെയ്യുക</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> ഇടമുണ്ടാക്കി</translation>
 <translation id="3432762828853624962">പങ്കിട്ട വർക്കർമാർ</translation>
 <translation id="3433507769937235446">പുറത്തുകടക്കുമ്പോൾ ലോക്ക് ചെയ്യൽ</translation>
 <translation id="3433621910545056227">ക്ഷമിക്കണം! ഉപകരണ ഇൻസ്റ്റലേഷൻ-സമയ ആട്രിബ്യൂട്ട് ലോക്ക് സ്ഥാപിക്കുന്നതിൽ സിസ്റ്റം പരാജയപ്പെട്ടു.</translation>
@@ -9730,7 +9731,6 @@
 <translation id="992256792861109788">പിങ്ക്</translation>
 <translation id="992592832486024913">ChromeVox (സ്‌പോക്കൺ ഫീഡ്‌ബാക്ക്) പ്രവർത്തനരഹിതമാക്കുക</translation>
 <translation id="992778845837390402">Linux ബാക്കപ്പ് ചെയ്യൽ നിലവിൽ പുരോഗതിയിലാണ്</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - സംരക്ഷിച്ചു <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">ഇൻസ്‌റ്റലേഷൻ പുരോഗമിക്കുകയാണ്</translation>
 <translation id="994289308992179865">&amp;ലൂപ്പുചെയ്യുക</translation>
 <translation id="995755448277384931">IBAN ചേർക്കുക</translation>

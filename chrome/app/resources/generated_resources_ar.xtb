@@ -2893,6 +2893,7 @@
 <translation id="3429160811076349561">ميزات الإصدار التجريبي غير مفعّلة</translation>
 <translation id="3429271624041785769">لغات محتوى الويب</translation>
 <translation id="3429275422858276529">ضَع إشارة على هذه الصفحة لسهولة العثور عليها لاحقًا</translation>
+<translation id="3431715928297727378">‫"<ph name="WINDOW_TITLE" />" - تم إخلاء <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">العمال المشتركون</translation>
 <translation id="3433507769937235446">قفل الشاشة عند الابتعاد عن الجهاز</translation>
 <translation id="3433621910545056227">عفوًا!  تعذّر النظام في إنشاء قفل سمات وقت التثبيت بالجهاز.</translation>
@@ -9748,7 +9749,6 @@
 <translation id="992256792861109788">وردي</translation>
 <translation id="992592832486024913">‏إيقاف ChromeVox (التعليقات المنطوقة)</translation>
 <translation id="992778845837390402">‏الاحتفاظ بنسخة احتياطية من Linux قيد التقدم حاليًا</translation>
-<translation id="992995739384733897">"<ph name="WINDOW_TITLE" />" - تم توفير <ph name="MEMORY_VALUE" /> من الذاكرة</translation>
 <translation id="993540765962421562">التثبيت قيد التقدم</translation>
 <translation id="994289308992179865">ت&amp;كرار</translation>
 <translation id="995755448277384931">‏إضافة رقم الحساب بصيغة IBAN</translation>

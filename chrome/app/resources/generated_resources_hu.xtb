@@ -2902,6 +2902,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3429160811076349561">A próbafunkciók ki vannak kapcsolva</translation>
 <translation id="3429271624041785769">Webes tartalmak nyelvei</translation>
 <translation id="3429275422858276529">Adja hozzá az oldalt a könyvjelzőkhöz, hogy később könnyen megtalálja</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> felszabadítva</translation>
 <translation id="3432762828853624962">Shared workers</translation>
 <translation id="3433507769937235446">Zárolás távozáskor</translation>
 <translation id="3433621910545056227">Hoppá! A rendszer nem tudta létrehozni az eszköz telepítésiidő-attribútumainak zárolását.</translation>
@@ -9747,7 +9748,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="992256792861109788">Rózsaszín</translation>
 <translation id="992592832486024913">A ChromeVox (beszélt visszajelzés) letiltása</translation>
 <translation id="992778845837390402">Folyamatban van a Linux biztonsági mentése</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> – Megtakarítás: <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Telepítés folyamatban</translation>
 <translation id="994289308992179865">&amp;Ismétlés</translation>
 <translation id="995755448277384931">IBAN hozzáadása</translation>

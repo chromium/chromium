@@ -2887,6 +2887,7 @@
 <translation id="3429160811076349561">Пробне функције су искључене</translation>
 <translation id="3429271624041785769">Језици веб-садржаја</translation>
 <translation id="3429275422858276529">Обележите ову страницу да бисте је касније лакше пронашли</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – ослобођено је<ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Дељени ресурси</translation>
 <translation id="3433507769937235446">Закључај при одласку</translation>
 <translation id="3433621910545056227">Упс! Систем није успео да одреди закључавање атрибута за време инсталације уређаја.</translation>
@@ -9737,7 +9738,6 @@
 <translation id="992256792861109788">Ружичаста</translation>
 <translation id="992592832486024913">Онемогући ChromeVox (говорне повратне информације)</translation>
 <translation id="992778845837390402">У току је прављење резервне копије Linux података</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> – Уштедели сте <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Инсталација је у току</translation>
 <translation id="994289308992179865">&amp;Понављај</translation>
 <translation id="995755448277384931">Додајте IBAN</translation>

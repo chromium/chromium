@@ -2903,6 +2903,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3429160811076349561">Trial features are off</translation>
 <translation id="3429271624041785769">Web content languages</translation>
 <translation id="3429275422858276529">Bookmark this page to easily find it later</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> freed up</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Lock on leave</translation>
 <translation id="3433621910545056227">Oops!  The system failed to establish the device installation-time attributes lock.</translation>
@@ -9748,7 +9749,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="992256792861109788">Pink</translation>
 <translation id="992592832486024913">Disable ChromeVox (spoken feedback)</translation>
 <translation id="992778845837390402">Linux backup currently in progress</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - Saved <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Installation in progress</translation>
 <translation id="994289308992179865">&amp;Loop</translation>
 <translation id="995755448277384931">Add IBAN</translation>

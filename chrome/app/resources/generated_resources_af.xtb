@@ -2903,6 +2903,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3429160811076349561">Proeflopiekenmerke is af</translation>
 <translation id="3429271624041785769">Webinhoudtale</translation>
 <translation id="3429275422858276529">Boekmerk hierdie bladsy om dit later maklik te kry</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> is beskikbaar gemaak</translation>
 <translation id="3432762828853624962">Gedeelde werkers</translation>
 <translation id="3433507769937235446">Sluit as jy weggaan</translation>
 <translation id="3433621910545056227">Oeps! Die stelsel kon nie die toestel se kenmerkeslot by installering vasmaak nie.</translation>
@@ -9748,7 +9749,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="992256792861109788">Pienk</translation>
 <translation id="992592832486024913">Deaktiveer ChromeVox (gesproke terugvoering)</translation>
 <translation id="992778845837390402">Linux-rugsteun vind tans plaas</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> – gestoor <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Besig om te installeer</translation>
 <translation id="994289308992179865">Lus</translation>
 <translation id="995755448277384931">Voeg IBAN by</translation>

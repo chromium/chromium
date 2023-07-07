@@ -63,6 +63,7 @@
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> को छोड़ने पर, इससे जुड़ी अनुमतियों को रीसेट करके, बंद कर दिया जाएगा.</translation>
 <translation id="1305822519689023679">यह पक्का करने के लिए कि आप जब चाहें, अपने Google खाते में सेव किए गए पासवर्ड का इस्तेमाल कर पाएं, अपनी पहचान की पुष्टि करें.</translation>
 <translation id="1312721752506309252">बेहतर सुरक्षा की सुविधा चालू है</translation>
+<translation id="1316466854070752597">खुले हुए सभी टैब देखें</translation>
 <translation id="1321993286294231467">इमेज सेव करने के दौरान कोई गड़बड़ी हुई.</translation>
 <translation id="1322735045095424339">आपके संगठन के मुताबिक, गुप्त मोड इस्तेमाल करना ज़रूरी है</translation>
 <translation id="1323735185997015385">मिटाएं</translation>
@@ -659,7 +660,6 @@
 <translation id="5150492518600715772">अपने डिवाइस पर भेजें</translation>
 <translation id="5168414296986405587">iPadOS के लिए बनाया गया</translation>
 <translation id="5173088371991956744">सिंक को आपकी पहचान की पुष्टि करनी है</translation>
-<translation id="5173493422621051500">कीबोर्ड का इस्तेमाल करें</translation>
 <translation id="5176312250994681348">हाल ही में इस्तेमाल किया गया पासवर्ड सेव करें</translation>
 <translation id="5181140330217080051">डाउनलोड हो रहा है</translation>
 <translation id="5184329579814168207">Chrome में खोलें</translation>

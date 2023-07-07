@@ -305,6 +305,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1593359183944365958">270 graos</translation>
 <translation id="1594030484168838125">Escoller</translation>
 <translation id="1596296697375291157">Películas de intriga, policiais e de suspense</translation>
+<translation id="1597473228022844713">Estás facendo un seguimento deste produto. Gardouse esta páxina en <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1599199147673445968">Tes unha tarxeta nova? Podes <ph name="BEGIN_LINK" />poñer os seus datos<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Xogar a Dino Run en Chrome</translation>
 <translation id="161042844686301425">Ciano</translation>
@@ -475,7 +476,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">O URL <ph name="URL" /> quere almacenar un gran volume de datos de forma permanente no teu ordenador local</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{e 1 máis}other{e # máis}}</translation>
-<translation id="2001469757375372617">Produciuse un erro. Non se gardou o cambio.</translation>
 <translation id="2003709556000175978">Restablecer o teu contrasinal agora</translation>
 <translation id="2003775180883135320">Catro perforacións na parte superior</translation>
 <translation id="2009942480257059311">Botón para crear un evento. Actívao para crear rapidamente un evento en Google Calendar</translation>
@@ -1475,7 +1475,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Camisetas</translation>
 <translation id="4253168017788158739">Nota</translation>
-<translation id="4255487295905690262">Recibirás alertas por correo electrónico se baixa o prezo en calquera sitio.</translation>
 <translation id="425582637250725228">É posible que non se gardasen os cambios que fixeches.</translation>
 <translation id="4258748452823770588">Sinatura incorrecta</translation>
 <translation id="4261046003697461417">Non se poden anotar os documentos protexidos</translation>
@@ -2322,6 +2321,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6157754950574419155">Quitar todos os elementos do historial</translation>
 <translation id="6157877588268064908">Para consultar os requisitos e métodos de envío, selecciona un enderezo</translation>
 <translation id="6159554577634054750">Control de pragas</translation>
+<translation id="6160391204859821737">Activar unha función de privacidade nos anuncios</translation>
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6167577165590485365">Último intento de obtención:</translation>
 <translation id="6169916984152623906">Agora podes navegar de forma privada, sen que os demais usuarios deste dispositivo vexan a túa actividade. Non obstante, gardaranse as descargas e os marcadores.</translation>
@@ -2745,6 +2745,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7108819624672055576">Permitido por unha extensión</translation>
 <translation id="7109510814665441393">Xogos de condución e carreiras</translation>
 <translation id="7110116949943042888">Postos temporais e estacionais</translation>
+<translation id="7110553203952632623">Recibirás alertas por correo electrónico se baixa o prezo en calquera sitio</translation>
 <translation id="7111012039238467737">(Válido)</translation>
 <translation id="7111507312244504964">Inspeccións e valoracións de propiedades</translation>
 <translation id="7112327784801341716">Non ves a túa información actual? Ponte en contacto co banco para actualizala.</translation>
@@ -3236,6 +3237,7 @@ Detalles adicionais:
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> non se instalou correctamente no teu ordenador ou na rede. Pídelle ao administrador de TI que solucione este problema.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8134058435519644366">Contratación e persoal</translation>
+<translation id="8144303576836498784">Produciuse un erro. O cambio non se gardou</translation>
 <translation id="8148608574971654810">Versión do PDF:</translation>
 <translation id="8149426793427495338">O teu ordenador entrou no modo de suspensión.</translation>
 <translation id="8150722005171944719">Non se pode ler o ficheiro que se encontra en <ph name="URL" />. É posible que se eliminase, movese ou que os permisos do ficheiro estean impedindo o acceso.</translation>
@@ -3382,6 +3384,7 @@ Detalles adicionais:
 <translation id="8449836157089738489">Abrir todo nun grupo de pestanas novo</translation>
 <translation id="8457125768502047971">Indefinido</translation>
 <translation id="8458202188076138974">Carta extra</translation>
+<translation id="8460854335417802511">Activar</translation>
 <translation id="8461694314515752532">Encriptar os datos sincronizados coa túa propia frase de acceso de sincronización</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 tarxeta de crédito}other{# tarxetas de crédito}}</translation>
 <translation id="8468358362970107653">Sobre C3</translation>

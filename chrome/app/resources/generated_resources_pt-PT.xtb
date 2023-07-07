@@ -2889,6 +2889,7 @@ Pretende pará-lo?</translation>
 <translation id="3429160811076349561">As funcionalidades de avaliação estão desativadas</translation>
 <translation id="3429271624041785769">Idiomas de conteúdo Web</translation>
 <translation id="3429275422858276529">Adicione esta página aos marcadores para encontrá-la facilmente mais tarde</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> libertados</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Bloquear ao sair</translation>
 <translation id="3433621910545056227">Ups! Falha do sistema ao estabelecer o bloqueio dos atributos de hora-instalação do dispositivo.</translation>
@@ -9734,7 +9735,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="992256792861109788">Rosa</translation>
 <translation id="992592832486024913">Desativar o ChromeVox (respostas faladas)</translation>
 <translation id="992778845837390402">Neste momento, está a decorrer a cópia de segurança do Linux.</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> – Poupou <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Instalação em curso</translation>
 <translation id="994289308992179865">&amp;Ciclo</translation>
 <translation id="995755448277384931">Adicione o IBAN</translation>

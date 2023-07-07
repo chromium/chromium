@@ -305,6 +305,7 @@
 <translation id="1593359183944365958">270 степени</translation>
 <translation id="1594030484168838125">Одабери</translation>
 <translation id="1596296697375291157">Трилери, криминалистички филмови и филмови мистерије</translation>
+<translation id="1597473228022844713">Пратите овај производ. Ова страница је сачувана у: <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1599199147673445968">Нова картица? <ph name="BEGIN_LINK" />Унесите податке о картици<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Играјте игру Диносаурус у Chrome-у</translation>
 <translation id="161042844686301425">Плавозелена</translation>
@@ -475,7 +476,6 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> жели да трајно складишти велику количину података на вашем локалном рачунару</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{ и још 1}one{и још #}few{и још #}other{и још #}}</translation>
-<translation id="2001469757375372617">Дошло је до грешке. Промена није сачувана.</translation>
 <translation id="2003709556000175978">Ресетујте лозинку</translation>
 <translation id="2003775180883135320">Четвороструко бушење на врху</translation>
 <translation id="2009942480257059311">Дугме Направи догађај, активирајте га да бисте брзо направили нов догађај у Google календару</translation>
@@ -1475,7 +1475,6 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Мајице</translation>
 <translation id="4253168017788158739">Напомена</translation>
-<translation id="4255487295905690262">Добијаћете обавештења имејлом ако се цена снизи на било ком сајту.</translation>
 <translation id="425582637250725228">Промене које сте унели можда неће бити сачуване.</translation>
 <translation id="4258748452823770588">Неисправан потпис</translation>
 <translation id="4261046003697461417">Напомене не могу да се додају у заштићене документе</translation>
@@ -2321,6 +2320,7 @@
 <translation id="6157754950574419155">Уклони све из историје</translation>
 <translation id="6157877588268064908">Да бисте видели начине и захтеве за слање, изаберите адресу</translation>
 <translation id="6159554577634054750">Дезинсекција и дератизација</translation>
+<translation id="6160391204859821737">Укључите функцију за приватност са огласима</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
 <translation id="6167577165590485365">Последњи покушај преузимања:</translation>
 <translation id="6169916984152623906">Сада можете да прегледате приватно и други људи који користе овај уређај неће видети ваше активности. Међутим, преузимања и обележивачи ће бити сачувани.</translation>
@@ -2744,6 +2744,7 @@
 <translation id="7108819624672055576">Дозвољава додатак</translation>
 <translation id="7109510814665441393">Возачке и тркачке игре</translation>
 <translation id="7110116949943042888">Привремени и сезонски послови</translation>
+<translation id="7110553203952632623">Добијаћете обавештења имејлом ако се цена снизи на било ком сајту.</translation>
 <translation id="7111012039238467737">(Важећи)</translation>
 <translation id="7111507312244504964">Преглед и процена вредности имовине</translation>
 <translation id="7112327784801341716">Не видите актуелне податке? Обратите се банци да бисте их ажурирали.</translation>
@@ -3235,6 +3236,7 @@
 <translation id="8127301229239896662">Софтвер „<ph name="SOFTWARE_NAME" />“ није правилно инсталиран на рачунару или мрежи. Затражите од ИТ администратора да реши овај проблем.</translation>
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8134058435519644366">Запошљавање и избор кадрова</translation>
+<translation id="8144303576836498784">Дошло је до грешке. Промена није сачувана</translation>
 <translation id="8148608574971654810">PDF верзија:</translation>
 <translation id="8149426793427495338">Рачунар је прешао у режим спавања.</translation>
 <translation id="8150722005171944719">Датотека на адреси <ph name="URL" /> не може да се чита. Можда је уклоњена или премештена или дозволе за датотеке спречавају приступ.</translation>
@@ -3381,6 +3383,7 @@
 <translation id="8449836157089738489">Отвори све у новој групи картица</translation>
 <translation id="8457125768502047971">Неограничено</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Укључи</translation>
 <translation id="8461694314515752532">Шифрујте синхронизоване податке помоћу сопствене приступне фразе за синхронизацију</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 кредитна картица}one{# кредитна картица}few{# кредитне картице}other{# кредитних картица}}</translation>
 <translation id="8468358362970107653">Коверта C3</translation>

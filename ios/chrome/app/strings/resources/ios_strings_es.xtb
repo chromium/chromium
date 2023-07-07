@@ -63,6 +63,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="1291506870746876680">Los permisos de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> se desactivarán cuando salgas de este sitio.</translation>
 <translation id="1305822519689023679">Para asegurarte de que siempre puedas usar las contraseñas en tu cuenta de Google, debes verificar que eres tú.</translation>
 <translation id="1312721752506309252">La protección mejorada está activada</translation>
+<translation id="1316466854070752597">Ver todas las pestañas abiertas</translation>
 <translation id="1321993286294231467">No se ha podido guardar la imagen.</translation>
 <translation id="1322735045095424339">Tu organización requiere que uses el modo Incógnito</translation>
 <translation id="1323735185997015385">Eliminar</translation>
@@ -659,7 +660,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5150492518600715772">Enviar a tu dispositivo</translation>
 <translation id="5168414296986405587">Diseñado para iPadOS</translation>
 <translation id="5173088371991956744">Verifica tu identidad para usar la sincronización</translation>
-<translation id="5173493422621051500">Usa el teclado</translation>
 <translation id="5176312250994681348">Mantener contraseña reciente</translation>
 <translation id="5181140330217080051">Descargando</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>

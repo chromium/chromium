@@ -2887,6 +2887,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3429160811076349561">Probne funkcije su isključene</translation>
 <translation id="3429271624041785769">Jezici veb-sadržaja</translation>
 <translation id="3429275422858276529">Obeležite ovu stranicu da biste je kasnije lakše pronašli</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – oslobođeno je<ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Deljeni resursi</translation>
 <translation id="3433507769937235446">Zaključaj pri odlasku</translation>
 <translation id="3433621910545056227">Ups! Sistem nije uspeo da odredi zaključavanje atributa za vreme instalacije uređaja.</translation>
@@ -9737,7 +9738,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="992256792861109788">Ružičasta</translation>
 <translation id="992592832486024913">Onemogući ChromeVox (govorne povratne informacije)</translation>
 <translation id="992778845837390402">U toku je pravljenje rezervne kopije Linux podataka</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> – Uštedeli ste <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Instalacija je u toku</translation>
 <translation id="994289308992179865">&amp;Ponavljaj</translation>
 <translation id="995755448277384931">Dodajte IBAN</translation>

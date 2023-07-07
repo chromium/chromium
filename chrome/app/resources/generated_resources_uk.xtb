@@ -2906,6 +2906,7 @@
 <translation id="3429160811076349561">Пробні функції вимкнено</translation>
 <translation id="3429271624041785769">Мови веб-контенту</translation>
 <translation id="3429275422858276529">Створіть закладку цієї сторінки, щоб легко знайти її пізніше</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" />: звільнено <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Блокувати, коли вас немає поруч</translation>
 <translation id="3433621910545056227">На жаль, системі не вдалося заблокувати атрибути часу встановлення на пристрої.</translation>
@@ -9756,7 +9757,6 @@
 <translation id="992256792861109788">Рожевий</translation>
 <translation id="992592832486024913">Вимкнути ChromeVox (голосові підказки)</translation>
 <translation id="992778845837390402">Триває резервне копіювання Linux</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> – заощаджено <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Триває встановлення</translation>
 <translation id="994289308992179865">&amp;Безперервно</translation>
 <translation id="995755448277384931">Додати номер IBAN</translation>

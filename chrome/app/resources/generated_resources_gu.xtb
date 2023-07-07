@@ -2886,6 +2886,7 @@
 <translation id="3429160811076349561">અજમાયશની સુવિધાઓ બંધ છે</translation>
 <translation id="3429271624041785769">વેબના કન્ટેન્ટની ભાષાઓ</translation>
 <translation id="3429275422858276529">થોડા સમય પછી આ પેજને સરળતાથી શોધવા માટે તેને બુકમાર્ક કરો</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> સ્પેસ બનાવી</translation>
 <translation id="3432762828853624962">શેર કરેલા કારીગરો</translation>
 <translation id="3433507769937235446">Lock on Leave</translation>
 <translation id="3433621910545056227">અરે! સિસ્ટમ ઉપકરણ ઇન્સ્ટોલેશન-સમય લક્ષણોનું લૉક સ્થાપિત કરવામાં નિષ્ફળ ગયું.</translation>
@@ -9729,7 +9730,6 @@ USB ડિવાઇસ</translation>
 <translation id="992256792861109788">ગુલાબી</translation>
 <translation id="992592832486024913">ChromeVox (બોલાયેલ પ્રતિસાદ) બંધ કરો</translation>
 <translation id="992778845837390402">હાલમાં Linuxનું બૅકઅપ લેવાની પ્રક્રિયા ચાલુ છે</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - સાચવેલા <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">ઇન્સ્ટૉલેશન થઈ રહ્યું છે</translation>
 <translation id="994289308992179865">&amp;લૂપ કરો</translation>
 <translation id="995755448277384931">IBAN ઉમેરો</translation>

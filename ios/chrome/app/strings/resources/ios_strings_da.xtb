@@ -63,6 +63,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="1291506870746876680">Tilladelser for <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> nulstilles til deres deaktiverede tilstand, når du forlader dette website.</translation>
 <translation id="1305822519689023679">Verificer din identitet for at sikre, at du altid kan bruge adgangskoderne på din Google-konto.</translation>
 <translation id="1312721752506309252">Forbedret beskyttelse er aktiveret</translation>
+<translation id="1316466854070752597">Se alle åbne faner</translation>
 <translation id="1321993286294231467">Billedet kunne ikke gemmes.</translation>
 <translation id="1322735045095424339">Din organisation kræver inkognitotilstand</translation>
 <translation id="1323735185997015385">Slet</translation>
@@ -659,7 +660,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5150492518600715772">Send til din enhed</translation>
 <translation id="5168414296986405587">Udviklet til iPadOS</translation>
 <translation id="5173088371991956744">Synkronisering skal verificere din identitet</translation>
-<translation id="5173493422621051500">Brug tastatur</translation>
 <translation id="5176312250994681348">Behold den seneste adgangskode</translation>
 <translation id="5181140330217080051">Downloader</translation>
 <translation id="5184329579814168207">Åbn i Chrome</translation>

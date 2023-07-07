@@ -305,6 +305,7 @@
 <translation id="1593359183944365958">270 度</translation>
 <translation id="1594030484168838125">選擇</translation>
 <translation id="1596296697375291157">恐怖、犯罪與懸疑片</translation>
+<translation id="1597473228022844713">你正在追蹤這項產品，這個網頁已儲存到「<ph name="LAST_BOOKMARKS_FOLDER" />」中</translation>
 <translation id="1599199147673445968">要更新信用卡資訊嗎？<ph name="BEGIN_LINK" />輸入卡片資料<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">暢玩 Chrome 恐龍遊戲</translation>
 <translation id="161042844686301425">青色</translation>
@@ -475,7 +476,6 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> 要求在你的本機電腦上永久儲存大量資料</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{以及另外 1 個應用程式}other{以及另外 # 個應用程式}}</translation>
-<translation id="2001469757375372617">發生錯誤，系統未儲存你的變更。</translation>
 <translation id="2003709556000175978">立即重設你的密碼</translation>
 <translation id="2003775180883135320">四孔 (頂端)</translation>
 <translation id="2009942480257059311">「建立活動」按鈕，啟動後即可在 Google 日曆中快速建立新活動</translation>
@@ -1474,7 +1474,6 @@
 <translation id="4250716950689692560">A4 x 4</translation>
 <translation id="4250937007454749162">T 恤</translation>
 <translation id="4253168017788158739">附註</translation>
-<translation id="4255487295905690262">如果產品在任何網站上降價，系統會透過電子郵件快訊通知你。</translation>
 <translation id="425582637250725228">系統可能不會儲存你所做的變更。</translation>
 <translation id="4258748452823770588">簽名有誤</translation>
 <translation id="4261046003697461417">無法加註受保護的文件</translation>
@@ -2321,6 +2320,7 @@
 <translation id="6157754950574419155">移除歷史記錄中的所有項目</translation>
 <translation id="6157877588268064908">如要查看運送方式和相關規定，請選取一個地址</translation>
 <translation id="6159554577634054750">病蟲害防治</translation>
+<translation id="6160391204859821737">開啟廣告隱私權功能</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6167577165590485365">上次擷取時間：</translation>
 <translation id="6169916984152623906">現在，你可以進行私密瀏覽了。共用這部裝置的其他使用者不會看到你的活動，不過，你下載的內容和新增的書籤仍會保留在裝置上。</translation>
@@ -2744,6 +2744,7 @@
 <translation id="7108819624672055576">依據擴充功能設定允許</translation>
 <translation id="7109510814665441393">駕駛與賽車遊戲</translation>
 <translation id="7110116949943042888">臨時和季節性工作</translation>
+<translation id="7110553203952632623">如果產品在任何網站上降價，系統會透過電子郵件快訊通知你</translation>
 <translation id="7111012039238467737">(有效)</translation>
 <translation id="7111507312244504964">物業檢查與估價</translation>
 <translation id="7112327784801341716">資料與現況不符嗎？請聯絡銀行辦理資料更新。</translation>
@@ -3235,6 +3236,7 @@
 <translation id="8127301229239896662">「<ph name="SOFTWARE_NAME" />」未正確安裝在電腦或網路上。請通知 IT 管理員解決這個問題。</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8134058435519644366">人才招募與人力派遣</translation>
+<translation id="8144303576836498784">發生錯誤，系統未儲存變更。</translation>
 <translation id="8148608574971654810">PDF 版本：</translation>
 <translation id="8149426793427495338">您的電腦已進入睡眠模式。</translation>
 <translation id="8150722005171944719">無法讀取位於 <ph name="URL" /> 的檔案。這個檔案可能已遭移除或移動位置，或者檔案權限為禁止存取。</translation>
@@ -3381,6 +3383,7 @@
 <translation id="8449836157089738489">在新分頁群組中開啟所有網址</translation>
 <translation id="8457125768502047971">無限期</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">啟用</translation>
 <translation id="8461694314515752532">使用你自己的同步通關密語，加密保護同步資料</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 張信用卡}other{# 張信用卡}}</translation>
 <translation id="8468358362970107653">Envelope C3</translation>

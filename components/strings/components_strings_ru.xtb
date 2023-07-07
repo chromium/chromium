@@ -305,6 +305,7 @@
 <translation id="1593359183944365958">270 градусов</translation>
 <translation id="1594030484168838125">Выбрать</translation>
 <translation id="1596296697375291157">Триллеры, криминальные и детективные фильмы</translation>
+<translation id="1597473228022844713">Вы следите за ценой на этот товар. Страница сохранена в папке "<ph name="LAST_BOOKMARKS_FOLDER" />"</translation>
 <translation id="1599199147673445968">Новая карта? <ph name="BEGIN_LINK" />Введите реквизиты<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Играть в игру Dino Run в Chrome</translation>
 <translation id="161042844686301425">Голубой</translation>
@@ -475,7 +476,6 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">Сайт <ph name="URL" /> запрашивает разрешение на постоянное хранение большого объема данных на вашем компьютере.</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{и ещё 1}one{и ещё #}few{и ещё #}many{и ещё #}other{и ещё #}}</translation>
-<translation id="2001469757375372617">Произошла ошибка. Изменение не сохранено.</translation>
 <translation id="2003709556000175978">Сброс пароля</translation>
 <translation id="2003775180883135320">Четыре отверстия сверху</translation>
 <translation id="2009942480257059311">Кнопка "Создать мероприятие". Нажмите ее, чтобы быстро создать мероприятие в Google Календаре.</translation>
@@ -1474,7 +1474,6 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">Футболки</translation>
 <translation id="4253168017788158739">Примечание</translation>
-<translation id="4255487295905690262">Если на одном из сайтов цена снизится, вы получите оповещение по электронной почте</translation>
 <translation id="425582637250725228">Возможно, внесенные изменения не сохранятся.</translation>
 <translation id="4258748452823770588">Подпись недействительна</translation>
 <translation id="4261046003697461417">Недоступно, так как документ защищен</translation>
@@ -2321,6 +2320,7 @@
 <translation id="6157754950574419155">Удалить все из истории</translation>
 <translation id="6157877588268064908">Выберите адрес, чтобы посмотреть способы и условия доставки.</translation>
 <translation id="6159554577634054750">Борьба с вредителями</translation>
+<translation id="6160391204859821737">Включите функцию для обеспечения конфиденциальности в рекламе</translation>
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6167577165590485365">Последняя попытка получения:</translation>
 <translation id="6169916984152623906">Ваши действия в режиме инкогнито будут недоступны другим пользователям этого устройства. Однако закладки и скачанные файлы сохранятся.</translation>
@@ -2744,6 +2744,7 @@
 <translation id="7108819624672055576">Разрешено расширением</translation>
 <translation id="7109510814665441393">Симуляторы вождения и гоночные игры</translation>
 <translation id="7110116949943042888">Временные и сезонные вакансии</translation>
+<translation id="7110553203952632623">Если цена снизится на любом из сайтов, вы получите оповещение по электронной почте</translation>
 <translation id="7111012039238467737">(действительный)</translation>
 <translation id="7111507312244504964">Инспекция и оценка имущества</translation>
 <translation id="7112327784801341716">Если вы видите устаревшие данные, обратитесь в свой банк.</translation>
@@ -3038,7 +3039,7 @@
 <translation id="7681273392938116652">Фэнтези-спорт</translation>
 <translation id="7682287625158474539">Адрес доставки</translation>
 <translation id="7682451652090915298">Регби</translation>
-<translation id="7687186412095877299">Сохранять и автоматически заполнять платежные данные</translation>
+<translation id="7687186412095877299">Автоматически заполняется сохраненными платежными данными</translation>
 <translation id="7687305263118037187">Время ожидания повтора</translation>
 <translation id="7690647519407127574">Oufuku Hagaki (открытка)</translation>
 <translation id="7693583928066320343">Порядок страниц получен</translation>
@@ -3235,6 +3236,7 @@
 <translation id="8127301229239896662">Программа "<ph name="SOFTWARE_NAME" />" была установлена неправильно. Обратитесь за помощью к системному администратору.</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8134058435519644366">Набор персонала и трудоустройство</translation>
+<translation id="8144303576836498784">Что-то пошло не так. Изменение не сохранено</translation>
 <translation id="8148608574971654810">Версия PDF:</translation>
 <translation id="8149426793427495338">Ваш компьютер перешел в спящий режим.</translation>
 <translation id="8150722005171944719">Файл по адресу <ph name="URL" /> недоступен. Возможно, он был удален или перемещен либо права доступа к нему ограничены.</translation>
@@ -3381,6 +3383,7 @@
 <translation id="8449836157089738489">Открыть все URL в новой группе вкладок</translation>
 <translation id="8457125768502047971">Бессрочно</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">Включить</translation>
 <translation id="8461694314515752532">Задать кодовую фразу для шифрования синхронизированных данных</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 банковская карта}one{# банковская карта}few{# банковские карты}many{# банковских карт}other{# банковской карты}}</translation>
 <translation id="8468358362970107653">Конверт C3</translation>

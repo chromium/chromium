@@ -2890,6 +2890,7 @@
 <translation id="3429160811076349561">ٹرائل کی خصوصیات آف ہیں</translation>
 <translation id="3429271624041785769">ویب مواد کی زبانیں</translation>
 <translation id="3429275422858276529">بعد میں اسے تلاش کرنے کے لیے اس صفحے کو بُک مارک کریں</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> خالی کیا گیا</translation>
 <translation id="3432762828853624962">اشتراک کردہ ورکرز</translation>
 <translation id="3433507769937235446">چھوڑنے پر مقفل کریں</translation>
 <translation id="3433621910545056227">افوہ!  سسٹم آلے کے انسٹالیشن کے وقت کے انتسابات کا لاک تشکیل دینے میں ناکام ہوگیا۔</translation>
@@ -9732,7 +9733,6 @@
 <translation id="992256792861109788">گلابی</translation>
 <translation id="992592832486024913">‏ChromeVox کو غیر فعال کریں (صوتی تاثرات)</translation>
 <translation id="992778845837390402">‏Linux بیک اپ فی الحال جاری ہے</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> کی بچت ہوئی</translation>
 <translation id="993540765962421562">انسٹالیشن پیش رفت میں ہے</translation>
 <translation id="994289308992179865">&amp;لوپ</translation>
 <translation id="995755448277384931">‏IBAN شامل کریں</translation>

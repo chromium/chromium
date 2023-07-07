@@ -2903,6 +2903,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3429160811076349561">Fitur uji coba nonaktif</translation>
 <translation id="3429271624041785769">Bahasan konten web</translation>
 <translation id="3429275422858276529">Bookmark halaman ini agar mudah ditemukan nanti</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> dikosongkan</translation>
 <translation id="3432762828853624962">Pekerja Bersama</translation>
 <translation id="3433507769937235446">Kunci saat pergi</translation>
 <translation id="3433621910545056227">Ups! Sistem gagal membuat kunci atribut waktu pemasangan perangkat.</translation>
@@ -9747,7 +9748,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="992256792861109788">Pink</translation>
 <translation id="992592832486024913">Nonaktifkan ChromeVox (respons lisan)</translation>
 <translation id="992778845837390402">Backup Linux saat ini sedang berlangsung</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - Hemat <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Penginstalan sedang berlangsung</translation>
 <translation id="994289308992179865">&amp;Putaran</translation>
 <translation id="995755448277384931">Tambahkan IBAN</translation>

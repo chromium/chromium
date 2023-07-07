@@ -2887,6 +2887,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3429160811076349561">Sınaq funksiyaları deaktivdir</translation>
 <translation id="3429271624041785769">Veb məzmun dilləri</translation>
 <translation id="3429275422858276529">Səhifəni sonradan asanlıqla tapmaq üçün əlfəcin qoyun</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> boşaldıldı</translation>
 <translation id="3432762828853624962">Birgə İşləyənlər</translation>
 <translation id="3433507769937235446">Çıxış etdikdə kilidlənsin</translation>
 <translation id="3433621910545056227">Sistem cihaz quraşdırma vaxtının atribut kilidini yarada bilmədi.</translation>
@@ -9724,7 +9725,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="992256792861109788">Çəhrayı</translation>
 <translation id="992592832486024913">ChromeVox'u (şifahi geri əlaqə) deaktiv edin</translation>
 <translation id="992778845837390402">Linux hazırda yedəklənir</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> qənaət edilib</translation>
 <translation id="993540765962421562">Quraşdırma davam edir</translation>
 <translation id="994289308992179865">&amp;Dövr</translation>
 <translation id="995755448277384931">IBAN əlavə edin</translation>

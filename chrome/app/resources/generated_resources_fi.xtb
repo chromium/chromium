@@ -2902,6 +2902,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3429160811076349561">Kokeiluominaisuudet ovat poissa käytöstä</translation>
 <translation id="3429271624041785769">Verkkosisällön kielet</translation>
 <translation id="3429275422858276529">Lisää tämä sivu kirjanmerkkeihin, niin löydät sen myöhemmin helposti.</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> vapautettu</translation>
 <translation id="3432762828853624962">SharedWorkerit</translation>
 <translation id="3433507769937235446">Lukitse poistuttaessa</translation>
 <translation id="3433621910545056227">Hups! Järjestelmä ei voi lukita laitteen asennuksen aikaisia attribuutteja.</translation>
@@ -9743,7 +9744,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="992256792861109788">Vaaleanpunainen</translation>
 <translation id="992592832486024913">Poista ChromeVox (äänipalaute) käytöstä</translation>
 <translation id="992778845837390402">Linux-varmuuskopiointi käynnissä</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - Tallennettu <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Asennus käynnissä</translation>
 <translation id="994289308992179865">Toista &amp;jatkuvasti</translation>
 <translation id="995755448277384931">Lisää IBAN-numero</translation>

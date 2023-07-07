@@ -2906,6 +2906,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3429160811076349561">Mae nodweddion prawf wedi'u diffodd</translation>
 <translation id="3429271624041785769">Ieithoedd cynnwys gwe</translation>
 <translation id="3429275422858276529">Creu nod tudalen o'r dudalen hon i ddod o hyd iddi'n hawdd yn nes ymlaen</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> wedi'i ryddhau</translation>
 <translation id="3432762828853624962">Gweithwyr Cyffredin</translation>
 <translation id="3433507769937235446">Cloi wrth adael</translation>
 <translation id="3433621910545056227">Wps!  Gwnaeth y system fethu â sefydlu clo priodweddau amser gosod y ddyfais.</translation>
@@ -9762,7 +9763,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="992256792861109788">Pinc</translation>
 <translation id="992592832486024913">Analluogi ChromeVox (adborth ar lafar)</translation>
 <translation id="992778845837390402">Wrthi'n gwneud copi wrth gefn o Linux ar hyn o bryd</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - Cadwyd - <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Wrthi'n gosod</translation>
 <translation id="994289308992179865">&amp;Dolen</translation>
 <translation id="995755448277384931">Ychwanegu'r IBAN</translation>

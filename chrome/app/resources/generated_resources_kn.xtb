@@ -2896,6 +2896,7 @@
 <translation id="3429160811076349561">ಪ್ರಾಯೋಗಿಕ ವೈಶಿಷ್ಟ್ಯಗಳು ಆಫ್ ಆಗಿವೆ</translation>
 <translation id="3429271624041785769">ವೆಬ್ ವಿಷಯದ ಭಾಷೆಗಳು</translation>
 <translation id="3429275422858276529">ಈ ಪುಟವನ್ನು ನಂತರ ಸುಲಭವಾಗಿ ಹುಡುಕಲು ಬುಕ್‌ಮಾರ್ಕ್‌ ಮಾಡಿ</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> ತೆರವುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3432762828853624962">ಹಂಚಿಕೊಳ್ಳಲಾದ ಕೆಲಸಗಾರರು</translation>
 <translation id="3433507769937235446">ನಿರ್ಗಮಿಸುವಾಗ ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="3433621910545056227">ಓಹ್! ಸಾಧನ ಇನ್‌ಸ್ಟಾಲೇಶನ್-ಸಮಯದ ಲಕ್ಷಣಗಳ ಲಾಕ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಿಸ್ಟಂ ವಿಫಲವಾಗಿದೆ.</translation>
@@ -9743,7 +9744,6 @@
 <translation id="992256792861109788">ಗುಲಾಬಿ ಬಣ್ಣ</translation>
 <translation id="992592832486024913">ChromeVox ನಿಷ್ಕ್ರಿಯಗೊಳಿಸು (ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆ)</translation>
 <translation id="992778845837390402">ಪ್ರಸ್ತುತವಾಗಿ Linux ಬ್ಯಾಕಪ್ ಪ್ರಗತಿಯಲ್ಲಿದೆ</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> ಸೇವ್ ಮಾಡಿದೆ</translation>
 <translation id="993540765962421562">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವಿಕೆಯು ಪ್ರಗತಿಯಲ್ಲಿದೆ</translation>
 <translation id="994289308992179865">&amp;ಲೂಪ್</translation>
 <translation id="995755448277384931">IBAN ಅನ್ನು ಸೇರಿಸಿ</translation>

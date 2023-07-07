@@ -2901,6 +2901,7 @@
 <translation id="3429160811076349561">ట్రయల్ ఫీచర్‌లు ఆఫ్ చేయబడి ఉన్నాయి</translation>
 <translation id="3429271624041785769">వెబ్ కంటెంట్ భాషలు</translation>
 <translation id="3429275422858276529">ఈ పేజీని తర్వాత సులభంగా కనుగొనడానికి దీనిని బుక్‌మార్క్ చేయండి</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> మెమరీ ఖాళీ చేయబడింది</translation>
 <translation id="3432762828853624962">షేర్డ్ వర్కర్స్</translation>
 <translation id="3433507769937235446">వదిలి వెళ్లినప్పుడు లాక్ చేయండి</translation>
 <translation id="3433621910545056227">అయ్యో!  పరికరం ఇన్‌స్టాలేషన్-సమయ లక్షణాల లాక్‌ను ఏర్పాటు చేయడంలో సిస్టమ్ విఫలమైంది.</translation>
@@ -9742,7 +9743,6 @@
 <translation id="992256792861109788">గులాబి రంగు</translation>
 <translation id="992592832486024913">ChromeVox (చదవబడే అభిప్రాయం)ను నిలిపివేయి</translation>
 <translation id="992778845837390402">ప్రస్తుతం Linux బ్యాకప్ ప్రోగ్రెస్‌లో ఉంది</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" />ని సేవ్ చేశారు</translation>
 <translation id="993540765962421562">ఇన్‌స్టాలేషన్ జరుగుతోంది</translation>
 <translation id="994289308992179865">&amp;లూప్</translation>
 <translation id="995755448277384931">IBANను జోడించండి</translation>

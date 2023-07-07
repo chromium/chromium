@@ -2890,6 +2890,7 @@
 <translation id="3429160811076349561">Функции отключены</translation>
 <translation id="3429271624041785769">Языки веб-контента</translation>
 <translation id="3429275422858276529">Чтобы в будущем эту страницу было проще найти, добавьте ее в закладки</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – освобождено <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Разделяемые объекты worker</translation>
 <translation id="3433507769937235446">Блокировать, если вас нет рядом</translation>
 <translation id="3433621910545056227">Системе не удалось заблокировать атрибуты устройства на время установки.</translation>
@@ -9742,7 +9743,6 @@
 <translation id="992256792861109788">Розовый</translation>
 <translation id="992592832486024913">Отключить ChromeVox (голосовое сопровождение)</translation>
 <translation id="992778845837390402">Выполняется резервное копирование Linux.</translation>
-<translation id="992995739384733897">Сэкономлено благодаря неактивной вкладке "<ph name="WINDOW_TITLE" />": <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Выполняется установка</translation>
 <translation id="994289308992179865">&amp;Повтор</translation>
 <translation id="995755448277384931">Добавление кода IBAN</translation>

@@ -158,6 +158,7 @@ Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph
       L'impostazione di <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ha effetto solo se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> è impostato su False.</translation>
 <translation id="1147732569915511430">L'hash SHA-256 dell'immagine dell'avatar.</translation>
 <translation id="1148415065145333943">Disattiva la modalità di ricarica avanzata della batteria</translation>
+<translation id="1149203480502386713">Attiva l'accordo chiave post-quantistico per TLS</translation>
 <translation id="1149841949061115313">Canale LTC</translation>
 <translation id="1150742937785306405">Consenti agli utenti di attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli annunci suggeriti dai siti.</translation>
 <translation id="1151353063931113432">Consenti immagini su questi siti</translation>
@@ -2487,6 +2488,7 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
       Se il criterio viene impostato su Attivato, agli utenti verrà presentata l'opzione per selezionare i dispositivi di trasmissione usando un codice di accesso o scansionando un codice QR.
       Se viene impostato su Disattivato o se non viene configurato, gli utenti non avranno la possibilità di selezionare i dispositivi di trasmissione usando un codice di accesso o scansionando un codice QR.</translation>
 <translation id="3208615748170745525">I giorni dal rilevamento di aggiornamenti.</translation>
+<translation id="3209947902706795852">Chiedi agli utenti di eseguire la migrazione.</translation>
 <translation id="3210408472559816322">La configurazione del criterio consente di specificare quale host di messaggistica nativo non deve essere caricato. Il valore <ph name="WILDCARD_VALUE" /> nell'elenco di host non consentiti comporta il rifiuto di tutti gli host di messaggistica nativi, a meno che non siano consentiti in modo esplicito.
 
       Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> carica tutti gli host di messaggistica nativi installati.</translation>
@@ -3561,7 +3563,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Se il criterio viene configurato, gli utenti non possono modificarlo. Se non viene configurato, la tastiera sullo schermo è disattivata all'inizio, ma gli utenti possono attivarla in qualsiasi momento.</translation>
 <translation id="412697421478384751">Consenti agli utenti di impostare PIN non sicuri per la schermata di blocco</translation>
-<translation id="4132809439883883106">Utilizza il valore predefinito per l'accordo chiave post-quantistico Kyber abilitato per TLS</translation>
 <translation id="4136603825567209889">Attiva la generazione di report sulle informazioni di identificazione degli utenti</translation>
 <translation id="4138655880188755661">Limite di tempo</translation>
 <translation id="4140646780789794190">Disattiva la condivisione dei dati diagnostici con PluginVm</translation>
@@ -3725,6 +3726,7 @@ Nota: il blocco degli URL interni chrome://* e chrome-untrusted://* può causare
       Se il dispositivo non è gestito o se è presente un solo utente, il criterio viene ignorato e la notifica viene sempre visualizzata.
 
       Se sono presenti diversi account utente su un dispositivo gestito, la notifica viene visualizzata soltanto se il criterio è stato attivato.</translation>
+<translation id="4298476374822550051">Attiva l'accordo chiave post-quantistico Kyber per TLS</translation>
 <translation id="4303167373847512281">Consenti modalità sviluppatore</translation>
 <translation id="4307116964468610577">Il criterio consente di prolungare la durata utilizzabile delle batterie di un sistema ricaricandole completamente solo una volta al giorno. Per il resto della giornata, la carica delle batterie viene mantenuta a un livello più basso, consentendo di conservarla più a lungo, anche quando il sistema è collegato a una fonte di alimentazione.
 
@@ -4104,7 +4106,6 @@ Se questo criterio non viene configurato, tutte le origini richiederanno un gest
       Se il criterio non viene configurato, non viene eseguita la selezione automatica per nessun sito.</translation>
 <translation id="4611983465824842867">Non mostrare avvisi o non disattivare la compilazione automatica sui moduli non sicuri</translation>
 <translation id="4615003180013429835">Modalità di analisi degli elenchi dei siti</translation>
-<translation id="4616706248182656871">Disattiva l'accordo chiave post-quantistico Kyber abilitato per TLS</translation>
 <translation id="4617338332148204752">Salta il controllo dei metatag in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Funzionalità NewBaseUrlInheritanceBehavior disponibile</translation>
 <translation id="4624006912948309924">La configurazione del criterio consente di correggere quali identificatori di applicazioni vengono mostrati da <ph name="PRODUCT_OS_NAME" /> come app bloccate nella barra Avvio app e gli utenti non possono modificarli.
@@ -5313,6 +5314,7 @@ Se questo criterio viene disattivato, la protezione delle estensioni di <ph name
 <translation id="5790763087505467169">Riduci notifiche sull'avvio automatico della sessione Ospite gestita</translation>
 <translation id="5800329278018669527">Disattiva la richiesta di configurazione di rete in modalità offline</translation>
 <translation id="5802931736499687181">Disabilita la Pipeline di reporting criptato</translation>
+<translation id="5804795151506109282">Non chiedere agli utenti di eseguire la migrazione.</translation>
 <translation id="5806128552675651249">Consenti solo la stampa senza immagini di sfondo</translation>
 <translation id="5809210507920527553">Consente di gestire le impostazioni relative al container Linux (Crostini).</translation>
 <translation id="5809728392451418079">Imposta il nome visualizzato per gli account del dispositivo</translation>
@@ -5913,6 +5915,7 @@ Per maggiori informazioni, visita la pagina https://developer.chrome.com/blog/im
         Aggiungi all'elenco |app_list| un'applicazione con i relativi valori |app_id| e |app_type| per autorizzarla.
        </translation>
 <translation id="6334397544347592516">Consenti le connessioni di assistenza da remoto da parte degli amministratori aziendali a questa macchina</translation>
+<translation id="6335206050538331829">Strategia per la migrazione dei dati ARC VM</translation>
 <translation id="6337782882143073193">Questo criterio è deprecato, al suo posto utilizza <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 
       Disattiva in <ph name="PRODUCT_NAME" /> gli schemi di protocollo elencati.
@@ -6498,6 +6501,7 @@ Il criterio verrà rimosso da <ph name="PRODUCT_NAME" /> in futuro.</translation
 <translation id="6800181452282128474">Non inviare query a Quirks Server</translation>
 <translation id="68031099365512050">Viene segnalato lo stato dell'audio</translation>
 <translation id="680356860463873420">Non consentire agli utenti di utilizzare PluginVm</translation>
+<translation id="6807947647944603395">Disattiva l'accordo chiave post-quantistico Kyber per TLS</translation>
 <translation id="6810445994095397827">Blocca JavaScript in questi siti</translation>
 <translation id="6813263547126514821">Alimentazione e spegnimento</translation>
 <translation id="681446116407619279">Schemi di autenticazione supportati</translation>
@@ -6728,6 +6732,7 @@ Se il criterio viene impostato su Disabled o se non viene configurato, verrà ap
        Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="6988791975283483023">Disattiva Wi-Fi</translation>
 <translation id="6990736882800900101">Consenti a tutti i popup aperti con una destinazione <ph name="BLANK_PAGE_NAME" /> di interagire con la pagina che ha richiesto l'apertura del popup se la pagina di apertura non disattiva esplicitamente questa interazione </translation>
+<translation id="6991623831629598930">Utilizza il valore predefinito per l'accordo chiave post-quantistico Kyber per TLS</translation>
 <translation id="6992943675460798920">Consenti agli utenti di acquisire screenshot e registrazioni video</translation>
 <translation id="6994082778848658360">Consente di specificare in che modo è possibile usare l'hardware degli elementi di sicurezza su scheda per fornire l'autenticazione a due fattori, se compatibile con questa funzione. Il tasto di accensione del computer viene usato per rilevare la presenza fisica dell'utente.
 
@@ -7070,6 +7075,15 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7298197471363105063">Esegui l'override degli insiemi First-Party.</translation>
 <translation id="7302043767260300182">Ritardo blocco schermo in caso di utilizzo di CA</translation>
 <translation id="7303902834678570827">Gli utenti di sessioni Ospite gestite non possono memorizzare le impostazioni di visualizzazione a livello di dispositivo.</translation>
+<translation id="7306926210354955892">La configurazione del criterio consente di specificare l'azione da eseguire quando la directory dei dati ARC dell'utente è stata creata con virtio-fs. A meno che non venga eseguita la migrazione dei dati virtio-fs su virtio-blk, le app per Android potrebbero essere eseguite più lentamente su ARC VM.
+
+      Se il criterio viene impostato su:
+
+      * <ph name="DO_NOT_PROMPT" />, all'utente non verrà chiesto di seguire il flusso di migrazione. Questo è il valore predefinito se il criterio non viene configurato.
+
+      * <ph name="PROMPT" /> (o un valore non supportato) indica che, al momento dell'accesso, all'utente viene chiesto di eseguire il flusso di migrazione dei dati. L'operazione potrebbe richiedere fino a 10 minuti.
+
+      Questo criterio si applica solo ai dispositivi ARM che eseguono la migrazione ad ARC VM.</translation>
 <translation id="731208205557053914">Segnala informazioni sui VPD</translation>
 <translation id="7313672174502374994">L'hash SHA-256 dell'immagine di sfondo.</translation>
 <translation id="7313681786668291607">Questo criterio consente di specificare il comportamento del sistema all'avvio. Disattivare questa impostazione equivale a non configurarla, perché per <ph name="PRODUCT_NAME" /> è necessario specificare un comportamento da adottare all'avvio.
@@ -7197,7 +7211,6 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
 <translation id="7421230730436851224">Non limitare mai il processo audio tramite sandbox</translation>
 <translation id="7421483919690710988">Imposta le dimensioni della cache su disco multimediale in byte</translation>
 <translation id="7424751532654212117">Elenco delle eccezioni all'elenco dei plug-in disattivati</translation>
-<translation id="7425076578809444474">Attiva accordo chiave post-quantistico per TLS</translation>
 <translation id="7426112309807051726">Consente di specificare se disattivare o meno l'ottimizzazione <ph name="TLS_FALSE_START" />. Il nome di questa norma è DisableSSLRecordSplitting per motivi storici.
 
       Se la norma non viene impostata, o viene impostata su false, l'ottimizzazione <ph name="TLS_FALSE_START" /> viene attivata. Se viene impostata su true, l'ottimizzazione <ph name="TLS_FALSE_START" /> viene disattivata.</translation>
@@ -8449,7 +8462,6 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
           Se questo criterio non viene impostato, viene usato un periodo di tempo predefinito.
 
           Il valore del criterio deve essere specificato in millisecondi.</translation>
-<translation id="859316804517480666">Attiva l'accordo chiave post-quantistico Kyber abilitato per TLS</translation>
 <translation id="859579553230883285">Disattiva l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli annunci suggeriti dai siti per i tuoi utenti.</translation>
 <translation id="8597758693275075382">Le stringhe OEM SMBIOS da passare alla VM durante l'installazione. Il valore predefinito è l'elenco vuoto.</translation>
 <translation id="8598786284856179541">Attiva la generazione di report sulle informazioni di versione</translation>

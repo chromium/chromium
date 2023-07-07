@@ -63,6 +63,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="1291506870746876680">Gdy opuścisz tę stronę, uprawnienia witryny <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />”<ph name="END_BOLD" /> zostaną wyłączone.</translation>
 <translation id="1305822519689023679">Aby móc zawsze używać haseł na koncie Google, potwierdź swoją tożsamość.</translation>
 <translation id="1312721752506309252">Włączona jest silniejsza ochrona</translation>
+<translation id="1316466854070752597">Zobacz wszystkie otwarte karty</translation>
 <translation id="1321993286294231467">Błąd podczas zapisywania obrazu.</translation>
 <translation id="1322735045095424339">Twoja organizacja wymaga trybu incognito</translation>
 <translation id="1323735185997015385">Usuń</translation>
@@ -659,7 +660,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5150492518600715772">Wyślij na swoje urządzenie</translation>
 <translation id="5168414296986405587">Stworzona dla iPadOS</translation>
 <translation id="5173088371991956744">Synchronizacja musi potwierdzić Twoją tożsamość</translation>
-<translation id="5173493422621051500">Użyj klawiatury</translation>
 <translation id="5176312250994681348">Zachowaj ostatnie hasło</translation>
 <translation id="5181140330217080051">Pobieranie</translation>
 <translation id="5184329579814168207">Otwórz w Chrome</translation>

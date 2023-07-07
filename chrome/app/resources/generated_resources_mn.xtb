@@ -2899,6 +2899,7 @@
 <translation id="3429160811076349561">Туршилтын онцлог унтраалттай байна</translation>
 <translation id="3429271624041785769">Веб контентын хэлнүүд</translation>
 <translation id="3429275422858276529">Энэ хуудсыг дараа хялбар олохын тулд тэмдэглэнэ үү</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" />-г сулласан</translation>
 <translation id="3432762828853624962">Хуваалцсан ажилчид</translation>
 <translation id="3433507769937235446">Гарах үед түгжих</translation>
 <translation id="3433621910545056227">Анхаарна уу! Систем төхөөрөмжийг суурьлуулж чадахгүй байна.</translation>
@@ -9738,7 +9739,6 @@
 <translation id="992256792861109788">Ягаан</translation>
 <translation id="992592832486024913">ChromeVox-ыг идэвхгүй болгох (дуут санал хүсэлт)</translation>
 <translation id="992778845837390402">Linux-г одоогоор нөөцөлж байна</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" />-г хэмнэсэн</translation>
 <translation id="993540765962421562">Суулгаж байна</translation>
 <translation id="994289308992179865">&amp; Гогцоо</translation>
 <translation id="995755448277384931">Олон улсын банк акаунтны дугаар нэмэх</translation>

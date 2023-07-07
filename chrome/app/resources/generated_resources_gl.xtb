@@ -2887,6 +2887,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3429160811076349561">As funcións de proba están desactivadas</translation>
 <translation id="3429271624041785769">Idiomas de contido web</translation>
 <translation id="3429275422858276529">Engade esta páxina aos marcadores para atopala facilmente máis tarde</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> de espazo liberado</translation>
 <translation id="3432762828853624962">Traballadores compartidos</translation>
 <translation id="3433507769937235446">Bloquear ao apartarse</translation>
 <translation id="3433621910545056227">O sistema non puido establecer o bloqueo de atributos do tempo de instalación do dispositivo.</translation>
@@ -9727,7 +9728,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="992256792861109788">Rosa</translation>
 <translation id="992592832486024913">Desactivar ChromeVox (comentarios orais)</translation>
 <translation id="992778845837390402">Estase creando unha copia de seguranza de Linux</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - Aforraches: <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Instalación en curso</translation>
 <translation id="994289308992179865">&amp;Bucle</translation>
 <translation id="995755448277384931">Engadir IBAN</translation>

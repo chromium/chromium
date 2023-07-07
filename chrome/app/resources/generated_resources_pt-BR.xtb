@@ -626,7 +626,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1517467582299994451">Para transmitir com um código, ative as configurações de sincronização do navegador Chrome</translation>
 <translation id="1521442365706402292">Gerenciar certificados</translation>
 <translation id="1521655867290435174">Planilhas Google</translation>
-<translation id="1521774566618522728">Ativado hoje</translation>
+<translation id="1521774566618522728">Ativo hoje</translation>
 <translation id="152234381334907219">Nunca salvas</translation>
 <translation id="1523279371236772909">Visualizado no último mês</translation>
 <translation id="1523978563989812243">Mecanismos da conversão de texto em voz</translation>
@@ -2904,6 +2904,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3429160811076349561">Os recursos de teste estão desativados</translation>
 <translation id="3429271624041785769">Idiomas de conteúdo da Web</translation>
 <translation id="3429275422858276529">Adicionar esta página aos favoritos para encontrá-la mais facilmente depois</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> liberados</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Bloquear ao sair</translation>
 <translation id="3433621910545056227">Ops! O sistema falhou ao estabelecer o bloqueio de atributos da hora de instalação do dispositivo.</translation>
@@ -4125,7 +4126,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
     <ph name="BEGIN_PARAGRAPH2" />É possível ativar ou desativar esses relatórios a qualquer momento nas configurações do dispositivo ChromeOS da criança. Se você administra um domínio, pode mudar essa configuração no Admin Console.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Se a configuração "Atividade na Web e de apps" estiver ativada para a Conta do Google da criança, esses dados poderão ser salvos na Conta do Google dela. Saiba mais sobre essas configurações e como elas podem ser ajustadas em families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="4457472090507035117">Selecione a voz atual:</translation>
-<translation id="4459169140545916303">Ativado há <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dias</translation>
+<translation id="4459169140545916303">Ativo <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dias atrás</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="4461483878391246134">Adicione idiomas para nunca oferecer tradução</translation>
 <translation id="4462159676511157176">Servidores de nome personalizados</translation>
@@ -9753,7 +9754,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="992256792861109788">Rosa</translation>
 <translation id="992592832486024913">Desativar ChromeVox (resposta falada)</translation>
 <translation id="992778845837390402">O backup do Linux está em andamento</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" />: salvou <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Instalação em andamento</translation>
 <translation id="994289308992179865">&amp;Repetir</translation>
 <translation id="995755448277384931">Adicionar IBAN</translation>

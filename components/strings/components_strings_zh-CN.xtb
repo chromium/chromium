@@ -305,6 +305,7 @@
 <translation id="1593359183944365958">270 度</translation>
 <translation id="1594030484168838125">选择</translation>
 <translation id="1596296697375291157">惊悚片、犯罪片与悬疑片</translation>
+<translation id="1597473228022844713">您正在跟踪此商品。该网页保存在“<ph name="LAST_BOOKMARKS_FOLDER" />”中</translation>
 <translation id="1599199147673445968">想使用新卡？<ph name="BEGIN_LINK" />输入信用卡详情<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">在 Chrome 中玩《Dino Run》游戏</translation>
 <translation id="161042844686301425">青色</translation>
@@ -430,6 +431,7 @@
 <translation id="1870473978371099486">家教服务</translation>
 <translation id="1871208020102129563">代理已设置为使用固定的代理服务器，而不是 .pac 脚本网址。</translation>
 <translation id="1871284979644508959">必填字段</translation>
+<translation id="1871739799120352748">价格高</translation>
 <translation id="1873899211667975540">摇滚乐</translation>
 <translation id="1874224422119691492">您可以在<ph name="SETTINGS" />中更改是否使用屏幕锁定功能填充密码</translation>
 <translation id="1875025161375567525">照片匣</translation>
@@ -533,6 +535,7 @@
 <translation id="2118132148597630479">C5 信封</translation>
 <translation id="2119505898009119320">颁发对象：<ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">打孔（右下角）</translation>
+<translation id="2122214041802369259">价格高</translation>
 <translation id="2122719317867821810">此政策正在正常运作，但与别处设置的值冲突且已覆盖该值。</translation>
 <translation id="2126374524350484896">PDF 制作工具：</translation>
 <translation id="2130448033692577677">您指定的模板未必会被应用，因为 DnsOverHttpsMode 政策未设置。</translation>
@@ -921,6 +924,7 @@
 <translation id="3054512251683174387">Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可屏蔽不希望 Chrome 与网站分享的主题。详细了解如何在 Chrome 中管理广告隐私权设置。</translation>
 <translation id="3061707000357573562">修补服务</translation>
 <translation id="306573536155379004">游戏已开始。</translation>
+<translation id="3067505415088964188">价格低</translation>
 <translation id="3068991664510324412">计算机游戏与视频游戏</translation>
 <translation id="3080254622891793721">图形</translation>
 <translation id="3081538120861307764">为了衡量广告效果，网站之间会分享有限类型的数据，例如一天中向您展示广告的时段。</translation>
@@ -1467,7 +1471,6 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">T 恤衫</translation>
 <translation id="4253168017788158739">备注</translation>
-<translation id="4255487295905690262">当任一网站上的商品降价时，您会收到电子邮件提醒。</translation>
 <translation id="425582637250725228">系统可能不会保存您所做的更改。</translation>
 <translation id="4258748452823770588">签名无效</translation>
 <translation id="4261046003697461417">无法为受保护的文档添加注释</translation>
@@ -2226,6 +2229,7 @@
 <translation id="5967592137238574583">修改联系信息</translation>
 <translation id="5967867314010545767">从历史记录中移除</translation>
 <translation id="5968022600320704045">无搜索结果</translation>
+<translation id="5969199813874624822">保存并跟踪价格</translation>
 <translation id="5974052231147553524">第 6 卷</translation>
 <translation id="5975083100439434680">缩小</translation>
 <translation id="5979084224081478209">检查密码</translation>
@@ -2312,6 +2316,7 @@
 <translation id="6157754950574419155">移除历史记录中的所有内容</translation>
 <translation id="6157877588268064908">要查看送货方式和要求，请选择相应地址</translation>
 <translation id="6159554577634054750">病虫害防治</translation>
+<translation id="6160391204859821737">开启一项广告隐私权功能</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6167577165590485365">上次尝试提取时的时间：</translation>
 <translation id="6169916984152623906">现在，您便可进行私密浏览了。共用此设备的其他用户将不会看到您的活动，但您下载的内容和添加的书签仍会保存在设备上。</translation>
@@ -2735,6 +2740,7 @@
 <translation id="7108819624672055576">某款扩展程序允许</translation>
 <translation id="7109510814665441393">驾驶与竞速游戏</translation>
 <translation id="7110116949943042888">临时和季节性职位</translation>
+<translation id="7110553203952632623">当任一网站上的商品降价时，您会收到电子邮件提醒</translation>
 <translation id="7111012039238467737">（有效）</translation>
 <translation id="7111507312244504964">不动产检测与评估</translation>
 <translation id="7112327784801341716">看到的不是您的最新信息？请让银行更新您的信息。</translation>
@@ -3226,6 +3232,7 @@
 <translation id="8127301229239896662">“<ph name="SOFTWARE_NAME" />”没有正确地安装到您的计算机或网络上。请让您的 IT 管理员解决此问题。</translation>
 <translation id="8131740175452115882">确认</translation>
 <translation id="8134058435519644366">招聘与人事</translation>
+<translation id="8144303576836498784">出了点问题。未能保存您的更改</translation>
 <translation id="8148608574971654810">PDF 版本：</translation>
 <translation id="8149426793427495338">您的计算机已进入休眠模式。</translation>
 <translation id="8150722005171944719">无法读取 <ph name="URL" /> 上的文件。该文件可能已遭到删除、移动，或者文件权限不允许进行访问。</translation>
@@ -3372,6 +3379,7 @@
 <translation id="8449836157089738489">在新标签页组中打开全部网址</translation>
 <translation id="8457125768502047971">无限期</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">开启</translation>
 <translation id="8461694314515752532">使用您自己的同步密码加密已同步的数据</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 张信用卡}other{# 张信用卡}}</translation>
 <translation id="8468358362970107653">C3 信封</translation>
@@ -3665,6 +3673,7 @@
 <translation id="9141013498910525015">管理地址</translation>
 <translation id="9144951720726881238">截止日期：</translation>
 <translation id="9148507642005240123">撤消修改(&amp;U)</translation>
+<translation id="9148599396704355100">价格低</translation>
 <translation id="9150045010208374699">使用您的摄像头</translation>
 <translation id="9150685862434908345">您的管理员可以远程更改您的浏览器设置。此设备上的活动可能也在接受 Chrome 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">已更新</translation>

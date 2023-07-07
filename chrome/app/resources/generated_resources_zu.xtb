@@ -2904,6 +2904,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3429160811076349561">Izici zokuhlola zivaliwe</translation>
 <translation id="3429271624041785769">Izilimi zokuqukethwe kwewebhu</translation>
 <translation id="3429275422858276529">Bekisa leli khasi ukuze uthole kalula muva</translation>
+<translation id="3431715928297727378">I-<ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> ikhululiwe</translation>
 <translation id="3432762828853624962">Abasebenzisi ababiwe</translation>
 <translation id="3433507769937235446">Khiya lapho uhamba</translation>
 <translation id="3433621910545056227">Eshu! Isistimu ihlulekile ukusungula ukukhiya kwesichasiso kwesikhathi sokufaka sedivayisi.</translation>
@@ -9752,7 +9753,6 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="992256792861109788">Okuphinki</translation>
 <translation id="992592832486024913">Khubaza i-ChromeVox (impendulo ekhulunywayo)</translation>
 <translation id="992778845837390402">Ukwenza isipele kwe-Linux manje kuyaqhubeka</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - I-<ph name="MEMORY_VALUE" /> elondoloziwe</translation>
 <translation id="993540765962421562">Ukufaka kuyaqhubeka</translation>
 <translation id="994289308992179865">Iluphi</translation>
 <translation id="995755448277384931">Engeza i-IBAN</translation>

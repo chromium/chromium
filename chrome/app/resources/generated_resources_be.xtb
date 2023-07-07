@@ -2891,6 +2891,7 @@
 <translation id="3429160811076349561">Пробныя функцыі выключаны</translation>
 <translation id="3429271624041785769">Мовы вэб-змесціва</translation>
 <translation id="3429275422858276529">Дадайце гэту старонку ў закладкі, каб палегчыць яе пошук у далейшым</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – вызвалена <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Сумесныя рабочыя працэсы</translation>
 <translation id="3433507769937235446">Блакіроўка пры аддаленні</translation>
 <translation id="3433621910545056227">Памылка.  Сістэме не ўдалося заблакіраваць атрыбуты часу ўсталявання на прыладзе.</translation>
@@ -9738,7 +9739,6 @@
 <translation id="992256792861109788">Ружовы</translation>
 <translation id="992592832486024913">Выключыць ChromeVox (галасавая зваротная сувязь)</translation>
 <translation id="992778845837390402">Ідзе рэзервовае капіраванне кантэйнера Linux</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> – Сэканомлена: <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Выконваецца ўсталяванне</translation>
 <translation id="994289308992179865">&amp;Зацыкліць</translation>
 <translation id="995755448277384931">Дадаванне нумара IBAN</translation>

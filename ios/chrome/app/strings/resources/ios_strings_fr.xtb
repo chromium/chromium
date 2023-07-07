@@ -63,6 +63,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1291506870746876680">Les autorisations du site <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> seront désactivées quand vous le quitterez.</translation>
 <translation id="1305822519689023679">Pour toujours pouvoir utiliser les mots de passe de votre compte Google, confirmez votre identité.</translation>
 <translation id="1312721752506309252">La protection renforcée est activée</translation>
+<translation id="1316466854070752597">Voir tous les onglets ouverts</translation>
 <translation id="1321993286294231467">Erreur lors de l'enregistrement de l'image.</translation>
 <translation id="1322735045095424339">Votre organisation exige d'utiliser le mode navigation privée</translation>
 <translation id="1323735185997015385">Supprimer</translation>
@@ -659,7 +660,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5150492518600715772">Envoyer sur votre appareil</translation>
 <translation id="5168414296986405587">Conçu pour iPadOS</translation>
 <translation id="5173088371991956744">La synchronisation doit confirmer votre identité</translation>
-<translation id="5173493422621051500">Utiliser le clavier</translation>
 <translation id="5176312250994681348">Conserver le mot de passe récent</translation>
 <translation id="5181140330217080051">Téléchargement</translation>
 <translation id="5184329579814168207">Ouvrir dans Chrome</translation>

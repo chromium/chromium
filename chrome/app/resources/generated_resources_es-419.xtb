@@ -2885,6 +2885,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3429160811076349561">Las funciones de prueba están desactivadas</translation>
 <translation id="3429271624041785769">Idiomas del contenido web</translation>
 <translation id="3429275422858276529">Agrega esta página a favoritos para encontrarla fácilmente más tarde</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> liberados</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Bloquear cuando estés ausente</translation>
 <translation id="3433621910545056227">El sistema no pudo establecer el bloqueo de atributos del tiempo de instalación del dispositivo.</translation>
@@ -9729,7 +9730,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="992256792861109788">Rosa</translation>
 <translation id="992592832486024913">Inhabilitar ChromeVox (comentarios por voz)</translation>
 <translation id="992778845837390402">La copia de seguridad de Linux está en curso</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" />: Ahorrados: <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">La instalación está en curso</translation>
 <translation id="994289308992179865">Bucle</translation>
 <translation id="995755448277384931">Agregar un IBAN</translation>

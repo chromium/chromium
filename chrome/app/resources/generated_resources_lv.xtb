@@ -2890,6 +2890,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3429160811076349561">Izmēģinājuma versijas funkcijas ir izslēgtas</translation>
 <translation id="3429271624041785769">Tīmekļa satura valodas</translation>
 <translation id="3429275422858276529">Saglabājiet šo lapu kā grāmatzīmi, lai vēlāk varētu to viegli atrast</translation>
+<translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> — atbrīvotā vieta: <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Bloķēšana izejot</translation>
 <translation id="3433621910545056227">Hmm... Sistēma nevarēja iestatīt ierīces instalēšanas laika atribūta bloķēšanu.</translation>
@@ -9736,7 +9737,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="992256792861109788">Rozā</translation>
 <translation id="992592832486024913">Atspējot ChromeVox (balss komentārus)</translation>
 <translation id="992778845837390402">Šobrīd notiek Linux dublēšana</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> — saglabāta: <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Notiek instalēšana</translation>
 <translation id="994289308992179865">A&amp;utomātiski atkārtot</translation>
 <translation id="995755448277384931">IBAN pievienošana</translation>

@@ -305,6 +305,7 @@
 <translation id="1593359183944365958">२७० अंश</translation>
 <translation id="1594030484168838125">निवडा</translation>
 <translation id="1596296697375291157">रोमांचक, गुन्हेविषयक आणि गूढ चित्रपट</translation>
+<translation id="1597473228022844713">तुम्ही हे उत्पादन ट्रॅक करत आहात. हे पेज <ph name="LAST_BOOKMARKS_FOLDER" /> मध्ये सेव्ह केले आहे</translation>
 <translation id="1599199147673445968">नवीन कार्ड हवे आहे? <ph name="BEGIN_LINK" />कार्ड तपशील एंटर करा<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome मध्ये Dino Run गेम खेळा</translation>
 <translation id="161042844686301425">निळसर</translation>
@@ -475,7 +476,6 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> ला तुमच्या स्थानिक काँप्युटरवर मोठ्या प्रमाणावर डेटा कायमचा स्टोअर करायचा आहे</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{आणि 1 अधिक}other{आणि # अधिक}}</translation>
-<translation id="2001469757375372617">काहीतरी चुकले. तुम्ही केलेला बदल सेव्ह केला गेला नाही.</translation>
 <translation id="2003709556000175978">आता तुमचा पासवर्ड रीसेट करा</translation>
 <translation id="2003775180883135320">क्वाड पंच टॉप</translation>
 <translation id="2009942480257059311">इव्‍हेंट तयार करा बटण, Google Calendar मध्ये नवीन इव्‍हेंट झटपट तयार करण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
@@ -1474,7 +1474,6 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">टी-शर्ट</translation>
 <translation id="4253168017788158739">टीप</translation>
-<translation id="4255487295905690262">कोणत्याही साइटवर किंमत कमी झाल्यास तुम्हाला ईमेल सूचना मिळतील.</translation>
 <translation id="425582637250725228">तुम्ही केलेले बदल कदाचित सेव्ह केले जाणार नाहीत.</translation>
 <translation id="4258748452823770588">खराब स्वाक्षरी</translation>
 <translation id="4261046003697461417">संरक्षित दस्तऐवजमध्ये भाष्य केले जाऊ शकत नाही</translation>
@@ -2322,6 +2321,7 @@
 <translation id="6157754950574419155">इतिहासामधून सर्व आयटम काढून टाका</translation>
 <translation id="6157877588268064908">शिपिंग पद्धती आणि आवश्यकता पाहण्यासाठी, एक पत्ता निवडा</translation>
 <translation id="6159554577634054750">कीट नियंत्रण</translation>
+<translation id="6160391204859821737">जाहिरातविषयक गोपनीयता वैशिष्‍ट्य सुरू करा</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6167577165590485365">शोधण्याचा शेवटचा केलेला प्रयत्न:</translation>
 <translation id="6169916984152623906">आता तुम्ही खाजगीरित्या ब्राउझ करू शकता आणि हे डिव्हाइस वापरणारे इतर लोक तुमचे क्रियाकलाप पाहू शकणार नाहीत. तथापि, डाउनलोड आणि बुकमार्क सेव्ह केले जातील.</translation>
@@ -2745,6 +2745,7 @@
 <translation id="7108819624672055576">एका एक्स्टेंशनने परवानगी दिलेले</translation>
 <translation id="7109510814665441393">ड्रायव्हिंग &amp; रेसिंग गेम</translation>
 <translation id="7110116949943042888">तात्पुरत्या आणि हंगामी नोकर्‍या</translation>
+<translation id="7110553203952632623">कोणत्याही साइटवर किंमत कमी झाल्यास, तुम्हाला ईमेल सूचना मिळतील</translation>
 <translation id="7111012039238467737">(वैध)</translation>
 <translation id="7111507312244504964">मालमत्ता निरीक्षणे आणि मूल्यांकने</translation>
 <translation id="7112327784801341716">तुमची सध्याची माहिती दिसत नाही का? ती अपडेट करण्यासाठी तुमच्या बँकशी संपर्क साधा.</translation>
@@ -3236,6 +3237,7 @@
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" तुमच्या काँप्युटरवर किंवा नेटवर्कवर योग्य रीतीने इंस्टॉल केले नव्हते. तुमच्या अ‍ॅडमिनिस्ट्रेटरला ही समस्या सोडवण्यास सांगा.</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>
 <translation id="8134058435519644366">भरती आणि कर्मचारी नेमणूक</translation>
+<translation id="8144303576836498784">काहीतरी चुकले. तुम्ही केलेला बदल सेव्ह झाला नाही</translation>
 <translation id="8148608574971654810">पीडीएफ आवृत्ती:</translation>
 <translation id="8149426793427495338">तुमचा कॉंप्युटर निष्क्रीय झाला.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> येथील फाइल वाचनीय नाही. ती काढून टाकलेली, हलविलेली असू शकते किंवा फाइल परवानग्या ॲक्सेस प्रतिबंधित करत असू शकतात.</translation>
@@ -3382,6 +3384,7 @@
 <translation id="8449836157089738489">सर्व नवीन टॅब गटामध्ये उघडा</translation>
 <translation id="8457125768502047971">अनिश्चित</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8460854335417802511">ते सुरू करा</translation>
 <translation id="8461694314515752532">तुमच्या स्वतःच्या सिंक पासफ्रेजसह सिंक केलेला डेटा एंक्रिप्ट करा</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 क्रेडिट कार्ड}other{# क्रेडिट कार्ड}}</translation>
 <translation id="8468358362970107653">एन्व्हलप सी३</translation>
