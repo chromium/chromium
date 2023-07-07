@@ -2,7 +2,10 @@
 # as the cr23_browser_tests test suite:
 All/PromotionalTabsEnabledPolicyWhatsNewInvalidTest.*
 BrowserNonClientFrameViewBrowserTest.*
+CompanionPageBrowserTest.ReloadWillRefreshCompanion
 ExtensionInstallDialogViewInteractiveBrowserTest.*
+FullscreenTabSearchBubbleDialogTest.InvokeUi_default
+IntentChipButtonBrowserTest.ShowsAppIconInChip
 LoadImageBrowserTest.*
 LocationIconViewBrowserTest.*
 ManagedUiTest/ManagedUiTest.*

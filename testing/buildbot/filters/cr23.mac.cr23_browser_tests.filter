@@ -1,12 +1,6 @@
 # cr23_browser_tests that are expected to fail on mac bots:
--All/PromotionalTabsEnabledPolicyWhatsNewInvalidTest.RunTest/0
--All/PromotionalTabsEnabledPolicyWhatsNewInvalidTest.RunTest/2
--BrowserNonClientFrameViewBrowserTest.IncognitoIsCorrectColor
+-CompanionPageBrowserTest.ReloadWillRefreshCompanion
+-IntentChipButtonBrowserTest.ShowsAppIconInChip
 -LoadImageBrowserTest.LoadImage
 -LoadImageBrowserTest.LoadImageWithMap
--LocationIconViewBrowserTest.InkDropMode
--ManagedUiTest/ManagedUiTest.GetManagedUiIconEnterprise/0
--ManagedUiTest/ManagedUiTest.GetManagedUiIconEnterprise/1
--PermissionRequestChipGestureSensitiveBrowserTest.ChipFinalizedWhenInteractingWithOmnibox
 -PrivacySandboxDialogSmallWindowTest.All
--WebAppBrowserTest.InstallToShelfContainsAppName

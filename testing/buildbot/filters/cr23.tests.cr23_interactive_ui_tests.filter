@@ -5,10 +5,18 @@ ExtensionsMenuModelInteractiveTest.*
 ExtensionsMenuModelPresenceTest.*
 FindInPageTest.*
 FocusRingBrowserTest.*
+FullscreenTabSearchBubbleDialogTest.InvokeUi_default
 LocalCardMigrationBrowserTest.*
+MdTextButtonTest.*
 PasswordManagerMenuItemInteractiveTest.*
+PermissionsFlowInteractiveUITest.*
+PriceTrackingBubbleInteractiveTest.*
+PriceTrackingIconViewErrorHandelingTest.*
+PriceTrackingIconViewInteractiveTest.*
 TabDragging/DetachToBrowserTabDragControllerTest.*
+TabStripRegionViewBrowserTest.*
 TestMenuControllerUITest.*
+TouchableMenuItemViewTest.*
 
 # This may be a flaky failure unrelated to the c23 code paths.
 SitePerProcessInteractivePDFTest.ContextMenuPositionForEmbeddedPDFInCrossOriginFrame

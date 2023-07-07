@@ -1,5 +1,6 @@
 # cr23_views_unittests that are expected to fail on win bots:
 -MenuControllerTest.AccessibilityDisabledItemsIndices
+-MenuControllerTest.AsynchronousGestureDeletesController
 -MenuControllerTest.ContextMenuInitializesAuraWindowWhenShown
 -MenuControllerTest.RepostEventToEmptyMenuItem
 -MenuControllerTest.RootAndChildMenusInitializeAuraWindowWhenShown
