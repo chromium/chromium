@@ -234,6 +234,14 @@ const char kFooterDummyLinkTarget[] = "about:blank";
     return;
   }
 
+  // Guard against the rare case where the user was able to tap on verify after
+  // setting an invalid date and before the button is disabled. The UIPickerView
+  // notifies its delegate about picker changes but with a sligh delay, which
+  // leads to this case.
+  if (![self isExpirationInputValid]) {
+    return;
+  }
+
   autofill::CardUnmaskPromptController* controller = _bridge->GetController();
 
   NSString* CVC = _CVCInputItem.textFieldValue;
