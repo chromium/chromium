@@ -5,6 +5,7 @@ Version: 0
 Date: 20230124
 Revision: 06ce8d348f9145e41e8f52ff9f83470fe3563084
 Security Critical: no
+Shipped: yes
 License: MIT, MPL 1.1/GPL 2.0/LGPL 2.1, GNU Lesser Public License, Unicode License, Unicode Data License, custom notice license, Unlicense, custom permissive license
 License File: LICENSE
 License Android Compatible: yes
