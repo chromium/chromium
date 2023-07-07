@@ -1393,6 +1393,10 @@ void ServiceWorkerContextWrapper::FindRegistrationForScopeImpl(
 void ServiceWorkerContextWrapper::MaybeProcessPendingWarmUpRequest() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  if (!context_core_) {
+    return;
+  }
+
   context_core_->EndProcessingWarmingUp();
 
   absl::optional<ServiceWorkerContextCore::WarmUpRequest> request =
