@@ -147,6 +147,24 @@ class MediaTest : public testing::WithParamInterface<bool>,
     MediaBrowserTest::SetUpCommandLine(command_line);
   }
 
+  void MaybePlayVideo(base::StringPiece codec_string,
+                      const std::string& file_name) {
+    constexpr char kTestVideoPlaybackScript[] = R"({
+      const video = document.createElement('video');
+      video.canPlayType('video/mp4; codecs=$1') === 'probably';
+    })";
+    EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+    content::WebContents* web_contents = shell()->web_contents();
+    bool result =
+        EvalJs(web_contents, JsReplace(kTestVideoPlaybackScript, codec_string))
+            .ExtractBool();
+    if (!result) {
+      return;
+    }
+
+    PlayVideo(file_name);
+  }
+
   // Play specified audio over http:// or file:// depending on |http| setting.
   void PlayAudio(const std::string& media_file, bool http = true) {
     PlayMedia("audio", media_file, http);
@@ -305,6 +323,38 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearRotated270) {
   REQUIRE_ACCELERATION_ON_ANDROID();
   RunVideoSizeTest("bear_rotate_270.mp4", 720, 1280);
 }
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+// HEVC video stream with 10-bit 422 range extension profile
+IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc10bit422) {
+  MaybePlayVideo("hev1.4.10.L120.90",
+                 "bear-1280x720-hevc-10bit-422-no-audio.mp4");
+}
+
+// HEVC video stream with 10-bit 444 range extension profile
+IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc10bit444) {
+  MaybePlayVideo("hev1.4.10.L120.90",
+                 "bear-1280x720-hevc-10bit-444-no-audio.mp4");
+}
+
+// HEVC video stream with 8-bit main profile
+IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc8bit) {
+  // TODO(crbug.com/1449878) : For Android, the `canPlayType()` test in
+  // `MaybePlayVideo` should be reporting the correct status for HEVC. The below
+  // `REQUIRE_ACCELERATION_ON_ANDROID` flag is a temporary fix.
+  REQUIRE_ACCELERATION_ON_ANDROID();
+  MaybePlayVideo("hev1.1.6.L120.90", "bear-1280x720-hevc-no-audio.mp4");
+}
+
+// HEVC video stream with 10-bit main10 profile
+IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc10bit) {
+  // TODO(crbug.com/1449878) : For Android, the `canPlayType()` test in
+  // `MaybePlayVideo` should be reporting the correct status for HEVC. The below
+  // `REQUIRE_ACCELERATION_ON_ANDROID` flag is a temporary fix.
+  REQUIRE_ACCELERATION_ON_ANDROID();
+  MaybePlayVideo("hev1.2.4.L120.90", "bear-1280x720-hevc-10bit-no-audio.mp4");
+}
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 #if !BUILDFLAG(IS_ANDROID)
 // Android devices usually only support baseline, main and high.

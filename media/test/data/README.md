@@ -1386,10 +1386,22 @@ HEVC video stream with 8-bit main profile, generated with
 ffmpeg -i bear-1280x720.mp4 -vcodec hevc bear-1280x720-hevc.mp4
 ```
 
+#### bear-1280x720-hevc-no-audio.mp4
+HEVC video stream with 8-bit main profile, generated with
+```
+ffmpeg -i bear-1280x720-hevc.mp4 -vcodec copy -an bear-1280x720-hevc-no-audio.mp4
+```
+
 #### bear-1280x720-hevc-10bit.mp4
 HEVC video stream with 10-bit main10 profile, generated with
 ```
 ffmpeg -i bear-1280x720.mp4 -vcodec hevc -pix_fmt yuv420p10le bear-1280x720-hevc-10bit.mp4
+```
+
+#### bear-1280x720-hevc-10bit-no-audio.mp4
+HEVC video stream with 10-bit main10 profile, generated with
+```
+ffmpeg -i bear-1280x720-hevc-10bit.mp4 -vcodec copy -an bear-1280x720-hevc-10bit-no-audio.mp4
 ```
 
 #### bear-1280x720-hevc-10bit-422.mp4
@@ -1398,10 +1410,22 @@ HEVC video stream with 10-bit 422 range extension profile, generated with
 ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -pix_fmt yuv422p10le bear-1280x720-hevc-10bit-422.mp4
 ```
 
+#### bear-1280x720-hevc-10bit-422-no-audio.mp4
+HEVC video stream with 10-bit 422 range extension profile, generated with
+```
+ffmpeg -i bear-1280x720-hevc-10bit-422.mp4 -vcodec copy -an bear-1280x720-hevc-10bit-422-no-audio.mp4
+```
+
 #### bear-1280x720-hevc-10bit-444.mp4
 HEVC video stream with 10-bit 444 range extension profile, generated with
 ```
 ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -pix_fmt yuv444p10le bear-1280x720-hevc-10bit-444.mp4
+```
+
+#### bear-1280x720-hevc-10bit-444-no-audio.mp4
+HEVC video stream with 10-bit 444 range extension profile, generated with
+```
+ffmpeg -i bear-1280x720-hevc-10bit-444.mp4 -vcodec copy -an bear-1280x720-hevc-10bit-444-no-audio.mp4
 ```
 
 #### bear-1280x720-hevc-12bit-420.mp4
