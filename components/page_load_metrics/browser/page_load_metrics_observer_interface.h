@@ -337,7 +337,7 @@ class PageLoadMetricsObserverInterface {
 
   // The callback is invoked when a soft navigation is detected.
   // See https://bit.ly/soft-navigation for more details.
-  virtual void OnSoftNavigationUpdated(mojom::SoftNavigationMetricsPtr) = 0;
+  virtual void OnSoftNavigationUpdated(const mojom::SoftNavigationMetrics&) = 0;
 
   // OnInputTimingUpdate is triggered when an updated InputTiming is available
   // at the subframe level. This method may be called multiple times over the

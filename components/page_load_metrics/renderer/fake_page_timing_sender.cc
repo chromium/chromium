@@ -68,6 +68,26 @@ void FakePageTimingSender::PageTimingValidator::VerifyExpectedTimings() const {
   }
 }
 
+void FakePageTimingSender::PageTimingValidator::ExpectSoftNavigationMetrics(
+    const mojom::SoftNavigationMetrics& soft_navigation_metrics) {
+  VerifyExpectedSoftNavigationMetrics();
+  expected_soft_navigation_metrics_.push_back(soft_navigation_metrics.Clone());
+}
+
+void FakePageTimingSender::PageTimingValidator::
+    VerifyExpectedSoftNavigationMetrics() const {
+  ASSERT_EQ(actual_soft_navigation_metrics_.size(),
+            expected_soft_navigation_metrics_.size());
+  for (size_t i = 0; i < actual_soft_navigation_metrics_.size(); ++i) {
+    if (actual_soft_navigation_metrics_.at(i)->Equals(
+            *expected_soft_navigation_metrics_.at(i))) {
+      continue;
+    }
+    ADD_FAILURE() << "Observed soft navigation metric != expected one at index "
+                  << i;
+  }
+}
+
 void FakePageTimingSender::PageTimingValidator::UpdateExpectedInputTiming(
     const base::TimeDelta input_delay) {
   expected_input_timing->num_input_events++;
@@ -150,6 +170,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
         subresource_load_metrics,
     const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) {
   actual_timings_.push_back(timing.Clone());
+  actual_soft_navigation_metrics_.push_back(soft_navigation_metrics->Clone());
   if (!cpu_timing->task_time.is_zero()) {
     actual_cpu_timings_.push_back(cpu_timing.Clone());
   }
@@ -177,7 +198,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   VerifyExpectedMainFrameIntersectionRect();
   VerifyExpectedMainFrameViewportRect();
   VerifyExpectedSubresourceLoadMetrics();
-  // TODO(yoav): Verify that soft nav count matches expectations.
+  VerifyExpectedSoftNavigationMetrics();
 }
 
 }  // namespace page_load_metrics

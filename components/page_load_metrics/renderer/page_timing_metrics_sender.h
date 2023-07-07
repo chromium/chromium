@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/small_map.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/renderer/page_resource_data_use.h"
 #include "components/page_load_metrics/renderer/page_timing_metadata_recorder.h"
@@ -107,6 +108,12 @@ class PageTimingMetricsSender {
                               bool completed_before_fcp);
   void SetUpSmoothnessReporting(base::ReadOnlySharedMemoryRegion shared_memory);
   void InitiateUserInteractionTiming();
+  mojom::SoftNavigationMetricsPtr GetSoftNavigationMetrics() {
+    return soft_navigation_metrics_->Clone();
+  }
+
+  void UpdateSoftNavigationMetrics(
+      mojom::SoftNavigationMetricsPtr soft_navigation_metrics);
 
  protected:
   base::OneShotTimer* timer() const { return timer_.get(); }
@@ -133,7 +140,7 @@ class PageTimingMetricsSender {
 
   blink::UseCounterFeatureTracker feature_tracker_;
 
-  blink::SoftNavigationMetrics soft_navigation_metrics_;
+  mojom::SoftNavigationMetricsPtr soft_navigation_metrics_;
 
   bool have_sent_ipc_ = false;
 

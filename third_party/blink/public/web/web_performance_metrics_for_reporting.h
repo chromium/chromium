@@ -98,6 +98,8 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
   double FirstMeaningfulPaint() const;
   LargestContentfulPaintDetailsForReporting LargestContentfulDetailsForMetrics()
       const;
+  LargestContentfulPaintDetailsForReporting
+  SoftNavigationLargestContentfulDetailsForMetrics() const;
   double FirstEligibleToPaint() const;
   double FirstInputOrScrollNotifiedTimestamp() const;
   absl::optional<base::TimeDelta> FirstInputDelay() const;

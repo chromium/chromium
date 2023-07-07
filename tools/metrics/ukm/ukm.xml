@@ -23194,6 +23194,54 @@ be describing additional metrics about the same event.
       differentiate soft navigations.
     </summary>
   </metric>
+  <metric name="PaintTiming.LargestContentfulPaint">
+    <summary>
+      Measures the LargestContentfulPaint in milliseconds from the start time of
+      the soft navigation to the LCP time.
+    </summary>
+  </metric>
+  <metric name="PaintTiming.LargestContentfulPaintBPP"
+      enum="BitsPerPixelExponential">
+    <summary>
+      Measures the ratio of image file size (in bits) to displayed pixels for
+      the LCP candidate. Bucketed into roughly exponential intervals to account
+      for the wide range of encountered values (less than 1:100000 to greater
+      than 10000:1). This metric is recorded whenever the LCP candidate is an
+      image, and omitted when it is text.
+    </summary>
+  </metric>
+  <metric name="PaintTiming.LargestContentfulPaintImageLoadEnd">
+    <summary>
+      Measures the time in milliseconds from soft navigation's start time to the
+      time when the image LCP element finishes loading. For animated images,
+      this is when the image resource finishes loading completely, not the first
+      frame time. See web.dev/optimize-lcp for more details. This metric is not
+      recorded when the LCP element is text or video.
+    </summary>
+  </metric>
+  <metric name="PaintTiming.LargestContentfulPaintImageLoadStart">
+    <summary>
+      Measures the time in milliseconds from soft navigation's start time to the
+      time when the image LCP element starts loading. See web.dev/optimize-lcp
+      for more details. This metric is not recorded when the LCP element is text
+      or video.
+    </summary>
+  </metric>
+  <metric name="PaintTiming.LargestContentfulPaintRequestPriority"
+      enum="NetRequestPriority">
+    <summary>
+      Resource loading priority used for the LCP candidate. This metric is
+      recorded whenever the LCP candidate is an image, and omitted when it is
+      text or video.
+    </summary>
+  </metric>
+  <metric name="PaintTiming.LargestContentfulPaintType">
+    <summary>
+      Indicates that type of the LargestContentfulPaint candidate. This value is
+      a packed set of flags, defined in
+      third_party/blink/public/common/performance/largest_contentful_paint_type.h
+    </summary>
+  </metric>
   <metric name="StartTime">
     <summary>
       Records the start time of a soft navigation. The start time is a time

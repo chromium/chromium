@@ -60,6 +60,11 @@ PageTimingMetricsSender::PageTimingMetricsSender(
       last_cpu_timing_(mojom::CpuTiming::New()),
       input_timing_delta_(mojom::InputTiming::New()),
       metadata_(mojom::FrameMetadata::New()),
+      soft_navigation_metrics_(mojom::SoftNavigationMetrics::New(
+          blink::kSoftNavigationCountDefaultValue,
+          base::Milliseconds(0),
+          base::EmptyString(),
+          mojom::LargestContentfulPaintTiming::New())),
       buffer_timer_delay_ms_(GetBufferTimerDelayMillis(TimerType::kRenderer)),
       metadata_recorder_(initial_monotonic_timing) {
   InitiateUserInteractionTiming();
@@ -118,15 +123,15 @@ void PageTimingMetricsSender::DidObserveSoftNavigation(
   // Therefore each soft navigation would have an effectively larger start_time
   // than the one that came before it. Each soft navigation should also have a
   // larger count and a different navigation id.
-  CHECK(new_metrics.count > soft_navigation_metrics_.count);
-  CHECK(new_metrics.start_time > soft_navigation_metrics_.start_time);
-  CHECK(new_metrics.navigation_id != soft_navigation_metrics_.navigation_id);
+  CHECK(new_metrics.count > soft_navigation_metrics_->count);
+  CHECK(new_metrics.start_time > soft_navigation_metrics_->start_time);
+  CHECK(new_metrics.navigation_id != soft_navigation_metrics_->navigation_id);
 
-  soft_navigation_metrics_.count = new_metrics.count;
+  soft_navigation_metrics_->count = new_metrics.count;
 
-  soft_navigation_metrics_.start_time = new_metrics.start_time;
+  soft_navigation_metrics_->start_time = new_metrics.start_time;
 
-  soft_navigation_metrics_.navigation_id = new_metrics.navigation_id;
+  soft_navigation_metrics_->navigation_id = new_metrics.navigation_id;
 
   EnsureSendTimer();
 }
@@ -293,6 +298,17 @@ void PageTimingMetricsSender::Update(
   EnsureSendTimer(send_urgently);
 }
 
+void PageTimingMetricsSender::UpdateSoftNavigationMetrics(
+    mojom::SoftNavigationMetricsPtr soft_navigation_metrics) {
+  if (soft_navigation_metrics_->Equals(*soft_navigation_metrics)) {
+    return;
+  }
+
+  soft_navigation_metrics_ = std::move(soft_navigation_metrics);
+
+  EnsureSendTimer(true);
+}
+
 void PageTimingMetricsSender::SendLatest() {
   if (!timer_->IsRunning())
     return;
@@ -341,11 +357,10 @@ void PageTimingMetricsSender::SendNow() {
     }
   }
 
-  sender_->SendTiming(
-      last_timing_, metadata_, std::move(new_features_), std::move(resources),
-      render_data_, last_cpu_timing_, std::move(input_timing_delta_),
-      subresource_load_metrics_,
-      mojom::SoftNavigationMetrics::From(soft_navigation_metrics_));
+  sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
+                      std::move(resources), render_data_, last_cpu_timing_,
+                      std::move(input_timing_delta_), subresource_load_metrics_,
+                      soft_navigation_metrics_);
 
   input_timing_delta_ = mojom::InputTiming::New();
   InitiateUserInteractionTiming();

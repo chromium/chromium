@@ -614,10 +614,18 @@ struct BackForwardCacheTiming {
 struct SoftNavigationMetrics {
   // The number of soft navigations that occur during a page load.
   uint64 count;
-  // The start time of a soft navigation. It is the time user initialize the
-  // soft navigation.
+
+  // The start time of a soft navigation. It is the time the user initializes
+  // the soft navigation. It is relative to navigation start.
   mojo_base.mojom.TimeDelta start_time;
+
   // The renderer side navigation id that increments when a soft navigation
   // happens.
   string navigation_id;
+
+  // The LargestContentfulPaint of a soft navigation, that is, the largest
+  // contentful paint that happened after a soft navigation is detected and
+  // before the next soft navigation is detected or page end.
+  // The timings are relative to the soft navigation start.
+  LargestContentfulPaintTiming largest_contentful_paint;
 };

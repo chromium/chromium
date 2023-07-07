@@ -48,6 +48,8 @@ class FakePageTimingSender : public PageTimingSender {
     // be passed to ExpectPageLoadTiming.
     void ExpectPageLoadTiming(const mojom::PageLoadTiming& timing);
 
+    void ExpectSoftNavigationMetrics(
+        const mojom::SoftNavigationMetrics& soft_navigation_metrics);
     // CpuTimings that are expected to be sent through SendTiming() should be
     // passed to ExpectCpuTiming.
     void ExpectCpuTiming(const base::TimeDelta& timing);
@@ -55,6 +57,8 @@ class FakePageTimingSender : public PageTimingSender {
     // Forces verification that actual timings sent through SendTiming() match
     // expected timings provided via ExpectPageLoadTiming.
     void VerifyExpectedTimings() const;
+
+    void VerifyExpectedSoftNavigationMetrics() const;
 
     // Forces verification that actual timings sent through SendTiming() match
     // expected timings provided via ExpectCpuTiming.
@@ -117,6 +121,10 @@ class FakePageTimingSender : public PageTimingSender {
    private:
     std::vector<mojom::PageLoadTimingPtr> expected_timings_;
     std::vector<mojom::PageLoadTimingPtr> actual_timings_;
+    std::vector<mojom::SoftNavigationMetricsPtr>
+        expected_soft_navigation_metrics_;
+    std::vector<mojom::SoftNavigationMetricsPtr>
+        actual_soft_navigation_metrics_;
     std::vector<mojom::CpuTimingPtr> expected_cpu_timings_;
     std::vector<mojom::CpuTimingPtr> actual_cpu_timings_;
     std::set<blink::UseCounterFeature> expected_features_;

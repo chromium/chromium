@@ -250,6 +250,9 @@ LargestContentfulPaintHandler::LargestContentfulPaintHandler()
                                  blink::LargestContentfulPaintType::kNone),
       cross_site_subframe_contentful_paint_(
           false /*in_main_frame*/,
+          blink::LargestContentfulPaintType::kNone),
+      soft_navigation_contentful_paint_candidate_(
+          false,
           blink::LargestContentfulPaintType::kNone) {}
 
 LargestContentfulPaintHandler::~LargestContentfulPaintHandler() = default;
@@ -261,6 +264,37 @@ LargestContentfulPaintHandler::MergeMainFrameAndSubframes() const {
   const ContentfulPaintTimingInfo& subframe_timing =
       subframe_contentful_paint_.MergeTextAndImageTiming();
   return MergeTimingsBySizeAndTime(main_frame_timing, subframe_timing);
+}
+
+void LargestContentfulPaintHandler::UpdateSoftNavigationLargestContentfulPaint(
+    const page_load_metrics::mojom::LargestContentfulPaintTiming&
+        largest_contentful_paint) {
+  if (IsValid(largest_contentful_paint.largest_text_paint)) {
+    // Image load start/end are not applicable to text LCP elements.
+    soft_navigation_contentful_paint_candidate_.Text().Reset(
+        largest_contentful_paint.largest_text_paint,
+        largest_contentful_paint.largest_text_paint_size,
+        static_cast<blink::LargestContentfulPaintType>(
+            largest_contentful_paint.type),
+        /*image_bpp=*/0.0,
+        /*image_request_priority=*/absl::nullopt,
+        /*image_discovery_time=*/absl::nullopt,
+        /*image_load_start=*/absl::nullopt,
+        /*image_load_end=*/absl::nullopt);
+  }
+
+  if (IsValid(largest_contentful_paint.largest_image_paint)) {
+    soft_navigation_contentful_paint_candidate_.Image().Reset(
+        largest_contentful_paint.largest_image_paint,
+        largest_contentful_paint.largest_image_paint_size,
+        static_cast<blink::LargestContentfulPaintType>(
+            largest_contentful_paint.type),
+        largest_contentful_paint.image_bpp,
+        GetImageRequestPriority(largest_contentful_paint),
+        largest_contentful_paint.largest_image_discovery_time,
+        largest_contentful_paint.largest_image_load_start,
+        largest_contentful_paint.largest_image_load_end);
+  }
 }
 
 void LargestContentfulPaintHandler::RecordMainFrameTiming(

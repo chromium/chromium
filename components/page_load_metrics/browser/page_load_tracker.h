@@ -18,6 +18,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_update_dispatcher.h"
 #include "components/page_load_metrics/browser/resource_tracker.h"
 #include "components/page_load_metrics/common/page_end_reason.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -297,8 +298,9 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   const LargestContentfulPaintHandler&
   GetExperimentalLargestContentfulPaintHandler() const override;
   ukm::SourceId GetPageUkmSourceId() const override;
-  uint32_t GetSoftNavigationCount() const override;
+  mojom::SoftNavigationMetrics& GetSoftNavigationMetrics() const override;
   ukm::SourceId GetUkmSourceIdForSoftNavigation() const override;
+  ukm::SourceId GetPreviousUkmSourceIdForSoftNavigation() const override;
   bool IsFirstNavigationInWebContents() const override;
 
   void Redirect(content::NavigationHandle* navigation_handle);
@@ -575,13 +577,16 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       experimental_largest_contentful_paint_handler_;
 
   mojom::SoftNavigationMetricsPtr soft_navigation_metrics_ =
-      mojom::SoftNavigationMetrics::New(blink::kSoftNavigationCountDefaultValue,
-                                        base::TimeDelta(),
-                                        base::EmptyString());
+      mojom::SoftNavigationMetrics::New(
+          blink::kSoftNavigationCountDefaultValue,
+          base::TimeDelta(),
+          base::EmptyString(),
+          mojom::LargestContentfulPaintTiming::New());
 
   GURL potential_soft_navigation_url_;
 
   ukm::SourceId potential_soft_navigation_source_id_ = ukm::kInvalidSourceId;
+  ukm::SourceId previous_soft_navigation_source_id_ = ukm::kInvalidSourceId;
 
   absl::optional<base::TimeTicks> main_frame_receive_headers_start_;
 

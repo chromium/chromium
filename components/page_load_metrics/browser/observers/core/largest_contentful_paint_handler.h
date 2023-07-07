@@ -182,6 +182,15 @@ class LargestContentfulPaintHandler {
     return main_frame_contentful_paint_.Image();
   }
 
+  void UpdateSoftNavigationLargestContentfulPaint(
+      const page_load_metrics::mojom::LargestContentfulPaintTiming&);
+
+  const ContentfulPaintTimingInfo& GetSoftNavigationLargestContentfulPaint()
+      const {
+    return soft_navigation_contentful_paint_candidate_
+        .MergeTextAndImageTiming();
+  }
+
  private:
   void RecordSubFrameTimingInternal(
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
@@ -213,6 +222,9 @@ class LargestContentfulPaintHandler {
   // `cross_site_subframe_contentful_paint_` keeps track of the most plausible
   // LCP candidate computed from the cross-site subframes.
   ContentfulPaint cross_site_subframe_contentful_paint_;
+
+  // Keeps track of the LCP candidate of a soft navigation.
+  ContentfulPaint soft_navigation_contentful_paint_candidate_;
 
   // Used for Telemetry to distinguish the LCP events from different
   // navigations.

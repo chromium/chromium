@@ -637,18 +637,82 @@ void UkmPageLoadMetricsObserver::RecordSiteEngagement() const {
   builder.Record(ukm::UkmRecorder::Get());
 }
 
-void UkmPageLoadMetricsObserver::OnSoftNavigationUpdated(
-    page_load_metrics::mojom::SoftNavigationMetricsPtr
-        soft_navigation_metrics) {
-  ukm::builders::SoftNavigation builder(
-      GetDelegate().GetUkmSourceIdForSoftNavigation());
-
+void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
+    ukm::SourceId ukm_source_id,
+    page_load_metrics::mojom::SoftNavigationMetrics& soft_navigation_metrics) {
+  ukm::builders::SoftNavigation builder(ukm_source_id);
   builder.SetNavigationId(
-      StrToHash64Bit(soft_navigation_metrics->navigation_id));
-  builder.SetStartTime(soft_navigation_metrics->start_time.InMilliseconds());
+      StrToHash64Bit(soft_navigation_metrics.navigation_id));
 
+  builder.SetStartTime(soft_navigation_metrics.start_time.InMillisecondsF());
+
+  auto largest_contentful_paint = GetSoftNavigationLargestContentfulPaint();
+
+  if (largest_contentful_paint.ContainsValidTime() &&
+      WasStartedInForegroundOptionalEventInForeground(
+          largest_contentful_paint.Time(), GetDelegate())) {
+    builder.SetPaintTiming_LargestContentfulPaint(
+        largest_contentful_paint.Time().value().InMillisecondsF());
+
+    builder.SetPaintTiming_LargestContentfulPaintType(
+        LargestContentfulPaintTypeToUKMFlags(largest_contentful_paint.Type()));
+
+    if (largest_contentful_paint.TextOrImage() ==
+        page_load_metrics::ContentfulPaintTimingInfo::
+            LargestContentTextOrImage::kImage) {
+      builder.SetPaintTiming_LargestContentfulPaintBPP(
+          CalculateLCPEntropyBucket(largest_contentful_paint.ImageBPP()));
+
+      auto priority = largest_contentful_paint.ImageRequestPriority();
+
+      if (priority) {
+        builder.SetPaintTiming_LargestContentfulPaintRequestPriority(*priority);
+      }
+
+      if (largest_contentful_paint.ImageLoadStart().has_value()) {
+        builder.SetPaintTiming_LargestContentfulPaintImageLoadStart(
+            largest_contentful_paint.ImageLoadStart()
+                .value()
+                .InMillisecondsF());
+      }
+
+      if (largest_contentful_paint.ImageLoadEnd().has_value()) {
+        builder.SetPaintTiming_LargestContentfulPaintImageLoadEnd(
+            largest_contentful_paint.ImageLoadEnd().value().InMillisecondsF());
+      }
+    }
+  }
   builder.Record(ukm::UkmRecorder::Get());
 }
+
+void UkmPageLoadMetricsObserver::OnSoftNavigationUpdated(
+    const page_load_metrics::mojom::SoftNavigationMetrics&
+        new_soft_navigation_metrics) {
+  auto current_soft_navigation_metrics =
+      GetDelegate().GetSoftNavigationMetrics().Clone();
+
+  // Record current soft navigation metrics into Ukm when a new soft navigation
+  // comes in. For example, when 2nd soft navigation with a larger count comes
+  // in, the 1st(current) soft metrics are recorded. The initial soft
+  // navigation metrics that have default values should not reported.
+  if (current_soft_navigation_metrics->count == 0 ||
+      current_soft_navigation_metrics->count ==
+          new_soft_navigation_metrics.count) {
+    return;
+  }
+
+  RecordSoftNavigationMetrics(
+      GetDelegate().GetPreviousUkmSourceIdForSoftNavigation(),
+      *current_soft_navigation_metrics);
+}
+
+const page_load_metrics::ContentfulPaintTimingInfo&
+UkmPageLoadMetricsObserver::GetSoftNavigationLargestContentfulPaint() const {
+  return GetDelegate()
+      .GetLargestContentfulPaintHandler()
+      .GetSoftNavigationLargestContentfulPaint();
+}
+
 const page_load_metrics::ContentfulPaintTimingInfo&
 UkmPageLoadMetricsObserver::GetCoreWebVitalsLcpTimingInfo() {
   return GetDelegate()
@@ -835,12 +899,17 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
   builder.SetNet_MediaBytes2(
       ukm::GetExponentialBucketMinForBytes(media_bytes_));
 
-  builder.SetSoftNavigationCount(GetDelegate().GetSoftNavigationCount());
+  builder.SetSoftNavigationCount(
+      GetDelegate().GetSoftNavigationMetrics().count);
 
   if (main_frame_timing_)
     ReportMainResourceTimingMetrics(builder);
 
   builder.Record(ukm::UkmRecorder::Get());
+
+  // Record the LCP of the last soft navigation.
+  RecordSoftNavigationMetrics(GetDelegate().GetUkmSourceIdForSoftNavigation(),
+                              GetDelegate().GetSoftNavigationMetrics());
 }
 
 void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(

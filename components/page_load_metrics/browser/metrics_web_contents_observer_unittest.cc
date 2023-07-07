@@ -17,6 +17,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_content_browser_client.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/browser/test_metrics_web_contents_observer_embedder.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -129,7 +130,7 @@ class MetricsWebContentsObserverTest
         mojom::InputTimingPtr(absl::in_place), absl::nullopt,
         mojom::SoftNavigationMetrics::New(
             blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-            base::EmptyString()));
+            base::EmptyString(), mojom::LargestContentfulPaintTiming::New()));
   }
 
   void SimulateTimingUpdate(const mojom::PageLoadTiming& timing,
@@ -157,7 +158,7 @@ class MetricsWebContentsObserverTest
         mojom::InputTimingPtr(absl::in_place), absl::nullopt,
         mojom::SoftNavigationMetrics::New(
             blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-            base::EmptyString()));
+            base::EmptyString(), mojom::LargestContentfulPaintTiming::New()));
   }
 
   virtual std::unique_ptr<TestMetricsWebContentsObserverEmbedder>

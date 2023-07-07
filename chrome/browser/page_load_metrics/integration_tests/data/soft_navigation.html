@@ -38,17 +38,52 @@
       });
     };
 
-    const waitForLcpEntries = async () => {
-      const entries = await new Promise(resolve => {
-        (new PerformanceObserver(list => resolve(
-          list.getEntries()))).observe(
-            {
-              type: 'largest-contentful-paint', buffered: true,
-              includeSoftNavigationObservations: true
-            });
+    const waitForRegularLcpEntries = () => {
+      return new Promise(resolve => {
+        new PerformanceObserver(resolve).observe(
+          {
+            type: 'largest-contentful-paint', buffered: true,
+            includeSoftNavigationObservations: true
+          });
+      })
+    }
+
+
+    const waitForSoftNavigationLcpEntries = () => {
+      return new Promise(resolve => {
+        new PerformanceObserver(resolve).observe(
+          {
+            type: 'largest-contentful-paint', buffered: true,
+            includeSoftNavigationObservations: true
+          });
+      })
+    }
+
+    const GetSoftNavigationLCPEntries = async () => {
+      const soft_nav_entry_navigation_ids = await new Promise(resolve => {
+        (new PerformanceObserver(list => {
+          if (list.getEntries().length >= 2) {
+            resolve(list.getEntries().map(e => e.navigationId));
+          }
+        })).observe({
+          type: 'soft-navigation', buffered: true
+        });
       });
-      return entries;
-    };
+
+      const soft_nav_lcp_entries = await new Promise(resolve => {
+        (new PerformanceObserver(list => {
+          if (list.getEntries().length >= 2) {
+            resolve(list.getEntries().filter(
+              e => soft_nav_entry_navigation_ids.includes(e.navigationId)));
+          }
+        })).observe({
+          type: 'largest-contentful-paint', buffered: true,
+          includeSoftNavigationObservations: true
+        });
+      });
+
+      return soft_nav_lcp_entries.map(e => JSON.stringify(e.toJSON()));
+    }
 
     let counter = 0;
     const setEvent = (button, pushState, addContent, pushUrl, eventType) => {
@@ -71,7 +106,7 @@
     };
 
     const setEventAndWait = async () => {
-      await waitForLcpEntries();
+      await waitForRegularLcpEntries();
       const link = document.getElementById("link");
       setEvent(link, /*pushState=*/url => history.pushState({}, '', url),
         /*addContent=*/async () => await addImageToMain(), /*pushUrl=*/true,
@@ -85,7 +120,7 @@
         });
       });
       await waitOnPaintEntriesPromise();;
-      await waitForLcpEntries();
+      await waitForSoftNavigationLcpEntries();
     }
 
     const waitForSoftNavigationEntry2 = async () => {
@@ -95,7 +130,7 @@
         });
       });
       await waitOnPaintEntriesPromise();
-      await waitForLcpEntries();
+      await waitForSoftNavigationLcpEntries();
     }
   </script>
 </body>

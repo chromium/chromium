@@ -108,7 +108,7 @@ class UkmPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
   void OnSoftNavigationUpdated(
-      page_load_metrics::mojom::SoftNavigationMetricsPtr) override;
+      const page_load_metrics::mojom::SoftNavigationMetrics&) override;
 
   // Whether the current page load is an Offline Preview. Must be called from
   // OnCommit. Virtual for testing.
@@ -151,6 +151,13 @@ class UkmPageLoadMetricsObserver
   // on when the page was backgrounded and other validations.
   const page_load_metrics::ContentfulPaintTimingInfo&
   GetCoreWebVitalsLcpTimingInfo();
+
+  const page_load_metrics::ContentfulPaintTimingInfo&
+  GetSoftNavigationLargestContentfulPaint() const;
+
+  void RecordSoftNavigationMetrics(
+      ukm::SourceId ukm_source_id,
+      page_load_metrics::mojom::SoftNavigationMetrics& soft_navigation_metrics);
 
   void RecordAbortMetrics(
       const page_load_metrics::mojom::PageLoadTiming& timing,
