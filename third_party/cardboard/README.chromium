@@ -5,6 +5,7 @@ Version: 1.21.0
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 The Cardboard SDK supports a simple API used for displaying VR scenes on
