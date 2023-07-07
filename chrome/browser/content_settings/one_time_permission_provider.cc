@@ -111,9 +111,11 @@ bool OneTimePermissionProvider::UpdateLastVisitTime(
   return false;
 }
 
-bool OneTimePermissionProvider::RenewContentSetting(const GURL& primary_url,
-                                                    const GURL& secondary_url,
-                                                    ContentSettingsType type) {
+bool OneTimePermissionProvider::RenewContentSetting(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType type,
+    absl::optional<ContentSetting> setting_to_match) {
   // Setting renewal is not supported for one-time permissions.
   return false;
 }

@@ -32,11 +32,15 @@ class UserModifiableProvider : public ObservableProvider {
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type) = 0;
   // Updates the expiration time for the given setting, based on its lifetime.
-  // (Only settings that have lifetimes may be renewed.) Returns true if the
-  // setting was found and updated.
-  virtual bool RenewContentSetting(const GURL& primary_url,
-                                   const GURL& secondary_url,
-                                   ContentSettingsType content_type) = 0;
+  // (Only settings that have lifetimes may be renewed.) If `setting_to_match`
+  // is nullopt, then the first rule with the appropriate patterns and type will
+  // be updated; otherwise, a rule will only be updated if its value matches
+  // `setting_to_match`. Returns true if the setting was found and updated.
+  virtual bool RenewContentSetting(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      absl::optional<ContentSetting> setting_to_match) = 0;
   // Sets the providers internal clock for testing purposes.
   virtual void SetClockForTesting(base::Clock* clock) = 0;
 };

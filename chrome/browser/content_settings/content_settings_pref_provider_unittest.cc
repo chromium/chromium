@@ -1096,8 +1096,14 @@ TEST_F(PrefProviderTest, RenewContentSetting) {
   EXPECT_EQ(metadata.lifetime(), base::Days(2));
   EXPECT_EQ(metadata.expiration(), clock.Now() + base::Days(1));
 
-  EXPECT_TRUE(provider.RenewContentSetting(
-      primary_url, primary_url, ContentSettingsType::STORAGE_ACCESS));
+  // Wrong ContentSetting, doesn't match.
+  EXPECT_FALSE(provider.RenewContentSetting(primary_url, primary_url,
+                                            ContentSettingsType::STORAGE_ACCESS,
+                                            CONTENT_SETTING_BLOCK));
+
+  EXPECT_TRUE(provider.RenewContentSetting(primary_url, primary_url,
+                                           ContentSettingsType::STORAGE_ACCESS,
+                                           CONTENT_SETTING_ALLOW));
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW, TestUtils::GetContentSetting(
                                        &provider, primary_url, primary_url,

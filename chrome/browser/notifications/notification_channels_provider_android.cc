@@ -397,7 +397,8 @@ bool NotificationChannelsProviderAndroid::UpdateLastVisitTime(
 bool NotificationChannelsProviderAndroid::RenewContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
-    ContentSettingsType content_type) {
+    ContentSettingsType content_type,
+    absl::optional<ContentSetting> setting_to_match) {
   // Setting renewal is not implemented for this type.
   return false;
 }

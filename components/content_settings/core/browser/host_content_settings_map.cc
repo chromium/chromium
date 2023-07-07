@@ -744,14 +744,16 @@ void HostContentSettingsMap::UpdateLastVisitedTime(
   }
 }
 
-bool HostContentSettingsMap::RenewContentSetting(const GURL& primary_url,
-                                                 const GURL& secondary_url,
-                                                 ContentSettingsType type) {
+bool HostContentSettingsMap::RenewContentSetting(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType type,
+    absl::optional<ContentSetting> setting_to_match) {
   bool any_updated = false;
   for (auto* provider : user_modifiable_providers_) {
-    any_updated =
-        provider->RenewContentSetting(primary_url, secondary_url, type) ||
-        any_updated;
+    any_updated = provider->RenewContentSetting(primary_url, secondary_url,
+                                                type, setting_to_match) ||
+                  any_updated;
   }
   return any_updated;
 }

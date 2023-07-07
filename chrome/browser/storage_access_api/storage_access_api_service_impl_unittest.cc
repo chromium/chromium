@@ -13,6 +13,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -109,6 +110,48 @@ TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant) {
 
   EXPECT_FALSE(service->RenewPermissionGrant(origin_a, origin_b));
   // The setting was already expired, so renewing it has no effect.
+  EXPECT_EQ(CONTENT_SETTING_ASK, settings_map->GetContentSetting(
+                                     origin_a.GetURL(), origin_b.GetURL(),
+                                     ContentSettingsType::STORAGE_ACCESS));
+}
+
+TEST_F(StorageAccessAPIServiceImplTest, PermissionDenial_NotRenewed) {
+  url::Origin origin_a(
+      url::Origin::Create(GURL(base::StrCat({"https://", kHostA}))));
+  url::Origin origin_b(
+      url::Origin::Create(GURL(base::StrCat({"https://", kHostB}))));
+
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  settings_map->SetClockForTesting(&clock);
+
+  content_settings::ContentSettingConstraints constraints(clock.Now());
+  constraints.set_lifetime(base::Days(30));
+
+  settings_map->SetContentSettingDefaultScope(
+      origin_a.GetURL(), origin_b.GetURL(), ContentSettingsType::STORAGE_ACCESS,
+      CONTENT_SETTING_BLOCK, constraints);
+
+  StorageAccessAPIServiceImpl* service =
+      StorageAccessAPIServiceFactory::GetForBrowserContext(profile());
+  ASSERT_NE(nullptr, service);
+
+  clock.Advance(base::Days(20));
+
+  // 20 days into a 30 day lifetime, so the setting hasn't expired yet.
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, settings_map->GetContentSetting(
+                                       origin_a.GetURL(), origin_b.GetURL(),
+                                       ContentSettingsType::STORAGE_ACCESS));
+
+  EXPECT_FALSE(service->RenewPermissionGrant(origin_a, origin_b));
+
+  clock.Advance(base::Days(20));
+  // Denials are not renewed by user interaction, so the setting has expired by
+  // now.
   EXPECT_EQ(CONTENT_SETTING_ASK, settings_map->GetContentSetting(
                                      origin_a.GetURL(), origin_b.GetURL(),
                                      ContentSettingsType::STORAGE_ACCESS));

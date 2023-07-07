@@ -26,6 +26,7 @@
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
@@ -215,53 +216,27 @@ bool PrefProvider::SetLastVisitTime(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     const base::Time time) {
-  return UpdateSetting(primary_pattern, secondary_pattern, content_type,
-                       [&](Rule& rule) -> bool {
-                         // This should only be updated for settings that are
-                         // already tracked.
-                         DCHECK_NE(rule.metadata.last_visited(), base::Time());
-
-                         rule.metadata.set_last_visited(time);
-
-                         return true;
-                       });
-}
-
-bool PrefProvider::UpdateSetting(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    base::FunctionRef<bool(Rule&)> compute_update) {
   return UpdateSetting(
       content_type,
-      [&](const ContentSettingsPattern& rule_primary_pattern,
-          const ContentSettingsPattern& rule_secondary_pattern) {
-        return primary_pattern == rule_primary_pattern &&
-               secondary_pattern == rule_secondary_pattern;
+      [&](const Rule& rule) -> bool {
+        return rule.primary_pattern == primary_pattern &&
+               rule.secondary_pattern == secondary_pattern;
       },
-      compute_update);
-}
+      [&](Rule& rule) -> bool {
+        // This should only be updated for settings that are
+        // already tracked.
+        DCHECK_NE(rule.metadata.last_visited(), base::Time());
 
-bool PrefProvider::UpdateSetting(
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    ContentSettingsType content_type,
-    base::FunctionRef<bool(Rule&)> compute_update) {
-  return UpdateSetting(
-      content_type,
-      [&](const ContentSettingsPattern& primary_pattern,
-          const ContentSettingsPattern& secondary_pattern) {
-        return primary_pattern.Matches(primary_url) &&
-               secondary_pattern.Matches(secondary_url);
-      },
-      compute_update);
+        rule.metadata.set_last_visited(time);
+
+        return true;
+      });
 }
 
 bool PrefProvider::UpdateSetting(
     ContentSettingsType content_type,
-    base::FunctionRef<bool(const ContentSettingsPattern&,
-                           const ContentSettingsPattern&)> is_match,
-    base::FunctionRef<bool(Rule&)> compute_update) {
+    base::FunctionRef<bool(const Rule&)> is_match,
+    base::FunctionRef<bool(Rule&)> perform_update) {
   if (!supports_type(content_type)) {
     return false;
   }
@@ -273,11 +248,11 @@ bool PrefProvider::UpdateSetting(
 
   while (it->HasNext()) {
     std::unique_ptr<Rule> rule = it->Next();
-    if (!is_match(rule->primary_pattern, rule->secondary_pattern)) {
+    if (!is_match(*rule)) {
       continue;
     }
 
-    bool updated = compute_update(*rule);
+    bool updated = perform_update(*rule);
     if (!updated) {
       return false;
     }
@@ -316,25 +291,35 @@ bool PrefProvider::UpdateLastVisitTime(
                           GetCoarseVisitedTime(clock_->Now()));
 }
 
-bool PrefProvider::RenewContentSetting(const GURL& primary_url,
-                                       const GURL& secondary_url,
-                                       ContentSettingsType content_type) {
-  return UpdateSetting(primary_url, secondary_url, content_type,
-                       [&](Rule& rule) -> bool {
-                         // Only settings whose lifetimes are non-zero can be
-                         // renewed.
-                         CHECK_NE(rule.metadata.lifetime(), base::TimeDelta());
+bool PrefProvider::RenewContentSetting(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    absl::optional<ContentSetting> setting_to_match) {
+  return UpdateSetting(
+      content_type,
+      [&](const Rule& rule) -> bool {
+        return rule.primary_pattern.Matches(primary_url) &&
+               rule.secondary_pattern.Matches(secondary_url) &&
+               (!setting_to_match.has_value() ||
+                setting_to_match.value() ==
+                    content_settings::ValueToContentSetting(rule.value()));
+      },
+      [&](Rule& rule) -> bool {
+        // Only settings whose lifetimes are non-zero can be
+        // renewed.
+        CHECK_NE(rule.metadata.lifetime(), base::TimeDelta());
 
-                         if (rule.metadata.expiration() < clock_->Now()) {
-                           return false;
-                         }
+        if (rule.metadata.expiration() < clock_->Now()) {
+          return false;
+        }
 
-                         base::TimeDelta lifetime = rule.metadata.lifetime();
-                         rule.metadata.SetExpirationAndLifetime(
-                             clock_->Now() + lifetime, lifetime);
+        base::TimeDelta lifetime = rule.metadata.lifetime();
+        rule.metadata.SetExpirationAndLifetime(clock_->Now() + lifetime,
+                                               lifetime);
 
-                         return true;
-                       });
+        return true;
+      });
 }
 
 void PrefProvider::ClearAllContentSettingsRules(

@@ -13,6 +13,7 @@
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_uma_util.h"
@@ -58,9 +59,11 @@ class OneTimePermissionProvider
   bool UpdateLastVisitTime(const ContentSettingsPattern& primary_pattern,
                            const ContentSettingsPattern& secondary_pattern,
                            ContentSettingsType content_type) override;
-  bool RenewContentSetting(const GURL& primary_url,
-                           const GURL& secondary_url,
-                           ContentSettingsType type) override;
+  bool RenewContentSetting(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType type,
+      absl::optional<ContentSetting> setting_to_match) override;
   void SetClockForTesting(base::Clock* clock) override;
 
   // OneTimePermissionsTrackerObserver:

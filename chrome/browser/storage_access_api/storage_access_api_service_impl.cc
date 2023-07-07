@@ -9,6 +9,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service_impl.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -56,9 +57,9 @@ bool StorageAccessAPIServiceImpl::RenewPermissionGrant(
       HostContentSettingsMapFactory::GetForProfile(&*browser_context_);
   CHECK(settings_map);
 
-  return settings_map->RenewContentSetting(embedded_origin.GetURL(),
-                                           top_frame_origin.GetURL(),
-                                           ContentSettingsType::STORAGE_ACCESS);
+  return settings_map->RenewContentSetting(
+      embedded_origin.GetURL(), top_frame_origin.GetURL(),
+      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 }
 
 void StorageAccessAPIServiceImpl::Shutdown() {
