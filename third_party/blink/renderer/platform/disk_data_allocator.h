@@ -75,10 +75,11 @@ class PLATFORM_EXPORT DiskDataAllocator : public mojom::blink::DiskAllocator {
     return free_chunks_size_;
   }
 
+  void set_may_write_for_testing(bool may_write) LOCKS_EXCLUDED(lock_);
+
  protected:
   // Protected methods for testing.
   DiskDataAllocator();
-  void set_may_write_for_testing(bool may_write) LOCKS_EXCLUDED(lock_);
 
  private:
   DiskDataMetadata FindChunk(size_t size) EXCLUSIVE_LOCKS_REQUIRED(lock_);

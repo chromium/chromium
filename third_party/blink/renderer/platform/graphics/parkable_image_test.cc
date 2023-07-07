@@ -43,8 +43,9 @@ class ParkableImageBaseTest : public ::testing::Test {
   void SetUp() override {
     auto& manager = ParkableImageManager::Instance();
     manager.ResetForTesting();
-    manager.SetDataAllocatorForTesting(
-        std::make_unique<InMemoryDataAllocator>());
+    auto tmp = std::make_unique<InMemoryDataAllocator>();
+    allocator_for_testing_ = tmp.get();
+    manager.SetDataAllocatorForTesting(std::move(tmp));
     manager.SetTaskRunnerForTesting(task_env_.GetMainThreadTaskRunner());
   }
 
@@ -70,6 +71,10 @@ class ParkableImageBaseTest : public ::testing::Test {
 
   size_t GetPendingMainThreadTaskCount() {
     return task_env_.GetPendingMainThreadTaskCount();
+  }
+
+  void set_may_write(bool may_write) {
+    allocator_for_testing_->set_may_write_for_testing(may_write);
   }
 
   bool MaybePark(scoped_refptr<ParkableImage> pi) {
@@ -174,6 +179,7 @@ class ParkableImageBaseTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_env_;
+  InMemoryDataAllocator* allocator_for_testing_;
 };
 
 // Parking is enabled for these tests.
@@ -886,6 +892,30 @@ TEST_F(ParkableImageTest, DestroyOnSeparateThread) {
   // Now that the tasks for deleting and parking have run, the image is deleted.
   EXPECT_EQ(0u, manager.Size());
   EXPECT_EQ(0u, GetPendingMainThreadTaskCount());
+}
+
+TEST_F(ParkableImageTest, FailedWrite) {
+  auto& manager = ParkableImageManager::Instance();
+  set_may_write(false);
+
+  const size_t kDataSize = 3.5 * 4096;
+  char data[kDataSize];
+  PrepareReferenceData(data, kDataSize);
+
+  EXPECT_EQ(0u, manager.Size());
+
+  WaitForParking();
+
+  {
+    auto pi = MakeParkableImageForTesting(data, kDataSize);
+    pi->Freeze();
+    manager.MaybeParkImagesForTesting();
+    EXPECT_EQ(1u, manager.Size());
+  }
+
+  WaitForParking();
+
+  EXPECT_EQ(0u, manager.Size());
 }
 
 // Test that we park only after 30 seconds, not immediately after freezing.
