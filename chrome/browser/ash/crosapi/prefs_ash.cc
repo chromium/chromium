@@ -9,9 +9,8 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -30,10 +29,10 @@ namespace crosapi {
 namespace {
 
 // List of all mojom::PrefPaths associated with profile prefs, and their
-// corresponding paths in the prefstore.
-base::StringPiece GetProfilePrefNameForPref(mojom::PrefPath path) {
-  static constexpr auto kProfilePrefPathToName =
-      base::MakeFixedFlatMap<mojom::PrefPath, base::StringPiece>({
+// corresponding paths in the prefstore. Initialized on first use.
+const std::string& GetProfilePrefNameForPref(mojom::PrefPath path) {
+  static base::NoDestructor<std::map<mojom::PrefPath, std::string>>
+      profile_prefpath_to_name({
           {mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
            ash::prefs::kAccessibilitySpokenFeedbackEnabled},
           {mojom::PrefPath::kGeolocationAllowed,
@@ -66,16 +65,16 @@ base::StringPiece GetProfilePrefNameForPref(mojom::PrefPath path) {
           {mojom::PrefPath::kAccessCodeCastDeviceAdditionTime,
            media_router::prefs::kAccessCodeCastDeviceAdditionTime},
       });
-  auto* pref_name = kProfilePrefPathToName.find(path);
-  DCHECK(pref_name != kProfilePrefPathToName.end());
+  auto pref_name = profile_prefpath_to_name->find(path);
+  DCHECK(pref_name != profile_prefpath_to_name->end());
   return pref_name->second;
 }
 
 // List of all mojom::PrefPaths associated with extension controlled prefs,
-// and their corresponding paths in the prefstore.
-base::StringPiece GetExtensionPrefNameForPref(mojom::PrefPath path) {
-  static constexpr auto kExtensionPrefPathToName =
-      base::MakeFixedFlatMap<mojom::PrefPath, base::StringPiece>(
+// and their corresponding paths in the prefstore. Initialized on first use.
+const std::string& GetExtensionPrefNameForPref(mojom::PrefPath path) {
+  static base::NoDestructor<std::map<mojom::PrefPath, std::string>>
+      extension_prefpath_to_name(
           {{mojom::PrefPath::kDockedMagnifierEnabled,
             ash::prefs::kDockedMagnifierEnabled},
            {mojom::PrefPath::kAccessibilityAutoclickEnabled,
@@ -108,8 +107,8 @@ base::StringPiece GetExtensionPrefNameForPref(mojom::PrefPath path) {
             ash::prefs::kAccessibilityVirtualKeyboardEnabled},
            {mojom::PrefPath::kProtectedContentDefault,
             prefs::kProtectedContentDefault}});
-  auto* pref_name = kExtensionPrefPathToName.find(path);
-  DCHECK(pref_name != kExtensionPrefPathToName.end());
+  auto pref_name = extension_prefpath_to_name->find(path);
+  DCHECK(pref_name != extension_prefpath_to_name->end());
   return pref_name->second;
 }
 
@@ -289,7 +288,7 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
         LOG(WARNING) << "Primary profile is not yet initialized";
         return absl::nullopt;
       }
-      std::string pref_name(GetProfilePrefNameForPref(path));
+      std::string pref_name = GetProfilePrefNameForPref(path);
       return State{profile_prefs_registrar_->prefs(),
                    profile_prefs_registrar_.get(), AshPrefSource::kNormal,
                    pref_name};
@@ -331,7 +330,7 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
         LOG(WARNING) << "Primary profile is not yet initialized";
         return absl::nullopt;
       }
-      std::string pref_name(GetExtensionPrefNameForPref(path));
+      std::string pref_name = GetExtensionPrefNameForPref(path);
       return State{profile_prefs_registrar_->prefs(),
                    profile_prefs_registrar_.get(),
                    AshPrefSource::kExtensionControlled, pref_name};
