@@ -4,6 +4,7 @@ Version: 4721483ad780ee2b63cb787bfee4aa64b61a0446
 License: MIT
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 The reference implementation of the WOFF 2.0 web font compression
