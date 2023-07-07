@@ -767,14 +767,24 @@ bool URLPattern::MatchesPortPattern(base::StringPiece port) const {
 
 std::vector<std::string> URLPattern::GetExplicitSchemes() const {
   std::vector<std::string> result;
+  const bool is_wildcard_scheme = (scheme_ == "*");
 
-  if (scheme_ != "*" && !match_all_urls_ && IsValidScheme(scheme_)) {
+  if (!is_wildcard_scheme && !match_all_urls_ && IsValidScheme(scheme_)) {
     result.push_back(scheme_);
     return result;
   }
 
+  result.reserve(std::size(kValidSchemes));
   for (size_t i = 0; i < std::size(kValidSchemes); ++i) {
-    if (MatchesScheme(kValidSchemes[i])) {
+    const bool is_valid_scheme = (valid_schemes_ == SCHEME_ALL ||
+                                  (valid_schemes_ & kValidSchemeMasks[i]));
+    if (!is_valid_scheme) {
+      continue;
+    }
+
+    const bool scheme_matches =
+        (is_wildcard_scheme || kValidSchemes[i] == scheme_);
+    if (scheme_matches) {
       result.push_back(kValidSchemes[i]);
     }
   }
