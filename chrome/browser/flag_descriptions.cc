@@ -6382,6 +6382,12 @@ const char kOsSettingsDeprecateSyncMetricsToggleDescription[] =
     "If enabled, deprecate the metrics in sync settings page in "
     "ChromeOS Settings.";
 
+const char kOsSettingsTestChromeRefreshName[] =
+    "ChromeOS Settings Test Chrome Refresh Components";
+const char kOsSettingsTestChromeRefreshDescription[] =
+    "If enabled, uses new Chrome Refresh web components in "
+    "ChromeOS Settings.";
+
 const char kOsSettingsRevampWayfindingName[] =
     "ChromeOS Settings Revamp: Wayfinding Improvements";
 const char kOsSettingsRevampWayfindingDescription[] =

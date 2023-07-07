@@ -199,6 +199,10 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "entryPointEnumSize",
       static_cast<int>(PersonalizationEntryPoint::kMaxValue) + 1);
 
+  html_source->AddString(
+      "chromeRefresh2023Attribute",
+      features::IsOsSettingsTestChromeRefresh() ? "chrome-refresh-2023" : "");
+
   AddSearchInSettingsStrings(html_source);
   AddChromeOSUserStrings(html_source);
   AddUpdateRequiredEolStrings(html_source);

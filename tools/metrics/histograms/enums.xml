@@ -60601,6 +60601,7 @@ from previous Chrome versions.
   <int value="-1620942609" label="MuteCompromisedPasswords:enabled"/>
   <int value="-1620860283" label="KioskEnableAppService:disabled"/>
   <int value="-1620804800" label="NoScriptPreviews:disabled"/>
+  <int value="-1620687388" label="OsSettingsTestChromeRefresh:disabled"/>
   <int value="-1620568042" label="FeaturePolicy:disabled"/>
   <int value="-1620425260" label="ShelfPalmRejectionSwipeOffset:disabled"/>
   <int value="-1620230777" label="StylusBatteryStatus:enabled"/>
@@ -64960,6 +64961,7 @@ from previous Chrome versions.
   <int value="622027416" label="HoldingSpaceSuggestions:disabled"/>
   <int value="623112705"
       label="IPH_KeyboardAccessoryPaymentVirtualCard:disabled"/>
+  <int value="623728853" label="OsSettingsTestChromeRefresh:enabled"/>
   <int value="623772100" label="EnableIncognitoWindowCounter:disabled"/>
   <int value="624317932" label="print-pdf-as-image"/>
   <int value="624368375" label="OmniboxEntitySuggestions:enabled"/>

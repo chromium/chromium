@@ -13,8 +13,7 @@
 #include "build/build_config.h"
 #include "chromeos/constants/chromeos_features.h"
 
-namespace ash {
-namespace features {
+namespace ash::features {
 namespace {
 
 // Controls whether Instant Tethering supports hosts which use the background
@@ -1807,6 +1806,11 @@ BASE_FEATURE(kOsSettingsRevampWayfinding,
              "OsSettingsRevampWayfinding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the new Chrome component refresh for testing purposes in OS Settings.
+BASE_FEATURE(kOsSettingsTestChromeRefresh,
+             "OsSettingsTestChromeRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOverviewButton,
              "OverviewButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3454,6 +3458,10 @@ bool IsOsSettingsRevampWayfindingEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsRevampWayfinding);
 }
 
+bool IsOsSettingsTestChromeRefresh() {
+  return base::FeatureList::IsEnabled(kOsSettingsTestChromeRefresh);
+}
+
 bool IsOsSyncConsentRevampEnabled() {
   return base::FeatureList::IsEnabled(kOsSyncConsentRevamp);
 }
@@ -3866,5 +3874,4 @@ bool ShouldUseV2DeviceSync() {
          base::FeatureList::IsEnabled(kCryptAuthV2DeviceSync);
 }
 
-}  // namespace features
-}  // namespace ash
+}  // namespace ash::features

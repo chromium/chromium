@@ -1437,6 +1437,9 @@ extern const char kOsSettingsAppNotificationsPageDescription[];
 extern const char kOsSettingsDeprecateSyncMetricsToggleName[];
 extern const char kOsSettingsDeprecateSyncMetricsToggleDescription[];
 
+extern const char kOsSettingsTestChromeRefreshName[];
+extern const char kOsSettingsTestChromeRefreshDescription[];
+
 extern const char kOverviewButtonName[];
 extern const char kOverviewButtonDescription[];
 
