@@ -351,7 +351,9 @@ class Xcode11LogParser(object):
 
     # See XCRESULT_ROOT in xcode_log_parser_test.py for an example of |root|.
     root = json.loads(Xcode11LogParser._xcresulttool_get(xcresult))
-    metrics = root['metrics']
+    metrics = root.get('actions', {}).get('_values',
+                                          [{}])[0].get('actionResult',
+                                                       {}).get('metrics', {})
     # In case of test crash both numbers of run and failed tests are equal to 0.
     if (metrics.get('testsCount', {}).get('_value', 0) == 0 and
         metrics.get('testsFailedCount', {}).get('_value', 0) == 0):
