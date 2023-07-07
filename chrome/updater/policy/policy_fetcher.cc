@@ -23,6 +23,7 @@
 #include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/service.h"
+#include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -140,7 +141,7 @@ PolicyFetcher::OnFetchPolicyRequestComplete(
               if (result != DMClient::RequestResult::kSuccess)
                 LOG(WARNING)
                     << "DMClient::ReportPolicyValidationErrors failed: "
-                    << static_cast<int>(result);
+                    << result;
             })));
   }
 

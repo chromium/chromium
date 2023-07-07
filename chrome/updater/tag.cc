@@ -588,8 +588,7 @@ std::ostream& operator<<(std::ostream& os,
     case TagArgs::BrowserType::kChrome:
       return os << "TagArgs::BrowserType::kChrome";
     default:
-      return os << "TagArgs::BrowserType(" << static_cast<int>(browser_type)
-                << ")";
+      return os << "TagArgs::BrowserType(" << browser_type << ")";
   }
 }
 

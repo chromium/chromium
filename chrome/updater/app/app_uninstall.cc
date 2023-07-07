@@ -169,8 +169,7 @@ void AppUninstall::UninstallAll(int reason) {
           [](base::OnceCallback<void(int)> shutdown, UpdaterScope scope,
              update_client::Error uninstall_ping_error) {
             VLOG_IF(1, uninstall_ping_error != update_client::Error::NONE)
-                << "Uninstall ping failed: "
-                << static_cast<int>(uninstall_ping_error);
+                << "Uninstall ping failed: " << uninstall_ping_error;
             base::ThreadPool::PostTaskAndReplyWithResult(
                 FROM_HERE, {base::MayBlock()},
                 base::BindOnce(
