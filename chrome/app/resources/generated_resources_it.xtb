@@ -6260,7 +6260,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> file</translation>
 <translation id="6469557521904094793">Attiva rete mobile</translation>
 <translation id="6469702164109431067">Password e passkey</translation>
-<translation id="6470823736074966819">Disattiva audio notifiche</translation>
+<translation id="6470823736074966819">Silenzia notifiche</translation>
 <translation id="6472893788822429178">Mostra pulsante Home</translation>
 <translation id="6474352027343282094">{COUNT,plural, =1{{COUNT} password è salvata solo su questo dispositivo. Per usarla sugli altri tuoi dispositivi, &lt;a target='_blank' href='chrome://password-manager/'&gt;salvala nel tuo Account Google&lt;/a&gt;.}other{{COUNT} password sono salvate solo su questo dispositivo. Per usarle sugli altri tuoi dispositivi, &lt;a target='_blank' href='chrome://password-manager/'&gt;salvale nel tuo Account Google&lt;/a&gt;.}}</translation>
 <translation id="6474498546677193336">Impossibile annullare la condivisione perché questa cartella è in uso in un'applicazione. La condivisione della cartella verrà annullata quando verrà arrestato Linux.</translation>

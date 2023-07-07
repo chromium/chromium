@@ -334,7 +334,7 @@
 <translation id="3157387275655328056">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="3157684681743766797">ทำเครื่องหมายทั้งหมด…</translation>
 <translation id="315778507796115851">ประวัติ</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">สำรวจ</translation>
 <translation id="3174662312949010067">คุณยังใช้รหัสผ่านที่บันทึกไว้ในอุปกรณ์อื่นๆ ได้ด้วย</translation>
 <translation id="3175081911749765310">บริการทางเว็บ</translation>
 <translation id="3178650076442119961">ใช้งานวันนี้</translation>
@@ -563,7 +563,7 @@
 <translation id="4747097190499141774">การเข้ารหัสลับด้วยรหัสผ่านจะไม่รวมข้อมูลวิธีการชำระเงินและที่อยู่จาก Google Pay เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นจึงจะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บรหัสผ่านนี้ คุณจะต้องรีเซ็ตการซิงค์หากลืมรหัสผ่านหรือต้องการเปลี่ยนแปลงการตั้งค่านี้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, เฉพาะในอุปกรณ์นี้, <ph name="URL" /></translation>
 <translation id="4751645464639803239">แท็บไม่ระบุตัวตนใหม่</translation>
-<translation id="4766112107778026136">Discover และกำลังติดตาม</translation>
+<translation id="4766112107778026136">สำรวจและกำลังติดตาม</translation>
 <translation id="4775879719735953715">เบราว์เซอร์เริ่มต้น</translation>
 <translation id="4778644898150334464">ใช้รหัสผ่านอื่น</translation>
 <translation id="478808905805139173">เปิดในโหมดไม่ระบุตัวตนไหม</translation>
@@ -1238,7 +1238,7 @@
 <translation id="9034759925968272072">คุณจะไม่ออกจากระบบบัญชี Google บัญชี Google ของคุณอาจมีประวัติการท่องเว็บในรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>
 <translation id="9037965129289936994">แสดงหน้าเว็บเดิม</translation>
 <translation id="9039373489628511875">แบนด์วิดท์</translation>
-<translation id="9043368763795653245">เปิดการซิงค์เพื่อปรับเปลี่ยนฟีด Discover และ Chrome ในแบบของคุณ</translation>
+<translation id="9043368763795653245">เปิดการซิงค์เพื่อปรับเปลี่ยนฟีดสำรวจและ Chrome ในแบบของคุณ</translation>
 <translation id="9055772144595778347">ไม่สามารถลงชื่อเข้า</translation>
 <translation id="9055960261314198756">การปกป้องที่ดียิ่งขึ้นปิดอยู่</translation>
 <translation id="9057972802061533987">ติดตามไม่ได้ เกิดข้อผิดพลาด</translation>

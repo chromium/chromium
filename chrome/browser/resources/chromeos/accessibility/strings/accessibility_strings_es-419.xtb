@@ -511,7 +511,7 @@
 <translation id="4281245629646759298">Amarillo claro</translation>
 <translation id="4289540628985791613">Descripción general</translation>
 <translation id="4294967782363273192">Orden ascendente</translation>
-<translation id="4300318234632215983">Indicar URL de un enlace</translation>
+<translation id="4300318234632215983">Indicar URL de un vínculo</translation>
 <translation id="4322625298640984693">Siena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punto}=3{puntos suspensivos}other{# puntos}}</translation>
 <translation id="4352022650330571548">escribir <ph name="PHRASE" /></translation>
@@ -692,7 +692,7 @@
 <translation id="5623842676595125836">Registro</translation>
 <translation id="5628125749885014029">h4</translation>
 <translation id="5632083598315326067">Símbolo gráfico</translation>
-<translation id="5648939288050772726">¡Felicitaciones! Aprendiste los conceptos básicos para usar ChromeVox de forma correcta. Presiona Búsqueda + punto para abrir el menú de comandos de ChromeVox en cualquier momento. Para obtener más información sobre ChromeVox y Chrome OS, visita los siguientes artículos.
+<translation id="5648939288050772726">¡Felicitaciones! Aprendiste los conceptos básicos para usar ChromeVox de forma correcta. Presiona Búsqueda + punto para abrir el menú de comandos de ChromeVox en cualquier momento. Para obtener más información sobre ChromeVox y ChromeOS, visita los siguientes artículos.
     Si completaste este instructivo, usa ChromeVox para navegar hasta el botón Cerrar y, luego, haz clic en él.</translation>
 <translation id="5653397561111110475">Usar las funciones de accesibilidad de la pantalla táctil de Chromebook</translation>
 <translation id="5655682562155942719">Comandos de salto</translation>

@@ -5322,7 +5322,7 @@
 <translation id="5633149627228920745">システム要件の詳細</translation>
 <translation id="563371367637259496">モバイル</translation>
 <translation id="5634446357546764049">最近の旅行の思い出などを見る</translation>
-<translation id="5635091213277904818">Chrome では、4 週間以上経過したウェブサイトは自動削除されます。再度アクセスすると、リストに再度表示される場合があります。広告の提案を行わないようウェブサイトをブロックすることもできます。</translation>
+<translation id="5635091213277904818">Chrome では、30 日以上経過したウェブサイトは自動削除されます。再度アクセスすると、リストに再度表示される場合があります。広告の提案を行わないようウェブサイトをブロックすることもできます。</translation>
 <translation id="5635312199252507107">特定のサイトで許可する</translation>
 <translation id="563535393368633106">アクセスする前に確認する（推奨）</translation>
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" /> から <ph name="DEVICE" /> を削除しますか？</translation>
