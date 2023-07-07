@@ -4,6 +4,9 @@
 
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing.h"
 
+#include <EGL/egl.h>
+#import <Metal/Metal.h>
+
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_policy.h"
@@ -33,10 +36,6 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_make_current.h"
-
-#include <EGL/egl.h>
-
-#import <Metal/Metal.h>
 
 // Usage of BUILDFLAG(USE_DAWN) needs to be after the include for
 // ui/gl/buildflags.h
@@ -73,7 +72,9 @@ gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
   return gfx::BufferFormat::RGBA_8888;
 }
 
-[[maybe_unused]] base::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
+#if BUILDFLAG(SKIA_USE_METAL)
+
+base::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
     id<MTLDevice> mtl_device,
     IOSurfaceRef io_surface,
     const gfx::Size& size,
@@ -115,7 +116,6 @@ gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
   return mtl_texture;
 }
 
-#if BUILDFLAG(SKIA_USE_METAL)
 std::vector<skgpu::graphite::BackendTexture> CreateGraphiteMetalTextures(
     std::vector<base::scoped_nsprotocol<id<MTLTexture>>> mtl_textures,
     const viz::SharedImageFormat format,
@@ -605,22 +605,19 @@ WGPUTexture DawnIOSurfaceRepresentation::BeginAccess(
   // stored in the backing as a consequence of earlier BeginAccess/
   // EndAccess calls against other representations.
   if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
-    if (@available(macOS 10.14, *)) {
-      SharedImageBacking* backing = this->backing();
-      // Not possible to reach this with any other type of backing.
-      DCHECK_EQ(backing->GetType(), SharedImageBackingType::kIOSurface);
-      IOSurfaceImageBacking* iosurface_backing =
-          static_cast<IOSurfaceImageBacking*>(backing);
-      std::vector<std::unique_ptr<SharedEventAndSignalValue>> signals =
-          iosurface_backing->TakeSharedEvents();
-      for (const auto& signal : signals) {
-        dawn::native::metal::ExternalImageMTLSharedEventDescriptor
-            external_desc;
-        external_desc.sharedEvent =
-            static_cast<id<MTLSharedEvent>>(signal->shared_event());
-        external_desc.signaledValue = signal->signaled_value();
-        descriptor.waitEvents.push_back(external_desc);
-      }
+    SharedImageBacking* backing = this->backing();
+    // Not possible to reach this with any other type of backing.
+    DCHECK_EQ(backing->GetType(), SharedImageBackingType::kIOSurface);
+    IOSurfaceImageBacking* iosurface_backing =
+        static_cast<IOSurfaceImageBacking*>(backing);
+    std::vector<std::unique_ptr<SharedEventAndSignalValue>> signals =
+        iosurface_backing->TakeSharedEvents();
+    for (const auto& signal : signals) {
+      dawn::native::metal::ExternalImageMTLSharedEventDescriptor external_desc;
+      external_desc.sharedEvent =
+          static_cast<id<MTLSharedEvent>>(signal->shared_event());
+      external_desc.signaledValue = signal->signaled_value();
+      descriptor.waitEvents.push_back(external_desc);
     }
   }
 
@@ -640,19 +637,17 @@ void DawnIOSurfaceRepresentation::EndAccess() {
     SetCleared();
   }
 
-  if (@available(macOS 10.14, *)) {
-    SharedImageBacking* backing = this->backing();
-    // Not possible to reach this with any other type of backing.
-    DCHECK_EQ(backing->GetType(), SharedImageBackingType::kIOSurface);
-    IOSurfaceImageBacking* iosurface_backing =
-        static_cast<IOSurfaceImageBacking*>(backing);
-    // Dawn's Metal backend has enqueued a MTLSharedEvent which
-    // consumers of the IOSurface must wait upon before attempting to
-    // use that IOSurface on another MTLDevice. Store this event in
-    // the underlying SharedImageBacking.
-    iosurface_backing->AddSharedEventAndSignalValue(descriptor.sharedEvent,
-                                                    descriptor.signaledValue);
-  }
+  SharedImageBacking* backing = this->backing();
+  // Not possible to reach this with any other type of backing.
+  DCHECK_EQ(backing->GetType(), SharedImageBackingType::kIOSurface);
+  IOSurfaceImageBacking* iosurface_backing =
+      static_cast<IOSurfaceImageBacking*>(backing);
+  // Dawn's Metal backend has enqueued a MTLSharedEvent which
+  // consumers of the IOSurface must wait upon before attempting to
+  // use that IOSurface on another MTLDevice. Store this event in
+  // the underlying SharedImageBacking.
+  iosurface_backing->AddSharedEventAndSignalValue(descriptor.sharedEvent,
+                                                  descriptor.signaledValue);
 
   // All further operations on the textures are errors (they would be racy
   // with other backings).
@@ -1270,19 +1265,17 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
   bool needs_synchronization = needs_sync_for_swangle || needs_sync_for_metal;
   if (needs_synchronization) {
     if (needs_sync_for_metal) {
-      if (@available(macOS 10.14, *)) {
-        if (!egl_state->egl_surfaces_.empty()) {
-          gl::GLDisplayEGL* display =
-              gl::GLDisplayEGL::GetDisplayForCurrentContext();
-          CHECK(display);
-          CHECK(display->GetDisplay() == egl_state->egl_display_);
-          id<MTLSharedEvent> shared_event = nil;
-          uint64_t signal_value = 0;
-          if (display->CreateMetalSharedEvent(&shared_event, &signal_value)) {
-            AddSharedEventAndSignalValue(shared_event, signal_value);
-          } else {
-            LOG(DFATAL) << "Failed to create Metal shared event";
-          }
+      if (!egl_state->egl_surfaces_.empty()) {
+        gl::GLDisplayEGL* display =
+            gl::GLDisplayEGL::GetDisplayForCurrentContext();
+        CHECK(display);
+        CHECK(display->GetDisplay() == egl_state->egl_display_);
+        id<MTLSharedEvent> shared_event = nil;
+        uint64_t signal_value = 0;
+        if (display->CreateMetalSharedEvent(&shared_event, &signal_value)) {
+          AddSharedEventAndSignalValue(shared_event, signal_value);
+        } else {
+          LOG(DFATAL) << "Failed to create Metal shared event";
         }
       }
     }
