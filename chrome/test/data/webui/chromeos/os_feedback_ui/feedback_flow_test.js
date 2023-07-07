@@ -437,6 +437,115 @@ export function FeedbackFlowTestSuite() {
     assertFalse(isVisible(bluetoothCheckbox));
   });
 
+  // Test the "Link Cross Device Dogfood Feedback" checkbox will show up if
+  // logged with internal account and input description is related.
+  test(
+      'ShowLinkCrossDeviceDogfoodFeedbackCheckboxsWithRelatedDescription',
+      async () => {
+        testWithInternalAccount();
+        await initializePage();
+
+        // Check the "Link Cross Device Dogfood Feedback" checkbox component is
+        // hidden when input is not related to cross device.
+        let activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertTrue(!!activePage);
+        assertEquals('searchPage', activePage.id);
+
+        activePage.shadowRoot.querySelector('textarea').value = 'abc';
+        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        await flushTasks();
+
+        loadTimeData.overrideValues(
+            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
+
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertEquals('shareDataPage', activePage.id);
+        const linkCrossDeviceDogfoodFeedbackCheckbox =
+            activePage.shadowRoot.querySelector(
+                '#linkCrossDeviceDogfoodFeedbackCheckboxContainer');
+        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+        assertFalse(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
+
+        activePage.shadowRoot.querySelector('#buttonBack').click();
+        await flushTasks();
+
+        loadTimeData.overrideValues(
+            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
+
+        // Go back to search page and set description input related to cross
+        // device.
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertTrue(!!activePage);
+        assertEquals('searchPage', activePage.id);
+
+        // Testing tetherRegEx
+        let descriptionElement =
+            activePage.shadowRoot.querySelector('textarea');
+        descriptionElement.value = 'hotspot';
+
+        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        await flushTasks();
+
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertTrue(!!activePage);
+        assertEquals('shareDataPage', activePage.id);
+
+        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+        assertTrue(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
+
+        activePage.shadowRoot.querySelector('#buttonBack').click();
+        await flushTasks();
+
+        loadTimeData.overrideValues(
+            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
+
+        // Go back to search page and set description input related to cross
+        // device.
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertTrue(!!activePage);
+        assertEquals('searchPage', activePage.id);
+
+        // Testing phoneHubRegEx
+        descriptionElement = activePage.shadowRoot.querySelector('textarea');
+        descriptionElement.value = 'appstream';
+
+        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        await flushTasks();
+
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertTrue(!!activePage);
+        assertEquals('shareDataPage', activePage.id);
+
+        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+        assertTrue(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
+
+        activePage.shadowRoot.querySelector('#buttonBack').click();
+        await flushTasks();
+
+        loadTimeData.overrideValues(
+            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
+
+        // Go back to search page and set description input related to cross
+        // device.
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertTrue(!!activePage);
+        assertEquals('searchPage', activePage.id);
+
+        // Testing phoneHubRegEx variation.
+        descriptionElement = activePage.shadowRoot.querySelector('textarea');
+        descriptionElement.value = 'camera roll';
+
+        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        await flushTasks();
+
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertTrue(!!activePage);
+        assertEquals('shareDataPage', activePage.id);
+
+        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+        assertTrue(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
+      });
+
   // Test the "Link Cross Device Dogfood Feedback" checkbox will not show up if
   // not logged with an Internal google account.
   test(
@@ -450,7 +559,6 @@ export function FeedbackFlowTestSuite() {
 
         // Set input description related to cross device.
         let activePage = page.shadowRoot.querySelector('.iron-selected');
-
         activePage.shadowRoot.querySelector('textarea').value = 'phone';
         activePage.shadowRoot.querySelector('#buttonContinue').click();
         await flushTasks();
