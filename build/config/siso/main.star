@@ -35,6 +35,10 @@ def init(ctx):
     #  e.g. C:/src/depot_tools/bootstrap-2@3_8_10_chromium_26_bin/python3/bin/python3.exe
     #  It needs to set `pyhton3` or `python3.exe` be replaced with `python3.exe` for remote execution.
     for rule in step_config["rules"]:
+        if rule["name"].startswith("clang-coverage"):
+            # clang_code_coverage_wrapper.run() strips the python wrapper.
+            # So it shouldn't set `remote_command: python3`.
+            continue
         arg0 = rule.get("command_prefix", "").split(" ")[0].strip("\"")
         if arg0 in ["python3", "python3.exe"]:
             rule["remote_command"] = arg0
