@@ -62,16 +62,6 @@ inline bool IsOutOfFlowPositionedWithImplicitHeight(
 }
 
 void MarkBoxForRelayoutAfterSplit(LayoutBoxModelObject* box) {
-  // FIXME: The table code should handle that automatically. If not,
-  // we should fix it and remove the table part checks.
-  if (auto* section = DynamicTo<LayoutNGTableSection>(box)) {
-    // TODO(1229581): Is this necessary? It just does a SetNeedsLayout(). We
-    // might as well just do the
-    // SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation() thing
-    // below, I suppose?
-    section->SetNeedsCellRecalc();
-  }
-
   box->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kAnonymousBlockChange);
 }

@@ -74,8 +74,6 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGBlock {
 
   // LayoutBlock methods end.
 
-  void SetNeedsCellRecalc();
-
   unsigned NumRows() const;
 
   unsigned NumCols(unsigned) const;
