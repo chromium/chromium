@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/test/scoped_path_override.h"
 #include "build/chromeos_buildflags.h"
@@ -18,6 +19,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/policy_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class ProfileAttributesStorage;
 class ProfileManager;
@@ -76,15 +78,22 @@ class TestingProfileManager : public ProfileObserver {
       absl::optional<bool> is_new_profile = absl::nullopt,
       absl::optional<std::unique_ptr<policy::PolicyService>> policy_service =
           absl::nullopt,
-      bool is_main_profile = false);
+      bool is_main_profile = false,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
+          nullptr);
 
   // Small helpers for creating testing profiles. Just forward to above.
-  TestingProfile* CreateTestingProfile(const std::string& name,
-                                       bool is_main_profile = false);
+  TestingProfile* CreateTestingProfile(
+      const std::string& name,
+      bool is_main_profile = false,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
+          nullptr);
   TestingProfile* CreateTestingProfile(
       const std::string& name,
       TestingProfile::TestingFactories testing_factories,
-      bool is_main_profile = false);
+      bool is_main_profile = false,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
+          nullptr);
 
   // Creates a new guest TestingProfile whose data lives in the guest profile
   // test environment directory, as specified by the profile manager.
