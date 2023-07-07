@@ -419,6 +419,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       return os.path.join(args.pyl_files_dir, filename)
 
     args.waterfalls_pyl_path = absolute_file_path('waterfalls.pyl')
+    args.mixins_pyl_path = absolute_file_path('mixins.pyl')
     args.test_suites_pyl_path = absolute_file_path('test_suites.pyl')
     args.test_suite_exceptions_pyl_path = absolute_file_path(
         'test_suite_exceptions.pyl')
@@ -426,12 +427,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     args.variants_pyl_path = absolute_file_path('variants.pyl')
     args.autoshard_exceptions_json_path = absolute_file_path(
         'autoshard_exceptions.json')
-
-    if args.pyl_files_dir == THIS_DIR:
-      args.mixins_pyl_path = os.path.join(args.infra_config_dir, 'generated',
-                                          'testing', 'mixins.pyl')
-    else:
-      args.mixins_pyl_path = absolute_file_path('mixins.pyl')
 
     return args
 
