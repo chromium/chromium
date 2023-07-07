@@ -2813,9 +2813,9 @@ crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-004.html [ Failure ]
 crbug.com/626703 [ Mac13 Release ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-nesting/nesting-type-selector.html [ Failure ]
-crbug.com/626703 [ Mac11 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Timeout ]
-crbug.com/626703 [ Mac12 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/cors/cors-keepalive.any.html [ Timeout ]
+crbug.com/626703 [ Mac11 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
+crbug.com/626703 [ Mac12 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
 crbug.com/626703 [ Mac13 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 [ Mac13 Release ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 [ Mac13 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Timeout ]
@@ -6597,6 +6597,6 @@ crbug.com/626703 virtual/css-highlight-overlay-painting/external/wpt/css/css-hig
 # Gardening 2023-07-06
 crbug.com/1462500 [ Win ] media/picture-in-picture/picture-in-picture-interstitial-sizing.html [ Failure Pass ]
 
-# Temporarily disable to introduce Material 3 color tokens 
+# Temporarily disable to introduce Material 3 color tokens
 crbug.com/1456677 http/tests/devtools/security/mixed-content-sidebar.js [ Failure Pass ]
 crbug.com/1456677 http/tests/devtools/security/interstitial-sidebar.js [ Failure Pass ]

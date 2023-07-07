@@ -1459,3 +1459,7 @@ crbug.com/1453708 [ Win ] http/tests/inspector-protocol/network/blocked-setcooki
 crbug.com/1453303 [ Win ] http/tests/inspector-protocol/network/blocked-setcookie-overwrite-secure.js [ Slow ]
 
 crbug.com/1459575 webexposed/global-interface-listing-dedicated-worker.html [ Slow ]
+
+crbug.com/626703 [ Mac11 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Slow ]
+crbug.com/626703 [ Mac12 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Slow ]
+crbug.com/626703 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/cors/cors-keepalive.any.html [ Slow ]
