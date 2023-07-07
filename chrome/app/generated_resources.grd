@@ -3729,6 +3729,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_DESCRIPTION" translateable="false"  desc="">
         Help us improve Chrome by telling us why you allowed third-party cookies
       </message>
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_RELOADING_LABEL" translateable="false" desc="">
+        Reloading <ph name="DOMAIN">$1<ex>example.com</ex></ph>...
+      </message>
+
 
       <!-- Win certificate selector dialog strings.  -->
       <if expr="toolkit_views">

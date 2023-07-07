@@ -4,14 +4,21 @@
 
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.h"
 
+#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/url_identity.h"
+#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/favicon/core/favicon_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
+
+constexpr int kProgressBarHeight = 3;
 
 int getDaysToExpiration(base::Time expiration) {
   // TODO(crbug.com/1446230): Apply DST corrections.
@@ -19,8 +26,6 @@ int getDaysToExpiration(base::Time expiration) {
   const base::Time midnight_expiration = expiration.LocalMidnight();
   return (midnight_expiration - midnight_today).InDays();
 }
-
-}  // namespace
 
 // Expected URL types for `UrlIdentity::CreateFromUrl()`.
 constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
@@ -30,6 +35,16 @@ constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
 constexpr UrlIdentity::FormatOptions kUrlIdentityOptions{
     .default_options = {UrlIdentity::DefaultFormatOptions::
                             kOmitSchemePathAndTrivialSubdomains}};
+
+std::u16string GetSubjectUrlName(content::WebContents* web_contents) {
+  CHECK(web_contents);
+  return UrlIdentity::CreateFromUrl(
+             Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+             web_contents->GetVisibleURL(), kUrlIdentityAllowedTypes,
+             kUrlIdentityOptions)
+      .name;
+}
+}  // namespace
 
 CookieControlsBubbleViewController::CookieControlsBubbleViewController(
     CookieControlsBubbleView* bubble_view,
@@ -41,8 +56,17 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
 
   content_view_ =
       bubble_view_->AddChildView(std::make_unique<CookieControlsContentView>());
+  reloading_view_ = bubble_view_->AddChildView(InitReloadingView(web_contents));
 
+  FetchFaviconFrom(web_contents);
   SetFeedbackButtonPressedCallback();
+
+  ShowReloadingView();
+}
+
+void CookieControlsBubbleViewController::OnFaviconFetched(
+    const favicon_base::FaviconImageResult& result) const {
+  reloading_icon_->SetImage(ui::ImageModel::FromImage(result.image));
 }
 
 CookieControlsBubbleViewController::~CookieControlsBubbleViewController() =
@@ -113,14 +137,67 @@ void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {
   // TODO(crbug.com/1446230): Handle Feedback button press.
 }
 
-std::u16string CookieControlsBubbleViewController::GetSubjectUrlName(
-    content::WebContents* web_contents) {
-  CHECK(web_contents);
-  content::NavigationEntry* nav_entry =
-      web_contents->GetController().GetVisibleEntry();
+void CookieControlsBubbleViewController::DidStopLoading() {
+  bubble_view_->GetWidget()->Close();
+}
 
-  return UrlIdentity::CreateFromUrl(
-             Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-             nav_entry->GetURL(), kUrlIdentityAllowedTypes, kUrlIdentityOptions)
-      .name;
+void CookieControlsBubbleViewController::ShowContentView() {
+  reloading_view_->SetVisible(false);
+  content_view_->SetVisible(true);
+}
+
+void CookieControlsBubbleViewController::ShowReloadingView() {
+  content_view_->SetVisible(false);
+  reloading_view_->SetVisible(true);
+}
+
+std::unique_ptr<views::View>
+CookieControlsBubbleViewController::InitReloadingView(
+    content::WebContents* web_contents) {
+  auto* provider = ChromeLayoutProvider::Get();
+  const int vertical_margin =
+      provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE);
+  const int side_margin =
+      provider->GetInsetsMetric(views::INSETS_DIALOG).left();
+
+  auto reloading_view = std::make_unique<views::View>();
+  reloading_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+
+  auto progress_bar = std::make_unique<views::ProgressBar>(
+      kProgressBarHeight, /*allow_round_corner=*/false);
+  progress_bar->SetValue(-1);
+
+  auto reloading_content = std::make_unique<views::View>();
+  reloading_content->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
+  reloading_content->SetProperty(views::kMarginsKey,
+                                 gfx::Insets::VH(vertical_margin, side_margin));
+  auto reloading_icon = std::make_unique<NonAccessibleImageView>();
+  reloading_icon->SetProperty(views::kMarginsKey,
+                              gfx::Insets::TLBR(0, 0, 0, side_margin));
+  reloading_icon_ = reloading_content->AddChildView(std::move(reloading_icon));
+
+  reloading_content->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringFUTF16(IDS_COOKIE_CONTROLS_BUBBLE_RELOADING_LABEL,
+                                 GetSubjectUrlName(web_contents))));
+
+  reloading_view->AddChildView(std::move(progress_bar));
+  reloading_view->AddChildView(std::move(reloading_content));
+
+  return reloading_view;
+}
+
+void CookieControlsBubbleViewController::FetchFaviconFrom(
+    content::WebContents* web_contents) {
+  auto* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  favicon::FaviconService* const favicon_service =
+      FaviconServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  favicon_service->GetFaviconImageForPageURL(
+      web_contents->GetVisibleURL(),
+      base::BindOnce(&CookieControlsBubbleViewController::OnFaviconFetched,
+                     weak_factory_.GetWeakPtr()),
+      &cancelable_task_tracker_);
 }

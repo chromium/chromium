@@ -8,17 +8,21 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
+#include "components/favicon_base/favicon_types.h"
+#include "url/gurl.h"
 
 class CookieControlsBubbleView;
 class CookieControlsContentView;
 
 class CookieControlsBubbleViewController
-    : public content_settings::CookieControlsObserver {
+    : public content_settings::CookieControlsObserver,
+      public content::WebContentsObserver {
  public:
   CookieControlsBubbleViewController(
       CookieControlsBubbleView* bubble_view,
@@ -41,16 +45,34 @@ class CookieControlsBubbleViewController
   void SetFeedbackButtonPressedCallback();
   void OnFeedbackButtonPressed();
 
+  void OnFaviconFetched(const favicon_base::FaviconImageResult& result) const;
+
+  [[nodiscard]] std::unique_ptr<views::View> InitReloadingView(
+      content::WebContents* web_contents);
+
+  void FetchFaviconFrom(content::WebContents* web_contents);
+
+  void ShowReloadingView();
+  void ShowContentView();
+
+  // content::WebContentsObserver
+  void DidStopLoading() override;
+
   raw_ptr<CookieControlsBubbleView> bubble_view_ = nullptr;
   raw_ptr<CookieControlsContentView> content_view_ = nullptr;
+  raw_ptr<views::View> reloading_view_ = nullptr;
+  raw_ptr<views::ImageView> reloading_icon_ = nullptr;
+
+  // Used for favicon loading tasks.
+  base::CancelableTaskTracker cancelable_task_tracker_;
+
   base::CallbackListSubscription feedback_button_callback_;
   base::WeakPtr<content_settings::CookieControlsController> controller_;
-
-  std::u16string GetSubjectUrlName(content::WebContents* web_contents);
-
   base::ScopedObservation<content_settings::CookieControlsController,
                           content_settings::CookieControlsObserver>
       controller_observation_{this};
+
+  base::WeakPtrFactory<CookieControlsBubbleViewController> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_BUBBLE_VIEW_CONTROLLER_H_
