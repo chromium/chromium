@@ -20,7 +20,7 @@
 #endif
 
 namespace {
-constexpr CGFloat kSpacingBeforeImageIfNoNavigationBar = 2;
+constexpr CGFloat kSpacingBeforeImageIfNoNavigationBar = 24;
 constexpr CGFloat kpacingAfterImageWithAnimation = 24;
 NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 NSString* const kDefaultBrowserAnimation = @"default_browser_animation";

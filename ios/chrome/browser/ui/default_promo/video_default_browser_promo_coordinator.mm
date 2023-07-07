@@ -108,7 +108,7 @@ using base::UserMetricsAction;
       IOSDefaultBrowserVideoPromoAction::kPrimaryActionTapped);
   RecordAction(UserMetricsAction(
       "IOS.DefaultBrowserVideoPromo.Fullscreen.OpenSettingsTapped"));
-  [self.defaultBrowserPromoHandler hidePromo];
+  [self.handler hidePromo];
 }
 
 - (void)confirmationAlertSecondaryAction {
@@ -117,7 +117,7 @@ using base::UserMetricsAction;
       IOSDefaultBrowserVideoPromoAction::kSecondaryActionTapped);
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
-  [self.defaultBrowserPromoHandler hidePromo];
+  [self.handler hidePromo];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -128,7 +128,7 @@ using base::UserMetricsAction;
                                 IOSDefaultBrowserVideoPromoAction::kSwipeDown);
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
-  [self.defaultBrowserPromoHandler hidePromo];
+  [self.handler hidePromo];
 }
 
 #pragma mark - HalfScreenPromoCoordinatorDelegate
@@ -149,12 +149,12 @@ using base::UserMetricsAction;
 
 - (void)handleSecondaryActionForHalfScreenPromoCoordinator:
     (HalfScreenPromoCoordinator*)coordinator {
-  [self.defaultBrowserPromoHandler hidePromo];
+  [self.handler hidePromo];
 }
 
 - (void)handleDismissActionForHalfScreenPromoCoordinator:
     (HalfScreenPromoCoordinator*)coordinator {
-  [self.defaultBrowserPromoHandler hidePromo];
+  [self.handler hidePromo];
 }
 
 #pragma mark - private

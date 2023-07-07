@@ -4,17 +4,20 @@
 
 #import "ios/chrome/browser/ui/default_promo/promo_handler/default_browser_promo_manager.h"
 
+#import "base/test/scoped_feature_list.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/default_browser/utils_test_support.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
@@ -34,6 +37,11 @@
 
 namespace {
 
+std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
+    web::BrowserState* browser_state) {
+  return std::make_unique<feature_engagement::test::MockTracker>();
+}
+
 class DefaultBrowserPromoManagerTest : public PlatformTest {
  public:
   DefaultBrowserPromoManagerTest() : PlatformTest() {}
@@ -47,6 +55,9 @@ class DefaultBrowserPromoManagerTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         base::BindRepeating(AuthenticationServiceFactory::GetDefaultFactory()));
+    builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindRepeating(&BuildFeatureEngagementMockTracker));
     browser_state_ = builder.Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
@@ -89,63 +100,73 @@ class DefaultBrowserPromoManagerTest : public PlatformTest {
 // detected that the user is likely interested in the promo.
 TEST_F(DefaultBrowserPromoManagerTest, ShowTailoredPromoMadeForIOS) {
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
-  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-  id mockDefaultPromoCommandsHandler =
-      OCMProtocolMock(@protocol(DefaultPromoCommands));
-  [dispatcher startDispatchingToTarget:mockDefaultPromoCommandsHandler
-                           forProtocol:@protocol(DefaultPromoCommands)];
+  id mock = [OCMockObject mockForClass:[DefaultBrowserPromoManager class]];
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
-  OCMExpect([mockDefaultPromoCommandsHandler showTailoredPromoMadeForIOS]);
+  [[mock expect] showPromoForTesting:DefaultPromoTypeMadeForIOS];
   [default_browser_promo_manager_ start];
-  EXPECT_OCMOCK_VERIFY(mockDefaultPromoCommandsHandler);
+  EXPECT_OCMOCK_VERIFY(mock);
 }
 
 // Tests that the DefaultPromoTypeStaySafe tailored promo is shown when it was
 // detected that the user is likely interested in the promo.
 TEST_F(DefaultBrowserPromoManagerTest, ShowTailoredPromoStaySafe) {
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
-  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-  id mockDefaultPromoCommandsHandler =
-      OCMProtocolMock(@protocol(DefaultPromoCommands));
-  [dispatcher startDispatchingToTarget:mockDefaultPromoCommandsHandler
-                           forProtocol:@protocol(DefaultPromoCommands)];
+  id mock = [OCMockObject mockForClass:[DefaultBrowserPromoManager class]];
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
-  OCMExpect([mockDefaultPromoCommandsHandler showTailoredPromoStaySafe]);
+  [[mock expect] showPromoForTesting:DefaultPromoTypeStaySafe];
   [default_browser_promo_manager_ start];
-  EXPECT_OCMOCK_VERIFY(mockDefaultPromoCommandsHandler);
+  EXPECT_OCMOCK_VERIFY(mock);
 }
 
 // Tests that the DefaultPromoTypeAllTabs tailored promo is shown when it was
 // detected that the user is likely interested in the promo.
 TEST_F(DefaultBrowserPromoManagerTest, ShowTailoredPromoAllTabs) {
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
-  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-  id mockDefaultPromoCommandsHandler =
-      OCMProtocolMock(@protocol(DefaultPromoCommands));
-  [dispatcher startDispatchingToTarget:mockDefaultPromoCommandsHandler
-                           forProtocol:@protocol(DefaultPromoCommands)];
+  id mock = [OCMockObject mockForClass:[DefaultBrowserPromoManager class]];
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
   SignIn();
-  OCMExpect([mockDefaultPromoCommandsHandler showTailoredPromoAllTabs]);
+  [[mock expect] showPromoForTesting:DefaultPromoTypeAllTabs];
   [default_browser_promo_manager_ start];
-  EXPECT_OCMOCK_VERIFY(mockDefaultPromoCommandsHandler);
+  EXPECT_OCMOCK_VERIFY(mock);
 }
 
 // Tests that the DefaultPromoTypeGeneral promo is shown when it was detected
 // that the user is likely interested in the promo.
 TEST_F(DefaultBrowserPromoManagerTest, showDefaultBrowserFullscreenPromo) {
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
-  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-  id mockDefaultPromoCommandsHandler =
-      OCMProtocolMock(@protocol(DefaultPromoCommands));
-  [dispatcher startDispatchingToTarget:mockDefaultPromoCommandsHandler
-                           forProtocol:@protocol(DefaultPromoCommands)];
+  id mock = [OCMockObject mockForClass:[DefaultBrowserPromoManager class]];
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
   SignIn();
-  OCMExpect(
-      [mockDefaultPromoCommandsHandler showDefaultBrowserFullscreenPromo]);
+  [[mock expect] showPromoForTesting:DefaultPromoTypeGeneral];
   [default_browser_promo_manager_ start];
-  EXPECT_OCMOCK_VERIFY(mockDefaultPromoCommandsHandler);
+  EXPECT_OCMOCK_VERIFY(mock);
+}
+
+// Tests that the DefaultPromoTypeVideo promo is shown when it was detected
+// that the user is likely interested in the promo.
+TEST_F(DefaultBrowserPromoManagerTest, showDefaultBrowserVideoPromo) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDefaultBrowserVideoPromo);
+  TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
+  feature_engagement::test::MockTracker* mock_tracker =
+      static_cast<feature_engagement::test::MockTracker*>(
+          feature_engagement::TrackerFactory::GetForBrowserState(
+              browser_state_.get()));
+  id mock = [OCMockObject mockForClass:[DefaultBrowserPromoManager class]];
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeVideo);
+  EXPECT_CALL(
+      *mock_tracker,
+      WouldTriggerHelpUI(testing::Ref(
+          feature_engagement::kIPHiOSDefaultBrowserVideoPromoTriggerFeature)))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(
+      *mock_tracker,
+      ShouldTriggerHelpUI(testing::Ref(
+          feature_engagement::kIPHiOSDefaultBrowserVideoPromoTriggerFeature)))
+      .WillOnce(testing::Return(true));
+  [[mock expect] showPromoForTesting:DefaultPromoTypeVideo];
+  [default_browser_promo_manager_ start];
+  EXPECT_OCMOCK_VERIFY(mock);
 }
 
 }  // namespace
