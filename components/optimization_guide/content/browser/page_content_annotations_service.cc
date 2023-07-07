@@ -22,6 +22,7 @@
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_validator.h"
 #include "components/optimization_guide/core/entity_metadata.h"
+#include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/optimization_guide/core/noisy_metrics_recorder.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -146,6 +147,7 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     leveldb_proto::ProtoDatabaseProvider* database_provider,
     const base::FilePath& database_dir,
     OptimizationGuideLogger* optimization_guide_logger,
+    NewOptimizationGuideDecider* optimization_guide_decider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : autocomplete_provider_client_(std::move(autocomplete_provider_client)),
       min_page_category_score_to_persist_(
@@ -156,7 +158,8 @@ PageContentAnnotationsService::PageContentAnnotationsService(
       last_annotated_history_visits_(
           features::MaxContentAnnotationRequestsCached()),
       annotated_text_cache_(features::MaxVisitAnnotationCacheSize()),
-      optimization_guide_logger_(optimization_guide_logger) {
+      optimization_guide_logger_(optimization_guide_logger),
+      optimization_guide_decider_(optimization_guide_decider) {
   DCHECK(optimization_guide_model_provider);
   DCHECK(history_service_);
   history_service_observation_.Observe(history_service_);
@@ -182,6 +185,17 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     annotation_types_to_execute_.push_back(AnnotationType::kPageEntities);
   }
 #endif
+
+  std::vector<proto::OptimizationType> optimization_types;
+  if (features::RemotePageMetadataEnabled()) {
+    optimization_types.emplace_back(proto::PAGE_ENTITIES);
+  }
+  if (features::ShouldPersistSalientImageMetadata()) {
+    optimization_types.emplace_back(proto::SALIENT_IMAGE);
+  }
+  if (optimization_guide_decider_ && !optimization_types.empty()) {
+    optimization_guide_decider_->RegisterOptimizationTypes(optimization_types);
+  }
 
   validator_ =
       PageContentAnnotationsValidator::MaybeCreateAndStartTimer(annotator_);
@@ -683,6 +697,25 @@ void PageContentAnnotationsService::OnURLVisited(
                  << "Text: " << *(history_visit.text_to_annotate);
     }
     Annotate(history_visit);
+  } else {
+    // Fetch remote page load metadata for local visits.
+    if (features::RemotePageMetadataEnabled() && optimization_guide_decider_) {
+      optimization_guide_decider_->CanApplyOptimization(
+          url_row.url(), proto::PAGE_ENTITIES,
+          base::BindOnce(&PageContentAnnotationsService::
+                             OnOptimizationGuideResponseReceived,
+                         weak_ptr_factory_.GetWeakPtr(), history_visit,
+                         proto::PAGE_ENTITIES));
+    }
+    if (features::ShouldPersistSalientImageMetadata() &&
+        optimization_guide_decider_) {
+      optimization_guide_decider_->CanApplyOptimization(
+          url_row.url(), proto::SALIENT_IMAGE,
+          base::BindOnce(&PageContentAnnotationsService::
+                             OnOptimizationGuideResponseReceived,
+                         weak_ptr_factory_.GetWeakPtr(), history_visit,
+                         proto::SALIENT_IMAGE));
+    }
   }
 }
 
@@ -703,6 +736,8 @@ void PageContentAnnotationsService::RemoveObserver(
 void PageContentAnnotationsService::PersistRemotePageMetadata(
     const HistoryVisit& visit,
     const proto::PageEntitiesMetadata& page_entities_metadata) {
+  CHECK(visit.visit_id);
+
   // Persist entities and categories to VisitContentModelAnnotations if that
   // feature is enabled.
   history::VisitContentModelAnnotations model_annotations;
@@ -729,29 +764,22 @@ void PageContentAnnotationsService::PersistRemotePageMetadata(
 
   if (!model_annotations.entities.empty() ||
       !model_annotations.categories.empty()) {
-    // Only persist if we have something to persist.
-    QueryURL(visit,
-             base::BindOnce(
-                 &history::HistoryService::AddContentModelAnnotationsForVisit,
-                 history_service_->AsWeakPtr(), model_annotations),
-             // Even though we are persisting remote page entities, we store
-             // these as an override to the model annotations.
-             PageContentAnnotationsType::kModelAnnotations);
+    history_service_->AddContentModelAnnotationsForVisit(model_annotations,
+                                                         *visit.visit_id);
   }
 
   // Persist any other metadata to VisitContentAnnotations, if enabled.
   if (!page_entities_metadata.alternative_title().empty()) {
-    QueryURL(visit,
-             base::BindOnce(&history::HistoryService::AddPageMetadataForVisit,
-                            history_service_->AsWeakPtr(),
-                            page_entities_metadata.alternative_title()),
-             PageContentAnnotationsType::kRemoteMetdata);
+    history_service_->AddPageMetadataForVisit(
+        page_entities_metadata.alternative_title(), *visit.visit_id);
   }
 }
 
 void PageContentAnnotationsService::PersistSalientImageMetadata(
     const HistoryVisit& visit,
     const proto::SalientImageMetadata& salient_image_metadata) {
+  CHECK(visit.visit_id);
+
   if (salient_image_metadata.thumbnails_size() <= 0) {
     return;
   }
@@ -759,12 +787,8 @@ void PageContentAnnotationsService::PersistSalientImageMetadata(
   // Persist the detail if at least one thumbnail has a non-empty URL.
   for (const auto& thumbnail : salient_image_metadata.thumbnails()) {
     if (!thumbnail.image_url().empty()) {
-      QueryURL(visit,
-               base::BindOnce(
-                   &history::HistoryService::SetHasUrlKeyedImageForVisit,
-                   history_service_->AsWeakPtr(), /*has_url_keyed_image=*/true),
-               PageContentAnnotationsType::kSalientImageMetadata);
-      return;
+      history_service_->SetHasUrlKeyedImageForVisit(
+          /*has_url_keyed_image=*/true, *visit.visit_id);
     }
   }
 }
@@ -809,6 +833,37 @@ void PageContentAnnotationsService::NotifyPageContentAnnotatedObservers(
   }
   for (auto& observer : page_content_annotations_observers_[annotation_type]) {
     observer.OnPageContentAnnotated(url, page_content_annotations_result);
+  }
+}
+
+void PageContentAnnotationsService::OnOptimizationGuideResponseReceived(
+    const HistoryVisit& history_visit,
+    proto::OptimizationType optimization_type,
+    OptimizationGuideDecision decision,
+    const OptimizationMetadata& metadata) {
+  if (decision != OptimizationGuideDecision::kTrue) {
+    return;
+  }
+
+  switch (optimization_type) {
+    case proto::OptimizationType::PAGE_ENTITIES: {
+      absl::optional<proto::PageEntitiesMetadata> page_entities_metadata =
+          metadata.ParsedMetadata<proto::PageEntitiesMetadata>();
+      if (page_entities_metadata) {
+        PersistRemotePageMetadata(history_visit, *page_entities_metadata);
+      }
+      break;
+    }
+    case proto::OptimizationType::SALIENT_IMAGE: {
+      absl::optional<proto::SalientImageMetadata> salient_image_metadata =
+          metadata.ParsedMetadata<proto::SalientImageMetadata>();
+      if (salient_image_metadata) {
+        PersistSalientImageMetadata(history_visit, *salient_image_metadata);
+      }
+      break;
+    }
+    default:
+      NOTREACHED();
   }
 }
 

@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/content/browser/salient_image_retriever.h"
-#include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -25,10 +24,6 @@ class NoStatePrefetchManager;
 
 namespace optimization_guide {
 
-enum class OptimizationGuideDecision;
-struct HistoryVisit;
-class OptimizationGuideDecider;
-class OptimizationMetadata;
 class PageContentAnnotationsService;
 
 // This class is used to dispatch page content to the
@@ -50,7 +45,6 @@ class PageContentAnnotationsWebContentsObserver
       content::WebContents* web_contents,
       PageContentAnnotationsService* page_content_annotations_service,
       TemplateURLService* template_url_service,
-      OptimizationGuideDecider* optimization_guide_decider,
       prerender::NoStatePrefetchManager* no_state_prefetch_manager);
 
  private:
@@ -62,14 +56,6 @@ class PageContentAnnotationsWebContentsObserver
   void DidFinishNavigation(content::NavigationHandle* handle) override;
   void TitleWasSet(content::NavigationEntry* navigation_entry) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
-
-  // Callback invoked when a response for |optimization_type| has been received
-  // from |optimization_guide_decider_| for |visit|.
-  void OnOptimizationGuideResponseReceived(
-      const HistoryVisit& visit,
-      proto::OptimizationType optimization_type,
-      OptimizationGuideDecision decision,
-      const OptimizationMetadata& metadata);
 
   void DidStopLoading() override;
 
@@ -86,10 +72,6 @@ class PageContentAnnotationsWebContentsObserver
 
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
-
-  // Not owned. Guaranteed to outlive |this|.
-  raw_ptr<OptimizationGuideDecider, DanglingUntriaged>
-      optimization_guide_decider_;
 
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<prerender::NoStatePrefetchManager> no_state_prefetch_manager_;

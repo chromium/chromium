@@ -390,7 +390,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
         CreateForWebContents(
             web_contents, page_content_annotations_service,
             TemplateURLServiceFactory::GetForProfile(profile),
-            OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
             prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
                 profile));
   }

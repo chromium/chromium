@@ -267,13 +267,15 @@ class HistoryService : public KeyedService,
                                          const std::u16string& search_terms,
                                          VisitID visit_id);
 
-  // Updates the history database with additional page metadata.
-  void AddPageMetadataForVisit(const std::string& alternative_title,
-                               VisitID visit_id);
+  // Updates the history database with additional page metadata. Virtual for
+  // testing.
+  virtual void AddPageMetadataForVisit(const std::string& alternative_title,
+                                       VisitID visit_id);
 
   // Updates the history database by setting the `has_url_keyed_image` bit for
-  // the visit.
-  void SetHasUrlKeyedImageForVisit(bool has_url_keyed_image, VisitID visit_id);
+  // the visit. Virtual for testing.
+  virtual void SetHasUrlKeyedImageForVisit(bool has_url_keyed_image,
+                                           VisitID visit_id);
 
   // Querying ------------------------------------------------------------------
 

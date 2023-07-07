@@ -9,12 +9,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -69,7 +67,6 @@ PageContentAnnotationsWebContentsObserver::
         content::WebContents* web_contents,
         PageContentAnnotationsService* page_content_annotations_service,
         TemplateURLService* template_url_service,
-        OptimizationGuideDecider* optimization_guide_decider,
         prerender::NoStatePrefetchManager* no_state_prefetch_manager)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<PageContentAnnotationsWebContentsObserver>(
@@ -78,20 +75,8 @@ PageContentAnnotationsWebContentsObserver::
       salient_image_retriever_(
           page_content_annotations_service_->optimization_guide_logger()),
       template_url_service_(template_url_service),
-      optimization_guide_decider_(optimization_guide_decider),
       no_state_prefetch_manager_(no_state_prefetch_manager) {
   DCHECK(page_content_annotations_service_);
-
-  std::vector<proto::OptimizationType> optimization_types;
-  if (features::RemotePageMetadataEnabled()) {
-    optimization_types.emplace_back(proto::PAGE_ENTITIES);
-  }
-  if (features::ShouldPersistSalientImageMetadata()) {
-    optimization_types.emplace_back(proto::SALIENT_IMAGE);
-  }
-  if (optimization_guide_decider_ && !optimization_types.empty()) {
-    optimization_guide_decider_->RegisterOptimizationTypes(optimization_types);
-  }
 }
 
 PageContentAnnotationsWebContentsObserver::
@@ -127,23 +112,6 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
   optimization_guide::HistoryVisit history_visit =
       CreateHistoryVisitFromWebContents(web_contents(),
                                         navigation_handle->GetNavigationId());
-  if (features::RemotePageMetadataEnabled() && optimization_guide_decider_) {
-    optimization_guide_decider_->CanApplyOptimizationAsync(
-        navigation_handle, proto::PAGE_ENTITIES,
-        base::BindOnce(&PageContentAnnotationsWebContentsObserver::
-                           OnOptimizationGuideResponseReceived,
-                       weak_ptr_factory_.GetWeakPtr(), history_visit,
-                       proto::PAGE_ENTITIES));
-  }
-  if (features::ShouldPersistSalientImageMetadata() &&
-      optimization_guide_decider_) {
-    optimization_guide_decider_->CanApplyOptimizationAsync(
-        navigation_handle, proto::SALIENT_IMAGE,
-        base::BindOnce(&PageContentAnnotationsWebContentsObserver::
-                           OnOptimizationGuideResponseReceived,
-                       weak_ptr_factory_.GetWeakPtr(), history_visit,
-                       proto::SALIENT_IMAGE));
-  }
 
   // Persist search metadata, if applicable if it's a search-y URL as determined
   // by the TemplateURLService.
@@ -240,40 +208,6 @@ void PageContentAnnotationsWebContentsObserver::
       optimization_guide::features::ShouldExtractRelatedSearches()) {
     page_content_annotations_service_->ExtractRelatedSearches(history_visit,
                                                               web_contents());
-  }
-}
-
-void PageContentAnnotationsWebContentsObserver::
-    OnOptimizationGuideResponseReceived(
-        const HistoryVisit& history_visit,
-        proto::OptimizationType optimization_type,
-        OptimizationGuideDecision decision,
-        const OptimizationMetadata& metadata) {
-  if (decision != OptimizationGuideDecision::kTrue) {
-    return;
-  }
-
-  switch (optimization_type) {
-    case proto::OptimizationType::PAGE_ENTITIES: {
-      absl::optional<proto::PageEntitiesMetadata> page_entities_metadata =
-          metadata.ParsedMetadata<proto::PageEntitiesMetadata>();
-      if (page_entities_metadata) {
-        page_content_annotations_service_->PersistRemotePageMetadata(
-            history_visit, *page_entities_metadata);
-      }
-      break;
-    }
-    case proto::OptimizationType::SALIENT_IMAGE: {
-      absl::optional<proto::SalientImageMetadata> salient_image_metadata =
-          metadata.ParsedMetadata<proto::SalientImageMetadata>();
-      if (salient_image_metadata) {
-        page_content_annotations_service_->PersistSalientImageMetadata(
-            history_visit, *salient_image_metadata);
-      }
-      break;
-    }
-    default:
-      NOTREACHED();
   }
 }
 

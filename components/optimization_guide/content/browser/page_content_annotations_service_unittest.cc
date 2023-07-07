@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/content/browser/test_page_content_annotator.h"
+#include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/search_engines/template_url_service.h"
@@ -43,6 +44,86 @@ class MockHistoryService : public history::HistoryService {
               AddSearchMetadataForVisit,
               (const GURL&, const std::u16string&, history::VisitID),
               (override));
+
+  MOCK_METHOD(void,
+              AddPageMetadataForVisit,
+              (const std::string&, history::VisitID),
+              (override));
+
+  MOCK_METHOD(void,
+              SetHasUrlKeyedImageForVisit,
+              (bool, history::VisitID),
+              (override));
+};
+
+class FakeOptimizationGuideDecider : public NewOptimizationGuideDecider {
+ public:
+  void RegisterOptimizationTypes(
+      const std::vector<proto::OptimizationType>& optimization_types) override {
+    registered_optimization_types_ = optimization_types;
+  }
+
+  std::vector<proto::OptimizationType> registered_optimization_types() {
+    return registered_optimization_types_;
+  }
+
+  void CanApplyOptimization(
+      const GURL& url,
+      proto::OptimizationType optimization_type,
+      OptimizationGuideDecisionCallback callback) override {
+    std::string url_spec = url.spec();
+    if (optimization_type == proto::PAGE_ENTITIES &&
+        url == GURL("http://hasmetadata.com/")) {
+      proto::PageEntitiesMetadata page_entities_metadata;
+      page_entities_metadata.set_alternative_title("alternative title");
+
+      OptimizationMetadata metadata;
+      metadata.SetAnyMetadataForTesting(page_entities_metadata);
+      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
+      return;
+    }
+    if (optimization_type == proto::SALIENT_IMAGE &&
+        url == GURL("http://hasimageurl.com")) {
+      proto::SalientImageMetadata salient_image_metadata;
+      salient_image_metadata.add_thumbnails()->set_image_url(
+          "http://gstatic.com/image");
+
+      OptimizationMetadata metadata;
+      metadata.SetAnyMetadataForTesting(salient_image_metadata);
+      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
+      return;
+    }
+    if (url == GURL("http://wrongmetadata.com/")) {
+      OptimizationMetadata metadata;
+      proto::Entity entity;
+      metadata.SetAnyMetadataForTesting(entity);
+      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
+      return;
+    }
+    std::move(callback).Run(OptimizationGuideDecision::kFalse, {});
+  }
+
+  optimization_guide::OptimizationGuideDecision CanApplyOptimization(
+      const GURL& url,
+      optimization_guide::proto::OptimizationType optimization_type,
+      optimization_guide::OptimizationMetadata* optimization_metadata)
+      override {
+    NOTREACHED();
+    return optimization_guide::OptimizationGuideDecision::kFalse;
+  }
+
+  void CanApplyOptimizationOnDemand(
+      const std::vector<GURL>& urls,
+      const base::flat_set<optimization_guide::proto::OptimizationType>&
+          optimization_types,
+      optimization_guide::proto::RequestContext request_context,
+      optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
+          callback) override {
+    NOTREACHED();
+  }
+
+ private:
+  std::vector<proto::OptimizationType> registered_optimization_types_;
 };
 
 }  // namespace
@@ -70,6 +151,9 @@ class PageContentAnnotationsServiceTest : public testing::Test {
     template_url_service_ = std::make_unique<TemplateURLService>(
         kTemplateURLData, std::size(kTemplateURLData));
 
+    optimization_guide_decider_ =
+        std::make_unique<FakeOptimizationGuideDecider>();
+
     // Instantiate service.
     service_ = std::make_unique<PageContentAnnotationsService>(
         /*autocomplete_provider_client=*/nullptr, "en-US",
@@ -79,6 +163,7 @@ class PageContentAnnotationsServiceTest : public testing::Test {
         /*database_provider=*/nullptr,
         /*database_dir=*/base::FilePath(),
         /*optimization_guide_logger=*/nullptr,
+        optimization_guide_decider_.get(),
         /*background_task_runner=*/nullptr);
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -102,6 +187,10 @@ class PageContentAnnotationsServiceTest : public testing::Test {
     service_->OnURLVisited(history_service_.get(), url_row, new_visit);
   }
 
+  FakeOptimizationGuideDecider* optimization_guide_decider() {
+    return optimization_guide_decider_.get();
+  }
+
  protected:
   std::unique_ptr<MockHistoryService> history_service_;
 
@@ -114,6 +203,7 @@ class PageContentAnnotationsServiceTest : public testing::Test {
       optimization_guide_model_provider_;
   std::unique_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<TestPageContentAnnotator> test_annotator_;
+  std::unique_ptr<FakeOptimizationGuideDecider> optimization_guide_decider_;
   std::unique_ptr<PageContentAnnotationsService> service_;
 };
 
@@ -163,6 +253,85 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsSearch) {
   VisitURL(GURL("https://default-engine.com/search?q=test#frag"), u"Test Page",
            visit_id,
            /*is_synced_visit=*/true);
+}
+
+class PageContentAnnotationsServiceRemotePageMetadataTest
+    : public PageContentAnnotationsServiceTest {
+ public:
+  PageContentAnnotationsServiceRemotePageMetadataTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kRemotePageMetadata);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
+       RegistersTypeWhenFeatureEnabled) {
+  std::vector<proto::OptimizationType> registered_optimization_types =
+      optimization_guide_decider()->registered_optimization_types();
+  EXPECT_EQ(registered_optimization_types.size(), 1u);
+  EXPECT_EQ(registered_optimization_types[0], proto::PAGE_ENTITIES);
+}
+
+TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
+       DoesNotPersistIfServerHasNoData) {
+  VisitURL(GURL("http://www.nohints.com"), u"sometitle", 13);
+}
+
+TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
+       DoesNotPersistIfServerReturnsWrongMetadata) {
+  // Navigate.
+  VisitURL(GURL("http://wrongmetadata.com"), u"sometitle", 13);
+}
+
+TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
+       RequestsToPersistIfHasPageMetadata) {
+  EXPECT_CALL(*history_service_,
+              AddPageMetadataForVisit("alternative title", 13));
+
+  // Navigate.
+  VisitURL(GURL("http://hasmetadata.com"), u"sometitle", 13);
+}
+
+class PageContentAnnotationsServiceSalientImageMetadataTest
+    : public PageContentAnnotationsServiceTest {
+ public:
+  PageContentAnnotationsServiceSalientImageMetadataTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kPageContentAnnotationsPersistSalientImageMetadata);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
+       RegistersTypeWhenFeatureEnabled) {
+  std::vector<proto::OptimizationType> registered_optimization_types =
+      optimization_guide_decider()->registered_optimization_types();
+  EXPECT_EQ(registered_optimization_types.size(), 1u);
+  EXPECT_EQ(registered_optimization_types[0], proto::SALIENT_IMAGE);
+}
+
+TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
+       DoesNotPersistIfServerHasNoData) {
+  // Navigate.
+  VisitURL(GURL("http://www.nohints.com"), u"sometitle", 13);
+}
+
+TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
+       DoesNotPersistIfServerReturnsWrongMetadata) {
+  // Navigate.
+  VisitURL(GURL("http://wrongmetadata.com"), u"sometitle", 13);
+}
+
+TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
+       RequestsToPersistIfHasSalientImageMetadata) {
+  EXPECT_CALL(*history_service_, SetHasUrlKeyedImageForVisit(true, 13));
+
+  // Navigate.
+  VisitURL(GURL("http://hasimageurl.com"), u"sometitle", 13);
 }
 
 }  // namespace optimization_guide

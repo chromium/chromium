@@ -111,6 +111,7 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
             nullptr,
             base::FilePath(),
             nullptr,
+            nullptr,
             nullptr) {}
   ~FakePageContentAnnotationsService() override = default;
 
@@ -141,85 +142,10 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
     return last_related_searches_extraction_request_;
   }
 
-  void PersistRemotePageMetadata(
-      const HistoryVisit& visit,
-      const proto::PageEntitiesMetadata& page_metadata) override {
-    last_page_metadata_ = page_metadata;
-  }
-
-  absl::optional<proto::PageEntitiesMetadata> last_page_metadata_persisted()
-      const {
-    return last_page_metadata_;
-  }
-
-  void PersistSalientImageMetadata(
-      const HistoryVisit& visit,
-      const proto::SalientImageMetadata& salient_image_metadata) override {
-    last_salient_image_metadata_ = salient_image_metadata;
-  }
-
-  absl::optional<proto::SalientImageMetadata>
-  last_salient_image_metadata_persisted() const {
-    return last_salient_image_metadata_;
-  }
-
  private:
   absl::optional<HistoryVisit> last_annotation_request_;
   absl::optional<std::pair<HistoryVisit, content::WebContents*>>
       last_related_searches_extraction_request_;
-  absl::optional<proto::PageEntitiesMetadata> last_page_metadata_;
-  absl::optional<proto::SalientImageMetadata> last_salient_image_metadata_;
-};
-
-class FakeOptimizationGuideDecider : public TestOptimizationGuideDecider {
- public:
-  void RegisterOptimizationTypes(
-      const std::vector<proto::OptimizationType>& optimization_types) override {
-    registered_optimization_types_ = optimization_types;
-  }
-
-  std::vector<proto::OptimizationType> registered_optimization_types() {
-    return registered_optimization_types_;
-  }
-
-  void CanApplyOptimizationAsync(
-      content::NavigationHandle* navigation_handle,
-      proto::OptimizationType optimization_type,
-      OptimizationGuideDecisionCallback callback) override {
-    std::string url_spec = navigation_handle->GetURL().spec();
-    if (optimization_type == proto::PAGE_ENTITIES &&
-        navigation_handle->GetURL() == GURL("http://hasmetadata.com/")) {
-      proto::PageEntitiesMetadata page_entities_metadata;
-      page_entities_metadata.set_alternative_title("alternative title");
-
-      OptimizationMetadata metadata;
-      metadata.SetAnyMetadataForTesting(page_entities_metadata);
-      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
-      return;
-    }
-    if (optimization_type == proto::SALIENT_IMAGE &&
-        navigation_handle->GetURL() == GURL("http://hasimageurl.com")) {
-      proto::SalientImageMetadata salient_image_metadata;
-      salient_image_metadata.add_thumbnails()->set_image_url(
-          "http://gstatic.com/image");
-
-      OptimizationMetadata metadata;
-      metadata.SetAnyMetadataForTesting(salient_image_metadata);
-      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
-      return;
-    }
-    if (navigation_handle->GetURL() == GURL("http://wrongmetadata.com/")) {
-      OptimizationMetadata metadata;
-      proto::Entity entity;
-      metadata.SetAnyMetadataForTesting(entity);
-      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
-      return;
-    }
-    std::move(callback).Run(OptimizationGuideDecision::kFalse, {});
-  }
-
- private:
-  std::vector<proto::OptimizationType> registered_optimization_types_;
 };
 
 class PageContentAnnotationsWebContentsObserverTest
@@ -259,13 +185,9 @@ class PageContentAnnotationsWebContentsObserverTest
         kDefaultTemplateURLKeyword);
     template_url_service_->SetUserSelectedDefaultSearchProvider(template_url_);
 
-    optimization_guide_decider_ =
-        std::make_unique<FakeOptimizationGuideDecider>();
-
     PageContentAnnotationsWebContentsObserver::CreateForWebContents(
         web_contents(), page_content_annotations_service_.get(),
-        template_url_service_.get(), optimization_guide_decider_.get(),
-        /*no_state_prefetch_manager=*/nullptr);
+        template_url_service_.get(), /*no_state_prefetch_manager=*/nullptr);
 
     // Overwrite Google base URL.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -279,7 +201,6 @@ class PageContentAnnotationsWebContentsObserverTest
     page_content_annotations_service_.reset();
     optimization_guide_model_provider_.reset();
     template_url_service_.reset();
-    optimization_guide_decider_.reset();
 
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -299,10 +220,6 @@ class PageContentAnnotationsWebContentsObserverTest
         web_contents());
   }
 
-  FakeOptimizationGuideDecider* optimization_guide_decider() {
-    return optimization_guide_decider_.get();
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestOptimizationGuideModelProvider>
@@ -315,13 +232,7 @@ class PageContentAnnotationsWebContentsObserverTest
       page_content_annotations_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;
   raw_ptr<TemplateURL, DanglingUntriaged> template_url_;
-  std::unique_ptr<FakeOptimizationGuideDecider> optimization_guide_decider_;
 };
-
-TEST_F(PageContentAnnotationsWebContentsObserverTest, DoesNotRegisterType) {
-  EXPECT_TRUE(
-      optimization_guide_decider()->registered_optimization_types().empty());
-}
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
        MainFrameNavigationAnnotatesTitle) {
@@ -757,104 +668,6 @@ TEST_F(PageContentAnnotationsWebContentsObserverRelatedSearchesFromZPSCacheTest,
     EXPECT_EQ(related_searches[1], "san diego");
     EXPECT_EQ(related_searches[2], "san francisco");
   }
-}
-
-class PageContentAnnotationsWebContentsObserverRemotePageMetadataTest
-    : public PageContentAnnotationsWebContentsObserverTest {
- public:
-  PageContentAnnotationsWebContentsObserverRemotePageMetadataTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kRemotePageMetadata);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(PageContentAnnotationsWebContentsObserverRemotePageMetadataTest,
-       RegistersTypeWhenFeatureEnabled) {
-  std::vector<proto::OptimizationType> registered_optimization_types =
-      optimization_guide_decider()->registered_optimization_types();
-  EXPECT_EQ(registered_optimization_types.size(), 1u);
-  EXPECT_EQ(registered_optimization_types[0], proto::PAGE_ENTITIES);
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverRemotePageMetadataTest,
-       DoesNotPersistIfServerHasNoData) {
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://www.nohints.com/"));
-
-  EXPECT_FALSE(service()->last_page_metadata_persisted());
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverRemotePageMetadataTest,
-       DoesNotPersistIfServerReturnsWrongMetadata) {
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://wrongmetadata.com/"));
-
-  EXPECT_FALSE(service()->last_page_metadata_persisted());
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverRemotePageMetadataTest,
-       RequestsToPersistIfHasPageMetadata) {
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://hasmetadata.com/"));
-
-  absl::optional<proto::PageEntitiesMetadata> metadata =
-      service()->last_page_metadata_persisted();
-  EXPECT_EQ(metadata->alternative_title(), "alternative title");
-}
-
-class PageContentAnnotationsWebContentsObserverSalientImageMetadataTest
-    : public PageContentAnnotationsWebContentsObserverTest {
- public:
-  PageContentAnnotationsWebContentsObserverSalientImageMetadataTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kPageContentAnnotationsPersistSalientImageMetadata);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(PageContentAnnotationsWebContentsObserverSalientImageMetadataTest,
-       RegistersTypeWhenFeatureEnabled) {
-  std::vector<proto::OptimizationType> registered_optimization_types =
-      optimization_guide_decider()->registered_optimization_types();
-  EXPECT_EQ(registered_optimization_types.size(), 1u);
-  EXPECT_EQ(registered_optimization_types[0], proto::SALIENT_IMAGE);
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverSalientImageMetadataTest,
-       DoesNotPersistIfServerHasNoData) {
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://www.nohints.com/"));
-
-  EXPECT_FALSE(service()->last_salient_image_metadata_persisted());
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverSalientImageMetadataTest,
-       DoesNotPersistIfServerReturnsWrongMetadata) {
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://wrongmetadata.com/"));
-
-  EXPECT_FALSE(service()->last_salient_image_metadata_persisted());
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverSalientImageMetadataTest,
-       RequestsToPersistIfHasSalientImageMetadata) {
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://hasimageurl.com/"));
-
-  absl::optional<proto::SalientImageMetadata> metadata =
-      service()->last_salient_image_metadata_persisted();
-  ASSERT_EQ(metadata->thumbnails_size(), 1);
-  EXPECT_EQ(metadata->thumbnails(0).image_url(), "http://gstatic.com/image");
 }
 
 }  // namespace optimization_guide
