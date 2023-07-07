@@ -8,6 +8,7 @@ CPEPrefix: cpe:/a:aomedia:aomedia:3.6.0
 License: BSD
 License File: source/libaom/LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 Provides tools for:
