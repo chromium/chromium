@@ -200,7 +200,7 @@ void CopyOrMoveIOTaskImpl::Execute(IOTask::ProgressCallback progress_callback,
 void CopyOrMoveIOTaskImpl::Pause(PauseParams params) {
   progress_->state = State::kPaused;
   progress_->pause_params = params;
-  std::move(progress_callback_).Run(*progress_);
+  progress_callback_.Run(*progress_);
 }
 
 void CopyOrMoveIOTaskImpl::Resume(ResumeParams params) {
