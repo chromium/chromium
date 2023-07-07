@@ -1450,6 +1450,11 @@ enum HeaderBehaviour {
       self.toolbarCoordinator.secondaryToolbarViewController.view;
   self.secondaryToolbarHeightConstraint = [toolbarView.heightAnchor
       constraintEqualToConstant:[self secondaryToolbarHeightWithInset]];
+  if (IsBottomOmniboxSteadyStateEnabled()) {
+    // The bottom toolbar can be constraint to the keyboard in some cases.
+    self.secondaryToolbarHeightConstraint.priority =
+        UILayoutPriorityRequired - 1;
+  }
   self.secondaryToolbarHeightConstraint.active = YES;
   AddSameConstraintsToSides(
       self.view, toolbarView,

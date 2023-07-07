@@ -7,9 +7,16 @@
 
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
 
-// View controller for the secondary part of the adaptive toolbar. It is the one
-// at the bottom of the screen. Displayed only on specific size classes.
+@protocol SecondaryToolbarKeyboardStateProvider;
+
+/// View controller for the secondary part of the adaptive toolbar. It is the
+/// one at the bottom of the screen. Displayed only on specific size classes.
 @interface SecondaryToolbarViewController : AdaptiveToolbarViewController
+
+/// Protocol to retrieve the keyboard state on the active web state.
+@property(nonatomic, weak) id<SecondaryToolbarKeyboardStateProvider>
+    keyboardStateProvider;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_SECONDARY_TOOLBAR_VIEW_CONTROLLER_H_

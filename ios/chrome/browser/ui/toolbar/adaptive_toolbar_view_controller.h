@@ -55,6 +55,8 @@
 // Returns the tools menu button.
 - (ToolbarButton*)toolsMenuButton;
 
+// Whether the toolbar has the omnibox.
+- (BOOL)hasOmnibox;
 // Updates the view so a snapshot can be taken. It needs to be adapted,
 // depending on if it is a snapshot displayed `onNonIncognitoNTP` or not.
 - (void)updateForSideSwipeSnapshot:(BOOL)onNonIncognitoNTP;

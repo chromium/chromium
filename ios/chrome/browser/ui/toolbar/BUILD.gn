@@ -104,6 +104,7 @@ source_set("toolbar_ui") {
     "primary_toolbar_view_controller.h",
     "primary_toolbar_view_controller.mm",
     "primary_toolbar_view_controller_delegate.h",
+    "secondary_toolbar_keyboard_state_provider.h",
     "secondary_toolbar_view.h",
     "secondary_toolbar_view.mm",
     "secondary_toolbar_view_controller.h",
