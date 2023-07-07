@@ -541,6 +541,60 @@ async def test_preloadScript_add_loadedInNewContexts(websocket, context_id,
 
 
 @pytest.mark.asyncio
+async def test_preloadScript_add_sandbox(websocket, context_id, html):
+    result = await execute_command(
+        websocket, {
+            "method": "script.addPreloadScript",
+            "params": {
+                "functionDeclaration": "() => { window.foo='bar'; }",
+                "sandbox": "MY_SANDBOX",
+            }
+        })
+    assert result == {'script': ANY_STR}
+
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": html(),
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    # Evaluate in the standard sandbox, script takes no effect.
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.foo",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True,
+                "resultOwnership": "root"
+            }
+        })
+    assert result["result"] == {"type": "undefined"}
+
+    # Evaluate in the given sandbox, script takes effect.
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.foo",
+                "target": {
+                    "context": context_id,
+                    "sandbox": "MY_SANDBOX",
+                },
+                "awaitPromise": True,
+                "resultOwnership": "root"
+            }
+        })
+    assert result["result"] == {"type": "string", "value": 'bar'}
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize("with_reload", [True, False],
                          ids=["with reload", "without reload"])
 async def test_preloadScript_add_runImmediately(websocket, html, context_id,

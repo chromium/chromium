@@ -50,6 +50,8 @@ export class BidiPreloadScript {
   readonly #targetIds = new Set<string>();
   /** Channels to be added as arguments to functionDeclaration. */
   readonly #channels: ChannelProxy[];
+  /** The script sandbox / world name. */
+  readonly #sandbox?: string;
 
   get id(): string {
     return this.#id;
@@ -60,14 +62,10 @@ export class BidiPreloadScript {
   }
 
   constructor(params: Script.AddPreloadScriptParameters) {
-    if (params.sandbox !== undefined) {
-      // TODO: Handle sandbox.
-      throw new Error('Sandbox is not supported yet');
-    }
-
     this.#channels =
       params.arguments?.map((a) => new ChannelProxy(a.value)) ?? [];
     this.#functionDeclaration = params.functionDeclaration;
+    this.#sandbox = params.sandbox;
   }
 
   /** Channels of the preload script. */
@@ -114,6 +112,7 @@ export class BidiPreloadScript {
       'Page.addScriptToEvaluateOnNewDocument',
       {
         source: this.#getEvaluateString(),
+        worldName: this.#sandbox,
         runImmediately,
       }
     );
