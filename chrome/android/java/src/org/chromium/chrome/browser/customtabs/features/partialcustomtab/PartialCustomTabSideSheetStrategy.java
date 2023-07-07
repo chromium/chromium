@@ -242,6 +242,8 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
                 // width in talkback mode. Some delay is required for this to work as expected.
                 var maximizeButton = mToolbarView.findViewById(R.id.custom_tabs_sidepanel_maximize);
                 maximizeButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                maximizeButton.sendAccessibilityEvent(
+                        AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
             }, 200);
         }
     }
