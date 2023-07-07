@@ -90,6 +90,7 @@ BruschettaUninstallerView::BruschettaUninstallerView(Profile* profile,
   message_label_ = AddChildView(std::make_unique<views::Label>());
   message_label_->SetMultiLine(true);
   message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  message_label_->SetText(message);
 }
 
 BruschettaUninstallerView::~BruschettaUninstallerView() {
