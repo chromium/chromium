@@ -842,10 +842,6 @@ bool Surface::HasPendingAcquireFence() const {
   return !!pending_state_.acquire_fence;
 }
 
-bool Surface::HasAcquireFence() const {
-  return !!state_.acquire_fence;
-}
-
 void Surface::SetPerCommitBufferReleaseCallback(
     Buffer::PerCommitExplicitReleaseCallback callback) {
   TRACE_EVENT0("exo", "Surface::SetPerCommitBufferReleaseCallback");
