@@ -3102,6 +3102,21 @@
             ]
         }
     ],
+    "ChromeOSMaterialNextWaveOne": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "JellyEnabled",
+                    "enable_features": [
+                        "Jelly"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSMemoryPressureSignalStudyArc": [
         {
             "platforms": [
