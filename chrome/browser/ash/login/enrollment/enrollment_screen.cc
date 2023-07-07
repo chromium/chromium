@@ -51,6 +51,7 @@
 namespace ash {
 namespace {
 
+using ::policy::AccountStatus;
 using ::policy::AccountStatusCheckFetcher;
 using ::policy::EnrollmentConfig;
 
@@ -631,8 +632,9 @@ void EnrollmentScreen::OnIdentifierEntered(const std::string& email) {
   auto callback = base::BindOnce(&EnrollmentScreen::OnAccountStatusFetched,
                                  base::Unretained(this), email);
   status_checker_.reset();
-  status_checker_ = std::make_unique<policy::AccountStatusCheckFetcher>(email);
-  status_checker_->Fetch(std::move(callback));
+  status_checker_ = std::make_unique<AccountStatusCheckFetcher>(email);
+  status_checker_->Fetch(std::move(callback),
+                         /*fetch_entollment_nudge_policy=*/false);
 }
 
 void EnrollmentScreen::OnFirstShow() {
@@ -646,24 +648,20 @@ void EnrollmentScreen::OnFrameLoadingCompleted() {
   UpdateState(NetworkError::ERROR_REASON_UPDATE);
 }
 
-void EnrollmentScreen::OnAccountStatusFetched(
-    const std::string& email,
-    bool result,
-    policy::AccountStatusCheckFetcher::AccountStatus status) {
+void EnrollmentScreen::OnAccountStatusFetched(const std::string& email,
+                                              bool result,
+                                              AccountStatus status) {
   if (!view_)
     return;
 
-  if (status == AccountStatusCheckFetcher::AccountStatus::kDasher ||
-      status == AccountStatusCheckFetcher::AccountStatus::kUnknown ||
-      result == false) {
+  if (status.type == AccountStatus::Type::kDasher ||
+      status.type == AccountStatus::Type::kUnknown || result == false) {
     view_->ShowSigninScreen();
     return;
   }
 
-  if (status == AccountStatusCheckFetcher::AccountStatus::
-                    kConsumerWithConsumerDomain ||
-      status == AccountStatusCheckFetcher::AccountStatus::
-                    kConsumerWithBusinessDomain) {
+  if (status.type == AccountStatus::Type::kConsumerWithConsumerDomain ||
+      status.type == AccountStatus::Type::kConsumerWithBusinessDomain) {
     view_->ShowUserError(email);
     return;
   }

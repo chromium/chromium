@@ -166,10 +166,9 @@ class EnrollmentScreen
   void SetConfig();
 
   // Called after account status is fetched.
-  void OnAccountStatusFetched(
-      const std::string& email,
-      bool result,
-      policy::AccountStatusCheckFetcher::AccountStatus status);
+  void OnAccountStatusFetched(const std::string& email,
+                              bool result,
+                              policy::AccountStatus status);
 
   // Creates an enrollment launcher if needed.
   void CreateEnrollmentLauncher();

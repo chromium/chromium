@@ -18,6 +18,27 @@ namespace policy {
 
 struct DMServerJobResult;
 
+struct AccountStatus {
+  // This enum is tied directly to a UMA enum `EnterpriseAccountStatus` defined
+  // in //tools/metrics/histograms/enums.xml, and should always reflect it (do
+  // not change one without changing the other). Entries should be never
+  // modified or deleted. Only additions possible.
+  enum class Type {
+    kUnknown = 0,
+    kConsumerWithConsumerDomain = 1,
+    kConsumerWithBusinessDomain = 2,
+    kOrganisationalAccountUnverified = 3,
+    kOrganisationalAccountVerified = 4,
+    kDasher = 5,
+    kMaxValue = kDasher
+  };
+  Type type = Type::kUnknown;
+  bool enrollment_required = false;
+};
+
+bool operator==(const AccountStatus&, const AccountStatus&);
+bool operator!=(const AccountStatus&, const AccountStatus&);
+
 // This class handles sending request to check account to DM server,
 // waits for the response and retrieves the account status from it.
 // Provided email should be canonicalized.
@@ -35,25 +56,12 @@ class AccountStatusCheckFetcher {
       delete;
   ~AccountStatusCheckFetcher();
 
-  // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
-  enum class AccountStatus {
-    kUnknown = 0,
-    kConsumerWithConsumerDomain = 1,
-    kConsumerWithBusinessDomain = 2,
-    kOrganisationalAccountUnverified = 3,
-    kOrganisationalAccountVerified = 4,
-    kDasher = 5,
-    kMaxValue = kDasher
-  };
   using FetchCallback =
       base::OnceCallback<void(bool fetch_succeeded, AccountStatus status)>;
 
   // Sends request to the DM server, gets and checks the response and
-  // calls the callback. It's possible to call Fetch several times.
-  void Fetch(FetchCallback callback);
+  // calls the callback.
+  void Fetch(FetchCallback callback, bool fetch_entollment_nudge_policy);
 
  private:
   // Response from DM server.
@@ -64,9 +72,6 @@ class AccountStatusCheckFetcher {
 
   // Job that sends request to the DM server.
   std::unique_ptr<DeviceManagementService::Job> fetch_request_job_;
-
-  // Acconut status.
-  AccountStatus result_ = AccountStatus::kUnknown;
 
   raw_ptr<DeviceManagementService, ExperimentalAsh> service_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -79,6 +84,11 @@ class AccountStatusCheckFetcher {
 
   // Called at the end of Fetch().
   FetchCallback callback_;
+
+  // Indicates whether `AccountStatusCheckFetcher` is currently being used to
+  // fetch the value of Enrollment Nudge policy.
+  bool is_fetching_enrollment_nudge_policy_ = false;
+
   base::WeakPtrFactory<AccountStatusCheckFetcher> weak_ptr_factory_{this};
 };
 

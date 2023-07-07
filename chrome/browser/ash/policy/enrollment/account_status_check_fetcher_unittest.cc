@@ -29,7 +29,10 @@ namespace {
 using ::testing::ElementsAre;
 namespace em = ::enterprise_management;
 
-class AccountStatusCheckFetcherUnitTest : public testing::Test {
+// bool parameter in these tests controls whether
+// `AccountStatusCheckFetcher` should fetch the value of Enrollment
+// Nudge policy or not.
+class AccountStatusCheckFetcherUnitTest : public testing::TestWithParam<bool> {
  public:
   AccountStatusCheckFetcherUnitTest() = default;
   ~AccountStatusCheckFetcherUnitTest() override = default;
@@ -61,7 +64,7 @@ class AccountStatusCheckFetcherUnitTest : public testing::Test {
 
   void OnFetchCompleted(base::OnceClosure finish_callback,
                         bool fetch_succeeded,
-                        AccountStatusCheckFetcher::AccountStatus status) {
+                        AccountStatus status) {
     fetch_succeeded_ = fetch_succeeded;
     status_ = status;
     std::move(finish_callback).Run();
@@ -72,18 +75,37 @@ class AccountStatusCheckFetcherUnitTest : public testing::Test {
     base::OnceClosure callback = run_loop.QuitClosure();
     fetcher_->Fetch(
         base::BindOnce(&AccountStatusCheckFetcherUnitTest::OnFetchCompleted,
-                       base::Unretained(this), std::move(callback)));
+                       base::Unretained(this), std::move(callback)),
+        /*fetch_entollment_nudge_policy=*/GetParam());
     run_loop.Run();
   }
 
   em::DeviceManagementResponse CreateResponse(
-      em::CheckUserAccountResponse::UserAccountType type,
+      em::CheckUserAccountResponse::UserAccountType account_type,
+      em::CheckUserAccountResponse::EnrollmentNudgeType enrollment_nudge_type,
       bool is_domain_verified) {
     em::DeviceManagementResponse response;
-    response.mutable_check_user_account_response()->set_user_account_type(type);
+    response.mutable_check_user_account_response()->set_user_account_type(
+        account_type);
+    if (GetParam()) {
+      response.mutable_check_user_account_response()->set_enrollment_nudge_type(
+          enrollment_nudge_type);
+    }
     response.mutable_check_user_account_response()->set_domain_verified(
         is_domain_verified);
     return response;
+  }
+
+  void CheckHistograms(const AccountStatus::Type& account_type) {
+    if (!GetParam()) {
+      EXPECT_THAT(histogram_tester_.GetAllSamples(
+                      "Enterprise.AccountStatusCheckResult"),
+                  ElementsAre(base::Bucket(static_cast<int>(account_type), 1)));
+    } else {
+      EXPECT_TRUE(
+          histogram_tester_.GetAllSamples("Enterprise.AccountStatusCheckResult")
+              .empty());
+    }
   }
 
   em::DeviceManagementResponse dummy_response_;
@@ -92,8 +114,8 @@ class AccountStatusCheckFetcherUnitTest : public testing::Test {
 
  protected:
   bool fetch_succeeded_ = false;
-  AccountStatusCheckFetcher::AccountStatus status_ =
-      AccountStatusCheckFetcher::AccountStatus::kUnknown;
+  AccountStatus status_ = {.type = AccountStatus::Type::kUnknown,
+                           .enrollment_required = false};
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -103,83 +125,116 @@ class AccountStatusCheckFetcherUnitTest : public testing::Test {
   std::unique_ptr<FakeDeviceManagementService> service_;
 };
 
-TEST_F(AccountStatusCheckFetcherUnitTest, NetworkFailure) {
+TEST_P(AccountStatusCheckFetcherUnitTest, NetworkFailure) {
   SetUpAccountStatusCheckFetcher("fooboo@foobooorg.com");
   SetFailReply(net::OK, DeviceManagementService::kServiceUnavailable);
   SyncFetch();
   EXPECT_FALSE(fetch_succeeded_);
 }
 
-TEST_F(AccountStatusCheckFetcherUnitTest, Dasher) {
+TEST_P(AccountStatusCheckFetcherUnitTest, DasherWithUnknownEnrollmentNudge) {
+  SetUpAccountStatusCheckFetcher("fooboo@foobooorg.com");
+  SetReply(CreateResponse(
+      em::CheckUserAccountResponse::DASHER,
+      em::CheckUserAccountResponse::UNKNOWN_ENROLLMENT_NUDGE_TYPE,
+      /*is_domain_verified=*/true));
+  SyncFetch();
+  EXPECT_TRUE(fetch_succeeded_);
+  const AccountStatus expected_status = {.type = AccountStatus::Type::kDasher,
+                                         .enrollment_required = false};
+  EXPECT_EQ(status_, expected_status);
+  CheckHistograms(expected_status.type);
+}
+
+TEST_P(AccountStatusCheckFetcherUnitTest, DasherWithEnrollmentNudgeSetToNone) {
   SetUpAccountStatusCheckFetcher("fooboo@foobooorg.com");
   SetReply(CreateResponse(em::CheckUserAccountResponse::DASHER,
+                          em::CheckUserAccountResponse::NONE,
                           /*is_domain_verified=*/true));
   SyncFetch();
   EXPECT_TRUE(fetch_succeeded_);
-  const AccountStatusCheckFetcher::AccountStatus expected_status =
-      AccountStatusCheckFetcher::AccountStatus::kDasher;
+  const AccountStatus expected_status = {.type = AccountStatus::Type::kDasher,
+                                         .enrollment_required = false};
   EXPECT_EQ(status_, expected_status);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("Enterprise.AccountStatusCheckResult"),
-      ElementsAre(base::Bucket(static_cast<int>(expected_status), 1)));
+  CheckHistograms(expected_status.type);
 }
 
-TEST_F(AccountStatusCheckFetcherUnitTest, ConsumerWithConsumerDomain) {
+TEST_P(AccountStatusCheckFetcherUnitTest, DasherWithEnrollmentRequired) {
+  SetUpAccountStatusCheckFetcher("fooboo@foobooorg.com");
+  SetReply(CreateResponse(em::CheckUserAccountResponse::DASHER,
+                          em::CheckUserAccountResponse::ENROLLMENT_REQUIRED,
+                          /*is_domain_verified=*/true));
+  SyncFetch();
+  EXPECT_TRUE(fetch_succeeded_);
+  const AccountStatus expected_status = {.type = AccountStatus::Type::kDasher,
+                                         .enrollment_required = GetParam()};
+  EXPECT_EQ(status_, expected_status);
+  CheckHistograms(expected_status.type);
+}
+
+TEST_P(AccountStatusCheckFetcherUnitTest, ConsumerWithConsumerDomain) {
   SetUpAccountStatusCheckFetcher("fooboo@gmail.com");
-  SetReply(CreateResponse(em::CheckUserAccountResponse::CONSUMER,
-                          /*is_domain_verified=*/true));
+  SetReply(CreateResponse(
+      em::CheckUserAccountResponse::CONSUMER,
+      em::CheckUserAccountResponse::UNKNOWN_ENROLLMENT_NUDGE_TYPE,
+      /*is_domain_verified=*/true));
   SyncFetch();
   EXPECT_TRUE(fetch_succeeded_);
-  const AccountStatusCheckFetcher::AccountStatus expected_status =
-      AccountStatusCheckFetcher::AccountStatus::kConsumerWithConsumerDomain;
+  const AccountStatus expected_status = {
+      .type = AccountStatus::Type::kConsumerWithConsumerDomain,
+      .enrollment_required = false};
   EXPECT_EQ(status_, expected_status);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("Enterprise.AccountStatusCheckResult"),
-      ElementsAre(base::Bucket(static_cast<int>(expected_status), 1)));
+  CheckHistograms(expected_status.type);
 }
 
-TEST_F(AccountStatusCheckFetcherUnitTest, ConsumerWithBusinessDomain) {
+TEST_P(AccountStatusCheckFetcherUnitTest, ConsumerWithBusinessDomain) {
   SetUpAccountStatusCheckFetcher("fooboo@testbusinessdomain.com");
-  SetReply(CreateResponse(em::CheckUserAccountResponse::CONSUMER,
-                          /*is_domain_verified=*/true));
+  SetReply(CreateResponse(
+      em::CheckUserAccountResponse::CONSUMER,
+      em::CheckUserAccountResponse::UNKNOWN_ENROLLMENT_NUDGE_TYPE,
+      /*is_domain_verified=*/true));
   SyncFetch();
   EXPECT_TRUE(fetch_succeeded_);
-  const AccountStatusCheckFetcher::AccountStatus expected_status =
-      AccountStatusCheckFetcher::AccountStatus::kConsumerWithBusinessDomain;
+  const AccountStatus expected_status = {
+      .type = AccountStatus::Type::kConsumerWithBusinessDomain,
+      .enrollment_required = false};
   EXPECT_EQ(status_, expected_status);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("Enterprise.AccountStatusCheckResult"),
-      ElementsAre(base::Bucket(static_cast<int>(expected_status), 1)));
+  CheckHistograms(expected_status.type);
 }
 
-TEST_F(AccountStatusCheckFetcherUnitTest, OrganisationalAccountVerified) {
+TEST_P(AccountStatusCheckFetcherUnitTest, OrganisationalAccountVerified) {
   SetUpAccountStatusCheckFetcher("fooboo@testbusinessdomain.com");
-  SetReply(CreateResponse(em::CheckUserAccountResponse::NOT_EXIST,
-                          /*is_domain_verified=*/true));
+  SetReply(CreateResponse(
+      em::CheckUserAccountResponse::NOT_EXIST,
+      em::CheckUserAccountResponse::UNKNOWN_ENROLLMENT_NUDGE_TYPE,
+      /*is_domain_verified=*/true));
   SyncFetch();
   EXPECT_TRUE(fetch_succeeded_);
-  const AccountStatusCheckFetcher::AccountStatus expected_status =
-      AccountStatusCheckFetcher::AccountStatus::kOrganisationalAccountVerified;
+  const AccountStatus expected_status = {
+      .type = AccountStatus::Type::kOrganisationalAccountVerified,
+      .enrollment_required = false};
   EXPECT_EQ(status_, expected_status);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("Enterprise.AccountStatusCheckResult"),
-      ElementsAre(base::Bucket(static_cast<int>(expected_status), 1)));
+  CheckHistograms(expected_status.type);
 }
 
-TEST_F(AccountStatusCheckFetcherUnitTest, OrganisationalAccountUnverified) {
+TEST_P(AccountStatusCheckFetcherUnitTest, OrganisationalAccountUnverified) {
   SetUpAccountStatusCheckFetcher("fooboo@testbusinessdomain.com");
-  SetReply(CreateResponse(em::CheckUserAccountResponse::NOT_EXIST,
-                          /*is_domain_verified=*/false));
+  SetReply(CreateResponse(
+      em::CheckUserAccountResponse::NOT_EXIST,
+      em::CheckUserAccountResponse::UNKNOWN_ENROLLMENT_NUDGE_TYPE,
+      /*is_domain_verified=*/false));
   SyncFetch();
   EXPECT_TRUE(fetch_succeeded_);
-  const AccountStatusCheckFetcher::AccountStatus expected_status =
-      AccountStatusCheckFetcher::AccountStatus::
-          kOrganisationalAccountUnverified;
+  const AccountStatus expected_status = {
+      .type = AccountStatus::Type::kOrganisationalAccountUnverified,
+      .enrollment_required = false};
   EXPECT_EQ(status_, expected_status);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("Enterprise.AccountStatusCheckResult"),
-      ElementsAre(base::Bucket(static_cast<int>(expected_status), 1)));
+  CheckHistograms(expected_status.type);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AccountStatusCheckFetcherUnitTest,
+                         ::testing::Bool());
 
 }  // namespace
 }  // namespace policy
