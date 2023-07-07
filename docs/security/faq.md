@@ -654,7 +654,7 @@ allows stuck users to still, for example, conduct searches and access Chrome's
 homepage to hopefully get unstuck.
 
 In order to determine whether key pinning is active, try loading
-[https://pinningtest.appspot.com](https://pinningtest.appspot.com). If key
+[https://pinning-test.badssl.com/](https://pinning-test.badssl.com/). If key
 pinning is active the load will _fail_ with a pinning error.
 
 <a name="TOC-How-does-certificate-transparency-interact-with-local-proxies-and-filters-"></a>
