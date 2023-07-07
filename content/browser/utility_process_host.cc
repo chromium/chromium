@@ -391,8 +391,7 @@ bool UtilityProcessHost::StartProcess() {
       switches::kHardwareVideoDecodeFrameRate,
 #endif
     };
-    cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
-                               std::size(kSwitchNames));
+    cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames);
 
     network_session_configurator::CopyNetworkSwitches(browser_command_line,
                                                       cmd_line.get());

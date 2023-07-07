@@ -3729,8 +3729,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kLacrosUseChromeosProtectedAv1,
 #endif
   };
-  renderer_cmd->CopySwitchesFrom(browser_cmd, kSwitchNames,
-                                 std::size(kSwitchNames));
+  renderer_cmd->CopySwitchesFrom(browser_cmd, kSwitchNames);
 
   // |switches::kGaiaConfig| can be set via browser command-line arguments,
   // usually by developers working on signin code. The switch, however, cannot

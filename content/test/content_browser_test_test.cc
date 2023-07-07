@@ -61,12 +61,11 @@ base::CommandLine CreateCommandLine() {
   const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
   base::CommandLine command_line = base::CommandLine(cmdline.GetProgram());
 #if BUILDFLAG(IS_OZONE)
-  const char* kSwitchesToCopy[] = {
+  static const char* const kSwitchesToCopy[] = {
       // Keep the kOzonePlatform switch that the Ozone must use.
       switches::kOzonePlatform,
   };
-  command_line.CopySwitchesFrom(cmdline, kSwitchesToCopy,
-                                std::size(kSwitchesToCopy));
+  command_line.CopySwitchesFrom(cmdline, kSwitchesToCopy);
 #endif
   return command_line;
 }

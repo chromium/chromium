@@ -1224,19 +1224,18 @@ bool GpuProcessHost::LaunchGpuProcess() {
   // https://crbug.com/590825
   // If you want a browser command-line switch passed to the GPU process
   // you need to add it to |kSwitchNames| at the beginning of this file.
-  cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
-                             std::size(kSwitchNames));
+  cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames);
   cmd_line->CopySwitchesFrom(
-      browser_command_line, switches::kGLSwitchesCopiedFromGpuProcessHost,
-      switches::kGLSwitchesCopiedFromGpuProcessHostNumSwitches);
+      browser_command_line,
+      {switches::kGLSwitchesCopiedFromGpuProcessHost,
+       switches::kGLSwitchesCopiedFromGpuProcessHostNumSwitches});
 
   if (browser_command_line.HasSwitch(switches::kDisableFrameRateLimit))
     cmd_line->AppendSwitch(switches::kDisableGpuVsync);
 
   std::vector<const char*> gpu_workarounds;
   gpu::GpuDriverBugList::AppendAllWorkarounds(&gpu_workarounds);
-  cmd_line->CopySwitchesFrom(browser_command_line, gpu_workarounds.data(),
-                             gpu_workarounds.size());
+  cmd_line->CopySwitchesFrom(browser_command_line, gpu_workarounds);
 
   // Because AppendExtraCommandLineSwitches is called here, we should call
   // LaunchWithoutExtraCommandLineSwitches() instead of Launch for gpu process

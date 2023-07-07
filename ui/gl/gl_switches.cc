@@ -165,7 +165,7 @@ const char* const kGLSwitchesCopiedFromGpuProcessHost[] = {
     kEnableDirectCompositionVideoOverlays,
     kDirectCompositionVideoSwapChainFormat,
 };
-const int kGLSwitchesCopiedFromGpuProcessHostNumSwitches =
+const size_t kGLSwitchesCopiedFromGpuProcessHostNumSwitches =
     std::size(kGLSwitchesCopiedFromGpuProcessHost);
 
 }  // namespace switches

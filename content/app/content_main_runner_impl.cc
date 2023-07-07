@@ -319,7 +319,7 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
 #endif
   };
   cmd_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                             kForwardSwitches, std::size(kForwardSwitches));
+                             kForwardSwitches);
 
   GetContentClient()->browser()->AppendExtraCommandLineSwitches(cmd_line, -1);
 

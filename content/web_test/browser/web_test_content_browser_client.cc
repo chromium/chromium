@@ -409,7 +409,7 @@ void WebTestContentBrowserClient::AppendExtraCommandLineSwitches(
   ShellContentBrowserClient::AppendExtraCommandLineSwitches(command_line,
                                                             child_process_id);
 
-  static const char* kForwardSwitches[] = {
+  static const char* const kForwardSwitches[] = {
       // Switches from web_test_switches.h that are used in the renderer.
       switches::kEnableAccelerated2DCanvas,
       switches::kEnableFontAntialiasing,
@@ -418,7 +418,7 @@ void WebTestContentBrowserClient::AppendExtraCommandLineSwitches(
   };
 
   command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                                 kForwardSwitches, std::size(kForwardSwitches));
+                                 kForwardSwitches);
 }
 
 std::unique_ptr<BrowserMainParts>

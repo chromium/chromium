@@ -331,8 +331,7 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
       switches::kV,
       switches::kVModule,
   };
-  cmd_line->CopySwitchesFrom(browser_command_line, kForwardSwitches,
-                             std::size(kForwardSwitches));
+  cmd_line->CopySwitchesFrom(browser_command_line, kForwardSwitches);
 
   // All processes should have a non-empty metrics name.
   if (data_.metrics_name.empty())

@@ -399,7 +399,7 @@ bool ShellContentBrowserClient::IsHandledURL(const GURL& url) {
 void ShellContentBrowserClient::AppendExtraCommandLineSwitches(
     base::CommandLine* command_line,
     int child_process_id) {
-  static const char* kForwardSwitches[] = {
+  static const char* const kForwardSwitches[] = {
 #if BUILDFLAG(IS_MAC)
     // Needed since on Mac, content_browsertests doesn't use
     // content_test_launcher.cc and instead uses shell_main.cc. So give a signal
@@ -414,7 +414,7 @@ void ShellContentBrowserClient::AppendExtraCommandLineSwitches(
   };
 
   command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                                 kForwardSwitches, std::size(kForwardSwitches));
+                                 kForwardSwitches);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
