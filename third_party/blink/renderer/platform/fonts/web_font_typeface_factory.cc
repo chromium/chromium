@@ -20,10 +20,6 @@
 #include "third_party/skia/include/ports/SkFontMgr_empty.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "third_party/blink/renderer/platform/fonts/mac/core_text_font_format_support.h"
-#endif
-
 #if BUILDFLAG(USE_FONTATIONS_BACKEND)
 #include "third_party/skia/include/ports/SkTypeface_fontations.h"
 #endif
@@ -156,10 +152,6 @@ sk_sp<SkTypeface> WebFontTypefaceFactory::MakeVariationsTypeface(
     sk_sp<SkData> data) {
 #if BUILDFLAG(IS_WIN)
   if (!DWriteVersionSupportsVariations()) {
-    return MakeTypefaceFreeType(data);
-  }
-#elif BUILDFLAG(IS_MAC)
-  if (!CoreTextVersionSupportsVariations()) {
     return MakeTypefaceFreeType(data);
   }
 #endif

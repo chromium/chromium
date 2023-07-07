@@ -1598,8 +1598,6 @@ component("platform") {
       "audio/mac/vector_math_mac.h",
       "fonts/mac/attributed_string_type_converter.h",
       "fonts/mac/attributed_string_type_converter.mm",
-      "fonts/mac/core_text_font_format_support.cc",
-      "fonts/mac/core_text_font_format_support.h",
       "fonts/mac/font_cache_mac.mm",
       "fonts/mac/font_matcher_mac.h",
       "fonts/mac/font_matcher_mac.mm",
