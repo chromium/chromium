@@ -65,6 +65,15 @@ bool BaseFormActivityParams::FromMessage(const web::ScriptMessage& message,
   return true;
 }
 
+bool BaseFormActivityParams::operator==(
+    const BaseFormActivityParams& params) const {
+  return (form_name == params.form_name) &&
+         (unique_form_id == params.unique_form_id) &&
+         (frame_id == params.frame_id) &&
+         (input_missing == params.input_missing) &&
+         (is_main_frame == params.is_main_frame);
+}
+
 bool FormActivityParams::FromMessage(const web::ScriptMessage& message,
                                      FormActivityParams* params) {
   const base::Value::Dict* message_body = nullptr;
@@ -106,6 +115,14 @@ bool FormActivityParams::FromMessage(const web::ScriptMessage& message,
   }
 
   return true;
+}
+
+bool FormActivityParams::operator==(const FormActivityParams& params) const {
+  return BaseFormActivityParams::operator==(params) &&
+         (field_identifier == params.field_identifier) &&
+         (unique_field_id == params.unique_field_id) &&
+         (field_type == params.field_type) && (value == params.value) &&
+         (type == params.type) && (has_user_gesture == params.has_user_gesture);
 }
 
 }  // namespace autofill

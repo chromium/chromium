@@ -576,6 +576,12 @@ using base::UmaHistogramEnumeration;
   }
 }
 
+- (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
+                     params:(const autofill::FormActivityParams&)params {
+  CHECK(_lastSeenParams == params);
+  [self didSelectSuggestion:formSuggestion];
+}
+
 #pragma mark - PasswordFetcherDelegate
 
 - (void)passwordFetcher:(PasswordFetcher*)passwordFetcher

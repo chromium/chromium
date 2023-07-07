@@ -9,6 +9,7 @@
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -79,6 +80,9 @@
   // Whether the field that triggered the bottom sheet will need to refocus when
   // the bottom sheet is dismissed. Default is true.
   bool _needsRefocus;
+
+  // Information regarding the triggering form for this bottom sheet.
+  autofill::FormActivityParams _params;
 }
 
 #pragma mark - Properties
@@ -88,10 +92,12 @@
 #pragma mark - Initialization
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                              params:(const autofill::FormActivityParams&)params
                  personalDataManager:
                      (autofill::PersonalDataManager*)personalDataManager {
   if (self = [super init]) {
     _needsRefocus = true;
+    _params = params;
     _hasCreditCards = NO;
     _webStateList = webStateList;
     _personalDataManager = personalDataManager;
@@ -174,9 +180,8 @@
       FormSuggestionTabHelper::FromWebState(activeWebState);
   DCHECK(tabHelper);
 
-  id<FormInputSuggestionsProvider> suggestionsProvider =
-      tabHelper->GetAccessoryViewProvider();
-  DCHECK(suggestionsProvider);
+  id<FormSuggestionClient> client = tabHelper->GetAccessoryViewProvider();
+  DCHECK(client);
 
   // Create a form suggestion containing the selected credit card's backend id
   // so that the suggestion provider can properly fill the form.
@@ -191,7 +196,7 @@
           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
 
-  [suggestionsProvider didSelectSuggestion:suggestion];
+  [client didSelectSuggestion:suggestion params:_params];
 }
 
 - (void)disableBottomSheet {

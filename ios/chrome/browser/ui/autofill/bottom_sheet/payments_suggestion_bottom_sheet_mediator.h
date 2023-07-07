@@ -11,6 +11,7 @@
 
 namespace autofill {
 class CreditCard;
+struct FormActivityParams;
 class PersonalDataManager;
 }  // namespace autofill
 
@@ -24,6 +25,7 @@ class WebStateList;
     : NSObject <PaymentsSuggestionBottomSheetDelegate>
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                              params:(const autofill::FormActivityParams&)params
                  personalDataManager:
                      (autofill::PersonalDataManager*)personalDataManager;
 

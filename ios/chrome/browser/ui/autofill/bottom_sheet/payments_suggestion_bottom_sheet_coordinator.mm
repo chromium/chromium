@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
 
+#import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -17,7 +18,10 @@
 #error "This file requires ARC support."
 #endif
 
-@interface PaymentsSuggestionBottomSheetCoordinator ()
+@interface PaymentsSuggestionBottomSheetCoordinator () {
+  // Information regarding the triggering form for this bottom sheet.
+  autofill::FormActivityParams _params;
+}
 
 // This mediator is used to fetch data related to the bottom sheet.
 @property(nonatomic, strong) PaymentsSuggestionBottomSheetMediator* mediator;
@@ -40,6 +44,8 @@
                                                params {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
+    _params = params;
+
     ChromeBrowserState* browserState =
         browser->GetBrowserState()->GetOriginalChromeBrowserState();
 
@@ -56,6 +62,7 @@
   WebStateList* webStateList = self.browser->GetWebStateList();
   self.mediator = [[PaymentsSuggestionBottomSheetMediator alloc]
       initWithWebStateList:webStateList
+                    params:_params
        personalDataManager:self.personalDataManager];
   const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
   self.viewController =

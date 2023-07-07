@@ -7,6 +7,7 @@
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_prefs.h"
+#import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -76,6 +77,7 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
 
     mediator_ = [[PaymentsSuggestionBottomSheetMediator alloc]
         initWithWebStateList:&web_state_list_
+                      params:autofill::FormActivityParams()
          personalDataManager:personal_data_manager_.get()];
   }
 
