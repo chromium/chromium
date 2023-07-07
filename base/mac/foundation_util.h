@@ -140,78 +140,6 @@ BASE_EXPORT const char* BaseBundleID();
 // make its own copy of new_base_bundle_id.
 BASE_EXPORT void SetBaseBundleID(const char* new_base_bundle_id);
 
-}  // namespace base::mac
-
-// These casting functions cannot be implemented in a way that will work with
-// ARC. Use the casting functions in base/apple/bridging.h instead.
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-
-#if defined(__OBJC__)
-
-// Convert toll-free bridged CFTypes to NSTypes and vice-versa. This does not
-// autorelease |cf_val|. This is useful for the case where there is a CFType in
-// a call that expects an NSType and the compiler is complaining about const
-// casting problems.
-// The calls are used like this:
-// NSString *foo = CFToNSCast(CFSTR("Hello"));
-// CFStringRef foo2 = NSToCFCast(@"Hello");
-// The macro magic below is to enforce safe casting. It could possibly have
-// been done using template function specialization, but template function
-// specialization doesn't always work intuitively,
-// (http://www.gotw.ca/publications/mill17.htm) so the trusty combination
-// of macros and function overloading is used instead.
-
-#define CF_TO_NS_CAST_DECL(TypeCF, TypeNS)            \
-  namespace base::mac {                               \
-  BASE_EXPORT TypeNS* CFToNSCast(TypeCF##Ref cf_val); \
-  BASE_EXPORT TypeCF##Ref NSToCFCast(TypeNS* ns_val); \
-  }
-
-#define CF_TO_NS_MUTABLE_CAST_DECL(name)                                \
-  CF_TO_NS_CAST_DECL(CF##name, NS##name)                                \
-                                                                        \
-  namespace base::mac {                                                 \
-  BASE_EXPORT NSMutable##name* CFToNSCast(CFMutable##name##Ref cf_val); \
-  BASE_EXPORT CFMutable##name##Ref NSToCFCast(NSMutable##name* ns_val); \
-  }
-
-// List of toll-free bridged types taken from:
-// http://www.cocoadev.com/index.pl?TollFreeBridged
-
-CF_TO_NS_MUTABLE_CAST_DECL(Array)
-CF_TO_NS_MUTABLE_CAST_DECL(AttributedString)
-CF_TO_NS_CAST_DECL(CFCalendar, NSCalendar)
-CF_TO_NS_MUTABLE_CAST_DECL(CharacterSet)
-CF_TO_NS_MUTABLE_CAST_DECL(Data)
-CF_TO_NS_CAST_DECL(CFDate, NSDate)
-CF_TO_NS_MUTABLE_CAST_DECL(Dictionary)
-CF_TO_NS_CAST_DECL(CFError, NSError)
-CF_TO_NS_CAST_DECL(CFLocale, NSLocale)
-CF_TO_NS_CAST_DECL(CFNumber, NSNumber)
-CF_TO_NS_CAST_DECL(CFRunLoopTimer, NSTimer)
-CF_TO_NS_CAST_DECL(CFTimeZone, NSTimeZone)
-CF_TO_NS_MUTABLE_CAST_DECL(Set)
-CF_TO_NS_CAST_DECL(CFReadStream, NSInputStream)
-CF_TO_NS_CAST_DECL(CFWriteStream, NSOutputStream)
-CF_TO_NS_MUTABLE_CAST_DECL(String)
-CF_TO_NS_CAST_DECL(CFURL, NSURL)
-
-#if BUILDFLAG(IS_IOS)
-CF_TO_NS_CAST_DECL(CTFont, UIFont)
-#else
-CF_TO_NS_CAST_DECL(CTFont, NSFont)
-#endif
-
-#undef CF_TO_NS_CAST_DECL
-#undef CF_TO_NS_MUTABLE_CAST_DECL
-#undef OBJC_CPP_CLASS_DECL
-
-#endif  // __OBJC__
-
-#endif  // !defined(__has_feature) || !__has_feature(objc_arc)
-
-namespace base::mac {
-
 // CFCast<>() and CFCastStrict<>() cast a basic CFTypeRef to a more
 // specific CoreFoundation type. The compatibility of the passed
 // object is found by comparing its opaque type against the
@@ -364,11 +292,13 @@ BASE_EXPORT base::ScopedCFTypeRef<CFURLRef> FilePathToCFURL(
 
 }  // namespace base::mac
 
-// Stream operations for CFTypes. They can be used with NSTypes as well
-// by using the NSToCFCast methods above.
-// e.g. LOG(INFO) << base::mac::NSToCFCast(@"foo");
-// Operator << can not be overloaded for ObjectiveC types as the compiler
-// can not distinguish between overloads for id with overloads for void*.
+// Stream operations for CFTypes. They can be used with Objective-C types as
+// well by using the casting methods in base/apple/bridging.h.
+//
+// For example: LOG(INFO) << base::apple::NSToCFPtrCast(@"foo");
+//
+// operator<<() can not be overloaded for Objective-C types as the compiler
+// cannot distinguish between overloads for id with overloads for void*.
 BASE_EXPORT extern std::ostream& operator<<(std::ostream& o,
                                             const CFErrorRef err);
 BASE_EXPORT extern std::ostream& operator<<(std::ostream& o,
