@@ -506,11 +506,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return FlipForWritingMode(LayoutOverflowRect());
   }
-  DeprecatedLayoutSize MaxLayoutOverflow() const {
-    NOT_DESTROYED();
-    return DeprecatedLayoutSize(LayoutOverflowRect().MaxX(),
-                                LayoutOverflowRect().MaxY());
-  }
 
   LayoutRect VisualOverflowRect() const;
   PhysicalRect PhysicalVisualOverflowRect() const final {
