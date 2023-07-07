@@ -4313,6 +4313,9 @@
         <message name="IDS_SETTINGS_APN_MENU_DETAILS" desc="Details button in three dotted menu for APNs">
           Details
         </message>
+        <message name="IDS_SETTINGS_APN_MENU_EDIT" desc="Edit button in three dotted menu for APNs">
+          Edit
+        </message>
         <message name="IDS_SETTINGS_APN_MENU_DISABLE" desc="Disable button in three dotted menu for APNs">
           Disable
         </message>
@@ -4344,7 +4347,7 @@
           APN details
         </message>
         <message name="IDS_SETTINGS_EDIT_APN_DIALOG_TITLE" desc="Title for the dialog for viewing an APN">
-          View and edit details
+          Edit APN details
         </message>
         <message name="IDS_SETTINGS_APN_INPUT_LABEL" desc="Label for the input field where the APN is specified, the asterisk indicates that this is required">
           APN*

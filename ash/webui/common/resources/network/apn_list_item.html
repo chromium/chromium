@@ -61,11 +61,10 @@
         isDisabled_)]]">
 </cr-icon-button>
 
-<!-- TODO(b/162365553) Add a11y support-->
 <cr-action-menu id="dotsMenu">
   <button id="detailsButton" class="dropdown-item"
       on-click="onDetailsClicked_">
-    [[i18n('apnMenuDetails')]]
+    [[getDetailsMenuItemLabel_(apn)]]
   </button>
   <template is="dom-if" if="[[shouldShowDisableMenuItem_(apn)]]" restamp>
     <button id="disableButton" class="dropdown-item"

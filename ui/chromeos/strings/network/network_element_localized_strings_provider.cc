@@ -336,6 +336,7 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"apnSettingsCustomApnsErrorMessage",
        IDS_SETTINGS_APN_CUSTOM_APNS_ERROR_MESSAGE},
       {"apnMenuDetails", IDS_SETTINGS_APN_MENU_DETAILS},
+      {"apnMenuEdit", IDS_SETTINGS_APN_MENU_EDIT},
       {"apnMenuDisable", IDS_SETTINGS_APN_MENU_DISABLE},
       {"apnMenuEnable", IDS_SETTINGS_APN_MENU_ENABLE},
       {"apnMenuRemove", IDS_SETTINGS_APN_MENU_REMOVE},

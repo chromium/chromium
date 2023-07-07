@@ -107,7 +107,6 @@ class ApnListItem extends ApnListItemBase {
 
   /**
    * Opens APN Details dialog.
-   * TODO(b/162365553): Implement.
    * @private
    */
   onDetailsClicked_() {
@@ -252,6 +251,15 @@ class ApnListItem extends ApnListItemBase {
    */
   computeIsDisabled_() {
     return !!this.apn.id && this.apn.state === ApnState.kDisabled;
+  }
+
+  /**
+   * Returns the label for the "Details" menu item.
+   * @return {string}
+   * @private
+   */
+  getDetailsMenuItemLabel_() {
+    return this.apn.id ? this.i18n('apnMenuEdit') : this.i18n('apnMenuDetails');
   }
 
   /**

@@ -219,6 +219,9 @@ suite('ApnListItemTest', function() {
         let apnDetailsClickedEvent =
             eventToPromise('show-apn-detail-dialog', window);
         assertTrue(!!apnListItem.$.detailsButton);
+        assertEquals(
+            apnListItem.i18n('apnMenuDetails'),
+            apnListItem.$.detailsButton.innerText.trim());
         apnListItem.$.detailsButton.click();
         let eventData = await apnDetailsClickedEvent;
 
@@ -232,6 +235,9 @@ suite('ApnListItemTest', function() {
           id: '1',
         };
         assertTrue(subLabel.hasAttribute('hidden'));
+        assertEquals(
+            apnListItem.i18n('apnMenuEdit'),
+            apnListItem.$.detailsButton.innerText.trim());
 
         apnDetailsClickedEvent =
             eventToPromise('show-apn-detail-dialog', window);
