@@ -6474,6 +6474,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="Commerce.PriceTracking.EditedBookmarkFolderFromPriceInsightsSidePanel">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when users click the bookmark folder name shown in the shopping
+    insights side panel to launch the bookmark editor.
+  </description>
+</action>
+
 <action name="Commerce.PriceTracking.FirstRunBubbleDismissed">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

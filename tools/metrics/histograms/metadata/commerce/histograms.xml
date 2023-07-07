@@ -485,6 +485,21 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.PriceTracking.PriceInsightsSidePanel.{Action}"
+    enum="PriceInsightsPriceBucket" expires_after="2024-01-03">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>zhiyuancai@chromium.org</owner>
+  <summary>
+    Records when user flips the toggle in price insights side panel to {Action}
+    price for this product, and records the current price bucket of the product
+    when this {Action} happens.
+  </summary>
+  <token key="Action">
+    <variant name="Track"/>
+    <variant name="Untrack"/>
+  </token>
+</histogram>
+
 <histogram name="Commerce.PriceTracking.PriceTrackedProductCount"
     units="subscriptions" expires_after="2023-12-04">
   <owner>ayman@chromium.org</owner>

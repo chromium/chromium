@@ -87631,6 +87631,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="The user chose to reload the full page."/>
 </enum>
 
+<enum name="PriceInsightsPriceBucket">
+  <int value="0" label="Price bucket unknown"/>
+  <int value="1" label="Price low"/>
+  <int value="2" label="Price typical"/>
+  <int value="3" label="Price high"/>
+</enum>
+
 <enum name="PriceNotificationEmailState">
   <int value="0" label="Enabled"/>
   <int value="1" label="Disabled"/>
