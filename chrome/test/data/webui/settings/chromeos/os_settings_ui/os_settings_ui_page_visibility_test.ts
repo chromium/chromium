@@ -63,28 +63,22 @@ suite('<os-settings-ui> page visibility', () => {
   }
 
   /**
-   * Asserts the page with the given |pageName| is the only visible page by
-   * checking:
-   * - Only one page is marked active
-   * - Active page does not have style "display: none"
-   * - Inactive pages have style "display: none"
+   * Asserts the following:
+   * - The page with |sectionName| is the only page marked active
+   * - The page with |sectionName| is the only page visible
    */
-  function assertOnlyVisiblePage(sectionName: SectionName): void {
+  function assertIsOnlyActiveAndVisiblePage(sectionName: SectionName): void {
     const pages =
         mainPageContainer.shadowRoot!.querySelectorAll('page-displayer');
-    let numActive = 0;
-
     for (const page of pages) {
-      if (page.hasAttribute('active')) {
-        numActive++;
+      if (page.section === Section[sectionName]) {
+        assertTrue(page.active);
         assertTrue(isVisible(page));
-        assertEquals(Section[sectionName], page.section);
       } else {
+        assertFalse(page.active);
         assertFalse(isVisible(page));
       }
     }
-
-    assertEquals(1, numActive);
   }
 
   /**
@@ -119,7 +113,7 @@ suite('<os-settings-ui> page visibility', () => {
   });
 
   test('Network page should be the default visible page', () => {
-    assertOnlyVisiblePage('kNetwork');
+    assertIsOnlyActiveAndVisiblePage('kNetwork');
   });
 
   interface MenuItemData {
@@ -213,7 +207,7 @@ suite('<os-settings-ui> page visibility', () => {
           flush();
           await pageReadyPromise;
 
-          assertOnlyVisiblePage(sectionName);
+          assertIsOnlyActiveAndVisiblePage(sectionName);
           assertPageIsFocused(sectionName);
         });
   }
