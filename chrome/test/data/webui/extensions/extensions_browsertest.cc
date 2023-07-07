@@ -251,3 +251,212 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest, LoadTimeData) {
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest, SafetyCheckPanel) {
   RunTestCase("SafetyCheckPanel");
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Extension Load Error Tests
+
+class CrExtensionsLoadErrorTest : public ExtensionsBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    ExtensionsBrowserTest::RunTest(
+        "extensions/load_error_test.js",
+        base::StringPrintf("runMochaTest('ExtensionLoadErrorTests', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsLoadErrorTest, RetryError) {
+  RunTestCase("RetryError");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsLoadErrorTest, RetrySuccess) {
+  RunTestCase("RetrySuccess");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsLoadErrorTest, CodeSection) {
+  RunTestCase("CodeSection");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsLoadErrorTest, PathWithoutSource) {
+  RunTestCase("PathWithoutSource");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsLoadErrorTest, GenericError) {
+  RunTestCase("GenericError");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Extension Manager Tests
+
+class CrExtensionsManagerUnitTest : public ExtensionsBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    ExtensionsBrowserTest::RunTest(
+        "extensions/manager_unit_test.js",
+        base::StringPrintf("runMochaTest('ExtensionManagerUnitTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, ItemOrder) {
+  RunTestCase("ItemOrder");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, SetItemData) {
+  RunTestCase("SetItemData");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, UpdateItemData) {
+  RunTestCase("UpdateItemData");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, ProfileSettings) {
+  RunTestCase("ProfileSettings");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, Uninstall) {
+  RunTestCase("Uninstall");
+}
+
+// Flaky since r621915: https://crbug.com/922490
+IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest,
+                       DISABLED_UninstallFromDetails) {
+  RunTestCase("UninstallFromDetails");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, ToggleIncognito) {
+  RunTestCase("ToggleIncognito");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, EnableAndDisable) {
+  RunTestCase("EnableAndDisable");
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+typedef ExtensionsBrowserTest CrExtensionsKioskModeManagerUnitTest;
+IN_PROC_BROWSER_TEST_F(CrExtensionsKioskModeManagerUnitTest, KioskMode) {
+  RunTest("extensions/kiosk_mode_manager_unit_test.js", "mocha.run()");
+}
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
+// Extension Keyboard Shortcuts Tests
+
+class CrExtensionsShortcutTest : public ExtensionsBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    ExtensionsBrowserTest::RunTest(
+        "extensions/keyboard_shortcuts_test.js",
+        base::StringPrintf("runMochaTest('ExtensionShortcutTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsShortcutTest, Layout) {
+  RunTestCase("Layout");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsShortcutTest, IsValidKeyCode) {
+  RunTestCase("IsValidKeyCode");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsShortcutTest, KeyStrokeToString) {
+  RunTestCase("KeyStrokeToString");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsShortcutTest, ScopeChange) {
+  RunTestCase("ScopeChange");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Extension Pack Dialog Tests
+
+class CrExtensionsPackDialogTest : public ExtensionsBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    ExtensionsBrowserTest::RunTest(
+        "extensions/pack_dialog_test.js",
+        base::StringPrintf("runMochaTest('ExtensionPackDialogTests', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsPackDialogTest, Interaction) {
+  RunTestCase("Interaction");
+}
+
+// Disabling on Windows due to flaky timeout on some build bots.
+// http://crbug.com/832885
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PackSuccess DISABLED_PackSuccess
+#else
+#define MAYBE_PackSuccess PackSuccess
+#endif
+IN_PROC_BROWSER_TEST_F(CrExtensionsPackDialogTest, MAYBE_PackSuccess) {
+  RunTestCase("PackSuccess");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsPackDialogTest, PackError) {
+  RunTestCase("PackError");
+}
+
+// Temporarily disabling on Mac due to flakiness.
+// http://crbug.com/877109
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PackWarning DISABLED_PackWarning
+#else
+#define MAYBE_PackWarning PackWarning
+#endif
+IN_PROC_BROWSER_TEST_F(CrExtensionsPackDialogTest, MAYBE_PackWarning) {
+  RunTestCase("PackWarning");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Extension Error Page Tests
+
+class CrExtensionsErrorPageTest : public ExtensionsBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    ExtensionsBrowserTest::RunTest(
+        "extensions/error_page_test.js",
+        base::StringPrintf("runMochaTest('ExtensionErrorPageTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsErrorPageTest, Layout) {
+  RunTestCase("Layout");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsErrorPageTest, CodeSection) {
+  RunTestCase("CodeSection");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsErrorPageTest, ErrorSelection) {
+  RunTestCase("ErrorSelection");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsErrorPageTest, InvalidUrl) {
+  RunTestCase("InvalidUrl");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Extension Code Section Tests
+
+class CrExtensionsCodeSectionTest : public ExtensionsBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    ExtensionsBrowserTest::RunTest(
+        "extensions/code_section_test.js",
+        base::StringPrintf("runMochaTest('ExtensionCodeSectionTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsCodeSectionTest, Layout) {
+  RunTestCase("Layout");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsCodeSectionTest, LongSource) {
+  RunTestCase("LongSource");
+}

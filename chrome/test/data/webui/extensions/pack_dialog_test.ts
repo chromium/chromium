@@ -15,18 +15,6 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {isElementVisible} from './test_util.js';
 
-const extension_pack_dialog_tests = {
-  suiteName: 'ExtensionPackDialogTests',
-  TestNames: {
-    Interaction: 'Interaction',
-    PackSuccess: 'PackSuccess',
-    PackWarning: 'PackWarning',
-    PackError: 'PackError',
-  },
-};
-
-Object.assign(window, {extension_pack_dialog_tests});
-
 class MockDelegate implements PackDialogDelegate {
   rootPromise: PromiseResolver<string>|null = null;
   keyPromise: PromiseResolver<string>|null = null;
@@ -55,7 +43,7 @@ class MockDelegate implements PackDialogDelegate {
   }
 }
 
-suite(extension_pack_dialog_tests.suiteName, function() {
+suite('ExtensionPackDialogTests', function() {
   let packDialog: ExtensionsPackDialogElement;
   let mockDelegate: MockDelegate;
 
@@ -67,7 +55,7 @@ suite(extension_pack_dialog_tests.suiteName, function() {
     document.body.appendChild(packDialog);
   });
 
-  test(extension_pack_dialog_tests.TestNames.Interaction, function() {
+  test('Interaction', function() {
     const dialogElement = packDialog.$.dialog.getNative();
 
     assertTrue(isElementVisible(dialogElement));
@@ -104,7 +92,7 @@ suite(extension_pack_dialog_tests.suiteName, function() {
     });
   });
 
-  test(extension_pack_dialog_tests.TestNames.PackSuccess, function() {
+  test('PackSuccess', function() {
     const dialogElement = packDialog.$.dialog.getNative();
     let packDialogAlert: ExtensionsPackDialogAlertElement;
     let alertElement: HTMLDialogElement;
@@ -155,7 +143,7 @@ suite(extension_pack_dialog_tests.suiteName, function() {
         });
   });
 
-  test(extension_pack_dialog_tests.TestNames.PackError, function() {
+  test('PackError', function() {
     const dialogElement = packDialog.$.dialog.getNative();
     let packDialogAlert: ExtensionsPackDialogAlertElement;
     let alertElement: HTMLDialogElement;
@@ -204,7 +192,7 @@ suite(extension_pack_dialog_tests.suiteName, function() {
         });
   });
 
-  test(extension_pack_dialog_tests.TestNames.PackWarning, function() {
+  test('PackWarning', function() {
     const dialogElement = packDialog.$.dialog.getNative();
     let packDialogAlert: ExtensionsPackDialogAlertElement;
     let alertElement: HTMLDialogElement;

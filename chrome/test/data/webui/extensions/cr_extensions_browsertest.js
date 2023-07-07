@@ -53,95 +53,18 @@ const CrExtensionsBrowserTestWithInstalledExtension =
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Extension Load Error Tests
-
-var CrExtensionsLoadErrorTest = class extends CrExtensionsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/load_error_test.js';
-  }
-
-  /** @override */
-  get suiteName() {
-    return extension_load_error_tests.suiteName;
-  }
-};
-
-TEST_F('CrExtensionsLoadErrorTest', 'RetryError', function() {
-  this.runMochaTest(extension_load_error_tests.TestNames.RetryError);
-});
-
-TEST_F('CrExtensionsLoadErrorTest', 'RetrySuccess', function() {
-  this.runMochaTest(extension_load_error_tests.TestNames.RetrySuccess);
-});
-
-TEST_F('CrExtensionsLoadErrorTest', 'CodeSection', function() {
-  this.runMochaTest(extension_load_error_tests.TestNames.CodeSection);
-});
-
-TEST_F('CrExtensionsLoadErrorTest', 'PathWithoutSource', function() {
-  this.runMochaTest(extension_load_error_tests.TestNames.PathWithoutSource);
-});
-
-TEST_F('CrExtensionsLoadErrorTest', 'GenericError', function() {
-  this.runMochaTest(extension_load_error_tests.TestNames.GenericError);
-});
-
-////////////////////////////////////////////////////////////////////////////////
 // Extension Manager Tests
 
-var CrExtensionsManagerUnitTest = class extends CrExtensionsBrowserTest {
+var CrExtensionsManagerUnitTestWithActivityLogFlag =
+    class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/manager_unit_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/manager_unit_test_with_activity_log_flag.js';
   }
 
   /** @override */
   get suiteName() {
     return extension_manager_unit_tests.suiteName;
-  }
-};
-
-TEST_F('CrExtensionsManagerUnitTest', 'ItemOrder', function() {
-  this.runMochaTest(extension_manager_unit_tests.TestNames.ItemOrder);
-});
-
-TEST_F('CrExtensionsManagerUnitTest', 'SetItemData', function() {
-  this.runMochaTest(extension_manager_unit_tests.TestNames.SetItemData);
-});
-
-TEST_F('CrExtensionsManagerUnitTest', 'UpdateItemData', function() {
-  this.runMochaTest(extension_manager_unit_tests.TestNames.UpdateItemData);
-});
-
-TEST_F('CrExtensionsManagerUnitTest', 'ProfileSettings', function() {
-  this.runMochaTest(extension_manager_unit_tests.TestNames.ProfileSettings);
-});
-
-TEST_F('CrExtensionsManagerUnitTest', 'Uninstall', function() {
-  this.runMochaTest(extension_manager_unit_tests.TestNames.Uninstall);
-});
-
-// Flaky since r621915: https://crbug.com/922490
-TEST_F(
-    'CrExtensionsManagerUnitTest', 'DISABLED_UninstallFromDetails', function() {
-      this.runMochaTest(
-          extension_manager_unit_tests.TestNames.UninstallFromDetails);
-    });
-
-TEST_F('CrExtensionsManagerUnitTest', 'ToggleIncognito', function() {
-  this.runMochaTest(extension_manager_unit_tests.TestNames.ToggleIncognitoMode);
-});
-
-TEST_F('CrExtensionsManagerUnitTest', 'EnableAndDisable', function() {
-  this.runMochaTest(extension_manager_unit_tests.TestNames.EnableAndDisable);
-});
-
-var CrExtensionsManagerUnitTestWithActivityLogFlag =
-    class extends CrExtensionsManagerUnitTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/manager_unit_test_with_activity_log_flag.js';
   }
 
   /** @override */
@@ -158,20 +81,6 @@ TEST_F(
       this.runMochaTest(
           extension_manager_unit_tests.TestNames.UpdateFromActivityLog);
     });
-
-GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
-var CrExtensionsKioskModeManagerUnitTest =
-    class extends CrExtensionsManagerUnitTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/kiosk_mode_manager_unit_test.js';
-  }
-};
-
-TEST_F('CrExtensionsKioskModeManagerUnitTest', 'KioskMode', function() {
-  this.runMochaTest(extension_manager_unit_tests.TestNames.KioskMode);
-});
-GEN('#endif');
 
 var CrExtensionsManagerTestWithMultipleExtensionTypesInstalled =
     class extends CrExtensionsBrowserTest {
@@ -290,82 +199,6 @@ TEST_F(
     });
 
 ////////////////////////////////////////////////////////////////////////////////
-// Extension Keyboard Shortcuts Tests
-
-var CrExtensionsShortcutTest = class extends CrExtensionsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/keyboard_shortcuts_test.js';
-  }
-
-  /** @override */
-  get suiteName() {
-    return extension_shortcut_tests.suiteName;
-  }
-};
-
-TEST_F('CrExtensionsShortcutTest', 'Layout', function() {
-  this.runMochaTest(extension_shortcut_tests.TestNames.Layout);
-});
-
-TEST_F('CrExtensionsShortcutTest', 'IsValidKeyCode', function() {
-  this.runMochaTest(extension_shortcut_tests.TestNames.IsValidKeyCode);
-});
-
-TEST_F('CrExtensionsShortcutTest', 'KeyStrokeToString', function() {
-  this.runMochaTest(extension_shortcut_tests.TestNames.IsValidKeyCode);
-});
-
-TEST_F('CrExtensionsShortcutTest', 'ScopeChange', function() {
-  this.runMochaTest(extension_shortcut_tests.TestNames.ScopeChange);
-});
-
-////////////////////////////////////////////////////////////////////////////////
-// Extension Pack Dialog Tests
-
-var CrExtensionsPackDialogTest = class extends CrExtensionsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/pack_dialog_test.js';
-  }
-
-  /** @override */
-  get suiteName() {
-    return extension_pack_dialog_tests.suiteName;
-  }
-};
-
-TEST_F('CrExtensionsPackDialogTest', 'Interaction', function() {
-  this.runMochaTest(extension_pack_dialog_tests.TestNames.Interaction);
-});
-
-// Disabling on Windows due to flaky timeout on some build bots.
-// http://crbug.com/832885
-GEN('#if BUILDFLAG(IS_WIN)');
-GEN('#define MAYBE_PackSuccess DISABLED_PackSuccess');
-GEN('#else');
-GEN('#define MAYBE_PackSuccess PackSuccess');
-GEN('#endif');
-TEST_F('CrExtensionsPackDialogTest', 'MAYBE_PackSuccess', function() {
-  this.runMochaTest(extension_pack_dialog_tests.TestNames.PackSuccess);
-});
-
-TEST_F('CrExtensionsPackDialogTest', 'PackError', function() {
-  this.runMochaTest(extension_pack_dialog_tests.TestNames.PackError);
-});
-
-// Temporarily disabling on Mac due to flakiness.
-// http://crbug.com/877109
-GEN('#if BUILDFLAG(IS_MAC)');
-GEN('#define MAYBE_PackWarning DISABLED_PackWarning');
-GEN('#else');
-GEN('#define MAYBE_PackWarning PackWarning');
-GEN('#endif');
-TEST_F('CrExtensionsPackDialogTest', 'MAYBE_PackWarning', function() {
-  this.runMochaTest(extension_pack_dialog_tests.TestNames.PackWarning);
-});
-
-////////////////////////////////////////////////////////////////////////////////
 // Extension Options Dialog Tests
 
 var CrExtensionsOptionsDialogTest = class extends CrExtensionsBrowserTest {
@@ -387,60 +220,6 @@ var CrExtensionsOptionsDialogTest = class extends CrExtensionsBrowserTest {
 
 TEST_F('CrExtensionsOptionsDialogTest', 'DISABLED_Layout', function() {
   this.runMochaTest(extension_options_dialog_tests.TestNames.Layout);
-});
-
-////////////////////////////////////////////////////////////////////////////////
-// Extension Error Page Tests
-
-var CrExtensionsErrorPageTest = class extends CrExtensionsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/error_page_test.js';
-  }
-
-  /** @override */
-  get suiteName() {
-    return extension_error_page_tests.suiteName;
-  }
-};
-
-TEST_F('CrExtensionsErrorPageTest', 'Layout', function() {
-  this.runMochaTest(extension_error_page_tests.TestNames.Layout);
-});
-
-TEST_F('CrExtensionsErrorPageTest', 'CodeSection', function() {
-  this.runMochaTest(extension_error_page_tests.TestNames.CodeSection);
-});
-
-TEST_F('CrExtensionsErrorPageTest', 'ErrorSelection', function() {
-  this.runMochaTest(extension_error_page_tests.TestNames.ErrorSelection);
-});
-
-TEST_F('CrExtensionsErrorPageTest', 'InvalidUrl', function() {
-  this.runMochaTest(extension_error_page_tests.TestNames.InvalidUrl);
-});
-
-////////////////////////////////////////////////////////////////////////////////
-// Extension Code Section Tests
-
-var CrExtensionsCodeSectionTest = class extends CrExtensionsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/code_section_test.js';
-  }
-
-  /** @override */
-  get suiteName() {
-    return extension_code_section_tests.suiteName;
-  }
-};
-
-TEST_F('CrExtensionsCodeSectionTest', 'Layout', function() {
-  this.runMochaTest(extension_code_section_tests.TestNames.Layout);
-});
-
-TEST_F('CrExtensionsCodeSectionTest', 'LongSource', function() {
-  this.runMochaTest(extension_code_section_tests.TestNames.LongSource);
 });
 
 ////////////////////////////////////////////////////////////////////////////////

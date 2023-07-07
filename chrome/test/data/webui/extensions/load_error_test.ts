@@ -13,19 +13,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {TestService} from './test_service.js';
 import {isElementVisible} from './test_util.js';
 
-const extension_load_error_tests = {
-  suiteName: 'ExtensionLoadErrorTests',
-  TestNames: {
-    RetryError: 'RetryError',
-    RetrySuccess: 'RetrySuccess',
-    CodeSection: 'Code Section',
-    PathWithoutSource: 'Path without source',
-    GenericError: 'Generic Error',
-  },
-};
-Object.assign(window, {extension_load_error_tests});
-
-suite(extension_load_error_tests.suiteName, function() {
+suite('ExtensionLoadErrorTests', function() {
   let loadError: ExtensionsLoadErrorElement;
 
   let mockDelegate: TestService;
@@ -47,7 +35,7 @@ suite(extension_load_error_tests.suiteName, function() {
     document.body.appendChild(loadError);
   });
 
-  test(extension_load_error_tests.TestNames.RetryError, async function() {
+  test('RetryError', async function() {
     const dialogElement =
         loadError.shadowRoot!.querySelector('cr-dialog')!.getNative();
     assertFalse(isElementVisible(dialogElement));
@@ -63,7 +51,7 @@ suite(extension_load_error_tests.suiteName, function() {
     assertFalse(isElementVisible(dialogElement));
   });
 
-  test(extension_load_error_tests.TestNames.RetrySuccess, async function() {
+  test('RetrySuccess', async function() {
     const dialogElement =
         loadError.shadowRoot!.querySelector('cr-dialog')!.getNative();
     assertFalse(isElementVisible(dialogElement));
@@ -76,7 +64,7 @@ suite(extension_load_error_tests.suiteName, function() {
     assertFalse(isElementVisible(dialogElement));
   });
 
-  test(extension_load_error_tests.TestNames.CodeSection, function() {
+  test('CodeSection', function() {
     assertTrue(loadError.$.code.shadowRoot!
                    .querySelector<HTMLElement>('#scroll-container')!.hidden);
     const loadErrorWithSource = {
@@ -95,7 +83,7 @@ suite(extension_load_error_tests.suiteName, function() {
                     .querySelector<HTMLElement>('#scroll-container')!.hidden);
   });
 
-  test(extension_load_error_tests.TestNames.PathWithoutSource, function() {
+  test('PathWithoutSource', function() {
     loadError.loadError = stubLoadError;
     flush();
 
@@ -107,7 +95,7 @@ suite(extension_load_error_tests.suiteName, function() {
         'some/path/');
   });
 
-  test(extension_load_error_tests.TestNames.GenericError, function() {
+  test('GenericError', function() {
     assertTrue(loadError.$.code.shadowRoot!
                    .querySelector<HTMLElement>('#scroll-container')!.hidden);
 

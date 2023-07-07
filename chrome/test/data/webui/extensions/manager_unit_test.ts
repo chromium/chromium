@@ -15,23 +15,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {TestService} from './test_service.js';
 import {createExtensionInfo} from './test_util.js';
 
-const extension_manager_unit_tests = {
-  suiteName: 'ExtensionManagerUnitTest',
-  TestNames: {
-    EnableAndDisable: 'enable and disable',
-    ItemOrder: 'item order',
-    ProfileSettings: 'profile settings',
-    ToggleIncognitoMode: 'toggle incognito mode',
-    Uninstall: 'uninstall',
-    UninstallFromDetails: 'uninstall while in details view',
-    SetItemData: 'set item data',
-    UpdateItemData: 'update item data',
-  },
-};
-
-Object.assign(window, {extension_manager_unit_tests});
-
-suite(extension_manager_unit_tests.suiteName, function() {
+suite('ExtensionManagerUnitTest', function() {
   let manager: ExtensionsManagerElement;
   let service: TestService;
 
@@ -76,7 +60,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
   }
 
   // Test that newly added items are inserted in the correct order.
-  test(extension_manager_unit_tests.TestNames.ItemOrder, function() {
+  test('ItemOrder', function() {
     assertEquals(0, getExtensions().length);
 
     const alphaFromStore = createExtensionInfo({
@@ -141,7 +125,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
     assertEquals(alphaFromStore.id, getExtension(5).id);
   });
 
-  test(extension_manager_unit_tests.TestNames.SetItemData, function() {
+  test('SetItemData', function() {
     const description = 'description';
 
     const extension = createExtensionInfo({description: description});
@@ -162,7 +146,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
   });
 
   test(
-      extension_manager_unit_tests.TestNames.UpdateItemData, function() {
+      'UpdateItemData', function() {
         const oldDescription = 'old description';
         const newDescription = 'new description';
 
@@ -202,7 +186,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
         assertEquals(newDescription, content.textContent!.trim());
       });
 
-  test(extension_manager_unit_tests.TestNames.ProfileSettings, function() {
+  test('ProfileSettings', function() {
     assertFalse(manager.inDevMode);
 
     service.profileStateChangedTarget.callListeners({inDeveloperMode: true});
@@ -218,7 +202,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
     assertFalse(manager.canLoadUnpacked);
   });
 
-  test(extension_manager_unit_tests.TestNames.Uninstall, function() {
+  test('Uninstall', function() {
     assertEquals(0, getExtensions().length);
 
     const extension = createExtensionInfo({
@@ -244,8 +228,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
   }
 
   test(
-      extension_manager_unit_tests.TestNames.UninstallFromDetails,
-      function(done) {
+      'UninstallFromDetails', function(done) {
         const extension = createExtensionInfo({
           location: chrome.developerPrivate.Location.FROM_STORE,
           name: 'Alpha',
@@ -271,7 +254,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
       });
 
   test(
-      extension_manager_unit_tests.TestNames.ToggleIncognitoMode, function() {
+      'ToggleIncognito', function() {
         assertEquals(0, getExtensions().length);
         const extension = createExtensionInfo({
           location: chrome.developerPrivate.Location.FROM_STORE,
@@ -306,7 +289,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
       });
 
   test(
-      extension_manager_unit_tests.TestNames.EnableAndDisable, function() {
+      'EnableAndDisable', function() {
         const ExtensionState = chrome.developerPrivate.ExtensionState;
         assertEquals(0, getExtensions().length);
         const extension = createExtensionInfo({
