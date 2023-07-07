@@ -268,7 +268,7 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
 
   scoped_refptr<SimpleFontData> font_data =
       FontCache::Get().GetFontData(request_description, settings_family_name);
-  if (request_description.HasSizeAdjust()) {
+  if (font_data && request_description.HasSizeAdjust()) {
     DCHECK(RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled());
     if (auto adjusted_size =
             FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
