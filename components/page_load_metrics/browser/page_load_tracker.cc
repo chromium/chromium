@@ -1051,11 +1051,12 @@ void PageLoadTracker::OnSoftNavigationChanged(
     return;
   }
 
-  CHECK(soft_navigation_metrics.count > soft_navigation_metrics_->count);
-  CHECK(soft_navigation_metrics.start_time >
-        soft_navigation_metrics_->start_time);
-  CHECK(soft_navigation_metrics.navigation_id !=
-        soft_navigation_metrics_->navigation_id);
+  // TODO(crbug.com/1451911): For soft navigation detections, the count and
+  // start time should be monotonically increasing and navigation id different
+  // each time. But we do see check failures on
+  // soft_navigation_metrics.count >= soft_navigation_metrics_->count when this
+  // OnSoftNavigationChanged is only invoked by soft navigation detection.
+  // we should investigate this issue.
 
   soft_navigation_metrics_ = soft_navigation_metrics.Clone();
 
