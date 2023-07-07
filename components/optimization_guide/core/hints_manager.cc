@@ -1348,7 +1348,7 @@ void HintsManager::CanApplyOptimizationAsync(
       HasAllInformationForDecisionAvailable(navigation_url,
                                             optimization_type)) {
     base::UmaHistogramEnumeration(
-        "OptimizationGuide.ApplyDecisionAsync." +
+        "OptimizationGuide.ApplyDecision." +
             GetStringNameForOptimizationType(optimization_type),
         type_decision);
     std::move(callback).Run(decision, metadata);
@@ -1555,7 +1555,7 @@ void HintsManager::OnReadyToInvokeRegisteredCallbacks(
           GetOptimizationGuideDecisionFromOptimizationTypeDecision(
               type_decision);
       base::UmaHistogramEnumeration(
-          "OptimizationGuide.ApplyDecisionAsync." +
+          "OptimizationGuide.ApplyDecision." +
               GetStringNameForOptimizationType(opt_type),
           type_decision);
       std::move(callback).Run(decision, metadata);

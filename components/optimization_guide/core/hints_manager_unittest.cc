@@ -1512,7 +1512,7 @@ TEST_F(HintsManagerTest,
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.CompressPublicImages",
+      "OptimizationGuide.ApplyDecision.CompressPublicImages",
       OptimizationTypeDecision::kNoHintAvailable, 1);
 }
 
@@ -1541,7 +1541,7 @@ TEST_F(
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.CompressPublicImages",
+      "OptimizationGuide.ApplyDecision.CompressPublicImages",
       OptimizationTypeDecision::kNotAllowedByHint, 1);
 }
 
@@ -2570,7 +2570,7 @@ TEST_F(HintsManagerFetchingTest,
 
   // The new API should have called the async API in the background.
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.CompressPublicImages",
+      "OptimizationGuide.ApplyDecision.CompressPublicImages",
       OptimizationTypeDecision::kAllowedByHint, 1);
 }
 
@@ -2659,7 +2659,7 @@ TEST_F(HintsManagerFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.CompressPublicImages",
+      "OptimizationGuide.ApplyDecision.CompressPublicImages",
       OptimizationTypeDecision::kAllowedByHint, 1);
 }
 
@@ -2695,7 +2695,7 @@ TEST_F(HintsManagerFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.CompressPublicImages",
+      "OptimizationGuide.ApplyDecision.CompressPublicImages",
       OptimizationTypeDecision::kAllowedByHint, 2);
 }
 
@@ -2724,7 +2724,7 @@ TEST_F(
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.ResourceLoading",
+      "OptimizationGuide.ApplyDecision.ResourceLoading",
       OptimizationTypeDecision::kNotAllowedByHint, 1);
 }
 
@@ -2752,7 +2752,7 @@ TEST_F(HintsManagerFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.CompressPublicImages",
+      "OptimizationGuide.ApplyDecision.CompressPublicImages",
       OptimizationTypeDecision::kNotAllowedByHint, 1);
 }
 
@@ -2784,7 +2784,7 @@ TEST_F(HintsManagerFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.CompressPublicImages",
+      "OptimizationGuide.ApplyDecision.CompressPublicImages",
       OptimizationTypeDecision::kAllowedByHint, 1);
 }
 
@@ -2815,7 +2815,7 @@ TEST_F(HintsManagerFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.PerformanceHints",
+      "OptimizationGuide.ApplyDecision.PerformanceHints",
       OptimizationTypeDecision::kNotAllowedByHint, 1);
 }
 
@@ -2844,7 +2844,7 @@ TEST_F(HintsManagerFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.PerformanceHints",
+      "OptimizationGuide.ApplyDecision.PerformanceHints",
       OptimizationTypeDecision::kNoHintAvailable, 1);
 }
 
@@ -2872,7 +2872,7 @@ TEST_F(HintsManagerFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.CompressPublicImages",
+      "OptimizationGuide.ApplyDecision.CompressPublicImages",
       OptimizationTypeDecision::kNoHintAvailable, 1);
 }
 
@@ -2902,7 +2902,7 @@ TEST_F(HintsManagerFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.CompressPublicImages",
+      "OptimizationGuide.ApplyDecision.CompressPublicImages",
       OptimizationTypeDecision::kNotAllowedByHint, 1);
 }
 
@@ -2933,7 +2933,7 @@ TEST_F(HintsManagerFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.LitePageRedirect",
+      "OptimizationGuide.ApplyDecision.LitePageRedirect",
       OptimizationTypeDecision::kNotAllowedByOptimizationFilter, 1);
 }
 
@@ -2964,7 +2964,7 @@ TEST_F(HintsManagerFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.LitePageRedirect",
+      "OptimizationGuide.ApplyDecision.LitePageRedirect",
       OptimizationTypeDecision::kNotAllowedByOptimizationFilter, 1);
 }
 
@@ -2995,7 +2995,7 @@ TEST_F(HintsManagerFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.CompressPublicImages",
+      "OptimizationGuide.ApplyDecision.CompressPublicImages",
       OptimizationTypeDecision::kAllowedByHint, 1);
 }
 

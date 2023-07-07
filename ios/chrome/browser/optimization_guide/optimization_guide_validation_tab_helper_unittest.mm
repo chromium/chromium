@@ -104,7 +104,7 @@ TEST_F(OptimizationGuideValidationTabHelperTest,
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.MetadataFetchValidation.Result", true, 1);
   histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.MetadataFetchValidation",
+      "OptimizationGuide.ApplyDecision.MetadataFetchValidation",
       optimization_guide::OptimizationTypeDecision::kAllowedByHint, 1);
 }
 
@@ -127,7 +127,7 @@ TEST_F(OptimizationGuideValidationTabHelperTest,
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.MetadataFetchValidation.Result", true, 1);
   histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.MetadataFetchValidation",
+      "OptimizationGuide.ApplyDecision.MetadataFetchValidation",
       optimization_guide::OptimizationTypeDecision::kAllowedByHint, 1);
 }
 
@@ -145,6 +145,6 @@ TEST_F(OptimizationGuideValidationTabHelperTest, TestInvalidMetadataFetch) {
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.MetadataFetchValidation.Result", false, 1);
   histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.ApplyDecisionAsync.MetadataFetchValidation",
+      "OptimizationGuide.ApplyDecision.MetadataFetchValidation",
       optimization_guide::OptimizationTypeDecision::kAllowedByHint, 1);
 }

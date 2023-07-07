@@ -179,20 +179,6 @@ chromium-metrics-reviews@google.com.
   <token key="OptimizationType" variants="OptimizationType"/>
 </histogram>
 
-<histogram name="OptimizationGuide.ApplyDecisionAsync.{OptimizationType}"
-    enum="OptimizationGuideOptimizationTypeDecision" expires_after="M121">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Records the decision made for whether {OptimizationType} can be applied on a
-    page load when all information for that page load has been sufficiently
-    gathered. This will be recorded once per callback registered, so if two
-    callbacks were registered for {OptimizationType} on the same page load, this
-    will be recorded twice for that case.
-  </summary>
-  <token key="OptimizationType" variants="OptimizationType"/>
-</histogram>
-
 <histogram name="OptimizationGuide.ClearFetchedHints.StoreAvailable"
     enum="BooleanAvailable" expires_after="M121">
   <owner>mcrouse@chromium.org</owner>
