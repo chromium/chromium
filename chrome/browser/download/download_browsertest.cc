@@ -4327,7 +4327,13 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
 }
 
 // Tests that download a canvas image will show the file chooser.
-IN_PROC_BROWSER_TEST_F(DownloadTest, SaveCanvasImage) {
+// TODO(crbug.com/1462760): Enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SaveCanvasImage DISABLED_SaveCanvasImage
+#else
+#define MAYBE_SaveCanvasImage SaveCanvasImage
+#endif
+IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_SaveCanvasImage) {
   EnableFileChooser(true);
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());

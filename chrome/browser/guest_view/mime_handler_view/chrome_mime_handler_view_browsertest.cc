@@ -471,7 +471,14 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, BeforeUnload_NoDialog) {
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, BeforeUnload_ShowDialog) {
+// TODO(crbug.com/1462760): Enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_BeforeUnload_ShowDialog DISABLED_BeforeUnload_ShowDialog
+#else
+#define MAYBE_BeforeUnload_ShowDialog BeforeUnload_ShowDialog
+#endif
+IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
+                       MAYBE_BeforeUnload_ShowDialog) {
   ASSERT_NO_FATAL_FAILURE(RunTest("testBeforeUnloadShowDialog.csv"));
   auto* web_contents = GetEmbedderWebContents();
   content::PrepContentsForBeforeUnloadTest(web_contents);
@@ -505,8 +512,16 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 }
 
+// TODO(crbug.com/1462760): Enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_BeforeUnloadEnabled_WithUserActivation \
+  DISABLED_BeforeUnloadEnabled_WithUserActivation
+#else
+#define MAYBE_BeforeUnloadEnabled_WithUserActivation \
+  BeforeUnloadEnabled_WithUserActivation
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
-                       BeforeUnloadEnabled_WithUserActivation) {
+                       MAYBE_BeforeUnloadEnabled_WithUserActivation) {
   ASSERT_NO_FATAL_FAILURE(RunTest("testBeforeUnloadWithUserActivation.csv"));
   auto* web_contents = GetEmbedderWebContents();
   // Prepare frames but don't trigger user activation across all frames.
