@@ -683,6 +683,11 @@ void UsbServiceWin::CreateDeviceObject(
     uint32_t port_number,
     UsbDeviceWin::DriverType driver_type,
     const std::wstring& driver_name) {
+  if (base::Contains(devices_by_path_, device_path)) {
+    USB_LOG(ERROR) << "Got duplicate add event for path: " << device_path;
+    return;
+  }
+
   // Devices that appear during initial enumeration are gathered into the first
   // result returned by GetDevices() and prevent device add/remove notifications
   // from being sent.
