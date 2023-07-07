@@ -198,6 +198,12 @@ function initialize() {
               frame.contentWindow.postMessage(message, companionOrigin);
             });
           }
+          // We also repost the same message 2000ms later as a failsafe
+          // to the race condition of loading the iFrame of the companion.
+          window.setTimeout(() => {
+            assert(frame.contentWindow);
+            frame.contentWindow.postMessage(message, companionOrigin);
+          }, 2000);
         }
       });
 

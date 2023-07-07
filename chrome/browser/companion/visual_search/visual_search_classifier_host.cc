@@ -14,12 +14,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/encode/SkJpegEncoder.h"
 #include "ui/gfx/image/buffer_w_stream.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/image/image_skia_rep.h"
 #include "url/gurl.h"
 
 namespace companion::visual_search {
@@ -142,18 +139,23 @@ void VisualSearchClassifierHost::StartClassificationWithModel(
     visual_search->StartVisualClassification(
         std::move(model), base64_config,
         result_handler_.BindNewPipeAndPassRemote());
+    LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.StartClassificationSuccess",
+                            visual_search.is_bound());
   } else {
     // Closing file in background thread since we did not make IPC.
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&CloseModelFile, std::move(model)));
   }
-
-  LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.StartClassificationSuccess",
-                          visual_search.is_bound());
+  // We clear url after processing because we want to allow the current url to
+  // to processed multiple times especially after changes in the viewport.
+  current_url_ = GURL::EmptyGURL();
 }
 
-void VisualSearchClassifierHost::CancelClassification() {
+void VisualSearchClassifierHost::CancelClassification(const GURL& visible_url) {
+  if (visible_url == current_url_) {
+    return;
+  }
   result_callback_.Reset();
   current_url_ = GURL::EmptyGURL();
   LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.ClassificationCancelled",

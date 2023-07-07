@@ -47,7 +47,7 @@ class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
 
   // Used to cancel and cleanup any ongoing classification; currently it
   // mainly tracks the model fetching step.
-  void CancelClassification();
+  void CancelClassification(const GURL& visible_url);
 
  private:
   // This method performs the actual mojom IPC to start classifier agent after
