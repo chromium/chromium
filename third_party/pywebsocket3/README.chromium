@@ -5,6 +5,7 @@ Version: 0
 License: New BSD
 License File: src/LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 pywebsocket3 is a WebSocket server which is intended for testing.
