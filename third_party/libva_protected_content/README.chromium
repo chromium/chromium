@@ -5,6 +5,7 @@ Date: 2020-11-02
 License: MIT
 License File: LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 This contains a header file supplied by Intel that is used for protected content
