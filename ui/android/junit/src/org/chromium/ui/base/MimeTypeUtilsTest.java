@@ -23,7 +23,6 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.ui.permissions.PermissionConstants;
 import org.chromium.url.GURL;
 
 /**
@@ -103,11 +102,11 @@ public class MimeTypeUtilsTest {
     @Test
     @Config(shadows = {ShadowMimeTypeUtilsForT.class})
     public void testPermissionForMimeTypeAndroidT() {
-        assertEquals("Wrong permission for audio mime type", PermissionConstants.READ_MEDIA_AUDIO,
+        assertEquals("Wrong permission for audio mime type", permission.READ_MEDIA_AUDIO,
                 MimeTypeUtils.getPermissionNameForMimeType(MimeTypeUtils.Type.AUDIO));
-        assertEquals("Wrong permission for image mime type", PermissionConstants.READ_MEDIA_IMAGES,
+        assertEquals("Wrong permission for image mime type", permission.READ_MEDIA_IMAGES,
                 MimeTypeUtils.getPermissionNameForMimeType(MimeTypeUtils.Type.IMAGE));
-        assertEquals("Wrong permission for video mime type", PermissionConstants.READ_MEDIA_VIDEO,
+        assertEquals("Wrong permission for video mime type", permission.READ_MEDIA_VIDEO,
                 MimeTypeUtils.getPermissionNameForMimeType(MimeTypeUtils.Type.VIDEO));
         assertNull("Wrong permission for pdf mime type",
                 MimeTypeUtils.getPermissionNameForMimeType(MimeTypeUtils.Type.PDF));

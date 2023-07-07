@@ -46,7 +46,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.ui.R;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.permissions.PermissionConstants;
 
 import java.io.File;
 import java.io.IOException;
@@ -301,13 +300,13 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             // Chrome to request any permission.
             if (BuildInfo.isAtLeastT()) {
                 if (!preferAndroidMediaPicker()) {
-                    if (!window.hasPermission(PermissionConstants.READ_MEDIA_IMAGES)
+                    if (!window.hasPermission(Manifest.permission.READ_MEDIA_IMAGES)
                             && shouldShowImageTypes()) {
-                        missingPermissions.add(PermissionConstants.READ_MEDIA_IMAGES);
+                        missingPermissions.add(Manifest.permission.READ_MEDIA_IMAGES);
                     }
-                    if (!window.hasPermission(PermissionConstants.READ_MEDIA_VIDEO)
+                    if (!window.hasPermission(Manifest.permission.READ_MEDIA_VIDEO)
                             && shouldShowVideoTypes()) {
-                        missingPermissions.add(PermissionConstants.READ_MEDIA_VIDEO);
+                        missingPermissions.add(Manifest.permission.READ_MEDIA_VIDEO);
                     }
                 }
             } else {
@@ -357,9 +356,9 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
                         if (shouldUsePhotoPicker) {
                             if (permissions[i].equals(storagePermission)
-                                    || permissions[i].equals(PermissionConstants.READ_MEDIA_IMAGES)
+                                    || permissions[i].equals(Manifest.permission.READ_MEDIA_IMAGES)
                                     || permissions[i].equals(
-                                            PermissionConstants.READ_MEDIA_VIDEO)) {
+                                            Manifest.permission.READ_MEDIA_VIDEO)) {
                                 WindowAndroid.showError(R.string.permission_denied_error);
                                 onFileNotSelected();
                                 return;

@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 package org.chromium.ui.base;
 
-import android.Manifest.permission;
+import android.Manifest;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.ui.permissions.PermissionConstants;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -76,16 +75,16 @@ public class MimeTypeUtils {
      */
     public @Nullable static String getPermissionNameForMimeType(@MimeTypeUtils.Type int mimeType) {
         if (useExternalStoragePermission()) {
-            return permission.READ_EXTERNAL_STORAGE;
+            return Manifest.permission.READ_EXTERNAL_STORAGE;
         }
 
         switch (mimeType) {
             case MimeTypeUtils.Type.AUDIO:
-                return PermissionConstants.READ_MEDIA_AUDIO;
+                return Manifest.permission.READ_MEDIA_AUDIO;
             case MimeTypeUtils.Type.IMAGE:
-                return PermissionConstants.READ_MEDIA_IMAGES;
+                return Manifest.permission.READ_MEDIA_IMAGES;
             case MimeTypeUtils.Type.VIDEO:
-                return PermissionConstants.READ_MEDIA_VIDEO;
+                return Manifest.permission.READ_MEDIA_VIDEO;
             default:
                 return null;
         }
