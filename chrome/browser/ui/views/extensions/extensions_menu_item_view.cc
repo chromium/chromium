@@ -354,7 +354,7 @@ void ExtensionMenuItemView::Update(
                                          SitePermissionsButtonState::kEnabled);
     std::u16string site_permissions_text =
         GetSitePermissionsButtonText(site_permissions_button_access);
-    site_permissions_button_->SetText(site_permissions_text);
+    site_permissions_button_->SetTitleText(site_permissions_text);
     site_permissions_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ACCESSIBLE_NAME,
         site_permissions_text));

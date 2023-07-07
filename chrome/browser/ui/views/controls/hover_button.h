@@ -75,6 +75,10 @@ class HoverButton : public views::LabelButton {
   void PreferredSizeChanged() override;
   void OnViewBoundsChanged(View* observed_view) override;
 
+  // Sets the title text to |text|, and updates the button size, when |title_|
+  // exists.
+  void SetTitleText(const std::u16string& text);
+
   // Sets the text style of the title considering the color of the background.
   // Passing |background_color| makes sure that the text color will not be
   // changed to a color that is not readable on the specified background.
@@ -89,13 +93,14 @@ class HoverButton : public views::LabelButton {
   // |title_| and |subtitle_| labels.
   void SetTooltipAndAccessibleName();
 
+  views::StyledLabel* title() const { return title_; }
+
  protected:
   // views::MenuButton:
   KeyClickAction GetKeyClickActionForEvent(const ui::KeyEvent& event) override;
   void StateChanged(ButtonState old_state) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 
-  views::StyledLabel* title() const { return title_; }
   views::Label* subtitle() const { return subtitle_; }
   views::View* icon_view() const { return icon_view_; }
   views::View* secondary_view() const { return secondary_view_; }

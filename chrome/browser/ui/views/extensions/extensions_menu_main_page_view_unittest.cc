@@ -35,6 +35,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_utils.h"
 
@@ -237,9 +238,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, NoSiteAccessRequested) {
   EXPECT_FALSE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_FALSE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
 
   // when site setting is set to "block all extensions":
   //   - site access toggle is hidden
@@ -274,9 +276,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_FALSE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_FALSE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
 
   // When site setting is set to "block all extensions":
   //   - site access toggle is hidden
@@ -316,9 +319,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE));
 
   // When site access is toggled OFF:
   //   - extension site access is "on click".
@@ -334,9 +338,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
   // When site access is toggled ON:
   //   - extension site access is "on site".
@@ -352,9 +357,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE));
 }
 
 // Verifies the site access toggle and site permissions button properties when
@@ -387,7 +393,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
   EXPECT_EQ(
-      menu_item->site_permissions_button_for_testing()->GetText(),
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
       l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
 
@@ -405,9 +411,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
   // When site access is toggled ON:
   //   - extension site access is "on site". Even though previously extension
@@ -425,9 +432,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE));
 }
 
 // Verifies the site access toggle and site permissions button properties for an
@@ -460,7 +468,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
   EXPECT_EQ(
-      menu_item->site_permissions_button_for_testing()->GetText(),
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
       l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
 
@@ -477,9 +485,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
   // When site setting is set to "block all extensions":
   //   - site access toggle is hidden.
@@ -519,7 +528,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetVisible());
   EXPECT_FALSE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_EQ(
-      menu_item->site_permissions_button_for_testing()->GetText(),
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
       l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
   EXPECT_FALSE(
@@ -543,7 +552,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetVisible());
   EXPECT_FALSE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_EQ(
-      menu_item->site_permissions_button_for_testing()->GetText(),
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
       l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
   EXPECT_FALSE(
@@ -578,9 +587,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
   // When site access toggle is toggled ON:
   //   - extension site access is "on click". Since extension only requested
@@ -598,9 +608,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
   // When site access toggle is toggled OFF:
   //   - extension site access is "on click".
@@ -616,9 +627,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 }
 
 // Verifies the site access toggle and site permissions button properties when
@@ -652,9 +664,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
   auto* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
@@ -679,9 +692,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
   // When extension is toggled OFF:
   //   - site interaction is "active tab".
@@ -700,9 +714,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 }
 
 // Verifies the site access toggle and site permissions button properties for an
@@ -730,9 +745,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ActiveTabRequested_DynamicUpdates) {
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
   // When site setting is set to "customize by extension" active tab is granted:
   //   - site access toggle is visible and on.
@@ -750,9 +766,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ActiveTabRequested_DynamicUpdates) {
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
   // Navigating to the same url after navigating to other url should remove tab
   // permissions. Therefore:
@@ -769,9 +786,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ActiveTabRequested_DynamicUpdates) {
   EXPECT_TRUE(menu_item->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_TRUE(
       menu_item->site_permissions_button_icon_for_testing()->GetVisible());
-  EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->title()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
   // When site setting is set to "block all extensions":
   //   - site access toggle is hidden.
