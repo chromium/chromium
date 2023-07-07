@@ -20,6 +20,7 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
+#include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
@@ -408,7 +409,11 @@ void AppServiceProxyAsh::OnPromiseApp(PromiseAppPtr delta) {
   if (!promise_app_service_) {
     return;
   }
-  PromiseAppService()->OnPromiseApp(std::move(delta));
+  promise_app_service_->OnPromiseApp(std::move(delta));
+}
+
+void AppServiceProxyAsh::RemovePromiseApp(const PackageId& package_id) {
+  promise_app_service_->RemovePromiseApp(package_id);
 }
 
 void AppServiceProxyAsh::RegisterShortcutPublisher(

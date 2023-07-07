@@ -31,6 +31,9 @@ class PromiseAppIconCache {
   // Checks whether there is at least one icon for a package ID.
   bool DoesPackageIdHaveIcons(const PackageId& package_id);
 
+  // Removes the icons cached for a specified package ID.
+  void RemoveIconsForPackageId(const PackageId& package_id);
+
   // For testing only. Retrieves pointers to all the registered icons for a
   // package ID.
   std::vector<PromiseAppIcon*> GetIconsForTesting(const PackageId& package_id);

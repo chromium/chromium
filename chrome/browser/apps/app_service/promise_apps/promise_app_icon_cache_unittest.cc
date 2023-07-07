@@ -78,4 +78,23 @@ TEST_F(PromiseAppIconCacheTest, SaveMultipleIcons) {
                                    gfx::test::CreateBitmap(1024, 1024)));
 }
 
+TEST_F(PromiseAppIconCacheTest, RemoveIconsForPackageId) {
+  PromiseAppIconPtr icon_small = CreateIcon(/*width=*/100);
+  PromiseAppIconPtr icon_med = CreateIcon(/*width=*/200);
+  PromiseAppIconPtr icon_large = CreateIcon(/*width=*/300);
+
+  icon_cache()->SaveIcon(kTestPackageId, std::move(icon_small));
+  icon_cache()->SaveIcon(kTestPackageId, std::move(icon_med));
+  icon_cache()->SaveIcon(kTestPackageId, std::move(icon_large));
+
+  // Confirm we have 3 icons.
+  EXPECT_EQ(icon_cache()->GetIconsForTesting(kTestPackageId).size(), 3u);
+
+  // Remove all icons for package ID.
+  icon_cache()->RemoveIconsForPackageId(kTestPackageId);
+
+  // Confirm we have no icons.
+  EXPECT_EQ(icon_cache()->GetIconsForTesting(kTestPackageId).size(), 0u);
+}
+
 }  // namespace apps

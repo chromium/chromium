@@ -64,6 +64,10 @@ class PromiseAppService {
   // request to the Almanac API to retrieve additional promise app info.
   void OnPromiseApp(PromiseAppPtr delta);
 
+  // Remove all details about a promise app from the PromiseAppRegistryCache and
+  // PromiseAppIconCache.
+  void RemovePromiseApp(const PackageId& package_id);
+
   // Allows us to skip Almanac implementation when running unit tests that don't
   // care about Almanac responses.
   void SetSkipAlmanacForTesting(bool skip_almanac);

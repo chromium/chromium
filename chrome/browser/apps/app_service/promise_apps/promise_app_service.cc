@@ -117,6 +117,14 @@ void PromiseAppService::OnPromiseApp(PromiseAppPtr delta) {
                      weak_ptr_factory_.GetWeakPtr(), package_id));
 }
 
+void PromiseAppService::RemovePromiseApp(const PackageId& package_id) {
+  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
+  promise_app->status = PromiseStatus::kRemove;
+  promise_app->should_show = false;
+  OnPromiseApp(std::move(promise_app));
+  promise_app_icon_cache_->RemoveIconsForPackageId(package_id);
+}
+
 void PromiseAppService::SetSkipAlmanacForTesting(bool skip_almanac) {
   skip_almanac_for_testing_ = skip_almanac;
 }

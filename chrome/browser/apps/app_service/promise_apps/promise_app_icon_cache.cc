@@ -36,6 +36,13 @@ bool PromiseAppIconCache::DoesPackageIdHaveIcons(const PackageId& package_id) {
   return icon_cache_.contains(package_id);
 }
 
+void PromiseAppIconCache::RemoveIconsForPackageId(const PackageId& package_id) {
+  if (!icon_cache_.contains(package_id)) {
+    return;
+  }
+  icon_cache_.erase(package_id);
+}
+
 std::vector<PromiseAppIcon*> PromiseAppIconCache::GetIconsForTesting(
     const PackageId& package_id) {
   std::vector<PromiseAppIcon*> icons;

@@ -44,7 +44,10 @@ void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
     observer.OnPromiseAppUpdate(PromiseAppUpdate(state, delta.get()));
   }
 
-  if (state) {
+  if (delta->status == PromiseStatus::kRemove &&
+      promise_app_map_.contains(delta->package_id)) {
+    promise_app_map_.erase(delta->package_id);
+  } else if (state) {
     // Update the existing promise app if it exists.
     PromiseAppUpdate::Merge(state, delta.get());
   } else {

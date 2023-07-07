@@ -58,6 +58,13 @@ class PromiseAppServiceTest : public testing::Test,
 
   PromiseAppService* service() { return service_.get(); }
 
+  PromiseAppIconPtr CreateIcon(int width) {
+    PromiseAppIconPtr icon = std::make_unique<PromiseAppIcon>();
+    icon->icon = gfx::test::CreateBitmap(width, width);
+    icon->width_in_pixels = width;
+    return icon;
+  }
+
   // Create a data string that represents an image of the requested dimensions.
   // This is used to produce mock content for the url_loader_factory.
   std::string CreateImageString(int width) {
@@ -232,6 +239,35 @@ TEST_F(PromiseAppServiceTest, OnPromiseApp_FailedIconDownload) {
   WaitForPromiseAppUpdates();
 
   // Icon cache should still be empty.
+  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+}
+
+TEST_F(PromiseAppServiceTest, RemovePromiseApp) {
+  // Register test promise app.
+  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(kTestPackageId);
+  promise_app->should_show = true;
+  promise_app->status = PromiseStatus::kInstalling;
+  service()->OnPromiseApp(std::move(promise_app));
+
+  // Confirm that the promise app gets registered.
+  const PromiseApp* promise_app_registered =
+      cache()->GetPromiseAppForTesting(kTestPackageId);
+  EXPECT_TRUE(promise_app_registered);
+  EXPECT_TRUE(promise_app_registered->should_show.has_value());
+  EXPECT_TRUE(promise_app_registered->should_show.value());
+  EXPECT_EQ(promise_app_registered->status, PromiseStatus::kInstalling);
+
+  // Add test icons.
+  icon_cache()->SaveIcon(kTestPackageId, CreateIcon(100));
+  icon_cache()->SaveIcon(kTestPackageId, CreateIcon(200));
+  EXPECT_TRUE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+
+  // Remove the promise app.
+  service()->RemovePromiseApp(kTestPackageId);
+
+  // Confirm that the promise app is now absent from the Promise App Registry
+  // and Promise App Icon Cache.
+  EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
   EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
 }
 }  // namespace apps

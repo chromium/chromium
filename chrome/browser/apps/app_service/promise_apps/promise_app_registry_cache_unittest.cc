@@ -88,6 +88,23 @@ TEST_F(PromiseAppRegistryCacheTest, GetAllPromiseApps) {
   EXPECT_EQ(promise_app_list[1]->package_id, package_id_2);
 }
 
+TEST_F(PromiseAppRegistryCacheTest, RemovePromiseApp) {
+  // Register a promise app.
+  auto promise_app = std::make_unique<PromiseApp>(kTestPackageId);
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Confirm that the promise app is registered.
+  EXPECT_TRUE(cache()->HasPromiseApp(kTestPackageId));
+
+  // Update the promise app with a kRemove status.
+  auto delta = std::make_unique<PromiseApp>(kTestPackageId);
+  delta->status = PromiseStatus::kRemove;
+  cache()->OnPromiseApp(std::move(delta));
+
+  // Confirm that the promise app was removed.
+  EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
+}
+
 class PromiseAppRegistryCacheObserverTest : public testing::Test,
                                             PromiseAppRegistryCache::Observer {
  public:

@@ -52,6 +52,7 @@ class AppPlatformMetricsService;
 class InstanceRegistryUpdater;
 class BrowserAppInstanceRegistry;
 class BrowserAppInstanceTracker;
+class PackageId;
 class PromiseAppRegistryCache;
 class PromiseAppService;
 class ShortcutPublisher;
@@ -155,6 +156,9 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   // Add or update a promise app in the Promise App Registry Cache.
   void OnPromiseApp(PromiseAppPtr delta);
+
+  // Remove all details of a promise app from the Promise App Service.
+  void RemovePromiseApp(const PackageId& package_id);
 
   // Registers `publisher` with the App Service as exclusively publishing
   // shortcut to app type `app_type`. `publisher` must have a lifetime equal to
