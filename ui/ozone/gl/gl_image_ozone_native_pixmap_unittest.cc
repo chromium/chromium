@@ -7,11 +7,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringize_macros.h"
-#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/client_native_pixmap.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_surface.h"
@@ -81,17 +82,15 @@ TYPED_TEST_P_WITH_EXPANSION(GLImageTest, MAYBE_Create) {
   const gfx::Size large_image_size(512, 512);
   const uint8_t* image_color = this->delegate_.GetImageColor();
 
-  // Create a small solid color green image of preferred format. This must
-  // succeed in order for a GLImage to be conformant.
-  scoped_refptr<gpu::GLImageNativePixmap> small_image =
+  // Create a small solid color green image of preferred format.
+  auto small_image_binding =
       this->delegate_.CreateSolidColorImage(small_image_size, image_color);
-  ASSERT_TRUE(small_image);
+  ASSERT_TRUE(small_image_binding);
 
-  // Create a large solid color green image of preferred format. This must
-  // succeed in order for a GLImage to be conformant.
-  scoped_refptr<gpu::GLImageNativePixmap> large_image =
+  // Create a large solid color green image of preferred format.
+  auto large_image_binding =
       this->delegate_.CreateSolidColorImage(large_image_size, image_color);
-  ASSERT_TRUE(large_image);
+  ASSERT_TRUE(large_image_binding);
 }
 
 // The GLImageTest test case verifies the behaviour that is expected from a
@@ -130,7 +129,7 @@ class GLImageNativePixmapTestDelegate {
     return false;
   }
 
-  scoped_refptr<gpu::GLImageNativePixmap> CreateSolidColorImage(
+  std::unique_ptr<ui::NativePixmapGLBinding> CreateSolidColorImage(
       const gfx::Size& size,
       const uint8_t color[4]) {
     ui::SurfaceFactoryOzone* surface_factory =
@@ -162,10 +161,15 @@ class GLImageNativePixmapTestDelegate {
       glGenTextures(1, &texture_id_);
     }
 
-    auto image = gpu::GLImageNativePixmap::CreateForTesting(
-        size, format, std::move(pixmap), GetTextureTarget(), texture_id_);
-    EXPECT_TRUE(image);
-    return image;
+    auto binding = ui::OzonePlatform::GetInstance()
+                       ->GetSurfaceFactoryOzone()
+                       ->GetCurrentGLOzone()
+                       ->ImportNativePixmap(std::move(pixmap), format,
+                                            gfx::BufferPlane::DEFAULT, size,
+                                            gfx::ColorSpace(),
+                                            GetTextureTarget(), texture_id_);
+    EXPECT_TRUE(binding);
+    return std::move(binding);
   }
 
   unsigned GetTextureTarget() const { return GL_TEXTURE_EXTERNAL_OES; }
