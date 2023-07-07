@@ -94,7 +94,8 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
     word_0_1->set_language("en");
     // `word_0_1.has_space_after()` should be defaulted to false.
     word_0_1->set_estimate_color_success(true);
-    word_0_1->set_background_rgb_value(50000);
+    // Background is set to black, to test color sensitivity in style blocks.
+    word_0_1->set_background_rgb_value(00000);
     word_0_1->set_foreground_rgb_value(25000);
     word_0_1->set_direction(chrome_screen_ai::DIRECTION_RIGHT_TO_LEFT);
 
