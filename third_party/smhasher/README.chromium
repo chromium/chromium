@@ -5,6 +5,7 @@ Revision: 147
 License: MIT, Public Domain
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 This is a library containing the MurmurHash3 function, and a hashing function
