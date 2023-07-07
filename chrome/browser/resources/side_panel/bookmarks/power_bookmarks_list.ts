@@ -752,7 +752,7 @@ export class PowerBookmarksListElement extends PolymerElement {
       } else {
         this.bookmarksApi_.openBookmark(
             event.detail.bookmark.id, this.activeFolderPath_.length, {
-              middleButton: false,
+              middleButton: event.detail.event.button === 1,
               altKey: event.detail.event.altKey,
               ctrlKey: event.detail.event.ctrlKey,
               metaKey: event.detail.event.metaKey,
