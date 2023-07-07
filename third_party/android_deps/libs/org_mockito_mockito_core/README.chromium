@@ -3,9 +3,10 @@ Short Name: mockito-core
 URL: https://github.com/mockito/mockito
 Version: 5.4.0
 License: The MIT License
-License File: NOT_SHIPPED
+License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no
+Shipped: no
 
 Description:
 Mockito mock objects library core API and implementation
