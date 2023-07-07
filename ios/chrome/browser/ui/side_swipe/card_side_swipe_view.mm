@@ -153,13 +153,23 @@ const CGFloat kResizeFactor = 4;
 - (UIImage*)smallGreyImage:(UIImage*)image {
   CGRect smallSize = CGRectMake(0, 0, image.size.width / kResizeFactor,
                                 image.size.height / kResizeFactor);
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat preferredFormat];
+  format.opaque = YES;
   // Using CIFilter here on iOS 5+ might be faster, but it doesn't easily
   // allow for resizing.  At the max size, it's still too slow for side swipe.
-  UIGraphicsBeginImageContextWithOptions(smallSize.size, YES, 0);
-  [image drawInRect:smallSize blendMode:kCGBlendModeLuminosity alpha:1.0];
-  UIImage* greyImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return greyImage;
+
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:smallSize.size
+                                             format:format];
+
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+    UIBezierPath* background = [UIBezierPath bezierPathWithRect:smallSize];
+    [UIColor.blackColor set];
+    [background fill];
+
+    [image drawInRect:smallSize blendMode:kCGBlendModeLuminosity alpha:1.0];
+  }];
 }
 
 // Create card view based on `_webStateList`'s index.

@@ -57,19 +57,14 @@ class SnapshotCacheTest : public PlatformTest {
     snapshotIDs_ = [[NSMutableArray alloc] initWithCapacity:kSnapshotCount];
 
     CGFloat scale = [snapshotCache_ snapshotScaleForDevice];
-    UIGraphicsBeginImageContextWithOptions(
-        CGSizeMake(kSnapshotPixelSize, kSnapshotPixelSize), NO, scale);
-    CGContextRef context = UIGraphicsGetCurrentContext();
+
     srand(1);
 
     for (NSUInteger i = 0; i < kSnapshotCount; ++i) {
-      UIImage* image = GenerateRandomImage(context);
-      [testImages_ addObject:image];
+      [testImages_ addObject:GenerateRandomImage(scale)];
       [snapshotIDs_
           addObject:[NSString stringWithFormat:@"SnapshotID-%" PRIuNS, i]];
     }
-
-    UIGraphicsEndImageContext();
 
     ClearDumpedImages();
   }
@@ -99,26 +94,28 @@ class SnapshotCacheTest : public PlatformTest {
     return image_path;
   }
 
-  // Generates an image filled with a random color.
-  UIImage* GenerateRandomImage(CGContextRef context) {
-    CGFloat r = rand() / CGFloat(RAND_MAX);
-    CGFloat g = rand() / CGFloat(RAND_MAX);
-    CGFloat b = rand() / CGFloat(RAND_MAX);
-    CGContextSetRGBStrokeColor(context, r, g, b, 1.0);
-    CGContextSetRGBFillColor(context, r, g, b, 1.0);
-    CGContextFillRect(
-        context, CGRectMake(0.0, 0.0, kSnapshotPixelSize, kSnapshotPixelSize));
-    return UIGraphicsGetImageFromCurrentImageContext();
-  }
+  // Generates an image of `scale`, filled with a random color.
+  UIImage* GenerateRandomImage(CGFloat scale) {
+    CGSize size = CGSizeMake(kSnapshotPixelSize, kSnapshotPixelSize);
+    UIGraphicsImageRendererFormat* format =
+        [UIGraphicsImageRendererFormat preferredFormat];
+    format.scale = scale;
+    format.opaque = NO;
 
-  // Generates an image of `size`, filled with a random color.
-  UIImage* GenerateRandomImage(CGSize size) {
-    UIGraphicsBeginImageContextWithOptions(size, /*opaque=*/NO,
-                                           UIScreen.mainScreen.scale);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    UIImage* image = GenerateRandomImage(context);
-    UIGraphicsEndImageContext();
-    return image;
+    UIGraphicsImageRenderer* renderer =
+        [[UIGraphicsImageRenderer alloc] initWithSize:size format:format];
+
+    return [renderer
+        imageWithActions:^(UIGraphicsImageRendererContext* UIContext) {
+          CGContextRef context = UIContext.CGContext;
+          CGFloat r = rand() / CGFloat(RAND_MAX);
+          CGFloat g = rand() / CGFloat(RAND_MAX);
+          CGFloat b = rand() / CGFloat(RAND_MAX);
+          CGContextSetRGBStrokeColor(context, r, g, b, 1.0);
+          CGContextSetRGBFillColor(context, r, g, b, 1.0);
+          CGContextFillRect(context, CGRectMake(0.0, 0.0, kSnapshotPixelSize,
+                                                kSnapshotPixelSize));
+        }];
   }
 
   // Flushes all the runloops internally used by the snapshot cache.
@@ -578,11 +575,7 @@ TEST_F(SnapshotCacheTest, SizeAndScalePreservation) {
 
   // Create an image with the expected snapshot scale.
   CGFloat scale = [cache snapshotScaleForDevice];
-  UIGraphicsBeginImageContextWithOptions(
-      CGSizeMake(kSnapshotPixelSize, kSnapshotPixelSize), NO, scale);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  UIImage* image = GenerateRandomImage(context);
-  UIGraphicsEndImageContext();
+  UIImage* image = GenerateRandomImage(scale);
 
   // Add the image to the cache then call handle low memory to ensure the image
   // is read from disk instead of the in-memory cache.
@@ -614,11 +607,7 @@ TEST_F(SnapshotCacheTest, DeleteRetinaImages) {
   }
 
   // Create an image with retina scale.
-  UIGraphicsBeginImageContextWithOptions(
-      CGSizeMake(kSnapshotPixelSize, kSnapshotPixelSize), NO, 2.0);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  UIImage* image = GenerateRandomImage(context);
-  UIGraphicsEndImageContext();
+  UIImage* image = GenerateRandomImage(2.0);
 
   // Add the image to the cache then call handle low memory to ensure the image
   // is read from disk instead of the in-memory cache.
@@ -642,8 +631,7 @@ TEST_F(SnapshotCacheTest, DeleteRetinaImages) {
 // `-removeImageWithSnapshotID:`.
 TEST_F(SnapshotCacheTest, ImageDeleted) {
   SnapshotCache* cache = GetSnapshotCache();
-  UIImage* image =
-      GenerateRandomImage(CGSizeMake(kSnapshotPixelSize, kSnapshotPixelSize));
+  UIImage* image = GenerateRandomImage(0);
   [cache setImage:image withSnapshotID:@"snapshotID"];
   base::FilePath image_path = [cache imagePathForSnapshotID:@"snapshotID"];
   [cache removeImageWithSnapshotID:@"snapshotID"];
@@ -655,8 +643,7 @@ TEST_F(SnapshotCacheTest, ImageDeleted) {
 // Tests that all images are deleted when calling `-removeAllImages`.
 TEST_F(SnapshotCacheTest, AllImagesDeleted) {
   SnapshotCache* cache = GetSnapshotCache();
-  UIImage* image =
-      GenerateRandomImage(CGSizeMake(kSnapshotPixelSize, kSnapshotPixelSize));
+  UIImage* image = GenerateRandomImage(0);
   [cache setImage:image withSnapshotID:@"snapshotID-1"];
   [cache setImage:image withSnapshotID:@"snapshotID-2"];
   base::FilePath image_1_path = [cache imagePathForSnapshotID:@"snapshotID-1"];

@@ -91,12 +91,6 @@ UIImage* NativeReversibleImage(int imageID, BOOL reversible);
 // reversible; equivalent to NativeReversibleImage(imageID, NO).
 UIImage* NativeImage(int imageID);
 
-// Returns an output image where each pixel has RGB values equal to a color and
-// the alpha value sampled from the given image. The RGB values of the image are
-// ignored. If the color has alpha value of less than one, then the entire
-// output image's alpha is scaled by the color's alpha value.
-UIImage* TintImage(UIImage* image, UIColor* color);
-
 // Returns the first responder in the subviews of `view`, or nil if no view in
 // the subtree is the first responder.
 UIView* GetFirstResponderSubview(UIView* view);

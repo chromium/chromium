@@ -43,45 +43,50 @@ UIImage* ConfirmationAlertImage() {
   CGRect frame = CGRectInset(tileFrame, -kTileShadowRadius, -kTileShadowRadius);
   // Recenter the tile frame.
   tileFrame = CGRectOffset(tileFrame, kTileShadowRadius, kTileShadowRadius);
-  UIGraphicsBeginImageContextWithOptions(frame.size, NO, 0);
 
-  // Draw the background with a shadow.
-  [[UIColor colorNamed:kBlue500Color] setFill];
-  UIBezierPath* path =
-      [UIBezierPath bezierPathWithRoundedRect:tileFrame
-                                 cornerRadius:kTileCornerRadius];
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextSaveGState(context);
-  CGColorRef shadowColor =
-      [UIColor.blackColor colorWithAlphaComponent:kTileShadowOpacity].CGColor;
-  CGContextSetShadowWithColor(
-      context, CGSizeMake(kTileShadowOffsetX, kTileShadowOffsetY),
-      kTileShadowRadius, shadowColor);
-  [path fill];
-  CGContextRestoreGState(context);
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat preferredFormat];
+  format.opaque = NO;
 
-  // Draw the icon.
-  [UIColor.whiteColor setFill];
-  UIImage* icon =
-      DefaultSymbolTemplateWithPointSize(kSquareOnSquareDashedSymbol, 0);
-  if (icon.size.width > icon.size.height) {
-    CGFloat ratio = icon.size.height / icon.size.width;
-    CGFloat drawingWidth = kTileSize - 2 * kIconPadding;
-    CGFloat drawingHeight = drawingWidth * ratio;
-    CGFloat verticalPadding = (kTileSize - drawingHeight) / 2;
-    [icon drawInRect:CGRectInset(tileFrame, kIconPadding, verticalPadding)];
-  } else {
-    CGFloat ratio = icon.size.width / icon.size.height;
-    CGFloat drawingHeight = kTileSize - 2 * kIconPadding;
-    CGFloat drawingWidth = drawingHeight * ratio;
-    CGFloat horizontalPadding = (kTileSize - drawingWidth) / 2;
-    [icon drawInRect:CGRectInset(tileFrame, horizontalPadding, kIconPadding)];
-  }
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:frame.size format:format];
 
-  // Render the image.
-  UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return image;
+  return [renderer imageWithActions:^(
+                       UIGraphicsImageRendererContext* UIContext) {
+    CGContextRef context = UIContext.CGContext;
+
+    // Draw the background with a shadow.
+    [[UIColor colorNamed:kBlue500Color] setFill];
+    UIBezierPath* path =
+        [UIBezierPath bezierPathWithRoundedRect:tileFrame
+                                   cornerRadius:kTileCornerRadius];
+    CGContextSaveGState(context);
+    CGColorRef shadowColor =
+        [UIColor.blackColor colorWithAlphaComponent:kTileShadowOpacity].CGColor;
+    CGContextSetShadowWithColor(
+        context, CGSizeMake(kTileShadowOffsetX, kTileShadowOffsetY),
+        kTileShadowRadius, shadowColor);
+    [path fill];
+    CGContextRestoreGState(context);
+
+    // Draw the icon.
+    [UIColor.whiteColor setFill];
+    UIImage* icon =
+        DefaultSymbolTemplateWithPointSize(kSquareOnSquareDashedSymbol, 0);
+    if (icon.size.width > icon.size.height) {
+      CGFloat ratio = icon.size.height / icon.size.width;
+      CGFloat drawingWidth = kTileSize - 2 * kIconPadding;
+      CGFloat drawingHeight = drawingWidth * ratio;
+      CGFloat verticalPadding = (kTileSize - drawingHeight) / 2;
+      [icon drawInRect:CGRectInset(tileFrame, kIconPadding, verticalPadding)];
+    } else {
+      CGFloat ratio = icon.size.width / icon.size.height;
+      CGFloat drawingHeight = kTileSize - 2 * kIconPadding;
+      CGFloat drawingWidth = drawingHeight * ratio;
+      CGFloat horizontalPadding = (kTileSize - drawingWidth) / 2;
+      [icon drawInRect:CGRectInset(tileFrame, horizontalPadding, kIconPadding)];
+    }
+  }];
 }
 
 }  // namespace

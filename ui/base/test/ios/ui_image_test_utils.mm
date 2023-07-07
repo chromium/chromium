@@ -19,13 +19,20 @@ UIImage* UIImageWithSizeAndSolidColor(CGSize const& size, UIColor* color) {
 UIImage* UIImageWithSizeAndSolidColorAndScale(CGSize const& size,
                                               UIColor* color,
                                               CGFloat scale) {
-  UIGraphicsBeginImageContextWithOptions(size, /*opaque=*/YES, scale);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextSetFillColorWithColor(context, [color CGColor]);
-  CGContextFillRect(context, CGRectMake(0, 0, size.width, size.height));
-  UIImage* image_with_solid_color = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return image_with_solid_color;
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat preferredFormat];
+  format.scale = scale;
+  format.opaque = YES;
+
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:size format:format];
+
+  return
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* ui_context) {
+        CGContextRef context = ui_context.CGContext;
+        CGContextSetFillColorWithColor(context, [color CGColor]);
+        CGContextFillRect(context, CGRectMake(0, 0, size.width, size.height));
+      }];
 }
 
 bool UIImagesAreEqual(UIImage* image_1, UIImage* image_2) {
