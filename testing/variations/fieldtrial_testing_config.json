@@ -1396,10 +1396,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_WithNameRequirement",
+                    "name": "Enabled",
                     "enable_features": [
-                        "AutofillAccountProfileStorage",
-                        "AutofillRequireNameForProfileImport"
+                        "AutofillAccountProfileStorage"
                     ],
                     "disable_features": [
                         "SyncEnableContactInfoDataTypeForDasherUsers"
