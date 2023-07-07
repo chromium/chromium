@@ -184,8 +184,6 @@ bool IsAddToCartButtonSpec(int height, int width) {
 }
 
 bool IsAddToCartButtonTag(const std::string& tag) {
-  static re2::RE2::Options options;
-  options.set_case_sensitive(false);
   static base::NoDestructor<std::set<std::string>> set([] {
     std::vector<std::string> tags =
         base::SplitString(commerce::kAddToCartButtonTagPattern.Get(), ",",
