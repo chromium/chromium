@@ -77,6 +77,17 @@ Node* GetOutermostNonSearchableAncestor(const Node& node) {
   return nullptr;
 }
 
+const ComputedStyle* EnsureComputedStyleForFind(Node& node) {
+  Element* element = DynamicTo<Element>(node);
+  if (!element) {
+    element = FlatTreeTraversal::ParentElement(node);
+  }
+  if (element) {
+    return element->EnsureComputedStyle();
+  }
+  return nullptr;
+}
+
 // Returns the next/previous node after |start_node| (including start node) that
 // is a text node and is searchable and visible.
 template <class Direction>
@@ -92,7 +103,7 @@ Node* GetVisibleTextNode(Node& start_node) {
   }
   // Move to first text node that's visible.
   while (node) {
-    const ComputedStyle* style = node->EnsureComputedStyle();
+    const ComputedStyle* style = EnsureComputedStyleForFind(*node);
     if (ShouldIgnoreContents(*node) ||
         (style && style->Display() == EDisplay::kNone)) {
       // This element and its descendants are not visible, skip it.
@@ -360,7 +371,7 @@ void FindBuffer::CollectTextUntilBlockBoundary(
       node = FlatTreeTraversal::NextSkippingChildren(*node);
       continue;
     }
-    const ComputedStyle* style = node->EnsureComputedStyle();
+    const ComputedStyle* style = EnsureComputedStyleForFind(*node);
     if (style->Display() == EDisplay::kNone) {
       // This element and its descendants are not visible, skip it.
       // We can safely just check the computed style of this node since
