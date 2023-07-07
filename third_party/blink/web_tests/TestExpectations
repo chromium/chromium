@@ -217,7 +217,7 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 # <canvas> renders via IOSurface and OffscreenCanvas does not.
 crbug.com/1311760 [ Mac ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-paths-in-worker.html [ Failure ]
 
-crbug.com/1302831 wpt_internal/prerender/restriction-web-auth.https.html [ Crash Failure Pass Timeout ]
+crbug.com/1462226 wpt_internal/prerender/restriction-web-auth.https.html [ Crash Failure Pass Timeout ]
 
 crbug.com/1461952 [ Win10.20h2 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Pass Timeout ]
 
