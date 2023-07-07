@@ -5,6 +5,7 @@ CPEPrefix: cpe:/a:xmlsoft:libxml2:2.11.0
 License: MIT
 License File: src/Copyright
 Security Critical: yes
+Shipped: yes
 
 Description:
 
