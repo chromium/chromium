@@ -582,8 +582,9 @@ TEST_P(ScrollbarsTest, OverlayScrollbarChangeToDisplayNoneDynamically) {
   DCHECK(!scrollable_root->HorizontalScrollbar());
 
   // Set display:none.
-  div->setAttribute(html_names::kClassAttr, "noscrollbars");
-  document.body()->setAttribute(html_names::kClassAttr, "noscrollbars");
+  div->setAttribute(html_names::kClassAttr, AtomicString("noscrollbars"));
+  document.body()->setAttribute(html_names::kClassAttr,
+                                AtomicString("noscrollbars"));
   Compositor().BeginFrame();
 
   EXPECT_TRUE(scrollable_div->VerticalScrollbar());
@@ -635,7 +636,7 @@ TEST_P(ScrollbarsTest, OverlayScrolblarNotCreatedInUnscrollableAxis) {
   ASSERT_FALSE(scrollable_area->HorizontalScrollbar());
 
   // Mutate the opacity so that we cause a style-only change.
-  target->setAttribute(html_names::kStyleAttr, "opacity: 0.9");
+  target->setAttribute(html_names::kStyleAttr, AtomicString("opacity: 0.9"));
   Compositor().BeginFrame();
 
   ASSERT_FALSE(scrollable_area->VerticalScrollbar());
@@ -1497,7 +1498,7 @@ TEST_P(ScrollbarsTest, CustomScrollbarWhenStyleOwnerChange) {
   DCHECK(!div_scrollable->VerticalScrollbar()->IsOverlayScrollbar());
   DCHECK(!div_scrollable->VerticalScrollbar()->GetTheme().IsMockTheme());
 
-  div->setAttribute(html_names::kClassAttr, "custom");
+  div->setAttribute(html_names::kClassAttr, AtomicString("custom"));
   Compositor().BeginFrame();
 
   EXPECT_TRUE(div_scrollable->VerticalScrollbar()->IsCustomScrollbar());
@@ -2191,7 +2192,7 @@ TEST_P(ScrollbarsTest, AutosizeExpandingContentScrollable) {
 
   GetDocument()
       .getElementById(AtomicString("spacer"))
-      ->setAttribute(html_names::kStyleAttr, "height: 900px");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("height: 900px"));
   Compositor().BeginFrame();
 
   // Now scrollable due to overflow.
@@ -2233,7 +2234,7 @@ TEST_P(ScrollbarsTest,
   EXPECT_FALSE(scrollable_div->ScrollbarsHiddenIfOverlay());
 
   // Set display:none calls Dispose().
-  div->setAttribute(html_names::kClassAttr, "hide");
+  div->setAttribute(html_names::kClassAttr, AtomicString("hide"));
   Compositor().BeginFrame();
 
   // After paint layer in scrollable dispose, we can still call scrollbar hidden
@@ -2277,7 +2278,7 @@ TEST_P(ScrollbarsTest, PLSADisposeShouldClearPointerInLayers) {
     EXPECT_TRUE(scrollable_div->UsesCompositedScrolling());
   }
 
-  div->setAttribute(html_names::kClassAttr, "hide");
+  div->setAttribute(html_names::kClassAttr, AtomicString("hide"));
   document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   EXPECT_FALSE(paint_layer->GetScrollableArea());
@@ -2731,7 +2732,8 @@ TEST_P(ScrollbarsTest, UseCounterCustomScrollbarPercentSize) {
   // Show vertical scrollbar which uses fixed lengths for thickness
   // (width: 10px) and thumb minimum length (min-height: 10px).
   auto* child = GetDocument().getElementById(AtomicString("child"));
-  child->setAttribute(html_names::kStyleAttr, "width: 50px; height: 200px");
+  child->setAttribute(html_names::kStyleAttr,
+                      AtomicString("width: 50px; height: 200px"));
   Compositor().BeginFrame();
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kCustomScrollbarPercentThickness));
@@ -2740,7 +2742,8 @@ TEST_P(ScrollbarsTest, UseCounterCustomScrollbarPercentSize) {
 
   // Show horizontal scrollbar which uses percent lengths for thickness
   // (height: 10%) and thumb minimum length (min-width: 10%).
-  child->setAttribute(html_names::kStyleAttr, "width: 200px; height: 50px");
+  child->setAttribute(html_names::kStyleAttr,
+                      AtomicString("width: 200px; height: 50px"));
   Compositor().BeginFrame();
   EXPECT_TRUE(
       GetDocument().IsUseCounted(WebFeature::kCustomScrollbarPercentThickness));
@@ -2792,7 +2795,7 @@ TEST_P(ScrollbarsTest, CheckScrollCornerIfThereIsNoScrollbar) {
   EXPECT_TRUE(scrollable_container->ScrollCorner());
 
   // Make the container non-scrollable so the scrollbar and corner disappear.
-  element->setAttribute(html_names::kStyleAttr, "width: 100px;");
+  element->setAttribute(html_names::kStyleAttr, AtomicString("width: 100px;"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   EXPECT_FALSE(scrollable_container->HasScrollbar());
@@ -2832,7 +2835,7 @@ TEST_P(ScrollbarsTest, NoNeedsBeginFrameForCustomScrollbarAfterBeginFrame) {
   EXPECT_FALSE(thumb->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(Compositor().NeedsBeginFrame());
 
-  target->setAttribute(html_names::kStyleAttr, "width: 400px");
+  target->setAttribute(html_names::kStyleAttr, AtomicString("width: 400px"));
   EXPECT_TRUE(Compositor().NeedsBeginFrame());
   Compositor().BeginFrame();
   EXPECT_FALSE(thumb->ShouldCheckForPaintInvalidation());

@@ -687,8 +687,8 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_TRUE(style->NonInheritedVariables()
                   ->GetData(AtomicString("--x"))
                   .value_or(nullptr));
-  EXPECT_TRUE(style->GetVariableData("--y"));
-  EXPECT_TRUE(style->GetVariableData("--z"));
+  EXPECT_TRUE(style->GetVariableData(AtomicString("--y")));
+  EXPECT_TRUE(style->GetVariableData(AtomicString("--z")));
 
   NiceMock<MockCSSPaintImageGenerator>* mock_generator =
       MakeGarbageCollected<NiceMock<MockCSSPaintImageGenerator>>();
@@ -699,12 +699,13 @@ TEST_P(AnimationCompositorAnimationsTest,
           CSSPaintImageGenerator::GetCreateFunctionForTesting(),
           ProvideOverrideGenerator);
 
-  mock_generator->AddCustomProperty("--foo");
-  mock_generator->AddCustomProperty("--bar");
-  mock_generator->AddCustomProperty("--loo");
-  mock_generator->AddCustomProperty("--y");
-  mock_generator->AddCustomProperty("--z");
-  auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("foopainter");
+  mock_generator->AddCustomProperty(AtomicString("--foo"));
+  mock_generator->AddCustomProperty(AtomicString("--bar"));
+  mock_generator->AddCustomProperty(AtomicString("--loo"));
+  mock_generator->AddCustomProperty(AtomicString("--y"));
+  mock_generator->AddCustomProperty(AtomicString("--z"));
+  auto* ident =
+      MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("foopainter"));
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident);
   paint_value->CreateGeneratorForTesting(GetDocument());
   StyleGeneratedImage* style_image = MakeGarbageCollected<StyleGeneratedImage>(
@@ -1477,7 +1478,8 @@ TEST_P(AnimationCompositorAnimationsTest, CanStartEffectOnCompositorBasic) {
 
   // Set SVGAttribute keeps a pointer to this thing for the lifespan of
   // the Keyframe.  This is ugly but sufficient to work around it.
-  QualifiedName fake_name("prefix", "local", "uri");
+  QualifiedName fake_name(AtomicString("prefix"), AtomicString("local"),
+                          AtomicString("uri"));
 
   StringKeyframeVector non_css_frames_vector;
   non_css_frames_vector.push_back(CreateSVGKeyframe(fake_name, "cargo", 0.0));
@@ -2064,7 +2066,8 @@ void UpdateDummyEffectNode(ObjectPaintProperties& properties,
 
 TEST_P(AnimationCompositorAnimationsTest,
        CanStartElementOnCompositorTransformBasedOnPaintProperties) {
-  Persistent<Element> element = GetDocument().CreateElementForBinding("shared");
+  Persistent<Element> element =
+      GetDocument().CreateElementForBinding(AtomicString("shared"));
   LayoutObjectProxy* layout_object = LayoutObjectProxy::Create(element.Get());
   layout_object->EnsureIdForTestingProxy();
   element->SetLayoutObject(layout_object);
@@ -2099,7 +2102,8 @@ TEST_P(AnimationCompositorAnimationsTest,
 
 TEST_P(AnimationCompositorAnimationsTest,
        CanStartElementOnCompositorEffectBasedOnPaintProperties) {
-  Persistent<Element> element = GetDocument().CreateElementForBinding("shared");
+  Persistent<Element> element =
+      GetDocument().CreateElementForBinding(AtomicString("shared"));
   LayoutObjectProxy* layout_object = LayoutObjectProxy::Create(element.Get());
   layout_object->EnsureIdForTestingProxy();
   element->SetLayoutObject(layout_object);
@@ -2311,7 +2315,7 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   // Change the backface visibility, while the compositor animation is
   // happening.
-  target->setAttribute(html_names::kClassAttr, "backface-hidden");
+  target->setAttribute(html_names::kClassAttr, AtomicString("backface-hidden"));
   ForceFullCompositingUpdate();
   // Make sure the setting made it to both blink and all the way to CC.
   EXPECT_EQ(transform->GetBackfaceVisibilityForTesting(),
@@ -2426,7 +2430,7 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   auto CanStartAnimation = [&](const char* id) -> bool {
     return CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG(
-        To<SVGElement>(*GetDocument().getElementById(id)));
+        To<SVGElement>(*GetElementById(id)));
   };
 
   EXPECT_TRUE(CanStartAnimation("svg"));

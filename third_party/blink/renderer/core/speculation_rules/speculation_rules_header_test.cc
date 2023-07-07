@@ -65,8 +65,8 @@ TEST(SpeculationRulesHeaderTest, NoMetricsWithoutHeader) {
 
   ResourceResponse document_response(KURL("https://speculation-rules.test/"));
   document_response.SetHttpStatusCode(200);
-  document_response.SetMimeType("text/html");
-  document_response.SetTextEncodingName("UTF-8");
+  document_response.SetMimeType(AtomicString("text/html"));
+  document_response.SetTextEncodingName(AtomicString("UTF-8"));
   SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
       document_response, *page_holder.GetFrame().DomWindow());
 
@@ -86,9 +86,10 @@ TEST(SpeculationRulesHeaderTest, UnparseableHeader) {
 
   ResourceResponse document_response(KURL("https://speculation-rules.test/"));
   document_response.SetHttpStatusCode(200);
-  document_response.SetMimeType("text/html");
-  document_response.SetTextEncodingName("UTF-8");
-  document_response.AddHttpHeaderField(http_names::kSpeculationRules, "_:");
+  document_response.SetMimeType(AtomicString("text/html"));
+  document_response.SetTextEncodingName(AtomicString("UTF-8"));
+  document_response.AddHttpHeaderField(http_names::kSpeculationRules,
+                                       AtomicString("_:"));
   SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
       document_response, *page_holder.GetFrame().DomWindow());
 
@@ -109,9 +110,10 @@ TEST(SpeculationRulesHeaderTest, EmptyHeader) {
 
   ResourceResponse document_response(KURL("https://speculation-rules.test/"));
   document_response.SetHttpStatusCode(200);
-  document_response.SetMimeType("text/html");
-  document_response.SetTextEncodingName("UTF-8");
-  document_response.AddHttpHeaderField(http_names::kSpeculationRules, "");
+  document_response.SetMimeType(AtomicString("text/html"));
+  document_response.SetTextEncodingName(AtomicString("UTF-8"));
+  document_response.AddHttpHeaderField(http_names::kSpeculationRules,
+                                       g_empty_atom);
   SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
       document_response, *page_holder.GetFrame().DomWindow());
 
@@ -130,10 +132,11 @@ TEST(SpeculationRulesHeaderTest, InvalidItem) {
 
   ResourceResponse document_response(KURL("https://speculation-rules.test/"));
   document_response.SetHttpStatusCode(200);
-  document_response.SetMimeType("text/html");
-  document_response.SetTextEncodingName("UTF-8");
-  document_response.AddHttpHeaderField(http_names::kSpeculationRules,
-                                       "42, :aGVsbG8=:, ?1, \"://\"");
+  document_response.SetMimeType(AtomicString("text/html"));
+  document_response.SetTextEncodingName(AtomicString("UTF-8"));
+  document_response.AddHttpHeaderField(
+      http_names::kSpeculationRules,
+      AtomicString("42, :aGVsbG8=:, ?1, \"://\""));
   SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
       document_response, *page_holder.GetFrame().DomWindow());
 
@@ -157,11 +160,12 @@ TEST(SpeculationRulesHeaderTest, ValidURL) {
 
   ResourceResponse document_response(KURL("https://speculation-rules.test/"));
   document_response.SetHttpStatusCode(200);
-  document_response.SetMimeType("text/html");
-  document_response.SetTextEncodingName("UTF-8");
+  document_response.SetMimeType(AtomicString("text/html"));
+  document_response.SetTextEncodingName(AtomicString("UTF-8"));
   document_response.AddHttpHeaderField(
       http_names::kSpeculationRules,
-      "\"https://thirdparty-speculationrules.test/single_url_prefetch.json\"");
+      AtomicString("\"https://thirdparty-speculationrules.test/"
+                   "single_url_prefetch.json\""));
   SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
       document_response, *page_holder.GetFrame().DomWindow());
   url_test_helpers::ServeAsynchronousRequests();

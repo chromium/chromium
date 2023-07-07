@@ -1976,7 +1976,7 @@ TEST_F(LayoutBoxTest, AnchorInInlineContainingBlockWithNameConflicts) {
   )HTML");
 
   const ScopedCSSName& anchor_name =
-      *MakeGarbageCollected<ScopedCSSName>("--a", &GetDocument());
+      *MakeGarbageCollected<ScopedCSSName>(AtomicString("--a"), &GetDocument());
 
   const LayoutBox* target1 =
       To<LayoutBox>(GetLayoutObjectByElementId("target1"));

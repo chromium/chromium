@@ -30,7 +30,7 @@ TEST_F(StyleRecalcChangeTest, SuppressRecalc) {
 
   Element* element = GetDocument().getElementById(AtomicString("element"));
   ASSERT_TRUE(element);
-  element->classList().Add("foo");
+  element->classList().Add(AtomicString("foo"));
 
   EXPECT_TRUE(StyleRecalcChange().ShouldRecalcStyleFor(*element));
   EXPECT_FALSE(
@@ -113,8 +113,8 @@ TEST_F(StyleRecalcChangeTestCQ, SkipStyleRecalcForContainer) {
   // will not cause #container to be marked for layout, the style recalc can not
   // be blocked because we do not know for sure #container will be reached
   // during layout.
-  outer->classList().Add("narrow");
-  flip->classList().Add("flip");
+  outer->classList().Add(AtomicString("narrow"));
+  flip->classList().Add(AtomicString("flip"));
 
   GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
   EXPECT_TRUE(outer->GetLayoutObject());
@@ -145,8 +145,8 @@ TEST_F(StyleRecalcChangeTestCQ, SkipStyleRecalcForContainer) {
 
   // Change the #container width directly to 100px which will means it will be
   // marked for layout and we can skip the style recalc.
-  container->classList().Add("narrow");
-  flip->classList().Remove("flip");
+  container->classList().Add(AtomicString("narrow"));
+  flip->classList().Remove(AtomicString("flip"));
 
   GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
   EXPECT_TRUE(outer->GetLayoutObject());
@@ -197,7 +197,7 @@ TEST_F(StyleRecalcChangeTestCQ, SkipStyleRecalcForContainerCleanSubtree) {
 
   Element* container = GetDocument().getElementById(AtomicString("container"));
   ASSERT_TRUE(container);
-  container->classList().Add("narrow");
+  container->classList().Add(AtomicString("narrow"));
   GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
 
   ASSERT_TRUE(container->GetContainerQueryData());
@@ -232,7 +232,7 @@ TEST_F(StyleRecalcChangeTestCQ, SkipAttachLayoutTreeForContainer) {
   EXPECT_TRUE(container->GetLayoutObject());
   EXPECT_TRUE(affected->GetLayoutObject());
 
-  container->classList().Add("narrow");
+  container->classList().Add(AtomicString("narrow"));
   GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
 
   ASSERT_TRUE(container->GetContainerQueryData());

@@ -50,8 +50,8 @@ using animation_test_helpers::CreateSimpleKeyframeEffectForTest;
 
 class StyleResolverTest : public PageTestBase {
  protected:
-  scoped_refptr<const ComputedStyle> StyleForId(AtomicString id) {
-    Element* element = GetDocument().getElementById(id);
+  scoped_refptr<const ComputedStyle> StyleForId(const char* id) {
+    Element* element = GetElementById(id);
     StyleRecalcContext recalc_context;
     recalc_context.old_style = element->GetComputedStyle();
     auto style = GetStyleEngine().GetStyleResolver().ResolveStyle(
@@ -318,14 +318,14 @@ TEST_F(StyleResolverTest,
   UpdateAllLifecyclePhasesForTest();
 
   Element* element = GetDocument().documentElement();
-  element->setAttribute(html_names::kIdAttr, "target");
+  element->setAttribute(html_names::kIdAttr, AtomicString("target"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ("20px", ComputedValue("font-size", *StyleForId("target")));
   ElementAnimations* element_animations = element->GetElementAnimations();
   EXPECT_FALSE(element_animations);
 
   // Trigger a transition with a dependency on the parent style.
-  element->setAttribute(html_names::kClassAttr, "adjust");
+  element->setAttribute(html_names::kClassAttr, AtomicString("adjust"));
   UpdateAllLifecyclePhasesForTest();
   element_animations = element->GetElementAnimations();
   EXPECT_TRUE(element_animations);
@@ -342,7 +342,7 @@ TEST_F(StyleResolverTest,
       ComputedValue("font-size", *StyleForId("target"));
 
   // Verify there is no discontinuity in the font-size on transition reversal.
-  element->setAttribute(html_names::kClassAttr, "");
+  element->setAttribute(html_names::kClassAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
   element_animations = element->GetElementAnimations();
   EXPECT_TRUE(element_animations);
@@ -611,7 +611,7 @@ TEST_F(StyleResolverTest, NoFetchForAtPage) {
 
   GetDocument().GetStyleEngine().UpdateActiveStyle();
   scoped_refptr<const ComputedStyle> page_style =
-      GetDocument().GetStyleResolver().StyleForPage(0, "");
+      GetDocument().GetStyleResolver().StyleForPage(0, g_empty_atom);
   ASSERT_TRUE(page_style);
   const CSSValue* computed_value = ComputedStyleUtils::ComputedPropertyValue(
       GetCSSPropertyBackgroundImage(), *page_style);
@@ -713,7 +713,7 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
       <li style="list-style: none inside"><b></b></li>
     </ul>
   )HTML");
-  StaticElementList* lis = GetDocument().QuerySelectorAll("li");
+  StaticElementList* lis = GetDocument().QuerySelectorAll(AtomicString("li"));
   EXPECT_EQ(lis->length(), 10U);
 
   UpdateAllLifecyclePhasesForTest();
@@ -747,7 +747,7 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
               UnicodeBidi::kIsolate);
   }
 
-  GetDocument().body()->SetIdAttribute("marker");
+  GetDocument().body()->SetIdAttribute(AtomicString("marker"));
   UpdateAllLifecyclePhasesForTest();
   for (unsigned i = 0; i < lis->length(); ++i) {
     Element* li = lis->item(i);
@@ -1111,7 +1111,7 @@ TEST_F(StyleResolverTest, ComputeValueCustomProperty) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
 
-  AtomicString custom_property_name = "--color";
+  AtomicString custom_property_name("--color");
   const CSSValue* parsed_value = ParseCustomProperty(
       GetDocument(), CustomProperty(custom_property_name, GetDocument()),
       "blue");
@@ -1906,7 +1906,7 @@ TEST_F(StyleResolverTest, CascadeLayersAndPageRules) {
 TEST_F(StyleResolverTest, BodyPropagationLayoutImageContain) {
   GetDocument().documentElement()->setAttribute(
       html_names::kStyleAttr,
-      "contain:size; display:inline-table; content:url(img);");
+      AtomicString("contain:size; display:inline-table; content:url(img);"));
   GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor,
                                                "red");
 
@@ -2004,7 +2004,8 @@ TEST_F(StyleResolverTest, IsInertWithDialogs) {
       <dialog>dialog3_text</dialog>
     </div>
   )HTML");
-  StaticElementList* dialogs = document.QuerySelectorAll("dialog");
+  StaticElementList* dialogs =
+      document.QuerySelectorAll(AtomicString("dialog"));
   Element* html = document.documentElement();
   Element* body = document.body();
   auto* dialog1 = To<HTMLDialogElement>(dialogs->item(0));
@@ -3149,14 +3150,18 @@ TEST_F(StyleResolverTest, ScopedAnchorName) {
   Element* part = shadow->getElementById(AtomicString("part"));
   Element* inner_anchor = shadow->getElementById(AtomicString("inner-anchor"));
 
-  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--outer", &GetDocument()),
+  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>(AtomicString("--outer"),
+                                                 &GetDocument()),
             *outer_anchor->ComputedStyleRef().AnchorName());
-  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--host", shadow),
-            *host->ComputedStyleRef().AnchorName());
-  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--part", &GetDocument()),
+  EXPECT_EQ(
+      *MakeGarbageCollected<ScopedCSSName>(AtomicString("--host"), shadow),
+      *host->ComputedStyleRef().AnchorName());
+  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>(AtomicString("--part"),
+                                                 &GetDocument()),
             *part->ComputedStyleRef().AnchorName());
-  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--inner", shadow),
-            *inner_anchor->ComputedStyleRef().AnchorName());
+  EXPECT_EQ(
+      *MakeGarbageCollected<ScopedCSSName>(AtomicString("--inner"), shadow),
+      *inner_anchor->ComputedStyleRef().AnchorName());
 }
 
 TEST_F(StyleResolverTest, ScopedAnchorScroll) {
@@ -3182,14 +3187,18 @@ TEST_F(StyleResolverTest, ScopedAnchorScroll) {
   Element* part = shadow->getElementById(AtomicString("part"));
   Element* inner_anchor = shadow->getElementById(AtomicString("inner-anchor"));
 
-  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--outer", &GetDocument()),
+  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>(AtomicString("--outer"),
+                                                 &GetDocument()),
             outer_anchor->ComputedStyleRef().AnchorScroll()->GetName());
-  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--host", shadow),
-            host->ComputedStyleRef().AnchorScroll()->GetName());
-  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--part", &GetDocument()),
+  EXPECT_EQ(
+      *MakeGarbageCollected<ScopedCSSName>(AtomicString("--host"), shadow),
+      host->ComputedStyleRef().AnchorScroll()->GetName());
+  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>(AtomicString("--part"),
+                                                 &GetDocument()),
             part->ComputedStyleRef().AnchorScroll()->GetName());
-  EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--inner", shadow),
-            inner_anchor->ComputedStyleRef().AnchorScroll()->GetName());
+  EXPECT_EQ(
+      *MakeGarbageCollected<ScopedCSSName>(AtomicString("--inner"), shadow),
+      inner_anchor->ComputedStyleRef().AnchorScroll()->GetName());
 }
 
 // |length| must be a calculated value of a single anchor query node.
@@ -3443,9 +3452,7 @@ TEST_F(StyleResolverTest, CssRulesForElementExcludeStartingStyle) {
   EXPECT_EQ(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
             nullptr);
 
-  GetDocument()
-      .getElementById(AtomicString("wrapper"))
-      ->removeAttribute("hidden");
+  GetElementById("wrapper")->removeAttribute(html_names::kHiddenAttr);
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_NE(target->GetComputedStyle(), nullptr);
@@ -3483,9 +3490,7 @@ TEST_F(StyleResolverTest, PseudoCSSRulesForElementExcludeStartingStyle) {
   ASSERT_NE(pseudo_rules, nullptr);
   EXPECT_EQ(pseudo_rules->size(), 1u);
 
-  GetDocument()
-      .getElementById(AtomicString("wrapper"))
-      ->removeAttribute("hidden");
+  GetElementById("wrapper")->removeAttribute(html_names::kHiddenAttr);
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_NE(target->GetComputedStyle(), nullptr);

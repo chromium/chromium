@@ -505,7 +505,7 @@ TEST_F(HTMLSelectElementTest, CrashOnAttachingMenuList) {
 
   // Attach LayoutMenuList again.  It triggered null-dereference in
   // LayoutMenuList::AdjustInnerStyle().
-  select->removeAttribute("style");
+  select->removeAttribute(html_names::kStyleAttr);
   GetDocument().UpdateStyleAndLayoutTree();
   ASSERT_TRUE(select->GetLayoutObject());
 }

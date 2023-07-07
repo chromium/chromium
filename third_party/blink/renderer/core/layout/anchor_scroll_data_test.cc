@@ -102,8 +102,10 @@ TEST_F(AnchorScrollDataTest, Detach) {
   EXPECT_TRUE(in_flow->GetAnchorScrollData());
 
   remove->remove();
-  display_none->setAttribute(html_names::kStyleAttr, "display: none");
-  in_flow->setAttribute(html_names::kStyleAttr, "position: static");
+  display_none->setAttribute(html_names::kStyleAttr,
+                             AtomicString("display: none"));
+  in_flow->setAttribute(html_names::kStyleAttr,
+                        AtomicString("position: static"));
 
   UnsetAnimationScheduled();
 
@@ -153,7 +155,7 @@ TEST_F(AnchorScrollDataTest, ScrollerSizeChange) {
   EXPECT_EQ(ScrollOffset(0, 300),
             anchored->GetAnchorScrollData()->AccumulatedScrollOffset());
 
-  GetElementById("scroller")->classList().Add("changed");
+  GetElementById("scroller")->classList().Add(AtomicString("changed"));
 
   // This shouldn't update AnchorScrollData, because style isn't updated yet.
   SimulateFrame();
@@ -215,7 +217,7 @@ TEST_F(AnchorScrollDataTest, ScrollContentSizeChange) {
   EXPECT_EQ(ScrollOffset(0, 300),
             anchored->GetAnchorScrollData()->AccumulatedScrollOffset());
 
-  GetElementById("spacer")->classList().Add("changed");
+  GetElementById("spacer")->classList().Add(AtomicString("changed"));
 
   // This shouldn't update AnchorScrollData, because style isn't updated yet.
   SimulateFrame();

@@ -232,24 +232,24 @@ class ImagePaintTimingDetectorTest : public testing::Test,
     UpdateCandidate();
   }
 
-  void SetImageAndPaint(AtomicString id, int width, int height) {
-    Element* element = GetDocument().getElementById(id);
+  void SetImageAndPaint(const char* id, int width, int height) {
+    Element* element = GetDocument().getElementById(AtomicString(id));
     // Set image and make it loaded.
     ImageResourceContent* content = CreateImageForTest(width, height);
     To<HTMLImageElement>(element)->SetImageForTest(content);
   }
 
-  void SetChildFrameImageAndPaint(AtomicString id, int width, int height) {
+  void SetChildFrameImageAndPaint(const char* id, int width, int height) {
     DCHECK(GetChildDocument());
-    Element* element = GetChildDocument()->getElementById(id);
+    Element* element = GetChildDocument()->getElementById(AtomicString(id));
     DCHECK(element);
     // Set image and make it loaded.
     ImageResourceContent* content = CreateImageForTest(width, height);
     To<HTMLImageElement>(element)->SetImageForTest(content);
   }
 
-  void SetSVGImageAndPaint(AtomicString id, int width, int height) {
-    Element* element = GetDocument().getElementById(id);
+  void SetSVGImageAndPaint(const char* id, int width, int height) {
+    Element* element = GetDocument().getElementById(AtomicString(id));
     // Set image and make it loaded.
     ImageResourceContent* content = CreateImageForTest(width, height);
     To<SVGImageElement>(element)->SetImageForTest(content);
@@ -341,17 +341,17 @@ TEST_P(ImagePaintTimingDetectorTest, InsertionOrderIsSecondaryRankingKey) {
   )HTML");
 
   auto* image1 = MakeGarbageCollected<HTMLImageElement>(GetDocument());
-  image1->setAttribute("id", "image1");
+  image1->setAttribute(html_names::kIdAttr, AtomicString("image1"));
   GetDocument().body()->AppendChild(image1);
   SetImageAndPaint("image1", 5, 5);
 
   auto* image2 = MakeGarbageCollected<HTMLImageElement>(GetDocument());
-  image2->setAttribute("id", "image2");
+  image2->setAttribute(html_names::kIdAttr, AtomicString("image2"));
   GetDocument().body()->AppendChild(image2);
   SetImageAndPaint("image2", 5, 5);
 
   auto* image3 = MakeGarbageCollected<HTMLImageElement>(GetDocument());
-  image3->setAttribute("id", "image3");
+  image3->setAttribute(html_names::kIdAttr, AtomicString("image3"));
   GetDocument().body()->AppendChild(image3);
   SetImageAndPaint("image3", 5, 5);
 
@@ -784,7 +784,7 @@ TEST_P(ImagePaintTimingDetectorTest,
     </div>
   )HTML");
   auto* image = MakeGarbageCollected<HTMLImageElement>(GetDocument());
-  image->setAttribute("id", "target");
+  image->setAttribute(html_names::kIdAttr, AtomicString("target"));
   GetDocument().getElementById(AtomicString("parent"))->AppendChild(image);
   SetImageAndPaint("target", 5, 5);
   test_task_runner_->FastForwardBy(base::Seconds(1));
@@ -1201,7 +1201,7 @@ TEST_P(ImagePaintTimingDetectorTest, OpacityZeroHTML) {
 
   // Change the opacity of documentElement, now the img should be a candidate.
   GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
-                                                "opacity: 1");
+                                                AtomicString("opacity: 1"));
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   EXPECT_EQ(CountImageRecords(), 1u);
   auto largest_contentful_paint_details =
@@ -1225,12 +1225,12 @@ TEST_P(ImagePaintTimingDetectorTest, OpacityZeroHTML2) {
   EXPECT_EQ(CountImageRecords(), 0u);
 
   GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
-                                                "opacity: 0");
+                                                AtomicString("opacity: 0"));
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   EXPECT_EQ(CountImageRecords(), 0u);
 
   GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
-                                                "opacity: 1");
+                                                AtomicString("opacity: 1"));
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   EXPECT_EQ(CountImageRecords(), 0u);
 }

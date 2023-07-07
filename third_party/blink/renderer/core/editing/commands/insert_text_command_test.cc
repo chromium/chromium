@@ -281,7 +281,7 @@ TEST_F(InsertTextCommandTest, AnchorElementWithBlockCrash) {
   Element* nested_anchor = GetDocument().CreateRawElement(html_names::kATag);
   Element* iElement = GetDocument().CreateRawElement(html_names::kITag);
 
-  nested_anchor->setAttribute("href", "www");
+  nested_anchor->setAttribute(html_names::kHrefAttr, AtomicString("www"));
   iElement->setInnerHTML("home");
 
   anchor->AppendChild(nested_anchor);

@@ -398,11 +398,11 @@ TEST_F(ContainerQueryTest, ContainerQueryEvaluation) {
   // Check that dependent elements are responsive to changes:
   Element* container = GetDocument().getElementById(AtomicString("container"));
   ASSERT_TRUE(container);
-  container->setAttribute(html_names::kClassAttr, "adjust");
+  container->setAttribute(html_names::kClassAttr, AtomicString("adjust"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(3, div->ComputedStyleRef().ZIndex());
 
-  container->setAttribute(html_names::kClassAttr, "");
+  container->setAttribute(html_names::kClassAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(2, div->ComputedStyleRef().ZIndex());
 }
@@ -448,15 +448,23 @@ TEST_F(ContainerQueryTest, QueryZoom) {
   ASSERT_TRUE(target1);
   ASSERT_TRUE(target2);
 
-  EXPECT_TRUE(target1->ComputedStyleRef().GetVariableData("--w100"));
-  EXPECT_TRUE(target1->ComputedStyleRef().GetVariableData("--h200"));
-  EXPECT_FALSE(target1->ComputedStyleRef().GetVariableData("--w200"));
-  EXPECT_FALSE(target1->ComputedStyleRef().GetVariableData("--h400"));
+  EXPECT_TRUE(
+      target1->ComputedStyleRef().GetVariableData(AtomicString("--w100")));
+  EXPECT_TRUE(
+      target1->ComputedStyleRef().GetVariableData(AtomicString("--h200")));
+  EXPECT_FALSE(
+      target1->ComputedStyleRef().GetVariableData(AtomicString("--w200")));
+  EXPECT_FALSE(
+      target1->ComputedStyleRef().GetVariableData(AtomicString("--h400")));
 
-  EXPECT_FALSE(target2->ComputedStyleRef().GetVariableData("--w100"));
-  EXPECT_FALSE(target2->ComputedStyleRef().GetVariableData("--h200"));
-  EXPECT_TRUE(target2->ComputedStyleRef().GetVariableData("--w200"));
-  EXPECT_TRUE(target2->ComputedStyleRef().GetVariableData("--h400"));
+  EXPECT_FALSE(
+      target2->ComputedStyleRef().GetVariableData(AtomicString("--w100")));
+  EXPECT_FALSE(
+      target2->ComputedStyleRef().GetVariableData(AtomicString("--h200")));
+  EXPECT_TRUE(
+      target2->ComputedStyleRef().GetVariableData(AtomicString("--w200")));
+  EXPECT_TRUE(
+      target2->ComputedStyleRef().GetVariableData(AtomicString("--h400")));
 }
 
 TEST_F(ContainerQueryTest, QueryFontRelativeWithZoom) {
@@ -509,9 +517,12 @@ TEST_F(ContainerQueryTest, QueryFontRelativeWithZoom) {
   ASSERT_TRUE(ex_target);
   ASSERT_TRUE(ch_target);
 
-  EXPECT_TRUE(em_target->ComputedStyleRef().GetVariableData("--em"));
-  EXPECT_TRUE(ex_target->ComputedStyleRef().GetVariableData("--ex"));
-  EXPECT_TRUE(ch_target->ComputedStyleRef().GetVariableData("--ch"));
+  EXPECT_TRUE(
+      em_target->ComputedStyleRef().GetVariableData(AtomicString("--em")));
+  EXPECT_TRUE(
+      ex_target->ComputedStyleRef().GetVariableData(AtomicString("--ex")));
+  EXPECT_TRUE(
+      ch_target->ComputedStyleRef().GetVariableData(AtomicString("--ch")));
 }
 
 TEST_F(ContainerQueryTest, ContainerUnitsViewportFallback) {
@@ -1150,7 +1161,7 @@ TEST_F(ContainerQueryTest, CQDependentContentVisibilityHidden) {
   ancestor->SetInlineStyleProperty(CSSPropertyID::kWidth, "200px");
 
   Element* locker = GetDocument().getElementById(AtomicString("locker"));
-  locker->setAttribute(html_names::kClassAttr, "locked");
+  locker->setAttribute(html_names::kClassAttr, AtomicString("locked"));
   locker->setInnerHTML("<span>Visible?</span>");
 
   UpdateAllLifecyclePhasesForTest();

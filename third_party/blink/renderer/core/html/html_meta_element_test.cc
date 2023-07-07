@@ -47,18 +47,18 @@ class HTMLMetaElementTest : public PageTestBase,
   }
 
  protected:
-  HTMLMetaElement* CreateColorSchemeMeta(const AtomicString& content) {
+  HTMLMetaElement* CreateColorSchemeMeta(const char* content) {
     auto* meta = MakeGarbageCollected<HTMLMetaElement>(GetDocument(),
                                                        CreateElementFlags());
-    meta->setAttribute(html_names::kNameAttr, "color-scheme");
-    meta->setAttribute(html_names::kContentAttr, content);
+    meta->setAttribute(html_names::kNameAttr, AtomicString("color-scheme"));
+    meta->setAttribute(html_names::kContentAttr, AtomicString(content));
     return meta;
   }
 
-  void SetColorScheme(const AtomicString& content) {
+  void SetColorScheme(const char* content) {
     auto* meta = To<HTMLMetaElement>(GetDocument().head()->firstChild());
     ASSERT_TRUE(meta);
-    meta->setAttribute(html_names::kContentAttr, content);
+    meta->setAttribute(html_names::kContentAttr, AtomicString(content));
   }
 
   void ExpectPageColorSchemes(ColorSchemeFlags expected) const {
@@ -155,7 +155,7 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_SetAttribute) {
 
   GetDocument()
       .getElementById(AtomicString("meta"))
-      ->setAttribute(html_names::kContentAttr, "light");
+      ->setAttribute(html_names::kContentAttr, AtomicString("light"));
 
   ExpectPageColorSchemes(
       static_cast<ColorSchemeFlags>(ColorSchemeFlag::kLight));

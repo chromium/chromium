@@ -93,7 +93,7 @@ TEST_F(MediaValuesTest, ZoomedFontUnits) {
   // Set 'font:Ahem 10px' as the default font.
   Settings* settings = GetDocument().GetSettings();
   ASSERT_TRUE(settings);
-  settings->GetGenericFontFamilySettings().UpdateStandard("Ahem");
+  settings->GetGenericFontFamilySettings().UpdateStandard(AtomicString("Ahem"));
   settings->SetDefaultFontSize(10.0f);
 
   UpdateAllLifecyclePhasesForTest();

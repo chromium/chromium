@@ -88,7 +88,7 @@ TEST_F(CSSPropertyRefTest, GetResolvedPropertyAlias) {
 TEST_F(CSSPropertyRefTest, FromCSSPropertyNameCustom) {
   css_test_helpers::RegisterProperty(GetDocument(), "--x", "<length>", "42px",
                                      false);
-  CSSPropertyRef ref(CSSPropertyName("--x"), GetDocument());
+  CSSPropertyRef ref(CSSPropertyName(AtomicString("--x")), GetDocument());
   EXPECT_EQ(CSSPropertyID::kVariable, ref.GetProperty().PropertyID());
 }
 

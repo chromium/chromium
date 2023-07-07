@@ -64,7 +64,7 @@ class HTMLFormControlElementTest : public PageTestBase {
 
 void HTMLFormControlElementTest::SetUp() {
   PageTestBase::SetUp();
-  GetDocument().SetMimeType("text/html");
+  GetDocument().SetMimeType(AtomicString("text/html"));
 }
 
 TEST_F(HTMLFormControlElementTest, customValidationMessageTextDirection) {

@@ -24,16 +24,17 @@ class DisplayLockUtilitiesTest : public RenderingTest {
 
   void LockElement(Element& element, bool activatable) {
     if (activatable) {
-      element.setAttribute(html_names::kHiddenAttr, "until-found");
+      element.setAttribute(html_names::kHiddenAttr,
+                           AtomicString("until-found"));
     } else {
       element.setAttribute(html_names::kStyleAttr,
-                           "content-visibility: hidden");
+                           AtomicString("content-visibility: hidden"));
     }
     UpdateAllLifecyclePhasesForTest();
   }
 
   void CommitElement(Element& element) {
-    element.setAttribute(html_names::kStyleAttr, "");
+    element.setAttribute(html_names::kStyleAttr, g_empty_atom);
     UpdateAllLifecyclePhasesForTest();
   }
 };

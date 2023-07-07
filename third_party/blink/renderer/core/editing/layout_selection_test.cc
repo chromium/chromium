@@ -814,8 +814,8 @@ TEST_F(LayoutSelectionTest, ClearBySlotChange) {
       DumpSelectionInfo());
   Element* slot =
       GetDocument().body()->firstChild()->GetShadowRoot()->QuerySelector(
-          "slot");
-  slot->setAttribute("name", "s2");
+          AtomicString("slot"));
+  slot->setAttribute(html_names::kNameAttr, AtomicString("s2"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Selection().CommitAppearanceIfNeeded();
   EXPECT_EQ(

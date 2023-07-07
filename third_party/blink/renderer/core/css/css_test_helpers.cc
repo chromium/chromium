@@ -170,8 +170,8 @@ scoped_refptr<CSSVariableData> CreateVariableData(String s) {
                                  needs_variable_resolution);
 }
 
-const CSSValue* CreateCustomIdent(AtomicString s) {
-  return MakeGarbageCollected<CSSCustomIdentValue>(s);
+const CSSValue* CreateCustomIdent(const char* s) {
+  return MakeGarbageCollected<CSSCustomIdentValue>(AtomicString(s));
 }
 
 const CSSValue* ParseLonghand(Document& document,

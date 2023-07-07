@@ -31,12 +31,13 @@ class CheckPseudoHasFastRejectFilterTest : public PageTestBase {
     for (unsigned i = 0; i < length; i++) {
       NonThrowableExceptionState no_exceptions;
       Element* element = GetDocument().CreateElementForBinding(
-          element_info_list[i].tag_name, nullptr, no_exceptions);
-      element->setAttribute(html_names::kIdAttr, element_info_list[i].id);
+          AtomicString(element_info_list[i].tag_name), nullptr, no_exceptions);
+      element->setAttribute(html_names::kIdAttr,
+                            AtomicString(element_info_list[i].id));
       element->setAttribute(html_names::kClassAttr,
-                            element_info_list[i].class_names);
-      element->setAttribute(element_info_list[i].attribute_name,
-                            element_info_list[i].attribute_value);
+                            AtomicString(element_info_list[i].class_names));
+      element->setAttribute(AtomicString(element_info_list[i].attribute_name),
+                            AtomicString(element_info_list[i].attribute_value));
       filter.AddElementIdentifierHashes(*element);
     }
   }

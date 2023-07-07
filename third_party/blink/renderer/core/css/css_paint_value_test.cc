@@ -89,7 +89,8 @@ TEST_P(CSSPaintValueTest, DelayPaintUntilGeneratorReady) {
   LayoutObject* target = GetLayoutObjectByElementId("target");
   const ComputedStyle& style = *target->Style();
 
-  auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
+  auto* ident =
+      MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("testpainter"));
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
 
   // Initially the generator is not ready, so GetImage should fail (and no paint
@@ -122,7 +123,8 @@ TEST_P(CSSPaintValueTest, GetImageCalledOnMultipleDocuments) {
   LayoutObject* target = GetLayoutObjectByElementId("target");
   const ComputedStyle& style = *target->Style();
 
-  auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
+  auto* ident =
+      MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("testpainter"));
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
 
   EXPECT_EQ(paint_value->NumberOfGeneratorsForTesting(), 0u);
@@ -140,7 +142,8 @@ TEST_P(CSSPaintValueTest, GetImageCalledOnMultipleDocuments) {
 TEST_P(CSSPaintValueTest, NativeInvalidationPropertiesWithNoGenerator) {
   SetBodyInnerHTML(R"HTML(<div id="target"></div>)HTML");
 
-  auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
+  auto* ident =
+      MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("testpainter"));
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
 
   EXPECT_EQ(paint_value->NumberOfGeneratorsForTesting(), 0u);
@@ -151,7 +154,8 @@ TEST_P(CSSPaintValueTest, NativeInvalidationPropertiesWithNoGenerator) {
 TEST_P(CSSPaintValueTest, CustomInvalidationPropertiesWithNoGenerator) {
   SetBodyInnerHTML(R"HTML(<div id="target"></div>)HTML");
 
-  auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
+  auto* ident =
+      MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("testpainter"));
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
 
   EXPECT_EQ(paint_value->NumberOfGeneratorsForTesting(), 0u);
@@ -181,7 +185,8 @@ TEST_P(CSSPaintValueTest, PrintingMustFallbackToMainThread) {
   LayoutObject* target = GetLayoutObjectByElementId("target");
   const ComputedStyle& style = *target->Style();
 
-  auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
+  auto* ident =
+      MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("testpainter"));
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
 
   ON_CALL(*mock_generator, IsImageGeneratorReady()).WillByDefault(Return(true));
@@ -223,7 +228,8 @@ TEST_P(CSSPaintValueTest, DoNotPaintForLink) {
   const ComputedStyle& style = *target->Style();
   ASSERT_NE(style.InsideLink(), EInsideLink::kNotInsideLink);
 
-  auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("linkpainter");
+  auto* ident =
+      MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("linkpainter"));
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
   EXPECT_FALSE(paint_value->GetImage(*target, GetDocument(), style,
                                      gfx::SizeF(100, 100)));
@@ -251,14 +257,16 @@ TEST_P(CSSPaintValueTest, DoNotPaintWhenAncestorHasLink) {
   const ComputedStyle& style = *target->Style();
   ASSERT_NE(style.InsideLink(), EInsideLink::kNotInsideLink);
 
-  auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("linkpainter");
+  auto* ident =
+      MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("linkpainter"));
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
   EXPECT_FALSE(paint_value->GetImage(*target, GetDocument(), style,
                                      gfx::SizeF(100, 100)));
 }
 
 TEST_P(CSSPaintValueTest, BuildInputArgumentValuesNotCrash) {
-  auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
+  auto* ident =
+      MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("testpainter"));
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
 
   ASSERT_EQ(paint_value->GetParsedInputArgumentsForTesting(), nullptr);

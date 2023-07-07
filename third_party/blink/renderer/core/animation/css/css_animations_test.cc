@@ -256,17 +256,18 @@ TEST_P(CSSAnimationsTest, AnimationFlags_Transitions) {
   EXPECT_FALSE(element->ComputedStyleRef().HasCurrentFilterAnimation());
 
   // Newly created transition:
-  element->setAttribute(html_names::kClassAttr, "contrast30");
+  element->setAttribute(html_names::kClassAttr, AtomicString("contrast30"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentFilterAnimation());
 
   // Already running (and unmodified) transition:
-  element->setAttribute(html_names::kClassAttr, "contrast30 unrelated");
+  element->setAttribute(html_names::kClassAttr,
+                        AtomicString("contrast30 unrelated"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentFilterAnimation());
 
   // Cancelled transition:
-  element->setAttribute(html_names::kClassAttr, "cancel");
+  element->setAttribute(html_names::kClassAttr, AtomicString("cancel"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(element->ComputedStyleRef().HasCurrentFilterAnimation());
 }
@@ -639,7 +640,7 @@ TEST_P(CSSAnimationsTest, AnimationFlags_CompositablePaintAnimationChanged) {
   EXPECT_FALSE(animation->CompositorPending());
 
   // Do an unrelated change to clear the flag.
-  element->classList().toggle("unrelated", ASSERT_NO_EXCEPTION);
+  element->classList().toggle(AtomicString("unrelated"), ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
   EXPECT_FALSE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
@@ -652,13 +653,13 @@ TEST_P(CSSAnimationsTest, AnimationFlags_CompositablePaintAnimationChanged) {
   // invalidated artificially.
   InvalidateCompositorKeyframesSnapshot(animation);
   // Also do an "unrelated" change, to avoid IsAnimationStyleChange()==true.
-  element->classList().toggle("unrelated", ASSERT_NO_EXCEPTION);
+  element->classList().toggle(AtomicString("unrelated"), ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
   EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
 
   // Do an unrelated change to clear the flag.
-  element->classList().toggle("unrelated", ASSERT_NO_EXCEPTION);
+  element->classList().toggle(AtomicString("unrelated"), ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
   EXPECT_FALSE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
@@ -666,7 +667,7 @@ TEST_P(CSSAnimationsTest, AnimationFlags_CompositablePaintAnimationChanged) {
   // Verify that paint is invalidated by a forced style resolve.
   ASSERT_TRUE(element->GetLayoutObject());
   EXPECT_FALSE(element->GetLayoutObject()->ShouldCheckForPaintInvalidation());
-  element->classList().toggle("newtiming", ASSERT_NO_EXCEPTION);
+  element->classList().toggle(AtomicString("newtiming"), ASSERT_NO_EXCEPTION);
   GetDocument().UpdateStyleAndLayoutTree();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
   EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
@@ -748,15 +749,15 @@ TEST_P(CSSAnimationsTest, CSSTransitionBlockedByAnimationUseCounter) {
   // Transition should still not trigger because of
   // |previous_active_interpolations_for_animations_|.
   ClearUseCounter(WebFeature::kCSSTransitionBlockedByAnimation);
-  element->classList().Remove("animate");
-  element->classList().Remove("change");
+  element->classList().Remove(AtomicString("animate"));
+  element->classList().Remove(AtomicString("change"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(0, element->ComputedStyleRef().ZIndex());
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSTransitionBlockedByAnimation));
 
   // Finally trigger the transition.
   ClearUseCounter(WebFeature::kCSSTransitionBlockedByAnimation);
-  element->classList().Add("change");
+  element->classList().Add(AtomicString("change"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(50, element->ComputedStyleRef().ZIndex());
   EXPECT_FALSE(IsUseCounted(WebFeature::kCSSTransitionBlockedByAnimation));
@@ -796,7 +797,7 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
     ElementAnimations* animations = element_->GetElementAnimations();
     EXPECT_FALSE(animations);
 
-    element_->setAttribute(html_names::kClassAttr, "fade");
+    element_->setAttribute(html_names::kClassAttr, AtomicString("fade"));
     UpdateAllLifecyclePhasesForTest();
     SyncAnimationOnCompositor(/*needs_start_time*/ true);
 
@@ -1079,7 +1080,7 @@ TEST_P(CSSAnimationsTest, LingeringTimelineAttachments) {
   const CSSAnimations& css_animations = element_animations->CssAnimations();
   EXPECT_TRUE(css_animations.HasTimelines());
 
-  scroller->classList().Remove("timeline");
+  scroller->classList().Remove(AtomicString("timeline"));
   UpdateAllLifecyclePhasesForTest();
 
   // No timeline data should linger on #scroller's CSSAnimations.

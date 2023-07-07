@@ -215,7 +215,7 @@ TEST_F(DocumentLoadingRenderingTest, ShouldScheduleFrameAfterSheetsLoaded) {
   // Replace the stylesheet by changing href.
   auto* element = GetDocument().getElementById(AtomicString("link"));
   EXPECT_NE(nullptr, element);
-  element->setAttribute(html_names::kHrefAttr, "second.css");
+  element->setAttribute(html_names::kHrefAttr, AtomicString("second.css"));
   EXPECT_FALSE(Compositor().NeedsBeginFrame());
 
   second_css_resource.Complete("body { color: red; }");

@@ -356,7 +356,8 @@ TEST_F(TextFinderTest, ScopeTextMatchesSimple) {
 
   // Modify the document size and ensure the cached match rects are recomputed
   // to reflect the updated layout.
-  GetDocument().body()->setAttribute(html_names::kStyleAttr, "margin: 2000px");
+  GetDocument().body()->setAttribute(html_names::kStyleAttr,
+                                     AtomicString("margin: 2000px"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   match_rects = GetTextFinder().FindMatchRects();

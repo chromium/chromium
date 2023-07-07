@@ -86,13 +86,13 @@ TEST_F(NGAnchorQueryTest, AnchorNameAdd) {
   EXPECT_FALSE(anchor_query);
 
   // Add the "after" class and test anchors are updated accordingly.
-  container->classList().Add("after");
+  container->classList().Add(AtomicString("after"));
   UpdateAllLifecyclePhasesForTest();
   anchor_query = AnchorQuery(*container);
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
-              testing::ElementsAre(
-                  AnchorTestData{"--div1a", PhysicalRect(0, 0, 50, 20)}));
+              testing::ElementsAre(AnchorTestData{AtomicString("--div1a"),
+                                                  PhysicalRect(0, 0, 50, 20)}));
 }
 
 TEST_F(NGAnchorQueryTest, AnchorNameChange) {
@@ -119,17 +119,17 @@ TEST_F(NGAnchorQueryTest, AnchorNameChange) {
   const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
-              testing::ElementsAre(
-                  AnchorTestData{"--div1", PhysicalRect(0, 0, 50, 20)}));
+              testing::ElementsAre(AnchorTestData{AtomicString("--div1"),
+                                                  PhysicalRect(0, 0, 50, 20)}));
 
   // Add the "after" class and test anchors are updated accordingly.
-  container->classList().Add("after");
+  container->classList().Add(AtomicString("after"));
   UpdateAllLifecyclePhasesForTest();
   anchor_query = AnchorQuery(*container);
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
-              testing::ElementsAre(
-                  AnchorTestData{"--div1a", PhysicalRect(0, 0, 50, 20)}));
+              testing::ElementsAre(AnchorTestData{AtomicString("--div1a"),
+                                                  PhysicalRect(0, 0, 50, 20)}));
 }
 
 TEST_F(NGAnchorQueryTest, AnchorNameRemove) {
@@ -156,11 +156,11 @@ TEST_F(NGAnchorQueryTest, AnchorNameRemove) {
   const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
-              testing::ElementsAre(
-                  AnchorTestData{"--div1", PhysicalRect(0, 0, 50, 20)}));
+              testing::ElementsAre(AnchorTestData{AtomicString("--div1"),
+                                                  PhysicalRect(0, 0, 50, 20)}));
 
   // Add the "after" class and test anchors are updated accordingly.
-  container->classList().Add("after");
+  container->classList().Add(AtomicString("after"));
   UpdateAllLifecyclePhasesForTest();
   anchor_query = AnchorQuery(*container);
   EXPECT_FALSE(anchor_query);
@@ -192,22 +192,24 @@ TEST_F(NGAnchorQueryTest, BlockFlow) {
   Element* container = GetElementById("container");
   const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
   ASSERT_NE(anchor_query, nullptr);
-  EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
-              testing::UnorderedElementsAre(
-                  AnchorTestData{"--div1", PhysicalRect(0, 0, 400, 20)},
-                  AnchorTestData{"--div2", PhysicalRect(0, 20, 800, 0)},
-                  AnchorTestData{"--div3", PhysicalRect(0, 50, 800, 0)}));
+  EXPECT_THAT(
+      AnchorTestData::ToList(*anchor_query),
+      testing::UnorderedElementsAre(
+          AnchorTestData{AtomicString("--div1"), PhysicalRect(0, 0, 400, 20)},
+          AnchorTestData{AtomicString("--div2"), PhysicalRect(0, 20, 800, 0)},
+          AnchorTestData{AtomicString("--div3"), PhysicalRect(0, 50, 800, 0)}));
 
   // Add the "after" class and test anchors are updated accordingly.
-  container->classList().Add("after");
+  container->classList().Add(AtomicString("after"));
   UpdateAllLifecyclePhasesForTest();
   anchor_query = AnchorQuery(*container);
   ASSERT_NE(anchor_query, nullptr);
-  EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
-              testing::UnorderedElementsAre(
-                  AnchorTestData{"--div1", PhysicalRect(0, 0, 400, 40)},
-                  AnchorTestData{"--div2", PhysicalRect(0, 40, 800, 0)},
-                  AnchorTestData{"--div3", PhysicalRect(0, 70, 800, 0)}));
+  EXPECT_THAT(
+      AnchorTestData::ToList(*anchor_query),
+      testing::UnorderedElementsAre(
+          AnchorTestData{AtomicString("--div1"), PhysicalRect(0, 0, 400, 40)},
+          AnchorTestData{AtomicString("--div2"), PhysicalRect(0, 40, 800, 0)},
+          AnchorTestData{AtomicString("--div3"), PhysicalRect(0, 70, 800, 0)}));
 }
 
 TEST_F(NGAnchorQueryTest, Inline) {
@@ -249,24 +251,28 @@ TEST_F(NGAnchorQueryTest, Inline) {
   EXPECT_THAT(
       AnchorTestData::ToList(*anchor_query),
       testing::UnorderedElementsAre(
-          AnchorTestData{"--culled", PhysicalRect(20, 0, 20, 10)},
-          AnchorTestData{"--img", PhysicalRect(110, 0, 10, 8)},
-          AnchorTestData{"--inline-block", PhysicalRect(130, 0, 10, 10)},
-          AnchorTestData{"--non-culled", PhysicalRect(50, 0, 20, 10)}));
+          AnchorTestData{AtomicString("--culled"), PhysicalRect(20, 0, 20, 10)},
+          AnchorTestData{AtomicString("--img"), PhysicalRect(110, 0, 10, 8)},
+          AnchorTestData{AtomicString("--inline-block"),
+                         PhysicalRect(130, 0, 10, 10)},
+          AnchorTestData{AtomicString("--non-culled"),
+                         PhysicalRect(50, 0, 20, 10)}));
 
   // Add the "after" class and test anchors are updated accordingly.
-  container->classList().Add("after");
+  container->classList().Add(AtomicString("after"));
   UpdateAllLifecyclePhasesForTest();
   anchor_query = AnchorQuery(*container);
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(
       AnchorTestData::ToList(*anchor_query),
       testing::UnorderedElementsAre(
-          AnchorTestData{"--add", PhysicalRect(80, 0, 20, 10)},
-          AnchorTestData{"--culled", PhysicalRect(20, 0, 20, 10)},
-          AnchorTestData{"--img", PhysicalRect(110, 0, 10, 8)},
-          AnchorTestData{"--inline-block", PhysicalRect(130, 0, 10, 10)},
-          AnchorTestData{"--non-culled", PhysicalRect(50, 0, 20, 10)}));
+          AnchorTestData{AtomicString("--add"), PhysicalRect(80, 0, 20, 10)},
+          AnchorTestData{AtomicString("--culled"), PhysicalRect(20, 0, 20, 10)},
+          AnchorTestData{AtomicString("--img"), PhysicalRect(110, 0, 10, 8)},
+          AnchorTestData{AtomicString("--inline-block"),
+                         PhysicalRect(130, 0, 10, 10)},
+          AnchorTestData{AtomicString("--non-culled"),
+                         PhysicalRect(50, 0, 20, 10)}));
 }
 
 TEST_F(NGAnchorQueryTest, OutOfFlow) {
@@ -287,8 +293,8 @@ TEST_F(NGAnchorQueryTest, OutOfFlow) {
       AnchorQueryByElementId("container");
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
-              testing::ElementsAre(
-                  AnchorTestData{"--abs1", PhysicalRect(100, 50, 400, 20)}));
+              testing::ElementsAre(AnchorTestData{
+                  AtomicString("--abs1"), PhysicalRect(100, 50, 400, 20)}));
 
   // Anchor names of out-of-flow positioned objects are propagated to their
   // containing blocks.
@@ -312,8 +318,8 @@ TEST_F(NGAnchorQueryTest, Relative) {
       AnchorQueryByElementId("container");
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
-              testing::ElementsAre(
-                  AnchorTestData{"--relpos", PhysicalRect(20, 10, 800, 0)}));
+              testing::ElementsAre(AnchorTestData{
+                  AtomicString("--relpos"), PhysicalRect(20, 10, 800, 0)}));
 }
 
 // CSS Transform should not shift the rectangles.
@@ -333,8 +339,8 @@ TEST_F(NGAnchorQueryTest, Transform) {
       AnchorQueryByElementId("container");
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
-              testing::ElementsAre(
-                  AnchorTestData{"--transform", PhysicalRect(0, 0, 800, 0)}));
+              testing::ElementsAre(AnchorTestData{AtomicString("--transform"),
+                                                  PhysicalRect(0, 0, 800, 0)}));
 }
 
 // Scroll positions should not shift the rectangles.
@@ -358,8 +364,8 @@ TEST_F(NGAnchorQueryTest, Scroll) {
   const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
   ASSERT_NE(anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
-              testing::ElementsAre(
-                  AnchorTestData{"--inner", PhysicalRect(0, 0, 400, 500)}));
+              testing::ElementsAre(AnchorTestData{
+                  AtomicString("--inner"), PhysicalRect(0, 0, 400, 500)}));
 }
 
 TEST_F(NGAnchorQueryTest, FragmentedContainingBlock) {
@@ -399,28 +405,28 @@ TEST_F(NGAnchorQueryTest, FragmentedContainingBlock) {
   const NGPhysicalAnchorQuery* cb_anchor_query1 = cb_fragment1->AnchorQuery();
   ASSERT_NE(cb_anchor_query1, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*cb_anchor_query1),
-              testing::ElementsAre(
-                  AnchorTestData{"--a1", PhysicalRect(0, 50, 100, 50)}));
+              testing::ElementsAre(AnchorTestData{
+                  AtomicString("--a1"), PhysicalRect(0, 50, 100, 50)}));
   const NGPhysicalBoxFragment* cb_fragment2 = cb->GetPhysicalFragment(2);
   const NGPhysicalAnchorQuery* cb_anchor_query2 = cb_fragment2->AnchorQuery();
   ASSERT_NE(cb_anchor_query2, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*cb_anchor_query2),
-              testing::ElementsAre(
-                  AnchorTestData{"--a1", PhysicalRect(0, 0, 100, 50)}));
+              testing::ElementsAre(AnchorTestData{
+                  AtomicString("--a1"), PhysicalRect(0, 0, 100, 50)}));
 
   const NGPhysicalAnchorQuery* columns_anchor_query =
       AnchorQueryByElementId("columns");
   ASSERT_NE(columns_anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*columns_anchor_query),
-              testing::ElementsAre(
-                  AnchorTestData{"--a1", PhysicalRect(110, 0, 210, 100)}));
+              testing::ElementsAre(AnchorTestData{
+                  AtomicString("--a1"), PhysicalRect(110, 0, 210, 100)}));
 
   const NGPhysicalAnchorQuery* container_anchor_query =
       AnchorQueryByElementId("container");
   ASSERT_NE(container_anchor_query, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*container_anchor_query),
-              testing::ElementsAre(
-                  AnchorTestData{"--a1", PhysicalRect(110, 10, 210, 100)}));
+              testing::ElementsAre(AnchorTestData{
+                  AtomicString("--a1"), PhysicalRect(110, 10, 210, 100)}));
 }
 
 }  // namespace

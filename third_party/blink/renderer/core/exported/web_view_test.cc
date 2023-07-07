@@ -1017,8 +1017,8 @@ TEST_F(WebViewTest, TextInputInfoUpdateStyleAndLayout) {
   Document* document =
       web_view_impl->MainFrameImpl()->GetFrame()->GetDocument();
   document->body()
-      ->QuerySelector("path", ASSERT_NO_EXCEPTION)
-      ->SetIdAttribute("foo");
+      ->QuerySelector(AtomicString("path"), ASSERT_NO_EXCEPTION)
+      ->SetIdAttribute(AtomicString("foo"));
 
   // This should not DCHECK.
   EXPECT_EQ(kWebTextInputTypeText, web_view_impl->MainFrameImpl()
@@ -1883,21 +1883,23 @@ TEST_F(
     AtomicString element_id;
     int next_previous_flags;
   } focused_elements[] = {
-      {"input1",
+      {AtomicString("input1"),
        default_text_input_flags | kWebTextInputFlagHaveNextFocusableElement},
-      {"contenteditable1", kWebTextInputFlagHaveNextFocusableElement |
-                               kWebTextInputFlagHavePreviousFocusableElement},
-      {"input2", default_text_input_flags |
-                     kWebTextInputFlagHaveNextFocusableElement |
-                     kWebTextInputFlagHavePreviousFocusableElement},
-      {"textarea1", default_text_input_flags |
-                        kWebTextInputFlagHaveNextFocusableElement |
-                        kWebTextInputFlagHavePreviousFocusableElement},
-      {"input3", default_text_input_flags |
-                     kWebTextInputFlagHaveNextFocusableElement |
-                     kWebTextInputFlagHavePreviousFocusableElement},
-      {"textarea2", default_text_input_flags |
-                        kWebTextInputFlagHavePreviousFocusableElement},
+      {AtomicString("contenteditable1"),
+       kWebTextInputFlagHaveNextFocusableElement |
+           kWebTextInputFlagHavePreviousFocusableElement},
+      {AtomicString("input2"),
+       default_text_input_flags | kWebTextInputFlagHaveNextFocusableElement |
+           kWebTextInputFlagHavePreviousFocusableElement},
+      {AtomicString("textarea1"),
+       default_text_input_flags | kWebTextInputFlagHaveNextFocusableElement |
+           kWebTextInputFlagHavePreviousFocusableElement},
+      {AtomicString("input3"),
+       default_text_input_flags | kWebTextInputFlagHaveNextFocusableElement |
+           kWebTextInputFlagHavePreviousFocusableElement},
+      {AtomicString("textarea2"),
+       default_text_input_flags |
+           kWebTextInputFlagHavePreviousFocusableElement},
   };
 
   // Forward Navigation in form1 with NEXT
@@ -2163,7 +2165,8 @@ TEST_F(
   Element* next_focus = nullptr;
   int next_previous_flags;
   for (size_t i = 0; i < std::size(focused_elements); ++i) {
-    current_focus = document->getElementById(focused_elements[i].element_id);
+    current_focus =
+        document->getElementById(AtomicString(focused_elements[i].element_id));
     EXPECT_EQ(current_focus, document->FocusedElement());
     next_previous_flags =
         active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
@@ -2185,7 +2188,8 @@ TEST_F(
 
   // Backward Navigation in form1 with PREVIOUS
   for (size_t i = std::size(focused_elements); i-- > 0;) {
-    current_focus = document->getElementById(focused_elements[i].element_id);
+    current_focus =
+        document->getElementById(AtomicString(focused_elements[i].element_id));
     EXPECT_EQ(current_focus, document->FocusedElement());
     next_previous_flags =
         active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
@@ -2273,7 +2277,8 @@ TEST_F(WebViewTest,
   Element* next_focus = nullptr;
   int next_previous_flags;
   for (size_t i = 0; i < std::size(focused_elements); ++i) {
-    current_focus = document->getElementById(focused_elements[i].element_id);
+    current_focus =
+        document->getElementById(AtomicString(focused_elements[i].element_id));
     EXPECT_EQ(current_focus, document->FocusedElement());
     next_previous_flags =
         active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
@@ -2296,7 +2301,8 @@ TEST_F(WebViewTest,
   // Backward Navigation in form with PREVIOUS which has tabindex attribute
   // which differs visual order.
   for (size_t i = std::size(focused_elements); i-- > 0;) {
-    current_focus = document->getElementById(focused_elements[i].element_id);
+    current_focus =
+        document->getElementById(AtomicString(focused_elements[i].element_id));
     EXPECT_EQ(current_focus, document->FocusedElement());
     next_previous_flags =
         active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
@@ -2374,7 +2380,8 @@ TEST_F(
   Element* next_focus = nullptr;
   int next_previous_flags;
   for (size_t i = 0; i < std::size(focused_elements); ++i) {
-    current_focus = document->getElementById(focused_elements[i].element_id);
+    current_focus =
+        document->getElementById(AtomicString(focused_elements[i].element_id));
     EXPECT_EQ(current_focus, document->FocusedElement());
     next_previous_flags =
         active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
@@ -2397,7 +2404,8 @@ TEST_F(
   // Backward Navigation in form with PREVIOUS which has has
   // disabled/enabled elements which will gets skipped during navigation.
   for (size_t i = std::size(focused_elements); i-- > 0;) {
-    current_focus = document->getElementById(focused_elements[i].element_id);
+    current_focus =
+        document->getElementById(AtomicString(focused_elements[i].element_id));
     EXPECT_EQ(current_focus, document->FocusedElement());
     next_previous_flags =
         active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
@@ -4061,7 +4069,7 @@ TEST_F(WebViewTest, DoNotFocusCurrentFrameOnNavigateFromLocalFrame) {
       local_frame->DomWindow(),
       web_url_request_with_target_start.ToResourceRequest());
   local_frame->Tree().FindOrCreateFrameForNavigation(request_with_target_start,
-                                                     "_top");
+                                                     AtomicString("_top"));
   EXPECT_FALSE(client.DidFocusCalled());
 
   web_view_helper.Reset();  // Remove dependency on locally scoped client.
@@ -4081,7 +4089,7 @@ TEST_F(WebViewTest, FocusExistingFrameOnNavigate) {
   FrameLoadRequest request(nullptr, web_url_request.ToResourceRequest());
   To<LocalFrame>(web_view_impl->GetPage()->MainFrame())
       ->Tree()
-      .FindOrCreateFrameForNavigation(request, "_blank");
+      .FindOrCreateFrameForNavigation(request, AtomicString("_blank"));
   ASSERT_TRUE(frame_client.CreatedWebView());
   EXPECT_FALSE(client.DidFocusCalled());
 
@@ -4094,7 +4102,8 @@ TEST_F(WebViewTest, FocusExistingFrameOnNavigate) {
                      ->GetPage()
                      ->MainFrame())
       ->Tree()
-      .FindOrCreateFrameForNavigation(request_with_target_start, "_start");
+      .FindOrCreateFrameForNavigation(request_with_target_start,
+                                      AtomicString("_start"));
   EXPECT_TRUE(client.DidFocusCalled());
 
   web_view_helper.Reset();  // Remove dependency on locally scoped client.
@@ -4139,8 +4148,8 @@ TEST_F(WebViewTest,
   WebURLRequest web_url_request(KURL("about:blank"));
   FrameLoadRequest request(frame->DomWindow(),
                            web_url_request.ToResourceRequest());
-  FrameTree::FindResult result =
-      frame->Tree().FindOrCreateFrameForNavigation(request, "_blank");
+  FrameTree::FindResult result = frame->Tree().FindOrCreateFrameForNavigation(
+      request, AtomicString("_blank"));
   EXPECT_EQ(frame, result.frame);
   EXPECT_EQ(kNavigationPolicyCurrentTab, request.GetNavigationPolicy());
 }

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/input_type_names.h"
 
 namespace blink {
 
@@ -450,7 +451,7 @@ TEST_F(SpellCheckerTest, PasswordFieldsAreIgnored) {
 
   // But if this turns into a password field, this disables spellchecking.
   // input->setType(input_type_names::kPassword);
-  input->setType("password");
+  input->setType(input_type_names::kPassword);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_FALSE(SpellChecker::IsSpellCheckingEnabledAt(
       Position(input->InnerEditorElement()->firstChild(), 0)));
@@ -458,7 +459,7 @@ TEST_F(SpellCheckerTest, PasswordFieldsAreIgnored) {
   // Some websites toggle between <input type="password"> and
   // <input type="text"> via a reveal/hide button. In this case, spell
   // checking should remain disabled.
-  input->setType("text");
+  input->setType(input_type_names::kText);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_FALSE(SpellChecker::IsSpellCheckingEnabledAt(
       Position(input->InnerEditorElement()->firstChild(), 0)));

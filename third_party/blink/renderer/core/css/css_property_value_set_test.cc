@@ -123,7 +123,7 @@ TEST_F(CSSPropertyValueSetTest, SetCustomPropertyReturnValue) {
   MutableCSSPropertyValueSet properties(kHTMLStandardMode);
   EXPECT_EQ(MutableCSSPropertyValueSet::kChangedPropertySet,
             properties.ParseAndSetCustomProperty(
-                "--my-property", "red", /*important=*/false,
+                AtomicString("--my-property"), "red", /*important=*/false,
                 SecureContextMode::kInsecureContext,
                 /*context_style_sheet=*/nullptr,
                 /*is_animation_tainted=*/false));
@@ -133,26 +133,26 @@ TEST_F(CSSPropertyValueSetTest, SetCustomPropertyReturnValue) {
   // return value here.
   EXPECT_EQ(MutableCSSPropertyValueSet::kModifiedExisting,
             properties.ParseAndSetCustomProperty(
-                "--my-property", "red", /*important=*/false,
+                AtomicString("--my-property"), "red", /*important=*/false,
                 SecureContextMode::kInsecureContext,
                 /*context_style_sheet=*/nullptr,
                 /*is_animation_tainted=*/false));
 
   EXPECT_EQ(MutableCSSPropertyValueSet::kChangedPropertySet,
             properties.ParseAndSetCustomProperty(
-                "--your-property", "white",
+                AtomicString("--your-property"), "white",
                 /*important=*/false, SecureContextMode::kInsecureContext,
                 /*context_style_sheet=*/nullptr,
                 /*is_animation_tainted=*/false));
   EXPECT_EQ(MutableCSSPropertyValueSet::kModifiedExisting,
             properties.ParseAndSetCustomProperty(
-                "--my-property", "green",
+                AtomicString("--my-property"), "green",
                 /*important=*/false, SecureContextMode::kInsecureContext,
                 /*context_style_sheet=*/nullptr,
                 /*is_animation_tainted=*/false));
   EXPECT_EQ(MutableCSSPropertyValueSet::kChangedPropertySet,
             properties.ParseAndSetCustomProperty(
-                "--my-property", "", /*important=*/false,
+                AtomicString("--my-property"), "", /*important=*/false,
                 SecureContextMode::kInsecureContext,
                 /*context_style_sheet=*/nullptr,
                 /*is_animation_tainted=*/false));

@@ -182,7 +182,7 @@ TEST_P(HTMLVideoElementTest, ChangeLayerNeedsCompositingUpdate) {
 }
 
 TEST_P(HTMLVideoElementTest, HasAvailableVideoFrameChecksWMP) {
-  video()->SetSrc("http://example.com/foo.mp4");
+  video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
   test::RunPendingTasks();
   UpdateAllLifecyclePhasesForTest();
 

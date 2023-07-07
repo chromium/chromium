@@ -224,8 +224,8 @@ TEST_F(RangeTest, SplitTextNodeRangeOutsideText) {
 }
 
 TEST_F(RangeTest, updateOwnerDocumentIfNeeded) {
-  Element* foo = GetDocument().CreateElementForBinding("foo");
-  Element* bar = GetDocument().CreateElementForBinding("bar");
+  Element* foo = GetDocument().CreateElementForBinding(AtomicString("foo"));
+  Element* bar = GetDocument().CreateElementForBinding(AtomicString("bar"));
   foo->AppendChild(bar);
 
   auto* range = MakeGarbageCollected<Range>(GetDocument(), Position(bar, 0),

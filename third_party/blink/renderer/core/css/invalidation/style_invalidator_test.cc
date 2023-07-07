@@ -41,7 +41,7 @@ TEST_F(StyleInvalidatorTest, SkipDisplayNone) {
   {
     InvalidationLists lists;
     scoped_refptr<InvalidationSet> set = DescendantInvalidationSet::Create();
-    set->AddClass("a");
+    set->AddClass(AtomicString("a"));
     lists.descendants.push_back(set);
     pending.ScheduleInvalidationSetsForNode(
         lists, *GetDocument().getElementById(AtomicString("root")));
@@ -70,7 +70,7 @@ TEST_F(StyleInvalidatorTest, SkipDisplayNoneClearPendingNth) {
   {
     InvalidationLists lists;
     scoped_refptr<InvalidationSet> set = NthSiblingInvalidationSet::Create();
-    set->AddClass("a");
+    set->AddClass(AtomicString("a"));
     lists.siblings.push_back(set);
     pending.ScheduleInvalidationSetsForNode(
         lists, *GetDocument().getElementById(AtomicString("none")));
@@ -78,7 +78,7 @@ TEST_F(StyleInvalidatorTest, SkipDisplayNoneClearPendingNth) {
   {
     InvalidationLists lists;
     scoped_refptr<InvalidationSet> set = DescendantInvalidationSet::Create();
-    set->AddClass("a");
+    set->AddClass(AtomicString("a"));
     lists.descendants.push_back(set);
     pending.ScheduleInvalidationSetsForNode(
         lists, *GetDocument().getElementById(AtomicString("descendant")));

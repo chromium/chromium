@@ -370,7 +370,7 @@ TEST_F(ScrollTimelineTest, AnimationPersistsWhenSourceBecomesNonScrollable) {
                              .InSecondsF());
 
   // Make #scroller non-scrollable.
-  GetElementById("scroller")->classList().Remove("scroll");
+  GetElementById("scroller")->classList().Remove(AtomicString("scroll"));
   UpdateAllLifecyclePhasesForTest();
   scroller = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   ASSERT_TRUE(scroller);
@@ -387,7 +387,7 @@ TEST_F(ScrollTimelineTest, AnimationPersistsWhenSourceBecomesNonScrollable) {
   animation = *scroll_timeline->GetAnimations().begin();
 
   // Make #scroller scrollable again.
-  GetElementById("scroller")->classList().Add("scroll");
+  GetElementById("scroller")->classList().Add(AtomicString("scroll"));
   UpdateAllLifecyclePhasesForTest();
   scroller = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   ASSERT_TRUE(scroller);
@@ -492,14 +492,15 @@ TEST_F(ScrollTimelineTest, ScheduleFrameWhenScrollerLayoutChanges) {
   // current time to change. Here we change the scroller max offset which
   // affects current time because endScrollOffset is 'auto'.
   Element* spacer_element = GetElementById("spacer");
-  spacer_element->setAttribute(html_names::kStyleAttr, "height:1000px;");
+  spacer_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString("height:1000px;"));
   GetChromeClient().UnsetAnimationScheduled();
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(GetChromeClient().AnimationScheduled());
 
   // Also test changing the scroller height, which also affect the max offset.
   GetElementById("scroller")
-      ->setAttribute(html_names::kStyleAttr, "height: 200px");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("height: 200px"));
   GetChromeClient().UnsetAnimationScheduled();
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(GetChromeClient().AnimationScheduled());
@@ -540,7 +541,8 @@ TEST_F(ScrollTimelineTest,
   scroll_animation->play();
   UpdateAllLifecyclePhasesForTest();
 
-  scroller_element->setAttribute(html_names::kStyleAttr, "display:table-cell;");
+  scroller_element->setAttribute(html_names::kStyleAttr,
+                                 AtomicString("display:table-cell;"));
   GetChromeClient().UnsetAnimationScheduled();
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(GetChromeClient().AnimationScheduled());
@@ -820,7 +822,8 @@ TEST_F(ScrollTimelineTest, WeakViewTimelines) {
 
   wtf_size_t base_count = TimelinesCount();
 
-  StaticElementList* list = GetDocument().QuerySelectorAll("#scroller > div");
+  StaticElementList* list =
+      GetDocument().QuerySelectorAll(AtomicString("#scroller > div"));
   ASSERT_TRUE(list);
   EXPECT_EQ(10u, list->length());
 

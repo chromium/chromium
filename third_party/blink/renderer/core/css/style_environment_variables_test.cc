@@ -95,20 +95,22 @@ class StyleEnvironmentVariablesTest : public PageTestBase {
     return data->Serialize();
   }
 
-  void SetVariableOnRoot(const AtomicString& name, const String& value) {
-    StyleEnvironmentVariables::GetRootInstance().SetVariable(name, value);
+  void SetVariableOnRoot(const char* name, const String& value) {
+    StyleEnvironmentVariables::GetRootInstance().SetVariable(AtomicString(name),
+                                                             value);
   }
 
-  void RemoveVariableOnRoot(const AtomicString& name) {
-    StyleEnvironmentVariables::GetRootInstance().RemoveVariable(name);
+  void RemoveVariableOnRoot(const char* name) {
+    StyleEnvironmentVariables::GetRootInstance().RemoveVariable(
+        AtomicString(name));
   }
 
-  void SetVariableOnDocument(const AtomicString& name, const String& value) {
-    GetDocumentVariables().SetVariable(name, value);
+  void SetVariableOnDocument(const char* name, const String& value) {
+    GetDocumentVariables().SetVariable(AtomicString(name), value);
   }
 
-  void RemoveVariableOnDocument(const AtomicString& name) {
-    GetDocumentVariables().RemoveVariable(name);
+  void RemoveVariableOnDocument(const char* name) {
+    GetDocumentVariables().RemoveVariable(AtomicString(name));
   }
 
   void SetTwoDimensionalVariableOnRoot(UADefinedTwoDimensionalVariable variable,
@@ -336,9 +338,9 @@ TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_DefaultsPresent) {
   EXPECT_EQ(kSafeAreaInsetExpectedDefault,
             GetRootVariableValue(UADefinedVariable::kSafeAreaInsetRight));
 
-  EXPECT_EQ(
-      nullptr,
-      StyleEnvironmentVariables::GetRootInstance().ResolveVariable("test", {}));
+  EXPECT_EQ(nullptr,
+            StyleEnvironmentVariables::GetRootInstance().ResolveVariable(
+                AtomicString("test"), {}));
 }
 
 TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_Preset) {

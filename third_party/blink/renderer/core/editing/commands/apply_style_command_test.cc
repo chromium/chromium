@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -73,7 +74,7 @@ TEST_F(ApplyStyleCommandTest, JustifyRightDetachesDestination) {
       "</ruby");
   Element* body = GetDocument().body();
   // The bug doesn't reproduce with a contenteditable <div> as container.
-  body->setAttribute(html_names::kContenteditableAttr, "true");
+  body->setAttribute(html_names::kContenteditableAttr, keywords::kTrue);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Selection().SelectAll();
 

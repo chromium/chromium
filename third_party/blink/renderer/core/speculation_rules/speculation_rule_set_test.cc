@@ -639,7 +639,7 @@ TEST_F(SpeculationRuleSetTest, PropagatesToDocument) {
   Document& document = page_holder.GetDocument();
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
-  script->setAttribute(html_names::kTypeAttr, "SpEcUlAtIoNrUlEs");
+  script->setAttribute(html_names::kTypeAttr, AtomicString("SpEcUlAtIoNrUlEs"));
   script->setText(
       R"({"prefetch": [
            {"source": "list", "urls": ["https://example.com/foo"]}
@@ -664,7 +664,7 @@ HTMLScriptElement* InsertSpeculationRules(Document& document,
                                           const String& speculation_script) {
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
-  script->setAttribute(html_names::kTypeAttr, "SpEcUlAtIoNrUlEs");
+  script->setAttribute(html_names::kTypeAttr, AtomicString("SpEcUlAtIoNrUlEs"));
   script->setText(speculation_script);
   document.head()->appendChild(script);
   return script;
@@ -1029,7 +1029,7 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarning) {
   Document& document = page_holder.GetDocument();
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
-  script->setAttribute(html_names::kTypeAttr, "speculationrules");
+  script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
   script->setText("[invalid]");
   document.head()->appendChild(script);
 
@@ -1048,7 +1048,7 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForInvalidRule) {
   Document& document = page_holder.GetDocument();
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
-  script->setAttribute(html_names::kTypeAttr, "speculationrules");
+  script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
   script->setText(
       R"({
         "prefetch": [{
@@ -1680,7 +1680,7 @@ TEST_F(DocumentRulesTest, ConsoleWarningForInvalidRule) {
   Document& document = page_holder.GetDocument();
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
-  script->setAttribute(html_names::kTypeAttr, "speculationrules");
+  script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
   script->setText(
       R"({
         "prefetch": [{
@@ -2425,10 +2425,11 @@ TEST_F(DocumentRulesTest, ReferrerPolicy) {
 
   auto* link_with_referrer = AddAnchor(*document.body(), "https://foo.com/abc");
   link_with_referrer->setAttribute(html_names::kReferrerpolicyAttr,
-                                   "same-origin");
+                                   AtomicString("same-origin"));
   auto* link_with_rel_no_referrer =
       AddAnchor(*document.body(), "https://foo.com/def");
-  link_with_rel_no_referrer->setAttribute(html_names::kRelAttr, "noreferrer");
+  link_with_rel_no_referrer->setAttribute(html_names::kRelAttr,
+                                          AtomicString("noreferrer"));
 
   String speculation_script = R"(
     {"prefetch": [{
@@ -2455,20 +2456,21 @@ TEST_F(DocumentRulesTest, LinkReferrerPolicy) {
 
   auto* link_with_referrer = AddAnchor(*document.body(), "https://foo.com/abc");
   link_with_referrer->setAttribute(html_names::kReferrerpolicyAttr,
-                                   "same-origin");
+                                   AtomicString("same-origin"));
   auto* link_with_no_referrer =
       AddAnchor(*document.body(), "https://foo.com/xyz");
   auto* link_with_rel_noreferrer =
       AddAnchor(*document.body(), "https://foo.com/mno");
-  link_with_rel_noreferrer->setAttribute(html_names::kRelAttr, "noreferrer");
+  link_with_rel_noreferrer->setAttribute(html_names::kRelAttr,
+                                         AtomicString("noreferrer"));
   auto* link_with_invalid_referrer =
       AddAnchor(*document.body(), "https://foo.com/pqr");
   link_with_invalid_referrer->setAttribute(html_names::kReferrerpolicyAttr,
-                                           "invalid");
+                                           AtomicString("invalid"));
   auto* link_with_disallowed_referrer =
       AddAnchor(*document.body(), "https://foo.com/aaa");
   link_with_disallowed_referrer->setAttribute(html_names::kReferrerpolicyAttr,
-                                              "unsafe-url");
+                                              AtomicString("unsafe-url"));
 
   String speculation_script = R"(
     {"prefetch": [
@@ -2513,7 +2515,7 @@ TEST_F(DocumentRulesTest, ReferrerPolicyAttributeChangeCausesLinkInvalidation) {
 
   auto* link_with_referrer = AddAnchor(*document.body(), "https://foo.com/abc");
   link_with_referrer->setAttribute(html_names::kReferrerpolicyAttr,
-                                   "same-origin");
+                                   AtomicString("same-origin"));
   String speculation_script = R"(
     {"prefetch": [
       {"source": "document", "where": {"href_matches": "https://foo.com/*"}}
@@ -2527,7 +2529,7 @@ TEST_F(DocumentRulesTest, ReferrerPolicyAttributeChangeCausesLinkInvalidation) {
 
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
     link_with_referrer->setAttribute(html_names::kReferrerpolicyAttr,
-                                     "strict-origin");
+                                     AtomicString("strict-origin"));
   });
   EXPECT_THAT(candidates, ElementsAre(HasReferrerPolicy(
                               network::mojom::ReferrerPolicy::kStrictOrigin)));
@@ -2542,7 +2544,8 @@ TEST_F(DocumentRulesTest, RelAttributeChangeCausesLinkInvalidation) {
   Document& document = page_holder.GetDocument();
 
   auto* link = AddAnchor(*document.body(), "https://foo.com/abc");
-  link->setAttribute(html_names::kReferrerpolicyAttr, "same-origin");
+  link->setAttribute(html_names::kReferrerpolicyAttr,
+                     AtomicString("same-origin"));
 
   String speculation_script = R"(
     {"prefetch": [
@@ -2556,7 +2559,7 @@ TEST_F(DocumentRulesTest, RelAttributeChangeCausesLinkInvalidation) {
                               network::mojom::ReferrerPolicy::kSameOrigin)));
 
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
-    link->setAttribute(html_names::kRelAttr, "noreferrer");
+    link->setAttribute(html_names::kRelAttr, AtomicString("noreferrer"));
   });
   EXPECT_THAT(
       candidates,
@@ -2584,8 +2587,8 @@ TEST_F(DocumentRulesTest, ReferrerMetaChangeShouldInvalidateCandidates) {
 
   auto* meta =
       MakeGarbageCollected<HTMLMetaElement>(document, CreateElementFlags());
-  meta->setAttribute(html_names::kNameAttr, "referrer");
-  meta->setAttribute(html_names::kContentAttr, "strict-origin");
+  meta->setAttribute(html_names::kNameAttr, AtomicString("referrer"));
+  meta->setAttribute(html_names::kContentAttr, AtomicString("strict-origin"));
 
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
     document.head()->appendChild(meta);
@@ -2594,7 +2597,7 @@ TEST_F(DocumentRulesTest, ReferrerMetaChangeShouldInvalidateCandidates) {
                               network::mojom::ReferrerPolicy::kStrictOrigin)));
 
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
-    meta->setAttribute(html_names::kContentAttr, "same-origin");
+    meta->setAttribute(html_names::kContentAttr, AtomicString("same-origin"));
   });
   EXPECT_THAT(candidates, ElementsAre(HasReferrerPolicy(
                               network::mojom::ReferrerPolicy::kSameOrigin)));
@@ -2634,9 +2637,9 @@ TEST_F(DocumentRulesTest, TargetHintFromLink) {
   Document& document = page_holder.GetDocument();
 
   auto* anchor_1 = AddAnchor(*document.body(), "https://foo.com/bar");
-  anchor_1->setAttribute(html_names::kTargetAttr, "_blank");
+  anchor_1->setAttribute(html_names::kTargetAttr, AtomicString("_blank"));
   auto* anchor_2 = AddAnchor(*document.body(), "https://fizz.com/buzz");
-  anchor_2->setAttribute(html_names::kTargetAttr, "_self");
+  anchor_2->setAttribute(html_names::kTargetAttr, AtomicString("_self"));
   AddAnchor(*document.body(), "https://hello.com/world");
 
   String speculation_script = R"(
@@ -2677,7 +2680,7 @@ TEST_F(DocumentRulesTest, TargetHintFromSpeculationRuleOverridesLinkTarget) {
   Document& document = page_holder.GetDocument();
 
   auto* anchor = AddAnchor(*document.body(), "https://foo.com/bar");
-  anchor->setAttribute(html_names::kTargetAttr, "_blank");
+  anchor->setAttribute(html_names::kTargetAttr, AtomicString("_blank"));
 
   String speculation_script = R"(
     {"prerender": [{"source": "document", "target_hint": "_self"}]}
@@ -2706,14 +2709,14 @@ TEST_F(DocumentRulesTest, TargetHintFromLinkDynamic) {
   HTMLBaseElement* base_element;
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
     base_element = MakeGarbageCollected<HTMLBaseElement>(document);
-    base_element->setAttribute(html_names::kTargetAttr, "_self");
+    base_element->setAttribute(html_names::kTargetAttr, AtomicString("_self"));
     document.head()->appendChild(base_element);
   });
   EXPECT_THAT(candidates, ::testing::ElementsAre(HasTargetHint(
                               mojom::blink::SpeculationTargetHint::kSelf)));
 
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
-    anchor->setAttribute(html_names::kTargetAttr, "_blank");
+    anchor->setAttribute(html_names::kTargetAttr, AtomicString("_blank"));
   });
   EXPECT_THAT(candidates, ::testing::ElementsAre(HasTargetHint(
                               mojom::blink::SpeculationTargetHint::kBlank)));
@@ -2851,13 +2854,14 @@ TEST_F(DocumentRulesTest, SelectorMatchesIsDynamic) {
   EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/fizz")));
 
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
-    second_anchor->setAttribute(html_names::kClassAttr, "important-link");
+    second_anchor->setAttribute(html_names::kClassAttr,
+                                AtomicString("important-link"));
   });
   EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/fizz"),
                                   KURL("https://foo.com/buzz")));
 
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
-    important_section->SetIdAttribute("random-section");
+    important_section->SetIdAttribute(AtomicString("random-section"));
   });
   EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/buzz")));
 }
@@ -2952,9 +2956,9 @@ TEST_F(DocumentRulesTest, BasicStyleInvalidation) {
                                       speculation_script);
 
   EXPECT_FALSE(document.NeedsLayoutTreeUpdate());
-  unimportant_section->SetIdAttribute("random-section");
+  unimportant_section->SetIdAttribute(AtomicString("random-section"));
   EXPECT_FALSE(document.NeedsLayoutTreeUpdate());
-  unimportant_section->SetIdAttribute("important-section");
+  unimportant_section->SetIdAttribute(AtomicString("important-section"));
   EXPECT_TRUE(document.NeedsLayoutTreeUpdate());
 }
 
@@ -2990,7 +2994,7 @@ TEST_F(DocumentRulesTest, IrrelevantDOMChangeShouldNotInvalidateCandidateList) {
 
   AssertNoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host, [&]() {
-        unimportant_section->SetIdAttribute("random-section");
+        unimportant_section->SetIdAttribute(AtomicString("random-section"));
         page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
       });
 }
@@ -3039,7 +3043,7 @@ TEST_F(DocumentRulesTest, SelectorMatchesWithScopePseudoSelector) {
   StubSpeculationHost speculation_host;
   Document& document = page_holder.GetDocument();
 
-  document.body()->setAttribute(html_names::kClassAttr, "foo");
+  document.body()->setAttribute(html_names::kClassAttr, AtomicString("foo"));
   document.body()->setInnerHTML(R"HTML(
     <a href="https://foo.com/fizz"></a>
     <div class="foo">
@@ -3170,8 +3174,10 @@ TEST_F(DocumentRulesTest, UpdateQueueingWithSelectorMatches_2) {
         EXPECT_FALSE(document.NeedsLayoutTreeUpdate());
         auto* referrer_meta = MakeGarbageCollected<HTMLMetaElement>(
             document, CreateElementFlags());
-        referrer_meta->setAttribute(html_names::kNameAttr, "referrer");
-        referrer_meta->setAttribute(html_names::kContentAttr, "strict-origin");
+        referrer_meta->setAttribute(html_names::kNameAttr,
+                                    AtomicString("referrer"));
+        referrer_meta->setAttribute(html_names::kContentAttr,
+                                    AtomicString("strict-origin"));
         document.head()->appendChild(referrer_meta);
         EXPECT_FALSE(document.NeedsLayoutTreeUpdate());
       },
@@ -3280,7 +3286,9 @@ TEST_F(DocumentRulesTest, UpdateQueueingWithSelectorMatches_5) {
   // Changing the link's container's ID will not queue a microtask on its own.
   AssertNoRulesPropagatedToStubSpeculationHost(
       page_holder, speculation_host,
-      [&]() { important_section->SetIdAttribute("unimportant-section"); },
+      [&]() {
+        important_section->SetIdAttribute(AtomicString("unimportant-section"));
+      },
       IncludesStyleUpdate{false});
   // After style updates, we should update the list of speculation candidates.
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, []() {});
@@ -3743,7 +3751,7 @@ TEST_F(DocumentRulesTest, DisplayLockedContainerTracking) {
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
     important_section->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
                                               CSSValueID::kHidden);
-    anchor_1->SetHref("https://foo.com/fizz.html");
+    anchor_1->SetHref(AtomicString("https://foo.com/fizz.html"));
   });
   EXPECT_THAT(candidates, HasURLs());
 
@@ -3844,7 +3852,7 @@ TEST_F(DocumentRulesTest, RemoveForcesStyleUpdate) {
   InsertSpeculationRules(doc,
                          R"({"prefetch": [{"source": "document",
                         "where": {"selector_matches": ".magic *"}}]})");
-  doc.body()->setAttribute("class", "magic");
+  doc.body()->setAttribute(html_names::kClassAttr, AtomicString("magic"));
 
   event_loop->PerformMicrotaskCheckpoint();
 
@@ -4211,7 +4219,7 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForNoVarySearchHint) {
   Document& document = page_holder.GetDocument();
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
-  script->setAttribute(html_names::kTypeAttr, "speculationrules");
+  script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
   script->setText(
       R"({
     "prefetch": [{

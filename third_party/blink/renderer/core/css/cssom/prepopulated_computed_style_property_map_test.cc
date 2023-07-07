@@ -91,7 +91,8 @@ TEST_F(PrepopulatedComputedStylePropertyMapTest, NativePropertyAccessors) {
 
 TEST_F(PrepopulatedComputedStylePropertyMapTest, CustomPropertyAccessors) {
   Vector<CSSPropertyID> empty_native_properties;
-  Vector<AtomicString> custom_properties({"--foo", "--bar"});
+  Vector<AtomicString> custom_properties(
+      {AtomicString("--foo"), AtomicString("--bar")});
 
   UpdateAllLifecyclePhasesForTest();
   Node* node = PageNode();

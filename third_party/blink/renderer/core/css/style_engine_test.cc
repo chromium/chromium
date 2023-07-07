@@ -179,7 +179,7 @@ TEST_F(StyleEngineTest, DocumentDirtyAfterInject) {
   auto* parsed_sheet = MakeGarbageCollected<StyleSheetContents>(
       MakeGarbageCollected<CSSParserContext>(GetDocument()));
   parsed_sheet->ParseString("div {}");
-  GetStyleEngine().InjectSheet("", parsed_sheet);
+  GetStyleEngine().InjectSheet(g_empty_atom, parsed_sheet);
   EXPECT_FALSE(IsDocumentStyleSheetCollectionClean());
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(IsDocumentStyleSheetCollectionClean());
@@ -741,7 +741,7 @@ TEST_F(StyleEngineTest, InjectedUserNoAuthorFontFace) {
 
   FontDescription font_description;
   FontFaceCache* cache = GetStyleEngine().GetFontSelector()->GetFontFaceCache();
-  EXPECT_FALSE(cache->Get(font_description, "User"));
+  EXPECT_FALSE(cache->Get(font_description, AtomicString("User")));
 
   auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
       MakeGarbageCollected<CSSParserContext>(GetDocument()));
@@ -756,7 +756,7 @@ TEST_F(StyleEngineTest, InjectedUserNoAuthorFontFace) {
 
   UpdateAllLifecyclePhases();
 
-  EXPECT_TRUE(cache->Get(font_description, "User"));
+  EXPECT_TRUE(cache->Get(font_description, AtomicString("User")));
 }
 
 TEST_F(StyleEngineTest, InjectedFontFace) {
@@ -772,8 +772,8 @@ TEST_F(StyleEngineTest, InjectedFontFace) {
 
   FontDescription font_description;
   FontFaceCache* cache = GetStyleEngine().GetFontSelector()->GetFontFaceCache();
-  EXPECT_TRUE(cache->Get(font_description, "Author"));
-  EXPECT_FALSE(cache->Get(font_description, "User"));
+  EXPECT_TRUE(cache->Get(font_description, AtomicString("Author")));
+  EXPECT_FALSE(cache->Get(font_description, AtomicString("User")));
 
   auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
       MakeGarbageCollected<CSSParserContext>(GetDocument()));
@@ -788,8 +788,8 @@ TEST_F(StyleEngineTest, InjectedFontFace) {
 
   UpdateAllLifecyclePhases();
 
-  EXPECT_TRUE(cache->Get(font_description, "Author"));
-  EXPECT_TRUE(cache->Get(font_description, "User"));
+  EXPECT_TRUE(cache->Get(font_description, AtomicString("Author")));
+  EXPECT_TRUE(cache->Get(font_description, AtomicString("User")));
 }
 
 TEST_F(StyleEngineTest, IgnoreInvalidPropertyValue) {
@@ -1051,7 +1051,8 @@ TEST_F(StyleEngineTest, StyleMediaAttributeStyleChange) {
   unsigned before_count = GetStyleEngine().StyleForElementCount();
 
   Element* s1 = GetDocument().getElementById(AtomicString("s1"));
-  s1->setAttribute(blink::html_names::kMediaAttr, "(max-width: 2000px)");
+  s1->setAttribute(blink::html_names::kMediaAttr,
+                   AtomicString("(max-width: 2000px)"));
   UpdateAllLifecyclePhases();
 
   unsigned after_count = GetStyleEngine().StyleForElementCount();
@@ -1079,7 +1080,8 @@ TEST_F(StyleEngineTest, StyleMediaAttributeNoStyleChange) {
   unsigned before_count = GetStyleEngine().StyleForElementCount();
 
   Element* s1 = GetDocument().getElementById(AtomicString("s1"));
-  s1->setAttribute(blink::html_names::kMediaAttr, "(max-width: 2000px)");
+  s1->setAttribute(blink::html_names::kMediaAttr,
+                   AtomicString("(max-width: 2000px)"));
   UpdateAllLifecyclePhases();
 
   unsigned after_count = GetStyleEngine().StyleForElementCount();
@@ -1183,7 +1185,7 @@ TEST_F(StyleEngineTest, ScheduleInvalidationAfterSubtreeRecalc) {
   ASSERT_TRUE(t2);
 
   // Sanity test.
-  t1->setAttribute(blink::html_names::kClassAttr, "t1");
+  t1->setAttribute(blink::html_names::kClassAttr, AtomicString("t1"));
   EXPECT_FALSE(GetDocument().NeedsStyleInvalidation());
   EXPECT_TRUE(GetDocument().ChildNeedsStyleInvalidation());
   EXPECT_TRUE(t1->NeedsStyleInvalidation());
@@ -1199,7 +1201,7 @@ TEST_F(StyleEngineTest, ScheduleInvalidationAfterSubtreeRecalc) {
 
   // Check that no invalidations sets are scheduled when the document node is
   // already SubtreeStyleChange.
-  t2->setAttribute(blink::html_names::kClassAttr, "t2");
+  t2->setAttribute(blink::html_names::kClassAttr, AtomicString("t2"));
   EXPECT_FALSE(GetDocument().NeedsStyleInvalidation());
   EXPECT_FALSE(GetDocument().ChildNeedsStyleInvalidation());
 
@@ -1770,30 +1772,32 @@ TEST_F(StyleEngineTest, MediaQueriesChangePrefersContrastOverride) {
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
-  GetDocument().GetPage()->SetMediaFeatureOverride("prefers-contrast", "more");
+  GetDocument().GetPage()->SetMediaFeatureOverride(
+      media_feature_names::kPrefersContrastMediaFeature, "more");
 
   UpdateAllLifecyclePhases();
   EXPECT_EQ(Color::FromRGB(0, 0, 255),
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
-  GetDocument().GetPage()->SetMediaFeatureOverride("prefers-contrast",
-                                                   "no-preference");
+  GetDocument().GetPage()->SetMediaFeatureOverride(
+      media_feature_names::kPrefersContrastMediaFeature, "no-preference");
 
   UpdateAllLifecyclePhases();
   EXPECT_EQ(Color::FromRGB(255, 0, 0),
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
-  GetDocument().GetPage()->SetMediaFeatureOverride("prefers-contrast", "less");
+  GetDocument().GetPage()->SetMediaFeatureOverride(
+      media_feature_names::kPrefersContrastMediaFeature, "less");
 
   UpdateAllLifecyclePhases();
   EXPECT_EQ(Color::FromRGB(255, 165, 0),
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
-  GetDocument().GetPage()->SetMediaFeatureOverride("prefers-contrast",
-                                                   "custom");
+  GetDocument().GetPage()->SetMediaFeatureOverride(
+      media_feature_names::kPrefersContrastMediaFeature, "custom");
 
   UpdateAllLifecyclePhases();
   EXPECT_EQ(Color::FromRGB(255, 255, 0),
@@ -1982,14 +1986,16 @@ TEST_F(StyleEngineTest, MediaQueriesForcedColorsOverride) {
                 GetCSSPropertyColor()));
 
   ColorSchemeHelper color_scheme_helper(GetDocument());
-  GetDocument().GetPage()->SetMediaFeatureOverride("forced-colors", "active");
+  GetDocument().GetPage()->SetMediaFeatureOverride(
+      media_feature_names::kForcedColorsMediaFeature, "active");
 
   UpdateAllLifecyclePhases();
   EXPECT_EQ(Color::FromRGB(0, 128, 0),
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
-  GetDocument().GetPage()->SetMediaFeatureOverride("forced-colors", "none");
+  GetDocument().GetPage()->SetMediaFeatureOverride(
+      media_feature_names::kForcedColorsMediaFeature, "none");
   UpdateAllLifecyclePhases();
   EXPECT_EQ(Color::FromRGB(255, 0, 0),
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
@@ -2024,8 +2030,8 @@ TEST_F(StyleEngineTest, MediaQueriesColorSchemeOverride) {
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
-  GetDocument().GetPage()->SetMediaFeatureOverride("prefers-color-scheme",
-                                                   "dark");
+  GetDocument().GetPage()->SetMediaFeatureOverride(
+      media_feature_names::kPrefersColorSchemeMediaFeature, "dark");
   UpdateAllLifecyclePhases();
   EXPECT_EQ(Color::FromRGB(0, 128, 0),
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
@@ -2151,8 +2157,8 @@ TEST_F(StyleEngineTest, MediaQueriesReducedMotionOverride) {
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
-  GetDocument().GetPage()->SetMediaFeatureOverride("prefers-reduced-motion",
-                                                   "reduce");
+  GetDocument().GetPage()->SetMediaFeatureOverride(
+      media_feature_names::kPrefersReducedMotionMediaFeature, "reduce");
   UpdateAllLifecyclePhases();
   EXPECT_EQ(Color::FromRGB(0, 128, 0),
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
@@ -2376,12 +2382,12 @@ TEST_F(StyleEngineTest, CSSSelectorEmptyWhitespaceOnlyFail) {
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kCSSSelectorEmptyWhitespaceOnlyFail));
 
-  auto* div_elements = GetDocument().getElementsByTagName("div");
+  auto* div_elements = GetDocument().getElementsByTagName(AtomicString("div"));
   ASSERT_TRUE(div_elements);
   ASSERT_EQ(5u, div_elements->length());
 
   auto is_counted = [](Element* element) {
-    element->setAttribute(blink::html_names::kClassAttr, "match");
+    element->setAttribute(blink::html_names::kClassAttr, AtomicString("match"));
     element->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
     return element->GetDocument().IsUseCounted(
         WebFeature::kCSSSelectorEmptyWhitespaceOnlyFail);
@@ -2557,8 +2563,8 @@ TEST_F(StyleEngineTest, ColorSchemeOverride) {
       mojom::blink::ColorScheme::kLight,
       GetDocument().documentElement()->GetComputedStyle()->UsedColorScheme());
 
-  GetDocument().GetPage()->SetMediaFeatureOverride("prefers-color-scheme",
-                                                   "dark");
+  GetDocument().GetPage()->SetMediaFeatureOverride(
+      media_feature_names::kPrefersColorSchemeMediaFeature, "dark");
 
   UpdateAllLifecyclePhases();
   EXPECT_EQ(
@@ -2835,7 +2841,7 @@ TEST_F(StyleEngineTest, RemoveStyleRecalcRootFromFlatTree) {
   UpdateAllLifecyclePhases();
 
   // Make the span style dirty.
-  span->setAttribute("style", "color:green");
+  span->setAttribute(html_names::kStyleAttr, AtomicString("color:green"));
 
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
   EXPECT_EQ(span, GetStyleRecalcRoot());
@@ -2843,7 +2849,7 @@ TEST_F(StyleEngineTest, RemoveStyleRecalcRootFromFlatTree) {
   auto* div = shadow_root.firstChild();
   auto* slot = To<Element>(div->firstChild());
 
-  slot->setAttribute("name", "x");
+  slot->setAttribute(html_names::kNameAttr, AtomicString("x"));
   GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
 
   // Make sure shadow tree div and slot have their ChildNeedsStyleRecalc()
@@ -2875,7 +2881,7 @@ TEST_F(StyleEngineTest, SlottedWithEnsuredStyleOutsideFlatTree) {
   ASSERT_TRUE(style);
   EXPECT_TRUE(style->IsEnsuredOutsideFlatTree());
 
-  span->setAttribute("slot", "default");
+  span->setAttribute(html_names::kSlotAttr, AtomicString("default"));
   GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
   EXPECT_EQ(span, GetStyleRecalcRoot());
   EXPECT_FALSE(span->GetComputedStyle());
@@ -3316,7 +3322,7 @@ TEST_F(StyleEngineTest, MediaAttributeChangeUpdatesFontCacheVersion) {
   UpdateAllLifecyclePhases();
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
-  target->setAttribute(html_names::kMediaAttr, "print");
+  target->setAttribute(html_names::kMediaAttr, AtomicString("print"));
 
   // Shouldn't crash.
   UpdateAllLifecyclePhases();
@@ -3651,7 +3657,7 @@ TEST_F(StyleEngineSimTest, OwnerColorSchemeBaseBackground) {
   EXPECT_FALSE(light_document->View()->ShouldPaintBaseBackgroundColor());
 
   GetDocument().documentElement()->setAttribute(blink::html_names::kClassAttr,
-                                                "dark");
+                                                AtomicString("dark"));
 
   test::RunPendingTasks();
   Compositor().BeginFrame();
@@ -3909,7 +3915,7 @@ TEST_F(StyleEngineContainerQueryTest,
 
   Element* a = GetDocument().getElementById(AtomicString("a"));
   ASSERT_TRUE(a);
-  a->classList().Add("toggle");
+  a->classList().Add(AtomicString("toggle"));
 
   GetDocument().UpdateStyleAndLayoutTree();
   EXPECT_TRUE(GetDocument().View()->NeedsLayout())
@@ -3940,7 +3946,7 @@ TEST_F(StyleEngineContainerQueryTest,
 
   Element* container = GetDocument().getElementById(AtomicString("container"));
   ASSERT_TRUE(container);
-  container->classList().Add("toggle");
+  container->classList().Add(AtomicString("toggle"));
 
   GetDocument().UpdateStyleAndLayoutTree();
   EXPECT_FALSE(GetDocument().View()->NeedsLayout())
@@ -3985,7 +3991,7 @@ TEST_F(StyleEngineContainerQueryTest,
   EXPECT_FALSE(GetStyleEngine().StyleAffectedByLayout());
 
   // Mutate DOM to invalidate style recalc.
-  container->classList().Add("toggle");
+  container->classList().Add(AtomicString("toggle"));
   EXPECT_EQ(Document::StyleAndLayoutTreeUpdate::kAnalyzed,
             GetDocument().CalculateStyleAndLayoutTreeUpdate());
 
@@ -4287,8 +4293,9 @@ TEST_F(StyleEngineTest, AudioUAStyleNameSpace) {
   )HTML");
   Element* html_audio =
       GetDocument().getElementById(AtomicString("html-audio"));
-  Element* audio = GetDocument().createElementNS("http://dummyns", "audio",
-                                                 ASSERT_NO_EXCEPTION);
+  Element* audio =
+      GetDocument().createElementNS(AtomicString("http://dummyns"),
+                                    AtomicString("audio"), ASSERT_NO_EXCEPTION);
   GetDocument().body()->appendChild(audio);
   UpdateAllLifecyclePhases();
 
@@ -5176,7 +5183,7 @@ TEST_F(StyleEngineTest, HasPseudoClassInvalidationSkipIrrelevantClassChange) {
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetDocument()
       .getElementById(AtomicString("div4"))
-      ->setAttribute(html_names::kClassAttr, "c");
+      ->setAttribute(html_names::kClassAttr, AtomicString("c"));
   UpdateAllLifecyclePhases();
   unsigned element_count =
       GetStyleEngine().StyleForElementCount() - start_count;
@@ -5185,7 +5192,7 @@ TEST_F(StyleEngineTest, HasPseudoClassInvalidationSkipIrrelevantClassChange) {
   start_count = GetStyleEngine().StyleForElementCount();
   GetDocument()
       .getElementById(AtomicString("div4"))
-      ->setAttribute(html_names::kClassAttr, "b");
+      ->setAttribute(html_names::kClassAttr, AtomicString("b"));
   UpdateAllLifecyclePhases();
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
   ASSERT_EQ(1U, element_count);
@@ -5208,7 +5215,7 @@ TEST_F(StyleEngineTest, HasPseudoClassInvalidationSkipIrrelevantIdChange) {
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetDocument()
       .getElementById(AtomicString("div4"))
-      ->setAttribute(html_names::kIdAttr, "c");
+      ->setAttribute(html_names::kIdAttr, AtomicString("c"));
   UpdateAllLifecyclePhases();
   unsigned element_count =
       GetStyleEngine().StyleForElementCount() - start_count;
@@ -5217,7 +5224,7 @@ TEST_F(StyleEngineTest, HasPseudoClassInvalidationSkipIrrelevantIdChange) {
   start_count = GetStyleEngine().StyleForElementCount();
   GetDocument()
       .getElementById(AtomicString("c"))
-      ->setAttribute(html_names::kIdAttr, "b");
+      ->setAttribute(html_names::kIdAttr, AtomicString("b"));
   UpdateAllLifecyclePhases();
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
   ASSERT_EQ(1U, element_count);
@@ -5241,7 +5248,9 @@ TEST_F(StyleEngineTest,
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetDocument()
       .getElementById(AtomicString("div4"))
-      ->setAttribute(QualifiedName("", "c", ""), "C");
+      ->setAttribute(
+          QualifiedName(g_empty_atom, AtomicString("c"), g_empty_atom),
+          AtomicString("C"));
   UpdateAllLifecyclePhases();
   unsigned element_count =
       GetStyleEngine().StyleForElementCount() - start_count;
@@ -5250,7 +5259,9 @@ TEST_F(StyleEngineTest,
   start_count = GetStyleEngine().StyleForElementCount();
   GetDocument()
       .getElementById(AtomicString("div4"))
-      ->setAttribute(QualifiedName("", "b", ""), "B");
+      ->setAttribute(
+          QualifiedName(g_empty_atom, AtomicString("b"), g_empty_atom),
+          AtomicString("B"));
   UpdateAllLifecyclePhases();
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
   ASSERT_EQ(1U, element_count);
@@ -5272,7 +5283,7 @@ TEST_F(StyleEngineTest,
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   auto* div5 = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  div5->setAttribute(html_names::kIdAttr, "div5");
+  div5->setAttribute(html_names::kIdAttr, AtomicString("div5"));
   div5->setInnerHTML(R"HTML(<div class='c'></div>)HTML");
   GetDocument().getElementById(AtomicString("div3"))->AppendChild(div5);
   UpdateAllLifecyclePhases();
@@ -5282,7 +5293,7 @@ TEST_F(StyleEngineTest,
 
   start_count = GetStyleEngine().StyleForElementCount();
   auto* div6 = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  div6->setAttribute(html_names::kIdAttr, "div6");
+  div6->setAttribute(html_names::kIdAttr, AtomicString("div6"));
   div6->setInnerHTML(R"HTML(<div class='b'></div>)HTML");
   GetDocument().getElementById(AtomicString("div4"))->AppendChild(div6);
   UpdateAllLifecyclePhases();
@@ -5319,7 +5330,7 @@ TEST_F(StyleEngineTest, HasPseudoClassInvalidationUniversalInArgument) {
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   auto* div3 = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  div3->setAttribute(html_names::kIdAttr, "div3");
+  div3->setAttribute(html_names::kIdAttr, AtomicString("div3"));
   GetDocument().getElementById(AtomicString("div2"))->AppendChild(div3);
   UpdateAllLifecyclePhases();
   unsigned element_count =
@@ -5352,7 +5363,7 @@ TEST_F(StyleEngineTest,
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   auto* div4 = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  div4->setAttribute(html_names::kIdAttr, "div4");
+  div4->setAttribute(html_names::kIdAttr, AtomicString("div4"));
   GetDocument().getElementById(AtomicString("div2"))->AppendChild(div4);
   UpdateAllLifecyclePhases();
   unsigned element_count =
@@ -5361,7 +5372,7 @@ TEST_F(StyleEngineTest,
 
   start_count = GetStyleEngine().StyleForElementCount();
   auto* div5 = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  div5->setAttribute(html_names::kIdAttr, "div5");
+  div5->setAttribute(html_names::kIdAttr, AtomicString("div5"));
   GetDocument().getElementById(AtomicString("div3"))->AppendChild(div5);
   UpdateAllLifecyclePhases();
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
@@ -5398,7 +5409,7 @@ TEST_F(StyleEngineTest, HasPseudoClassInvalidationLinkInHas) {
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   auto* anchor = MakeGarbageCollected<HTMLAnchorElement>(GetDocument());
-  anchor->setAttribute(html_names::kIdAttr, "anchor1");
+  anchor->setAttribute(html_names::kIdAttr, AtomicString("anchor1"));
   GetDocument().getElementById(AtomicString("div1"))->AppendChild(anchor);
   UpdateAllLifecyclePhases();
   unsigned element_count =
@@ -5428,8 +5439,8 @@ TEST_F(StyleEngineTest, HasPseudoClassInvalidationIgnoreVisitedPseudoInHas) {
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   auto* anchor = MakeGarbageCollected<HTMLAnchorElement>(GetDocument());
-  anchor->SetHref("");
-  anchor->setAttribute(html_names::kIdAttr, "anchor1");
+  anchor->SetHref(g_empty_atom);
+  anchor->setAttribute(html_names::kIdAttr, AtomicString("anchor1"));
   GetDocument().getElementById(AtomicString("div1"))->AppendChild(anchor);
   UpdateAllLifecyclePhases();
   unsigned element_count =
@@ -5475,7 +5486,7 @@ TEST_F(StyleEngineTest, HasPseudoClassInvalidationCheckFiltering) {
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kClassAttr, "d");
+      ->setAttribute(html_names::kClassAttr, AtomicString("d"));
   UpdateAllLifecyclePhases();
   unsigned element_count =
       GetStyleEngine().StyleForElementCount() - start_count;
@@ -5483,7 +5494,7 @@ TEST_F(StyleEngineTest, HasPseudoClassInvalidationCheckFiltering) {
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kClassAttr, "");
+      ->setAttribute(html_names::kClassAttr, g_empty_atom);
   UpdateAllLifecyclePhases();
 
   // TODO(blee@igalia.com) Should be 1U. Need additional filtering
@@ -5496,7 +5507,7 @@ TEST_F(StyleEngineTest, HasPseudoClassInvalidationCheckFiltering) {
   start_count = GetStyleEngine().StyleForElementCount();
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kClassAttr, "b");
+      ->setAttribute(html_names::kClassAttr, AtomicString("b"));
   UpdateAllLifecyclePhases();
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
   EXPECT_EQ(4U, element_count);
@@ -5796,8 +5807,8 @@ TEST_F(StyleEngineSimTest,
 }
 
 TEST_F(StyleEngineTest, StyleElementTypeAttrChange) {
-  Element* style = GetDocument().CreateElementForBinding("style");
-  style->setAttribute("type", "invalid");
+  Element* style = GetDocument().CreateElementForBinding(AtomicString("style"));
+  style->setAttribute(html_names::kTypeAttr, AtomicString("invalid"));
   style->setInnerHTML("body { color: red }");
   GetDocument().body()->appendChild(style);
 
@@ -5808,7 +5819,7 @@ TEST_F(StyleEngineTest, StyleElementTypeAttrChange) {
                 GetCSSPropertyColor()));
 
   // <style> should now be effective with a valid type attribute value
-  style->setAttribute("type", "text/css");
+  style->setAttribute(html_names::kTypeAttr, AtomicString("text/css"));
   UpdateAllLifecyclePhases();
   EXPECT_EQ(Color::FromRGB(255, 0, 0),
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(

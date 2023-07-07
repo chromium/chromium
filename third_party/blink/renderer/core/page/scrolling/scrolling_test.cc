@@ -160,7 +160,7 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
       const char* id_value) const {
     return GetFrame()
         ->GetDocument()
-        ->getElementById(id_value)
+        ->getElementById(AtomicString(id_value))
         ->GetLayoutBoxForScrolling()
         ->GetScrollableArea();
   }
@@ -640,7 +640,8 @@ TEST_P(ScrollingTest, nestedTouchActionInvalidation) {
 
   auto* scrollable =
       GetFrame()->GetDocument()->getElementById(AtomicString("scrollable"));
-  scrollable->setAttribute("style", "touch-action: none", ASSERT_NO_EXCEPTION);
+  scrollable->setAttribute(html_names::kStyleAttr,
+                           AtomicString("touch-action: none"));
   ForceFullCompositingUpdate();
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
@@ -682,7 +683,8 @@ TEST_P(ScrollingTest, nestedTouchActionChangesUnion) {
 
   Element* ancestor =
       GetFrame()->GetDocument()->getElementById(AtomicString("ancestor"));
-  ancestor->setAttribute(html_names::kStyleAttr, "touch-action: pan-y");
+  ancestor->setAttribute(html_names::kStyleAttr,
+                         AtomicString("touch-action: pan-y"));
   ForceFullCompositingUpdate();
 
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
@@ -729,8 +731,8 @@ TEST_P(ScrollingTest, touchActionEditableElement) {
   // Make touchaction scrollable by making child overflow.
   Element* child =
       GetFrame()->GetDocument()->getElementById(AtomicString("child"));
-  child->setAttribute("style", "width: 1000px; height: 100px;",
-                      ASSERT_NO_EXCEPTION);
+  child->setAttribute(html_names::kStyleAttr,
+                      AtomicString("width: 1000px; height: 100px;"));
   ForceFullCompositingUpdate();
 
   cc_layer = ScrollingContentsLayerByDOMElementId("touchaction");
@@ -1752,7 +1754,7 @@ TEST_P(ScrollingTest, IframeCompositedScrollingHideAndShow) {
   // Hiding the iframe should clear the NFSR.
   Element* iframe =
       GetFrame()->GetDocument()->getElementById(AtomicString("iframe"));
-  iframe->setAttribute(html_names::kStyleAttr, "display: none");
+  iframe->setAttribute(html_names::kStyleAttr, AtomicString("display: none"));
   ForceFullCompositingUpdate();
   EXPECT_TRUE(MainFrameScrollingContentsLayer()
                   ->non_fast_scrollable_region()
@@ -1760,7 +1762,7 @@ TEST_P(ScrollingTest, IframeCompositedScrollingHideAndShow) {
                   .IsEmpty());
 
   // Showing it again should compute the NFSR.
-  iframe->setAttribute(html_names::kStyleAttr, "");
+  iframe->setAttribute(html_names::kStyleAttr, g_empty_atom);
   ForceFullCompositingUpdate();
   EXPECT_EQ(
       MainFrameScrollingContentsLayer()->non_fast_scrollable_region().bounds(),
@@ -1811,7 +1813,7 @@ TEST_P(ScrollingTest, IframeCompositedScrollingHideAndShowScrollable) {
                   .IsEmpty());
 
   // Hiding the iframe should clear the NFSR.
-  iframe->setAttribute(html_names::kStyleAttr, "display: none");
+  iframe->setAttribute(html_names::kStyleAttr, AtomicString("display: none"));
   ForceFullCompositingUpdate();
   EXPECT_TRUE(MainFrameScrollingContentsLayer()
                   ->non_fast_scrollable_region()
@@ -1819,7 +1821,7 @@ TEST_P(ScrollingTest, IframeCompositedScrollingHideAndShowScrollable) {
                   .IsEmpty());
 
   // Showing it again should compute the NFSR.
-  iframe->setAttribute(html_names::kStyleAttr, "");
+  iframe->setAttribute(html_names::kStyleAttr, g_empty_atom);
   ForceFullCompositingUpdate();
   EXPECT_FALSE(MainFrameScrollingContentsLayer()
                    ->non_fast_scrollable_region()
@@ -2021,7 +2023,8 @@ TEST_P(ScrollingTest, TouchActionUpdatesOutsideInterestRect) {
 
   auto* touch_action =
       GetFrame()->GetDocument()->getElementById(AtomicString("touchaction"));
-  touch_action->setAttribute(html_names::kStyleAttr, "touch-action: none;");
+  touch_action->setAttribute(html_names::kStyleAttr,
+                             AtomicString("touch-action: none;"));
 
   ForceFullCompositingUpdate();
 
@@ -2126,7 +2129,7 @@ class UnifiedScrollingSimTest : public SimTest, public PaintTestConfigurations {
     auto* box = MainFrame()
                     .GetFrame()
                     ->GetDocument()
-                    ->getElementById(id_value)
+                    ->getElementById(AtomicString(id_value))
                     ->GetLayoutBoxForScrolling();
     return box ? box->GetScrollableArea() : nullptr;
   }
@@ -2187,7 +2190,7 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
   // Now remove the box-shadow property and ensure the compositor scroll node
   // changes.
   noncomposited_element->setAttribute(html_names::kStyleAttr,
-                                      "box-shadow: none");
+                                      AtomicString("box-shadow: none"));
   Compositor().BeginFrame();
 
   ASSERT_COMPOSITED(scroll_node);
@@ -2239,8 +2242,9 @@ TEST_P(UnifiedScrollingSimTest,
 
   // Now add an inset box-shadow property to make the node noncomposited and
   // ensure the compositor scroll node updates accordingly.
-  composited_element->setAttribute(html_names::kStyleAttr,
-                                   "box-shadow: 10px 10px black inset");
+  composited_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("box-shadow: 10px 10px black inset"));
   Compositor().BeginFrame();
 
   ASSERT_NOT_COMPOSITED(
@@ -2941,7 +2945,7 @@ TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
   Element* box = GetDocument().getElementById(AtomicString("box"));
   if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     // Dirty the layout
-    box->setAttribute(html_names::kStyleAttr, "height: 10px");
+    box->setAttribute(html_names::kStyleAttr, AtomicString("height: 10px"));
     GetDocument().UpdateStyleAndLayoutTree();
     ASSERT_NE(NumObjectsNeedingLayout(), 0u);
 
@@ -2954,7 +2958,7 @@ TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
     // ScrollBegin should trigger a layout.
     {
       // Dirty the layout
-      box->setAttribute(html_names::kStyleAttr, "height: 10px");
+      box->setAttribute(html_names::kStyleAttr, AtomicString("height: 10px"));
       GetDocument().UpdateStyleAndLayoutTree();
       ASSERT_NE(NumObjectsNeedingLayout(), 0u);
 
@@ -2967,7 +2971,7 @@ TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
     // ScrollUpdate should trigger a layout.
     {
       // Dirty the layout
-      box->setAttribute(html_names::kStyleAttr, "height: 11px");
+      box->setAttribute(html_names::kStyleAttr, AtomicString("height: 11px"));
       GetDocument().UpdateStyleAndLayoutTree();
       ASSERT_NE(NumObjectsNeedingLayout(), 0u);
 
@@ -2980,7 +2984,7 @@ TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
     // ScrollEnd shouldn't trigger a layout.
     {
       // Dirty the layout
-      box->setAttribute(html_names::kStyleAttr, "height: 12px");
+      box->setAttribute(html_names::kStyleAttr, AtomicString("height: 12px"));
       GetDocument().UpdateStyleAndLayoutTree();
       ASSERT_NE(NumObjectsNeedingLayout(), 0u);
 

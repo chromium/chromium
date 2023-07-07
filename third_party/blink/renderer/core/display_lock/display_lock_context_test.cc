@@ -141,16 +141,17 @@ class DisplayLockContextTest : public testing::Test,
 
   void LockElement(Element& element, bool activatable) {
     if (activatable) {
-      element.setAttribute(html_names::kHiddenAttr, "until-found");
+      element.setAttribute(html_names::kHiddenAttr,
+                           AtomicString("until-found"));
     } else {
       element.setAttribute(html_names::kStyleAttr,
-                           "content-visibility: hidden");
+                           AtomicString("content-visibility: hidden"));
     }
     UpdateAllLifecyclePhasesForTest();
   }
 
   void CommitElement(Element& element, bool update_lifecycle = true) {
-    element.setAttribute(html_names::kStyleAttr, "");
+    element.setAttribute(html_names::kStyleAttr, g_empty_atom);
     if (update_lifecycle)
       UpdateAllLifecyclePhasesForTest();
   }
@@ -221,8 +222,9 @@ TEST_P(DisplayLockContextTest, LockAfterAppendStyleDirtyBits) {
       GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount(), 1);
 
   // If the element is dirty, style recalc would handle it in the next recalc.
-  element->setAttribute(html_names::kStyleAttr,
-                        "content-visibility: hidden; color: red;");
+  element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("content-visibility: hidden; color: red;"));
   EXPECT_TRUE(GetDocument().body()->ChildNeedsStyleRecalc());
   EXPECT_TRUE(element->NeedsStyleRecalc());
   EXPECT_FALSE(element->ChildNeedsStyleRecalc());
@@ -237,7 +239,7 @@ TEST_P(DisplayLockContextTest, LockAfterAppendStyleDirtyBits) {
   // Manually commit the lock so that we can verify which dirty bits get
   // propagated.
   UnlockImmediate(element->GetDisplayLockContext());
-  element->setAttribute(html_names::kStyleAttr, "color: red;");
+  element->setAttribute(html_names::kStyleAttr, AtomicString("color: red;"));
 
   auto* child = GetDocument().getElementById(AtomicString("child"));
   EXPECT_TRUE(GetDocument().body()->ChildNeedsStyleRecalc());
@@ -253,7 +255,7 @@ TEST_P(DisplayLockContextTest, LockAfterAppendStyleDirtyBits) {
 
   // Lock the child.
   child->setAttribute(html_names::kStyleAttr,
-                      "content-visibility: hidden; color: blue;");
+                      AtomicString("content-visibility: hidden; color: blue;"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(GetDocument().body()->ChildNeedsStyleRecalc());
@@ -266,7 +268,7 @@ TEST_P(DisplayLockContextTest, LockAfterAppendStyleDirtyBits) {
       Color::FromRGB(0, 0, 255));
 
   UnlockImmediate(child->GetDisplayLockContext());
-  child->setAttribute(html_names::kStyleAttr, "color: blue;");
+  child->setAttribute(html_names::kStyleAttr, AtomicString("color: blue;"));
   EXPECT_TRUE(GetDocument().body()->ChildNeedsStyleRecalc());
   EXPECT_FALSE(element->NeedsStyleRecalc());
   EXPECT_TRUE(element->ChildNeedsStyleRecalc());
@@ -812,7 +814,7 @@ TEST_P(DisplayLockContextTest, CallUpdateStyleAndLayoutAfterChangeCSS) {
   EXPECT_FALSE(element->NeedsReattachLayoutTree());
   EXPECT_FALSE(element->ChildNeedsReattachLayoutTree());
 
-  element->classList().Remove("locked");
+  element->classList().Remove(AtomicString("locked"));
 
   // Class list changed, so we should need self style change.
   EXPECT_TRUE(element->NeedsStyleRecalc());
@@ -1314,7 +1316,8 @@ TEST_P(DisplayLockContextTest, ElementInTemplate) {
             0);
   ASSERT_FALSE(document_child->GetDisplayLockContext());
 
-  container->setAttribute(html_names::kStyleAttr, "display: block;");
+  container->setAttribute(html_names::kStyleAttr,
+                          AtomicString("display: block;"));
   EXPECT_TRUE(container->NeedsStyleRecalc());
   UpdateAllLifecyclePhasesForTest();
 
@@ -1327,14 +1330,16 @@ TEST_P(DisplayLockContextTest, ElementInTemplate) {
   ASSERT_TRUE(document_child->GetDisplayLockContext());
   EXPECT_TRUE(document_child->GetDisplayLockContext()->IsLocked());
 
-  document_child->setAttribute(html_names::kStyleAttr,
-                               "content-visibility: hidden; color: red;");
+  document_child->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("content-visibility: hidden; color: red;"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(document_child->NeedsStyleRecalc());
 
   // Commit will unlock the element and update the style.
-  document_child->setAttribute(html_names::kStyleAttr, "color: red;");
+  document_child->setAttribute(html_names::kStyleAttr,
+                               AtomicString("color: red;"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(document_child->GetDisplayLockContext()->IsLocked());
@@ -2106,7 +2111,7 @@ TEST_P(DisplayLockContextRenderingTest,
 
   // Lock the container.
   auto* lockable = GetDocument().getElementById(AtomicString("lockable"));
-  lockable->classList().Add("hidden");
+  lockable->classList().Add(AtomicString("hidden"));
   UpdateAllLifecyclePhasesForTest();
 
   auto* child_layer = GetPaintLayerByElementId("child");
@@ -2124,7 +2129,7 @@ TEST_P(DisplayLockContextRenderingTest,
   EXPECT_TRUE(child_layer->NeedsVisualOverflowRecalc());
 
   // After unlocking, we should process the pending visual overflow recalc.
-  lockable->classList().Remove("hidden");
+  lockable->classList().Remove(AtomicString("hidden"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(child_layer->NeedsVisualOverflowRecalc());
@@ -2147,7 +2152,7 @@ TEST_P(DisplayLockContextRenderingTest, FloatChildLocked) {
   EXPECT_EQ(LayoutRect(0, 0, 200, 100), lockable_box->VisualOverflowRect());
   EXPECT_EQ(LayoutRect(0, 0, 200, 100), lockable_box->LayoutOverflowRect());
 
-  lockable->classList().Add("hidden");
+  lockable->classList().Add(AtomicString("hidden"));
   UpdateAllLifecyclePhasesForTest();
 
   // Verify that the display lock knows that the descendant dependent flags
@@ -2158,7 +2163,7 @@ TEST_P(DisplayLockContextRenderingTest, FloatChildLocked) {
   EXPECT_EQ(LayoutRect(0, 0, 200, 50), lockable_box->VisualOverflowRect());
   EXPECT_EQ(LayoutRect(0, 0, 200, 50), lockable_box->LayoutOverflowRect());
 
-  floating->setAttribute(html_names::kStyleAttr, "height: 200px");
+  floating->setAttribute(html_names::kStyleAttr, AtomicString("height: 200px"));
   // The following should not crash/DCHECK.
   UpdateAllLifecyclePhasesForTest();
 
@@ -2169,7 +2174,7 @@ TEST_P(DisplayLockContextRenderingTest, FloatChildLocked) {
   EXPECT_EQ(LayoutRect(0, 0, 200, 50), lockable_box->LayoutOverflowRect());
 
   // After unlocking, we should process the pending visual overflow recalc.
-  lockable->classList().Remove("hidden");
+  lockable->classList().Remove(AtomicString("hidden"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(LayoutRect(0, 0, 200, 200), lockable_box->VisualOverflowRect());
@@ -2203,7 +2208,7 @@ TEST_P(DisplayLockContextRenderingTest,
 
   // Lock the container.
   auto* lockable = GetDocument().getElementById(AtomicString("lockable"));
-  lockable->classList().Add("hidden");
+  lockable->classList().Add(AtomicString("hidden"));
   UpdateAllLifecyclePhasesForTest();
 
   auto* child_layer = GetPaintLayerByElementId("child");
@@ -2227,7 +2232,7 @@ TEST_P(DisplayLockContextRenderingTest,
   EXPECT_FALSE(child_layer->NeedsVisualOverflowRecalc());
 
   // After unlocking, we should not need to do any extra work.
-  lockable->classList().Remove("hidden");
+  lockable->classList().Remove(AtomicString("hidden"));
   EXPECT_FALSE(child_layer->NeedsVisualOverflowRecalc());
 
   UpdateAllLifecyclePhasesForTest();
@@ -2310,7 +2315,8 @@ TEST_P(DisplayLockContextRenderingTest, ObjectsNeedingLayoutConsidersLocks) {
 
   GetDocument()
       .getElementById(AtomicString("e"))
-      ->setAttribute(html_names::kStyleAttr, "content-visibility: hidden");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("content-visibility: hidden"));
   UpdateAllLifecyclePhasesForTest();
 
   // Note that the dirty_all call propagate the dirty bit from the unlocked
@@ -2327,7 +2333,8 @@ TEST_P(DisplayLockContextRenderingTest, ObjectsNeedingLayoutConsidersLocks) {
 
   GetDocument()
       .getElementById(AtomicString("a"))
-      ->setAttribute(html_names::kStyleAttr, "content-visibility: hidden");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("content-visibility: hidden"));
   UpdateAllLifecyclePhasesForTest();
 
   // Note that this dirty_all call is now not propagating the dirty bits at all,
@@ -2388,7 +2395,7 @@ TEST_P(DisplayLockContextRenderingTest,
   EXPECT_FALSE(child_layer->SelfOrDescendantNeedsRepaint());
   EXPECT_FALSE(grandchild_layer->SelfOrDescendantNeedsRepaint());
 
-  lockable->classList().Add("locked");
+  lockable->classList().Add(AtomicString("locked"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   // Lockable layer needs repainting after locking.
@@ -2446,7 +2453,7 @@ TEST_P(DisplayLockContextRenderingTest,
   EXPECT_FALSE(grandchild_layer->DescendantNeedsRepaint());
 
   // Unlocking causes lockable to repaint itself.
-  lockable->classList().Remove("locked");
+  lockable->classList().Remove(AtomicString("locked"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   EXPECT_FALSE(parent_layer->SelfNeedsRepaint());
@@ -2512,7 +2519,7 @@ TEST_P(DisplayLockContextRenderingTest,
   EXPECT_FALSE(inner_context->IsLocked());
 
   // Lock outer.
-  outer_element->setAttribute(html_names::kClassAttr, "hidden");
+  outer_element->setAttribute(html_names::kClassAttr, AtomicString("hidden"));
   // Ensure the lock processes (but don't run intersection observation tasks
   // yet).
   UpdateAllLifecyclePhasesForTest();
@@ -2555,7 +2562,7 @@ TEST_P(DisplayLockContextRenderingTest,
   }
 
   // Unlock outer.
-  outer_element->setAttribute(html_names::kClassAttr, "");
+  outer_element->setAttribute(html_names::kClassAttr, g_empty_atom);
   // Ensure the lock processes (but don't run intersection observation tasks
   // yet).
   UpdateAllLifecyclePhasesForTest();
@@ -2633,7 +2640,7 @@ TEST_P(DisplayLockContextRenderingTest, NestedLockDoesHideWhenItIsOffscreen) {
   EXPECT_FALSE(inner_context->IsLocked());
 
   // Lock outer.
-  outer_element->setAttribute(html_names::kClassAttr, "hidden");
+  outer_element->setAttribute(html_names::kClassAttr, AtomicString("hidden"));
   // Ensure the lock processes (but don't run intersection observation tasks
   // yet).
   UpdateAllLifecyclePhasesForTest();
@@ -2668,7 +2675,7 @@ TEST_P(DisplayLockContextRenderingTest, NestedLockDoesHideWhenItIsOffscreen) {
   // Let future spacer become a real spacer!
   GetDocument()
       .getElementById(AtomicString("future_spacer"))
-      ->setAttribute(html_names::kClassAttr, "spacer");
+      ->setAttribute(html_names::kClassAttr, AtomicString("spacer"));
 
   UpdateAllLifecyclePhasesForTest();
 
@@ -2677,7 +2684,7 @@ TEST_P(DisplayLockContextRenderingTest, NestedLockDoesHideWhenItIsOffscreen) {
   EXPECT_TRUE(IsObservingLifecycle(inner_context));
 
   // Unlock outer.
-  outer_element->setAttribute(html_names::kClassAttr, "");
+  outer_element->setAttribute(html_names::kClassAttr, g_empty_atom);
   // Ensure the lock processes (but don't run intersection observation tasks
   // yet).
   UpdateAllLifecyclePhasesForTest();
@@ -2762,7 +2769,7 @@ TEST_P(DisplayLockContextRenderingTest, ForcedUnlockBookkeeping) {
   EXPECT_EQ(
       GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount(), 1);
 
-  target->classList().Add("inline");
+  target->classList().Add(AtomicString("inline"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(context->IsLocked());
@@ -2790,7 +2797,7 @@ TEST_P(DisplayLockContextRenderingTest, LayoutRootIsSkippedIfLocked) {
 
   // Lock an ancestor.
   auto* hide = GetDocument().getElementById(AtomicString("hide"));
-  hide->classList().Add("hidden");
+  hide->classList().Add(AtomicString("hidden"));
   UpdateAllLifecyclePhasesForTest();
 
   auto* target = GetDocument().getElementById(AtomicString("target"));
@@ -2810,7 +2817,7 @@ TEST_P(DisplayLockContextRenderingTest, LayoutRootIsSkippedIfLocked) {
   EXPECT_TRUE(new_parent->GetLayoutObject()->NeedsLayout());
 
   // Unlocking and updating should update everything.
-  hide->classList().Remove("hidden");
+  hide->classList().Remove(AtomicString("hidden"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(hide->GetLayoutObject()->NeedsLayout());
@@ -2839,7 +2846,7 @@ TEST_P(DisplayLockContextRenderingTest,
 
   // Lock an ancestor.
   auto* hide = GetDocument().getElementById(AtomicString("hide"));
-  hide->classList().Add("hidden");
+  hide->classList().Add(AtomicString("hidden"));
   UpdateAllLifecyclePhasesForTest();
 
   auto* target = GetDocument().getElementById(AtomicString("target"));
@@ -2866,7 +2873,7 @@ TEST_P(DisplayLockContextRenderingTest,
   }
 
   // Unlocking and updating should update everything.
-  hide->classList().Remove("hidden");
+  hide->classList().Remove(AtomicString("hidden"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(hide->GetLayoutObject()->NeedsLayout());
@@ -2890,12 +2897,12 @@ TEST_P(DisplayLockContextRenderingTest, ContainStrictChild) {
 
   // Lock an ancestor.
   auto* hide = GetDocument().getElementById(AtomicString("hide"));
-  hide->classList().Add("hidden");
+  hide->classList().Add(AtomicString("hidden"));
 
   // This should not DCHECK.
   UpdateAllLifecyclePhasesForTest();
 
-  hide->classList().Remove("hidden");
+  hide->classList().Remove(AtomicString("hidden"));
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -2913,14 +2920,20 @@ TEST_P(DisplayLockContextRenderingTest, UseCounter) {
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kContentVisibilityHidden));
 
-  GetDocument().getElementById(AtomicString("e1"))->classList().Add("auto");
+  GetDocument()
+      .getElementById(AtomicString("e1"))
+      ->classList()
+      .Add(AtomicString("auto"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kContentVisibilityAuto));
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kContentVisibilityHidden));
 
-  GetDocument().getElementById(AtomicString("e2"))->classList().Add("hidden");
+  GetDocument()
+      .getElementById(AtomicString("e2"))
+      ->classList()
+      .Add(AtomicString("hidden"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kContentVisibilityAuto));
@@ -2944,11 +2957,11 @@ TEST_P(DisplayLockContextRenderingTest,
 
   // Lock an ancestor.
   auto* hide = GetDocument().getElementById(AtomicString("hide"));
-  hide->classList().Add("hidden");
+  hide->classList().Add(AtomicString("hidden"));
   UpdateAllLifecyclePhasesForTest();
 
   auto* target = GetDocument().getElementById(AtomicString("target"));
-  target->classList().Add("backface_hidden");
+  target->classList().Add(AtomicString("backface_hidden"));
 
   auto scope =
       GetScopedForcedUpdate(hide, DisplayLockContext::ForcedPhase::kPrePaint,
@@ -3201,8 +3214,8 @@ TEST_P(DisplayLockContextRenderingTest, FirstAutoFramePaintsInViewport) {
   auto* visible = GetDocument().getElementById(AtomicString("visible"));
   auto* hidden = GetDocument().getElementById(AtomicString("hidden"));
 
-  visible->classList().Add("auto");
-  hidden->classList().Add("auto");
+  visible->classList().Add(AtomicString("auto"));
+  hidden->classList().Add(AtomicString("auto"));
 
   UpdateAllLifecyclePhasesForTest();
 
@@ -3317,19 +3330,19 @@ TEST_P(DisplayLockContextTest, CullRectUpdate) {
   EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
             target->FirstFragment().GetCullRect().Rect());
 
-  container->classList().Add("locked");
+  container->classList().Add(AtomicString("locked"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
             target->FirstFragment().GetCullRect().Rect());
 
   GetDocument()
       .getElementById(AtomicString("clip"))
-      ->setAttribute(html_names::kStyleAttr, "width: 200px");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("width: 200px"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
             target->FirstFragment().GetCullRect().Rect());
 
-  container->classList().Remove("locked");
+  container->classList().Remove(AtomicString("locked"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(gfx::Rect(0, 0, 200, 100),
             target->FirstFragment().GetCullRect().Rect());
@@ -3423,7 +3436,7 @@ TEST_P(DisplayLockContextTest, BlockedReattachOfSlotted) {
 
   EXPECT_TRUE(slot->GetLayoutObject());
 
-  slot->classList().Add("locked");
+  slot->classList().Add(AtomicString("locked"));
   GetDocument().documentElement()->SetForceReattachLayoutTree();
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(slotted->GetLayoutObject());
@@ -3448,7 +3461,7 @@ TEST_P(DisplayLockContextTest, BlockedReattachOfShadowTree) {
   ASSERT_TRUE(host->GetLayoutObject());
   EXPECT_TRUE(span->GetLayoutObject());
 
-  host->classList().Add("locked");
+  host->classList().Add(AtomicString("locked"));
   GetDocument().documentElement()->SetForceReattachLayoutTree();
   UpdateAllLifecyclePhasesForTest();
 
@@ -3472,7 +3485,7 @@ TEST_P(DisplayLockContextTest, BlockedReattachOfPseudoElements) {
   ASSERT_TRUE(locked->GetPseudoElement(kPseudoIdBefore));
   EXPECT_TRUE(locked->GetPseudoElement(kPseudoIdBefore)->GetLayoutObject());
 
-  locked->classList().Add("locked");
+  locked->classList().Add(AtomicString("locked"));
   GetDocument().documentElement()->SetForceReattachLayoutTree();
   UpdateAllLifecyclePhasesForTest();
 
@@ -3499,7 +3512,7 @@ TEST_P(DisplayLockContextTest, BlockedReattachWhitespaceSibling) {
   EXPECT_TRUE(locked->nextSibling()->GetLayoutObject());
   EXPECT_TRUE(locked->nextSibling()->nextSibling()->GetLayoutObject());
 
-  locked->classList().Add("locked");
+  locked->classList().Add(AtomicString("locked"));
   GetDocument().documentElement()->SetForceReattachLayoutTree();
   UpdateAllLifecyclePhasesForTest();
 

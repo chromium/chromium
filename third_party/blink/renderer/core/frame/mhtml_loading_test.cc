@@ -224,7 +224,8 @@ TEST_F(MHTMLLoadingTest, FormControlElements) {
   Document* document = frame->GetDocument();
   ASSERT_TRUE(document);
 
-  HTMLCollection* formControlElements = document->getElementsByClassName("fc");
+  HTMLCollection* formControlElements =
+      document->getElementsByClassName(AtomicString("fc"));
   ASSERT_TRUE(formControlElements);
   for (Element* element : *formControlElements)
     EXPECT_TRUE(element->IsDisabledFormControl());
@@ -249,8 +250,8 @@ TEST_F(MHTMLLoadingTest, LoadMHTMLContainingSoftLineBreaks) {
 
   // We should not have problem to concatenate body lines separated by soft
   // line breaks.
-  EXPECT_TRUE(document->getElementById(
-      "AVeryLongID012345678901234567890123456789012345678901234567890End"));
+  EXPECT_TRUE(document->getElementById(AtomicString(
+      "AVeryLongID012345678901234567890123456789012345678901234567890End")));
 }
 
 }  // namespace test

@@ -89,7 +89,7 @@ TEST_F(ListMarkerTest, AddCounterStyle) {
   EXPECT_EQ("3. ", GetMarkerText("bar"));
 
   // Add @counter-style 'bar'. Should not affect 'decimal' and 'foo'.
-  AddCounterStyle("bar", "system: fixed; symbols: A B C;");
+  AddCounterStyle(AtomicString("bar"), "system: fixed; symbols: A B C;");
   GetDocument().UpdateStyleAndLayoutTree();
 
   EXPECT_FALSE(GetMarker("decimal")->NeedsLayout());

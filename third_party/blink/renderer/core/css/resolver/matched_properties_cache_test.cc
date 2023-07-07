@@ -283,8 +283,10 @@ TEST_F(MatchedPropertiesCacheTest, VariableDependency) {
 
   auto parent_builder_a = CreateStyleBuilder();
   auto parent_builder_b = CreateStyleBuilder();
-  parent_builder_a.SetVariableData("--x", CreateVariableData("1px"), true);
-  parent_builder_b.SetVariableData("--x", CreateVariableData("2px"), true);
+  parent_builder_a.SetVariableData(AtomicString("--x"),
+                                   CreateVariableData("1px"), true);
+  parent_builder_b.SetVariableData(AtomicString("--x"),
+                                   CreateVariableData("2px"), true);
   auto parent_a = parent_builder_a.TakeStyle();
   auto parent_b = parent_builder_b.TakeStyle();
 
@@ -329,8 +331,10 @@ TEST_F(MatchedPropertiesCacheTest, NoVariableDependency) {
 
   auto parent_builder_a = CreateStyleBuilder();
   auto parent_builder_b = CreateStyleBuilder();
-  parent_builder_a.SetVariableData("--x", CreateVariableData("1px"), true);
-  parent_builder_b.SetVariableData("--x", CreateVariableData("2px"), true);
+  parent_builder_a.SetVariableData(AtomicString("--x"),
+                                   CreateVariableData("1px"), true);
+  parent_builder_b.SetVariableData(AtomicString("--x"),
+                                   CreateVariableData("2px"), true);
   auto parent_a = parent_builder_a.TakeStyle();
   auto parent_b = parent_builder_b.TakeStyle();
   const auto& style_a = InitialStyle();

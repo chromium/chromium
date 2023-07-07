@@ -193,7 +193,7 @@ class NGOffsetMappingTest : public RenderingTest {
   }
 
   const LayoutText* GetLayoutTextUnder(const char* parent_id) {
-    Element* parent = GetDocument().getElementById(parent_id);
+    Element* parent = GetElementById(parent_id);
     return To<LayoutText>(parent->firstChild()->GetLayoutObject());
   }
 

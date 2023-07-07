@@ -65,7 +65,7 @@ class NodeTest : public EditingTestBase {
     ShadowRoot& second_shadow = test_node->CreateUserAgentShadowRoot();
 
     auto* class_div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-    class_div->setAttribute("class", "test");
+    class_div->setAttribute(html_names::kClassAttr, AtomicString("test"));
     second_shadow.AppendChild(class_div);
     return class_div;
   }
@@ -325,7 +325,7 @@ TEST_F(NodeTest, MutationOutsideFlatTreeStyleDirty) {
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
   GetDocument()
       .getElementById(AtomicString("nonslotted"))
-      ->setAttribute("style", "color:green");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("color:green"));
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 }
 
@@ -340,7 +340,8 @@ TEST_F(NodeTest, SkipStyleDirtyHostChild) {
 
   // Check that we do not mark an element for style recalc when the element and
   // its flat tree parent are display:none.
-  To<Element>(host->firstChild())->setAttribute("style", "color:green");
+  To<Element>(host->firstChild())
+      ->setAttribute(html_names::kStyleAttr, AtomicString("color:green"));
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 }
 
@@ -377,7 +378,7 @@ TEST_F(NodeTest, SkipForceReattachDisplayNone) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* span = To<Element>(host->firstChild());
-  span->setAttribute(html_names::kSlotAttr, "target");
+  span->setAttribute(html_names::kSlotAttr, AtomicString("target"));
   GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
 
   // Node::FlatTreeParentChanged for a display:none could trigger style recalc,
@@ -402,11 +403,11 @@ TEST_F(NodeTest, UpdateChildDirtyAncestorsOnSlotAssignment) {
   auto* ancestor = shadow_root.getElementById(AtomicString("child-dirty"));
 
   // Make sure the span is dirty before the re-assignment.
-  span->setAttribute("style", "color:green");
+  span->setAttribute(html_names::kStyleAttr, AtomicString("color:green"));
   EXPECT_FALSE(ancestor->ChildNeedsStyleRecalc());
 
   // Re-assign to second slot.
-  span->setAttribute(html_names::kSlotAttr, "target");
+  span->setAttribute(html_names::kSlotAttr, AtomicString("target"));
   GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
   EXPECT_TRUE(ancestor->ChildNeedsStyleRecalc());
 }
@@ -426,7 +427,7 @@ TEST_F(NodeTest, UpdateChildDirtySlotAfterRemoval) {
 
   // Make sure the span is dirty, and the slot marked child-dirty before the
   // removal.
-  span->setAttribute("style", "color:green");
+  span->setAttribute(html_names::kStyleAttr, AtomicString("color:green"));
   EXPECT_TRUE(span->NeedsStyleRecalc());
   EXPECT_TRUE(slot->ChildNeedsStyleRecalc());
   EXPECT_TRUE(host->ChildNeedsStyleRecalc());
@@ -459,7 +460,7 @@ TEST_F(NodeTest, UpdateChildDirtyAfterSlotRemoval) {
 
   // Make sure the span is dirty, and the slot marked child-dirty before the
   // removal.
-  span->setAttribute("style", "color:green");
+  span->setAttribute(html_names::kStyleAttr, AtomicString("color:green"));
   EXPECT_TRUE(span->NeedsStyleRecalc());
   EXPECT_TRUE(slot->ChildNeedsStyleRecalc());
   EXPECT_TRUE(div->ChildNeedsStyleRecalc());
@@ -490,10 +491,10 @@ TEST_F(NodeTest, UpdateChildDirtyAfterSlottingDirtyNode) {
   UpdateAllLifecyclePhasesForTest();
 
   // Make sure the span is style dirty.
-  span->setAttribute("style", "color:green");
+  span->setAttribute(html_names::kStyleAttr, AtomicString("color:green"));
 
   // Assign span to slot.
-  span->setAttribute("slot", "x");
+  span->setAttribute(html_names::kSlotAttr, AtomicString("x"));
 
   GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
 
@@ -538,7 +539,7 @@ TEST_F(NodeTest, ReassignStyleDirtyElementIntoSlotOutsideFlatTree) {
 
   // Mark for slot reassignment. The #s2 slot is outside the flat tree because
   // its parent is a shadow host with no slots in the shadow tree.
-  slotted->setAttribute("slot", "s2");
+  slotted->setAttribute(html_names::kSlotAttr, AtomicString("s2"));
 
   // After doing the slot assignment, the #slotted element should no longer be
   // marked dirty and its ComputedStyle should be null because it's outside the

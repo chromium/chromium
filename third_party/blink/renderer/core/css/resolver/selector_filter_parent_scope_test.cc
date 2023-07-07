@@ -30,8 +30,9 @@ class SelectorFilterParentScopeTest : public testing::Test {
 
 TEST_F(SelectorFilterParentScopeTest, ParentScope) {
   HeapVector<CSSSelector> arena;
-  GetDocument().body()->setAttribute(html_names::kClassAttr, "match");
-  GetDocument().documentElement()->SetIdAttribute("myId");
+  GetDocument().body()->setAttribute(html_names::kClassAttr,
+                                     AtomicString("match"));
+  GetDocument().documentElement()->SetIdAttribute(AtomicString("myId"));
   auto* div = GetDocument().CreateRawElement(html_names::kDivTag);
   GetDocument().body()->appendChild(div);
   SelectorFilter& filter = GetDocument().GetStyleResolver().GetSelectorFilter();

@@ -273,7 +273,7 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithoutEligibleHeader) {
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterTrigger,
-      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());
@@ -304,7 +304,7 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithTriggerHeader) {
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterTrigger,
-      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());
@@ -330,7 +330,7 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithSourceTriggerHeader) {
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterTrigger,
-      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());
@@ -356,15 +356,15 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerOsHeadersIgnored) {
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterTrigger,
-      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
 
   // These should be ignored because the relevant feature is disabled by
   // default.
   response.SetHttpHeaderField(http_names::kAttributionReportingRegisterOSSource,
-                              R"("https://r.test/x")");
+                              AtomicString(R"("https://r.test/x")"));
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterOSTrigger,
-      R"("https://r.test/y")");
+      AtomicString(R"("https://r.test/y")"));
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());
@@ -388,7 +388,7 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithVerifications) {
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterTrigger,
-      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
 
   response.SetTriggerVerifications(
       {*network::TriggerVerification::Create(
@@ -429,7 +429,7 @@ TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestsIgnored) {
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterTrigger,
-      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
 
   EXPECT_FALSE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
       request, response, resource));
@@ -449,7 +449,7 @@ TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestsInvalidEligibleHeaders) {
 
   for (const char* header : header_values) {
     response.SetHttpHeaderField(
-        http_names::kAttributionReportingRegisterTrigger, header);
+        http_names::kAttributionReportingRegisterTrigger, AtomicString(header));
 
     EXPECT_FALSE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
         request, response, resource))
@@ -463,13 +463,13 @@ TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestStatusHistogram) {
   KURL url1 = ToKURL(kUrl);
   RegisterMockedURLLoad(url1, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->Register(kUrl, /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr);
 
   static constexpr char kUrl2[] = "https://example2.com/foo.html";
   KURL url2 = ToKURL(kUrl2);
   RegisterMockedErrorURLLoad(url2);
 
-  attribution_src_loader_->Register(kUrl2, /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl2), /*element=*/nullptr);
 
   // kRequested = 0.
   histograms.ExpectUniqueSample("Conversions.AttributionSrcRequestStatus", 0,
@@ -488,7 +488,7 @@ TEST_F(AttributionSrcLoaderTest, Referrer) {
   KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->Register(kUrl, /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -501,7 +501,7 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_Register) {
   KURL url = ToKURL(kUrl);
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->Register(kUrl, /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -509,7 +509,7 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_Register) {
             AttributionReportingEligibility::kEventSourceOrTrigger);
 
   EXPECT_TRUE(client_->request_head()
-                  .HttpHeaderField(kAttributionReportingSupport)
+                  .HttpHeaderField(AtomicString(kAttributionReportingSupport))
                   .IsNull());
 }
 
@@ -518,7 +518,7 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
   std::ignore = attribution_src_loader_->RegisterNavigation(
-      /*navigation_url=*/KURL(), /*attribution_src=*/kUrl,
+      /*navigation_url=*/KURL(), /*attribution_src=*/AtomicString(kUrl),
       /*element=*/MakeGarbageCollected<HTMLAnchorElement>(GetDocument()));
 
   url_test_helpers::ServeAsynchronousRequests();
@@ -527,7 +527,7 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
             AttributionReportingEligibility::kNavigationSource);
 
   EXPECT_TRUE(client_->request_head()
-                  .HttpHeaderField(kAttributionReportingSupport)
+                  .HttpHeaderField(AtomicString(kAttributionReportingSupport))
                   .IsNull());
 }
 
@@ -541,7 +541,7 @@ TEST_F(AttributionSrcLoaderTest, EagerlyClosesRemote) {
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());
-  attribution_src_loader_->Register(kUrl, /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr);
   host.WaitUntilBoundAndFlush();
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -573,7 +573,7 @@ TEST_F(AttributionSrcLoaderTest, WebDisabled_TriggerNotRegistered) {
     response.SetHttpStatusCode(200);
     response.SetHttpHeaderField(
         http_names::kAttributionReportingRegisterTrigger,
-        R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+        AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
 
     MockAttributionHost host(
         GetFrame().GetRemoteNavigationAssociatedInterfaces());
@@ -615,7 +615,7 @@ TEST_F(AttributionSrcLoaderCrossAppWebRuntimeDisabledTest,
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterOSTrigger,
-      R"("https://r.test/x")");
+      AtomicString(R"("https://r.test/x")"));
 
   EXPECT_FALSE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
       request, response, resource));
@@ -645,7 +645,7 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, SupportHeader_Register) {
   KURL url = ToKURL(kUrl);
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->Register(kUrl, /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -663,7 +663,7 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
   std::ignore = attribution_src_loader_->RegisterNavigation(
-      /*navigation_url=*/KURL(), /*attribution_src=*/kUrl,
+      /*navigation_url=*/KURL(), /*attribution_src=*/AtomicString(kUrl),
       /*element=*/MakeGarbageCollected<HTMLAnchorElement>(GetDocument()));
 
   url_test_helpers::ServeAsynchronousRequests();
@@ -684,7 +684,7 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, RegisterOsTrigger) {
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterOSTrigger,
-      R"("https://r.test/x")");
+      AtomicString(R"("https://r.test/x")"));
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());

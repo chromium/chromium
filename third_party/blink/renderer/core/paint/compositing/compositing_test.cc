@@ -182,7 +182,8 @@ TEST_P(CompositingTest, DidScrollCallbackAfterScrollableAreaChanges) {
   EXPECT_EQ(ScrollOffset(0, 1), scrollable_area->GetScrollOffset());
 
   // Make the scrollable area non-scrollable.
-  scrollable->setAttribute(html_names::kStyleAttr, "overflow: visible");
+  scrollable->setAttribute(html_names::kStyleAttr,
+                           AtomicString("overflow: visible"));
 
   // Update layout without updating compositing state.
   LocalMainFrame()->ExecuteScript(
@@ -291,8 +292,9 @@ TEST_P(CompositingTest, Compositing3DTransformOnSVGModelObject) {
 
   // Adding a 3D transform should trigger compositing.
   auto* target_element = GetElementById("target");
-  target_element->setAttribute(html_names::kStyleAttr,
-                               "transform: translate3d(0, 0, 1px)");
+  target_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("transform: translate3d(0, 0, 1px)"));
   UpdateAllLifecyclePhases();
   // |HasTransformRelatedProperty| is used in |CompositingReasonsFor3DTransform|
   // and must be set correctly.
@@ -300,7 +302,8 @@ TEST_P(CompositingTest, Compositing3DTransformOnSVGModelObject) {
   EXPECT_TRUE(CcLayerByDOMElementId("target"));
 
   // Removing a 3D transform removes the compositing trigger.
-  target_element->setAttribute(html_names::kStyleAttr, "transform: none");
+  target_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString("transform: none"));
   UpdateAllLifecyclePhases();
   // |HasTransformRelatedProperty| is used in |CompositingReasonsFor3DTransform|
   // and must be set correctly.
@@ -309,13 +312,14 @@ TEST_P(CompositingTest, Compositing3DTransformOnSVGModelObject) {
 
   // Adding a 2D transform should not trigger compositing.
   target_element->setAttribute(html_names::kStyleAttr,
-                               "transform: translate(1px, 0)");
+                               AtomicString("transform: translate(1px, 0)"));
   UpdateAllLifecyclePhases();
   EXPECT_FALSE(CcLayerByDOMElementId("target"));
 
   // Switching from a 2D to a 3D transform should trigger compositing.
-  target_element->setAttribute(html_names::kStyleAttr,
-                               "transform: translate3d(0, 0, 1px)");
+  target_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("transform: translate3d(0, 0, 1px)"));
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(CcLayerByDOMElementId("target"));
 }
@@ -332,8 +336,9 @@ TEST_P(CompositingTest, Compositing3DTransformOnSVGBlock) {
 
   // Adding a 3D transform should trigger compositing.
   auto* target_element = GetElementById("target");
-  target_element->setAttribute(html_names::kStyleAttr,
-                               "transform: translate3d(0, 0, 1px)");
+  target_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("transform: translate3d(0, 0, 1px)"));
   UpdateAllLifecyclePhases();
   // |HasTransformRelatedProperty| is used in |CompositingReasonsFor3DTransform|
   // and must be set correctly.
@@ -341,7 +346,8 @@ TEST_P(CompositingTest, Compositing3DTransformOnSVGBlock) {
   EXPECT_TRUE(CcLayerByDOMElementId("target"));
 
   // Removing a 3D transform removes the compositing trigger.
-  target_element->setAttribute(html_names::kStyleAttr, "transform: none");
+  target_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString("transform: none"));
   UpdateAllLifecyclePhases();
   // |HasTransformRelatedProperty| is used in |CompositingReasonsFor3DTransform|
   // and must be set correctly.
@@ -350,13 +356,14 @@ TEST_P(CompositingTest, Compositing3DTransformOnSVGBlock) {
 
   // Adding a 2D transform should not trigger compositing.
   target_element->setAttribute(html_names::kStyleAttr,
-                               "transform: translate(1px, 0)");
+                               AtomicString("transform: translate(1px, 0)"));
   UpdateAllLifecyclePhases();
   EXPECT_FALSE(CcLayerByDOMElementId("target"));
 
   // Switching from a 2D to a 3D transform should trigger compositing.
-  target_element->setAttribute(html_names::kStyleAttr,
-                               "transform: translate3d(0, 0, 1px)");
+  target_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("transform: translate3d(0, 0, 1px)"));
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(CcLayerByDOMElementId("target"));
 }
@@ -378,8 +385,9 @@ TEST_P(CompositingTest, NotCompositing3DTransformOnSVGInline) {
 
   // Adding a 3D transform to an inline should not trigger compositing.
   auto* inline_element = GetElementById("inline");
-  inline_element->setAttribute(html_names::kStyleAttr,
-                               "transform: translate3d(0, 0, 1px)");
+  inline_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("transform: translate3d(0, 0, 1px)"));
   UpdateAllLifecyclePhases();
   // |HasTransformRelatedProperty| is used in |CompositingReasonsFor3DTransform|
   // and must be set correctly.
@@ -619,8 +627,9 @@ class CompositingSimTest : public PaintTestConfigurations, public SimTest {
     return nullptr;
   }
 
-  Element* GetElementById(const AtomicString& id) {
-    return MainFrame().GetFrame()->GetDocument()->getElementById(id);
+  Element* GetElementById(const char* id) {
+    return MainFrame().GetFrame()->GetDocument()->getElementById(
+        AtomicString(id));
   }
 
   void UpdateAllLifecyclePhases() {
@@ -693,7 +702,7 @@ TEST_P(CompositingSimTest, LayerUpdatesDoNotInvalidateEarlierLayers) {
           b_layer));
 
   // Modifying b should only cause the b layer to need to push properties.
-  b_element->setAttribute(html_names::kStyleAttr, "opacity: 0.2");
+  b_element->setAttribute(html_names::kStyleAttr, AtomicString("opacity: 0.2"));
   UpdateAllLifecyclePhases();
   EXPECT_FALSE(
       host.pending_commit_state()->layers_that_should_push_properties.count(
@@ -751,8 +760,8 @@ TEST_P(CompositingSimTest, LayerUpdatesDoNotInvalidateLaterLayers) {
 
   // Modifying a and b (adding opacity to a and removing opacity from b) should
   // not cause the c layer to push properties.
-  a_element->setAttribute(html_names::kStyleAttr, "opacity: 0.3");
-  b_element->setAttribute(html_names::kStyleAttr, "");
+  a_element->setAttribute(html_names::kStyleAttr, AtomicString("opacity: 0.3"));
+  b_element->setAttribute(html_names::kStyleAttr, g_empty_atom);
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(
       host.pending_commit_state()->layers_that_should_push_properties.count(
@@ -852,7 +861,7 @@ TEST_P(CompositingSimTest, LayerSubtreeTransformPropertyChanged) {
   // Modifying the transform style should set |subtree_property_changed| on
   // both layers.
   outer_element->setAttribute(html_names::kStyleAttr,
-                              "transform: rotate(10deg)");
+                              AtomicString("transform: rotate(10deg)"));
   UpdateAllLifecyclePhases();
   // This is still set by the traditional GraphicsLayer::SetTransform().
   EXPECT_TRUE(outer_element_layer->subtree_property_changed());
@@ -920,8 +929,9 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdate) {
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
 
   // Modifying the transform in a simple way allowed for a direct update.
-  outer_element->setAttribute(html_names::kStyleAttr,
-                              "animation-name: animateTransformB");
+  outer_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("animation-name: animateTransformB"));
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(transform_node->transform_changed);
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
@@ -985,7 +995,8 @@ TEST_P(CompositingSimTest, FastPathTransformUpdateFromStyle) {
 
   // Change the transform style and ensure the blink and cc transform nodes are
   // not marked for a full update.
-  div->setAttribute(html_names::kStyleAttr, "transform: translateX(400px)");
+  div->setAttribute(html_names::kStyleAttr,
+                    AtomicString("transform: translateX(400px)"));
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
@@ -1055,7 +1066,7 @@ TEST_P(CompositingSimTest, FastPathOpacityUpdateFromStyle) {
 
   // Change the effect style and ensure the blink and cc effect nodes are
   // not marked for a full update.
-  div->setAttribute(html_names::kStyleAttr, "opacity: 0.15");
+  div->setAttribute(html_names::kStyleAttr, AtomicString("opacity: 0.15"));
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
@@ -1113,8 +1124,9 @@ TEST_P(CompositingSimTest, DirectSVGTransformPropertyUpdate) {
 
   // Modifying the transform in a simple way allowed for a direct update.
   auto* will_change_element = GetElementById("willChangeWithAnimation");
-  will_change_element->setAttribute(html_names::kStyleAttr,
-                                    "animation-name: animateTransformB");
+  will_change_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("animation-name: animateTransformB"));
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(transform_node->transform_changed);
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
@@ -1182,10 +1194,11 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdateCausesChange) {
   // Modifying the outer transform in a simple way should allow for a direct
   // update of the outer transform. Modifying the inner transform in a
   // non-simple way should not allow for a direct update of the inner transform.
-  outer_element->setAttribute(html_names::kStyleAttr,
-                              "animation-name: animateTransformB");
+  outer_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("animation-name: animateTransformB"));
   inner_element->setAttribute(html_names::kStyleAttr,
-                              "transform: rotate(30deg)");
+                              AtomicString("transform: rotate(30deg)"));
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(outer_transform_node->transform_changed);
   EXPECT_FALSE(inner_transform_node->transform_changed);
@@ -1230,7 +1243,8 @@ TEST_P(CompositingSimTest, AffectedByOuterViewportBoundsDelta) {
   // expand/contract, the fixed element will need to be moved as the bounds
   // delta changes.
   {
-    fixed_element->setAttribute(html_names::kStyleAttr, "bottom: 0");
+    fixed_element->setAttribute(html_names::kStyleAttr,
+                                AtomicString("bottom: 0"));
     Compositor().BeginFrame();
 
     auto transform_tree_index = fixed_element_layer->transform_tree_index();
@@ -1245,7 +1259,7 @@ TEST_P(CompositingSimTest, AffectedByOuterViewportBoundsDelta) {
   // renderer origin), we no longer need to move it as the bounds delta
   // changes.
   {
-    fixed_element->setAttribute(html_names::kStyleAttr, "top: 0");
+    fixed_element->setAttribute(html_names::kStyleAttr, AtomicString("top: 0"));
     Compositor().BeginFrame();
 
     auto transform_tree_index = fixed_element_layer->transform_tree_index();
@@ -1300,7 +1314,7 @@ TEST_P(CompositingSimTest, DirectTransformOriginPropertyUpdate) {
 
   // Modifying the transform-origin in a simple way allowed for a direct update.
   box_element->setAttribute(html_names::kStyleAttr,
-                            "animation-name: animateTransformB");
+                            AtomicString("animation-name: animateTransformB"));
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(transform_node->transform_changed);
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
@@ -1349,7 +1363,8 @@ TEST_P(CompositingSimTest, LayerSubtreeEffectPropertyChanged) {
 
   // Modifying the filter style should set |subtree_property_changed| on
   // both layers.
-  outer_element->setAttribute(html_names::kStyleAttr, "filter: blur(20px)");
+  outer_element->setAttribute(html_names::kStyleAttr,
+                              AtomicString("filter: blur(20px)"));
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(outer_element_layer->subtree_property_changed());
   // Set by blink::PropertyTreeManager.
@@ -1405,7 +1420,7 @@ TEST_P(CompositingSimTest, LayerSubtreeClipPropertyChanged) {
   // Modifying the clip style should set |subtree_property_changed| on
   // both layers.
   outer_element->setAttribute(html_names::kStyleAttr,
-                              "clip: rect(1px, 8px, 7px, 4px);");
+                              AtomicString("clip: rect(1px, 8px, 7px, 4px);"));
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(outer_element_layer->subtree_property_changed());
   EXPECT_TRUE(inner_element_layer->subtree_property_changed());
@@ -1452,7 +1467,8 @@ TEST_P(CompositingSimTest, LayerSubtreeOverflowClipPropertyChanged) {
 
   // Modifying the clip width should set |subtree_property_changed| on
   // both layers.
-  outer_element->setAttribute(html_names::kStyleAttr, "width: 200px;");
+  outer_element->setAttribute(html_names::kStyleAttr,
+                              AtomicString("width: 200px;"));
   UpdateAllLifecyclePhases();
   // The overflow clip does not affect |outer_element_layer|, so
   // subtree_property_changed should be false for it. It does affect
@@ -1500,7 +1516,7 @@ TEST_P(CompositingSimTest, LayerClipPropertyChanged) {
   // Removing overflow: hidden on the outer div should set
   // |subtree_property_changed| on the inner div's cc::Layer.
   auto* outer_element = GetElementById("outer");
-  outer_element->setAttribute(html_names::kStyleAttr, "");
+  outer_element->setAttribute(html_names::kStyleAttr, g_empty_atom);
   UpdateAllLifecyclePhases();
 
   inner_element_layer = CcLayerByDOMElementId("inner");
@@ -2197,7 +2213,7 @@ TEST_P(CompositingSimTest, DecompositedTransformWithChange) {
   EXPECT_FALSE(svg_element_layer->subtree_property_changed());
 
   auto* svg_element = GetElementById("svg");
-  svg_element->setAttribute(html_names::kClassAttr, "changed");
+  svg_element->setAttribute(html_names::kClassAttr, AtomicString("changed"));
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(svg_element_layer->subtree_property_changed());
 }
@@ -2230,7 +2246,8 @@ TEST_P(CompositingSimTest, BackgroundColorChangeUsesRepaintUpdate) {
 
   // Modifying paint in a simple way only requires a repaint update.
   auto* target_element = GetElementById("target");
-  target_element->setAttribute(html_names::kStyleAttr, "background: black");
+  target_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString("background: black"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::PreviousUpdateType::kRepaint);
@@ -2287,7 +2304,8 @@ TEST_P(CompositingSimTest, MultipleChunkBackgroundColorChangeRepaintUpdate) {
 
   // Modifying paint in a simple way only requires a repaint update.
   auto* background_element = GetElementById("c");
-  background_element->setAttribute(html_names::kStyleAttr, "background: white");
+  background_element->setAttribute(html_names::kStyleAttr,
+                                   AtomicString("background: white"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::PreviousUpdateType::kRepaint);
@@ -2331,7 +2349,7 @@ TEST_P(CompositingSimTest, SVGColorChangeUsesRepaintUpdate) {
 
   // Modifying paint in a simple way only requires a repaint update.
   auto* rect_element = GetElementById("rect");
-  rect_element->setAttribute(svg_names::kFillAttr, "black");
+  rect_element->setAttribute(svg_names::kFillAttr, AtomicString("black"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::PreviousUpdateType::kRepaint);
@@ -2341,7 +2359,8 @@ TEST_P(CompositingSimTest, SVGColorChangeUsesRepaintUpdate) {
 
   // Modifying paint in a simple way only requires a repaint update.
   auto* div_element = GetElementById("div");
-  div_element->setAttribute(html_names::kStyleAttr, "background: black");
+  div_element->setAttribute(html_names::kStyleAttr,
+                            AtomicString("background: black"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::PreviousUpdateType::kRepaint);
@@ -2375,7 +2394,7 @@ TEST_P(CompositingSimTest, ChangingOpaquenessRequiresFullUpdate) {
   // (see: PaintArtifactCompositor::CompositedLayerForPendingLayer).
   auto* target_element = GetElementById("target");
   target_element->setAttribute(html_names::kStyleAttr,
-                               "background: rgba(1, 0, 0, 0.1)");
+                               AtomicString("background: rgba(1, 0, 0, 0.1)"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::PreviousUpdateType::kFull);
@@ -2420,8 +2439,8 @@ TEST_P(CompositingSimTest, ChangingContentsOpaqueForTextRequiresFullUpdate) {
   // opaque for text property (see:
   // PaintArtifactCompositor::CompositedLayerForPendingLayer).
   auto* text_container_element = GetElementById("textContainer");
-  text_container_element->setAttribute(html_names::kStyleAttr,
-                                       "background: rgba(1, 0, 0, 0.1)");
+  text_container_element->setAttribute(
+      html_names::kStyleAttr, AtomicString("background: rgba(1, 0, 0, 0.1)"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::PreviousUpdateType::kFull);
@@ -2455,7 +2474,8 @@ TEST_P(CompositingSimTest, ChangingDrawsContentRequiresFullUpdate) {
   // needs to cause a full update because it can affect whether mask layers are
   // created.
   auto* target = GetElementById("target");
-  target->setAttribute(html_names::kStyleAttr, "background: rgba(0,0,0,0.5)");
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString("background: rgba(0,0,0,0.5)"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::PreviousUpdateType::kFull);
@@ -2557,7 +2577,7 @@ TEST_P(CompositingSimTest, FullCompositingUpdateReasons) {
   // order of synthetic effect layers are two examples of paint changes that
   // affect compositing decisions.
   auto* b_element = GetElementById("b");
-  b_element->setAttribute(html_names::kStyleAttr, "z-index: 5");
+  b_element->setAttribute(html_names::kStyleAttr, AtomicString("z-index: 5"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::PreviousUpdateType::kFull);
@@ -2566,7 +2586,8 @@ TEST_P(CompositingSimTest, FullCompositingUpdateReasons) {
   paint_artifact_compositor()->ClearPreviousUpdateForTesting();
 
   // Removing a paint chunk requires a full update.
-  b_element->setAttribute(html_names::kStyleAttr, "display: none");
+  b_element->setAttribute(html_names::kStyleAttr,
+                          AtomicString("display: none"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::PreviousUpdateType::kFull);
@@ -2575,7 +2596,7 @@ TEST_P(CompositingSimTest, FullCompositingUpdateReasons) {
   paint_artifact_compositor()->ClearPreviousUpdateForTesting();
 
   // Adding a paint chunk requires a full update.
-  b_element->setAttribute(html_names::kStyleAttr, "");
+  b_element->setAttribute(html_names::kStyleAttr, g_empty_atom);
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::PreviousUpdateType::kFull);
@@ -2584,7 +2605,7 @@ TEST_P(CompositingSimTest, FullCompositingUpdateReasons) {
   paint_artifact_compositor()->ClearPreviousUpdateForTesting();
 
   // Changing the size of a chunk affects overlap and requires a full update.
-  b_element->setAttribute(html_names::kStyleAttr, "width: 101px");
+  b_element->setAttribute(html_names::kStyleAttr, AtomicString("width: 101px"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::PreviousUpdateType::kFull);
@@ -2617,7 +2638,7 @@ TEST_P(CompositingSimTest, FullCompositingUpdateReasonWithCompositedSVG) {
 
   // Changing the size of a chunk affects overlap and requires a full update.
   auto* rect = GetElementById("rect");
-  rect->setAttribute(html_names::kStyleAttr, "width: 101px");
+  rect->setAttribute(html_names::kStyleAttr, AtomicString("width: 101px"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::PreviousUpdateType::kFull);
@@ -2654,7 +2675,8 @@ TEST_P(CompositingSimTest, FullCompositingUpdateForJustCreatedChunks) {
   // needs a full update. A first letter style adds a pseudo element which
   // results in rebuilding the #target LayoutObject.
   auto* target = GetElementById("target");
-  target->setAttribute(html_names::kClassAttr, "firstLetterStyle");
+  target->setAttribute(html_names::kClassAttr,
+                       AtomicString("firstLetterStyle"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::PreviousUpdateType::kFull);
@@ -2690,7 +2712,7 @@ TEST_P(CompositingSimTest, FullCompositingUpdateForUncachableChunks) {
   auto* rect = GetElementById("rect");
   auto* rect_client = static_cast<DisplayItemClient*>(rect->GetLayoutObject());
   rect_client->Invalidate(PaintInvalidationReason::kUncacheable);
-  rect->setAttribute(html_names::kStyleAttr, "fill: green");
+  rect->setAttribute(html_names::kStyleAttr, AtomicString("fill: green"));
   Compositor().BeginFrame();
 
   // Initially, no update is needed.
@@ -2702,7 +2724,8 @@ TEST_P(CompositingSimTest, FullCompositingUpdateForUncachableChunks) {
   // A full update should be required due to the presence of uncacheable
   // paint chunks.
   auto* target = GetElementById("target");
-  target->setAttribute(html_names::kStyleAttr, "background: lightgreen");
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString("background: lightgreen"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::PreviousUpdateType::kFull);
@@ -2784,7 +2807,8 @@ TEST_P(CompositingSimTest, ForeignLayersInMovedSubsequence) {
 
   // Modifying paint in a simple way only requires a repaint update.
   auto* target_element = GetElementById("target");
-  target_element->setAttribute(html_names::kStyleAttr, "background: green;");
+  target_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString("background: green;"));
   Compositor().BeginFrame();
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::PreviousUpdateType::kRepaint);

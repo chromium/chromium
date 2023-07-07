@@ -40,7 +40,8 @@ TEST_F(StyleAdjusterTest, TouchActionPropagatedAcrossIframes) {
             target->GetComputedStyle()->EffectiveTouchAction());
 
   Element* owner = GetDocument().getElementById(AtomicString("owner"));
-  owner->setAttribute(html_names::kStyleAttr, "touch-action: auto");
+  owner->setAttribute(html_names::kStyleAttr,
+                      AtomicString("touch-action: auto"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(TouchAction::kPinchZoom,
             target->GetComputedStyle()->EffectiveTouchAction());
@@ -80,14 +81,16 @@ TEST_F(StyleAdjusterTest, TouchActionPropagatedWhenAncestorStyleChanges) {
             target->GetComputedStyle()->EffectiveTouchAction());
 
   Element* ancestor = GetDocument().getElementById(AtomicString("ancestor"));
-  ancestor->setAttribute(html_names::kStyleAttr, "touch-action: pan-y");
+  ancestor->setAttribute(html_names::kStyleAttr,
+                         AtomicString("touch-action: pan-y"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(TouchAction::kPanY | TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->EffectiveTouchAction());
 
   Element* potential_scroller =
       GetDocument().getElementById(AtomicString("potential-scroller"));
-  potential_scroller->setAttribute(html_names::kStyleAttr, "overflow: scroll");
+  potential_scroller->setAttribute(html_names::kStyleAttr,
+                                   AtomicString("overflow: scroll"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(TouchAction::kPan | TouchAction::kInternalPanXScrolls |
                 TouchAction::kInternalNotWritable,
@@ -110,7 +113,8 @@ TEST_F(StyleAdjusterTest, TouchActionRestrictedByLowerAncestor) {
             target->GetComputedStyle()->EffectiveTouchAction());
 
   Element* parent = GetDocument().getElementById(AtomicString("parent"));
-  parent->setAttribute(html_names::kStyleAttr, "touch-action: auto");
+  parent->setAttribute(html_names::kStyleAttr,
+                       AtomicString("touch-action: auto"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
                 TouchAction::kInternalNotWritable,
@@ -164,7 +168,7 @@ TEST_F(StyleAdjusterTest, TouchActionContentEditableArea) {
                 ->EffectiveTouchAction());
 
   Element* target = GetDocument().getElementById(AtomicString("editable1"));
-  target->setAttribute(html_names::kContenteditableAttr, "true");
+  target->setAttribute(html_names::kContenteditableAttr, keywords::kTrue);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(TouchAction::kAuto & ~TouchAction::kInternalPanXScrolls,
             target->GetComputedStyle()->EffectiveTouchAction());
@@ -187,7 +191,7 @@ TEST_F(StyleAdjusterTest, TouchActionNoPanXScrollsWhenNoPanX) {
   EXPECT_EQ(TouchAction::kPanY | TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->EffectiveTouchAction());
 
-  target->setAttribute(html_names::kContenteditableAttr, "true");
+  target->setAttribute(html_names::kContenteditableAttr, keywords::kTrue);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(TouchAction::kPanY | TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->EffectiveTouchAction());
@@ -276,7 +280,7 @@ TEST_F(StyleAdjusterTest, TouchActionWritableArea) {
                 ->EffectiveTouchAction());
 
   Element* target = GetDocument().getElementById(AtomicString("editable1"));
-  target->setAttribute(html_names::kContenteditableAttr, "true");
+  target->setAttribute(html_names::kContenteditableAttr, keywords::kTrue);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(expected_input_action,
             target->GetComputedStyle()->EffectiveTouchAction());
@@ -319,7 +323,7 @@ TEST_F(StyleAdjusterTest, AdjustForSVGCrash) {
   Element* text = GetDocument()
                       .getElementById(AtomicString("use1"))
                       ->GetShadowRoot()
-                      ->getElementById("text5");
+                      ->getElementById(AtomicString("text5"));
   EXPECT_EQ(EDominantBaseline::kHanging,
             text->GetComputedStyle()->CssDominantBaseline());
 }

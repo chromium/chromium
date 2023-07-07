@@ -277,8 +277,8 @@ TEST_F(ElementTest, GetElementsByClassNameCrash) {
   // Test for a crash in NodeListsNodeData::AddCache().
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
   ASSERT_TRUE(GetDocument().InQuirksMode());
-  GetDocument().body()->getElementsByClassName("ABC DEF");
-  GetDocument().body()->getElementsByClassName("ABC DEF");
+  GetDocument().body()->getElementsByClassName(AtomicString("ABC DEF"));
+  GetDocument().body()->getElementsByClassName(AtomicString("ABC DEF"));
   // The test passes if no crash happens.
 }
 
@@ -417,7 +417,7 @@ TEST_F(ElementTest, PartAttribute) {
     EXPECT_EQ(&part, has_no_part->GetPart());
 
     // Now update the attribute value and make sure it's reflected.
-    has_no_part->setAttribute("part", "partname");
+    has_no_part->setAttribute(AtomicString("part"), AtomicString("partname"));
     ASSERT_EQ(1UL, part.length());
     ASSERT_EQ("partname", part.value());
   }
@@ -447,8 +447,9 @@ TEST_F(ElementTest, ExportpartsAttribute) {
     const NamesMap* part_names_map = has_one_mapping->PartNamesMap();
     ASSERT_TRUE(part_names_map);
     ASSERT_EQ(1UL, part_names_map->size());
-    ASSERT_EQ("partname2",
-              part_names_map->Get("partname1").value().SerializeToString());
+    ASSERT_EQ("partname2", part_names_map->Get(AtomicString("partname1"))
+                               .value()
+                               .SerializeToString());
   }
 
   {
@@ -456,10 +457,12 @@ TEST_F(ElementTest, ExportpartsAttribute) {
     const NamesMap* part_names_map = has_two_mappings->PartNamesMap();
     ASSERT_TRUE(part_names_map);
     ASSERT_EQ(2UL, part_names_map->size());
-    ASSERT_EQ("partname2",
-              part_names_map->Get("partname1").value().SerializeToString());
-    ASSERT_EQ("partname4",
-              part_names_map->Get("partname3").value().SerializeToString());
+    ASSERT_EQ("partname2", part_names_map->Get(AtomicString("partname1"))
+                               .value()
+                               .SerializeToString());
+    ASSERT_EQ("partname4", part_names_map->Get(AtomicString("partname3"))
+                               .value()
+                               .SerializeToString());
   }
 
   {
@@ -467,12 +470,14 @@ TEST_F(ElementTest, ExportpartsAttribute) {
     EXPECT_FALSE(has_no_mapping->PartNamesMap());
 
     // Now update the attribute value and make sure it's reflected.
-    has_no_mapping->setAttribute("exportparts", "partname1: partname2");
+    has_no_mapping->setAttribute(AtomicString("exportparts"),
+                                 AtomicString("partname1: partname2"));
     const NamesMap* part_names_map = has_no_mapping->PartNamesMap();
     ASSERT_TRUE(part_names_map);
     ASSERT_EQ(1UL, part_names_map->size());
-    ASSERT_EQ("partname2",
-              part_names_map->Get("partname1").value().SerializeToString());
+    ASSERT_EQ("partname2", part_names_map->Get(AtomicString("partname1"))
+                               .value()
+                               .SerializeToString());
   }
 }
 
@@ -1140,7 +1145,7 @@ TEST_F(ElementTest, MixStyleAttributeAndCSSOMChanges) {
   // Verify that setting the style attribute back to its initial value is not
   // mistakenly considered as a no-op attribute change and ignored. It would be
   // without proper synchronization of attributes.
-  elmt->setAttribute(html_names::kStyleAttr, "color: green;");
+  elmt->setAttribute(html_names::kStyleAttr, AtomicString("color: green;"));
 
   EXPECT_EQ(elmt->getAttribute(html_names::kStyleAttr), "color: green;");
   EXPECT_EQ(elmt->style()->getPropertyValue("color"), "green");

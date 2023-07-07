@@ -85,7 +85,7 @@ TEST_F(LocalFrameViewTest, SetPaintInvalidationDuringUpdateAllLifecyclePhases) {
   SetBodyInnerHTML("<div id='a' style='color: blue'>A</div>");
   GetDocument()
       .getElementById(AtomicString("a"))
-      ->setAttribute(html_names::kStyleAttr, "color: green");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("color: green"));
   GetAnimationMockChromeClient().has_scheduled_animation_ = false;
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(GetAnimationMockChromeClient().has_scheduled_animation_);
@@ -96,7 +96,7 @@ TEST_F(LocalFrameViewTest,
   SetBodyInnerHTML("<div id='a' style='color: blue'>A</div>");
   GetDocument()
       .getElementById(AtomicString("a"))
-      ->setAttribute(html_names::kStyleAttr, "color: green");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("color: green"));
   GetAnimationMockChromeClient().has_scheduled_animation_ = false;
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
@@ -232,14 +232,14 @@ TEST_F(LocalFrameViewTest,
   Element* div = GetDocument().getElementById(AtomicString("div"));
 
   // Only body has fixed background. No main thread scrolling.
-  body->setAttribute(html_names::kClassAttr, "fixed-background");
+  body->setAttribute(html_names::kClassAttr, AtomicString("fixed-background"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(1u, frame_view->BackgroundAttachmentFixedObjects().size());
   EXPECT_FALSE(
       frame_view->RequiresMainThreadScrollingForBackgroundAttachmentFixed());
 
   // Both body and div have fixed background. Requires main thread scrolling.
-  div->setAttribute(html_names::kClassAttr, "fixed-background");
+  div->setAttribute(html_names::kClassAttr, AtomicString("fixed-background"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(2u, frame_view->BackgroundAttachmentFixedObjects().size());
   EXPECT_TRUE(
@@ -254,14 +254,14 @@ TEST_F(LocalFrameViewTest,
 
   // Only html has fixed background. No main thread scrolling.
   div->removeAttribute(html_names::kClassAttr);
-  html->setAttribute(html_names::kClassAttr, "fixed-background");
+  html->setAttribute(html_names::kClassAttr, AtomicString("fixed-background"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(1u, frame_view->BackgroundAttachmentFixedObjects().size());
   EXPECT_FALSE(
       frame_view->RequiresMainThreadScrollingForBackgroundAttachmentFixed());
 
   // Both html and body have fixed background. Requires main thread scrolling.
-  body->setAttribute(html_names::kClassAttr, "fixed-background");
+  body->setAttribute(html_names::kClassAttr, AtomicString("fixed-background"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(2u, frame_view->BackgroundAttachmentFixedObjects().size());
   EXPECT_TRUE(
@@ -290,13 +290,13 @@ TEST_F(LocalFrameViewTest,
 
   // When not prefer compositing, we use main thread scrolling when there is
   // any object with fixed-attachment background.
-  body->setAttribute(html_names::kClassAttr, "fixed-background");
+  body->setAttribute(html_names::kClassAttr, AtomicString("fixed-background"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(1u, frame_view->BackgroundAttachmentFixedObjects().size());
   EXPECT_TRUE(
       frame_view->RequiresMainThreadScrollingForBackgroundAttachmentFixed());
 
-  div->setAttribute(html_names::kClassAttr, "fixed-background");
+  div->setAttribute(html_names::kClassAttr, AtomicString("fixed-background"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(2u, frame_view->BackgroundAttachmentFixedObjects().size());
   EXPECT_TRUE(
@@ -309,13 +309,13 @@ TEST_F(LocalFrameViewTest,
       frame_view->RequiresMainThreadScrollingForBackgroundAttachmentFixed());
 
   div->removeAttribute(html_names::kClassAttr);
-  html->setAttribute(html_names::kClassAttr, "fixed-background");
+  html->setAttribute(html_names::kClassAttr, AtomicString("fixed-background"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(1u, frame_view->BackgroundAttachmentFixedObjects().size());
   EXPECT_TRUE(
       frame_view->RequiresMainThreadScrollingForBackgroundAttachmentFixed());
 
-  body->setAttribute(html_names::kClassAttr, "fixed-background");
+  body->setAttribute(html_names::kClassAttr, AtomicString("fixed-background"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(2u, frame_view->BackgroundAttachmentFixedObjects().size());
   EXPECT_TRUE(

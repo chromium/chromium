@@ -96,7 +96,7 @@ TEST_F(EditingCommandTest, EnabledVisibleSelection) {
       div, FocusParams(SelectionBehaviorOnFocus::kNone,
                        mojom::blink::FocusType::kNone, nullptr));
   EXPECT_TRUE(command.IsEnabled());
-  div->removeAttribute("contenteditable");
+  div->removeAttribute(html_names::kContenteditableAttr);
   EXPECT_FALSE(command.IsEnabled());
   GetDocument().GetFrame()->GetSettings()->SetCaretBrowsingEnabled(true);
   EXPECT_TRUE(command.IsEnabled());
@@ -115,7 +115,7 @@ TEST_F(EditingCommandTest, EnabledVisibleSelectionAndMark) {
   EXPECT_FALSE(command.IsEnabled());
   editor.SetMark();
   EXPECT_TRUE(command.IsEnabled());
-  div->removeAttribute("contenteditable");
+  div->removeAttribute(html_names::kContenteditableAttr);
   EXPECT_FALSE(command.IsEnabled());
   GetDocument().GetFrame()->GetSettings()->SetCaretBrowsingEnabled(true);
   EXPECT_TRUE(command.IsEnabled());
@@ -140,7 +140,7 @@ TEST_F(EditingCommandTest, EnabledInEditableTextOrCaretBrowsing) {
       div, FocusParams(SelectionBehaviorOnFocus::kNone,
                        mojom::blink::FocusType::kNone, nullptr));
   EXPECT_TRUE(command.IsEnabled());
-  div->removeAttribute("contenteditable");
+  div->removeAttribute(html_names::kContenteditableAttr);
   EXPECT_FALSE(command.IsEnabled());
 }
 

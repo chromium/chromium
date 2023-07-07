@@ -734,7 +734,7 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
         base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0,
         root_document->UkmSourceID(), root_document->UkmRecorder());
 
-    target1->setAttribute(html_names::kStyleAttr, "width: 60px");
+    target1->setAttribute(html_names::kStyleAttr, AtomicString("width: 60px"));
     Compositor().BeginFrame();
     EXPECT_EQ(
         histogram_tester.GetTotalSum(
@@ -912,7 +912,8 @@ TEST_F(LocalFrameUkmAggregatorSimTest, DidNotReachFirstContentfulPaintMetric) {
 
   // Make a change that does not result in FCP on the next frame.
   Element* target = GetDocument().getElementById(AtomicString("target"));
-  target->setAttribute(html_names::kStyleAttr, "background: blue;");
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString("background: blue;"));
 
   // Do another pre-FCP frame.
   Compositor().BeginFrame();

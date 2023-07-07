@@ -310,9 +310,10 @@ TEST(CSSSelector, PseudoTrueSpecificity) {
 }
 
 TEST(CSSSelector, ImplicitScopeSpecificity) {
-  CSSSelector selector[2] = {CSSSelector(html_names::kDivTag,
-                                         /* is_implicit */ false),
-                             CSSSelector("scope", /* is_implicit */ true)};
+  CSSSelector selector[2] = {
+      CSSSelector(html_names::kDivTag,
+                  /* is_implicit */ false),
+      CSSSelector(AtomicString("scope"), /* is_implicit */ true)};
   selector[0].SetRelation(CSSSelector::kChild);
   selector[1].SetLastInComplexSelector(true);
   EXPECT_EQ("> div", selector[0].SelectorText());

@@ -102,7 +102,7 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonEmptyContent) {
   auto& target = *GetDocument().getElementById(AtomicString("target"));
   auto& box = *target.GetLayoutBox();
   // Remove border.
-  target.setAttribute(html_names::kClassAttr, "");
+  target.setAttribute(html_names::kClassAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
 
   box.SetShouldCheckForPaintInvalidation();
@@ -118,7 +118,7 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonEmptyContent) {
             ComputePaintInvalidationReason(box, old_paint_offset));
 
   // Size change.
-  target.setAttribute(html_names::kStyleAttr, "width: 200px");
+  target.setAttribute(html_names::kStyleAttr, AtomicString("width: 200px"));
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   EXPECT_EQ(PaintInvalidationReason::kIncremental,
@@ -130,8 +130,8 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonBasic) {
   auto& target = *GetDocument().getElementById(AtomicString("target"));
   auto& box = *target.GetLayoutBox();
   // Remove border.
-  target.setAttribute(html_names::kClassAttr, "");
-  target.setAttribute(html_names::kStyleAttr, "background: blue");
+  target.setAttribute(html_names::kClassAttr, g_empty_atom);
+  target.setAttribute(html_names::kStyleAttr, AtomicString("background: blue"));
   UpdateAllLifecyclePhasesForTest();
 
   box.SetShouldCheckForPaintInvalidation();
@@ -143,20 +143,23 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonBasic) {
             ComputePaintInvalidationReason(box, paint_offset));
 
   // Size change.
-  target.setAttribute(html_names::kStyleAttr, "background: blue; width: 200px");
+  target.setAttribute(html_names::kStyleAttr,
+                      AtomicString("background: blue; width: 200px"));
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   EXPECT_EQ(PaintInvalidationReason::kIncremental,
             ComputePaintInvalidationReason(box, paint_offset));
 
   // Add visual overflow.
-  target.setAttribute(html_names::kStyleAttr,
-                      "background: blue; width: 200px; outline: 5px solid red");
+  target.setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("background: blue; width: 200px; outline: 5px solid red"));
   UpdateAllLifecyclePhasesForTest();
 
   // Size change with visual overflow.
-  target.setAttribute(html_names::kStyleAttr,
-                      "background: blue; width: 100px; outline: 5px solid red");
+  target.setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("background: blue; width: 100px; outline: 5px solid red"));
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
 
@@ -193,7 +196,7 @@ TEST_P(BoxPaintInvalidatorTest,
 
   UpdateAllLifecyclePhasesForTest();
   auto& target = *GetDocument().getElementById(AtomicString("target"));
-  target.setAttribute(html_names::kStyleAttr, "");
+  target.setAttribute(html_names::kStyleAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
   // This test passes if no underinvalidation occurs.
 }
@@ -206,21 +209,25 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonOtherCases) {
   ExpectFullPaintInvalidationOnGeometryChange("With border");
 
   // Clear border, set background.
-  target.setAttribute(html_names::kClassAttr, "background");
-  target.setAttribute(html_names::kStyleAttr, "border-radius: 5px");
+  target.setAttribute(html_names::kClassAttr, AtomicString("background"));
+  target.setAttribute(html_names::kStyleAttr,
+                      AtomicString("border-radius: 5px"));
   ExpectFullPaintInvalidationOnGeometryChange("With border-radius");
 
-  target.setAttribute(html_names::kStyleAttr, "-webkit-mask: url(#)");
+  target.setAttribute(html_names::kStyleAttr,
+                      AtomicString("-webkit-mask: url(#)"));
   ExpectFullPaintInvalidationOnGeometryChange("With mask");
 
-  target.setAttribute(html_names::kStyleAttr, "filter: blur(5px)");
+  target.setAttribute(html_names::kStyleAttr,
+                      AtomicString("filter: blur(5px)"));
   ExpectFullPaintInvalidationOnGeometryChange("With filter");
 
-  target.setAttribute(html_names::kStyleAttr, "box-shadow: inset 3px 2px");
+  target.setAttribute(html_names::kStyleAttr,
+                      AtomicString("box-shadow: inset 3px 2px"));
   ExpectFullPaintInvalidationOnGeometryChange("With box-shadow");
 
   target.setAttribute(html_names::kStyleAttr,
-                      "clip-path: circle(50% at 0 50%)");
+                      AtomicString("clip-path: circle(50% at 0 50%)"));
   ExpectFullPaintInvalidationOnGeometryChange("With clip-path");
 }
 
@@ -230,7 +237,8 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonOutline) {
   auto* object = target.GetLayoutObject();
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
-  target.setAttribute(html_names::kStyleAttr, "outline: 2px solid blue;");
+  target.setAttribute(html_names::kStyleAttr,
+                      AtomicString("outline: 2px solid blue;"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
@@ -240,7 +248,7 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonOutline) {
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
   target.setAttribute(html_names::kStyleAttr,
-                      "outline: 2px solid blue; width: 100px;");
+                      AtomicString("outline: 2px solid blue; width: 100px;"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
@@ -265,7 +273,7 @@ TEST_P(BoxPaintInvalidatorTest, InvalidateHitTestOnCompositingStyleChange) {
 
   UpdateAllLifecyclePhasesForTest();
   auto& target = *GetDocument().getElementById(AtomicString("target"));
-  target.setAttribute(html_names::kStyleAttr, "");
+  target.setAttribute(html_names::kStyleAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
   // This test passes if no under-invalidation occurs.
 }

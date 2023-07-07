@@ -39,14 +39,14 @@ TEST_F(StyleImageCacheTest, DuplicateBackgroundImageURLs) {
   ASSERT_TRUE(target);
   ASSERT_FALSE(target->ComputedStyleRef().BackgroundLayers().GetImage());
 
-  target->setAttribute(blink::html_names::kClassAttr, "rule1");
+  target->setAttribute(blink::html_names::kClassAttr, AtomicString("rule1"));
   UpdateAllLifecyclePhasesForTest();
 
   StyleImage* rule1_image =
       target->ComputedStyleRef().BackgroundLayers().GetImage();
   EXPECT_TRUE(rule1_image);
 
-  target->setAttribute(blink::html_names::kClassAttr, "rule2");
+  target->setAttribute(blink::html_names::kClassAttr, AtomicString("rule2"));
   UpdateAllLifecyclePhasesForTest();
 
   StyleImage* rule2_image =
@@ -70,7 +70,7 @@ TEST_F(StyleImageCacheTest, CustomPropertyURL) {
       target->ComputedStyleRef().BackgroundLayers().GetImage();
   EXPECT_TRUE(initial_image);
 
-  target->setAttribute(blink::html_names::kClassAttr, "green");
+  target->setAttribute(blink::html_names::kClassAttr, AtomicString("green"));
   UpdateAllLifecyclePhasesForTest();
 
   StyleImage* image_after_recalc =

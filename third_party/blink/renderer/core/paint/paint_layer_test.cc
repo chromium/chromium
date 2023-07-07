@@ -182,7 +182,8 @@ TEST_P(PaintLayerTest, HasFixedPositionDescendant) {
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr, "position: relative");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("position: relative"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(parent->HasFixedPositionDescendant());
@@ -203,7 +204,8 @@ TEST_P(PaintLayerTest, HasNonContainedAbsolutePositionDescendant) {
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr, "position: absolute");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("position: absolute"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_TRUE(parent->HasNonContainedAbsolutePositionDescendant());
@@ -211,7 +213,8 @@ TEST_P(PaintLayerTest, HasNonContainedAbsolutePositionDescendant) {
 
   GetDocument()
       .getElementById(AtomicString("parent"))
-      ->setAttribute(html_names::kStyleAttr, "position: relative");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("position: relative"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(parent->HasNonContainedAbsolutePositionDescendant());
   EXPECT_FALSE(child->HasNonContainedAbsolutePositionDescendant());
@@ -290,16 +293,17 @@ class ReorderOverlayOverflowControlsTest
   OverlayType GetOverlayType() const { return GetParam(); }
 
   void InitOverflowStyle(const char* id) {
-    GetDocument().getElementById(id)->setAttribute(
-        html_names::kStyleAttr, GetOverlayType() == kOverlayScrollbars
-                                    ? "overflow: auto"
-                                    : "overflow: hidden; resize: both");
+    GetElementById(id)->setAttribute(
+        html_names::kStyleAttr,
+        AtomicString(GetOverlayType() == kOverlayScrollbars
+                         ? "overflow: auto"
+                         : "overflow: hidden; resize: both"));
     UpdateAllLifecyclePhasesForTest();
   }
 
   void RemoveOverflowStyle(const char* id) {
-    GetDocument().getElementById(id)->setAttribute(html_names::kStyleAttr,
-                                                   "overflow: visible");
+    GetElementById(id)->setAttribute(html_names::kStyleAttr,
+                                     AtomicString("overflow: visible"));
     UpdateAllLifecyclePhasesForTest();
   }
 };
@@ -337,7 +341,7 @@ TEST_P(ReorderOverlayOverflowControlsTest, StackedWithInFlowDescendant) {
   GetDocument()
       .getElementById(AtomicString("child"))
       ->setAttribute(html_names::kStyleAttr,
-                     "position: relative; height: 80px");
+                     AtomicString("position: relative; height: 80px"));
   UpdateAllLifecyclePhasesForTest();
   if (GetOverlayType() == kOverlayScrollbars) {
     EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
@@ -352,8 +356,9 @@ TEST_P(ReorderOverlayOverflowControlsTest, StackedWithInFlowDescendant) {
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr,
-                     "position: relative; width: 200px; height: 80px");
+      ->setAttribute(
+          html_names::kStyleAttr,
+          AtomicString("position: relative; width: 200px; height: 80px"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_THAT(LayersPaintingOverlayOverflowControlsAfter(child),
@@ -362,15 +367,17 @@ TEST_P(ReorderOverlayOverflowControlsTest, StackedWithInFlowDescendant) {
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr, "width: 200px; height: 80px");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("width: 200px; height: 80px"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr,
-                     "position: relative; width: 200px; height: 80px");
+      ->setAttribute(
+          html_names::kStyleAttr,
+          AtomicString("position: relative; width: 200px; height: 80px"));
   UpdateAllLifecyclePhasesForTest();
   child = GetPaintLayerByElementId("child");
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
@@ -410,13 +417,14 @@ TEST_P(ReorderOverlayOverflowControlsTest, StackedWithOutOfFlowDescendant) {
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr, "");
+      ->setAttribute(html_names::kStyleAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr, "position: absolute");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("position: absolute"));
   UpdateAllLifecyclePhasesForTest();
   child = GetPaintLayerByElementId("child");
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
@@ -457,7 +465,7 @@ TEST_P(ReorderOverlayOverflowControlsTest, StackedWithZIndexDescendant) {
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr, "z-index: -1");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("z-index: -1"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_FALSE(LayersPaintingOverlayOverflowControlsAfter(child));
@@ -465,7 +473,7 @@ TEST_P(ReorderOverlayOverflowControlsTest, StackedWithZIndexDescendant) {
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr, "z-index: 2");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("z-index: 2"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_THAT(LayersPaintingOverlayOverflowControlsAfter(child),
@@ -611,7 +619,7 @@ TEST_P(ReorderOverlayOverflowControlsTest, MultipleChildren) {
   std::string new_style = extra_style + "position: absolute; z-index: 1";
   GetDocument()
       .getElementById(AtomicString("parent"))
-      ->setAttribute(html_names::kStyleAttr, new_style.c_str());
+      ->setAttribute(html_names::kStyleAttr, AtomicString(new_style.c_str()));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_FALSE(LayersPaintingOverlayOverflowControlsAfter(low_child));
@@ -622,7 +630,7 @@ TEST_P(ReorderOverlayOverflowControlsTest, MultipleChildren) {
   new_style = extra_style + "position: absolute;";
   GetDocument()
       .getElementById(AtomicString("parent"))
-      ->setAttribute(html_names::kStyleAttr, new_style.c_str());
+      ->setAttribute(html_names::kStyleAttr, AtomicString(new_style.c_str()));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_FALSE(LayersPaintingOverlayOverflowControlsAfter(low_child));
@@ -659,7 +667,7 @@ TEST_P(ReorderOverlayOverflowControlsTest, NonStackedWithInFlowDescendant) {
   GetDocument()
       .getElementById(AtomicString("child"))
       ->setAttribute(html_names::kStyleAttr,
-                     "position: relative; height: 80px");
+                     AtomicString("position: relative; height: 80px"));
   UpdateAllLifecyclePhasesForTest();
   if (GetOverlayType() == kOverlayResizer) {
     EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
@@ -673,8 +681,9 @@ TEST_P(ReorderOverlayOverflowControlsTest, NonStackedWithInFlowDescendant) {
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr,
-                     "position: relative; width: 200px; height: 80px");
+      ->setAttribute(
+          html_names::kStyleAttr,
+          AtomicString("position: relative; width: 200px; height: 80px"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_THAT(LayersPaintingOverlayOverflowControlsAfter(child),
@@ -683,15 +692,17 @@ TEST_P(ReorderOverlayOverflowControlsTest, NonStackedWithInFlowDescendant) {
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr, "width: 200px; height: 80px");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("width: 200px; height: 80px"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr,
-                     "position: relative; width: 200px; height: 80px");
+      ->setAttribute(
+          html_names::kStyleAttr,
+          AtomicString("position: relative; width: 200px; height: 80px"));
   UpdateAllLifecyclePhasesForTest();
   child = GetPaintLayerByElementId("child");
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
@@ -731,7 +742,7 @@ TEST_P(ReorderOverlayOverflowControlsTest,
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr, "z-index: -1");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("z-index: -1"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_FALSE(LayersPaintingOverlayOverflowControlsAfter(child));
@@ -739,7 +750,7 @@ TEST_P(ReorderOverlayOverflowControlsTest,
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr, "z-index: 2");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("z-index: 2"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_THAT(LayersPaintingOverlayOverflowControlsAfter(child),
@@ -993,7 +1004,8 @@ TEST_P(ReorderOverlayOverflowControlsTest, AddRemoveStackedChild) {
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
   auto* child_element = GetDocument().getElementById(AtomicString("child"));
-  child_element->setAttribute(html_names::kStyleAttr, "display: block");
+  child_element->setAttribute(html_names::kStyleAttr,
+                              AtomicString("display: block"));
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_THAT(LayersPaintingOverlayOverflowControlsAfter(
@@ -1004,7 +1016,7 @@ TEST_P(ReorderOverlayOverflowControlsTest, AddRemoveStackedChild) {
   EXPECT_FALSE(parent->SelfNeedsRepaint());
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
-  child_element->setAttribute(html_names::kStyleAttr, "");
+  child_element->setAttribute(html_names::kStyleAttr, g_empty_atom);
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_TRUE(parent->SelfNeedsRepaint());
@@ -1080,7 +1092,7 @@ TEST_P(PaintLayerTest, NegativeZIndexChangeToPositive) {
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr, "z-index: 1");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("z-index: 1"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(
@@ -1133,7 +1145,8 @@ TEST_P(PaintLayerTest, Has3DTransformedDescendantChangeStyle) {
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr, "transform: translateZ(1px)");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("transform: translateZ(1px)"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_TRUE(parent->Has3DTransformedDescendant());
@@ -1190,7 +1203,8 @@ TEST_P(PaintLayerTest, DescendantDependentFlagsStopsAtThrottledFrames) {
   // Move the child frame offscreen so it becomes available for throttling.
   auto* iframe = To<HTMLIFrameElement>(
       GetDocument().getElementById(AtomicString("iframe")));
-  iframe->setAttribute(html_names::kStyleAttr, "transform: translateY(5555px)");
+  iframe->setAttribute(html_names::kStyleAttr,
+                       AtomicString("transform: translateY(5555px)"));
   UpdateAllLifecyclePhasesForTest();
   // Ensure intersection observer notifications get delivered.
   test::RunPendingTasks();
@@ -1618,7 +1632,7 @@ TEST_P(PaintLayerTest, NeedsRepaintOnSelfPaintingStatusChange) {
   // and change its compositing container. The original compositing container
   // span_layer should be marked SelfNeedsRepaint.
   target_element->setAttribute(html_names::kStyleAttr,
-                               "overflow: hidden; float: left");
+                               AtomicString("overflow: hidden; float: left"));
 
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_FALSE(target_layer->IsSelfPaintingLayer());
@@ -1646,8 +1660,8 @@ TEST_P(PaintLayerTest, NeedsRepaintOnRemovingStackedLayer) {
   EXPECT_NE(body_layer, target_layer->CompositingContainer());
   auto* old_compositing_container = target_layer->CompositingContainer();
 
-  body->setAttribute(html_names::kStyleAttr, "margin-top: 0");
-  target_element->setAttribute(html_names::kStyleAttr, "top: 0");
+  body->setAttribute(html_names::kStyleAttr, AtomicString("margin-top: 0"));
+  target_element->setAttribute(html_names::kStyleAttr, AtomicString("top: 0"));
   UpdateAllLifecyclePhasesExceptPaint();
 
   EXPECT_FALSE(target_object->HasLayer());
@@ -2054,7 +2068,8 @@ TEST_P(PaintLayerTest, HitTestOverlayResizer) {
   for (int i = 0; i < 6; i++) {
     Element* target_element = GetDocument().getElementById(
         AtomicString(String::Format("target_%d", i)));
-    target_element->setAttribute(html_names::kStyleAttr, "display: block");
+    target_element->setAttribute(html_names::kStyleAttr,
+                                 AtomicString("display: block"));
     UpdateAllLifecyclePhasesForTest();
 
     HitTestRequest request(HitTestRequest::kIgnoreClipping);
@@ -2066,7 +2081,8 @@ TEST_P(PaintLayerTest, HitTestOverlayResizer) {
     else
       EXPECT_EQ(target_element, result.InnerNode());
 
-    target_element->setAttribute(html_names::kStyleAttr, "display: none");
+    target_element->setAttribute(html_names::kStyleAttr,
+                                 AtomicString("display: none"));
   }
 }
 
@@ -2221,7 +2237,8 @@ TEST_P(PaintLayerTest, AddLayerNeedsRepaintAndCullRectUpdate) {
 
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr, "position: relative");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("position: relative"));
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   EXPECT_TRUE(parent_layer->DescendantNeedsRepaint());

@@ -20,7 +20,7 @@ class HTMLFormElementTest : public PageTestBase {
 
 void HTMLFormElementTest::SetUp() {
   PageTestBase::SetUp();
-  GetDocument().SetMimeType("text/html");
+  GetDocument().SetMimeType(AtomicString("text/html"));
 }
 
 TEST_F(HTMLFormElementTest, UniqueRendererFormId) {

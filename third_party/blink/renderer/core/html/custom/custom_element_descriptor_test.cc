@@ -34,31 +34,35 @@ TEST(CustomElementDescriptorTest, notEqual) {
 
 TEST(CustomElementDescriptorTest, hashable) {
   HashSet<CustomElementDescriptor> descriptors;
-  descriptors.insert(CustomElementDescriptor("foo-bar", "foo-bar"));
-  EXPECT_TRUE(
-      descriptors.Contains(CustomElementDescriptor("foo-bar", "foo-bar")))
+  descriptors.insert(CustomElementDescriptor(AtomicString("foo-bar"),
+                                             AtomicString("foo-bar")));
+  EXPECT_TRUE(descriptors.Contains(CustomElementDescriptor(
+      AtomicString("foo-bar"), AtomicString("foo-bar"))))
       << "the identical descriptor should be found in the hash set";
-  EXPECT_FALSE(
-      descriptors.Contains(CustomElementDescriptor("bad-poetry", "blockquote")))
+  EXPECT_FALSE(descriptors.Contains(CustomElementDescriptor(
+      AtomicString("bad-poetry"), AtomicString("blockquote"))))
       << "an unrelated descriptor should not be found in the hash set";
 }
 
 TEST(CustomElementDescriptorTest, matches_autonomous) {
   CustomElementDescriptor descriptor(AtomicString("a-b"), AtomicString("a-b"));
-  Element* element = CreateElement("a-b");
+  Element* element = CreateElement(AtomicString("a-b"));
   EXPECT_TRUE(descriptor.Matches(*element));
 }
 
 TEST(CustomElementDescriptorTest,
      matches_autonomous_shouldNotMatchCustomizedBuiltInElement) {
   CustomElementDescriptor descriptor(AtomicString("a-b"), AtomicString("a-b"));
-  Element* element = CreateElement("futuretag").WithIsValue("a-b");
+  Element* element =
+      CreateElement(AtomicString("futuretag")).WithIsValue(AtomicString("a-b"));
   EXPECT_FALSE(descriptor.Matches(*element));
 }
 
 TEST(CustomElementDescriptorTest, matches_customizedBuiltIn) {
-  CustomElementDescriptor descriptor("a-b", "button");
-  Element* element = CreateElement("button").WithIsValue("a-b");
+  CustomElementDescriptor descriptor(AtomicString("a-b"),
+                                     AtomicString("button"));
+  Element* element =
+      CreateElement(AtomicString("button")).WithIsValue(AtomicString("a-b"));
   EXPECT_TRUE(descriptor.Matches(*element));
 }
 
@@ -66,14 +70,15 @@ TEST(CustomElementDescriptorTest,
      matches_customizedBuiltIn_shouldNotMatchAutonomousElement) {
   CustomElementDescriptor descriptor(AtomicString("a-b"),
                                      AtomicString("button"));
-  Element* element = CreateElement("a-b");
+  Element* element = CreateElement(AtomicString("a-b"));
   EXPECT_FALSE(descriptor.Matches(*element));
 }
 
 TEST(CustomElementDescriptorTest,
      matches_elementNotInHTMLNamespaceDoesNotMatch) {
   CustomElementDescriptor descriptor(AtomicString("a-b"), AtomicString("a-b"));
-  Element* element = CreateElement("a-b").InNamespace("data:text/plain,foo");
+  Element* element = CreateElement(AtomicString("a-b"))
+                         .InNamespace(AtomicString("data:text/plain,foo"));
   EXPECT_FALSE(descriptor.Matches(*element));
 }
 

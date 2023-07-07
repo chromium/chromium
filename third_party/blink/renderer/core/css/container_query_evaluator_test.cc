@@ -332,7 +332,8 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
   // Set --no: match. Should not cause change because size query part does not
   // match.
   builder = ComputedStyleBuilder(*style);
-  builder.SetVariableData("--no", css_test_helpers::CreateVariableData("match"),
+  builder.SetVariableData(AtomicString("--no"),
+                          css_test_helpers::CreateVariableData("match"),
                           inherited);
   style = builder.TakeStyle();
   container_element.SetComputedStyle(style);
@@ -341,7 +342,8 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
 
   // Set --foo: bar. Should trigger change.
   builder = ComputedStyleBuilder(*style);
-  builder.SetVariableData("--foo", css_test_helpers::CreateVariableData("bar"),
+  builder.SetVariableData(AtomicString("--foo"),
+                          css_test_helpers::CreateVariableData("bar"),
                           inherited);
   style = builder.TakeStyle();
   container_element.SetComputedStyle(style);
@@ -351,7 +353,8 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
   // Set --bar: foo. Should trigger change because size part also matches.
   eval_and_add_all();
   builder = ComputedStyleBuilder(*style);
-  builder.SetVariableData("--bar", css_test_helpers::CreateVariableData("foo"),
+  builder.SetVariableData(AtomicString("--bar"),
+                          css_test_helpers::CreateVariableData("foo"),
                           inherited);
   style = builder.TakeStyle();
   container_element.SetComputedStyle(style);
@@ -659,11 +662,11 @@ TEST_F(ContainerQueryEvaluatorTest, EvaluatorDisplayNone) {
   ASSERT_TRUE(inner);
   EXPECT_TRUE(inner->GetContainerQueryEvaluator());
 
-  inner->classList().Add("none");
+  inner->classList().Add(AtomicString("none"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(inner->GetContainerQueryEvaluator());
 
-  inner->classList().Remove("none");
+  inner->classList().Remove(AtomicString("none"));
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(inner->GetContainerQueryEvaluator());
 
@@ -673,12 +676,12 @@ TEST_F(ContainerQueryEvaluatorTest, EvaluatorDisplayNone) {
   EXPECT_TRUE(outer->GetContainerQueryEvaluator());
   EXPECT_TRUE(inner->GetContainerQueryEvaluator());
 
-  outer->classList().Add("none");
+  outer->classList().Add(AtomicString("none"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(outer->GetContainerQueryEvaluator());
   EXPECT_FALSE(inner->GetContainerQueryEvaluator());
 
-  outer->classList().Remove("none");
+  outer->classList().Remove(AtomicString("none"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(outer->GetContainerQueryEvaluator());
   EXPECT_TRUE(inner->GetContainerQueryEvaluator());
@@ -901,7 +904,7 @@ TEST_F(ContainerQueryEvaluatorTest, DisplayContentsStyleQueryInvalidation) {
   ContainerQueryEvaluator* evaluator = container->GetContainerQueryEvaluator();
   ASSERT_TRUE(evaluator);
 
-  container->setAttribute(html_names::kClassAttr, "contents");
+  container->setAttribute(html_names::kClassAttr, AtomicString("contents"));
 
   unsigned before_count = GetStyleEngine().StyleForElementCount();
 

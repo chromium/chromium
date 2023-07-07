@@ -138,7 +138,7 @@ TEST_F(FrameSelectionTest, FirstEphemeralRangeOf) {
                                    Position(text, 3), Position(text, 6)))
                                .Build(),
                            SetSelectionOptions());
-  sample->setAttribute(html_names::kStyleAttr, "display:none");
+  sample->setAttribute(html_names::kStyleAttr, AtomicString("display:none"));
   // Move |VisibleSelection| before "abc".
   UpdateAllLifecyclePhasesForTest();
   const EphemeralRange& range =

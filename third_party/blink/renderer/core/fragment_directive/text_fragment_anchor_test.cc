@@ -115,9 +115,9 @@ class TextFragmentAnchorTest : public TextFragmentAnchorTestBase {
     auto* buffer =
         MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
             DOMArrayBuffer::Create(shared_buffer));
-    FontFace* ahem =
-        FontFace::Create(GetDocument().GetFrame()->DomWindow(), "Ahem", buffer,
-                         FontFaceDescriptors::Create());
+    FontFace* ahem = FontFace::Create(GetDocument().GetFrame()->DomWindow(),
+                                      AtomicString("Ahem"), buffer,
+                                      FontFaceDescriptors::Create());
 
     ScriptState* script_state =
         ToScriptStateForMainWorld(GetDocument().GetFrame());
@@ -234,7 +234,8 @@ TEST_F(TextFragmentAnchorTest, NonMatchingString) {
   EXPECT_EQ(ScrollOffset(), LayoutViewport()->GetScrollOffset());
 
   // Force a layout
-  GetDocument().body()->setAttribute(html_names::kStyleAttr, "height: 1300px");
+  GetDocument().body()->setAttribute(html_names::kStyleAttr,
+                                     AtomicString("height: 1300px"));
   Compositor().BeginFrame();
 
   EXPECT_EQ(nullptr, GetDocument().CssTarget());
@@ -447,7 +448,8 @@ TEST_F(TextFragmentAnchorTest, MultipleNonMatchingStrings) {
   EXPECT_EQ(ScrollOffset(), LayoutViewport()->GetScrollOffset());
 
   // Force a layout
-  GetDocument().body()->setAttribute(html_names::kStyleAttr, "height: 1300px");
+  GetDocument().body()->setAttribute(html_names::kStyleAttr,
+                                     AtomicString("height: 1300px"));
   Compositor().BeginFrame();
 
   EXPECT_EQ(nullptr, GetDocument().CssTarget());
@@ -1089,8 +1091,8 @@ TEST_F(TextFragmentAnchorTest, DisabledInWindowOpen) {
       ToScriptStateForMainWorld(main_window->GetFrame());
   ScriptState::Scope entered_context_scope(script_state);
   LocalDOMWindow* child_window = To<LocalDOMWindow>(
-      main_window->open(script_state->GetIsolate(), destination, "frame1", "",
-                        ASSERT_NO_EXCEPTION));
+      main_window->open(script_state->GetIsolate(), destination,
+                        AtomicString("frame1"), "", ASSERT_NO_EXCEPTION));
   ASSERT_TRUE(child_window);
 
   RunPendingTasks();

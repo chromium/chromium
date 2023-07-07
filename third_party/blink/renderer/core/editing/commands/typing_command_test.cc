@@ -56,7 +56,7 @@ TEST_F(TypingCommandTest, insertLineBreakWithIllFormedHTML) {
   Element* tr = GetDocument().CreateRawElement(html_names::kTrTag);
   Element* input2 = GetDocument().CreateRawElement(html_names::kInputTag);
   Element* header = GetDocument().CreateRawElement(html_names::kHeaderTag);
-  Element* rbc = GetDocument().CreateElementForBinding("rbc");
+  Element* rbc = GetDocument().CreateElementForBinding(AtomicString("rbc"));
   input2->AppendChild(header);
   tr->AppendChild(input2);
   tr->AppendChild(rbc);

@@ -183,9 +183,9 @@ class AnnotationAgentImplTest : public SimTest {
     auto* buffer =
         MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
             DOMArrayBuffer::Create(shared_buffer));
-    FontFace* ahem =
-        FontFace::Create(GetDocument().GetFrame()->DomWindow(), "Ahem", buffer,
-                         FontFaceDescriptors::Create());
+    FontFace* ahem = FontFace::Create(GetDocument().GetFrame()->DomWindow(),
+                                      AtomicString("Ahem"), buffer,
+                                      FontFaceDescriptors::Create());
 
     ScriptState* script_state =
         ToScriptStateForMainWorld(GetDocument().GetFrame());
@@ -745,7 +745,8 @@ TEST_F(AnnotationAgentImplTest, ScrollIntoViewWithDirtyLayout) {
   Compositor().BeginFrame();
   ASSERT_TRUE(agent_foo->IsAttached());
 
-  element_text->setAttribute(html_names::kStyleAttr, "top: 2000px");
+  element_text->setAttribute(html_names::kStyleAttr,
+                             AtomicString("top: 2000px"));
 
   // Invoking ScrollIntoView on the agent should perform layout and then cause
   // the attached content to scroll into the viewport.
@@ -1033,8 +1034,9 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindEmptyOverflowHidden) {
   // Empty container with `overflow: visible hidden` (y being hidden makes x
   // compute to auto).
   {
-    container->setAttribute(html_names::kStyleAttr,
-                            "height: 0px; overflow: visible hidden");
+    container->setAttribute(
+        html_names::kStyleAttr,
+        AtomicString("height: 0px; overflow: visible hidden"));
 
     auto* agent_foo = CreateAgentForRange(
         range_foo, mojom::blink::AnnotationType::kTextFinder);
@@ -1051,8 +1053,9 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindEmptyOverflowHidden) {
   // compute to auto). TextFinder should refuse to attach to the text since
   // it's clipped by the container.
   {
-    container->setAttribute(html_names::kStyleAttr,
-                            "height: 0px; overflow: visible hidden");
+    container->setAttribute(
+        html_names::kStyleAttr,
+        AtomicString("height: 0px; overflow: visible hidden"));
 
     auto* agent_foo = CreateAgentForRange(
         range_foo, mojom::blink::AnnotationType::kTextFinder);
@@ -1067,8 +1070,9 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindEmptyOverflowHidden) {
   // `overflow: clip` can clip in a single axis and in this case is clipping
   // the non-empty axis.
   {
-    container->setAttribute(html_names::kStyleAttr,
-                            "height: 0px; overflow: clip visible");
+    container->setAttribute(
+        html_names::kStyleAttr,
+        AtomicString("height: 0px; overflow: clip visible"));
 
     auto* agent_foo = CreateAgentForRange(
         range_foo, mojom::blink::AnnotationType::kTextFinder);
@@ -1083,7 +1087,7 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindEmptyOverflowHidden) {
   // clipped in the empty direction.
   {
     container->setAttribute(html_names::kStyleAttr,
-                            "height: 0px; overflow: clip clip");
+                            AtomicString("height: 0px; overflow: clip clip"));
 
     auto* agent_foo = CreateAgentForRange(
         range_foo, mojom::blink::AnnotationType::kTextFinder);
@@ -1097,8 +1101,9 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindEmptyOverflowHidden) {
   // Empty container with `overflow: visible clip`. Should fail since
   // `overflow: clip` is in the empty direction
   {
-    container->setAttribute(html_names::kStyleAttr,
-                            "height: 0px; overflow: visible clip");
+    container->setAttribute(
+        html_names::kStyleAttr,
+        AtomicString("height: 0px; overflow: visible clip"));
 
     auto* agent_foo = CreateAgentForRange(
         range_foo, mojom::blink::AnnotationType::kTextFinder);
@@ -1112,7 +1117,7 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindEmptyOverflowHidden) {
   // Giving the container size should make it visible to TextFinder annotations.
   {
     container->setAttribute(html_names::kStyleAttr,
-                            "height: 1px; overflow: hidden");
+                            AtomicString("height: 1px; overflow: hidden"));
 
     auto* agent_foo = CreateAgentForRange(
         range_foo, mojom::blink::AnnotationType::kTextFinder);
@@ -1127,7 +1132,7 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindEmptyOverflowHidden) {
   // An empty container shouldn't prevent attaching if overflow is visible.
   {
     container->setAttribute(html_names::kStyleAttr,
-                            "height: 0px; overflow: visible");
+                            AtomicString("height: 0px; overflow: visible"));
 
     auto* agent_foo = CreateAgentForRange(
         range_foo, mojom::blink::AnnotationType::kTextFinder);

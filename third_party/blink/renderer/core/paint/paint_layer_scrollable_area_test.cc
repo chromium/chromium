@@ -156,7 +156,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
   // Change the background to transparent
   scroller->setAttribute(
       html_names::kStyleAttr,
-      "background: rgba(255,255,255,0.5) local content-box;");
+      AtomicString("background: rgba(255,255,255,0.5) local content-box;"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 }
@@ -176,7 +176,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, OpaqueLayersPromotedOnStyleChange) {
 
   // Change the background to opaque
   scroller->setAttribute(html_names::kStyleAttr,
-                         "background: white local content-box;");
+                         AtomicString("background: white local content-box;"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 }
@@ -201,7 +201,8 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 
   // Change the parent to have a transform.
-  parent->setAttribute(html_names::kStyleAttr, "transform: translate(1px, 0);");
+  parent->setAttribute(html_names::kStyleAttr,
+                       AtomicString("transform: translate(1px, 0);"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 
@@ -212,7 +213,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
 
   // Apply a transform to the scroller directly.
   scroller->setAttribute(html_names::kStyleAttr,
-                         "transform: translate(1px, 0);");
+                         AtomicString("transform: translate(1px, 0);"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 }
@@ -235,17 +236,17 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 
   // Change the parent to be partially translucent.
-  parent->setAttribute(html_names::kStyleAttr, "opacity: 0.5;");
+  parent->setAttribute(html_names::kStyleAttr, AtomicString("opacity: 0.5;"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 
   // Change the parent to be opaque again.
-  parent->setAttribute(html_names::kStyleAttr, "opacity: 1;");
+  parent->setAttribute(html_names::kStyleAttr, AtomicString("opacity: 1;"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 
   // Make the scroller translucent.
-  scroller->setAttribute(html_names::kStyleAttr, "opacity: 0.5");
+  scroller->setAttribute(html_names::kStyleAttr, AtomicString("opacity: 0.5"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 }
@@ -265,11 +266,12 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
   Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   EXPECT_FALSE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 
-  scroller->setAttribute(html_names::kStyleAttr, "will-change: transform");
+  scroller->setAttribute(html_names::kStyleAttr,
+                         AtomicString("will-change: transform"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 
-  scroller->setAttribute(html_names::kStyleAttr, "");
+  scroller->setAttribute(html_names::kStyleAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 }
@@ -291,18 +293,20 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, ScrollLayerOnPointerEvents) {
 
   // pointer-events: none does not affect whether composited scrolling is
   // present.
-  scroller->setAttribute(html_names::kStyleAttr, "pointer-events: none");
+  scroller->setAttribute(html_names::kStyleAttr,
+                         AtomicString("pointer-events: none"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 
   // visibility: hidden causes the scroller to be invisible for hit testing,
   // so ScrollsOverflow becomes false on the PaintLayerScrollableArea, and hence
   // composited scrolling is not present.
-  scroller->setAttribute(html_names::kStyleAttr, "visibility: hidden");
+  scroller->setAttribute(html_names::kStyleAttr,
+                         AtomicString("visibility: hidden"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 
-  scroller->setAttribute(html_names::kStyleAttr, "");
+  scroller->setAttribute(html_names::kStyleAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 }
@@ -322,7 +326,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, InputElementPromotionTest) {
   EXPECT_FALSE(HasDirectCompositingReasons(element->GetLayoutObject()));
   EXPECT_FALSE(UsesCompositedScrolling(element->GetLayoutBox()));
 
-  element->setAttribute("class", "composited");
+  element->setAttribute(html_names::kClassAttr, AtomicString("composited"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(HasDirectCompositingReasons(element->GetLayoutObject()));
   EXPECT_FALSE(UsesCompositedScrolling(element->GetLayoutBox()));
@@ -348,7 +352,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, SelectElementPromotionTest) {
   EXPECT_FALSE(HasDirectCompositingReasons(element->GetLayoutObject()));
   EXPECT_FALSE(UsesCompositedScrolling(element->GetLayoutBox()));
 
-  element->setAttribute("class", "composited");
+  element->setAttribute(html_names::kClassAttr, AtomicString("composited"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(HasDirectCompositingReasons(element->GetLayoutBox()));
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -409,14 +413,16 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
       scroll_paint_layer->GetScrollableArea()->GetScrollbarOverlayColorTheme());
 
   GetElementById("scroller")
-      ->setAttribute(html_names::kStyleAttr, "background: rgb(34, 85, 51);");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("background: rgb(34, 85, 51);"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(
       ScrollbarOverlayColorTheme::kScrollbarOverlayColorThemeLight,
       scroll_paint_layer->GetScrollableArea()->GetScrollbarOverlayColorTheme());
 
   GetElementById("scroller")
-      ->setAttribute(html_names::kStyleAttr, "background: rgb(236, 143, 185);");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("background: rgb(236, 143, 185);"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(
       ScrollbarOverlayColorTheme::kScrollbarOverlayColorThemeDark,
@@ -1215,11 +1221,12 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, StickyPositionUseCounter) {
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kPositionSticky));
 
   auto* test = GetElementById("test");
-  test->setAttribute(html_names::kStyleAttr, "position: sticky;");
+  test->setAttribute(html_names::kStyleAttr, AtomicString("position: sticky;"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kPositionSticky));
 
-  test->setAttribute(html_names::kStyleAttr, "top: 0; position: sticky;");
+  test->setAttribute(html_names::kStyleAttr,
+                     AtomicString("top: 0; position: sticky;"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kPositionSticky));
 }

@@ -43,10 +43,11 @@ void RunTests(ContainerNode& scope, const QueryTest (&test_cases)[length]) {
                                          : "querySelector('")
                  << selector << "')");
     if (test_case.query_all) {
-      StaticElementList* match_all = scope.QuerySelectorAll(selector);
+      StaticElementList* match_all =
+          scope.QuerySelectorAll(AtomicString(selector));
       EXPECT_EQ(test_case.matches, match_all->length());
     } else {
-      Element* match = scope.QuerySelector(selector);
+      Element* match = scope.QuerySelector(AtomicString(selector));
       EXPECT_EQ(test_case.matches, match ? 1u : 0u);
     }
 #if DCHECK_IS_ON() || defined(RELEASE_QUERY_STATS)
@@ -454,67 +455,90 @@ TEST(SelectorQueryTest, QueryHasPseudoClass) {
   )HTML");
   Element* scope = document->getElementById(AtomicString("main"));
   {
-    StaticElementList* result = scope->QuerySelectorAll(":has(> .a ~ .b)");
+    StaticElementList* result =
+        scope->QuerySelectorAll(AtomicString(":has(> .a ~ .b)"));
     ASSERT_EQ(4U, result->length());
     EXPECT_EQ(result->item(0)->GetIdAttribute(), "div4");
-    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject1"));
+    EXPECT_TRUE(
+        result->item(0)->ClassNames().Contains(AtomicString("subject1")));
     EXPECT_EQ(result->item(1)->GetIdAttribute(), "div7");
-    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject1"));
+    EXPECT_TRUE(
+        result->item(1)->ClassNames().Contains(AtomicString("subject1")));
     EXPECT_EQ(result->item(2)->GetIdAttribute(), "div16");
-    EXPECT_TRUE(result->item(2)->ClassNames().Contains("subject1"));
+    EXPECT_TRUE(
+        result->item(2)->ClassNames().Contains(AtomicString("subject1")));
     EXPECT_EQ(result->item(3)->GetIdAttribute(), "div19");
-    EXPECT_TRUE(result->item(3)->ClassNames().Contains("subject1"));
+    EXPECT_TRUE(
+        result->item(3)->ClassNames().Contains(AtomicString("subject1")));
   }
 
   {
-    StaticElementList* result = scope->QuerySelectorAll(":has(+ .a > .b .c)");
+    StaticElementList* result =
+        scope->QuerySelectorAll(AtomicString(":has(+ .a > .b .c)"));
     ASSERT_EQ(2U, result->length());
     EXPECT_EQ(result->item(0)->GetIdAttribute(), "div5");
-    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject2"));
+    EXPECT_TRUE(
+        result->item(0)->ClassNames().Contains(AtomicString("subject2")));
     EXPECT_EQ(result->item(1)->GetIdAttribute(), "div17");
-    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject2"));
+    EXPECT_TRUE(
+        result->item(1)->ClassNames().Contains(AtomicString("subject2")));
   }
 
   {
-    StaticElementList* result = scope->QuerySelectorAll(":has(> .a .b)");
+    StaticElementList* result =
+        scope->QuerySelectorAll(AtomicString(":has(> .a .b)"));
     ASSERT_EQ(3U, result->length());
     EXPECT_EQ(result->item(0)->GetIdAttribute(), "div1");
-    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject3"));
+    EXPECT_TRUE(
+        result->item(0)->ClassNames().Contains(AtomicString("subject3")));
     EXPECT_EQ(result->item(1)->GetIdAttribute(), "div4");
-    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject3"));
+    EXPECT_TRUE(
+        result->item(1)->ClassNames().Contains(AtomicString("subject3")));
     EXPECT_EQ(result->item(2)->GetIdAttribute(), "div16");
-    EXPECT_TRUE(result->item(2)->ClassNames().Contains("subject3"));
+    EXPECT_TRUE(
+        result->item(2)->ClassNames().Contains(AtomicString("subject3")));
   }
 
   {
-    StaticElementList* result = scope->QuerySelectorAll(":has(> .a + .b .c)");
+    StaticElementList* result =
+        scope->QuerySelectorAll(AtomicString(":has(> .a + .b .c)"));
     ASSERT_EQ(3U, result->length());
     EXPECT_EQ(result->item(0)->GetIdAttribute(), "div4");
-    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject4"));
+    EXPECT_TRUE(
+        result->item(0)->ClassNames().Contains(AtomicString("subject4")));
     EXPECT_EQ(result->item(1)->GetIdAttribute(), "div7");
-    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject4"));
+    EXPECT_TRUE(
+        result->item(1)->ClassNames().Contains(AtomicString("subject4")));
     EXPECT_EQ(result->item(2)->GetIdAttribute(), "div19");
-    EXPECT_TRUE(result->item(2)->ClassNames().Contains("subject4"));
+    EXPECT_TRUE(
+        result->item(2)->ClassNames().Contains(AtomicString("subject4")));
   }
 
   {
-    StaticElementList* result = scope->QuerySelectorAll(":has(~ .a ~ .b .d)");
+    StaticElementList* result =
+        scope->QuerySelectorAll(AtomicString(":has(~ .a ~ .b .d)"));
     ASSERT_EQ(3U, result->length());
     EXPECT_EQ(result->item(0)->GetIdAttribute(), "div5");
-    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject5"));
+    EXPECT_TRUE(
+        result->item(0)->ClassNames().Contains(AtomicString("subject5")));
     EXPECT_EQ(result->item(1)->GetIdAttribute(), "div17");
-    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject5"));
+    EXPECT_TRUE(
+        result->item(1)->ClassNames().Contains(AtomicString("subject5")));
     EXPECT_EQ(result->item(2)->GetIdAttribute(), "div20");
-    EXPECT_TRUE(result->item(2)->ClassNames().Contains("subject5"));
+    EXPECT_TRUE(
+        result->item(2)->ClassNames().Contains(AtomicString("subject5")));
   }
 
   {
-    StaticElementList* result = scope->QuerySelectorAll(":has(+ .a + .b .d)");
+    StaticElementList* result =
+        scope->QuerySelectorAll(AtomicString(":has(+ .a + .b .d)"));
     ASSERT_EQ(2U, result->length());
     EXPECT_EQ(result->item(0)->GetIdAttribute(), "div5");
-    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject6"));
+    EXPECT_TRUE(
+        result->item(0)->ClassNames().Contains(AtomicString("subject6")));
     EXPECT_EQ(result->item(1)->GetIdAttribute(), "div20");
-    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject6"));
+    EXPECT_TRUE(
+        result->item(1)->ClassNames().Contains(AtomicString("subject6")));
   }
 }
 

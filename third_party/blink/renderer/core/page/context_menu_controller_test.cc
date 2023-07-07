@@ -288,7 +288,7 @@ TEST_F(ContextMenuControllerTest, CopyFromPlugin) {
 TEST_F(ContextMenuControllerTest, VideoNotLoaded) {
   ContextMenuAllowedScope context_menu_allowed_scope;
   HitTestResult hit_test_result;
-  const char video_url[] = "https://example.com/foo.webm";
+  AtomicString video_url("https://example.com/foo.webm");
 
   // Make sure Picture-in-Picture is enabled.
   GetDocument()->GetSettings()->SetPictureInPictureEnabled(true);
@@ -316,7 +316,7 @@ TEST_F(ContextMenuControllerTest, VideoNotLoaded) {
   ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kVideo,
             context_menu_data.media_type);
-  EXPECT_EQ(video_url, context_menu_data.src_url.spec());
+  EXPECT_EQ(video_url, context_menu_data.src_url.spec().c_str());
 
   const Vector<std::pair<ContextMenuData::MediaFlags, bool>>
       expected_media_flags = {
@@ -345,7 +345,7 @@ TEST_F(ContextMenuControllerTest, VideoNotLoaded) {
 TEST_F(ContextMenuControllerTest, VideoWithAudioOnly) {
   ContextMenuAllowedScope context_menu_allowed_scope;
   HitTestResult hit_test_result;
-  const char video_url[] = "https://example.com/foo.webm";
+  AtomicString video_url("https://example.com/foo.webm");
 
   // Make sure Picture-in-Picture is enabled.
   GetDocument()->GetSettings()->SetPictureInPictureEnabled(true);
@@ -377,7 +377,7 @@ TEST_F(ContextMenuControllerTest, VideoWithAudioOnly) {
   ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kAudio,
             context_menu_data.media_type);
-  EXPECT_EQ(video_url, context_menu_data.src_url.spec());
+  EXPECT_EQ(video_url, context_menu_data.src_url.spec().c_str());
 
   const Vector<std::pair<ContextMenuData::MediaFlags, bool>>
       expected_media_flags = {
@@ -409,7 +409,7 @@ TEST_F(ContextMenuControllerTest, PictureInPictureEnabledVideoLoaded) {
 
   ContextMenuAllowedScope context_menu_allowed_scope;
   HitTestResult hit_test_result;
-  const char video_url[] = "https://example.com/foo.webm";
+  AtomicString video_url("https://example.com/foo.webm");
 
   // Setup video element.
   Persistent<HTMLVideoElement> video =
@@ -434,7 +434,7 @@ TEST_F(ContextMenuControllerTest, PictureInPictureEnabledVideoLoaded) {
   ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kVideo,
             context_menu_data.media_type);
-  EXPECT_EQ(video_url, context_menu_data.src_url.spec());
+  EXPECT_EQ(video_url, context_menu_data.src_url.spec().c_str());
 
   const Vector<std::pair<ContextMenuData::MediaFlags, bool>>
       expected_media_flags = {
@@ -466,7 +466,7 @@ TEST_F(ContextMenuControllerTest, PictureInPictureDisabledVideoLoaded) {
 
   ContextMenuAllowedScope context_menu_allowed_scope;
   HitTestResult hit_test_result;
-  const char video_url[] = "https://example.com/foo.webm";
+  AtomicString video_url("https://example.com/foo.webm");
 
   // Setup video element.
   Persistent<HTMLVideoElement> video =
@@ -491,7 +491,7 @@ TEST_F(ContextMenuControllerTest, PictureInPictureDisabledVideoLoaded) {
   ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kVideo,
             context_menu_data.media_type);
-  EXPECT_EQ(video_url, context_menu_data.src_url.spec());
+  EXPECT_EQ(video_url, context_menu_data.src_url.spec().c_str());
 
   const Vector<std::pair<ContextMenuData::MediaFlags, bool>>
       expected_media_flags = {
@@ -581,7 +581,7 @@ TEST_F(ContextMenuControllerTest, InfiniteDurationVideoLoaded) {
 
   ContextMenuAllowedScope context_menu_allowed_scope;
   HitTestResult hit_test_result;
-  const char video_url[] = "https://example.com/foo.webm";
+  AtomicString video_url("https://example.com/foo.webm");
 
   // Setup video element.
   Persistent<HTMLVideoElement> video =
@@ -612,7 +612,7 @@ TEST_F(ContextMenuControllerTest, InfiniteDurationVideoLoaded) {
   ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
   EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kVideo,
             context_menu_data.media_type);
-  EXPECT_EQ(video_url, context_menu_data.src_url.spec());
+  EXPECT_EQ(video_url, context_menu_data.src_url.spec().c_str());
 
   const Vector<std::pair<ContextMenuData::MediaFlags, bool>>
       expected_media_flags = {
@@ -644,7 +644,7 @@ TEST_F(ContextMenuControllerTest, HitTestVideoChildElements) {
 
   ContextMenuAllowedScope context_menu_allowed_scope;
   HitTestResult hit_test_result;
-  const char video_url[] = "https://example.com/foo.webm";
+  AtomicString video_url("https://example.com/foo.webm");
 
   // Setup video element.
   Persistent<HTMLVideoElement> video =
@@ -652,7 +652,8 @@ TEST_F(ContextMenuControllerTest, HitTestVideoChildElements) {
   video->SetSrc(video_url);
   video->setAttribute(
       html_names::kStyleAttr,
-      "position: absolute; left: 0; top: 0; width: 200px; height: 200px");
+      AtomicString(
+          "position: absolute; left: 0; top: 0; width: 200px; height: 200px"));
   GetDocument()->body()->AppendChild(video);
   test::RunPendingTasks();
   SetReadyState(video.Get(), HTMLMediaElement::kHaveMetadata);
@@ -665,7 +666,7 @@ TEST_F(ContextMenuControllerTest, HitTestVideoChildElements) {
         GetWebFrameClient().GetContextMenuData();
     EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kVideo,
               context_menu_data.media_type);
-    EXPECT_EQ(video_url, context_menu_data.src_url.spec());
+    EXPECT_EQ(video_url, context_menu_data.src_url.spec().c_str());
   };
 
   // Center of video.
@@ -1825,21 +1826,21 @@ TEST_F(ContextMenuControllerTest, CheckRendererIdFromContextMenuOnTextField) {
   // input_field_type
   std::vector<std::tuple<AtomicString, bool, bool,
                          mojom::ContextMenuDataInputFieldType>>
-      expectations = {
-          // Input Text Field
-          {"name", true, true,
-           mojom::ContextMenuDataInputFieldType::kPlainText},
-          // Text Area Field
-          {"address", true, true,
-           mojom::ContextMenuDataInputFieldType::kPlainText},
-          // Non form element
-          {"one", false, false, mojom::ContextMenuDataInputFieldType::kNone},
-          // Formless Input field
-          {"two", false, true,
-           mojom::ContextMenuDataInputFieldType::kPlainText},
-          // Formless text area field
-          {"three", false, true,
-           mojom::ContextMenuDataInputFieldType::kPlainText}};
+      expectations = {// Input Text Field
+                      {AtomicString("name"), true, true,
+                       mojom::ContextMenuDataInputFieldType::kPlainText},
+                      // Text Area Field
+                      {AtomicString("address"), true, true,
+                       mojom::ContextMenuDataInputFieldType::kPlainText},
+                      // Non form element
+                      {AtomicString("one"), false, false,
+                       mojom::ContextMenuDataInputFieldType::kNone},
+                      // Formless Input field
+                      {AtomicString("two"), false, true,
+                       mojom::ContextMenuDataInputFieldType::kPlainText},
+                      // Formless text area field
+                      {AtomicString("three"), false, true,
+                       mojom::ContextMenuDataInputFieldType::kPlainText}};
 
   for (const auto& expectation : expectations) {
     auto [field_id, is_form_renderer_id_present, is_field_renderer_id_present,
@@ -1938,11 +1939,11 @@ TEST_F(ContextMenuControllerTest, AttributionSrc) {
     anchor->setInnerText("abc");
 
     if (test_case.href)
-      anchor->SetHref(test_case.href);
+      anchor->SetHref(AtomicString(test_case.href));
 
     if (test_case.attributionsrc) {
       anchor->setAttribute(html_names::kAttributionsrcAttr,
-                           test_case.attributionsrc);
+                           AtomicString(test_case.attributionsrc));
     }
 
     GetDocument()->body()->AppendChild(anchor);

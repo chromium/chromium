@@ -277,7 +277,7 @@ TEST_F(LayoutObjectTest, UseCountContainWithoutContentVisibility) {
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kCSSContainStrictWithoutContentVisibility));
 
-  target->classList().Add("all");
+  target->classList().Add(AtomicString("all"));
   UpdateAllLifecyclePhasesForTest();
 
   // With content-visibility, we don't count the features.
@@ -286,9 +286,9 @@ TEST_F(LayoutObjectTest, UseCountContainWithoutContentVisibility) {
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kCSSContainStrictWithoutContentVisibility));
 
-  target->classList().Remove("cv");
-  target->classList().Remove("all");
-  target->classList().Add("strict");
+  target->classList().Remove(AtomicString("cv"));
+  target->classList().Remove(AtomicString("all"));
+  target->classList().Add(AtomicString("strict"));
   UpdateAllLifecyclePhasesForTest();
 
   // Strict should register, and all is counted.
@@ -297,8 +297,8 @@ TEST_F(LayoutObjectTest, UseCountContainWithoutContentVisibility) {
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kCSSContainStrictWithoutContentVisibility));
 
-  target->classList().Remove("strict");
-  target->classList().Add("all");
+  target->classList().Remove(AtomicString("strict"));
+  target->classList().Add(AtomicString("all"));
   UpdateAllLifecyclePhasesForTest();
 
   // Everything should be counted now.
@@ -1111,7 +1111,7 @@ TEST_F(LayoutObjectTest, UpdateVisualRectAfterAncestorLayout) {
   )HTML");
 
   auto* target = GetDocument().getElementById(AtomicString("target"));
-  target->setAttribute(html_names::kStyleAttr, "height: 300px");
+  target->setAttribute(html_names::kStyleAttr, AtomicString("height: 300px"));
   UpdateAllLifecyclePhasesForTest();
   const auto* container = GetLayoutBoxByElementId("ancestor");
   EXPECT_EQ(LayoutRect(0, 0, 100, 300), container->VisualOverflowRect());
@@ -1153,29 +1153,35 @@ TEST_F(LayoutObjectSimTest, TouchActionUpdatesSubframeEventHandler) {
       iframe_doc->GetFrame()->GetEventHandlerRegistry();
 
   // We should add event handler if touch action is set on subframe.
-  inner->setAttribute("style", "touch-action: none");
+  inner->setAttribute(html_names::kStyleAttr,
+                      AtomicString("touch-action: none"));
   EXPECT_TRUE(DocumentHasTouchActionRegion(registry));
 
   // We should remove event handler if touch action is removed on subframe.
-  inner->setAttribute("style", "touch-action: auto");
+  inner->setAttribute(html_names::kStyleAttr,
+                      AtomicString("touch-action: auto"));
   EXPECT_FALSE(DocumentHasTouchActionRegion(registry));
 
   // We should add event handler if touch action is set on main frame.
-  container->setAttribute("style", "touch-action: none");
+  container->setAttribute(html_names::kStyleAttr,
+                          AtomicString("touch-action: none"));
   EXPECT_TRUE(DocumentHasTouchActionRegion(registry));
 
   // We should keep event handler if touch action is set on subframe document
   // element.
-  iframe_doc_element->setAttribute("style", "touch-action: none");
+  iframe_doc_element->setAttribute(html_names::kStyleAttr,
+                                   AtomicString("touch-action: none"));
   EXPECT_TRUE(DocumentHasTouchActionRegion(registry));
 
   // We should keep the event handler if touch action is removed on subframe
   // document element.
-  iframe_doc_element->setAttribute("style", "touch-action: auto");
+  iframe_doc_element->setAttribute(html_names::kStyleAttr,
+                                   AtomicString("touch-action: auto"));
   EXPECT_TRUE(DocumentHasTouchActionRegion(registry));
 
   // We should remove the handler if touch action is removed on main frame.
-  container->setAttribute("style", "touch-action: auto");
+  container->setAttribute(html_names::kStyleAttr,
+                          AtomicString("touch-action: auto"));
   EXPECT_FALSE(DocumentHasTouchActionRegion(registry));
 }
 
@@ -1260,7 +1266,7 @@ TEST_F(LayoutObjectSimTest, FirstLineBackgroundImage) {
   EXPECT_FALSE(second_line->ShouldDoFullPaintInvalidation());
   EXPECT_FALSE(second_line->SlowFirstChild()->ShouldDoFullPaintInvalidation());
 
-  target->setAttribute(html_names::kStyleAttr, "display: none");
+  target->setAttribute(html_names::kStyleAttr, AtomicString("display: none"));
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   target_object = target->GetLayoutObject();
   EXPECT_EQ(nullptr, target_object);
@@ -1281,7 +1287,7 @@ TEST_F(LayoutObjectTest, FirstLineBackgroundImageNestedCrash) {
   // The following code should not crash due to incorrectly paired
   // StyleImage::AddClient() and RemoveClient().
   GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
-                                                "display: none");
+                                                AtomicString("display: none"));
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -1297,9 +1303,11 @@ TEST_F(LayoutObjectTest, FirstLineBackgroundImageAddBlockBackgroundImageCrash) {
   // StyleImage::AddClient() and RemoveClient().
   GetDocument()
       .getElementById(AtomicString("target"))
-      ->setAttribute(html_names::kStyleAttr,
-                     "background-image: url(data:image/gif;base64,"
-                     "R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==)");
+      ->setAttribute(
+          html_names::kStyleAttr,
+          AtomicString(
+              "background-image: url(data:image/gif;base64,"
+              "R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==)"));
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -1316,12 +1324,12 @@ TEST_F(LayoutObjectTest, FirstLineBackgroundImageChangeStyleCrash) {
   // These should not crash.
   GetDocument()
       .getElementById(AtomicString("target"))
-      ->setAttribute(html_names::kStyleAttr, "color: blue");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("color: blue"));
   UpdateAllLifecyclePhasesForTest();
 
   GetDocument()
       .getElementById(AtomicString("target"))
-      ->setAttribute(html_names::kStyleAttr, "display: none");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("display: none"));
   UpdateAllLifecyclePhasesForTest();
 
   auto* style_element = GetDocument().getElementById(AtomicString("style"));
@@ -1612,12 +1620,14 @@ TEST_F(LayoutObjectTest, RemovePendingTransformUpdatesCorrectly) {
       )HTML");
 
   auto* div2 = GetDocument().getElementById(AtomicString("div2"));
-  div2->setAttribute(html_names::kStyleAttr, "transform: translateX(200px)");
+  div2->setAttribute(html_names::kStyleAttr,
+                     AtomicString("transform: translateX(200px)"));
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
 
   auto* div1 = GetDocument().getElementById(AtomicString("div1"));
-  div1->setAttribute(html_names::kStyleAttr, "transform: translateX(200px)");
+  div1->setAttribute(html_names::kStyleAttr,
+                     AtomicString("transform: translateX(200px)"));
   div2->SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
   UpdateAllLifecyclePhasesForTest();
 }
@@ -1639,13 +1649,14 @@ TEST_F(LayoutObjectTestWithCompositing,
 
   auto* target = GetDocument().getElementById(AtomicString("target"));
 
-  target->setAttribute(html_names::kStyleAttr, kTransformsWith3D[0]);
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString(kTransformsWith3D[0]));
   UpdateAllLifecyclePhasesForTest();
   target->scrollIntoView();
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kDifferentPerspectiveCBOrParent));
 
-  target->setAttribute(html_names::kStyleAttr, kPreserve3D);
+  target->setAttribute(html_names::kStyleAttr, AtomicString(kPreserve3D));
   UpdateAllLifecyclePhasesForTest();
   target->scrollIntoView();
   EXPECT_FALSE(
@@ -1667,13 +1678,15 @@ TEST_F(LayoutObjectTestWithCompositing,
 
   target = GetDocument().getElementById(AtomicString("target"));
 
-  target->setAttribute(html_names::kStyleAttr, kTransformWithout3D);
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString(kTransformWithout3D));
   UpdateAllLifecyclePhasesForTest();
   target->scrollIntoView();
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kDifferentPerspectiveCBOrParent));
 
-  target->setAttribute(html_names::kStyleAttr, kTransformsWith3D[0]);
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString(kTransformsWith3D[0]));
   UpdateAllLifecyclePhasesForTest();
   target->scrollIntoView();
   EXPECT_TRUE(
@@ -1684,7 +1697,8 @@ TEST_F(LayoutObjectTestWithCompositing,
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kDifferentPerspectiveCBOrParent));
 
-  target->setAttribute(html_names::kStyleAttr, kTransformsWith3D[1]);
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString(kTransformsWith3D[1]));
   UpdateAllLifecyclePhasesForTest();
   target->scrollIntoView();
   EXPECT_TRUE(
@@ -1692,7 +1706,7 @@ TEST_F(LayoutObjectTestWithCompositing,
   GetDocument().ClearUseCounterForTesting(
       WebFeature::kDifferentPerspectiveCBOrParent);
 
-  target->setAttribute(html_names::kStyleAttr, kPreserve3D);
+  target->setAttribute(html_names::kStyleAttr, AtomicString(kPreserve3D));
   UpdateAllLifecyclePhasesForTest();
   target->scrollIntoView();
   EXPECT_TRUE(

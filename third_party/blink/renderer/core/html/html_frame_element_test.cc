@@ -28,7 +28,8 @@ TEST_F(HTMLFrameElementTest, DefaultContainerPolicy) {
 
   auto* frame_element = MakeGarbageCollected<HTMLFrameElement>(*document);
 
-  frame_element->setAttribute(html_names::kSrcAttr, "http://example.net/");
+  frame_element->setAttribute(html_names::kSrcAttr,
+                              AtomicString("http://example.net/"));
   frame_element->UpdateContainerPolicyForTests();
 
   const ParsedPermissionsPolicy& container_policy =

@@ -221,10 +221,10 @@ static void FontSizeValue(FontBuilder& b) {
 }
 
 static void FontScriptBase(FontDescription& d) {
-  d.SetLocale(LayoutLocale::Get("no"));
+  d.SetLocale(LayoutLocale::Get(AtomicString("no")));
 }
 static void FontScriptValue(FontBuilder& b) {
-  b.SetLocale(LayoutLocale::Get("se"));
+  b.SetLocale(LayoutLocale::Get(AtomicString("se")));
 }
 
 INSTANTIATE_TEST_SUITE_P(

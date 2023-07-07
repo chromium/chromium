@@ -482,51 +482,53 @@ TEST_F(DocumentTest, LinkManifest) {
   // Check that we use the first manifest with <link rel=manifest>
   auto* link = MakeGarbageCollected<HTMLLinkElement>(GetDocument(),
                                                      CreateElementFlags());
-  link->setAttribute(blink::html_names::kRelAttr, "manifest");
-  link->setAttribute(blink::html_names::kHrefAttr, "foo.json");
+  link->setAttribute(blink::html_names::kRelAttr, AtomicString("manifest"));
+  link->setAttribute(blink::html_names::kHrefAttr, AtomicString("foo.json"));
   GetDocument().head()->AppendChild(link);
   EXPECT_EQ(link, GetDocument().LinkManifest());
 
   auto* link2 = MakeGarbageCollected<HTMLLinkElement>(GetDocument(),
                                                       CreateElementFlags());
-  link2->setAttribute(blink::html_names::kRelAttr, "manifest");
-  link2->setAttribute(blink::html_names::kHrefAttr, "bar.json");
+  link2->setAttribute(blink::html_names::kRelAttr, AtomicString("manifest"));
+  link2->setAttribute(blink::html_names::kHrefAttr, AtomicString("bar.json"));
   GetDocument().head()->InsertBefore(link2, link);
   EXPECT_EQ(link2, GetDocument().LinkManifest());
   GetDocument().head()->AppendChild(link2);
   EXPECT_EQ(link, GetDocument().LinkManifest());
 
   // Check that crazy URLs are accepted.
-  link->setAttribute(blink::html_names::kHrefAttr, "http:foo.json");
+  link->setAttribute(blink::html_names::kHrefAttr,
+                     AtomicString("http:foo.json"));
   EXPECT_EQ(link, GetDocument().LinkManifest());
 
   // Check that empty URLs are accepted.
-  link->setAttribute(blink::html_names::kHrefAttr, "");
+  link->setAttribute(blink::html_names::kHrefAttr, g_empty_atom);
   EXPECT_EQ(link, GetDocument().LinkManifest());
 
   // Check that URLs from different origins are accepted.
   link->setAttribute(blink::html_names::kHrefAttr,
-                     "http://example.org/manifest.json");
+                     AtomicString("http://example.org/manifest.json"));
   EXPECT_EQ(link, GetDocument().LinkManifest());
   link->setAttribute(blink::html_names::kHrefAttr,
-                     "http://foo.example.org/manifest.json");
+                     AtomicString("http://foo.example.org/manifest.json"));
   EXPECT_EQ(link, GetDocument().LinkManifest());
   link->setAttribute(blink::html_names::kHrefAttr,
-                     "http://foo.bar/manifest.json");
+                     AtomicString("http://foo.bar/manifest.json"));
   EXPECT_EQ(link, GetDocument().LinkManifest());
 
   // More than one token in @rel is accepted.
-  link->setAttribute(blink::html_names::kRelAttr, "foo bar manifest");
+  link->setAttribute(blink::html_names::kRelAttr,
+                     AtomicString("foo bar manifest"));
   EXPECT_EQ(link, GetDocument().LinkManifest());
 
   // Such as spaces around the token.
-  link->setAttribute(blink::html_names::kRelAttr, " manifest ");
+  link->setAttribute(blink::html_names::kRelAttr, AtomicString(" manifest "));
   EXPECT_EQ(link, GetDocument().LinkManifest());
 
   // Check that rel=manifest actually matters.
-  link->setAttribute(blink::html_names::kRelAttr, "");
+  link->setAttribute(blink::html_names::kRelAttr, g_empty_atom);
   EXPECT_EQ(link2, GetDocument().LinkManifest());
-  link->setAttribute(blink::html_names::kRelAttr, "manifest");
+  link->setAttribute(blink::html_names::kRelAttr, AtomicString("manifest"));
 
   // Check that link outside of the <head> are ignored.
   GetDocument().head()->RemoveChild(link);
@@ -538,15 +540,16 @@ TEST_F(DocumentTest, LinkManifest) {
   GetDocument().head()->AppendChild(link2);
 
   // Check that some attribute values do not have an effect.
-  link->setAttribute(blink::html_names::kCrossoriginAttr, "use-credentials");
+  link->setAttribute(blink::html_names::kCrossoriginAttr,
+                     AtomicString("use-credentials"));
   EXPECT_EQ(link, GetDocument().LinkManifest());
-  link->setAttribute(blink::html_names::kHreflangAttr, "klingon");
+  link->setAttribute(blink::html_names::kHreflangAttr, AtomicString("klingon"));
   EXPECT_EQ(link, GetDocument().LinkManifest());
-  link->setAttribute(blink::html_names::kTypeAttr, "image/gif");
+  link->setAttribute(blink::html_names::kTypeAttr, AtomicString("image/gif"));
   EXPECT_EQ(link, GetDocument().LinkManifest());
-  link->setAttribute(blink::html_names::kSizesAttr, "16x16");
+  link->setAttribute(blink::html_names::kSizesAttr, AtomicString("16x16"));
   EXPECT_EQ(link, GetDocument().LinkManifest());
-  link->setAttribute(blink::html_names::kMediaAttr, "print");
+  link->setAttribute(blink::html_names::kMediaAttr, AtomicString("print"));
   EXPECT_EQ(link, GetDocument().LinkManifest());
 }
 
@@ -563,19 +566,20 @@ TEST_F(DocumentTest, StyleVersion) {
   EXPECT_TRUE(element);
 
   uint64_t previous_style_version = GetDocument().StyleVersion();
-  element->setAttribute(blink::html_names::kClassAttr, "notfound");
+  element->setAttribute(blink::html_names::kClassAttr,
+                        AtomicString("notfound"));
   EXPECT_EQ(previous_style_version, GetDocument().StyleVersion());
 
   UpdateAllLifecyclePhasesForTest();
 
   previous_style_version = GetDocument().StyleVersion();
-  element->setAttribute(blink::html_names::kClassAttr, "a");
+  element->setAttribute(blink::html_names::kClassAttr, AtomicString("a"));
   EXPECT_NE(previous_style_version, GetDocument().StyleVersion());
 
   UpdateAllLifecyclePhasesForTest();
 
   previous_style_version = GetDocument().StyleVersion();
-  element->setAttribute(blink::html_names::kClassAttr, "a b");
+  element->setAttribute(blink::html_names::kClassAttr, AtomicString("a b"));
   EXPECT_NE(previous_style_version, GetDocument().StyleVersion());
 }
 
@@ -851,7 +855,8 @@ TEST_F(DocumentTest,
             GetDocument().Lifecycle().GetState());
 
   // Dirty layout.
-  GetDocument().body()->setAttribute("style", "background: red;");
+  GetDocument().body()->setAttribute(html_names::kStyleAttr,
+                                     AtomicString("background: red;"));
   EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
             GetDocument().Lifecycle().GetState());
 
@@ -875,7 +880,7 @@ TEST_F(DocumentTest, ViewportPropagationNoRecalc) {
   int old_element_count = GetDocument().GetStyleEngine().StyleForElementCount();
 
   Element* div = GetDocument().getElementById(AtomicString("recalc"));
-  div->setAttribute("style", "color:green");
+  div->setAttribute(html_names::kStyleAttr, AtomicString("color:green"));
   GetDocument().UpdateStyleAndLayoutTree();
 
   int new_element_count = GetDocument().GetStyleEngine().StyleForElementCount();
@@ -952,7 +957,7 @@ TEST_F(DocumentTest, ElementFromPointOnScrollbar) {
 
   // Add width which will cause a horizontal scrollbar.
   auto* content = GetDocument().getElementById(AtomicString("content"));
-  content->setAttribute("style", "width: 101%;");
+  content->setAttribute(html_names::kStyleAttr, AtomicString("width: 101%;"));
 
   // A hit test on the horizontal scrollbar should not return an element because
   // it is outside the viewport.
@@ -1704,8 +1709,8 @@ TEST_F(DocumentSimTest, DuplicatedDocumentPolicyViolationsAreIgnored) {
 // Tests getting the unassociated listed elements.
 class UnassociatedListedElementTest : public DocumentTest {
  protected:
-  ListedElement* GetElement(AtomicString id) {
-    Element* element = GetDocument().getElementById(id);
+  ListedElement* GetElement(const char* id) {
+    Element* element = GetElementById(id);
     return ListedElement::From(*element);
   }
 };
@@ -1746,16 +1751,18 @@ TEST_F(UnassociatedListedElementTest, GetUnassociatedListedElements) {
 
   // Add unassociated form-associated custom element.
   Element* unassociated_custom_element =
-      CreateElement("input").WithIsValue("a-b");
-  unassociated_custom_element->SetIdAttribute("unassociated_custom_element");
+      CreateElement(AtomicString("input")).WithIsValue(AtomicString("a-b"));
+  unassociated_custom_element->SetIdAttribute(
+      AtomicString("unassociated_custom_element"));
   GetDocument().body()->AppendChild(unassociated_custom_element);
   ASSERT_TRUE(GetDocument().getElementById(
       AtomicString("unassociated_custom_element")));
 
   // Add associated form-associated custom element.
   Element* associated_custom_element =
-      CreateElement("input").WithIsValue("a-b");
-  associated_custom_element->SetIdAttribute("associated_custom_element");
+      CreateElement(AtomicString("input")).WithIsValue(AtomicString("a-b"));
+  associated_custom_element->SetIdAttribute(
+      AtomicString("associated_custom_element"));
   GetDocument()
       .getElementById(AtomicString("form"))
       ->AppendChild(associated_custom_element);
@@ -1763,14 +1770,14 @@ TEST_F(UnassociatedListedElementTest, GetUnassociatedListedElements) {
       GetDocument().getElementById(AtomicString("associated_custom_element")));
 
   ListedElement::List expected_elements;
-  expected_elements.push_back(GetElement(u"unassociated_button"));
-  expected_elements.push_back(GetElement(u"unassociated_fieldset"));
-  expected_elements.push_back(GetElement(u"unassociated_input"));
-  expected_elements.push_back(GetElement(u"unassociated_textarea"));
-  expected_elements.push_back(GetElement(u"unassociated_output"));
-  expected_elements.push_back(GetElement(u"unassociated_select"));
-  expected_elements.push_back(GetElement(u"unassociated_object"));
-  expected_elements.push_back(GetElement(u"unassociated_custom_element"));
+  expected_elements.push_back(GetElement("unassociated_button"));
+  expected_elements.push_back(GetElement("unassociated_fieldset"));
+  expected_elements.push_back(GetElement("unassociated_input"));
+  expected_elements.push_back(GetElement("unassociated_textarea"));
+  expected_elements.push_back(GetElement("unassociated_output"));
+  expected_elements.push_back(GetElement("unassociated_select"));
+  expected_elements.push_back(GetElement("unassociated_object"));
+  expected_elements.push_back(GetElement("unassociated_custom_element"));
 
   ListedElement::List listed_elements =
       GetDocument().UnassociatedListedElements();
@@ -1811,7 +1818,7 @@ TEST_F(UnassociatedListedElementTest,
 
   auto* input = MakeGarbageCollected<HTMLInputElement>(
       GetDocument(), CreateElementFlags::ByCreateElement());
-  input->SetIdAttribute("unassociated_input");
+  input->SetIdAttribute(AtomicString("unassociated_input"));
   GetDocument().body()->AppendChild(input);
 
   listed_elements = GetDocument().UnassociatedListedElements();
@@ -1852,7 +1859,7 @@ TEST_F(UnassociatedListedElementTest,
 
   GetDocument()
       .getElementById(AtomicString("input_id"))
-      ->setAttribute(html_names::kFormAttr, "form_id");
+      ->setAttribute(html_names::kFormAttr, AtomicString("form_id"));
   listed_elements = GetDocument().UnassociatedListedElements();
   EXPECT_EQ(0u, listed_elements.size());
 }
@@ -1891,7 +1898,7 @@ TEST_F(UnassociatedListedElementTest,
 
   GetDocument()
       .getElementById(AtomicString("input_id"))
-      ->setAttribute(html_names::kFormAttr, "nonexistent_id");
+      ->setAttribute(html_names::kFormAttr, AtomicString("nonexistent_id"));
   listed_elements = GetDocument().UnassociatedListedElements();
   EXPECT_THAT(listed_elements, ElementsAre(GetElement("input_id")));
 }

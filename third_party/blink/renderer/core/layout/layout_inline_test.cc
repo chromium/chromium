@@ -130,7 +130,8 @@ TEST_F(LayoutInlineTest, BlockInInlineRemove) {
   // Insert another block before the "after" text node.
   // This should be in the existing anonymous block, next to the `#block`.
   Document& document = GetDocument();
-  Element* block2_element = document.CreateElementForBinding("div");
+  Element* block2_element =
+      document.CreateElementForBinding(AtomicString("div"));
   after_block->parentNode()->insertBefore(block2_element, after_block);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(block2_element->GetLayoutObject(), block->NextSibling());
@@ -762,24 +763,26 @@ TEST_F(LayoutInlineTest, VisualOverflowRecalcLegacyLayout) {
   auto* span_element = GetDocument().getElementById(AtomicString("span"));
   auto* span2_element = GetDocument().getElementById(AtomicString("span2"));
 
-  span_element->setAttribute(html_names::kStyleAttr, "outline: 50px solid red");
+  span_element->setAttribute(html_names::kStyleAttr,
+                             AtomicString("outline: 50px solid red"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(PhysicalRect(-50, -50, 200, 120),
             span->PhysicalVisualOverflowRect());
 
-  span_element->setAttribute(html_names::kStyleAttr, "");
+  span_element->setAttribute(html_names::kStyleAttr, g_empty_atom);
   span2_element->setAttribute(html_names::kStyleAttr,
-                              "outline: 50px solid red");
+                              AtomicString("outline: 50px solid red"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(PhysicalRect(0, 0, 100, 20), span->PhysicalVisualOverflowRect());
 
-  span2_element->setAttribute(html_names::kStyleAttr, "");
-  span_element->setAttribute(html_names::kStyleAttr, "outline: 50px solid red");
+  span2_element->setAttribute(html_names::kStyleAttr, g_empty_atom);
+  span_element->setAttribute(html_names::kStyleAttr,
+                             AtomicString("outline: 50px solid red"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(PhysicalRect(-50, -50, 200, 120),
             span->PhysicalVisualOverflowRect());
 
-  span_element->setAttribute(html_names::kStyleAttr, "");
+  span_element->setAttribute(html_names::kStyleAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(PhysicalRect(0, 0, 100, 20), span->PhysicalVisualOverflowRect());
 }
@@ -806,24 +809,26 @@ TEST_F(LayoutInlineTest, VisualOverflowRecalcLayoutNG) {
   auto* span_element = GetDocument().getElementById(AtomicString("span"));
   auto* span2_element = GetDocument().getElementById(AtomicString("span2"));
 
-  span_element->setAttribute(html_names::kStyleAttr, "outline: 50px solid red");
+  span_element->setAttribute(html_names::kStyleAttr,
+                             AtomicString("outline: 50px solid red"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(PhysicalRect(-50, -50, 200, 120),
             span->PhysicalVisualOverflowRect());
 
-  span_element->setAttribute(html_names::kStyleAttr, "");
+  span_element->setAttribute(html_names::kStyleAttr, g_empty_atom);
   span2_element->setAttribute(html_names::kStyleAttr,
-                              "outline: 50px solid red");
+                              AtomicString("outline: 50px solid red"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(PhysicalRect(0, 0, 100, 20), span->PhysicalVisualOverflowRect());
 
-  span2_element->setAttribute(html_names::kStyleAttr, "");
-  span_element->setAttribute(html_names::kStyleAttr, "outline: 50px solid red");
+  span2_element->setAttribute(html_names::kStyleAttr, g_empty_atom);
+  span_element->setAttribute(html_names::kStyleAttr,
+                             AtomicString("outline: 50px solid red"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(PhysicalRect(-50, -50, 200, 120),
             span->PhysicalVisualOverflowRect());
 
-  span_element->setAttribute(html_names::kStyleAttr, "");
+  span_element->setAttribute(html_names::kStyleAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(PhysicalRect(0, 0, 100, 20), span->PhysicalVisualOverflowRect());
 }
@@ -846,7 +851,8 @@ TEST_F(LayoutInlineTest, VisualOverflowRecalcLegacyLayoutPositionRelative) {
   auto* span = To<LayoutInline>(GetLayoutObjectByElementId("span"));
   auto* span_element = GetDocument().getElementById(AtomicString("span"));
 
-  span_element->setAttribute(html_names::kStyleAttr, "outline: 50px solid red");
+  span_element->setAttribute(html_names::kStyleAttr,
+                             AtomicString("outline: 50px solid red"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(PhysicalRect(-50, -50, 180, 120),
             span->PhysicalVisualOverflowRect());

@@ -662,17 +662,16 @@ TEST_P(MatchFlagsShadowTest, Host) {
 
 class EasySelectorCheckerTest : public PageTestBase {
  protected:
-  bool Matches(const String& selector_text, const AtomicString& id);
+  bool Matches(const String& selector_text, const char* id);
   static bool IsEasy(const String& selector_text);
 };
 
 bool EasySelectorCheckerTest::Matches(const String& selector_text,
-                                      const AtomicString& id) {
+                                      const char* id) {
   StyleRule* rule = To<StyleRule>(
       css_test_helpers::ParseRule(GetDocument(), selector_text + " {}"));
   CHECK(EasySelectorChecker::IsEasy(rule->FirstSelector()));
-  return EasySelectorChecker::Match(rule->FirstSelector(),
-                                    GetDocument().getElementById(id));
+  return EasySelectorChecker::Match(rule->FirstSelector(), GetElementById(id));
 }
 
 #if DCHECK_IS_ON()  // Requires all_rules_, to find back the rules we add.
@@ -810,7 +809,7 @@ TEST_F(SelectorCheckerTest, PseudoTrueMatchesHost) {
   selector.SetTrue();
   selector.SetLastInComplexSelector(true);
 
-  Element* host = GetDocument().getElementById("host");
+  Element* host = GetElementById("host");
   ASSERT_TRUE(host);
   ShadowRoot* shadow = host->GetShadowRoot();
   ASSERT_TRUE(shadow);

@@ -80,7 +80,7 @@ const ScrollPaintPropertyNode* PaintPropertyTreeBuilderTest::DocScroll(
 const ObjectPaintProperties*
 PaintPropertyTreeBuilderTest::PaintPropertiesForElement(const char* name) {
   return GetDocument()
-      .getElementById(name)
+      .getElementById(AtomicString(name))
       ->GetLayoutObject()
       ->FirstFragment()
       .PaintProperties();
@@ -592,7 +592,8 @@ TEST_P(PaintPropertyTreeBuilderTest, Perspective) {
                           inner->GetLayoutObject(),
                           GetDocument().View()->GetLayoutView());
 
-  perspective->setAttribute(html_names::kStyleAttr, "perspective: 200px");
+  perspective->setAttribute(html_names::kStyleAttr,
+                            AtomicString("perspective: 200px"));
   UpdateAllLifecyclePhasesForTest();
   gfx::Transform matrix1;
   matrix1.ApplyPerspectiveDepth(200);
@@ -603,7 +604,7 @@ TEST_P(PaintPropertyTreeBuilderTest, Perspective) {
             perspective_properties->Perspective()->Parent());
 
   perspective->setAttribute(html_names::kStyleAttr,
-                            "perspective-origin: 5% 20%");
+                            AtomicString("perspective-origin: 5% 20%"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(matrix, perspective_properties->Perspective()->Matrix());
   EXPECT_EQ(gfx::Point3F(70, 160, 0),
@@ -641,17 +642,18 @@ TEST_P(PaintPropertyTreeBuilderTest, Transform) {
                           transform->GetLayoutObject(),
                           GetDocument().View()->GetLayoutView());
 
-  transform->setAttribute(
-      html_names::kStyleAttr,
-      "margin-left: 50px; margin-top: 100px; width: 400px; height: 300px;");
+  transform->setAttribute(html_names::kStyleAttr,
+                          AtomicString("margin-left: 50px; margin-top: 100px; "
+                                       "width: 400px; height: 300px;"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(nullptr,
             transform->GetLayoutObject()->FirstFragment().PaintProperties());
 
   transform->setAttribute(
       html_names::kStyleAttr,
-      "margin-left: 50px; margin-top: 100px; width: 400px; height: 300px; "
-      "transform: translate3d(123px, 456px, 789px)");
+      AtomicString(
+          "margin-left: 50px; margin-top: 100px; width: 400px; height: 300px; "
+          "transform: translate3d(123px, 456px, 789px)"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(MakeTranslationMatrix(123, 456, 789), transform->GetLayoutObject()
                                                       ->FirstFragment()
@@ -779,17 +781,18 @@ TEST_P(PaintPropertyTreeBuilderTest, WillChangeTransform) {
                           transform->GetLayoutObject(),
                           GetDocument().View()->GetLayoutView());
 
-  transform->setAttribute(
-      html_names::kStyleAttr,
-      "margin-left: 50px; margin-top: 100px; width: 400px; height: 300px;");
+  transform->setAttribute(html_names::kStyleAttr,
+                          AtomicString("margin-left: 50px; margin-top: 100px; "
+                                       "width: 400px; height: 300px;"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(nullptr,
             transform->GetLayoutObject()->FirstFragment().PaintProperties());
 
   transform->setAttribute(
       html_names::kStyleAttr,
-      "margin-left: 50px; margin-top: 100px; width: 400px; height: 300px; "
-      "will-change: transform");
+      AtomicString(
+          "margin-left: 50px; margin-top: 100px; width: 400px; height: 300px; "
+          "will-change: transform"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(transform->GetLayoutObject()
                   ->FirstFragment()
@@ -1947,7 +1950,7 @@ TEST_P(PaintPropertyTreeBuilderTest, FramesEstablishIsolation) {
   // However, isolation stops this recursion.
   GetDocument()
       .getElementById(AtomicString("parent"))
-      ->setAttribute(html_names::kClassAttr, "transformed");
+      ->setAttribute(html_names::kClassAttr, AtomicString("transformed"));
   frame_view->UpdateAllLifecyclePhasesForTest();
 
   // Verify that our clobbered state is still clobbered.
@@ -3422,7 +3425,8 @@ TEST_P(PaintPropertyTreeBuilderTest, CachedProperties) {
   // Change transform of b. B's transform node should be a new node with the new
   // value, and a and c's transform nodes should be unchanged (with c's parent
   // adjusted).
-  b->setAttribute(html_names::kStyleAttr, "transform: translate(111px, 222px)");
+  b->setAttribute(html_names::kStyleAttr,
+                  AtomicString("transform: translate(111px, 222px)"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(a_properties,
@@ -3450,7 +3454,7 @@ TEST_P(PaintPropertyTreeBuilderTest, CachedProperties) {
   // Remove transform from b. B's transform node should be removed from the
   // tree, and a and c's transform nodes should be unchanged (with c's parent
   // adjusted).
-  b->setAttribute(html_names::kStyleAttr, "");
+  b->setAttribute(html_names::kStyleAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(a_properties,
@@ -3474,7 +3478,8 @@ TEST_P(PaintPropertyTreeBuilderTest, CachedProperties) {
   // Re-add transform to b. B's transform node should be inserted into the tree,
   // and a and c's transform nodes should be unchanged (with c's parent
   // adjusted).
-  b->setAttribute(html_names::kStyleAttr, "transform: translate(4px, 5px)");
+  b->setAttribute(html_names::kStyleAttr,
+                  AtomicString("transform: translate(4px, 5px)"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(a_properties,
@@ -4692,7 +4697,8 @@ TEST_P(PaintPropertyTreeBuilderTest, BecomingUnfragmented) {
   Element* target_element =
       GetDocument().getElementById(AtomicString("target"));
 
-  target_element->setAttribute(html_names::kStyleAttr, "position: absolute");
+  target_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString("position: absolute"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(0u, target->FirstFragment().FragmentID());
   EXPECT_EQ(PhysicalOffset(LayoutUnit(8), LayoutUnit(28)),
@@ -4907,7 +4913,7 @@ TEST_P(PaintPropertyTreeBuilderTest, ChangePositionUpdateDescendantProperties) {
             &descendant->FirstFragment().LocalBorderBoxProperties().Clip());
 
   To<Element>(ancestor->GetNode())
-      ->setAttribute(html_names::kStyleAttr, "position: static");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("position: static"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_NE(ancestor->FirstFragment().PaintProperties()->OverflowClip(),
             &descendant->FirstFragment().LocalBorderBoxProperties().Clip());
@@ -5334,7 +5340,8 @@ TEST_P(PaintPropertyTreeBuilderTest, ScrollBoundsOffset) {
   // And the scroll node should not.
   EXPECT_EQ(gfx::Rect(0, 0, 100, 100), scroll_node->ContainerRect());
 
-  scroller->setAttribute(html_names::kStyleAttr, "border: 20px solid black;");
+  scroller->setAttribute(html_names::kStyleAttr,
+                         AtomicString("border: 20px solid black;"));
   UpdateAllLifecyclePhasesForTest();
   // The paint offset node should be offset by the margin.
   EXPECT_EQ(gfx::Vector2dF(7, 11),
@@ -5343,8 +5350,8 @@ TEST_P(PaintPropertyTreeBuilderTest, ScrollBoundsOffset) {
   EXPECT_EQ(gfx::Rect(20, 20, 100, 100), scroll_node->ContainerRect());
 
   scroller->setAttribute(html_names::kStyleAttr,
-                         "border: 20px solid black;"
-                         "transform: translate(20px, 30px);");
+                         AtomicString("border: 20px solid black;"
+                                      "transform: translate(20px, 30px);"));
   UpdateAllLifecyclePhasesForTest();
   // The scroll node's offset should not include margin if it has already been
   // included in a paint offset node.
@@ -5376,7 +5383,8 @@ TEST_P(PaintPropertyTreeBuilderTest, BackfaceHidden) {
   EXPECT_EQ(TransformPaintPropertyNode::BackfaceVisibility::kHidden,
             transform->GetBackfaceVisibilityForTesting());
 
-  To<Element>(target->GetNode())->setAttribute(html_names::kStyleAttr, "");
+  To<Element>(target->GetNode())
+      ->setAttribute(html_names::kStyleAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(PhysicalOffset(60, 50), target->FirstFragment().PaintOffset());
   EXPECT_EQ(nullptr, target->FirstFragment().PaintProperties());
@@ -5641,7 +5649,7 @@ TEST_P(PaintPropertyTreeBuilderTest, RootHasCompositedScrolling) {
   // Remove scrolling from the root.
   Element* force_scroll_element =
       GetDocument().getElementById(AtomicString("forceScroll"));
-  force_scroll_element->setAttribute(html_names::kStyleAttr, "");
+  force_scroll_element->setAttribute(html_names::kStyleAttr, g_empty_atom);
   UpdateAllLifecyclePhasesExceptPaint();
   // Always create scroll translation for layout view even the document does
   // not scroll (not enough content).
@@ -5685,7 +5693,8 @@ TEST_P(PaintPropertyTreeBuilderTest, ClipHitTestChangeDoesNotCauseFullRepaint) {
   auto* child_layer = GetPaintLayerByElementId("child");
   EXPECT_FALSE(child_layer->SelfNeedsRepaint());
 
-  GetDocument().body()->setAttribute(html_names::kClassAttr, "noscrollbars");
+  GetDocument().body()->setAttribute(html_names::kClassAttr,
+                                     AtomicString("noscrollbars"));
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_FALSE(child_layer->SelfNeedsRepaint());
 }
@@ -6214,7 +6223,7 @@ TEST_P(PaintPropertyTreeBuilderTest, WillChangeOpacityInducesAnEffectNode) {
   EXPECT_FLOAT_EQ(properties->Effect()->Opacity(), 1.f);
 
   auto* div = GetDocument().getElementById(AtomicString("div"));
-  div->setAttribute(html_names::kClassAttr, "transluscent");
+  div->setAttribute(html_names::kClassAttr, AtomicString("transluscent"));
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_FALSE(
       To<LayoutBox>(div->GetLayoutObject())->Layer()->SelfNeedsRepaint());
@@ -6390,7 +6399,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SimpleOpacityChangeDoesNotCausePacUpdate) {
                    .needs_update());
 
   Element* element = GetDocument().getElementById(AtomicString("element"));
-  element->setAttribute(html_names::kStyleAttr, "opacity: 0.9");
+  element->setAttribute(html_names::kStyleAttr, AtomicString("opacity: 0.9"));
 
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_FLOAT_EQ(properties->Effect()->Opacity(), 0.9f);
@@ -6542,7 +6551,8 @@ TEST_P(PaintPropertyTreeBuilderTest,
       GetDocument().View()->GetPaintArtifactCompositor()->NeedsUpdate());
 
   Element* outer = GetDocument().getElementById(AtomicString("outer"));
-  outer->setAttribute(html_names::kStyleAttr, "transform: translateY(10px)");
+  outer->setAttribute(html_names::kStyleAttr,
+                      AtomicString("transform: translateY(10px)"));
   UpdateAllLifecyclePhasesExceptPaint();
 
   EXPECT_TRUE(
@@ -7000,7 +7010,7 @@ TEST_P(PaintPropertyTreeBuilderTest, TransformChangesInvalidateGeometryMapper) {
 
   // Make a color change and ensure the geometry mapper cache is not
   // invalidated.
-  div->setAttribute(html_names::kStyleAttr, "background: green;");
+  div->setAttribute(html_names::kStyleAttr, AtomicString("background: green;"));
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(transform_cache.IsValid());
 }
@@ -7033,7 +7043,7 @@ TEST_P(PaintPropertyTreeBuilderTest,
   // Remove the direct compositing reason from #container.
   auto* container_element =
       GetDocument().getElementById(AtomicString("container"));
-  container_element->setAttribute(html_names::kStyleAttr, "");
+  container_element->setAttribute(html_names::kStyleAttr, g_empty_atom);
   frame_view->UpdateAllLifecyclePhasesForTest();
 
   auto* composited = GetLayoutObjectByElementId("composited");
@@ -7133,52 +7143,59 @@ TEST_P(PaintPropertyTreeBuilderTest, BackgroundClip) {
   EXPECT_BACKGROUND_CLIP(PaintPropertiesForElement("target"),
                          gfx::RectF(0, 0, 300, 200));
 
-  target->setAttribute(html_names::kStyleAttr, "background-clip: padding-box");
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString("background-clip: padding-box"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_BACKGROUND_CLIP(PaintPropertiesForElement("target"),
                          gfx::RectF(20, 20, 260, 160));
 
-  target->setAttribute(html_names::kStyleAttr,
-                       "background-clip: padding-box; border-top-width: 15px");
+  target->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("background-clip: padding-box; border-top-width: 15px"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_BACKGROUND_CLIP(PaintPropertiesForElement("target"),
                          gfx::RectF(20, 15, 260, 165));
 
-  target->setAttribute(html_names::kStyleAttr, "background-clip: content-box");
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString("background-clip: content-box"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_BACKGROUND_CLIP(PaintPropertiesForElement("target"),
                          gfx::RectF(30, 30, 240, 140));
 
-  target->setAttribute(html_names::kStyleAttr,
-                       "background-clip: content-box; padding-left: 25px");
+  target->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("background-clip: content-box; padding-left: 25px"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_BACKGROUND_CLIP(PaintPropertiesForElement("target"),
                          gfx::RectF(45, 30, 225, 140));
 
-  target->setAttribute(html_names::kStyleAttr, "");
+  target->setAttribute(html_names::kStyleAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_BACKGROUND_CLIP(PaintPropertiesForElement("target"),
                          gfx::RectF(0, 0, 300, 200));
 
-  target->setAttribute(html_names::kStyleAttr, "border-radius: 20px");
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString("border-radius: 20px"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(PaintPropertiesForElement("target"));
 
-  target->setAttribute(html_names::kStyleAttr, "");
+  target->setAttribute(html_names::kStyleAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_BACKGROUND_CLIP(PaintPropertiesForElement("target"),
                          gfx::RectF(0, 0, 300, 200));
 
-  target->setAttribute(html_names::kStyleAttr, "box-shadow: 10px 20px blue");
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString("box-shadow: 10px 20px blue"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(PaintPropertiesForElement("target"));
 
-  target->setAttribute(html_names::kStyleAttr, "");
+  target->setAttribute(html_names::kStyleAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_BACKGROUND_CLIP(PaintPropertiesForElement("target"),
                          gfx::RectF(0, 0, 300, 200));
 
-  target->setAttribute(html_names::kStyleAttr, "background-attachment: local");
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString("background-attachment: local"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(PaintPropertiesForElement("target"));
 }
@@ -7216,7 +7233,8 @@ TEST_P(PaintPropertyTreeBuilderTest, BackgroundClipFragmented) {
 
   GetDocument()
       .getElementById(AtomicString("target"))
-      ->setAttribute(html_names::kStyleAttr, "background-clip: padding-box");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("background-clip: padding-box"));
   UpdateAllLifecyclePhasesForTest();
   ASSERT_EQ(3u, NumFragments(target));
   EXPECT_BACKGROUND_CLIP(FragmentAt(target, 0).PaintProperties(),
@@ -7228,7 +7246,8 @@ TEST_P(PaintPropertyTreeBuilderTest, BackgroundClipFragmented) {
 
   GetDocument()
       .getElementById(AtomicString("target"))
-      ->setAttribute(html_names::kStyleAttr, "background-clip: border-box");
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("background-clip: border-box"));
   UpdateAllLifecyclePhasesForTest();
   ASSERT_EQ(3u, NumFragments(target));
   EXPECT_BACKGROUND_CLIP(FragmentAt(target, 0).PaintProperties(),

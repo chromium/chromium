@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/keywords.h"
 
 namespace blink {
 
@@ -128,7 +129,7 @@ TEST_F(CompositeEditCommandTest, insertNodeBeforeWithDirtyLayoutTree) {
   Node* insert_child = GetDocument().createTextNode("foo");
   Element* ref_child = GetDocument().QuerySelector(AtomicString("b"));
   Element* div = GetDocument().QuerySelector(AtomicString("div"));
-  div->setAttribute(html_names::kContenteditableAttr, "true");
+  div->setAttribute(html_names::kContenteditableAttr, keywords::kTrue);
 
   EditingState editing_state;
   sample.InsertNodeBefore(insert_child, ref_child, &editing_state);
@@ -144,7 +145,7 @@ TEST_F(CompositeEditCommandTest,
   SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
   Element* body = GetDocument().body();
   Node* text = body->lastChild();
-  body->setAttribute(html_names::kContenteditableAttr, "true");
+  body->setAttribute(html_names::kContenteditableAttr, keywords::kTrue);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   EditingState editing_state;

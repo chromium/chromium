@@ -231,7 +231,7 @@ TEST_F(DocumentMarkerControllerTest, UpdateRenderedRects) {
       MarkerController().LayoutRectsForTextMatchMarkers();
   EXPECT_EQ(1u, rendered_rects.size());
 
-  div->setAttribute(html_names::kStyleAttr, "margin: 200px");
+  div->setAttribute(html_names::kStyleAttr, AtomicString("margin: 200px"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Vector<gfx::Rect> new_rendered_rects =
       MarkerController().LayoutRectsForTextMatchMarkers();

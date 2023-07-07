@@ -1600,7 +1600,8 @@ TEST_F(NGGridLayoutAlgorithmTest, SubgridLineNameList) {
   EXPECT_EQ(ordered_named_grid_row_lines.size(), 3u);
 
   const Vector<NamedGridLine> row_named_lines = {
-      NamedGridLine("a"), NamedGridLine("b"), NamedGridLine("c")};
+      NamedGridLine(AtomicString("a")), NamedGridLine(AtomicString("b")),
+      NamedGridLine(AtomicString("c"))};
   for (wtf_size_t i = 0; i < 3; ++i) {
     EXPECT_EQ(ordered_named_grid_row_lines.find(i)->value[0],
               row_named_lines[i]);
@@ -1646,8 +1647,8 @@ TEST_F(NGGridLayoutAlgorithmTest, SubgridLineNameListWithRepeaters) {
   EXPECT_EQ(auto_repeat_ordered_named_grid_column_lines.size(), 2u);
 
   const Vector<NamedGridLine> column_named_lines = {
-      NamedGridLine("a"), NamedGridLine("b"), NamedGridLine("c"),
-      NamedGridLine("d")};
+      NamedGridLine(AtomicString("a")), NamedGridLine(AtomicString("b")),
+      NamedGridLine(AtomicString("c")), NamedGridLine(AtomicString("d"))};
 
   EXPECT_EQ(ordered_named_grid_column_lines.find(0)->value[0],
             column_named_lines[0]);
@@ -1663,12 +1664,14 @@ TEST_F(NGGridLayoutAlgorithmTest, SubgridLineNameListWithRepeaters) {
   EXPECT_EQ(ordered_named_grid_row_lines.size(), 6u);
 
   const Vector<NamedGridLine> row_named_lines = {
-      NamedGridLine("a"),
-      NamedGridLine("b", /* is_in_repeat */ true, /* is_first_repeat */ true),
-      NamedGridLine("c", /* is_in_repeat */ true, /* is_first_repeat */ true),
-      NamedGridLine("b", /* is_in_repeat */ true),
-      NamedGridLine("c", /* is_in_repeat */ true),
-      NamedGridLine("d")};
+      NamedGridLine(AtomicString("a")),
+      NamedGridLine(AtomicString("b"), /* is_in_repeat */ true,
+                    /* is_first_repeat */ true),
+      NamedGridLine(AtomicString("c"), /* is_in_repeat */ true,
+                    /* is_first_repeat */ true),
+      NamedGridLine(AtomicString("b"), /* is_in_repeat */ true),
+      NamedGridLine(AtomicString("c"), /* is_in_repeat */ true),
+      NamedGridLine(AtomicString("d"))};
 
   for (wtf_size_t i = 0; i < 6; ++i) {
     EXPECT_EQ(ordered_named_grid_row_lines.find(i)->value[0],

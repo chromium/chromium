@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -337,7 +338,8 @@ void LayoutShiftTrackerNavigationTest::RunTest(bool is_browser_initiated) {
   test::RunPendingTasks();
 
   WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
-  auto entries = perf.getBufferedEntriesByType("layout-shift");
+  auto entries =
+      perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift);
   EXPECT_EQ(1u, entries.size());
   LayoutShift* shift = static_cast<LayoutShift*>(entries.front().Get());
   // region fraction 50%, distance fraction 1/8
@@ -417,7 +419,9 @@ void LayoutShiftTrackerPointerdownTest::RunTest(
   WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
   auto& tracker = MainFrame().GetFrameView()->GetLayoutShiftTracker();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0.0, tracker.Score());
 
   WebView().MainFrameWidget()->HandleInputEvent(
@@ -426,7 +430,8 @@ void LayoutShiftTrackerPointerdownTest::RunTest(
   // region fraction 50%, distance fraction 1/8
   const double expected_shift = 0.5 * 0.125;
 
-  auto entries = perf.getBufferedEntriesByType("layout-shift");
+  auto entries =
+      perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift);
   EXPECT_EQ(1u, entries.size());
   LayoutShift* shift = static_cast<LayoutShift*>(entries.front().Get());
 
@@ -505,7 +510,9 @@ TEST_F(LayoutShiftTrackerSimTest, MouseMoveDraggingAction) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0.0, tracker.Score());
 
   tracker.ResetTimerForTesting();
@@ -516,7 +523,9 @@ TEST_F(LayoutShiftTrackerSimTest, MouseMoveDraggingAction) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0.0, tracker.Score());
 
   tracker.ResetTimerForTesting();
@@ -527,7 +536,8 @@ TEST_F(LayoutShiftTrackerSimTest, MouseMoveDraggingAction) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  auto entries = perf.getBufferedEntriesByType("layout-shift");
+  auto entries =
+      perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift);
   EXPECT_EQ(2u, entries.size());
   LayoutShift* shift = static_cast<LayoutShift*>(entries.back().Get());
 
@@ -585,7 +595,9 @@ TEST_F(LayoutShiftTrackerSimTest, TouchDraggingAction) {
   WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
   auto& tracker = MainFrame().GetFrameView()->GetLayoutShiftTracker();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0.0, tracker.Score());
 
   WebView().MainFrameWidget()->HandleInputEvent(
@@ -596,7 +608,9 @@ TEST_F(LayoutShiftTrackerSimTest, TouchDraggingAction) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0.0, tracker.Score());
 
   WebView().MainFrameWidget()->HandleInputEvent(
@@ -605,7 +619,8 @@ TEST_F(LayoutShiftTrackerSimTest, TouchDraggingAction) {
   // region fraction 50%, distance fraction 1/8
   const double expected_shift = 0.5 * 0.125;
 
-  auto entries = perf.getBufferedEntriesByType("layout-shift");
+  auto entries =
+      perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift);
   EXPECT_EQ(1u, entries.size());
   LayoutShift* shift = static_cast<LayoutShift*>(entries.back().Get());
 
@@ -666,7 +681,9 @@ TEST_F(LayoutShiftTrackerSimTest, TouchScrollingAction) {
   WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
   auto& tracker = MainFrame().GetFrameView()->GetLayoutShiftTracker();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0.0, tracker.Score());
 
   WebView().MainFrameWidget()->HandleInputEvent(
@@ -677,7 +694,9 @@ TEST_F(LayoutShiftTrackerSimTest, TouchScrollingAction) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0, tracker.Score());
 
   WebView().MainFrameWidget()->HandleInputEvent(
@@ -685,7 +704,8 @@ TEST_F(LayoutShiftTrackerSimTest, TouchScrollingAction) {
 
   // region fraction 50%, distance fraction 1/8
   const double expected_shift = 0.5 * 0.125;
-  auto entries = perf.getBufferedEntriesByType("layout-shift");
+  auto entries =
+      perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift);
   EXPECT_EQ(1u, entries.size());
   LayoutShift* shift = static_cast<LayoutShift*>(entries.back().Get());
 
@@ -703,7 +723,8 @@ TEST_F(LayoutShiftTrackerSimTest, TouchScrollingAction) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  entries = perf.getBufferedEntriesByType("layout-shift");
+  entries =
+      perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift);
   EXPECT_EQ(2u, entries.size());
   shift = static_cast<LayoutShift*>(entries.back().Get());
 
@@ -764,13 +785,17 @@ TEST_F(LayoutShiftTrackerSimTest, MultiplePointerDownUps) {
   WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
   auto& tracker = MainFrame().GetFrameView()->GetLayoutShiftTracker();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0.0, tracker.Score());
 
   WebView().MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(event2, ui::LatencyInfo()));
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0, tracker.Score());
 
   WebView().MainFrameWidget()->HandleInputEvent(
@@ -781,7 +806,9 @@ TEST_F(LayoutShiftTrackerSimTest, MultiplePointerDownUps) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0, tracker.Score());
 
   WebView().MainFrameWidget()->HandleInputEvent(
@@ -789,7 +816,8 @@ TEST_F(LayoutShiftTrackerSimTest, MultiplePointerDownUps) {
 
   // region fraction 50%, distance fraction 1/8
   const double expected_shift = 0.5 * 0.125;
-  auto entries = perf.getBufferedEntriesByType("layout-shift");
+  auto entries =
+      perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift);
   EXPECT_EQ(1u, entries.size());
   LayoutShift* shift = static_cast<LayoutShift*>(entries.back().Get());
 
@@ -1064,7 +1092,7 @@ TEST_F(LayoutShiftTrackerTest,
   // report layout shift.
   To<Element>(offscreen->GetNode())
       ->setAttribute(html_names::kStyleAttr,
-                     "position: relative; top: 100100px");
+                     AtomicString("position: relative; top: 100100px"));
   UpdateAllLifecyclePhasesForTest();
   auto score = GetLayoutShiftTracker().Score();
   EXPECT_GT(score, 0);
@@ -1136,7 +1164,7 @@ TEST_F(LayoutShiftTrackerTest, ClipByVisualViewport) {
 
   GetDocument()
       .getElementById(AtomicString("target"))
-      ->setAttribute(html_names::kStyleAttr, "top: 100px");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("top: 100px"));
   UpdateAllLifecyclePhasesForTest();
   // 50.0: visible width
   // 100.0 + 100.0: visible height + vertical shift
@@ -1175,14 +1203,14 @@ TEST_F(LayoutShiftTrackerTest, ScrollThenCauseScrollAnchoring) {
 
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 
-  target_element->classList().Remove("big");
-  target_element->classList().Add("small");
+  target_element->classList().Remove(AtomicString("big"));
+  target_element->classList().Add(AtomicString("small"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 
-  target_element->classList().Remove("small");
-  target_element->classList().Add("big");
+  target_element->classList().Remove(AtomicString("small"));
+  target_element->classList().Add(AtomicString("big"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
@@ -1319,13 +1347,13 @@ TEST_F(LayoutShiftTrackerTest, AnimatingTransformCreatesLayoutShiftRoot) {
 
   GetDocument()
       .getElementById(AtomicString("animation"))
-      ->setAttribute(html_names::kStyleAttr, "top: 400px");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("top: 400px"));
   // `animation` creates a layout shift root, so `child`'s shift doesn't
   // include the shift of `animation`. The 2px shift is below the threshold of
   // reporting a layout shift.
   GetDocument()
       .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr, "top: 2px");
+      ->setAttribute(html_names::kStyleAttr, AtomicString("top: 2px"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 }

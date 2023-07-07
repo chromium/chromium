@@ -234,7 +234,7 @@ TEST_P(ViewTransitionTest, LayoutShift) {
       kPseudoIdViewTransition);
   ASSERT_TRUE(transition_pseudo);
   auto* container_pseudo = transition_pseudo->GetPseudoElement(
-      kPseudoIdViewTransitionGroup, "shared");
+      kPseudoIdViewTransitionGroup, AtomicString("shared"));
   ASSERT_TRUE(container_pseudo);
   auto* container_box = To<LayoutBox>(container_pseudo->GetLayoutObject());
   EXPECT_EQ(PhysicalSize(100, 100), container_box->Size());
@@ -386,8 +386,10 @@ TEST_P(ViewTransitionTest, StartTransitionElementsWantToBeComposited) {
   ExceptionState& exception_state = v8_scope.GetExceptionState();
 
   // Set two of the elements to be shared.
-  e1->setAttribute(html_names::kStyleAttr, "view-transition-name: e1");
-  e3->setAttribute(html_names::kStyleAttr, "view-transition-name: e3");
+  e1->setAttribute(html_names::kStyleAttr,
+                   AtomicString("view-transition-name: e1"));
+  e3->setAttribute(html_names::kStyleAttr,
+                   AtomicString("view-transition-name: e3"));
 
   struct Data {
     STACK_ALLOCATED();
@@ -418,13 +420,13 @@ TEST_P(ViewTransitionTest, StartTransitionElementsWantToBeComposited) {
         auto* data =
             static_cast<Data*>(info.Data().As<v8::External>()->Value());
         data->document.getElementById(AtomicString("e1"))
-            ->setAttribute(html_names::kStyleAttr, "");
+            ->setAttribute(html_names::kStyleAttr, g_empty_atom);
         data->document.getElementById(AtomicString("e3"))
-            ->setAttribute(html_names::kStyleAttr, "");
+            ->setAttribute(html_names::kStyleAttr, g_empty_atom);
         data->e1->setAttribute(html_names::kStyleAttr,
-                               "view-transition-name: e1");
+                               AtomicString("view-transition-name: e1"));
         data->e2->setAttribute(html_names::kStyleAttr,
-                               "view-transition-name: e2");
+                               AtomicString("view-transition-name: e2"));
       };
   auto start_setup_callback =
       v8::Function::New(v8_scope.GetContext(), start_setup_lambda,
@@ -593,7 +595,9 @@ TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
   UpdateAllLifecyclePhasesForTest();
 
   // The prepare phase should generate the pseudo tree.
-  const Vector<AtomicString> view_transition_names = {"root", "e1", "e2", "e3"};
+  const Vector<AtomicString> view_transition_names = {
+      AtomicString("root"), AtomicString("e1"), AtomicString("e2"),
+      AtomicString("e3")};
   ValidatePseudoElementTree(view_transition_names, false);
 
   // Finish the prepare phase, mutate the DOM and start the animation.
@@ -752,9 +756,9 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
        "::view-transition-old(foo) { background-color: grey; }"}};
 
   for (const auto& test_case : test_cases) {
-    InspectorStyleResolver resolver(GetDocument().documentElement(),
-                                    test_case.pseudo_id,
-                                    test_case.uses_tags ? "foo" : g_null_atom);
+    InspectorStyleResolver resolver(
+        GetDocument().documentElement(), test_case.pseudo_id,
+        test_case.uses_tags ? AtomicString("foo") : g_null_atom);
     auto* pseudo_element_rules = resolver.MatchedRules();
 
     // The resolver collects developer and UA rules.
@@ -788,7 +792,7 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
     // by default.
     EXPECT_EQ(found_rule_for_root, test_case.uses_tags);
     EXPECT_EQ(matched_rules_for_pseudo->view_transition_name,
-              test_case.uses_tags ? "foo" : g_null_atom);
+              test_case.uses_tags ? AtomicString("foo") : g_null_atom);
 
     auto pseudo_element_rules = matched_rules_for_pseudo->matched_rules;
     // The resolver collects developer and UA rules.

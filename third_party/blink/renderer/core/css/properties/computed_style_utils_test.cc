@@ -45,19 +45,19 @@ TEST(ComputedStyleUtilsTest, MatrixZoom3D) {
 
 TEST(ComputedStyleUtilsTest, ValueForStyleName) {
   EXPECT_EQ(*ComputedStyleUtils::ValueForStyleName(
-                StyleName("foo", StyleName::Type::kCustomIdent)),
-            *MakeGarbageCollected<CSSCustomIdentValue>("foo"));
+                StyleName(AtomicString("foo"), StyleName::Type::kCustomIdent)),
+            *MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("foo")));
   EXPECT_EQ(*ComputedStyleUtils::ValueForStyleName(
-                StyleName("foo", StyleName::Type::kString)),
+                StyleName(AtomicString("foo"), StyleName::Type::kString)),
             *MakeGarbageCollected<CSSStringValue>("foo"));
 }
 
 TEST(ComputedStyleUtilsTest, ValueForStyleNameOrKeyword) {
   EXPECT_EQ(*ComputedStyleUtils::ValueForStyleNameOrKeyword(StyleNameOrKeyword(
-                StyleName("foo", StyleName::Type::kCustomIdent))),
-            *MakeGarbageCollected<CSSCustomIdentValue>("foo"));
-  EXPECT_EQ(*ComputedStyleUtils::ValueForStyleNameOrKeyword(
-                StyleNameOrKeyword(StyleName("foo", StyleName::Type::kString))),
+                StyleName(AtomicString("foo"), StyleName::Type::kCustomIdent))),
+            *MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("foo")));
+  EXPECT_EQ(*ComputedStyleUtils::ValueForStyleNameOrKeyword(StyleNameOrKeyword(
+                StyleName(AtomicString("foo"), StyleName::Type::kString))),
             *MakeGarbageCollected<CSSStringValue>("foo"));
   EXPECT_EQ(*ComputedStyleUtils::ValueForStyleNameOrKeyword(
                 StyleNameOrKeyword(CSSValueID::kNone)),
