@@ -1,35 +1,30 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ROW_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ROW_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_CONTROLS_CONTAINER_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_CONTROLS_CONTAINER_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/view.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace views {
 class ImageView;
-class FlexLayout;
 class Label;
 }  // namespace views
 
-namespace test {
-class PageInfoBubbleViewTestApi;
-}  // namespace test
-
-// A view that contains basic layout for rows in page info.
+// A view that contains basic layout for a container with controls.
 // *-------------------------------------------------------------------------*
 // | Icon | Title                                | Controls (buttons, icons) |
 // |-------------------------------------------------------------------------|
-// |      | Secondary label                      |                           |
+// |      | Secondary label(s)                   |                           |
 // *-------------------------------------------------------------------------*
-class PageInfoRowView : public views::View {
+class RichControlsContainerView : public views::FlexLayoutView {
  public:
-  PageInfoRowView();
+  RichControlsContainerView();
 
   void SetIcon(const ui::ImageModel image);
   void SetTitle(std::u16string title);
@@ -52,7 +47,7 @@ class PageInfoRowView : public views::View {
   const std::u16string& GetTitleForTesting();
 
  private:
-  friend class test::PageInfoBubbleViewTestApi;
+  virtual int GetMinBubbleWidth() const;
 
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
@@ -60,7 +55,6 @@ class PageInfoRowView : public views::View {
 
   // The sum of width of all control views in the right side of the row.
   int controls_width_ = 0;
-  raw_ptr<views::FlexLayout> layout_manager_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ROW_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_CONTROLS_CONTAINER_VIEW_H_

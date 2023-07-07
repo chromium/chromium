@@ -289,7 +289,7 @@ void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesRow() {
   // |blocking_third_party_cookies_row_| has to be the first cookie button.
   blocking_third_party_cookies_row_ =
       cookies_buttons_container_view_->AddChildViewAt(
-          std::make_unique<PageInfoRowView>(), 0);
+          std::make_unique<RichControlsContainerView>(), 0);
   blocking_third_party_cookies_row_->SetTitle(title);
   blocking_third_party_cookies_row_->SetIcon(icon);
   blocking_third_party_cookies_row_->SetID(

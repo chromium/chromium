@@ -38,8 +38,10 @@ PermissionToggleRowView::PermissionToggleRowView(
     : permission_(permission),
       delegate_(delegate),
       navigation_handler_(navigation_handler) {
+  // TODO(crbug.com/1446230): Directly subclass `RichControlsContainerView`
+  // instead of adding it as the only child.
   SetUseDefaultFillLayout(true);
-  row_view_ = AddChildView(std::make_unique<PageInfoRowView>());
+  row_view_ = AddChildView(std::make_unique<RichControlsContainerView>());
   row_view_->SetTitle(PageInfoUI::PermissionTypeToUIString(permission.type));
 
   // Add extra details as sublabel.
@@ -77,11 +79,12 @@ PermissionToggleRowView::PermissionToggleRowView(
   } else {
     InitForManagedSource(delegate);
   }
-  // Set flex rule, defined in `PageInfoRowView`, to wrap the subtitle text but
-  // size the parent view to match the content.
-  SetProperty(views::kFlexBehaviorKey,
-              views::FlexSpecification(base::BindRepeating(
-                  &PageInfoRowView::FlexRule, base::Unretained(row_view_))));
+  // Set flex rule, defined in `RichControlsContainerView`, to wrap the subtitle
+  // text but size the parent view to match the content.
+  SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(base::BindRepeating(
+          &RichControlsContainerView::FlexRule, base::Unretained(row_view_))));
   UpdateUiOnPermissionChanged();
 }
 

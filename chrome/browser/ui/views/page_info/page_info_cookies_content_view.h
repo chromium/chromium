@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_COOKIES_CONTENT_VIEW_H_
 
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
+#include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
-#include "chrome/browser/ui/views/page_info/page_info_row_view.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -81,7 +81,8 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // The view that contains toggle for blocking third party cookies
   // and displays information with a number of blocked sites.
   // Only displayed when third party cookies are blocked in settings.
-  raw_ptr<PageInfoRowView> blocking_third_party_cookies_row_ = nullptr;
+  raw_ptr<RichControlsContainerView> blocking_third_party_cookies_row_ =
+      nullptr;
 
   // The Label which is a subtitle of |blocking_third_party_cookies_row|.
   raw_ptr<views::Label> blocking_third_party_cookies_subtitle_label_ = nullptr;
