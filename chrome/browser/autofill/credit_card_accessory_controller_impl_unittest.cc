@@ -29,6 +29,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -102,9 +103,11 @@ class CreditCardAccessoryControllerTest
         web_contents(), mock_mf_controller_.AsWeakPtr(), &data_manager_,
         &autofill_manager(), &autofill_driver());
     data_manager_.SetPrefService(profile()->GetPrefs());
+    data_manager_.SetSyncServiceForTest(&sync_service_);
   }
 
   void TearDown() override {
+    data_manager_.SetSyncServiceForTest(nullptr);
     data_manager_.SetPrefService(nullptr);
     data_manager_.ClearCreditCards();
     data_manager_.ClearCreditCardOfferData();
@@ -139,6 +142,7 @@ class CreditCardAccessoryControllerTest
     return *autofill_manager_injector_[web_contents()];
   }
 
+  syncer::TestSyncService sync_service_;
   TestPersonalDataManager data_manager_;
   testing::NiceMock<MockManualFillingController> mock_mf_controller_;
   base::MockCallback<AccessoryController::FillingSourceObserver>
@@ -165,18 +169,6 @@ class CreditCardAccessoryControllerTestWithoutSupportingUnmaskedCards
             features::kAutofillFillMerchantPromoCodeFields});
   }
 
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    NavigateAndCommit(GURL(kExampleSite));
-    SetFormOrigin(GURL(kExampleSite));
-    FocusWebContentsOnMainFrame();
-
-    CreditCardAccessoryControllerImpl::CreateForWebContentsForTesting(
-        web_contents(), mock_mf_controller_.AsWeakPtr(), &data_manager_,
-        &autofill_manager(), &autofill_driver());
-    data_manager_.SetPrefService(profile()->GetPrefs());
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -190,18 +182,6 @@ class CreditCardAccessoryControllerTestSupportingPromoCodeOffers
         {features::kAutofillShowUnmaskedCachedCardInManualFillingView,
          features::kAutofillFillMerchantPromoCodeFields},
         /*disabled_features=*/{});
-  }
-
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    NavigateAndCommit(GURL(kExampleSite));
-    SetFormOrigin(GURL(kExampleSite));
-    FocusWebContentsOnMainFrame();
-
-    CreditCardAccessoryControllerImpl::CreateForWebContentsForTesting(
-        web_contents(), mock_mf_controller_.AsWeakPtr(), &data_manager_,
-        &autofill_manager(), &autofill_driver());
-    data_manager_.SetPrefService(profile()->GetPrefs());
   }
 
  private:
@@ -221,7 +201,6 @@ TEST_F(CreditCardAccessoryControllerTest,
   prefs::SetPaymentsIntegrationEnabled(profile()->GetPrefs(), true);
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForProfile(profile());
-  personal_data_manager->SetSyncingForTest(true);
   // Add a non-virtual card.
   CreditCard card = test::GetMaskedServerCard();
   personal_data_manager->AddServerCreditCardForTest(
@@ -237,7 +216,6 @@ TEST_F(CreditCardAccessoryControllerTest,
   prefs::SetPaymentsIntegrationEnabled(profile()->GetPrefs(), true);
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForProfile(profile());
-  personal_data_manager->SetSyncingForTest(true);
   // Add a virtual card.
   CreditCard card = test::GetMaskedServerCard();
   card.set_virtual_card_enrollment_state(CreditCard::ENROLLED);

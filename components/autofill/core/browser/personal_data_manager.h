@@ -550,7 +550,7 @@ class PersonalDataManager : public KeyedService,
   // Returns the value of the AutofillIBANEnabled pref.
   virtual bool IsAutofillIBANEnabled() const;
 
-  // Returns the value of the AutofillWalletImportEnabled pref.
+  // Returns whether sync's integration with payments is on.
   virtual bool IsAutofillWalletImportEnabled() const;
 
   // Returns true if the PDM is in the off-the-record mode.

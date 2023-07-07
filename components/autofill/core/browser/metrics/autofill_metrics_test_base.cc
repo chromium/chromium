@@ -45,6 +45,7 @@ void AutofillMetricsBaseTest::SetUpHelper() {
 
   personal_data().set_auto_accept_address_imports_for_testing(true);
   personal_data().SetPrefService(autofill_client_->GetPrefs());
+  personal_data().SetSyncServiceForTest(&sync_service_);
 
   autofill_driver_ = std::make_unique<TestAutofillDriver>();
   autofill_driver_->SetIsInAnyMainFrame(is_in_any_main_frame_);

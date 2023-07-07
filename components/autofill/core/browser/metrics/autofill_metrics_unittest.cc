@@ -1698,6 +1698,7 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardWithNicknameMetrics) {
 TEST_F(AutofillMetricsTest, AutofillProfileIsEnabledAtStartup) {
   base::HistogramTester histogram_tester;
   personal_data().SetAutofillProfileEnabled(true);
+  personal_data().SetSyncServiceForTest(nullptr);  // Undo work in base suite.
   personal_data().Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
                        /*pref_service=*/autofill_client_->GetPrefs(),
@@ -1716,6 +1717,7 @@ TEST_F(AutofillMetricsTest, AutofillProfileIsEnabledAtStartup) {
 TEST_F(AutofillMetricsTest, AutofillProfileIsDisabledAtStartup) {
   base::HistogramTester histogram_tester;
   personal_data().SetAutofillProfileEnabled(false);
+  personal_data().SetSyncServiceForTest(nullptr);  // Undo work in base suite.
   personal_data().Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
                        /*pref_service=*/autofill_client_->GetPrefs(),
@@ -1734,6 +1736,7 @@ TEST_F(AutofillMetricsTest, AutofillProfileIsDisabledAtStartup) {
 TEST_F(AutofillMetricsTest, AutofillCreditCardIsEnabledAtStartup) {
   base::HistogramTester histogram_tester;
   personal_data().SetAutofillCreditCardEnabled(true);
+  personal_data().SetSyncServiceForTest(nullptr);  // Undo work in base suite.
   personal_data().Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
                        /*pref_service=*/autofill_client_->GetPrefs(),
@@ -1752,6 +1755,7 @@ TEST_F(AutofillMetricsTest, AutofillCreditCardIsEnabledAtStartup) {
 TEST_F(AutofillMetricsTest, AutofillCreditCardIsDisabledAtStartup) {
   base::HistogramTester histogram_tester;
   personal_data().SetAutofillCreditCardEnabled(false);
+  personal_data().SetSyncServiceForTest(nullptr);  // Undo work in base suite.
   personal_data().Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
                        /*pref_service=*/autofill_client_->GetPrefs(),

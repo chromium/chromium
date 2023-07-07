@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/sync/test/test_sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,7 +64,7 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
         /*local_state=*/autofill_client_->GetPrefs(),
         /*identity_manager=*/nullptr,
         /*history_service=*/nullptr,
-        /*sync_service=*/nullptr,
+        /*sync_service=*/&sync_service_,
         /*strike_database=*/nullptr,
         /*image_fetcher=*/nullptr,
         /*is_off_the_record=*/false);
@@ -164,6 +165,7 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestAutofillClient> autofill_client_;
   raw_ptr<payments::TestPaymentsClient> payments_client_;
+  syncer::TestSyncService sync_service_;
   std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
   std::unique_ptr<TestVirtualCardEnrollmentManager>
       virtual_card_enrollment_manager_;

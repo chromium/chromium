@@ -511,7 +511,7 @@ class FormDataImporterTestBase {
         /*local_state=*/prefs_.get(),
         /*identity_manager=*/identity_test_env_.identity_manager(),
         /*history_service=*/nullptr,
-        /*sync_service=*/nullptr,
+        /*sync_service=*/&sync_service_,
         /*strike_database=*/nullptr,
         /*image_fetcher=*/nullptr,
         /*is_off_the_record=*/(user_mode == USER_MODE_INCOGNITO));
@@ -765,6 +765,7 @@ class FormDataImporterTestBase {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<PrefService> prefs_;
   signin::IdentityTestEnvironment identity_test_env_;
+  syncer::TestSyncService sync_service_;
   scoped_refptr<AutofillWebDataService> autofill_database_service_;
   scoped_refptr<WebDatabaseService> web_database_;
   raw_ptr<AutofillTable> autofill_table_;  // weak ref

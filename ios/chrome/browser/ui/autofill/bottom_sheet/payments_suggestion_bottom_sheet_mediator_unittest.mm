@@ -8,6 +8,7 @@
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/prefs/pref_service.h"
+#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -62,6 +63,7 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
     autofill::prefs::SetAutofillProfileEnabled(pref_service, true);
     autofill::prefs::SetAutofillCreditCardEnabled(pref_service, true);
     personal_data_manager_->SetPrefService(pref_service);
+    personal_data_manager_->SetSyncServiceForTest(&sync_service_);
   }
 
   void TearDown() override { [mediator_ disconnect]; }
@@ -123,6 +125,7 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  syncer::TestSyncService sync_service_;
   id consumer_;
   std::unique_ptr<autofill::PersonalDataManager> personal_data_manager_;
   PaymentsSuggestionBottomSheetMediator* mediator_;

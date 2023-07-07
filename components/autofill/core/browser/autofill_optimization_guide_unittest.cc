@@ -20,6 +20,7 @@
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -73,7 +74,7 @@ class AutofillOptimizationGuideTest : public testing::Test {
         /*local_state=*/pref_service_.get(),
         /*identity_manager=*/nullptr,
         /*history_service=*/nullptr,
-        /*sync_service=*/nullptr,
+        /*sync_service=*/&sync_service_,
         /*strike_database=*/nullptr,
         /*image_fetcher=*/nullptr,
         /*is_off_the_record=*/false);
@@ -84,6 +85,7 @@ class AutofillOptimizationGuideTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<PrefService> pref_service_;
+  syncer::TestSyncService sync_service_;
   std::unique_ptr<MockOptimizationGuideDecider> decider_;
   std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
   std::unique_ptr<AutofillOptimizationGuide> autofill_optimization_guide_;
