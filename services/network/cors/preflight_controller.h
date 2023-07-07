@@ -138,7 +138,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>> devtools_observer,
       const net::NetLogWithSource& net_log,
       bool acam_preflight_spec_conformant,
-      mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
+      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_service_observer);
 
   // Clears the CORS preflight cache. The time range is always "all time" as

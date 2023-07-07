@@ -376,7 +376,7 @@ class PreflightController::PreflightLoader final {
       base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>> devtools_observer,
       const net::NetLogWithSource net_log,
       bool acam_preflight_spec_conformant,
-      mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
+      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_service_observer)
       : controller_(controller),
         completion_callback_(std::move(completion_callback)),
@@ -767,7 +767,7 @@ void PreflightController::PerformPreflightCheck(
     base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>> devtools_observer,
     const net::NetLogWithSource& net_log,
     bool acam_preflight_spec_conformant,
-    mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
+    mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_service_observer) {
   DCHECK(request.request_initiator);
 

@@ -55,6 +55,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   using DeleteCallback = base::OnceCallback<void(CorsURLLoader* loader)>;
 
   // Raw pointer arguments must outlive the returned instance.
+  // note: `url_loader_network_service_observer` must not be null.
   CorsURLLoader(
       mojo::PendingReceiver<mojom::URLLoader> loader_receiver,
       int32_t process_id,
@@ -74,7 +75,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       const mojom::ClientSecurityState* factory_client_security_state,
-      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+      mojo::Remote<mojom::URLLoaderNetworkServiceObserver>*
           url_loader_network_service_observer,
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage,
@@ -303,26 +304,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // from `memory_cache_`.
   bool memory_cache_was_used_ = false;
 
-  // mojo::Remote<mojom::URLLoaderNetworkServiceObserver> for CORSURLoader.
-  // Pass to PreflightController in StartRequest().
-  //
-  // Note: CorsURLLoader may make two calls to PerformPreflightCheck(). This
-  // happens when URLLoader notices that a request with target_ip_address_space
-  // == kUnknown goes to a less-public IP address space and fails with
-  // CorsError::kUnexpectedPrivateNetworkAccess. CorsURLLoader then restarts a
-  // second preflight request with target_ip_address_space != kUnknown. For that
-  // second preflight request,
-  // mojo::Remote<mojom::URLLoaderNetworkServiceObserver> will pass a null
-  // remote here (or worse, trigger UB because of the use-after-move).
-  // However, `url_loader_network_service_observer_` will only be used in
-  // preflight controller if:
-  // 1. The client is a secure context.
-  // 2. The target URL is HTTP.
-  // 3. The request has a target IP address space.
-  // #3 means that URLLoader will never return kUnexpectedPrivateNetworkAccess,
-  // which means that there will only be one preflight request at most and
-  // the previous concern will never happen.
-  mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
+  // Observer for this request and any preflight requests we send ahead of it.
+  // Owned by the parent `CorsURLLoaderFactory`, never nullptr - though the
+  // pointee remote itself may be unbound.
+  raw_ptr<mojo::Remote<mojom::URLLoaderNetworkServiceObserver>>
       url_loader_network_service_observer_;
 
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;

@@ -387,7 +387,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
         origin_access_list_, GetAllowAnyCorsExemptHeaderForBrowser(),
         HasFactoryOverride(!!factory_override_), *isolation_info_ptr,
         std::move(devtools_observer), client_security_state_.get(),
-        std::move(observer_remote), cross_origin_embedder_policy_,
+        &url_loader_network_service_observer_, cross_origin_embedder_policy_,
         shared_dictionary_storage,
         shared_dictionary_observer_ ? shared_dictionary_observer_.get()
                                     : nullptr,

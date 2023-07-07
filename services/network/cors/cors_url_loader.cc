@@ -26,6 +26,7 @@
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/header_util.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
@@ -273,7 +274,7 @@ CorsURLLoader::CorsURLLoader(
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
     const mojom::ClientSecurityState* factory_client_security_state,
-    mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+    mojo::Remote<mojom::URLLoaderNetworkServiceObserver>*
         url_loader_network_service_observer,
     const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage,
@@ -295,8 +296,7 @@ CorsURLLoader::CorsURLLoader(
       has_factory_override_(has_factory_override),
       isolation_info_(isolation_info),
       factory_client_security_state_(factory_client_security_state),
-      url_loader_network_service_observer_(
-          std::move(url_loader_network_service_observer)),
+      url_loader_network_service_observer_(url_loader_network_service_observer),
       cross_origin_embedder_policy_(cross_origin_embedder_policy),
       devtools_observer_(std::move(devtools_observer)),
       weak_devtools_observer_factory_(&devtools_observer_),
@@ -307,6 +307,7 @@ CorsURLLoader::CorsURLLoader(
       context_(context),
       shared_dictionary_storage_(std::move(shared_dictionary_storage)),
       shared_dictionary_observer_(shared_dictionary_observer) {
+  CHECK(url_loader_network_service_observer_ != nullptr);
   if (ignore_isolated_world_origin)
     request_.isolated_world_origin = absl::nullopt;
 
@@ -808,6 +809,20 @@ void CorsURLLoader::StartRequest() {
   // it now to free up the socket.
   network_loader_.reset();
 
+  mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver> remote_observer;
+  // TODO(https://crbug.com/1338439): Create a base function and clean up all
+  // need_pna_permission check in the code base.
+  const mojom::ClientSecurityState* state = GetClientSecurityState();
+  const bool needs_pna_permission =
+      base::FeatureList::IsEnabled(
+          features::kPrivateNetworkAccessPermissionPrompt) &&
+      state && state->is_web_secure_context &&
+      !IsUrlPotentiallyTrustworthy(request_.url);
+  if (needs_pna_permission &&
+      url_loader_network_service_observer_->is_bound()) {
+    (*url_loader_network_service_observer_)
+        ->Clone(remote_observer.InitWithNewPipeAndPassReceiver());
+  }
   context_->cors_preflight_controller()->PerformPreflightCheck(
       base::BindOnce(&CorsURLLoader::OnPreflightRequestComplete,
                      weak_factory_.GetWeakPtr()),
@@ -819,8 +834,7 @@ void CorsURLLoader::StartRequest() {
       net::NetworkTrafficAnnotationTag(traffic_annotation_),
       network_loader_factory_, isolation_info_, CloneClientSecurityState(),
       weak_devtools_observer_factory_.GetWeakPtr(), net_log_,
-      context_->acam_preflight_spec_conformant(),
-      std::move(url_loader_network_service_observer_));
+      context_->acam_preflight_spec_conformant(), std::move(remote_observer));
 }
 
 void CorsURLLoader::ReportCorsErrorToDevTools(const CorsErrorStatus& status,
