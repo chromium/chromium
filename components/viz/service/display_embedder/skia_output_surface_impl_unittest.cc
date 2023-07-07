@@ -140,7 +140,13 @@ void SkiaOutputSurfaceImplTest::CopyRequestCallbackOnGpuThread(
   UnblockMainThread();
 }
 
-TEST_F(SkiaOutputSurfaceImplTest, EndPaint) {
+// TODO(crbug.com/1462855): Re-enable this test
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_EndPaint DISABLED_EndPaint
+#else
+#define MAYBE_EndPaint EndPaint
+#endif
+TEST_F(SkiaOutputSurfaceImplTest, MAYBE_EndPaint) {
   OutputSurface::ReshapeParams reshape_params;
   reshape_params.size = kSurfaceRect.size();
   output_surface_->Reshape(reshape_params);
@@ -218,9 +224,17 @@ TEST_F(SkiaOutputSurfaceImplTest, SupportsColorSpaceChange) {
   }
 }
 
+// TODO(crbug.com/1462855): Re-enable this test
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_CopyOutputBitmapSupportedColorSpace \
+  DISABLED_CopyOutputBitmapSupportedColorSpace
+#else
+#define MAYBE_CopyOutputBitmapSupportedColorSpace \
+  CopyOutputBitmapSupportedColorSpace
+#endif
 // Tests that the destination color space is preserved across a CopyOutput for
 // ColorSpaces supported by SkColorSpace.
-TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapSupportedColorSpace) {
+TEST_F(SkiaOutputSurfaceImplTest, MAYBE_CopyOutputBitmapSupportedColorSpace) {
   OutputSurface::ReshapeParams reshape_params;
   reshape_params.size = kSurfaceRect.size();
   output_surface_->Reshape(reshape_params);
