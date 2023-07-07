@@ -6,6 +6,7 @@
 
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
+load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 
 __filegroups = {
@@ -28,16 +29,6 @@ __filegroups = {
         "type": "glob",
         "includes": ["*.h", "crtbegin.o"],
     },
-    # TODO: remove buildtools/third_party/lib* once migrated to third_party/lib*
-    "buildtools/third_party/libc++/trunk/include:headers": {
-        "type": "glob",
-        "includes": ["*"],
-        # can't use "*.h", because c++ headers have no extension.
-    },
-    "buildtools/third_party/libc++abi/trunk/include:headers": {
-        "type": "glob",
-        "includes": ["*.h"],
-    },
     "third_party/android_toolchain/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include": {
         "type": "glob",
         "includes": ["*"],
@@ -47,27 +38,8 @@ __filegroups = {
         "type": "glob",
         "includes": ["*"],
     },
-    "third_party/libc++/trunk/include:headers": {
-        "type": "glob",
-        "includes": ["*"],
-        # can't use "*.h", because c++ headers have no extension.
-    },
-    "third_party/libc++abi/trunk/include:headers": {
-        "type": "glob",
-        "includes": ["*.h"],
-    },
-
-    # toolchain root
-    # :headers for compiling
-    "third_party/llvm-build/Release+Asserts:headers": {
-        "type": "glob",
-        "includes": [
-            "*.h",
-            "bin/clang",
-            "bin/clang++",
-        ],
-    },
 }
+__filegroups.update(clang_all.filegroups)
 
 def __clang_compile_coverage(ctx, cmd):
     clang_command = clang_code_coverage_wrapper.run(ctx, list(cmd.args))
@@ -92,19 +64,8 @@ def __step_config(ctx, step_config):
             "third_party/android_toolchain/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include",
             "third_party/android_toolchain/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include:include",
         ],
-
-        # need this because we use
-        # buildtools/third_party/libc++/trunk/include:headers,
-        # but scandeps doesn't scan `__config` file, which uses
-        # `#include <__config_site>`
-        # TODO: remove buildtools/third_party/lib* once migrated to third_party/lib*
-        "buildtools/third_party/libc++": [
-            "buildtools/third_party/libc++/__config_site",
-        ],
-        "third_party/libc++": [
-            "third_party/libc++/__config_site",
-        ],
     })
+    step_config["input_deps"].update(clang_all.input_deps)
     step_config["rules"].extend([
         {
             "name": "clang/cxx",
