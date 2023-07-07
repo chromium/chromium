@@ -59921,6 +59921,7 @@ from previous Chrome versions.
   <int value="-1978625006" label="PcieBillboardNotification:disabled"/>
   <int value="-1977496883" label="ViewPasswords:enabled"/>
   <int value="-1976050618" label="AppDeduplicationService:disabled"/>
+  <int value="-1975970208" label="(Obsolete) TranslateSubFrames:disabled"/>
   <int value="-1975719988" label="GlobalMediaControlsSeamlessTransfer:enabled"/>
   <int value="-1974861173" label="ShelfGesturesWithVirtualKeyboard:enabled"/>
   <int value="-1973722176" label="VoiceSearchOnLocalNtp:enabled"/>
@@ -62476,7 +62477,6 @@ from previous Chrome versions.
   <int value="-678281465" label="force-companion-pinned-state:enabled"/>
   <int value="-678272527"
       label="ClearingCookiesKeepsSupervisedUsersSignedIn:disabled"/>
-  <int value="-678184617" label="TranslateSubFrames:disabled"/>
   <int value="-677978627" label="ZeroCopyTabCapture:enabled"/>
   <int value="-677938988" label="AssistantConsentSimplifiedText:disabled"/>
   <int value="-674804217" label="SoleIntegration:enabled"/>
@@ -64434,6 +64434,7 @@ from previous Chrome versions.
   <int value="339419844" label="EmojiSuggestAddition:enabled"/>
   <int value="339671131" label="disable-per-user-timezone"/>
   <int value="340497722" label="WebPaymentAPICSP:enabled"/>
+  <int value="341116976" label="(Obsolete) TranslateSubFrames:enabled"/>
   <int value="341152650" label="SoundContentSetting:enabled"/>
   <int value="341851350" label="EnableDbusAndX11StatusIcons:enabled"/>
   <int value="342431487" label="VizForWebView:enabled"/>
@@ -67471,7 +67472,6 @@ from previous Chrome versions.
   <int value="1914347357" label="AutofillEnableVirtualCard:disabled"/>
   <int value="1915028326" label="BuiltInModuleKvStorage:disabled"/>
   <int value="1915178511" label="disable-blink-features"/>
-  <int value="1916637435" label="TranslateSubFrames:enabled"/>
   <int value="1918061181" label="HoldingSpaceInProgressAnimationV2:enabled"/>
   <int value="1918229773"
       label="OmniboxMatchToolbarAndStatusBarColor:disabled"/>

@@ -202,11 +202,8 @@ ChromeRenderFrameObserver::ChromeRenderFrameObserver(
 #if !BUILDFLAG(IS_ANDROID)
   SetVisualSearchClassifierAgent();
 #endif
-
-  if (!translate::IsSubFrameTranslationEnabled()) {
-    translate_agent_ = new translate::TranslateAgent(
-        render_frame, ISOLATED_WORLD_ID_TRANSLATE);
-  }
+  translate_agent_ =
+      new translate::TranslateAgent(render_frame, ISOLATED_WORLD_ID_TRANSLATE);
 }
 
 ChromeRenderFrameObserver::~ChromeRenderFrameObserver() {

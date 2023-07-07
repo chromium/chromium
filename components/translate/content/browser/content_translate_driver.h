@@ -123,17 +123,6 @@ class ContentTranslateDriver : public TranslateDriver,
       GetLanguageDetectionModelCallback callback) override;
 
  protected:
-  const base::ObserverList<TranslationObserver, true>& translation_observers()
-      const {
-    return translation_observers_;
-  }
-
-  TranslateManager* translate_manager() const { return translate_manager_; }
-
-  language::UrlLanguageHistogram* language_histogram() const {
-    return language_histogram_;
-  }
-
   bool IsAutoHrefTranslateAllOriginsEnabled() const;
 
  private:

@@ -8,8 +8,6 @@ static_library("renderer") {
   sources = [
     "isolated_world_util.cc",
     "isolated_world_util.h",
-    "per_frame_translate_agent.cc",
-    "per_frame_translate_agent.h",
     "translate_agent.cc",
     "translate_agent.h",
   ]

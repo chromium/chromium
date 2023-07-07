@@ -11,10 +11,6 @@
 
 namespace translate {
 
-// Controls whether translation applies to sub frames as well as the
-// main frame.
-BASE_DECLARE_FEATURE(kTranslateSubFrames);
-
 // Controls whether the TFLite-based language detection is enabled.
 BASE_DECLARE_FEATURE(kTFLiteLanguageDetectionEnabled);
 
@@ -43,9 +39,6 @@ extern const char kSecurityOrigin[];
 // Gets Security origin with which Translate runs. This is used both for
 // language checks and to obtain the list of available languages.
 GURL GetTranslateSecurityOrigin();
-
-// Return whether sub frame translation is enabled.
-bool IsSubFrameTranslationEnabled();
 
 // Return whether sub frame language detection is enabled.
 bool IsSubFrameLanguageDetectionEnabled();

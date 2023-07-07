@@ -13,19 +13,7 @@
 
 namespace translate {
 
-namespace {
-
-// Parameter for TranslateSubFrames feature to determine whether language
-// detection should include the sub frames (or just the main frame).
-const char kDetectLanguageInSubFrames[] = "detect_language_in_sub_frames";
-
-}  // namespace
-
 const char kSecurityOrigin[] = "https://translate.googleapis.com/";
-
-BASE_FEATURE(kTranslateSubFrames,
-             "TranslateSubFrames",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The feature is explicitly disabled on Webview and Weblayer.
 // TODO(crbug.com/1292622): Enable the feature on Webview.
@@ -69,16 +57,6 @@ GURL GetTranslateSecurityOrigin() {
         command_line->GetSwitchValueASCII(switches::kTranslateSecurityOrigin);
   }
   return GURL(security_origin);
-}
-
-bool IsSubFrameTranslationEnabled() {
-  return base::FeatureList::IsEnabled(kTranslateSubFrames);
-}
-
-bool IsSubFrameLanguageDetectionEnabled() {
-  return base::FeatureList::IsEnabled(kTranslateSubFrames) &&
-         base::GetFieldTrialParamByFeatureAsBool(
-             kTranslateSubFrames, kDetectLanguageInSubFrames, true);
 }
 
 bool IsForceTranslateEnabled() {

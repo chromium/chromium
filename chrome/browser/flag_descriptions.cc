@@ -1273,10 +1273,6 @@ const char kEnablePerfettoSystemTracingDescription[] =
     "When enabled, Chrome will attempt to connect to the system tracing "
     "service";
 
-const char kEnableTranslateSubFramesName[] = "Translate sub frames";
-const char kEnableTranslateSubFramesDescription[] =
-    "Enable the translation of sub frames (as well as the main frame)";
-
 const char kEnableWebUsbOnExtensionServiceWorkerName[] =
     "Enable WebUSB on extension service workers";
 const char kEnableWebUsbOnExtensionServiceWorkerDescription[] =

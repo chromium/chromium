@@ -658,9 +658,6 @@ extern const char kEnableGpuServiceLoggingDescription[];
 extern const char kEnableNetworkLoggingToFileName[];
 extern const char kEnableNetworkLoggingToFileDescription[];
 
-extern const char kEnableTranslateSubFramesName[];
-extern const char kEnableTranslateSubFramesDescription[];
-
 extern const char kEnableWebUsbOnExtensionServiceWorkerName[];
 extern const char kEnableWebUsbOnExtensionServiceWorkerDescription[];
 

@@ -80,17 +80,9 @@ struct LanguageDetectionDetails {
 };
 
 // Handles language translation. This is used by the browser process to
-// direct a renderer to detect the language details of a frame and translate
-// the language of a frame (or revert a previous translation of the contents
-// of a frame.
+// direct a renderer to translate the language of a frame (or revert a previous
+// translation of the contents of a frame).
 interface TranslateAgent {
-  // Requests that the frame's language details be detected and returned to
-  // the browser process. This includes the html root language, the content
-  // language metadata, and whether the notranslate metadata is present.
-  GetWebLanguageDetectionDetails()
-        => (string content_meta_language, string html_root_lang,
-          url.mojom.Url url, bool has_notranslate_meta);
-
   // Requests that the frame be translated from |source_lang| to
   // |target_lang|.
   //

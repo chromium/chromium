@@ -3587,11 +3587,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-translate-sub-frames",
-    "owners": [ "sclittle", "chrome-language@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "enable-ui-devtools",
     "owners": [ "//components/ui_devtools/OWNERS" ],
     // Convenience debugging flag for non-stable ChromeOS Builds.
