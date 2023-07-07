@@ -36,6 +36,7 @@
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/browser/installable/ml_install_result_reporter.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
@@ -116,6 +117,13 @@ class WebContentsObserverAdapter : public content::WebContentsObserver {
 
   void AwaitFaviconUrlsChanged() { favicon_run_loop_.Run(); }
 
+  void AwaitVisibilityHidden() {
+    if (web_contents()->GetVisibility() == content::Visibility::HIDDEN) {
+      return;
+    }
+    visibility_run_loop_.Run();
+  }
+
  private:
   void DidUpdateWebManifestURL(content::RenderFrameHost* rfh,
                                const GURL& manifest_url) override {
@@ -131,10 +139,21 @@ class WebContentsObserverAdapter : public content::WebContentsObserver {
     favicon_run_loop_.Quit();
   }
 
+  void OnVisibilityChanged(content::Visibility visibility) override {
+    if (!visibility_run_loop_.running() ||
+        visibility != content::Visibility::HIDDEN) {
+      return;
+    }
+    visibility_run_loop_.Quit();
+  }
+
   bool manifest_url_updated_ = false;
   GURL expected_manifest_url_;
   base::RunLoop manifest_run_loop_;
+
   base::RunLoop favicon_run_loop_;
+
+  base::RunLoop visibility_run_loop_;
 };
 
 class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
@@ -841,7 +860,9 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
   content::WebContents* original_web_contents = web_contents();
 
   // Creating a new tab should ensure that visibility changes.
+  WebContentsObserverAdapter hidden_waiter(original_web_contents);
   chrome::NewTab(browser());
+  hidden_waiter.AwaitVisibilityHidden();
 
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetUrlBasedOnDialogState(),
