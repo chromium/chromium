@@ -17,11 +17,10 @@ class PasswordSenderServiceImpl : public PasswordSenderService {
  public:
   explicit PasswordSenderServiceImpl(
       std::unique_ptr<OutgoingPasswordSharingInvitationSyncBridge> sync_bridge);
-  ~PasswordSenderServiceImpl() override;
-
   PasswordSenderServiceImpl(const PasswordSenderServiceImpl&) = delete;
   PasswordSenderServiceImpl& operator=(const PasswordSenderServiceImpl&) =
       delete;
+  ~PasswordSenderServiceImpl() override;
 
   // PasswordSenderService implementation
   void SendPassword(const CredentialUIEntry& credential_ui_entry,

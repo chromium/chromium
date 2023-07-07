@@ -23,10 +23,9 @@ struct PasswordRecipient {
 class PasswordSenderService : public KeyedService {
  public:
   PasswordSenderService() = default;
-  ~PasswordSenderService() override = default;
-
   PasswordSenderService(const PasswordSenderService&) = delete;
   PasswordSenderService& operator=(const PasswordSenderService&) = delete;
+  ~PasswordSenderService() override = default;
 
   // Sends password entries for the given `credential_ui_entry` to the specified
   // `recipient`.
