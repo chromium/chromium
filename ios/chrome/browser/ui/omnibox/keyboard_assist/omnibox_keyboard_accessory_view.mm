@@ -153,32 +153,50 @@
 
   UIButton* button =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeCustom];
-  [button setTitleColor:kTitleColorStateNormal forState:UIControlStateNormal];
-  [button setTitleColor:kTitleColorStateHighlighted
-               forState:UIControlStateHighlighted];
 
-  [button setTitle:title forState:UIControlStateNormal];
-  [button setTitleColor:[UIColor colorNamed:kTextPrimaryColor]
-               forState:UIControlStateNormal];
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      IsUIButtonConfigurationEnabled()) {
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          0, kHorizontalEdgeInset, 0, kHorizontalEdgeInset);
-      button.configuration = buttonConfiguration;
-    }
+  if (IsUIButtonConfigurationEnabled()) {
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        0, kHorizontalEdgeInset, 0, kHorizontalEdgeInset);
+    UIFont* font = [UIFont systemFontOfSize:kButtonTitleFontSize
+                                     weight:UIFontWeightMedium];
+    NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+        initWithString:title
+            attributes:@{NSFontAttributeName : font}];
+    buttonConfiguration.attributedTitle = attributedTitle;
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kTextPrimaryColor];
+    button.configuration = buttonConfiguration;
+    button.configurationUpdateHandler = ^(UIButton* incomingButton) {
+      UIButtonConfiguration* updatedConfig = incomingButton.configuration;
+      switch (incomingButton.state) {
+        case UIControlStateHighlighted:
+          updatedConfig.baseForegroundColor = kTitleColorStateHighlighted;
+          break;
+        case UIControlStateNormal:
+          updatedConfig.baseForegroundColor = kTitleColorStateNormal;
+          break;
+        default:
+          break;
+      }
+      incomingButton.configuration = updatedConfig;
+    };
   } else {
+    [button setTitleColor:kTitleColorStateNormal forState:UIControlStateNormal];
+    [button setTitleColor:kTitleColorStateHighlighted
+                 forState:UIControlStateHighlighted];
+
+    [button setTitle:title forState:UIControlStateNormal];
+    [button setTitleColor:[UIColor colorNamed:kTextPrimaryColor]
+                 forState:UIControlStateNormal];
     UIEdgeInsets contentEdgeInsets =
         UIEdgeInsetsMake(0, kHorizontalEdgeInset, 0, kHorizontalEdgeInset);
     SetContentEdgeInsets(button, contentEdgeInsets);
+    [button.titleLabel setFont:[UIFont systemFontOfSize:kButtonTitleFontSize
+                                                 weight:UIFontWeightMedium]];
   }
   button.clipsToBounds = YES;
-  [button.titleLabel setFont:[UIFont systemFontOfSize:kButtonTitleFontSize
-                                               weight:UIFontWeightMedium]];
 
   [button addTarget:self
                 action:@selector(keyboardButtonPressed:)
