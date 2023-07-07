@@ -14,10 +14,10 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_sync_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
-#import "ios/chrome/browser/ui/first_run/history_sync/history_sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/tangible_sync/tangible_sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
@@ -31,6 +31,7 @@ using base::RecordAction;
 using base::UserMetricsAction;
 
 @interface TwoScreensSigninCoordinator () <
+    HistorySyncCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate>
 @end
 
@@ -152,11 +153,11 @@ using base::UserMetricsAction;
                                   firstRun:NO
                                   delegate:self];
     case kHistorySync:
-      return [[HistorySyncScreenCoordinator alloc]
+      return [[HistorySyncCoordinator alloc]
           initWithBaseNavigationController:_navigationController
                                    browser:self.browser
-                                  firstRun:NO
-                                  delegate:self];
+                                  delegate:self
+                                  firstRun:NO];
     case kDefaultBrowserPromo:
     case kChoice:
     case kStepsCompleted:
@@ -250,6 +251,14 @@ using base::UserMetricsAction;
                    finishCompletion();
                  }
                }];
+}
+
+#pragma mark - HistorySyncCoordinatorDelegate
+
+// Dismisses the current screen.
+- (void)closeHistorySyncCoordinator:
+    (HistorySyncCoordinator*)historySyncCoordinator {
+  [self screenWillFinishPresenting];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
