@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/test_trace_processor.h"
+#include "base/trace_event/trace_log.h"
 
 namespace base::test {
 
@@ -59,6 +60,19 @@ void TestTraceProcessor::StartTrace(const StringPiece& category_filter_string,
 
 void TestTraceProcessor::StartTrace(const TraceConfig& config,
                                     perfetto::BackendType backend) {
+  // Try to guess the correct backend if it's unspecified. In unit tests
+  // Perfetto is initialized by TraceLog, and only the in-process backend is
+  // available. In browser tests multiple backend can be available, so we
+  // explicitly specialize the custom backend to prevent tests from connecting
+  // to a system backend.
+  if (backend == perfetto::kUnspecifiedBackend) {
+    if (base::trace_event::TraceLog::GetInstance()
+            ->IsPerfettoInitializedByTraceLog()) {
+      backend = perfetto::kInProcessBackend;
+    } else {
+      backend = perfetto::kCustomBackend;
+    }
+  }
   session_ = perfetto::Tracing::NewTrace(backend);
   session_->Setup(config);
   // Some tests run the tracing service on the main thread and StartBlocking()

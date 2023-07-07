@@ -975,6 +975,10 @@ void TraceLog::InitializePerfettoIfNeeded() {
   TrackEvent::Register();
 }
 
+bool TraceLog::IsPerfettoInitializedByTraceLog() const {
+  return g_perfetto_initialized_by_tracelog;
+}
+
 void TraceLog::SetEnabled(const TraceConfig& trace_config,
                           const perfetto::TraceConfig& perfetto_config) {
   AutoLock lock(lock_);

@@ -424,6 +424,7 @@ class BASE_EXPORT TraceLog :
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   perfetto::DataSourceConfig GetCurrentTrackEventDataSourceConfig() const;
   void InitializePerfettoIfNeeded();
+  bool IsPerfettoInitializedByTraceLog() const;
   void SetEnabledImpl(const TraceConfig& trace_config,
                       const perfetto::TraceConfig& perfetto_config);
 
