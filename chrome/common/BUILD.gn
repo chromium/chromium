@@ -593,7 +593,6 @@ static_library("constants") {
     "chrome_result_codes.h",
     "pref_font_script_names-inl.h",
     "pref_font_webkit_names.h",
-    "pref_names.cc",
     "pref_names.h",
   ]
 

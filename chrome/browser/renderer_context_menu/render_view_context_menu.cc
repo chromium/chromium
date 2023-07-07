@@ -130,6 +130,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_metrics.h"
 #include "components/live_caption/caption_util.h"
+#include "components/live_caption/pref_names.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"

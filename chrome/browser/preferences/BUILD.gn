@@ -34,7 +34,7 @@ android_library("java") {
 # TODO(chouinard,estade): Consider breaking this target up into a different target for each pref file.
 java_cpp_strings("java_pref_names_srcjar") {
   sources = [
-    "//chrome/common/pref_names.cc",
+    "//chrome/common/pref_names.h",
     "//components/autofill/core/common/autofill_prefs.cc",
     "//components/commerce/core/pref_names.cc",
     "//components/dom_distiller/core/pref_names.cc",
@@ -42,7 +42,7 @@ java_cpp_strings("java_pref_names_srcjar") {
     "//components/feed/core/common/pref_names.cc",
     "//components/feed/core/shared_prefs/pref_names.cc",
     "//components/history/core/common/pref_names.cc",
-    "//components/language/core/browser/pref_names.cc",
+    "//components/language/core/browser/pref_names.h",
     "//components/password_manager/core/common/password_manager_pref_names.cc",
     "//components/payments/core/payment_prefs.cc",
     "//components/policy/core/common/policy_pref_names.cc",
