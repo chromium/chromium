@@ -901,19 +901,13 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
       return;
     }
 
-    // For CrOS language settings V2 update 2, languages and spell check are
-    // decoupled so there's no need to remove the language from spell check.
-    if (!this.isChromeOsLanguageSettingsV2Update2_()) {
-      this.deletePrefListItem('spellcheck.dictionaries', languageCode);
-    }
+    // Chrome Browser removes the web language from spell check, as web
+    // languages and spell check languages are coupled.
+    // On ChromeOS, we decouple web languages and spell check languages, so
+    // we intentionally omit this behaviour.
 
     // Remove the language from preferred languages.
     this.languageSettingsPrivate_.disableLanguage(languageCode);
-  }
-
-  private isChromeOsLanguageSettingsV2Update2_(): boolean {
-    // TODO: b/263823772 - Inline this variable.
-    return true;
   }
 
   isOnlyTranslateBlockedLanguage(languageState: LanguageState): boolean {
