@@ -527,6 +527,11 @@ static bool IsRedundantTextAlign(MutableCSSPropertyValueSet* style,
     return false;
   if (text_align == base_text_align)
     return true;
+  const ComputedStyle* node_style = node->GetComputedStyle();
+  if (!node_style) {
+    return true;
+  }
+  TextDirection node_direction = node_style->Direction();
   if (base_text_align == CSSValueID::kStart ||
       base_text_align == CSSValueID::kEnd) {
     // Returns true for "text-align:left" of <p>
@@ -538,8 +543,7 @@ static bool IsRedundantTextAlign(MutableCSSPropertyValueSet* style,
     //   <div style="text-align:start"><p dir="rtl" style="text-align:left">
     // because meaning of "text-align:start" in <p> is identical to
     // "text-align:right".
-    return TextAlignResolvingStartAndEnd(
-               base_text_align, node->EnsureComputedStyle()->Direction()) ==
+    return TextAlignResolvingStartAndEnd(base_text_align, node_direction) ==
            text_align;
   }
   if (text_align == CSSValueID::kStart || text_align == CSSValueID::kEnd) {
@@ -549,8 +553,7 @@ static bool IsRedundantTextAlign(MutableCSSPropertyValueSet* style,
     // Returns false for "text-align:start" of <p>
     //  <div style="text-align:left"><p dir="rtl" style="text-align:start">
     //  <div style="text-align:right"><p dir="ltr" style="text-align:start">
-    return TextAlignResolvingStartAndEnd(
-               text_align, node->EnsureComputedStyle()->Direction()) ==
+    return TextAlignResolvingStartAndEnd(text_align, node_direction) ==
            base_text_align;
   }
   return false;
@@ -604,9 +607,7 @@ void EditingStyle::Init(Node* node, PropertiesToInclude properties_to_include) {
     }
   }
 
-  if (node && node->EnsureComputedStyle()) {
-    const ComputedStyle* computed_style = node->EnsureComputedStyle();
-
+  if (const ComputedStyle* computed_style = node->GetComputedStyle()) {
     // Fix for crbug.com/768261: due to text-autosizing, reading the current
     // computed font size and re-writing it to an element may actually cause the
     // font size to become larger (since the autosizer will run again on the new
