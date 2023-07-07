@@ -3125,14 +3125,19 @@ class PasswordFormManagerTestWithMockedSaver : public PasswordFormManagerTest {
         std::move(mock_password_save_manager));
   }
 
+  void ResetFormManager() {
+    mock_password_save_manager_ = nullptr;
+    form_manager_.reset();
+  }
+
  private:
-  raw_ptr<NiceMock<MockPasswordSaveManager>, DanglingUntriaged>
-      mock_password_save_manager_;
+  raw_ptr<NiceMock<MockPasswordSaveManager>> mock_password_save_manager_ =
+      nullptr;
 };
 
 TEST_F(
     PasswordFormManagerTestWithMockedSaver,
-    ProviosnallySaveShouldCreatePendingPasswordFormManagerTestWithMockedSaverCredentials) {
+    ProvisionallySaveShouldCreatePendingPasswordFormManagerTestWithMockedSaverCredentials) {
   EXPECT_CALL(*mock_password_save_manager(),
               CreatePendingCredentials(_, _, _, _, _));
   EXPECT_TRUE(
@@ -3176,7 +3181,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveCredentials) {
   EXPECT_EQ(submitted_form.fields[kPasswordFieldIndex].name,
             updated_form.password_element);
   // Check UKM metrics.
-  form_manager_.reset();
+  ResetFormManager();
   ExpectedGenerationUKM expected_metrics = {
       {} /* shown manually */,
       0 /* password generated */,
@@ -3429,7 +3434,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, PasswordNoLongerGenerated) {
       .WillByDefault(Return(false));
   EXPECT_FALSE(form_manager_->HasGeneratedPassword());
   // Check UKM metrics.
-  form_manager_.reset();
+  ResetFormManager();
   ExpectedGenerationUKM expected_metrics = {
       absl::make_optional(2u) /* shown manually */,
       0 /* password generated */,
