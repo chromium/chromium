@@ -3,8 +3,9 @@ Short Name: turbine
 URL: https://github.com/google/turbine
 Version: unknown
 License: Apache 2.0
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 Turbine is a header compiler for Java. This library does not provide versioning
