@@ -4,7 +4,9 @@ URL: http://www.7-zip.org/sdk.html
 Version: 22.01
 Date: 2022-07-15
 License: Public Domain
+License File: LICENSE
 Security Critical: yes
+Shipped: yes
 CPEPrefix: cpe:2.3:a:7-zip:7-zip:22.01:
 
 Description:
