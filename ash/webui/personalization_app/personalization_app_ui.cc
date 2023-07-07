@@ -331,15 +331,7 @@ void AddStrings(content::WebUIDataSource* source) {
       {"googlePhotosAlbumZeroStateMessage",
        IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUM_ZERO_STATE_MESSAGE},
 
-      //  Time of day Wallpaper/Screen saver strings
-      {"timeOfDayWallpaperDialogTitle",
-       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_TITLE},
-      {"timeOfDayWallpaperDialogContent",
-       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONTENT},
-      {"timeOfDayWallpaperDialogBackButton",
-       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_BACK_BUTTON},
-      {"timeOfDayWallpaperDialogConfirmButton",
-       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONFIRM_BUTTON},
+      // Time of day Wallpaper/Screen saver strings
       {"timeOfDayBannerDescription",
        IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION},
       {"timeOfDayBannerDescriptionNoScreensaver",

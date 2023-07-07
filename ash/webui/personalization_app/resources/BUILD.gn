@@ -78,7 +78,6 @@ build_webui("build") {
     "js/wallpaper/google_photos_zero_state_element.ts",
     "js/wallpaper/info_svg_element.ts",
     "js/wallpaper/local_images_element.ts",
-    "js/wallpaper/time_of_day_wallpaper_dialog_element.ts",
     "js/wallpaper/wallpaper_collections_element.ts",
     "js/wallpaper/wallpaper_error_element.ts",
     "js/wallpaper/wallpaper_fullscreen_element.ts",

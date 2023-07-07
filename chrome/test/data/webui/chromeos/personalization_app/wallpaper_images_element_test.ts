@@ -5,25 +5,22 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {ColorScheme, DEFAULT_COLOR_SCHEME, OnlineImageType, PersonalizationRouter, TimeOfDayWallpaperDialog, WallpaperGridItem, WallpaperImages} from 'chrome://personalization/js/personalization_app.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {OnlineImageType, PersonalizationRouter, WallpaperGridItem, WallpaperImages} from 'chrome://personalization/js/personalization_app.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestThemeProvider} from './test_theme_interface_provider.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 suite('WallpaperImagesTest', function() {
   let wallpaperImagesElement: WallpaperImages|null;
   let wallpaperProvider: TestWallpaperProvider;
-  let themeProvider: TestThemeProvider;
   let personalizationStore: TestPersonalizationStore;
 
   setup(() => {
     const mocks = baseSetup();
     wallpaperProvider = mocks.wallpaperProvider;
-    themeProvider = mocks.themeProvider;
     personalizationStore = mocks.personalizationStore;
   });
 
@@ -50,29 +47,6 @@ suite('WallpaperImagesTest', function() {
     const element = initElement(WallpaperImages, {collectionId});
     await waitAfterNextRender(element);
     return element;
-  }
-
-  async function selectTimeOfDayWallpaper() {
-    // Click the first image that is not currently selected.
-    wallpaperImagesElement!.shadowRoot!
-        .querySelector<WallpaperGridItem>(`${
-            WallpaperGridItem
-                .is}[aria-selected='false'][data-is-time-of-day-wallpaper]`)!
-        .click();
-    await waitAfterNextRender(wallpaperImagesElement!);
-    return wallpaperImagesElement;
-  }
-
-  async function clickTimeOfDayWallpaperDialogButton(id: string) {
-    const dialog = wallpaperImagesElement!.shadowRoot!
-                       .querySelector<TimeOfDayWallpaperDialog>(
-                           TimeOfDayWallpaperDialog.is);
-    assertNotEquals(null, dialog, 'dialog element must exist to click button');
-    const button = dialog!.shadowRoot!.getElementById(id);
-    assertNotEquals(null, button, `button with id ${id} must exist`);
-    button!.click();
-    await waitAfterNextRender(wallpaperImagesElement!);
-    return wallpaperImagesElement;
   }
 
   test('sets aria-selected for current wallpaper asset id', async () => {
@@ -335,23 +309,6 @@ suite('WallpaperImagesTest', function() {
     assertEquals(
         wallpaperProvider.isInTabletModeResponse, previewMode,
         'preview mode is same as tablet mode');
-    assertEquals(
-        null,
-        wallpaperImagesElement.shadowRoot!.querySelector(
-            TimeOfDayWallpaperDialog.is),
-        'no time of day dialog when selecting a regular image');
-  });
-
-  test('shows dialog when clicking on a time of day wallpaper', async () => {
-    wallpaperImagesElement =
-        await createWithDefaultData(wallpaperProvider.timeOfDayCollectionId);
-
-    await selectTimeOfDayWallpaper();
-    assertNotEquals(
-        null,
-        wallpaperImagesElement.shadowRoot!.querySelector(
-            TimeOfDayWallpaperDialog.is),
-        'dialog element exists');
   });
 
   test('dismiss time of day promo banner after showing images', async () => {
@@ -363,75 +320,6 @@ suite('WallpaperImagesTest', function() {
     assertFalse(
         personalizationStore.data.ambient.shouldShowTimeOfDayBanner,
         'banner is dismissed');
-  });
-
-  test('do not show time of day dialog with proper settings', async () => {
-    wallpaperImagesElement =
-        await createWithDefaultData(wallpaperProvider.timeOfDayCollectionId);
-    personalizationStore.data.theme.colorModeAutoScheduleEnabled = true;
-    personalizationStore.data.theme.colorSchemeSelected =
-        ColorScheme.kTonalSpot;
-    personalizationStore.notifyObservers();
-    await waitAfterNextRender(wallpaperImagesElement);
-
-    await selectTimeOfDayWallpaper();
-    assertEquals(
-        null,
-        wallpaperImagesElement.shadowRoot!.querySelector(
-            TimeOfDayWallpaperDialog.is),
-        'dialog element does not exist');
-    const [assetId, _] = await wallpaperProvider.whenCalled('selectWallpaper');
-    assertEquals(3n, assetId, 'correct asset id is passed');
-  });
-
-  test(
-      'clicking cancel dismisses the time of day wallpaper dialog',
-      async () => {
-        wallpaperImagesElement = await createWithDefaultData(
-            wallpaperProvider.timeOfDayCollectionId);
-
-        await selectTimeOfDayWallpaper();
-        await clickTimeOfDayWallpaperDialogButton('close');
-        assertEquals(
-            null,
-            wallpaperImagesElement.shadowRoot!.querySelector(
-                TimeOfDayWallpaperDialog.is),
-            'clicking cancel dismisses the dialog');
-        assertEquals(
-            wallpaperProvider.currentWallpaper,
-            personalizationStore.data.wallpaper.currentSelected,
-            'current wallpaper is not updated');
-      });
-
-  test('clicking confirm on the time of day wallpaper dialog', async () => {
-    wallpaperImagesElement =
-        await createWithDefaultData(wallpaperProvider.timeOfDayCollectionId);
-
-    await selectTimeOfDayWallpaper();
-    await clickTimeOfDayWallpaperDialogButton('accept');
-    assertEquals(
-        null,
-        wallpaperImagesElement.shadowRoot!.querySelector(
-            TimeOfDayWallpaperDialog.is),
-        'clicking accept dismisses the dialog');
-
-    const scheme = await themeProvider.whenCalled('setColorScheme');
-    assertEquals(
-        DEFAULT_COLOR_SCHEME, scheme,
-        'time of day wallpaper sets default color scheme');
-
-    const autoScheduleEnabled =
-        await themeProvider.whenCalled('setColorModeAutoScheduleEnabled');
-    assertTrue(
-        autoScheduleEnabled,
-        'time of day wallpaper sets auto schedule enabled');
-
-    const [assetId, previewMode] =
-        await wallpaperProvider.whenCalled('selectWallpaper');
-    assertEquals(3n, assetId, 'correct asset id is passed');
-    assertEquals(
-        wallpaperProvider.isInTabletModeResponse, previewMode,
-        'preview mode is same as tablet mode');
   });
 
   test('redirects to wallpaper page if no images', async () => {
