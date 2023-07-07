@@ -5091,9 +5091,10 @@ void LayoutBox::RecalcFragmentsVisualOverflow() {
 void LayoutBox::CopyVisualOverflowFromFragments() {
   NOT_DESTROYED();
   DCHECK(CanUseFragmentsForVisualOverflow());
-  const LayoutRect previous_visual_overflow = VisualOverflowRectAllowingUnset();
+  const PhysicalRect previous_visual_overflow =
+      PhysicalVisualOverflowRectAllowingUnset();
   CopyVisualOverflowFromFragmentsWithoutInvalidations();
-  const LayoutRect visual_overflow = VisualOverflowRect();
+  const PhysicalRect visual_overflow = PhysicalVisualOverflowRect();
   if (visual_overflow == previous_visual_overflow)
     return;
   InvalidateIntersectionObserverCachedRects();
@@ -5303,12 +5304,6 @@ LayoutRect LayoutBox::VisualOverflowRect() const {
 }
 
 #if DCHECK_IS_ON()
-LayoutRect LayoutBox::VisualOverflowRectAllowingUnset() const {
-  NOT_DESTROYED();
-  NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
-  return VisualOverflowRect();
-}
-
 PhysicalRect LayoutBox::PhysicalVisualOverflowRectAllowingUnset() const {
   NOT_DESTROYED();
   NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;

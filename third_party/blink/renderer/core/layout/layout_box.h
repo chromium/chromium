@@ -519,13 +519,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // functions pretend there is no visual overflow when it is not computed.
   // TODO(crbug.com/1205708): Audit the usages and fix issues.
 #if DCHECK_IS_ON()
-  LayoutRect VisualOverflowRectAllowingUnset() const;
   PhysicalRect PhysicalVisualOverflowRectAllowingUnset() const;
 #else
-  ALWAYS_INLINE LayoutRect VisualOverflowRectAllowingUnset() const {
-    NOT_DESTROYED();
-    return VisualOverflowRect();
-  }
   ALWAYS_INLINE PhysicalRect PhysicalVisualOverflowRectAllowingUnset() const {
     NOT_DESTROYED();
     return PhysicalVisualOverflowRect();

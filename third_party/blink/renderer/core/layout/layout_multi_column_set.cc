@@ -408,12 +408,13 @@ PhysicalRect LayoutMultiColumnSet::FragmentsBoundingBox(
 
 void LayoutMultiColumnSet::ComputeVisualOverflow() {
   NOT_DESTROYED();
-  LayoutRect previous_visual_overflow_rect = VisualOverflowRectAllowingUnset();
+  PhysicalRect previous_visual_overflow_rect =
+      PhysicalVisualOverflowRectAllowingUnset();
   ClearVisualOverflow();
   AddVisualOverflowFromChildren();
   AddVisualEffectOverflow();
 
-  if (VisualOverflowRect() != previous_visual_overflow_rect) {
+  if (PhysicalVisualOverflowRect() != previous_visual_overflow_rect) {
     InvalidateIntersectionObserverCachedRects();
     SetShouldCheckForPaintInvalidation();
     GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
