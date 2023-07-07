@@ -3,7 +3,9 @@ Short Name: liburlpattern
 URL: https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/liburlpattern
 Version: 0
 License: MIT
+License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 This library is the underlying pattern matching engine for the URLPattern web
