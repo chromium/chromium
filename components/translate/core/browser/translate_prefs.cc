@@ -137,33 +137,6 @@ void MigrateObsoleteAlwaysTranslateLanguagesPref(PrefService* prefs) {
 
 }  // namespace
 
-const char TranslatePrefs::kPrefForceTriggerTranslateCount[] =
-    "translate_force_trigger_on_english_count_for_backoff_1";
-const char TranslatePrefs::kPrefNeverPromptSitesDeprecated[] =
-    "translate_site_blacklist";
-const char TranslatePrefs::kPrefTranslateDeniedCount[] =
-    "translate_denied_count_for_language";
-const char TranslatePrefs::kPrefTranslateIgnoredCount[] =
-    "translate_ignored_count_for_language";
-const char TranslatePrefs::kPrefTranslateAcceptedCount[] =
-    "translate_accepted_count";
-
-// TODO(crbug/1303963): Deprecated 10/2021. Check status of bug before removing.
-const char TranslatePrefs::kPrefAlwaysTranslateListDeprecated[] =
-    "translate_whitelists";
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-const char TranslatePrefs::kPrefTranslateAutoAlwaysCount[] =
-    "translate_auto_always_count";
-const char TranslatePrefs::kPrefTranslateAutoNeverCount[] =
-    "translate_auto_never_count";
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-const char TranslatePrefs::kPrefExplicitLanguageAskShown[] =
-    "translate_explicit_language_ask_shown";
-#endif
-
 // The below properties used to be used but now are deprecated. Don't use them
 // since an old profile might have some values there.
 //
