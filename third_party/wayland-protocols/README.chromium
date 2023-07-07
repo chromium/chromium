@@ -58,6 +58,7 @@ Version: 1.3.0
 License: GNU LGPL 2.1
 License File: kde/COPYING.LIB
 Security Critical: yes
+Shipped: yes
 
 Description:
 wayland-protocols/kde contains Wayland protocol extensions exposed by
