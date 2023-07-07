@@ -166,8 +166,8 @@ struct PartitionOptions {
     kAllowed,
   };
 
+  // TODO(bartekn): Remove.
   enum class Cookie : uint8_t {
-    kDisallowed,
     kAllowed,
   };
 
