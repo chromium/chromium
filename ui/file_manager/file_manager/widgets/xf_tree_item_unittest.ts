@@ -101,7 +101,6 @@ export async function testRenderWithSingleTreeItem(done: () => void) {
 
   // Test attributes on the root element.
   assertEquals('treeitem', root.getAttribute('role'));
-  assertEquals('-1', root.getAttribute('tabindex'));
   assertEquals('false', root.getAttribute('aria-selected'));
   assertFalse(root.hasAttribute('aria-expanded'));
   assertEquals('false', root.getAttribute('aria-disabled'));

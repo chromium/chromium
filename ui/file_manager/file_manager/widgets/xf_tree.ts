@@ -381,11 +381,11 @@ export class XfTree extends XfBase {
       return;
     }
     if (previousFocusedItem) {
-      previousFocusedItem.tabIndex = -1;
+      previousFocusedItem.toggleFocusable(false);
     }
     this.focusedItem_ = itemToFocus;
     if (this.focusedItem_) {
-      this.focusedItem_.tabIndex = 0;
+      this.focusedItem_.toggleFocusable(true);
     }
   }
 }

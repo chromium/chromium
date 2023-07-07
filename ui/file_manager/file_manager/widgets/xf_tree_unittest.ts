@@ -48,7 +48,12 @@ function simulateDoubleClick(element: HTMLElement) {
  * Helper method that checks that focused item is correct.
  */
 function checkFocusedItemToBe(tree: XfTree, id: string): boolean {
-  return tree.focusedItem!.id === id;
+  // Force focus the tree before checking document.activeElement. This is
+  // because if the tree item itself is selected programmatically (e.g. via
+  // ".selected = true"), the `.focusedItem` will update but it won't be
+  // actually focused(). For more details check `Tree.makeItemFocusable_()`.
+  tree.focus();
+  return tree.focusedItem!.id === id && document.activeElement!.id === id;
 }
 
 /** Construct a tree with only direct children. */

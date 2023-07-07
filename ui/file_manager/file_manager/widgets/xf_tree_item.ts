@@ -32,12 +32,6 @@ export class XfTreeItem extends XfBase {
   }
 
   /**
-   * Override the tabIndex because we need to assign it to the <li> element
-   * instead of the host element, so "delegatesFocus" above can work.
-   */
-  @property({attribute: false}) override tabIndex: number = -1;
-
-  /**
    * `separator` attribute will show a top border for the tree item. It's
    * mainly used to identify this tree item is a start of the new section.
    */
@@ -90,25 +84,6 @@ export class XfTreeItem extends XfBase {
     } as const;
   }
 
-  /**
-   * Override to focus the inner <li> instead of the host element.
-   *
-   * Why we still need this given we already have "delegatesFocus = true"? This
-   * is because delegateFocus can only delegate the focus from host element to
-   * the inner element who is focusable (tabindex = 0). Here <li> element gets
-   * "tabindex" from the property so it's asynchronous, so when we update
-   * `tabIndex` from outside by property and call `focus()` immediately,
-   * delegatesFocus won't work because due to the asynchronous nature the <li>
-   * hasn't get "tabindex = 0" yet.
-   */
-  override focus() {
-    console.assert(
-        !this.disabled,
-        'Called focus() on a disabled XfTreeItem() isn\'t allowed');
-
-    this.$treeItem_.focus();
-  }
-
   /** The level of the tree item, starting from 1. */
   get level(): number {
     return this.level_;
@@ -126,6 +101,27 @@ export class XfTreeItem extends XfBase {
 
   hasChildren(): boolean {
     return this.mayHaveChildren || this.items_.length > 0;
+  }
+
+  /**
+   * Toggle the focusable for the item.
+   *
+   * We are delegate the focus to the <li> element in the shadow DOM, to make
+   * sure the update is synchronous, we are operating on the DOM directly here
+   * instead of updating this in the render() function.
+   *
+   * Note: "tabindex = -1" is also considered as "focusable" according to the
+   * spec
+   * https://html.spec.whatwg.org/multipage/interaction.html#the-tabindex-attribute,
+   * so we need to remove the "tabindex" attribute below to make it
+   * non-focusable.
+   */
+  toggleFocusable(focusable: boolean) {
+    if (focusable) {
+      this.$treeItem_.setAttribute('tabindex', '0');
+    } else {
+      this.$treeItem_.removeAttribute('tabindex');
+    }
   }
 
   /**
@@ -194,7 +190,6 @@ export class XfTreeItem extends XfBase {
       <li
         class="tree-item"
         role="treeitem"
-        tabindex=${this.tabIndex}
         aria-labelledby="tree-label"
         aria-selected=${this.selected}
         aria-expanded=${ifDefined(showExpandIcon ? this.expanded : undefined)}
