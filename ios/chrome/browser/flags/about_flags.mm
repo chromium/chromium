@@ -632,11 +632,7 @@ const FeatureEntry::FeatureParam
     kCredentialProviderExtensionPromoOnPasswordCopied[] = {
         {kCredentialProviderExtensionPromoOnPasswordCopiedParam, "true"}};
 const FeatureEntry::FeatureParam
-    kCredentialProviderExtensionPromoOnLoginWithAutofill[] = {
-        {kCredentialProviderExtensionPromoOnLoginWithAutofillParam, "true"}};
-const FeatureEntry::FeatureParam
     kCredentialProviderExtensionPromoOnAllTriggers[] = {
-        {kCredentialProviderExtensionPromoOnLoginWithAutofillParam, "true"},
         {kCredentialProviderExtensionPromoOnPasswordCopiedParam, "true"},
         {kCredentialProviderExtensionPromoOnPasswordSavedParam, "true"}};
 
@@ -647,13 +643,8 @@ const FeatureEntry::FeatureVariation
         {"On password copied",
          kCredentialProviderExtensionPromoOnPasswordCopied,
          std::size(kCredentialProviderExtensionPromoOnPasswordCopied), nullptr},
-        {"On successful login with autofill",
-         kCredentialProviderExtensionPromoOnLoginWithAutofill,
-         std::size(kCredentialProviderExtensionPromoOnLoginWithAutofill),
-         nullptr},
         {"On all triggers", kCredentialProviderExtensionPromoOnAllTriggers,
-         std::size(kCredentialProviderExtensionPromoOnAllTriggers), nullptr},
-};
+         std::size(kCredentialProviderExtensionPromoOnAllTriggers), nullptr}};
 
 const FeatureEntry::FeatureParam kIOSEditMenuPartialTranslateNoIncognito[] = {
     {kIOSEditMenuPartialTranslateNoIncognitoParam, "true"}};

@@ -1880,9 +1880,18 @@ enum class ToolbarKind {
 
 - (void)maybeDisplayPromo {
   if (!self.promosManagerCoordinator) {
+    id<CredentialProviderPromoCommands> credentialProviderPromoHandler = nil;
+    if (IsCredentialProviderExtensionPromoEnabled() ||
+        IsIOSSetUpListEnabled()) {
+      credentialProviderPromoHandler =
+          HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                             CredentialProviderPromoCommands);
+    }
     self.promosManagerCoordinator = [[PromosManagerCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:self.browser];
+            initWithBaseViewController:self.viewController
+                               browser:self.browser
+        credentialProviderPromoHandler:credentialProviderPromoHandler];
+
     // CredentialProviderPromoCoordinator is initialized earlier than this, so
     // make sure to set its UI handler.
     _credentialProviderPromoCoordinator.promosUIHandler =

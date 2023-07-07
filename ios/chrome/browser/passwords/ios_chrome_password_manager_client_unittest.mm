@@ -123,11 +123,6 @@ TEST_F(IOSChromePasswordManagerClientTest, PasswordManagerEnabledPolicyTest) {
 // `CredentialProviderPromoCommands`.
 TEST_F(IOSChromePasswordManagerClientTest,
        NotifySuccessfulLoginWithExistingPasswordTest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kCredentialProviderExtensionPromo,
-      {{"enable_promo_on_login_with_autofill", "true"}});
-
   // Create a dispatcher for the client, register the command handler for
   // `CredentialProviderPromoCommands`
   id credential_provider_promo_commands_handler_mock =

@@ -83,6 +83,9 @@
 
   // The currently displayed promo data, if any.
   absl::optional<PromoDisplayData> _currentPromoData;
+
+  // The handler for the CredentialProviderPromoCommands.
+  id<CredentialProviderPromoCommands> _credentialProviderPromoCommandHandler;
 }
 
 // A mediator that observes when it's a good time to display a promo.
@@ -107,9 +110,12 @@
 #pragma mark - Initialization
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser {
+                                   browser:(Browser*)browser
+            credentialProviderPromoHandler:
+                (id<CredentialProviderPromoCommands>)handler {
   if (self = [super initWithBaseViewController:viewController
                                        browser:browser]) {
+    _credentialProviderPromoCommandHandler = handler;
     [self registerPromos];
 
     BOOL promosExist = _displayHandlerPromos.size() > 0 ||
@@ -570,10 +576,9 @@
 
   // CredentialProvider Promo handler
   if (IsCredentialProviderExtensionPromoEnabled() || IsIOSSetUpListEnabled()) {
-    id<CredentialProviderPromoCommands> handler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), CredentialProviderPromoCommands);
     _displayHandlerPromos[promos_manager::Promo::CredentialProviderExtension] =
-        [[CredentialProviderPromoDisplayHandler alloc] initWithHandler:handler];
+        [[CredentialProviderPromoDisplayHandler alloc]
+            initWithHandler:_credentialProviderPromoCommandHandler];
   }
 
   // DefaultBrowser Promo handler
