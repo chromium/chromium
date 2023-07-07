@@ -6,6 +6,7 @@ Date: 2023/05/03 17:45
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 The Closure Compiler provides warnings for illegal JavaScript and warnings for
