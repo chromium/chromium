@@ -10,6 +10,6 @@ rootWebArea
 ++++++switch name='Switch3' checkedState=true
 ++++++++staticText name='Switch3'
 ++++++++++inlineTextBox name='Switch3'
-++++++switch name='Switch4' checkedState=true
+++++++switch name='Switch4' checkedState=false
 ++++++++staticText name='Switch4'
 ++++++++++inlineTextBox name='Switch4'

@@ -2,4 +2,4 @@
 ++[toggle button] name='Switch1' checkable:true xml-roles:switch
 ++[toggle button] name='Switch2' checkable:true xml-roles:switch
 ++[toggle button] name='Switch3' checked checkable:true xml-roles:switch
-++[toggle button] name='Switch4' checked checkable:true xml-roles:switch
+++[toggle button] name='Switch4' checkable:true xml-roles:switch

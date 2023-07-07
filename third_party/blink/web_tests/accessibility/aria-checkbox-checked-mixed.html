@@ -10,7 +10,7 @@
 <div id="element2" role="menuitemcheckbox" aria-checked="mixed"></div>
 <div id="element3" role="radio" aria-checked="mixed"></div>
 <div id="element4" role="menuitemradio" aria-checked="mixed"></div>
-<!-- Switch specifically does not support mixed -->
+<!-- Switch specifically does not support mixed. It's treated as false. -->
 <div id="element5" role="switch" aria-checked="mixed"></div>
 
 <input id="element6" type="checkbox" aria-checked="mixed" checked />
@@ -39,7 +39,7 @@ test((t) => {
                    "mixed",
                    "mixed",
                    "mixed",
-                   "true",
+                   "false",
                    "mixed",
                    "mixed",
                    "mixed",

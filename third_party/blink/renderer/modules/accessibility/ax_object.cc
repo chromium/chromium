@@ -2718,9 +2718,10 @@ ax::mojom::blink::CheckedState AXObject::CheckedState() const {
   const AtomicString& checked_attribute = GetAOMPropertyOrARIAAttribute(prop);
   if (checked_attribute) {
     if (EqualIgnoringASCIICase(checked_attribute, "mixed")) {
-      // Only checkable role that doesn't support mixed is the switch.
-      if (role != ax::mojom::blink::Role::kSwitch)
-        return ax::mojom::blink::CheckedState::kMixed;
+      // Mixed value is invalid for switch role. Treat as false.
+      return role == ax::mojom::blink::Role::kSwitch
+                 ? ax::mojom::blink::CheckedState::kFalse
+                 : ax::mojom::blink::CheckedState::kMixed;
     }
 
     // Anything other than "false" should be treated as "true".
@@ -2735,13 +2736,17 @@ ax::mojom::blink::CheckedState AXObject::CheckedState() const {
     if (!node)
       return ax::mojom::blink::CheckedState::kNone;
 
-    // Expose native checkbox mixed state as accessibility mixed state. However,
-    // do not expose native radio mixed state as accessibility mixed state.
-    // This would confuse the JAWS screen reader, which reports a mixed radio as
-    // both checked and partially checked, but a native mixed native radio
-    // button simply means no radio buttons have been checked in the group yet.
-    if (IsNativeCheckboxInMixedState(node))
-      return ax::mojom::blink::CheckedState::kMixed;
+    // Expose native checkbox mixed state as accessibility mixed state (unless
+    // the role is switch). However, do not expose native radio mixed state as
+    // accessibility mixed state. This would confuse the JAWS screen reader,
+    // which reports a mixed radio as both checked and partially checked, but a
+    // native mixed native radio button simply means no radio buttons have been
+    // checked in the group yet.
+    if (IsNativeCheckboxInMixedState(node)) {
+      return role == ax::mojom::blink::Role::kSwitch
+                 ? ax::mojom::blink::CheckedState::kFalse
+                 : ax::mojom::blink::CheckedState::kMixed;
+    }
 
     auto* html_input_element = DynamicTo<HTMLInputElement>(node);
     if (html_input_element && html_input_element->ShouldAppearChecked()) {
