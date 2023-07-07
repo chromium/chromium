@@ -1145,7 +1145,6 @@ void StyleResolver::InitStyleAndApplyInheritance(
       DCHECK((IsShadowHost(element.parentNode()) ||
               IsA<HTMLSlotElement>(element.parentNode())) &&
              !LayoutTreeBuilderTraversal::ParentElement(element));
-      state.StyleBuilder().SetIsEnsuredOutsideFlatTree();
     }
   }
   state.StyleBuilder().SetStyleType(style_request.pseudo_id);
@@ -1398,6 +1397,11 @@ void StyleResolver::ApplyBaseStyleNoCache(
       state.SetHadNoMatchedProperties();
       return;
     }
+  }
+
+  if (style_recalc_context.is_ensuring_style &&
+      style_recalc_context.is_outside_flat_tree) {
+    state.StyleBuilder().SetIsEnsuredOutsideFlatTree();
   }
 
   if (match_result.HasNonUniversalHighlightPseudoStyles()) {

@@ -6238,6 +6238,7 @@ const ComputedStyle* Element::EnsureComputedStyle(
   auto style_recalc_context = LayoutTreeBuilderTraversal::Parent(*top)
                                   ? StyleRecalcContext::FromAncestors(*top)
                                   : StyleRecalcContext();
+  style_recalc_context.is_outside_flat_tree = !is_in_flat_tree;
 
   for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
     Element* ancestor = it->Get();
