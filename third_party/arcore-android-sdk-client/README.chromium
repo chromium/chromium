@@ -5,6 +5,7 @@ Version: 1.32
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 The ARCore Android SDK provides augmented reality capabilities to Android
