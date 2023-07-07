@@ -235,6 +235,12 @@ found in the LICENSE file.
       <message name="IDS_RESTORE_TABS_REVIEW_TABS_SCREEN_DESELECT_ALL" desc="Text for deselecting all tabs from the current device shown on the screen.">
         Deselect all
       </message>
+      <message name="IDS_RESTORE_TABS_DEVICE_SCREEN_SELECTED_DESCRIPTION" desc="Accessibility string describing the icon that indicates that a device is the currently selected one.">
+        Selected
+      </message>
+      <message name="IDS_RESTORE_TABS_DEVICE_SCREEN_NOT_SELECTED_DESCRIPTION" desc="Accessibility string describing that no icon exists that indicates that a device is the currently selected one.">
+        Not selected
+      </message>
     </messages>
   </release>
 </grit>

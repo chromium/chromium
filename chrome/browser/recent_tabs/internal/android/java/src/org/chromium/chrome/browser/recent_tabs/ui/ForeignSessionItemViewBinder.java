@@ -47,16 +47,7 @@ public class ForeignSessionItemViewBinder {
                     || session.formFactor == FormFactor.TABLET)
                 : "Unsupported form factor device retrieved.";
 
-            int tabCount = 0;
-            for (ForeignSessionWindow window : session.windows) {
-                tabCount += window.tabs.size();
-            }
-
-            CharSequence lastModifiedTimeString = DateUtils.getRelativeTimeSpanString(
-                    session.modifiedTime, System.currentTimeMillis(), 0);
-            String sessionInfo = view.getContext().getResources().getQuantityString(
-                    R.plurals.restore_tabs_promo_sheet_device_info, tabCount,
-                    Integer.toString(tabCount), lastModifiedTimeString);
+            String sessionInfo = getSessionInfo(view, session);
             TextView sessionInfoView =
                     view.findViewById(R.id.restore_tabs_detail_sheet_session_info);
             sessionInfoView.setText(sessionInfo);
@@ -66,5 +57,32 @@ public class ForeignSessionItemViewBinder {
             view.findViewById(R.id.restore_tabs_detail_sheet_device_item_selected_icon)
                     .setVisibility(model.get(IS_SELECTED) ? View.VISIBLE : View.GONE);
         }
+        setAccessibilityContent(view, model.get(SESSION_PROFILE), model.get(IS_SELECTED));
+    }
+
+    private static void setAccessibilityContent(
+            View view, ForeignSession session, boolean isSelected) {
+        String sessionInfo = getSessionInfo(view, session);
+        StringBuilder builder = new StringBuilder();
+        builder.append(session.name);
+        builder.append(sessionInfo);
+        builder.append(view.getContext().getResources().getString(isSelected
+                        ? R.string.restore_tabs_device_screen_selected_description
+                        : R.string.restore_tabs_device_screen_not_selected_description));
+        view.setContentDescription(builder.toString());
+    }
+
+    private static String getSessionInfo(View view, ForeignSession session) {
+        int tabCount = 0;
+        for (ForeignSessionWindow window : session.windows) {
+            tabCount += window.tabs.size();
+        }
+
+        CharSequence lastModifiedTimeString = DateUtils.getRelativeTimeSpanString(
+                session.modifiedTime, System.currentTimeMillis(), 0);
+        String sessionInfo = view.getContext().getResources().getQuantityString(
+                R.plurals.restore_tabs_promo_sheet_device_info, tabCount,
+                Integer.toString(tabCount), lastModifiedTimeString);
+        return sessionInfo;
     }
 }
