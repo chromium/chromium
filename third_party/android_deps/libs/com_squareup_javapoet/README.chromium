@@ -3,9 +3,10 @@ Short Name: javapoet
 URL: http://github.com/square/javapoet/
 Version: 1.13.0
 License: Apache 2.0
-License File: NOT_SHIPPED
+License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no
+Shipped: no
 
 Description:
 Use beautiful Java code to generate beautiful Java code.
