@@ -6,7 +6,6 @@ source_set("utils") {
   sources = [
     "promos_features.cc",
     "promos_features.h",
-    "promos_pref_names.cc",
     "promos_pref_names.h",
     "promos_utils.cc",
     "promos_utils.h",
