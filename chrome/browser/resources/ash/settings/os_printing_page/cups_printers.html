@@ -6,8 +6,11 @@
   }
 
   .custom-list-item-top {
-    border-top: var(--cr-separator-line);
     min-height: var(--cr-section-min-height);
+  }
+
+  :host(:not([nearby-printers-empty_])) .custom-list-item-top {
+    border-top: var(--cr-separator-line);
   }
 
   .padded {

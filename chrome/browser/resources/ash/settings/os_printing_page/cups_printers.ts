@@ -215,6 +215,16 @@ export class SettingsCupsPrintersElement extends
       },
 
       /**
+       * Indicates whether the nearby printers section is empty.
+       * @private {boolean}
+       */
+      nearbyPrintersEmpty_: {
+        type: Boolean,
+        computed: 'computeNearbyPrintersEmpty_(nearbyPrinterCount_)',
+        reflectToAttribute: true,
+      },
+
+      /**
        * True when the "printer-settings-revamp" feature flag is enabled.
        */
       isPrinterSettingsRevampEnabled_: {
@@ -250,6 +260,7 @@ export class SettingsCupsPrintersElement extends
   private savedPrinters_: PrinterListEntry[];
   private showCupsEditPrinterDialog_: boolean;
   private nearbyPrintersExpanded_: boolean;
+  private nearbyPrintersEmpty_: boolean;
   private isPrinterSettingsRevampEnabled_: boolean;
 
   constructor() {
@@ -560,6 +571,10 @@ export class SettingsCupsPrintersElement extends
 
   private onHelpLinkClicked_(): void {
     recordPrinterSettingsUserAction(PrinterSettingsUserAction.CLICK_HELP_LINK);
+  }
+
+  private computeNearbyPrintersEmpty_(): boolean {
+    return this.nearbyPrinterCount_ === 0;
   }
 }
 
