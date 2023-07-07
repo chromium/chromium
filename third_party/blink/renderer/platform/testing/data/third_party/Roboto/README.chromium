@@ -6,6 +6,7 @@ Date: 2017-08-02
 License: Apache-2.0
 License File: LICENSE.txt
 Security Critical: no
+Shipped: no
 
 Description:
 We need a a latin font with ligatures for platform testing.
