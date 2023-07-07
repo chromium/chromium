@@ -774,6 +774,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowserRenderProcessHost.BlockedByFilterURL"
+    enum="RenderProcessHostBlockedURLReason" expires_after="2024-07-06">
+  <owner>creis@chromium.org</owner>
+  <owner>site-isolation-dev@chromium.org</owner>
+  <summary>
+    Recorded when RenderProcessHostImpl::FilterURL detects a disallowed URL sent
+    by the renderer process and rewrites it to about:blank#blocked.
+  </summary>
+</histogram>
+
 <histogram name="BrowserRenderProcessHost.ChildCodeIntegrityFailures"
     enum="RendererType" expires_after="never">
 <!-- expires-never: For monitoring stability regressions. -->

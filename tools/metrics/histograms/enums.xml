@@ -92074,6 +92074,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Software Rendering"/>
 </enum>
 
+<enum name="RenderProcessHostBlockedURLReason">
+  <int value="0" label="Invalid URL"/>
+  <int value="1" label="Failed CanRequestURL Check"/>
+</enum>
+
 <enum name="RenderProcessHostDelayShutdownReason">
   <int value="0" label="No Delay"/>
   <int value="1" label="Other Active Or Pending Views">
