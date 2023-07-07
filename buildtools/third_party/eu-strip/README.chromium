@@ -2,8 +2,8 @@ Name: eu-strip
 URL: https://sourceware.org/elfutils/
 Version: 0.158
 Security Critical: no
+Shipped: no
 License: LGPL 3
-License File: NOT_SHIPPED
 
 Description:
 
