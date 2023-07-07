@@ -12,18 +12,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")  # For generate_jni().
 }
 
-if (is_win) {
-  config("usb_linker_flags") {
-    ldflags = [
-      "/DELAYLOAD:advapi32.dll",
-      "/DELAYLOAD:cfgmgr32.dll",
-      "/DELAYLOAD:ole32.dll",
-      "/DELAYLOAD:setupapi.dll",
-      "/DELAYLOAD:winusb.dll",
-    ]
-  }
-}
-
 static_library("usb") {
   # Only targets under //services/device folder can depend on it.
   visibility = [
@@ -97,8 +85,6 @@ static_library("usb") {
       "setupapi.lib",
       "winusb.lib",
     ]
-
-    all_dependent_configs = [ ":usb_linker_flags" ]
 
     deps += [ "//third_party/re2" ]
   }
