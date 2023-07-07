@@ -620,6 +620,7 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   ui::ColorMixer& mixer = provider->AddMixer();
   const bool use_dark_color =
       key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
+  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
 
   AddShieldAndBaseColors(mixer, key);
   AddControlsColors(mixer, key);
@@ -665,7 +666,7 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorAshOnboardingFocusRing] = {cros_tokens::kColorProminentDark};
 
   mixer[ui::kColorAshSystemUIMenuBackground] = {
-      chromeos::features::IsJellyEnabled()
+      is_jelly_enabled
           ? static_cast<ui::ColorId>(cros_tokens::kCrosSysBaseElevated)
           : kColorAshShieldAndBase80};
   mixer[ui::kColorAshSystemUIMenuIcon] = {kColorAshIconColorPrimary};
@@ -709,6 +710,13 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[kColorAshWindowHeaderStrokeColor] =
       ui::SetAlpha(cros_tokens::kCrosRefNeutral0, kAlpha8);
 
+  if (is_jelly_enabled) {
+    mixer[ui::kColorRadioButtonForegroundChecked] = {
+        cros_tokens::kCrosSysPrimary};
+    mixer[ui::kColorRadioButtonForegroundUnchecked] = {
+        cros_tokens::kCrosSysSecondary};
+  }
+
   mixer[ui::kColorToggleButtonThumbOn] = {cros_tokens::kCrosSysOnPrimary};
   mixer[ui::kColorToggleButtonThumbOff] = {cros_tokens::kCrosSysOnSecondary};
   mixer[ui::kColorToggleButtonThumbOnDisabled] =
@@ -726,7 +734,7 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorTooltipBackground] = {cros_tokens::kCrosSysOnSurface};
   mixer[ui::kColorTooltipForeground] = {cros_tokens::kCrosSysInverseOnSurface};
 
-  if (chromeos::features::IsJellyEnabled() && !key.custom_theme) {
+  if (is_jelly_enabled && !key.custom_theme) {
     // Only override frame color if there's no custom theme or we'll
     // override the value from the theme.
     mixer[ui::kColorFrameActive] = {cros_tokens::kCrosSysHeader};
