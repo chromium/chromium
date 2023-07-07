@@ -125,8 +125,11 @@ void FrameColorHelper::AddNativeChromeColors(
 
   if (ShouldDefaultThemeUseMicaTitlebar() && !key.app_controller) {
     mixer[kColorNewTabButtonBackgroundFrameActive] = {SK_ColorTRANSPARENT};
+    mixer[kColorNewTabButtonBackgroundFrameInactive] = {SK_ColorTRANSPARENT};
     mixer[kColorNewTabButtonInkDropFrameActive] =
         ui::GetColorWithMaxContrast(ui::kColorFrameActive);
+    mixer[kColorNewTabButtonInkDropFrameInactive] =
+        ui::GetColorWithMaxContrast(ui::kColorFrameInactive);
   }
 }
 
