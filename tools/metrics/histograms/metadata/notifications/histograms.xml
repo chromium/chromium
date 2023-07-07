@@ -329,33 +329,42 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Database.DeleteBeforeWriteResult"
-    enum="NotificationDatabaseStatus" expires_after="2022-05-01">
+    enum="NotificationDatabaseStatus" expires_after="2024-01-07">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Records the result status codes of deleting notification data from the Web
     Notification database that share their tag (replacement identifier) with a
     notification that's about to be shown.
+
+    This metric was expired between May 2022 and July 2023 and may be missing
+    data.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Database.DeleteResult"
-    enum="NotificationDatabaseStatus" expires_after="2022-04-24">
+    enum="NotificationDatabaseStatus" expires_after="2024-01-07">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Records the result status codes of deleting notification data from the Web
     Notification database.
+
+    This metric was expired between May 2022 and July 2023 and may be missing
+    data.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Database.DestroyResult"
-    enum="NotificationDatabaseStatus" expires_after="2022-04-24">
+    enum="NotificationDatabaseStatus" expires_after="2024-01-07">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Records the result status codes of destroying the Web Notification database
     altogether.
+
+    This metric was expired between May 2022 and July 2023 and may be missing
+    data.
   </summary>
 </histogram>
 
@@ -382,12 +391,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Database.OpenAfterCorruptionResult"
-    enum="NotificationDatabaseStatus" expires_after="2022-01-02">
+    enum="NotificationDatabaseStatus" expires_after="2024-01-07">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Records the result status codes of opening the Web Notification database
     after it has been destroyed in response to data corruption.
+
+    This metric was expired between May 2022 and July 2023 and may be missing
+    data.
   </summary>
 </histogram>
 
@@ -407,12 +419,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Database.ReadForServiceWorkerResult"
-    enum="NotificationDatabaseStatus" expires_after="2022-04-17">
+    enum="NotificationDatabaseStatus" expires_after="2024-01-07">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Records the result status codes of reading data of all notifications
     associated with a Service Worker from the Web Notification database.
+
+    This metric was expired between May 2022 and July 2023 and may be missing
+    data.
   </summary>
 </histogram>
 
