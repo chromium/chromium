@@ -3,7 +3,9 @@ Short Name: usb-ids
 URL: http://www.linux-usb.org/usb-ids.html
 Version: 2015.06.09
 License: BSD
+License File: LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 "This is a public repository of all known ID's used in USB devices: ID's of
