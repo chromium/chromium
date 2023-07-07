@@ -104,14 +104,40 @@ class KombuchaInProcessFuzzer
 
   FuzzCase current_fuzz_case_;
 
-  // TODO(xrosado) Replace EnsurePresent with non crashing variant
-  // EnsurePresent hits check if item isn't present
-  // Pollutes corpus with useless crashes
-  auto CheckAndSelectMenuItem(ui::ElementIdentifier item) {
-    return Steps(EnsurePresent(item), SelectMenuItem(item));
+  // Step could be a StepBuilder or a Multistep
+  template <typename T>
+  auto CheckStep(ui::ElementIdentifier target, T step, std::string step_name) {
+    return Steps(IfElement(
+        target,
+        [](const ui::TrackedElement* element) { return element != nullptr; },
+        Steps(std::move(step), Log("[KOMB] Added ", step_name, " with target ",
+                                   target.GetName())),
+        Steps(Log("[KOMB] Failed to add step: ", step_name, ". ",
+                  target.GetName(), " was not visible"))));
   }
-  auto CheckAndPressButton(ui::ElementIdentifier item) {
-    return Steps(EnsurePresent(item), PressButton(item));
+
+  // Used primarily for DragFromTo which requires two ElementIdentifiers
+  //  Check for dest first. If there is no source, we convert to DragMouseTo
+  template <typename T>
+  auto CheckStep(ui::ElementIdentifier source,
+                 ui::ElementIdentifier dest,
+                 T step,
+                 std::string step_name) {
+    return Steps(IfElement(
+        dest,
+        [](const ui::TrackedElement* element) { return element != nullptr; },
+        Steps(IfElement(
+            source,
+            [](const ui::TrackedElement* element) {
+              return element != nullptr;
+            },
+            Steps(std::move(step), Log("[KOMB] Added ", step_name,
+                                       " with targets: ", dest.GetName(), " ",
+                                       source.GetName())),
+            Steps(DragMouseTo(dest),  // Dest but no source
+                  Log("Added DragMouseTo with target: ", dest.GetName())))),
+        Steps(Log("[KOMB] Failed to add step: ", step_name,
+                  " Dest:", dest.GetName(), " was not visible"))));
   }
 
   auto ShowBookmarksBar() {
@@ -121,15 +147,25 @@ class KombuchaInProcessFuzzer
                  WaitForShow(kBookmarkBarElementId));
   }
 
+  // Both ClickRight/ClickLeft are handled by ClickAt in protobuf file
+  auto ClickRight(ui::ElementIdentifier target) {
+    return Steps(MoveMouseTo(target), ClickMouse(ui_controls::RIGHT));
+  }
+
+  auto ClickLeft(ui::ElementIdentifier target) {
+    return Steps(MoveMouseTo(target), ClickMouse(ui_controls::LEFT));
+  }
+
+  auto DragFromTo(ui::ElementIdentifier source, ui::ElementIdentifier dest) {
+    return Steps(MoveMouseTo(source), DragMouseTo(dest));
+  }
+
   // Enum descriptors for protobuf messages
   // Allows for a kombucha verb to function independent of what element
   // it's targeting
-  raw_ptr<const google::protobuf::EnumDescriptor> button_descriptor =
-      raw_ptr(test::fuzzing::ui_fuzzing::Button_descriptor());
 
-  raw_ptr<const google::protobuf::EnumDescriptor> menu_item_descriptor =
-      raw_ptr(test::fuzzing::ui_fuzzing::MenuItem_descriptor());
-
+  raw_ptr<const google::protobuf::EnumDescriptor> target_descriptor =
+      raw_ptr(test::fuzzing::ui_fuzzing::Target_descriptor());
   raw_ptr<const google::protobuf::EnumDescriptor> accelerator_descriptor =
       raw_ptr(test::fuzzing::ui_fuzzing::Accelerator_descriptor());
 
@@ -214,40 +250,62 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
       Steps(PressButton(kNewTabButtonElementId),
             InstrumentTab(kPrimaryTabElementId, 0),
             AddInstrumentedTab(kSecondaryTabElementId, GURL("about:blank")),
-            Log("Passed initial setup steps"));
+            Log("[KOMB] Passed initial setup steps"));
 
-  auto input_buffer = Steps(Log("Began procedurally generated inputs"));
+  auto input_buffer = Steps(Log("[KOMB] Began procedurally generated inputs"));
 
   // Action can have arbitrary number of steps
   // Translate and append each step to run at once
   test::fuzzing::ui_fuzzing::Action action = fuzz_case.action();
+
+  AddStep(input_buffer,
+          Log("[KOMB] Count of Steps generated: ", action.steps_size()));
+
   for (int j = 0; j < action.steps_size(); j++) {
     test::fuzzing::ui_fuzzing::Step step = action.steps(j);
 
     switch (step.step_choice_case()) {
-      case test::fuzzing::ui_fuzzing::Step::kPressButton: {
-        test::fuzzing::ui_fuzzing::Button button = step.press_button().target();
-        ui::ElementIdentifier target = ui::ElementIdentifier::FromName(
-            button_descriptor->FindValueByNumber(button)->name().c_str());
-        AddStep(input_buffer, CheckAndPressButton(target));
+      case test::fuzzing::ui_fuzzing::Step::kClickAt: {
+        auto* name =
+            target_descriptor->FindValueByNumber(step.click_at().target())
+                ->name()
+                .c_str();
+        ui::ElementIdentifier target = ui::ElementIdentifier::FromName(name);
 
+        AddStep(input_buffer,
+                CheckStep(target,
+                          step.click_at().right_click() ? ClickRight(target)
+                                                        : ClickLeft(target),
+                          step.click_at().right_click() ? "ClickRight"
+                                                        : "ClickLeft"));
         break;
       }
-      case test::fuzzing::ui_fuzzing::Step::kSelectTab:
-        AddStep(input_buffer,
-                Steps(SelectTab(kTabStripElementId,
-                                step.select_tab().target() %
-                                    browser()->tab_strip_model()->count())));
+      case test::fuzzing::ui_fuzzing::Step::kDragFromTo: {
+        auto* sname =
+            target_descriptor->FindValueByNumber(step.drag_from_to().source())
+                ->name()
+                .c_str();
 
+        auto* dname =
+            target_descriptor->FindValueByNumber(step.drag_from_to().dest())
+                ->name()
+                .c_str();
+
+        ui::ElementIdentifier source = ui::ElementIdentifier::FromName(sname);
+        ui::ElementIdentifier dest = ui::ElementIdentifier::FromName(dname);
+
+        AddStep(input_buffer, CheckStep(source, dest, DragFromTo(source, dest),
+                                        "DragFromTo"));
         break;
-      case test::fuzzing::ui_fuzzing::Step::kSelectMenuItem: {
-        test::fuzzing::ui_fuzzing::MenuItem item =
-            step.select_menu_item().target();
-        ui::ElementIdentifier target = ui::ElementIdentifier::FromName(
-            menu_item_descriptor->FindValueByNumber(item)->name().c_str());
-        AddStep(input_buffer,
-                Steps(CheckAndPressButton(kAppMenuButtonElementId),
-                      CheckAndSelectMenuItem(target)));
+      }
+      case test::fuzzing::ui_fuzzing::Step::kSelectTab: {
+        auto index =
+            step.select_tab().target() % browser()->tab_strip_model()->count();
+
+        // No need to check step, so we log here instead
+        AddStep(input_buffer, Log("[KOMB] Adding SelectTab: ", index));
+        AddStep(input_buffer, Steps(SelectTab(kTabStripElementId, index)));
+
         break;
       }
       case test::fuzzing::ui_fuzzing::Step::kSendAccelerator: {
@@ -283,22 +341,13 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
     ui_input = Steps(std::move(ui_input), std::move(input_buffer));
   }
 
-  // POC for JS execution
-  // TODO(xrosado) Generalize to more inputs and convert to a case
-  std::string key_event_js =
-      "el => el.dispatchEvent(new KeyboardEvent('keydown', {'key':'ArrowDown', "
-      "'code':'ArrowDown'}))";
-
-  AddStep(ui_input, Log("Executed all procedurally generated UI inputs"));
+  AddStep(ui_input,
+          Log("[KOMB] Executed all procedurally generated UI inputs"));
 
   // Set of inputs always placed at the end
   // Mainly used for debugging and sanity checks
-  AddStep(ui_input,
-          Steps(NavigateWebContents(kSecondaryTabElementId, test_url),
-                Log("Passed navigation step"), SelectTab(kTabStripElementId, 2),
-                Log("About to execute js"),
-                ExecuteJs(kSecondaryTabElementId, key_event_js),
-                Log("Executed js event")));
+  AddStep(ui_input, Steps(NavigateWebContents(kSecondaryTabElementId, test_url),
+                          Log("[KOMB] Passed navigation step")));
 
   RunTestSequence(std::move(ui_input));
 

@@ -18,14 +18,21 @@ message Action {
 
 message Step {
   oneof step_choice {
-    PressButton press_button = 1;
-    SelectTab select_tab = 2;
-    SelectMenuItem select_menu_item = 3;
+    SelectTab select_tab = 1;
+    ClickAt click_at = 2;
+    DragFromTo drag_from_to = 3;
     SendAccelerator send_accelerator = 4;
   }
 
-  message PressButton {
-    Button target = 1;
+  // Handles DragMouseTo events whenever it generates an empty source
+  message DragFromTo {
+    Target source = 1;
+    Target dest = 2;
+  }
+
+  message ClickAt {
+    Target target = 1;
+    bool right_click = 2;
   }
 
   message SelectTab {
@@ -33,10 +40,6 @@ message Step {
     // Should just function as an index
     // Use modulo to make sure it doesn't go over
     uint32 target = 1;
-  }
-
-  message SelectMenuItem {
-    MenuItem target = 1;
   }
 
   message SendAccelerator {
@@ -49,30 +52,61 @@ enum Parallelism {
   ANY_OF = 1;
 }
 
-// Targets for SelectButton
-enum Button {
-  kBackButtonElementId = 0;
-  kForwardButtonElementId = 1;
-  kNewTabButtonElementId = 2;
-  kSidePanelCloseButtonElementId = 3;
-  kTabCounterButtonElementId = 4;
-  kDownloadToolbarButtonElementId = 5;
-  kMediaButtonElementId = 6;
-  kSidePanelButtonElementId = 7;
-  kSidePanelOpenInNewTabButtonElementId = 8;
-  kTabAlertIndicatorButtonElementId = 9;
-  kTabSearchButtonElementId = 10;
+enum Target {
+  kAddCurrentTabToReadingListElementId = 0;
+  kAppMenuButtonElementId = 1;
+  kAppUninstallDialogOkButtonId = 2;
+  kAutofillCreditCardSuggestionEntryElementId = 3;
+  kAutofillSuggestionElementId = 4;
+  kAvatarButtonElementId = 5;
+  kBatterySaverButtonElementId = 6;
+  kBackButtonElementId = 7;
+  kBookmarkBarElementId = 8;
+  kBookmarkSidePanelWebViewElementId = 9;
+  kBookmarkStarViewElementId = 10;
+  kBrowserViewElementId = 11;
+  kDownloadToolbarButtonElementId = 12;
+  kEnhancedProtectionSettingElementId = 13;
+  kExclusiveAccessBubbleViewElementId = 14;
+  kForwardButtonElementId = 15;
+  kHighEfficiencyChipElementId = 16;
+  kInstallPwaElementId = 17;
+  kIntentChipElementId = 18;
+  kLocationIconElementId = 19;
+  kMediaButtonElementId = 20;
+  kNewTabButtonElementId = 21;
+  kOmniboxElementId = 22;
+  kPasswordsOmniboxKeyIconElementId = 23;
+  kPriceTrackingChipElementId = 24;
+  kPriceTrackingBookmarkViewElementId = 25;
+  kReadLaterSidePanelWebViewElementId = 26;
+  kSavedTabGroupBarElementId = 27;
+  kSavedTabGroupButtonElementId = 28;
+  kSidePanelButtonElementId = 29;
+  kSidePanelElementId = 30;
+  kSidePanelCloseButtonElementId = 31;
+  kSidePanelComboboxElementId = 32;
+  kSidePanelCompanionToolbarButtonElementId = 33;
+  kSidePanelOpenInNewTabButtonElementId = 34;
+  kSidePanelPinButtonElementId = 35;
+  kSidePanelReadingListUnreadElementId = 36;
+  kSavePasswordComboboxElementId = 37;
+  kSideSearchButtonElementId = 38;
+  kSideSearchWebViewElementId = 39;
+  kTabAlertIndicatorButtonElementId = 40;
+  kTabCounterButtonElementId = 41;
+  kTabGroupEditorBubbleId = 42;
+  kTabGroupEditorBubbleSaveToggleId = 43;
+  kTabGroupHeaderElementId = 44;
+  kTabSearchBubbleElementId = 45;
+  kTabSearchButtonElementId = 46;
+  kTabElementId = 47;
+  kTabStripElementId = 48;
+  kTabStripRegionElementId = 49;
+  kTopContainerElementId = 50;
+  kUserNotesSidePanelWebViewElementId = 51;
+  kWebUIIPHDemoElementIdentifier = 52;
 }
-// Targets for SelectMenuItem
-enum MenuItem {
-  kBookmarksMenuItem = 0;
-  kHistoryMenuItem = 1;
-  kMoreToolsMenuItem = 2;
-  kDownloadsMenuItem = 3;
-  kExtensionsMenuItem = 4;
-  kPasswordManagerMenuItem = 5;
-}
-
 // Targets for SendAccelerator
 enum Accelerator {
   fullscreen_accelerator_ = 0;
