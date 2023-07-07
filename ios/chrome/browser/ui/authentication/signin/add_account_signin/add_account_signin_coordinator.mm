@@ -87,17 +87,8 @@ using signin_metrics::PromoAction;
   }
 
   DCHECK(self.addAccountSigninManager);
-  switch (action) {
-    case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
-    case SigninCoordinatorInterrupt::DismissWithoutAnimation:
-      [self.addAccountSigninManager interruptAddAccountAnimated:NO
-                                                     completion:completion];
-      break;
-    case SigninCoordinatorInterrupt::DismissWithAnimation:
-      [self.addAccountSigninManager interruptAddAccountAnimated:YES
-                                                     completion:completion];
-      break;
-  }
+  [self.addAccountSigninManager interruptWithAction:action
+                                         completion:completion];
 }
 
 #pragma mark - ChromeCoordinator

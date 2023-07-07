@@ -49,8 +49,8 @@
 - (void)showSigninWithDefaultUserEmail:(NSString*)defaultUserEmail;
 
 // Interrupts the add account view.
-- (void)interruptAddAccountAnimated:(BOOL)animated
-                         completion:(ProceduralBlock)completion;
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
+                 completion:(ProceduralBlock)completion;
 
 @end
 

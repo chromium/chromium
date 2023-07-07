@@ -171,10 +171,11 @@ TEST_F(AddAccountSigninManagerTest, AddAccountWithEmailSigninInterrupted) {
   WaitForFakeAddAccountViewPresented(
       /*expectedUserEmail=*/@"email@example.com");
   __block BOOL completionCalled = NO;
-  [signin_manager_ interruptAddAccountAnimated:YES
-                                    completion:^() {
-                                      completionCalled = YES;
-                                    }];
+  [signin_manager_
+      interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
+               completion:^() {
+                 completionCalled = YES;
+               }];
   WaitForFakeAddAccountViewDismissed();
   EXPECT_TRUE(completionCalled);
 }
@@ -266,10 +267,11 @@ TEST_F(AddAccountSigninManagerTest, AddAccountWithoutEmailSigninInterrupted) {
   [signin_manager_ showSigninWithDefaultUserEmail:nil];
   WaitForFakeAddAccountViewPresented(/*expectedUserEmail=*/nil);
   __block BOOL completionCalled = NO;
-  [signin_manager_ interruptAddAccountAnimated:YES
-                                    completion:^() {
-                                      completionCalled = YES;
-                                    }];
+  [signin_manager_
+      interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
+               completion:^() {
+                 completionCalled = YES;
+               }];
   WaitForFakeAddAccountViewDismissed();
   EXPECT_TRUE(completionCalled);
 }
