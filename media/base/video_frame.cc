@@ -1232,21 +1232,27 @@ gfx::ColorSpace VideoFrame::ColorSpace() const {
 }
 
 bool VideoFrame::RequiresExternalSampler() const {
+  const bool is_multiplanar_pixel_format = format() == PIXEL_FORMAT_NV12 ||
+                                           format() == PIXEL_FORMAT_YV12 ||
+                                           format() == PIXEL_FORMAT_P016LE;
+
   // With SharedImageFormats NumTextures() is always 1. Use
   // SharedImageFormatType to check for NumTextures for legacy formats and
-  // kSharedImageFormatExternalSampler for SharedImageFormats
-  const bool result =
-      (format() == PIXEL_FORMAT_NV12 || format() == PIXEL_FORMAT_YV12 ||
-       format() == PIXEL_FORMAT_P016LE) &&
-      ((NumTextures() == 1 &&
-        shared_image_format_type() == SharedImageFormatType::kLegacy) ||
-       shared_image_format_type() ==
-           SharedImageFormatType::kSharedImageFormatExternalSampler);
+  // kSharedImageFormatExternalSampler for SharedImageFormats. Note that
+  // kSharedImageFormatExternalSampler is set only for multiplanar formats.
+  const bool requires_external_sampler =
+      shared_image_format_type() ==
+          SharedImageFormatType::kSharedImageFormatExternalSampler ||
+      (is_multiplanar_pixel_format &&
+       (NumTextures() == 1 &&
+        shared_image_format_type() == SharedImageFormatType::kLegacy));
+
   // The texture target can be 0 for Fuchsia.
-  DCHECK(!result ||
-         (mailbox_holder(0).texture_target == GL_TEXTURE_EXTERNAL_OES ||
-          mailbox_holder(0).texture_target == 0u));
-  return result;
+  DCHECK(!requires_external_sampler ||
+         (is_multiplanar_pixel_format &&
+          (mailbox_holder(0).texture_target == GL_TEXTURE_EXTERNAL_OES ||
+           mailbox_holder(0).texture_target == 0u)));
+  return requires_external_sampler;
 }
 
 int VideoFrame::row_bytes(size_t plane) const {
