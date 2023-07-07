@@ -41,7 +41,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/public/base/consent_level.h"
@@ -408,9 +407,6 @@ void PeopleHandler::HandleSetDatatypes(const base::Value::List& args) {
   const base::Value* callback_id = nullptr;
   ParseConfigurationArguments(args, &configuration, &callback_id);
 
-  autofill::prefs::SetPaymentsIntegrationEnabled(
-      profile_->GetPrefs(), configuration.payments_integration_enabled);
-
   // Start configuring the SyncService using the configuration passed to us from
   // the JS layer.
   syncer::SyncService* service = GetSyncService();
@@ -427,6 +423,9 @@ void PeopleHandler::HandleSetDatatypes(const base::Value::List& args) {
   // on Chrome OS).
   configuration.selected_types.RetainAll(
       service->GetUserSettings()->GetRegisteredSelectableTypes());
+
+  service->GetUserSettings()->SetPaymentsIntegrationEnabled(
+      configuration.payments_integration_enabled);
 
   service->GetUserSettings()->SetSelectedTypes(configuration.sync_everything,
                                                configuration.selected_types);
@@ -1013,7 +1012,7 @@ void PeopleHandler::PushSyncPrefs() {
   }
   args.Set("syncAllDataTypes", sync_user_settings->IsSyncEverythingEnabled());
   args.Set("paymentsIntegrationEnabled",
-           autofill::prefs::IsPaymentsIntegrationEnabled(profile_->GetPrefs()));
+           sync_user_settings->IsPaymentsIntegrationEnabled());
   args.Set("encryptAllData", sync_user_settings->IsEncryptEverythingEnabled());
   args.Set("customPassphraseAllowed",
            sync_user_settings->IsCustomPassphraseAllowed());
@@ -1081,7 +1080,7 @@ void PeopleHandler::MarkFirstSetupComplete() {
   }
 
   unified_consent::metrics::RecordSyncSetupDataTypesHistrogam(
-      service->GetUserSettings(), profile_->GetPrefs());
+      service->GetUserSettings());
 
   // We're done configuring, so notify SyncService that it is OK to start
   // syncing.

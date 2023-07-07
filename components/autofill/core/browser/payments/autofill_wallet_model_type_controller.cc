@@ -54,9 +54,13 @@ void AutofillWalletModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
 syncer::DataTypeController::PreconditionState
 AutofillWalletModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
+  // Note that IsPaymentsIntegrationEnabled() doesn't need an explicit
+  // observation and corresponding DataTypePreconditionChanged(), because
+  // SyncService has built-in support for reacting to changes.
+  // TODO(crbug.com/1459963): Remove this asymmetry by avoiding
+  // IsPaymentsIntegrationEnabled() altogether as precondition state.
   bool preconditions_met =
-      pref_service_->GetBoolean(
-          autofill::prefs::kAutofillWalletImportEnabled) &&
+      sync_service_->GetUserSettings()->IsPaymentsIntegrationEnabled() &&
       pref_service_->GetBoolean(autofill::prefs::kAutofillCreditCardEnabled);
   return preconditions_met ? PreconditionState::kPreconditionsMet
                            : PreconditionState::kMustStopAndClearData;
@@ -79,10 +83,6 @@ void AutofillWalletModelTypeController::OnUserPrefChanged() {
 
 void AutofillWalletModelTypeController::SubscribeToPrefChanges() {
   pref_registrar_.Init(pref_service_);
-  pref_registrar_.Add(
-      autofill::prefs::kAutofillWalletImportEnabled,
-      base::BindRepeating(&AutofillWalletModelTypeController::OnUserPrefChanged,
-                          base::Unretained(this)));
   pref_registrar_.Add(
       autofill::prefs::kAutofillCreditCardEnabled,
       base::BindRepeating(&AutofillWalletModelTypeController::OnUserPrefChanged,

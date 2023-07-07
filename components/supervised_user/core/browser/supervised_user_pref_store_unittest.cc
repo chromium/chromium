@@ -8,7 +8,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
-#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/safe_search_api/safe_search_util.h"
@@ -16,6 +15,7 @@
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/sync/base/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -126,7 +126,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
 
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
-                  autofill::prefs::kAutofillWalletImportEnabled),
+                  syncer::prefs::internal::kAutofillWalletImportEnabled),
               false);
 #endif
 

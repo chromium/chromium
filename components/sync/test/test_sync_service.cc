@@ -145,13 +145,21 @@ void TestSyncService::SetDownloadStatusFor(
 }
 
 void TestSyncService::FireStateChanged() {
-  for (SyncServiceObserver& observer : observers_)
+  for (SyncServiceObserver& observer : observers_) {
     observer.OnStateChanged(this);
+  }
+}
+
+void TestSyncService::FirePaymentsIntegrationEnabledChanged() {
+  for (SyncServiceObserver& observer : observers_) {
+    observer.OnSyncPaymentsIntegrationEnabledChanged(this);
+  }
 }
 
 void TestSyncService::FireSyncCycleCompleted() {
-  for (SyncServiceObserver& observer : observers_)
+  for (SyncServiceObserver& observer : observers_) {
     observer.OnSyncCycleCompleted(this);
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)

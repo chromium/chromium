@@ -7,9 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #import "base/mac/foundation_util.h"
-#import "components/autofill/core/common/autofill_prefs.h"
-#import "components/prefs/pref_registry_simple.h"
-#import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
@@ -57,18 +54,6 @@ using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 
-namespace {
-
-PrefService* SetPrefService() {
-  TestingPrefServiceSimple* prefs = new TestingPrefServiceSimple();
-  PrefRegistrySimple* registry = prefs->registry();
-  registry->RegisterBooleanPref(autofill::prefs::kAutofillWalletImportEnabled,
-                                true);
-
-  return prefs;
-}
-}  // namespace
-
 class ManageSyncSettingsMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
@@ -98,8 +83,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
         initWithStyle:UITableViewStyleGrouped];
     [consumer_ loadModel];
 
-    pref_service_ = SetPrefService();
-
     sync_setup_service_mock_ = static_cast<SyncSetupServiceMock*>(
         SyncSetupServiceFactory::GetForBrowserState(browser_state_.get()));
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
@@ -115,7 +98,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 
     mediator_ = [[ManageSyncSettingsMediator alloc]
           initWithSyncService:sync_service_mock_
-              userPrefService:pref_service_
               identityManager:IdentityManagerFactory::GetForBrowserState(
                                   browser_state_.get())
         authenticationService:authentication_service
@@ -169,7 +151,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 
   ManageSyncSettingsMediator* mediator_ = nullptr;
   ManageSyncSettingsTableViewController* consumer_ = nullptr;
-  PrefService* pref_service_ = nullptr;
 };
 
 // Tests for Advanced Settings items.

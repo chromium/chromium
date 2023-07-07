@@ -1368,11 +1368,11 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       autofill::PersonalDataManagerFactory::GetForProfile(profile);
   html_source->AddBoolean(
       "migrationEnabled",
-      !is_guest_mode && autofill::IsCreditCardMigrationEnabled(
-                            personal_data, profile->GetPrefs(),
-                            SyncServiceFactory::GetForProfile(profile),
-                            /*is_test_mode=*/false,
-                            /*log_manager=*/nullptr));
+      !is_guest_mode &&
+          autofill::IsCreditCardMigrationEnabled(
+              personal_data, SyncServiceFactory::GetForProfile(profile),
+              /*is_test_mode=*/false,
+              /*log_manager=*/nullptr));
 
   html_source->AddBoolean("showIbansSettings",
                           autofill::ShouldShowIbanOnSettingsPage(

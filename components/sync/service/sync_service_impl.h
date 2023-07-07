@@ -195,7 +195,8 @@ class SyncServiceImpl : public SyncService,
   void OnSyncManagedPrefChange(bool is_sync_managed) override;
   void OnFirstSetupCompletePrefChange(
       bool is_initial_sync_feature_setup_complete) override;
-  void OnPreferredDataTypesPrefChange() override;
+  void OnPreferredDataTypesPrefChange(
+      bool payments_integration_enabled_changed) override;
 
   // KeyedService implementation.  This must be called exactly
   // once (before this object is destroyed).

@@ -258,6 +258,16 @@ public class FakeSyncServiceImpl extends SyncService {
     }
 
     @Override
+    public boolean isPaymentsIntegrationEnabled() {
+        return mDelegate.isPaymentsIntegrationEnabled();
+    }
+
+    @Override
+    public void setPaymentsIntegrationEnabled(boolean enable) {
+        mDelegate.setPaymentsIntegrationEnabled(enable);
+    }
+
+    @Override
     public SyncSetupInProgressHandle getSetupInProgressHandle() {
         return mDelegate.getSetupInProgressHandle();
     }

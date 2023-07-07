@@ -15,7 +15,6 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_value_map.h"
@@ -27,6 +26,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/sync/base/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 
 namespace {
@@ -130,7 +130,10 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
     prefs_->SetBoolean(feed::prefs::kEnableSnippets, false);
 
 #if BUILDFLAG(IS_ANDROID)
-    prefs_->SetBoolean(autofill::prefs::kAutofillWalletImportEnabled, false);
+    // TODO(crbug.com/1435427, crbug.com/1451509): Avoid a direct dependency to
+    // internal prefs.
+    prefs_->SetBoolean(syncer::prefs::internal::kAutofillWalletImportEnabled,
+                       false);
 #endif
 
     // Copy supervised user settings to prefs.

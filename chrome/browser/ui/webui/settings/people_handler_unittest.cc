@@ -889,7 +889,6 @@ TEST_F(PeopleHandlerTest, ShowSetupSyncEverything) {
   ExpectHasBoolKey(dictionary, "tabsRegistered", true);
   ExpectHasBoolKey(dictionary, "themesRegistered", true);
   ExpectHasBoolKey(dictionary, "typedUrlsRegistered", true);
-  ExpectHasBoolKey(dictionary, "paymentsIntegrationEnabled", true);
   ExpectHasBoolKey(dictionary, "passphraseRequired", false);
   ExpectHasBoolKey(dictionary, "encryptAllData", false);
   CheckConfigDataTypeArguments(dictionary, SYNC_ALL_DATA, GetAllTypes());

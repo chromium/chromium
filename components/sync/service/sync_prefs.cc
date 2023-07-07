@@ -97,6 +97,9 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::internal::kSyncAppsEnabledByOs, false);
 #endif
 
+  registry->RegisterBooleanPref(prefs::internal::kAutofillWalletImportEnabled,
+                                true);
+
   registry->RegisterIntegerPref(kSyncToSigninMigrationState, kNotMigrated);
 
   // The encryption bootstrap token represents a user-entered passphrase.
@@ -288,8 +291,11 @@ void SyncPrefs::SetSelectedTypes(bool keep_everything_synced,
     pref_service_->SetBoolean(pref_name, selected_types.Has(type));
   }
 
+  // Note that payments integration is controlled via
+  // SetPaymentsIntegrationEnabled(), hence it cannot have changed here.
   for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnPreferredDataTypesPrefChange();
+    observer.OnPreferredDataTypesPrefChange(
+        /*payments_integration_enabled_changed=*/false);
   }
 }
 
@@ -297,6 +303,8 @@ void SyncPrefs::SetSelectedTypeForAccount(
     UserSelectableType type,
     bool is_type_on,
     const signin::GaiaIdHash& gaia_id_hash) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   {
     ScopedDictPrefUpdate update_selected_types_dict(
         pref_service_, prefs::internal::kSelectedTypesPerAccount);
@@ -304,8 +312,30 @@ void SyncPrefs::SetSelectedTypeForAccount(
         update_selected_types_dict->EnsureDict(gaia_id_hash.ToBase64());
     account_settings->Set(GetPrefNameForType(type), is_type_on);
   }
+
+  // Note that payments integration is controlled via
+  // SetPaymentsIntegrationEnabled(), hence it cannot have changed here.
   for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnPreferredDataTypesPrefChange();
+    observer.OnPreferredDataTypesPrefChange(
+        /*payments_integration_enabled_changed=*/false);
+  }
+}
+
+bool SyncPrefs::IsPaymentsIntegrationEnabled() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_->GetBoolean(
+      prefs::internal::kAutofillWalletImportEnabled);
+}
+
+void SyncPrefs::SetPaymentsIntegrationEnabled(bool enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  pref_service_->SetBoolean(prefs::internal::kAutofillWalletImportEnabled,
+                            enabled);
+
+  for (SyncPrefObserver& observer : sync_pref_observers_) {
+    observer.OnPreferredDataTypesPrefChange(
+        /*payments_integration_enabled_changed=*/true);
   }
 }
 
@@ -333,20 +363,24 @@ void SyncPrefs::KeepAccountSettingsPrefsOnlyForUsers(
 
 #if BUILDFLAG(IS_IOS)
 void SyncPrefs::SetBookmarksAndReadingListAccountStorageOptIn(bool value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetBoolean(
       prefs::internal::kBookmarksAndReadingListAccountStorageOptIn, value);
 
   for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnPreferredDataTypesPrefChange();
+    observer.OnPreferredDataTypesPrefChange(
+        /*payments_integration_enabled_changed=*/false);
   }
 }
 
 bool SyncPrefs::IsOptedInForBookmarksAndReadingListAccountStorageForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pref_service_->GetBoolean(
       prefs::internal::kBookmarksAndReadingListAccountStorageOptIn);
 }
 
 void SyncPrefs::ClearBookmarksAndReadingListAccountStorageOptIn() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->ClearPref(
       prefs::internal::kBookmarksAndReadingListAccountStorageOptIn);
 }
@@ -392,7 +426,8 @@ void SyncPrefs::SetSelectedOsTypes(bool sync_all_os_types,
     pref_service_->SetBoolean(pref_name, selected_types.Has(type));
   }
   for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnPreferredDataTypesPrefChange();
+    observer.OnPreferredDataTypesPrefChange(
+        /*payments_integration_enabled_changed=*/false);
   }
 }
 
@@ -436,7 +471,8 @@ void SyncPrefs::SetAppsSyncEnabledByOs(bool apps_sync_enabled) {
   pref_service_->SetBoolean(prefs::internal::kSyncAppsEnabledByOs,
                             apps_sync_enabled);
   for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnPreferredDataTypesPrefChange();
+    observer.OnPreferredDataTypesPrefChange(
+        /*payments_integration_enabled_changed=*/false);
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

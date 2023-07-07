@@ -25,7 +25,6 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/strings/grit/components_strings.h"
@@ -198,7 +197,6 @@ TEST_F(CreditCardAccessoryControllerTest,
        features::kAutofillShowUnmaskedCachedCardInManualFillingView},
       /*disabled_features=*/{features::kAutofillFillMerchantPromoCodeFields,
                              autofill::features::kAutofillKeyboardAccessory});
-  prefs::SetPaymentsIntegrationEnabled(profile()->GetPrefs(), true);
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForProfile(profile());
   // Add a non-virtual card.
@@ -213,7 +211,6 @@ TEST_F(CreditCardAccessoryControllerTest,
 
 TEST_F(CreditCardAccessoryControllerTest,
        AllowedForWebContentsForVirtualCards) {
-  prefs::SetPaymentsIntegrationEnabled(profile()->GetPrefs(), true);
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForProfile(profile());
   // Add a virtual card.

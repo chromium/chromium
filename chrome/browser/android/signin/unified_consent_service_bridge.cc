@@ -51,5 +51,5 @@ static void JNI_UnifiedConsentServiceBridge_RecordSyncSetupDataTypesHistogram(
   Profile* profile = ProfileAndroid::FromProfileAndroid(profileAndroid);
   auto* syncService = SyncServiceFactory::GetForProfile(profile);
   unified_consent::metrics::RecordSyncSetupDataTypesHistrogam(
-      syncService->GetUserSettings(), profile->GetPrefs());
+      syncService->GetUserSettings());
 }

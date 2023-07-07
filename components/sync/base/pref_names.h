@@ -83,6 +83,12 @@ inline constexpr char kSyncThemes[] = "sync.themes";
 inline constexpr char kSyncTypedUrls[] = "sync.typed_urls";
 inline constexpr char kSyncSavedTabGroups[] = "sync.saved_tab_groups";
 
+// Historic artifact for payment methods, which were implemented differently.
+// It represents a boolean that's true when payments integration is enabled by
+// the user.
+inline constexpr char kAutofillWalletImportEnabled[] =
+    "autofill.wallet_import_enabled";
+
 // Boolean used by enterprise configuration management in order to lock down
 // sync.
 inline constexpr char kSyncManaged[] = "sync.managed";

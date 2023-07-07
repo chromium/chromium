@@ -104,8 +104,7 @@ const char* const kSupportedAdditionalDomains[] = {"aol",
                                                    "yahoo",
                                                    "ymail"};
 
-bool IsCreditCardUploadEnabled(const PrefService* pref_service,
-                               const syncer::SyncService* sync_service,
+bool IsCreditCardUploadEnabled(const syncer::SyncService* sync_service,
                                const std::string& user_email,
                                const std::string& user_country,
                                const AutofillSyncSigninState sync_state,
@@ -173,7 +172,7 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
   }
 
   // Check Payments integration user setting.
-  if (!prefs::IsPaymentsIntegrationEnabled(pref_service)) {
+  if (!sync_service->GetUserSettings()->IsPaymentsIntegrationEnabled()) {
     autofill_metrics::LogCardUploadEnabledMetric(
         autofill_metrics::CardUploadEnabled::kPaymentsIntegrationDisabled,
         sync_state);
@@ -246,7 +245,6 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
 }
 
 bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
-                                  PrefService* pref_service,
                                   syncer::SyncService* sync_service,
                                   bool is_test_mode,
                                   LogManager* log_manager) {
@@ -255,7 +253,7 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
   // local card migration browsertests.
   if (!is_test_mode &&
       !IsCreditCardUploadEnabled(
-          pref_service, sync_service,
+          sync_service,
           personal_data_manager->GetAccountInfoForPaymentsServer().email,
           personal_data_manager->GetCountryCodeForExperimentGroup(),
           personal_data_manager->GetSyncSigninState(), log_manager)) {

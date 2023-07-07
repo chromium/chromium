@@ -61,8 +61,7 @@ using unified_consent::metrics::RecordSyncSetupDataTypesHistrogam;
     case SigninCoordinatorResultSuccess: {
       RecordAction(
           UserMetricsAction("Signin_Signin_ConfirmAdvancedSyncSettings"));
-      RecordSyncSetupDataTypesHistrogam(self.syncService->GetUserSettings(),
-                                        self.prefService);
+      RecordSyncSetupDataTypesHistrogam(self.syncService->GetUserSettings());
       break;
     }
     case SigninCoordinatorResultCanceledByUser:

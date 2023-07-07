@@ -1977,7 +1977,10 @@ TEST_F(PersonalDataManagerMockTest, GetAutofillOffers_WalletImportDisabled) {
   base::RunLoop run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
       .WillOnce(QuitMessageLoop(&run_loop));
-  prefs::SetPaymentsIntegrationEnabled(prefs_.get(), false);
+
+  ASSERT_EQ(2U, personal_data_->GetAutofillOffers().size());
+
+  sync_service.GetUserSettings()->SetPaymentsIntegrationEnabled(false);
 
   // Should return neither of them as the wallet import pref is disabled.
   EXPECT_EQ(0U, personal_data_->GetAutofillOffers().size());
@@ -2038,7 +2041,13 @@ TEST_F(PersonalDataManagerMockTest,
   base::RunLoop run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
       .WillOnce(QuitMessageLoop(&run_loop));
-  prefs::SetPaymentsIntegrationEnabled(prefs_.get(), false);
+
+  ASSERT_EQ(1U, personal_data_
+                    ->GetActiveAutofillPromoCodeOffersForOrigin(
+                        GURL("http://www.example.com"))
+                    .size());
+
+  sync_service.GetUserSettings()->SetPaymentsIntegrationEnabled(false);
 
   // Should not return the offer as the wallet import pref is disabled.
   EXPECT_EQ(0U, personal_data_

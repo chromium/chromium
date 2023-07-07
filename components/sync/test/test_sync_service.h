@@ -72,6 +72,7 @@ class TestSyncService : public SyncService {
                             ModelTypeDownloadStatus download_status);
 
   void FireStateChanged();
+  void FirePaymentsIntegrationEnabledChanged();
   void FireSyncCycleCompleted();
 
   // SyncService implementation.

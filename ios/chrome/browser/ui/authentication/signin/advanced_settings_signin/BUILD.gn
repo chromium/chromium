@@ -54,7 +54,6 @@ source_set("unit_tests") {
   deps = [
     ":advanced_settings_signin",
     "//base/test:test_support",
-    "//components/autofill/core/common",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/signin/public/base",

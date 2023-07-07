@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #import "base/test/task_environment.h"
-#import "components/autofill/core/common/autofill_prefs.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -80,8 +79,6 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
     registry->RegisterStringPref(prefs::kGoogleServicesLastUsername,
                                  kTestEmail);
     registry->RegisterStringPref(prefs::kGoogleServicesLastGaiaId, kTestGaiaID);
-    registry->RegisterBooleanPref(autofill::prefs::kAutofillWalletImportEnabled,
-                                  false);
     return prefs;
   }
 

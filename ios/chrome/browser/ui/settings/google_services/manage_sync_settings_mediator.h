@@ -16,7 +16,6 @@ class AuthenticationService;
 class ChromeAccountManagerService;
 @protocol ManageSyncSettingsCommandHandler;
 @protocol ManageSyncSettingsConsumer;
-class PrefService;
 @protocol SyncErrorSettingsCommandHandler;
 class SyncSetupService;
 namespace signin {
@@ -56,7 +55,6 @@ class SyncService;
 // `syncService`: Sync service. Should not be null.
 - (instancetype)
       initWithSyncService:(syncer::SyncService*)syncService
-          userPrefService:(PrefService*)userPrefService
           identityManager:(signin::IdentityManager*)identityManager
     authenticationService:(AuthenticationService*)authenticationService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService

@@ -80,6 +80,19 @@ void TestSyncUserSettings::SetSelectedType(UserSelectableType type,
   }
 }
 
+bool TestSyncUserSettings::IsPaymentsIntegrationEnabled() const {
+  return is_payments_integration_enabled_;
+}
+
+void TestSyncUserSettings::SetPaymentsIntegrationEnabled(bool enabled) {
+  if (is_payments_integration_enabled_ == enabled) {
+    return;
+  }
+
+  is_payments_integration_enabled_ = enabled;
+  service_->FirePaymentsIntegrationEnabledChanged();
+}
+
 void TestSyncUserSettings::KeepAccountSettingsPrefsOnlyForUsers(
     const std::vector<signin::GaiaIdHash>& available_gaia_ids) {}
 

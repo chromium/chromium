@@ -32,7 +32,6 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -835,8 +834,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
 
   // Turn off the wallet autofill pref, the data & metadata should be gone as a
   // side effect of the wallet model type controller noticing.
-  autofill::prefs::SetPaymentsIntegrationEnabled(GetProfile(0)->GetPrefs(),
-                                                 false);
+  GetSyncService(0)->GetUserSettings()->SetPaymentsIntegrationEnabled(false);
 
   // It's not sufficient to wait for 0 cards (as in other tests) because
   // switching off the pref makes PDM (synchronously) return 0 cards (without

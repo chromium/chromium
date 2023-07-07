@@ -31,8 +31,6 @@ class AutofillExperimentsTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    pref_service_.registry()->RegisterBooleanPref(
-        prefs::kAutofillWalletImportEnabled, true);
     pref_service_.registry()->RegisterBooleanPref(prefs::kAutofillHasSeenIban,
                                                   false);
     log_manager_ = LogManager::Create(nullptr, base::NullCallback());
@@ -52,9 +50,9 @@ class AutofillExperimentsTest : public testing::Test {
   bool IsCreditCardUploadEnabled(const std::string& user_email,
                                  const std::string& user_country,
                                  const AutofillSyncSigninState sync_state) {
-    return autofill::IsCreditCardUploadEnabled(&pref_service_, &sync_service_,
-                                               user_email, user_country,
-                                               sync_state, log_manager_.get());
+    return autofill::IsCreditCardUploadEnabled(&sync_service_, user_email,
+                                               user_country, sync_state,
+                                               log_manager_.get());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -179,7 +177,7 @@ TEST_F(AutofillExperimentsTest,
 
 TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_AutofillWalletImportEnabledPrefIsDisabled) {
-  prefs::SetPaymentsIntegrationEnabled(&pref_service_, false);
+  sync_service_.GetUserSettings()->SetPaymentsIntegrationEnabled(false);
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(

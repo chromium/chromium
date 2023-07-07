@@ -151,6 +151,8 @@ class PersonalDataManager : public KeyedService,
 
   // SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncPaymentsIntegrationEnabledChanged(
+      syncer::SyncService* sync) override;
   void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // AccountInfoGetter:
@@ -897,9 +899,6 @@ class PersonalDataManager : public KeyedService,
   // Prefers verified profiles over unverified ones.
   std::string MostCommonCountryCodeFromProfiles() const;
 
-  // Called when the value of prefs::kAutofillWalletImportEnabled changes.
-  void EnableWalletIntegrationPrefChanged();
-
   // Called when the value of prefs::kAutofillCreditCardEnabled or
   // prefs::kAutofillProfileEnabled changes.
   void EnableAutofillPrefChanged();
@@ -1044,9 +1043,6 @@ class PersonalDataManager : public KeyedService,
 
   // An observer to listen for changes to prefs::kAutofillProfileEnabled.
   std::unique_ptr<BooleanPrefMember> profile_enabled_pref_;
-
-  // An observer to listen for changes to prefs::kAutofillWalletImportEnabled.
-  std::unique_ptr<BooleanPrefMember> wallet_enabled_pref_;
 
   // The database that is used to count guid-keyed strikes to suppress the
   // migration-prompt of new profiles.

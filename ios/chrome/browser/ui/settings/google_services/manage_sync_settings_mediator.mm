@@ -9,8 +9,6 @@
 #import "base/containers/fixed_flat_map.h"
 #import "base/mac/foundation_util.h"
 #import "base/notreached.h"
-#import "components/autofill/core/common/autofill_prefs.h"
-#import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -48,7 +46,6 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_consumer.h"
 #import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
-#import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
@@ -100,8 +97,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
 
 }  // namespace
 
-@interface ManageSyncSettingsMediator () <BooleanObserver,
-                                          IdentityManagerObserverBridgeDelegate,
+@interface ManageSyncSettingsMediator () <IdentityManagerObserverBridgeDelegate,
                                           ChromeAccountManagerServiceObserver>
 
 // Model item for sync everything.
@@ -130,8 +126,6 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   std::unique_ptr<SyncObserverBridge> _syncObserver;
   // Whether Sync State changes should be currently ignored.
   BOOL _ignoreSyncStateChanges;
-  // Preference value for kAutofillWalletImportEnabled.
-  PrefBackedBoolean* _autocompleteWalletPreference;
   // Sync service.
   syncer::SyncService* _syncService;
   // Observer for `IdentityManager`.
@@ -150,7 +144,6 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
 
 - (instancetype)
       initWithSyncService:(syncer::SyncService*)syncService
-          userPrefService:(PrefService*)userPrefService
           identityManager:(signin::IdentityManager*)identityManager
     authenticationService:(AuthenticationService*)authenticationService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
@@ -162,10 +155,6 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
     _authenticationService = authenticationService;
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
-    _autocompleteWalletPreference = [[PrefBackedBoolean alloc]
-        initWithPrefService:userPrefService
-                   prefName:autofill::prefs::kAutofillWalletImportEnabled];
-    _autocompleteWalletPreference.observer = self;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
@@ -185,9 +174,6 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   _authenticationService = nullptr;
   _syncObserver.reset();
   _syncService = nullptr;
-  _autocompleteWalletPreference.observer = nil;
-  [_autocompleteWalletPreference stop];
-  _autocompleteWalletPreference = nil;
   _identityManagerObserver.reset();
   _authenticationService = nullptr;
   _chromeAccountManagerService = nullptr;
@@ -433,7 +419,8 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
       syncer::UserSelectableType::kAutofill);
   BOOL autocompleteWalletEnabled =
       isAutofillOn && self.shouldSyncDataItemEnabled;
-  BOOL autocompleteWalletOn = _autocompleteWalletPreference.value;
+  BOOL autocompleteWalletOn =
+      _syncService->GetUserSettings()->IsPaymentsIntegrationEnabled();
   BOOL needsUpdate = (syncSwitchItem.enabled != autocompleteWalletEnabled) ||
                      (syncSwitchItem.on != autocompleteWalletOn);
   syncSwitchItem.enabled = autocompleteWalletEnabled;
@@ -840,12 +827,6 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   [self loadSignOutAndManageAccountsSection];
 }
 
-#pragma mark - BooleanObserver
-
-- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  [self updateAutocompleteWalletItemNotifyConsumer:YES];
-}
-
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
@@ -911,7 +892,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
           // When sync everything is turned on, the autocomplete wallet
           // should be turned on. This code can be removed once
           // crbug.com/937234 is fixed.
-          _autocompleteWalletPreference.value = true;
+          _syncService->GetUserSettings()->SetPaymentsIntegrationEnabled(true);
         }
         break;
       case HistoryDataTypeItemType: {
@@ -953,7 +934,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
           // when auto fill data type disabled. This behaviour not be
           // implemented in the UI code. This code can be removed once
           // crbug.com/937234 is fixed.
-          _autocompleteWalletPreference.value = value;
+          _syncService->GetUserSettings()->SetPaymentsIntegrationEnabled(value);
         }
         break;
       }
@@ -962,7 +943,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
                                                     kAutofill]) {
           break;
         }
-        _autocompleteWalletPreference.value = value;
+        _syncService->GetUserSettings()->SetPaymentsIntegrationEnabled(value);
         break;
       case SignOutAndTurnOffSyncItemType:
       case ManageGoogleAccountItemType:

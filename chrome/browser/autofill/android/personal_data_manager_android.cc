@@ -912,19 +912,6 @@ static jboolean JNI_PersonalDataManager_IsAutofillCreditCardManaged(
   return prefs::IsAutofillCreditCardManaged(GetPrefs());
 }
 
-// Returns whether the Payments integration feature is enabled.
-static jboolean JNI_PersonalDataManager_IsPaymentsIntegrationEnabled(
-    JNIEnv* env) {
-  return prefs::IsPaymentsIntegrationEnabled(GetPrefs());
-}
-
-// Enables or disables the Payments integration feature.
-static void JNI_PersonalDataManager_SetPaymentsIntegrationEnabled(
-    JNIEnv* env,
-    jboolean enable) {
-  prefs::SetPaymentsIntegrationEnabled(GetPrefs(), enable);
-}
-
 // Returns an ISO 3166-1-alpha-2 country code for a |jcountry_name| using
 // the application locale, or an empty string.
 static ScopedJavaLocalRef<jstring> JNI_PersonalDataManager_ToCountryCode(

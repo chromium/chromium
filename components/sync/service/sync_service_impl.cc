@@ -1335,18 +1335,21 @@ base::Time SyncServiceImpl::GetLastSyncedTimeForDebugging() const {
   return engine_->GetLastSyncedTimeForDebugging();
 }
 
-void SyncServiceImpl::OnPreferredDataTypesPrefChange() {
+void SyncServiceImpl::OnPreferredDataTypesPrefChange(
+    bool payments_integration_enabled_changed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!engine_ && !HasDisableReason(DISABLE_REASON_UNRECOVERABLE_ERROR)) {
-    return;
-  }
 
   if (data_type_manager_) {
     data_type_manager_->ResetDataTypeErrors();
   }
 
   ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
+
+  if (payments_integration_enabled_changed) {
+    for (SyncServiceObserver& observer : *observers_) {
+      observer.OnSyncPaymentsIntegrationEnabledChanged(this);
+    }
+  }
 }
 
 SyncClient* SyncServiceImpl::GetSyncClientForTest() {

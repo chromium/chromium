@@ -44,7 +44,6 @@ extern const char kAutofillStatesDataDir[];
 extern const char kAutofillUploadEncodingSeed[];
 extern const char kAutofillUploadEvents[];
 extern const char kAutofillUploadEventsLastResetTimestamp[];
-extern const char kAutofillWalletImportEnabled[];
 extern const char kAutocompleteLastVersionRetentionPolicy[];
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 extern const char kAutofillPaymentMethodsMandatoryReauth[];
@@ -95,10 +94,6 @@ bool IsAutofillCreditCardManaged(const PrefService* prefs);
 bool IsAutofillProfileEnabled(const PrefService* prefs);
 
 void SetAutofillProfileEnabled(PrefService* prefs, bool enabled);
-
-bool IsPaymentsIntegrationEnabled(const PrefService* prefs);
-
-void SetPaymentsIntegrationEnabled(PrefService* prefs, bool enabled);
 
 bool IsPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs);
 

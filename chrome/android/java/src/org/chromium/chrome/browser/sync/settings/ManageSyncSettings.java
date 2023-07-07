@@ -36,7 +36,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -372,15 +371,14 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     }
 
     /**
-     * Gets the state from data type checkboxes and saves this state into {@link SyncService}
-     * and {@link PersonalDataManager}.
+     * Gets the state from data type checkboxes and saves this state into {@link SyncService}.
      */
     private void updateSyncStateFromSelectedTypes() {
         mSyncService.setSelectedTypes(mSyncEverything.isChecked(), getUserSelectedTypes());
         // Note: mSyncPaymentsIntegration should be checked if mSyncEverything is checked, but if
         // mSyncEverything was just enabled, then that state may not have propagated to
         // mSyncPaymentsIntegration yet. See crbug.com/972863.
-        PersonalDataManager.setPaymentsIntegrationEnabled(mSyncEverything.isChecked()
+        mSyncService.setPaymentsIntegrationEnabled(mSyncEverything.isChecked()
                 || (mSyncPaymentsIntegration.isChecked()
                         && mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked()));
 
@@ -616,7 +614,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         // Payments integration requires AUTOFILL user selectable type.
         mSyncPaymentsIntegration.setChecked(
                 mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked()
-                && PersonalDataManager.isPaymentsIntegrationEnabled());
+                && mSyncService.isPaymentsIntegrationEnabled());
         mSyncPaymentsIntegration.setEnabled(!syncEverything
                 && mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked()
                 && !Profile.getLastUsedRegularProfile().isChild());

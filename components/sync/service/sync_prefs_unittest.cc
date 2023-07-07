@@ -54,7 +54,7 @@ class MockSyncPrefObserver : public SyncPrefObserver {
  public:
   MOCK_METHOD(void, OnSyncManagedPrefChange, (bool), (override));
   MOCK_METHOD(void, OnFirstSetupCompletePrefChange, (bool), (override));
-  MOCK_METHOD(void, OnPreferredDataTypesPrefChange, (), (override));
+  MOCK_METHOD(void, OnPreferredDataTypesPrefChange, (bool), (override));
 };
 
 TEST_F(SyncPrefsTest, ObservedPrefs) {
@@ -92,7 +92,9 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
   StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
-  EXPECT_CALL(mock_sync_pref_observer, OnPreferredDataTypesPrefChange());
+  EXPECT_CALL(mock_sync_pref_observer,
+              OnPreferredDataTypesPrefChange(
+                  /*payments_integration_enabled_changed=*/false));
 
   sync_prefs_->AddSyncPrefObserver(&mock_sync_pref_observer);
   sync_prefs_->SetSelectedOsTypes(/*sync_all_os_types=*/false,
@@ -423,6 +425,29 @@ TEST_F(SyncPrefsTest,
                    .Has(UserSelectableType::kPasswords));
 }
 
+TEST_F(SyncPrefsTest, PaymentsIntegrationEnabled) {
+  StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
+  sync_prefs_->AddSyncPrefObserver(&mock_sync_pref_observer);
+
+  // It should be enabled by default.
+  EXPECT_TRUE(sync_prefs_->IsPaymentsIntegrationEnabled());
+
+  // Set it to false and verify.
+  EXPECT_CALL(mock_sync_pref_observer,
+              OnPreferredDataTypesPrefChange(
+                  /*payments_integration_enabled_changed=*/true));
+  sync_prefs_->SetPaymentsIntegrationEnabled(false);
+  EXPECT_FALSE(sync_prefs_->IsPaymentsIntegrationEnabled());
+  testing::Mock::VerifyAndClearExpectations(&mock_sync_pref_observer);
+
+  // Set it back to true and verify.
+  EXPECT_CALL(mock_sync_pref_observer,
+              OnPreferredDataTypesPrefChange(
+                  /*payments_integration_enabled_changed=*/true));
+  sync_prefs_->SetPaymentsIntegrationEnabled(true);
+  EXPECT_TRUE(sync_prefs_->IsPaymentsIntegrationEnabled());
+}
+
 TEST_F(SyncPrefsTest, KeepAccountSettingsPrefsOnlyForUsers) {
   base::test::ScopedFeatureList feature_list(
       kReplaceSyncPromosWithSignInPromos);
@@ -591,12 +616,16 @@ TEST_F(SyncPrefsTest, ShouldChangeAppsSyncEnabledByOsAndNotifyObservers) {
   StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
   sync_prefs_->AddSyncPrefObserver(&mock_sync_pref_observer);
 
-  EXPECT_CALL(mock_sync_pref_observer, OnPreferredDataTypesPrefChange());
+  EXPECT_CALL(mock_sync_pref_observer,
+              OnPreferredDataTypesPrefChange(
+                  /*payments_integration_enabled_changed=*/false));
   sync_prefs_->SetAppsSyncEnabledByOs(/*apps_sync_enabled=*/true);
   EXPECT_TRUE(sync_prefs_->IsAppsSyncEnabledByOs());
 
   testing::Mock::VerifyAndClearExpectations(&mock_sync_pref_observer);
-  EXPECT_CALL(mock_sync_pref_observer, OnPreferredDataTypesPrefChange());
+  EXPECT_CALL(mock_sync_pref_observer,
+              OnPreferredDataTypesPrefChange(
+                  /*payments_integration_enabled_changed=*/false));
   sync_prefs_->SetAppsSyncEnabledByOs(/*apps_sync_enabled=*/false);
   EXPECT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
 }

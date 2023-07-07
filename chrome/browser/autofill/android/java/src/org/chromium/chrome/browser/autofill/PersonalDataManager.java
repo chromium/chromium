@@ -1455,21 +1455,6 @@ public class PersonalDataManager {
         return PersonalDataManagerJni.get().isAutofillCreditCardManaged();
     }
 
-    /**
-     * @return Whether the Payments integration feature is enabled.
-     */
-    public static boolean isPaymentsIntegrationEnabled() {
-        return PersonalDataManagerJni.get().isPaymentsIntegrationEnabled();
-    }
-
-    /**
-     * Enables or disables the Payments integration.
-     * @param enable True to enable Payments data import.
-     */
-    public static void setPaymentsIntegrationEnabled(boolean enable) {
-        PersonalDataManagerJni.get().setPaymentsIntegrationEnabled(enable);
-    }
-
     @VisibleForTesting
     public static void setRequestTimeoutForTesting(int timeout) {
         sRequestTimeoutSeconds = timeout;
@@ -1647,8 +1632,6 @@ public class PersonalDataManager {
         boolean isAutofillManaged();
         boolean isAutofillProfileManaged();
         boolean isAutofillCreditCardManaged();
-        boolean isPaymentsIntegrationEnabled();
-        void setPaymentsIntegrationEnabled(boolean enable);
         String toCountryCode(String countryName);
         void cancelPendingGetSubKeys(long nativePersonalDataManagerAndroid);
         void setSyncServiceForTesting(long nativePersonalDataManagerAndroid);

@@ -35,7 +35,8 @@ class SyncPrefObserver {
   virtual void OnSyncManagedPrefChange(bool is_sync_managed) = 0;
   virtual void OnFirstSetupCompletePrefChange(
       bool is_initial_sync_feature_setup_complete) = 0;
-  virtual void OnPreferredDataTypesPrefChange() = 0;
+  virtual void OnPreferredDataTypesPrefChange(
+      bool payments_integration_enabled_changed) = 0;
 
  protected:
   virtual ~SyncPrefObserver();
@@ -130,6 +131,11 @@ class SyncPrefs {
   // passed-in |available_gaia_ids|.
   void KeepAccountSettingsPrefsOnlyForUsers(
       const std::vector<signin::GaiaIdHash>& available_gaia_ids);
+
+  // For historic reasons, payments is not listed as UserSelectableType
+  // and uses a separate API.
+  bool IsPaymentsIntegrationEnabled() const;
+  void SetPaymentsIntegrationEnabled(bool enabled);
 
 #if BUILDFLAG(IS_IOS)
   // Sets the opt-in for bookmarks & reading list in transport mode.

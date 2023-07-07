@@ -40,7 +40,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -1018,7 +1017,8 @@ public class ManageSyncSettingsTest {
 
     private void assertPaymentsIntegrationEnabled(final boolean enabled) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(enabled, PersonalDataManager.isPaymentsIntegrationEnabled());
+            Assert.assertEquals(
+                    enabled, mSyncTestRule.getSyncService().isPaymentsIntegrationEnabled());
         });
     }
 

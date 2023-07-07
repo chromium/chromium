@@ -181,6 +181,18 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
+    public boolean isPaymentsIntegrationEnabled() {
+        ThreadUtils.assertOnUiThread();
+        return SyncServiceImplJni.get().isPaymentsIntegrationEnabled(mSyncServiceAndroidBridge);
+    }
+
+    @Override
+    public void setPaymentsIntegrationEnabled(boolean enable) {
+        ThreadUtils.assertOnUiThread();
+        SyncServiceImplJni.get().setPaymentsIntegrationEnabled(mSyncServiceAndroidBridge, enable);
+    }
+
+    @Override
     public SyncSetupInProgressHandle getSetupInProgressHandle() {
         ThreadUtils.assertOnUiThread();
         if (++mSetupInProgressCounter == 1) {
@@ -424,6 +436,8 @@ public class SyncServiceImpl extends SyncService {
         boolean isTypeManagedByPolicy(long nativeSyncServiceAndroidBridge, int type);
         void setSelectedTypes(long nativeSyncServiceAndroidBridge, boolean syncEverything,
                 int[] userSelectableTypeArray);
+        boolean isPaymentsIntegrationEnabled(long nativeSyncServiceAndroidBridge);
+        void setPaymentsIntegrationEnabled(long nativeSyncServiceAndroidBridge, boolean enabled);
         boolean isCustomPassphraseAllowed(long nativeSyncServiceAndroidBridge);
         boolean isEncryptEverythingEnabled(long nativeSyncServiceAndroidBridge);
         boolean isPassphraseRequiredForPreferredDataTypes(long nativeSyncServiceAndroidBridge);

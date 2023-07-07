@@ -125,7 +125,6 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
   self.mediator = [[ManageSyncSettingsMediator alloc]
         initWithSyncService:self.syncService
-            userPrefService:browserState->GetPrefs()
             identityManager:IdentityManagerFactory::GetForBrowserState(
                                 browserState)
       authenticationService:self.authService

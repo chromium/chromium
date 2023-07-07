@@ -320,7 +320,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      */
     public void setPaymentsIntegrationEnabled(final boolean enabled) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> PersonalDataManager.setPaymentsIntegrationEnabled(enabled));
+                () -> mSyncService.setPaymentsIntegrationEnabled(enabled));
     }
 
     /*

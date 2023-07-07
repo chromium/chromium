@@ -103,10 +103,6 @@ const char kAutofillUploadEvents[] = "autofill.upload_events";
 const char kAutofillUploadEventsLastResetTimestamp[] =
     "autofill.upload_events_last_reset_timestamp";
 
-// Boolean that's true when Wallet card and address import is enabled by the
-// user.
-const char kAutofillWalletImportEnabled[] = "autofill.wallet_import_enabled";
-
 // Integer that is set to the last major version where the Autocomplete
 // retention policy was run.
 const char kAutocompleteLastVersionRetentionPolicy[] =
@@ -157,7 +153,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
 #endif
-  registry->RegisterBooleanPref(prefs::kAutofillWalletImportEnabled, true);
   registry->RegisterIntegerPref(
       prefs::kAutofillLastVersionDisusedCreditCardsDeleted, 0);
   registry->RegisterIntegerPref(prefs::kAutocompleteLastVersionRetentionPolicy,
@@ -244,14 +239,6 @@ bool IsAutofillProfileEnabled(const PrefService* prefs) {
 
 void SetAutofillProfileEnabled(PrefService* prefs, bool enabled) {
   prefs->SetBoolean(kAutofillProfileEnabled, enabled);
-}
-
-bool IsPaymentsIntegrationEnabled(const PrefService* prefs) {
-  return prefs->GetBoolean(kAutofillWalletImportEnabled);
-}
-
-void SetPaymentsIntegrationEnabled(PrefService* prefs, bool enabled) {
-  prefs->SetBoolean(kAutofillWalletImportEnabled, enabled);
 }
 
 bool IsPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs) {

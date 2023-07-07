@@ -69,6 +69,14 @@ class SyncUserSettings {
   // this function is only allowed while IsSyncEverythingEnabled() returns
   // false.
   virtual void SetSelectedType(UserSelectableType type, bool is_type_on) = 0;
+
+  // For historic reasons, payments is not listed as UserSelectableType and uses
+  // a separate API.
+  // TODO(crbug.com/1459963): Avoid dedicated APIs once there is an entry in
+  // UserSelectableType.
+  virtual bool IsPaymentsIntegrationEnabled() const = 0;
+  virtual void SetPaymentsIntegrationEnabled(bool enabled) = 0;
+
   // Clears per account prefs for all users *except* the ones in the passed-in
   // |available_gaia_ids|.
   virtual void KeepAccountSettingsPrefsOnlyForUsers(
