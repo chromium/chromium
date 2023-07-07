@@ -234,6 +234,7 @@ source_set("eg2_tests") {
     "//components/signin/public/base",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/reading_list:constants",
     "//ios/chrome/browser/shared/ui/elements:eg_test_support+eg2",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:constants",
@@ -282,14 +283,16 @@ source_set("eg_test_support+eg2") {
   sources = [
     "reading_list_app_interface.h",
     "reading_list_app_interface_stub.mm",
-    "reading_list_earl_grey_ui.h",
-    "reading_list_earl_grey_ui.mm",
+    "reading_list_egtest_utils.h",
+    "reading_list_egtest_utils.mm",
   ]
   deps = [
     ":reading_list_constants",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
   ]
 }

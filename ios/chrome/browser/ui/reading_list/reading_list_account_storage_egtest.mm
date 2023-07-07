@@ -6,6 +6,7 @@
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/reading_list/reading_list_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
@@ -13,12 +14,14 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_egtest_utils.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,11 +31,17 @@
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SecondarySignInButton;
+using reading_list_test_utils::AddedToLocalReadingListSnackbar;
+using reading_list_test_utils::AddURLToReadingList;
+using reading_list_test_utils::OpenReadingList;
+using reading_list_test_utils::ReadingListItem;
 
 namespace {
 
 NSString* const kReadTitle = @"foobar";
 NSString* const kReadURL = @"http://readfoobar.com";
+NSString* kNewItemTitle = @"New Item";
+const char kNewItemURL[] = "/newItem";
 
 id<GREYMatcher> SignedInSnackbar(NSString* email) {
   NSString* snackbarMessage = l10n_util::GetNSStringF(
@@ -44,6 +53,35 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
   return grey_accessibilityID(kSigninSnackbarUndo);
 }
 
+id<GREYMatcher> AddedToAccountStorageSnackbarUndoButton() {
+  return grey_accessibilityID(kReadingListAddedToAccountSnackbarUndoID);
+}
+
+// The cloud slash icon that appears for Reading List items that are only stored
+// in the local storage. Shown only for signed-in users.
+id<GREYMatcher> LocalItemIcon(NSString* title) {
+  return grey_allOf(grey_ancestor(ReadingListItem(title)),
+                    grey_accessibilityID(kTableViewURLCellMetadataImageID),
+                    nil);
+}
+
+// Provides responses containing a custom title for fake URLs.
+std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
+    const net::test_server::HttpRequest& request) {
+  std::unique_ptr<net::test_server::BasicHttpResponse> response =
+      std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+
+  if (request.relative_url == kNewItemURL) {
+    response->set_content("<html><head><title>" +
+                          base::SysNSStringToUTF8(kNewItemTitle) +
+                          "</title></head></html>");
+    return std::move(response);
+  }
+
+  return nil;
+}
+
 }  // namespace
 
 // Reading List integration tests for Chrome with account storage and UI
@@ -53,8 +91,16 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
 
 @implementation ReadingListAccountStorageTestCase
 
+- (void)setUp {
+  [super setUp];
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+}
+
 - (void)tearDown {
   [super tearDown];
+  [ChromeEarlGrey clearBrowsingHistory];
   GREYAssertNil([ReadingListAppInterface clearEntries],
                 @"Unable to clear Reading List entries");
 }
@@ -68,12 +114,12 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
   return config;
 }
 
-#pragma mark - ReadingListAccountStorageTestCase Tests
+#pragma mark - Sign-in promo and snackbar
 
 // Test that the Reading List sign-in promo is in the "no accounts" mode when
 // there is no identity on the device.
 - (void)testPromoWithNoMainAccount {
-  [ReadingListEarlGreyUI openReadingList];
+  OpenReadingList();
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
 }
@@ -83,7 +129,7 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
 - (void)testPromoWithMainAccount {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [ReadingListEarlGreyUI openReadingList];
+  OpenReadingList();
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
 }
@@ -95,7 +141,7 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Sign-in with the existing identity with the promo.
-  [ReadingListEarlGreyUI openReadingList];
+  OpenReadingList();
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
@@ -119,7 +165,7 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Sign-in with the existing identity with the promo.
-  [ReadingListEarlGreyUI openReadingList];
+  OpenReadingList();
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
@@ -153,7 +199,7 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
   // Use sign-in with the second account using the promo's secondary button.
-  [ReadingListEarlGreyUI openReadingList];
+  OpenReadingList();
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(SecondarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
@@ -181,7 +227,7 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
   // Verify that the promo is hidden in the Reading List.
-  [ReadingListEarlGreyUI openReadingList];
+  OpenReadingList();
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
@@ -192,7 +238,7 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
   // Verify that the promo is hidden in the Reading List.
-  [ReadingListEarlGreyUI openReadingList];
+  OpenReadingList();
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
@@ -203,7 +249,7 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   // Sign-in with identity1 with the promo.
-  [ReadingListEarlGreyUI openReadingList];
+  OpenReadingList();
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
   [[EarlGrey
@@ -235,7 +281,7 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
   // Sign-out and remove data.
   [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
 
-  [ReadingListEarlGreyUI openReadingList];
+  OpenReadingList();
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
 }
@@ -249,7 +295,7 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
   // Sign-out without removing data.
   [SigninEarlGrey signOut];
 
-  [ReadingListEarlGreyUI openReadingList];
+  OpenReadingList();
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
@@ -261,7 +307,7 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   // Open the Reading List in incognito mode.
   [ChromeEarlGrey openNewIncognitoTab];
-  [ReadingListEarlGreyUI openReadingList];
+  OpenReadingList();
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
   [[EarlGrey
@@ -278,7 +324,7 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
 // the promo item is still shown.
 // See https://crbug.com/1439243.
 - (void)testPromoShownAfterContentReload {
-  [ReadingListEarlGreyUI openReadingList];
+  OpenReadingList();
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
   GREYAssertNil(
@@ -288,6 +334,29 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
       @"Unable to add Reading List item");
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
+}
+
+#pragma mark - Local & account storage items
+
+// When adding an item and there's no signed-in account, test that the standard
+// "Added to Reading List" snackbar is shown and there's no cloud icon on the
+// new item.
+- (void)testAddItemWhenSignedOut {
+  AddURLToReadingList(self.testServer->GetURL(kNewItemURL));
+  // Verify that the right snackbar appears and there's no undo button on it.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:AddedToLocalReadingListSnackbar()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   AddedToAccountStorageSnackbarUndoButton(),
+                                   grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+  // Verify there's no cloud icon on the new item in the Reading List.
+  OpenReadingList();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(LocalItemIcon(kNewItemTitle),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

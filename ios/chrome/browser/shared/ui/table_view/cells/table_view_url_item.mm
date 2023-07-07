@@ -188,6 +188,7 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
     _metadataLabel.adjustsFontForContentSizeCategory = YES;
     _metadataLabel.hidden = YES;
     _metadataImage.contentMode = UIViewContentModeCenter;
+    _metadataImage.accessibilityIdentifier = kTableViewURLCellMetadataImageID;
 
     // Use stack views to layout the subviews except for the favicon.
     UIStackView* verticalStack = [[UIStackView alloc]

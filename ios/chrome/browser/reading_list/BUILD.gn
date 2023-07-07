@@ -13,8 +13,6 @@ source_set("reading_list") {
     "offline_url_utils.mm",
     "reading_list_browser_agent.h",
     "reading_list_browser_agent.mm",
-    "reading_list_constants.h",
-    "reading_list_constants.mm",
     "reading_list_distiller_page.h",
     "reading_list_distiller_page.mm",
     "reading_list_distiller_page_factory.h",
@@ -31,6 +29,7 @@ source_set("reading_list") {
     "url_downloader.mm",
   ]
   deps = [
+    ":constants",
     ":reading_list_remover",
     "//base",
     "//components/browser_sync",
@@ -100,6 +99,14 @@ source_set("reading_list_remover") {
     # allow_circular_includes_from.
     "//ios/chrome/browser/dom_distiller",
   ]
+}
+
+source_set("constants") {
+  sources = [
+    "reading_list_constants.h",
+    "reading_list_constants.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("test_support") {

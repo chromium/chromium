@@ -67,6 +67,9 @@ extern NSString* const kTableViewTabsSearchSuggestedHistoryItemId;
 // Accessibility identifier for the badge icon.
 extern NSString* const kTableViewURLCellFaviconBadgeViewID;
 
+// Accessibility identifier for the metadata image view.
+extern NSString* const kTableViewURLCellMetadataImageID;
+
 // Returns a padding according to the width of the current device.
 extern CGFloat HorizontalPadding();
 
