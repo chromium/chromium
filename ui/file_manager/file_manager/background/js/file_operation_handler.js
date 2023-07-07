@@ -64,7 +64,6 @@ export class FileOperationHandler {
     item.message = getMessageFromProgressEvent_(event);
     item.sourceMessage = event.sourceName;
     item.destinationMessage = event.destinationName;
-    item.policyError = getPolicyErrorFromIOTaskPolicyError_(event.policyError);
 
     switch (event.state) {
       case chrome.fileManagerPrivate.IOTaskState.QUEUED:
@@ -83,24 +82,22 @@ export class FileOperationHandler {
         item.remainingTime = event.remainingSeconds;
         break;
       case chrome.fileManagerPrivate.IOTaskState.PAUSED:
-        // Check for policy errors - the task might be paused because of warning
-        // level restrictions.
+        // Check if the task is paused because of warning level restrictions.
         if (event.pauseParams && event.pauseParams.policyParams) {
           item.state = ProgressItemState.PAUSED;
+          item.policyFileCount = event.pauseParams.policyParams.policyFileCount;
           // TODO(b/279435843): Replace with translation strings.
-          const extraButtonText =
-              (event.itemCount === 1) ? `${event.type} anyway` : 'Review';
+          const single = event.pauseParams.policyParams.policyFileCount === 1;
+          const extraButtonText = single ? `${event.type} anyway` : 'Review';
           item.setExtraButton(ProgressItemState.PAUSED, extraButtonText, () => {
-            if (event.itemCount === 1) {
-              // Single item: the user can continue the action directly from
-              // the notification.
+            if (single) {
+              // Proceed/cancel the action directly from the notification.
               chrome.fileManagerPrivate.resumeIOTask(event.taskId, {
                 policyParams: {type: event.pauseParams.policyParams.type},
                 conflictParams: undefined,
               });
             } else {
-              // Multiple items: the user can continue the action from the
-              // review dialog.
+              // Show the dialog to proceed/cancel.
               chrome.fileManagerPrivate.showPolicyDialog(
                   event.taskId,
                   chrome.fileManagerPrivate.PolicyDialogType.WARNING);
@@ -144,16 +141,26 @@ export class FileOperationHandler {
         } else {  // ERROR
           item.state = ProgressItemState.ERROR;
           // Check if there was a policy error.
-          // If more than one file was blocked, add the "Review" button.
-          if (item.policyError &&
-              item.policyError !== PolicyErrorType.DLP_WARNING_TIMEOUT &&
-              event.itemCount > 1) {
+          if (event.policyError) {
+            item.policyError =
+                getPolicyErrorFromIOTaskPolicyError_(event.policyError.type);
+            item.policyFileCount = event.policyError.policyFileCount;
             // TODO(b/279435843): Replace with translation strings.
-            item.setExtraButton(ProgressItemState.ERROR, 'Review', () => {
-              chrome.fileManagerPrivate.showPolicyDialog(
-                  event.taskId,
-                  chrome.fileManagerPrivate.PolicyDialogType.ERROR);
-            });
+            if (event.policyError.type !==
+                    PolicyErrorType.DLP_WARNING_TIMEOUT &&
+                event.policyError.policyFileCount > 1) {
+              item.setExtraButton(ProgressItemState.ERROR, 'Review', () => {
+                chrome.fileManagerPrivate.showPolicyDialog(
+                    event.taskId,
+                    chrome.fileManagerPrivate.PolicyDialogType.ERROR);
+              });
+            } else {
+              item.setExtraButton(
+                  ProgressItemState.ERROR, 'Learn more',
+                  () => {
+                      // TODO(b/289919765): Implementation.
+                  });
+            }
           }
         }
         break;

@@ -875,6 +875,14 @@ chrome.fileManagerPrivate.IOTaskParams;
 
 /**
  * @typedef {{
+ *   type: !chrome.fileManagerPrivate.PolicyErrorType,
+ *   policyFileCount: number
+ * }}
+ */
+chrome.fileManagerPrivate.PolicyError;
+
+/**
+ * @typedef {{
  *   conflictName: (string|undefined),
  *   conflictIsDirectory: (boolean|undefined),
  *   conflictMultiple: (boolean|undefined),
@@ -885,7 +893,8 @@ chrome.fileManagerPrivate.ConflictPauseParams;
 
 /**
  * @typedef {{
- *   type: !chrome.fileManagerPrivate.PolicyErrorType
+ *   type: !chrome.fileManagerPrivate.PolicyErrorType,
+ *   policyFileCount: number
  * }}
  */
 chrome.fileManagerPrivate.PolicyPauseParams;
@@ -925,7 +934,7 @@ chrome.fileManagerPrivate.ResumeParams;
  * @typedef {{
  *   type: !chrome.fileManagerPrivate.IOTaskType,
  *   state: !chrome.fileManagerPrivate.IOTaskState,
- *   policyError: (!chrome.fileManagerPrivate.PolicyErrorType|undefined),
+ *   policyError: (!chrome.fileManagerPrivate.PolicyError|undefined),
  *   sourceName: string,
  *   numRemainingItems: number,
  *   itemCount: number,

@@ -189,9 +189,11 @@ MATCHER_P3(ExpectEventArgString, index, field, expected_value, "") {
 }
 
 // A matcher that matches an `extensions::Event::event_args` and attempts to
-// extract the "pauseParams" key. It then looks at the output at `policyParams`
-// and matches the `field` against the `expected_value`.
-MATCHER_P(ExpectEventArgPauseParams, expected_value, "") {
+// extract the "conflictParams" and "pauseParams" keys. It expects
+// "conflictParams" to be empty, and then matches the "policyParams" values
+// "type" and "policyFileCount" against the `expected_type` and
+// `expected_count`.
+MATCHER_P2(ExpectEventArgPauseParams, expected_type, expected_count, "") {
   EXPECT_GE(arg.size(), 1u);
   const base::Value::Dict* pause_params =
       arg[0].GetDict().FindDict("pauseParams");
@@ -201,27 +203,44 @@ MATCHER_P(ExpectEventArgPauseParams, expected_value, "") {
   const base::Value::Dict* conflict_pause_params =
       pause_params->FindDict("conflictParams");
   EXPECT_FALSE(conflict_pause_params)
-      << "The conflictParams field is not available on the event";
+      << "The conflictParams field should not be available on the event";
 
   const base::Value::Dict* policy_pause_params =
       pause_params->FindDict("policyParams");
   EXPECT_TRUE(policy_pause_params)
       << "The policyParams field is not available on the event";
-  const std::string* actual_value = policy_pause_params->FindString("type");
-  EXPECT_TRUE(actual_value) << "Could not find the string with key: type";
-  return testing::ExplainMatchResult(expected_value, *actual_value,
+  const std::string* actual_type = policy_pause_params->FindString("type");
+  EXPECT_TRUE(actual_type) << "Could not find the string with key: type";
+  const absl::optional<int> actual_count =
+      policy_pause_params->FindInt("policyFileCount");
+  EXPECT_TRUE(actual_count.has_value())
+      << "Could not find the number with key: type";
+  return testing::ExplainMatchResult(expected_type, *actual_type,
+                                     result_listener) &&
+         testing::ExplainMatchResult(expected_count, actual_count.value(),
                                      result_listener);
 }
 
 // A matcher that matches an `extensions::Event::event_args` and attempts to
-// extract the "policyError" key.  against the `expected_value`.
-MATCHER_P(ExpectEventArgPolicyError, expected_value, "") {
+// extract the "policyError" key. It then matches the "policyError" values
+// "type" and "policyFileCount" against the `expected_type` and
+// `expected_count`.
+MATCHER_P2(ExpectEventArgPolicyError, expected_type, expected_count, "") {
   EXPECT_GE(arg.size(), 1u);
-  const std::string* policy_error = arg[0].GetDict().FindString("policyError");
+  const base::Value::Dict* policy_error =
+      arg[0].GetDict().FindDict("policyError");
   EXPECT_TRUE(policy_error)
       << "The policyError field is not available on the event";
 
-  return testing::ExplainMatchResult(expected_value, *policy_error,
+  const std::string* actual_type = policy_error->FindString("type");
+  EXPECT_TRUE(actual_type) << "Could not find the string with key: type";
+  const absl::optional<int> actual_count =
+      policy_error->FindInt("policyFileCount");
+  EXPECT_TRUE(actual_count.has_value())
+      << "Could not find the string with key: type";
+  return testing::ExplainMatchResult(expected_type, *actual_type,
+                                     result_listener) &&
+         testing::ExplainMatchResult(expected_count, actual_count.value(),
                                      result_listener);
 }
 
@@ -285,14 +304,14 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForCopyPause) {
   status.type = file_manager::io_task::OperationType::kCopy;
   status.state = file_manager::io_task::State::kPaused;
   status.sources = std::move(source_entries);
-  status.pause_params.policy_params =
-      io_task::PolicyPauseParams(policy::Policy::kDlp);
+  status.pause_params.policy_params = io_task::PolicyPauseParams(
+      policy::Policy::kDlp, /*warning_files_count*/ 2u);
 
   // Expect the event to have dlp as policy pause params.
   base::RunLoop run_loop;
-  EXPECT_CALL(observer,
-              OnBroadcastEvent(Field(&extensions::Event::event_args,
-                                     AllOf(ExpectEventArgPauseParams("dlp")))))
+  EXPECT_CALL(observer, OnBroadcastEvent(
+                            Field(&extensions::Event::event_args,
+                                  AllOf(ExpectEventArgPauseParams("dlp", 2)))))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   event_router->OnIOTaskStatus(status);
@@ -323,9 +342,9 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForPolicyError) {
 
   // Expect the event to have dlp as policy error.
   base::RunLoop run_loop;
-  EXPECT_CALL(observer,
-              OnBroadcastEvent(Field(&extensions::Event::event_args,
-                                     AllOf(ExpectEventArgPolicyError("dlp")))))
+  EXPECT_CALL(observer, OnBroadcastEvent(
+                            Field(&extensions::Event::event_args,
+                                  AllOf(ExpectEventArgPolicyError("dlp", 1)))))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   event_router->OnIOTaskStatus(status);
