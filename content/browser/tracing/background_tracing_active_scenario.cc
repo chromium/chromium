@@ -294,6 +294,7 @@ bool BackgroundTracingActiveScenario::StartTracing() {
   // If the tracing controller is tracing, i.e. DevTools or about://tracing,
   // we don't start background tracing to not interfere with the user activity.
   if (TracingControllerImpl::GetInstance()->IsTracing()) {
+    // No member access after this point, aborting might delete |this|.
     AbortScenario();
     return false;
   }

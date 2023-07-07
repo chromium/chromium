@@ -423,14 +423,11 @@ void BackgroundTracingManagerImpl::AbortScenarioForTesting() {
 void BackgroundTracingManagerImpl::OnScenarioAborted() {
   DCHECK(active_scenario_);
 
-  // Don't synchronously delete to avoid use-after-free issues in
-  // BackgroundTracingActiveScenario.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-      FROM_HERE, std::move(active_scenario_));
-
   for (auto* observer : background_tracing_observers_) {
     observer->OnScenarioAborted();
   }
+
+  active_scenario_.reset();
 }
 
 // static
