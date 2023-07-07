@@ -72,10 +72,9 @@ MULTIPROCESS_TEST_MAIN(Ftruncate) {
   return ftruncate(fd, 0) == 0 ? 0 : 15;
 }
 
-// Tests ftruncate() behavior on an inherited, open, writable FD. Prior to
-// macOS 10.15, the sandbox did not permit ftruncate (but it did permit regular
-// writing) on such FDs. This verifies the behavior before, on, and after macOS
-// 10.15. See https://crbug.com/1084565 for details.
+// Tests ftruncate() behavior on an inherited, open, writable FD. Prior to macOS
+// 10.15, the sandbox did not permit ftruncate on such FDs, but now it does.
+// This verifies the new behavior. See https://crbug.com/1084565 for details.
 TEST_F(SeatbeltTest, Ftruncate) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -104,13 +103,8 @@ TEST_F(SeatbeltTest, Ftruncate) {
   EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),
                                              &exit_code));
 
-  if (base::mac::IsAtLeastOS10_15()) {
-    EXPECT_EQ(0, exit_code);
-    EXPECT_EQ(0, file.GetLength());
-  } else {
-    EXPECT_EQ(15, exit_code);
-    EXPECT_GT(file.GetLength(), static_cast<int64_t>(contents.length()));
-  }
+  EXPECT_EQ(0, exit_code);
+  EXPECT_EQ(0, file.GetLength());
 }
 
 MULTIPROCESS_TEST_MAIN(ProcessSelfInfo) {

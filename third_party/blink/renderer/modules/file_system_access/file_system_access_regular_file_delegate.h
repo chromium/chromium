@@ -9,18 +9,12 @@
 #include "base/files/file_error_or.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
-#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_capacity_tracker.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "third_party/blink/public/mojom/file/file_utilities.mojom-blink.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#endif  // BUILDFLAG(IS_MAC)
 
 namespace blink {
 
@@ -47,10 +41,6 @@ class FileSystemAccessRegularFileDelegate final
   void Trace(Visitor* visitor) const override {
     FileSystemAccessFileDelegate::Trace(visitor);
     visitor->Trace(capacity_tracker_);
-#if BUILDFLAG(IS_MAC)
-    visitor->Trace(context_);
-    visitor->Trace(file_utilities_host_);
-#endif  // BUILDFLAG(IS_MAC)
   }
 
   base::FileErrorOr<int> Read(int64_t offset,
@@ -64,14 +54,6 @@ class FileSystemAccessRegularFileDelegate final
   bool IsValid() const override { return backing_file_.IsValid(); }
 
  private:
-#if BUILDFLAG(IS_MAC)
-  // We need the FileUtilitiesHost only on Mac, where we have to execute
-  // base::File::SetLength on the browser process, see crbug.com/1084565.
-  // We need the context_ to create the instance of FileUtilitiesHost lazily.
-  Member<ExecutionContext> context_;
-  HeapMojoRemote<mojom::blink::FileUtilitiesHost> file_utilities_host_;
-#endif  // BUILDFLAG(IS_MAC)
-
   // The file on disk backing the parent FileSystemFileHandle.
   base::File backing_file_;
 

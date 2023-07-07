@@ -25,12 +25,6 @@ class FileUtilitiesHostImpl : public blink::mojom::FileUtilitiesHost {
   void GetFileInfo(const base::FilePath& path,
                    GetFileInfoCallback callback) override;
 
-#if BUILDFLAG(IS_MAC)
-  void SetLength(base::File file,
-                 const int64_t length,
-                 SetLengthCallback callback) override;
-#endif  // BUILDFLAG(IS_MAC)
-
   const int process_id_;
 };
 
