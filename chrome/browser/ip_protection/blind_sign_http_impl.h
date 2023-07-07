@@ -25,18 +25,16 @@ class BlindSignHttpImpl : public quiche::BlindSignHttpInterface {
   explicit BlindSignHttpImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~BlindSignHttpImpl() override;
-  void DoRequest(
-      const std::string& path_and_query,
-      const std::string& authorization_header,
-      const std::string& body,
-      std::function<void(absl::StatusOr<quiche::BlindSignHttpResponse>)>
-          callback) override;
+  void DoRequest(const std::string& path_and_query,
+                 const std::string& authorization_header,
+                 const std::string& body,
+                 quiche::BlindSignHttpCallback callback) override;
 
  private:
   void OnRequestCompleted(std::unique_ptr<std::string> response);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  std::function<void(absl::StatusOr<quiche::BlindSignHttpResponse>)> callback_;
+  quiche::BlindSignHttpCallback callback_;
 
   base::WeakPtrFactory<BlindSignHttpImpl> weak_ptr_factory_{this};
 };

@@ -236,7 +236,7 @@ class QuicStreamFactory::QuicCryptoClientConfigOwner {
 
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-    quic::SessionCache* session_cache = config_.mutable_session_cache();
+    quic::SessionCache* session_cache = config_.session_cache();
     if (!session_cache) {
       return;
     }

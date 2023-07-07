@@ -58,12 +58,10 @@ BlindSignHttpImpl::BlindSignHttpImpl(
 
 BlindSignHttpImpl::~BlindSignHttpImpl() = default;
 
-void BlindSignHttpImpl::DoRequest(
-    const std::string& path_and_query,
-    const std::string& authorization_header,
-    const std::string& body,
-    std::function<void(absl::StatusOr<quiche::BlindSignHttpResponse>)>
-        callback) {
+void BlindSignHttpImpl::DoRequest(const std::string& path_and_query,
+                                  const std::string& authorization_header,
+                                  const std::string& body,
+                                  quiche::BlindSignHttpCallback callback) {
   callback_ = std::move(callback);
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -99,12 +97,13 @@ void BlindSignHttpImpl::OnRequestCompleted(
   if (!response) {
     // TODO (crbug.com/1446863): Indicate why the request to Phosphor failed so
     // we can consider not requesting more tokens.
-    callback_(absl::InternalError("Failed Request to Authentication Server"));
+    std::move(callback_)(
+        absl::InternalError("Failed Request to Authentication Server"));
     return;
   }
 
   quiche::BlindSignHttpResponse bsa_response(response_code,
                                              std::move(*response));
 
-  callback_(std::move(bsa_response));
+  std::move(callback_)(std::move(bsa_response));
 }

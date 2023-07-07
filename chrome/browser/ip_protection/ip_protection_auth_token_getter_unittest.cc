@@ -16,12 +16,9 @@ namespace {
 
 class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
  public:
-  using BlindSignTokenCallback =
-      std::function<void(absl::StatusOr<absl::Span<quiche::BlindSignToken>>)>;
-
-  void GetTokens(absl::string_view oauth_token,
+  void GetTokens(std::string oauth_token,
                  int num_tokens,
-                 BlindSignTokenCallback callback) override {
+                 quiche::SignedTokenCallback callback) override {
     get_tokens_called_ = true;
     oauth_token_ = oauth_token;
     num_tokens_ = num_tokens;
@@ -36,7 +33,7 @@ class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
-            [](BlindSignTokenCallback callback,
+            [](quiche::SignedTokenCallback callback,
                absl::StatusOr<absl::Span<quiche::BlindSignToken>> result) {
               std::move(callback)(std::move(result));
             },
