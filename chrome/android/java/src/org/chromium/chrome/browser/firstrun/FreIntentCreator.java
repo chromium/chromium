@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
@@ -170,6 +171,9 @@ public class FreIntentCreator {
     private static boolean shouldSwitchToTabbedMode(Context caller) {
         // Caller must be an activity.
         if (!(caller instanceof Activity)) return false;
+
+        // Always show TabbedMode on automotive devices.
+        if (BuildInfo.getInstance().isAutomotive) return true;
 
         // We must be on a tablet (where FRE is a dialog).
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(caller)) return false;
