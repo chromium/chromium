@@ -115,8 +115,14 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   }
 };
 
+// TODO(crbug.com/1462896): Re-enable this test
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ShowFloatingHelpBubble DISABLED_ShowFloatingHelpBubble
+#else
+#define MAYBE_ShowFloatingHelpBubble ShowFloatingHelpBubble
+#endif
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
-                       ShowFloatingHelpBubble) {
+                       MAYBE_ShowFloatingHelpBubble) {
   const DeepQuery kPathToAddCurrentTabElement{"reading-list-app",
                                               "#currentPageActionButton"};
   RunTestSequence(
@@ -171,9 +177,17 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
                                   base::UTF16ToUTF8(kBubbleBodyText)));
 }
 
+// TODO(crbug.com/1462896): Re-enable this test
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden \
+  DISABLED_FloatingHelpBubbleHiddenOnWebUiHidden
+#else
+#define MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden \
+  FloatingHelpBubbleHiddenOnWebUiHidden
+#endif
 // Regression test for item (1) in crbug.com/1422875.
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
-                       FloatingHelpBubbleHiddenOnWebUiHidden) {
+                       MAYBE_FloatingHelpBubbleHiddenOnWebUiHidden) {
   RunTestSequence(
       OpenReadingListSidePanel(),
       ShowHelpBubble(kAddCurrentTabToReadingListElementId),
@@ -203,11 +217,17 @@ class HelpBubbleFactoryRtlWebUIInteractiveUiTest
   }
 };
 
+// TODO(crbug.com/1462896): Re-enable this test
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ResizeSidePanelSendsUpdate DISABLED_ResizeSidePanelSendsUpdate
+#else
+#define MAYBE_ResizeSidePanelSendsUpdate ResizeSidePanelSendsUpdate
+#endif
 // This verifies that the "element bounds updated" event gets sent when the side
 // panel is resized, even if none of the elements in the side panel are resized.
 // This is a regression test for crbug.com/1425487.
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRtlWebUIInteractiveUiTest,
-                       ResizeSidePanelSendsUpdate) {
+                       MAYBE_ResizeSidePanelSendsUpdate) {
   RunTestSequence(
       OpenReadingListSidePanel(),
       InAnyContext(
