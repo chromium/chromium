@@ -178,14 +178,31 @@ TEST_F(AutofillExperimentsTest,
 TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_AutofillWalletImportEnabledPrefIsDisabled) {
   sync_service_.GetUserSettings()->SetPaymentsIntegrationEnabled(false);
+  // When payments integration is disabled via prefs, the sync datatype
+  // AUTOFILL_WALLET_DATA becomes inactive due to the logic in
+  // AutofillWalletModelTypeController::GetPreconditionState(). To
+  // achieve similar behavior, this test mimics a failure for
+  // AUTOFILL_WALLET_DATA, which is sufficient to avoid listing the datatype as
+  // active.
+  // TODO(crbug.com/1459963): Simplify test once payment methods are represented
+  // with their own syncer::UserSelectableType enum value.
+  sync_service_.SetFailedDataTypes(
+      syncer::ModelTypeSet({syncer::AUTOFILL_WALLET_DATA}));
+  ASSERT_FALSE(
+      sync_service_.GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA));
+
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      autofill_metrics::CardUploadEnabled::kPaymentsIntegrationDisabled, 1);
+      autofill_metrics::CardUploadEnabled::
+          kSyncServiceMissingAutofillWalletDataActiveType,
+      1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      autofill_metrics::CardUploadEnabled::kPaymentsIntegrationDisabled, 1);
+      autofill_metrics::CardUploadEnabled::
+          kSyncServiceMissingAutofillWalletDataActiveType,
+      1);
 }
 
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_EmptyUserEmail) {

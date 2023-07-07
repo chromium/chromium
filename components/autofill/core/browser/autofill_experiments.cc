@@ -135,6 +135,11 @@ bool IsCreditCardUploadEnabled(const syncer::SyncService* sync_service,
     return false;
   }
 
+  // If syncer::AUTOFILL_WALLET_DATA is active, payments integration must be
+  // enabled due to the logic in
+  // AutofillWalletModelTypeController::GetPreconditionState().
+  CHECK(sync_service->GetUserSettings()->IsPaymentsIntegrationEnabled());
+
   if (sync_service->IsSyncFeatureActive()) {
     if (!sync_service->GetActiveDataTypes().Has(syncer::AUTOFILL_PROFILE)) {
       // In full sync mode, we only allow card upload when addresses are also
@@ -168,15 +173,6 @@ bool IsCreditCardUploadEnabled(const syncer::SyncService* sync_service,
     autofill_metrics::LogCardUploadEnabledMetric(
         autofill_metrics::CardUploadEnabled::kLocalSyncEnabled, sync_state);
     LogCardUploadDisabled(log_manager, "USER_ONLY_SYNCING_LOCALLY");
-    return false;
-  }
-
-  // Check Payments integration user setting.
-  if (!sync_service->GetUserSettings()->IsPaymentsIntegrationEnabled()) {
-    autofill_metrics::LogCardUploadEnabledMetric(
-        autofill_metrics::CardUploadEnabled::kPaymentsIntegrationDisabled,
-        sync_state);
-    LogCardUploadDisabled(log_manager, "PAYMENTS_INTEGRATION_DISABLED");
     return false;
   }
 

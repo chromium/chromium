@@ -6403,7 +6403,9 @@ others/histograms.xml -->
              M78)."/>
   <int value="5" label="User has an explicit sync passphrase"/>
   <int value="6" label="Local sync is enabled"/>
-  <int value="7" label="Payments integration user setting is disabled"/>
+  <int value="7"
+      label="(Obsolete) Payments integration user setting is disabled (Never
+             recorded)."/>
   <int value="8" label="User email is empty"/>
   <int value="9" label="User is logged into an unsupported domain"/>
   <int value="10"
