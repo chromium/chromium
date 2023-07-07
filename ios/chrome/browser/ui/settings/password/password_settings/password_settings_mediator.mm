@@ -12,6 +12,7 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/passphrase_enums.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service_utils.h"
@@ -314,7 +315,9 @@ using password_manager::prefs::kCredentialsEnableService;
 
 - (PasswordSettingsAccountStorageState)computeAccountStorageState {
   if (_syncService->GetAccountInfo().IsEmpty() ||
-      _syncService->IsSyncFeatureEnabled()) {
+      _syncService->IsSyncFeatureEnabled() ||
+      base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
     return PasswordSettingsAccountStorageStateNotShown;
   }
 

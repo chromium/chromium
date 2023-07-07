@@ -472,6 +472,19 @@ void CopyPasswordDetailWithID(int detail_id) {
   // testCopyPasswordToast and testCopyPasswordMenuItem to check for the promo.
   config.features_disabled.push_back(kCredentialProviderExtensionPromo);
 
+  if ([self isRunningTest:@selector
+            (testAccountStorageSwitchDisabledByPolicy_SyncToSigninDisabled)] ||
+      [self isRunningTest:@selector
+            (testAccountStorageSwitchShownIfSignedIn_SyncToSigninDisabled)]) {
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+  if ([self isRunningTest:@selector
+            (testAccountStorageSwitchHiddenIfSignedIn_SyncToSigninEnabled)]) {
+    config.features_enabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+
   return config;
 }
 
@@ -3094,7 +3107,7 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 }
 
-- (void)testAccountStorageSwitchShownIfSignedIn {
+- (void)testAccountStorageSwitchShownIfSignedIn_SyncToSigninDisabled {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
 
@@ -3125,7 +3138,20 @@ void CopyPasswordDetailWithID(int detail_id) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-- (void)testAccountStorageSwitchDisabledIfBlockedByPolicy {
+- (void)testAccountStorageSwitchHiddenIfSignedIn_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+
+  OpenPasswordManager();
+  OpenSettingsSubmenu();
+
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kPasswordSettingsAccountStorageSwitchTableViewId)]
+      assertWithMatcher:grey_nil()];
+}
+
+- (void)testAccountStorageSwitchDisabledByPolicy_SyncToSigninDisabled {
   policy_test_utils::SetPolicy(std::string("[\"passwords\"]"),
                                policy::key::kSyncTypesListDisabled);
 
