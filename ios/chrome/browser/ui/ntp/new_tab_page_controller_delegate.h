@@ -13,6 +13,9 @@
 // The target for scribble events as forwarded by the NTP fakebox.
 - (UIResponder<UITextInput>*)fakeboxScribbleForwardingTarget;
 
+// NTP became active on the active web state.
+- (void)didNavigateToNTPOnActiveWebState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_CONTROLLER_DELEGATE_H_

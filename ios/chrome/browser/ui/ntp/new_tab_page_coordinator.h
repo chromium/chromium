@@ -40,7 +40,7 @@ class WebState;
 // ViewController associated with this coordinator.
 @property(nonatomic, readonly) UIViewController* viewController;
 
-// The toolbar delegate to pass to ContentSuggestionsCoordinator.
+// Delete for NTP and it's subclasses to communicate with the toolbar.
 @property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;
 
 // Returns `YES` if the coordinator is started.

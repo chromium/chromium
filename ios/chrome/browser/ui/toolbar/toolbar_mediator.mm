@@ -102,6 +102,13 @@
   [self updateOmniboxPositionWithFirstUpdate:YES];
 }
 
+- (void)didNavigateToNTPOnActiveWebState {
+  _isNTP = YES;
+  if (IsBottomOmniboxSteadyStateEnabled()) {
+    [self updateOmniboxPositionWithFirstUpdate:NO];
+  }
+}
+
 #pragma mark - Boolean Observer
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {

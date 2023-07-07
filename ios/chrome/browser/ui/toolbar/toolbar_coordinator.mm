@@ -346,6 +346,10 @@
   return self.locationBarCoordinator.omniboxScribbleForwardingTarget;
 }
 
+- (void)didNavigateToNTPOnActiveWebState {
+  [self.toolbarMediator didNavigateToNTPOnActiveWebState];
+}
+
 #pragma mark - PopupMenuUIUpdating
 
 - (void)updateUIForOverflowMenuIPHDisplayed {

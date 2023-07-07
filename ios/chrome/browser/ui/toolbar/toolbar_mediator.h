@@ -46,6 +46,10 @@ class WebStateList;
 /// Location bar (omnibox) focus has changed to `focused`.
 - (void)locationBarFocusChangedTo:(BOOL)focused;
 
+/// NTP became active on the active web state. This can happen after web state
+/// finish navigation.
+- (void)didNavigateToNTPOnActiveWebState;
+
 /// Toolbar's trait collection changed to `traitCollection`.
 - (void)toolbarTraitCollectionChangedTo:(UITraitCollection*)traitCollection;
 

@@ -143,6 +143,10 @@
   return nil;
 }
 
+- (void)didNavigateToNTPOnActiveWebState {
+  // Implemented in `ToolbarCoordinator`.
+}
+
 #pragma mark - ToolbarCommands
 
 - (void)triggerToolbarSlideInAnimation {
