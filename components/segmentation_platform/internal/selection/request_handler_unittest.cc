@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
@@ -16,6 +17,7 @@
 #include "components/segmentation_platform/public/prediction_options.h"
 #include "components/segmentation_platform/public/proto/prediction_result.pb.h"
 #include "components/segmentation_platform/public/result.h"
+#include "components/segmentation_platform/public/trigger.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,6 +25,7 @@ using testing::_;
 using testing::ElementsAre;
 using testing::FloatNear;
 using testing::Invoke;
+using testing::Return;
 
 namespace segmentation_platform {
 namespace {
@@ -35,6 +38,22 @@ class MockResultProvider : public SegmentResultProvider {
  public:
   MOCK_METHOD1(GetSegmentResult,
                void(std::unique_ptr<GetResultOptions> options));
+};
+
+class MockTrainingDataCollector : public TrainingDataCollector {
+ public:
+  MOCK_METHOD0(OnModelMetadataUpdated, void());
+  MOCK_METHOD0(OnServiceInitialized, void());
+  MOCK_METHOD0(ReportCollectedContinuousTrainingData, void());
+  MOCK_METHOD3(OnDecisionTime,
+               TrainingRequestId(proto::SegmentId id,
+                                 scoped_refptr<InputContext> input_context,
+                                 DecisionType type));
+  MOCK_METHOD4(CollectTrainingData,
+               void(SegmentId segment_id,
+                    TrainingRequestId request_id,
+                    const TrainingLabels& param,
+                    SuccessCallback callback));
 };
 
 proto::PredictionResult CreatePredictionResultWithBinaryClassifier() {
@@ -57,6 +76,11 @@ class RequestHandlerTest : public testing::Test {
   void SetUp() override {
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
+    auto training_data_collector =
+        std::make_unique<MockTrainingDataCollector>();
+    training_data_collector_ = training_data_collector.get();
+    execution_service_.set_training_data_collector_for_testing(
+        std::move(training_data_collector));
     config_ = test_utils::CreateTestConfig("test_client", kSegmentId);
     auto provider = std::make_unique<MockResultProvider>();
     result_provider_ = provider.get();
@@ -68,21 +92,27 @@ class RequestHandlerTest : public testing::Test {
                              const RawResult& result) {
     EXPECT_EQ(result.status, PredictionStatus::kSucceeded);
     EXPECT_NEAR(0.8, result.result.result(0), 0.001);
+    EXPECT_EQ(result.request_id, TrainingRequestId::FromUnsafeValue(15));
     std::move(closure).Run();
   }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<Config> config_;
+  ExecutionService execution_service_;
+  raw_ptr<MockTrainingDataCollector> training_data_collector_;
   std::unique_ptr<RequestHandler> request_handler_;
   raw_ptr<MockResultProvider> result_provider_ = nullptr;
-  ExecutionService execution_service_;
 };
 
 TEST_F(RequestHandlerTest, GetPredictionResult) {
   PredictionOptions options;
   options.on_demand_execution = true;
 
+  EXPECT_CALL(*training_data_collector_,
+              OnDecisionTime(kSegmentId, _,
+                             proto::TrainingOutputs::TriggerConfig::ONDEMAND))
+      .WillOnce(Return(TrainingRequestId::FromUnsafeValue(15)));
   EXPECT_CALL(*result_provider_, GetSegmentResult(_))
       .WillOnce(Invoke(
           [](std::unique_ptr<SegmentResultProvider::GetResultOptions> options) {
