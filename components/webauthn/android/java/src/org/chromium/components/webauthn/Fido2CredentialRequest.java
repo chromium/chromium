@@ -94,6 +94,11 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     static final String LOW_LEVEL_ERROR_MSG = "Low level error 0x6a80";
     static final String CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_USER_CANCEL =
             "android.credentials.CreateCredentialException.TYPE_USER_CANCELED";
+    // This value is formed differently because it comes from the Jetpack
+    // library, not the framework.
+    @VisibleForTesting
+    public static final String CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_INVALID_STATE_ERROR =
+            "androidx.credentials.TYPE_CREATE_PUBLIC_KEY_CREDENTIAL_DOM_EXCEPTIONandroidx.credentials.TYPE_CREATE_PUBLIC_KEY_CREDENTIAL_INVALID_STATE_ERROR";
     static final String CRED_MAN_EXCEPTION_GET_CREDENTIAL_TYPE_USER_CANCEL =
             "android.credentials.GetCredentialException.TYPE_USER_CANCELED";
     static final String CRED_MAN_EXCEPTION_GET_CREDENTIAL_TYPE_NO_CREDENTIAL =
@@ -939,6 +944,12 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                     returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
                     mMetricsHelper.recordCredManCreateRequestHistogram(
                             CredManCreateRequestEnum.CANCELLED);
+                } else if (errorType.equals(
+                                   CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_INVALID_STATE_ERROR)) {
+                    returnErrorAndResetCallback(AuthenticatorStatus.CREDENTIAL_EXCLUDED);
+                    // This is successful from the point of view of the user.
+                    mMetricsHelper.recordCredManCreateRequestHistogram(
+                            CredManCreateRequestEnum.SUCCESS);
                 } else {
                     // Includes:
                     //  * CreateCredentialException.TYPE_UNKNOWN

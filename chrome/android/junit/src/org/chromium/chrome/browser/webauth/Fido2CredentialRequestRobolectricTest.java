@@ -272,6 +272,27 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
+    public void testMakeCredential_credManEnabledInvalidStateError_credentialExcluded() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        mCredentialManager.setErrorResponse(new FakeAndroidCredManException(
+                Fido2CredentialRequest
+                        .CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_INVALID_STATE_ERROR,
+                "Message"));
+        mRequest.handleMakeCredentialRequest(mActivity, mCreationOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin,
+                (responseStatus, response)
+                        -> mCallback.onRegisterResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        assertThat(mCallback.getStatus())
+                .isEqualTo(Integer.valueOf(AuthenticatorStatus.CREDENTIAL_EXCLUDED));
+        verify(mMetricsHelper, times(1))
+                .recordCredManCreateRequestHistogram(CredManCreateRequestEnum.SUCCESS);
+    }
+
+    @Test
+    @SmallTest
     public void testMakeCredential_credManEnabledUnknownError_unknownError() {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
