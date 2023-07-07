@@ -11,20 +11,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/pref_names.h"
 
-namespace variations {
-// Per-profile preference for the sync data containing the list of dogfood group
-// gaia IDs for a given syncing user.
-// The variables below are the pref name, and the key for the gaia ID within
-// the dictionary value.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kOsDogfoodGroupsSyncPrefName[] = "sync.os_dogfood_groups";
-#else
-const char kDogfoodGroupsSyncPrefName[] = "sync.dogfood_groups";
-#endif
-
-const char kDogfoodGroupsSyncPrefGaiaIdKey[] = "gaia_id";
-}  // namespace variations
-
 // This feature controls whether variations code copies the dogfood group
 // information from per-profile data to local-state.
 BASE_FEATURE(kVariationsGoogleGroupFiltering,

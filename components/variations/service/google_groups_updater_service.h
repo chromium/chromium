@@ -16,12 +16,17 @@ class PrefRegistrySyncable;
 }
 
 namespace variations {
+// Per-profile preference for the sync data containing the list of dogfood group
+// gaia IDs for a given syncing user.
+// The variables below are the pref name, and the key for the gaia ID within
+// the dictionary value.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kOsDogfoodGroupsSyncPrefName[];
+inline constexpr char kOsDogfoodGroupsSyncPrefName[] = "sync.os_dogfood_groups";
 #else
-extern const char kDogfoodGroupsSyncPrefName[];
+inline constexpr char kDogfoodGroupsSyncPrefName[] = "sync.dogfood_groups";
 #endif
-extern const char kDogfoodGroupsSyncPrefGaiaIdKey[];
+
+inline constexpr char kDogfoodGroupsSyncPrefGaiaIdKey[] = "gaia_id";
 }  // namespace variations
 
 BASE_DECLARE_FEATURE(kVariationsGoogleGroupFiltering);
