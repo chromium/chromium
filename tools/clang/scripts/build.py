@@ -1088,73 +1088,103 @@ def main():
   elif sys.platform == 'win32':
     cmake_args.append('-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-pc-windows-msvc')
 
-  # List of (triple, list of CMake vars without '-D').
-  runtimes_triples_args = []
+  # Map from triple to {
+  #   "args": list of CMake vars without '-D' common to builtins and runtimes
+  #   "profile": bool # build profile runtime
+  #   "sanitizers": bool # build sanitizer runtimes
+  # }
+  runtimes_triples_args = {}
 
   if sys.platform.startswith('linux'):
-    runtimes_triples_args.append((
-        'i386-unknown-linux-gnu',
-        compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
+    runtimes_triples_args['i386-unknown-linux-gnu'] = {
+        "args": [
             'CMAKE_SYSROOT=%s' % sysroot_i386,
             # TODO(https://crbug.com/1374690): pass proper flags to i386 tests so they compile correctly
             'LLVM_INCLUDE_TESTS=OFF',
-        ]))
-    runtimes_triples_args.append(
-        ('x86_64-unknown-linux-gnu',
-         compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
-             'CMAKE_SYSROOT=%s' % sysroot_amd64,
-         ]))
-    runtimes_triples_args.append(
-        # Using "armv7a-unknown-linux-gnueabhihf" confuses the compiler-rt
-        # builtins build, since compiler-rt/cmake/builtin-config-ix.cmake
-        # doesn't include "armv7a" in its `ARM32` list.
-        # TODO(thakis): It seems to work for everything else though, see try
-        # results on
-        # https://chromium-review.googlesource.com/c/chromium/src/+/3702739/4
-        # Maybe it should work for builtins too?
-        (
-            'armv7-unknown-linux-gnueabihf',
-            compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
-                'CMAKE_SYSROOT=%s' % sysroot_arm,
-                # Can't run tests on x86 host.
-                'LLVM_INCLUDE_TESTS=OFF',
-            ]))
-    runtimes_triples_args.append((
-        'aarch64-unknown-linux-gnu',
-        compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
+        ],
+        "profile":
+        True,
+        "sanitizers":
+        True,
+    }
+    runtimes_triples_args['x86_64-unknown-linux-gnu'] = {
+        "args": [
+            'CMAKE_SYSROOT=%s' % sysroot_amd64,
+        ],
+        "profile": True,
+        "sanitizers": True,
+    }
+    # Using "armv7a-unknown-linux-gnueabhihf" confuses the compiler-rt
+    # builtins build, since compiler-rt/cmake/builtin-config-ix.cmake
+    # doesn't include "armv7a" in its `ARM32` list.
+    # TODO(thakis): It seems to work for everything else though, see try
+    # results on
+    # https://chromium-review.googlesource.com/c/chromium/src/+/3702739/4
+    # Maybe it should work for builtins too?
+    runtimes_triples_args['armv7-unknown-linux-gnueabihf'] = {
+        "args": [
+            'CMAKE_SYSROOT=%s' % sysroot_arm,
+            # Can't run tests on x86 host.
+            'LLVM_INCLUDE_TESTS=OFF',
+        ],
+        "profile":
+        True,
+        "sanitizers":
+        True,
+    }
+    runtimes_triples_args['aarch64-unknown-linux-gnu'] = {
+        "args": [
             'CMAKE_SYSROOT=%s' % sysroot_arm64,
             # Can't run tests on x86 host.
             'LLVM_INCLUDE_TESTS=OFF',
-        ]))
+        ],
+        "profile":
+        True,
+        "sanitizers":
+        True,
+    }
   elif sys.platform == 'win32':
     sysroot = os.path.dirname(os.path.dirname(GetWinSDKDir()))
-    runtimes_triples_args.append(
-        ('i386-pc-windows-msvc',
-         compiler_rt_cmake_flags(sanitizers=False, profile=True) + [
-             'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
-             'LLVM_WINSYSROOT="%s"' % sysroot,
-         ]))
-    runtimes_triples_args.append(
-        ('x86_64-pc-windows-msvc',
-         compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
-             'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
-             'LLVM_WINSYSROOT="%s"' % sysroot,
-         ]))
+    runtimes_triples_args['i386-pc-windows-msvc'] = {
+        "args": [
+            'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
+            'LLVM_WINSYSROOT="%s"' % sysroot,
+        ],
+        "profile":
+        True,
+        "sanitizers":
+        False,
+    }
+    runtimes_triples_args['x86_64-pc-windows-msvc'] = {
+        "args": [
+            'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
+            'LLVM_WINSYSROOT="%s"' % sysroot,
+        ],
+        "profile":
+        True,
+        "sanitizers":
+        True,
+    }
   elif sys.platform == 'darwin':
-    compiler_rt_args = [
-        'SANITIZER_MIN_OSX_VERSION=' + deployment_target,
-        'COMPILER_RT_ENABLE_MACCATALYST=ON',
-        'COMPILER_RT_ENABLE_IOS=ON',
-        'COMPILER_RT_ENABLE_WATCHOS=OFF',
-        'COMPILER_RT_ENABLE_TVOS=OFF',
-        'DARWIN_ios_ARCHS=arm64',
-        'DARWIN_iossim_ARCHS=arm64;x86_64',
-        'DARWIN_osx_ARCHS=arm64;x86_64',
-    ] + compiler_rt_cmake_flags(sanitizers=True, profile=True)
     # compiler-rt is built for all platforms/arches with a single
     # configuration, we should only specify one target triple. 'default' is
     # specially handled.
-    runtimes_triples_args.append(('default', compiler_rt_args))
+    runtimes_triples_args['default'] = {
+        "args": [
+            'SANITIZER_MIN_OSX_VERSION=' + deployment_target,
+            'COMPILER_RT_ENABLE_MACCATALYST=ON',
+            'COMPILER_RT_ENABLE_IOS=ON',
+            'COMPILER_RT_ENABLE_WATCHOS=OFF',
+            'COMPILER_RT_ENABLE_TVOS=OFF',
+            'DARWIN_ios_ARCHS=arm64',
+            'DARWIN_iossim_ARCHS=arm64;x86_64',
+            'DARWIN_osx_ARCHS=arm64;x86_64',
+        ],
+        "sanitizers":
+        True,
+        "profile":
+        True
+    }
 
   if args.with_android:
     toolchain_dir = ANDROID_NDK_DIR + '/toolchains/llvm/prebuilt/linux-x86_64'
@@ -1177,7 +1207,7 @@ def main():
         # Use PAC/BTI instructions for AArch64
         android_cflags += ['-mbranch-protection=standard']
 
-      android_args = compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
+      android_args = [
           'LLVM_ENABLE_RUNTIMES=compiler-rt',
           # On Android, we want DWARF info for the builtins for unwinding. See
           # crbug.com/1311807.
@@ -1195,8 +1225,11 @@ def main():
           # TODO: remove once we only support API >=24.
           'ANDROID_NATIVE_API_LEVEL=' + api_level,
       ]
-
-      runtimes_triples_args.append((target_triple, android_args))
+      runtimes_triples_args[target_triple] = {
+          "args": android_args,
+          "sanitizers": True,
+          "profile": True
+      }
 
   if args.with_fuchsia:
     # Fuchsia links against libclang_rt.builtins-<arch>.a instead of libgcc.a.
@@ -1217,9 +1250,7 @@ def main():
       build_sanitizers = build_profile and sys.platform != 'darwin'
       # TODO(thakis): Might have to pass -B here once sysroot contains
       # binaries (e.g. gas for arm64?)
-      fuchsia_args = compiler_rt_cmake_flags(
-          sanitizers=build_sanitizers, profile=build_profile
-      ) + [
+      fuchsia_args = [
           'LLVM_ENABLE_RUNTIMES=compiler-rt',
           'CMAKE_SYSTEM_NAME=Fuchsia',
           'CMAKE_SYSROOT=%s' % toolchain_dir,
@@ -1230,7 +1261,11 @@ def main():
       if build_sanitizers:
         fuchsia_args.append('SANITIZER_NO_UNDEFINED_SYMBOLS=OFF')
 
-      runtimes_triples_args.append((target_triple, fuchsia_args))
+      runtimes_triples_args[target_triple] = {
+          "args": fuchsia_args,
+          "sanitizers": build_sanitizers,
+          "profile": build_profile
+      }
 
   # Embed MLGO inliner model. If tf_path is not specified, a vpython3 env
   # will be created which contains the necessary source files for compilation.
@@ -1261,16 +1296,25 @@ def main():
   # -DBUILTINS_$triple_FOO=BAR/-DRUNTIMES_$triple_FOO=BAR and build up
   # -DLLVM_BUILTIN_TARGETS/-DLLVM_RUNTIME_TARGETS.
   all_triples = ''
-  for (triple, a) in runtimes_triples_args:
-    all_triples += ';' + triple
-    for arg in a:
+  for triple in sorted(runtimes_triples_args.keys()):
+    all_triples += triple + ';'
+    for arg in runtimes_triples_args[triple]["args"]:
       assert not arg.startswith('-')
       # 'default' is specially handled to pass through relevant CMake flags.
       if triple == 'default':
         cmake_args.append('-D' + arg)
       else:
-        cmake_args.append('-DBUILTINS_' + triple + '_' + arg)
         cmake_args.append('-DRUNTIMES_' + triple + '_' + arg)
+        cmake_args.append('-DBUILTINS_' + triple + '_' + arg)
+    for arg in compiler_rt_cmake_flags(
+        profile=runtimes_triples_args[triple]["profile"],
+        sanitizers=runtimes_triples_args[triple]["sanitizers"]):
+      # 'default' is specially handled to pass through relevant CMake flags.
+      if triple == 'default':
+        cmake_args.append('-D' + arg)
+      else:
+        cmake_args.append('-DRUNTIMES_' + triple + '_' + arg)
+
   cmake_args.append('-DLLVM_BUILTIN_TARGETS=' + all_triples)
   cmake_args.append('-DLLVM_RUNTIME_TARGETS=' + all_triples)
 
