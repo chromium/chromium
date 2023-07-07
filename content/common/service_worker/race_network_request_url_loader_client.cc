@@ -30,8 +30,7 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
     ServiceWorkerRaceNetworkRequestURLLoaderClient(
         const network::ResourceRequest& request,
         base::WeakPtr<ServiceWorkerResourceLoader> owner,
-        absl::optional<mojo::PendingRemote<network::mojom::URLLoaderClient>>
-            forwarding_client,
+        mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client,
         uint32_t data_pipe_capacity_num_bytes)
     : request_(request),
       owner_(std::move(owner)),
@@ -47,13 +46,11 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
     TransitionState(State::kAborted);
     return;
   }
-  if (forwarding_client_) {
-    if (CreateDataPipe(data_pipe_for_fetch_handler_.producer,
-                       data_pipe_for_fetch_handler_.consumer,
-                       data_pipe_capacity_num_bytes) != MOJO_RESULT_OK) {
-      TransitionState(State::kAborted);
-      return;
-    }
+  if (CreateDataPipe(data_pipe_for_fetch_handler_.producer,
+                     data_pipe_for_fetch_handler_.consumer,
+                     data_pipe_capacity_num_bytes) != MOJO_RESULT_OK) {
+    TransitionState(State::kAborted);
+    return;
   }
 }
 
@@ -105,14 +102,12 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
       base::BindRepeating(
           &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
           base::Unretained(this)));
-  if (forwarding_client_) {
-    data_pipe_for_fetch_handler_.watcher.Watch(
-        data_pipe_for_fetch_handler_.producer.get(),
-        MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-        base::BindRepeating(
-            &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
-            base::Unretained(this)));
-  }
+  data_pipe_for_fetch_handler_.watcher.Watch(
+      data_pipe_for_fetch_handler_.producer.get(),
+      MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      base::BindRepeating(
+          &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
+          base::Unretained(this)));
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
@@ -192,11 +187,9 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
       break;
   }
 
-  if (forwarding_client_) {
-    forwarding_client_.value()->OnReceiveResponse(
-        head_->Clone(), std::move(data_pipe_for_fetch_handler_.consumer),
-        absl::nullopt);
-  }
+  forwarding_client_->OnReceiveResponse(
+      head_->Clone(), std::move(data_pipe_for_fetch_handler_.consumer),
+      absl::nullopt);
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCompleteResponse() {
@@ -232,10 +225,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
       break;
   }
   data_pipe_for_race_network_request_.producer.reset();
-  if (forwarding_client_) {
-    forwarding_client_.value()->OnComplete(completion_status_.value());
-    data_pipe_for_fetch_handler_.producer.reset();
-  }
+  forwarding_client_->OnComplete(completion_status_.value());
+  data_pipe_for_fetch_handler_.producer.reset();
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete() {
@@ -247,9 +238,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete() {
   MaybeCompleteResponse();
   body_consumer_watcher_.Cancel();
   data_pipe_for_race_network_request_.watcher.Cancel();
-  if (forwarding_client_) {
-    data_pipe_for_fetch_handler_.watcher.Cancel();
-  }
+  data_pipe_for_fetch_handler_.watcher.Cancel();
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
@@ -308,33 +297,30 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
       return;
   }
 
-  if (forwarding_client_) {
-    // Begin the write process for the response of the fetch handler.
-    result = data_pipe_for_fetch_handler_.producer->BeginWriteData(
-        &write_buffer_for_fetch_handler,
-        &data_pipe_for_fetch_handler_.num_write_bytes,
-        MOJO_WRITE_DATA_FLAG_NONE);
-    switch (result) {
-      case MOJO_RESULT_OK:
-        // Perhaps writable size may be smaller than the readable size. Choose
-        // the most smallest size.
-        num_bytes_to_consume = std::min(
-            num_bytes_to_consume, data_pipe_for_fetch_handler_.num_write_bytes);
-        break;
-      case MOJO_RESULT_FAILED_PRECONDITION:
-        // The data pipe consumer is aborted.
-        TransitionState(State::kAborted);
-        Abort();
-        return;
-      case MOJO_RESULT_SHOULD_WAIT:
-        // The data pipe is not writable yet. We don't consume data from |body_|
-        // and write any data in this case. And retry it later.
-        body_->EndReadData(0);
-        data_pipe_for_race_network_request_.producer->EndWriteData(0);
-        data_pipe_for_fetch_handler_.producer->EndWriteData(0);
-        data_pipe_for_fetch_handler_.watcher.ArmOrNotify();
-        return;
-    }
+  // Begin the write process for the response of the fetch handler.
+  result = data_pipe_for_fetch_handler_.producer->BeginWriteData(
+      &write_buffer_for_fetch_handler,
+      &data_pipe_for_fetch_handler_.num_write_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+  switch (result) {
+    case MOJO_RESULT_OK:
+      // Perhaps writable size may be smaller than the readable size. Choose
+      // the most smallest size.
+      num_bytes_to_consume = std::min(
+          num_bytes_to_consume, data_pipe_for_fetch_handler_.num_write_bytes);
+      break;
+    case MOJO_RESULT_FAILED_PRECONDITION:
+      // The data pipe consumer is aborted.
+      TransitionState(State::kAborted);
+      Abort();
+      return;
+    case MOJO_RESULT_SHOULD_WAIT:
+      // The data pipe is not writable yet. We don't consume data from |body_|
+      // and write any data in this case. And retry it later.
+      body_->EndReadData(0);
+      data_pipe_for_race_network_request_.producer->EndWriteData(0);
+      data_pipe_for_fetch_handler_.producer->EndWriteData(0);
+      data_pipe_for_fetch_handler_.watcher.ArmOrNotify();
+      return;
   }
 
   // Copy data and complete read/write process.
@@ -342,12 +328,10 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
   result = data_pipe_for_race_network_request_.producer->EndWriteData(
       num_bytes_to_consume);
   CHECK_EQ(result, MOJO_RESULT_OK);
-  if (forwarding_client_) {
-    memcpy(write_buffer_for_fetch_handler, buffer, num_bytes_to_consume);
-    result = data_pipe_for_fetch_handler_.producer->EndWriteData(
-        num_bytes_to_consume);
-    CHECK_EQ(result, MOJO_RESULT_OK);
-  }
+  memcpy(write_buffer_for_fetch_handler, buffer, num_bytes_to_consume);
+  result =
+      data_pipe_for_fetch_handler_.producer->EndWriteData(num_bytes_to_consume);
+  CHECK_EQ(result, MOJO_RESULT_OK);
   result = body_->EndReadData(num_bytes_to_consume);
   CHECK_EQ(result, MOJO_RESULT_OK);
 
@@ -360,11 +344,9 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Abort() {
   data_pipe_for_race_network_request_.producer.reset();
   data_pipe_for_race_network_request_.consumer.reset();
   data_pipe_for_race_network_request_.watcher.Cancel();
-  if (forwarding_client_) {
-    data_pipe_for_fetch_handler_.producer.reset();
-    data_pipe_for_fetch_handler_.consumer.reset();
-    data_pipe_for_fetch_handler_.watcher.Cancel();
-  }
+  data_pipe_for_fetch_handler_.producer.reset();
+  data_pipe_for_fetch_handler_.consumer.reset();
+  data_pipe_for_fetch_handler_.watcher.Cancel();
   body_consumer_watcher_.Cancel();
 }
 

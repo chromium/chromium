@@ -42,17 +42,12 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
     // Used when the pipe is closed unexpectedly.
     kAborted,
   };
-  // TODO(crbug.com/1420517) Remove optional from |forwarding_client| once we
-  // support subresource request deduping. Currently |forwarding_client| might
-  // be absl::nullopt.
-  //
   // |data_pipe_capacity_num_bytes| indicates the byte size of the data pipe
   // which is newly created in the constructor.
   ServiceWorkerRaceNetworkRequestURLLoaderClient(
       const network::ResourceRequest& request,
       base::WeakPtr<ServiceWorkerResourceLoader> owner,
-      absl::optional<mojo::PendingRemote<network::mojom::URLLoaderClient>>
-          forwarding_client,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client,
       uint32_t data_pipe_capacity_num_bytes);
   ServiceWorkerRaceNetworkRequestURLLoaderClient(
       const ServiceWorkerRaceNetworkRequestURLLoaderClient&) = delete;
@@ -127,8 +122,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
   const network::ResourceRequest request_;
   base::WeakPtr<ServiceWorkerResourceLoader> owner_;
-  absl::optional<mojo::Remote<network::mojom::URLLoaderClient>>
-      forwarding_client_;
+  mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
   mojo::SimpleWatcher body_consumer_watcher_;
   mojo::ScopedDataPipeConsumerHandle body_;
 
