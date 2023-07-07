@@ -40,6 +40,10 @@ source_set("browser_tests") {
     sources += [ "welcome/welcome_browsertest.cc" ]
   }
 
+  if (enable_extensions) {
+    sources += [ "extensions/extensions_browsertest.cc" ]
+  }
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
