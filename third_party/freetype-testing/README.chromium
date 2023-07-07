@@ -3,8 +3,9 @@ URL: https://github.com/freetype/freetype2-testing
 Version: VER-7a69b1a2b
 Revision: 7a69b1a2b028476f840ab7d4a2ffdfe4eb2c389f
 License: GPL
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 License Android Compatible: yes
 
 Description:
