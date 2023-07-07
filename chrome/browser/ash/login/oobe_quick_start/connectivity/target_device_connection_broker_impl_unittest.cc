@@ -54,6 +54,9 @@ constexpr std::array<uint8_t, 25> kBaseUrl = {
 // Qr code key param ("?key=") represented in a 5 byte array.
 constexpr std::array<uint8_t, 5> kUrlKeyParam = {0x3f, 0x6b, 0x65, 0x79, 0x3d};
 
+// Qr code device type param ("&t=7") represented in a 4 byte array.
+constexpr std::array<uint8_t, 4> kUrlDeviceTypeParam = {0x26, 0x74, 0x3d, 0x37};
+
 // 32 random bytes to use as the shared secret when generating QR Code.
 constexpr std::array<uint8_t, 32> kSharedSecret = {
     0x54, 0xbd, 0x40, 0xcf, 0x8a, 0x7c, 0x2f, 0x6a, 0xca, 0x15, 0x59,
@@ -699,6 +702,8 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, GetQRCodeData) {
                        std::end(kUrlKeyParam));
   expected_data.insert(expected_data.end(), encoded_shared_secret.begin(),
                        encoded_shared_secret.end());
+  expected_data.insert(expected_data.end(), std::begin(kUrlDeviceTypeParam),
+                       std::end(kUrlDeviceTypeParam));
 
   std::vector<uint8_t> actual_data = GetQrCodeData();
   EXPECT_EQ(expected_data, actual_data);

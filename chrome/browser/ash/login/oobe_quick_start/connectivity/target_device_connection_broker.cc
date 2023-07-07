@@ -11,6 +11,14 @@
 
 namespace ash::quick_start {
 
+namespace {
+
+// The target device's device type. 7 = CHROME. Values come from this enum:
+// http://google3/java/com/google/android/gmscore/integ/client/smartdevice/src/com/google/android/gms/smartdevice/d2d/DeviceType.java;l=57;rcl=526500829
+constexpr char kDeviceTypeQueryParamValue[] = "7";
+
+}  // namespace
+
 TargetDeviceConnectionBroker::TargetDeviceConnectionBroker() = default;
 TargetDeviceConnectionBroker::~TargetDeviceConnectionBroker() = default;
 
@@ -60,7 +68,8 @@ std::vector<uint8_t> TargetDeviceConnectionBroker::GetQrCodeData(
   std::string url = "https://signin.google/qs/" + random_session_id.ToString() +
                     "?key=" +
                     std::string(shared_secret_base64_uriencoded.data(),
-                                shared_secret_base64_uriencoded.length());
+                                shared_secret_base64_uriencoded.length()) +
+                    "&t=" + std::string(kDeviceTypeQueryParamValue);
 
   return std::vector<uint8_t>(url.begin(), url.end());
 }
