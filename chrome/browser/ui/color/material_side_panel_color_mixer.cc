@@ -32,7 +32,7 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
   mixer[kColorSidePanelCardSecondaryForeground] = {
       ui::kColorSysOnSurfaceSubtle};
   mixer[kColorSidePanelDivider] = {ui::kColorSysDivider};
-  mixer[kColorSidePanelScrollbarThumb] = {ui::kColorSysPrimary};
+  mixer[kColorSidePanelScrollbarThumb] = {ui::kColorSysTonalOutline};
 
   /* Dialogs within the side panel. */
   mixer[kColorSidePanelDialogBackground] = {ui::kColorSysSurface};
