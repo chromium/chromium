@@ -8,7 +8,7 @@ import {queryRequiredElement, queryRequiredExactlyOne} from '../../common/js/dom
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
-import {CurrentDirectory, State} from '../../externs/ts/state.js';
+import {State} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {getStore} from '../../state/store.js';
@@ -144,13 +144,6 @@ export class ToolbarController {
      */
     this.cloudButtonIcon_ = queryRequiredElement(
         '#cloud-button > xf-icon[slot="prefix-icon"]', this.toolbar_);
-
-    /**
-     * @private {!HTMLElement}
-     * @const
-     */
-    this.cloudOfflineFolderIndicator_ =
-        queryRequiredElement('#offline-folder-indicator', this.toolbar_);
 
     /**
      * @private {!Command}
@@ -572,32 +565,10 @@ export class ToolbarController {
     if (!util.canBulkPinningCloudPanelShow(
             bulkPinning?.stage, bulkPinningPref)) {
       this.cloudButton_.hidden = true;
-      this.cloudOfflineFolderIndicator_.hidden = true;
       return;
     }
-    this.updateBulkPinningFolderIndicator_(
-        state.currentDirectory, bulkPinning?.stage);
     this.updateBulkPinningIcon_(bulkPinning);
     this.cloudButton_.hidden = false;
-  }
-
-  /**
-   * Updates the icon that appears beside the breadcrumbs when a user is within
-   * their My drive.
-   * @param {CurrentDirectory|undefined} currentDirectory
-   * @param {chrome.fileManagerPrivate.BulkPinStage|undefined} stage
-   * @private
-   */
-  updateBulkPinningFolderIndicator_(currentDirectory, stage) {
-    if (currentDirectory?.rootType === VolumeManagerCommon.RootType.DRIVE &&
-        (stage === chrome.fileManagerPrivate.BulkPinStage.SYNCING ||
-         stage === chrome.fileManagerPrivate.BulkPinStage.PAUSED_OFFLINE ||
-         stage ===
-             chrome.fileManagerPrivate.BulkPinStage.PAUSED_BATTERY_SAVER)) {
-      this.cloudOfflineFolderIndicator_.hidden = false;
-      return;
-    }
-    this.cloudOfflineFolderIndicator_.hidden = true;
   }
 
   /**

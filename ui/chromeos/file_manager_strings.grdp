@@ -1800,9 +1800,6 @@
   <message name="IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE_LABEL" desc="The text used when the bulk pinning of Google Drive items has failed due to insufficient space.">
     Your device doesn’t have enough storage space to keep file sync turned on. New files will no longer sync automatically.
   </message>
-  <message name="IDS_FILE_BROWSER_BULK_PINNING_FOLDER_INDICATOR_TOOLTIP" desc="The text used when hovering over the offline folder indicator beside the breadcrumbs">
-    Files in this folder are available offline
-  </message>
   <message name="IDS_FILE_BROWSER_BULK_PINNING_OFFLINE_LABEL" desc="The text used when the device is in an offline mode and has paused syncing.">
     You are currently offline. File sync will resume when you are connected to the internet
   </message>

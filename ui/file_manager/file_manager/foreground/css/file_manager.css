@@ -1201,8 +1201,7 @@ body.check-select .breadcrumbs {
   padding-inline: 16px 12px;
 }
 
-body.check-select #read-only-indicator,
-body.check-select #offline-folder-indicator {
+body.check-select #read-only-indicator {
   display: none;
 }
 
