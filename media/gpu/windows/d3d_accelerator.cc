@@ -19,8 +19,8 @@ D3DAccelerator::D3DAccelerator(
       video_context_(std::move(video_context)) {
   DCHECK(client);
   DCHECK(media_log_);
-  client->SetDecoderCB(base::BindRepeating(&D3DAccelerator::SetVideoDecoder,
-                                           base::Unretained(this)));
+  client->SetDecoderCB(base::BindRepeating(
+      &D3DAccelerator::SetVideoDecoder, base::UnsafeDanglingUntriaged(this)));
 }
 
 D3DAccelerator::~D3DAccelerator() = default;
