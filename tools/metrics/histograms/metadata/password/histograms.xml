@@ -1431,6 +1431,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.CredMan.PasswordFormSubmissionTriggered"
+    enum="Boolean" expires_after="2024-02-01">
+  <owner>derinel@google.com</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Records whether the password form is submitted right after being filled by
+    Android Credential Manager UI. The filled username and password are coming
+    from Android Credential Manager UI. This histogram is emitted only if
+    Android Credential Manager is enabled and displayed. Recorded when the user
+    selects a password from the Android Credential Manager UI.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.DefaultPasswordStoreSet"
     enum="PasswordManager.Store" expires_after="2023-12-04">
   <owner>mamir@chromium.org</owner>

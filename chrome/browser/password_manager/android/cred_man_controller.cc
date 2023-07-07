@@ -4,9 +4,8 @@
 
 #include "chrome/browser/password_manager/android/cred_man_controller.h"
 
-#include "base/check.h"
 #include "base/functional/bind.h"
-#include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/password_manager/core/browser/password_credential_filler.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
@@ -42,10 +41,17 @@ bool CredManController::Show(
       },
       filler_->AsWeakPtr()));
   cred_man_delegate->SetFillingCallback(
-      base::BindOnce(&PasswordCredentialFiller::FillUsernameAndPassword,
-                     filler_->AsWeakPtr()));
+      base::BindOnce(&CredManController::Fill, AsWeakPtr()));
   cred_man_delegate->TriggerFullRequest();
   return true;
+}
+
+void CredManController::Fill(const std::u16string& username,
+                             const std::u16string& password) {
+  filler_->FillUsernameAndPassword(username, password);
+  base::UmaHistogramBoolean(
+      "PasswordManager.CredMan.PasswordFormSubmissionTriggered",
+      filler_->ShouldTriggerSubmission());
 }
 
 }  // namespace password_manager

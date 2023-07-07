@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_CRED_MAN_CONTROLLER_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_CRED_MAN_CONTROLLER_H_
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
@@ -37,6 +39,8 @@ class CredManController : public base::SupportsWeakPtr<CredManController> {
             bool is_webauthn_form);
 
  private:
+  void Fill(const std::u16string& username, const std::u16string& password);
+
   std::unique_ptr<PasswordCredentialFiller> filler_;
 };
 

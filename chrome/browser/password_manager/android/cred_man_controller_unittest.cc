@@ -5,7 +5,7 @@
 #include "chrome/browser/password_manager/android/cred_man_controller.h"
 #include <memory>
 
-#include "base/android/build_info.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/password_credential_filler.h"
@@ -123,6 +123,7 @@ TEST_F(CredManControllerTest, ShowIfResultsExist) {
 
 TEST_F(CredManControllerTest, Fill) {
   base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
+  base::HistogramTester uma_recorder;
   const std::u16string kUsername = u"test_user";
   const std::u16string kPassword = u"38kAy5Er1Sp0r38";
 
@@ -137,8 +138,11 @@ TEST_F(CredManControllerTest, Fill) {
                                 std::move(filler),
                                 /*is_webauthn_form=*/true));
 
+  ON_CALL(last_filler(), ShouldTriggerSubmission()).WillByDefault(Return(true));
   EXPECT_CALL(last_filler(), FillUsernameAndPassword(kUsername, kPassword));
   web_authn_cred_man_delegate()->FillUsernameAndPassword(kUsername, kPassword);
+  uma_recorder.ExpectBucketCount(
+      "PasswordManager.CredMan.PasswordFormSubmissionTriggered", /*true*/ 1, 1);
 }
 
 }  // namespace password_manager
