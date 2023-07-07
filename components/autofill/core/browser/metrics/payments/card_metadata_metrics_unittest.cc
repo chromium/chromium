@@ -29,7 +29,7 @@ constexpr char kCardGuid[] = "10000000-0000-0000-0000-000000000001";
 class CardMetadataFormEventMetricsTest
     : public AutofillMetricsBaseTest,
       public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
  public:
   CardMetadataFormEventMetricsTest() = default;
   ~CardMetadataFormEventMetricsTest() override = default;
@@ -37,6 +37,9 @@ class CardMetadataFormEventMetricsTest
   bool card_issuer_available() const { return std::get<0>(GetParam()); }
   bool card_metadata_available() const { return std::get<1>(GetParam()); }
   bool card_has_static_art_image() const { return std::get<2>(GetParam()); }
+  bool new_card_art_and_network_images_used() const {
+    return std::get<3>(GetParam());
+  }
 
   FormData form() { return form_; }
   const CreditCard& card() const { return card_; }
@@ -60,7 +63,11 @@ class CardMetadataFormEventMetricsTest
       card_.set_issuer_id(kCapitalOneCardIssuerId);
     }
     if (card_has_static_art_image()) {
-      card_.set_card_art_url(GURL(kCapitalOneCardArtUrl));
+      if (new_card_art_and_network_images_used()) {
+        card_.set_card_art_url(GURL(kCapitalOneLargeCardArtUrl));
+      } else {
+        card_.set_card_art_url(GURL(kCapitalOneCardArtUrl));
+      }
     }
     // Set metadata to card. The `card_art_url` will be overriden with rich card
     // art url regarless of `card_has_static_art_image()` in the test set-up,
@@ -84,6 +91,7 @@ class CardMetadataFormEventMetricsTest
 INSTANTIATE_TEST_SUITE_P(All,
                          CardMetadataFormEventMetricsTest,
                          testing::Combine(testing::Bool(),
+                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
 

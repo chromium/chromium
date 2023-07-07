@@ -60,11 +60,8 @@ std::string GetCardIssuerIdSuffix(const std::string& card_issuer_id) {
 // image.
 bool HasRichCardArtImageFromMetadata(const CreditCard& card) {
   return card.card_art_url().is_valid() &&
-         card.card_art_url().spec() !=
-             (base::FeatureList::IsEnabled(
-                  features::kAutofillEnableNewCardArtAndNetworkImages)
-                  ? kCapitalOneLargeCardArtUrl
-                  : kCapitalOneCardArtUrl);
+         card.card_art_url().spec() != kCapitalOneLargeCardArtUrl &&
+         card.card_art_url().spec() != kCapitalOneCardArtUrl;
 }
 
 }  // namespace
