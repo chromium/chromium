@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/callback_forward.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 
 #include "base/files/file.h"
@@ -72,6 +74,11 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
   }
 
+  void TearDownOnMainThread() override {
+    RemoveObservers();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   // Creates mount point for My files and registers local filesystem.
   void SetUpMyFiles() {
     {
@@ -113,6 +120,58 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
         file_manager::test::CreateFakeProvidedFileSystemOneDrive(profile());
   }
 
+  // Create and add a file with |test_file_name| to the file system
+  // |source_path|. Return the created |source_file_url|.
+  FileSystemURL SetUpSourceFile(const std::string& test_file_name,
+                                base::FilePath source_path) {
+    const base::FilePath source_file_path =
+        source_path.AppendASCII(test_file_name);
+    // Create test docx file within My files.
+    const base::FilePath test_file_path = GetTestFilePath(test_file_name);
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      CHECK(base::CopyFile(test_file_path, source_file_path));
+    }
+
+    // Check that the source file exists at the intended source location and is
+    // not in ODFS.
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      EXPECT_TRUE(base::PathExists(source_path.AppendASCII(test_file_name)));
+      CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
+    }
+
+    FileSystemURL source_file_url = FilePathToFileSystemURL(
+        profile(),
+        file_manager::util::GetFileManagerFileSystemContext(profile()),
+        source_file_path);
+
+    return source_file_url;
+  }
+
+  void SetUpObservers() {
+    // Subscribe to Notification updates to track copy/move ODFS notifications.
+    NotificationDisplayService::GetForProfile(profile())->AddObserver(this);
+  }
+
+  void RemoveObservers() {
+    NotificationDisplayService::GetForProfile(browser()->profile())
+        ->RemoveObserver(this);
+  }
+
+  void Wait() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_FALSE(run_loop_);
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+    run_loop_ = nullptr;
+  }
+
+  void EndWait() {
+    ASSERT_TRUE(run_loop_);
+    run_loop_->Quit();
+  }
+
   void CheckPathExistsOnODFS(const base::FilePath& path) {
     ASSERT_TRUE(provided_file_system_);
     provided_file_system_->GetMetadata(
@@ -120,10 +179,7 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
         base::BindOnce(&OneDriveUploadHandlerTest::OnGetMetadataExpectSuccess,
                        base::Unretained(this)));
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_FALSE(run_loop_);
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-    run_loop_ = nullptr;
+    Wait();
   }
 
   void CheckPathNotFoundOnODFS(const base::FilePath& path) {
@@ -133,62 +189,48 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
         base::BindOnce(&OneDriveUploadHandlerTest::OnGetMetadataExpectNotFound,
                        base::Unretained(this)));
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_FALSE(run_loop_);
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-    run_loop_ = nullptr;
+    Wait();
   }
 
   void OnGetMetadataExpectSuccess(
       std::unique_ptr<file_system_provider::EntryMetadata> entry_metadata,
       base::File::Error result) {
     EXPECT_EQ(base::File::Error::FILE_OK, result);
-    ASSERT_TRUE(run_loop_);
-    run_loop_->Quit();
+    EndWait();
   }
 
   void OnGetMetadataExpectNotFound(
       std::unique_ptr<file_system_provider::EntryMetadata> entry_metadata,
       base::File::Error result) {
     EXPECT_EQ(base::File::Error::FILE_ERROR_NOT_FOUND, result);
-    ASSERT_TRUE(run_loop_);
-    run_loop_->Quit();
+    EndWait();
   }
 
-  // The exit point of the test. `WaitForUploadComplete` will not complete until
-  // this is called.
+  // Watch for a valid `uploaded_file_url`.
   void OnUploadDone(const storage::FileSystemURL& uploaded_file_url,
                     int64_t size) {
     ASSERT_TRUE(uploaded_file_url.is_valid());
-    ASSERT_TRUE(run_loop_);
-    run_loop_->Quit();
+    EndWait();
   }
 
-  void WaitForUploadComplete() {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_FALSE(run_loop_);
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-    run_loop_ = nullptr;
-  }
-
-  void SetExpectedErrorMessage(std::string expected_error_message) {
-    expected_error_message_ = base::UTF8ToUTF16(expected_error_message);
-  }
-
-  // Watch for the `expected_error_message_`.
+  // Run |on_notification_displayed_callback_| with observed |notification|.
   void OnNotificationDisplayed(
       const message_center::Notification& notification,
       const NotificationCommon::Metadata* const metadata) override {
-    if (notification.message() == expected_error_message_) {
-      ASSERT_TRUE(run_loop_);
-      run_loop_->Quit();
+    if (on_notification_displayed_callback_) {
+      std::move(on_notification_displayed_callback_).Run(notification);
     }
   }
 
   void OnNotificationClosed(const std::string& notification_id) override {}
   void OnNotificationDisplayServiceDestroyed(
       NotificationDisplayService* service) override {}
+
+  void SetOnNotificationDisplayedCallback(
+      base::RepeatingCallback<void(const message_center::Notification&)>
+          callback) {
+    on_notification_displayed_callback_ = std::move(callback);
+  }
 
   Profile* profile() { return browser()->profile(); }
 
@@ -202,41 +244,25 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
   base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  std::u16string expected_error_message_;
+  // Used to observe upload notifications during the tests.
+  base::RepeatingCallback<void(const message_center::Notification&)>
+      on_notification_displayed_callback_;
 };
 
 IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, UploadFromMyFiles) {
-  const std::string test_file_name = "text.docx";
-  const base::FilePath source_file_path =
-      my_files_dir_.AppendASCII(test_file_name);
-
   SetUpMyFiles();
   SetUpODFS();
-
-  // Create test docx file within My files.
-  const base::FilePath test_file_path = GetTestFilePath(test_file_name);
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    CHECK(base::CopyFile(test_file_path, source_file_path));
-  }
-
-  // Check that the source file exists at the intended source location.
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_TRUE(base::PathExists(my_files_dir_.AppendASCII(test_file_name)));
-    CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
-  }
+  const std::string test_file_name = "text.docx";
+  FileSystemURL source_file_url =
+      SetUpSourceFile(test_file_name, my_files_dir_);
 
   // Start the upload workflow and end the test once the upload has completed
   // successfully.
-  FileSystemURL source_file_url = FilePathToFileSystemURL(
-      profile(), file_manager::util::GetFileManagerFileSystemContext(profile()),
-      source_file_path);
   OneDriveUploadHandler::Upload(
       profile(), source_file_url,
       base::BindOnce(&OneDriveUploadHandlerTest::OnUploadDone,
                      base::Unretained(this)));
-  WaitForUploadComplete();
+  Wait();
 
   // Check that the source file has been moved to OneDrive.
   {
@@ -248,39 +274,21 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, UploadFromMyFiles) {
 
 IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
                        UploadFromReadOnlyFileSystem) {
-  const std::string test_file_name = "text.docx";
-  const base::FilePath source_file_path =
-      read_only_dir_.AppendASCII(test_file_name);
-
   SetUpReadOnlyLocation();
   SetUpODFS();
-
-  // Create test docx file within My files.
-  const base::FilePath test_file_path = GetTestFilePath(test_file_name);
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    CHECK(base::CopyFile(test_file_path, source_file_path));
-  }
-
-  // Check that the source file exists at the intended source location.
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_TRUE(base::PathExists(read_only_dir_.AppendASCII(test_file_name)));
-    CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
-  }
+  const std::string test_file_name = "text.docx";
+  FileSystemURL source_file_url =
+      SetUpSourceFile(test_file_name, read_only_dir_);
 
   // Start the upload workflow and end the test once the upload has completed
   // successfully.
-  FileSystemURL source_file_url = FilePathToFileSystemURL(
-      profile(), file_manager::util::GetFileManagerFileSystemContext(profile()),
-      source_file_path);
   OneDriveUploadHandler::Upload(
       profile(), source_file_url,
       base::BindOnce(&OneDriveUploadHandlerTest::OnUploadDone,
                      base::Unretained(this)));
-  WaitForUploadComplete();
+  Wait();
 
-  // Check that the source file has been moved to OneDrive.
+  // Check that the source file has been copied to OneDrive.
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(base::PathExists(read_only_dir_.AppendASCII(test_file_name)));
@@ -292,44 +300,38 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
 // being required, the reauthentication required notification is shown.
 IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
                        FailToUploadDueToReauthenticationRequired) {
-  const std::string test_file_name = "text.docx";
-  const base::FilePath source_file_path =
-      my_files_dir_.AppendASCII(test_file_name);
-
+  SetUpObservers();
   SetUpMyFiles();
   SetUpODFS();
   // Ensure upload fails due to reauthentication to OneDrive being required.
   provided_file_system_->SetCreateFileError(
       base::File::Error::FILE_ERROR_ACCESS_DENIED);
   provided_file_system_->SetReauthenticationRequired(true);
-  NotificationDisplayService::GetForProfile(profile())->AddObserver(this);
   // Expect the reauthentication required notification.
-  SetExpectedErrorMessage(GetReauthenticationRequiredMessage());
+  const std::string test_file_name = "text.docx";
+  FileSystemURL source_file_url =
+      SetUpSourceFile(test_file_name, my_files_dir_);
 
-  // Create test docx file within My files.
-  const base::FilePath test_file_path = GetTestFilePath(test_file_name);
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    CHECK(base::CopyFile(test_file_path, source_file_path));
-  }
+  // Start the upload workflow and end the test once the upload has failed due
+  // to reauthentication being required.
+  auto on_notification = base::BindLambdaForTesting(
+      [&](const message_center::Notification& notification) {
+        if (notification.message() ==
+            base::UTF8ToUTF16(GetReauthenticationRequiredMessage())) {
+          EndWait();
+        }
+      });
+  SetOnNotificationDisplayedCallback(std::move(on_notification));
+  OneDriveUploadHandler::Upload(profile(), source_file_url, base::DoNothing());
+  Wait();
 
-  // Check that the source file exists at the intended source location.
+  // Check that the source file still exists only at the intended source
+  // location and did not get uploaded to ODFS.
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(base::PathExists(my_files_dir_.AppendASCII(test_file_name)));
     CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
   }
-
-  // Start the upload workflow and end the test once the upload has failed due
-  // to reauthentication being required.
-  FileSystemURL source_file_url = FilePathToFileSystemURL(
-      profile(), file_manager::util::GetFileManagerFileSystemContext(profile()),
-      source_file_path);
-  OneDriveUploadHandler::Upload(profile(), source_file_url, base::DoNothing());
-  WaitForUploadComplete();
-
-  NotificationDisplayService::GetForProfile(browser()->profile())
-      ->RemoveObserver(this);
 }
 
 // Test that when the upload to ODFS fails due an access error that is not
@@ -337,10 +339,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
 // notification is shown.
 IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
                        FailToUploadDueToOtherAccessError) {
-  const std::string test_file_name = "text.docx";
-  const base::FilePath source_file_path =
-      my_files_dir_.AppendASCII(test_file_name);
-
+  SetUpObservers();
   SetUpMyFiles();
   SetUpODFS();
   // Ensure Upload fails due to some access error which is not because
@@ -348,34 +347,30 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
   provided_file_system_->SetCreateFileError(
       base::File::Error::FILE_ERROR_ACCESS_DENIED);
   provided_file_system_->SetReauthenticationRequired(false);
-  NotificationDisplayService::GetForProfile(profile())->AddObserver(this);
-  // Expect generic access error notification.
-  SetExpectedErrorMessage(GetGenericOneDriveAccessErrorMessage());
+  const std::string test_file_name = "text.docx";
+  FileSystemURL source_file_url =
+      SetUpSourceFile(test_file_name, my_files_dir_);
 
-  // Create test docx file within My files.
-  const base::FilePath test_file_path = GetTestFilePath(test_file_name);
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    CHECK(base::CopyFile(test_file_path, source_file_path));
-  }
+  // Start the upload workflow and end the test once the upload has failed due
+  // to some access error.
+  auto on_notification = base::BindLambdaForTesting(
+      [&](const message_center::Notification& notification) {
+        if (notification.message() ==
+            base::UTF8ToUTF16(GetGenericOneDriveAccessErrorMessage())) {
+          EndWait();
+        }
+      });
+  SetOnNotificationDisplayedCallback(std::move(on_notification));
+  OneDriveUploadHandler::Upload(profile(), source_file_url, base::DoNothing());
+  Wait();
 
-  // Check that the source file exists at the intended source location.
+  // Check that the source file still exists only at the intended source
+  // location and did not get uploaded to ODFS.
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(base::PathExists(my_files_dir_.AppendASCII(test_file_name)));
     CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
   }
-
-  // Start the upload workflow and end the test once the upload has failed due
-  // to some access error.
-  FileSystemURL source_file_url = FilePathToFileSystemURL(
-      profile(), file_manager::util::GetFileManagerFileSystemContext(profile()),
-      source_file_path);
-  OneDriveUploadHandler::Upload(profile(), source_file_url, base::DoNothing());
-  WaitForUploadComplete();
-
-  NotificationDisplayService::GetForProfile(browser()->profile())
-      ->RemoveObserver(this);
 }
 
 }  // namespace ash::cloud_upload

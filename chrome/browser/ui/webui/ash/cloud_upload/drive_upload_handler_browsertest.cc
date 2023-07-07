@@ -85,6 +85,11 @@ class DriveUploadHandlerTest
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
   }
 
+  void TearDownOnMainThread() override {
+    RemoveObservers();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -131,42 +136,75 @@ class DriveUploadHandlerTest
         ash::DeviceType::kUnknown, /*read_only=*/true);
   }
 
-  void SetUpSourceFile(const std::string& test_file_name,
-                       base::FilePath source_path) {
+  void SetUpDrive() {
+    // Create Drive root directory.
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      EXPECT_TRUE(base::CreateDirectory(drive_root_dir_));
+    }
+  }
+
+  // Create and add a file with |test_file_name| to the file system
+  // |source_path|. Return the created |source_file_url|.
+  FileSystemURL SetUpSourceFile(const std::string& test_file_name,
+                                base::FilePath source_path) {
     test_file_name_ = test_file_name;
-    source_file_path_ = source_path.AppendASCII(test_file_name);
+    source_file_path_ = source_path.AppendASCII(test_file_name_);
     const base::FilePath test_file_path = GetTestFilePath(test_file_name_);
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       CHECK(base::CopyFile(test_file_path, source_file_path_));
     }
-  }
 
-  // Starts the upload flow.
-  void InitiateUpload() {
-    // Subscribe to IOTasks updates to track the copy/move to Drive progress.
-    file_manager::VolumeManager::Get(profile())
-        ->io_task_controller()
-        ->AddObserver(this);
+    // Check that the source file exists at the intended source location and is
+    // not in Drive.
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      EXPECT_TRUE(base::PathExists(source_path.AppendASCII(test_file_name)));
+      EXPECT_FALSE(
+          base::PathExists(drive_root_dir_.AppendASCII(test_file_name)));
+    }
 
     FileSystemURL source_file_url = FilePathToFileSystemURL(
         profile(),
         file_manager::util::GetFileManagerFileSystemContext(profile()),
         source_file_path_);
-    DriveUploadHandler::Upload(
-        profile(), source_file_url,
-        base::BindOnce(&DriveUploadHandlerTest::OnUploadDone,
-                       base::Unretained(this)));
+
+    return source_file_url;
+  }
+
+  void SetUpObservers() {
+    // Subscribe to IOTasks updates to track the copy/move to Drive progress.
+    file_manager::VolumeManager::Get(profile())
+        ->io_task_controller()
+        ->AddObserver(this);
+  }
+
+  void RemoveObservers() {
+    file_manager::VolumeManager::Get(profile())
+        ->io_task_controller()
+        ->RemoveObserver(this);
   }
 
   // Resolves once the `OnUploadDone` callback is called with a valid URL, which
   // indicates the successful completion of the upload flow.
-  void WaitForUploadComplete() {
+  void Wait() {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_FALSE(run_loop_);
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
     run_loop_ = nullptr;
+  }
+
+  void EndWait() {
+    ASSERT_TRUE(run_loop_);
+    run_loop_->Quit();
+  }
+
+  // `Wait` will not complete until this is called.
+  void OnUploadDone(const GURL& url, int64_t size) {
+    ASSERT_FALSE(url.is_empty());
+    EndWait();
   }
 
   Profile* profile() { return browser()->profile(); }
@@ -243,14 +281,6 @@ class DriveUploadHandlerTest
     drivefs_delegate().FlushForTesting();
   }
 
-  // The exit point of the test. `WaitForUploadComplete` will not complete until
-  // this is called.
-  void OnUploadDone(const GURL& url, int64_t size) {
-    ASSERT_FALSE(url.is_empty());
-    ASSERT_TRUE(run_loop_);
-    run_loop_->Quit();
-  }
-
   base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -268,30 +298,22 @@ class DriveUploadHandlerTest
 };
 
 IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFiles) {
-  const std::string test_file_name = "text.docx";
+  SetUpObservers();
   SetUpMyFiles();
-
+  SetUpDrive();
   // Define the source file as a test docx file within My files.
-  SetUpSourceFile(test_file_name, my_files_dir_);
-
-  // Create Drive root directory.
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_TRUE(base::CreateDirectory(drive_root_dir_));
-  }
-
-  // Check that the source file exists at the intended source location.
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_TRUE(base::PathExists(my_files_dir_.AppendASCII(test_file_name)));
-    EXPECT_FALSE(base::PathExists(drive_root_dir_.AppendASCII(test_file_name)));
-  }
+  const std::string test_file_name = "text.docx";
+  FileSystemURL source_file_url =
+      SetUpSourceFile(test_file_name, my_files_dir_);
 
   EXPECT_CALL(fake_drivefs(), ImmediatelyUpload(_, _))
       .WillOnce(RunOnceCallback<1>(drive::FileError::FILE_ERROR_OK));
 
-  InitiateUpload();
-  WaitForUploadComplete();
+  DriveUploadHandler::Upload(
+      profile(), source_file_url,
+      base::BindOnce(&DriveUploadHandlerTest::OnUploadDone,
+                     base::Unretained(this)));
+  Wait();
 
   // Check that the source file has been moved to Drive.
   {
@@ -302,29 +324,22 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFiles) {
 }
 
 IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromReadOnlyFileSystem) {
-  const std::string test_file_name = "text.docx";
+  SetUpObservers();
   SetUpReadOnlyLocation();
-
+  SetUpDrive();
   // Define the source file as a test docx file within My files.
-  SetUpSourceFile(test_file_name, read_only_dir_);
-
-  // Create Drive root directory.
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_TRUE(base::CreateDirectory(drive_root_dir_));
-  }
-
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_TRUE(base::PathExists(read_only_dir_.AppendASCII(test_file_name)));
-    EXPECT_FALSE(base::PathExists(drive_root_dir_.AppendASCII(test_file_name)));
-  }
+  const std::string test_file_name = "text.docx";
+  FileSystemURL source_file_url =
+      SetUpSourceFile(test_file_name, read_only_dir_);
 
   EXPECT_CALL(fake_drivefs(), ImmediatelyUpload(_, _))
       .WillOnce(RunOnceCallback<1>(drive::FileError::FILE_ERROR_OK));
 
-  InitiateUpload();
-  WaitForUploadComplete();
+  DriveUploadHandler::Upload(
+      profile(), source_file_url,
+      base::BindOnce(&DriveUploadHandlerTest::OnUploadDone,
+                     base::Unretained(this)));
+  Wait();
 
   // Check that the source file has been copied to Drive.
   {
