@@ -6,6 +6,7 @@ License: Android Software Development Kit License
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: yes
+Shipped: yes
 
 Description:
 A library jar that provides annotations for the Google Android Platform.
