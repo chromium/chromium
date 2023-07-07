@@ -119,8 +119,6 @@
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "remoting/host/audio_capturer_mac.h"
 #include "remoting/host/desktop_capturer_checker.h"
 #include "remoting/host/mac/permission_utils.h"
@@ -556,9 +554,7 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
     // heuristic that might not be 100% reliable, but it is critically
     // important to add the host bundle to the list of apps under
     // Security & Privacy -> Screen Recording.
-    if (base::mac::IsAtLeastOS10_15()) {
-      DesktopCapturerChecker().TriggerSingleCapture();
-    }
+    DesktopCapturerChecker().TriggerSingleCapture();
     checking_permission_state_ = true;
     permission_granted_ = mac::CanRecordScreen();
     return false;
@@ -1842,17 +1838,6 @@ void HostProcess::StartHost() {
   host_event_logger_ =
       HostEventLogger::Create(host_->status_monitor(), kApplicationName);
 #endif  // !defined(REMOTING_MULTI_PROCESS)
-
-#if BUILDFLAG(IS_APPLE)
-  // Don't run the permission-checks as root (i.e. at the login screen), as they
-  // are not actionable there.
-  // Also, the permission-checks are not needed on MacOS 10.15+, as they are
-  // always handled by the new permission-wizard (the old shell script is
-  // never used on 10.15+).
-  if (getuid() != 0U && base::mac::IsAtMostOS10_14()) {
-    mac::PromptUserToChangeTrustStateIfNeeded(context_->ui_task_runner());
-  }
-#endif  // BUILDFLAG(IS_APPLE)
 
   host_->Start(host_owner_);
   host_->StartChromotingHostServices();

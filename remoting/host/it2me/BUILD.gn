@@ -329,7 +329,7 @@ if (!is_chromeos_ash && enable_remoting_host) {
           "BUNDLE_ID=$remote_assistance_host_bundle_id",
           "VERSION_FULL=$remoting_version_full",
           "VERSION_SHORT=$remoting_version_short",
-          "MACOSX_DEPLOYMENT_TARGET=10.7",
+          "MACOSX_DEPLOYMENT_TARGET=10.15",
         ]
         extra_configs = [
           "//build/config/compiler:wexit_time_destructors",

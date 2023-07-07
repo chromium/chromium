@@ -41,7 +41,6 @@
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) &&
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "remoting/host/desktop_capturer_checker.h"
 #include "remoting/host/mac/permission_utils.h"
@@ -229,9 +228,7 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
     // heuristic that might not be 100% reliable, but it is critically
     // important to add the host bundle to the list of apps under
     // Security & Privacy -> Screen Recording.
-    if (base::mac::IsAtLeastOS10_15()) {
-      DesktopCapturerChecker().TriggerSingleCapture();
-    }
+    DesktopCapturerChecker().TriggerSingleCapture();
     return mac::CanRecordScreen() ? EXIT_SUCCESS : EXIT_FAILURE;
   }
 #endif  // BUILDFLAG(IS_APPLE)

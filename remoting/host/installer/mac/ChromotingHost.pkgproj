@@ -633,7 +633,7 @@
 							<key>LANGUAGE</key>
 							<string>English</string>
 							<key>VALUE</key>
-							<string>@@HOST_NAME@@ requires 10.13 or newer.</string>
+							<string>@@HOST_NAME@@ requires 10.15 or newer.</string>
 						</dict>
 					</array>
 					<key>NAME</key>
