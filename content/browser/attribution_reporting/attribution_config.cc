@@ -8,7 +8,6 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/destination_throttler.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -82,7 +81,7 @@ bool AttributionConfig::Validate() const {
     return false;
   }
 
-  if (!throttler_policy.Validate()) {
+  if (!destination_rate_limit.Validate()) {
     return false;
   }
 
@@ -260,6 +259,22 @@ AttributionConfig::AggregateLimit::AggregateLimit()
   if (delay_span.is_negative()) {
     delay_span = kDefaultDelaySpan;
   }
+}
+
+bool AttributionConfig::DestinationRateLimit::Validate() const {
+  if (max_per_reporting_site <= 0) {
+    return false;
+  }
+
+  if (max_total < max_per_reporting_site) {
+    return false;
+  }
+
+  if (!rate_limit_window.is_positive()) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace content

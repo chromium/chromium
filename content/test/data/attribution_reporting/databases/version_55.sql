@@ -36,14 +36,10 @@ CREATE INDEX reports_by_trigger_time ON reports(trigger_time);
 
 CREATE INDEX reports_by_reporting_origin ON reports(reporting_origin)WHERE report_type=2;
 
-CREATE INDEX rate_limit_source_site_reporting_site_idx ON rate_limits(source_site,reporting_site)WHERE scope=0;
-
-CREATE INDEX rate_limit_reporting_origin_idx ON rate_limits(scope,destination_site,source_site);
+CREATE INDEX rate_limit_reporting_origin_idx ON rate_limits(scope,source_site,destination_site);
 
 CREATE INDEX rate_limit_time_idx ON rate_limits(time);
 
 CREATE INDEX rate_limit_source_id_idx ON rate_limits(source_id);
-
-INSERT INTO rate_limits VALUES (0,1,2,'3','4','5','https://a.r.test',7,8,9);
 
 COMMIT;

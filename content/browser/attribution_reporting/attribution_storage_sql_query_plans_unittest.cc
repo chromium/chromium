@@ -199,18 +199,25 @@ TEST_F(AttributionSqlQueryPlanTest, kRateLimitAttributionAllowedSql) {
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitSourceAllowedSql) {
   const auto plan = GetPlan(attribution_queries::kRateLimitSourceAllowedSql);
   ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(),
-              UsesIndex("rate_limit_source_site_reporting_site_idx",
-                        {"source_site", "reporting_site"}));
+  EXPECT_THAT(plan.value(), UsesIndex("rate_limit_reporting_origin_idx",
+                                      {"scope", "source_site"}));
+}
+
+TEST_F(AttributionSqlQueryPlanTest,
+       kRateLimitSourceAllowedDestinationRateLimitSql) {
+  const auto plan = GetPlan(
+      attribution_queries::kRateLimitSourceAllowedDestinationRateLimitSql);
+  ASSERT_TRUE(plan.has_value());
+  EXPECT_THAT(plan.value(), UsesIndex("rate_limit_reporting_origin_idx",
+                                      {"scope", "source_site"}));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitSourceReportingOriginsBySiteSql) {
   const auto plan = GetPlan(
       attribution_queries::kRateLimitSelectSourceReportingOriginsBySiteSql);
   ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(),
-              UsesIndex("rate_limit_source_site_reporting_site_idx",
-                        {"source_site", "reporting_site"}));
+  EXPECT_THAT(plan.value(), UsesIndex("rate_limit_reporting_origin_idx",
+                                      {"scope", "source_site"}));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitSelectReportingOriginsSql) {

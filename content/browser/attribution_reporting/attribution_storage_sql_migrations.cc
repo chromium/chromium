@@ -224,6 +224,21 @@ bool To54(sql::Database& db) {
   return db.Execute(kRateLimitImpressionIdIndexSql);
 }
 
+bool To55(sql::Database& db) {
+  if (!db.Execute("DROP INDEX rate_limit_source_site_reporting_site_idx")) {
+    return false;
+  }
+
+  if (!db.Execute("DROP INDEX rate_limit_reporting_origin_idx")) {
+    return false;
+  }
+
+  static constexpr char kRateLimitReportingOriginIndexSql[] =
+      "CREATE INDEX rate_limit_reporting_origin_idx "
+      "ON rate_limits(scope,source_site,destination_site)";
+  return db.Execute(kRateLimitReportingOriginIndexSql);
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(sql::Database& db,
@@ -237,12 +252,13 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database& db,
                 "Remove migration(s) below.");
 
   bool ok = MaybeMigrate(db, meta_table, 52, &To53) &&  //
-            MaybeMigrate(db, meta_table, 53, &To54);
+            MaybeMigrate(db, meta_table, 53, &To54) &&
+            MaybeMigrate(db, meta_table, 54, &To55);
   if (!ok) {
     return false;
   }
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber == 54,
+  static_assert(AttributionStorageSql::kCurrentVersionNumber == 55,
                 "Add migration(s) above.");
 
   if (base::ThreadTicks::IsSupported()) {

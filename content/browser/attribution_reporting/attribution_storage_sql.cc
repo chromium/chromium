@@ -54,7 +54,6 @@
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
-#include "content/browser/attribution_reporting/destination_throttler.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/sql_queries.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
@@ -620,17 +619,19 @@ base::FilePath DatabasePath(const base::FilePath& user_data_directory) {
   return user_data_directory.Append(kDatabasePath);
 }
 
-StorableSource::Result ThrottleResultToStorableSourceResult(
-    DestinationThrottler::Result r) {
+StorableSource::Result DestinationRateLimitResultToStorableSourceResult(
+    RateLimitTable::DestinationRateLimitResult r) {
   switch (r) {
-    case DestinationThrottler::Result::kAllowed:
+    case RateLimitTable::DestinationRateLimitResult::kAllowed:
       return StorableSource::Result::kSuccess;
-    case DestinationThrottler::Result::kHitGlobalLimit:
+    case RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit:
       return StorableSource::Result::kDestinationGlobalLimitReached;
-    case DestinationThrottler::Result::kHitReportingLimit:
+    case RateLimitTable::DestinationRateLimitResult::kHitReportingLimit:
       return StorableSource::Result::kDestinationReportingLimitReached;
-    case DestinationThrottler::Result::kHitBothLimits:
+    case RateLimitTable::DestinationRateLimitResult::kHitBothLimits:
       return StorableSource::Result::kDestinationBothLimitsReached;
+    case RateLimitTable::DestinationRateLimitResult::kError:
+      return StorableSource::Result::kInternalError;
   }
 }
 
@@ -646,8 +647,7 @@ AttributionStorageSql::AttributionStorageSql(
                                .page_size = 4096,
                                .cache_size = 32}),
       delegate_(std::move(delegate)),
-      rate_limit_table_(delegate_.get()),
-      throttler_(delegate_->GetDestinationThrottlerPolicy()) {
+      rate_limit_table_(delegate_.get()) {
   DCHECK(delegate_);
 
   db_.set_histogram_tag("Conversions");
@@ -690,13 +690,6 @@ bool AttributionStorageSql::DeactivateSources(
 StoreSourceResult AttributionStorageSql::StoreSource(
     const StorableSource& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (StorableSource::Result result = CheckDestinationThrottler(source);
-      result != StorableSource::Result::kSuccess) {
-    StoreSourceResult store_result(result);
-    store_result.max_destinations_per_rate_limit_window_reporting_origin =
-        throttler_.GetMaxPerReportingSite();
-    return store_result;
-  }
 
   // Force the creation of the database if it doesn't exist, as we need to
   // persist the source.
@@ -704,12 +697,24 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     return StoreSourceResult(StorableSource::Result::kInternalError);
   }
 
+  const base::Time source_time = base::Time::Now();
+
+  if (StorableSource::Result result =
+          CheckDestinationRateLimit(source, source_time);
+      result != StorableSource::Result::kSuccess) {
+    StoreSourceResult store_result(result);
+    if (result != StorableSource::Result::kInternalError) {
+      store_result.max_destinations_per_rate_limit_window_reporting_origin =
+          delegate_->GetDestinationRateLimit().max_per_reporting_site;
+    }
+    return store_result;
+  }
+
   // Only delete expired impressions periodically to avoid excessive DB
   // operations.
   const base::TimeDelta delete_frequency =
       delegate_->GetDeleteExpiredSourcesFrequency();
   DCHECK_GE(delete_frequency, base::TimeDelta());
-  const base::Time source_time = base::Time::Now();
   if (source_time - last_deleted_expired_sources_ >= delete_frequency) {
     if (!DeleteExpiredSources()) {
       return StoreSourceResult(StorableSource::Result::kInternalError);
@@ -928,17 +933,17 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       min_fake_report_time);
 }
 
-StorableSource::Result AttributionStorageSql::CheckDestinationThrottler(
-    const StorableSource& source) {
+StorableSource::Result AttributionStorageSql::CheckDestinationRateLimit(
+    const StorableSource& source,
+    base::Time source_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DestinationThrottler::Result throttle_result = throttler_.UpdateAndGetResult(
-      source.registration().destination_set,
-      net::SchemefulSite(source.common_info().source_origin()),
-      net::SchemefulSite(source.common_info().reporting_origin()));
-  base::UmaHistogramEnumeration("Conversions.DestinationThrottlerResult",
-                                throttle_result);
+  RateLimitTable::DestinationRateLimitResult rate_limit_result =
+      rate_limit_table_.SourceAllowedForDestinationRateLimit(&db_, source,
+                                                             source_time);
+  base::UmaHistogramEnumeration("Conversions.DestinationRateLimitResult",
+                                rate_limit_result);
 
-  return ThrottleResultToStorableSourceResult(throttle_result);
+  return DestinationRateLimitResultToStorableSourceResult(rate_limit_result);
 }
 
 // Checks whether a new report is allowed to be stored for the given source

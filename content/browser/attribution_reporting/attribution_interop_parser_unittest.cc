@@ -25,7 +25,6 @@
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
-#include "content/browser/attribution_reporting/destination_throttler.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -90,11 +89,18 @@ bool operator==(const AttributionConfig::AggregateLimit& a,
   return tie(a) == tie(b);
 }
 
+bool operator==(const AttributionConfig::DestinationRateLimit& a,
+                const AttributionConfig::DestinationRateLimit& b) {
+  return a.max_total == b.max_total &&
+         a.max_per_reporting_site == b.max_per_reporting_site &&
+         a.rate_limit_window == b.rate_limit_window;
+}
+
 bool operator==(const AttributionConfig& a, const AttributionConfig& b) {
   const auto tie = [](const AttributionConfig& config) {
     return std::make_tuple(config.max_sources_per_origin, config.rate_limit,
                            config.event_level_limit, config.aggregate_limit,
-                           config.throttler_policy);
+                           config.destination_rate_limit);
   };
   return tie(a) == tie(b);
 }
@@ -595,11 +601,11 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        })},
       {R"json({"max_destinations_per_rate_limit_window_reporting_site":"100"})json",
        false, AttributionConfigWith([](AttributionConfig& c) {
-         c.throttler_policy = {.max_per_reporting_site = 100};
+         c.destination_rate_limit = {.max_per_reporting_site = 100};
        })},
       {R"json({"max_destinations_per_rate_limit_window":"100"})json", false,
        AttributionConfigWith([](AttributionConfig& c) {
-         c.throttler_policy = {.max_total = 100};
+         c.destination_rate_limit = {.max_total = 100};
        })},
       {R"json({"rate_limit_time_window":"30"})json", false,
        AttributionConfigWith([](AttributionConfig& c) {
@@ -755,7 +761,8 @@ TEST(AttributionInteropParserTest, ValidConfig) {
                a.min_delay = base::Minutes(10);
                a.delay_span = base::Minutes(20);
              });
-         c.throttler_policy = {.max_total = 2, .max_per_reporting_site = 1};
+         c.destination_rate_limit = {.max_total = 2,
+                                     .max_per_reporting_site = 1};
        })}};
 
   for (const auto& test_case : kTestCases) {

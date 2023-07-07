@@ -57,6 +57,15 @@ class CONTENT_EXPORT RateLimitTable {
     kAttribution = 1,
   };
 
+  enum class DestinationRateLimitResult {
+    kAllowed = 0,
+    kHitGlobalLimit = 1,
+    kHitReportingLimit = 2,
+    kHitBothLimits = 3,
+    kError = 4,
+    kMaxValue = kError,
+  };
+
   explicit RateLimitTable(const AttributionStorageDelegate*);
   RateLimitTable(const RateLimitTable&) = delete;
   RateLimitTable& operator=(const RateLimitTable&) = delete;
@@ -89,6 +98,11 @@ class CONTENT_EXPORT RateLimitTable {
       base::Time source_time);
 
   [[nodiscard]] RateLimitResult SourceAllowedForDestinationLimit(
+      sql::Database* db,
+      const StorableSource& source,
+      base::Time source_time);
+
+  [[nodiscard]] DestinationRateLimitResult SourceAllowedForDestinationRateLimit(
       sql::Database* db,
       const StorableSource& source,
       base::Time source_time);

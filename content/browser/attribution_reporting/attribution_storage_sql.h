@@ -18,7 +18,6 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
-#include "content/browser/attribution_reporting/destination_throttler.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom-forward.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -47,11 +46,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 54;
+  static constexpr int kCurrentVersionNumber = 55;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 54;
+  static constexpr int kCompatibleVersionNumber = 55;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -129,7 +128,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   void SetDelegate(std::unique_ptr<AttributionStorageDelegate>) override;
 
   [[nodiscard]] attribution_reporting::mojom::StoreSourceResult
-  CheckDestinationThrottler(const StorableSource& source);
+  CheckDestinationRateLimit(const StorableSource& source,
+                            base::Time source_time);
 
   void ClearAllDataAllTime(bool delete_rate_limit_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -375,8 +375,6 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   // the NULL time.
   base::Time last_deleted_expired_sources_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  DestinationThrottler throttler_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

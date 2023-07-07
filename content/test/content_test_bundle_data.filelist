@@ -5133,6 +5133,7 @@ data/attribution_reporting/databases/version_51.sql
 data/attribution_reporting/databases/version_52.sql
 data/attribution_reporting/databases/version_53.sql
 data/attribution_reporting/databases/version_54.sql
+data/attribution_reporting/databases/version_55.sql
 data/attribution_reporting/inject_cross_app_web_third_party_ot.js
 data/attribution_reporting/interop/aggregatable_budget.json
 data/attribution_reporting/interop/aggregatable_contributions_creation.json
@@ -5145,7 +5146,7 @@ data/attribution_reporting/interop/config_trigger_data_cardinality.json
 data/attribution_reporting/interop/dedup_key.json
 data/attribution_reporting/interop/default_config.json
 data/attribution_reporting/interop/destination_limit.json
-data/attribution_reporting/interop/destination_throttle_limit.json
+data/attribution_reporting/interop/destination_rate_limit.json
 data/attribution_reporting/interop/event_level_report_time.json
 data/attribution_reporting/interop/event_level_storage_limit.json
 data/attribution_reporting/interop/event_level_trigger_filter_data.json

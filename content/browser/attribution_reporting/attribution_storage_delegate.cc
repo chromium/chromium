@@ -78,10 +78,10 @@ int AttributionStorageDelegate::GetMaxAggregatableReportsPerSource() const {
   return config_.aggregate_limit.max_aggregatable_reports_per_source;
 }
 
-DestinationThrottler::Policy
-AttributionStorageDelegate::GetDestinationThrottlerPolicy() const {
+AttributionConfig::DestinationRateLimit
+AttributionStorageDelegate::GetDestinationRateLimit() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return config_.throttler_policy;
+  return config_.destination_rate_limit;
 }
 
 uint64_t AttributionStorageDelegate::SanitizeTriggerData(

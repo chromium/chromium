@@ -3654,8 +3654,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.DestinationThrottlerResult"
-    enum="AttributionDestinationThrottlerResult" expires_after="M121">
+<histogram name="Conversions.DestinationRateLimitResult"
+    enum="AttributionDestinationRateLimitResult" expires_after="M121">
   <owner>csharrison@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>

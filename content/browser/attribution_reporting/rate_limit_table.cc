@@ -74,20 +74,11 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
   static_assert(static_cast<int>(Scope::kSource) == 0,
                 "update `scope=0` clause below");
 
-  // Optimizes calls to `SourceAllowedForDestinationLimit()`.
-  static constexpr char kRateLimitSourceSiteReportingSiteIndexSql[] =
-      "CREATE INDEX rate_limit_source_site_reporting_site_idx "
-      "ON rate_limits(source_site,reporting_site)"
-      "WHERE scope=0";
-  if (!db->Execute(kRateLimitSourceSiteReportingSiteIndexSql)) {
-    return false;
-  }
-
   // Optimizes calls to `AllowedForReportingOriginLimit()` and
   // `AttributionAllowedForAttributionLimit()`.
   static constexpr char kRateLimitReportingOriginIndexSql[] =
       "CREATE INDEX rate_limit_reporting_origin_idx "
-      "ON rate_limits(scope,destination_site,source_site)";
+      "ON rate_limits(scope,source_site,destination_site)";
   if (!db->Execute(kRateLimitReportingOriginIndexSql)) {
     return false;
   }
@@ -325,6 +316,71 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
 
   return statement.Succeeded() ? RateLimitResult::kAllowed
                                : RateLimitResult::kError;
+}
+
+RateLimitTable::DestinationRateLimitResult
+RateLimitTable::SourceAllowedForDestinationRateLimit(
+    sql::Database* db,
+    const StorableSource& source,
+    base::Time source_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE,
+      attribution_queries::kRateLimitSourceAllowedDestinationRateLimitSql));
+
+  AttributionConfig::DestinationRateLimit destination_rate_limit =
+      delegate_->GetDestinationRateLimit();
+
+  const CommonSourceInfo& common_info = source.common_info();
+  statement.BindString(0, common_info.source_site().Serialize());
+  statement.BindTime(1, source_time);
+  statement.BindTime(2, source_time - destination_rate_limit.rate_limit_window);
+
+  base::flat_set<net::SchemefulSite> destination_sites =
+      source.registration().destination_set.destinations();
+  base::flat_set<net::SchemefulSite> same_reporting_destination_sites =
+      destination_sites;
+
+  const std::string serialized_reporting_site =
+      net::SchemefulSite(common_info.reporting_origin()).Serialize();
+
+  while (statement.Step()) {
+    net::SchemefulSite destination_site =
+        net::SchemefulSite::Deserialize(statement.ColumnString(0));
+
+    if (serialized_reporting_site == statement.ColumnString(1)) {
+      same_reporting_destination_sites.insert(destination_site);
+    }
+
+    destination_sites.insert(std::move(destination_site));
+  }
+
+  if (!statement.Succeeded()) {
+    return DestinationRateLimitResult::kError;
+  }
+
+  const int global_limit = destination_rate_limit.max_total;
+  DCHECK_GT(global_limit, 0);
+
+  const int reporting_limit = destination_rate_limit.max_per_reporting_site;
+  DCHECK_GT(reporting_limit, 0);
+
+  bool global_limit_hit =
+      destination_sites.size() > static_cast<size_t>(global_limit);
+  bool reporting_limit_hit = same_reporting_destination_sites.size() >
+                             static_cast<size_t>(reporting_limit);
+
+  if (global_limit_hit && reporting_limit_hit) {
+    return DestinationRateLimitResult::kHitBothLimits;
+  }
+
+  if (!global_limit_hit && !reporting_limit_hit) {
+    return DestinationRateLimitResult::kAllowed;
+  }
+
+  return global_limit_hit ? DestinationRateLimitResult::kHitGlobalLimit
+                          : DestinationRateLimitResult::kHitReportingLimit;
 }
 
 RateLimitResult RateLimitTable::AttributionAllowedForReportingOriginLimit(
