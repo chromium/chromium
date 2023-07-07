@@ -367,6 +367,20 @@ void FakeDiagnosticsService::RunUfsLifetimeRoutine(
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
 }
 
+void FakeDiagnosticsService::RunPowerButtonRoutine(
+    uint32_t timeout_seconds,
+    RunPowerButtonRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_passed_parameters_.Set("timeout_seconds",
+                                static_cast<int32_t>(timeout_seconds));
+
+  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kPowerButton;
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
+}
+
 void FakeDiagnosticsService::SetRunRoutineResponse(
     crosapi::DiagnosticsRunRoutineResponsePtr response) {
   run_routine_response_ = std::move(response);

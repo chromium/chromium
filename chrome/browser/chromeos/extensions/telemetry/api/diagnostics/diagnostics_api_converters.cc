@@ -96,6 +96,9 @@ bool ConvertMojoRoutine(crosapi::DiagnosticsRoutineEnum in,
     case crosapi::DiagnosticsRoutineEnum::kUfsLifetime:
       *out = cx_diag::RoutineType::kUfsLifetime;
       return true;
+    case crosapi::DiagnosticsRoutineEnum::kPowerButton:
+      *out = cx_diag::RoutineType::kPowerButton;
+      return true;
     case crosapi::DiagnosticsRoutineEnum::kUnknown:
       return false;
   }
@@ -179,6 +182,8 @@ cx_diag::UserMessageType ConvertRoutineUserMessage(
       return cx_diag::UserMessageType::kUnplugAcPower;
     case crosapi::DiagnosticsRoutineUserMessageEnum::kPlugInACPower:
       return cx_diag::UserMessageType::kPlugInAcPower;
+    case crosapi::DiagnosticsRoutineUserMessageEnum::kPressPowerButton:
+      return cx_diag::UserMessageType::kPressPowerButton;
   }
 }
 

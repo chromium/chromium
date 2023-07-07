@@ -83,6 +83,8 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineEnum) {
             crosapi::DiagnosticsRoutineEnum::kBluetoothPower);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kUfsLifetime),
             crosapi::DiagnosticsRoutineEnum::kUfsLifetime);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kPowerButton),
+            crosapi::DiagnosticsRoutineEnum::kPowerButton);
 
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kArcHttp),
             absl::nullopt);
@@ -164,11 +166,10 @@ TEST(DiagnosticsServiceConvertersTest,
   EXPECT_EQ(
       Convert(cros_healthd::DiagnosticRoutineUserMessageEnum::kCheckLedColor),
       crosapi::DiagnosticsRoutineUserMessageEnum::kUnknown);
-  // Power Button routine is not yet supported in telemetry extension.
   EXPECT_EQ(
       Convert(
           cros_healthd::DiagnosticRoutineUserMessageEnum::kPressPowerButton),
-      crosapi::DiagnosticsRoutineUserMessageEnum::kUnknown);
+      crosapi::DiagnosticsRoutineUserMessageEnum::kPressPowerButton);
 }
 
 TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineCommandEnum) {

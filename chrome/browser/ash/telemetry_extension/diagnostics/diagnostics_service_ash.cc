@@ -426,4 +426,19 @@ void DiagnosticsServiceAsh::RunUfsLifetimeRoutine(
       std::move(callback)));
 }
 
+void DiagnosticsServiceAsh::RunPowerButtonRoutine(
+    uint32_t timeout_seconds,
+    RunPowerButtonRoutineCallback callback) {
+  GetService()->RunPowerButtonRoutine(
+      timeout_seconds,
+      base::BindOnce(
+          [](crosapi::mojom::DiagnosticsService::RunPowerButtonRoutineCallback
+                 callback,
+             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+            std::move(callback).Run(
+                converters::ConvertDiagnosticsPtr(std::move(ptr)));
+          },
+          std::move(callback)));
+}
+
 }  // namespace ash

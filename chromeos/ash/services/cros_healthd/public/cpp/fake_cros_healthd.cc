@@ -709,6 +709,10 @@ void FakeCrosHealthd::RunBluetoothPairingRoutine(
 void FakeCrosHealthd::RunPowerButtonRoutine(
     uint32_t timeout_seconds,
     RunPowerButtonRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_passed_parameters_.Set("timeout_seconds",
+                                static_cast<int32_t>(timeout_seconds));
+
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kPowerButton;
   std::move(callback).Run(run_routine_response_.Clone());
 }

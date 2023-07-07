@@ -130,6 +130,8 @@ absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
       return crosapi::mojom::DiagnosticsRoutineEnum::kBluetoothPower;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kUfsLifetime:
       return crosapi::mojom::DiagnosticsRoutineEnum::kUfsLifetime;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kPowerButton:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kPowerButton;
     default:
       return absl::nullopt;
   }
@@ -162,8 +164,8 @@ crosapi::mojom::DiagnosticsRoutineUserMessageEnum Convert(
       return crosapi::mojom::DiagnosticsRoutineUserMessageEnum::kUnknown;
     case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::
         kPressPowerButton:
-      NOTIMPLEMENTED();
-      return crosapi::mojom::DiagnosticsRoutineUserMessageEnum::kUnknown;
+      return crosapi::mojom::DiagnosticsRoutineUserMessageEnum::
+          kPressPowerButton;
   }
   NOTREACHED();
   return static_cast<crosapi::mojom::DiagnosticsRoutineUserMessageEnum>(

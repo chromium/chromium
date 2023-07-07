@@ -382,4 +382,16 @@ void OsDiagnosticsRunUfsLifetimeRoutineFunction::RunIfAllowed() {
   GetRemoteService()->RunUfsLifetimeRoutine(GetOnResult());
 }
 
+// OsDiagnosticsRunPowerButtonRoutineFunction -----------------------------
+
+void OsDiagnosticsRunPowerButtonRoutineFunction::RunIfAllowed() {
+  const auto params = GetParams<cx_diag::RunPowerButtonRoutine::Params>();
+  if (!params) {
+    return;
+  }
+
+  GetRemoteService()->RunPowerButtonRoutine(params->request.timeout_seconds,
+                                            GetOnResult());
+}
+
 }  // namespace chromeos

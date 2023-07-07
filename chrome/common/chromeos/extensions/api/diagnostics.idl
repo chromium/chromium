@@ -33,7 +33,8 @@ namespace os.diagnostics {
     smartctl_check_with_percentage_used,
     emmc_lifetime,
     bluetooth_power,
-    ufs_lifetime
+    ufs_lifetime,
+    power_button
   };
 
   enum RoutineStatus {
@@ -62,7 +63,8 @@ namespace os.diagnostics {
   enum UserMessageType {
     unknown,
     unplug_ac_power,
-    plug_in_ac_power
+    plug_in_ac_power,
+    press_power_button
   };
 
   enum DiskReadRoutineType {
@@ -139,6 +141,10 @@ namespace os.diagnostics {
     long? percentage_used_threshold;
   };
 
+  dictionary RunPowerButtonRequest {
+    long timeout_seconds;
+  };
+
   dictionary RunRoutineResponse {
     long id;
 
@@ -213,5 +219,7 @@ namespace os.diagnostics {
     [supportsPromises] static void runSmartctlCheckRoutine(optional RunSmartctlCheckRequest request, RunRoutineCallback callback);
 
     [supportsPromises] static void runUfsLifetimeRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runPowerButtonRoutine(RunPowerButtonRequest request, RunRoutineCallback callback);
   };
 };

@@ -117,6 +117,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::DiagnosticsRoutineEnum::kEmmcLifetime,
         crosapi::DiagnosticsRoutineEnum::kBluetoothPower,
         crosapi::DiagnosticsRoutineEnum::kUfsLifetime,
+        crosapi::DiagnosticsRoutineEnum::kPowerButton,
     });
 
     SetServiceForTesting(std::move(fake_service_impl));
@@ -154,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "smartctl_check_with_percentage_used",
               "emmc_lifetime",
               "bluetooth_power",
-              "ufs_lifetime"
+              "ufs_lifetime",
+              "power_button"
             ]
           }, response);
         chrome.test.succeed();
@@ -1154,6 +1156,47 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       async function runUfsLifetimeRoutine() {
         const response =
           await chrome.os.diagnostics.runUfsLifetimeRoutine();
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunPowerButtonRoutineSuccess) {
+  // Configure FakeDiagnosticsService.
+  {
+    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
+    expected_response->id = 0;
+    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
+
+    // Set the return value for a call to RunPowerButtonRoutine.
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
+
+    base::Value::Dict expected_result;
+    expected_result.Set("timeout_seconds", 10);
+
+    fake_service_impl->SetExpectedLastPassedParameters(
+        std::move(expected_result));
+
+    // Set the expected called routine.
+    fake_service_impl->SetExpectedLastCalledRoutine(
+        crosapi::DiagnosticsRoutineEnum::kPowerButton);
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runPowerButtonRoutine() {
+        const response =
+          await chrome.os.diagnostics.runPowerButtonRoutine(
+            {
+              timeout_seconds: 10
+            }
+          );
         chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }

@@ -348,6 +348,17 @@ class OsDiagnosticsRunUfsLifetimeRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunPowerButtonRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runPowerButtonRoutine",
+                             OS_DIAGNOSTICS_RUNPOWERBUTTONROUTINE)
+ private:
+  ~OsDiagnosticsRunPowerButtonRoutineFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_DIAGNOSTICS_DIAGNOSTICS_API_H_

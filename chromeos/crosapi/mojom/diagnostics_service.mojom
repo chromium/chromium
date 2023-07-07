@@ -18,8 +18,8 @@ import "chromeos/crosapi/mojom/nullable_primitives.mojom";
 
 // Interface for exposing diagnostics service. Implemented in ash-chrome.
 //
-// Next version: 4
-// Next ID: 26
+// Next version: 5
+// Next ID: 27
 [Stable, Uuid="14bc6194-c059-4048-9bea-ca6823eeda82",
 RenamedFrom="ash.health.mojom.DiagnosticsService"]
 interface DiagnosticsService {
@@ -409,12 +409,29 @@ interface DiagnosticsService {
   //                routine.
   [MinVersion=3] RunUfsLifetimeRoutine@25()
       => (DiagnosticsRunRoutineResponse response);
+
+  // Requests that the PowerButton routine is created and started on the
+  // platform. This routine checks the functionality of the power button. The
+  // routine passes if a power button event is received before the timeout.
+  // Otherwise, the routine fails.
+  // The availability of this routine can be determined by checking that
+  // kPowerButton is returned by GetAvailableRoutines.
+  //
+  // The request:
+  // * |timeout_seconds| - length of time, in seconds, to listen to the power
+  //                       button events. Range: [1, 600].
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=4] RunPowerButtonRoutine@26(uint32 timeout_seconds)
+      => (DiagnosticsRunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.
 //
-// Next version: 3
-// Next ID: 26
+// Next version: 4
+// Next ID: 27
 [Stable, Extensible, RenamedFrom="ash.health.mojom.DiagnosticRoutineEnum"]
 enum DiagnosticsRoutineEnum {
   [Default] kUnknown = 15,
@@ -443,6 +460,7 @@ enum DiagnosticsRoutineEnum {
   kEmmcLifetime = 23,
   [MinVersion=1] kBluetoothPower = 24,
   [MinVersion=2] kUfsLifetime = 25,
+  [MinVersion=3] kPowerButton = 26,
 };
 
 // Enumeration of each of the possible statuses for a diagnostics routine.
@@ -470,13 +488,16 @@ enum DiagnosticsRoutineStatusEnum {
 // Enumeration of each of the messages a diagnostics routine can pass back.
 // These messages prompt interaction from the user of the routine.
 //
-// Next ID: 3
+// Next version: 2
+// Next ID: 4
 [Stable, Extensible,
 RenamedFrom="ash.health.mojom.DiagnosticRoutineUserMessageEnum"]
 enum DiagnosticsRoutineUserMessageEnum {
   [Default] kUnknown = 2,
   kUnplugACPower = 0,  // The user needs to unplug the AC power cord.
   kPlugInACPower = 1,  // The user needs to plug in the AC power cord.
+  [MinVersion=1] kPressPowerButton = 3,  // The user needs to press the power
+                                         // button.
 };
 
 // Enumeration of the possible commands to send a diagnostics routine.
