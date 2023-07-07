@@ -31,13 +31,15 @@ public class PasswordMigrationWarningOptionsFragment extends Fragment {
     private String mAccountDisplayName;
     private FragmentManager mFragmentManager;
     private Runnable mOnResumeExportFlowCallback;
+    private boolean mShouldOfferSync;
 
-    public PasswordMigrationWarningOptionsFragment(Context context,
+    public PasswordMigrationWarningOptionsFragment(Context context, boolean shouldOfferSync,
             PasswordMigrationWarningOnClickHandler onClickHandler, Runnable cancelCallback,
             String channelString, String accountDisplayName, FragmentManager fragmentManager,
             Runnable onResumeExportFlowCallback) {
         super(R.layout.pwd_migration_warning_options);
         mContext = context;
+        mShouldOfferSync = shouldOfferSync;
         mOnClickHandler = onClickHandler;
         mCancelCallback = cancelCallback;
         mChannelString = channelString;
@@ -53,9 +55,14 @@ public class PasswordMigrationWarningOptionsFragment extends Fragment {
         Button nextButton = view.findViewById(R.id.password_migration_next_button);
         Button cancelButton = view.findViewById(R.id.password_migration_cancel_button);
 
-        mSignInOrSyncButton.setChecked(true);
-        if (mAccountDisplayName != null) {
-            mSignInOrSyncButton.setDescriptionText(mAccountDisplayName);
+        if (mShouldOfferSync) {
+            if (mAccountDisplayName != null) {
+                mSignInOrSyncButton.setDescriptionText(mAccountDisplayName);
+            }
+            mSignInOrSyncButton.setChecked(true);
+        } else {
+            mSignInOrSyncButton.setVisibility(View.GONE);
+            mPasswordExportButton.setChecked(true);
         }
 
         mPasswordExportButton.setDescriptionText(

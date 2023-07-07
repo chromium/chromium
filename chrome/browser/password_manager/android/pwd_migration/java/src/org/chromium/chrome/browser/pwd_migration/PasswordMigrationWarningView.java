@@ -39,6 +39,7 @@ class PasswordMigrationWarningView implements BottomSheetContent {
     private Context mContext;
     private String mAccountDisplayName;
     private @ScreenType int mScreenType = ScreenType.NONE;
+    private boolean mShouldOfferSync;
 
     private Runnable mOnResumeExportFlowCallback;
 
@@ -123,6 +124,9 @@ class PasswordMigrationWarningView implements BottomSheetContent {
         mBottomSheetController.expandSheet();
     }
 
+    void setShouldOfferSync(boolean shouldOfferSync) {
+        mShouldOfferSync = shouldOfferSync;
+    }
     private void setFragment() {
         assert mScreenType != ScreenType.NONE;
         if (mScreenType == ScreenType.INTRO_SCREEN) {
@@ -137,7 +141,8 @@ class PasswordMigrationWarningView implements BottomSheetContent {
                     .commit();
         } else if (mScreenType == ScreenType.OPTIONS_SCREEN) {
             PasswordMigrationWarningOptionsFragment optionsFragment =
-                    new PasswordMigrationWarningOptionsFragment(mContext, mOnClickHandler,
+                    new PasswordMigrationWarningOptionsFragment(mContext, mShouldOfferSync,
+                            mOnClickHandler,
                             ()
                                     -> mOnClickHandler.onCancel(mBottomSheetController),
                             getChannelString(), mAccountDisplayName, mFragmentManager,
