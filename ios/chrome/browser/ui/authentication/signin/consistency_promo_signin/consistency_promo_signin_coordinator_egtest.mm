@@ -94,7 +94,8 @@
 
 // Removes the only identity while the error dialog is opened. Once the identity
 // is removed, the web sign-in dialog is removed.
-- (void)testRemoveLastIdentityWithSigninErrorDialog {
+// TODO(crbug.com/1462976): Reenable this test.
+- (void)DISABLED_testRemoveLastIdentityWithSigninErrorDialog {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
