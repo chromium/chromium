@@ -59,6 +59,27 @@ void CryptohomeCoreImpl::StartAuthSession(const AuthAttemptVector& attempt,
     performer_->InvalidateCurrentAttempts();
   }
   DCHECK(!clients_.contains(client));
+
+  if (current_stage_ == Stage::kAuthSessionRequested) {
+    // All events would be sent in OnAuthSessionStarted.
+    clients_.insert(client);
+    return;
+  }
+
+  if (current_stage_ == Stage::kAuthSessionRequestFinished) {
+    if (auth_session_started_) {
+      clients_.insert(client);
+      client->OnCryptohomeAuthSessionStarted();
+    } else {
+      client->OnAuthSessionStartFailure();
+    }
+    return;
+  }
+
+  CHECK_EQ(current_stage_, Stage::kIdle);
+  current_stage_ = Stage::kAuthSessionRequested;
+  CHECK(!auth_session_started_);
+
   clients_.insert(client);
 
   const user_manager::User* user =
@@ -77,6 +98,8 @@ void CryptohomeCoreImpl::OnAuthSessionStarted(
     bool user_exists,
     std::unique_ptr<UserContext> context,
     absl::optional<AuthenticationError> error) {
+  CHECK_EQ(current_stage_, Stage::kAuthSessionRequested);
+  current_stage_ = Stage::kAuthSessionRequestFinished;
   if (!user_exists) {
     // Somehow user home directory does not exist.
     LOG(ERROR) << "Cryptohome Core: user does not exist";
@@ -97,6 +120,7 @@ void CryptohomeCoreImpl::OnAuthSessionStarted(
   }
 
   context_ = std::move(context);
+  auth_session_started_ = true;
 
   for (auto& client : clients_) {
     client->OnCryptohomeAuthSessionStarted();
@@ -108,6 +132,12 @@ void CryptohomeCoreImpl::EndAuthSession(Client* client) {
   DCHECK(!clients_being_removed_.contains(client));
   clients_.erase(client);
   clients_being_removed_.insert(client);
+  CHECK_NE(current_stage_, Stage::kIdle);
+  if (current_stage_ == Stage::kAuthSessionRequested) {
+    performer_->InvalidateCurrentAttempts();
+  }
+  current_stage_ = Stage::kIdle;
+  auth_session_started_ = false;
   if (!clients_.empty()) {
     // Wait for all clients to issue EndAuthSession.
     return;

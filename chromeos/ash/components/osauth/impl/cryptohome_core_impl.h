@@ -30,6 +30,12 @@ class CryptohomeCoreImpl : public CryptohomeCore {
   AuthProofToken StoreAuthenticationContext() override;
 
  private:
+  enum class Stage {
+    kIdle,
+    kAuthSessionRequested,
+    kAuthSessionRequestFinished,
+  };
+
   void OnServiceStatus(ServiceAvailabilityCallback callback,
                        bool service_is_available);
   void OnAuthSessionStarted(bool user_exists,
@@ -43,6 +49,8 @@ class CryptohomeCoreImpl : public CryptohomeCore {
   base::flat_set<base::raw_ptr<Client>> clients_;
   base::flat_set<base::raw_ptr<Client>> clients_being_removed_;
 
+  Stage current_stage_ = Stage::kIdle;
+  bool auth_session_started_ = false;
   bool was_authenticated_ = false;
   std::unique_ptr<UserContext> context_;
   base::raw_ptr<UserDataAuthClient> dbus_client_;
