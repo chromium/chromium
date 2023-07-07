@@ -82,7 +82,7 @@ void ResizeObserverEntry::PopulateFromSVGChild(
   content_box_size_.push_back(size);
   border_box_size_.push_back(size);
   const ComputedStyle& style = layout_object.StyleRef();
-  const LayoutSize scaled_bounding_box_size(
+  const DeprecatedLayoutSize scaled_bounding_box_size(
       gfx::ScaleSize(bounding_box_size, style.EffectiveZoom()));
   gfx::SizeF snapped_device_pixel_content_box =
       ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(

@@ -303,11 +303,11 @@ TEST_P(LayoutRectUniteTest, Data) {
   // value to actually get a saturated expectation (which is what happens in
   // the Unite operation).
   if (data.expected.Width() == GetMaxSaturatedSetResultForTesting()) {
-    expected.Expand(LayoutSize(kExtraForSaturation, 0));
+    expected.Expand(DeprecatedLayoutSize(kExtraForSaturation, 0));
   }
 
   if (data.expected.Height() == GetMaxSaturatedSetResultForTesting()) {
-    expected.Expand(LayoutSize(0, kExtraForSaturation));
+    expected.Expand(DeprecatedLayoutSize(0, kExtraForSaturation));
   }
   EXPECT_EQ(expected, actual);
 }

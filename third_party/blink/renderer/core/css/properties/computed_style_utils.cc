@@ -794,8 +794,8 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
                     PhysicalOffset(container->ClientLeft(),
                                    container->ClientTop())
               : PhysicalOffset(box->LocationOffset() -
-                               LayoutSize(container->ClientLeft(),
-                                          container->ClientTop()));
+                               DeprecatedLayoutSize(container->ClientLeft(),
+                                                    container->ClientTop()));
 
       LayoutUnit position;
 

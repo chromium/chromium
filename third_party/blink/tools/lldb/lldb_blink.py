@@ -58,7 +58,7 @@ def __lldb_init_module(debugger, dict):
         'type summary add -F lldb_blink.BlinkLayoutUnit_SummaryProvider blink::LayoutUnit'
     )
     debugger.HandleCommand(
-        'type summary add -F lldb_blink.BlinkLayoutSize_SummaryProvider blink::LayoutSize'
+        'type summary add -F lldb_blink.BlinkLayoutSize_SummaryProvider blink::DeprecatedLayoutSize'
     )
     debugger.HandleCommand(
         'type summary add -F lldb_blink.BlinkLayoutPoint_SummaryProvider blink::LayoutPoint'
@@ -234,7 +234,7 @@ class BlinkLayoutUnitProvider:
 
 
 class BlinkLayoutSizeProvider:
-    "Print a blink::LayoutSize"
+    "Print a blink::DeprecatedLayoutSize"
 
     def __init__(self, valobj, dict):
         self.valobj = valobj

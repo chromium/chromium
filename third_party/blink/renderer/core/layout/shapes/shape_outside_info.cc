@@ -183,11 +183,12 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
       style_image->ForceOrientationIfNecessary(
           LayoutObject::ShouldRespectImageOrientation(layout_box_));
 
-  const LayoutSize& image_size = RoundedLayoutSize(style_image->ImageSize(
-      layout_box_->StyleRef().EffectiveZoom(),
-      gfx::SizeF(reference_box_logical_size_.inline_size.ToFloat(),
-                 reference_box_logical_size_.block_size.ToFloat()),
-      respect_orientation));
+  const DeprecatedLayoutSize& image_size =
+      RoundedLayoutSize(style_image->ImageSize(
+          layout_box_->StyleRef().EffectiveZoom(),
+          gfx::SizeF(reference_box_logical_size_.inline_size.ToFloat(),
+                     reference_box_logical_size_.block_size.ToFloat()),
+          respect_orientation));
 
   const LogicalRect& margin_rect =
       GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);

@@ -34,7 +34,7 @@ gfx::SizeF ComputeZoomAdjustedSVGBox(ResizeObserverBoxOptions box_option,
       return bounding_box_size;
     case ResizeObserverBoxOptions::kDevicePixelContentBox: {
       const ComputedStyle& style = layout_object.StyleRef();
-      const LayoutSize scaled_bounding_box_size(
+      const DeprecatedLayoutSize scaled_bounding_box_size(
           gfx::ScaleSize(bounding_box_size, style.EffectiveZoom()));
       return ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
           scaled_bounding_box_size, layout_object, style);
@@ -44,7 +44,7 @@ gfx::SizeF ComputeZoomAdjustedSVGBox(ResizeObserverBoxOptions box_option,
 
 // Set the initial observation size to something impossible so that the first
 // gather observation step always will pick up a new observation.
-constexpr LayoutSize kInitialObservationSize(-1, -1);
+constexpr DeprecatedLayoutSize kInitialObservationSize(-1, -1);
 
 }  // namespace
 
@@ -82,7 +82,8 @@ bool ResizeObservation::ObservationSizeOutOfSync() {
   return true;
 }
 
-void ResizeObservation::SetObservationSize(const LayoutSize& observation_size) {
+void ResizeObservation::SetObservationSize(
+    const DeprecatedLayoutSize& observation_size) {
   observation_size_ = observation_size;
 }
 
@@ -98,18 +99,19 @@ size_t ResizeObservation::TargetDepth() {
   return depth;
 }
 
-LayoutSize ResizeObservation::ComputeTargetSize() const {
+DeprecatedLayoutSize ResizeObservation::ComputeTargetSize() const {
   if (!target_ || !target_->GetLayoutObject())
-    return LayoutSize();
+    return DeprecatedLayoutSize();
   const LayoutObject& layout_object = *target_->GetLayoutObject();
   if (layout_object.IsSVGChild()) {
-    return LayoutSize(ComputeZoomAdjustedSVGBox(observed_box_, layout_object));
+    return DeprecatedLayoutSize(
+        ComputeZoomAdjustedSVGBox(observed_box_, layout_object));
   }
   if (const auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
-    return LayoutSize(ResizeObserverUtilities::ComputeZoomAdjustedBox(
+    return DeprecatedLayoutSize(ResizeObserverUtilities::ComputeZoomAdjustedBox(
         observed_box_, *layout_box, layout_box->StyleRef()));
   }
-  return LayoutSize();
+  return DeprecatedLayoutSize();
 }
 
 void ResizeObservation::Trace(Visitor* visitor) const {

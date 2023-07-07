@@ -86,7 +86,7 @@ TEST_F(ResizeObserverUnitTest, ResizeObserverDOMContentBoxAndSVG) {
   ASSERT_TRUE(svg_observation->ObservationSizeOutOfSync());
 
   // Target size is correct
-  LayoutSize size = dom_observation->ComputeTargetSize();
+  DeprecatedLayoutSize size = dom_observation->ComputeTargetSize();
   ASSERT_EQ(size.Width(), 100);
   ASSERT_EQ(size.Height(), 100);
   dom_observation->SetObservationSize(size);
@@ -128,7 +128,7 @@ TEST_F(ResizeObserverUnitTest, ResizeObserverDOMBorderBox) {
   ASSERT_TRUE(dom_border_observation->ObservationSizeOutOfSync());
 
   // Target size is correct
-  LayoutSize size = dom_border_observation->ComputeTargetSize();
+  DeprecatedLayoutSize size = dom_border_observation->ComputeTargetSize();
   ASSERT_EQ(size.Width(), 110);
   ASSERT_EQ(size.Height(), 110);
   dom_border_observation->SetObservationSize(size);
@@ -169,7 +169,7 @@ TEST_F(ResizeObserverUnitTest, ResizeObserverDOMDevicePixelContentBox) {
   ASSERT_TRUE(dom_dp_nested_observation->ObservationSizeOutOfSync());
 
   // Target size is correct
-  LayoutSize size = dom_dp_observation->ComputeTargetSize();
+  DeprecatedLayoutSize size = dom_dp_observation->ComputeTargetSize();
   ASSERT_EQ(size.Width(), 100);
   ASSERT_EQ(size.Height(), 100);
   dom_dp_observation->SetObservationSize(size);

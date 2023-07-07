@@ -28,10 +28,10 @@ class CORE_EXPORT ResizeObservation final
   size_t TargetDepth();
   // True if observationSize differs from target's current size.
   bool ObservationSizeOutOfSync();
-  void SetObservationSize(const LayoutSize&);
+  void SetObservationSize(const DeprecatedLayoutSize&);
   ResizeObserverBoxOptions ObservedBox() const { return observed_box_; }
 
-  LayoutSize ComputeTargetSize() const;
+  DeprecatedLayoutSize ComputeTargetSize() const;
 
   void Trace(Visitor*) const;
 
@@ -39,7 +39,7 @@ class CORE_EXPORT ResizeObservation final
   WeakMember<Element> target_;
   Member<ResizeObserver> observer_;
   // Target size sent in last observation notification.
-  LayoutSize observation_size_;
+  DeprecatedLayoutSize observation_size_;
   ResizeObserverBoxOptions observed_box_;
 };
 

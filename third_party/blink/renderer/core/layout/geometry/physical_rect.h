@@ -33,7 +33,8 @@ struct CORE_EXPORT PhysicalRect {
   // TODO(wangxianzhu): This is temporary for convenience of constructing
   // PhysicalRect with LayoutBox::Size(), before we convert LayoutBox::Size() to
   // PhysicalSize.
-  constexpr PhysicalRect(const PhysicalOffset& offset, const LayoutSize& size)
+  constexpr PhysicalRect(const PhysicalOffset& offset,
+                         const DeprecatedLayoutSize& size)
       : offset(offset), size(size) {}
   constexpr PhysicalRect(LayoutUnit left,
                          LayoutUnit top,

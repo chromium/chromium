@@ -48,17 +48,18 @@ class PLATFORM_EXPORT LayoutRect {
 
  public:
   constexpr LayoutRect() = default;
-  constexpr LayoutRect(const LayoutPoint& location, const LayoutSize& size)
+  constexpr LayoutRect(const LayoutPoint& location,
+                       const DeprecatedLayoutSize& size)
       : location_(location), size_(size) {}
   constexpr LayoutRect(LayoutUnit x,
                        LayoutUnit y,
                        LayoutUnit width,
                        LayoutUnit height)
-      : location_(LayoutPoint(x, y)), size_(LayoutSize(width, height)) {}
+      : location_(LayoutPoint(x, y)),
+        size_(DeprecatedLayoutSize(width, height)) {}
   constexpr LayoutRect(int x, int y, int width, int height)
-      : location_(LayoutPoint(x, y)), size_(LayoutSize(width, height)) {}
-  constexpr LayoutRect(const gfx::PointF& location, const gfx::SizeF& size)
-      : location_(location), size_(size) {}
+      : location_(LayoutPoint(x, y)),
+        size_(DeprecatedLayoutSize(width, height)) {}
   constexpr LayoutRect(const gfx::Point& location, const gfx::Size& size)
       : location_(location), size_(size) {}
   constexpr explicit LayoutRect(const gfx::Rect& rect)
@@ -78,7 +79,7 @@ class PLATFORM_EXPORT LayoutRect {
   LayoutRect(double, double, double, double) = delete;
 
   constexpr LayoutPoint Location() const { return location_; }
-  constexpr LayoutSize Size() const { return size_; }
+  constexpr DeprecatedLayoutSize Size() const { return size_; }
 
   gfx::Point PixelSnappedLocation() const { return ToRoundedPoint(location_); }
   gfx::Size PixelSnappedSize() const {
@@ -87,7 +88,6 @@ class PLATFORM_EXPORT LayoutRect {
   }
 
   void SetLocation(const LayoutPoint& location) { location_ = location; }
-  void SetSize(const LayoutSize& size) { size_ = size; }
 
   ALWAYS_INLINE constexpr LayoutUnit X() const { return location_.X(); }
   ALWAYS_INLINE constexpr LayoutUnit Y() const { return location_.Y(); }
@@ -112,7 +112,7 @@ class PLATFORM_EXPORT LayoutRect {
     return LayoutPoint(X() + Width() / 2, Y() + Height() / 2);
   }
 
-  void Move(const LayoutSize& size) { location_ += size; }
+  void Move(const DeprecatedLayoutSize& size) { location_ += size; }
   void Move(const gfx::Vector2d& offset) {
     location_.Move(LayoutUnit(offset.x()), LayoutUnit(offset.y()));
   }
@@ -122,7 +122,7 @@ class PLATFORM_EXPORT LayoutRect {
   void Move(LayoutUnit dx, LayoutUnit dy) { location_.Move(dx, dy); }
   void Move(int dx, int dy) { location_.Move(LayoutUnit(dx), LayoutUnit(dy)); }
 
-  void Expand(const LayoutSize& size) { size_ += size; }
+  void Expand(const DeprecatedLayoutSize& size) { size_ += size; }
   void Expand(LayoutUnit dw, LayoutUnit dh) { size_.Expand(dw, dh); }
   void ExpandEdges(LayoutUnit top,
                    LayoutUnit right,
@@ -131,7 +131,6 @@ class PLATFORM_EXPORT LayoutRect {
     location_.Move(-left, -top);
     size_.Expand(left + right, top + bottom);
   }
-  void Contract(const LayoutSize& size) { size_ -= size; }
   void Contract(LayoutUnit dw, LayoutUnit dh) { size_.Expand(-dw, -dh); }
   void Contract(int dw, int dh) { size_.Expand(-dw, -dh); }
   void ContractEdges(LayoutUnit top,
@@ -277,7 +276,7 @@ class PLATFORM_EXPORT LayoutRect {
 
  private:
   LayoutPoint location_;
-  LayoutSize size_;
+  DeprecatedLayoutSize size_;
 };
 
 inline LayoutRect Intersection(const LayoutRect& a, const LayoutRect& b) {

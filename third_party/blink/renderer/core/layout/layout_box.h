@@ -315,11 +315,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return LocationInternal();
   }
   // LocationOffset() is deprecated.  Use PhysicalLocation() instead.
-  LayoutSize LocationOffset() const {
+  DeprecatedLayoutSize LocationOffset() const {
     NOT_DESTROYED();
     DCHECK(!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled());
     auto location = Location();
-    return LayoutSize(location.X(), location.Y());
+    return DeprecatedLayoutSize(location.X(), location.Y());
   }
   virtual PhysicalSize Size() const;
 
@@ -506,9 +506,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return FlipForWritingMode(LayoutOverflowRect());
   }
-  LayoutSize MaxLayoutOverflow() const {
+  DeprecatedLayoutSize MaxLayoutOverflow() const {
     NOT_DESTROYED();
-    return LayoutSize(LayoutOverflowRect().MaxX(), LayoutOverflowRect().MaxY());
+    return DeprecatedLayoutSize(LayoutOverflowRect().MaxX(),
+                                LayoutOverflowRect().MaxY());
   }
 
   LayoutRect VisualOverflowRect() const;
@@ -595,13 +596,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   NGPhysicalBoxStrut ComputeVisualEffectOverflowOutsets();
   void AddVisualOverflowFromChild(const LayoutBox& child) {
     NOT_DESTROYED();
-    LayoutSize delta = RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
-                           ? PhysicalLocation().ToLayoutSize()
-                           : child.LocationOffset();
+    DeprecatedLayoutSize delta =
+        RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
+            ? PhysicalLocation().ToLayoutSize()
+            : child.LocationOffset();
     AddVisualOverflowFromChild(child, delta);
   }
   void AddVisualOverflowFromChild(const LayoutBox& child,
-                                  const LayoutSize& delta);
+                                  const DeprecatedLayoutSize& delta);
 
   void ClearLayoutOverflow();
   void ClearVisualOverflow();

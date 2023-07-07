@@ -4545,11 +4545,11 @@ LayoutRect LayoutBox::FlippedLocalCaretRect(
   // FIXME: Paint the carets inside empty blocks differently than the carets
   // before/after elements.
   LayoutUnit caret_width = GetFrameView()->CaretWidth();
-  LayoutRect rect(Location(), LayoutSize(caret_width, Size().height));
+  LayoutRect rect(Location(), DeprecatedLayoutSize(caret_width, Size().height));
   bool ltr = StyleRef().IsLeftToRightDirection();
 
   if ((!caret_offset) ^ ltr)
-    rect.Move(LayoutSize(Size().width - caret_width, LayoutUnit()));
+    rect.Move(DeprecatedLayoutSize(Size().width - caret_width, LayoutUnit()));
 
   // If height of box is smaller than font height, use the latter one,
   // otherwise the caret might become invisible.
@@ -4705,7 +4705,7 @@ NGPhysicalBoxStrut LayoutBox::ComputeVisualEffectOverflowOutsets() {
 }
 
 void LayoutBox::AddVisualOverflowFromChild(const LayoutBox& child,
-                                           const LayoutSize& delta) {
+                                           const DeprecatedLayoutSize& delta) {
   NOT_DESTROYED();
   // Never allow flow threads to propagate overflow up to a parent.
   if (child.IsLayoutFlowThread())

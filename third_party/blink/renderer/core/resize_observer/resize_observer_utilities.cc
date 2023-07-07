@@ -19,9 +19,9 @@ namespace blink {
 
 namespace {
 // Compute the logical paint offset for a layout object.
-LayoutSize ComputePaintOffset(const LayoutObject& layout_object,
-                              const ComputedStyle& style) {
-  LayoutSize paint_offset =
+DeprecatedLayoutSize ComputePaintOffset(const LayoutObject& layout_object,
+                                        const ComputedStyle& style) {
+  DeprecatedLayoutSize paint_offset =
       layout_object.FirstFragment().PaintOffset().ToLayoutSize();
   LayoutUnit paint_offset_inline = style.IsHorizontalWritingMode()
                                        ? paint_offset.Width()
@@ -29,7 +29,7 @@ LayoutSize ComputePaintOffset(const LayoutObject& layout_object,
   LayoutUnit paint_offset_block = style.IsHorizontalWritingMode()
                                       ? paint_offset.Height()
                                       : paint_offset.Width();
-  return LayoutSize(paint_offset_inline, paint_offset_block);
+  return DeprecatedLayoutSize(paint_offset_inline, paint_offset_block);
 }
 }  // namespace
 
@@ -50,8 +50,8 @@ gfx::SizeF ResizeObserverUtilities::ComputeZoomAdjustedBox(
                         AdjustForAbsoluteZoom::AdjustLayoutUnit(
                             layout_box.LogicalHeight(), style));
     case ResizeObserverBoxOptions::kDevicePixelContentBox: {
-      LayoutSize box_size = LayoutSize(layout_box.ContentLogicalWidth(),
-                                       layout_box.ContentLogicalHeight());
+      DeprecatedLayoutSize box_size = DeprecatedLayoutSize(
+          layout_box.ContentLogicalWidth(), layout_box.ContentLogicalHeight());
       return ComputeSnappedDevicePixelContentBox(box_size, layout_box, style);
     }
     default:
@@ -60,10 +60,10 @@ gfx::SizeF ResizeObserverUtilities::ComputeZoomAdjustedBox(
 }
 
 gfx::SizeF ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
-    LayoutSize box_size,
+    DeprecatedLayoutSize box_size,
     const LayoutObject& layout_object,
     const ComputedStyle& style) {
-  LayoutSize paint_offset = ComputePaintOffset(layout_object, style);
+  DeprecatedLayoutSize paint_offset = ComputePaintOffset(layout_object, style);
   return gfx::SizeF(SnapSizeToPixel(box_size.Width(), paint_offset.Width()),
                     SnapSizeToPixel(box_size.Height(), paint_offset.Height()));
 }

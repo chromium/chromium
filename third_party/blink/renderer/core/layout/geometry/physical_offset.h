@@ -18,7 +18,6 @@
 namespace blink {
 
 class LayoutPoint;
-class LayoutSize;
 struct LogicalOffset;
 struct PhysicalSize;
 
@@ -92,13 +91,13 @@ struct CORE_EXPORT PhysicalOffset {
   // logical/physical distinctions.
   constexpr explicit PhysicalOffset(const LayoutPoint& point)
       : left(point.X()), top(point.Y()) {}
-  constexpr explicit PhysicalOffset(const LayoutSize& size)
+  constexpr explicit PhysicalOffset(const DeprecatedLayoutSize& size)
       : left(size.Width()), top(size.Height()) {}
 
   // Conversions from/to existing code. New code prefers type safety for
   // logical/physical distinctions.
   constexpr LayoutPoint ToLayoutPoint() const { return {left, top}; }
-  constexpr LayoutSize ToLayoutSize() const { return {left, top}; }
+  constexpr DeprecatedLayoutSize ToLayoutSize() const { return {left, top}; }
 
   explicit PhysicalOffset(const gfx::Point& point)
       : left(point.x()), top(point.y()) {}
@@ -161,7 +160,7 @@ inline gfx::Vector2d ToCeiledVector2d(const PhysicalOffset& o) {
 inline PhysicalOffset PhysicalOffsetToBeNoop(const LayoutPoint& p) {
   return PhysicalOffset(p);
 }
-inline PhysicalOffset PhysicalOffsetToBeNoop(const LayoutSize& s) {
+inline PhysicalOffset PhysicalOffsetToBeNoop(const DeprecatedLayoutSize& s) {
   return PhysicalOffset(s);
 }
 
