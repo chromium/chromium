@@ -13,6 +13,10 @@
 #include "base/memory/weak_ptr.h"
 #import "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace remote_cocoa {
 
 // The ActiveEventTap is a RAII handle on the resources being used to capture
@@ -42,8 +46,8 @@ class CocoaMouseCapture::ActiveEventTap {
   static ActiveEventTap* g_active_event_tap;
 
   raw_ptr<CocoaMouseCapture, DanglingUntriaged> owner_;  // Weak. Owns this.
-  id local_monitor_ = nil;
-  id global_monitor_ = nil;
+  id __strong local_monitor_;
+  id __strong global_monitor_;
 };
 
 CocoaMouseCapture::ActiveEventTap*

@@ -44,7 +44,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ApplicationBridge
       mojo::ScopedInterfaceEndpointHandle view_request_handle)>;
   void SetContentNSViewCreateCallbacks(
       RenderWidgetHostNSViewCreateCallback render_widget_host_create_callback,
-      WebContentsNSViewCreateCallback web_conents_create_callback);
+      WebContentsNSViewCreateCallback web_contents_create_callback);
 
   // mojom::Application:
   void CreateAlert(
@@ -77,7 +77,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ApplicationBridge
   ~ApplicationBridge() override;
 
   RenderWidgetHostNSViewCreateCallback render_widget_host_create_callback_;
-  WebContentsNSViewCreateCallback web_conents_create_callback_;
+  WebContentsNSViewCreateCallback web_contents_create_callback_;
 
   mojo::AssociatedReceiver<mojom::Application> receiver_{this};
 };

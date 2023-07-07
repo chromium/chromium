@@ -5,11 +5,8 @@
 #ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_VIEWS_SCROLLBAR_BRIDGE_H_
 #define COMPONENTS_REMOTE_COCOA_APP_SHIM_VIEWS_SCROLLBAR_BRIDGE_H_
 
-#include "base/memory/raw_ptr.h"
-
 #import <Cocoa/Cocoa.h>
 
-#import "base/mac/scoped_nsobject.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 
 // The delegate set to ViewsScrollbarBridge.
@@ -23,10 +20,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ViewsScrollbarBridgeDelegate {
 // A bridge to NSScroller managed by NativeCocoaScrollbar. Serves as a helper
 // class to bridge NSScroller notifications and functions to CocoaScrollbar.
 REMOTE_COCOA_APP_SHIM_EXPORT
-@interface ViewsScrollbarBridge : NSObject {
- @private
-  raw_ptr<ViewsScrollbarBridgeDelegate> _delegate;  // Weak. Owns this.
-}
+@interface ViewsScrollbarBridge : NSObject
 
 // Initializes with the given delegate and registers for notifications on
 // scroller style changes.
@@ -35,8 +29,8 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // Sets |delegate_| to nullptr.
 - (void)clearDelegate;
 
-// Returns the style of scrollers that OSX is using.
-+ (NSScrollerStyle)getPreferredScrollerStyle;
+// Returns the style of scrollers that macOS is using.
++ (NSScrollerStyle)preferredScrollerStyle;
 
 @end
 

@@ -7,12 +7,15 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/mac/scoped_nsobject.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 #include "components/remote_cocoa/common/alert.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/text_elider.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class AlertBridgeHelper;
 
@@ -25,7 +28,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT AlertBridge
  public:
   // Creates a new alert which controls its own lifetime. It will destroy itself
   // once its NSAlert goes away.
-  AlertBridge(mojo::PendingReceiver<mojom::AlertBridge> bridge_receiver);
+  explicit AlertBridge(
+      mojo::PendingReceiver<mojom::AlertBridge> bridge_receiver);
 
   AlertBridge(const AlertBridge&) = delete;
   AlertBridge& operator=(const AlertBridge&) = delete;
@@ -54,7 +58,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT AlertBridge
             ShowCallback callback) override;
 
   // The NSAlert's owner and delegate.
-  base::scoped_nsobject<AlertBridgeHelper> helper_;
+  AlertBridgeHelper* __strong helper_;
 
   // Set once the alert window is showing (needed because showing is done in a
   // posted task).

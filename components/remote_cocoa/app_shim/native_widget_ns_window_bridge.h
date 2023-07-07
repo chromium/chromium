@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#import "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
@@ -34,6 +33,10 @@
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class BridgedContentView;
 @class ModalShowAnimationWithLayer;
@@ -356,19 +359,18 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   const raw_ptr<remote_cocoa::mojom::TextInputHost>
       text_input_host_;  // Weak, owned by |host_|.
 
-  base::scoped_nsobject<NativeWidgetMacNSWindow> window_;
-  base::scoped_nsobject<ViewsNSWindowDelegate> window_delegate_;
-  base::scoped_nsobject<NSObject<CommandDispatcherDelegate>>
-      window_command_dispatcher_delegate_;
+  NativeWidgetMacNSWindow* __strong window_;
+  ViewsNSWindowDelegate* __strong window_delegate_;
+  NSObject<CommandDispatcherDelegate>* window_command_dispatcher_delegate_;
 
-  base::scoped_nsobject<BridgedContentView> bridged_view_;
+  BridgedContentView* __strong bridged_view_;
   std::unique_ptr<remote_cocoa::ScopedNSViewIdMapping> bridged_view_id_mapping_;
-  base::scoped_nsobject<ModalShowAnimationWithLayer> show_animation_;
+  ModalShowAnimationWithLayer* __strong show_animation_;
   std::unique_ptr<CocoaMouseCapture> mouse_capture_;
   std::unique_ptr<CocoaWindowMoveLoop> window_move_loop_;
   ui::ModalType modal_type_ = ui::MODAL_TYPE_NONE;
   bool is_translucent_window_ = false;
-  id key_down_event_monitor_ = nil;
+  id __strong key_down_event_monitor_;
 
   raw_ptr<NativeWidgetNSWindowBridge> parent_ =
       nullptr;  // Weak. If non-null, owns this.

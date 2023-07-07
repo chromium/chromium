@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/remote_cocoa/app_shim/window_move_loop.h"
+
 #include <memory>
 
 #include "base/debug/stack_trace.h"
@@ -12,6 +13,10 @@
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "ui/display/screen.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 // When event monitors process the events the full list of monitors is cached,
 // and if we unregister the event monitor that's at the end of the list while
@@ -78,8 +83,8 @@ bool CocoaWindowMoveLoop::Run() {
 
   // Will be retained by the monitor handler block.
   WeakCocoaWindowMoveLoop* weak_cocoa_window_move_loop =
-      [[[WeakCocoaWindowMoveLoop alloc]
-          initWithWeakPtr:weak_factory_.GetWeakPtr()] autorelease];
+      [[WeakCocoaWindowMoveLoop alloc]
+          initWithWeakPtr:weak_factory_.GetWeakPtr()];
 
   __block BOOL has_moved = NO;
   screen_disabler_ = std::make_unique<gfx::ScopedCocoaDisableScreenUpdates>();
@@ -91,7 +96,7 @@ bool CocoaWindowMoveLoop::Run() {
   auto handler = ^NSEvent*(NSEvent* event) {
     // The docs say this always runs on the main thread, but if it didn't,
     // it would explain https://crbug.com/876493, so let's make sure.
-    CHECK_EQ(CFRunLoopGetMain(), CFRunLoopGetCurrent());
+    CHECK(NSThread.isMainThread);
 
     CocoaWindowMoveLoop* strong = [weak_cocoa_window_move_loop weak].get();
     if (!strong || !strong->exit_reason_ref_) {

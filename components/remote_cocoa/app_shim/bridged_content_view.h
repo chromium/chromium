@@ -14,6 +14,10 @@
 #import "ui/base/cocoa/tool_tip_base_view.h"
 #import "ui/base/cocoa/tracking_area.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace remote_cocoa {
 class NativeWidgetNSWindowBridge;
 }  // namespace remote_cocoa
@@ -39,7 +43,7 @@ REMOTE_COCOA_APP_SHIM_EXPORT
   ui::ScopedCrTrackingArea _cursorTrackingArea;
 
   // The keyDown event currently being handled, nil otherwise.
-  NSEvent* _keyDownEvent;
+  NSEvent* __strong _keyDownEvent;
 
   // Whether there's an active key down event which is not handled yet.
   BOOL _hasUnhandledKeyDownEvent;
@@ -55,7 +59,7 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 
 @property(readonly, nonatomic) remote_cocoa::NativeWidgetNSWindowBridge* bridge;
 @property(assign, nonatomic) BOOL drawMenuBackgroundForBlur;
-@property(assign, nonatomic) NSEvent* keyDownEventForTesting;
+@property(strong, nonatomic) NSEvent* keyDownEventForTesting;
 
 // Initialize the NSView -> views::View bridge. |viewToHost| must be non-NULL.
 - (instancetype)initWithBridge:(remote_cocoa::NativeWidgetNSWindowBridge*)bridge

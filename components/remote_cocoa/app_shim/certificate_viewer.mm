@@ -4,21 +4,27 @@
 
 #import "components/remote_cocoa/app_shim/certificate_viewer.h"
 
-#include <CoreFoundation/CFArray.h>
+#include <CoreFoundation/CoreFoundation.h>
 #include <Security/Security.h>
-#import <SecurityInterface/SFCertificatePanel.h>
+#import <SecurityInterface/SecurityInterface.h>
 
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/notreached.h"
 #include "net/cert/x509_util_apple.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace remote_cocoa {
 
 void ShowCertificateViewerForWindow(NSWindow* owning_window,
                                     net::X509Certificate* certificate) {
-  base::ScopedCFTypeRef<CFArrayRef> cert_chain(
-      net::x509_util::CreateSecCertificateArrayForX509Certificate(certificate));
+  NSArray* cert_chain = base::apple::CFToNSOwnershipCast(
+      net::x509_util::CreateSecCertificateArrayForX509Certificate(certificate)
+          .release());
   if (!cert_chain)
     return;
 
@@ -52,17 +58,13 @@ void ShowCertificateViewerForWindow(NSWindow* owning_window,
   CFArrayAppendValue(policies, basic_policy.get());
 
   SFCertificatePanel* panel = [[SFCertificatePanel alloc] init];
-  [panel setPolicies:base::mac::CFToNSCast(policies.get())];
+  [panel setPolicies:base::apple::CFToNSPtrCast(policies.get())];
   [panel beginSheetForWindow:owning_window
                modalDelegate:nil
               didEndSelector:nil
                  contextInfo:nil
-                certificates:base::mac::CFToNSCast(cert_chain.get())
+                certificates:cert_chain
                    showGroup:YES];
-  // beginSheetForWindow: internally retains an extra reference to |panel| and
-  // releases it when the sheet closes. Release the original reference so the
-  // sheet is destroyed.
-  [panel autorelease];
 }
 
 }  // namespace remote_cocoa

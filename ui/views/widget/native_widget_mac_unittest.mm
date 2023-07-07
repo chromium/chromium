@@ -115,8 +115,7 @@ class BridgedNativeWidgetTestApi {
   }
 
   NSAnimation* show_animation() {
-    return base::mac::ObjCCastStrict<NSAnimation>(
-        bridge_->show_animation_.get());
+    return base::mac::ObjCCastStrict<NSAnimation>(bridge_->show_animation_);
   }
 
   bool HasWindowRestorationData() {

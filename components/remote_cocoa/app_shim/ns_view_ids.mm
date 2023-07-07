@@ -5,11 +5,16 @@
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 
 #import <Cocoa/Cocoa.h>
+
 #include <map>
 #include <utility>
 
 #include "base/check.h"
 #include "base/no_destructor.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace remote_cocoa {
 

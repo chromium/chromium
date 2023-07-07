@@ -6,8 +6,11 @@
 
 #include <tuple>
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 #include "base/functional/bind.h"
-#include "base/memory/scoped_policy.h"
 #include "base/no_destructor.h"
 #include "components/remote_cocoa/app_shim/alert.h"
 #include "components/remote_cocoa/app_shim/color_panel_bridge.h"
@@ -46,7 +49,7 @@ class NativeWidgetBridgeOwner : public NativeWidgetNSWindowHostHelper {
   }
 
  private:
-  ~NativeWidgetBridgeOwner() override {}
+  ~NativeWidgetBridgeOwner() override = default;
 
   void OnMojoDisconnect() { delete this; }
 
@@ -58,11 +61,10 @@ class NativeWidgetBridgeOwner : public NativeWidgetNSWindowHostHelper {
       host_remote_->GetRootViewAccessibilityToken(&browser_pid, &element_token);
       [NSAccessibilityRemoteUIElement
           registerRemoteUIProcessIdentifier:browser_pid];
-      remote_accessibility_element_.reset(
-          ui::RemoteAccessibility::GetRemoteElementFromToken(element_token),
-          base::scoped_policy::RETAIN);
+      remote_accessibility_element_ =
+          ui::RemoteAccessibility::GetRemoteElementFromToken(element_token);
     }
-    return remote_accessibility_element_.get();
+    return remote_accessibility_element_;
   }
   void DispatchKeyEvent(ui::KeyEvent* event) override {
     bool event_handled = false;
@@ -101,8 +103,7 @@ class NativeWidgetBridgeOwner : public NativeWidgetNSWindowHostHelper {
   mojo::AssociatedRemote<mojom::TextInputHost> text_input_host_remote_;
 
   std::unique_ptr<NativeWidgetNSWindowBridge> bridge_;
-  base::scoped_nsobject<NSAccessibilityRemoteUIElement>
-      remote_accessibility_element_;
+  NSAccessibilityRemoteUIElement* __strong remote_accessibility_element_;
 };
 
 }  // namespace
@@ -121,9 +122,9 @@ void ApplicationBridge::BindReceiver(
 
 void ApplicationBridge::SetContentNSViewCreateCallbacks(
     RenderWidgetHostNSViewCreateCallback render_widget_host_create_callback,
-    WebContentsNSViewCreateCallback web_conents_create_callback) {
+    WebContentsNSViewCreateCallback web_contents_create_callback) {
   render_widget_host_create_callback_ = render_widget_host_create_callback;
-  web_conents_create_callback_ = web_conents_create_callback;
+  web_contents_create_callback_ = web_contents_create_callback;
 }
 
 void ApplicationBridge::CreateAlert(
@@ -165,10 +166,11 @@ void ApplicationBridge::CreateWebContentsNSView(
     uint64_t view_id,
     mojo::PendingAssociatedRemote<mojom::StubInterface> host,
     mojo::PendingAssociatedReceiver<mojom::StubInterface> view_receiver) {
-  if (!web_conents_create_callback_)
+  if (!web_contents_create_callback_) {
     return;
-  web_conents_create_callback_.Run(view_id, host.PassHandle(),
-                                   view_receiver.PassHandle());
+  }
+  web_contents_create_callback_.Run(view_id, host.PassHandle(),
+                                    view_receiver.PassHandle());
 }
 
 void ApplicationBridge::ForwardCutCopyPaste(
