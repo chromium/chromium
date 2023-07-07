@@ -5797,7 +5797,7 @@ bool LayoutBox::IsFixedToView(
 PhysicalRect LayoutBox::ComputeStickyConstrainingRect() const {
   NOT_DESTROYED();
   DCHECK(IsScrollContainer());
-  PhysicalRect constraining_rect(OverflowClipRect(LayoutPoint()));
+  PhysicalRect constraining_rect(OverflowClipRect(PhysicalOffset()));
   constraining_rect.Move(PhysicalOffset(-BorderLeft() + PaddingLeft(),
                                         -BorderTop() + PaddingTop()));
   constraining_rect.ContractEdges(LayoutUnit(), PaddingLeft() + PaddingRight(),

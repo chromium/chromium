@@ -633,10 +633,11 @@ gfx::Vector2d PaintLayerScrollableArea::MaximumScrollOffsetInt() const {
             ->OverflowClipRect(PhysicalOffset(), kIgnoreOverlayScrollbarSize)
             .size);
   } else {
-    visible_size = ToPixelSnappedRect(GetLayoutBox()->OverflowClipRect(
-                                          GetLayoutBox()->Location(),
-                                          kIgnoreOverlayScrollbarSize))
-                       .size();
+    visible_size =
+        ToPixelSnappedRect(
+            GetLayoutBox()->DeprecatedOverflowClipRect(
+                GetLayoutBox()->Location(), kIgnoreOverlayScrollbarSize))
+            .size();
   }
 
   // TODO(skobes): We should really ASSERT that contentSize >= visibleSize

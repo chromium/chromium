@@ -1259,9 +1259,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // This version is for legacy code that has not switched to the new physical
   // geometry yet.
-  LayoutRect OverflowClipRect(const LayoutPoint& location,
-                              OverlayScrollbarClipBehavior behavior =
-                                  kIgnoreOverlayScrollbarSize) const {
+  LayoutRect DeprecatedOverflowClipRect(const LayoutPoint& location,
+                                        OverlayScrollbarClipBehavior behavior =
+                                            kIgnoreOverlayScrollbarSize) const {
     NOT_DESTROYED();
     return OverflowClipRect(PhysicalOffset(location), behavior).ToLayoutRect();
   }
