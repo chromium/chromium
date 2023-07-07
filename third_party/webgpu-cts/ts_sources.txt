@@ -503,9 +503,12 @@ src/webgpu/shader/execution/shader_io/shared_structs.spec.ts
 src/webgpu/shader/execution/statement/increment_decrement.spec.ts
 src/webgpu/shader/validation/shader_validation_test.ts
 src/webgpu/shader/validation/const_assert/const_assert.spec.ts
+src/webgpu/shader/validation/decl/util.ts
+src/webgpu/shader/validation/decl/var_access_mode.spec.ts
 src/webgpu/shader/validation/expression/access/vector.spec.ts
 src/webgpu/shader/validation/expression/binary/bitwise_shift.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/const_override_validation.ts
+src/webgpu/shader/validation/expression/call/builtin/abs.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/acos.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/acosh.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/asin.spec.ts
@@ -514,12 +517,15 @@ src/webgpu/shader/validation/expression/call/builtin/atan.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/atanh.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/atomics.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/bitcast.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/ceil.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/clamp.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/cos.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/cosh.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/degrees.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/exp.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/exp2.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/inverseSqrt.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/length.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/log.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/log2.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/modf.spec.ts
@@ -564,6 +570,8 @@ src/webgpu/shader/validation/shader_io/interpolate.spec.ts
 src/webgpu/shader/validation/shader_io/invariant.spec.ts
 src/webgpu/shader/validation/shader_io/locations.spec.ts
 src/webgpu/shader/validation/shader_io/workgroup_size.spec.ts
+src/webgpu/shader/validation/types/alias.spec.ts
+src/webgpu/shader/validation/types/struct.spec.ts
 src/webgpu/shader/validation/types/vector.spec.ts
 src/webgpu/shader/validation/uniformity/uniformity.spec.ts
 src/webgpu/util/color_space_conversion.ts
