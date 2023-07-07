@@ -48,10 +48,10 @@ source_set("app_share_target") {
   ]
 }
 
-source_set("macros") {
-  sources = [ "macros.h" ]
-}
-
+# Component for the core data structures and types used by App Service. Large
+# parts of the codebase are dependent on this target (via
+# //chromeos/crosapi/mojom), so this must have minimal deps to avoid circular
+# chains.
 component("app_types") {
   output_name = "APP_TYPES"
   sources = [
@@ -63,12 +63,18 @@ component("app_types") {
     "capability_access.h",
     "features.cc",
     "features.h",
+    "icon_types.cc",
+    "icon_types.h",
     "intent_filter.cc",
     "intent_filter.h",
     "menu.cc",
     "menu.h",
     "permission.cc",
     "permission.h",
+    "preferred_app.cc",
+    "preferred_app.h",
+    "run_on_os_login_types.cc",
+    "run_on_os_login_types.h",
   ]
 
   defines = [ "IS_APP_TYPES_IMPL" ]
@@ -76,13 +82,23 @@ component("app_types") {
   public_deps = [ "//components/services/app_service/public/protos" ]
 
   deps = [
-    ":icon_types",
     ":macros",
-    ":run_on_os_login",
-    "//ui/gfx:gfx",
-    "//ui/gfx/geometry:geometry",
-    "//url:url",
+    "//base",
+    "//ui/gfx",
+    "//url",
   ]
+
+  if (is_chromeos) {
+    sources += [
+      "browser_app_instance_update.cc",
+      "browser_app_instance_update.h",
+      "browser_window_instance_update.h",
+    ]
+  }
+}
+
+source_set("macros") {
+  sources = [ "macros.h" ]
 }
 
 component("app_update") {
@@ -108,10 +124,8 @@ component("app_update") {
 
   deps = [
     ":app_types",
-    ":icon_types",
     ":intents",
     ":macros",
-    ":run_on_os_login",
     "//ui/gfx",
   ]
 }
@@ -123,18 +137,6 @@ source_set("app_url_handling") {
   ]
 
   deps = [ "//url" ]
-}
-
-if (is_chromeos) {
-  source_set("browser_app_instance_registry_update") {
-    sources = [
-      "browser_app_instance_update.cc",
-      "browser_app_instance_update.h",
-      "browser_window_instance_update.h",
-    ]
-
-    deps = [ "//base" ]
-  }
 }
 
 if (is_chromeos_ash) {
@@ -170,7 +172,6 @@ source_set("icon_loader") {
 
   deps = [
     ":app_types",
-    ":icon_types",
     "//ui/gfx:gfx",
   ]
 }
@@ -185,33 +186,6 @@ source_set("icon_loader_test_support") {
     ":icon_loader",
     "//skia",
     "//ui/gfx:gfx",
-  ]
-}
-
-component("icon_types") {
-  output_name = "ICON_TYPES"
-  sources = [
-    "icon_types.cc",
-    "icon_types.h",
-  ]
-
-  defines = [ "IS_ICON_TYPES_IMPL" ]
-
-  deps = [ "//ui/gfx" ]
-}
-
-component("run_on_os_login") {
-  output_name = "LOGIN_MODE"
-  sources = [
-    "run_on_os_login_types.cc",
-    "run_on_os_login_types.h",
-  ]
-
-  defines = [ "IS_LOGIN_MODE_IMPL" ]
-
-  deps = [
-    ":macros",
-    "//base:base",
   ]
 }
 
@@ -242,19 +216,6 @@ source_set("protocol_handling") {
   deps = [ "//url" ]
 }
 
-source_set("preferred_app") {
-  sources = [
-    "preferred_app.cc",
-    "preferred_app.h",
-  ]
-
-  deps = [
-    ":app_types",
-    "//base:base",
-    "//third_party/abseil-cpp:absl",
-  ]
-}
-
 source_set("preferred_apps") {
   sources = [
     "preferred_apps_converter.cc",
@@ -270,7 +231,6 @@ source_set("preferred_apps") {
   deps = [
     ":app_types",
     ":intents",
-    ":preferred_app",
     "//base",
     "//content/public/browser",
     "//url",
@@ -330,11 +290,8 @@ source_set("unit_tests") {
     ":app_types",
     ":app_update",
     ":icon_loader",
-    ":icon_types",
     ":intents",
-    ":preferred_app",
     ":preferred_apps",
-    ":run_on_os_login",
     ":test_support",
     ":types",
     "//content/test:test_support",

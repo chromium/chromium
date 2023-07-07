@@ -9726,7 +9726,6 @@ if (!is_android) {
       "//components/search_engines",
       "//components/security_interstitials/content:security_interstitial_page",
       "//components/services/app_service/public/cpp:app_types",
-      "//components/services/app_service/public/cpp:run_on_os_login",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//components/storage_monitor:test_support",

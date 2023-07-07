@@ -14,19 +14,12 @@ source_set("app_service") {
     "//components/services/app_service/public/cpp:app_url_handling",
     "//components/services/app_service/public/cpp:crosapi_utils",
     "//components/services/app_service/public/cpp:icon_loader",
-    "//components/services/app_service/public/cpp:icon_types",
     "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/cpp:macros",
-    "//components/services/app_service/public/cpp:preferred_app",
     "//components/services/app_service/public/cpp:preferred_apps",
     "//components/services/app_service/public/cpp:protocol_handling",
-    "//components/services/app_service/public/cpp:run_on_os_login",
     "//components/services/app_service/public/cpp:types",
   ]
-
-  if (is_chromeos) {
-    public_deps += [ "//components/services/app_service/public/cpp:browser_app_instance_registry_update" ]
-  }
 
   if (is_chromeos_ash) {
     public_deps +=
