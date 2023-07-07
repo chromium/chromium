@@ -1178,7 +1178,9 @@ void BrowserCommandController::InitCommandState() {
 
   // Window management commands
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_WINDOW, true);
-  command_updater_.UpdateCommandEnabled(IDC_NEW_TAB, true);
+  command_updater_.UpdateCommandEnabled(
+      IDC_NEW_TAB, !browser_->app_controller() ||
+                       !browser_->app_controller()->ShouldHideNewTabButton());
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_TAB, true);
   command_updater_.UpdateCommandEnabled(
       IDC_DUPLICATE_TAB, !browser_->is_type_picture_in_picture());

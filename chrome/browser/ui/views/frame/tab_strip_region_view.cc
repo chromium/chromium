@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -64,6 +65,13 @@ class FrameGrabHandle : public views::View {
 
 BEGIN_METADATA(FrameGrabHandle, views::View)
 END_METADATA
+
+bool ShouldShowNewTabButton(const Browser* browser) {
+  // `browser` can be null in tests and `app_controller` will be null if
+  // the browser is not for an app.
+  return !browser || !browser->app_controller() ||
+         !browser->app_controller()->ShouldHideNewTabButton();
+}
 
 }  // namespace
 
@@ -130,16 +138,19 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
                                       tab_strip_container_flex_spec);
   }
 
-  new_tab_button_ = AddChildView(std::make_unique<NewTabButton>(
-      tab_strip_, base::BindRepeating(&TabStrip::NewTabButtonPressed,
-                                      base::Unretained(tab_strip_))));
-  new_tab_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
-  new_tab_button_->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ACCNAME_NEWTAB));
-  new_tab_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_BOTTOM);
-  new_tab_button_->SetEventTargeter(
-      std::make_unique<views::ViewTargeter>(new_tab_button_));
+  if (ShouldShowNewTabButton(browser)) {
+    new_tab_button_ = AddChildView(std::make_unique<NewTabButton>(
+        tab_strip_, base::BindRepeating(&TabStrip::NewTabButtonPressed,
+                                        base::Unretained(tab_strip_))));
+    new_tab_button_->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
+    new_tab_button_->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_ACCNAME_NEWTAB));
+    new_tab_button_->SetImageVerticalAlignment(
+        views::ImageButton::ALIGN_BOTTOM);
+    new_tab_button_->SetEventTargeter(
+        std::make_unique<views::ViewTargeter>(new_tab_button_));
+  }
 
   reserved_grab_handle_space_ =
       AddChildView(std::make_unique<FrameGrabHandle>());
@@ -179,17 +190,19 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   //  tabstrip, then buttons are rendered to a layer, and the margins are set to
   //  take up the rest of the space under the buttons.
   absl::optional<int> tab_strip_right_margin;
-  if (render_new_tab_button_over_tab_strip_) {
-    new_tab_button_->SetPaintToLayer();
-    new_tab_button_->layer()->SetFillsBoundsOpaquely(false);
-    // Inset between the tabstrip and new tab button should be reduced to
-    // account for extra spacing.
-    layout_manager_->SetChildViewIgnoredByLayout(new_tab_button_, true);
+  if (new_tab_button_) {
+    if (render_new_tab_button_over_tab_strip_) {
+      new_tab_button_->SetPaintToLayer();
+      new_tab_button_->layer()->SetFillsBoundsOpaquely(false);
+      // Inset between the tabstrip and new tab button should be reduced to
+      // account for extra spacing.
+      layout_manager_->SetChildViewIgnoredByLayout(new_tab_button_, true);
 
-    tab_strip_right_margin = new_tab_button_->GetPreferredSize().width() +
-                             kCRtabstripRegionViewControlPadding;
-  } else {
-    UpdateNewTabButtonBorder();
+      tab_strip_right_margin = new_tab_button_->GetPreferredSize().width() +
+                               kCRtabstripRegionViewControlPadding;
+    } else {
+      UpdateNewTabButtonBorder();
+    }
   }
 
   absl::optional<int> tab_strip_left_margin;
@@ -318,7 +331,7 @@ void TabStripRegionView::Layout() {
     tab_search_button_->SetBoundsRect(tab_search_new_bounds);
   }
 
-  if (render_new_tab_button_over_tab_strip_) {
+  if (render_new_tab_button_over_tab_strip_ && new_tab_button_) {
     // The NTB needs to be layered on top of the tabstrip to achieve negative
     // margins.
     gfx::Size new_tab_button_size = new_tab_button_->GetPreferredSize();

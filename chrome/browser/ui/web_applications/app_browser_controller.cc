@@ -441,6 +441,10 @@ GURL AppBrowserController::GetAppNewTabUrl() const {
   return GetAppStartUrl();
 }
 
+bool AppBrowserController::ShouldHideNewTabButton() const {
+  return false;
+}
+
 bool AppBrowserController::IsUrlInHomeTabScope(const GURL& url) const {
   return false;
 }

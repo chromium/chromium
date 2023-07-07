@@ -90,6 +90,7 @@ class WebAppBrowserController : public AppBrowserController,
   std::u16string GetFormattedUrlOrigin() const override;
   GURL GetAppStartUrl() const override;
   GURL GetAppNewTabUrl() const override;
+  bool ShouldHideNewTabButton() const override;
   bool IsUrlInHomeTabScope(const GURL& url) const override;
   bool ShouldShowAppIconOnTab(int index) const override;
   bool IsUrlInAppScope(const GURL& url) const override;

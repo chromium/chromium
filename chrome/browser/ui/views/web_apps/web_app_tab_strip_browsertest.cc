@@ -311,6 +311,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, InstallingPinsHomeTab) {
   // The URL of the pinned home tab should include the query params.
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
   EXPECT_EQ(tab_strip->active_index(), 0);
+
+  // App should have a new tab button.
+  EXPECT_FALSE(app_browser->app_controller()->ShouldHideNewTabButton());
 }
 
 // Tests that the monochrome app icon is used on the home tab and it is
@@ -1005,6 +1008,18 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, CloseAllTabsCommand) {
   EXPECT_TRUE(tab_strip->IsTabPinned(0));
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
   EXPECT_EQ(tab_strip->active_index(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
+                       NewTabButtonUrlInHomeTabScope) {
+  GURL start_url = embedded_test_server()->GetURL(
+      "/web_apps/get_manifest.html?tab_strip_wildcard_home_scope.json");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  EXPECT_TRUE(app_browser->app_controller()->ShouldHideNewTabButton());
 }
 
 }  // namespace web_app
