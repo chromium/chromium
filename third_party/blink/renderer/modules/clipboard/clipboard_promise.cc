@@ -604,7 +604,11 @@ void ClipboardPromise::RequestPermission(
 LocalFrame* ClipboardPromise::GetLocalFrame() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ExecutionContext* context = GetExecutionContext();
-  DCHECK(context);
+  // In case the context was destroyed and the caller didn't check for it, we
+  // just return nullptr.
+  if (!context) {
+    return nullptr;
+  }
   LocalFrame* local_frame = To<LocalDOMWindow>(context)->GetFrame();
   return local_frame;
 }
