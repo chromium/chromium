@@ -1942,6 +1942,15 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     policy_prefs::kAllowBackForwardCacheForCacheControlNoStorePageEnabled,
     base::Value::Type::BOOLEAN},
 #endif  // !BUILDFLAG(IS_FUCHSIA)
+  { key::kDefaultMidiSetting,
+    prefs::kManagedDefaultMidi,
+    base::Value::Type::INTEGER },
+  { key::kMidiAllowedForUrls,
+    prefs::kManagedMidiAllowedForUrls,
+    base::Value::Type::LIST },
+  { key::kMidiBlockedForUrls,
+    prefs::kManagedMidiBlockedForUrls,
+    base::Value::Type::LIST },
 };
 // clang-format on
 

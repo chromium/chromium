@@ -1,0 +1,35 @@
+caption: Default MIDI permission setting
+default: null
+desc: |-
+        Setting the policy to <ph name="BLOCK_MIDI_POLICY_NAME">BlockMidi</ph> (value 2) automatically blocks sites from using MIDI devices such as musical instruments and controllers.
+
+        Setting the policy to <ph name="ASK_MIDI_POLICY_NAME">AskMidi</ph> (value 3) will prompt the user when a site wants to use MIDI devices.
+
+        Leaving the policy unset means <ph name="ASK_MIDI_POLICY_NAME">AskMidi</ph> policy applies, but users can change this setting.
+example_value: 2
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- android
+- chrome.*
+- chrome_os
+- fuchsia
+items:
+- caption: Denies the MIDI permission on all sites by default
+  name: BlockMidi
+  value: 2
+- caption: Ask every time a site wants to obtain the MIDI permission
+  name: AskMidi
+  value: 3
+owners:
+- hongchan@chromium.org
+- mjwilson@chromium.org
+- sinafirooz@chromium.org
+schema:
+  enum:
+  - 2
+  - 3
+  type: integer
+tags: []
+type: int-enum
