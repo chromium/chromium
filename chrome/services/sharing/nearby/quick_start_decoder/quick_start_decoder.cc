@@ -196,9 +196,16 @@ QuickStartDecoder::QuickStartDecoder(
 QuickStartDecoder::~QuickStartDecoder() = default;
 
 mojom::GetAssertionResponsePtr QuickStartDecoder::DoDecodeGetAssertionResponse(
-    const std::vector<uint8_t>& data) {
+    const absl::optional<std::vector<uint8_t>>& data) {
+  if (!data.has_value()) {
+    LOG(ERROR) << "No response bytes received.";
+    return BuildGetAssertionResponseError(
+        GetAssertionStatus::kMessagePayloadParseError, kCtap2ErrInvalidCBOR,
+        kCborDecoderUnknownError);
+  }
+
   absl::optional<std::vector<uint8_t>> parsed_response_bytes =
-      ExtractFidoDataFromJsonResponse(data);
+      ExtractFidoDataFromJsonResponse(data.value());
   if (!parsed_response_bytes.has_value()) {
     LOG(ERROR) << "Failed to extract Fido data from JSON response.";
     return BuildGetAssertionResponseError(
@@ -241,10 +248,17 @@ mojom::GetAssertionResponsePtr QuickStartDecoder::DoDecodeGetAssertionResponse(
 }
 
 void QuickStartDecoder::DoDecodeBootstrapConfigurations(
-    const std::vector<uint8_t>& data,
+    const absl::optional<std::vector<uint8_t>>& data,
     DecodeBootstrapConfigurationsCallback callback) {
+  if (!data.has_value()) {
+    LOG(ERROR) << "No response bytes received.";
+    std::move(callback).Run(nullptr,
+                            mojom::QuickStartDecoderError::kEmptyMessage);
+    return;
+  }
+
   std::unique_ptr<QuickStartMessage> message = QuickStartMessage::ReadMessage(
-      data, QuickStartMessageType::kBootstrapConfigurations);
+      data.value(), QuickStartMessageType::kBootstrapConfigurations);
 
   base::Value::Dict* device_details =
       message->GetPayload()->FindDict(kDeviceDetailsKey);
@@ -271,22 +285,29 @@ void QuickStartDecoder::DoDecodeBootstrapConfigurations(
 }
 
 void QuickStartDecoder::DecodeBootstrapConfigurations(
-    const std::vector<uint8_t>& data,
+    const absl::optional<std::vector<uint8_t>>& data,
     DecodeBootstrapConfigurationsCallback callback) {
   DoDecodeBootstrapConfigurations(data, std::move(callback));
 }
 
 void QuickStartDecoder::DecodeWifiCredentialsResponse(
-    const std::vector<uint8_t>& data,
+    const absl::optional<std::vector<uint8_t>>& data,
     DecodeWifiCredentialsResponseCallback callback) {
   DoDecodeWifiCredentialsResponse(data, std::move(callback));
 }
 
 void QuickStartDecoder::DecodeUserVerificationRequested(
-    const std::vector<uint8_t>& data,
+    const absl::optional<std::vector<uint8_t>>& data,
     DecodeUserVerificationRequestedCallback callback) {
+  if (!data.has_value()) {
+    LOG(ERROR) << "No response bytes received.";
+    std::move(callback).Run(nullptr,
+                            mojom::QuickStartDecoderError::kEmptyMessage);
+    return;
+  }
+
   std::unique_ptr<ash::quick_start::QuickStartMessage> message =
-      QuickStartMessage::ReadMessage(data,
+      QuickStartMessage::ReadMessage(data.value(),
                                      QuickStartMessageType::kQuickStartPayload);
   if (!message) {
     LOG(ERROR)
@@ -312,10 +333,17 @@ void QuickStartDecoder::DecodeUserVerificationRequested(
 }
 
 void QuickStartDecoder::DecodeUserVerificationResult(
-    const std::vector<uint8_t>& data,
+    const absl::optional<std::vector<uint8_t>>& data,
     DecodeUserVerificationResultCallback callback) {
+  if (!data.has_value()) {
+    LOG(ERROR) << "No response bytes received.";
+    std::move(callback).Run(nullptr,
+                            mojom::QuickStartDecoderError::kEmptyMessage);
+    return;
+  }
+
   std::unique_ptr<ash::quick_start::QuickStartMessage> message =
-      QuickStartMessage::ReadMessage(data,
+      QuickStartMessage::ReadMessage(data.value(),
                                      QuickStartMessageType::kQuickStartPayload);
 
   if (!message) {
@@ -363,10 +391,17 @@ void QuickStartDecoder::DecodeUserVerificationResult(
 }
 
 void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
-    const std::vector<uint8_t>& data,
+    const absl::optional<std::vector<uint8_t>>& data,
     DecodeWifiCredentialsResponseCallback callback) {
+  if (!data.has_value()) {
+    LOG(ERROR) << "No response bytes received.";
+    std::move(callback).Run(nullptr,
+                            mojom::QuickStartDecoderError::kEmptyMessage);
+    return;
+  }
+
   std::unique_ptr<ash::quick_start::QuickStartMessage> message =
-      QuickStartMessage::ReadMessage(data,
+      QuickStartMessage::ReadMessage(data.value(),
                                      QuickStartMessageType::kQuickStartPayload);
 
   if (!message) {
@@ -492,7 +527,7 @@ void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
 }
 
 void QuickStartDecoder::DecodeGetAssertionResponse(
-    const std::vector<uint8_t>& data,
+    const absl::optional<std::vector<uint8_t>>& data,
     DecodeGetAssertionResponseCallback callback) {
   std::move(callback).Run(DoDecodeGetAssertionResponse(data));
 }
@@ -535,15 +570,20 @@ QuickStartDecoder::ExtractFidoDataFromJsonResponse(
 }
 
 void QuickStartDecoder::DecodeNotifySourceOfUpdateResponse(
-    const std::vector<uint8_t>& data,
+    const absl::optional<std::vector<uint8_t>>& data,
     DecodeNotifySourceOfUpdateResponseCallback callback) {
   std::move(callback).Run(DoDecodeNotifySourceOfUpdateResponse(data));
 }
 
 absl::optional<bool> QuickStartDecoder::DoDecodeNotifySourceOfUpdateResponse(
-    const std::vector<uint8_t>& data) {
+    const absl::optional<std::vector<uint8_t>>& data) {
+  if (!data.has_value()) {
+    LOG(ERROR) << "No response bytes received.";
+    return absl::nullopt;
+  }
+
   std::unique_ptr<ash::quick_start::QuickStartMessage> message =
-      QuickStartMessage::ReadMessage(data,
+      QuickStartMessage::ReadMessage(data.value(),
                                      QuickStartMessageType::kQuickStartPayload);
 
   if (!message) {

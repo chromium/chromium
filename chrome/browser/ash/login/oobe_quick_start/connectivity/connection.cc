@@ -381,13 +381,6 @@ template <typename T>
 void Connection::DecodeData(DecoderMethod<T> decoder_method,
                             OnDecodingCompleteCallback<T> on_decoding_complete,
                             absl::optional<std::vector<uint8_t>> data) {
-  if (!data.has_value()) {
-    QS_LOG(ERROR) << "No data received from phone.";
-    // TODO(b/288451775) Call decoder method when data is empty.
-    std::move(on_decoding_complete).Run(absl::nullopt);
-    return;
-  }
-
   // Setup a callback to handle the decoder's response. If an error was
   // reported, return empty. If not, run the success callback with the
   // decoded data.
@@ -407,8 +400,7 @@ void Connection::DecodeData(DecoderMethod<T> decoder_method,
       std::move(on_decoding_complete));
 
   // Run the decoder
-  base::BindOnce(decoder_method, decoder_, data.value(),
-                 std::move(decoder_callback))
+  base::BindOnce(decoder_method, decoder_, data, std::move(decoder_callback))
       .Run();
 }
 

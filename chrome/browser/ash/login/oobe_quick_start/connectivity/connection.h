@@ -175,9 +175,9 @@ class Connection
                               absl::optional<mojom::QuickStartDecoderError>)>;
 
   template <typename T>
-  using DecoderMethod =
-      void (mojom::QuickStartDecoder::*)(const std::vector<uint8_t>&,
-                                         DecoderResponseCallback<T>);
+  using DecoderMethod = void (mojom::QuickStartDecoder::*)(
+      const absl::optional<std::vector<uint8_t>>&,
+      DecoderResponseCallback<T>);
 
   template <typename T>
   using OnDecodingCompleteCallback =

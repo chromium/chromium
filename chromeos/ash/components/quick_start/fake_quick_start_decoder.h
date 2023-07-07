@@ -25,22 +25,22 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
 
   // mojom::QuickStartDecoder:
   void DecodeBootstrapConfigurations(
-      const std::vector<uint8_t>& data,
+      const absl::optional<std::vector<uint8_t>>& data,
       DecodeBootstrapConfigurationsCallback callback) override;
   void DecodeGetAssertionResponse(
-      const std::vector<uint8_t>& data,
+      const absl::optional<std::vector<uint8_t>>& data,
       DecodeGetAssertionResponseCallback callback) override;
   void DecodeWifiCredentialsResponse(
-      const std::vector<uint8_t>& data,
+      const absl::optional<std::vector<uint8_t>>& data,
       DecodeWifiCredentialsResponseCallback callback) override;
   void DecodeNotifySourceOfUpdateResponse(
-      const std::vector<uint8_t>& data,
+      const absl::optional<std::vector<uint8_t>>& data,
       DecodeNotifySourceOfUpdateResponseCallback callback) override;
   void DecodeUserVerificationRequested(
-      const std::vector<uint8_t>& data,
+      const absl::optional<std::vector<uint8_t>>& data,
       DecodeUserVerificationRequestedCallback callback) override;
   void DecodeUserVerificationResult(
-      const std::vector<uint8_t>& data,
+      const absl::optional<std::vector<uint8_t>>& data,
       DecodeUserVerificationResultCallback callback) override;
 
   void SetExpectedData(std::vector<uint8_t> expected_data);

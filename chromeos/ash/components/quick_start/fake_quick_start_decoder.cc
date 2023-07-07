@@ -22,7 +22,7 @@ FakeQuickStartDecoder::GetRemote() {
   return pending_remote;
 }
 void FakeQuickStartDecoder::DecodeBootstrapConfigurations(
-    const std::vector<uint8_t>& data,
+    const absl::optional<std::vector<uint8_t>>& data,
     DecodeBootstrapConfigurationsCallback callback) {
   std::move(callback).Run(
       mojom::BootstrapConfigurations::New(response_cryptauth_device_id_),
@@ -30,13 +30,13 @@ void FakeQuickStartDecoder::DecodeBootstrapConfigurations(
 }
 
 void FakeQuickStartDecoder::DecodeWifiCredentialsResponse(
-    const std::vector<uint8_t>& data,
+    const absl::optional<std::vector<uint8_t>>& data,
     DecodeWifiCredentialsResponseCallback callback) {
   std::move(callback).Run(std::move(credentials_), error_);
 }
 
 void FakeQuickStartDecoder::DecodeUserVerificationRequested(
-    const std::vector<uint8_t>& data,
+    const absl::optional<std::vector<uint8_t>>& data,
     DecodeUserVerificationRequestedCallback callback) {
   if (error_ != absl::nullopt) {
     std::move(callback).Run(nullptr, error_);
@@ -47,7 +47,7 @@ void FakeQuickStartDecoder::DecodeUserVerificationRequested(
 }
 
 void FakeQuickStartDecoder::DecodeUserVerificationResult(
-    const std::vector<uint8_t>& data,
+    const absl::optional<std::vector<uint8_t>>& data,
     DecodeUserVerificationResultCallback callback) {
   if (error_ != absl::nullopt) {
     std::move(callback).Run(nullptr, error_);
@@ -58,7 +58,7 @@ void FakeQuickStartDecoder::DecodeUserVerificationResult(
 }
 
 void FakeQuickStartDecoder::DecodeGetAssertionResponse(
-    const std::vector<uint8_t>& data,
+    const absl::optional<std::vector<uint8_t>>& data,
     DecodeGetAssertionResponseCallback callback) {
   EXPECT_EQ(expected_data_, data);
   std::move(callback).Run(mojom::GetAssertionResponse::New(
@@ -68,7 +68,7 @@ void FakeQuickStartDecoder::DecodeGetAssertionResponse(
 }
 
 void FakeQuickStartDecoder::DecodeNotifySourceOfUpdateResponse(
-    const std::vector<uint8_t>& data,
+    const absl::optional<std::vector<uint8_t>>& data,
     DecodeNotifySourceOfUpdateResponseCallback callback) {
   std::move(callback).Run(/*ack_received=*/notify_source_of_update_response_);
 }
