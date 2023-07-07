@@ -74,8 +74,10 @@ class SodaClient {
   typedef void (*SodaStartFunction)(void*);
   SodaStartFunction soda_start_func_;
 
-  // An opaque handle to the SODA async instance.
-  raw_ptr<void> soda_async_handle_;
+  // An opaque handle to the SODA async instance. While this class owns this
+  // handle, the handle is instantiated and deleted by the SODA library, so the
+  // pointer may dangle after DeleteExtendedSodaAsync is called.
+  raw_ptr<void, DisableDanglingPtrDetection> soda_async_handle_;
 
   LoadSodaResultValue load_soda_result_ = LoadSodaResultValue::kUnknown;
   bool is_initialized_;
