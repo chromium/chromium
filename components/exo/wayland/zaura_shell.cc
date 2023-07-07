@@ -23,6 +23,8 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/window_state.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -1151,6 +1153,7 @@ const uint32_t kFixedBugIds[] = {
 // for the aura shell interface.
 class WaylandAuraShell : public ash::DesksController::Observer,
                          public ash::TabletModeObserver,
+                         public ash::OverviewObserver,
                          public SeatObserver {
  public:
   WaylandAuraShell(wl_resource* aura_shell_resource, Display* display)
@@ -1158,6 +1161,7 @@ class WaylandAuraShell : public ash::DesksController::Observer,
     WMHelper* helper = WMHelper::GetInstance();
     helper->AddTabletModeObserver(this);
     ash::DesksController::Get()->AddObserver(this);
+    ash::Shell::Get()->overview_controller()->AddObserver(this);
     if (wl_resource_get_version(aura_shell_resource_) >=
         ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION) {
       auto layout_mode = helper->InTabletMode()
@@ -1175,12 +1179,14 @@ class WaylandAuraShell : public ash::DesksController::Observer,
 
     OnDesksChanged();
     OnDeskActivationChanged();
+    OnOverviewModeChanged();
   }
   WaylandAuraShell(const WaylandAuraShell&) = delete;
   WaylandAuraShell& operator=(const WaylandAuraShell&) = delete;
   ~WaylandAuraShell() override {
     WMHelper* helper = WMHelper::GetInstance();
     helper->RemoveTabletModeObserver(this);
+    ash::Shell::Get()->overview_controller()->RemoveObserver(this);
     ash::DesksController::Get()->RemoveObserver(this);
     if (seat_)
       seat_->RemoveObserver(this);
@@ -1201,13 +1207,6 @@ class WaylandAuraShell : public ash::DesksController::Observer,
   }
   void OnTabletModeEnded() override {}
 
-  // Overridden from SeatObserver:
-  void OnSurfaceFocused(Surface* gained_focus,
-                        Surface* lost_focus,
-                        bool has_focused_surface) override {
-    FocusedSurfaceChanged(gained_focus, lost_focus, has_focused_surface);
-  }
-
   // ash::DesksController::Observer:
   void OnDeskAdded(const ash::Desk* desk) override { OnDesksChanged(); }
   void OnDeskRemoved(const ash::Desk* desk) override { OnDesksChanged(); }
@@ -1223,6 +1222,25 @@ class WaylandAuraShell : public ash::DesksController::Observer,
   void OnDeskNameChanged(const ash::Desk* desk,
                          const std::u16string& new_name) override {
     OnDesksChanged();
+  }
+
+  // ash::OverviewObserver:
+  void OnOverviewModeStartingAnimationComplete(bool canceled) override {
+    if (!canceled) {
+      OnOverviewModeChanged();
+    }
+  }
+  void OnOverviewModeEndingAnimationComplete(bool canceled) override {
+    if (!canceled) {
+      OnOverviewModeChanged();
+    }
+  }
+
+  // SeatObserver:
+  void OnSurfaceFocused(Surface* gained_focus,
+                        Surface* lost_focus,
+                        bool has_focused_surface) override {
+    FocusedSurfaceChanged(gained_focus, lost_focus, has_focused_surface);
   }
 
  private:
@@ -1255,6 +1273,21 @@ class WaylandAuraShell : public ash::DesksController::Observer,
     zaura_shell_send_desk_activation_changed(
         aura_shell_resource_,
         ash::DesksController::Get()->GetActiveDeskIndex());
+  }
+
+  void OnOverviewModeChanged() {
+    if (wl_resource_get_version(aura_shell_resource_) <
+        ZAURA_SHELL_SET_OVERVIEW_MODE_SINCE_VERSION) {
+      return;
+    }
+
+    const bool in_overview =
+        ash::Shell::Get()->overview_controller()->InOverviewSession();
+    if (in_overview) {
+      zaura_shell_send_set_overview_mode(aura_shell_resource_);
+    } else {
+      zaura_shell_send_unset_overview_mode(aura_shell_resource_);
+    }
   }
 
   void FocusedSurfaceChanged(Surface* gained_active_surface,

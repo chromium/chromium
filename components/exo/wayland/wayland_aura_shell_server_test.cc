@@ -1,8 +1,13 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include <wayland-server-protocol-core.h>
+
+#include "ash/shell.h"
 #include "ash/test/test_widget_builder.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/exo/display.h"
 #include "components/exo/wayland/test/client_util.h"
@@ -11,6 +16,7 @@
 #include "components/exo/wayland/xdg_shell.h"
 #include "components/exo/xdg_shell_surface.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace exo::wayland {
 namespace {
@@ -92,10 +98,15 @@ class WaylandAuraShellServerTest : public test::WaylandServerTest {
     });
   }
 
-  struct FocusObserver {
+  struct ShellObserver {
+    // For focus.
     raw_ptr<wl_surface, ExperimentalAsh> gained_active;
     raw_ptr<wl_surface, ExperimentalAsh> lost_active;
     int32_t activated_call_count = 0;
+
+    // For overview.
+    int32_t overview_entered_call_count = 0;
+    int32_t overview_exited_call_count = 0;
   };
 
   const zaura_shell_listener kAuraShellListener = {
@@ -111,14 +122,22 @@ class WaylandAuraShellServerTest : public test::WaylandServerTest {
          struct zaura_shell* zaura_shell,
          struct wl_surface* gained_active,
          struct wl_surface* lost_active) {
-        auto* observer = static_cast<FocusObserver*>(data);
+        auto* observer = static_cast<ShellObserver*>(data);
         observer->gained_active = gained_active;
         observer->lost_active = lost_active;
         observer->activated_call_count++;
+      },
+      [](void* data, struct zaura_shell* zaura_shell) {
+        auto* observer = static_cast<ShellObserver*>(data);
+        observer->overview_entered_call_count++;
+      },
+      [](void* data, struct zaura_shell* zaura_shell) {
+        auto* observer = static_cast<ShellObserver*>(data);
+        observer->overview_exited_call_count++;
       }};
 
-  std::unique_ptr<FocusObserver> SetupFocusObservation() {
-    auto observer = std::make_unique<FocusObserver>();
+  std::unique_ptr<ShellObserver> SetupShellObservation() {
+    auto observer = std::make_unique<ShellObserver>();
     PostToClientAndWait([&](test::TestClient* client) {
       zaura_shell_add_listener(client->aura_shell(), &kAuraShellListener,
                                observer.get());
@@ -137,7 +156,7 @@ class WaylandAuraShellServerTest : public test::WaylandServerTest {
 // Home screen -> any window
 TEST_F(WaylandAuraShellServerTest, HasFocusedClientChangedSendActivated) {
   auto keys = SetupClientSurfaces();
-  auto observer = SetupFocusObservation();
+  auto observer = SetupShellObservation();
 
   Surface* surface = GetClientSurface(keys[0].surface_key);
   ASSERT_TRUE(surface);
@@ -153,7 +172,7 @@ TEST_F(WaylandAuraShellServerTest, HasFocusedClientChangedSendActivated) {
 // Exo client window -> Same exo client another window
 TEST_F(WaylandAuraShellServerTest, FocusedClientChangedSendActivated) {
   auto keys = SetupClientSurfaces(2);
-  auto observer = SetupFocusObservation();
+  auto observer = SetupShellObservation();
 
   Surface* surface = GetClientSurface(keys[0].surface_key);
   ASSERT_TRUE(surface);
@@ -177,7 +196,7 @@ TEST_F(WaylandAuraShellServerTest, FocusedClientChangedSendActivated) {
 // Exo client window -> Chrome window
 TEST_F(WaylandAuraShellServerTest, FocusedClientChangedToNonExoSendActivated) {
   auto keys = SetupClientSurfaces(2);
-  auto observer = SetupFocusObservation();
+  auto observer = SetupShellObservation();
 
   Surface* surface = GetClientSurface(keys[0].surface_key);
   ASSERT_TRUE(surface);
@@ -204,7 +223,7 @@ TEST_F(WaylandAuraShellServerTest, FocusedClientChangedToNonExoSendActivated) {
 TEST_F(WaylandAuraShellServerTest,
        NonExoFocusedClientChangedNotSendingActivated) {
   auto keys = SetupClientSurfaces(2);
-  auto observer = SetupFocusObservation();
+  auto observer = SetupShellObservation();
 
   Surface* surface = GetClientSurface(keys[0].surface_key);
   ASSERT_TRUE(surface);
@@ -373,6 +392,61 @@ TEST_F(WaylandAuraShellServerTest, AckRotateFocus) {
         ZAURA_TOPLEVEL_ROTATE_HANDLED_STATE_NOT_HANDLED);
   });
   EXPECT_TRUE(native_widget1->IsActive());
+}
+
+TEST_F(WaylandAuraShellServerTest, OverviewMode) {
+  auto* overview_controller = ash::Shell::Get()->overview_controller();
+  const auto start_action = ash::OverviewStartAction::kTests;
+  const auto end_action = ash::OverviewEndAction::kTests;
+
+  auto observer = SetupShellObservation();
+
+  // Need at least one window for overview animation.
+  auto native_widget = ash::TestWidgetBuilder().BuildOwnsNativeWidget();
+
+  ui::ScopedAnimationDurationScaleMode non_zero(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Test starting overview and letting the animation complete.
+  overview_controller->StartOverview(start_action);
+  ash::WaitForOverviewEnterAnimation();
+
+  // Wait until all wayland events are sent.
+  PostToClientAndWait([]() {});
+  EXPECT_EQ(1, observer->overview_entered_call_count);
+  EXPECT_EQ(0, observer->overview_exited_call_count);
+
+  // Test ending overview and letting the animation complete.
+  overview_controller->EndOverview(end_action);
+  ash::WaitForOverviewExitAnimation();
+  PostToClientAndWait([]() {});
+  EXPECT_EQ(1, observer->overview_entered_call_count);
+  EXPECT_EQ(1, observer->overview_exited_call_count);
+
+  // Test starting overview but ending overview before the animation completes.
+  // We don't send a start signal.
+  overview_controller->StartOverview(start_action);
+  overview_controller->EndOverview(end_action);
+  ash::WaitForOverviewExitAnimation();
+  PostToClientAndWait([]() {});
+  EXPECT_EQ(1, observer->overview_entered_call_count);
+  EXPECT_EQ(2, observer->overview_exited_call_count);
+
+  // Enter overview to prepare for the next test.
+  overview_controller->StartOverview(start_action);
+  ash::WaitForOverviewEnterAnimation();
+  PostToClientAndWait([]() {});
+  EXPECT_EQ(2, observer->overview_entered_call_count);
+  EXPECT_EQ(2, observer->overview_exited_call_count);
+
+  // Test ending overview but ending overview before the animation completes.
+  // We don't send an end signal.
+  overview_controller->EndOverview(end_action);
+  overview_controller->StartOverview(start_action);
+  ash::WaitForOverviewEnterAnimation();
+  PostToClientAndWait([]() {});
+  EXPECT_EQ(3, observer->overview_entered_call_count);
+  EXPECT_EQ(2, observer->overview_exited_call_count);
 }
 
 }  // namespace

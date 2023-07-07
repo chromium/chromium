@@ -1171,7 +1171,9 @@ void ClientBase::SetupAuraShellIfAvailable() {
       [](void* data, struct zaura_shell* zaura_shell,
          int32_t active_desk_index) {},
       [](void* data, struct zaura_shell* zaura_shell,
-         struct wl_surface* gained_active, struct wl_surface* lost_active) {}};
+         struct wl_surface* gained_active, struct wl_surface* lost_active) {},
+      [](void* data, struct zaura_shell* zaura_shell) {},
+      [](void* data, struct zaura_shell* zaura_shell) {}};
   zaura_shell_add_listener(globals_.aura_shell.get(), &kAuraShellListener,
                            this);
 

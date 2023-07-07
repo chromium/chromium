@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="56">
+  <interface name="zaura_shell" version="57">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -158,6 +158,20 @@
   renamed to "destroy" if we move to aura-shell v2.
       </description>
     </request>
+
+        <!-- Version 57 additions -->
+    <event name="set_overview_mode" since="57">
+      <description summary="entered overview mode">
+        Notifies client that the server has entered overview mode. Overview mode
+        displays all app windows associated with the current desk for the user.
+      </description>
+    </event>
+    <event name="unset_overview_mode" since="57">
+      <description summary="exited overview mode">
+        Notifies client that the server has exited overview mode.
+      </description>
+    </event>
+
   </interface>
 
   <interface name="zaura_surface" version="51">
