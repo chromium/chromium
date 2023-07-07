@@ -21,7 +21,6 @@
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "device/vr/buildflags/buildflags.h"
-#include "media/base/media_switches.h"
 #include "media/gpu/buildflags.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -246,9 +245,7 @@ auto RunAudio(mojo::PendingReceiver<audio::mojom::AudioService> receiver) {
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  return audio::CreateStandaloneService(
-      std::move(receiver),
-      /*run_audio_processing=*/media::IsChromeWideEchoCancellationEnabled());
+  return audio::CreateStandaloneService(std::move(receiver));
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)

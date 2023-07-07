@@ -438,12 +438,7 @@ BASE_FEATURE(kContextMenuCopyVideoFrame,
 // playback going to a specific output device in the audio service.
 BASE_FEATURE(kChromeWideEchoCancellation,
              "ChromeWideEchoCancellation",
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-    base::FEATURE_DISABLED_BY_DEFAULT
-#else
-    base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-             );
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When audio processing is done in the audio process, at the renderer side IPC
 // is set up to receive audio at the processing sample rate. This is a
@@ -1527,14 +1522,6 @@ BASE_FEATURE(kVideoDecodeBatching,
 
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-  if (base::FeatureList::IsEnabled(kCrOSEnforceSystemAecNsAgc) ||
-      base::FeatureList::IsEnabled(kCrOSEnforceSystemAecNs) ||
-      base::FeatureList::IsEnabled(kCrOSEnforceSystemAecAgc) ||
-      base::FeatureList::IsEnabled(kCrOSEnforceSystemAec)) {
-    return false;
-  }
-#endif
   return base::FeatureList::IsEnabled(kChromeWideEchoCancellation);
 #else
   return false;
