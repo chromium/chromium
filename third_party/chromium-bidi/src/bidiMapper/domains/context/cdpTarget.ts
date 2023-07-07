@@ -103,26 +103,33 @@ export class CdpTarget {
    */
   async #unblock() {
     try {
-      // Enable Network domain, if it is enabled globally.
+      // Collect all command promises and wait for them after
+      // `Runtime.runIfWaitingForDebugger`.
+      const promises: Promise<unknown>[] = [];
+
+      // Enable Network domain if enabled globally.
       // TODO: enable Network domain for OOPiF targets.
       if (this.#eventManager.isNetworkDomainEnabled) {
-        await this.enableNetworkDomain();
+        promises.push(this.enableNetworkDomain());
       }
 
-      await this.#cdpClient.sendCommand('Runtime.enable');
-      await this.#cdpClient.sendCommand('Page.enable');
-      await this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
-        enabled: true,
-      });
-      await this.#cdpClient.sendCommand('Target.setAutoAttach', {
-        autoAttach: true,
-        waitForDebuggerOnStart: true,
-        flatten: true,
-      });
-
-      await this.#initAndEvaluatePreloadScripts();
+      promises.push(
+        this.#cdpClient.sendCommand('Runtime.enable'),
+        this.#cdpClient.sendCommand('Page.enable'),
+        this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
+          enabled: true,
+        }),
+        this.#cdpClient.sendCommand('Target.setAutoAttach', {
+          autoAttach: true,
+          waitForDebuggerOnStart: true,
+          flatten: true,
+        }),
+        this.#initAndEvaluatePreloadScripts()
+      );
 
       await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
+
+      await Promise.all(promises);
     } catch (error: any) {
       // The target might have been closed before the initialization finished.
       if (!this.#cdpClient.isCloseError(error)) {

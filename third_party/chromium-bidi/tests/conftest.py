@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import asyncio
 import os
 
 import pytest
@@ -138,6 +139,18 @@ def read_sorted_messages(websocket):
 
 
 @pytest.fixture
+def assert_no_more_messages(websocket):
+    """Assert that there are no more messages on the websocket."""
+    async def assert_no_more_messages(timeout: float = 0):
+        with pytest.raises(Exception) as exception:
+            await asyncio.wait_for(read_JSON_message(websocket),
+                                   timeout=timeout)
+        assert exception.type == asyncio.TimeoutError
+
+    return assert_no_more_messages
+
+
+@pytest.fixture
 def get_cdp_session_id(websocket):
     """Return the CDP session ID from the given context."""
     async def get_cdp_session_id(context_id: str) -> str:
@@ -187,6 +200,6 @@ async def iframe_id(websocket, context_id: str, html_iframe_same_origin, html):
 
     # To avoid issue with the events order in headful mode, navigate to some
     # page: https://crbug.com/1353719
-    await goto_url(websocket, iframe_id, "data:text/html,<h1>FRAME</h1>")
+    await goto_url(websocket, iframe_id, html("<h1>FRAME</h1>"))
 
     return iframe_id

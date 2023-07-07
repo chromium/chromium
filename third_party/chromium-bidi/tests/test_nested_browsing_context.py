@@ -15,8 +15,8 @@
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_TIMESTAMP, get_tree, goto_url, read_JSON_message,
-                          send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, execute_command, get_tree, goto_url,
+                          read_JSON_message, subscribe)
 
 
 @pytest.mark.asyncio
@@ -42,165 +42,108 @@ async def test_nestedBrowsingContext_navigateToPageWithHash_contextInfoUpdated(
 
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_navigateWaitNone_navigated(
-        websocket, iframe_id, html):
+        websocket, iframe_id, html, read_sorted_messages):
     await subscribe(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    await send_JSON_command(
+    result = await execute_command(
         websocket, {
-            "id": 13,
             "method": "browsingContext.navigate",
             "params": {
-                "url": html("<h2>test</h2>"),
+                "url": html("<h2>iframe</h2>"),
                 "wait": "none",
                 "context": iframe_id
             }
         })
+    navigation_id = result["navigation"]
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert {
-        "id": 13,
-        "result": {
-            "navigation": ANY_STR,
-            "url": html("<h2>test</h2>")
-        }
-    } == resp
-
-    navigation_id = resp["result"]["navigation"]
-
-    # Wait for `browsingContext.load` event.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "method": "browsingContext.load",
-        "params": {
-            "context": iframe_id,
-            "navigation": navigation_id,
-            "timestamp": ANY_TIMESTAMP,
-            "url": html("<h2>test</h2>")
-        }
+    assert result == {
+        "navigation": navigation_id,
+        "url": html("<h2>iframe</h2>")
     }
 
-    # Wait for `browsingContext.domContentLoaded` event.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
+    [dom_content_loaded, browsing_context_load] = await read_sorted_messages(2)
+    assert dom_content_loaded == {
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
-            "url": html("<h2>test</h2>")
+            "url": html("<h2>iframe</h2>")
+        }
+    }
+    assert browsing_context_load == {
+        "method": "browsingContext.load",
+        "params": {
+            "context": iframe_id,
+            "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
+            "url": html("<h2>iframe</h2>")
         }
     }
 
 
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(
-        websocket, iframe_id, html):
+        websocket, iframe_id, html, assert_no_more_messages):
     await subscribe(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    await send_JSON_command(
+    result = await execute_command(
         websocket, {
-            "id": 14,
             "method": "browsingContext.navigate",
             "params": {
-                "url": html("<h2>test</h2>"),
+                "url": html("<h2>iframe</h2>"),
                 "wait": "interactive",
                 "context": iframe_id
             }
         })
+    navigation_id = result["navigation"]
 
-    # Wait for `browsingContext.load` event.
-    resp = await read_JSON_message(websocket)
-    navigation_id = resp["params"]["navigation"]
-    assert resp == {
-        "method": "browsingContext.load",
-        "params": {
-            "context": iframe_id,
-            "navigation": navigation_id,
-            "timestamp": ANY_TIMESTAMP,
-            "url": html("<h2>test</h2>")
-        }
+    assert result == {
+        "navigation": navigation_id,
+        "url": html("<h2>iframe</h2>")
     }
 
-    # Wait for `browsingContext.domContentLoaded` event.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "method": "browsingContext.domContentLoaded",
-        "params": {
-            "context": iframe_id,
-            "navigation": navigation_id,
-            "timestamp": ANY_TIMESTAMP,
-            "url": html("<h2>test</h2>")
-        }
-    }
-
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "id": 14,
-        "result": {
-            "navigation": navigation_id,
-            "url": html("<h2>test</h2>")
-        }
-    }
+    await assert_no_more_messages()
 
 
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_navigateWaitComplete_navigated(
-        websocket, iframe_id, html):
+        websocket, iframe_id, html, assert_no_more_messages):
     await subscribe(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    await send_JSON_command(
+    result = await execute_command(
         websocket, {
-            "id": 15,
             "method": "browsingContext.navigate",
             "params": {
-                "url": html("<h2>test</h2>"),
+                "url": html("<h2>iframe</h2>"),
                 "wait": "complete",
                 "context": iframe_id
             }
         })
+    navigation_id = result["navigation"]
 
-    # Wait for `browsingContext.load` event.
-    resp = await read_JSON_message(websocket)
-    navigation_id = resp["params"]["navigation"]
-    assert resp == {
-        "method": "browsingContext.load",
-        "params": {
-            "context": iframe_id,
-            "navigation": navigation_id,
-            "timestamp": ANY_TIMESTAMP,
-            "url": html("<h2>test</h2>")
-        }
+    assert result == {
+        "navigation": navigation_id,
+        "url": html("<h2>iframe</h2>")
     }
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "id": 15,
-        "result": {
-            "navigation": navigation_id,
-            "url": html("<h2>test</h2>")
-        }
-    }
-
-    # Wait for `browsingContext.domContentLoaded` event.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
+    assert await read_JSON_message(websocket) == {
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
-            "url": html("<h2>test</h2>")
+            "url": html("<h2>iframe</h2>")
         }
     }
+
+    await assert_no_more_messages()
 
 
 @pytest.mark.asyncio

@@ -1065,3 +1065,99 @@ async def test_browsingContext_userPromptClosed_event(websocket, context_id):
             "accepted": True
         }
     }
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_create_withUserGesture_eventsEmitted(
+        websocket, context_id, html, read_sorted_messages, get_cdp_session_id):
+    LINK_WITH_BLANK_TARGET = html(
+        '<a href="https://example.com" target="_blank">new tab</a>')
+
+    await subscribe(websocket, [
+        "browsingContext.contextCreated",
+        "browsingContext.domContentLoaded",
+        "browsingContext.load",
+    ])
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": LINK_WITH_BLANK_TARGET,
+                "wait": "complete",
+            }
+        })
+
+    [
+        command_result,
+        dom_content_loaded_event,
+        load_event,
+    ] = await read_sorted_messages(3)
+    assert command_result == AnyExtending({
+        "id": command_id,
+        "result": ANY_DICT,
+    })
+    assert dom_content_loaded_event == AnyExtending(
+        {"method": "browsingContext.domContentLoaded"})
+    assert load_event == AnyExtending({"method": "browsingContext.load"})
+
+    session_id = await get_cdp_session_id(context_id)
+
+    # XXX: Execute via BiDi once supported: https://github.com/w3c/webdriver-bidi/issues/359
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "cdp.sendCommand",
+            "params": {
+                "method": "Runtime.evaluate",
+                "params": {
+                    "expression": "document.querySelector('a').click();",
+                    "userGesture": True,
+                },
+                "session": session_id
+            }
+        })
+
+    [
+        command_result,
+        context_created_event,
+        dom_content_loaded_event,
+        load_event,
+    ] = await read_sorted_messages(4)
+
+    assert command_result == AnyExtending({
+        "id": command_id,
+        "result": ANY_DICT
+    })
+
+    assert context_created_event == {
+        "method": "browsingContext.contextCreated",
+        "params": {
+            "context": ANY_STR,
+            "url": "about:blank",
+            "children": None,
+            "parent": None
+        }
+    }
+
+    new_context_id = context_created_event["params"]["context"]
+    assert new_context_id != context_id
+
+    assert dom_content_loaded_event == {
+        "method": "browsingContext.domContentLoaded",
+        "params": {
+            "context": new_context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": "about:blank"
+        }
+    }
+
+    assert load_event == {
+        "method": "browsingContext.load",
+        "params": {
+            "context": new_context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": "https://example.com/"
+        }
+    }
