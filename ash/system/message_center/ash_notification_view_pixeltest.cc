@@ -95,17 +95,21 @@ class AshNotificationViewPixelTestBase : public AshTestBase {
 
 class AshNotificationViewPixelTest
     : public AshNotificationViewPixelTestBase,
-      public testing::WithParamInterface<bool /*IsQsRevampEnabled()*/> {
+      public testing::WithParamInterface<
+          std::tuple<bool /*IsQsRevampEnabled()*/, bool /*IsJellyEnabled()*/>> {
  public:
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(features::kQsRevamp,
-                                               /*enabled=*/IsQsRevampEnabled());
+    scoped_feature_list_->InitWithFeatureStates(
+        {{features::kQsRevamp, /*enabled=*/IsQsRevampEnabled()},
+         {chromeos::features::kJelly, /*enabled=*/IsJellyEnabled()}});
     AshNotificationViewPixelTestBase::SetUp();
   }
 
-  bool IsQsRevampEnabled() { return GetParam(); }
+  bool IsQsRevampEnabled() { return std::get<0>(GetParam()); }
+
+  bool IsJellyEnabled() { return std::get<1>(GetParam()); }
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
@@ -113,7 +117,9 @@ class AshNotificationViewPixelTest
 
 INSTANTIATE_TEST_SUITE_P(IsQsRevampEnabled,
                          AshNotificationViewPixelTest,
-                         /*IsQsRevampEnabled()=*/testing::Bool());
+                         testing::Combine(
+                             /*QsRevamp*/ testing::Bool(),
+                             /*Jelly*/ testing::Bool()));
 
 // Tests that a notification's close button is visible when it is focused.
 TEST_P(AshNotificationViewPixelTest, CloseButtonFocused) {
@@ -143,7 +149,7 @@ TEST_P(AshNotificationViewPixelTest, CloseButtonFocused) {
   EXPECT_TRUE(close_button->HasFocus());
   EXPECT_EQ(control_buttons_layer->opacity(), 1);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "close_button_focused", /*revision_number=*/0u, notification_view));
+      "close_button_focused", /*revision_number=*/1, notification_view));
 }
 
 class AshNotificationViewTitlePixelTest
