@@ -6,6 +6,7 @@ Date: 2022/10/24
 License: MIT
 License File: LICENSE
 Security Critical: Yes
+Shipped: yes
 
 Description:
 Header-only library for conversion to/from half-precision floating point formats
