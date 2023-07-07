@@ -15,6 +15,7 @@
 #include <sys/utsname.h>
 #include <sys/xattr.h>
 
+#include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -23,13 +24,16 @@
 #include "base/mac/scoped_aedesc.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace base::mac {
 
@@ -70,23 +74,24 @@ class LoginItemsFileList {
 
 #pragma clang diagnostic push  // https://crbug.com/1154377
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    base::scoped_nsobject<NSArray> login_items_array(
-        CFToNSCast(LSSharedFileListCopySnapshot(login_items_, nullptr)));
+    ScopedCFTypeRef<CFArrayRef> login_items_array(
+        LSSharedFileListCopySnapshot(login_items_, /*inList=*/nullptr));
 #pragma clang diagnostic pop
 
-    for (id login_item in login_items_array.get()) {
+    for (CFIndex i = 0; i < CFArrayGetCount(login_items_array); ++i) {
       LSSharedFileListItemRef item =
-          reinterpret_cast<LSSharedFileListItemRef>(login_item);
+          (LSSharedFileListItemRef)CFArrayGetValueAtIndex(login_items_array, i);
 #pragma clang diagnostic push  // https://crbug.com/1154377
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
       // kLSSharedFileListDoNotMountVolumes is used so that we don't trigger
       // mounting when it's not expected by a user. Just listing the login
       // items should not cause any side-effects.
-      ScopedCFTypeRef<CFURLRef> item_url(LSSharedFileListItemCopyResolvedURL(
-          item, kLSSharedFileListDoNotMountVolumes, nullptr));
+      NSURL* item_url =
+          apple::CFToNSOwnershipCast(LSSharedFileListItemCopyResolvedURL(
+              item, kLSSharedFileListDoNotMountVolumes, /*outError=*/nullptr));
 #pragma clang diagnostic pop
 
-      if (item_url && CFEqual(item_url, url)) {
+      if (item_url && [item_url isEqual:url]) {
         return ScopedCFTypeRef<LSSharedFileListItemRef>(
             item, base::scoped_policy::RETAIN);
       }
@@ -96,7 +101,7 @@ class LoginItemsFileList {
   }
 
   ScopedCFTypeRef<LSSharedFileListItemRef> GetLoginItemForMainApp() {
-    NSURL* url = [NSURL fileURLWithPath:[base::apple::MainBundle() bundlePath]];
+    NSURL* url = [NSURL fileURLWithPath:base::apple::MainBundle().bundlePath];
     return GetLoginItemForApp(url);
   }
 
@@ -107,9 +112,9 @@ class LoginItemsFileList {
 bool IsHiddenLoginItem(LSSharedFileListItemRef item) {
 #pragma clang diagnostic push  // https://crbug.com/1154377
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  ScopedCFTypeRef<CFBooleanRef> hidden(reinterpret_cast<CFBooleanRef>(
-      LSSharedFileListItemCopyProperty(item,
-          reinterpret_cast<CFStringRef>(kLSSharedFileListLoginItemHidden))));
+  ScopedCFTypeRef<CFBooleanRef> hidden(
+      reinterpret_cast<CFBooleanRef>(LSSharedFileListItemCopyProperty(
+          item, kLSSharedFileListLoginItemHidden)));
 #pragma clang diagnostic pop
 
   return hidden && hidden == kCFBooleanTrue;
@@ -158,15 +163,16 @@ CGColorSpaceRef GetSystemColorSpace() {
 void AddToLoginItems(const FilePath& app_bundle_file_path,
                      bool hide_on_startup) {
   LoginItemsFileList login_items;
-  if (!login_items.Initialize())
+  if (!login_items.Initialize()) {
     return;
+  }
 
   NSURL* app_bundle_url = base::mac::FilePathToNSURL(app_bundle_file_path);
-  base::ScopedCFTypeRef<LSSharedFileListItemRef> item(
-      login_items.GetLoginItemForApp(app_bundle_url));
+  base::ScopedCFTypeRef<LSSharedFileListItemRef> item =
+      login_items.GetLoginItemForApp(app_bundle_url);
 
   if (item.get() && (IsHiddenLoginItem(item) == hide_on_startup)) {
-    return;  // Already is a login item with required hide flag.
+    return;  // There already is a login item with required hide flag.
   }
 
   // Remove the old item, it has wrong hide flag, we'll create a new one.
@@ -181,13 +187,14 @@ void AddToLoginItems(const FilePath& app_bundle_file_path,
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
   BOOL hide = hide_on_startup ? YES : NO;
   NSDictionary* properties =
-      @{(NSString*)kLSSharedFileListLoginItemHidden : @(hide) };
+      @{apple::CFToNSPtrCast(kLSSharedFileListLoginItemHidden) : @(hide)};
 
   ScopedCFTypeRef<LSSharedFileListItemRef> new_item(
       LSSharedFileListInsertItemURL(
-          login_items.GetLoginFileList(), kLSSharedFileListItemLast, nullptr,
-          nullptr, reinterpret_cast<CFURLRef>(app_bundle_url),
-          reinterpret_cast<CFDictionaryRef>(properties), nullptr));
+          login_items.GetLoginFileList(), kLSSharedFileListItemLast,
+          /*inDisplayName=*/nullptr,
+          /*inIconRef=*/nullptr, apple::NSToCFPtrCast(app_bundle_url),
+          apple::NSToCFPtrCast(properties), /*inPropertiesToClear=*/nullptr));
 #pragma clang diagnostic pop
 
   if (!new_item.get()) {
@@ -197,14 +204,16 @@ void AddToLoginItems(const FilePath& app_bundle_file_path,
 
 void RemoveFromLoginItems(const FilePath& app_bundle_file_path) {
   LoginItemsFileList login_items;
-  if (!login_items.Initialize())
+  if (!login_items.Initialize()) {
     return;
+  }
 
   NSURL* app_bundle_url = base::mac::FilePathToNSURL(app_bundle_file_path);
-  base::ScopedCFTypeRef<LSSharedFileListItemRef> item(
-      login_items.GetLoginItemForApp(app_bundle_url));
-  if (!item.get())
+  base::ScopedCFTypeRef<LSSharedFileListItemRef> item =
+      login_items.GetLoginItemForApp(app_bundle_url);
+  if (!item.get()) {
     return;
+  }
 
 #pragma clang diagnostic push  // https://crbug.com/1154377
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -213,7 +222,7 @@ void RemoveFromLoginItems(const FilePath& app_bundle_file_path) {
 }
 
 bool WasLaunchedAsLoginOrResumeItem() {
-  ProcessSerialNumber psn = { 0, kCurrentProcess };
+  ProcessSerialNumber psn = {0, kCurrentProcess};
   ProcessInfoRec info = {};
   info.processInfoLength = sizeof(info);
 
@@ -237,10 +246,11 @@ bool WasLaunchedAsLoginOrResumeItem() {
 }
 
 bool WasLaunchedAsLoginItemRestoreState() {
-  // "Reopen windows..." option was added for Lion.  Prior OS versions should
+  // "Reopen windows..." option was added for 10.7.  Prior OS versions should
   // not have this behavior.
-  if (!WasLaunchedAsLoginOrResumeItem())
+  if (!WasLaunchedAsLoginOrResumeItem()) {
     return false;
+  }
 
   CFStringRef app = CFSTR("com.apple.loginwindow");
   CFStringRef save_state = CFSTR("TALLogoutSavesState");
@@ -251,27 +261,31 @@ bool WasLaunchedAsLoginItemRestoreState() {
   // "reopen windows" option is checked by default, so the plist would exist had
   // the user unchecked it.
   // https://developer.apple.com/library/mac/documentation/macosx/conceptual/bpsystemstartup/chapters/CustomLogin.html
-  if (!plist)
+  if (!plist) {
     return true;
+  }
 
-  if (CFBooleanRef restore_state = base::mac::CFCast<CFBooleanRef>(plist))
+  if (CFBooleanRef restore_state = base::mac::CFCast<CFBooleanRef>(plist)) {
     return CFBooleanGetValue(restore_state);
+  }
 
   return false;
 }
 
 bool WasLaunchedAsHiddenLoginItem() {
-  if (!WasLaunchedAsLoginOrResumeItem())
+  if (!WasLaunchedAsLoginOrResumeItem()) {
     return false;
+  }
 
   LoginItemsFileList login_items;
-  if (!login_items.Initialize())
+  if (!login_items.Initialize()) {
     return false;
+  }
 
   base::ScopedCFTypeRef<LSSharedFileListItemRef> item(
       login_items.GetLoginItemForMainApp());
   if (!item.get()) {
-    // OS X can launch items for the resume feature.
+    // The OS itself can launch items, usually for the resume feature.
     return false;
   }
   return IsHiddenLoginItem(item);
@@ -300,6 +314,9 @@ int DarwinMajorVersionInternal() {
   // system calls to obtain the relevant data from the kernel. The data is
   // compiled right into the kernel, so no threads or blocking or other
   // funny business is necessary.
+  //
+  // TODO: Switch to the kern.osproductversion sysctl? It's compiled in and
+  // should require less Darwin offset guessing and parsing.
 
   struct utsname uname_info;
   if (uname(&uname_info) != 0) {
@@ -319,7 +336,7 @@ int DarwinMajorVersionInternal() {
             base::StringPiece(uname_info.release,
                               static_cast<size_t>(dot - uname_info.release)),
             &darwin_major_version)) {
-      dot = NULL;
+      dot = nullptr;
     }
   }
 
@@ -340,8 +357,9 @@ int MacOSVersionInternal() {
   // Darwin major versions 6 through 19 corresponded to macOS versions 10.2
   // through 10.15.
   CHECK(darwin_major_version >= 6);
-  if (darwin_major_version <= 19)
+  if (darwin_major_version <= 19) {
     return 1000 + darwin_major_version - 4;
+  }
 
   // Darwin major version 20 corresponds to macOS version 11.0. Assume a
   // correspondence between Darwin's major version numbers and macOS major
@@ -369,8 +387,9 @@ namespace {
 bool ProcessIsTranslated() {
   int ret = 0;
   size_t size = sizeof(ret);
-  if (sysctlbyname("sysctl.proc_translated", &ret, &size, nullptr, 0) == -1)
+  if (sysctlbyname("sysctl.proc_translated", &ret, &size, nullptr, 0) == -1) {
     return false;
+  }
   return ret;
 }
 #endif  // ARCH_CPU_X86_64
@@ -389,16 +408,12 @@ CPUType GetCPUType() {
 
 std::string GetModelIdentifier() {
   std::string return_string;
-  ScopedIOObject<io_service_t> platform_expert(
-      IOServiceGetMatchingService(kIOMasterPortDefault,
-                                  IOServiceMatching("IOPlatformExpertDevice")));
+  ScopedIOObject<io_service_t> platform_expert(IOServiceGetMatchingService(
+      kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice")));
   if (platform_expert) {
     ScopedCFTypeRef<CFDataRef> model_data(
         static_cast<CFDataRef>(IORegistryEntryCreateCFProperty(
-            platform_expert,
-            CFSTR("model"),
-            kCFAllocatorDefault,
-            0)));
+            platform_expert, CFSTR("model"), kCFAllocatorDefault, 0)));
     if (model_data) {
       return_string =
           reinterpret_cast<const char*>(CFDataGetBytePtr(model_data));
@@ -412,11 +427,13 @@ bool ParseModelIdentifier(const std::string& ident,
                           int32_t* major,
                           int32_t* minor) {
   size_t number_loc = ident.find_first_of("0123456789");
-  if (number_loc == std::string::npos)
+  if (number_loc == std::string::npos) {
     return false;
+  }
   size_t comma_loc = ident.find(',', number_loc);
-  if (comma_loc == std::string::npos)
+  if (comma_loc == std::string::npos) {
     return false;
+  }
   int32_t major_tmp, minor_tmp;
   std::string::const_iterator begin = ident.begin();
   if (!StringToInt(MakeStringPiece(begin + static_cast<ptrdiff_t>(number_loc),
@@ -425,8 +442,9 @@ bool ParseModelIdentifier(const std::string& ident,
       !StringToInt(
           MakeStringPiece(begin + static_cast<ptrdiff_t>(comma_loc) + 1,
                           ident.end()),
-          &minor_tmp))
+          &minor_tmp)) {
     return false;
+  }
   *type = ident.substr(0, number_loc);
   *major = major_tmp;
   *minor = minor_tmp;
@@ -435,7 +453,7 @@ bool ParseModelIdentifier(const std::string& ident,
 
 std::string GetOSDisplayName() {
   std::string version_string = base::SysNSStringToUTF8(
-      [[NSProcessInfo processInfo] operatingSystemVersionString]);
+      NSProcessInfo.processInfo.operatingSystemVersionString);
   return "macOS " + version_string;
 }
 
@@ -594,16 +612,16 @@ void OpenSystemSettingsPane(SystemSettingsPane pane) {
     return;
   }
 
-  base::scoped_nsobject<NSAppleEventDescriptor> subpane_descriptor;
+  NSAppleEventDescriptor* subpane_descriptor;
   NSArray* pane_file_urls = @[ [NSURL fileURLWithPath:pane_file] ];
 
   LSLaunchURLSpec launchSpec = {0};
-  launchSpec.itemURLs = NSToCFCast(pane_file_urls);
+  launchSpec.itemURLs = apple::NSToCFPtrCast(pane_file_urls);
   if (subpane_data) {
-    subpane_descriptor.reset([[NSAppleEventDescriptor alloc]
-        initWithDescriptorType:'ptru'
-                          data:subpane_data]);
-    launchSpec.passThruParams = subpane_descriptor.get().aeDesc;
+    subpane_descriptor =
+        [[NSAppleEventDescriptor alloc] initWithDescriptorType:'ptru'
+                                                          data:subpane_data];
+    launchSpec.passThruParams = subpane_descriptor.aeDesc;
   }
   launchSpec.launchFlags = kLSLaunchAsync | kLSLaunchDontAddToRecents;
 
