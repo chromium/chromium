@@ -20,7 +20,6 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/webui/signin/profile_creation_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
@@ -43,7 +42,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/webui/mojo_web_ui_controller.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -291,8 +289,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
 }  // namespace
 
 ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
-      customize_themes_factory_receiver_(this) {
+    : content::WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
@@ -330,28 +327,8 @@ gfx::Size ProfilePickerUI::GetMinimumSize() {
   return gfx::Size(kMinimumPickerSizePx, kMinimumPickerSizePx);
 }
 
-void ProfilePickerUI::BindInterface(
-    mojo::PendingReceiver<
-        customize_themes::mojom::CustomizeThemesHandlerFactory>
-        pending_receiver) {
-  if (customize_themes_factory_receiver_.is_bound()) {
-    customize_themes_factory_receiver_.reset();
-  }
-  customize_themes_factory_receiver_.Bind(std::move(pending_receiver));
-}
-
 ProfilePickerHandler* ProfilePickerUI::GetProfilePickerHandlerForTesting() {
   return profile_picker_handler_;
-}
-
-void ProfilePickerUI::CreateCustomizeThemesHandler(
-    mojo::PendingRemote<customize_themes::mojom::CustomizeThemesClient>
-        pending_client,
-    mojo::PendingReceiver<customize_themes::mojom::CustomizeThemesHandler>
-        pending_handler) {
-  customize_themes_handler_ =
-      std::make_unique<ProfileCreationCustomizeThemesHandler>(
-          std::move(pending_client), std::move(pending_handler));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ProfilePickerUI)

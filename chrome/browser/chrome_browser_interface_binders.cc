@@ -1126,7 +1126,7 @@ void PopulateChromeWebUIFrameBinders(
       customize_themes::mojom::CustomizeThemesHandlerFactory, NewTabPageUI
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
       ,
-      ProfileCustomizationUI, ProfilePickerUI, settings::SettingsUI
+      ProfileCustomizationUI, settings::SettingsUI
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
       >(map);
 

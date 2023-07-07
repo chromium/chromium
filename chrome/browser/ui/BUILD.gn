@@ -3813,8 +3813,6 @@ static_library("ui") {
       "webui/signin/enterprise_profile_welcome_handler.h",
       "webui/signin/enterprise_profile_welcome_ui.cc",
       "webui/signin/enterprise_profile_welcome_ui.h",
-      "webui/signin/profile_creation_customize_themes_handler.cc",
-      "webui/signin/profile_creation_customize_themes_handler.h",
       "webui/signin/profile_customization_handler.cc",
       "webui/signin/profile_customization_handler.h",
       "webui/signin/profile_customization_ui.cc",
