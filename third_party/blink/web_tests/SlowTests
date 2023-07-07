@@ -1463,3 +1463,6 @@ crbug.com/1459575 webexposed/global-interface-listing-dedicated-worker.html [ Sl
 crbug.com/626703 [ Mac11 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Slow ]
 crbug.com/626703 [ Mac12 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Slow ]
 crbug.com/626703 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/cors/cors-keepalive.any.html [ Slow ]
+
+crbug.com/1456739 [ Linux Release ] virtual/private-aggregation-developer-mode/wpt_internal/private-aggregation/protected-audience-sends-report.https.html [ Slow ]
+
