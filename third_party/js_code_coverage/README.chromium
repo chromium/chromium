@@ -3,8 +3,8 @@ Short Name: v8-to-istanbul
 URL: https://www.npmjs.com/package/v8-to-istanbul
 Version: 9.0.1
 License: ISC
-License File: NOT_SHIPPED
 Security Critical: no
+Shipped: no
 
 Description:
 V8 To Istanbul converts raw v8 coverage into istanbul compliant coverage report.
@@ -17,8 +17,8 @@ Short Name: source-map
 URL: https://www.npmjs.com/package/source-map
 Version: 0.7.4
 License: BSD-3-Clause
-License File: NOT_SHIPPED
 Security Critical: No. Not shipped in Chrome, used to generate source maps for build steps.
+Shipped: no
 
 Description:
 Source map provides useful functionality to easily generate and consume
@@ -34,8 +34,8 @@ Short Name: nyc
 URL: https://www.npmjs.com/package/nyc
 Version: 15.1.0
 License: ISC
-License File: NOT_SHIPPED
 Security Critical: No. Not shipped in Chrome, used for post-processing of coverage reports.
+Shipped: no
 
 Description:
 NYC is a CLI to merge, manipulate and generate reports in a variety of formats
@@ -50,8 +50,8 @@ Short Name: argparse
 URL: https://www.npmjs.com/package/argparse
 Version: 2.0.1
 License: Python-2.0
-License File: NOT_SHIPPED
 Security Critical: No. Not shipped in Chrome, used to take arguments for JS files run via CLI.
+Shipped: no
 
 Description:
 Argparse is used to take, validate and parse CLI arguments for JavaScript scripts
@@ -62,8 +62,8 @@ Short Name: istanbul-lib-coverage
 URL: https://www.npmjs.com/package/istanbul-lib-coverage
 Version: 3.2.0
 License: BSD-3-Clause
-License File: NOT_SHIPPED
 Security Critical: No. Not shipped in Chrome, used to merge coverage reports.
+Shipped: no
 
 Description:
 istanbul-lib-coverage is used to merge coverage reports by the NYC library.
