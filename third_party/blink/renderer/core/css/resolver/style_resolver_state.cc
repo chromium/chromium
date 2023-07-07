@@ -79,6 +79,9 @@ StyleResolverState::StyleResolverState(
       is_for_highlight_(IsHighlightPseudoElement(style_request.pseudo_id)),
       uses_highlight_pseudo_inheritance_(
           ::blink::UsesHighlightPseudoInheritance(style_request.pseudo_id)),
+      is_outside_flat_tree_(style_recalc_context
+                                ? style_recalc_context->is_outside_flat_tree
+                                : false),
       can_trigger_animations_(style_request.can_trigger_animations) {
   DCHECK(!!parent_style_ == !!layout_parent_style_);
 

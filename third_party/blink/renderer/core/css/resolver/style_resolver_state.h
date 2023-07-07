@@ -189,6 +189,7 @@ class CORE_EXPORT StyleResolverState {
   bool UsesHighlightPseudoInheritance() const {
     return uses_highlight_pseudo_inheritance_;
   }
+  bool IsOutsideFlatTree() const { return is_outside_flat_tree_; }
 
   bool CanTriggerAnimations() const { return can_trigger_animations_; }
 
@@ -299,6 +300,9 @@ class CORE_EXPORT StyleResolverState {
   // True if this is a highlight style request, and highlight inheritance
   // should be used for this highlight pseudo.
   const bool uses_highlight_pseudo_inheritance_;
+  // See StyleRecalcContext::is_outside_flat_tree. Set to false if there is no
+  // StyleRecalcContext.
+  const bool is_outside_flat_tree_;
 
   // True if this style resolution can start or stop animations and transitions.
   // One case where animations and transitions can not be triggered is when we

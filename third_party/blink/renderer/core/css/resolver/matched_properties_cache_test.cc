@@ -60,11 +60,12 @@ class MatchedPropertiesCacheTestCache {
     cache_.Add(key.InnerKey(), &style, &parent_style);
   }
 
-  const CachedMatchedProperties* Find(const TestKey& key,
-                                      const ComputedStyle& style,
-                                      const ComputedStyle& parent_style) {
-    StyleResolverState state(document_, *document_.body(),
-                             nullptr /* StyleRecalcContext */,
+  const CachedMatchedProperties* Find(
+      const TestKey& key,
+      const ComputedStyle& style,
+      const ComputedStyle& parent_style,
+      const StyleRecalcContext* style_recalc_context = nullptr) {
+    StyleResolverState state(document_, *document_.body(), style_recalc_context,
                              StyleRequest(&parent_style));
     state.SetStyle(style);
     return cache_.Find(key.InnerKey(), state);
@@ -173,14 +174,16 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredOutsideFlatTree) {
   auto ensured_style = builder.TakeStyle();
 
   TestKey key1("display:block", 1, GetDocument());
+  StyleRecalcContext context;
+  context.is_outside_flat_tree = true;
 
   cache.Add(key1, style, parent);
   EXPECT_TRUE(cache.Find(key1, style, parent));
-  EXPECT_TRUE(cache.Find(key1, *ensured_style, parent));
+  EXPECT_TRUE(cache.Find(key1, *ensured_style, parent, &context));
 
   cache.Add(key1, *ensured_style, parent);
   EXPECT_FALSE(cache.Find(key1, style, parent));
-  EXPECT_TRUE(cache.Find(key1, *ensured_style, parent));
+  EXPECT_TRUE(cache.Find(key1, *ensured_style, parent, &context));
 }
 
 TEST_F(MatchedPropertiesCacheTest, EnsuredOutsideFlatTreeAndDisplayNone) {
@@ -197,13 +200,16 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredOutsideFlatTreeAndDisplayNone) {
   builder.SetIsEnsuredOutsideFlatTree();
   auto style_flat = builder.TakeStyle();
 
+  StyleRecalcContext context;
+  context.is_outside_flat_tree = true;
+
   TestKey key1("display:block", 1, GetDocument());
 
   cache.Add(key1, style, *parent_none);
-  EXPECT_TRUE(cache.Find(key1, *style_flat, parent));
+  EXPECT_TRUE(cache.Find(key1, *style_flat, parent, &context));
 
   cache.Add(key1, *style_flat, parent);
-  EXPECT_TRUE(cache.Find(key1, style, *parent_none));
+  EXPECT_TRUE(cache.Find(key1, style, *parent_none, &context));
 }
 
 TEST_F(MatchedPropertiesCacheTest, WritingModeDependency) {
