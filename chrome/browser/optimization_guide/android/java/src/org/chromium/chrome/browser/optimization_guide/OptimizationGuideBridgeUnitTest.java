@@ -31,7 +31,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.RequestContext;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
-import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -127,45 +126,6 @@ public class OptimizationGuideBridgeUnitTest {
 
         verify(mOptimizationGuideBridgeJniMock, times(1))
                 .canApplyOptimization(eq(1L), eq(gurl), eq(6), eq(mCallbackMock));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"OptimizationHints"})
-    public void testCanApplyOptimizationAsync_withoutNativeBridge() {
-        GURL gurl = new GURL(TEST_URL);
-        OptimizationGuideBridge bridge = new OptimizationGuideBridge(0);
-        NavigationHandle navHandle = NavigationHandle.createForTesting(new GURL(TEST_URL),
-                false /* isRendererInitiated */, 0 /* pageTransition */,
-                false /* hasUserGesture */);
-
-        bridge.canApplyOptimizationAsync(
-                navHandle, OptimizationType.PERFORMANCE_HINTS, mCallbackMock);
-
-        verify(mOptimizationGuideBridgeJniMock, never())
-                .canApplyOptimization(anyLong(), any(), anyInt(),
-                        any(OptimizationGuideBridge.OptimizationGuideCallback.class));
-        verify(mCallbackMock)
-                .onOptimizationGuideDecision(eq(OptimizationGuideDecision.UNKNOWN), isNull());
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"OptimizationHints"})
-    public void testCanApplyOptimizationAsync() {
-        GURL gurl = new GURL(TEST_URL);
-        OptimizationGuideBridge bridge = new OptimizationGuideBridge(1);
-        NavigationHandle navHandle =
-                NavigationHandle.createForTesting(gurl, false /* isRendererInitiated */,
-                        0 /* pageTransition */, false /* hasUserGesture */);
-
-        bridge.canApplyOptimizationAsync(
-                navHandle, OptimizationType.PERFORMANCE_HINTS, mCallbackMock);
-
-        verify(mOptimizationGuideBridgeJniMock, times(1))
-                .canApplyOptimizationAsync(eq(1L), eq(gurl), eq(6), eq(mCallbackMock));
     }
 
     @Test

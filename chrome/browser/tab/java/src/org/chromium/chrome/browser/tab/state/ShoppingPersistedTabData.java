@@ -265,7 +265,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             return;
         }
         OptimizationGuideBridgeFactoryHolder.sOptimizationGuideBridgeFactory.create()
-                .canApplyOptimizationAsync(navigationHandle,
+                .canApplyOptimization(navigationHandle.getUrl(),
                         HintsProto.OptimizationType.PRICE_TRACKING, (decision, metadata) -> {
                             if (!tab.isInitialized()) {
                                 if (onCompleteForTesting != null) {

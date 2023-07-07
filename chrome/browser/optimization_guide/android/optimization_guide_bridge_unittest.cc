@@ -36,26 +36,6 @@ using ::testing::UnorderedElementsAre;
 namespace optimization_guide {
 namespace android {
 
-class MockOptimizationGuideHintsManager
-    : public optimization_guide::ChromeHintsManager {
- public:
-  MockOptimizationGuideHintsManager(Profile* profile, PrefService* pref_service)
-      : optimization_guide::ChromeHintsManager(
-            profile,
-            pref_service,
-            /*hint_store=*/nullptr,
-            /*top_host_provider=*/nullptr,
-            /*tab_url_provider=*/nullptr,
-            /*url_loader_factory=*/nullptr,
-            /*push_notification_manager=*/nullptr,
-            /*optimization_guide_logger=*/nullptr) {}
-  ~MockOptimizationGuideHintsManager() override = default;
-  MOCK_METHOD3(CanApplyOptimizationAsync,
-               void(const GURL&,
-                    optimization_guide::proto::OptimizationType,
-                    optimization_guide::OptimizationGuideDecisionCallback));
-};
-
 class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
  public:
   explicit MockOptimizationGuideKeyedService(
@@ -63,15 +43,13 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
       : OptimizationGuideKeyedService(browser_context) {}
   ~MockOptimizationGuideKeyedService() override = default;
 
-  MOCK_METHOD0(GetHintsManager, optimization_guide::ChromeHintsManager*());
   MOCK_METHOD1(
       RegisterOptimizationTypes,
       void(const std::vector<optimization_guide::proto::OptimizationType>&));
   MOCK_METHOD3(CanApplyOptimization,
-               optimization_guide::OptimizationGuideDecision(
-                   const GURL& gurl,
-                   optimization_guide::proto::OptimizationType,
-                   optimization_guide::OptimizationMetadata* metadata));
+               void(const GURL& gurl,
+                    optimization_guide::proto::OptimizationType,
+                    optimization_guide::OptimizationGuideDecisionCallback));
   MOCK_METHOD4(
       CanApplyOptimizationOnDemand,
       void(const std::vector<GURL>&,
@@ -107,14 +85,6 @@ class OptimizationGuideBridgeTest : public testing::Test {
                       return std::make_unique<
                           MockOptimizationGuideKeyedService>(context);
                     })));
-    optimization_guide_hints_manager_ =
-        std::make_unique<MockOptimizationGuideHintsManager>(
-            profile_, pref_service_.get());
-  }
-
-  void TearDown() override {
-    optimization_guide_hints_manager_->Shutdown();
-    optimization_guide_hints_manager_.reset();
   }
 
   void RegisterOptimizationTypes() {
@@ -127,8 +97,6 @@ class OptimizationGuideBridgeTest : public testing::Test {
   base::android::ScopedJavaGlobalRef<jobject> j_test_;
   raw_ptr<JNIEnv> env_;
   raw_ptr<MockOptimizationGuideKeyedService> optimization_guide_keyed_service_;
-  std::unique_ptr<MockOptimizationGuideHintsManager>
-      optimization_guide_hints_manager_;
 
  private:
   content::BrowserTaskEnvironment task_environment_{
@@ -149,39 +117,18 @@ TEST_F(OptimizationGuideBridgeTest, RegisterOptimizationTypes) {
       env_, j_test_);
 }
 
-TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationAsyncHasHint) {
-  RegisterOptimizationTypes();
-  EXPECT_CALL(*optimization_guide_keyed_service_, GetHintsManager())
-      .WillRepeatedly(Return(optimization_guide_hints_manager_.get()));
-  optimization_guide::proto::LoadingPredictorMetadata hints_metadata;
-  optimization_guide::OptimizationMetadata metadata;
-  metadata.SetAnyMetadataForTesting(hints_metadata);
-  EXPECT_CALL(
-      *optimization_guide_hints_manager_,
-      CanApplyOptimizationAsync(GURL("https://example.com/"),
-                                optimization_guide::proto::LOADING_PREDICTOR,
-                                base::test::IsNotNullCallback()))
-      .WillOnce(base::test::RunOnceCallback<2>(
-          optimization_guide::OptimizationGuideDecision::kTrue,
-          ByRef(metadata)));
-
-  Java_OptimizationGuideBridgeNativeUnitTest_testCanApplyOptimizationAsyncHasHint(
-      env_, j_test_);
-}
-
 TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationHasHint) {
   RegisterOptimizationTypes();
   optimization_guide::proto::LoadingPredictorMetadata hints_metadata;
   optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(hints_metadata);
-
-  ON_CALL(*optimization_guide_keyed_service_,
-          CanApplyOptimization(GURL("https://example.com/"),
-                               optimization_guide::proto::LOADING_PREDICTOR,
-                               NotNull()))
-      .WillByDefault(
-          DoAll(SetArgPointee<2>(metadata),
-                Return(optimization_guide::OptimizationGuideDecision::kTrue)));
+  EXPECT_CALL(*optimization_guide_keyed_service_,
+              CanApplyOptimization(GURL("https://example.com/"),
+                                   optimization_guide::proto::LOADING_PREDICTOR,
+                                   base::test::IsNotNullCallback()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
+          ByRef(metadata)));
 
   Java_OptimizationGuideBridgeNativeUnitTest_testCanApplyOptimizationHasHint(
       env_, j_test_);

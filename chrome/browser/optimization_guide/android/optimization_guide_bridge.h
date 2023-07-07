@@ -41,11 +41,6 @@ class OptimizationGuideBridge {
   void RegisterOptimizationTypes(
       JNIEnv* env,
       const base::android::JavaParamRef<jintArray>& joptimization_types);
-  void CanApplyOptimizationAsync(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_gurl,
-      jint optimization_type,
-      const base::android::JavaParamRef<jobject>& java_callback);
   void CanApplyOptimization(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& java_gurl,

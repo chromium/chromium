@@ -17,7 +17,6 @@ import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.RequestContext;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.components.optimization_guide.proto.PushNotificationProto.HintNotificationPayload;
-import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -98,27 +97,8 @@ public class OptimizationGuideBridge implements Destroyable {
     }
 
     /**
-     * Invokes {@link callback} with the decision for the URL associated with {@link
-     * navigationHandle} and {@link optimizationType} when sufficient information has been
-     * collected to make a decision. This should only be called for main frame navigations.
-     */
-    public void canApplyOptimizationAsync(NavigationHandle navigationHandle,
-            OptimizationType optimizationType, OptimizationGuideCallback callback) {
-        assert navigationHandle.isInPrimaryMainFrame();
-
-        if (mNativeOptimizationGuideBridge == 0) {
-            callback.onOptimizationGuideDecision(OptimizationGuideDecision.UNKNOWN, null);
-            return;
-        }
-
-        OptimizationGuideBridgeJni.get().canApplyOptimizationAsync(mNativeOptimizationGuideBridge,
-                navigationHandle.getUrl(), optimizationType.getNumber(), callback);
-    }
-
-    /**
      * Returns whether {@link optimizationType} can be applied for {@link url}. This should
-     * only be called for main frame navigations or future main frame navigations. This will invoke
-     * {@link callback} immediately with any information available on device.
+     * only be called for main frame navigations or future main frame navigations.
      *
      * @param url main frame navigation URL an optimization decision is being made for.
      * @param optimizationType {@link OptimizationType} decision is being made for
@@ -317,8 +297,6 @@ public class OptimizationGuideBridge implements Destroyable {
         long init();
         void destroy(long nativeOptimizationGuideBridge);
         void registerOptimizationTypes(long nativeOptimizationGuideBridge, int[] optimizationTypes);
-        void canApplyOptimizationAsync(long nativeOptimizationGuideBridge, GURL url,
-                int optimizationType, OptimizationGuideCallback callback);
         void canApplyOptimization(long nativeOptimizationGuideBridge, GURL url,
                 int optimizationType, OptimizationGuideCallback callback);
         void canApplyOptimizationOnDemand(long nativeOptimizationGuideBridge, GURL[] urls,
