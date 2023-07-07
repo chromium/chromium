@@ -4857,14 +4857,17 @@ crbug.com/1176162 http/tests/devtools/screen-orientation-override.js [ Failure P
 crbug.com/1215949 external/wpt/pointerevents/pointerevent_iframe-touch-action-none_touch.html [ Pass Timeout ]
 crbug.com/1216139 http/tests/devtools/bfcache/bfcache-elements-update.js [ Failure Pass ]
 
-# Sheriff 2021-06-10
-
 # CSS Highlight API painting issues related to general CSS highlight
 # pseudo-elements painting
 crbug.com/1163437 external/wpt/css/css-highlight-api/painting/custom-highlight-painting-below-grammar.html [ Failure ]
 crbug.com/1147859 external/wpt/css/css-highlight-api/painting/custom-highlight-painting-below-target-text.html [ Failure ]
 crbug.com/1147859 [ Mac ] virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/forced-colors-mode-53.html [ Failure ]
 
+crbug.com/1454939 fast/events/touch/gesture/focus-selectionchange-on-tap.html [ Failure Pass ]
+crbug.com/1455239 http/tests/security/drag-drop-different-origin.html [ Failure Pass ]
+crbug.com/1455579 virtual/disable-device-id-pointer-event/fast/events/pointerevents/device-id/get-device-id-from-pointer-event.html [ Failure Pass ]
+crbug.com/1456442 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheel-latched-scroll-node-removed.html [ Failure Pass ]
+crbug.com/1462420 fast/dnd/dragtriggerdommove/drag-trigger-dom-move-image.html [ Failure Pass ]
 
 # Green Mac11 Test
 crbug.com/1201406 http/tests/credentialmanagement/publickeycredential-same-origin-with-ancestors.html [ Crash Pass Timeout ]
