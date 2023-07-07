@@ -5,13 +5,14 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {OsSettingsFilesPageElement} from 'chrome://os-settings/lazy_load.js';
-import {OneDriveBrowserProxy, Router, routes, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, OneDriveBrowserProxy, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertAsync} from '../utils.js';
@@ -22,19 +23,77 @@ suite('<os-settings-files-page>', () => {
   /* The <os-settings-files-page> app. */
   let filesPage: OsSettingsFilesPageElement;
 
-  setup(() => {
-    loadTimeData.overrideValues({
-      showOfficeSettings: false,
-    });
+  /* The element that maintains all the preferences. */
+  let prefElement: SettingsPrefsElement;
+
+  /**
+   * Returns a list of fake preferences that are used at some point in any test,
+   * if another element is added that requires a new pref ensure to add it here.
+   */
+  function getFakePrefs() {
+    return [
+      {
+        key: 'gdata.disabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+      // The OneDrive preferences that are required when navigating to the
+      // officeFiles page route.
+      {
+        key: 'filebrowser.office.always_move_to_onedrive',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+      {
+        key: 'filebrowser.office.always_move_to_drive',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+    ];
+  }
+
+  /**
+   * Helper function to tear down the elements on the page and reset the route
+   * for testing.
+   */
+  function teardownFilesPage() {
+    filesPage?.remove();
+    prefElement?.remove();
+    Router.getInstance()?.resetRouteForTesting();
+  }
+
+  /**
+   * Ensures any existing files page and prefs elements are torn down and then
+   * sets up the files page with the prefs element associated.
+   */
+  async function resetFilesPageWithLoadTimeData(data: {[key: string]: any}) {
+    teardownFilesPage();
+
+    loadTimeData.overrideValues(data);
+    prefElement = document.createElement('settings-prefs');
+    const settingsPrivate = new FakeSettingsPrivate(getFakePrefs()) as
+        unknown as typeof chrome.settingsPrivate;
+    prefElement.initialize(settingsPrivate);
+
+    await CrSettingsPrefs.initialized;
     filesPage = document.createElement('os-settings-files-page');
+    filesPage.prefs = prefElement.prefs;
     document.body.appendChild(filesPage);
-    flush();
+    await filesPage.initPromise;
+  }
+
+  suiteSetup(() => {
+    CrSettingsPrefs.deferInitialization = true;
   });
 
-  teardown(() => {
-    filesPage.remove();
-    Router.getInstance().resetRouteForTesting();
+  setup(async () => {
+    await resetFilesPageWithLoadTimeData({
+      showOfficeSettings: false,
+      enableDriveFsBulkPinning: false,
+    });
   });
+
+  teardown(teardownFilesPage);
 
   test('Disconnect Google Drive account,pref disabled/enabled', async () => {
     // The default state of the pref is disabled.
@@ -67,6 +126,13 @@ suite('<os-settings-files-page>', () => {
         assertEquals(null, filesPage.shadowRoot!.querySelector('#office'));
       });
 
+  test(
+      'Google Drive row is hidden when isBulkPinningEnabled_ is disabled',
+      async () => {
+        assertEquals(
+            null, filesPage.shadowRoot!.querySelector('#GoogleDriveLink'));
+      });
+
   test('Deep link to disconnect Google Drive', async () => {
     const params = new URLSearchParams();
     params.append('settingId', '1300');
@@ -89,26 +155,15 @@ suite('<os-settings-files-page>', () => {
        called. */
     let testOneDriveProxy: OneDriveTestBrowserProxy;
 
-    setup(() => {
-      loadTimeData.overrideValues({
-        showOfficeSettings: true,
-      });
-      flush();
-    });
-
-    teardown(() => {
-      filesPage.remove();
-      Router.getInstance().resetRouteForTesting();
-      testOneDriveProxy.handler.reset();
-    });
-
     async function setupFilesPage(options: ProxyOptions) {
       testOneDriveProxy = new OneDriveTestBrowserProxy(options);
       OneDriveBrowserProxy.setInstance(testOneDriveProxy);
-      filesPage = document.createElement('os-settings-files-page');
-      document.body.appendChild(filesPage);
-      await filesPage.initPromise;
+      return resetFilesPageWithLoadTimeData({showOfficeSettings: true});
     }
+
+    teardown(() => {
+      testOneDriveProxy.handler.reset();
+    });
 
     test('OneDrive row shows Disconnected', async () => {
       await setupFilesPage({email: null});
