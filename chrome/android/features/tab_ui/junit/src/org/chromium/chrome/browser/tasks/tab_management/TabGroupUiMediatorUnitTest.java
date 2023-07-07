@@ -197,6 +197,7 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     private void initAndAssertProperties(@Nullable Tab currentTab) {
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         if (currentTab == null) {
             doReturn(TabModel.INVALID_TAB_INDEX).when(mTabModel).index();
             doReturn(0).when(mTabModel).getCount();
