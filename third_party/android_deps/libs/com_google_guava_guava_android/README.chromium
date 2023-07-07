@@ -6,6 +6,7 @@ License: Apache 2.0
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: yes
+Shipped: yes
 
 Description:
 Guava is a suite of core and expanded libraries that include utility classes, Google's collections, I/O classes, and much more.
