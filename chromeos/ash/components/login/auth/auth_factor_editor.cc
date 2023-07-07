@@ -345,8 +345,6 @@ void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
   cryptohome::AuthFactorCommonMetadata metadata;
   cryptohome::AuthFactor factor(ref, std::move(metadata));
 
-  // TODO(crbug.com/1310312): The public key will likely be hardcoded, although
-  //  perhaps configurable via a command line switch for testing.
   cryptohome::AuthFactorInput input(
       cryptohome::AuthFactorInput::RecoveryCreation{
           .pub_key = GetRecoveryHsmPublicKey(),
@@ -362,6 +360,39 @@ void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
 
   UserDataAuthClient::Get()->AddAuthFactor(std::move(request),
                                            std::move(add_auth_factor_callback));
+}
+
+void AuthFactorEditor::RotateRecoveryFactor(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  CHECK(features::IsCryptohomeRecoveryEnabled());
+  CHECK(!context->GetAuthSessionId().empty());
+
+  LOGIN_LOG(EVENT) << "Rotating recovery key";
+
+  user_data_auth::UpdateAuthFactorRequest request;
+  request.set_auth_session_id(context->GetAuthSessionId());
+  request.set_auth_factor_label(kCryptohomeRecoveryKeyLabel);
+
+  cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kRecovery,
+                                KeyLabel{kCryptohomeRecoveryKeyLabel}};
+  cryptohome::AuthFactorCommonMetadata metadata;
+  cryptohome::AuthFactor factor(ref, std::move(metadata));
+
+  cryptohome::AuthFactorInput input(
+      cryptohome::AuthFactorInput::RecoveryCreation{
+          .pub_key = GetRecoveryHsmPublicKey(),
+          .user_gaia_id = context->GetGaiaID(),
+          .device_user_id = context->GetDeviceId()});
+
+  cryptohome::SerializeAuthFactor(factor, request.mutable_auth_factor());
+  cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
+
+  auto on_updated_callback = base::BindOnce(
+      &AuthFactorEditor::OnUpdateAuthFactor, weak_factory_.GetWeakPtr(),
+      std::move(context), std::move(callback));
+  UserDataAuthClient::Get()->UpdateAuthFactor(std::move(request),
+                                              std::move(on_updated_callback));
 }
 
 void AuthFactorEditor::RemoveRecoveryFactor(

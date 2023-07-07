@@ -139,6 +139,21 @@ void CryptohomeRecoveryScreen::OnAuthenticateWithRecovery(
     return;
   }
 
+  auth_factor_editor_.RotateRecoveryFactor(
+      std::move(user_context),
+      base::BindOnce(&CryptohomeRecoveryScreen::OnRotateRecoveryFactor,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CryptohomeRecoveryScreen::OnRotateRecoveryFactor(
+    std::unique_ptr<UserContext> user_context,
+    absl::optional<AuthenticationError> error) {
+  if (error.has_value()) {
+    LOG(ERROR) << "Failed to rotate recovery factor, code "
+               << error->get_cryptohome_code();
+    // TODO(b/289472295): handle failure scenario.
+  }
+
   std::string key_label;
   auto* password_factor =
       user_context->GetAuthFactorsData().FindOnlinePasswordFactor();

@@ -50,6 +50,8 @@ class CryptohomeRecoveryScreen : public BaseScreen {
                                      absl::optional<AuthenticationError> error);
   void OnAuthenticateWithRecovery(std::unique_ptr<UserContext> context,
                                   absl::optional<AuthenticationError> error);
+  void OnRotateRecoveryFactor(std::unique_ptr<UserContext> context,
+                              absl::optional<AuthenticationError> error);
   void OnReplaceContextKey(std::unique_ptr<UserContext> context,
                            absl::optional<AuthenticationError> error);
 
