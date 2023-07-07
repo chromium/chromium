@@ -5728,7 +5728,12 @@
   },
   {
     "name": "omnibox-drive-suggestions-no-setting",
-    "owners": [ "msramek", "chrome-omnibox-team@google.com", "chrome-privacy-controls@google.com" ],
+    "owners": [ "jdonnelly", "chrome-omnibox-team@google.com", "chrome-privacy-controls@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
+    "name": "omnibox-drive-suggestions-no-sync-requirement",
+    "owners": [ "jdonnelly", "chrome-omnibox-team@google.com", "chrome-privacy-controls@google.com" ],
     "expiry_milestone": 120
   },
   {

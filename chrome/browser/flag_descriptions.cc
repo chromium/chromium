@@ -4794,14 +4794,18 @@ const char kOmniboxDriveSuggestionsDescription[] =
     "is the default search engine.";
 
 const char kOmniboxDriveSuggestionsNoSettingName[] =
-    "Omnibox Google Drive Document suggestions available to all signed-in "
-    "users";
+    "Omnibox Google Drive Document suggestions don't require separate setting";
 const char kOmniboxDriveSuggestionsNoSettingDescription[] =
-    "Omnibox Drive suggestions are available to all signed-in users. "
-    "Previously, they were only available to syncing users who had the 'Show "
-    "Google Drive suggestions' setting enabled. The setting is now removed, "
-    "however, the existing 'Improve search suggestions' setting can still be "
-    "used to disable all server-side suggestions altogether.";
+    "Omnibox Drive suggestions don't require a separate setting and are "
+    "available when all other requirements are met. The existing 'Improve "
+    "search suggestions' setting can still be used to disable all server-side "
+    "suggestions altogether.";
+
+const char kOmniboxDriveSuggestionsNoSyncRequirementName[] =
+    "Omnibox Google Drive Document suggestions don't require Chrome Sync";
+const char kOmniboxDriveSuggestionsNoSyncRequirementDescription[] =
+    "Omnibox Drive suggestions don't require the user to have enabled Chrome "
+    "Sync and are available when all other requirements are met.";
 
 const char kPermissionStorageAccessAPIName[] =
     "Storage Access API permission UI";

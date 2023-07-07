@@ -282,19 +282,24 @@ BASE_FEATURE(kDocumentProvider,
              "OmniboxDocumentProvider",
              enabled_by_default_desktop_only);
 
+// If enabled, the 'Show Google Drive Suggestions' setting is removed and Drive
+// suggestions are available to all clients who meet the other requirements.
+BASE_FEATURE(kDocumentProviderNoSetting,
+             "OmniboxDocumentProviderNoSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the requirement to be in an active Sync state is removed and
+// Drive suggestions are available to all clients who meet the other
+// requirements.
+BASE_FEATURE(kDocumentProviderNoSyncRequirement,
+             "OmniboxDocumentProviderNoSyncRequirement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature to determine if the HQP should double as a domain provider by
 // suggesting up to the provider limit for each of the user's highly visited
 // domains.
 BASE_FEATURE(kDomainSuggestions,
              "OmniboxDomainSuggestions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, Drive suggestions are available to all signed-in users who have
-// not opted out of server-side suggestions. The 'Show Google Drive suggestions'
-// setting is removed. Otherwise, Drive suggestions also require that the user
-// syncs and has the aforementioned setting enabled.
-BASE_FEATURE(kDriveSuggestionsNoSetting,
-             "DriveSuggestionsNoSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows Omnibox to dynamically adjust number of offered suggestions to fill in

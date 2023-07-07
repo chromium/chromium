@@ -59840,7 +59840,6 @@ from previous Chrome versions.
   <int value="-2024330288" label="RawDraw:enabled"/>
   <int value="-2023673947" label="TabRestoreSubMenus:disabled"/>
   <int value="-2023641192" label="DestroySystemProfiles:enabled"/>
-  <int value="-2023094535" label="DriveSuggestionsNoSetting:enabled"/>
   <int value="-2022956008" label="ExternalPciDevicesAllowed:disabled"/>
   <int value="-2022243258" label="SiteDataImprovements:enabled"/>
   <int value="-2021954068" label="TapVisualizerApp:disabled"/>
@@ -62240,7 +62239,6 @@ from previous Chrome versions.
   <int value="-803206774" label="TabbedAppOverflowMenuActionBar:disabled"/>
   <int value="-802348444" label="disable-site-engagement-service"/>
   <int value="-802309777" label="ChromeTipsInMainMenu:disabled"/>
-  <int value="-801699250" label="DriveSuggestionsNoSetting:disabled"/>
   <int value="-801349708" label="PassthroughYuvRgbConversion:disabled"/>
   <int value="-800565336" label="ArcInstantResponseWindowOpen:disabled"/>
   <int value="-800464360" label="ContextualPageActions:enabled"/>
@@ -62720,6 +62718,8 @@ from previous Chrome versions.
   <int value="-557742250" label="ContentSuggestionsCategories:disabled"/>
   <int value="-556662059" label="AuraWindowSubtreeCapture:enabled"/>
   <int value="-556218705" label="SlowDCTimerInterruptsWin:enabled"/>
+  <int value="-556166412"
+      label="OmniboxDocumentProviderNoSyncRequirement:enabled"/>
   <int value="-556021689" label="ArcEnableVirtioBlkForData:disabled"/>
   <int value="-555341956" label="AutofillSaveAndFillVPA:enabled"/>
   <int value="-552425893" label="ProjectorAnnotator:disabled"/>
@@ -65191,6 +65191,7 @@ from previous Chrome versions.
   <int value="724427456" label="WebAuthenticationPINSupport:disabled"/>
   <int value="725067265" label="enable-experimental-cookie-features"/>
   <int value="725270017" label="ScrollAnchorSerialization:disabled"/>
+  <int value="725378493" label="OmniboxDocumentProviderNoSetting:disabled"/>
   <int value="725579946"
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRefOnInteraction:disabled"/>
   <int value="725870294" label="RequestUnbufferedDispatch:disabled"/>
@@ -66285,6 +66286,8 @@ from previous Chrome versions.
   <int value="1296878388" label="PermissionPredictions:disabled"/>
   <int value="1296958520" label="hide-active-apps-from-shelf"/>
   <int value="1297007123" label="ServiceWorkerBypassFetchHandler:enabled"/>
+  <int value="1298187304"
+      label="OmniboxDocumentProviderNoSyncRequirement:disabled"/>
   <int value="1298734793" label="OsSettingsAppNotificationsPage:disabled"/>
   <int value="1298788828" label="WebID:disabled"/>
   <int value="1298927156" label="TouchpadOverscrollHistoryNavigation:enabled"/>
@@ -67198,6 +67201,7 @@ from previous Chrome versions.
   <int value="1783293530" label="disallow-autofill-sync-credential"/>
   <int value="1783837132" label="enable-threaded-gpu-rasterization"/>
   <int value="1783967606" label="PageContentAnnotations:enabled"/>
+  <int value="1784129660" label="OmniboxDocumentProviderNoSetting:enabled"/>
   <int value="1784514956" label="QuickAnswersForMoreLocales:enabled"/>
   <int value="1785093465" label="enable-document-passive-event-listeners"/>
   <int value="1785274337"

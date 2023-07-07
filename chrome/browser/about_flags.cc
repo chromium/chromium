@@ -5952,7 +5952,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-drive-suggestions-no-setting",
      flag_descriptions::kOmniboxDriveSuggestionsNoSettingName,
      flag_descriptions::kOmniboxDriveSuggestionsNoSettingDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kDriveSuggestionsNoSetting)},
+     kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kDocumentProviderNoSetting)},
+    {"omnibox-drive-suggestions-no-sync-requirement",
+     flag_descriptions::kOmniboxDriveSuggestionsNoSyncRequirementName,
+     flag_descriptions::kOmniboxDriveSuggestionsNoSyncRequirementDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kDocumentProviderNoSyncRequirement)},
     {"omnibox-shortcut-boost", flag_descriptions::kOmniboxShortcutBoostName,
      flag_descriptions::kOmniboxShortcutBoostDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(

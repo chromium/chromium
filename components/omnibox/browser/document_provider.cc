@@ -450,30 +450,42 @@ bool DocumentProvider::IsDocumentProviderAllowed(
     AutocompleteProviderClient* client,
     const AutocompleteInput& input) {
   // Feature must be on.
-  if (!base::FeatureList::IsEnabled(omnibox::kDocumentProvider))
+  if (!base::FeatureList::IsEnabled(omnibox::kDocumentProvider)) {
     return false;
+  }
 
   // These may seem like search suggestions, so gate on that setting too.
-  if (!client->SearchSuggestEnabled())
+  if (!client->SearchSuggestEnabled()) {
     return false;
+  }
 
   // Client-side toggle must be enabled.
-  if (!client->GetPrefs()->GetBoolean(omnibox::kDocumentSuggestEnabled))
+  if (!base::FeatureList::IsEnabled(omnibox::kDocumentProviderNoSetting) &&
+      !client->GetPrefs()->GetBoolean(omnibox::kDocumentSuggestEnabled)) {
     return false;
+  }
 
   // No incognito.
-  if (client->IsOffTheRecord())
+  if (client->IsOffTheRecord()) {
     return false;
+  }
 
-  // Check sync's status and proceed if active.
-  bool authenticated_and_syncing =
-      client->IsAuthenticated() && client->IsSyncActive();
-  if (!authenticated_and_syncing)
+  // Must be logged in.
+  if (!client->IsAuthenticated()) {
     return false;
+  }
+
+  // Sync must be enabled and active.
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kDocumentProviderNoSyncRequirement) &&
+      !client->IsSyncActive()) {
+    return false;
+  }
 
   // We haven't received a server backoff signal.
-  if (backoff_for_session_)
+  if (backoff_for_session_) {
     return false;
+  }
 
   // Google must be set as default search provider.
   auto* template_url_service = client->GetTemplateURLService();
@@ -495,8 +507,9 @@ bool DocumentProvider::IsDocumentProviderAllowed(
   }
 
   // Don't issue queries for input likely to be a URL.
-  if (IsInputLikelyURL(input))
+  if (IsInputLikelyURL(input)) {
     return false;
+  }
 
   return true;
 }
