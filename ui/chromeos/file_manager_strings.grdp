@@ -1837,4 +1837,14 @@
   <message name="IDS_FILE_BROWSER_BULK_PINNING_BATTERY_SAVER" translateable="false" desc="Error message displayed when the Google Drive bulk pinning feature cannot be enabled because battery saver mode is active">
     Battery saver mode on. Try again when battery saver mode is turned off.
   </message>
+  <!-- Empty state inside OneDrive folder -->
+  <message name="IDS_FILE_BROWSER_ONEDRIVE_LOGGED_OUT_TITLE" desc="Title of an empty state section displayed in OneDrive folder when the user has been logged out from OneDrive.">
+    You've been logged out
+  </message>
+  <message name="IDS_FILE_BROWSER_ONEDRIVE_SIGN_IN_SUBTITLE" desc="Subtitle of an empty state section displayed in OneDrive folder when the user has been logged out from OneDrive.">
+    Sign in to your Microsoft account
+  </message>
+  <message name="IDS_FILE_BROWSER_ONEDRIVE_SIGN_IN_LINK" desc="Text of a link in an empty state section displayed in OneDrive folder when the user has been logged out from OneDrive.">
+    Sign in
+  </message>
 </grit-part>

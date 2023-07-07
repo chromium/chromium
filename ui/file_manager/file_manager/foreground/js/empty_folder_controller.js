@@ -240,7 +240,6 @@ export class EmptyFolderController {
   }
 
   /**
-   * TODO(b/254586358): i18n these strings.
    * Shows the ODFS reauthentication required message. Include the "Sign in"
    * and "Settings" links and set the handlers.
    * @private
@@ -248,14 +247,14 @@ export class EmptyFolderController {
   showODFSReauthenticationMessage_() {
     const titleSpan = document.createElement('span');
     titleSpan.id = 'empty-folder-title';
-    titleSpan.innerText = 'You\'ve been logged out';
+    titleSpan.innerText = str('ONEDRIVE_LOGGED_OUT_TITLE');
 
     const text = document.createElement('span');
-    text.innerText = 'Sign in to your Microsoft account';
+    text.innerText = str('ONEDRIVE_SIGN_IN_SUBTITLE');
 
     const signInLink = document.createElement('a');
     signInLink.setAttribute('class', 'sign-in');
-    signInLink.innerText = 'Sign in';
+    signInLink.innerText = str('ONEDRIVE_SIGN_IN_LINK');
     signInLink.addEventListener('click', this.onODFSSignIn_.bind(this));
 
     const descSpan = document.createElement('span');
