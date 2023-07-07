@@ -410,7 +410,8 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
 #if BUILDFLAG(IS_OZONE)
     if (overlay.is_solid_color) {
       DCHECK(overlay.color.has_value());
-      DCHECK(capabilities_.supports_non_backed_solid_color_overlays);
+      DCHECK(capabilities_.supports_non_backed_solid_color_overlays ||
+        capabilities_.supports_single_pixel_buffer);
       presenter_->ScheduleOverlayPlane(overlay, nullptr, nullptr);
       continue;
     }
