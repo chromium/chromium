@@ -58,6 +58,8 @@ class ProfileNameResolver : public signin::IdentityManager::Observer {
  private:
   void OnProfileNameResolved(const std::u16string& profile_name);
 
+  const CoreAccountInfo primary_account_;
+
   std::u16string resolved_profile_name_;
   base::CancelableOnceClosure extended_account_info_timeout_closure_;
 

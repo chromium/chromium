@@ -82,13 +82,13 @@ ProfileNameResolver::CreateScopedInfoFetchTimeoutOverrideForTesting(
 }
 
 ProfileNameResolver::ProfileNameResolver(
-    signin::IdentityManager* identity_manager) {
-  auto core_account_info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  CHECK(!core_account_info.IsEmpty());
+    signin::IdentityManager* identity_manager)
+    : primary_account_(identity_manager->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin)) {
+  CHECK(!primary_account_.IsEmpty());
 
   auto extended_account_info =
-      identity_manager->FindExtendedAccountInfo(core_account_info);
+      identity_manager->FindExtendedAccountInfo(primary_account_);
   if (extended_account_info.IsValid()) {
     OnExtendedAccountInfoUpdated(extended_account_info);
     return;
@@ -100,7 +100,7 @@ ProfileNameResolver::ProfileNameResolver(
   // Set up a timeout for extended account info.
   std::u16string fallback_profile_name =
       profiles::GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
-          core_account_info);
+          primary_account_);
   extended_account_info_timeout_closure_.Reset(
       base::BindOnce(&ProfileNameResolver::OnProfileNameResolved,
                      weak_ptr_factory_.GetWeakPtr(), fallback_profile_name));
@@ -125,7 +125,8 @@ void ProfileNameResolver::RunWithProfileName(NameResolvedCallback callback) {
 
 void ProfileNameResolver::OnExtendedAccountInfoUpdated(
     const AccountInfo& account_info) {
-  if (!account_info.IsValid()) {
+  if (!account_info.IsValid() ||
+      primary_account_.account_id != account_info.account_id) {
     return;
   }
 

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -296,6 +296,14 @@ void SetFreshnessOfAccountsInGaiaCookie(IdentityManager* identity_manager,
                                         bool accounts_are_fresh);
 
 std::string GetTestGaiaIdForEmail(const std::string& email);
+
+// Returns a new `AccountInfo` object that completes the info from
+// `base_account_info` with generated extended info (the one normally obtained
+// from Gaia's /UserInfo endpoint), based on `given_name`.
+//
+// The returned account info will be valid per `AccountInfo::IsValid()`.
+AccountInfo WithGeneratedUserInfo(const AccountInfo& base_account_info,
+                                  base::StringPiece given_name);
 
 // Updates the persistent auth error set on |account_id| which must be a known
 // account, i.e., an account with a refresh token.

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -19,6 +20,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
@@ -529,6 +531,26 @@ void SetCookieAccounts(
   cookie_manager->ListAccounts(nullptr, nullptr);
 
   run_loop.Run();
+}
+
+AccountInfo WithGeneratedUserInfo(const AccountInfo& base_account_info,
+                                  base::StringPiece given_name) {
+  CHECK(!given_name.empty())
+      << "A given name is needed to generate the Gaia info.";
+
+  AccountInfo extended_account_info = base_account_info;
+
+  extended_account_info.given_name = given_name;
+  extended_account_info.full_name = base::StrCat({given_name, " FullName"});
+
+  extended_account_info.picture_url =
+      "https://chromium.org/examples/account_picture.jpg";
+  extended_account_info.hosted_domain = kNoHostedDomainFound;
+  extended_account_info.locale = "en";
+
+  CHECK(extended_account_info.IsValid());
+
+  return extended_account_info;
 }
 
 void UpdateAccountInfoForAccount(IdentityManager* identity_manager,

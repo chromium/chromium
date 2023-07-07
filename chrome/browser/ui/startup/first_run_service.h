@@ -124,6 +124,8 @@ class FirstRunService : public KeyedService {
   friend class FirstRunServiceFactory;
   FRIEND_TEST_ALL_PREFIXES(FirstRunFieldTrialCreatorTest, SetUpFromClientSide);
   FRIEND_TEST_ALL_PREFIXES(FirstRunCohortSetupTest, JoinFirstRunCohort);
+  FRIEND_TEST_ALL_PREFIXES(FirstRunServiceTest,
+                           ShouldPopulateProfileNameFromPrimaryAccount);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Internal interface for `SetUpClientSideFieldTrialIfNeeded()`, exposed to
