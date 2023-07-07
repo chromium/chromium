@@ -127,7 +127,7 @@ mojom::ResultCode TestPrintBackend::GetPrinterSemanticCapsAndDefaults(
 #if BUILDFLAG(IS_WIN)
   // The Windows implementation does not load the printable area for all
   // paper sizes, only for the default size.  Mimic this behavior by
-  // defaulting the printable area to the physical size any other paper
+  // defaulting the printable area to the physical size for all other paper
   // sizes.
   for (auto& paper : printer_caps->papers) {
     if (paper != printer_caps->default_paper) {

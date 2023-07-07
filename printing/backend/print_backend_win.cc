@@ -255,14 +255,12 @@ void LoadPaper(const wchar_t* printer,
   if (devmode->dmFields & DM_PAPERLENGTH)
     default_size.set_height(devmode->dmPaperLength * kToUm);
 
-  if (!default_size.IsEmpty()) {
-    // Reset default paper if `dmPaperWidth` or `dmPaperLength` does not
-    // match default paper set by.
-    if (default_size != caps->default_paper.size_um) {
-      caps->default_paper = PrinterSemanticCapsAndDefaults::Paper();
-      caps->default_paper.printable_area_um = gfx::Rect(default_size);
-    }
+  // Reset default paper if `dmPaperWidth` or `dmPaperLength` does not match
+  // default paper set by `dmPaperSize`.
+  if (!default_size.IsEmpty() && default_size != caps->default_paper.size_um) {
+    caps->default_paper = PrinterSemanticCapsAndDefaults::Paper();
     caps->default_paper.size_um = default_size;
+    caps->default_paper.printable_area_um = gfx::Rect(default_size);
   }
 }
 
