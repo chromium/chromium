@@ -565,9 +565,16 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
           history::VisitContentModelAnnotations::Category("category1", 85)));
   EXPECT_EQ(got_content_annotations->alternative_title, "alternative title");
 }
-
+// TODO(1463015): Fails on macOS 12
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_StoresPageEntitiesAndCategoriesFromRemoteService \
+  DISABLED_StoresPageEntitiesAndCategoriesFromRemoteService
+#else
+#define MAYBE_StoresPageEntitiesAndCategoriesFromRemoteService \
+  StoresPageEntitiesAndCategoriesFromRemoteService
+#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
-                       StoresPageEntitiesAndCategoriesFromRemoteService) {
+                       MAYBE_StoresPageEntitiesAndCategoriesFromRemoteService) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
@@ -708,9 +715,16 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(got_content_annotations.has_url_keyed_image);
 }
 
+// TODO(1463015): Fails on macOS 12
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MetadataWithNonEmptyUrlStored \
+  DISABLED_MetadataWithNonEmptyUrlStored
+#else
+#define MAYBE_MetadataWithNonEmptyUrlStored MetadataWithNonEmptyUrlStored
+#endif
 IN_PROC_BROWSER_TEST_F(
     PageContentAnnotationsServiceSalientImageMetadataBrowserTest,
-    MetadataWithNonEmptyUrlStored) {
+    MAYBE_MetadataWithNonEmptyUrlStored) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
