@@ -17,14 +17,16 @@
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
-#import "ios/web/navigation/session_storage_builder.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
-#import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/session/proto/metadata.pb.h"
+#import "ios/web/public/session/proto/navigation.pb.h"
+#import "ios/web/public/session/proto/proto_util.h"
+#import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/ui/java_script_dialog_presenter.h"
 #import "ios/web/public/web_client.h"
@@ -95,15 +97,16 @@ void WebStateImpl::RealizedWebState::Init(BrowserState* browser_state,
       std::make_unique<SessionCertificatePolicyCacheImpl>(browser_state);
 }
 
-void WebStateImpl::RealizedWebState::InitWithStorage(
+void WebStateImpl::RealizedWebState::InitWithProto(
     BrowserState* browser_state,
-    CRWSessionStorage* session_storage,
+    proto::WebStateStorage storage,
     FaviconStatus favicon_status,
     base::Time last_active_time) {
-  CHECK(session_storage);
   favicon_status_ = std::move(favicon_status);
-  creation_time_ = session_storage.creationTime;
-  last_active_time_ = session_storage.lastActiveTime;
+  creation_time_ = TimeFromProto(storage.metadata().creation_time());
+  last_active_time_ = TimeFromProto(storage.metadata().last_active_time());
+  user_agent_type_ = UserAgentTypeFromProto(storage.user_agent());
+  created_with_opener_ = storage.has_opener();
 
   // If not null, `last_active_time` overrides the restored value.
   if (!last_active_time.is_null()) {
@@ -112,12 +115,12 @@ void WebStateImpl::RealizedWebState::InitWithStorage(
 
   // Session storage restore is asynchronous because it involves a page
   // load in WKWebView. Temporarily cache the restored session so it can
-  // be returned if BuildSessionStorage() or GetTitle() is called before
-  // the actual restoration completes. This can happen to inactive tabs
-  // when a navigation in the current tab triggers the serialization of
-  // all tabs and when user clicks on tab switcher without switching to
-  // a tab.
-  restored_session_storage_ = session_storage;
+  // be returned if SerializeToProto() or GetTitle() is called before the
+  // actual restoration completes. This can happen to inactive tabs when
+  // a navigation in the current tab triggers the serialization of all
+  // tabs and when user clicks on tab switcher without switching to a tab.
+  cached_storage_ =
+      std::make_unique<proto::WebStateStorage>(std::move(storage));
 
   // The restoration of the session history in NavigationManagerImpl needs
   // the WebState to have a valid CRWWebController, so create both objects
@@ -126,19 +129,51 @@ void WebStateImpl::RealizedWebState::InitWithStorage(
       std::make_unique<NavigationManagerImpl>(browser_state, this);
   web_controller_ = [[CRWWebController alloc] initWithWebState:owner_];
 
-  // Set the callback used to load the native session data blob from the
-  // session cache.
+  // Restore the navigation history from the storage.
   navigation_manager_->SetNativeSessionFetcher(
       base::BindOnce(&FetchSessionDataBlob, owner_->GetWeakPtr()));
+  navigation_manager_->RestoreFromProto(cached_storage_->navigation());
 
-  // Restore the session from `session_storage`.
-  SessionStorageBuilder::ExtractSessionState(*owner_, *navigation_manager_,
-                                             restored_session_storage_);
-
-  // Update the BrowserState's CertificatePolicyCache with the newly
-  // restored policy cache entries.
-  DCHECK(certificate_policy_cache_);
+  // Create the certificate policy cache with data from storage and update
+  // the cache with the restored data.
+  certificate_policy_cache_ =
+      std::make_unique<SessionCertificatePolicyCacheImpl>(
+          browser_state, cached_storage_->certs_cache());
   certificate_policy_cache_->UpdateCertificatePolicyCache();
+}
+
+void WebStateImpl::RealizedWebState::SerializeToProto(
+    proto::WebStateStorage& storage) const {
+  // If restorating is in progress, copy the currently cached storage.
+  if (cached_storage_) {
+    storage = *cached_storage_;
+    return;
+  }
+
+  // Ensure state is synchronized between CRWWebController and
+  // NavigationManagerImpl before starting the serialization.
+  [web_controller_ recordStateInHistory];
+
+  storage.set_has_opener(created_with_opener_);
+  storage.set_user_agent(UserAgentTypeToProto(user_agent_type_));
+  navigation_manager_->SerializeToProto(*storage.mutable_navigation());
+  certificate_policy_cache_->SerializeToProto(*storage.mutable_certs_cache());
+
+  proto::WebStateMetadataStorage& metadata = *storage.mutable_metadata();
+  SerializeTimeToProto(creation_time_, *metadata.mutable_creation_time());
+  SerializeTimeToProto(last_active_time_, *metadata.mutable_last_active_time());
+
+  const proto::NavigationStorage& navigation = storage.navigation();
+  metadata.set_navigation_item_count(navigation.items_size());
+  const int index = navigation.last_committed_item_index();
+  if (0 <= index && index < navigation.items_size()) {
+    const proto::NavigationItemStorage& item = navigation.items(index);
+    const std::string& virtual_url = item.virtual_url();
+
+    proto::PageMetadataStorage& page_metadata = *metadata.mutable_active_page();
+    page_metadata.set_page_url(virtual_url.empty() ? item.url() : virtual_url);
+    page_metadata.set_page_title(item.title());
+  }
 }
 
 void WebStateImpl::RealizedWebState::TearDown() {
@@ -604,15 +639,6 @@ void WebStateImpl::RealizedWebState::Stop() {
   [web_controller_ stopLoading];
 }
 
-CRWSessionStorage* WebStateImpl::RealizedWebState::BuildSessionStorage() const {
-  [web_controller_ recordStateInHistory];
-  if (restored_session_storage_) {
-    return restored_session_storage_;
-  }
-  return SessionStorageBuilder::BuildStorage(*owner_, *navigation_manager_,
-                                             *certificate_policy_cache_);
-}
-
 void WebStateImpl::RealizedWebState::LoadData(NSData* data,
                                               NSString* mime_type,
                                               const GURL& url) {
@@ -910,7 +936,7 @@ void WebStateImpl::RealizedWebState::OnNavigationItemCommitted(
   // A committed navigation item indicates that NavigationManager has a new
   // valid session history so should invalidate the cached restored session
   // history.
-  restored_session_storage_ = nil;
+  cached_storage_.reset();
 }
 
 WebState* WebStateImpl::RealizedWebState::GetWebState() {

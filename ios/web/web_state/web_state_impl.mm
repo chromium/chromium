@@ -16,6 +16,7 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 #import "ios/web/web_state/global_web_state_event_tracker.h"
@@ -101,10 +102,14 @@ WebStateImpl::WebStateImpl(const CreateParams& params,
 WebStateImpl::WebStateImpl(CloneFrom, const RealizedWebState& pimpl) {
   AddWebStateImplMarker();
 
+  // Serialize `pimpl` state to protobuf message.
+  proto::WebStateStorage storage;
+  pimpl.SerializeToProto(storage);
+
   pimpl_ = std::make_unique<RealizedWebState>(this, [[NSUUID UUID] UUIDString],
                                               SessionID::NewUnique());
-  pimpl_->InitWithStorage(pimpl.GetBrowserState(), pimpl.BuildSessionStorage(),
-                          pimpl.GetFaviconStatus(), base::Time::Now());
+  pimpl_->InitWithProto(pimpl.GetBrowserState(), std::move(storage),
+                        pimpl.GetFaviconStatus(), base::Time::Now());
 
   SendGlobalCreationEvent();
 }
@@ -384,6 +389,11 @@ WebState* WebStateImpl::ForceRealized() {
     FaviconStatus favicon_status = saved_->GetFaviconStatus();
     DCHECK(session_storage);
 
+    // Convert the CRWSessionStorage to proto::WebStateStorage as this
+    // is the format used for RealizedWebState() serialisation.
+    proto::WebStateStorage storage;
+    [session_storage serializeToProto:storage];
+
     // Create the RealizedWebState. At this point the WebStateImpl has
     // both `pimpl_` and `saved_` that are non-null. This is one of the
     // reason why the initialisation of the RealizedWebState needs to
@@ -400,8 +410,8 @@ WebState* WebStateImpl::ForceRealized() {
     // Perform the initialisation of the RealizedWebState. No outside
     // code should be able to observe the WebStateImpl with both `saved_`
     // and `pimpl_` set.
-    pimpl_->InitWithStorage(params.browser_state, session_storage,
-                            std::move(favicon_status), params.last_active_time);
+    pimpl_->InitWithProto(params.browser_state, std::move(storage),
+                          std::move(favicon_status), params.last_active_time);
 
     // Notify all observers that the WebState has become realized.
     for (auto& observer : observers_)
@@ -517,9 +527,19 @@ WebStateImpl::GetSessionCertificatePolicyCache() {
 }
 
 CRWSessionStorage* WebStateImpl::BuildSessionStorage() const {
-  CRWSessionStorage* session_storage = LIKELY(pimpl_)
-                                           ? pimpl_->BuildSessionStorage()
-                                           : saved_->GetSessionStorage();
+  CRWSessionStorage* session_storage = nil;
+  if (LIKELY(pimpl_)) {
+    proto::WebStateStorage storage;
+    pimpl_->SerializeToProto(storage);
+
+    // Convert the proto::WebStateStorage to CRWSessionStorage as this
+    // is still the format used outside of //ios/web.
+    session_storage = [[CRWSessionStorage alloc] initWithProto:storage];
+    session_storage.stableIdentifier = GetStableIdentifier();
+    session_storage.uniqueIdentifier = GetUniqueIdentifier();
+  } else {
+    session_storage = saved_->GetSessionStorage();
+  }
 
   // If a SerializableUserDataManager is attached to the WebState, the user
   // may have changed its content. Thus, update the serializable user data

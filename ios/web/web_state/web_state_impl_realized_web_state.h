@@ -7,11 +7,13 @@
 
 #include <map>
 
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/web_state/web_state_impl.h"
 
-#import "ios/web/public/web_state_observer.h"
-
 namespace web {
+namespace proto {
+class WebStateStorage;
+}  // namespace proto
 
 class WebUIIOS;
 
@@ -60,12 +62,15 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
             bool created_with_opener);
 
   // Initializes the RealizedWebState with `browser_state`, serialized data
-  // from `session_storage` and `favicon_status`. The other parameters are
-  // described in `WebState::CreateParams`.
-  void InitWithStorage(BrowserState* browser_state,
-                       CRWSessionStorage* session_storage,
-                       FaviconStatus favicon_status,
-                       base::Time last_active_time);
+  // from `storage` and `favicon_status`. The other parameters are described
+  // in `WebState::CreateParams`.
+  void InitWithProto(BrowserState* browser_state,
+                     proto::WebStateStorage storage,
+                     FaviconStatus favicon_status,
+                     base::Time last_active_time);
+
+  // Serializes the object to `storage`.
+  void SerializeToProto(proto::WebStateStorage& storage) const;
 
   // Tears down the RealizedWebState. The tear down *must* be called before
   // the object is destroyed because the WebStateObserver may call methods on
@@ -166,7 +171,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   SessionID GetUniqueIdentifier() const;
   void OpenURL(const WebState::OpenURLParams& params);
   void Stop();
-  CRWSessionStorage* BuildSessionStorage() const;
   void LoadData(NSData* data, NSString* mime_type, const GURL& url);
   void ExecuteUserJavaScript(NSString* javaScript);
   const std::string& GetContentsMimeType() const;
@@ -290,9 +294,9 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   // The WebState's creation time.
   base::Time creation_time_ = base::Time::Now();
 
-  // The most recently restored session history that has not yet committed in
-  // the WKWebView. This is reset in OnNavigationItemCommitted().
-  CRWSessionStorage* restored_session_storage_ = nil;
+  // The data used for the in-progress navigation history restoration that has
+  // not yet committed in the WKWebView. Reset in OnNavigationItemCommitted().
+  std::unique_ptr<proto::WebStateStorage> cached_storage_;
 
   // Favicons URLs received in OnFaviconUrlUpdated.
   // WebStateObserver:FaviconUrlUpdated must be called for same-document
