@@ -744,11 +744,14 @@ void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {
       container_file.Extension() != FILE_PATH_LITERAL(".yaml");
 
   if (isContainerBackupFile) {
-    VLOG(1) << "backup_file = " << container_file;
-    crostini::CrostiniExportImport::GetForProfile(profile_)->ImportContainer(
-        container_id, container_file,
-        base::BindOnce(&CrostiniHandler::OnContainerCreated,
-                       handler_weak_ptr_factory_.GetWeakPtr(), container_id));
+    VLOG(1) << "backup_file = " << container_file
+            << "will be used to create a new container.";
+    crostini::CrostiniExportImport::GetForProfile(profile_)
+        ->CreateContainerFromImport(
+            container_id, container_file,
+            base::BindOnce(&CrostiniHandler::OnContainerCreated,
+                           handler_weak_ptr_factory_.GetWeakPtr(),
+                           container_id));
     return;
   }
 
