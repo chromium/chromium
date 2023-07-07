@@ -13,6 +13,7 @@
 #include "ash/style/typography.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -205,9 +206,14 @@ void ResizeToggleMenu::MenuButtonView::UpdateColors() {
   GetBorder()->set_color(border_color);
 }
 
-ResizeToggleMenu::ResizeToggleMenu(views::Widget* widget,
-                                   ArcResizeLockPrefDelegate* pref_delegate)
-    : widget_(widget), pref_delegate_(pref_delegate) {
+ResizeToggleMenu::ResizeToggleMenu(
+    base::OnceClosure on_bubble_widget_closing_callback,
+    views::Widget* widget,
+    ArcResizeLockPrefDelegate* pref_delegate)
+    : on_bubble_widget_closing_callback_(
+          std::move(on_bubble_widget_closing_callback)),
+      widget_(widget),
+      pref_delegate_(pref_delegate) {
   aura::Window* const window = widget->GetNativeWindow();
   // Don't show the menu in maximized or fullscreen.
   const ui::WindowShowState state =
@@ -236,6 +242,10 @@ ResizeToggleMenu::~ResizeToggleMenu() {
 }
 
 void ResizeToggleMenu::OnWidgetClosing(views::Widget* widget) {
+  if (widget == bubble_widget_ && on_bubble_widget_closing_callback_) {
+    std::move(on_bubble_widget_closing_callback_).Run();
+  }
+
   OverlayDialog::CloseIfAny(widget_->GetNativeWindow());
   widget_observations_.RemoveAllObservations();
   widget_ = nullptr;

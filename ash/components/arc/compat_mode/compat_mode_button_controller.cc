@@ -90,7 +90,9 @@ void CompatModeButtonController::Update(
         this,
         base::BindRepeating(&CompatModeButtonController::ToggleResizeToggleMenu,
                             GetWeakPtr(), window, pref_delegate));
-    compat_mode_button->SetSubImage(views::kMenuDropArrowIcon);
+    compat_mode_button->SetSubImage(chromeos::features::IsJellyEnabled()
+                                        ? ash::kKsvArrowDownIcon
+                                        : views::kMenuDropArrowIcon);
     frame_header->SetCenterButton(compat_mode_button);
 
     auto* const frame_view = ash::NonClientFrameViewAsh::Get(window);
@@ -134,6 +136,25 @@ void CompatModeButtonController::Update(
 void CompatModeButtonController::OnButtonPressed() {
   visible_when_button_pressed_ =
       resize_toggle_menu_ && resize_toggle_menu_->IsBubbleShown();
+}
+
+void CompatModeButtonController::UpdateArrowIcon(aura::Window* window,
+                                                 bool widget_visibility) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    return;
+  }
+
+  auto* const frame_view = ash::NonClientFrameViewAsh::Get(window);
+  // |frame_view| can be null in unittest.
+  if (!frame_view) {
+    return;
+  }
+
+  auto* const compat_mode_button =
+      frame_view->GetHeaderView()->GetFrameHeader()->GetCenterButton();
+  compat_mode_button->SetSubImage(widget_visibility ? ash::kKsvArrowUpIcon
+                                                    : ash::kKsvArrowDownIcon);
+  compat_mode_button->SchedulePaint();
 }
 
 base::WeakPtr<CompatModeButtonController>
@@ -187,8 +208,12 @@ void CompatModeButtonController::ToggleResizeToggleMenu(
   if (visible_when_button_pressed_)
     return;
   resize_toggle_menu_.reset();
-  resize_toggle_menu_ =
-      std::make_unique<ResizeToggleMenu>(frame_view->frame(), pref_delegate);
+  resize_toggle_menu_ = std::make_unique<ResizeToggleMenu>(
+      base::BindOnce(&CompatModeButtonController::UpdateArrowIcon,
+                     base::Unretained(this), window,
+                     /*widget_visibility=*/false),
+      frame_view->frame(), pref_delegate);
+  UpdateArrowIcon(window, /*widget_visibility=*/true);
 }
 
 }  // namespace arc

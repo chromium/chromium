@@ -69,7 +69,8 @@ class ResizeToggleMenu : public views::WidgetObserver,
     bool is_selected_{false};
   };
 
-  ResizeToggleMenu(views::Widget* widget,
+  ResizeToggleMenu(base::OnceClosure on_bubble_widget_closing_callback,
+                   views::Widget* widget,
                    ArcResizeLockPrefDelegate* pref_delegate);
   ResizeToggleMenu(const ResizeToggleMenu&) = delete;
   ResizeToggleMenu& operator=(const ResizeToggleMenu&) = delete;
@@ -105,6 +106,8 @@ class ResizeToggleMenu : public views::WidgetObserver,
       base::RepeatingCallback<void(ResizeCompatMode)> command_handler);
 
   void CloseBubble();
+
+  base::OnceClosure on_bubble_widget_closing_callback_;
 
   raw_ptr<views::Widget, ExperimentalAsh> widget_;
 
