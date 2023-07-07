@@ -11,7 +11,6 @@
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/test/base/web_ui_browser_test.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
-#include "extensions/browser/test_management_policy.h"
 
 namespace extensions {
 class Extension;
@@ -47,18 +46,10 @@ class ExtensionSettingsUIBrowserTest : public WebUIBrowserTest {
   // and returns it back to the caller.  Can return null upon failure.
   const extensions::Extension* InstallExtensionWithInPageOptions();
 
-  void AddManagedPolicyProvider();
-
   void SetAutoConfirmUninstall();
-
-  // Enables the error console so errors are displayed in the extensions page.
-  void EnableErrorConsole();
 
   // Sets the DevMode status for the current profile.
   void SetDevModeEnabled(bool enabled);
-
-  // Shrinks the web contents view in order to ensure vertical overflow.
-  void ShrinkWebContentsView();
 
   // Sets whether to ignore errors for deprecated manifest versions.
   void SetSilenceDeprecatedManifestVersionWarnings(bool silence);
@@ -67,9 +58,6 @@ class ExtensionSettingsUIBrowserTest : public WebUIBrowserTest {
 
  private:
   const extensions::Extension* InstallExtension(const base::FilePath& path);
-
-  // Used to simulate managed extensions (by being registered as a provider).
-  extensions::TestManagementPolicyProvider policy_provider_;
 
   const base::FilePath test_data_dir_;
 

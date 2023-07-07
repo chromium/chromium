@@ -31,17 +31,12 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/test/extension_test_message_listener.h"
 
 using extensions::Extension;
-using extensions::TestManagementPolicyProvider;
 
 ExtensionSettingsUIBrowserTest::ExtensionSettingsUIBrowserTest()
-    : policy_provider_(TestManagementPolicyProvider::PROHIBIT_MODIFY_STATUS |
-                       TestManagementPolicyProvider::MUST_REMAIN_ENABLED |
-                       TestManagementPolicyProvider::MUST_REMAIN_INSTALLED),
-      test_data_dir_(base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+    : test_data_dir_(base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
                          .AppendASCII("extensions")) {}
 
 ExtensionSettingsUIBrowserTest::~ExtensionSettingsUIBrowserTest() {}
@@ -86,12 +81,6 @@ ExtensionSettingsUIBrowserTest::InstallExtensionWithInPageOptions() {
   return extension;
 }
 
-void ExtensionSettingsUIBrowserTest::AddManagedPolicyProvider() {
-  extensions::ExtensionSystem* extension_system =
-      extensions::ExtensionSystem::Get(browser()->profile());
-  extension_system->management_policy()->RegisterProvider(&policy_provider_);
-}
-
 void ExtensionSettingsUIBrowserTest::SetAutoConfirmUninstall() {
   uninstall_auto_confirm_ =
       std::make_unique<extensions::ScopedTestDialogAutoConfirm>(
@@ -101,13 +90,6 @@ void ExtensionSettingsUIBrowserTest::SetAutoConfirmUninstall() {
 void ExtensionSettingsUIBrowserTest::SetDevModeEnabled(bool enabled) {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kExtensionsUIDeveloperMode, enabled);
-}
-
-void ExtensionSettingsUIBrowserTest::ShrinkWebContentsView() {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  CHECK(web_contents);
-  web_contents->Resize(gfx::Rect(0, 0, 400, 400));
 }
 
 void ExtensionSettingsUIBrowserTest::
