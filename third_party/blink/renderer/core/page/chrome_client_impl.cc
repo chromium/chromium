@@ -1012,6 +1012,8 @@ void ChromeClientImpl::NotifyPresentationTime(LocalFrame& frame,
   FrameWidget* widget = frame.GetWidgetForLocalRoot();
   if (!widget)
     return;
+  recordreplay::Assert(
+      "[RUN-2317-2316] ChromeClientImpl::NotifyPresentationTime %d", frame.RecordReplayId());
   widget->NotifyPresentationTimeInBlink(
       ConvertToBaseOnceCallback(std::move(callback)));
 }

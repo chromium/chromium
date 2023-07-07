@@ -28,6 +28,13 @@ void LargestContentfulPaintCalculator::UpdateLargestContentfulPaintIfNeeded(
     const ImageRecord* largest_image) {
   uint64_t text_size = largest_text ? largest_text->first_size : 0u;
   uint64_t image_size = largest_image ? largest_image->first_size : 0u;
+
+  recordreplay::Assert(
+      "[RUN-2317-2316] "
+      "LargestContentfulPaintCalculator::UpdateLargestContentfulPaintIfNeeded "
+      "%llu %llu",
+      image_size, text_size);
+
   if (image_size > text_size) {
     if (image_size > largest_reported_size_ &&
         largest_image->paint_time > base::TimeTicks()) {
@@ -117,6 +124,12 @@ void LargestContentfulPaintCalculator::UpdateLargestContentfulText(
       text_node->IsInShadowTree() ? nullptr : To<Element>(text_node);
   const AtomicString& text_id =
       text_element ? text_element->GetIdAttribute() : AtomicString();
+
+  recordreplay::Assert(
+      "[RUN-2317-2316] "
+      "LargestContentfulPaintCalculator::UpdateLargestContentfulText %d",
+      text_node->RecordReplayId());
+
   window_performance_->OnLargestContentfulPaintUpdated(
       largest_text.paint_time, largest_text.first_size, base::TimeTicks(),
       base::TimeTicks(), text_id, g_empty_string, text_element);

@@ -2165,6 +2165,9 @@ void MainThreadSchedulerImpl::RemoveAgentGroupScheduler(
     AgentGroupSchedulerImpl* agent_group_scheduler) {
   DCHECK(main_thread_only().agent_group_schedulers.Contains(
       agent_group_scheduler));
+  recordreplay::Assert(
+      "[RUN-2056-2316] MainThreadSchedulerImpl::RemoveAgentGroupScheduler %d",
+      agent_group_scheduler->RecordReplayId());
   main_thread_only().agent_group_schedulers.erase(agent_group_scheduler);
 }
 
@@ -2291,6 +2294,9 @@ void MainThreadSchedulerImpl::AddAgentGroupScheduler(
   bool is_new_entry = main_thread_only()
                           .agent_group_schedulers.insert(agent_group_scheduler)
                           .is_new_entry;
+  recordreplay::Assert(
+      "[RUN-2056-2316] MainThreadSchedulerImpl::AddAgentGroupScheduler %d %d",
+      agent_group_scheduler->RecordReplayId(), is_new_entry);
   DCHECK(is_new_entry);
 }
 
