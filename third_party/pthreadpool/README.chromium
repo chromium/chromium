@@ -6,6 +6,7 @@ Date: 2022-04-22
 License: BSD
 License File: src/LICENSE
 Security Critical: Yes
+Shipped: yes
 
 Description:
 pthreadpool is a portable and efficient thread pool implementation. It provides
