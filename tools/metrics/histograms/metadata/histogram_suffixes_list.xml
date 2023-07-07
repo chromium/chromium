@@ -5034,16 +5034,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Sharing.SendMessageResult.Windows"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ShillCumulativeTimeOnline" separator=".">
-  <obsolete>
-    Obsoleted Dec 2022, histograms were renamed (b/254170385).
-  </obsolete>
-  <suffix name="Any" label="Any connection type"/>
-  <suffix name="Cellular" label="Cellular connection"/>
-  <suffix name="Wifi" label="WiFi connection"/>
-  <affected-histogram name="Network.Shill.CumulativeTimeOnline"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ShillWiFiRememberedNetworkSecurityMode" separator=".">
   <suffix name="802_1x" label="Network is secured with 802.1x"/>
   <suffix name="none" label="Network is not secured"/>

@@ -75347,10 +75347,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="8" label="5g"/>
 </enum>
 
-<enum name="NetworkCorruptedProfile">
-  <int value="0" label="Corrupted Profile"/>
-</enum>
-
 <enum name="NetworkDhcpClientStatus">
   <int value="0" label="Arp Gateway">
     The DHCP client will attempt to identify the default gateway using a unicast
@@ -97133,15 +97129,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="56" label="Eap Remote Tls Failed"/>
   <int value="57" label="WEP networks are not supported"/>
   <int value="58" label="Disable Hotspot Failed"/>
-</enum>
-
-<enum name="ShillSuspendTerminationDarkResumeActionResult">
-  <summary>
-    The termination/suspend/dark resume action result types come from
-    SuspendActionResult in shill/metrics.h
-  </summary>
-  <int value="0" label="Success"/>
-  <int value="1" label="Failure"/>
 </enum>
 
 <enum name="ShoppingDataProviderFallback">
