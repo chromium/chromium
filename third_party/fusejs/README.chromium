@@ -5,6 +5,7 @@ License: Apache License, Version 2.0
 License File: LICENSE
 License Android Compatible: yes
 Security Critical: yes
+Shipped: yes
 Description:
 Fuzzy search js library used by WebUI
 Local Modifications:
