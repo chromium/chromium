@@ -1542,6 +1542,7 @@ TEST_F(NavigationControllerTest, GoBackWithUserAgentOverrideChange) {
   back_navigation->Commit();
 
   EXPECT_EQ(1, change_counter);
+  contents()->set_web_preferences_changed_counter(nullptr);
 }
 
 // Tests what happens when we navigate back successfully
@@ -4306,11 +4307,12 @@ TEST_F(NavigationControllerTest, SubFrameNavigationUIData) {
   LoadCommittedDetailsObserver observer(contents());
 
   // Navigate sub frame.
-  auto navigation =
-      NavigationSimulatorImpl::CreateBrowserInitiated(url1, contents());
   NavigationController::LoadURLParams load_url_params(url1);
   load_url_params.navigation_ui_data = std::make_unique<TestNavigationUIData>();
   load_url_params.frame_tree_node_id = subframe->GetFrameTreeNodeId();
+
+  auto navigation =
+      NavigationSimulatorImpl::CreateBrowserInitiated(url1, contents());
   navigation->SetLoadURLParams(&load_url_params);
 
   // We DCHECK to prevent misuse of the API.
