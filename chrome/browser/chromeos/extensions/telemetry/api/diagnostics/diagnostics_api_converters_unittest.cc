@@ -155,6 +155,12 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
         crosapi::DiagnosticsRoutineEnum::kPowerButton, &out));
     EXPECT_EQ(out, cx_diag::RoutineType::kPowerButton);
   }
+  {
+    cx_diag::RoutineType out = cx_diag::RoutineType::kNone;
+    EXPECT_TRUE(ConvertMojoRoutine(
+        crosapi::DiagnosticsRoutineEnum::kAudioDriver, &out));
+    EXPECT_EQ(out, cx_diag::RoutineType::kAudioDriver);
+  }
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest, ConvertRoutineStatus) {

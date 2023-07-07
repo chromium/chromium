@@ -394,4 +394,10 @@ void OsDiagnosticsRunPowerButtonRoutineFunction::RunIfAllowed() {
                                             GetOnResult());
 }
 
+// OsDiagnosticsRunAudioDriverRoutineFunction -------------------------------
+
+void OsDiagnosticsRunAudioDriverRoutineFunction::RunIfAllowed() {
+  GetRemoteService()->RunAudioDriverRoutine(GetOnResult());
+}
+
 }  // namespace chromeos

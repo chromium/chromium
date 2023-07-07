@@ -85,6 +85,8 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineEnum) {
             crosapi::DiagnosticsRoutineEnum::kUfsLifetime);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kPowerButton),
             crosapi::DiagnosticsRoutineEnum::kPowerButton);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kAudioDriver),
+            crosapi::DiagnosticsRoutineEnum::kAudioDriver);
 
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kArcHttp),
             absl::nullopt);

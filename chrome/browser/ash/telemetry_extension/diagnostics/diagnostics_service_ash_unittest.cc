@@ -207,6 +207,20 @@ TEST_F(DiagnosticsServiceAshTest, RunAcPowerRoutineSuccess) {
                   ->DidExpectedDiagnosticsParametersMatch());
 }
 
+TEST_F(DiagnosticsServiceAshTest, RunAudioDriverRoutineSuccess) {
+  // Configure FakeCrosHealthd.
+  SetSuccessfulRoutineResponse();
+
+  base::test::TestFuture<crosapi::mojom::DiagnosticsRunRoutineResponsePtr>
+      future;
+  diagnostics_service()->RunAudioDriverRoutine(future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& result = future.Get();
+  ValidateResponse(result,
+                   cros_healthd::mojom::DiagnosticRoutineEnum::kAudioDriver);
+}
+
 TEST_F(DiagnosticsServiceAshTest, RunBatteryCapacityRoutineSuccess) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();

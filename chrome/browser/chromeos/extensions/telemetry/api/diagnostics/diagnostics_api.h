@@ -359,6 +359,17 @@ class OsDiagnosticsRunPowerButtonRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunAudioDriverRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runAudioDriverRoutine",
+                             OS_DIAGNOSTICS_RUNAUDIODRIVERROUTINE)
+ private:
+  ~OsDiagnosticsRunAudioDriverRoutineFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_DIAGNOSTICS_DIAGNOSTICS_API_H_

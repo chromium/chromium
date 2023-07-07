@@ -132,6 +132,8 @@ absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
       return crosapi::mojom::DiagnosticsRoutineEnum::kUfsLifetime;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kPowerButton:
       return crosapi::mojom::DiagnosticsRoutineEnum::kPowerButton;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kAudioDriver:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kAudioDriver;
     default:
       return absl::nullopt;
   }

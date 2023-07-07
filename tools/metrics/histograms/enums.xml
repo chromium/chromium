@@ -37071,6 +37071,7 @@ Called by update_extension_histograms.py.-->
   <int value="1800" label="OS_DIAGNOSTICS_RUNUFSLIFETIMEROUTINE"/>
   <int value="1801" label="OS_TELEMETRY_GETDISPLAYINFO"/>
   <int value="1802" label="OS_DIAGNOSTICS_RUNPOWERBUTTONROUTINE"/>
+  <int value="1803" label="OS_DIAGNOSTICS_RUNAUDIODRIVERROUTINE"/>
 </enum>
 
 <enum name="ExtensionIconState">

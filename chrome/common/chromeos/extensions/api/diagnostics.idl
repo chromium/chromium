@@ -34,7 +34,8 @@ namespace os.diagnostics {
     emmc_lifetime,
     bluetooth_power,
     ufs_lifetime,
-    power_button
+    power_button,
+    audio_driver
   };
 
   enum RoutineStatus {
@@ -221,5 +222,7 @@ namespace os.diagnostics {
     [supportsPromises] static void runUfsLifetimeRoutine(RunRoutineCallback callback);
 
     [supportsPromises] static void runPowerButtonRoutine(RunPowerButtonRequest request, RunRoutineCallback callback);
+
+    [supportsPromises] static void runAudioDriverRoutine(RunRoutineCallback callback);
   };
 };

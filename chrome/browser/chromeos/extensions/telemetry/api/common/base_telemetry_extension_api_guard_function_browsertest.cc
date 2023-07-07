@@ -199,6 +199,15 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function runAudioDriverRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runAudioDriverRoutine(),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.runAudioDriverRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function runBatteryCapacityRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runBatteryCapacityRoutine(),
