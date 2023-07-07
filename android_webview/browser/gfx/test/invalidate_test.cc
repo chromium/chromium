@@ -9,6 +9,7 @@
 #include "android_webview/browser/gfx/root_frame_sink.h"
 #include "android_webview/browser/gfx/root_frame_sink_proxy.h"
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"
+#include "android_webview/browser/gfx/task_queue_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
@@ -274,6 +275,7 @@ class InvalidateTest
  public:
   InvalidateTest()
       : task_environment_(std::make_unique<base::test::TaskEnvironment>()) {
+    TaskQueueWebView::GetInstance()->ResetRenderThreadForTesting();
     begin_frame_source_ = std::make_unique<viz::ExternalBeginFrameSource>(this);
     root_frame_sink_proxy_ = std::make_unique<RootFrameSinkProxy>(
         base::SingleThreadTaskRunner::GetCurrentDefault(), this,
@@ -309,6 +311,7 @@ class InvalidateTest
                        },
                        std::move(client_)));
     render_thread_manager_->DestroyHardwareRendererOnRT(false, false);
+    TaskQueueWebView::GetInstance()->ResetRenderThreadForTesting();
   }
 
   // viz::ExternalBeginFrameSourceClient

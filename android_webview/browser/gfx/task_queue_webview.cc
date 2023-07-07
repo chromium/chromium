@@ -49,6 +49,9 @@ class TaskQueueViz : public TaskQueueWebView {
   void InitializeVizThread(const scoped_refptr<base::SingleThreadTaskRunner>&
                                viz_task_runner) override;
   void ScheduleOnVizAndBlock(VizTask viz_task) override;
+  void ResetRenderThreadForTesting() override {
+    DETACH_FROM_THREAD(render_thread_checker_);
+  }
 
  private:
   void RunOnViz(VizTask viz_task);
