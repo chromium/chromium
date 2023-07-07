@@ -1348,8 +1348,10 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
                              autofill_field, trigger_source);
 }
 
-void BrowserAutofillManager::UndoAutofill(FormData form,
-                                          const FormFieldData& trigger_field) {
+void BrowserAutofillManager::UndoAutofill(
+    mojom::RendererFormDataAction renderer_action,
+    FormData form,
+    const FormFieldData& trigger_field) {
   if (!form_autofill_history_.HasHistory(trigger_field.global_id())) {
     LOG_AF(log_manager())
         << "Could not undo the filling operation on field "
@@ -1379,7 +1381,11 @@ void BrowserAutofillManager::UndoAutofill(FormData form,
 
   driver()->UndoAutofill(form, operation.GetOrigin(),
                          operation.GetFieldTypeMap());
-  form_autofill_history_.EraseFormFillEntry(operation);
+  // Do not clear history on previews as it might be used for future previews or
+  // for the filling.
+  if (renderer_action == mojom::RendererFormDataAction::kFill) {
+    form_autofill_history_.EraseFormFillEntry(operation);
+  }
 }
 
 void BrowserAutofillManager::FillOrPreviewForm(

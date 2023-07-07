@@ -159,8 +159,11 @@ class BrowserAutofillManager : public AutofillManager,
                               const std::u16string& cvc,
                               AutofillTriggerSource trigger_source) override;
   // Reverts the last autofill operation on `form` that affected
-  // `trigger_field`, virtual for testing.
-  virtual void UndoAutofill(FormData form, const FormFieldData& trigger_field);
+  // `trigger_field`, virtual for testing. `renderer_action` denotes whether
+  // this is an actual filling or a preview operation on the renderer side.
+  virtual void UndoAutofill(mojom::RendererFormDataAction renderer_action,
+                            FormData form,
+                            const FormFieldData& trigger_field);
   // Virtual for testing
   virtual void DidShowSuggestions(bool has_autofill_suggestions,
                                   const FormData& form,

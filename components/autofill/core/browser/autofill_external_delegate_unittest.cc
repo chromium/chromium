@@ -88,7 +88,7 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void,
               UpdateAutofillPopupDataListValues,
               (const std::vector<std::u16string>& values,
-               const std::vector<std::u16string>& lables),
+               const std::vector<std::u16string>& labels),
               (override));
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason), (override));
   MOCK_METHOD(void,
@@ -151,7 +151,9 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
   }
   MOCK_METHOD(void,
               UndoAutofill,
-              (FormData form, const FormFieldData& trigger_field),
+              (mojom::RendererFormDataAction renderer_action,
+               FormData form,
+               const FormFieldData& trigger_field),
               (override));
   MOCK_METHOD(void,
               FillOrPreviewForm,
@@ -546,10 +548,10 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back();
   std::u16string masked_iban_value = u"IE12 **** **** **** **56 78";
-  std::u16string ummasked_iban_value = u"IE12 BOFI 9000 0112 3456 78";
+  std::u16string unmasked_iban_value = u"IE12 BOFI 9000 0112 3456 78";
   suggestions[0].main_text.value = masked_iban_value;
   suggestions[0].labels = {{Suggestion::Text(u"My doctor's IBAN")}};
-  suggestions[0].payload = Suggestion::ValueToFill(ummasked_iban_value);
+  suggestions[0].payload = Suggestion::ValueToFill(unmasked_iban_value);
   suggestions[0].popup_item_id = PopupItemId::kIbanEntry;
   external_delegate_->OnSuggestionsReturned(field_id_, suggestions,
                                             kDefaultTriggerSource);
@@ -565,7 +567,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   EXPECT_CALL(*autofill_driver_,
-              RendererShouldFillFieldWithValue(field_id_, ummasked_iban_value));
+              RendererShouldFillFieldWithValue(field_id_, unmasked_iban_value));
   external_delegate_->DidAcceptSuggestion(suggestions[0], 0,
                                           kDefaultTriggerSource);
 }
@@ -726,7 +728,7 @@ INSTANTIATE_TEST_SUITE_P(AutofillExternalDelegateUnitTest,
 TEST_P(AutofillExternalDelegateUnitTest_UndoAutofill,
        ExternalDelegateUndoAndClearForm) {
   if (UndoInsteadOfClear()) {
-    EXPECT_CALL(*browser_autofill_manager_, UndoAutofill(_, _));
+    EXPECT_CALL(*browser_autofill_manager_, UndoAutofill);
   } else {
     EXPECT_CALL(autofill_client_,
                 HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
@@ -734,6 +736,17 @@ TEST_P(AutofillExternalDelegateUnitTest_UndoAutofill,
   }
   external_delegate_->DidAcceptSuggestion(Suggestion(PopupItemId::kClearForm),
                                           0, kDefaultTriggerSource);
+}
+
+// Test that the driver is directed to undo the form after being notified that
+// the user selected the suggestion to undo the form.
+TEST_P(AutofillExternalDelegateUnitTest_UndoAutofill,
+       ExternalDelegateUndoAndClearPreviewForm) {
+  if (UndoInsteadOfClear()) {
+    EXPECT_CALL(*browser_autofill_manager_, UndoAutofill);
+  }
+  external_delegate_->DidSelectSuggestion(Suggestion(PopupItemId::kClearForm),
+                                          kDefaultTriggerSource);
 }
 
 // Test that autofill client will scan a credit card after use accepted the
@@ -881,17 +894,17 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
       0, kDefaultTriggerSource);
 
   std::u16string masked_iban_value = u"IE12 **** **** **** **56 78";
-  std::u16string ummasked_iban_value = u"IE12 BOFI 9000 0112 3456 78";
+  std::u16string unmasked_iban_value = u"IE12 BOFI 9000 0112 3456 78";
   // Test that IBANs get autofilled.
   EXPECT_CALL(*autofill_driver_,
-              RendererShouldFillFieldWithValue(field_id_, ummasked_iban_value));
+              RendererShouldFillFieldWithValue(field_id_, unmasked_iban_value));
   EXPECT_CALL(*autofill_client_.GetMockIBANManager(),
               OnSingleFieldSuggestionSelected(masked_iban_value,
                                               PopupItemId::kIbanEntry));
   external_delegate_->DidAcceptSuggestion(
       test::CreateAutofillSuggestion(
           PopupItemId::kIbanEntry, masked_iban_value,
-          Suggestion::ValueToFill(ummasked_iban_value)),
+          Suggestion::ValueToFill(unmasked_iban_value)),
       0, kDefaultTriggerSource);
 }
 

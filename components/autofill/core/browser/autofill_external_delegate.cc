@@ -29,6 +29,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -202,6 +203,12 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       suggestion.GetPayload<Suggestion::BackendId>();
 
   switch (suggestion.popup_item_id) {
+    case PopupItemId::kClearForm:
+      if (base::FeatureList::IsEnabled(features::kAutofillUndo)) {
+        manager_->UndoAutofill(mojom::RendererFormDataAction::kPreview,
+                               query_form_, query_field_);
+      }
+      break;
     case PopupItemId::kAddressEntry:
     case PopupItemId::kCreditCardEntry:
       FillAutofillFormData(suggestion.popup_item_id, backend_id, true,
@@ -237,7 +244,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       // This serves as a clear form or undo autofill suggestion, depending on
       // the state of the feature `kAutofillUndo`.
       if (base::FeatureList::IsEnabled(features::kAutofillUndo)) {
-        manager_->UndoAutofill(query_form_, query_field_);
+        manager_->UndoAutofill(mojom::RendererFormDataAction::kFill,
+                               query_form_, query_field_);
       } else {
         // User selected 'Clear form'.
         AutofillMetrics::LogAutofillFormCleared();

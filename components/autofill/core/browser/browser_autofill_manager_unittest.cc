@@ -2931,7 +2931,8 @@ TEST_F(BrowserAutofillManagerTest, UndoAutofillCallsDriver) {
       form_structure, autofill_field);
 
   EXPECT_CALL(*autofill_driver_, UndoAutofill(_, _, _));
-  browser_autofill_manager_->UndoAutofill(form, form.fields.front());
+  browser_autofill_manager_->UndoAutofill(mojom::RendererFormDataAction::kFill,
+                                          form, form.fields.front());
 }
 
 TEST_F(BrowserAutofillManagerTest,
