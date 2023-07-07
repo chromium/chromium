@@ -814,6 +814,14 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
       tile->set_solid_color_analysis_performed(true);
       SkColor4f color = SkColors::kTransparent;
 
+      // 5 operations is an arbitrary amount. Was picked in 2023 because the
+      // paint op list generated for solid colored tiles in Views contained 3
+      // entries: DrawRecord, Save, Restore. 5 was picked to provide some margin
+      // in case other operations creep in, while being low enough that
+      // performing the analysis is not too costly (and besides, long paint op
+      // lists are unlikely to result in easily identifiable solid colored
+      // tiles). This was shows to improve memory usage without regressing
+      // performance.
       int max_ops_to_analyze = base::FeatureList::IsEnabled(
                                    features::kMoreAggressiveSolidColorDetection)
                                    ? 5
