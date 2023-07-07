@@ -22,6 +22,7 @@
 #include "components/optimization_guide/proto/page_topics_override_list.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace browsing_topics {
@@ -107,7 +108,7 @@ class BrowsingTopicsAnnotatorImplTest : public testing::Test {
     RunUntilIdle();
   }
 
-  void SendModelToAnnotator(
+  void SendModelToAnnotatorSkipWaiting(
       const absl::optional<optimization_guide::proto::Any>& model_metadata) {
     base::FilePath source_root_dir;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
@@ -125,6 +126,11 @@ class BrowsingTopicsAnnotatorImplTest : public testing::Test {
     annotator()->OnModelUpdated(
         optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2,
         *model_info);
+  }
+
+  void SendModelToAnnotator(
+      const absl::optional<optimization_guide::proto::Any>& model_metadata) {
+    SendModelToAnnotatorSkipWaiting(model_metadata);
 
     base::RunLoop run_loop;
     annotator()->NotifyWhenModelAvailable(run_loop.QuitClosure());
@@ -139,7 +145,7 @@ class BrowsingTopicsAnnotatorImplTest : public testing::Test {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
- private:
+ protected:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ModelObserverTracker> model_observer_tracker_;
@@ -426,6 +432,129 @@ TEST_F(BrowsingTopicsAnnotatorImplTest, PreprocessingNewVersion) {
     EXPECT_EQ(raw_host, got_input);
     EXPECT_EQ(processed_host, annotator()->inputs().back());
   }
+}
+
+TEST_F(BrowsingTopicsAnnotatorImplTest,
+       SameTaxonomyVersions_ModelUpdateSuccess) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kBrowsingTopicsParameters,
+        {{"taxonomy_version", "2"}}}},
+      /*disabled_features=*/{
+          optimization_guide::features::kPreventLongRunningPredictionModels});
+
+  optimization_guide::proto::PageTopicsModelMetadata model_metadata;
+  model_metadata.set_taxonomy_version(2);
+
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/com.foo.PageTopicsModelMetadata");
+  model_metadata.SerializeToString(any_metadata.mutable_value());
+
+  SendModelToAnnotatorSkipWaiting(any_metadata);
+
+  absl::optional<optimization_guide::ModelInfo> model_info =
+      annotator()->GetBrowsingTopicsModelInfo();
+  EXPECT_TRUE(model_info);
+}
+
+TEST_F(BrowsingTopicsAnnotatorImplTest,
+       DifferentTaxonomyVersions_ModelUpdateSkipped) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kBrowsingTopicsParameters,
+        {{"taxonomy_version", "2"}}}},
+      /*disabled_features=*/{
+          optimization_guide::features::kPreventLongRunningPredictionModels});
+
+  optimization_guide::proto::PageTopicsModelMetadata model_metadata;
+  model_metadata.set_taxonomy_version(1);
+
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/com.foo.PageTopicsModelMetadata");
+  model_metadata.SerializeToString(any_metadata.mutable_value());
+
+  SendModelToAnnotatorSkipWaiting(any_metadata);
+
+  absl::optional<optimization_guide::ModelInfo> model_info =
+      annotator()->GetBrowsingTopicsModelInfo();
+  EXPECT_FALSE(model_info);
+}
+
+TEST_F(BrowsingTopicsAnnotatorImplTest,
+       TaxonomyConfiguredVersion1ServerVersion1_ModelUpdateSkipped) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kBrowsingTopicsParameters,
+        {{"taxonomy_version", "1"}}}},
+      /*disabled_features=*/{
+          optimization_guide::features::kPreventLongRunningPredictionModels});
+
+  optimization_guide::proto::PageTopicsModelMetadata model_metadata;
+  model_metadata.set_taxonomy_version(1);
+
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/com.foo.PageTopicsModelMetadata");
+  model_metadata.SerializeToString(any_metadata.mutable_value());
+
+  SendModelToAnnotatorSkipWaiting(any_metadata);
+
+  absl::optional<optimization_guide::ModelInfo> model_info =
+      annotator()->GetBrowsingTopicsModelInfo();
+  EXPECT_FALSE(model_info);
+}
+
+TEST_F(BrowsingTopicsAnnotatorImplTest,
+       TaxonomyConfiguredVersion1ServerVersionEmpty_ModelUpdateSuccess) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kBrowsingTopicsParameters,
+        {{"taxonomy_version", "1"}}}},
+      /*disabled_features=*/{
+          optimization_guide::features::kPreventLongRunningPredictionModels});
+
+  optimization_guide::proto::PageTopicsModelMetadata model_metadata;
+
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/com.foo.PageTopicsModelMetadata");
+  model_metadata.SerializeToString(any_metadata.mutable_value());
+
+  SendModelToAnnotatorSkipWaiting(any_metadata);
+
+  absl::optional<optimization_guide::ModelInfo> model_info =
+      annotator()->GetBrowsingTopicsModelInfo();
+  EXPECT_TRUE(model_info);
+}
+
+TEST_F(BrowsingTopicsAnnotatorImplTest,
+       TaxonomyConfiguredVersion2ServerVersionEmpty_ModelUpdateSkipped) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kBrowsingTopicsParameters,
+        {{"taxonomy_version", "2"}}}},
+      /*disabled_features=*/{
+          optimization_guide::features::kPreventLongRunningPredictionModels});
+
+  optimization_guide::proto::PageTopicsModelMetadata model_metadata;
+
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/com.foo.PageTopicsModelMetadata");
+  model_metadata.SerializeToString(any_metadata.mutable_value());
+
+  SendModelToAnnotatorSkipWaiting(any_metadata);
+
+  absl::optional<optimization_guide::ModelInfo> model_info =
+      annotator()->GetBrowsingTopicsModelInfo();
+  EXPECT_FALSE(model_info);
 }
 
 class BrowsingTopicsAnnotatorOverrideListTest

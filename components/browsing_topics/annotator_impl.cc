@@ -15,6 +15,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "components/optimization_guide/proto/page_topics_override_list.pb.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace browsing_topics {
@@ -129,6 +130,17 @@ int MeaninglessPrefixLength(const std::string& host) {
     }
   }
   return 0;
+}
+
+bool IsModelTaxonomyVersionSupported(int model_taxonomy_version) {
+  // Taxonomy version 1 is a special case, where the server would send nothing
+  // (i.e. use 0) for the taxonomy version.
+  if (blink::features::kBrowsingTopicsTaxonomyVersion.Get() == 1) {
+    return model_taxonomy_version == 0;
+  }
+
+  return model_taxonomy_version ==
+         blink::features::kBrowsingTopicsTaxonomyVersion.Get();
 }
 
 }  // namespace
@@ -448,6 +460,20 @@ void AnnotatorImpl::OnModelUpdated(
     return;
   }
 
+  if (!model_info.GetModelMetadata()) {
+    return;
+  }
+
+  absl::optional<optimization_guide::proto::PageTopicsModelMetadata>
+      model_metadata = optimization_guide::ParsedAnyMetadata<
+          optimization_guide::proto::PageTopicsModelMetadata>(
+          *model_info.GetModelMetadata());
+
+  if (!model_metadata ||
+      !IsModelTaxonomyVersionSupported(model_metadata->taxonomy_version())) {
+    return;
+  }
+
   optimization_guide::BertModelHandler::OnModelUpdated(optimization_target,
                                                        model_info);
 
@@ -455,9 +481,6 @@ void AnnotatorImpl::OnModelUpdated(
   override_list_file_path_ = absl::nullopt;
   override_list_ = absl::nullopt;
 
-  absl::optional<optimization_guide::proto::PageTopicsModelMetadata>
-      model_metadata = ParsedSupportedFeaturesForLoadedModel<
-          optimization_guide::proto::PageTopicsModelMetadata>();
   if (model_metadata) {
     version_ = model_metadata->version();
   }
