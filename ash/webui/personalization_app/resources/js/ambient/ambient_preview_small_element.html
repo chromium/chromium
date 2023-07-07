@@ -111,9 +111,10 @@
               alt$="[[getAlbumTitle_(firstPreviewAlbum_)]]"
               is-google-photos>
         </div>
-        <h3 id="textContainer"
+        <h3 aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]"
             class="preview-text-container album-info-subpage jelly-disabled"
-            aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]">
+            id="textContainer"
+            role="alert">
           <span id="currentlySet" class="currently-set-text" aria-hidden="true">
             $i18n{currentlySet}
           </span>
