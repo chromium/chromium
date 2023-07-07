@@ -6600,3 +6600,6 @@ crbug.com/1462500 [ Win ] media/picture-in-picture/picture-in-picture-interstiti
 # Temporarily disable to introduce Material 3 color tokens
 crbug.com/1456677 http/tests/devtools/security/mixed-content-sidebar.js [ Failure Pass ]
 crbug.com/1456677 http/tests/devtools/security/interstitial-sidebar.js [ Failure Pass ]
+
+# Gardnener 2023-07-07
+crbug.com/1462462 http/tests/history/replacestate-post-to-get-2.html [ Failure Pass ]
