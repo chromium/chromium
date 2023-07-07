@@ -48,7 +48,7 @@ base::flat_map<SchemefulSite, FirstPartySetEntry> CollectEffectiveSetEntries(
   base::flat_map<SchemefulSite, FirstPartySetEntry> got;
   sets.ForEachEffectiveSetEntry(
       config, [&](const SchemefulSite& site, const FirstPartySetEntry& entry) {
-        DCHECK(!got.contains(site));
+        EXPECT_FALSE(got.contains(site));
         got[site] = entry;
         return true;
       });
@@ -56,7 +56,7 @@ base::flat_map<SchemefulSite, FirstPartySetEntry> CollectEffectiveSetEntries(
   // Consistency check: verify that all of the returned entries are what we'd
   // get if we called FindEntry directly.
   for (const auto& [site, entry] : got) {
-    DCHECK_EQ(sets.FindEntry(site, config).value(), entry);
+    EXPECT_EQ(sets.FindEntry(site, config).value(), entry);
   }
   return got;
 }

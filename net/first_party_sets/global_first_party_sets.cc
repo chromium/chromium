@@ -101,7 +101,7 @@ GlobalFirstPartySets::GlobalFirstPartySets(
       aliases_(std::move(aliases)),
       manual_config_(std::move(manual_config)) {
   if (public_sets_version_.IsValid()) {
-    DCHECK(base::ranges::all_of(aliases_, [&](const auto& pair) {
+    CHECK(base::ranges::all_of(aliases_, [&](const auto& pair) {
       return entries_.contains(pair.second);
     }));
   } else {
