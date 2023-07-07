@@ -52,11 +52,6 @@ void PrefsAshObserver::Init() {
               prefs::
                   kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls));
 
-  pdf_ocr_always_active_observer_ = std::make_unique<CrosapiPrefObserver>(
-      crosapi::mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
-      base::BindRepeating(&PrefsAshObserver::OnPdfOcrAlwaysActiveChanged,
-                          base::Unretained(this)));
-
   // User prefs (need caching before user profile is initialized):
   post_profile_initialized_handlers_
       [prefs::kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls] =
@@ -155,27 +150,4 @@ void PrefsAshObserver::ListChangedHandler(PrefService* pref_service,
   }
 
   pref_service->SetList(pref_name, value_list->Clone());
-}
-
-void PrefsAshObserver::OnPdfOcrAlwaysActiveChanged(base::Value value) {
-  Profile* const profile = ProfileManager::GetPrimaryUserProfile();
-  if (!profile) {
-    LOG(ERROR) << "No primary user profile";
-    return;
-  }
-
-  PrefService* const pref_service = profile->GetPrefs();
-  if (!pref_service) {
-    LOG(ERROR) << "Pref service not available";
-    return;
-  }
-
-  if (!value.is_bool()) {
-    LOG(WARNING) << "Unexpected value type: "
-                 << base::Value::GetTypeName(value.type());
-    return;
-  }
-
-  pref_service->SetBoolean(::prefs::kAccessibilityPdfOcrAlwaysActive,
-                           value.GetBool());
 }

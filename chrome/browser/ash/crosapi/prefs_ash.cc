@@ -36,8 +36,6 @@ base::StringPiece GetProfilePrefNameForPref(mojom::PrefPath path) {
       base::MakeFixedFlatMap<mojom::PrefPath, base::StringPiece>({
           {mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
            ash::prefs::kAccessibilitySpokenFeedbackEnabled},
-          {mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
-           ::prefs::kAccessibilityPdfOcrAlwaysActive},
           {mojom::PrefPath::kGeolocationAllowed,
            ash::prefs::kUserGeolocationAllowed},
           {mojom::PrefPath::kQuickAnswersEnabled,
@@ -292,16 +290,6 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
         return absl::nullopt;
       }
       std::string pref_name(GetProfilePrefNameForPref(path));
-      return State{profile_prefs_registrar_->prefs(),
-                   profile_prefs_registrar_.get(), AshPrefSource::kNormal,
-                   pref_name};
-    }
-    case mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive: {
-      if (!profile_prefs_registrar_) {
-        LOG(WARNING) << "Primary profile is not yet initialized";
-        return absl::nullopt;
-      }
-      std::string pref_name = GetProfilePrefNameForPref(path);
       return State{profile_prefs_registrar_->prefs(),
                    profile_prefs_registrar_.get(), AshPrefSource::kNormal,
                    pref_name};
