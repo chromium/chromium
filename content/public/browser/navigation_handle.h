@@ -472,14 +472,14 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // navigation. This can be nullptr if the navigation was not associated with a
   // frame, or may return a valid frame token to a frame that no longer exists
   // because it was deleted before the navigation began. This parameter is
-  // defined if and only if GetInitiatorProcessID below is.
+  // defined if and only if GetInitiatorProcessId below is.
   virtual const absl::optional<blink::LocalFrameToken>&
   GetInitiatorFrameToken() = 0;
 
   // Return the ID of the renderer process of the frame host that initiated the
   // navigation. This is defined if and only if GetInitiatorFrameToken above is,
   // and it is only valid in conjunction with it.
-  virtual int GetInitiatorProcessID() = 0;
+  virtual int GetInitiatorProcessId() = 0;
 
   // Returns, if available, the origin of the document that has initiated the
   // navigation for this NavigationHandle.

@@ -400,7 +400,7 @@ class CONTENT_EXPORT NavigationRequest
   const absl::optional<blink::Impression>& GetImpression() override;
   const absl::optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
       override;
-  int GetInitiatorProcessID() override;
+  int GetInitiatorProcessId() override;
   const absl::optional<url::Origin>& GetInitiatorOrigin() override;
   const absl::optional<GURL>& GetInitiatorBaseUrl() override;
   const std::vector<std::string>& GetDnsAliases() override;

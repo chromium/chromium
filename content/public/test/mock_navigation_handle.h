@@ -179,7 +179,7 @@ class MockNavigationHandle : public NavigationHandle {
       override {
     return initiator_frame_token_;
   }
-  int GetInitiatorProcessID() override { return initiator_process_id_; }
+  int GetInitiatorProcessId() override { return initiator_process_id_; }
   const absl::optional<url::Origin>& GetInitiatorOrigin() override {
     return initiator_origin_;
   }

@@ -84,7 +84,7 @@ public class ContextMenuHeaderMediatorTest {
         final GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
         final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
                 url, GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "", null, false, 0,
-                0, 0, false, /*impression=*/null);
+                0, 0, false, /*additionalNavigationParams=*/null);
         final ContextMenuHeaderMediator mediator =
                 new ContextMenuHeaderMediator(mActivity, model, params, mProfile, mNativeDelegate);
 
@@ -113,7 +113,7 @@ public class ContextMenuHeaderMediatorTest {
                 new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS).build();
         final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.VIDEO,
                 GURL.emptyGURL(), GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "",
-                null, false, 0, 0, 0, false, /*impression=*/null);
+                null, false, 0, 0, 0, false, /*additionalNavigationParams=*/null);
         final ContextMenuHeaderMediator mediator =
                 new ContextMenuHeaderMediator(mActivity, model, params, mProfile, mNativeDelegate);
 
@@ -136,7 +136,7 @@ public class ContextMenuHeaderMediatorTest {
         final GURL linkUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
         final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.FILE,
                 GURL.emptyGURL(), linkUrl, JUnitTestGURLs.URL_1, GURL.emptyGURL(), GURL.emptyGURL(),
-                "", null, false, 0, 0, 0, false, /*impression=*/null);
+                "", null, false, 0, 0, 0, false, /*additionalNavigationParams=*/null);
         final ContextMenuHeaderMediator mediator =
                 new ContextMenuHeaderMediator(mActivity, model, params, mProfile, mNativeDelegate);
 

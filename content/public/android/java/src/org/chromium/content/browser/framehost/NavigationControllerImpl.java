@@ -14,7 +14,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.content_public.browser.Impression;
+import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
@@ -185,7 +185,8 @@ import org.chromium.url.Origin;
                     params.getDataUrlAsString(), params.getCanLoadLocalResources(),
                     params.getIsRendererInitiated(), params.getShouldReplaceCurrentEntry(),
                     params.getInitiatorOrigin(), params.getHasUserGesture(),
-                    params.getShouldClearHistoryList(), params.getImpression(), inputStart,
+                    params.getShouldClearHistoryList(), params.getAdditionalNavigationParams(),
+                    inputStart,
                     params.getNavigationUIDataSupplier() == null
                             ? 0
                             : params.getNavigationUIDataSupplier().get());
@@ -377,7 +378,8 @@ import org.chromium.url.Origin;
                 ResourceRequestBody postData, String baseUrlForDataUrl, String virtualUrlForDataUrl,
                 String dataUrlAsString, boolean canLoadLocalResources, boolean isRendererInitiated,
                 boolean shouldReplaceCurrentEntry, Origin initiatorOrigin, boolean hasUserGesture,
-                boolean shouldClearHistoryList, Impression impression, long inputStart,
+                boolean shouldClearHistoryList,
+                AdditionalNavigationParams additionalNavigationParams, long inputStart,
                 long navigationUIDataPtr);
         void clearHistory(long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
         int getNavigationHistory(long nativeNavigationControllerAndroid,

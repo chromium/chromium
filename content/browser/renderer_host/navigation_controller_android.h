@@ -90,7 +90,8 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       const base::android::JavaParamRef<jobject>& j_initiator_origin,
       jboolean has_user_gesture,
       jboolean should_clear_history_list,
-      const base::android::JavaParamRef<jobject>& j_impression,
+      const base::android::JavaParamRef<jobject>&
+          j_additional_navigation_params,
       jlong input_start,
       jlong navigation_ui_data_ptr);
   void ClearSslPreferences(

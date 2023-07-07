@@ -271,7 +271,7 @@ void TestNavigationObserver::OnDidFinishNavigation(
   last_navigation_url_ = navigation_handle->GetURL();
   last_navigation_initiator_origin_ = request->common_params().initiator_origin;
   last_initiator_frame_token_ = navigation_handle->GetInitiatorFrameToken();
-  last_initiator_process_id_ = navigation_handle->GetInitiatorProcessID();
+  last_initiator_process_id_ = navigation_handle->GetInitiatorProcessId();
   last_navigation_succeeded_ =
       navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage();
   last_navigation_initiator_activation_and_ad_status_ =
