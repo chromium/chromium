@@ -484,12 +484,14 @@ async function fencedFrameTest(t, { source, target, expected }) {
 
   // The grandchild fenced frame writes a value to the server iff it loads
   // successfully.
-  const result = await Promise.race([
-    nextValueFromServer(frame_loaded_key),
+  const result = (expected == FrameTestResult.SUCCESS) ?
+    await nextValueFromServer(frame_loaded_key) :
+    await Promise.race([
+      nextValueFromServer(frame_loaded_key),
       new Promise((resolve) => {
         t.step_timeout(() => resolve("timeout"), 10000 /* ms */);
       }),
-  ]);
+    ]);
 
   assert_equals(result, expected);
 }

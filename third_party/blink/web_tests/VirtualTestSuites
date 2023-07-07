@@ -1581,7 +1581,8 @@
       "external/wpt/html/anonymous-iframe",
       "external/wpt/fenced-frame",
       "external/wpt/fetch/local-network-access/fenced-frame-subresource-fetch.tentative.https.window.js",
-      "external/wpt/fetch/local-network-access/fenced-frame.tentative.https.window.js"
+      "external/wpt/fetch/local-network-access/fenced-frame.tentative.https.window.js",
+      "external/wpt/fetch/local-network-access/fenced-frame-no-preflight-required.tentative.https.window.js"
     ],
     "exclusive_tests": [
       "http/tests/fenced_frame",
@@ -1589,7 +1590,8 @@
       "external/wpt/fenced-frame",
       "http/tests/inspector-protocol/fenced-frame",
       "external/wpt/fetch/local-network-access/fenced-frame-subresource-fetch.tentative.https.window.js",
-      "external/wpt/fetch/local-network-access/fenced-frame.tentative.https.window.js"
+      "external/wpt/fetch/local-network-access/fenced-frame.tentative.https.window.js",
+      "external/wpt/fetch/local-network-access/fenced-frame-no-preflight-required.tentative.https.window.js"
     ],
     "args": ["--enable-features=FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,SharedStorageAPI,NoncedPartitionedCookies,Fledge,InterestGroupStorage,AdInterestGroupAPI,AllowURNsInIframes,BiddingAndScoringDebugReportingAPI,ComputePressure",
              "--enable-blink-features=FencedFramesAPIChanges,FencedFramesDefaultMode"],
