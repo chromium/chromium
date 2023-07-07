@@ -52,11 +52,15 @@ class ScalableIphDelegateImpl
   void OnNetworkStateList(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);
-  void OnNudgeButtonClicked(scalable_iph::ActionType action_type);
-  void OnNudgeDismissed();
+  void OnNudgeButtonClicked(const std::string& bubble_id,
+                            scalable_iph::ActionType action_type);
+  void OnNudgeDismissed(const std::string& bubble_id);
 
   raw_ptr<Profile> profile_;
   bool has_online_network_ = false;
+
+  std::unique_ptr<scalable_iph::IphSession> bubble_iph_session_;
+  std::string bubble_id_;
 
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;

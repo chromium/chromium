@@ -45,6 +45,20 @@ void MockScalableIphDelegate::FakeClientAgeInDays() {
   });
 }
 
+void MockScalableIphDelegate::FakeShowBubble() {
+  CHECK(delegate_) << "Delegate must be set to enable fake behaviors";
+  CHECK(!show_bubble_fake_enabled_)
+      << "Fake is already set for showing a bubble";
+  show_bubble_fake_enabled_ = true;
+
+  ON_CALL(*this, ShowBubble)
+      .WillByDefault(
+          [this](const scalable_iph::ScalableIphDelegate::BubbleParams& params,
+                 std::unique_ptr<scalable_iph::IphSession> iph_session) {
+            return delegate_->ShowBubble(params, std::move(iph_session));
+          });
+}
+
 void MockScalableIphDelegate::FakeShowNotification() {
   CHECK(delegate_) << "Delegate must be set to enable fake behaviors";
   CHECK(!show_notification_fake_enabled_)

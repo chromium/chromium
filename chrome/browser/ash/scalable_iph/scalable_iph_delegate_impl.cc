@@ -146,19 +146,25 @@ ScalableIphDelegateImpl::~ScalableIphDelegateImpl() {
 void ScalableIphDelegateImpl::ShowBubble(
     const scalable_iph::ScalableIphDelegate::BubbleParams& params,
     std::unique_ptr<scalable_iph::IphSession> iph_session) {
+  // It will be no-op if the `bubble_id_` is an empty string when the first time
+  // to show a bubble.
+  ash::AnchoredNudgeManager::Get()->Cancel(bubble_id_);
+  bubble_id_ = params.bubble_id;
+  bubble_iph_session_ = std::move(iph_session);
+
   ash::AnchoredNudgeData nudge_data(
       params.bubble_id, NudgeCatalogName::kScalableIphBubble,
       base::UTF8ToUTF16(params.text), /*anchor_view=*/nullptr);
 
   nudge_data.first_button_text = base::UTF8ToUTF16(params.button.text);
-  nudge_data.first_button_callback = base::BindRepeating(
-      &ScalableIphDelegateImpl::OnNudgeButtonClicked,
-      weak_ptr_factory_.GetWeakPtr(), params.button.action.action_type);
+  nudge_data.first_button_callback =
+      base::BindRepeating(&ScalableIphDelegateImpl::OnNudgeButtonClicked,
+                          weak_ptr_factory_.GetWeakPtr(), params.bubble_id,
+                          params.button.action.action_type);
   nudge_data.dismiss_callback =
       base::BindRepeating(&ScalableIphDelegateImpl::OnNudgeDismissed,
-                          weak_ptr_factory_.GetWeakPtr());
+                          weak_ptr_factory_.GetWeakPtr(), params.bubble_id);
   ash::AnchoredNudgeManager::Get()->Show(nudge_data);
-  // TODO(b/289565494): Handle life cycle of `iph_session`.
 }
 
 void ScalableIphDelegateImpl::ShowNotification(
@@ -247,12 +253,24 @@ void ScalableIphDelegateImpl::OnNetworkStateList(
 }
 
 void ScalableIphDelegateImpl::OnNudgeButtonClicked(
+    const std::string& bubble_id,
     scalable_iph::ActionType action_type) {
-  // TODO(b/289565494): Handle life cycle of `iph_session`.
+  if (bubble_id_ != bubble_id) {
+    DCHECK(false) << "Callback for an obsolete bubble id gets called "
+                  << bubble_id;
+    return;
+  }
+  bubble_iph_session_->PerformAction(action_type);
 }
 
-void ScalableIphDelegateImpl::OnNudgeDismissed() {
-  // TODO(b/289565494): Handle life cycle of `iph_session`.
+void ScalableIphDelegateImpl::OnNudgeDismissed(const std::string& bubble_id) {
+  if (bubble_id_ != bubble_id) {
+    DCHECK(false) << "Callback for an obsolete bubble id gets called "
+                  << bubble_id;
+    return;
+  }
+  bubble_iph_session_.reset();
+  bubble_id_ = "";
 }
 
 }  // namespace ash

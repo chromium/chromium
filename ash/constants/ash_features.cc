@@ -3350,6 +3350,7 @@ bool IsNewLockScreenReauthLayoutEnabled() {
 
 bool IsSystemNudgeV2Enabled() {
   return base::FeatureList::IsEnabled(kSystemNudgeV2) ||
+         IsScalableIphEnabled() ||
          IsVideoConferenceEnabled();  // System Nudge V2 is launching
                                       // together with the VC project.
 }
