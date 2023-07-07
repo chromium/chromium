@@ -311,6 +311,7 @@ export class SettingsGoogleDriveSubpageElement extends
     switch (closedDialogType) {
       case ConfirmationDialogType.DISCONNECT:
         this.setPrefValue(GOOGLE_DRIVE_DISABLED_PREF, true);
+        this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_PREF, false);
         break;
       case ConfirmationDialogType.BULK_PINNING_DISABLE:
         this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_PREF, false);

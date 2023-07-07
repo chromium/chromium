@@ -157,6 +157,23 @@ suite('<settings-google-drive-subpage>', function() {
         await assertAsync(() => !page.getPref('gdata.disabled').value, 5000);
       });
 
+  test('removing drive access also disables bulk pinning', async function() {
+    page.setPrefValue('gdata.disabled', false);
+    page.setPrefValue('drivefs.bulk_pinning_enabled', true);
+    flush();
+
+    // Click the connect disconnect button.
+    connectDisconnectButton.click();
+
+    // Wait for the disconnect confirmation button to be visible.
+    await clickConfirmationDialogButton('.action-button');
+
+    // Once disabled the pref must be updated for both drive disabled and for
+    // bulk pinning to be disabled.
+    await assertAsync(() => page.getPref('gdata.disabled').value, 5000);
+    assertFalse(page.getPref('drivefs.bulk_pinning_enabled').value);
+  });
+
   test(
       'clicking the toggle updates the bulk pinning preference',
       async function() {
