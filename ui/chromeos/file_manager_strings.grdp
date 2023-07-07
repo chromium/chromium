@@ -1807,7 +1807,7 @@
     You are currently offline. File sync will resume when you are connected to the internet
   </message>
   <message name="IDS_FILE_BROWSER_BULK_PINNING_BATTERY_SAVER_LABEL" desc="The text used when the device is in battery saver mode and has paused syncing.">
-    Battery is low. Sync will resume when you are connected to power.
+    Battery is low. File sync will resume when you are connected to power.
   </message>
   <message name="IDS_FILE_BROWSER_BULK_PINNING_ITEM_TEMPORARILY_UNAVAILABLE_OFFLINE" desc="The text used when the bulk pinning of Google Drive items has failed due to insufficient space.">
     Can’t sync this file right now
