@@ -2108,7 +2108,7 @@
     },
     {
       name: "LayoutNGSubgrid",
-      status: "experimental",
+      status: "stable",
       base_feature: "none",
     },
     {
