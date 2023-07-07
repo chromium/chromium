@@ -374,7 +374,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">시스템 관리자에게 문의하세요.</translation>
 <translation id="1736420071277903564">컴퓨터</translation>
-<translation id="1740951997222943430">올바른 만료 월을 입력하세요.</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode가 <ph name="SECURE_DNS_MODE_SECURE" />일 때 반드시 지정되어야 하며 유효한 문자열이어야 합니다.</translation>
 <translation id="1743393865165844832">침구</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Chrome의 데이터 사용 방식:<ph name="END_BOLD" /> Chrome에서 내가 인터넷을 사용하는 동안 관심 주제를 파악합니다. 주제 라벨은 사전 정의되어 있으며 예술 및 엔터테인먼트, 쇼핑, 스포츠 등을 포함합니다. 나중에 사이트를 방문하면 사이트에서 광고 개인 최적화를 위해 내 관심 주제 몇 가지를 Chrome에 요청할 수 있습니다(방문 기록 제외).</translation>
@@ -421,6 +420,7 @@
 <translation id="1838374766361614909">검색어 지우기</translation>
 <translation id="1839551713262164453">오류가 발생하여 정책 값의 유효성을 검사하지 못했습니다.</translation>
 <translation id="1842969606798536927">결제</translation>
+<translation id="1854180393107901205">전송 중지</translation>
 <translation id="1855370856221982654">복싱</translation>
 <translation id="1856713167556118146">시크릿 모드에서 제공되지 않는 기능</translation>
 <translation id="1862788842908766795">임원 및 관리 직업</translation>
@@ -569,7 +569,6 @@
 <translation id="2188375229972301266">하단 다공 펀칭</translation>
 <translation id="2197398642355049178">내 주제</translation>
 <translation id="219906046732893612">주택 개조</translation>
-<translation id="2202020181578195191">올바른 만료 연도를 입력하세요.</translation>
 <translation id="2202627062836089804">카드 뒷면</translation>
 <translation id="2204482073374652408">업데이트 완료됨</translation>
 <translation id="2208053750671792556">코드를 받지 못하셨나요? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1176,7 +1175,6 @@
 <translation id="361438452008624280">목록 항목 ‘<ph name="LANGUAGE_ID" />’: 알 수 없거나 지원되지 않는 언어입니다.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 안전 확인을 실행하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="3615309852743236517">매니큐어 및 페디큐어</translation>
-<translation id="3615877443314183785">올바른 만료일을 입력하세요.</translation>
 <translation id="3620239073311576716">유니폼 및 작업복</translation>
 <translation id="36224234498066874">인터넷 사용 기록 삭제...</translation>
 <translation id="362276910939193118">방문 기록 전체 보기</translation>
@@ -2251,6 +2249,7 @@
 <translation id="5995727681868049093">Google 계정에서 정보, 개인 정보 보호 및 보안 설정 관리</translation>
 <translation id="5997247540087773573">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하기 위해 Google 비밀번호 관리자에서 지금 바로 비밀번호를 변경하고 저장된 비밀번호를 확인하시기 바랍니다.</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' 검색결과 <ph name="RESULT_COUNT" />개</translation>
+<translation id="6002122790816966947">내 기기</translation>
 <translation id="6005765687956866568">양식에서 자동 완성 정보가 삭제되었습니다</translation>
 <translation id="6006365096047131769">3x5인치</translation>
 <translation id="6006484371116297560">기본</translation>
@@ -2263,7 +2262,6 @@
 <translation id="6017514345406065928">녹색</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />에 있는 공격자는 다른 앱인 것처럼 가장하거나 사용자를 추적하는 데 사용될 수 있는 데이터를 수집하는 사기성 앱을 설치할 수도 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" />(동기화됨)</translation>
-<translation id="6027201098523975773">이름을 입력하세요.</translation>
 <translation id="6028591542479806248">모바일 및 이메일 알림 관리</translation>
 <translation id="603068602130820122">오른쪽 듀얼 스테이플</translation>
 <translation id="6032524144326295339">메일박스 2</translation>

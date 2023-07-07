@@ -1553,7 +1553,6 @@ Mới cài đặt</translation>
 <translation id="7866482334467279021">đang bật</translation>
 <translation id="7872786842639831132">Tắt</translation>
 <translation id="7875575368831396199">Có vẻ như bạn đã tắt Bluetooth trên <ph name="DEVICE_TYPE" />. Vui lòng bật Bluetooth để sử dụng Trung tâm điều khiển điện thoại.</translation>
-<translation id="7876243839304621966">Xóa tất cả</translation>
 <translation id="7877557217297072640">{0,plural, =0{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước ngay bây giờ}=1{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 giây}other{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng # giây}}</translation>
 <translation id="7884446017008693258">Cài đặt điểm phát sóng</translation>
 <translation id="7884902759927478774">Huỷ thao tác kéo thẻ</translation>
@@ -1652,7 +1651,6 @@ Mới cài đặt</translation>
 <translation id="8255234195843591763">Hãy đặt lại để cập nhật</translation>
 <translation id="8261506727792406068">Xoá</translation>
 <translation id="8262312463845990408">Phát hoặc dừng phát</translation>
-<translation id="8265826854528868575">Đang hiển thị <ph name="NUM_SHOWN_TASKS" />/<ph name="NUM_TOTAL_TASKS" /></translation>
 <translation id="8270450402312105425">{0,plural, =1{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 giờ}other{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng # giờ}}</translation>
 <translation id="8277261673056602147">Đánh dấu văn bản trên màn hình</translation>
 <translation id="8284362522226889623">Hãy vuốt sang trái bằng 4 ngón tay để chuyển sang không gian làm việc trước</translation>

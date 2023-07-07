@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">ドイツ語（Neo 2）</translation>
 <translation id="3858860766373142691">名前</translation>
 <translation id="3866249974567520381">説明</translation>
-<translation id="3866439285517092441">電池残量が少なくなっています。電源に接続すると、同期が再開されます。</translation>
 <translation id="3899991606604168269">フランス語（カナダ）（多言語）キーボード</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> に接続しています</translation>
 <translation id="3906232975181435906">モバイル プロファイルのインストール中 - <ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">貼り付け</translation>
+<translation id="3950820424414687140">ログイン</translation>
 <translation id="3952872973865944257">テルグ語（表音）</translation>
 <translation id="3958548648197196644">キウイ</translation>
 <translation id="397105322502079400">計算しています...</translation>
@@ -948,8 +948,8 @@
 <translation id="8395901698320285466">サイズ</translation>
 <translation id="8404498045299006085">すべて保持</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ネットワーク、接続中</translation>
-<translation id="841387525767317275">このフォルダ内のファイルをオフラインで使用できます</translation>
 <translation id="8425213833346101688">変更</translation>
+<translation id="8428213095426709021">設定</translation>
 <translation id="8431909052837336408">SIM PIN を変更</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">SIM カードがありません</translation>

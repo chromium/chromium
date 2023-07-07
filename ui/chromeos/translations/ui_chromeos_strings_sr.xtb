@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">немачка Neo 2</translation>
 <translation id="3858860766373142691">Назив</translation>
 <translation id="3866249974567520381">Опис</translation>
-<translation id="3866439285517092441">Ниво напуњености батерије је низак. Синхронизација ће се наставити када се прикључите на напајање.</translation>
 <translation id="3899991606604168269">француски (Канада) са вишејезичном тастатуром</translation>
 <translation id="3901991538546252627">Повезивање са мрежом <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Инсталира се профил за мобилне уређаје, мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Налепи</translation>
+<translation id="3950820424414687140">Пријави ме</translation>
 <translation id="3952872973865944257">фонетски телугу</translation>
 <translation id="3958548648197196644">Киви</translation>
 <translation id="397105322502079400">Израчунавање...</translation>
@@ -948,8 +948,8 @@
 <translation id="8395901698320285466">Димензије</translation>
 <translation id="8404498045299006085">Задржи све</translation>
 <translation id="8408068190360279472">Мрежа <ph name="NETWORK_TYPE" />, повезује се</translation>
-<translation id="841387525767317275">Фајлови у овом фолдеру су доступни офлајн</translation>
 <translation id="8425213833346101688">Промени</translation>
+<translation id="8428213095426709021">Подешавања</translation>
 <translation id="8431909052837336408">Промените PIN SIM картице</translation>
 <translation id="8437209419043462667">америчка</translation>
 <translation id="8452135315243592079">SIM картица недостаје</translation>

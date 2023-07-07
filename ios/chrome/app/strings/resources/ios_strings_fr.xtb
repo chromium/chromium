@@ -404,7 +404,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3464194322481586217">Impossible de suivre le prix.</translation>
 <translation id="3469166899695866866">Arrêter le téléchargement ?</translation>
 <translation id="3470502288861289375">Copie en cours…</translation>
-<translation id="3471148582064653480">Synchronisez vos mots de passe, votre historique et plus encore.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{pour {COUNT} site ou appli}one{pour {COUNT} site ou appli}other{pour {COUNT} sites ou applis}}</translation>
 <translation id="3474624961160222204">Continuer en tant que <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Retrouvez vos mots de passe dans d'autres applications.</translation>
@@ -944,7 +943,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6674571176963658787">Pour lancer la synchronisation, saisissez votre phrase secrète</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6684906340059221832">Suivi des prix activé</translation>
-<translation id="6689804622901271327">Saisir automatiquement les infos de paiement</translation>
 <translation id="6710079714193676716">Géré par votre organisation. Certaines fonctionnalités peuvent être indisponibles. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Accédez à vos favoris, à vos mots de passe et plus encore sur tous vos appareils.</translation>
@@ -1301,7 +1299,6 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="8976414606286374109">Les cartes sont enregistrées dans votre compte Google.</translation>
 <translation id="8981454092730389528">Commandes Google relatives à l'activité</translation>
 <translation id="8985320356172329008">Connecté à Google en tant que</translation>
-<translation id="8986567980592931173">Connectez-vous avec votre compte Google pour synchroniser vos mots de passe, votre historique, etc.</translation>
 <translation id="8998289560386111590">Non disponible sur votre appareil</translation>
 <translation id="8999545564078155498">Déverrouiller avec Face ID</translation>
 <translation id="9000089900434778519">Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1215127405478249895">Review tabs</translation>
+<translation id="1275718070701477396">Selected</translation>
 <translation id="1356944128023012143">List of synced devices and selected tabs from those devices to be restored on fresh restore workflow is closed.</translation>
 <translation id="1816430105422765050">Change to other synced devices under this menu item.</translation>
 <translation id="2575169127313449202">You can get tabs from the device listed below</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Select all</translation>
 <translation id="5972844218283131174">Deselect all</translation>
 <translation id="791922009843073162">All selected tabs will be deselected, or all deselected tabs will be selected.</translation>
+<translation id="7927711904086083099">Not selected</translation>
 <translation id="8003146088970081079">Choose the device from which you'd like to get tabs</translation>
 <translation id="8019269305087157499">Open from</translation>
 </translationbundle>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
 <translation id="1215127405478249895">Przeglądaj karty</translation>
+<translation id="1275718070701477396">Zaznaczony</translation>
 <translation id="1356944128023012143">Lista zsynchronizowanych urządzeń i wybranych kart do przywrócenia z tych urządzeń w ramach nowego procesu przywracania jest zamknięta.</translation>
 <translation id="1816430105422765050">Wybierz inne zsynchronizowane urządzenia w tej pozycji menu.</translation>
 <translation id="2575169127313449202">Możesz pobrać karty z urządzenia wymienionego poniżej</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Wybierz wszystko</translation>
 <translation id="5972844218283131174">Odznacz wszystko</translation>
 <translation id="791922009843073162">Wszystkie karty wybrane zostaną odznaczone lub wszystkie karty niewybrane zostaną zaznaczone.</translation>
+<translation id="7927711904086083099">Niewybrany</translation>
 <translation id="8003146088970081079">Wybierz urządzenie, z którego chcesz pobrać karty</translation>
 <translation id="8019269305087157499">Otwórz z</translation>
 </translationbundle>

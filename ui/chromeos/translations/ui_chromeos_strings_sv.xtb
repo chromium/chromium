@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">Tyska (neo 2)</translation>
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3866249974567520381">Beskrivning</translation>
-<translation id="3866439285517092441">Batterinivån är låg. Synkroniseringen återupptas när du ansluter till en strömkälla.</translation>
 <translation id="3899991606604168269">franska (Kanada) med flerspråkigt tangentbord</translation>
 <translation id="3901991538546252627">Ansluter till <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Installerar mobilprofil, Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Klistra in</translation>
+<translation id="3950820424414687140">Logga in</translation>
 <translation id="3952872973865944257">telugu, fonetiskt</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="397105322502079400">Beräknar ...</translation>
@@ -948,8 +948,8 @@
 <translation id="8395901698320285466">Dimensioner</translation>
 <translation id="8404498045299006085">Behåll allt</translation>
 <translation id="8408068190360279472">Nätverkstyp: <ph name="NETWORK_TYPE" />, ansluter</translation>
-<translation id="841387525767317275">Filerna i den här mappen är tillgängliga offline</translation>
 <translation id="8425213833346101688">Ändra</translation>
+<translation id="8428213095426709021">Inställningar</translation>
 <translation id="8431909052837336408">Ändra SIM-kortets pinkod</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8452135315243592079">SIM-kort saknas</translation>

@@ -404,7 +404,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3464194322481586217">Narxni kuzatish imkonsiz.</translation>
 <translation id="3469166899695866866">Yuklab olish to‘xtatilsinmi?</translation>
 <translation id="3470502288861289375">Nusxa olinmoqda...</translation>
-<translation id="3471148582064653480">Parollar, tarix va boshqa maʼlumotlarni sinxronlang</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} ta sayt yoki ilova uchun}other{{COUNT} ta sayt yoki ilova uchun}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> sifatida davom etish</translation>
 <translation id="3476450923187944815">Parollarni boshqa ilovalarda ishlatish.</translation>
@@ -944,7 +943,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6674571176963658787">Sinxronlashni boshlash uchun kodli iborani kiriting</translation>
 <translation id="667999046851023355">Hujjat</translation>
 <translation id="6684906340059221832">Narxlar kuzatilmoqda</translation>
-<translation id="6689804622901271327">Toʻlov axborotini avtomatik kiritish</translation>
 <translation id="6710079714193676716">Tashkilotingiz tomonidan boshqariladi. Ayrim funksiyalar ishlamasligi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Bukmark, parol va barcha qurilmalaringizdagi maʼlumotlarni oling</translation>
@@ -1300,7 +1298,6 @@ Maʼlumotlaringiz <ph name="TIME" /> sanasida kodli ibora bilan shifrlangan. Chr
 <translation id="8976414606286374109">Kartalar Google hisobingizda saqlanadi.</translation>
 <translation id="8981454092730389528">Google hisobidagi harakatlarni kuzatish</translation>
 <translation id="8985320356172329008">Siz bu hisobdan kirgansiz</translation>
-<translation id="8986567980592931173">Parollar, tarix va boshqalarni sinxronlash uchun Google hisobingizga kiring.</translation>
 <translation id="8998289560386111590">Qurilmangizda ishlamaydi.</translation>
 <translation id="8999545564078155498">Face ID bilan qulfni ochish</translation>
 <translation id="9000089900434778519">Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi koʻrsatmalarni oching.</translation>

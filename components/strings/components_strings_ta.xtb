@@ -374,7 +374,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">கணினி நிர்வாகியைத் தொடர்புகொள்ளவும்</translation>
 <translation id="1736420071277903564">கம்ப்யூட்டர்</translation>
-<translation id="1740951997222943430">சரியான காலாவதி மாதத்தை உள்ளிடவும்</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> ஆக இருக்கும்போது குறிப்பிடப்பட வேண்டும். அத்துடன் சரியான சரமாகவும் இருக்க வேண்டும்.</translation>
 <translation id="1743393865165844832">படுக்கைகள் &amp; படுக்கை விரிப்புகள்</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />இந்தத் தரவை நாங்கள் பயன்படுத்தும் விதம்:<ph name="END_BOLD" /> நீங்கள் உலாவும்போது உங்களுக்கு ஆர்வமுள்ள தலைப்புகளை Chrome நினைவில் வைத்துக்கொள்ளும். தலைப்பு லேபிள்கள் முன்கூட்டியே வரையறுக்கப்பட்டவை. இவற்றில் கலைகள், பொழுதுபோக்கு, ஷாப்பிங், விளையாட்டு போன்றவை அடங்கும். அதன்பிறகு பிரத்தியேக விளம்பரங்களைக் காட்ட சில தலைப்புகளை (நீங்கள் இதுவரை இணையத்தில் பார்த்தவை அல்ல) நீங்கள் பார்வையிடும் தளம் Chrome உலாவியிடம் கேட்டறியலாம்.</translation>
@@ -421,6 +420,7 @@
 <translation id="1838374766361614909">தேடலை அழி</translation>
 <translation id="1839551713262164453">கொள்கை மதிப்புகளின் சரிபார்ப்பு பிழைகளுடன் தோல்வியில் முடிந்தது.</translation>
 <translation id="1842969606798536927">பணம் செலுத்துக</translation>
+<translation id="1854180393107901205">அனுப்புவதை நிறுத்து</translation>
 <translation id="1855370856221982654">குத்துச்சண்டை</translation>
 <translation id="1856713167556118146">மறைநிலையில் செய்யப்படாதவை:</translation>
 <translation id="1862788842908766795">நிர்வாகம் &amp; மேலாண்மைப் பணிகள்</translation>
@@ -569,7 +569,6 @@
 <translation id="2188375229972301266">மல்டிப்பில் பஞ்ச் பாட்டம்</translation>
 <translation id="2197398642355049178">உங்கள் தலைப்புகள்</translation>
 <translation id="219906046732893612">வீட்டு மேம்பாடு</translation>
-<translation id="2202020181578195191">சரியான காலாவதி ஆண்டை உள்ளிடவும்</translation>
 <translation id="2202627062836089804">உங்கள் கார்டின் பின்பக்கம்</translation>
 <translation id="2204482073374652408">புதுப்பிக்கப்பட்டது!</translation>
 <translation id="2208053750671792556">குறியீட்டைப் பெறவில்லையா? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1172,7 +1171,6 @@
 <translation id="361438452008624280">பட்டியல் உள்ளீடு '<ph name="LANGUAGE_ID" />': தெரியாத அல்லது ஆதரிக்கப்படாத மொழி.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome அமைப்புகளில் பாதுகாப்புச் சரிபார்ப்பை இயக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="3615309852743236517">மெனிக்கியூர் &amp; பெடிக்கியூர்</translation>
-<translation id="3615877443314183785">சரியான காலாவதித் தேதியை உள்ளிடவும்</translation>
 <translation id="3620239073311576716">சீருடை &amp; பணிக்கான ஆடைகள்</translation>
 <translation id="36224234498066874">உலாவிய தரவை அழி...</translation>
 <translation id="362276910939193118">முழு வரலாற்றையும் காண்பி</translation>
@@ -2247,6 +2245,7 @@
 <translation id="5995727681868049093">உங்கள் Google கணக்கில் உள்ள தகவல்கள், தனியுரிமை, பாதுகாப்பு ஆகியவற்றை நிர்வகிக்கலாம்</translation>
 <translation id="5997247540087773573">நீங்கள் தற்போது பயன்படுத்திய கடவுச்சொல், தரவு மீறலுக்கு உள்ளாகியிருப்பதாகக் கண்டறியப்பட்டுள்ளது. உங்கள் கணக்குகளைப் பாதுகாப்பாக வைத்திருக்க, இப்போதே கடவுச்சொல்லை மாற்றும்படியும் சேமித்த கடவுச்சொற்களைச் சரிபார்க்கும்படியும் Google Password Manager பரிந்துரைக்கிறது.</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />'க்கு <ph name="RESULT_COUNT" /> முடிவுகள் உள்ளன</translation>
+<translation id="6002122790816966947">உங்கள் சாதனங்கள்</translation>
 <translation id="6005765687956866568">தானாக நிரப்பப்பட்ட தகவல், படிவத்தில் இருந்து அழிக்கப்பட்டது</translation>
 <translation id="6006365096047131769">3 x 5 இன்ச்</translation>
 <translation id="6006484371116297560">கிளாசிக்</translation>
@@ -2259,7 +2258,6 @@
 <translation id="6017514345406065928">பச்சை</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> எனும் தளத்தில் உள்ள தீங்கிழைப்பவர்கள், ஏமாற்றக்கூடிய ஆப்ஸை (இவை வேறு ஏதோவொன்றைப் போல போலியாகத் தோற்றமளிக்கும் அல்லது உங்களை டிராக் செய்வதற்குப் பயன்படுத்தக்கூடிய தரவைச் சேகரிக்கும்) நிறுவலாம். <ph name="BEGIN_LEARN_MORE_LINK" />மேலும் அறிக<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (ஒத்திசைக்கப்பட்டன)</translation>
-<translation id="6027201098523975773">பெயரை உள்ளிடவும்</translation>
 <translation id="6028591542479806248">மொபைல் மற்றும் மின்னஞ்சல் அறிவிப்புகளை நிர்வகிக்கலாம்</translation>
 <translation id="603068602130820122">டூயல் ஸ்டேப்பில் ரைட்</translation>
 <translation id="6032524144326295339">அஞ்சல் பெட்டி 2</translation>

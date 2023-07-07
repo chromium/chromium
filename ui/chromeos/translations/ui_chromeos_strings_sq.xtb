@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">Gjermanisht Neo 2</translation>
 <translation id="3858860766373142691">Emri</translation>
 <translation id="3866249974567520381">Përshkrimi</translation>
-<translation id="3866439285517092441">Niveli i baterisë është i ulët. Sinkronizimi do të vazhdojë kur pajisja jote të lidhet me energjinë elektrike.</translation>
 <translation id="3899991606604168269">Frëngjisht (Kanada) me tastierë shumëgjuhëshe</translation>
 <translation id="3901991538546252627">Po lidhet me <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Po instalon profilin e celularit, rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Ngjite</translation>
+<translation id="3950820424414687140">Identifikohu</translation>
 <translation id="3952872973865944257">Teluguisht fonetike</translation>
 <translation id="3958548648197196644">Kivi</translation>
 <translation id="397105322502079400">Po llogarit...</translation>
@@ -947,8 +947,8 @@
 <translation id="8395901698320285466">Përmasat</translation>
 <translation id="8404498045299006085">Mbaji të gjitha</translation>
 <translation id="8408068190360279472">Rrjeti <ph name="NETWORK_TYPE" />, po lidhet</translation>
-<translation id="841387525767317275">Skedarët në këtë dosje janë të disponueshëm jashtë linje</translation>
 <translation id="8425213833346101688">Ndrysho</translation>
+<translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8431909052837336408">Ndrysho PIN-in e kartës SIM</translation>
 <translation id="8437209419043462667">Amerikane</translation>
 <translation id="8452135315243592079">Karta SIM mungon</translation>

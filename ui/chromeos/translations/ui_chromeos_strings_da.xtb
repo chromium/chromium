@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">Tysk (Neo 2)</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3866249974567520381">Beskrivelse</translation>
-<translation id="3866439285517092441">Batteriniveauet er lavt. Synkroniseringen genoptages, når enheden er tilsluttet en strømkilde.</translation>
 <translation id="3899991606604168269">Fransk (Canada) tastatur til flere sprog</translation>
 <translation id="3901991538546252627">Opretter forbindelse til <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Mobilprofil installeres. Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Indsæt</translation>
+<translation id="3950820424414687140">Log ind</translation>
 <translation id="3952872973865944257">Telugu fonetisk</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="397105322502079400">Beregner...</translation>
@@ -948,8 +948,8 @@
 <translation id="8395901698320285466">Mål</translation>
 <translation id="8404498045299006085">Behold alle</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-netværk, opretter forbindelse</translation>
-<translation id="841387525767317275">Filer i denne mappe er tilgængelige offline</translation>
 <translation id="8425213833346101688">Skift</translation>
+<translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8431909052837336408">Skift pinkode til SIM-kort</translation>
 <translation id="8437209419043462667">Amerikansk</translation>
 <translation id="8452135315243592079">SIM-kort mangler</translation>

@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">Cari açar cütündən istifadə edin</translation>
 <translation id="2320295602967756579">İşıqlı temanı aktiv edin</translation>
 <translation id="2323506179655536734">ÖTÜRÜLÜB</translation>
+<translation id="2324354238778375592">Üzən</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yaxınlıqdakı cihazları tapmaq üçün Bluetooth'u aktiv edin</translation>
 <translation id="2346474577291266260">Əla (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
 <translation id="370665806235115550">Yüklənir...</translation>
 <translation id="3708186454126126312">Öncə qoşulmuş cihazlar</translation>
+<translation id="3715651196924935218">Üzən pəncərədən çıxın</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> rəy)</translation>
 <translation id="3748026146096797577">Qoşulmayıb</translation>
 <translation id="3749289110408117711">Fayl adı</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Ekran</translation>
 <translation id="4155551848414053977">Skanerin aktiv olduğuna, şəbəkə və ya birbaşa qoşulma üzərindən əlçatan olduğuna əmin olun</translation>
+<translation id="4159238217853743776">Qismən</translation>
 <translation id="4159784952369912983">Bənövşəyi</translation>
 <translation id="4170180284036919717">Foto çəkin</translation>
 <translation id="4170700058716978431">UĞURSUZ OLDU</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">Bağlantını ayarlamaq və ya güncəlləmək üçün <ph name="BEGIN_LINK" />Ayarlara<ph name="END_LINK" /> keçin.</translation>
 <translation id="4932733599132424254">Tarix</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> cihazı <ph name="VERSION" /> versiyaya güncəllənib</translation>
+<translation id="4969079779290789265">Bölünmüş</translation>
 <translation id="4972592110715526173">rejim dəyişikliyi</translation>
 <translation id="498186245079027698">Skaneri yoxlayın və yenidən cəhd edin. Skan edilmiş faylları saxlamaq üçün diskdə kifayət qədər yer olduğuna əmin olun.</translation>
 <translation id="4985509611418653372">İşə salın</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">Serverin host adı</translation>
 <translation id="5089810972385038852">Dövlət</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">Tam</translation>
 <translation id="5142961317498132443">İdentifikasiya</translation>
 <translation id="5154917547274118687">Yaddaş</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> cihazınıza daxil olun</translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">Hesabdan çıxın</translation>
 <translation id="522307662484862935">E-poçt ünvanını daxil etməyin</translation>
 <translation id="5227902338748591677">Qaranlıq tema cədvəli</translation>
+<translation id="5229344016299762883">Tam ekrandan çıxın</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>
 <translation id="5252456968953390977">Rouminq</translation>
 <translation id="5257811368506016604">Açıq rəng rejimini aktiv edin</translation>
@@ -707,6 +713,7 @@
 <translation id="6566314079205407217">Bir neçə səhifənin skanlanması</translation>
 <translation id="6574762126505704998">Doldurma</translation>
 <translation id="6575134580692778371">Konfiqurasiya edilməyib</translation>
+<translation id="6576005492601044801">sol</translation>
 <translation id="6579509898032828423">Bu fotonu istifadə edin</translation>
 <translation id="6596816719288285829">IP Ünvanı</translation>
 <translation id="6599673642868607614">Rəyiniz üçün təşəkkür edirik. Rəyiniz Chromebook təcrübəsini təkmilləşdirməmizə kömək edir və komandamız tərəfindən nəzərdən keçiriləcək. Çox sayda hesabat olduğu üçün cavab göndərə bilməyəcəyik.</translation>
@@ -812,6 +819,7 @@
 <translation id="7497215489070763236">Server CA sertifikatı</translation>
 <translation id="7501957181231305652">və ya</translation>
 <translation id="7502658306369382406">IPv6 ünvanı</translation>
+<translation id="7513770521371759388">alt</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Yardım məzmunu əlçatan deyil</translation>
 <translation id="7535791657097741517">İşıqlı temanı aktiv edin</translation>
@@ -950,6 +958,7 @@
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">Keçidi paylaşın:</translation>
 <translation id="8660881923941176839">funt</translation>
+<translation id="8670574982334489519">sağ</translation>
 <translation id="8675354002693747642">Öncədən paylaşılan açar</translation>
 <translation id="8677859815076891398">Albom yoxdur. <ph name="LINK_BEGIN" />Google Fotoda<ph name="LINK_END" /> albom yaradın.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bu funksiyanı idarə etmək üçün Sol və ya Sağ ox düyməsini istifadə edin.</translation>
@@ -995,6 +1004,7 @@
 <translation id="8936793075252196307">Müştərinin IP ünvanı</translation>
 <translation id="8944651180182756621">Başladıcı rəngi</translation>
 <translation id="894617464444543719">Cihaz telefondur.</translation>
+<translation id="8950424402482976779">üst</translation>
 <translation id="8968751544471797276">Şarj sürəti</translation>
 <translation id="8970109610781093811">Yenidən icra edin</translation>
 <translation id="8983038754672563810">HSPA</translation>

@@ -374,7 +374,6 @@
 <translation id="1734864079702812349">美国运通卡</translation>
 <translation id="1734878702283171397">请尝试联系系统管理员。</translation>
 <translation id="1736420071277903564">计算机</translation>
-<translation id="1740951997222943430">请输入有效的失效月份</translation>
 <translation id="1741613555002899862">当 DnsOverHttpsMode 是“<ph name="SECURE_DNS_MODE_SECURE" />”时，必须将此政策指定为有效字符串。</translation>
 <translation id="1743393865165844832">床上用品</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />我们如何使用这些数据<ph name="END_BOLD" />：Chrome 会在您浏览时记录您感兴趣的主题。主题标签是预定义的，包括“艺术与娱乐”“购物”和“体育”等等。之后，您访问的网站便可请求 Chrome 提供您的若干主题（而非您的浏览记录），以便向您展示个性化广告。</translation>
@@ -421,6 +420,7 @@
 <translation id="1838374766361614909">清除搜索字词</translation>
 <translation id="1839551713262164453">由于出现错误，未能成功验证政策值</translation>
 <translation id="1842969606798536927">付款</translation>
+<translation id="1854180393107901205">停止投放</translation>
 <translation id="1855370856221982654">拳击</translation>
 <translation id="1856713167556118146">无痕模式不会做什么</translation>
 <translation id="1862788842908766795">行政和管理职位</translation>
@@ -430,6 +430,7 @@
 <translation id="1870473978371099486">家教服务</translation>
 <translation id="1871208020102129563">代理已设置为使用固定的代理服务器，而不是 .pac 脚本网址。</translation>
 <translation id="1871284979644508959">必填字段</translation>
+<translation id="1871739799120352748">价格高</translation>
 <translation id="1873899211667975540">摇滚乐</translation>
 <translation id="1874224422119691492">您可以在<ph name="SETTINGS" />中更改是否使用屏幕锁定功能填充密码</translation>
 <translation id="1875025161375567525">照片匣</translation>
@@ -533,6 +534,7 @@
 <translation id="2118132148597630479">C5 信封</translation>
 <translation id="2119505898009119320">颁发对象：<ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">打孔（右下角）</translation>
+<translation id="2122214041802369259">价格高</translation>
 <translation id="2122719317867821810">此政策正在正常运作，但与别处设置的值冲突且已覆盖该值。</translation>
 <translation id="2126374524350484896">PDF 制作工具：</translation>
 <translation id="2130448033692577677">您指定的模板未必会被应用，因为 DnsOverHttpsMode 政策未设置。</translation>
@@ -567,7 +569,6 @@
 <translation id="2188375229972301266">多孔（底部）</translation>
 <translation id="2197398642355049178">您的主题</translation>
 <translation id="219906046732893612">家居改善</translation>
-<translation id="2202020181578195191">请输入有效的失效年份</translation>
 <translation id="2202627062836089804">卡背面</translation>
 <translation id="2204482073374652408">更新已完成！</translation>
 <translation id="2208053750671792556">没收到验证码？<ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -920,6 +921,7 @@
 <translation id="3054512251683174387">Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可屏蔽不希望 Chrome 与网站分享的主题。详细了解如何在 Chrome 中管理广告隐私权设置。</translation>
 <translation id="3061707000357573562">修补服务</translation>
 <translation id="306573536155379004">游戏已开始。</translation>
+<translation id="3067505415088964188">价格低</translation>
 <translation id="3068991664510324412">计算机游戏与视频游戏</translation>
 <translation id="3080254622891793721">图形</translation>
 <translation id="3081538120861307764">为了衡量广告效果，网站之间会分享有限类型的数据，例如一天中向您展示广告的时段。</translation>
@@ -1170,7 +1172,6 @@
 <translation id="361438452008624280">列表条目“<ph name="LANGUAGE_ID" />”：语言未知或不受支持。</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可从 Chrome 设置中运行安全检查</translation>
 <translation id="3615309852743236517">美甲与足部护理</translation>
-<translation id="3615877443314183785">请输入有效的失效日期</translation>
 <translation id="3620239073311576716">制服与工作服</translation>
 <translation id="36224234498066874">清除浏览数据...</translation>
 <translation id="362276910939193118">显示全部历史记录</translation>
@@ -2231,6 +2232,7 @@
 <translation id="5967592137238574583">修改联系信息</translation>
 <translation id="5967867314010545767">从历史记录中移除</translation>
 <translation id="5968022600320704045">无搜索结果</translation>
+<translation id="5969199813874624822">保存并跟踪价格</translation>
 <translation id="5974052231147553524">第 6 卷</translation>
 <translation id="5975083100439434680">缩小</translation>
 <translation id="5979084224081478209">检查密码</translation>
@@ -2243,6 +2245,7 @@
 <translation id="5995727681868049093">在您的 Google 帐号中管理自己的信息、隐私和安全</translation>
 <translation id="5997247540087773573">您刚才使用的密码遭遇了数据泄露。为确保您的帐号安全，Google 密码管理工具建议您立即更改此密码并检查您已保存的所有密码。</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
+<translation id="6002122790816966947">您的设备</translation>
 <translation id="6005765687956866568">已从此表单中清除自动填充的信息</translation>
 <translation id="6006365096047131769">3 x 5 英寸</translation>
 <translation id="6006484371116297560">经典</translation>
@@ -2255,7 +2258,6 @@
 <translation id="6017514345406065928">绿色</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻击者可能会安装欺骗性应用来冒充其他内容或收集可用于对您进行跟踪的数据。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" />（已同步）</translation>
-<translation id="6027201098523975773">请输入名称</translation>
 <translation id="6028591542479806248">管理移动应用和电子邮件通知</translation>
 <translation id="603068602130820122">双钉（右侧）</translation>
 <translation id="6032524144326295339">信箱 2</translation>
@@ -3676,6 +3678,7 @@
 <translation id="9141013498910525015">管理地址</translation>
 <translation id="9144951720726881238">截止日期：</translation>
 <translation id="9148507642005240123">撤消修改(&amp;U)</translation>
+<translation id="9148599396704355100">价格低</translation>
 <translation id="9150045010208374699">使用您的摄像头</translation>
 <translation id="9150685862434908345">您的管理员可以远程更改您的浏览器设置。此设备上的活动可能也在接受 Chrome 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">已更新</translation>

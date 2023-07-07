@@ -376,7 +376,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">సిస్టమ్ నిర్వాహకుడిని సంప్రదించి ప్రయత్నించండి.</translation>
 <translation id="1736420071277903564">కంప్యూటర్</translation>
-<translation id="1740951997222943430">చెల్లుబాటు అయ్యే గడువు ముగింపు నెలను నమోదు చేయండి</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode అనేది, <ph name="SECURE_DNS_MODE_SECURE" />గా సెట్ చేసి ఉన్నప్పుడు ఖచ్చితంగా పేర్కొనాలి, చెల్లుబాటు అయ్యే స్ట్రింగ్ అయి ఉండాలి.</translation>
 <translation id="1743393865165844832">పరుపులు &amp; దుప్పట్లు, దిండు గలేబాలు</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />మేము ఈ డేటాను ఎలా ఉపయోగిస్తాము:<ph name="END_BOLD" /> మీరు బ్రౌజ్ చేస్తున్నప్పుడు మీకు ఆసక్తి ఉన్న టాపిక్‌లను Chrome నోట్ చేస్తుంది. టాపిక్ లేబుల్స్ ముందే నిర్వచించబడి ఉంటాయి, ఉదాహరణకు కళలు &amp; వినోదం, షాపింగ్, స్పోర్ట్స్ మొదలైనవి. ఆ తర్వాత, మీకు కనిపించే యాడ్‌లను వ్యక్తిగతీకరించడానికి, మీరు తెరిచిన ఏదైనా సైట్ మీ టాపిక్‌లలో కొన్నింటిని (మీ బ్రౌజింగ్ హిస్టరీ కాదు) అందించాల్సిందిగా Chromeను అడగవచ్చు.</translation>
@@ -423,6 +422,7 @@
 <translation id="1838374766361614909">శోధనను తీసివేయండి</translation>
 <translation id="1839551713262164453">విధాన విలువల క్రమబద్ధీకరణ ఎర్రర్‌లతో విఫలమైంది</translation>
 <translation id="1842969606798536927">చెల్లింపు</translation>
+<translation id="1854180393107901205">ప్రసారాన్ని ఆపివేయి</translation>
 <translation id="1855370856221982654">బాక్సింగ్</translation>
 <translation id="1856713167556118146">అజ్ఞాత మోడ్ ఏమి చేయదు</translation>
 <translation id="1862788842908766795">కార్యనిర్వాహక &amp; నిర్వహణ ఉద్యోగాలు</translation>
@@ -571,7 +571,6 @@
 <translation id="2188375229972301266">దిగువ భాగంలో అనేక రంధ్రాలు</translation>
 <translation id="2197398642355049178">మీ టాపిక్‌లు</translation>
 <translation id="219906046732893612">గృహ మరమ్మత్తులు</translation>
-<translation id="2202020181578195191">చెల్లుబాటు అయ్యే గడువు ముగింపు సంవత్సరాన్ని నమోదు చేయండి</translation>
 <translation id="2202627062836089804">మీ కార్డ్ వెనుక వైపు</translation>
 <translation id="2204482073374652408">అప్‌డేట్ చేయడం పూర్తయింది!</translation>
 <translation id="2208053750671792556">మీ కోడ్‌ను స్వీకరించలేదా? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1178,7 +1177,6 @@
 <translation id="361438452008624280">లిస్ట్‌ నమోదు "<ph name="LANGUAGE_ID" />": తెలియని లేదా మద్దతు లేని భాష.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో భద్రతా తనిఖీని రన్ చేయడానికి 'Tab'ను నొక్కి ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="3615309852743236517">మ్యానిక్యూర్‌లు &amp; పెడిక్యూర్‌లు</translation>
-<translation id="3615877443314183785">చెల్లుబాటు అయ్యే గడువు ముగింపు తేదీని నమోదు చేయండి</translation>
 <translation id="3620239073311576716">యూనిఫామ్‌లు &amp; పనికి వెళ్లేటపుడు వేసుకునే దుస్తులు</translation>
 <translation id="36224234498066874">బ్రౌజింగ్ డేటాను క్లియర్ చేయండి...</translation>
 <translation id="362276910939193118">పూర్తి హిస్టరీని చూపించు</translation>
@@ -2253,6 +2251,7 @@
 <translation id="5995727681868049093">మీ Google ఖాతాలో మీ సమాచారం, గోప్యత, ఇంకా భద్రతను మేనేజ్ చేయండి</translation>
 <translation id="5997247540087773573">మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్, డేటా ఉల్లంఘనలో కనగొనబడింది. మీ ఖాతాలను సురక్షితం చేయడానికి, దానిని ఇప్పుడే మార్చి, మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయమని Google Password Manager సిఫార్సు చేస్తోంది.</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' అనే దానికి <ph name="RESULT_COUNT" /> ఫలితాలు లభించాయి</translation>
+<translation id="6002122790816966947">మీ పరికరాలు</translation>
 <translation id="6005765687956866568">ఫారమ్ నుండి ఆటోఫిల్ చేసిన సమాచారం క్లియర్ చేయబడింది</translation>
 <translation id="6006365096047131769">3 x 5 అంగుళాలు</translation>
 <translation id="6006484371116297560">క్లాసిక్</translation>
@@ -2265,7 +2264,6 @@
 <translation id="6017514345406065928">ఆకుపచ్చ</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />లోని హ్యాకర్‌లు మోసపూరిత యాప్‌లను ఇన్‌స్టాల్ చేయవచ్చు. ఇవి వేరే వాటిలా కనిపించవచ్చు లేదా మిమ్మల్ని ట్రాక్ చేయడానికి ఉపయోగించబడే డేటాను సేకరించవచ్చు. <ph name="BEGIN_LEARN_MORE_LINK" />మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (సింక్ చేయబడ్డాయి)</translation>
-<translation id="6027201098523975773">పేరుని నమోదు చేయండి</translation>
 <translation id="6028591542479806248">మొబైల్, ఈమెయిల్ నోటిఫికేషన్‌లను మేనేజ్ చేయండి</translation>
 <translation id="603068602130820122">కుడివైపు డ్యుయల్ స్టేపుల్</translation>
 <translation id="6032524144326295339">మెయిల్‌బాక్స్ 2</translation>

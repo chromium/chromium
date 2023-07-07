@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">德语Neo 2</translation>
 <translation id="3858860766373142691">名称</translation>
 <translation id="3866249974567520381">说明</translation>
-<translation id="3866439285517092441">电池电量低。待接通电源后，设备会继续同步。</translation>
 <translation id="3899991606604168269">法语（加拿大）多语言键盘</translation>
 <translation id="3901991538546252627">正在连接：<ph name="NAME" /></translation>
 <translation id="3906232975181435906">正在安装移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">粘贴</translation>
+<translation id="3950820424414687140">登录</translation>
 <translation id="3952872973865944257">泰卢固语注音</translation>
 <translation id="3958548648197196644">猕猴桃</translation>
 <translation id="397105322502079400">正在计算...</translation>
@@ -560,6 +560,7 @@
 <translation id="5422221874247253874">接入点</translation>
 <translation id="5428105026674456456">西班牙语</translation>
 <translation id="5438282218546237410">没有与“<ph name="SEARCH_TERM" />”相符的结果。</translation>
+<translation id="5447680084201416734">存储空间不足。</translation>
 <translation id="5449551289610225147">密码无效</translation>
 <translation id="5459064203055649751">已有一个名为“<ph name="FILENAME" />”的文件。要将它替换为您想移动的文件吗？</translation>
 <translation id="5463231940765244860">输入</translation>
@@ -686,6 +687,7 @@
 <translation id="6423031066725912715">越南语 TCVN 键盘</translation>
 <translation id="6430271654280079150">您还有 1 次尝试机会。</translation>
 <translation id="643243556292470964">被删除的文件现已移至回收站</translation>
+<translation id="6438480100790416671">正在检查存储空间…</translation>
 <translation id="6485131920355264772">检索存储空间信息失败</translation>
 <translation id="6495925982925244349">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，详细信息</translation>
 <translation id="649877868557234318">正在将文件“<ph name="FILE_NAME" />”提取到文件夹“<ph name="FOLDER_NAME" />”</translation>
@@ -888,6 +890,7 @@
 <translation id="8000066093800657092">未连接任何网络</translation>
 <translation id="8008366997883261463">杰克罗素梗犬</translation>
 <translation id="8028993641010258682">大小</translation>
+<translation id="8034974485549318493">在进行初始设置时，您需要连接到互联网才能同步文件。</translation>
 <translation id="803771048473350947">文件</translation>
 <translation id="8038111231936746805">（默认）</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> 音频</translation>
@@ -940,8 +943,8 @@
 <translation id="8395901698320285466">尺寸</translation>
 <translation id="8404498045299006085">全部保留</translation>
 <translation id="8408068190360279472">“<ph name="NETWORK_TYPE" />”类型的网络，正在连接</translation>
-<translation id="841387525767317275">此文件夹中的文件已可供离线访问</translation>
 <translation id="8425213833346101688">更改</translation>
+<translation id="8428213095426709021">设置</translation>
 <translation id="8431909052837336408">更改 SIM 卡 PIN 码</translation>
 <translation id="8437209419043462667">美国英语</translation>
 <translation id="8452135315243592079">缺少 SIM 卡</translation>

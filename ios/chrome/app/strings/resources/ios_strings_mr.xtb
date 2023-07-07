@@ -404,7 +404,6 @@
 <translation id="3464194322481586217">किमतीचा माग ठेवता आला नाही.</translation>
 <translation id="3469166899695866866">डाउनलोड थांबवायचे?</translation>
 <translation id="3470502288861289375">कॉपी करत आहे...</translation>
-<translation id="3471148582064653480">तुमचे पासवर्ड, इतिहास आणि आणखी बऱ्याच गोष्टी सिंक करा.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} साइट किंवा अ‍ॅपसाठी}other{{COUNT} साइट आणि अ‍ॅप्ससाठी}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> म्हणून सुरू ठेवा</translation>
 <translation id="3476450923187944815">इतर सर्व अ‍ॅप्सवर तुमचे पासवर्ड अ‍ॅक्सेस करा.</translation>
@@ -945,7 +944,6 @@
 <translation id="6674571176963658787">सिंक सुरू करण्यासाठी तुमचा पासफ्रेझ एंटर करा</translation>
 <translation id="667999046851023355">दस्तऐवज</translation>
 <translation id="6684906340059221832">किमतींचा माग ठेवत आहे</translation>
-<translation id="6689804622901271327">पेमेंट माहिती ऑटोफिल करा</translation>
 <translation id="6710079714193676716">तुमच्या संस्थेने व्यवस्थापित केलेला. काही वैशिष्ट्ये कदाचित उपलब्ध नसतील. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क, पासवर्ड आणि आणखी बरेच काही मिळवा.</translation>
@@ -1301,7 +1299,6 @@
 <translation id="8976414606286374109">कार्ड तुमच्या Google खाते मध्ये सेव्ह केली जातात.</translation>
 <translation id="8981454092730389528">Google ॲक्टिव्हिटी नियंत्रणे</translation>
 <translation id="8985320356172329008">Google मध्ये हे म्हणून साइन इन केले</translation>
-<translation id="8986567980592931173">तुमचे पासवर्ड, इतिहास आणि आणखी बरेच काही सिंक करण्यासाठी तुमचे Google खाते वापरून साइन इन करा.</translation>
 <translation id="8998289560386111590">तुमच्या डिव्हाइसवर उपलब्ध नाही</translation>
 <translation id="8999545564078155498">फेस आयडी वापरून अनलॉक करा</translation>
 <translation id="9000089900434778519"><ph name="DSE_NAME" /> हे तुमचे शोध इंजीन आहे. लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, त्याच्या सूचना पहा.</translation>

@@ -3714,6 +3714,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4068776064906523561">Gemte fingeraftryk</translation>
 <translation id="407173827865827707">Ved klik</translation>
 <translation id="4072701974556190758">Adgangskoden gemmes på din Google-konto <ph name="ACCOUNT" />. Du behøver ikke at huske den.</translation>
+<translation id="4072805772816336153">Prøv igen senere</translation>
 <translation id="407520071244661467">Skaler</translation>
 <translation id="407543464472585404">Profilen tilhørende <ph name="NAME" /> er knyttet til <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">Annoncer er blokeret på dette website</translation>
@@ -3956,6 +3957,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4290791284969893584">Når du har lukket en side, kan de handlinger, du har påbegyndt, muligvis ikke gennemføres</translation>
 <translation id="4291265871880246274">Dialogboks for login</translation>
 <translation id="429234155571566255">disse opskrifter, du har set for nylig</translation>
+<translation id="429312253194641664">Et website afspiller medier</translation>
 <translation id="4295072614469448764">Appen er tilgængelig i din terminal. Der vises muligvis også et ikon på din appliste.</translation>
 <translation id="4295979599050707005">Log ind igen for at bekræfte, at din konto, <ph name="USER_EMAIL" />, kan bruges sammen med websites, apps og udvidelser i Chrome og Google Play. Du kan også fjerne denne konto. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Installerede og streamede apps via <ph name="APP_NAME" /></translation>
@@ -5696,7 +5698,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5811614940486072060">Denne fil er ikke downloadet på almindelig vis og kan være skadelig</translation>
 <translation id="5812674658566766066">Udvid alle</translation>
 <translation id="5815645614496570556">X.400-adresse</translation>
-<translation id="5816166985204777171">Denne systemapp er forudinstalleret på din enhed</translation>
 <translation id="5816434091619127343">De printerændringer, du har anmodet om, vil gøre printeren ubrugelig.</translation>
 <translation id="581659025233126501">Aktivér synkronisering</translation>
 <translation id="5817069030404929329">Vil du flytte adgangskoder fra denne enhed til din Google-konto?</translation>
@@ -6004,7 +6005,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6065289257230303064">Indeksattributter for certifikatets emne</translation>
 <translation id="6066794465984119824">Systembilledets hash-værdi er ikke angivet</translation>
 <translation id="6069464830445383022">Brug din Google-konto, når du logger ind på din Chromebook</translation>
-<translation id="6070311415473175157">Vælg det billedområde, du vil søge i</translation>
 <translation id="6071181508177083058">bekræft adgangskode</translation>
 <translation id="6071576563962215370">Systemet kunne ikke fastslå installationstidspunktet for enhedens attributlås.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> hukommelse er sparet</translation>
@@ -6369,7 +6369,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6393156038355142111">Foreslå en stærk adgangskode</translation>
 <translation id="6393550101331051049">Har tilladelse til at vise usikkert indhold</translation>
 <translation id="6395423953133416962">Send <ph name="BEGIN_LINK1" />systemoplysninger<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />metrics<ph name="END_LINK2" /></translation>
-<translation id="6396175271241405634">Systemapp</translation>
 <translation id="6398715114293939307">Fjern Google Play Butik</translation>
 <translation id="6398765197997659313">Afslut fuld skærm</translation>
 <translation id="6399675241776343019">Afvist</translation>
@@ -6644,7 +6643,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6619801788773578757">Tilføj terminalapp</translation>
 <translation id="6619990499523117484">Bekræft din pinkode</translation>
 <translation id="6620254580880484313">Containernavn</translation>
-<translation id="6620927550847360014">Vil du fjerne Bruschetta fra din <ph name="DEVICE_TYPE" />?</translation>
 <translation id="6621391692573306628">Hvis du vil sende denne fane til en anden enhed, skal du logge ind på Chrome på begge enheder</translation>
 <translation id="6622980291894852883">Fortsæt blokering af billeder</translation>
 <translation id="6624036901798307345">I tablettilstand skal du trykke på knappen til faneoptælling på værktøjslinjen for at åbne den nye fanelinje, der viser miniaturebilleder af hver fane.</translation>
@@ -8385,6 +8383,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8077120325605624147">Ethvert website, du besøger, kan vise dig en hvilken som helst annonce</translation>
 <translation id="8077579734294125741">Andre Chrome-profiler</translation>
 <translation id="80798452873915119">Websites kan anmode om tilladelse til at administrere vinduer på alle dine skærme</translation>
+<translation id="8080028325999236607">Luk alle faner</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Din session administreres af <ph name="MANAGER_NAME" />. Administratorer kan slette din profil og overvåge din netværkstrafik.</translation>
 <translation id="8081989000209387414">Vil du deaktivere ADB-fejlretning?</translation>
@@ -8687,6 +8686,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8336463659890584292">Når et website anmoder om at forudindlæse links privat på websitets side, anvender Chrome Googles servere. På denne måde skjules din identitet fra det forudindlæste website, men Google registrerer, hvilke websites der forudindlæses.</translation>
 <translation id="8336739000755212683">Skift kontobillede på enheden</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Denne enhed gemmes i 1 time, og du kan oprette forbindelse uden en kode næste gang. Koden indstilles af din administrator.}one{Denne enhed gemmes i {HOURS} time, og du kan oprette forbindelse uden en kode næste gang. Koden indstilles af din administrator.}other{Denne enhed gemmes i {HOURS} timer, og du kan oprette forbindelse uden en kode næste gang. Koden indstilles af din administrator.}}</translation>
+<translation id="8337399713761067085">Du er i øjeblikket offline</translation>
 <translation id="8338952601723052325">Udviklerens website</translation>
 <translation id="8339288417038613756">Skærm- og tekststørrelse</translation>
 <translation id="833986336429795709">Vælg en app for at åbne dette link</translation>
@@ -9429,9 +9429,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8978154919215542464">Til – synkroniser alt</translation>
 <translation id="8978670037548431647">Opdater muligheder for netdeling</translation>
 <translation id="897939795688207351">På <ph name="ORIGIN" /></translation>
-<translation id="8980335421826918629">Denne fil kan være en virus eller malware.
-
-Du kan sende den til Google Beskyttet browsing for at tjekke, om den er usikker. Det tager normalt et par sekunder at scanne filer.</translation>
 <translation id="8980345560318123814">Feedbackrapporter</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – gået ned</translation>
 <translation id="8981038076986775523">Få flere oplysninger om, hvordan du bruger en mikrofon</translation>
@@ -9795,6 +9792,7 @@ Du kan sende den til Google Beskyttet browsing for at tjekke, om den er usikker.
 <translation id="97905529126098460">Dette vindue lukkes, når annulleringen er fuldført.</translation>
 <translation id="980731642137034229">Knappen Handlingsmenu</translation>
 <translation id="981121421437150478">Offline</translation>
+<translation id="983192555821071799">Luk alle faner</translation>
 <translation id="983511809958454316">Denne funktion understøttes ikke i VR</translation>
 <translation id="984275831282074731">Betalingsmetoder</translation>
 <translation id="984705303330760860">Tilføj sprog for stavekontrollen</translation>

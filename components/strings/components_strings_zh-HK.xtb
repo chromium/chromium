@@ -374,7 +374,6 @@
 <translation id="1734864079702812349">美國運通信用卡</translation>
 <translation id="1734878702283171397">請嘗試聯絡系統管理員。</translation>
 <translation id="1736420071277903564">電腦</translation>
-<translation id="1740951997222943430">請輸入有效的到期月份</translation>
 <translation id="1741613555002899862">將 DnsOverHttpsMode 設定為 <ph name="SECURE_DNS_MODE_SECURE" /> 時，必須指定有效的字串。</translation>
 <translation id="1743393865165844832">床墊和寢具</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />我們會如何使用這些資料：<ph name="END_BOLD" />Chrome 會在您瀏覽內容時記錄感興趣的主題。系統會預先定義主題標籤，包括「藝術與娛樂」、「購物」和「運動」等。您日後瀏覽的網站可要求 Chrome 提供一些主題 (而非您的瀏覽記錄)，以便向您顯示個人化廣告。</translation>
@@ -421,6 +420,7 @@
 <translation id="1838374766361614909">清除搜尋</translation>
 <translation id="1839551713262164453">發生錯誤，政策值驗證失敗</translation>
 <translation id="1842969606798536927">支付</translation>
+<translation id="1854180393107901205">停止投放</translation>
 <translation id="1855370856221982654">拳擊</translation>
 <translation id="1856713167556118146">無痕模式不會做什麼</translation>
 <translation id="1862788842908766795">行政和管理職位</translation>
@@ -569,7 +569,6 @@
 <translation id="2188375229972301266">多孔 (底部)</translation>
 <translation id="2197398642355049178">您的主題</translation>
 <translation id="219906046732893612">家居裝修</translation>
-<translation id="2202020181578195191">請輸入有效的到期年份</translation>
 <translation id="2202627062836089804">信用卡背面</translation>
 <translation id="2204482073374652408">更新完成！</translation>
 <translation id="2208053750671792556">沒有收到驗證碼嗎？<ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1175,7 +1174,6 @@
 <translation id="361438452008624280">清單項目「<ph name="LANGUAGE_ID" />」：不明或不支援的語言。</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度執行安全檢查</translation>
 <translation id="3615309852743236517">修甲服務</translation>
-<translation id="3615877443314183785">請輸入有效的到期日</translation>
 <translation id="3620239073311576716">制服及工作服</translation>
 <translation id="36224234498066874">清除瀏覽資料…</translation>
 <translation id="362276910939193118">顯示完整記錄</translation>
@@ -2250,6 +2248,7 @@
 <translation id="5995727681868049093">在 Google 帳戶管理您的資料、私隱權和安全設定</translation>
 <translation id="5997247540087773573">系統發現您剛才使用的密碼因資料外洩而被洩露。為確保帳戶安全，「Google 密碼管理工具」建議您立即變更密碼，並檢查已儲存的密碼。</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅搜尋結果</translation>
+<translation id="6002122790816966947">您的裝置</translation>
 <translation id="6005765687956866568">已經由表格清除咗自動填入嘅資料</translation>
 <translation id="6006365096047131769">3 x 5 吋</translation>
 <translation id="6006484371116297560">經典主題</translation>
@@ -2262,7 +2261,6 @@
 <translation id="6017514345406065928">綠色</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻擊者可能會安裝欺詐應用程式來冒充其他內容，或收集可能用於追蹤您的資料。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /> (已同步)</translation>
-<translation id="6027201098523975773">輸入名稱</translation>
 <translation id="6028591542479806248">管理流動裝置/應用程式和電郵通知</translation>
 <translation id="603068602130820122">雙釘 (右側)</translation>
 <translation id="6032524144326295339">出紙槽 2</translation>

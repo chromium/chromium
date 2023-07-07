@@ -1551,7 +1551,6 @@
 <translation id="7866482334467279021">開啟</translation>
 <translation id="7872786842639831132">關閉</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> 上的藍牙似乎已關閉。請開啟藍牙，才能使用 Phone Hub。</translation>
-<translation id="7876243839304621966">全部移除</translation>
 <translation id="7877557217297072640">{0,plural, =0{現在將裝置回復為先前的版本}=1{在 1 秒內將裝置回復為先前的版本}other{在 # 秒內將裝置回復為先前的版本}}</translation>
 <translation id="7884446017008693258">熱點設定</translation>
 <translation id="7884902759927478774">取消分頁拖曳</translation>
@@ -1650,7 +1649,6 @@
 <translation id="8255234195843591763">重設以更新</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8262312463845990408">切換播放</translation>
-<translation id="8265826854528868575">目前顯示 <ph name="NUM_SHOWN_TASKS" /> 個，共 <ph name="NUM_TOTAL_TASKS" /> 個</translation>
 <translation id="8270450402312105425">{0,plural, =1{在 1 小時內將裝置回復為先前的版本}other{在 # 小時內將裝置回復為先前的版本}}</translation>
 <translation id="8277261673056602147">突顯畫面上的文字</translation>
 <translation id="8284362522226889623">請用四隻手指向左滑動以切換至上一個桌面</translation>

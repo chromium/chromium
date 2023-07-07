@@ -374,7 +374,6 @@
 <translation id="1734864079702812349">AmEx</translation>
 <translation id="1734878702283171397">စနစ်စီမံခန့်ခွဲသူကို ဆက်သွယ်ကြည့်ပါ။</translation>
 <translation id="1736420071277903564">ကွန်ပျူတာ</translation>
-<translation id="1740951997222943430">မှန်ကန်သည့် ကုန်ဆုံးမည့်လကို ထည့်ပါ</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode က <ph name="SECURE_DNS_MODE_SECURE" /> ဖြစ်သောအခါ သတ်မှတ်ထားပြီး မှန်ကန်သောလိုင်း ဖြစ်ရမည်။</translation>
 <translation id="1743393865165844832">မွေ့ရာနှင့် အိပ်ရာခင်း</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />ဤဒေတာကို ကျွန်ုပ်တို့ အသုံးပြုပုံ-<ph name="END_BOLD" /> Chrome က သင်ကြည့်ရှုနေချိန်တွင် သင်စိတ်ဝင်စားသည့် အကြောင်းအရာများကို မှတ်သားသည်။ အကြောင်းအရာအညွှန်းများကို ကြိုတင်သတ်မှတ်ထားပြီး အနုပညာနှင့် ဖျော်ဖြေရေး၊ ဈေးဝယ်ထွက်ခြင်းနှင့် အားကစားတို့ စသည်ကဲ့သို့အရာများ ပါဝင်သည်။ သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်က သင်တွေ့ရသော ကြော်ငြာများကို ပုဂ္ဂိုလ်ရေးသီးသန့် ပြုလုပ်ရန် သင့်အကြောင်းအရာအချို့ (သင်၏ကြည့်ရှုမှုမှတ်တမ်း မပါဝင်ပါ) ကို Chrome ထံမှ နောက်ပိုင်းတွင် တောင်းဆိုနိုင်သည်။</translation>
@@ -422,6 +421,7 @@
 <translation id="1838374766361614909">ရှာဖွေမှုကို ရှင်းပါ</translation>
 <translation id="1839551713262164453">မူဝါဒတန်ဖိုးများကို အတည်ပြုရာတွင် အမှားအယွင်းရှိနေသည်</translation>
 <translation id="1842969606798536927">ငွေပေးချေရန်</translation>
+<translation id="1854180393107901205">ကက်စ်လုပ်နေခြင်း ရပ်မည်</translation>
 <translation id="1855370856221982654">လက်ဝှေ့</translation>
 <translation id="1856713167556118146">ရုပ်ဖျက်မုဒ်က မလုပ်ပေးနိုင်သည်များ</translation>
 <translation id="1862788842908766795">အမှုဆောင်နှင့် စီမံခန့်ခွဲရေး အလုပ်</translation>
@@ -570,7 +570,6 @@
 <translation id="2188375229972301266">အောက်ခြေတွင် အများအပြားဖောက်ရန်</translation>
 <translation id="2197398642355049178">သင့်အကြောင်းအရာများ</translation>
 <translation id="219906046732893612">အိမ်မွမ်းမံရေး</translation>
-<translation id="2202020181578195191">မှန်ကန်သည့် ကုန်ဆုံးမည့်ခုနှစ်ကို ထည့်ပါ</translation>
 <translation id="2202627062836089804">သင့်ကတ်၏ ကျောဘက်ခြမ်း</translation>
 <translation id="2204482073374652408">အပ်ဒိတ်လုပ်ခြင်း ပြီးသွားပြီ။</translation>
 <translation id="2208053750671792556">ကုဒ်မရရှိဘူးလား။ <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1177,7 +1176,6 @@
 <translation id="361438452008624280">"<ph name="LANGUAGE_ID" />" စာရင်းထည့်သွင်းမှု- အမျိုးအမည်မသိ သို့မဟုတ် ပံ့ပိုးမထားသော ဘာသာစကား။</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် လုံခြုံရေး စစ်ဆေးမှု လုပ်ဆောင်ရန် ‘တဘ်ခလုတ်’ ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="3615309852743236517">ခြေသည်း လက်သည်း သန့်ရှင်းရေး</translation>
-<translation id="3615877443314183785">မှန်ကန်သည့် ကုန်ဆုံးမည့်ရက်ကို ထည့်ပါ</translation>
 <translation id="3620239073311576716">တူညီဝတ်စုံနှင့် လုပ်ငန်းခွင်ဝတ်စုံ</translation>
 <translation id="36224234498066874">ဖွင့်ကြည့်ထားသည့် ဒေတာများကို ရှင်းလင်းရန်...</translation>
 <translation id="362276910939193118">မှတ်တမ်း အပြည့် ပြရန်</translation>
@@ -2252,6 +2250,7 @@
 <translation id="5995727681868049093">သင်၏ Google Account တွင် သင့်အချက်အလက်၊ ပုဂ္ဂိုလ်ရေးနှင့် လုံခြုံရေးဆိုင်ရာများကို စီမံနိုင်သည်</translation>
 <translation id="5997247540087773573">သင်သုံးလိုက်သောစကားဝှက်ကို ဒေတာကျိုးပေါက်မှုတွင် တွေ့ရှိထားသည်။ သင့်အကောင့်များကို လုံခြုံစေရန် ‘Google စကားဝှက်မန်နေဂျာ’ က သင်သိမ်းထားသော စကားဝှက်များကို ယခုပြောင်းရန်နှင့် စစ်ဆေးရန် အကြံပြုပါသည်။</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' အတွက် ရလဒ် <ph name="RESULT_COUNT" /> ခု</translation>
+<translation id="6002122790816966947">သင်၏စက်များ</translation>
 <translation id="6005765687956866568">အော်တိုဖြည့်အချက်အလက်ကို ဖောင်မှ ဖယ်ရှားထားသည်</translation>
 <translation id="6006365096047131769">၃ x ၅ လက်မ</translation>
 <translation id="6006484371116297560">ဂန္ထဝင်</translation>
@@ -2264,7 +2263,6 @@
 <translation id="6017514345406065928">အစိမ်းရောင်</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ပေါ်ရှိ တိုက်ခိုက်သူများသည် အခြားတစ်စုံတစ်ခုအဖြစ် ဟန်ဆောင်ထားသော သို့မဟုတ် သင့်အား ခြေရာခံရန်အတွက် အသုံးပြုရန် ဒေတာများ စုဆောင်းခြင်းတို့ ပြုလုပ်နိုင်သည့် လှည့်စားတတ်သော အက်ပ်ကို ထည့်သွင်းနိုင်ပါသည်။ <ph name="BEGIN_LEARN_MORE_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />၊ <ph name="TYPE_2" />၊ <ph name="TYPE_3" /> (စင့်ခ်လုပ်ထားသည်)</translation>
-<translation id="6027201098523975773">အမည် ထည့်ပါ</translation>
 <translation id="6028591542479806248">မိုဘိုင်းနှင့် အီးမေးလ် အကြောင်းကြားချက်များကို စီမံနိုင်သည်</translation>
 <translation id="603068602130820122">ညာဘက်တွင် ချုပ်စက်ဖြင့် နှစ်ချက်ချုပ်ရန်</translation>
 <translation id="6032524144326295339">စာတိုက်ပုံး ၂</translation>

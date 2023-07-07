@@ -375,7 +375,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">सिस्टम व्यवस्थापक से संपर्क करने का प्रयास करें.</translation>
 <translation id="1736420071277903564">कंप्यूटर</translation>
-<translation id="1740951997222943430">खत्म होने का मान्य महीना डालें</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> होने पर, नीति तय हाेनी चाहिए. साथ ही, इसकी एक मान्य स्ट्रिंग भी होनी चाहिए.</translation>
 <translation id="1743393865165844832">बेडिंग और बेड लिनन</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />हम इस डेटा का इस्तेमाल कैसे करते हैं:<ph name="END_BOLD" /> जब कोई व्यक्ति ब्राउज़िंग करता है, तो Chrome उसकी दिलचस्पियों के विषयों को सेव करता है. विषय के लेबल पहले से तय होते हैं. इनमें कला और मनोरंजन, शॉपिंग, और खेल-कूद जैसी चीज़ें शामिल होती हैं. इसके बाद, किसी साइट को विज़िट करने पर, वह साइट Chrome से इनमें से कुछ विषयों की जानकारी मांग सकती है. इससे उस साइट को आपकी पसंद के हिसाब से विज्ञापन दिखाने में मदद मिलती है. हालांकि, इन विषयों में आपके ब्राउज़िंग इतिहास की जानकारी शामिल नहीं होती है.</translation>
@@ -422,6 +421,7 @@
 <translation id="1838374766361614909">खोज साफ़ करें</translation>
 <translation id="1839551713262164453">गड़बड़ियों के चलते नीति मानों की पुष्टि नहीं हो सकी</translation>
 <translation id="1842969606798536927">पैसे चुकाएं</translation>
+<translation id="1854180393107901205">कास्ट करना रोकें</translation>
 <translation id="1855370856221982654">मुक्केबाज़ी</translation>
 <translation id="1856713167556118146">गुप्त मोड क्या नहीं करता है</translation>
 <translation id="1862788842908766795">एक्ज़ीक्यूटिव और मैनेजमेंट सेक्टर की नौकरियां</translation>
@@ -570,7 +570,6 @@
 <translation id="2188375229972301266">नीचे की ओर एक से ज़्यादा पंच</translation>
 <translation id="2197398642355049178">आपकी पसंद के विषय</translation>
 <translation id="219906046732893612">घर की मरम्मत</translation>
-<translation id="2202020181578195191">खत्म होने का मान्य वर्ष डालें</translation>
 <translation id="2202627062836089804">अपने कार्ड के पिछले हिस्से</translation>
 <translation id="2204482073374652408">अपडेट पूरा हुआ!</translation>
 <translation id="2208053750671792556">क्या आपको कोड नहीं मिला? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1176,7 +1175,6 @@
 <translation id="361438452008624280">सूची एंट्री "<ph name="LANGUAGE_ID" />": अनजान या काम नहीं करने वाली भाषा.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में, सुरक्षा जांच करने के लिए पहले Tab और फिर Enter दबाएं</translation>
 <translation id="3615309852743236517">मैनिक्योर और पेडिक्योर</translation>
-<translation id="3615877443314183785">खत्म होने की मान्य तारीख डालें</translation>
 <translation id="3620239073311576716">काम पर जाने के लिए पहने जाने वाले कपड़े और यूनिफ़ॉर्म</translation>
 <translation id="36224234498066874">ब्राउज़िंग डेटा मिटाएं...</translation>
 <translation id="362276910939193118">पूरा इतिहास दिखाएं</translation>
@@ -2251,6 +2249,7 @@
 <translation id="5995727681868049093">Google खाते में अपनी जानकारी, निजता, और सुरक्षा को मैनेज करें</translation>
 <translation id="5997247540087773573">आपने अभी जो पासवर्ड इस्तेमाल किया है वह डेटा के गलत इस्तेमाल की वजह से लीक हो चुका है. Google Password Manager आपको यह सुझाव देता है कि आप तुरंत इस पासवर्ड को बदलें और सेव किए गए पासवर्ड की जांच करें. ऐसा करने से, आपके खाते सुरक्षित रहेंगे.</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' के लिए <ph name="RESULT_COUNT" /> नतीजे मिले हैं</translation>
+<translation id="6002122790816966947">आपके डिवाइस</translation>
 <translation id="6005765687956866568">फ़ॉर्म में ऑटोमैटिक भरी गई जानकारी मिटा दी गई है</translation>
 <translation id="6006365096047131769">3 x 5 इंच</translation>
 <translation id="6006484371116297560">क्लासिक</translation>
@@ -2263,7 +2262,6 @@
 <translation id="6017514345406065928">हरा</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> पर मौजूद हमलावर ऐसे भ्रामक ऐप्लिकेशन इंस्टॉल कर सकते हैं जो कुछ और होने का दावा करते हैं या ऐसा डेटा एकत्रित करते हैं जिसका उपयोग आप पर नज़र रखने के लिए किया जा सके. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (सिंक किए गए)</translation>
-<translation id="6027201098523975773">नाम डालें</translation>
 <translation id="6028591542479806248">मोबाइल और ईमेल सूचनाएं मैनेज करें</translation>
 <translation id="603068602130820122">दाईं ओर ड्युएल स्टेपल</translation>
 <translation id="6032524144326295339">मेलबॉक्स 2</translation>

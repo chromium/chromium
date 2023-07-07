@@ -1552,7 +1552,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7866482334467279021">activé</translation>
 <translation id="7872786842639831132">Désactivé</translation>
 <translation id="7875575368831396199">Apparemment, le Bluetooth est désactivé sur votre <ph name="DEVICE_TYPE" />. Activez-le pour utiliser Phone Hub.</translation>
-<translation id="7876243839304621966">Tout supprimer</translation>
 <translation id="7877557217297072640">{0,plural, =0{Rétablir une version antérieure de l'appareil maintenant}=1{Rétablir une version antérieure de l'appareil d'ici 1 seconde}one{Rétablir une version antérieure de l'appareil d'ici # seconde}other{Rétablir une version antérieure de l'appareil d'ici # secondes}}</translation>
 <translation id="7884446017008693258">Paramètres de point d'accès</translation>
 <translation id="7884902759927478774">Annuler le déplacement d'onglets</translation>
@@ -1651,7 +1650,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8255234195843591763">Réinitialiser pour mettre à jour</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8262312463845990408">Activer/Désactiver la lecture</translation>
-<translation id="8265826854528868575">Affichage de <ph name="NUM_SHOWN_TASKS" /> sur <ph name="NUM_TOTAL_TASKS" /></translation>
 <translation id="8270450402312105425">{0,plural, =1{Rétablir une version antérieure de l'appareil d'ici une heure}one{Rétablir une version antérieure de l'appareil d'ici # heure}other{Rétablir une version antérieure de l'appareil d'ici # heures}}</translation>
 <translation id="8277261673056602147">Mettre en surbrillance du texte à l'écran</translation>
 <translation id="8284362522226889623">Balayez l'écran vers la gauche avec quatre doigts pour passer au bureau précédent</translation>

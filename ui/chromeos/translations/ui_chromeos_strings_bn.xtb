@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">জার্মান নিও ২</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3866249974567520381">বর্ণনা</translation>
-<translation id="3866439285517092441">ব্যাটারিতে চার্জ কমে গেছে। আপনি পাওয়ারের সাথে কানেক্ট করলে, সিঙ্ক প্রসেস আবার চালু হবে।</translation>
 <translation id="3899991606604168269">ফরাসি (কানাডা) ভাষায় মাল্টিলিঙ্গুয়াল কীবোর্ড</translation>
 <translation id="3901991538546252627"><ph name="NAME" />-এ সংযোগ করা হচ্ছে</translation>
 <translation id="3906232975181435906">মোবাইল প্রোফাইল ইনস্টল করা হচ্ছে, <ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">পেস্ট করুন</translation>
+<translation id="3950820424414687140">সাইন-ইন করুন</translation>
 <translation id="3952872973865944257">তেলুগু ফোনেটিক</translation>
 <translation id="3958548648197196644">কিউই</translation>
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
@@ -947,8 +947,8 @@
 <translation id="8395901698320285466">আয়তন</translation>
 <translation id="8404498045299006085">সবগুলি রাখুন</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> নেটওয়ার্ক, কানেক্ট করা হচ্ছে</translation>
-<translation id="841387525767317275">এই ফোল্ডারে থাকা ফাইল অফলাইনেও উপলভ্য</translation>
 <translation id="8425213833346101688">পরিবর্তন</translation>
+<translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8431909052837336408">সিম পিন পরিবর্তন করুন</translation>
 <translation id="8437209419043462667">মার্কিন যুক্তরাষ্ট্রীয়</translation>
 <translation id="8452135315243592079">সিম কার্ড পাওয়া যাচ্ছে না</translation>

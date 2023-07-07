@@ -404,7 +404,6 @@
 <translation id="3464194322481586217">Не вдалося підписатися на відстеження ціни.</translation>
 <translation id="3469166899695866866">Зупинити завантаження?</translation>
 <translation id="3470502288861289375">Копіювання…</translation>
-<translation id="3471148582064653480">Синхронізуйте свої паролі, історію тощо.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{для {COUNT} сайту або додатка}one{для {COUNT} сайту й додатка}few{для {COUNT} сайтів і додатків}many{для {COUNT} сайтів і додатків}other{для {COUNT} сайту й додатка}}</translation>
 <translation id="3474624961160222204">Продовжити як <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Отримуйте доступ до своїх паролів в інших додатках.</translation>
@@ -944,7 +943,6 @@
 <translation id="6674571176963658787">Щоб почати синхронізацію, введіть парольну фразу</translation>
 <translation id="667999046851023355">Документ</translation>
 <translation id="6684906340059221832">Відстежувані ціни</translation>
-<translation id="6689804622901271327">Автозаповнення платіжної інформації</translation>
 <translation id="6710079714193676716">Веб-переглядачем керує ваша організація. Деякі функції можуть бути недоступними. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Отримайте доступ до закладок, паролів і інших даних на всіх пристроях.</translation>
@@ -1300,7 +1298,6 @@
 <translation id="8976414606286374109">Картки зберігаються у вашому обліковому записі Google.</translation>
 <translation id="8981454092730389528">Відстеження дій у Google</translation>
 <translation id="8985320356172329008">Ви ввійшли в обліковий запис Google як</translation>
-<translation id="8986567980592931173">Увійдіть в обліковий запис Google, щоб синхронізувати паролі, історію тощо.</translation>
 <translation id="8998289560386111590">Недоступно на вашому пристрої</translation>
 <translation id="8999545564078155498">Розблокуйте за допомогою Face ID</translation>
 <translation id="9000089900434778519">Ваша пошукова система – <ph name="DSE_NAME" />. Перегляньте її вказівки щодо того, як видалити історію пошуку (якщо вона є).</translation>

@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Drive trenutno ni na voljo. Ko bo spet na voljo, se bo prenos samodejno začel znova.</translation>
 <translation id="1307931752636661898">Ni si mogoče ogledati datotek za Linux</translation>
 <translation id="1313405956111467313">Samodejna konfiguracija strežnika proxy</translation>
+<translation id="134645005685694099">V napravi ni dovolj prostora za shranjevanje, da bi lahko bila sinhronizacija datotek še naprej vklopljena. Nove datoteke ne bodo več samodejno sinhronizirane.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Neuporabna datoteka ali imenik.</translation>
 <translation id="1363028406613469049">Posnetek</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">Proxy HTTP</translation>
 <translation id="2467267713099745100">Omrežje <ph name="NETWORK_TYPE" />, izklopljeno</translation>
 <translation id="2468402215065996499">Tamagoči</translation>
+<translation id="2468470447085858632">S sinhronizacijo datotek lahko dostopate do datotek v Googlu Drive brez povezave</translation>
 <translation id="2470939964922472929">Prevečkrat ste vnesli napačno kodo PIN. Če želite nastaviti novo kodo PIN, vnesite 8-mestno osebno kodo za odblokiranje (PUK), ki jo dobite od operaterja.</translation>
 <translation id="2500392669976258912">gudžaratščina (fonetična)</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -349,12 +351,12 @@
 <translation id="3855472144336161447">nemščina (Neo 2)</translation>
 <translation id="3858860766373142691">Ime</translation>
 <translation id="3866249974567520381">Opis</translation>
-<translation id="3866439285517092441">Baterija je skoraj prazna. Sinhronizacija se bo nadaljevala, ko boste napravo priklopili na napajanje.</translation>
 <translation id="3899991606604168269">francoščina (Kanada) z večjezično tipkovnico</translation>
 <translation id="3901991538546252627">Vzpostavljanje povezave z omrežjem <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Nameščanje profila v mobilni napravi, omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Prilepi</translation>
+<translation id="3950820424414687140">Prijava</translation>
 <translation id="3952872973865944257">teluščina (fonetična)</translation>
 <translation id="3958548648197196644">Kivi</translation>
 <translation id="397105322502079400">Izračunavanje …</translation>
@@ -603,6 +605,7 @@
 <translation id="5720028165859493293">Datoteka <ph name="FILE_NAME" /> je premaknjena v smetnjak.</translation>
 <translation id="5724172041621205163">tajščina s tipkovnico pattachote</translation>
 <translation id="57383366388012121">Prejšnji mesec</translation>
+<translation id="575175778971367197">Te datoteke trenutno ni mogoče sinhronizirati</translation>
 <translation id="5756666464756035725">madžarščina – QWERTY</translation>
 <translation id="5760252553414789727">Izbranih je toliko elementov: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">nemščina (Švica)</translation>
@@ -705,6 +708,7 @@
 <translation id="6558280019477628686">Prišlo je do napake. Nekateri elementi morda niso izbrisani.</translation>
 <translation id="656398493051028875">Brisanje datoteke »<ph name="FILENAME" />« ...</translation>
 <translation id="6581162200855843583">Povezava Google Drive</translation>
+<translation id="6588648400954570689">Nastavitve sinhronizacije datotek</translation>
 <translation id="6594855146910089723">Ta mapa je deljena z Linuxom in programom Parallels Desktop</translation>
 <translation id="6607272825297743757">Podatki o datoteki</translation>
 <translation id="6609332149380188670">Št. map, deljenih s programom Parallels Desktop: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -829,6 +833,7 @@
 <translation id="7547811415869834682">nizozemščina</translation>
 <translation id="7551643184018910560">Pripenjanje na polico</translation>
 <translation id="7553492409867692754">Aplikacijam za Linux dovolite dostop do datotek v mapi <ph name="FOLDER_NAME" />.</translation>
+<translation id="7555339735447658365">Trenutno ste brez povezave. Sinhronizacija datotek se bo nadaljevala, ko vzpostavite internetno povezavo</translation>
 <translation id="7589661784326793847">Počakajte trenutek</translation>
 <translation id="7592775719802218421">Omogočanje dostopa do datoteke <ph name="FILE_NAME" /> brez povezave</translation>
 <translation id="7600126690270271294">srbščina</translation>
@@ -871,6 +876,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Napaka pri konfiguriranju omrežja</translation>
+<translation id="7832093238954689746">Sinhronizacija datoteke je končana. Datoteke v Mojem disku so na voljo brez povezave.</translation>
 <translation id="7839804798877833423">Za prenos teh datotek bo porabljenih približno <ph name="FILE_SIZE" /> MB mobilnih podatkov.</translation>
 <translation id="7846076177841592234">Prekliči izbor</translation>
 <translation id="7853966320808728790">francoščina – BÉPO</translation>
@@ -919,6 +925,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model naprave</translation>
 <translation id="8223479393428528563">Če želite te datoteke shraniti za uporabo brez povezave, vzpostavite povezavo, z desnim gumbom miške kliknite datoteke in izberite možnost <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Ogled shrambe</translation>
 <translation id="8249296373107784235">Prekini</translation>
 <translation id="8250690786522693009">Latinščina</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
@@ -948,8 +955,8 @@
 <translation id="8395901698320285466">Mere</translation>
 <translation id="8404498045299006085">Ohrani vse</translation>
 <translation id="8408068190360279472">Omrežje <ph name="NETWORK_TYPE" />, vzpostavljanje povezave</translation>
-<translation id="841387525767317275">Datoteke v tej mapi so na voljo brez povezave</translation>
 <translation id="8425213833346101688">Spremeni</translation>
+<translation id="8428213095426709021">Nastavitve</translation>
 <translation id="8431909052837336408">Spreminjanje kode PIN kartice SIM</translation>
 <translation id="8437209419043462667">Združene države</translation>
 <translation id="8452135315243592079">Ni kartice SIM</translation>

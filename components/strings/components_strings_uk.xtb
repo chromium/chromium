@@ -374,7 +374,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Зв’яжіться із системним адміністратором.</translation>
 <translation id="1736420071277903564">Комп'ютер</translation>
-<translation id="1740951997222943430">Введіть дійсний місяць закінчення терміну дії</translation>
 <translation id="1741613555002899862">Якщо параметр DnsOverHttpsMode має значення <ph name="SECURE_DNS_MODE_SECURE" />, потрібно вказати правило, яке має бути дійсним рядком.</translation>
 <translation id="1743393865165844832">Постільна білизна</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Як ми використовуємо ці дані.<ph name="END_BOLD" /> Chrome визначає теми, які вас цікавлять, на основі вашої історії веб-перегляду. Мітки тем є попередньо визначеними й включають такі категорії, як "Мистецтво та розваги", "Покупки" й "Спорт". Коли ви пізніше відвідаєте якийсь сайт, він може запитати в Chrome про кілька ваших тем (але не про історію веб-перегляду), щоб персоналізувати для вас оголошення.</translation>
@@ -421,6 +420,7 @@
 <translation id="1838374766361614909">Очистити поле пошуку</translation>
 <translation id="1839551713262164453">Не вдалося перевірити значення правила. Знайдено помилки</translation>
 <translation id="1842969606798536927">Оплатити</translation>
+<translation id="1854180393107901205">Зупинити трансляцію</translation>
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1856713167556118146">Що зберігається в анонімному режимі</translation>
 <translation id="1862788842908766795">Вакансії в галузі керування й менеджменту</translation>
@@ -569,7 +569,6 @@
 <translation id="2188375229972301266">Пробити кілька отворів унизу</translation>
 <translation id="2197398642355049178">Ваші теми</translation>
 <translation id="219906046732893612">Облаштування житла</translation>
-<translation id="2202020181578195191">Введіть дійсний рік закінчення терміну дії</translation>
 <translation id="2202627062836089804">зворотній стороні картки</translation>
 <translation id="2204482073374652408">Оновлення завершено.</translation>
 <translation id="2208053750671792556">Не отримали код? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1176,7 +1175,6 @@
 <translation id="361438452008624280">Пункт списку <ph name="LANGUAGE_ID" />: мова невідома або не підтримується.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб виконати перевірку безпеки в налаштуваннях Chrome</translation>
 <translation id="3615309852743236517">Манікюр і педикюр</translation>
-<translation id="3615877443314183785">Введіть дійсний термін дії</translation>
 <translation id="3620239073311576716">Уніформа й робочий одяг</translation>
 <translation id="36224234498066874">Очистити історію…</translation>
 <translation id="362276910939193118">Показати всю історію</translation>
@@ -2251,6 +2249,7 @@
 <translation id="5995727681868049093">Керуйте своєю інформацією, конфіденційністю й безпекою в обліковому записі Google</translation>
 <translation id="5997247540087773573">Введений пароль розкрито через порушення безпеки даних. Щоб захистити ваші облікові записи, Менеджер паролів Google радить негайно його змінити й перевірити збережені паролі.</translation>
 <translation id="6000758707621254961">Результатів для запиту "<ph name="SEARCH_TEXT" />": <ph name="RESULT_COUNT" /></translation>
+<translation id="6002122790816966947">Ваші пристрої</translation>
 <translation id="6005765687956866568">Автоматично заповнену інформацію було вилучено з форми</translation>
 <translation id="6006365096047131769">3 x 5 дюйм.</translation>
 <translation id="6006484371116297560">Класична</translation>
@@ -2263,7 +2262,6 @@
 <translation id="6017514345406065928">Зелений</translation>
 <translation id="6017850046339264347">Зловмисники можуть використати сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, щоб установити на ваш пристрій оманливі додатки, які видають себе за інші або збирають дані для відстеження ваших дій. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (синхронізовано)</translation>
-<translation id="6027201098523975773">Введіть ім’я</translation>
 <translation id="6028591542479806248">Керувати сповіщеннями на мобільному пристрої й електронною поштою</translation>
 <translation id="603068602130820122">Двічі скріпити праворуч</translation>
 <translation id="6032524144326295339">Поштова скринька 2</translation>

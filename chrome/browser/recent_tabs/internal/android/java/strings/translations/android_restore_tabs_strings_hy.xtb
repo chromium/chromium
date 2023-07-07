@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
 <translation id="1215127405478249895">Ներդիրների դիտում</translation>
+<translation id="1275718070701477396">Ընտրված</translation>
 <translation id="1356944128023012143">Համաժամացված սարքերի և դրանցից ընտրված ներդիրների ցանկը, որոնք հնարավոր է վերականգնել, փակված է։</translation>
 <translation id="1816430105422765050">Ընտրել այլ համաժամացված սարքեր ընտրացանկի այս տարրի համար։</translation>
 <translation id="2575169127313449202">Դուք կարող եք ներմուծել ստորև նշված սարքի ներդիրները</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
 <translation id="5972844218283131174">Ապընտրել բոլորը</translation>
 <translation id="791922009843073162">Ընտրված բոլոր ներդիրները կապընտրվեն կամ բոլոր չընտրված ներդիրները կընտրվեն</translation>
+<translation id="7927711904086083099">Ընտրված չէ</translation>
 <translation id="8003146088970081079">Ընտրեք սարքը, որից ուզում եք ներդիրներ ներմուծել</translation>
 <translation id="8019269305087157499">Բացել այստեղից</translation>
 </translationbundle>

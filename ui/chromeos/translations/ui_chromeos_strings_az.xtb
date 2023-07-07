@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Disk hazırda əlçatmazdır. Google Disk əlçatan olan kimi yükləmə avtomatik yenidən başlayacaq.</translation>
 <translation id="1307931752636661898">Linux fayllarını göstərmək alınmadı</translation>
 <translation id="1313405956111467313">Avtomatik proksi sazlama</translation>
+<translation id="134645005685694099">Fayl sinxronlaşdırmasını aktiv saxlamaq üçün cihazda yaddaş yeri kifayət deyil. Yeni fayllar avtomatik sinxronlaşdırılmayacaq.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Fayl və ya direktoriya qeyri-stabildir.</translation>
 <translation id="1363028406613469049">Trek</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP Proksi</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> şəbəkəsi, deaktivdir</translation>
 <translation id="2468402215065996499">Tamaqoçi</translation>
+<translation id="2468470447085858632">Fayl sinxronlaşdırması ilə Google Disk fayllarına oflayn daxil olun</translation>
 <translation id="2470939964922472929">Yanlış PİN kod dəfələrlə daxil edilib. Yeni PİN kod ayarlamaq üçün operator tərəfindən təmin edilən 8 rəqəmli Şəxsi Blokdan Çıxarma Açarını (PUK) daxil edin.</translation>
 <translation id="2500392669976258912">Qucarat Fonetikası</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -349,12 +351,12 @@
 <translation id="3855472144336161447">Alman Neo 2</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3866249974567520381">Təsvir</translation>
-<translation id="3866439285517092441">Batareya azdır. Enerji mənbəyinə qoşulduqda sinxronlaşdırma bərpa ediləcək.</translation>
 <translation id="3899991606604168269">Çoxdilli klaviatura ilə Fransız (Kanada)</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> qoşulur</translation>
 <translation id="3906232975181435906">Mobil profil quraşdırılır, Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
+<translation id="3950820424414687140">Giriş</translation>
 <translation id="3952872973865944257">Teluqu (Fonetik)</translation>
 <translation id="3958548648197196644">Kivi</translation>
 <translation id="397105322502079400">Hesablanır...</translation>
@@ -602,6 +604,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> zibil qutusuna köçürüldü</translation>
 <translation id="5724172041621205163">Pattachote klaviaturası ilə Tay dili</translation>
 <translation id="57383366388012121">Keçən ay</translation>
+<translation id="575175778971367197">Hazırda bu faylı sinxronlaşdırmaq olmur</translation>
 <translation id="5756666464756035725">Macar QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> element seçilib</translation>
 <translation id="5763377084591234761">Alman (İsveçrə)</translation>
@@ -704,6 +707,7 @@
 <translation id="6558280019477628686">Xəta baş verdi. Bəzi elementlər silinməmiş ola bilər.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" silinir...</translation>
 <translation id="6581162200855843583">Google Disk linki</translation>
+<translation id="6588648400954570689">Fayl sinxronlaşdırma ayarları</translation>
 <translation id="6594855146910089723">Bu qovluq Linux və Parallels Desktop ilə paylaşılır</translation>
 <translation id="6607272825297743757">Fayl məlumatı</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> qovluq Parallels Desktop ilə paylaşılır</translation>
@@ -828,6 +832,7 @@
 <translation id="7547811415869834682">Holland</translation>
 <translation id="7551643184018910560">Rəfə sancaqlayın</translation>
 <translation id="7553492409867692754">Linux tətbiqlərinə <ph name="FOLDER_NAME" /> qovluğundakı fayllara giriş icazəsi verin</translation>
+<translation id="7555339735447658365">Oflaynsınız. İnternetə qoşulduqda fayl sinxronlaşdırması bərpa ediləcək</translation>
 <translation id="7589661784326793847">Bir saniyə gözləyin</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> oflayn əlçatan edilir</translation>
 <translation id="7600126690270271294">Serb</translation>
@@ -868,6 +873,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Şəbəkə konfiqurasiya xətası</translation>
+<translation id="7832093238954689746">Fayl sinxronlaşdırıldı. Mənim diskim faylları oflayn əlçatandır.</translation>
 <translation id="7839804798877833423">Bu faylların əldə edilməsi təxminən <ph name="FILE_SIZE" /> mobil data istifadə edəcək.</translation>
 <translation id="7846076177841592234">Seçimi ləğv edin</translation>
 <translation id="7853966320808728790">Fransız BÉPO</translation>
@@ -916,6 +922,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Cihaz modeli</translation>
 <translation id="8223479393428528563">Bu faylları oflayn istifadəyə saxlamaq üçün onlayn olun, faylları sağ klikləyin və <ph name="OFFLINE_CHECKBOX_NAME" /> seçimini edin.</translation>
+<translation id="8241139360630443550">Yaddaşa baxın</translation>
 <translation id="8249296373107784235">Dayandırın</translation>
 <translation id="8250690786522693009">Latın</translation>
 <translation id="8250920743982581267">Sənədlər</translation>
@@ -945,8 +952,8 @@
 <translation id="8395901698320285466">Ölçülər</translation>
 <translation id="8404498045299006085">Hamısını saxlayın</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> şəbəkəsi, qoşulur</translation>
-<translation id="841387525767317275">Bu qovluqdakı fayllar oflayn əlçatandır</translation>
 <translation id="8425213833346101688">Dəyişin</translation>
+<translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8431909052837336408">SIM PIN kodu dəyişin</translation>
 <translation id="8437209419043462667">ABŞ</translation>
 <translation id="8452135315243592079">SIM kart yoxdur</translation>

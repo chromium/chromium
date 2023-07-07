@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">Alman Neo 2</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3866249974567520381">Açıklama</translation>
-<translation id="3866439285517092441">Pil seviyesi düşük. Senkronizasyon, güç kaynağına bağlandığınızda devam edecek.</translation>
 <translation id="3899991606604168269">Fransızca (Kanada), Çok Dilli klavye</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> ağına bağlanılıyor</translation>
 <translation id="3906232975181435906">Mobil profil, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> ağ, <ph name="NETWORK_NAME" /> yükleniyor</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Yapıştır</translation>
+<translation id="3950820424414687140">Oturum açın</translation>
 <translation id="3952872973865944257">Telugu Fonetik</translation>
 <translation id="3958548648197196644">Kivi</translation>
 <translation id="397105322502079400">Hesaplanıyor...</translation>
@@ -948,8 +948,8 @@
 <translation id="8395901698320285466">Boyutlar</translation>
 <translation id="8404498045299006085">Tümünü sakla</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ağı, bağlanıyor</translation>
-<translation id="841387525767317275">Bu klasördeki dosyalar internet bağlantısı olmadan kullanılabilir</translation>
 <translation id="8425213833346101688">Değiştir</translation>
+<translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8431909052837336408">SIM PIN Kodunu Değiştir</translation>
 <translation id="8437209419043462667">ABD</translation>
 <translation id="8452135315243592079">SIM kart yok</translation>

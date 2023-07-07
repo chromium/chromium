@@ -351,12 +351,12 @@
 <translation id="3855472144336161447">Þýskt Neo 2</translation>
 <translation id="3858860766373142691">Heiti</translation>
 <translation id="3866249974567520381">Lýsing</translation>
-<translation id="3866439285517092441">Lítil rafhleðsla. Samstilling hefst aftur þegar þú tengist við rafmagn.</translation>
 <translation id="3899991606604168269">Franska (Kanada) með fjölmála lyklaborði</translation>
 <translation id="3901991538546252627">Tengist <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Setur upp snjallprófíl, netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Líma</translation>
+<translation id="3950820424414687140">Skrá inn</translation>
 <translation id="3952872973865944257">Telugu hljóðritun</translation>
 <translation id="3958548648197196644">Loðber</translation>
 <translation id="397105322502079400">Reiknar...</translation>
@@ -954,8 +954,8 @@
 <translation id="8395901698320285466">Stærð</translation>
 <translation id="8404498045299006085">Geyma allt</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-net, tengist</translation>
-<translation id="841387525767317275">Skrár í þessari möppu eru tiltækar án nettengingar</translation>
 <translation id="8425213833346101688">Breyta</translation>
+<translation id="8428213095426709021">Stillingar</translation>
 <translation id="8431909052837336408">Breyta PIN-númeri SIM-korts</translation>
 <translation id="8437209419043462667">Bandarískt</translation>
 <translation id="8452135315243592079">SIM-kort vantar</translation>

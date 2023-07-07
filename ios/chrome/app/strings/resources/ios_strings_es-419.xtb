@@ -404,7 +404,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3464194322481586217">No se pudo realizar el seguimiento del precio.</translation>
 <translation id="3469166899695866866">¿Deseas detener la descarga?</translation>
 <translation id="3470502288861289375">Copiando…</translation>
-<translation id="3471148582064653480">Sincroniza tus contraseñas, historial y más.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{en {COUNT} sitio o app}other{en {COUNT} sitios o apps}}</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Accede a tus contraseñas en otras apps.</translation>
@@ -944,7 +943,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6674571176963658787">Para iniciar la sincronización, ingresa tu frase de contraseña.</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6684906340059221832">Se está realizando el seguimiento de los precios</translation>
-<translation id="6689804622901271327">Autocompletar información de pago</translation>
 <translation id="6710079714193676716">Tu organización administra el navegador. Es posible que algunas funciones no estén disponibles. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Accede a tus favoritos, contraseñas y más en todos tus dispositivos.</translation>
@@ -1300,7 +1298,6 @@ Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingr
 <translation id="8976414606286374109">Las tarjetas se guardan en tu Cuenta de Google.</translation>
 <translation id="8981454092730389528">Controles de actividad de Google</translation>
 <translation id="8985320356172329008">Accediste a Google como</translation>
-<translation id="8986567980592931173">Accede con tu Cuenta de Google para sincronizar tus contraseñas, historial y más.</translation>
 <translation id="8998289560386111590">No está disponible en tu dispositivo</translation>
 <translation id="8999545564078155498">Desbloquea con Face ID</translation>
 <translation id="9000089900434778519">Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para borrar el historial de búsqueda (si corresponde).</translation>

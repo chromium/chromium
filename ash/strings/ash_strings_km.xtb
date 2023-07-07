@@ -1553,7 +1553,6 @@
 <translation id="7866482334467279021">បើក</translation>
 <translation id="7872786842639831132">បិទ</translation>
 <translation id="7875575368831396199">ប៊្លូធូសហាក់ដូចជាបានបិទនៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក។ សូមបើកប៊្លូធូស ដើម្បីប្រើមណ្ឌលទូរសព្ទ។</translation>
-<translation id="7876243839304621966">ដកចេញទាំងអស់</translation>
 <translation id="7877557217297072640">{0,plural, =0{ប្ដូរកំណែ​ឧបករណ៍​ទៅកំណែមុន​ឥឡូវនេះ}=1{ប្ដូរកំណែ​ឧបករណ៍​ទៅកំណែមុន​ក្នុងរយៈពេល 1 វិនាទី}other{ប្ដូរកំណែ​ឧបករណ៍​ទៅកំណែមុន​ក្នុងរយៈពេល # វិនាទី}}</translation>
 <translation id="7884446017008693258">ការ​កំណត់​ហតស្ប៉ត</translation>
 <translation id="7884902759927478774">បោះបង់​ការ​អូស​ផ្ទាំង</translation>
@@ -1652,7 +1651,6 @@
 <translation id="8255234195843591763">កំណត់​ឡើងវិញ ដើម្បី​ដំឡើងកំណែ</translation>
 <translation id="8261506727792406068">លុប</translation>
 <translation id="8262312463845990408">បិទ/បើកការចាក់</translation>
-<translation id="8265826854528868575">កំពុង​បង្ហាញ <ph name="NUM_SHOWN_TASKS" /> នៃ <ph name="NUM_TOTAL_TASKS" /></translation>
 <translation id="8270450402312105425">{0,plural, =1{ប្ដូរកំណែ​ឧបករណ៍​ទៅកំណែមុន​ក្នុងរយៈពេល​មួយម៉ោង}other{ប្ដូរកំណែ​ឧបករណ៍​ទៅកំណែមុន​ក្នុងរយៈពេល # ម៉ោង}}</translation>
 <translation id="8277261673056602147">រំលេចអក្សរនៅលើអេក្រង់របស់អ្នក</translation>
 <translation id="8284362522226889623">អូសទៅឆ្វេង​ដោយប្រើម្រាមដៃបួន ដើម្បីប្ដូរទៅតុមុន</translation>

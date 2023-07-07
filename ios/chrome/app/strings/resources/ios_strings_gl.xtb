@@ -404,7 +404,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3464194322481586217">Non se puido facer un seguimento do prezo.</translation>
 <translation id="3469166899695866866">Queres deter a descarga?</translation>
 <translation id="3470502288861289375">Copiando...</translation>
-<translation id="3471148582064653480">Sincroniza os teus contrasinais, historial e moito máis.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{de {COUNT} sitio ou aplicación}other{de {COUNT} sitios ou aplicacións}}</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Accede aos teus contrasinais noutras aplicacións.</translation>
@@ -944,7 +943,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6674571176963658787">Para comezar a sincronizar datos, escribe a túa frase de acceso</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6684906340059221832">Seguimento de prezos</translation>
-<translation id="6689804622901271327">Autocompleta a información de pago</translation>
 <translation id="6710079714193676716">Xestionado pola túa organización. É posible que algunhas funcións non estean dispoñibles. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Accede aos teus marcadores, contrasinais e moito máis en todos os dispositivos.</translation>
@@ -1300,7 +1298,6 @@ Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Intr
 <translation id="8976414606286374109">As tarxetas gárdanse na túa Conta de Google.</translation>
 <translation id="8981454092730389528">Controis de actividade de Google</translation>
 <translation id="8985320356172329008">Iniciaches sesión en Google como</translation>
-<translation id="8986567980592931173">Inicia sesión coa túa Conta de Google para sincronizar os contrasinais ou o historial, entre outras opcións.</translation>
 <translation id="8998289560386111590">Non está dispoñible no teu dispositivo</translation>
 <translation id="8999545564078155498">Desbloquear con Face ID</translation>
 <translation id="9000089900434778519">O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>

@@ -351,12 +351,12 @@
 <translation id="3855472144336161447">Bahasa Jerman Neo 2</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3866249974567520381">Huraian</translation>
-<translation id="3866439285517092441">Bateri lemah. Penyegerakan akan disambung semula apabila anda disambungkan kepada bekalan kuasa.</translation>
 <translation id="3899991606604168269">Perancis (Kanada) dengan papan kekunci Berbilang Bahasa</translation>
 <translation id="3901991538546252627">Menyambung ke <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Memasang profil mudah alih, Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Tampal</translation>
+<translation id="3950820424414687140">Log masuk</translation>
 <translation id="3952872973865944257">Fonetik Telugu</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="397105322502079400">Mengira...</translation>
@@ -955,8 +955,8 @@
 <translation id="8395901698320285466">Dimensi</translation>
 <translation id="8404498045299006085">Kekalkan semua</translation>
 <translation id="8408068190360279472">Rangkaian <ph name="NETWORK_TYPE" />, menyambung</translation>
-<translation id="841387525767317275">Fail dalam folder ini tersedia di luar talian</translation>
 <translation id="8425213833346101688">Tukar</translation>
+<translation id="8428213095426709021">Tetapan</translation>
 <translation id="8431909052837336408">Tukar PIN SIM</translation>
 <translation id="8437209419043462667">AS</translation>
 <translation id="8452135315243592079">Kad SIM tiada</translation>

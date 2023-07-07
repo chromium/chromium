@@ -1553,7 +1553,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7866482334467279021">päälle</translation>
 <translation id="7872786842639831132">Pois päältä</translation>
 <translation id="7875575368831396199">Bluetooth näyttää olevan poissa päältä laitteellasi (<ph name="DEVICE_TYPE" />). Laita Bluetooth päälle, jotta voit käyttää Phone Hubia.</translation>
-<translation id="7876243839304621966">Poista kaikki</translation>
 <translation id="7877557217297072640">{0,plural, =0{Päivitä laite edelliseen versioon nyt}=1{Päivitä laite edelliseen versioon 1 sekunnin kuluessa}other{Päivitä laite edelliseen versioon # sekunnin kuluessa}}</translation>
 <translation id="7884446017008693258">Hotspot-asetukset</translation>
 <translation id="7884902759927478774">Peru välilehden vetäminen</translation>
@@ -1652,7 +1651,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8255234195843591763">Nollaa päivitystä varten</translation>
 <translation id="8261506727792406068">Poista</translation>
 <translation id="8262312463845990408">Käynnistä tai keskeytä toisto</translation>
-<translation id="8265826854528868575">Näytetään <ph name="NUM_SHOWN_TASKS" />/<ph name="NUM_TOTAL_TASKS" /></translation>
 <translation id="8270450402312105425">{0,plural, =1{Päivitä laite aiempaan versioon tunnin kuluessa}other{Päivitä laite aiempaan versioon # tunnin kuluessa}}</translation>
 <translation id="8277261673056602147">Korosta tekstiä näytöllä</translation>
 <translation id="8284362522226889623">Siirry edelliseen työpöytään pyyhkäisemälle vasemmalle neljällä sormella</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1215127405478249895">Табуудыг шалгах</translation>
+<translation id="1275718070701477396">Сонгогдсон</translation>
 <translation id="1356944128023012143">Синк хийсэн төхөөрөмжүүдийн жагсаалт болон тэдгээр төхөөрөмжөөс шинэ сэргээх ажлын урсгалд сэргээхээр сонгосон табуудыг хаасан.</translation>
 <translation id="1816430105422765050">Энэ цэсийн зүйлийн дор синк хийсэн бусад төхөөрөмж рүү өөрчилнө үү.</translation>
 <translation id="2575169127313449202">Та доор жагсаасан төхөөрөмжөөс табууд авах боломжтой</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Бүгдийг сонго</translation>
 <translation id="5972844218283131174">Бүх сонголтыг цуцлах</translation>
 <translation id="791922009843073162">Сонгосон бүх табын сонголтыг цуцлах эсвэл сонголтыг цуцалсан бүх табыг сонгоно.</translation>
+<translation id="7927711904086083099">Сонгогдоогүй</translation>
 <translation id="8003146088970081079">Табууд авах хүсэлтэй байгаа төхөөрөмжөө сонгоно уу</translation>
 <translation id="8019269305087157499">Дараахаас нээх</translation>
 </translationbundle>

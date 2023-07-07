@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1215127405478249895">查看标签页</translation>
+<translation id="1275718070701477396">已选择</translation>
 <translation id="1356944128023012143">包含下述内容的列表已关闭：同步设备，以及已在这些设备上选择要通过新恢复工作流程来恢复的标签页。</translation>
 <translation id="1816430105422765050">切换到此菜单项下的其他同步设备。</translation>
 <translation id="2575169127313449202">您可获取下列设备中的标签页</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">全选</translation>
 <translation id="5972844218283131174">取消全选</translation>
 <translation id="791922009843073162">系统会取消选中所有已选择的标签页，或者选择所有未选中的标签页。</translation>
+<translation id="7927711904086083099">未选择</translation>
 <translation id="8003146088970081079">请选择您想获取哪部设备中的标签页</translation>
 <translation id="8019269305087157499">打开位置</translation>
 </translationbundle>

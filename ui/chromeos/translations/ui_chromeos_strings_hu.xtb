@@ -351,12 +351,12 @@
 <translation id="3855472144336161447">német Neo 2</translation>
 <translation id="3858860766373142691">Név</translation>
 <translation id="3866249974567520381">Leírás</translation>
-<translation id="3866439285517092441">Az akkumulátor töltöttsége alacsony. A szinkronizálás folytatódik, amint áramforráshoz csatlakozik.</translation>
 <translation id="3899991606604168269">francia (Kanada), többnyelvű billentyűzettel</translation>
 <translation id="3901991538546252627">Csatlakozás a következőhöz: <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Mobilprofil telepítése, <ph name="NETWORK_COUNT" />/<ph name="NETWORK_INDEX" />. hálózat, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Beillesztés</translation>
+<translation id="3950820424414687140">Bejelentkezés</translation>
 <translation id="3952872973865944257">telugu, fonetikus</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="397105322502079400">Számítás…</translation>
@@ -955,8 +955,8 @@
 <translation id="8395901698320285466">Méret</translation>
 <translation id="8404498045299006085">Az összes megtartása</translation>
 <translation id="8408068190360279472">Hálózat: <ph name="NETWORK_TYPE" />. Csatlakozás…</translation>
-<translation id="841387525767317275">A mappában lévő fájlok offline is hozzáférhetők</translation>
 <translation id="8425213833346101688">Módosítás</translation>
+<translation id="8428213095426709021">Beállítások</translation>
 <translation id="8431909052837336408">SIM-kártya PIN-kódjának módosítása</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8452135315243592079">Hiányzó SIM-kártya</translation>

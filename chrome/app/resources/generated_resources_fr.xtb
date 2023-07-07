@@ -3699,6 +3699,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4068776064906523561">Empreintes digitales enregistrées</translation>
 <translation id="407173827865827707">En cas de clic</translation>
 <translation id="4072701974556190758">Votre mot de passe sera enregistré dans votre compte Google (<ph name="ACCOUNT" />). Vous n'aurez pas à vous en souvenir.</translation>
+<translation id="4072805772816336153">Réessayer plus tard</translation>
 <translation id="407520071244661467">Mise à l'échelle</translation>
 <translation id="407543464472585404">Le profil de <ph name="NAME" /> est associé à <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">Annonces bloquées sur ce site</translation>
@@ -3941,6 +3942,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4290791284969893584">Si vous fermez une page, les tâches lancées risquent de ne pas être terminées</translation>
 <translation id="4291265871880246274">Boîte de dialogue de connexion</translation>
 <translation id="429234155571566255">ces recettes consultées récemment</translation>
+<translation id="429312253194641664">Un site est en train de lire un contenu multimédia</translation>
 <translation id="4295072614469448764">L'application est disponible via votre terminal. Il peut également y avoir une icône dans votre lanceur d'applications.</translation>
 <translation id="4295979599050707005">Veuillez vous reconnecter pour confirmer que votre compte <ph name="USER_EMAIL" /> peut être utilisé avec des sites Web, des applications et des extensions dans Chrome et Google Play. Vous pouvez également supprimer ce compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Applis installées et en streaming depuis <ph name="APP_NAME" /></translation>
@@ -5681,7 +5683,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5811614940486072060">Ce fichier n'étant pas souvent téléchargé, il peut présenter un danger</translation>
 <translation id="5812674658566766066">Tout développer</translation>
 <translation id="5815645614496570556">Adresse X.400</translation>
-<translation id="5816166985204777171">Cette appli système est préinstallée sur votre appareil</translation>
 <translation id="5816434091619127343">Les modifications demandées concernant l'imprimante risquent de rendre celle-ci inutilisable.</translation>
 <translation id="581659025233126501">Activer la synchronisation</translation>
 <translation id="5817069030404929329">Transférer les mots de passe de votre appareil vers votre compte Google ?</translation>
@@ -5989,7 +5990,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6065289257230303064">Attributs du répertoire de l'objet du certificat</translation>
 <translation id="6066794465984119824">Hachage d'image non défini</translation>
 <translation id="6069464830445383022">Connectez-vous à votre Chromebook à l'aide de votre compte Google</translation>
-<translation id="6070311415473175157">Sélectionner la zone d'image à rechercher</translation>
 <translation id="6071181508177083058">confirmer le mot de passe</translation>
 <translation id="6071576563962215370">Échec du verrouillage des attributs de temps d'installation de l'appareil.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> de mémoire gagnée</translation>
@@ -6354,7 +6354,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6393156038355142111">Suggérer un mot de passe sécurisé</translation>
 <translation id="6393550101331051049">Autorisé à afficher du contenu non sécurisé</translation>
 <translation id="6395423953133416962">Envoyer les <ph name="BEGIN_LINK1" />informations système<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />statistiques<ph name="END_LINK2" /></translation>
-<translation id="6396175271241405634">Appli système</translation>
 <translation id="6398715114293939307">Supprimer le Google Play Store</translation>
 <translation id="6398765197997659313">Quitter le mode plein écran</translation>
 <translation id="6399675241776343019">Refusée</translation>
@@ -6629,7 +6628,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6619801788773578757">Ajouter une application kiosque</translation>
 <translation id="6619990499523117484">Confirmez votre code.</translation>
 <translation id="6620254580880484313">Nom du conteneur</translation>
-<translation id="6620927550847360014">Supprimer Bruschetta de votre <ph name="DEVICE_TYPE" /> ?</translation>
 <translation id="6621391692573306628">Pour envoyer cet onglet sur un autre appareil, connectez-vous à Chrome sur cet autre appareil et celui-ci</translation>
 <translation id="6622980291894852883">Continuer à bloquer les images</translation>
 <translation id="6624036901798307345">En mode tablette, appuyez sur le bouton de la barre d'outils du compteur d'onglets pour ouvrir la nouvelle barre d'onglets qui affiche une vignette de chaque onglet.</translation>
@@ -8371,6 +8369,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8077120325605624147">Tous les sites que vous consultez peuvent vous présenter des annonces</translation>
 <translation id="8077579734294125741">Autres profils Chrome</translation>
 <translation id="80798452873915119">Les sites peuvent demander à gérer les fenêtres de tous vos écrans</translation>
+<translation id="8080028325999236607">Fermer tous les onglets</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Votre session est gérée par <ph name="MANAGER_NAME" />. Les administrateurs peuvent supprimer votre profil et surveiller votre trafic réseau.</translation>
 <translation id="8081989000209387414">Désactiver le débogage ADB ?</translation>
@@ -8673,6 +8672,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8336463659890584292">Lorsqu'un site demande à précharger en mode privé des liens sur sa page, Chrome utilise les serveurs Google. Le site préchargé ignore votre identité, mais Google sait quels sites sont préchargés.</translation>
 <translation id="8336739000755212683">Modifier l'image du compte sur l'appareil</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Pendant 1 heure, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}one{Pendant {HOURS} heure, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}other{Pendant {HOURS} heures, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}}</translation>
+<translation id="8337399713761067085">Vous êtes actuellement hors connexion.</translation>
 <translation id="8338952601723052325">Site Web du développeur</translation>
 <translation id="8339288417038613756">Taille de police et d'affichage</translation>
 <translation id="833986336429795709">Pour ouvrir ce lien, sélectionner une application</translation>
@@ -9414,9 +9414,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8978154919215542464">Activée – Tout synchroniser</translation>
 <translation id="8978670037548431647">Actualiser les fonctionnalités de partage de connexion</translation>
 <translation id="897939795688207351">Sur <ph name="ORIGIN" /></translation>
-<translation id="8980335421826918629">Ce fichier est peut-être un virus ou un logiciel malveillant.
-
-Vous pouvez l'envoyer à la navigation sécurisée Google pour vérifier s'il est dangereux. Les analyses prennent généralement quelques secondes.</translation>
 <translation id="8980345560318123814">Rapports de commentaires</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – Plantage</translation>
 <translation id="8981038076986775523">En savoir plus sur l'utilisation d'un micro</translation>
@@ -9780,6 +9777,7 @@ Vous pouvez l'envoyer à la navigation sécurisée Google pour vérifier s'il es
 <translation id="97905529126098460">Cette fenêtre se fermera une fois l'installation annulée.</translation>
 <translation id="980731642137034229">Bouton du menu d'actions</translation>
 <translation id="981121421437150478">Hors connexion</translation>
+<translation id="983192555821071799">Fermer tous les onglets</translation>
 <translation id="983511809958454316">Cette fonctionnalité n'est pas compatible avec la RV</translation>
 <translation id="984275831282074731">Modes de paiement</translation>
 <translation id="984705303330760860">Ajouter des langues pour le correcteur orthographique</translation>

@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">Deutsch – Neo 2</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3866249974567520381">Beschreibung</translation>
-<translation id="3866439285517092441">Akku ist schwach. Die Synchronisierung wird fortgesetzt, wenn das Gerät an die Stromversorgung angeschlossen ist.</translation>
 <translation id="3899991606604168269">Französisch (Kanada) mit mehrsprachiger Tastatur</translation>
 <translation id="3901991538546252627">Verbindung mit <ph name="NAME" /> wird hergestellt.</translation>
 <translation id="3906232975181435906">Mobiles Profil wird installiert, Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Einfügen</translation>
+<translation id="3950820424414687140">Anmelden</translation>
 <translation id="3952872973865944257">Telugu (phonetisch)</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
@@ -948,8 +948,8 @@
 <translation id="8395901698320285466">Abmessungen</translation>
 <translation id="8404498045299006085">Alle beibehalten</translation>
 <translation id="8408068190360279472">Netzwerk: <ph name="NETWORK_TYPE" />, Verbindung wird hergestellt</translation>
-<translation id="841387525767317275">Dateien in diesem Ordner sind offline verfügbar</translation>
 <translation id="8425213833346101688">Ändern</translation>
+<translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8431909052837336408">PIN für SIM-Karte ändern</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8452135315243592079">Keine SIM-Karte vorhanden</translation>

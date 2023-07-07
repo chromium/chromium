@@ -374,7 +374,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Provo të kontaktosh me administratorin e sistemit.</translation>
 <translation id="1736420071277903564">Kompjuter</translation>
-<translation id="1740951997222943430">Fut një muaj të vlefshëm skadimi</translation>
 <translation id="1741613555002899862">Duhet të jetë e specifikuar dhe një varg i vlefshëm kur DnsOverHttpsMode është <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Çarçafë dhe mbulesa krevati</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Si i përdorim këto të dhëna:<ph name="END_BOLD" /> Chrome mban shënim temat e interesit kur ti shfleton. Etiketat e temave janë të përcaktuara paraprakisht dhe përfshijnë gjëra të tilla si "Arte dhe argëtim", "Blerje" dhe "Sporte". Më vonë, një sajt që ti viziton mund t'i kërkojë Chrome disa nga temat e tua (por jo historikun tënd të shfletimit) për të personalizuar reklamat që shikon ti.</translation>
@@ -421,6 +420,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1838374766361614909">Fshi kërkimin</translation>
 <translation id="1839551713262164453">Vërtetimi i vlerave të politikës ka dështuar me gabime</translation>
 <translation id="1842969606798536927">Paguaj</translation>
+<translation id="1854180393107901205">Ndalo transmetimin</translation>
 <translation id="1855370856221982654">Boksi</translation>
 <translation id="1856713167556118146">Çfarë nuk bën modaliteti "I fshehtë"</translation>
 <translation id="1862788842908766795">Punë të nivelit ekzekutiv dhe në menaxhim</translation>
@@ -569,7 +569,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2188375229972301266">Shumë shpime poshtë</translation>
 <translation id="2197398642355049178">Temat e tua</translation>
 <translation id="219906046732893612">Përmirësimi i shtëpisë</translation>
-<translation id="2202020181578195191">Fut një vit të vlefshëm skadimi</translation>
 <translation id="2202627062836089804">pjesën e pasme e kartës</translation>
 <translation id="2204482073374652408">Përditësimi përfundoi!</translation>
 <translation id="2208053750671792556">Nuk e more kodin tënd? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1176,7 +1175,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="361438452008624280">Regjistrimi i listës "<ph name="LANGUAGE_ID" />": Gjuhë e panjohur ose e pambështetur.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për të ekzekutuar një kontroll sigurie te cilësimet e Chrome</translation>
 <translation id="3615309852743236517">Manikyre dhe pedikyre</translation>
-<translation id="3615877443314183785">Fut një datë të vlefshme skadimi</translation>
 <translation id="3620239073311576716">Uniforma dhe veshje pune</translation>
 <translation id="36224234498066874">Pastro të dhënat e shfletimit...</translation>
 <translation id="362276910939193118">Shfaq historikun e plotë</translation>
@@ -2251,6 +2249,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5995727681868049093">Menaxho informacionin, privatësinë dhe sigurinë tënde në "Llogarinë tënde të Google"</translation>
 <translation id="5997247540087773573">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve i Google" rekomandon ta ndryshosh atë tani dhe të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultate për "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6002122790816966947">Pajisjet e tua</translation>
 <translation id="6005765687956866568">Informacionet e plotësuara automatikisht u pastruan nga formulari</translation>
 <translation id="6006365096047131769">3 x 5 inç</translation>
 <translation id="6006484371116297560">Klasike</translation>
@@ -2263,7 +2262,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6017514345406065928">E gjelbër</translation>
 <translation id="6017850046339264347">Sulmuesit në <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mund të instalojnë aplikacione mashtruese që pretendojnë se janë diçka tjetër ose që mbledhin të dhëna që mund të përdoren për të të gjurmuar. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sinkronizuar)</translation>
-<translation id="6027201098523975773">Fut një emër</translation>
 <translation id="6028591542479806248">Menaxho njoftimet e email-it dhe pajisjes celulare</translation>
 <translation id="603068602130820122">Dy kapje me tel djathtas</translation>
 <translation id="6032524144326295339">Kutia postare 2</translation>

@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">Գերմանական (Neo 2)</translation>
 <translation id="3858860766373142691">Անուն</translation>
 <translation id="3866249974567520381">Նկարագրություն</translation>
-<translation id="3866439285517092441">Մարտկոցի լիցքը քիչ է։ Համաժամացումը կվերսկսվի, երբ դուք միանաք հոսանքի աղբյուրին։</translation>
 <translation id="3899991606604168269">ֆրանսերեն (Կանադա)՝ բազմալեզու ստեղնաշարով</translation>
 <translation id="3901991538546252627">Միացում <ph name="NAME" />-ին</translation>
 <translation id="3906232975181435906">Տեղադրվում է բջջային պրոֆիլը (ցանց <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />)</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Տեղադրել</translation>
+<translation id="3950820424414687140">Մուտք գործել</translation>
 <translation id="3952872973865944257">տելուգու (հնչյունային)</translation>
 <translation id="3958548648197196644">Կիվի</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
@@ -947,8 +947,8 @@
 <translation id="8395901698320285466">Չափեր</translation>
 <translation id="8404498045299006085">Պահպանել բոլորը</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ցանց, միացում…</translation>
-<translation id="841387525767317275">Այս պանակի ֆայլերը հասանելի են անցանց ռեժիմում</translation>
 <translation id="8425213833346101688">Փոխել</translation>
+<translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8431909052837336408">Փոխեք SIM քարտի PIN կոդը</translation>
 <translation id="8437209419043462667">ԱՄՆ</translation>
 <translation id="8452135315243592079">SIM քարտը բացակայում է</translation>

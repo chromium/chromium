@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">‏الألمانية Neo 2</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3866249974567520381">الوصف</translation>
-<translation id="3866439285517092441">طاقة البطارية منخفضة. سيتم استئناف المزامنة عند توصيل الجهاز بمصدر طاقة.</translation>
 <translation id="3899991606604168269">الفرنسية (كندا) باستخدام لوحة مفاتيح متعددة اللغات</translation>
 <translation id="3901991538546252627">جارٍ الاتصال بـ <ph name="NAME" /></translation>
 <translation id="3906232975181435906">‏جارٍ تثبيت الملف الشخصي لشريحة eSIM على الجهاز الجوّال، الشبكة رقم <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">لصق</translation>
+<translation id="3950820424414687140">تسجيل الدخول</translation>
 <translation id="3952872973865944257">التيلوغوية الصوتية</translation>
 <translation id="3958548648197196644">كيوي</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
@@ -565,6 +565,7 @@
 <translation id="5422221874247253874">نقطة الوصول</translation>
 <translation id="5428105026674456456">الإسبانية</translation>
 <translation id="5438282218546237410">لا توجد نتائج تخص <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">مساحة التخزين غير كافية.</translation>
 <translation id="5449551289610225147">كلمة المرور غير صالحة</translation>
 <translation id="5459064203055649751">هناك ملف آخر يحمل الاسم "<ph name="FILENAME" />". هل تريد استبداله بالملف الذي تنقله؟</translation>
 <translation id="5463231940765244860">إدخال</translation>
@@ -691,6 +692,7 @@
 <translation id="6423031066725912715">‏الفيتنامية باستخدام لوحة مفاتيح TCVN</translation>
 <translation id="6430271654280079150">يتبقى لديك محاولة واحدة.</translation>
 <translation id="643243556292470964">يجري الآن نقل الملفات المحذوفة إلى المهملات.</translation>
+<translation id="6438480100790416671">جارٍ التحقّق من مساحة التخزين…</translation>
 <translation id="6485131920355264772">تعذّر جلب معلومات المساحة</translation>
 <translation id="6495925982925244349">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يديرها المشرف، التفاصيل</translation>
 <translation id="649877868557234318">جارٍ استخراج الملف <ph name="FILE_NAME" /> إلى المجلّد <ph name="FOLDER_NAME" /></translation>
@@ -893,6 +895,7 @@
 <translation id="8000066093800657092">لا شبكة</translation>
 <translation id="8008366997883261463">كلب</translation>
 <translation id="8028993641010258682">الحجم</translation>
+<translation id="8034974485549318493">لإجراء الإعداد الأوّلي، عليك الاتصال بالإنترنت كي تتم مزامنة الملفات.</translation>
 <translation id="803771048473350947">ملف</translation>
 <translation id="8038111231936746805">(تلقائي)</translation>
 <translation id="8042602468072383151">ملف صوت <ph name="AUDIO_TYPE" /></translation>
@@ -945,8 +948,8 @@
 <translation id="8395901698320285466">الأبعاد</translation>
 <translation id="8404498045299006085">الإبقاء على الكل</translation>
 <translation id="8408068190360279472">شبكة <ph name="NETWORK_TYPE" />، جارٍ الاتصال</translation>
-<translation id="841387525767317275">ملفات هذا المجلد متاحة على جهازك بلا اتصال بالإنترنت.</translation>
 <translation id="8425213833346101688">تغيير</translation>
+<translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8431909052837336408">‏تغيير رمز PIN لشريحة SIM</translation>
 <translation id="8437209419043462667">الأمريكية</translation>
 <translation id="8452135315243592079">‏شريحة SIM مفقودة</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1215127405478249895">Tinjau tab</translation>
+<translation id="1275718070701477396">Dipilih</translation>
 <translation id="1356944128023012143">Daftar perangkat yang disinkronkan dan tab yang dipilih dari perangkat tersebut yang akan dipulihkan pada alur kerja pemulihan baru ditutup.</translation>
 <translation id="1816430105422765050">Ubah ke perangkat yang disinkronkan lainnya di bagian item menu ini.</translation>
 <translation id="2575169127313449202">Anda dapat mengakses tab dari perangkat yang tercantum di bawah</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5972844218283131174">Batalkan semua pilihan</translation>
 <translation id="791922009843073162">Semua tab yang dipilih akan dibatalkan pilihannya, atau semua tab yang tidak dipilih akan dipilih.</translation>
+<translation id="7927711904086083099">Tidak dipilih</translation>
 <translation id="8003146088970081079">Pilih perangkat yang ingin Anda akses tabnya</translation>
 <translation id="8019269305087157499">Buka dari</translation>
 </translationbundle>

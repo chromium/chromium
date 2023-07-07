@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Pangalan</translation>
 <translation id="3866249974567520381">Paglalarawan</translation>
-<translation id="3866439285517092441">Paubos na ang baterya. Magpapatuloy ang pag-sync kapag nakakonekta ka sa kuryente.</translation>
 <translation id="3899991606604168269">French (Canada) na may Multilingual keyboard</translation>
 <translation id="3901991538546252627">Kumokonekta sa <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Ini-install ang profile ng mobile, Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">I-paste</translation>
+<translation id="3950820424414687140">Mag-sign in</translation>
 <translation id="3952872973865944257">Telugu Phonetic</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="397105322502079400">Kinakalkula...</translation>
@@ -948,8 +948,8 @@
 <translation id="8395901698320285466">Mga Sakop</translation>
 <translation id="8404498045299006085">Panatilihin lahat</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> network, kumokonekta</translation>
-<translation id="841387525767317275">Available offline ang mga file sa folder na ito</translation>
 <translation id="8425213833346101688">Baguhin</translation>
+<translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8431909052837336408">Palitan ang PIN ng SIM</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">Walang nakalagay na SIM card</translation>

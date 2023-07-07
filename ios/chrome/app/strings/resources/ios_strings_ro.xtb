@@ -255,6 +255,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2595587704210555261">{COUNT,plural, =1{Filele deschise care nu sunt folosite timp de o zi sau mai mult sunt mutate în File inactive, astfel încât să te poți concentra cu ușurință pe filele pe care le folosești cel mai des. Poți modifica oricând opțiunea din setări.}few{Filele deschise care nu sunt folosite timp de {COUNT} zile sau mai mult sunt mutate în File inactive, ca să te poți concentra cu ușurință pe filele pe care le folosești cel mai des. Poți modifica oricând opțiunea din setări.}other{Filele deschise care nu sunt folosite timp de {COUNT} de zile sau mai mult sunt mutate în File inactive, ca să te poți concentra cu ușurință pe filele pe care le folosești cel mai des. Poți modifica oricând opțiunea din setări.}}</translation>
 <translation id="2600682495497606169">Șterge cookie-urile site-ului</translation>
 <translation id="2609008503159898744">Închizi toate filele?</translation>
+<translation id="2617210333344098964">Mută adresa în cont</translation>
 <translation id="2625189173221582860">Parola a fost copiată</translation>
 <translation id="2626236249646841566">Verifică-ți conexiunea și încearcă să te conectezi din nou.</translation>
 <translation id="2637313651144986786">Caută în file...</translation>
@@ -404,7 +405,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3464194322481586217">Nu s-a putut urmări prețul.</translation>
 <translation id="3469166899695866866">Oprești descărcarea?</translation>
 <translation id="3470502288861289375">Se copiază...</translation>
-<translation id="3471148582064653480">Sincronizează parolele, istoricul și alte date.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{pentru {COUNT} site sau o aplicație}few{pentru {COUNT} site-uri și aplicații}other{pentru {COUNT} de site-uri și aplicații}}</translation>
 <translation id="3474624961160222204">Continuă ca <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Accesează-ți parolele în alte aplicații.</translation>
@@ -465,6 +465,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3851938967634752633">Parolele pentru <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> și încă <ph name="NUMBER_OF_ACCOUNTS" /> se vor șterge. Conturile tale nu se vor șterge.</translation>
 <translation id="3858860766373142691">Nume</translation>
 <translation id="3861486700625780712">Anulează urmărirea</translation>
+<translation id="3861908220442487587">Adresa este salvată numai pe acest dispozitiv. Pentru a o folosi pe celelalte dispozitive, mut-o în Contul Google <ph name="USER_EMAIL" />.</translation>
 <translation id="3863769054730344136">Trimite pe dispozitivele tale</translation>
 <translation id="387280738075653372">Descarcă Chrome de aici.</translation>
 <translation id="3875783148670536197">Arată-mi cum</translation>
@@ -944,7 +945,6 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6674571176963658787">Pentru a porni sincronizarea, introdu expresia de acces</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6684906340059221832">Se urmăresc prețurile</translation>
-<translation id="6689804622901271327">Completează automat informațiile de plată</translation>
 <translation id="6710079714193676716">Gestionat de organizația ta. Este posibil ca unele funcții să nu fie disponibile. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Accesează marcajele, parolele și multe altele pe toate dispozitivele.</translation>
@@ -1300,7 +1300,6 @@ Datele au fost criptate cu expresia de acces pentru <ph name="TIME" />. Introdu-
 <translation id="8976414606286374109">Cardurile se salvează în Contul Google.</translation>
 <translation id="8981454092730389528">Opțiuni privind activitatea Google</translation>
 <translation id="8985320356172329008">Conectat(ă) la Google ca</translation>
-<translation id="8986567980592931173">Conectează-te cu Contul Google pentru a sincroniza parolele, istoricul și alte date.</translation>
 <translation id="8998289560386111590">Nu este disponibil pe dispozitivul tău</translation>
 <translation id="8999545564078155498">Deblochează cu Face ID</translation>
 <translation id="9000089900434778519">Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentru ștergerea istoricului căutărilor, dacă este cazul.</translation>

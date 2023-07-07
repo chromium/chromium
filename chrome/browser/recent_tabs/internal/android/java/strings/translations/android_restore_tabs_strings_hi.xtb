@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
 <translation id="1215127405478249895">टैब देखें</translation>
+<translation id="1275718070701477396">चयनित</translation>
 <translation id="1356944128023012143">सिंक किए गए डिवाइसों और नई प्रक्रिया में वापस लाने के लिए उन डिवाइसों पर चुने गए टैब की सूची बंद कर दी गई है.</translation>
 <translation id="1816430105422765050">इस मेन्यू आइटम में जाकर, सिंक किए गए दूसरे डिवाइसों पर स्विच करें.</translation>
 <translation id="2575169127313449202">नीचे दिए गए डिवाइस से टैब वापस पाए जा सकते हैं</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">सभी को चुनें</translation>
 <translation id="5972844218283131174">सभी टैब से चुने हुए का निशान हटाएं</translation>
 <translation id="791922009843073162">चुने गए सभी टैब से चुने हुए का निशान हटा दिया जाएगा या जो टैब नहीं चुने गए हैं उन्हें चुना जाएगा.</translation>
+<translation id="7927711904086083099">चयनित नहीं</translation>
 <translation id="8003146088970081079">वह डिवाइस चुनें जिससे आपको टैब वापस पाने हैं</translation>
 <translation id="8019269305087157499">यहां से खोलें</translation>
 </translationbundle>

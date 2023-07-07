@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Drive ამჟამად მიუწვდომელია. ატვირთვა ავტომატურად განახლდება Google Drive-ის დაბრუნების შემდეგ.</translation>
 <translation id="1307931752636661898">Linux ფაილების ნახვა ვერ ხერხდება</translation>
 <translation id="1313405956111467313">პროქსის ავტომატური კონფიგურაცია</translation>
+<translation id="134645005685694099">თქვენს მოწყობილობაში არ არის საკმარისი მეხსიერება იმისთვის, რომ ფაილების სინქრონიზაცია ჩართული დარჩეს. ახალი ფაილების სინქრონიზაცია ავტომატურად აღარ განხორციელდება.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ფაილი ან დირექტორია არ არის გამოყენებადი.</translation>
 <translation id="1363028406613469049">ჩანაწერი</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP პროქსი-სერვერი</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> ქსელი, გამორთული</translation>
 <translation id="2468402215065996499">ტამაგოჩი</translation>
+<translation id="2468470447085858632">იქონიეთ წვდომა თქვენს Google Drive ფაილებზე ხაზგარეშე რეჟიმში, ფაილების სინქრონიზაციის მეშვეობით</translation>
 <translation id="2470939964922472929">არასწორი PIN-კოდი ზედმეტად ბევრჯერ შეიყვანეთ. ახალი PIN-კოდის დასაყენებლად შეიყვანეთ განბლოკვის პერსონალური 8-ციფრიანი გასაღები (PUK), რომელიც თქვენმა ოპერატორმა მოგაწოდათ.</translation>
 <translation id="2500392669976258912">გუჯარათული ფონეტიკური</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -349,12 +351,12 @@
 <translation id="3855472144336161447">გერმანული Neo 2</translation>
 <translation id="3858860766373142691">სახელი</translation>
 <translation id="3866249974567520381">აღწერა</translation>
-<translation id="3866439285517092441">ბატარეა ჯდება. სინქრონიზაცია გაგრძელდება, როცა ელკვების წყაროს დაუკავშირდებით.</translation>
 <translation id="3899991606604168269">ფრანგული (კანადა) მრავალენოვანი კლავიატურით</translation>
 <translation id="3901991538546252627"><ph name="NAME" />-თან დაკავშირება</translation>
 <translation id="3906232975181435906">მიმდინარეობს მობილური პროფილის ინსტალაცია, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">მეტა</translation>
 <translation id="3943857333388298514">ჩასმა</translation>
+<translation id="3950820424414687140">შესვლა</translation>
 <translation id="3952872973865944257">ტელუგუ ფონეტიკური</translation>
 <translation id="3958548648197196644">კივი</translation>
 <translation id="397105322502079400">ანგარიშობს…</translation>
@@ -602,6 +604,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> გადატანილია წაშლილებში</translation>
 <translation id="5724172041621205163">ტაი Pattachote კლავიატურით</translation>
 <translation id="57383366388012121">გასული თვე</translation>
+<translation id="575175778971367197">ამ ფაილის სინქრონიზაცია ამჟამად ვერ ხერხდება</translation>
 <translation id="5756666464756035725">უნგრული QWERTY</translation>
 <translation id="5760252553414789727">არჩეულია <ph name="SELECTED_FILES_COUNT" /> ერთეული</translation>
 <translation id="5763377084591234761">გერმანული (შვეიცარია)</translation>
@@ -704,6 +707,7 @@
 <translation id="6558280019477628686">მოხდა შეცდომა. ზოგიერთი ერთეული შეიძლება არ წაშლილიყო.</translation>
 <translation id="656398493051028875">„<ph name="FILENAME" />“-ის წაშლა…</translation>
 <translation id="6581162200855843583">Google Drive-ის ბმული</translation>
+<translation id="6588648400954570689">ფაილების სინქრონიზაციის პარამეტრები</translation>
 <translation id="6594855146910089723">ეს საქაღალდე გაზიარებულია Linux-სა და Parallels Desktop-თან</translation>
 <translation id="6607272825297743757">ფაილის ინფორმაცია</translation>
 <translation id="6609332149380188670">Parallels Desktop-თან გაზიარებულია <ph name="NUMBER_OF_ITEMS" /> საქაღალდე</translation>
@@ -828,6 +832,7 @@
 <translation id="7547811415869834682">ჰოლანდიური</translation>
 <translation id="7551643184018910560">თაროზე ჩამაგრება</translation>
 <translation id="7553492409867692754">მიეცით Linux აპებს საქაღალდეში „<ph name="FOLDER_NAME" />“ არსებულ ფაილებზე წვდომის ნებართვა</translation>
+<translation id="7555339735447658365">ამჟამად ხაზგარეშე რეჟიმში ხართ. ფაილების სინქრონიზაცია გაგრძელდება, როცა ინტერნეტს დაუკავშირდებით</translation>
 <translation id="7589661784326793847">დაელოდეთ ერთი წამი</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> გარდაიქმნება ხაზგარეშე ხელმისაწვდომად</translation>
 <translation id="7600126690270271294">სერბული</translation>
@@ -870,6 +875,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ტბაიტი</translation>
 <translation id="7831491651892296503">შეცდომა ქსელის კონფიგურაციისას</translation>
+<translation id="7832093238954689746">ფაილების სინქრონიზაცია დასრულდა. „ჩემი Drive“ ფაილები ხელმისაწვდომია ხაზგარეშე რეჟიმში.</translation>
 <translation id="7839804798877833423">ამ ფაილების შერჩევას გამოყენებული იქნება დაახლოებით <ph name="FILE_SIZE" /> მობილური მონაცემებისა.</translation>
 <translation id="7846076177841592234">შერჩევის გაუქმება</translation>
 <translation id="7853966320808728790">ფრანგული BÉPO</translation>
@@ -918,6 +924,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">მოწყობილობის მოდელი</translation>
 <translation id="8223479393428528563">ამ ფაილების ქსელგარე გამოყენებისათვის, დაბრუნდით ქსელში, ფაილზე გმარჯვენა ღილაკზე დააჭირეთ და მონიშნეთ <ph name="OFFLINE_CHECKBOX_NAME" /> ვარიანტი.</translation>
+<translation id="8241139360630443550">მეხსიერების ნახვა</translation>
 <translation id="8249296373107784235">შეწყვეტა</translation>
 <translation id="8250690786522693009">ლათინური</translation>
 <translation id="8250920743982581267">დოკუმენტები</translation>
@@ -947,8 +954,8 @@
 <translation id="8395901698320285466">ზომები</translation>
 <translation id="8404498045299006085">ყველას შენარჩუნება</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ქსელი, მიმდინარეობს დაკავშირება</translation>
-<translation id="841387525767317275">ამ საქაღალდეში არსებული ფაილები ხელმისაწვდომია ხაზგარეშე რეჟიმში</translation>
 <translation id="8425213833346101688">შეცვლა</translation>
+<translation id="8428213095426709021">პარამეტრები</translation>
 <translation id="8431909052837336408">SIM ბარათის PIN-კოდის შეცვლა</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">აკლია SIM ბარათი</translation>

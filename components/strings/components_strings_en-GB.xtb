@@ -384,7 +384,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Try contacting the system admin.</translation>
 <translation id="1736420071277903564">Computer</translation>
-<translation id="1740951997222943430">Enter a valid expiry month</translation>
 <translation id="1741613555002899862">Must be specified and a valid string when DnsOverHttpsMode is <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Bedding and Bed Linen</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Chrome notes topics of interest as you browse. Topic labels are predefined and include things like Arts and entertainment, Shopping and Sports. Later, a site that you visit can ask Chrome for a few of your topics (but not your browsing history) to personalise the ads that you see.</translation>
@@ -434,6 +433,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1842969606798536927">Pay</translation>
 <translation id="1846432862466000825">Plastic (archival)</translation>
 <translation id="1848982255014129637">Photo (high gloss)</translation>
+<translation id="1854180393107901205">Stop casting</translation>
 <translation id="1855370856221982654">Boxing</translation>
 <translation id="1856713167556118146">What Incognito doesn’t do</translation>
 <translation id="1862788842908766795">Executive and Management Jobs</translation>
@@ -585,7 +585,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2188375229972301266">Multiple punch bottom</translation>
 <translation id="2197398642355049178">Your topics</translation>
 <translation id="219906046732893612">Home improvement</translation>
-<translation id="2202020181578195191">Enter a valid expiry year</translation>
 <translation id="2202627062836089804">back of your card</translation>
 <translation id="2204482073374652408">Finished updating!</translation>
 <translation id="2208053750671792556">Didn't receive your code? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1211,7 +1210,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="361438452008624280">List entry '<ph name="LANGUAGE_ID" />': unknown or unsupported language.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to run a safety check in Chrome settings</translation>
 <translation id="3615309852743236517">Manicures and Pedicures</translation>
-<translation id="3615877443314183785">Enter a valid expiry date</translation>
 <translation id="3620239073311576716">Uniforms and Workwear</translation>
 <translation id="36224234498066874">Clear Browsing Data...</translation>
 <translation id="362276910939193118">Show full history</translation>
@@ -2316,6 +2314,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5995727681868049093">Manage your info, privacy and security in your Google Account</translation>
 <translation id="5997247540087773573">The password that you just used was found in a data breach. To secure your accounts, Google Password Manager recommends changing it now and checking your saved passwords.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> results for '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6002122790816966947">Your devices</translation>
 <translation id="6005659677094197001">Continuous</translation>
 <translation id="6005765687956866568">The auto-filled info was cleared from the form</translation>
 <translation id="6006365096047131769">3 in x 5 in</translation>
@@ -2329,7 +2328,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6017514345406065928">Green</translation>
 <translation id="6017850046339264347">Attackers on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> could install deceptive apps that pretend to be something else or collect data that may be used to track you. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synced)</translation>
-<translation id="6027201098523975773">Enter a name</translation>
 <translation id="6028591542479806248">Manage mobile and email notifications</translation>
 <translation id="603068602130820122">Dual staple right</translation>
 <translation id="6032524144326295339">Mailbox 2</translation>

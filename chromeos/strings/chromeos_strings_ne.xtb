@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">हालको किपेयर प्रयोग गर्नुहोस्</translation>
 <translation id="2320295602967756579">उज्यालो थिम अन गर्नुहोस्</translation>
 <translation id="2323506179655536734">स्किप गरिएको छ</translation>
+<translation id="2324354238778375592">फ्लोट</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">नजिकैका डिभाइसहरू पत्ता लगाउन ब्लुटुथ अन गर्नुहोस्</translation>
 <translation id="2346474577291266260">उत्कृष्ट (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> परीक्षण</translation>
 <translation id="370665806235115550">लोड गर्दै...</translation>
 <translation id="3708186454126126312">यसअघि कनेक्ट गरिएका डिभाइस</translation>
+<translation id="3715651196924935218">फ्लोट विन्डोबाट बाहिरिनुहोस्</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> वटा समीक्षा)</translation>
 <translation id="3748026146096797577">कनेक्ट गरिएको छैन</translation>
 <translation id="3749289110408117711">फाइल नाम</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">प्रदर्शन</translation>
 <translation id="4155551848414053977">स्क्यानर अन छ र उक्त स्क्यानर तपाईंको नेटवर्क वा कुनै डाइरेक्ट कनेक्सनमार्फत प्रयोग गर्न मिल्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
+<translation id="4159238217853743776">पार्सियल बटन</translation>
 <translation id="4159784952369912983">बैजनी</translation>
 <translation id="4170180284036919717">फोटो खिच्नुहोस्</translation>
 <translation id="4170700058716978431">असफल भयो</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">तपाईं नयाँ कनेक्सन सेटअप गर्न वा सेटअप गरिएको कनेक्सनसम्बन्धी सेटिङ बदल्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="4932733599132424254">मिति</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> को फर्मवेयर अपडेट गरी संस्करण <ph name="VERSION" /> इन्स्टल गरिएको छ</translation>
+<translation id="4969079779290789265">स्प्लिट स्क्रिन</translation>
 <translation id="4972592110715526173">"मोड बदल्नुहोस्" जनाउने आइकन</translation>
 <translation id="498186245079027698">स्क्यानर जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्। स्क्यान गरिएका फाइलहरू सुरक्षित गर्न चाहिने पर्याप्त खाली ठाउँ छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="4985509611418653372">चलाउनुहोस्</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">सर्भरको होस्टनाम</translation>
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">फुल स्क्रिन</translation>
 <translation id="5142961317498132443">प्रमाणीकरण</translation>
 <translation id="5154917547274118687">स्मरण</translation>
 <translation id="5160857336552977725">तपाईँको <ph name="DEVICE_TYPE" /> मा साइन इन गर्नुहोस्</translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="522307662484862935">इमेल ठेगाना समावेश नगर्नुहोस्</translation>
 <translation id="5227902338748591677">अँध्यारो थिमको समयतालिका</translation>
+<translation id="5229344016299762883">फुल स्क्रिनबाट बाहिरिनुहोस्</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
 <translation id="5252456968953390977">रोमिङ</translation>
 <translation id="5257811368506016604">उज्यालो रङ मोड अन गर्नुहोस्</translation>
@@ -707,6 +713,7 @@
 <translation id="6566314079205407217">एकभन्दा बढी पेज स्क्यान गर्नुहोस्</translation>
 <translation id="6574762126505704998">भर्नुहोस्</translation>
 <translation id="6575134580692778371">विन्यास गरिएको छैन</translation>
+<translation id="6576005492601044801">बायाँ</translation>
 <translation id="6579509898032828423">यो फोटो प्रयोग गर्नुहोस्</translation>
 <translation id="6596816719288285829">IP ​​ठेगाना</translation>
 <translation id="6599673642868607614">प्रतिक्रिया दिनुभएकामा यहाँलाई धन्यवाद। तपाईंको प्रतिक्रियाले हामीलाई Chromebook मा उपलब्ध सुविधाहरूको स्तर सुधार गर्ने कार्यमा मद्दत गर्छ र हाम्रो टोलीले उक्त प्रतिक्रियाको समीक्षा गर्ने छ। रिपोर्टहरूको सङ्ख्या अत्यन्त धेरै भएकाले हामी जवाफ दिन सक्ने छैनौँ।</translation>
@@ -812,6 +819,7 @@
 <translation id="7497215489070763236">सर्भरको CA को सर्टिफिकेट</translation>
 <translation id="7501957181231305652">वा</translation>
 <translation id="7502658306369382406">IPv6 ठेगाना</translation>
+<translation id="7513770521371759388">पुछार</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">मद्दतसम्बन्धी सामग्री उपलब्ध छैन</translation>
 <translation id="7535791657097741517">उज्यालो थिम अन गर्नुहोस्</translation>
@@ -950,6 +958,7 @@
 <translation id="8655295600908251630">च्यानल</translation>
 <translation id="8655828773034788261">URL सेयर गर्नुहोस्:</translation>
 <translation id="8660881923941176839">पाउन्ड</translation>
+<translation id="8670574982334489519">दायाँ</translation>
 <translation id="8675354002693747642">पहिलै साझा गरिएको साँचो</translation>
 <translation id="8677859815076891398">कुनै पनि एल्बम छैन। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मा गई एउटा एल्बम बनाउनुहोस्।</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> यो सुविधा व्यवस्थापन गर्न लेफ्ट वा राइट एरो की प्रयोग गर्नुहोस्।</translation>
@@ -995,6 +1004,7 @@
 <translation id="8936793075252196307">क्लाइन्टको IP ठेगाना</translation>
 <translation id="8944651180182756621">लन्चरको रङ</translation>
 <translation id="894617464444543719">यो डिभाइस फोन हो।</translation>
+<translation id="8950424402482976779">सिरान</translation>
 <translation id="8968751544471797276">चार्ज भइरहेको दर</translation>
 <translation id="8970109610781093811">फेरि गर्नुहोस्</translation>
 <translation id="8983038754672563810">HSPA</translation>

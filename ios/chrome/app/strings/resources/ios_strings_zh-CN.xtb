@@ -36,6 +36,7 @@
 <translation id="1176932207622159128">无法保存图片</translation>
 <translation id="1177414119866731261">打开 Chrome 菜单</translation>
 <translation id="1181037720776840403">移除</translation>
+<translation id="1200396280085622191">每次点按消息和其他应用中的链接时，都使用 Chrome 打开。</translation>
 <translation id="1207113853726624428">新搜索</translation>
 <translation id="1207493287814084192">下午 5:30</translation>
 <translation id="1209206284964581585">暂时隐藏</translation>
@@ -163,6 +164,7 @@
 <translation id="1974060860693918893">高级</translation>
 <translation id="1980417445547898121">{count,plural, =1{在这部 iPhone 上打开最近在其他设备上使用的 {count} 个标签页}other{在这部 iPhone 上打开最近在其他设备上使用的 {count} 个标签页}}</translation>
 <translation id="1981118202195772574">移动版</translation>
+<translation id="1987779152850321833">请完成下面这些建议的操作，以便充分利用 Chrome。</translation>
 <translation id="1989112275319619282">浏览</translation>
 <translation id="1990820278544963435">查找</translation>
 <translation id="199425419756152024">查看密码</translation>
@@ -320,6 +322,7 @@
 <translation id="2952246431280799028">轻触并按住相应地址。</translation>
 <translation id="2952278131021475699">智能镜头拍照搜索</translation>
 <translation id="2952581218264071393">1. 打开 Chrome 设置</translation>
+<translation id="2956733177489514605">登录您的 Google 帐号即可同步您的密码等信息。</translation>
 <translation id="2958718410589002129">密码</translation>
 <translation id="2961210776189273067">称谓</translation>
 <translation id="2964349545761222050">阻止第三方 Cookie</translation>
@@ -341,6 +344,7 @@
 请查看您所用搜索引擎的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="3080525922482950719">您可保存网页以供日后阅读或离线阅读</translation>
 <translation id="3081338492074632642">请确保您要保存的密码与您用来登录 <ph name="WEBSITE" /> 的密码相符</translation>
+<translation id="309672519329227863">获取您在其他应用内保存的 Chrome 登录密码等信息。</translation>
 <translation id="3112556859945124369">标为…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看您可同步的内容<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">历史记录和其他内容</translation>
@@ -398,7 +402,6 @@
 <translation id="3464194322481586217">无法跟踪价格。</translation>
 <translation id="3469166899695866866">是否停止下载？</translation>
 <translation id="3470502288861289375">正在复制…</translation>
-<translation id="3471148582064653480">同步您的密码、历史记录等信息。</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{涉及 {COUNT} 个网站或应用}other{涉及 {COUNT} 个网站和应用}}</translation>
 <translation id="3474624961160222204">继续以<ph name="NAME" />的身份使用</translation>
 <translation id="3476450923187944815">访问其他应用的密码。</translation>
@@ -519,7 +522,8 @@
 <translation id="4277990410970811858">安全浏览</translation>
 <translation id="4281844954008187215">服务条款</translation>
 <translation id="4293080268407233932">搜索</translation>
-<translation id="4304713468139749426">密码管理器</translation>
+<translation id="4302248187517737842">无用户名 ••••••••</translation>
+<translation id="4304713468139749426">密码管理工具</translation>
 <translation id="430793432425771671">同步所有内容</translation>
 <translation id="4309403553630140242">点按两次可了解详情</translation>
 <translation id="430967081421617822">时间不限</translation>
@@ -700,6 +704,7 @@
 <translation id="5478327362747197944">点击网页上的日期即可直接创建日历活动。</translation>
 <translation id="5489208564673669003">若要管理所有网站的 Cookie，请查看 <ph name="BEGIN_LINK" />Cookie 设置<ph name="END_LINK" />。</translation>
 <translation id="5490005495580364134">阻止所有 Cookie（不建议）</translation>
+<translation id="5511959326926949696">可选的浏览器极端保护措施。除非您认为自己可能会受到高度复杂的网络攻击，否则不应使用此选项。</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小时前</translation>
 <translation id="5520466080178053306">点按“密码管理工具”，然后点按“添加”</translation>
 <translation id="5525095647255982834">若要将此标签页发送到另一设备，请在该设备上登录 Chrome。</translation>
@@ -814,6 +819,7 @@
 <translation id="6149061208933997199">使用密码</translation>
 <translation id="6152406514676263192">开启同步功能后，您便会看到系统根据您的兴趣推荐的最相关的内容。</translation>
 <translation id="6159839020698489198">可选</translation>
+<translation id="6166946945007577435">一个新菜单，旨在帮助您顺利前往目标位置。</translation>
 <translation id="6170450281939467187">翻译失败</translation>
 <translation id="6173499589275053515">密码已保存到您的 Google 帐号 <ph name="EMAIL" /> 中</translation>
 <translation id="6177442314419606057">在 Chrome 中搜索</translation>
@@ -931,7 +937,6 @@
 <translation id="6674571176963658787">若要开始同步，请输入您的密码</translation>
 <translation id="667999046851023355">文档</translation>
 <translation id="6684906340059221832">正在跟踪价格</translation>
-<translation id="6689804622901271327">自动填充付款信息</translation>
 <translation id="6710079714193676716">由贵组织管理。未必能使用所有功能。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">获取您在所有设备上保存的书签、密码等信息。</translation>
@@ -1053,6 +1058,7 @@
 <translation id="7554645225856321710">全部关闭</translation>
 <translation id="7554791636758816595">新标签页</translation>
 <translation id="7561196759112975576">永远</translation>
+<translation id="7582857256643797524">您的设备已启用此设置</translation>
 <translation id="7583004045319035904">请使用<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁您的无痕式标签页。</translation>
 <translation id="7600965453749440009">一律不翻译<ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">拦截了弹出式窗口（<ph name="NUMBER_OF_BLOCKED_POPUPS" /> 个）</translation>
@@ -1284,7 +1290,6 @@
 <translation id="8976414606286374109">系统会将信用卡信息保存到您的 Google 帐号中。</translation>
 <translation id="8981454092730389528">Google 活动控件</translation>
 <translation id="8985320356172329008">已使用以下帐号登录 Google：</translation>
-<translation id="8986567980592931173">登录您的 Google 帐号即可同步您的密码、历史记录等。</translation>
 <translation id="8998289560386111590">在您的设备上不可用</translation>
 <translation id="8999545564078155498">使用面容 ID 解锁</translation>
 <translation id="9000089900434778519">您所用的搜索引擎是<ph name="DSE_NAME" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
@@ -1329,9 +1334,11 @@
 <translation id="952704832371081537">取消</translation>
 <translation id="953008885340860025">已退出 Chrome</translation>
 <translation id="959066944189734975">您已关注“<ph name="CHANNEL_NAME" />”</translation>
+<translation id="97300214378190234">每次点按其他应用中的链接时，都使用 Chrome 打开。</translation>
 <translation id="973493300226275298">跟踪某件商品在多个网店中的价格。当相应商品降价时，您会收到提醒。</translation>
 <translation id="981498610235328462">贵单位要求您只能使用特定帐号登录。不允许使用的帐号会处于隐藏状态。</translation>
 <translation id="984509647832111802">同步功能无法正常运行。</translation>
+<translation id="984879470761322682">若要在 Chrome 中停用锁定模式，请在您的设备上关闭该模式。</translation>
 <translation id="988141524645182168">其他设备</translation>
 <translation id="989988560359834682">修改地址</translation>
 <translation id="994757059139821576">文章推荐</translation>

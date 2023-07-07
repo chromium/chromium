@@ -384,7 +384,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Tente entrar em contato com o administrador do sistema.</translation>
 <translation id="1736420071277903564">Computador</translation>
-<translation id="1740951997222943430">Informe um mês de validade válido</translation>
 <translation id="1741613555002899862">Precisa ser especificada e ser uma string válida quando DnsOverHttpsMode for <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Roupa e artigos de cama</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Como usamos esses dados<ph name="END_BOLD" />: o Chrome registra temas de interesse durante a navegação. Os marcadores de temas são predefinidos e incluem itens como "Artes e entretenimento", "Compras" e "Esportes". Sites que você acessa podem pedir ao Chrome alguns dos seus temas (mas não seu histórico de navegação) para personalizar os anúncios que você recebe.</translation>
@@ -434,6 +433,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1842969606798536927">Pagar</translation>
 <translation id="1846432862466000825">Plástico (permanente)</translation>
 <translation id="1848982255014129637">Foto (alto brilho)</translation>
+<translation id="1854180393107901205">Parar transmissão</translation>
 <translation id="1855370856221982654">Boxe</translation>
 <translation id="1856713167556118146">O que a navegação anônima não faz</translation>
 <translation id="1862788842908766795">Vagas de liderança e gerenciamento</translation>
@@ -585,7 +585,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2188375229972301266">Perfuração múltipla na parte inferior</translation>
 <translation id="2197398642355049178">Seus temas</translation>
 <translation id="219906046732893612">Reforma de casas</translation>
-<translation id="2202020181578195191">Informe um ano de validade válido</translation>
 <translation id="2202627062836089804">parte de trás do cartão</translation>
 <translation id="2204482073374652408">Atualização concluída</translation>
 <translation id="2208053750671792556">Não recebeu o código? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1211,7 +1210,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="361438452008624280">Entrada "<ph name="LANGUAGE_ID" />": idioma desconhecido ou não compatível.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para executar a confirmação de segurança nas configurações do Chrome</translation>
 <translation id="3615309852743236517">Manicure e pedicure</translation>
-<translation id="3615877443314183785">Informe uma data de validade válida</translation>
 <translation id="3620239073311576716">Uniformes e roupas de trabalho</translation>
 <translation id="36224234498066874">Remover dados de navegação...</translation>
 <translation id="362276910939193118">Mostrar histórico completo</translation>
@@ -2316,6 +2314,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5995727681868049093">Gerenciar suas informações, sua privacidade e sua segurança na Conta do Google.</translation>
 <translation id="5997247540087773573">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas do Google recomenda que você a mude e revise as senhas salvas.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6002122790816966947">Seus dispositivos</translation>
 <translation id="6005659677094197001">Contínua</translation>
 <translation id="6005765687956866568">As informações preenchidas automaticamente foram removidas do formulário</translation>
 <translation id="6006365096047131769">3 x 5 pol.</translation>
@@ -2329,7 +2328,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6017850046339264347">Invasores em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> podem instalar apps enganosos que fingem ser outra pessoa ou coletam dados que podem ser usados para rastrear você. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sincronizados)</translation>
-<translation id="6027201098523975773">Insira um nome</translation>
 <translation id="6028591542479806248">Gerenciar notificações recebidas por e-mail e no dispositivo móvel</translation>
 <translation id="603068602130820122">Dois grampos no lado direito</translation>
 <translation id="6032524144326295339">Caixa de e-mails 2</translation>

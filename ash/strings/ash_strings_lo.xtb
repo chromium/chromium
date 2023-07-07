@@ -1553,7 +1553,6 @@
 <translation id="7866482334467279021">ເປີດ</translation>
 <translation id="7872786842639831132">ປິດ</translation>
 <translation id="7875575368831396199">ປາກົດວ່າ Bluetooth ປິດຢູ່ໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. ກະລຸນາເປີດ Bluetooth ເພື່ອໃຊ້ Phone Hub.</translation>
-<translation id="7876243839304621966">ເອົາ​ອອກທັງ​ຫມົດ</translation>
 <translation id="7877557217297072640">{0,plural, =0{ປ່ຽນອຸປະກອນເປັນເວີຊັນກ່ອນໜ້າດຽວນີ້}=1{ປ່ຽນອຸປະກອນເປັນເວີຊັນກ່ອນໜ້າພາຍໃນ 1 ວິນາທີ}other{ປ່ຽນອຸປະກອນເປັນເວີຊັນກ່ອນໜ້າພາຍໃນ # ວິນາທີ}}</translation>
 <translation id="7884446017008693258">ການຕັ້ງຄ່າຮັອດສະປອດ</translation>
 <translation id="7884902759927478774">ຍົກເລີກການລາກແຖບ</translation>
@@ -1652,7 +1651,6 @@
 <translation id="8255234195843591763">ຣີເຊັດເພື່ອອັບເດດ</translation>
 <translation id="8261506727792406068">ລຶບ</translation>
 <translation id="8262312463845990408">ສະຫຼັບການຫຼິ້ນ</translation>
-<translation id="8265826854528868575">ກຳລັງສະແດງ <ph name="NUM_SHOWN_TASKS" /> ຂາກທັງໝົດ <ph name="NUM_TOTAL_TASKS" /></translation>
 <translation id="8270450402312105425">{0,plural, =1{ປ່ຽນອຸປະກອນເປັນເວີຊັນກ່ອນໜ້າພາຍໃນໜຶ່ງຊົ່ວໂມງ}other{ປ່ຽນອຸປະກອນເປັນເວີຊັນກ່ອນໜ້າພາຍໃນ # ຊົ່ວໂມງ}}</translation>
 <translation id="8277261673056602147">ໄຮໄລ້ຂໍ້ຄວາມຢູ່ໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="8284362522226889623">ໃຊ້ສີ່ນິ້ວມືປັດໄປຊ້າຍເພື່ອປ່ຽນໄປໃຊ້ໂຕະກ່ອນໜ້າ</translation>

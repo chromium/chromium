@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Drive មិនមានទេឥឡូវនេះ។ ការទាញឡើងនឹងចាប់ផ្តើមឡើងវិញដោយស្វ័យប្រវត្តិនៅពេល Google Drive ត្រលប់មកវិញ។</translation>
 <translation id="1307931752636661898">មិនអាច​មើល​ឯកសារ Linux បានទេ</translation>
 <translation id="1313405956111467313">ការតំឡើងប្រូកស៊ីដោយស្វ័យប្រវត្តិ</translation>
+<translation id="134645005685694099">ឧបករណ៍​របស់អ្នក​មិនមាន​ទំហំផ្ទុក​គ្រប់គ្រាន់ ដើម្បីបន្តបើកការធ្វើសមកាលកម្មឯកសារទេ។ ឯកសារថ្មីៗ​នឹងលែង​ធ្វើសម​កាលកម្ម​ដោយស្វ័យប្រវត្តិ​ទៀតហើយ។</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />៖ <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ឯកសារ ឬថតឯកសារមិនអាចប្រើបានទេ។</translation>
 <translation id="1363028406613469049">សំឡេង</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">ប្រូកស៊ី HTTP</translation>
 <translation id="2467267713099745100">បណ្ដាញ <ph name="NETWORK_TYPE" />, ត្រូវបាន​បិទ</translation>
 <translation id="2468402215065996499">ថាម៉ាហ្គោឈី</translation>
+<translation id="2468470447085858632">ចូលប្រើឯកសារ Google ថាស​របស់អ្នកពេលគ្មានអ៊ីនធឺណិតតាមរយៈការធ្វើសមកាលកម្មឯកសារ</translation>
 <translation id="2470939964922472929">បានបញ្ចូលកូដ PIN មិនត្រឹមត្រូវច្រើនដងពេក។ ដើម្បីរៀបចំកូដ PIN ថ្មី សូមបញ្ចូលកូដឈប់​ទប់ស្កាត់ផ្ទាល់ខ្លួន (PUK) 8 ខ្ទង់ ដែលផ្ដល់ដោយក្រុមហ៊ុន​សេវាទូរសព្ទរបស់អ្នក។</translation>
 <translation id="2500392669976258912">សូរសព្ទជាភាសា​គូចារ៉ាទី</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -349,12 +351,12 @@
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">ឈ្មោះ</translation>
 <translation id="3866249974567520381">ការពិពណ៌នា</translation>
-<translation id="3866439285517092441">ថ្មសល់តិច។ សមកាលកម្ម​នឹងបន្ត នៅពេល​អ្នក​ភ្ជាប់ទៅ​ថាមពល។</translation>
 <translation id="3899991606604168269">ភាសាបារាំង (កាណាដា) ដែលប្រើ​ក្ដារចុចច្រើនភាសា</translation>
 <translation id="3901991538546252627">កំពុងភ្ជាប់ទៅ <ph name="NAME" /></translation>
 <translation id="3906232975181435906">កំពុងដំឡើង​កម្រងព័ត៌មាន​ឧបករណ៍ចល័ត បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">បិទភ្ជាប់</translation>
+<translation id="3950820424414687140">ចូល</translation>
 <translation id="3952872973865944257">សូរសព្ទ​ជាភាសា​តេលូហ្គូ</translation>
 <translation id="3958548648197196644">គីវី</translation>
 <translation id="397105322502079400">កំពុងគណនា...</translation>
@@ -602,6 +604,7 @@
 <translation id="5720028165859493293">បានផ្លាស់ទី <ph name="FILE_NAME" /> ទៅក្នុងធុងសំរាម</translation>
 <translation id="5724172041621205163">ភាសាថៃ​ដែលប្រើ​ក្ដារចុច Pattachote</translation>
 <translation id="57383366388012121">ខែមុន</translation>
+<translation id="575175778971367197">មិនអាចធ្វើ​សម​កាល​កម្មឯកសារនេះនៅពេលនេះបានទេ</translation>
 <translation id="5756666464756035725">ក្តារចុចហុងគ្រី</translation>
 <translation id="5760252553414789727">បានជ្រើសរើស​ធាតុ <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">ភាសា​អាល្លឺម៉ង់ (ស្វ៊ីស)</translation>
@@ -704,6 +707,7 @@
 <translation id="6558280019477628686">មាន​បញ្ហា​កើតឡើង។ ធាតុមួយ​ចំនួន​ប្រហែល​ជាមិនទាន់​ត្រូវបាន​លុបទេ។</translation>
 <translation id="656398493051028875">កំពុងលុប "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">តំណ Google Drive</translation>
+<translation id="6588648400954570689">ការកំណត់ការធ្វើសម​កាល​កម្មឯកសារ</translation>
 <translation id="6594855146910089723">ថតនេះត្រូវបាន​ចែករំលែកជាមួយ Linux និង Parallels Desktop</translation>
 <translation id="6607272825297743757">ព័ត៌មានឯកសារ</translation>
 <translation id="6609332149380188670">បានចែករំលែក​ថត <ph name="NUMBER_OF_ITEMS" /> ជាមួយ Parallels Desktop</translation>
@@ -828,6 +832,7 @@
 <translation id="7547811415869834682">ភាសាហូឡង់</translation>
 <translation id="7551643184018910560">ដៅទៅធ្នើ</translation>
 <translation id="7553492409867692754">ផ្ដល់ការអនុញ្ញាតឱ្យ​កម្មវិធី Linux ចូលប្រើឯកសារ​នៅក្នុងថត <ph name="FOLDER_NAME" /></translation>
+<translation id="7555339735447658365">បច្ចុប្បន្ននេះ អ្នកគ្មានអ៊ីនធឺណិតទេ។ ការធ្វើសមកាលកម្ម​ឯកសារនឹងបន្ត នៅពេល​ដែលអ្នក​បានភ្ជាប់ទៅ​អ៊ីនធឺណិត</translation>
 <translation id="7589661784326793847">រង់ចាំមួយភ្លែត</translation>
 <translation id="7592775719802218421">កំពុង​​កំណត់ឱ្យ <ph name="FILE_NAME" /> អាចប្រើបានពេល​​គ្មាន​​​អ៊ីនធឺណិត</translation>
 <translation id="7600126690270271294">ភាសា​ស៊ែប៊ី</translation>
@@ -870,6 +875,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">មានបញ្ហាក្នុងការកំណត់រចនាសម្ព័ន្ធបណ្តាញ</translation>
+<translation id="7832093238954689746">ការធ្វើសមកាលកម្មឯកសារចប់ហើយ។ អាចប្រើឯកសារ "ថាស​ខ្ញុំ" បានពេលគ្មានអ៊ីនធឺណិត។</translation>
 <translation id="7839804798877833423">ការនាំយកឯកសារទាំងនេះនឹងត្រូវប្រើប្រហែល <ph name="FILE_SIZE" /> នៃទិន្នន័យទូរស័ព្ទរបស់អ្នក។</translation>
 <translation id="7846076177841592234">បោះបង់ការជ្រើសរើស</translation>
 <translation id="7853966320808728790">BÉPO បារាំង</translation>
@@ -918,6 +924,7 @@
 <translation id="8179976553408161302">បញ្ចូល</translation>
 <translation id="8193175696669055101">គំរូឧបករណ៍</translation>
 <translation id="8223479393428528563">ដើម្បីរក្សាទុកឯកសារទាំងនេះសម្រាប់ការប្រើនៅក្រៅបណ្តាញ ភ្ជាប់ទៅអ៊ីនធឺណិត ហើយចុចកណ្តុរខាងស្តាំលើឯកសារ ហើយជ្រើសរើសជម្រើស <ph name="OFFLINE_CHECKBOX_NAME" />។</translation>
+<translation id="8241139360630443550">មើល​ទំហំ​ផ្ទុក</translation>
 <translation id="8249296373107784235">បោះបង់</translation>
 <translation id="8250690786522693009">ឡាតាំង</translation>
 <translation id="8250920743982581267">ឯកសារ</translation>
@@ -947,8 +954,8 @@
 <translation id="8395901698320285466">ទំហំ</translation>
 <translation id="8404498045299006085">រក្សាទុកទាំងអស់</translation>
 <translation id="8408068190360279472">បណ្ដាញ <ph name="NETWORK_TYPE" />, កំពុង​ភ្ជាប់</translation>
-<translation id="841387525767317275">អាចប្រើ​ឯកសារ​នៅក្នុង​ថតនេះ​បាន ពេល​គ្មានអ៊ីនធឺណិត</translation>
 <translation id="8425213833346101688">ប្តូរ</translation>
+<translation id="8428213095426709021">ការកំណត់</translation>
 <translation id="8431909052837336408">ប្ដូរកូដ PIN ស៊ីមកាត</translation>
 <translation id="8437209419043462667">អាមេរិក</translation>
 <translation id="8452135315243592079">បាត់ស៊ីមកាត</translation>

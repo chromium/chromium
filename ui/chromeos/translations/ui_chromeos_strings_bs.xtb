@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Disk trenutno nije dostupan. Otpremanje će se automatski ponovo pokrenuti čim Google Disk bude opet na raspolaganju.</translation>
 <translation id="1307931752636661898">Nije moguće prikazati Linux fajlove</translation>
 <translation id="1313405956111467313">Automatsko konfiguriranje proksi servera</translation>
+<translation id="134645005685694099">Vaš uređaj nema dovoljno prostora za pohranu da bi sinkronizacija datoteka ostala uključena. Nove datoteke više se neće automatski sinkronizirati.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />:<ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Fajl ili direktorij se ne može koristiti.</translation>
 <translation id="1363028406613469049">Numera</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP proksi server</translation>
 <translation id="2467267713099745100">Mreža <ph name="NETWORK_TYPE" />, isključena</translation>
 <translation id="2468402215065996499">Tamagoči</translation>
+<translation id="2468470447085858632">Offline pristup datotekama na Google disku uz sinkronizaciju datoteka</translation>
 <translation id="2470939964922472929">Pogrešan PIN je unesen previše puta. Da postavite novi PIN, unesite lični kôd za deblokiranje (PUK) od osam cifara koji pruža vaš mobilni operater.</translation>
 <translation id="2500392669976258912">gudžarati fonetski</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -349,12 +351,12 @@
 <translation id="3855472144336161447">Njemačka Neo 2</translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3866249974567520381">Opis</translation>
-<translation id="3866439285517092441">Baterija je slaba. Sinhronizacija će se nastaviti kada priključite napajanje.</translation>
 <translation id="3899991606604168269">francuski (Kanada) s višejezičnom tastaturom</translation>
 <translation id="3901991538546252627">Povezivanje na mrežu <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Instaliranje profila mobilnog uređaja, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Zalijepi</translation>
+<translation id="3950820424414687140">Prijava</translation>
 <translation id="3952872973865944257">telugu fonetski</translation>
 <translation id="3958548648197196644">Kivi</translation>
 <translation id="397105322502079400">Računanje…</translation>
@@ -603,6 +605,7 @@
 <translation id="5720028165859493293">Fajl <ph name="FILE_NAME" /> je premješten u otpad</translation>
 <translation id="5724172041621205163">tajlandski s tastaturom Pattachote</translation>
 <translation id="57383366388012121">Prošli mjesec</translation>
+<translation id="575175778971367197">Trenutačno nije moguće sinkronizirati tu datoteku</translation>
 <translation id="5756666464756035725">Mađarska QWERTY</translation>
 <translation id="5760252553414789727">Broj odabranih stavki: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">njemački (Švicarska)</translation>
@@ -705,6 +708,7 @@
 <translation id="6558280019477628686">Došlo je do greške. Neke stavke možda nisu izbrisane.</translation>
 <translation id="656398493051028875">Brisanje fajla "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Link za Google Disk</translation>
+<translation id="6588648400954570689">Postavke sinkronizacije datoteke</translation>
 <translation id="6594855146910089723">Ovaj folder se dijeli s Linuxom i aplikacijom Parallels Desktop</translation>
 <translation id="6607272825297743757">Informacije o fajlu</translation>
 <translation id="6609332149380188670">Broj foldera koji su podijeljeni pomoću aplikacije Parallels Desktop: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -829,6 +833,7 @@
 <translation id="7547811415869834682">Holandska</translation>
 <translation id="7551643184018910560">Zakači za policu</translation>
 <translation id="7553492409867692754">Dajte Linux aplikacijama odobrenje da pristupaju fajlovima u folderu <ph name="FOLDER_NAME" /></translation>
+<translation id="7555339735447658365">Trenutačno ste izvan mreže. Sinkronizacija datoteka nastavit će se kad se povežete s internetom.</translation>
 <translation id="7589661784326793847">Samo trenutak</translation>
 <translation id="7592775719802218421">Postavljanje dostupnosti van mreže za fajl <ph name="FILE_NAME" /></translation>
 <translation id="7600126690270271294">srpski</translation>
@@ -871,6 +876,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Greška prilikom konfiguriranja mreže</translation>
+<translation id="7832093238954689746">Sinkronizacija datoteka je dovršena. Datoteke iz odjeljka Moj disk dostupne su offline.</translation>
 <translation id="7839804798877833423">Preuzimanje ovih fajlova potrošit će otprilike <ph name="FILE_SIZE" /> podataka na mobilnoj mreži.</translation>
 <translation id="7846076177841592234">Otkazivanje odabira</translation>
 <translation id="7853966320808728790">Francuska BÉPO</translation>
@@ -919,6 +925,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model uređaja</translation>
 <translation id="8223479393428528563">Da sačuvate ove fajlove za korištenje van mreže, vratite se na mrežu, desnim klikom odaberite fajlove i odaberite opciju <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Prikaži pohranu</translation>
 <translation id="8249296373107784235">Prekini</translation>
 <translation id="8250690786522693009">Latinski jezik</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
@@ -948,8 +955,8 @@
 <translation id="8395901698320285466">Dimenzije</translation>
 <translation id="8404498045299006085">Zadrži sve</translation>
 <translation id="8408068190360279472">Mreža <ph name="NETWORK_TYPE" />, povezivanje</translation>
-<translation id="841387525767317275">Fajlovi u folderu su dostupni offline</translation>
 <translation id="8425213833346101688">Izmijeni</translation>
+<translation id="8428213095426709021">Postavke</translation>
 <translation id="8431909052837336408">Promijeni PIN za SIM</translation>
 <translation id="8437209419043462667">SAD</translation>
 <translation id="8452135315243592079">Nedostaje SIM kartica</translation>

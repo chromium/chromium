@@ -1554,7 +1554,6 @@
 <translation id="7866482334467279021">асаалттай</translation>
 <translation id="7872786842639831132">Унтраалттай</translation>
 <translation id="7875575368831396199">Таны <ph name="DEVICE_TYPE" /> дээр Bluetooth-г унтраасан бололтой. Phone Hub-г ашиглахын тулд Bluetooth-г асаана уу.</translation>
-<translation id="7876243839304621966">Бүгдийг устгах</translation>
 <translation id="7877557217297072640">{0,plural, =0{Төхөөрөмжийг яг одоо өмнөх хувилбарт өөрчилнө үү}=1{Төхөөрөмжийг 1 секундийн дотор өмнөх хувилбарт өөрчилнө үү}other{Төхөөрөмжийг # секундийн дотор өмнөх хувилбарт өөрчилнө үү}}</translation>
 <translation id="7884446017008693258">Сүлжээний цэгийн тохиргоо</translation>
 <translation id="7884902759927478774">Таб чирэхийг цуцлах</translation>
@@ -1653,7 +1652,6 @@
 <translation id="8255234195843591763">Шинэчлэхийн тулд дахин эхлүүлнэ үү</translation>
 <translation id="8261506727792406068">Устгах</translation>
 <translation id="8262312463845990408">Дахин тоглуулахыг асаах/унтраах</translation>
-<translation id="8265826854528868575"><ph name="NUM_TOTAL_TASKS" />-с <ph name="NUM_SHOWN_TASKS" />-г харуулж байна</translation>
 <translation id="8270450402312105425">{0,plural, =1{Төхөөрөмжийг өмнөх хувилбар луу нь 1 цагийн дотор өөрчилнө үү}other{Төхөөрөмжийг өмнөх хувилбар луу нь # цагийн дотор өөрчилнө үү}}</translation>
 <translation id="8277261673056602147">Дэлгэц дээрээ текст тодруулах</translation>
 <translation id="8284362522226889623">Өмнөх дэлгэц рүү сэлгэхийн тулд дөрвөн хуруугаараа зүүн тийш шударна уу</translation>

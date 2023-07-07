@@ -404,7 +404,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3464194322481586217">Tidak dapat memantau harga.</translation>
 <translation id="3469166899695866866">Berhenti Download?</translation>
 <translation id="3470502288861289375">Menyalin...</translation>
-<translation id="3471148582064653480">Sinkronkan sandi, histori, dan lainnya.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{untuk {COUNT} situs atau aplikasi}other{untuk {COUNT} situs dan aplikasi}}</translation>
 <translation id="3474624961160222204">Lanjutkan sebagai <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Mengakses sandi Anda di aplikasi lainnya.</translation>
@@ -944,7 +943,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6674571176963658787">Untuk memulai sinkronisasi, masukkan frasa sandi</translation>
 <translation id="667999046851023355">Dokumen</translation>
 <translation id="6684906340059221832">Memantau Harga</translation>
-<translation id="6689804622901271327">Isi Otomatis Info Pembayaran</translation>
 <translation id="6710079714193676716">Dikelola oleh organisasi Anda. Beberapa fitur mungkin tidak tersedia. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Dapatkan bookmark, sandi, dan lainnya di semua perangkat Anda.</translation>
@@ -1300,7 +1298,6 @@ Data Anda dienkripsi dengan frasa sandi pada <ph name="TIME" />. Masukkan frasa 
 <translation id="8976414606286374109">Kartu disimpan ke Akun Google Anda.</translation>
 <translation id="8981454092730389528">Kontrol Aktivitas Google</translation>
 <translation id="8985320356172329008">Login ke Google sebagai</translation>
-<translation id="8986567980592931173">Login dengan Akun Google Anda untuk menyinkronkan sandi, histori, dan lainnya.</translation>
 <translation id="8998289560386111590">Tidak tersedia di perangkat Anda</translation>
 <translation id="8999545564078155498">Buka Kunci Dengan Face ID</translation>
 <translation id="9000089900434778519">Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk menghapus histori penelusuran Anda, jika memungkinkan.</translation>

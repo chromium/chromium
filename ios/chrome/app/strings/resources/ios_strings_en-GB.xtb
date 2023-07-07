@@ -405,7 +405,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3464194322481586217">Couldn't track the price.</translation>
 <translation id="3469166899695866866">Stop download?</translation>
 <translation id="3470502288861289375">Copying...</translation>
-<translation id="3471148582064653480">Sync your passwords, history, and more.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{for {COUNT} site or app}other{for {COUNT} sites and apps}}</translation>
 <translation id="3474624961160222204">Continue as <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Access your passwords across other apps.</translation>
@@ -946,7 +945,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6674571176963658787">To start sync, enter your passphrase</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6684906340059221832">Tracking prices</translation>
-<translation id="6689804622901271327">Autofill payment info</translation>
 <translation id="6710079714193676716">Managed by your organisation. Some features may be unavailable. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Get your bookmarks, passwords and more on all your devices.</translation>
@@ -1302,7 +1300,6 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="8976414606286374109">Cards are saved to your Google Account.</translation>
 <translation id="8981454092730389528">Google Activity Controls</translation>
 <translation id="8985320356172329008">Signed In to Google as</translation>
-<translation id="8986567980592931173">Sign in with your Google Account to sync your passwords, history and more.</translation>
 <translation id="8998289560386111590">Not available on your device</translation>
 <translation id="8999545564078155498">Unlock with Face ID</translation>
 <translation id="9000089900434778519">Your search engine is <ph name="DSE_NAME" />. See their instructions for deleting your search history, if applicable.</translation>

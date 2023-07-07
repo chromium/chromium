@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1215127405478249895">Gjennomgå faner</translation>
+<translation id="1275718070701477396">Valgt</translation>
 <translation id="1356944128023012143">Listen over synkroniserte enheter og valgte faner fra disse enhetene som skal gjenopprettes ved ny arbeidsflyt for gjenoppretting, er lukket.</translation>
 <translation id="1816430105422765050">Bytt til andre synkroniserte enheter under dette menyelementet.</translation>
 <translation id="2575169127313449202">Du kan få fanene på enheten oppført nedenfor</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Velg alle</translation>
 <translation id="5972844218283131174">Velg bort alle</translation>
 <translation id="791922009843073162">Alle faner som er valgt velges bort, eller alle faner som er valgt bort velges.</translation>
+<translation id="7927711904086083099">Ikke valgt</translation>
 <translation id="8003146088970081079">Velg enheten du vil hente faner fra</translation>
 <translation id="8019269305087157499">Åpne fra</translation>
 </translationbundle>

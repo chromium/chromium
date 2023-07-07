@@ -3712,6 +3712,7 @@
 <translation id="4068776064906523561">फिंगरप्रिंट सेव्ह केले</translation>
 <translation id="407173827865827707">क्लिकवर</translation>
 <translation id="4072701974556190758">तुमच्या <ph name="ACCOUNT" /> या Google खाते मध्ये पासवर्ड सेव्ह केला जाईल. तुम्हाला तो लक्षात ठेवावा लागणार नाही.</translation>
+<translation id="4072805772816336153">नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="407520071244661467">स्केल</translation>
 <translation id="407543464472585404"><ph name="NAME" /> ची प्रोफाइल <ph name="EMAIL" /> शी जोडलेली आहे</translation>
 <translation id="4077917118009885966">या साइटवर जाहिराती ब्लॉक केल्या आहेत</translation>
@@ -3952,6 +3953,7 @@
 <translation id="4290791284969893584">पेज बंद केल्यानंतर, तुम्ही सुरू केलेली टास्क कदाचित पूर्ण होणार नाहीत</translation>
 <translation id="4291265871880246274">लॉग इन डायलॉग</translation>
 <translation id="429234155571566255">अलीकडे पाहिलेल्या या पाककृती</translation>
+<translation id="429312253194641664">साइट मीडिया प्ले करत आहे</translation>
 <translation id="4295072614469448764">तुमच्या टर्मिनलमध्ये अ‍ॅप उपलब्ध आहे. तुमच्या लाँचरमध्ये आयकन देखील असू शकतो.</translation>
 <translation id="4295979599050707005">तुमचे <ph name="USER_EMAIL" /> खाते Chrome आणि Google Play मध्ये वेबसाइट, अ‍ॅप्स व एक्स्टेंशनसह वापरले जाऊ शकते याची खात्री करण्यासाठी कृपया पुन्हा साइन इन करा. तुम्ही कदाचित हे खाते काढून देखील टाकू शकता. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304"><ph name="APP_NAME" /> कडून अ‍ॅप्लिकेशन इंस्टॉल आणि स्ट्रीम केली</translation>
@@ -5692,7 +5694,6 @@
 <translation id="5811614940486072060">ही फाइल सामान्यतः डाउनलोड केली जात नाही आणि ती धोकादायक असू शकते</translation>
 <translation id="5812674658566766066">सर्व विस्‍तृत करा</translation>
 <translation id="5815645614496570556">X.400 पत्ता</translation>
-<translation id="5816166985204777171">सिस्टीम अ‍ॅप तुमच्या डिव्‍हाइसवर प्रीइंस्‍टॉल केलेले आहे</translation>
 <translation id="5816434091619127343">विनंती केलेले प्रिंटर बदल प्रिंटरला वापरता न येण्याजोगा बनवतील.</translation>
 <translation id="581659025233126501">सिंक सुरू करा</translation>
 <translation id="5817069030404929329">या डिव्हाइसवरून तुमच्या Google खाते वर पासवर्ड हलवायचे आहेत का?</translation>
@@ -6001,7 +6002,6 @@
 <translation id="6065289257230303064">प्रमाणपत्र विषय डिरेक्टरी विशेषता</translation>
 <translation id="6066794465984119824">इमेज हॅश सेट केलेला नाही</translation>
 <translation id="6069464830445383022">तुमचे Google खाते हेच तुमचे Chromebook साइन इन आहे</translation>
-<translation id="6070311415473175157">शोधण्यासाठी इमेजचा भाग निवडा</translation>
 <translation id="6071181508177083058">पासवर्ड कन्फर्म करा</translation>
 <translation id="6071576563962215370">सिस्टमला डिव्हाइस इंस्टॉलेशन वेळ विशेषता लॉक स्थापित करता आले नाही.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> मेमरी सेव्ह केली आहे</translation>
@@ -6366,7 +6366,6 @@
 <translation id="6393156038355142111">क्लिष्ट पासवर्ड सुचवा</translation>
 <translation id="6393550101331051049">असुरक्षित आशय दाखवण्याची अनुमती आहे</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />सिस्टम माहिती<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />मेट्रिक्स<ph name="END_LINK2" /> पाठवा</translation>
-<translation id="6396175271241405634">सिस्टीम अ‍ॅप</translation>
 <translation id="6398715114293939307">Google Play स्टोअर काढून टाका</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रीनमधून निर्गमन करा</translation>
 <translation id="6399675241776343019">नाकारला</translation>
@@ -6639,7 +6638,6 @@
 <translation id="6619801788773578757">कियोस्क ॲप्लिकेशन जोडा</translation>
 <translation id="6619990499523117484">आपल्या पिन ची पुष्टी करा</translation>
 <translation id="6620254580880484313">कंटेनरचे नाव</translation>
-<translation id="6620927550847360014">तुमच्या <ph name="DEVICE_TYPE" /> मधून Bruschetta काढून टाकायचा आहे का?</translation>
 <translation id="6621391692573306628">हा टॅब दुसर्‍या डिव्हाइसवर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chrome मध्ये साइन इन करा</translation>
 <translation id="6622980291894852883">इमेज ब्लॉक करणे सुरू ठेवा</translation>
 <translation id="6624036901798307345">प्रत्येक टॅबचे थंबनेल दाखवणारी नवीन टॅब स्ट्रिप उघडण्यासाठी टॅबलेट मोडमध्ये, टॅब काउंटर टूलबार बटणवर टॅप करा.</translation>
@@ -8379,6 +8377,7 @@
 <translation id="8077120325605624147">तुम्ही भेट देता ती कोणतीही साइट तुम्हाला कोणतीही जाहिरात दाखवू शकते</translation>
 <translation id="8077579734294125741">इतर Chrome प्रोफाइल</translation>
 <translation id="80798452873915119">साइट तुमच्या सर्व डिस्प्लेवर विंडो व्यवस्थापित करण्याची विनंती करू शकतात</translation>
+<translation id="8080028325999236607">सर्व टॅब बंद करा</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">तुमचे सेशन <ph name="MANAGER_NAME" /> द्वारे व्यवस्थापित केले आहे. अ‍ॅडमिनिस्ट्रेटर तुमची प्रोफाइल हटवू शकतात आणि तुमच्या नेटवर्क ट्रॅफिकवरदेखील लक्ष ठेवू शकतात.</translation>
 <translation id="8081989000209387414">ADB डीबगिंग बंद करायचे?</translation>
@@ -8681,6 +8680,7 @@
 <translation id="8336463659890584292">साइटने त्यांच्या पेजवरील लिंक खाजगीरीत्या प्रीलोड करण्यास सांगितल्यास, Chrome हे Google सर्व्हर वापरते. हे प्रीलोड केलेल्या साइटपासून तुमची ओळख लपवते, पण कोणत्या साइट प्रीलोड केल्या जातात हे Google ला समजते.</translation>
 <translation id="8336739000755212683">डिव्हाइस खाते इमेज बदला</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{हे डिव्हाइस एका तासासाठी सेव्ह केले जाईल आणि तुम्ही पुढच्या वेळी कोडशिवाय कनेक्ट करू शकता. हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने सेट केलेले आहे.}other{हे डिव्हाइस {HOURS} तासांसाठी सेव्ह केले जाईल आणि तुम्ही पुढच्या वेळी कोडशिवाय कनेक्ट करू शकता. हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने सेट केलेले आहे.}}</translation>
+<translation id="8337399713761067085">तुम्ही सध्या ऑफलाइन आहात</translation>
 <translation id="8338952601723052325">डेव्हलपर वेबसाइट</translation>
 <translation id="8339288417038613756">डिस्प्ले आणि मजकुराचा आकार</translation>
 <translation id="833986336429795709">ही लिंक उघडण्यासाठी, अ‍ॅप निवडा</translation>
@@ -9422,9 +9422,6 @@
 <translation id="8978154919215542464">ऑन - सर्वकाही सिंक करत आहे</translation>
 <translation id="8978670037548431647">टेदरिंग क्षमता रिफ्रेश करा</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" /> वर</translation>
-<translation id="8980335421826918629">या फाइलमध्ये व्हायरस किंवा मालवेअर असू शकते.
-
-ती असुरक्षित आहे की नाही हे तपासण्यासाठी तुम्ही ती Google सुरक्षित ब्राउझिंग कडे पाठवू शकता. स्कॅनला काही सेकंद लागू शकतात.</translation>
 <translation id="8980345560318123814">फीडबॅक अहवाल</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - क्रॅश झाले</translation>
 <translation id="8981038076986775523">मायक्रोफोन वापरण्याबद्दल अधिक जाणून घ्या</translation>
@@ -9788,6 +9785,7 @@
 <translation id="97905529126098460">रद्द करणे पूर्ण झाल्यावर ही विंडो बंद होईल.</translation>
 <translation id="980731642137034229">अ‍ॅक्‍शन मेनू बटण</translation>
 <translation id="981121421437150478">ऑफलाइन</translation>
+<translation id="983192555821071799">सर्व टॅब बंद करा</translation>
 <translation id="983511809958454316">हे वैशिष्ट्य VR मध्ये सपोर्ट करत नाही</translation>
 <translation id="984275831282074731">पेमेंट पद्धती</translation>
 <translation id="984705303330760860">स्पेल चेकसाठी भाषा जोडा</translation>

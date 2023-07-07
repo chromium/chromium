@@ -3713,6 +3713,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4068776064906523561">Gestoorde vingerafdrukke</translation>
 <translation id="407173827865827707">Met klik</translation>
 <translation id="4072701974556190758">Wagwoord sal in jou Google-rekening <ph name="ACCOUNT" /> gestoor word. Jy hoef dit nie te onthou nie.</translation>
+<translation id="4072805772816336153">Probeer later weer</translation>
 <translation id="407520071244661467">Skaal</translation>
 <translation id="407543464472585404"><ph name="NAME" /> se profiel is gekoppel aan <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">Advertensies op hierdie werf is geblokkeer</translation>
@@ -3955,6 +3956,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4290791284969893584">Take wat jy begin het, sal dalk nie klaarmaak as jy 'n bladsy toemaak nie</translation>
 <translation id="4291265871880246274">Aanmelddialoog</translation>
 <translation id="429234155571566255">hierdie resepte wat onlangs bekyk is</translation>
+<translation id="429312253194641664">'n Werf speel tans media</translation>
 <translation id="4295072614469448764">Program is in jou terminaal beskikbaar. Daar is dalk ook 'n ikoon in jou Lanseerder.</translation>
 <translation id="4295979599050707005">Meld asseblief weer aan om te bevestig dat jou rekening <ph name="USER_EMAIL" /> in webwerwe, programme en uitbreidings in Chrome en Google Play gebruik kan word. Jy kan hierdie rekening ook verwyder. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Apps wat van <ph name="APP_NAME" /> af geïnstalleer en gestroom is</translation>
@@ -5696,7 +5698,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5811614940486072060">Hierdie lêer word nie gereeld afgelaai nie en kan gevaarlik wees</translation>
 <translation id="5812674658566766066">Vou alles uit</translation>
 <translation id="5815645614496570556">X.400-adres</translation>
-<translation id="5816166985204777171">Hierdie stelselapp is vooraf op jou toestel geïnstalleer</translation>
 <translation id="5816434091619127343">Die drukkerveranderinge wat versoek is, sal die drukker onbruikbaar maak.</translation>
 <translation id="581659025233126501">Skakel sinkronisering aan</translation>
 <translation id="5817069030404929329">Skuif wagwoorde van hierdie toestel na jou Google-rekening toe?</translation>
@@ -6004,7 +6005,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6065289257230303064">Sertifikaatonderwerp se gidseienskappe</translation>
 <translation id="6066794465984119824">Prenthuts is nie gestel nie</translation>
 <translation id="6069464830445383022">Jou Google-rekening is jou Chromebook-aanmelding</translation>
-<translation id="6070311415473175157">Kies prent-area om te deursoek</translation>
 <translation id="6071181508177083058">bevestig wagwoord</translation>
 <translation id="6071576563962215370">Die stelsel kon nie die toestel se kenmerkeslot by installering vasmaak nie.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> geheue bespaar</translation>
@@ -6369,7 +6369,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6393156038355142111">Stel sterk wagwoord voor</translation>
 <translation id="6393550101331051049">Mag onveilige inhoud wys</translation>
 <translation id="6395423953133416962">Stuur <ph name="BEGIN_LINK1" />stelselinligting<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />metrieke<ph name="END_LINK2" /></translation>
-<translation id="6396175271241405634">Stelselprogram</translation>
 <translation id="6398715114293939307">Verwyder Google Play Winkel</translation>
 <translation id="6398765197997659313">Gaan by volskerm uit</translation>
 <translation id="6399675241776343019">Afgewys</translation>
@@ -6642,7 +6641,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6619801788773578757">Voeg kioskprogram by</translation>
 <translation id="6619990499523117484">Bevestig jou PIN</translation>
 <translation id="6620254580880484313">Houernaam</translation>
-<translation id="6620927550847360014">Verwyder Bruschetta van jou <ph name="DEVICE_TYPE" />?</translation>
 <translation id="6621391692573306628">Om hierdie oortjie na ’n ander toestel toe te stuur, moet jy op albei toestelle by Chrome aanmeld</translation>
 <translation id="6622980291894852883">Hou aan om prente te blokkeer</translation>
 <translation id="6624036901798307345">Tik in tabletmodus op die oortjietellernutsbalkknoppie om die nuwe oortjiestrook oop te maak wat miniprente van elke oortjie wys.</translation>
@@ -8383,6 +8381,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8077120325605624147">Enige werf wat jy besoek, kan vir jou enige advertensie wys</translation>
 <translation id="8077579734294125741">Ander Chrome-profiele</translation>
 <translation id="80798452873915119">Werwe kan vra om vensters op al jou skerms te bestuur</translation>
+<translation id="8080028325999236607">Maak alle oortjies toe</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Jou sessie word bestuur deur <ph name="MANAGER_NAME" />. Administrateurs kan jou profiel uitvee en ook jou netwerkverkeer monitor.</translation>
 <translation id="8081989000209387414">Deaktiveer ADB-ontfouting?</translation>
@@ -8685,6 +8684,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8336463659890584292">Chrome gebruik Google-bedieners wanneer ’n werf vra om skakels op hul bladsy vooraf te laai. Dit versteek jou identiteit vir die werf wat vooraf gelaai is, maar Google vind uit watter werwe vooraf gelaai word.</translation>
 <translation id="8336739000755212683">Verander toestelrekeningprent</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Hierdie toestel sal 1 uur lank gestoor word en jy kan volgende keer sonder ’n kode koppel. Dit word deur jou administrateur gestel.}other{Hierdie toestel sal {HOURS} uur lank gestoor word en jy kan volgende keer sonder ’n kode koppel. Dit word deur jou administrateur gestel.}}</translation>
+<translation id="8337399713761067085">Jy is tans vanlyn</translation>
 <translation id="8338952601723052325">Ontwikkelaarwebwerf</translation>
 <translation id="8339288417038613756">Skerm- en teksgrootte</translation>
 <translation id="833986336429795709">Kies 'n program om hierdie skakel oop te maak</translation>
@@ -9425,9 +9425,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="8978154919215542464">Aan – sinkroniseer alles</translation>
 <translation id="8978670037548431647">Herlaai verbindingvermoëns</translation>
 <translation id="897939795688207351">Op <ph name="ORIGIN" /></translation>
-<translation id="8980335421826918629">Hierdie lêer kan ’n virus of wanware hê.
-
-Jy kan dit na Google Veiligblaai stuur om te kontroleer of dit onveilig is. Skanderings neem gewoonlik ’n paar sekondes.</translation>
 <translation id="8980345560318123814">Terugvoerverslae</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – Omgeval</translation>
 <translation id="8981038076986775523">Kom meer te wete oor gebruik van ’n mikrofoon</translation>
@@ -9791,6 +9788,7 @@ Jy kan dit na Google Veiligblaai stuur om te kontroleer of dit onveilig is. Skan
 <translation id="97905529126098460">Hierdie venster sal toemaak sodra kansellasie voltooi is.</translation>
 <translation id="980731642137034229">Handelingkieslysknoppie</translation>
 <translation id="981121421437150478">Vanlyn</translation>
+<translation id="983192555821071799">Maak alle oortjies toe</translation>
 <translation id="983511809958454316">Hierdie kenmerk word nie in VR gesteun nie</translation>
 <translation id="984275831282074731">Betaalmetodes</translation>
 <translation id="984705303330760860">Voeg speltoetstale by</translation>

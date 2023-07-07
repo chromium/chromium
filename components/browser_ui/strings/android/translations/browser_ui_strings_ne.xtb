@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">तपाईंले पछिल्लो पटक हेर्नुभएको ट्याबका आधारमा सिफारिस गरिएका खोजहरू</translation>
 <translation id="2241634353105152135">एकपटक मात्र</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> हटाउनुहोस्</translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{एउटा साइट ब्लक गरिएको छ}other{# वटा साइट ब्लक गरिएका छन्}}</translation>
 <translation id="228293613124499805">तपाईंले खोल्ने अधिकांश साइटहरूले प्रायः जसो तपाईंले उक्त साइटसँग सेयर गरेका प्राथमिकता वा जानकारी सेभ गरेर तपाईंलाई अझ राम्रो सुविधा प्रदान गर्न तपाईंको डिभाइसमा जानकारी सम्भवतः सेभ गर्छन्। हामी यो सेटिङ अन राख्न सिफारिस गर्छौँ।</translation>
 <translation id="2289270750774289114">कुनै साइटले छेउछाउका ब्लुटुथ यन्त्रहरू पत्ता लगाउन खोज्दा सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="2315043854645842844">अपरेटिङ सिस्टमले क्लाइन्ट साइड प्रमाणपत्रको चयनलाई समर्थन गर्दैन।</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">प्रमाणपत्र चयन गर्न असमर्थ।</translation>
 <translation id="8077120325605624147">तपाईंले खोल्ने कुनै पनि साइटले तपाईंलाई जुनसुकै विज्ञापन देखाउन सक्छ</translation>
 <translation id="8087000398470557479">यो Google द्वारा डेलिभर गरिएको <ph name="DOMAIN_NAME" /> को सामग्री हो।</translation>
+<translation id="8088603949666785339"><ph name="BANNER_TITLE" /> मा गई थप विकल्पहरू हेर्नुहोस्</translation>
 <translation id="8116925261070264013">म्युट गरियो</translation>
 <translation id="813082847718468539">साइट जानकारी हेर्नुहोस्</translation>
 <translation id="8131740175452115882">निश्चित</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई <ph name="APP_NAME" /> लाई अनुमति दिनुहोस्।</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="8730621377337864115">गरियो</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{एउटा साइटलाई कुकी प्रयोग गर्ने अनुमति दिइएको छ}other{# वटा साइटलाई कुकी प्रयोग गर्ने अनुमति दिइएको छ}}</translation>
 <translation id="8737217482364735741">यस कार्यले <ph name="ORIGIN" /> ले भण्डारण गरेका सबै डेटा र कुकीहरू मेटाउने छ।</translation>
 <translation id="8751914237388039244">कुनै छवि छनौट गर्नुहोस्‌</translation>
 <translation id="8801436777607969138">कुनै खास साइटमा JavaScript लाई रोक लगाउनुहोस्।</translation>

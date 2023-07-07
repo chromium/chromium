@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">Predlagana iskanja na podlagi zadnjega zavihka</translation>
 <translation id="2241634353105152135">Samo enkrat</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Odstrani</translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Blokirani so za 1 spletno mesto}one{Blokirani so za # spletno mesto}two{Blokirani so za # spletni mesti}few{Blokirani so za # spletna mesta}other{Blokirani so za # spletnih mest}}</translation>
 <translation id="228293613124499805">Večina spletnih mest, ki jih obiščete, v napravo verjetno shrani podatke, pogosto zaradi izboljšanja izkušnje, in sicer tako, da shrani nastavitve ali podatke, ki jih razkrijete spletnemu mestu. Priporočamo, da pustite to nastavitev vklopljeno.</translation>
 <translation id="2289270750774289114">Vprašaj, ko želi spletno mesto odkrivati naprave Bluetooth v bližini (priporočljivo)</translation>
 <translation id="2315043854645842844">Operacijski sistem ne podpira izbire potrdila pri odjemalcu.</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">Izbira potrdila ni mogoča</translation>
 <translation id="8077120325605624147">Vsa spletna mesta, ki jih obiščete, vam lahko prikazujejo kateri koli oglas.</translation>
 <translation id="8087000398470557479">Ta vsebina je iz domene <ph name="DOMAIN_NAME" /> in jo prikazuje Google.</translation>
+<translation id="8088603949666785339">Več možnosti v pasici <ph name="BANNER_TITLE" /></translation>
 <translation id="8116925261070264013">Prezrto</translation>
 <translation id="813082847718468539">Ogled podatkov o mestu</translation>
 <translation id="8131740175452115882">Potrdi</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129">V <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" /> vklopite dovoljenje za aplikacijo <ph name="APP_NAME" />.</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>
 <translation id="8730621377337864115">Končano</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Dovoljeni so za 1 spletno mesto}one{Dovoljeni so za # spletno mesto}two{Dovoljeni so za # spletni mesti}few{Dovoljeni so za # spletna mesta}other{Dovoljeni so za # spletnih mest}}</translation>
 <translation id="8737217482364735741">S tem boste izbrisali vse podatke in piškotke, ki jih je shranilo spletno mesto <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Izberite sliko</translation>
 <translation id="8801436777607969138">Preprečevanje JavaScripta za določeno spletno mesto.</translation>

@@ -384,7 +384,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Προσπαθήστε να επικοινωνήσετε με το διαχειριστή συστήματος.</translation>
 <translation id="1736420071277903564">Υπολογιστής</translation>
-<translation id="1740951997222943430">Εισαγάγετε έναν έγκυρο μήνα λήξης</translation>
 <translation id="1741613555002899862">Θα πρέπει να καθοριστεί μια έγκυρη συμβολοσειρά όταν η πολιτική DnsOverHttpsMode είναι <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Κλινοσκεπάσματα και λευκά είδη κλινών</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Πώς χρησιμοποιούμε αυτά τα δεδομένα:<ph name="END_BOLD" /> Το Chrome σημειώνει θέματα που σας ενδιαφέρουν κατά την περιήγησή σας. Οι ετικέτες των θεμάτων είναι προκαθορισμένες και περιλαμβάνουν στοιχεία όπως Τέχνες και ψυχαγωγία, Αγορές και Αθλητικά. Αργότερα, ένας ιστότοπος που επισκέπτεστε μπορεί να ζητήσει από το Chrome ορισμένα από τα θέματά σας (αλλά όχι το ιστορικό περιήγησής σας) για την εξατομίκευση των διαφημίσεων που βλέπετε.</translation>
@@ -434,6 +433,7 @@
 <translation id="1842969606798536927">Πληρωμή</translation>
 <translation id="1846432862466000825">Πλαστικό (Αρχειοθέτησης)</translation>
 <translation id="1848982255014129637">Φωτογραφία (Υψηλής στιλπνότητας)</translation>
+<translation id="1854180393107901205">Διακοπή μετάδοσης</translation>
 <translation id="1855370856221982654">Πυγμαχία</translation>
 <translation id="1856713167556118146">Τι δεν κάνει η Ανώνυμη περιήγηση</translation>
 <translation id="1862788842908766795">Θέσεις εργασίας διευθυντικών στελεχών</translation>
@@ -585,7 +585,6 @@
 <translation id="2188375229972301266">Πολλαπλό τρύπημα στο κάτω μέρος</translation>
 <translation id="2197398642355049178">Τα θέματά σας</translation>
 <translation id="219906046732893612">Ανακαίνιση σπιτιού</translation>
-<translation id="2202020181578195191">Εισαγάγετε ένα έγκυρο έτος λήξης</translation>
 <translation id="2202627062836089804">πίσω μέρος της κάρτας σας</translation>
 <translation id="2204482073374652408">Η ενημέρωση ολοκληρώθηκε!</translation>
 <translation id="2208053750671792556">Δεν λάβατε τον κωδικό σας; <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1211,7 +1210,6 @@
 <translation id="361438452008624280">Καταχώριση λίστας "<ph name="LANGUAGE_ID" />": Άγνωστη ή μη υποστηριζόμενη γλώσσα.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για εκτέλεση του ελέγχου ασφαλείας στις ρυθμίσεις του Chrome</translation>
 <translation id="3615309852743236517">Μανικιούρ και πεντικιούρ</translation>
-<translation id="3615877443314183785">Εισαγάγετε μια έγκυρη ημερομηνία λήξης</translation>
 <translation id="3620239073311576716">Φόρμες και στολές εργασίας</translation>
 <translation id="36224234498066874">Διαγραφή δεδομένων περιήγησης…</translation>
 <translation id="362276910939193118">Εμφάνιση πλήρους ιστορικού</translation>
@@ -2317,6 +2315,7 @@
 <translation id="5995727681868049093">Διαχειριστείτε τις πληροφορίες, το απόρρητο και την ασφάλεια στον Λογαριασμό σας Google</translation>
 <translation id="5997247540087773573">Ο κωδικός πρόσβασης που μόλις χρησιμοποιήσατε εντοπίστηκε σε μια παραβίαση δεδομένων. Για την ασφάλεια των λογαριασμών σας, ο Διαχειριστής κωδικών πρόσβασης Google συνιστά να αλλάξετε άμεσα τον κωδικό πρόσβασης και να ελέγξετε τους αποθηκευμένους κωδικούς πρόσβασης.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> αποτελέσματα για την αναζήτηση "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6002122790816966947">Οι συσκευές σας</translation>
 <translation id="6005659677094197001">Συνεχές</translation>
 <translation id="6005765687956866568">Οι πληροφορίες αυτόματης συμπλήρωσης διαγράφηκαν από τη φόρμα</translation>
 <translation id="6006365096047131769">3 x 5 ίντσες</translation>
@@ -2330,7 +2329,6 @@
 <translation id="6017514345406065928">Πράσινο</translation>
 <translation id="6017850046339264347">Οι εισβολείς στον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> θα μπορούσαν να εγκαταστήσουν παραπλανητικές εφαρμογές που προσποιούνται ότι είναι κάτι άλλο ή συλλέγουν δεδομένα τα οποία μπορεί να χρησιμοποιηθούν για την παρακολούθησή σας. <ph name="BEGIN_LEARN_MORE_LINK" />Μάθετε περισσότερα<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (συγχρονισμένο)</translation>
-<translation id="6027201098523975773">Εισαγωγή ονόματος</translation>
 <translation id="6028591542479806248">Διαχείριση ειδοποιήσεων εφαρμογών για κινητά και ειδοποιήσεων μέσω ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="603068602130820122">Διπλή συρραφή στα δεξιά</translation>
 <translation id="6032524144326295339">Γραμματοκιβώτιο 2</translation>

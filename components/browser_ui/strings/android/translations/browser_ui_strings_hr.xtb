@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">Predložena pretraživanja na temelju vaše posljednje kartice</translation>
 <translation id="2241634353105152135">Samo jednom</translation>
 <translation id="2253414712144136228">Ukloni <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Blokirana je jedna web-lokacija}one{Blokirana je # web-lokacija}few{Blokirane su # web-lokacije}other{Blokirano je # web-lokacija}}</translation>
 <translation id="228293613124499805">Većina web-lokacija koje posjećujete vjerojatno sprema podatke na vaš uređaj, često radi poboljšanja vašeg doživljaja spremanjem vaših preferencija ili podataka koje dijelite s tim web-lokacijama. Preporučujemo da ta postavka ostane uključena.</translation>
 <translation id="2289270750774289114">Prikaži upit kad web-lokacija želi tražiti Bluetooth uređaje u blizini (preporučeno)</translation>
 <translation id="2315043854645842844">Operativni sustav ne podržava odabir klijentskog certifikata.</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">Ne može se odabrati certifikat.</translation>
 <translation id="8077120325605624147">Svaka web-lokacija koju posjetite može vam prikazati bilo koji oglas</translation>
 <translation id="8087000398470557479">Sadržaj potječe s domene <ph name="DOMAIN_NAME" />, a omogućuje ga Google.</translation>
+<translation id="8088603949666785339">Više opcija u <ph name="BANNER_TITLE" /></translation>
 <translation id="8116925261070264013">Bez zvuka</translation>
 <translation id="813082847718468539">Prikaz informacija o web-mjestu</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129">Uključite dopuštenje za aplikaciju <ph name="APP_NAME" /> u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Pokušajte ponovo</translation>
 <translation id="8730621377337864115">Gotovo</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Dopuštena je jedna web-lokacija}one{Dopuštena je # web-lokacija}few{Dopuštene su # web-lokacije}other{Dopušteno je # web-lokacija}}</translation>
 <translation id="8737217482364735741">Izbrisat će se svi podaci i kolačići koje je spremila web-lokacija <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Odaberite sliku</translation>
 <translation id="8801436777607969138">Blokiranje JavaScripta za određenu web-lokaciju.</translation>

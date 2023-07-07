@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
 <translation id="1215127405478249895">Прагляд укладак</translation>
+<translation id="1275718070701477396">Выбрана</translation>
 <translation id="1356944128023012143">Спіс сінхранізаваных прылад і абраных укладак з гэтых прылад будзе адноўлены пасля закрыцця новага працэсу аднаўлення.</translation>
 <translation id="1816430105422765050">Пераключайцеся на іншыя сінхранізаваныя прылады пад гэтым пунктам меню.</translation>
 <translation id="2575169127313449202">Вы можаце аднавіць укладкі з прылады, указанай ніжэй</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Выбраць усё</translation>
 <translation id="5972844218283131174">Скасаваць выбар усіх укладак</translation>
 <translation id="791922009843073162">Будзе скасаваны выбар выбраных укладак або будуць выбраны ўсе нявыбраныя ўкладкі.</translation>
+<translation id="7927711904086083099">Не выбрана</translation>
 <translation id="8003146088970081079">Выберыце прыладу, з якой трэба аднавіць укладкі</translation>
 <translation id="8019269305087157499">Адкрыць з</translation>
 </translationbundle>

@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Диск временно недоступен. Когда доступ будет восстановлен, загрузка автоматически возобновится.</translation>
 <translation id="1307931752636661898">Нет доступа к файлам Linux</translation>
 <translation id="1313405956111467313">Автоматическая настройка прокси-сервера</translation>
+<translation id="134645005685694099">На устройстве недостаточно места для синхронизации файлов. Новые файлы не будут синхронизироваться автоматически.</translation>
 <translation id="1353686479385938207"><ph name="NETWORK_NAME" /> (<ph name="PROVIDER_NAME" />)</translation>
 <translation id="1358735829858566124">Этот файл или каталог непригоден для использования.</translation>
 <translation id="1363028406613469049">Трек</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP-прокси</translation>
 <translation id="2467267713099745100">Сеть <ph name="NETWORK_TYPE" /> отключена</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
+<translation id="2468470447085858632">Синхронизация позволит работать с файлами Google Диска в офлайн-режиме</translation>
 <translation id="2470939964922472929">Слишком много попыток ввести PIN-код. Чтобы задать новый PIN-код, введите 8-значный PUK-код, предоставленный оператором связи.</translation>
 <translation id="2500392669976258912">Гуджарати, фонетический</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -349,12 +351,12 @@
 <translation id="3855472144336161447">Немецкая (Neo 2)</translation>
 <translation id="3858860766373142691">Название</translation>
 <translation id="3866249974567520381">Описание</translation>
-<translation id="3866439285517092441">Низкий уровень заряда батареи. Синхронизация возобновится, когда вы подключитесь к источнику питания.</translation>
 <translation id="3899991606604168269">Французский (Канада), мультиязычная раскладка</translation>
 <translation id="3901991538546252627">Подключение к <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Установка мобильного профиля, сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Вставить</translation>
+<translation id="3950820424414687140">Вход</translation>
 <translation id="3952872973865944257">Телугу, фонетический</translation>
 <translation id="3958548648197196644">Киви</translation>
 <translation id="397105322502079400">Вычисление…</translation>
@@ -603,6 +605,7 @@
 <translation id="5720028165859493293">Файл <ph name="FILE_NAME" /> перемещен в корзину</translation>
 <translation id="5724172041621205163">Тайский, раскладка Pattachote</translation>
 <translation id="57383366388012121">Последний месяц</translation>
+<translation id="575175778971367197">Сейчас невозможно синхронизировать этот файл.</translation>
 <translation id="5756666464756035725">Венгерская QWERTY-клавиатура</translation>
 <translation id="5760252553414789727">Выбрано элементов: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Немецкий (Швейцария)</translation>
@@ -705,6 +708,7 @@
 <translation id="6558280019477628686">Произошла ошибка. Возможно, не все элементы были удалены.</translation>
 <translation id="656398493051028875">Удаление файла "<ph name="FILENAME" />"…</translation>
 <translation id="6581162200855843583">Ссылка на Google Диск</translation>
+<translation id="6588648400954570689">Настройки синхронизации файлов</translation>
 <translation id="6594855146910089723">Доступ к этой папке предоставлен Linux и Parallels Desktop.</translation>
 <translation id="6607272825297743757">Информация о файле</translation>
 <translation id="6609332149380188670">Parallels Desktop предоставлен доступ к нескольким папкам (<ph name="NUMBER_OF_ITEMS" />).</translation>
@@ -829,6 +833,7 @@
 <translation id="7547811415869834682">Нидерландская</translation>
 <translation id="7551643184018910560">Закрепить на панели запуска</translation>
 <translation id="7553492409867692754">Приложения Linux смогут получать доступ к файлам папки "<ph name="FOLDER_NAME" />".</translation>
+<translation id="7555339735447658365">Сейчас включен офлайн-режим. Синхронизация файлов возобновится, когда вы подключитесь к интернету.</translation>
 <translation id="7589661784326793847">Подождите…</translation>
 <translation id="7592775719802218421">Скачивание файла "<ph name="FILE_NAME" />" для офлайн-доступа…</translation>
 <translation id="7600126690270271294">Сербский</translation>
@@ -871,6 +876,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Ошибка при настройке сети</translation>
+<translation id="7832093238954689746">Синхронизация завершена. Файлы на Google Диске доступны в офлайн-режиме.</translation>
 <translation id="7839804798877833423">При загрузке этих файлов по мобильному каналу передачи данных будет использовано около <ph name="FILE_SIZE" /> трафика.</translation>
 <translation id="7846076177841592234">Отменить выбор</translation>
 <translation id="7853966320808728790">Французская (BÉPO)</translation>
@@ -919,6 +925,7 @@
 <translation id="8179976553408161302">ВВОД</translation>
 <translation id="8193175696669055101">Модель устройства</translation>
 <translation id="8223479393428528563">Чтобы работать с этими файлами в офлайн-режиме, подключитесь к Интернету, нажмите правой кнопкой мыши на каждый документ и выберите вариант "<ph name="OFFLINE_CHECKBOX_NAME" />".</translation>
+<translation id="8241139360630443550">Проверить хранилище</translation>
 <translation id="8249296373107784235">Отмена</translation>
 <translation id="8250690786522693009">Латиница</translation>
 <translation id="8250920743982581267">Документы</translation>
@@ -948,8 +955,8 @@
 <translation id="8395901698320285466">Размеры</translation>
 <translation id="8404498045299006085">Сохранить все</translation>
 <translation id="8408068190360279472">Сеть <ph name="NETWORK_TYPE" />, подключение</translation>
-<translation id="841387525767317275">Файлы в этой папке доступны в офлайн-режиме</translation>
 <translation id="8425213833346101688">Изменить</translation>
+<translation id="8428213095426709021">Настройки</translation>
 <translation id="8431909052837336408">Изменение PIN-кода SIM-карты</translation>
 <translation id="8437209419043462667">США</translation>
 <translation id="8452135315243592079">SIM-карта не обнаружена</translation>

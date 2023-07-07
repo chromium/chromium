@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">Neo 2 Jerman</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3866249974567520381">Deskripsi</translation>
-<translation id="3866439285517092441">Daya baterai lemah. Sinkronisasi akan dilanjutkan saat Anda terhubung ke sumber listrik.</translation>
 <translation id="3899991606604168269">Prancis (Kanada) dengan keyboard Multibahasa</translation>
 <translation id="3901991538546252627">Menghubungkan ke <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Menginstal profil seluler, Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Sisipkan</translation>
+<translation id="3950820424414687140">Login</translation>
 <translation id="3952872973865944257">Fonetik Telugu</translation>
 <translation id="3958548648197196644">Burung Kiwi</translation>
 <translation id="397105322502079400">Menghitung...</translation>
@@ -948,8 +948,8 @@
 <translation id="8395901698320285466">Dimensi</translation>
 <translation id="8404498045299006085">Simpan semua</translation>
 <translation id="8408068190360279472">Jaringan <ph name="NETWORK_TYPE" />, menyambungkan</translation>
-<translation id="841387525767317275">File dalam folder ini tersedia secara offline</translation>
 <translation id="8425213833346101688">Ubah</translation>
+<translation id="8428213095426709021">Setelan</translation>
 <translation id="8431909052837336408">Ubah PIN SIM</translation>
 <translation id="8437209419043462667">AS</translation>
 <translation id="8452135315243592079">Kartu SIM tidak ada</translation>

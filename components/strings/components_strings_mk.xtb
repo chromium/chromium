@@ -374,7 +374,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Обидете се да контактирате со системскиот администратор.</translation>
 <translation id="1736420071277903564">Компјутер</translation>
-<translation id="1740951997222943430">Внесете важечки месец на истекување</translation>
 <translation id="1741613555002899862">Мора да е одредена и важечка низа кога DnsOverHttpsMode е <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Постелнина и креветски чаршави</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Како ги користиме податоциве:<ph name="END_BOLD" /> Chrome ги утврдува темите од интерес додека прелистувате. Етикетите за теми се дефинирани однапред и вклучуваат работи како уметност и забава, купување и спорт. Подоцна, сајтот што го посетувате може да побара од Chrome неколку од вашите теми (но не и вашата историја на прелистувањето) за да ги персонализира рекламите што ги гледате.</translation>
@@ -421,6 +420,7 @@
 <translation id="1838374766361614909">Исчисти го пребарувањето</translation>
 <translation id="1839551713262164453">Проверката на вредностите на правилото не успеа поради грешки</translation>
 <translation id="1842969606798536927">Плати</translation>
+<translation id="1854180393107901205">Запри со емитување</translation>
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1856713167556118146">Што не прави „Инкогнито“</translation>
 <translation id="1862788842908766795">Работни места на извршно и раководно ниво</translation>
@@ -569,7 +569,6 @@
 <translation id="2188375229972301266">Повеќе дупки долу</translation>
 <translation id="2197398642355049178">Вашите теми</translation>
 <translation id="219906046732893612">Реновирање на домот</translation>
-<translation id="2202020181578195191">Внесете важечка година на истекување</translation>
 <translation id="2202627062836089804">задната страна од картичката</translation>
 <translation id="2204482073374652408">Ажурирањето е завршено!</translation>
 <translation id="2208053750671792556">Не го примивте вашиот код? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1176,7 +1175,6 @@
 <translation id="361438452008624280">Запис во списокот „<ph name="LANGUAGE_ID" />“: непознат или неподдржан јазик.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да извршите безбедносна проверка во поставките за Chrome</translation>
 <translation id="3615309852743236517">Маникири и педикири</translation>
-<translation id="3615877443314183785">Внесете важечки датум на истекување</translation>
 <translation id="3620239073311576716">Униформи и работничка облека</translation>
 <translation id="36224234498066874">Исчисти податоци…</translation>
 <translation id="362276910939193118">Покажи целосна историја</translation>
@@ -2251,6 +2249,7 @@
 <translation id="5995727681868049093">Управувајте со податоците, приватноста и безбедноста на вашата сметка на Google</translation>
 <translation id="5997247540087773573">Откриено е дека лозинката која штотуку ја употребивте е меѓу лозинките откриени при упад во податоците. За да ја задржите безбедноста на сметките, Google Password Manager препорачува веднаш да ја промените и да ги проверите зачуваните лозинки.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> резултати за „<ph name="SEARCH_TEXT" />“</translation>
+<translation id="6002122790816966947">Ваши уреди</translation>
 <translation id="6005765687956866568">Автоматски пополнетите податоци се избришани од формуларот</translation>
 <translation id="6006365096047131769">3 x 5 инчи</translation>
 <translation id="6006484371116297560">Класична</translation>
@@ -2263,7 +2262,6 @@
 <translation id="6017514345406065928">Зелена</translation>
 <translation id="6017850046339264347">Напаѓачите што се на <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> може да инсталираат лажни апликации што се преправаат дека се нешто друго или собираат податоци што може да ги користат за да ве следат. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /> (синхронизирани)</translation>
-<translation id="6027201098523975773">Внесете име</translation>
 <translation id="6028591542479806248">Управувајте со мобилните и известувањата по е-пошта</translation>
 <translation id="603068602130820122">Двојно спојување десно</translation>
 <translation id="6032524144326295339">Поштенско сандаче 2</translation>

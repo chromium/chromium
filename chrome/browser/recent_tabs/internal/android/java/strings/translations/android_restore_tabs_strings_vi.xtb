@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
 <translation id="1215127405478249895">Xem lại thẻ</translation>
+<translation id="1275718070701477396">Đã chọn</translation>
 <translation id="1356944128023012143">Danh sách các thiết bị đã đồng bộ hoá và các thẻ đã chọn mà bạn muốn khôi phục từ các thiết bị đó trong quy trình khôi phục mới đã đóng.</translation>
 <translation id="1816430105422765050">Chuyển sang các thiết bị đã đồng bộ hoá khác ở mục trong trình đơn này.</translation>
 <translation id="2575169127313449202">Bạn có thể khôi phục thẻ từ thiết bị được liệt kê bên dưới</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Chọn tất cả</translation>
 <translation id="5972844218283131174">Bỏ chọn tất cả</translation>
 <translation id="791922009843073162">Tất cả các thẻ đã chọn sẽ bị bỏ chọn hoặc tất cả các thẻ đã bỏ chọn sẽ được chọn.</translation>
+<translation id="7927711904086083099">Chưa chọn</translation>
 <translation id="8003146088970081079">Chọn thiết bị có các thẻ mà bạn muốn khôi phục</translation>
 <translation id="8019269305087157499">Mở từ</translation>
 </translationbundle>

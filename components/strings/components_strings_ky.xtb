@@ -374,7 +374,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Система администраторуна кайрылып көрүңүз.</translation>
 <translation id="1736420071277903564">Компьютер</translation>
-<translation id="1740951997222943430">Мөөнөтү аяктоочу айды туура киргизиңиз</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> деп жана мааниси туура көрсөтүлүшү керек.</translation>
 <translation id="1743393865165844832">Төшөктөр жана шейшептер</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Бул маалыматты кандайча колдонобуз:<ph name="END_BOLD" /> Cерептеп жатканыңызда Chrome сизди кызыктырган темаларды белгилеп турат. Темалардын аталыштары алдын ала аныкталат. Мисалы, "Искусство жана көңүл ачуу", "Сатып алуу" жана "Спорт". Кийинчерээк сиз кирген сайт жарнамаларды жекелештирүү үчүн, Chrome'дон бир нече темаңызды (көрүлгөн вебсайттардан тышкары) сурашы мүмкүн.</translation>
@@ -421,6 +420,7 @@
 <translation id="1838374766361614909">Изделип жаткан нерсени өчүрүү</translation>
 <translation id="1839551713262164453">Саясатта коюлган маанилерди ырастоодо ката кетип, ырастоо аткарылбай калды.</translation>
 <translation id="1842969606798536927">Төлөө</translation>
+<translation id="1854180393107901205">Тышкы экранга чыгарууну токтотуу</translation>
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1856713167556118146">Жашыруун режимде эмнелер сакталат:</translation>
 <translation id="1862788842908766795">Аткаруучу жана башкаруу жумуштары</translation>
@@ -569,7 +569,6 @@
 <translation id="2188375229972301266">Төмөнкү жагын бир нече жолу тешүү</translation>
 <translation id="2197398642355049178">Сиздин темаларыңыз</translation>
 <translation id="219906046732893612">Үйдү жакшыртуу</translation>
-<translation id="2202020181578195191">Мөөнөтү аяктоочу жылды туура киргизиңиз</translation>
 <translation id="2202627062836089804">картаңыздын аркасы</translation>
 <translation id="2204482073374652408">Жаңыртылды!</translation>
 <translation id="2208053750671792556">Код келген жокпу? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1175,7 +1174,6 @@
 <translation id="361438452008624280">Тизмедеги жазуу "<ph name="LANGUAGE_ID" />": Белгисиз же колдоого алынбаган тил.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлеринен коопсуздукту текшерүү үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="3615309852743236517">Маникюр жана педикюр</translation>
-<translation id="3615877443314183785">Мөөнөтү аяктоочу күндү туура киргизиңиз</translation>
 <translation id="3620239073311576716">Формалар жана жумушчу кийимдер</translation>
 <translation id="36224234498066874">Серептөө дайындарын тазалоо…</translation>
 <translation id="362276910939193118">Толук таржымалды көрсөтүү</translation>
@@ -2250,6 +2248,7 @@
 <translation id="5995727681868049093">Маалыматты, купуялыкты жана коопсуздукту Google аккаунтуңузда башкаруу</translation>
 <translation id="5997247540087773573">Жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганы аныкталды. Аккаунттарыңыздын коопсуздугун коргоо үчүн Google'дун Сырсөздөрдү башкаргычы аны азыр өзгөртүп жана башка сакталган сырсөздөрүңүздү текшерүүнү сунуштайт.</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" сурамы боюнча <ph name="RESULT_COUNT" /> жыйынтык табылды</translation>
+<translation id="6002122790816966947">Түзмөктөрүңүз</translation>
 <translation id="6005765687956866568">Автотолтурулган маалымат формадан өчүрүлдү</translation>
 <translation id="6006365096047131769">3 x 5 дюйм</translation>
 <translation id="6006484371116297560">Классикалык тема</translation>
@@ -2262,7 +2261,6 @@
 <translation id="6017514345406065928">Жашыл</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындагы чабуулчулар башка колдонмолордун кейпин кийген жасалма колдонмолорду орнотуп коюшу же сизге көз салуу үчүн дайындарды чогултуп алышы мүмкүн. <ph name="BEGIN_LEARN_MORE_LINK" />Кеңири маалымат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (шайкештирилген)</translation>
-<translation id="6027201098523975773">Аты-жөнүн киргизиңиз</translation>
 <translation id="6028591542479806248">Мобилдик жана электрондук почта билдирмелерин тескөө</translation>
 <translation id="603068602130820122">Оң жагын эки илмек менен бекитүү</translation>
 <translation id="6032524144326295339">2-электрондук каттар кутусу</translation>

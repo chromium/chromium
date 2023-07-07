@@ -3697,6 +3697,7 @@
 <translation id="4068776064906523561">已儲存的指紋</translation>
 <translation id="407173827865827707">點擊時</translation>
 <translation id="4072701974556190758">密碼會儲存在你的 Google 帳戶 (<ph name="ACCOUNT" />) 中，因此你不必記住密碼。</translation>
+<translation id="4072805772816336153">請稍後再試</translation>
 <translation id="407520071244661467">縮放比例</translation>
 <translation id="407543464472585404"><ph name="NAME" />的設定檔已連結至 <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">已封鎖這個網站的廣告</translation>
@@ -3939,6 +3940,7 @@
 <translation id="4290791284969893584">關閉網頁後，你已啟動的工作可能無法完成</translation>
 <translation id="4291265871880246274">登入對話方塊</translation>
 <translation id="429234155571566255">這些最近瀏覽過的食譜</translation>
+<translation id="429312253194641664">一個網站正在播放媒體內容</translation>
 <translation id="4295072614469448764">應用程式已出現在你的終端機上，且可能在啟動器中顯示圖示。</translation>
 <translation id="4295979599050707005">請再次登入，並確認你的帳戶 (<ph name="USER_EMAIL" />) 可用於 Chrome 和 Google Play 的網站、應用程式與擴充功能。你也可以移除這個帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">已透過「<ph name="APP_NAME" />」安裝及串流的應用程式</translation>
@@ -5674,7 +5676,6 @@
 <translation id="5811614940486072060">這個檔案不是常見的下載項目，內容可能不安全</translation>
 <translation id="5812674658566766066">全部展開</translation>
 <translation id="5815645614496570556">X.400 地址</translation>
-<translation id="5816166985204777171">這個系統應用程式已預先安裝在裝置上</translation>
 <translation id="5816434091619127343">要求的印表機變更會讓這部印表機無法使用。</translation>
 <translation id="581659025233126501">開啟同步功能</translation>
 <translation id="5817069030404929329">要將密碼從這部裝置移至你的 Google 帳戶嗎？</translation>
@@ -5980,7 +5981,6 @@
 <translation id="6065289257230303064">憑證主體目錄屬性</translation>
 <translation id="6066794465984119824">未設定映像檔雜湊</translation>
 <translation id="6069464830445383022">你的 Google 帳戶就是你用來登入 Chromebook 的帳戶</translation>
-<translation id="6070311415473175157">選取要搜尋的圖片區域</translation>
 <translation id="6071181508177083058">確認密碼</translation>
 <translation id="6071576563962215370">系統無法鎖定裝置安裝時的屬性。</translation>
 <translation id="6071938745001252305">已節省 <ph name="MEMORY_VALUE" /> 的記憶體</translation>
@@ -6345,7 +6345,6 @@
 <translation id="6393156038355142111">建議高強度密碼</translation>
 <translation id="6393550101331051049">可以顯示不安全的內容</translation>
 <translation id="6395423953133416962">傳送<ph name="BEGIN_LINK1" />系統資訊<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />指標<ph name="END_LINK2" /></translation>
-<translation id="6396175271241405634">系統應用程式</translation>
 <translation id="6398715114293939307">移除 Google Play 商店</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
 <translation id="6399675241776343019">已拒絕</translation>
@@ -6618,7 +6617,6 @@
 <translation id="6619801788773578757">新增 Kiosk 應用程式</translation>
 <translation id="6619990499523117484">確認你的 PIN 碼</translation>
 <translation id="6620254580880484313">容器名稱</translation>
-<translation id="6620927550847360014">要從 <ph name="DEVICE_TYPE" /> 中移除 Bruschetta 嗎？</translation>
 <translation id="6621391692573306628">如要將這個分頁傳送到其他裝置，請在這兩部裝置上登入 Chrome</translation>
 <translation id="6622980291894852883">繼續封鎖圖片</translation>
 <translation id="6624036901798307345">在平板電腦模式中，輕觸分頁計數器的工具列按鈕即可開啟新的分頁列，當中會顯示各分頁的縮圖。</translation>
@@ -8358,6 +8356,7 @@
 <translation id="8077120325605624147">你造訪的網站都能對你顯示所有廣告</translation>
 <translation id="8077579734294125741">其他 Chrome 設定檔</translation>
 <translation id="80798452873915119">網站可以要求管理所有螢幕上的視窗</translation>
+<translation id="8080028325999236607">關閉所有分頁</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">工作階段是由 <ph name="MANAGER_NAME" /> 管理。管理員可以刪除設定檔並監控網路流量。</translation>
 <translation id="8081989000209387414">是否要停用 ADB 偵錯？</translation>
@@ -8660,6 +8659,7 @@
 <translation id="8336463659890584292">當網站要求以私密方式預先載入網頁上的連結時，Chrome 會使用 Google 伺服器進行預先載入作業。這麼做可在預先載入網站中隱藏你的身分，但 Google 會知道這類網站預先載入的內容。</translation>
 <translation id="8336739000755212683">變更裝置的帳戶圖片</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{系統會記住這部裝置，在 1 個小時內無需輸入驗證碼即可再次連接。這項設定是由你系統管理員指定。}other{系統會記住這部裝置，在 {HOURS} 個小時內無需輸入驗證碼即可再次連接。這項設定是由你系統管理員指定。}}</translation>
+<translation id="8337399713761067085">你目前處於離線狀態</translation>
 <translation id="8338952601723052325">開發人員網站</translation>
 <translation id="8339288417038613756">顯示和文字大小</translation>
 <translation id="833986336429795709">請選擇要用來開啟這個連結的應用程式</translation>
@@ -9400,7 +9400,6 @@
 <translation id="8978154919215542464">開啟 - 同步處理所有資料</translation>
 <translation id="8978670037548431647">重新整理網路共用功能</translation>
 <translation id="897939795688207351">在 <ph name="ORIGIN" /> 上</translation>
-<translation id="8980335421826918629">這個檔案可能是病毒或惡意軟體。你可以將該檔案傳送給 Google 安全瀏覽，檢查是否安全。掃描通常需要幾秒鐘的時間。</translation>
 <translation id="8980345560318123814">使用狀況報告</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - 已當機</translation>
 <translation id="8981038076986775523">進一步瞭解如何使用麥克風</translation>
@@ -9764,6 +9763,7 @@
 <translation id="97905529126098460">此視窗將在完成取消作業後關閉。</translation>
 <translation id="980731642137034229">動作選單按鈕</translation>
 <translation id="981121421437150478">離線</translation>
+<translation id="983192555821071799">關閉所有分頁</translation>
 <translation id="983511809958454316">無法在 VR 狀態下使用這項功能</translation>
 <translation id="984275831282074731">付款方式</translation>
 <translation id="984705303330760860">新增拼字檢查支援的語言</translation>

@@ -3695,6 +3695,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4068776064906523561">Huellas digitales guardadas</translation>
 <translation id="407173827865827707">Al hacer clic</translation>
 <translation id="4072701974556190758">La contraseña se guardará en tu Cuenta de Google, <ph name="ACCOUNT" />. No deberás recordarla.</translation>
+<translation id="4072805772816336153">Vuelve a intentarlo más tarde</translation>
 <translation id="407520071244661467">Escala</translation>
 <translation id="407543464472585404">El perfil de <ph name="NAME" /> está vinculado a <ph name="EMAIL" />.</translation>
 <translation id="4077917118009885966">Anuncios bloqueados en este sitio</translation>
@@ -3937,6 +3938,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4290791284969893584">Después de cerrar una página, es posible que no puedas completar las tareas que empezaste.</translation>
 <translation id="4291265871880246274">Diálogo de acceso</translation>
 <translation id="429234155571566255">las recetas que viste recientemente</translation>
+<translation id="429312253194641664">Un sitio está reproduciendo contenido multimedia</translation>
 <translation id="4295072614469448764">La app está disponible en tu terminal. Es posible que haya un ícono en el Selector.</translation>
 <translation id="4295979599050707005">Vuelve a acceder para confirmar que tu cuenta <ph name="USER_EMAIL" /> se puede usar con sitios web, apps y extensiones en Chrome y Google Play. También puedes quitarla. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Aplicaciones instaladas y transmitidas desde <ph name="APP_NAME" /></translation>
@@ -5676,7 +5678,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5811614940486072060">Este archivo no se descarga con frecuencia y podría ser peligroso.</translation>
 <translation id="5812674658566766066">Expandir todo</translation>
 <translation id="5815645614496570556">Dirección X 400</translation>
-<translation id="5816166985204777171">Esta app del sistema está preinstalada en tu dispositivo.</translation>
 <translation id="5816434091619127343">Los cambios solicitados harán que la impresora no se pueda utilizar.</translation>
 <translation id="581659025233126501">Activar la sincronización</translation>
 <translation id="5817069030404929329">¿Deseas mover las contraseñas de este dispositivo a tu Cuenta de Google?</translation>
@@ -5984,7 +5985,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6065289257230303064">Atributos de directorio del sujeto del certificado</translation>
 <translation id="6066794465984119824">No se estableció un hash de imagen</translation>
 <translation id="6069464830445383022">Accede a la Chromebook con tu Cuenta de Google</translation>
-<translation id="6070311415473175157">Selecciona una parte de la imagen para realizar la búsqueda</translation>
 <translation id="6071181508177083058">confirmar contraseña</translation>
 <translation id="6071576563962215370">El sistema no pudo establecer el bloqueo de atributos del tiempo de instalación del dispositivo.</translation>
 <translation id="6071938745001252305">Ahorro de memoria: <ph name="MEMORY_VALUE" /></translation>
@@ -6349,7 +6349,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6393156038355142111">Sugerir contraseña segura</translation>
 <translation id="6393550101331051049">Puede mostrar contenido no seguro</translation>
 <translation id="6395423953133416962">Enviar <ph name="BEGIN_LINK1" />información del sistema<ph name="END_LINK1" /> y <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
-<translation id="6396175271241405634">App del sistema</translation>
 <translation id="6398715114293939307">Quitar Google Play Store</translation>
 <translation id="6398765197997659313">Salir de pantalla completa</translation>
 <translation id="6399675241776343019">Rechazado</translation>
@@ -6622,7 +6621,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6619801788773578757">Agregar aplicación de kiosco</translation>
 <translation id="6619990499523117484">Confirma el PIN</translation>
 <translation id="6620254580880484313">Nombre del contenedor</translation>
-<translation id="6620927550847360014">¿Quieres quitar Bruschetta de tu <ph name="DEVICE_TYPE" />?</translation>
 <translation id="6621391692573306628">Para enviar esta pestaña a otro dispositivo, accede a Chrome en ambos dispositivos.</translation>
 <translation id="6622980291894852883">Continuar con el bloqueo de imágenes</translation>
 <translation id="6624036901798307345">En el modo tablet, presiona el botón de la barra de herramientas del contador de pestañas para abrir la nueva barra de pestañas que muestra miniaturas de cada pestaña.</translation>
@@ -8364,6 +8362,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8077120325605624147">Cualquier sitio que visites puede mostrarte cualquier anuncio</translation>
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>
 <translation id="80798452873915119">Los sitios pueden solicitar permiso para administrar las ventanas de todas tus pantallas</translation>
+<translation id="8080028325999236607">Cerrar todas las pestañas</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> administra tu sesión. Los administradores pueden borrar tu perfil y supervisar el tráfico de red.</translation>
 <translation id="8081989000209387414">¿Quieres inhabilitar la depuración de adb?</translation>
@@ -8666,6 +8665,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8336463659890584292">Cuando un sitio te pregunta si quieres precargar de forma privada los vínculos de su página, Chrome usa los servidores de Google. De esta manera, se oculta tu identidad del sitio precargado, pero Google aprende qué sitios se precargan.</translation>
 <translation id="8336739000755212683">Cambiar la imagen de cuenta del dispositivo</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Este dispositivo se guardará por 1 hora y no necesitarás un código la próxima vez que te conectes. Esto lo estableció el administrador.}other{Este dispositivo se guardará por {HOURS} horas y no necesitarás un código la próxima vez que te conectes. Esto lo estableció el administrador.}}</translation>
+<translation id="8337399713761067085">En este momento estás desconectado.</translation>
 <translation id="8338952601723052325">Sitio web del programador</translation>
 <translation id="8339288417038613756">Tamaño de la pantalla y el texto</translation>
 <translation id="833986336429795709">Para abrir este vínculo, selecciona una app</translation>
@@ -9406,9 +9406,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8978154919215542464">Activada: sincronizar todo</translation>
 <translation id="8978670037548431647">Actualizar funciones de conexión mediante dispositivo móvil</translation>
 <translation id="897939795688207351">En <ph name="ORIGIN" /></translation>
-<translation id="8980335421826918629">Este archivo puede ser un virus o software malicioso.
-
-Puedes enviarlo a la Navegación segura de Google para comprobar que sea seguro. Los análisis suelen tardar unos segundos.</translation>
 <translation id="8980345560318123814">Informes de comentarios</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" />: Falló</translation>
 <translation id="8981038076986775523">Más información para usar un micrófono</translation>
@@ -9772,6 +9769,7 @@ Puedes enviarlo a la Navegación segura de Google para comprobar que sea seguro.
 <translation id="97905529126098460">Cuando se complete la cancelación, se cerrará esta ventana.</translation>
 <translation id="980731642137034229">Botón del menú de Acción</translation>
 <translation id="981121421437150478">Sin conexión</translation>
+<translation id="983192555821071799">Cerrar todas las pestañas</translation>
 <translation id="983511809958454316">Esta función no es compatible con RV</translation>
 <translation id="984275831282074731">Formas de pago</translation>
 <translation id="984705303330760860">Agregar idiomas al corrector ortográfico</translation>

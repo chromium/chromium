@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1215127405478249895">Rishiko skedat</translation>
+<translation id="1275718070701477396">Përzgjedhur</translation>
 <translation id="1356944128023012143">Lista e pajisjeve të sinkronizuara dhe skedat e zgjedhura nga ato pajisje që do të restaurohen me mbylljen e fluksit të ri të punës për restaurimit.</translation>
 <translation id="1816430105422765050">Kalo te pajisjet e tjera të sinkronizuara nën këtë artikull të menysë.</translation>
 <translation id="2575169127313449202">Mund të marrësh skedat nga pajisjet e listuara më poshtë</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
 <translation id="5972844218283131174">Anulo zgjedhjen për të gjitha</translation>
 <translation id="791922009843073162">Zgjedhja e të gjitha skedave të zgjedhura do të anulohet ose të gjitha skedat e pazgjedhura do të zgjidhen.</translation>
+<translation id="7927711904086083099">Nuk është zgjedhur</translation>
 <translation id="8003146088970081079">Zgjidh pajisjen nga e cila dëshiron të marrësh skedat</translation>
 <translation id="8019269305087157499">Hap nga</translation>
 </translationbundle>

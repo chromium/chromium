@@ -404,7 +404,6 @@
 <translation id="3464194322481586217">Следенето на цената не бе успешно.</translation>
 <translation id="3469166899695866866">Искате ли да спрете изтеглянето?</translation>
 <translation id="3470502288861289375">Копира се...</translation>
-<translation id="3471148582064653480">Синхронизирайте своите пароли, история и др.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{за {COUNT} сайт или приложение}other{за {COUNT} сайта и приложения}}</translation>
 <translation id="3474624961160222204">Продължаване като <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Осъществявайте достъп до паролите си в други приложения.</translation>
@@ -944,7 +943,6 @@
 <translation id="6674571176963658787">За да стартирате синхронизирането, въведете пропуска си</translation>
 <translation id="667999046851023355">Документ</translation>
 <translation id="6684906340059221832">Следени цени</translation>
-<translation id="6689804622901271327">Автоматично попълване на данни за плащане</translation>
 <translation id="6710079714193676716">Управлява се от организацията ви. Някои функции може да не са достъпни. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Получавайте своите отметки, пароли и др. на всичките си устройства.</translation>
@@ -1300,7 +1298,6 @@
 <translation id="8976414606286374109">Данните за картите се запазват в профила ви в Google.</translation>
 <translation id="8981454092730389528">Контроли за активността в Google</translation>
 <translation id="8985320356172329008">Влезли сте в Google като</translation>
-<translation id="8986567980592931173">Влезте с профила си в Google, за да синхронизирате своите пароли, история и др.</translation>
 <translation id="8998289560386111590">Не е налице на устройството ви</translation>
 <translation id="8999545564078155498">Отключване с Face ID</translation>
 <translation id="9000089900434778519">Търсещата ви машина е <ph name="DSE_NAME" />. Вижте инструкциите на търсещата си машина относно изтриването на историята на търсенията ви (ако е приложимо).</translation>

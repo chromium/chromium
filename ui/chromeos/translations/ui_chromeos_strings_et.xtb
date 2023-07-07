@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">Saksa Neo 2</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3866249974567520381">Kirjeldus</translation>
-<translation id="3866439285517092441">Aku hakkab tühjaks saama. Sünkroonimine jätkub, kui olete toiteallikaga ühendatud.</translation>
 <translation id="3899991606604168269">prantsuse (Kanada), mitmekeelse klaviatuuriga</translation>
 <translation id="3901991538546252627">Võrguga <ph name="NAME" /> ühenduse loomine</translation>
 <translation id="3906232975181435906">Mobiiliprofiili installimine, võrk <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Kleebi</translation>
+<translation id="3950820424414687140">Logige sisse</translation>
 <translation id="3952872973865944257">telugu, foneetiline</translation>
 <translation id="3958548648197196644">Kiivi</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
@@ -948,8 +948,8 @@
 <translation id="8395901698320285466">Dimensioonid</translation>
 <translation id="8404498045299006085">Jäta kõik alles</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-võrk, ühendamine</translation>
-<translation id="841387525767317275">Selles kaustas olevad failid on võrguühenduseta saadaval</translation>
 <translation id="8425213833346101688">Muuda</translation>
+<translation id="8428213095426709021">Seaded</translation>
 <translation id="8431909052837336408">Muuda SIM-kaardi PIN-koodi</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8452135315243592079">SIM-kaart puudub</translation>

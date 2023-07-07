@@ -255,6 +255,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2595587704210555261">{COUNT,plural, =1{Åpne faner som ikke har vært i bruk den siste dagen, flyttes til inaktive faner, slik at du enkelt kan fokusere på fanene du bruker mest. Du kan når som helst endre dette i innstillingene.}other{Åpne faner som ikke har vært i bruk de siste {COUNT} dagene, flyttes til inaktive faner, slik at du enkelt kan fokusere på fanene du bruker mest. Du kan når som helst endre dette i innstillingene.}}</translation>
 <translation id="2600682495497606169">Slett informasjonskapsler for nettstedet</translation>
 <translation id="2609008503159898744">Vil du lukke alle faner?</translation>
+<translation id="2617210333344098964">Flytt adressen til kontoen</translation>
 <translation id="2625189173221582860">Passordet er kopiert</translation>
 <translation id="2626236249646841566">Kontroller tilkoblingen din, og prøv å logge på igjen.</translation>
 <translation id="2637313651144986786">Søk i faner…</translation>
@@ -404,7 +405,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3464194322481586217">Kunne ikke spore prisen.</translation>
 <translation id="3469166899695866866">Vil du stoppe nedlastingen?</translation>
 <translation id="3470502288861289375">Kopierer ...</translation>
-<translation id="3471148582064653480">Synkroniser passordene dine, loggen din med mer.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{For {COUNT} nettsted eller app}other{for {COUNT} nettsteder og apper}}</translation>
 <translation id="3474624961160222204">Fortsett som <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Få tilgang til passordene dine i andre apper.</translation>
@@ -465,6 +465,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3851938967634752633">Passord for <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="NUMBER_OF_ACCOUNTS" /> andre slettes. Kontoene dine slettes ikke.</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3861486700625780712">Slutt å følge</translation>
+<translation id="3861908220442487587">Denne adressen er bare lagret på denne enheten. For å bruke den på de andre enhetene dine, flytt den til Google-kontoen din, <ph name="USER_EMAIL" /></translation>
 <translation id="3863769054730344136">Send til enhetene dine</translation>
 <translation id="387280738075653372">Last ned Chrome her.</translation>
 <translation id="3875783148670536197">Vis meg hvordan</translation>
@@ -944,7 +945,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6674571176963658787">For å starte synkroniseringen, skriv inn passordfrasen din</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6684906340059221832">Sporer prisene</translation>
-<translation id="6689804622901271327">Autofyll betalingsopplysninger</translation>
 <translation id="6710079714193676716">Administreres av organisasjonen din. Noen funksjoner er kanskje ikke tilgjengelige. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Få bokmerker, passord med mer på alle enhetene dine.</translation>
@@ -1300,7 +1300,6 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="8976414606286374109">Kort lagres i Google-kontoen din.</translation>
 <translation id="8981454092730389528">Google Aktivitetslagring</translation>
 <translation id="8985320356172329008">Logget på Google som</translation>
-<translation id="8986567980592931173">Logg på med Google-kontoen din for å synkronisere passordene dine, loggen din med mer.</translation>
 <translation id="8998289560386111590">Ikke tilgjengelig på enheten din</translation>
 <translation id="8999545564078155498">Lås opp med Face ID</translation>
 <translation id="9000089900434778519">Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om hvordan du sletter søkeloggen din.</translation>

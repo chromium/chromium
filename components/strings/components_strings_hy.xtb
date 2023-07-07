@@ -378,7 +378,6 @@
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Փորձեք կապվել համակարգի ադմինիստրատորի հետ:</translation>
 <translation id="1736420071277903564">Համակարգիչ</translation>
-<translation id="1740951997222943430">Մուտքագրեք ժամկետի սպառման վավեր ամիս</translation>
 <translation id="1741613555002899862">Պետք է լինի նշված և վավեր տող, եթե DnsOverHttpsMode կանոնի համար կարգավորված է <ph name="SECURE_DNS_MODE_SECURE" /> արժեքը:</translation>
 <translation id="1743393865165844832">Անկողնային պարագաներ և սպիտակեղեն</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Ինչպես ենք մենք օգտագործում այս տվյալները.<ph name="END_BOLD" /> Chrome-ը որոշում է ձեզ հետաքրքրող թեմաները ձեր այցելած կայքերի հիման վրա։ Թեմաների պիտակները նախապես սահմանված են, օրինակ՝ «Արվեստ և ժամանց», «Գնումներ», «Սպորտ»։ Հետագայում ձեր այցելած ցանկացած կայք կարող է Chrome-ից հայցել որոշ թեմաների անվանումներ(բայց ոչ այցելությունների պատմությունը)՝ ձեզ ցուցադրվող գովազդն անհատականացնելու համար։</translation>
@@ -425,6 +424,7 @@
 <translation id="1838374766361614909">Մաքրել որոնումը</translation>
 <translation id="1839551713262164453">Չհաջողվեց ստուգել կանոնի արժեքները</translation>
 <translation id="1842969606798536927">Վճարել</translation>
+<translation id="1854180393107901205">Դադարեցնել հեռարձակումը</translation>
 <translation id="1855370856221982654">Բռնցքամարտ</translation>
 <translation id="1856713167556118146">Ինչ չի տալիս ինկոգնիտո ռեժիմը</translation>
 <translation id="1862788842908766795">Աշխատանք գործադիր կառավարման և մենեջմենթի ոլորտում</translation>
@@ -573,7 +573,6 @@
 <translation id="2188375229972301266">Մի քանի անցք ներքևում</translation>
 <translation id="2197398642355049178">Ձեր թեմաները</translation>
 <translation id="219906046732893612">Տան վերանորոգում</translation>
-<translation id="2202020181578195191">Մուտքագրեք ժամկետի սպառման վավեր տարեթիվ</translation>
 <translation id="2202627062836089804">ձեր քարտի հետևի կողմում</translation>
 <translation id="2204482073374652408">Թարմացումն ավարտվեց</translation>
 <translation id="2208053750671792556">Կոդը չե՞ք ստացել։ <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1182,7 +1181,6 @@
 <translation id="361438452008624280">«<ph name="LANGUAGE_ID" />» ցանկի տարր․ լեզուն չի աջակցվում կամ հայտնի չէ։</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի կարգավորումներում անվտանգության ստուգում անցնելու համար սեղմեք «Tab», ապա՝ «Enter»։</translation>
 <translation id="3615309852743236517">Մատնահարդարում և ոտնահարդարում</translation>
-<translation id="3615877443314183785">Մուտքագրեք սպառման վավեր ամսաթիվ</translation>
 <translation id="3620239073311576716">Համազգեստ և աշխատանքային հագուստ</translation>
 <translation id="36224234498066874">Ջնջել այցելությունների պատմությունը...</translation>
 <translation id="362276910939193118">Ցույց տալ ամբողջ պատմությունը</translation>
@@ -2262,6 +2260,7 @@
 <translation id="5995727681868049093">Կառավարել տվյալները, գաղտնիությունն ու անվտանգությունը Google հաշվում</translation>
 <translation id="5997247540087773573">Գաղտնաբառը, որը հենց նոր օգտագործեցիք, կոտրվել է տվյալների արտահոսքի պատճառով։ Ձեր հաշիվները պաշտպանելու համար Google գաղտնաբառերի կառավարիչը խորհուրդ է տալիս անհապաղ փոխել այն և ստուգել պահված գաղտնաբառերը։</translation>
 <translation id="6000758707621254961">«<ph name="SEARCH_TEXT" />»-ի որոնման <ph name="RESULT_COUNT" /> արդյունք</translation>
+<translation id="6002122790816966947">Ձեր սարքերը</translation>
 <translation id="6005765687956866568">Ինքնալրացված տեղեկությունները ջնջվել են ձևից</translation>
 <translation id="6006365096047131769">3 x 5 դյույմ</translation>
 <translation id="6006484371116297560">Դասական</translation>
@@ -2274,7 +2273,6 @@
 <translation id="6017514345406065928">Կանաչ</translation>
 <translation id="6017850046339264347">Հարձակվողները <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> կայքում կարող են կեղծ հավելվածներ տեղադրել կամ տվյալներ հավաքել՝ ձեզ հետևելու համար։ <ph name="BEGIN_LEARN_MORE_LINK" />Մանրամասն<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (համաժամացված)</translation>
-<translation id="6027201098523975773">Մուտքագրեք անուն</translation>
 <translation id="6028591542479806248">Կառավարեք բջջային և փոստային ծանուցումները</translation>
 <translation id="603068602130820122">Երկու ամրակ աջ կողմում</translation>
 <translation id="6032524144326295339">Փոստարկղ 2</translation>

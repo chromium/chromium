@@ -404,7 +404,6 @@
 <translation id="3464194322481586217">Үнэ хянаж чадсангүй.</translation>
 <translation id="3469166899695866866">Tаталтыг зогсоох уу?</translation>
 <translation id="3470502288861289375">Хуулж байна ...</translation>
-<translation id="3471148582064653480">Нууц үг, түүх болон бусад зүйлээ синк хийнэ үү.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} сайт эсвэл аппад}other{{COUNT} сайт эсвэл аппад}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" />-р үргэлжлүүлэх</translation>
 <translation id="3476450923187944815">Бусад аппад нууц үгнүүддээ хандаарай.</translation>
@@ -944,7 +943,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6674571176963658787">Синк хийж эхлэхийн тулд нэвтрэх үгээ оруулна уу</translation>
 <translation id="667999046851023355">Бичиг баримт</translation>
 <translation id="6684906340059221832">Үнийг хянаж байна</translation>
-<translation id="6689804622901271327">Автоматаар бөглөх төлбөрийн мэдээлэл</translation>
 <translation id="6710079714193676716">Танай байгууллагаас удирддаг. Зарим онцлог боломжгүй байж болзошгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Апп</translation>
 <translation id="672735642903863329">Хавчуурга, нууц үг болон бусад зүйлийг бүгдийг төхөөрөмжүүддээ аваарай.</translation>
@@ -1300,7 +1298,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8976414606286374109">Картыг таны Google Бүртгэлд хадгалсан.</translation>
 <translation id="8981454092730389528">Google-н Ашиглалтын удирдлага</translation>
 <translation id="8985320356172329008">Google-д дараахаар нэвтэрсэн</translation>
-<translation id="8986567980592931173">Нууц үгнүүд, түүх болон бусад зүйлээ синк хийхийн тулд Google Бүртгэлдээ нэвтэрнэ үү.</translation>
 <translation id="8998289560386111590">Таны төхөөрөмжид боломжгүй</translation>
 <translation id="8999545564078155498">Царайн ID-р түгжээг тайлах</translation>
 <translation id="9000089900434778519">Таны хайлтын систем <ph name="DSE_NAME" /> байна. Хэрэв боломжтой бол хайлтын түүхээ устгахын тулд үүний зааварчилгааг харна уу.</translation>

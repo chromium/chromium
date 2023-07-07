@@ -374,7 +374,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Intenta comunicarte con el administrador del sistema.</translation>
 <translation id="1736420071277903564">Computadora</translation>
-<translation id="1740951997222943430">Ingresa una fecha de vencimiento válida</translation>
 <translation id="1741613555002899862">Esta política debe especificarse y tener una string válida, cuando DnsOverHttpsMode es <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Ropa de cama</translation>
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Cómo usamos estos datos:<ph name="END_BOLD" /> Chrome registra los temas que te interesan a medida que navegas. Las etiquetas de temas están predefinidas e incluyen categorías como Arte y entretenimiento, Compras y Deportes. Luego, los sitios que visites podrán pedirle a Chrome algunos de tus temas (pero no tu historial de navegación) para personalizar los anuncios que te verás.</translation>
@@ -421,6 +420,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1838374766361614909">Borrar la búsqueda</translation>
 <translation id="1839551713262164453">Se produjeron errores en la validación de los valores de la política</translation>
 <translation id="1842969606798536927">Pagar</translation>
+<translation id="1854180393107901205">Detener transmisión</translation>
 <translation id="1855370856221982654">Boxeo</translation>
 <translation id="1856713167556118146">Qué no hace el modo Incógnito</translation>
 <translation id="1862788842908766795">Trabajos ejecutivos y administrativos</translation>
@@ -569,7 +569,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2188375229972301266">Perforaciones múltiples en la parte inferior</translation>
 <translation id="2197398642355049178">Tus temas</translation>
 <translation id="219906046732893612">Mejora del hogar</translation>
-<translation id="2202020181578195191">Ingresa un año de vencimiento válido</translation>
 <translation id="2202627062836089804">dorso de tu tarjeta</translation>
 <translation id="2204482073374652408">Finalizó la actualización.</translation>
 <translation id="2208053750671792556">¿No recibiste el código? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1177,7 +1176,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="361438452008624280">Entrada de lista "<ph name="LANGUAGE_ID" />": El idioma es desconocido o no es compatible.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para realizar una Verificación de seguridad en la configuración de Chrome</translation>
 <translation id="3615309852743236517">Manicura y pedicura</translation>
-<translation id="3615877443314183785">Ingresa una fecha de vencimiento válida</translation>
 <translation id="3620239073311576716">Uniformes y ropa de trabajo</translation>
 <translation id="36224234498066874">Borrar datos de navegación...</translation>
 <translation id="362276910939193118">Mostrar historial completo</translation>
@@ -2252,6 +2250,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5995727681868049093">Administrar la información, privacidad y seguridad de tu Cuenta de Google</translation>
 <translation id="5997247540087773573">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. A fin de proteger tus cuentas, el Administrador de contraseñas de Google te recomienda cambiarla ahora y revisar las contraseñas guardadas.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6002122790816966947">Tus dispositivos</translation>
 <translation id="6005765687956866568">Se borró la información autocompletada del formulario</translation>
 <translation id="6006365096047131769">7.62 × 12.7 cm (3 × 5 in)</translation>
 <translation id="6006484371116297560">Clásico</translation>
@@ -2264,7 +2263,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6017850046339264347">Es posible que los atacantes que se encuentran en <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> instalen apps engañosas que se hagan pasar por otro tipo de contenido o que recopilen datos que se usen para rastrearte. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sincronizados)</translation>
-<translation id="6027201098523975773">Ingresa un nombre</translation>
 <translation id="6028591542479806248">Administra las notificaciones por correo electrónico y en dispositivos móviles.</translation>
 <translation id="603068602130820122">Grapas dobles a la derecha</translation>
 <translation id="6032524144326295339">Buzón 2</translation>

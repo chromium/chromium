@@ -404,7 +404,6 @@
 <translation id="3464194322481586217">ధరను ట్రాక్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="3469166899695866866">డౌన్‌లోడ్‌ను ఆపివేయాలా?</translation>
 <translation id="3470502288861289375">కాపీ చేస్తోంది...</translation>
-<translation id="3471148582064653480">మీ పాస్‌వర్డ్‌లు, హిస్టరీ, మరిన్నింటిని సింక్ చేయండి.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} సైట్ లేదా యాప్ కోసం}other{{COUNT} సైట్‌లు, యాప్‌ల కోసం}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> లాగా కొనసాగించండి</translation>
 <translation id="3476450923187944815">ఇతర యాప్‌లలోని మీ పాస్‌వర్డ్‌లను యాక్సెస్ చేయండి.</translation>
@@ -944,7 +943,6 @@
 <translation id="6674571176963658787">సింక్‌ను ప్రారంభించడానికి, రహస్య పదబంధాన్ని ఎంటర్ చేయండి</translation>
 <translation id="667999046851023355">డాక్యుమెంట్‌</translation>
 <translation id="6684906340059221832">ధరలను ట్రాక్ చేయడం</translation>
-<translation id="6689804622901271327">పేమెంట్ సమాచారాన్ని ఆటోఫిల్ చేసుకోండి</translation>
 <translation id="6710079714193676716">మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతోంది. కొన్ని ఫీచర్‌లు అందుబాటులో ఉండకపోవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, అలాగే మరిన్నింటిని మీ పరికరాలన్నింటిలో పొందండి.</translation>
@@ -1300,7 +1298,6 @@
 <translation id="8976414606286374109">కార్డ్‌లు మీ Google ఖాతాకు సేవ్ చేయబడ్డాయి.</translation>
 <translation id="8981454092730389528">Google కార్య‌క‌లాపాల నియంత్రణలు</translation>
 <translation id="8985320356172329008">Googleకు ఇలా సైన్ ఇన్ చేశారు</translation>
-<translation id="8986567980592931173">మీ పాస్‌వర్డ్‌లు, హిస్టరీ, అలాగే మరిన్నింటిని సింక్ చేయడానికి మీ Google ఖాతాతో సైన్ ఇన్ చేయండి.</translation>
 <translation id="8998289560386111590">ఈ మోడ్ మీ పరికరంలో అందుబాటులో లేదు</translation>
 <translation id="8999545564078155498">ముఖం IDతో అన్‌లాక్ చేయండి</translation>
 <translation id="9000089900434778519">మీ సెర్చ్ ఇంజిన్ <ph name="DSE_NAME" />. వర్తిస్తే, మీ సెర్చ్ హిస్టరీని తొలగించడానికి దాని సూచనలను చూడండి.</translation>

@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">Bruk nåværende nøkkelpar</translation>
 <translation id="2320295602967756579">Slå på lyst tema</translation>
 <translation id="2323506179655536734">HOPPET OVER</translation>
+<translation id="2324354238778375592">Løsne</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Slå på Bluetooth for å finne enheter i nærheten</translation>
 <translation id="2346474577291266260">Utmerket (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263"><ph name="TEST_NAME" />test</translation>
 <translation id="370665806235115550">Laster inn ...</translation>
 <translation id="3708186454126126312">Tidligere tilkoblet</translation>
+<translation id="3715651196924935218">Avslutt flytende tilstand</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> anmeldelser)</translation>
 <translation id="3748026146096797577">Ikke tilkoblet</translation>
 <translation id="3749289110408117711">Filnavn</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Skjerm</translation>
 <translation id="4155551848414053977">Sørg for at skanneren er påslått og tilgjengelig via nettverket eller en direktetilkobling</translation>
+<translation id="4159238217853743776">Delvis</translation>
 <translation id="4159784952369912983">Fiolett</translation>
 <translation id="4170180284036919717">Ta et bilde</translation>
 <translation id="4170700058716978431">MISLYKKET</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">For å konfigurere eller oppdatere en tilkobling, gå til <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Dato</translation>
 <translation id="4950314376641394653">Fastvaren for <ph name="DEVICE_NAME" /> er oppdatert til versjon <ph name="VERSION" /></translation>
+<translation id="4969079779290789265">Del opp</translation>
 <translation id="4972592110715526173">modusendring</translation>
 <translation id="498186245079027698">Sjekk skanneren, og prøv på nytt. Sørg for at det er nok lokal lagringsplass til å lagre skannede filer.</translation>
 <translation id="4985509611418653372">Kjør</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">Vertsnavn for tjener</translation>
 <translation id="5089810972385038852">Fylke/delstat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">Full</translation>
 <translation id="5142961317498132443">Autentisering</translation>
 <translation id="5154917547274118687">Minne</translation>
 <translation id="5160857336552977725">Logg på <ph name="DEVICE_TYPE" /></translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">Logg av</translation>
 <translation id="522307662484862935">Ikke ta med e-postadressen</translation>
 <translation id="5227902338748591677">Tidsplan for mørkt tema</translation>
+<translation id="5229344016299762883">Avslutt fullskjerm</translation>
 <translation id="5234764350956374838">Lukk</translation>
 <translation id="5252456968953390977">Datastreifing</translation>
 <translation id="5257811368506016604">Slå på modus for lyse farger</translation>
@@ -707,6 +713,7 @@
 <translation id="6566314079205407217">Skanning av flere sider</translation>
 <translation id="6574762126505704998">Fyll</translation>
 <translation id="6575134580692778371">Ikke konfigurert</translation>
+<translation id="6576005492601044801">venstre</translation>
 <translation id="6579509898032828423">Bruk dette bildet</translation>
 <translation id="6596816719288285829">IP-adresse</translation>
 <translation id="6599673642868607614">Takk for tilbakemeldingen. Tilbakemeldingen din hjelper oss med å gjøre Chromebook-opplevelsen bedre, og den blir gjennomgått av teamet vårt. På grunn av det store antallet rapporter kan vi ikke sende svar.</translation>
@@ -812,6 +819,7 @@
 <translation id="7497215489070763236">Tjenerens CA-sertifikat</translation>
 <translation id="7501957181231305652">eller</translation>
 <translation id="7502658306369382406">IPv6-adresse</translation>
+<translation id="7513770521371759388">bunn</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Hjelpeinnhold er ikke tilgjengelig</translation>
 <translation id="7535791657097741517">Slå på lyst tema</translation>
@@ -950,6 +958,7 @@
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">Del nettadressen:</translation>
 <translation id="8660881923941176839">pund</translation>
+<translation id="8670574982334489519">høyre</translation>
 <translation id="8675354002693747642">Forhåndsdelt nøkkel</translation>
 <translation id="8677859815076891398">Ingen album. Opprett et album i <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bruk venstre- eller høyrepilen for å administrere denne funksjonen.</translation>
@@ -995,6 +1004,7 @@
 <translation id="8936793075252196307">Klient-IP-adresse</translation>
 <translation id="8944651180182756621">Appoversiktfarge</translation>
 <translation id="894617464444543719">Enheten er en telefon.</translation>
+<translation id="8950424402482976779">topp</translation>
 <translation id="8968751544471797276">Ladefrekvens</translation>
 <translation id="8970109610781093811">Kjør på nytt</translation>
 <translation id="8983038754672563810">HSPA</translation>

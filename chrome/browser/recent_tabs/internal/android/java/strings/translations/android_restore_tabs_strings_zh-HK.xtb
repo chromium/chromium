@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="1215127405478249895">檢視分頁</translation>
+<translation id="1275718070701477396">已選取</translation>
 <translation id="1356944128023012143">閂咗顯示已同步裝置同要喺全新還原工作流程入面還原嘅所揀分頁清單。</translation>
 <translation id="1816430105422765050">改變呢個選單項目之下嘅其他已同步裝置。</translation>
 <translation id="2575169127313449202">您可從下列清單中的裝置取得分頁</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">全部選取</translation>
 <translation id="5972844218283131174">全部取消選取</translation>
 <translation id="791922009843073162">所有揀咗嘅分頁都會取消咗揀，或者會揀晒所有未揀嘅分頁。</translation>
+<translation id="7927711904086083099">未選取</translation>
 <translation id="8003146088970081079">選擇要取得分頁的裝置</translation>
 <translation id="8019269305087157499">選擇裝置</translation>
 </translationbundle>

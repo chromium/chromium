@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">Герман Neo 2</translation>
 <translation id="3858860766373142691">Нэр</translation>
 <translation id="3866249974567520381">Тодорхойлолт</translation>
-<translation id="3866439285517092441">Батарей бага байна. Таныг тэжээлд холбогдсон үед үргэлжлүүлэн синк хийнэ.</translation>
 <translation id="3899991606604168269">Олон хэлний гартай франц (Канад)</translation>
 <translation id="3901991538546252627"><ph name="NAME" />-д холбогдож байна</translation>
 <translation id="3906232975181435906">Мобайл профайлыг суулгаж байна, Сүлжээ <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Мета</translation>
 <translation id="3943857333388298514">Хуулан буулгах</translation>
+<translation id="3950820424414687140">Нэвтрэх</translation>
 <translation id="3952872973865944257">Тэлүгү авиа зүй</translation>
 <translation id="3958548648197196644">Киви</translation>
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
@@ -945,8 +945,8 @@
 <translation id="8395901698320285466">Хэмжээ</translation>
 <translation id="8404498045299006085">Бүгдийг хадгалах</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> сүлжээ, холбогдож байна</translation>
-<translation id="841387525767317275">Энэ фолдерын файлууд офлайн үед боломжгүй</translation>
 <translation id="8425213833346101688">Өөрчлөлт</translation>
+<translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8431909052837336408">SIM-н ПИН-г өөрчлөх</translation>
 <translation id="8437209419043462667">АНУ</translation>
 <translation id="8452135315243592079">SIM карт олдсонгүй</translation>

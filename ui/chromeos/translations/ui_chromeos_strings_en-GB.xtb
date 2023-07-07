@@ -351,12 +351,12 @@
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3866249974567520381">Description</translation>
-<translation id="3866439285517092441">Battery is low. Sync will resume when you are connected to power.</translation>
 <translation id="3899991606604168269">French (Canada) with multilingual keyboard</translation>
 <translation id="3901991538546252627">Connecting to <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Installing mobile profile, network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Paste</translation>
+<translation id="3950820424414687140">Sign in</translation>
 <translation id="3952872973865944257">Telugu phonetic</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="397105322502079400">Calculating...</translation>
@@ -955,8 +955,8 @@
 <translation id="8395901698320285466">Dimensions</translation>
 <translation id="8404498045299006085">Keep all</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> network, connecting</translation>
-<translation id="841387525767317275">Files in this folder are available offline</translation>
 <translation id="8425213833346101688">Change</translation>
+<translation id="8428213095426709021">Settings</translation>
 <translation id="8431909052837336408">Change SIM PIN</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">Missing SIM card</translation>

@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">Tastiera Neo 2 tedesca</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3866249974567520381">Descrizione</translation>
-<translation id="3866439285517092441">Batteria in esaurimento. La sincronizzazione riprenderà quando il dispositivo sarà collegato all'alimentazione.</translation>
 <translation id="3899991606604168269">Francese (Canada) con tastiera multilingue</translation>
 <translation id="3901991538546252627">Connessione a: <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Installazione del profilo per dispositivi mobili in corso, rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Incolla</translation>
+<translation id="3950820424414687140">Accedi</translation>
 <translation id="3952872973865944257">Telugu fonetica</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="397105322502079400">Calcolo in corso...</translation>
@@ -947,8 +947,8 @@
 <translation id="8395901698320285466">Dimensioni</translation>
 <translation id="8404498045299006085">Conserva tutto</translation>
 <translation id="8408068190360279472">Rete <ph name="NETWORK_TYPE" />, collegamento in corso</translation>
-<translation id="841387525767317275">I file in questa cartella sono disponibili offline</translation>
 <translation id="8425213833346101688">Cambia</translation>
+<translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8431909052837336408">Cambia il PIN della SIM</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8452135315243592079">Scheda SIM mancante</translation>

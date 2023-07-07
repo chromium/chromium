@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">Использовать текущую пару ключей</translation>
 <translation id="2320295602967756579">Использовать светлую тему</translation>
 <translation id="2323506179655536734">ПРОПУЩЕНО</translation>
+<translation id="2324354238778375592">Плавающий режим</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включите Bluetooth, чтобы найти устройства</translation>
 <translation id="2346474577291266260">Отличный (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263"><ph name="TEST_NAME" />: тестирование</translation>
 <translation id="370665806235115550">Загрузка...</translation>
 <translation id="3708186454126126312">Ранее подключенные устройства</translation>
+<translation id="3715651196924935218">Выйти из плавающего режима</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (отзывов: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Нет соединения</translation>
 <translation id="3749289110408117711">Название файла</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4150201353443180367">Экран</translation>
 <translation id="4155551848414053977">Убедитесь, что сканер работает и доступен для подключения напрямую или по сети.</translation>
+<translation id="4159238217853743776">Частичное увеличение</translation>
 <translation id="4159784952369912983">Фиолетовый</translation>
 <translation id="4170180284036919717">Сделать снимок</translation>
 <translation id="4170700058716978431">ОШИБКА</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">Чтобы задать или изменить параметры подключения, перейдите в <ph name="BEGIN_LINK" />настройки<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4950314376641394653">Встроенное ПО для устройства "<ph name="DEVICE_NAME" />" было обновлено до версии <ph name="VERSION" />.</translation>
+<translation id="4969079779290789265">Разделить</translation>
 <translation id="4972592110715526173">сменить режим</translation>
 <translation id="498186245079027698">Проверьте сканер и повторите попытку. Убедитесь, что на диске достаточно свободного места для хранения отсканированных файлов.</translation>
 <translation id="4985509611418653372">Проверить</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">Имя хоста сервера</translation>
 <translation id="5089810972385038852">Штат</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">Полноэкранный режим</translation>
 <translation id="5142961317498132443">Аутентификация</translation>
 <translation id="5154917547274118687">Память</translation>
 <translation id="5160857336552977725">Войдите в аккаунт на устройстве <ph name="DEVICE_TYPE" /></translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">Выйти</translation>
 <translation id="522307662484862935">Не указывать адрес электронной почты</translation>
 <translation id="5227902338748591677">Расписание тёмной темы</translation>
+<translation id="5229344016299762883">Выйти из полноэкранного режима</translation>
 <translation id="5234764350956374838">Закрыть</translation>
 <translation id="5252456968953390977">Роуминг</translation>
 <translation id="5257811368506016604">Включить режим светлых цветов</translation>
@@ -707,6 +713,7 @@
 <translation id="6566314079205407217">Сканировать несколько страниц</translation>
 <translation id="6574762126505704998">Заполнить</translation>
 <translation id="6575134580692778371">Не настроено</translation>
+<translation id="6576005492601044801">слева</translation>
 <translation id="6579509898032828423">Использовать это фото</translation>
 <translation id="6596816719288285829">IP-адрес</translation>
 <translation id="6599673642868607614">Благодарим за отзыв. Он поможет нам улучшить Chromebook и будет рассмотрен нашей командой. Мы получаем множество обращений, поэтому не сможем вам ответить.</translation>
@@ -812,6 +819,7 @@
 <translation id="7497215489070763236">Серверный сертификат ЦС</translation>
 <translation id="7501957181231305652">или</translation>
 <translation id="7502658306369382406">Адрес IPv6</translation>
+<translation id="7513770521371759388">снизу</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Справочный контент недоступен</translation>
 <translation id="7535791657097741517">Включить светлую тему</translation>
@@ -950,6 +958,7 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655828773034788261">URL с общим доступом:</translation>
 <translation id="8660881923941176839">фунта</translation>
+<translation id="8670574982334489519">справа</translation>
 <translation id="8675354002693747642">Общий ключ</translation>
 <translation id="8677859815076891398">Альбомов нет. Создайте альбом в <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Этой функцией можно управлять нажатием стрелки влево или вправо.</translation>
@@ -995,6 +1004,7 @@
 <translation id="8936793075252196307">IP-адрес клиента</translation>
 <translation id="8944651180182756621">Цвет панели запуска</translation>
 <translation id="894617464444543719">Это телефон.</translation>
+<translation id="8950424402482976779">сверху</translation>
 <translation id="8968751544471797276">Скорость зарядки</translation>
 <translation id="8970109610781093811">Выполнить ещё раз</translation>
 <translation id="8983038754672563810">HSPA</translation>

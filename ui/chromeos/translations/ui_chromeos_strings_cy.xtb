@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">Almaeneg Neo 2</translation>
 <translation id="3858860766373142691">Enw</translation>
 <translation id="3866249974567520381">Disgrifiad</translation>
-<translation id="3866439285517092441">Batri yn isel. Bydd cysoni yn ailddechrau pan fyddwch wedi'ch cysylltu â phŵer.</translation>
 <translation id="3899991606604168269">Ffrangeg (Canada) gyda bysellfwrdd Amlieithog</translation>
 <translation id="3901991538546252627">Cysylltu â <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Wrthi'n gosod proffil dyfais symudol, Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Gludo</translation>
+<translation id="3950820424414687140">Mewngofnodwch</translation>
 <translation id="3952872973865944257">Seinegol Telwgw</translation>
 <translation id="3958548648197196644">Ciwi</translation>
 <translation id="397105322502079400">Wrthi'n cyfrifo…</translation>
@@ -947,8 +947,8 @@
 <translation id="8395901698320285466">Dimensiynau</translation>
 <translation id="8404498045299006085">Cadw pob un</translation>
 <translation id="8408068190360279472">Rhwydwaith <ph name="NETWORK_TYPE" />, werthi'n cysylltu</translation>
-<translation id="841387525767317275">Mae ffeiliau yn y ffolder hwn ar gael all-lein</translation>
 <translation id="8425213833346101688">Newid</translation>
+<translation id="8428213095426709021">Gosodiadau</translation>
 <translation id="8431909052837336408">Newid PIN SIM</translation>
 <translation id="8437209419043462667">UDA</translation>
 <translation id="8452135315243592079">Cerdyn SIM ar goll</translation>

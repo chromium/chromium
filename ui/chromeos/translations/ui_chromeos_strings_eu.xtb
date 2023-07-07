@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">Neo 2 alemana</translation>
 <translation id="3858860766373142691">Izena</translation>
 <translation id="3866249974567520381">Azalpena</translation>
-<translation id="3866439285517092441">Bateria agortzen ari da. Korrontera konektatzen zarenean berrekingo zaio sinkronizazioari.</translation>
 <translation id="3899991606604168269">Frantsesa (Kanada), hizkuntza anitzetarako teklatuarekin</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> sarera konektatzen</translation>
 <translation id="3906232975181435906">Mugikorreko profila instalatzen, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Itsatsi</translation>
+<translation id="3950820424414687140">Hasi saioa</translation>
 <translation id="3952872973865944257">Teluguar fonetikoa</translation>
 <translation id="3958548648197196644">Kiwia</translation>
 <translation id="397105322502079400">Kalkulatzen…</translation>
@@ -947,8 +947,8 @@
 <translation id="8395901698320285466">Dimentsioak</translation>
 <translation id="8404498045299006085">Mantendu guztiak</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> sarea. Konektatzen.</translation>
-<translation id="841387525767317275">Karpeta honetako fitxategiak konexiorik gabe erabil ditzakezu</translation>
 <translation id="8425213833346101688">Aldatu</translation>
+<translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8431909052837336408">Aldatu SIMaren PINa</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">SIM txartela falta da</translation>

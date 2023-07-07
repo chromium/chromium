@@ -1553,7 +1553,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7866482334467279021">on</translation>
 <translation id="7872786842639831132">Off</translation>
 <translation id="7875575368831396199">Looks like Bluetooth is turned off on your <ph name="DEVICE_TYPE" />. Please turn on Bluetooth to use Phone Hub.</translation>
-<translation id="7876243839304621966">Remove all</translation>
 <translation id="7877557217297072640">{0,plural, =0{Change device to previous version now}=1{Change device to previous version within 1 second}other{Change device to previous version within # seconds}}</translation>
 <translation id="7884446017008693258">Hotspot settings</translation>
 <translation id="7884902759927478774">Cancel tab dragging</translation>
@@ -1652,7 +1651,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8255234195843591763">Reset to update</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8262312463845990408">Toggle -playback</translation>
-<translation id="8265826854528868575">Showing <ph name="NUM_SHOWN_TASKS" /> out of <ph name="NUM_TOTAL_TASKS" /></translation>
 <translation id="8270450402312105425">{0,plural, =1{Change device to previous version within an hour}other{Change device to previous version within # hours}}</translation>
 <translation id="8277261673056602147">Highlight text on your screen</translation>
 <translation id="8284362522226889623">Swipe left with four fingers to switch to the previous desk</translation>

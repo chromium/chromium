@@ -3699,6 +3699,7 @@
 <translation id="4068776064906523561">Захаваныя адбіткі пальцаў</translation>
 <translation id="407173827865827707">Па націсканні</translation>
 <translation id="4072701974556190758">Пароль будзе захаваны ва Уліковым запісе Google <ph name="ACCOUNT" />. Вам не трэба запамінаць яго.</translation>
+<translation id="4072805772816336153">Паўтарыце спробу пазней</translation>
 <translation id="407520071244661467">Маштаб</translation>
 <translation id="407543464472585404">Профіль карыстальніка <ph name="NAME" /> звязаны з адрасам электроннай пошты <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">Рэклама заблакіравана на гэтым сайце</translation>
@@ -3941,6 +3942,7 @@
 <translation id="4290791284969893584">Калі вы будзеце закрываць старонкі, задачы, пачатыя вамі, могуць заставацца незавершанымі</translation>
 <translation id="4291265871880246274">Дыялогавае акно для ўваходу</translation>
 <translation id="429234155571566255">гэтыя нядаўна прагледжаныя рэцэпты</translation>
+<translation id="429312253194641664">Сайт прайграе мультымедыя</translation>
 <translation id="4295072614469448764">Праграма даступная ў тэрмінале. Акрамя таго, на панэль запуску мог быць дададзены яе значок.</translation>
 <translation id="4295979599050707005">Каб пацвердзіць, што ўліковы запіс <ph name="USER_EMAIL" /> можа выкарыстоўвацца з вэб-сайтамі, праграмамі і пашырэннямі ў браўзеры Chrome і краме Google Play, увайдзіце ў яго яшчэ раз. Таксама яго можна выдаліць. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Праграмы, якія ўстаноўлены і трансліруюцца з <ph name="APP_NAME" /></translation>
@@ -5680,7 +5682,6 @@
 <translation id="5811614940486072060">Гэты файл звычайна не спампоўваецца і можа быць небяспечным</translation>
 <translation id="5812674658566766066">Разгарнуць усе</translation>
 <translation id="5815645614496570556">Адрас X.400</translation>
-<translation id="5816166985204777171">Гэта сістэмная праграма папярэдне ўсталявана на вашай прыладзе</translation>
 <translation id="5816434091619127343">Запытаныя змены прынтара зробяць немагчымым яго выкарыстанне.</translation>
 <translation id="581659025233126501">Уключыць сінхранізацыю</translation>
 <translation id="5817069030404929329">Перамясціць паролі з гэтай прылады ва Уліковы запіс Google?</translation>
@@ -5988,7 +5989,6 @@
 <translation id="6065289257230303064">Атрыбуты каталога суб'ектаў сертыфіката</translation>
 <translation id="6066794465984119824">Хэш відарыса не зададзены</translation>
 <translation id="6069464830445383022">Выкарыстоўвайце для ўваходу ў Chromebook свой Уліковы запіс Google</translation>
-<translation id="6070311415473175157">Выберыце вобласць відарыса для пошуку</translation>
 <translation id="6071181508177083058">пацвердзіце пароль</translation>
 <translation id="6071576563962215370">Не атрымалася заблакіраваць у сістэме атрыбуты часу ўсталявання на прыладзе.</translation>
 <translation id="6071938745001252305">Памяці сэканомлена: <ph name="MEMORY_VALUE" /></translation>
@@ -6353,7 +6353,6 @@
 <translation id="6393156038355142111">Прапанаваць надзейны пароль</translation>
 <translation id="6393550101331051049">Дазволена паказваць небяспечнае змесціва</translation>
 <translation id="6395423953133416962">Адпраўляць <ph name="BEGIN_LINK1" />звесткі пра сістэму<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />значэнні паказчыкаў<ph name="END_LINK2" /></translation>
-<translation id="6396175271241405634">Сістэмная праграма</translation>
 <translation id="6398715114293939307">Выдаліць Краму Google Play</translation>
 <translation id="6398765197997659313">Выключыць поўнаэкранны рэжым</translation>
 <translation id="6399675241776343019">Адхілена</translation>
@@ -6632,7 +6631,6 @@
 <translation id="6619801788773578757">Дадаць праграму-кіёск</translation>
 <translation id="6619990499523117484">Пацвердзіце PIN-код</translation>
 <translation id="6620254580880484313">Назва кантэйнера</translation>
-<translation id="6620927550847360014">Выдаліць Bruschetta з прылады <ph name="DEVICE_TYPE" />?</translation>
 <translation id="6621391692573306628">Каб адправіць гэту ўкладку на іншую прыладу, увайдзіце ў Chrome з абедзвюх прылад</translation>
 <translation id="6622980291894852883">Працягнуць блакіраваць відарысы</translation>
 <translation id="6624036901798307345">Планшэтны рэжым: кнопка лічыльніка ўкладак на панэлі інструментаў адкрывае новую панэль укладак з мініяцюрамі кожнай укладкі.</translation>
@@ -8373,6 +8371,7 @@
 <translation id="8077120325605624147">Любы наведаны вамі сайт будзе паказваць вам рэкламу</translation>
 <translation id="8077579734294125741">Іншыя профілі Chrome</translation>
 <translation id="80798452873915119">Сайты могуць запытваць дазвол кіраваць вокнамі на ўсіх дысплэях</translation>
+<translation id="8080028325999236607">Закрыць усе ўкладкі</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Гэтым сеансам кіруе <ph name="MANAGER_NAME" />. Адміністратары могуць выдаліць ваш профіль, а таксама адсочваць сеткавы трафік.</translation>
 <translation id="8081989000209387414">Выключыць адладку ADB?</translation>
@@ -9418,9 +9417,6 @@
 <translation id="8978154919215542464">Уключана. Сінхранізуецца ўсё</translation>
 <translation id="8978670037548431647">Абнавіць магчымасці рэжыму мадэма</translation>
 <translation id="897939795688207351">На старонцы <ph name="ORIGIN" /></translation>
-<translation id="8980335421826918629">Гэты файл можа з'яўляцца вірусам або шкоднай праграмай.
-
-Вы можаце адправіць яго на праверку ў Google Бяспечны прагляд. Сканіраванне звычайна займае некалькі секунд.</translation>
 <translation id="8980345560318123814">Адпраўка справаздач</translation>
 <translation id="8980951173413349704">Збой <ph name="WINDOW_TITLE" /></translation>
 <translation id="8981038076986775523">Даведацца больш пра выкарыстанне мікрафона</translation>
@@ -9781,6 +9777,7 @@
 <translation id="97905529126098460">Гэта акно закрыецца пасля завяршэння скасавання.</translation>
 <translation id="980731642137034229">Кнопка меню дзеянняў</translation>
 <translation id="981121421437150478">Па-за сеткай</translation>
+<translation id="983192555821071799">Закрыць усе ўкладкі</translation>
 <translation id="983511809958454316">Гэта функцыя не падтрымліваецца ў VR</translation>
 <translation id="984275831282074731">Спосабы аплаты</translation>
 <translation id="984705303330760860">Дадаванне моў праверкі правапісу</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
 <translation id="1215127405478249895">Adolygu tabiau</translation>
+<translation id="1275718070701477396">Wedi'i ddewis</translation>
 <translation id="1356944128023012143">Mae'r rhestr o ddyfeisiau sydd wedi'u cysoni a'r tabiau a ddewisir o'r dyfeisiau hynny i'w hadfer ar lif gwaith adfer ffres ar gau.</translation>
 <translation id="1816430105422765050">Newid i ddyfeisiau eraill sydd wedi'u cysoni o dan yr eitem ddewislen hon.</translation>
 <translation id="2575169127313449202">Gallwch gael tabiau o'r ddyfais a restrir isod</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Dewis pob un</translation>
 <translation id="5972844218283131174">Dad-ddewis popeth</translation>
 <translation id="791922009843073162">Bydd pob tab a ddewisir yn cael ei ddad-ddewis, neu bydd pob tab a ddad-ddewisir yn cael ei ddewis.</translation>
+<translation id="7927711904086083099">Heb ei ddewis</translation>
 <translation id="8003146088970081079">Dewiswch y ddyfais yr hoffech chi gael tabiau ohoni</translation>
 <translation id="8019269305087157499">Agor o</translation>
 </translationbundle>

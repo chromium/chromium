@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1215127405478249895">タブを確認</translation>
+<translation id="1275718070701477396">選択中</translation>
 <translation id="1356944128023012143">同期対象のデバイスと、それらのデバイスから選択した、新しい復元ワークフローで復元するタブのリストを閉じました。</translation>
 <translation id="1816430105422765050">このメニュー項目にある他の同期対象デバイスに変更できます。</translation>
 <translation id="2575169127313449202">以下のデバイスのタブを復元できます</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">すべて選択する</translation>
 <translation id="5972844218283131174">すべての選択を解除</translation>
 <translation id="791922009843073162">選択されたタブの選択をすべて解除、または選択が解除されたタブをすべて選択します。</translation>
+<translation id="7927711904086083099">選択されていません</translation>
 <translation id="8003146088970081079">どのデバイスのタブを復元するのか選択してください</translation>
 <translation id="8019269305087157499">次から開く:</translation>
 </translationbundle>

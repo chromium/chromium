@@ -255,6 +255,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2595587704210555261">{COUNT,plural, =1{Ən çox istifadə etdiyiniz tablara fokuslanmaq üçün ən az bir gün istifadə edilməyən açıq tablar Deaktiv Tablara köçürülür. İstənilən vaxt ayarlarda dəyişə bilərsiniz.}other{Ən çox istifadə etdiyiniz tablara fokuslanmaq üçün ən az {COUNT} gün istifadə edilməyən açıq tablar Deaktiv Tablara köçürülür. İstənilən vaxt ayarlarda dəyişə bilərsiniz.}}</translation>
 <translation id="2600682495497606169">Sayt Kukilərini Silin</translation>
 <translation id="2609008503159898744">Bütün Tablar Bağlansın?</translation>
+<translation id="2617210333344098964">Ünvanı hesaba köçürün</translation>
 <translation id="2625189173221582860">Parol kopyalandı</translation>
 <translation id="2626236249646841566">Bağlantını yoxlayın və yenidən daxil olmağa cəhd edin.</translation>
 <translation id="2637313651144986786">Tabları axtarın...</translation>
@@ -404,7 +405,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3464194322481586217">Qiyməti izləmək mümkün olmadı.</translation>
 <translation id="3469166899695866866">Endirmə dayandırılsın?</translation>
 <translation id="3470502288861289375">Kopyalanır...</translation>
-<translation id="3471148582064653480">Parol, tarixçə və s. sinxronlaşdırın.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} sayt və ya tətbiq üçün}other{{COUNT} sayt və ya tətbiq üçün}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> olaraq davam edin</translation>
 <translation id="3476450923187944815">Digər tətbiqlərdə parollarınıza giriş.</translation>
@@ -465,6 +465,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> və digər <ph name="NUMBER_OF_ACCOUNTS" /> hesab üçün parollar silinəcək. Hesablarınız silinməyəcək.</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3861486700625780712">İzləməyin</translation>
+<translation id="3861908220442487587">Bu ünvan yalnız bu cihazda saxlanır. Onu digər cihazlarda istifadə etmək üçün Google Hesabına (<ph name="USER_EMAIL" />) köçürün</translation>
 <translation id="3863769054730344136">Cihazlara göndərin</translation>
 <translation id="387280738075653372">Chrome'u buradan endirin.</translation>
 <translation id="3875783148670536197">İstifadə Qaydasını Göstərin</translation>
@@ -944,7 +945,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6674571176963658787">Sinxronizasiyanı başlatmaq üçün parol ifadənizi daxil edin</translation>
 <translation id="667999046851023355">Sənəd</translation>
 <translation id="6684906340059221832">Qiymətlər izlənilir</translation>
-<translation id="6689804622901271327">Ödəniş məlumatını avtomatik doldurun</translation>
 <translation id="6710079714193676716">Təşkilatınız tərəfindən idarə olunur. Bəzi funksiyalar əlçatan olmaya bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Tətbiqlər</translation>
 <translation id="672735642903863329">Əlfəcin, parol və s. məlumatları bütün cihazlarda əldə edin.</translation>
@@ -1300,7 +1300,6 @@ Data <ph name="TIME" /> tarixində parol ifadəsi ilə şifrələnib. Google Hes
 <translation id="8976414606286374109">Kartlar Google Hesabınızda saxlanılır.</translation>
 <translation id="8981454092730389528">Google Fəaliyyət Nəzarəti</translation>
 <translation id="8985320356172329008">Google'a bu cür daxil olunub</translation>
-<translation id="8986567980592931173">Parol, tarixçə və s. sinxronlaşdırmaq üçün Google Hesabı ilə daxil olun.</translation>
 <translation id="8998289560386111590">Cihazınızda əlçatan deyil</translation>
 <translation id="8999545564078155498">Üz ID-si ilə kiliddən çıxarın</translation>
 <translation id="9000089900434778519">Axtarış sisteminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək üçün onun təlimatlarına (təmin edilibsə) baxın.</translation>

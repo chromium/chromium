@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
 <translation id="1215127405478249895">Преглед на картичките</translation>
+<translation id="1275718070701477396">Избран</translation>
 <translation id="1356944128023012143">Списокот на синхронизирани уреди и избраните картички од тие уреди за враќање во нов работен тек на враќање е затворен.</translation>
 <translation id="1816430105422765050">Променете на други синхронизирани уреди во оваа ставка на менито.</translation>
 <translation id="2575169127313449202">Може да вратите картички од уредот наведен подолу</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Избери сè</translation>
 <translation id="5972844218283131174">Поништи го изборот на сите</translation>
 <translation id="791922009843073162">Ќе се поништи изборот на сите избрани картички или ќе се изберат сите картички со поништен избор.</translation>
+<translation id="7927711904086083099">Не е избран</translation>
 <translation id="8003146088970081079">Изберете го уредот од којшто сакате да вратите картички</translation>
 <translation id="8019269305087157499">Отвори од</translation>
 </translationbundle>

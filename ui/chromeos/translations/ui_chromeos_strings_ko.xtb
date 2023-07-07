@@ -349,12 +349,12 @@
 <translation id="3855472144336161447">독일어 Neo 2</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="3866249974567520381">설명</translation>
-<translation id="3866439285517092441">배터리가 부족합니다 전원에 연결되면 동기화가 재개됩니다.</translation>
 <translation id="3899991606604168269">프랑스어(캐나다, 다국어 키보드)</translation>
 <translation id="3901991538546252627"><ph name="NAME" />에 연결 중</translation>
 <translation id="3906232975181435906">모바일 프로필 설치 중, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">붙여넣기</translation>
+<translation id="3950820424414687140">로그인</translation>
 <translation id="3952872973865944257">텔루구어(표음)</translation>
 <translation id="3958548648197196644">키위</translation>
 <translation id="397105322502079400">계산 중...</translation>
@@ -948,8 +948,8 @@
 <translation id="8395901698320285466">크기</translation>
 <translation id="8404498045299006085">모두 보관</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> 네트워크, 연결 중</translation>
-<translation id="841387525767317275">이 폴더의 파일은 오프라인에서 사용할 수 있습니다.</translation>
 <translation id="8425213833346101688">변경</translation>
+<translation id="8428213095426709021">설정</translation>
 <translation id="8431909052837336408">SIM PIN 변경</translation>
 <translation id="8437209419043462667">영어(미국)</translation>
 <translation id="8452135315243592079">SIM 카드 없음</translation>

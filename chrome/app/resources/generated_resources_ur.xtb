@@ -3700,6 +3700,7 @@
 <translation id="4068776064906523561">محفوظ کردہ فنگر پرنٹس</translation>
 <translation id="407173827865827707">کلک کرنے پر</translation>
 <translation id="4072701974556190758">‏پاس ورڈ آپ کے Google اکاؤنٹ میں محفوظ کیا جائے گا، <ph name="ACCOUNT" />۔ آپ کو اسے یاد رکھنے کی ضرورت نہیں ہے۔</translation>
+<translation id="4072805772816336153">بعد میں دوبارہ کوشش کریں</translation>
 <translation id="407520071244661467">اسکیل</translation>
 <translation id="407543464472585404"><ph name="NAME" /> کی پروفائل <ph name="EMAIL" /> سے لنک ہے</translation>
 <translation id="4077917118009885966">اس سائٹ پر اشتہارات مسدود ہیں</translation>
@@ -3942,6 +3943,7 @@
 <translation id="4290791284969893584">صفحہ بند کرنے کے بعد، آپ کی شروع کردہ ٹاسکس شاید مکمل نہ ہوں</translation>
 <translation id="4291265871880246274">لاگ ان ڈائیلاگ</translation>
 <translation id="429234155571566255">یہ حال ہی میں دیکھی گئی ترکیبیں ہیں</translation>
+<translation id="429312253194641664">سائٹ پر میڈیا چل رہا ہے</translation>
 <translation id="4295072614469448764">آپ کے ٹرمنل میں ایپ دستیاب ہے۔ آپ کے لانچر میں ایک آئیکن بھی ہو سکتا ہے۔</translation>
 <translation id="4295979599050707005">‏براہ کرم یہ تصدیق کرنے کیلئے دوبارہ سائن ان کریں کہ آپ کا اکاؤنٹ <ph name="USER_EMAIL" /> Chrome اور Google Play میں موجود ویب سائٹس، ایپس اور ایکسٹینشنز کے ساتھ استعمال کیا جا سکتا ہے۔ آپ یہ اکاؤنٹ بھی ہٹا سکتے ہیں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304"><ph name="APP_NAME" /> سے ایپلیکیشنز انسٹال اور ان کی سلسلہ بندی کی گئی</translation>
@@ -5680,7 +5682,6 @@
 <translation id="5811614940486072060">یہ فائل عام طور پر ڈاؤن لوڈ نہیں کی جاتی ہے اور یہ خطرناک ہو سکتی ہے</translation>
 <translation id="5812674658566766066">سبھی کو پھیلائیں</translation>
 <translation id="5815645614496570556">‏X.400 پتہ</translation>
-<translation id="5816166985204777171">یہ سسٹم ایپ آپ کے آلے پر پہلے سے انسٹال ہے</translation>
 <translation id="5816434091619127343">پرنٹر میں درخواست کردہ تبدیلیاں کرنے سے پرنٹر ناقابل استعمال ہو جائے گا۔</translation>
 <translation id="581659025233126501">مطابقت پذیری آن کریں</translation>
 <translation id="5817069030404929329">‏اس آلے سے پاس ورڈز اپنے Google اکاؤنٹ میں منتقل کریں؟</translation>
@@ -5988,7 +5989,6 @@
 <translation id="6065289257230303064">سرٹیفیکیٹ موضوع ڈائریکٹری انتسابات</translation>
 <translation id="6066794465984119824">تصویری ہیش سیٹ نہیں ہے</translation>
 <translation id="6069464830445383022">‏آپ کا Google اکاؤنٹ آپ کا Chromebook سائن ان ہے</translation>
-<translation id="6070311415473175157">تلاش کرنے کے لیے تصویر کا علاقہ منتخب کریں</translation>
 <translation id="6071181508177083058">پاس ورڈ کی توثیق کریں</translation>
 <translation id="6071576563962215370">سسٹم آلہ کے انسٹالیشن کے وقت کے انتسابات کا لاک تشکیل دینے میں ناکام ہوگیا۔</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> میموری کی بچت ہوئی</translation>
@@ -6353,7 +6353,6 @@
 <translation id="6393156038355142111">مضبوط پاس ورڈ تجویز کریں</translation>
 <translation id="6393550101331051049">غیر محفوظ مواد دکھانے کی اجازت ہے</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />سسٹم کی معلومات<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />میٹرکس<ph name="END_LINK2" /> بھیجیں۔</translation>
-<translation id="6396175271241405634">سسٹم ایپ</translation>
 <translation id="6398715114293939307">‏Google Play اسٹور ہٹائیں</translation>
 <translation id="6398765197997659313">پوری سکرین سے خارج ہوں</translation>
 <translation id="6399675241776343019">مسترد ہو گئی</translation>
@@ -6626,7 +6625,6 @@
 <translation id="6619801788773578757">کیوسک ایپلیکیشن شامل کریں</translation>
 <translation id="6619990499523117484">‏اپنے PIN کی توثیق کریں</translation>
 <translation id="6620254580880484313">کنٹینر کا نام</translation>
-<translation id="6620927550847360014">‏اپنے <ph name="DEVICE_TYPE" /> سے Bruschetta کو ہٹائیں؟</translation>
 <translation id="6621391692573306628">‏اس ٹیب کو کسی اور آلے میں بھیجنے کے لیے دونوں آلات پر Chrome میں سائن ان کریں</translation>
 <translation id="6622980291894852883">تصاویر کو مسدود کرنا جاری رکھیں</translation>
 <translation id="6624036901798307345">ٹیبلیٹ موڈ میں، ٹیب کاؤنٹر ٹول بار کے بٹن پر تھپتھپائیں تاکہ نئی ٹیب کی اسٹرپ کھل سکے جو ہر ٹیب کے تھمب نیلز دکھاتی ہے۔</translation>
@@ -8367,6 +8365,7 @@
 <translation id="8077120325605624147">آپ کی ملاحظہ کردہ کوئی بھی سائٹ آپ کو کوئی بھی اشتہار دکھا سکتی ہے</translation>
 <translation id="8077579734294125741">‏دیگر Chrome پروفائلز</translation>
 <translation id="80798452873915119">سائٹس آپ کے سبھی ڈسپلیز پر ونڈوز کا نظم کرنے کو کہہ سکتی ہیں</translation>
+<translation id="8080028325999236607">سبھی ٹیبز بند کریں</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">آپ کا سیشن <ph name="MANAGER_NAME" /> کے زیر انتظام ہے۔ منتظمین آپ کی پروفائل حذف کر سکتے ہیں اور آپ کے نیٹ ورک ٹریفک کی نگرانی بھی کر سکتے ہیں۔</translation>
 <translation id="8081989000209387414">‏ADB ڈیبگنگ غیر فعال کریں؟</translation>
@@ -8669,6 +8668,7 @@
 <translation id="8336463659890584292">‏جب سائٹ اپنے صفحے پر لنکس کو نجی طور پر پیشگی لوڈ کرنے کا مطالبہ کرتی ہے تو Chrome ‏Google سرورز کا استعمال کرتا ہے۔ اس سے پیشگی لوڈ کردہ سائٹ سے آپ کی شناخت پوشیدہ ہو جاتی ہے لیکن Google جانتا ہے کہ کونسی سائٹس پیشگی لوڈ ہوتی ہیں۔</translation>
 <translation id="8336739000755212683">آلے کے اکاؤنٹ کی تصویر تبدیل کریں</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{یہ آلہ 1 گھنٹے کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}other{یہ آلہ {HOURS} گھنٹوں کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}}</translation>
+<translation id="8337399713761067085">آپ فی الحال آف لائن ہیں</translation>
 <translation id="8338952601723052325">ڈویلپر کی ویب سائٹ</translation>
 <translation id="8339288417038613756">ڈسپلے اور ٹیکسٹ کا سائز</translation>
 <translation id="833986336429795709">یہ لنک کھولنے کیلئے، ایک ایپ منتخب کریں</translation>
@@ -9409,9 +9409,6 @@
 <translation id="8978154919215542464">آن - ہر چیز کی مطابقت پذیری کریں</translation>
 <translation id="8978670037548431647">ٹیدرنگ کی صلاحیتیں ریفریش کریں</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" /> پر</translation>
-<translation id="8980335421826918629">‏یہ فائل ایک وائرس یا میلویئر ہو سکتی ہے۔
-
-یہ چیک کرنے کیلئے کہ آیا یہ غیر محفوظ ہے، آپ اسے Google محفوظ براؤزنگ کو بھیج سکتے ہیں۔ اسکینز میں عام طور پر چند سیکنڈ لگتے ہیں۔</translation>
 <translation id="8980345560318123814">تاثرات کی رپورٹس</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - کریش ہو گیا</translation>
 <translation id="8981038076986775523">مائیکروفون استعمال کرنے کے بارے میں مزید جانیں</translation>
@@ -9775,6 +9772,7 @@
 <translation id="97905529126098460">منسوخی کا عمل مکمل ہونے کے بعد یہ ونڈو بند ہو جائے گی۔</translation>
 <translation id="980731642137034229">کارروائی مینیو بٹن</translation>
 <translation id="981121421437150478">آف لائن</translation>
+<translation id="983192555821071799">سبھی ٹیبز بند کریں</translation>
 <translation id="983511809958454316">‏یہ خصوصیت VR میں تعاون یافتہ نہیں ہے</translation>
 <translation id="984275831282074731">ادائیگی کے طریقے</translation>
 <translation id="984705303330760860">املے کی جانچ کے لیے زبانیں شامل کریں</translation>

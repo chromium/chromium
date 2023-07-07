@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">Folosește perechea de chei actuală</translation>
 <translation id="2320295602967756579">Activează tema luminoasă</translation>
 <translation id="2323506179655536734">OMIS</translation>
+<translation id="2324354238778375592">Suprapus</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Pentru a descoperi dispozitivele din apropiere, activează Bluetooth</translation>
 <translation id="2346474577291266260">Excelentă (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263">Testul <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Se încarcă…</translation>
 <translation id="3708186454126126312">Conectat anterior</translation>
+<translation id="3715651196924935218">Ieși din modul suprapus</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recenzii)</translation>
 <translation id="3748026146096797577">Neconectat</translation>
 <translation id="3749289110408117711">Nume de fișier</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Ecran</translation>
 <translation id="4155551848414053977">Scanerul trebuie să fie pornit și disponibil prin rețea sau prin conexiune directă</translation>
+<translation id="4159238217853743776">Parțial</translation>
 <translation id="4159784952369912983">Mov</translation>
 <translation id="4170180284036919717">Fotografiază</translation>
 <translation id="4170700058716978431">NEREUȘIT</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">Pentru a configura sau a actualiza o conexiune, accesează <ph name="BEGIN_LINK" />Setările<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4950314376641394653">Firmware-ul <ph name="DEVICE_NAME" /> a fost actualizat la versiunea <ph name="VERSION" /></translation>
+<translation id="4969079779290789265">Împărțit</translation>
 <translation id="4972592110715526173">schimbarea modului</translation>
 <translation id="498186245079027698">Verifică scanerul și încearcă din nou. Asigură-te că există spațiu suficient la nivel local pentru a salva fișierele scanate.</translation>
 <translation id="4985509611418653372">Rulează</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">Nume de gazdă server</translation>
 <translation id="5089810972385038852">Stat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">Complet</translation>
 <translation id="5142961317498132443">Autentificare</translation>
 <translation id="5154917547274118687">Memorie</translation>
 <translation id="5160857336552977725">Conectează-te la <ph name="DEVICE_TYPE" /></translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">Deconectează-te</translation>
 <translation id="522307662484862935">Nu include adresa de e-mail</translation>
 <translation id="5227902338748591677">Programul temei întunecate</translation>
+<translation id="5229344016299762883">Ieși din ecranul complet</translation>
 <translation id="5234764350956374838">Închide</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Activează modul de culoare deschisă</translation>
@@ -707,6 +713,7 @@
 <translation id="6566314079205407217">Scanare pentru mai multe pagini</translation>
 <translation id="6574762126505704998">Umplere</translation>
 <translation id="6575134580692778371">Nu este configurată</translation>
+<translation id="6576005492601044801">stânga</translation>
 <translation id="6579509898032828423">Folosește fotografia</translation>
 <translation id="6596816719288285829">Adresă IP</translation>
 <translation id="6599673642868607614">Mulțumim pentru feedback. Feedbackul tău ne ajută să îmbunătățim experiența Chromebookurilor și va fi examinat de echipa noastră. Din cauza numărului mare de rapoarte, nu vom putea să trimitem un răspuns.</translation>
@@ -812,6 +819,7 @@
 <translation id="7497215489070763236">Certificat CA de server</translation>
 <translation id="7501957181231305652">sau</translation>
 <translation id="7502658306369382406">Adresă IPv6</translation>
+<translation id="7513770521371759388">jos</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Conținutul de ajutor nu este disponibil</translation>
 <translation id="7535791657097741517">Activează tema luminoasă</translation>
@@ -950,6 +958,7 @@
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Trimite adresa URL:</translation>
 <translation id="8660881923941176839">livre</translation>
+<translation id="8670574982334489519">dreapta</translation>
 <translation id="8675354002693747642">Cheie predistribuită</translation>
 <translation id="8677859815076891398">Niciun album. Creează un album în <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> folosește tastele săgeată la stânga sau la dreapta ca să gestionezi această funcție.</translation>
@@ -995,6 +1004,7 @@
 <translation id="8936793075252196307">Adresa IP a clientului</translation>
 <translation id="8944651180182756621">Culoarea lansatorului</translation>
 <translation id="894617464444543719">Dispozitivul este un telefon.</translation>
+<translation id="8950424402482976779">sus</translation>
 <translation id="8968751544471797276">Rata de încărcare</translation>
 <translation id="8970109610781093811">Rulați din nou</translation>
 <translation id="8983038754672563810">HSPA</translation>

@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">Варианты поисковых запросов, основанные на данных последней вкладки</translation>
 <translation id="2241634353105152135">Однократно</translation>
 <translation id="2253414712144136228">Удалить пункт "<ph name="NAME_OF_LIST_ITEM" />"</translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 заблокированный сайт}one{# заблокированный сайт}few{# заблокированных сайта}many{# заблокированных сайтов}other{# заблокированного сайта}}</translation>
 <translation id="228293613124499805">Большинство сайтов, которые вы посещаете, скорее всего, сохраняют на устройстве такую информацию, как ваши предпочтения или данные, которыми вы делитесь с ними. Чаще всего это делается для вашего удобства. Мы рекомендуем не отключать этот параметр.</translation>
 <translation id="2289270750774289114">Запрашивать для сайтов разрешение на поиск Bluetooth-устройств поблизости (рекомендуется)</translation>
 <translation id="2315043854645842844">Сертификат, выбранный клиентом, не поддерживается операционной системой.</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">Невозможно выбрать сертификат.</translation>
 <translation id="8077120325605624147">Реклама может показываться на любом посещаемом сайте</translation>
 <translation id="8087000398470557479">Контент с сайта <ph name="DOMAIN_NAME" />. Получен с помощью Google.</translation>
+<translation id="8088603949666785339"><ph name="BANNER_TITLE" />: другие действия</translation>
 <translation id="8116925261070264013">Сайты с отключенным звуком</translation>
 <translation id="813082847718468539">Сведения о сайте</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129">Предоставьте приложению "<ph name="APP_NAME" />" разрешение в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>
 <translation id="8730621377337864115">Готово</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Разрешено 1 сайту}one{Разрешено # сайту}few{Разрешено # сайтам}many{Разрешено # сайтам}other{Разрешено # сайта}}</translation>
 <translation id="8737217482364735741">Будут удалены все данные и файлы cookie, которые сохранены сайтом <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Выберите фото</translation>
 <translation id="8801436777607969138">Блокировать код JavaScript на определенном сайте</translation>

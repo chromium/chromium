@@ -1553,7 +1553,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7866482334467279021">activată</translation>
 <translation id="7872786842639831132">Dezactivat</translation>
 <translation id="7875575368831396199">Se pare că funcția Bluetooth este dezactivată pe <ph name="DEVICE_TYPE" />. Activează Bluetooth pentru a folosi Phone Hub.</translation>
-<translation id="7876243839304621966">Elimină tot</translation>
 <translation id="7877557217297072640">{0,plural, =0{Treci la versiunea anterioară a dispozitivului acum}=1{Treci la versiunea anterioară a dispozitivului în o secundă}few{Treci la versiunea anterioară a dispozitivului în # secunde}other{Treci la versiunea anterioară a dispozitivului în # de secunde}}</translation>
 <translation id="7884446017008693258">Setări pentru hotspot</translation>
 <translation id="7884902759927478774">Anulează tragerea filei</translation>
@@ -1652,7 +1651,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8255234195843591763">Resetează pentru a actualiza</translation>
 <translation id="8261506727792406068">Șterge</translation>
 <translation id="8262312463845990408">Schimbă redarea</translation>
-<translation id="8265826854528868575">Se afișează <ph name="NUM_SHOWN_TASKS" /> din <ph name="NUM_TOTAL_TASKS" /></translation>
 <translation id="8270450402312105425">{0,plural, =1{Treci la versiunea anterioară a dispozitivului în cel mult o oră}few{Treci la versiunea anterioară a dispozitivului în # ore}other{Treci la versiunea anterioară a dispozitivului în # de ore}}</translation>
 <translation id="8277261673056602147">Evidențiază textul pe ecran</translation>
 <translation id="8284362522226889623">Glisează spre stânga cu patru degete pentru a comuta la desktopul anterior</translation>

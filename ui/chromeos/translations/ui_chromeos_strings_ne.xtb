@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google ड्राइभ अहिले उपलब्ध छैन। Google ड्राइभ एकपटक फर्केपचि अपलोड स्वत: सुरुवात हुनेछ।</translation>
 <translation id="1307931752636661898">Linux का फाइलहरू हेर्न सकिएन</translation>
 <translation id="1313405956111467313">स्वचालित प्रोक्सी कन्फिगरेसन</translation>
+<translation id="134645005685694099">फाइल सिंक गर्ने सुविधा अन राखिराख्न तपाईंको डिभाइसमा पर्याप्त खाली ठाउँ छैन। अबदेखि नयाँ फाइलहरू स्वतः सिंक हुने छैनन्।</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">फाइलवा डाइरेक्टरी प्रयोगयोग्य छैन।</translation>
 <translation id="1363028406613469049">ट्रयाक</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP को प्रोक्सी</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> नेटवर्क, निष्क्रिय छ</translation>
 <translation id="2468402215065996499">तामागोची</translation>
+<translation id="2468470447085858632">फाइल सिंक गर्ने सुविधा प्रयोग गरी Google Drive मा भएका आफ्ना फाइलहरू अफलाइन एक्सेस गर्नुहोस्</translation>
 <translation id="2470939964922472929">तपाईंले अत्यन्तै धेरै पटक गलत PIN हाल्नुभयो। नयाँ PIN सेटअप गर्न तपाईंको मोबाइल सेवा प्रदायकले उपलब्ध गराएको ८ अङ्कको पर्सनल अनब्लकिङ की (PUK) हाल्नुहोस्।</translation>
 <translation id="2500392669976258912">गुजराती फोनेटिक</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -349,12 +351,12 @@
 <translation id="3855472144336161447">जर्मन नियो 2</translation>
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3866249974567520381">विवरण</translation>
-<translation id="3866439285517092441">ब्याट्री कम छ। तपाईंको डिभाइस बिजुलीको स्रोतमा जोडिएपछि सिंक गर्ने कार्य सुचारु गरिने छ।</translation>
 <translation id="3899991606604168269">फ्रान्सेली (क्यानाडा) बहुभाषी किबोर्ड</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> मा कनेक्ट गरिँदै छ</translation>
 <translation id="3906232975181435906">मोबाइल प्रोफाइल इन्स्टल गरिँदै छ। यो प्रोफाइल <ph name="NETWORK_NAME" /> नेटवर्कको <ph name="NETWORK_INDEX" /> मध्ये <ph name="NETWORK_COUNT" /> औँ नेटवर्क हो।</translation>
 <translation id="3924145049010392604">मेटा</translation>
 <translation id="3943857333388298514">टाँस्नुहोस्</translation>
+<translation id="3950820424414687140">साइन इन गर्नुहोस्</translation>
 <translation id="3952872973865944257">तेलगू फोनेटिक</translation>
 <translation id="3958548648197196644">कीवी</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
@@ -602,6 +604,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> ट्र्यासमा सारियो</translation>
 <translation id="5724172041621205163">थाई पत्ताचोते किबोर्ड</translation>
 <translation id="57383366388012121">गत महिना</translation>
+<translation id="575175778971367197">अहिले यो फाइल सिंक गर्न सकिएन</translation>
 <translation id="5756666464756035725">हंगेरी QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> वटा सामग्री चयन गरिएका छन्</translation>
 <translation id="5763377084591234761">जर्मन (स्विजरल्यान्ड)</translation>
@@ -704,6 +707,7 @@
 <translation id="6558280019477628686">एउटा त्रुटि भयो। केही वस्तुहरू नमेटिएका हुनसक्छन्।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" लाई मेटाउँदै...</translation>
 <translation id="6581162200855843583">Google ड्राइभ लिङ्क</translation>
+<translation id="6588648400954570689">फाइल सिंक गर्ने सुविधासम्बन्धी सेटिङ</translation>
 <translation id="6594855146910089723">यो फोल्डर Linux र Parallels Desktop सँग सेयर गरिएको छ</translation>
 <translation id="6607272825297743757">फाइल बारे जानकारी</translation>
 <translation id="6609332149380188670">Parallels Desktop सँग <ph name="NUMBER_OF_ITEMS" /> वटा फोल्डर सेयर गरियो</translation>
@@ -828,6 +832,7 @@
 <translation id="7547811415869834682">डच</translation>
 <translation id="7551643184018910560">शेल्फमा पिन गर्नुहोस्</translation>
 <translation id="7553492409867692754">Linux का एपलाई <ph name="FOLDER_NAME" /> फोल्डरमा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्</translation>
+<translation id="7555339735447658365">तपाईं अहिले अफलाइन हुनुहुन्छ। तपाईंको डिभाइस इन्टरनेटमा कनेक्ट भएपछि फाइल सिंक गर्ने सुविधा सुचारु गरिने छ</translation>
 <translation id="7589661784326793847">केवल एक सेकेन्ड प्रतिक्षा गर्नुहोस्</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> अफलाइनमा उपलब्ध गराइँदै छ</translation>
 <translation id="7600126690270271294">सर्बियाली</translation>
@@ -870,6 +875,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> टि.बि.</translation>
 <translation id="7831491651892296503">नेटवर्क कन्फिगर गर्दा त्रुटि भयो</translation>
+<translation id="7832093238954689746">फाइल सिंक गर्ने कार्य पूरा भयो। My Drive मा भएका फाइलहरू अफलाइन उपलब्ध भएका छन्।</translation>
 <translation id="7839804798877833423">यी फाइलहरू ल्याउने क्रममा लगभग <ph name="FILE_SIZE" /> को मोबाइल लगत प्रयोग गर्छ।</translation>
 <translation id="7846076177841592234">चयन रद्द गर्नुहोस्</translation>
 <translation id="7853966320808728790">फ्रान्सेली BÉPO</translation>
@@ -918,6 +924,7 @@
 <translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
 <translation id="8193175696669055101">यन्त्र मोडल</translation>
 <translation id="8223479393428528563">अफलाइन प्रयोगको लागि यी फाइलहरू सुरक्षित गर्न, अनलाइनमा फिर्ता जानुहोस्, फाइलमा दायाँ क्लिक गर्नुहोस्, र <ph name="OFFLINE_CHECKBOX_NAME" /> विकल्प चयन गर्नुहोस्।</translation>
+<translation id="8241139360630443550">भण्डारणसम्बन्धी जानकारी हेर्नुहोस्</translation>
 <translation id="8249296373107784235">रद्द गर्नुहोस्</translation>
 <translation id="8250690786522693009">ल्याटिन</translation>
 <translation id="8250920743982581267">कागजातहरू</translation>
@@ -947,8 +954,8 @@
 <translation id="8395901698320285466">उचाइ तथा चौडाइ</translation>
 <translation id="8404498045299006085">सबै इन्ट्रीहरू राखिराख्नुहोस्</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> नेटवर्क, जोड्दै</translation>
-<translation id="841387525767317275">यो फोल्डरभित्र रहेका फाइलहरू अफलाइन उपलब्ध भएका छन्</translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
+<translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8431909052837336408">SIM को PIN परिवर्तन गर्नुहोस्</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">SIM कार्ड उपलब्ध छैन</translation>

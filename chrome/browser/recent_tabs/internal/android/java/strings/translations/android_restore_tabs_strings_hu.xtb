@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="1215127405478249895">Lapok áttekintése</translation>
+<translation id="1275718070701477396">Kijelölve</translation>
 <translation id="1356944128023012143">Be van zárva a szinkronizált eszközök listája, valamint az ezeken az eszközökön található kiválasztott lapok listája, amelyek visszaállítandók az új visszaállítási munkafolyamatban.</translation>
 <translation id="1816430105422765050">Másik szinkronizált eszközökre válthat ebben a menüelemben.</translation>
 <translation id="2575169127313449202">Az alább felsorolt eszközökről állíthat vissza lapokat</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Összes kiválasztása</translation>
 <translation id="5972844218283131174">Összes kijelölésének megszüntetése</translation>
 <translation id="791922009843073162">Az összes kiválasztott lap kiválasztása meg lesz szüntetve, vagy minden nem kiválasztott lap ki lesz választva.</translation>
+<translation id="7927711904086083099">Nincs kiválasztva</translation>
 <translation id="8003146088970081079">Válassza ki azt az eszközt, amelynek lapjait vissza szeretné állítani</translation>
 <translation id="8019269305087157499">Megnyitás innen</translation>
 </translationbundle>

@@ -405,7 +405,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3464194322481586217">Não foi possível monitorar o preço.</translation>
 <translation id="3469166899695866866">Interromper o download?</translation>
 <translation id="3470502288861289375">Copiando...</translation>
-<translation id="3471148582064653480">Sincronize suas senhas, seu histórico e muito mais.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{de {COUNT} site ou app}one{de {COUNT} site ou app}other{de {COUNT} sites ou apps}}</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Acesse as suas senhas em outros apps.</translation>
@@ -946,7 +945,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6674571176963658787">Para iniciar a sincronização, digite a senha longa</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6684906340059221832">Monitorando preços</translation>
-<translation id="6689804622901271327">Preenchimento automático de informações de pagamento</translation>
 <translation id="6710079714193676716">Gerenciado pela sua organização. Talvez alguns recursos estejam indisponíveis. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Acesse seus favoritos, senhas e mais em todos seus dispositivos.</translation>
@@ -1302,7 +1300,6 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="8976414606286374109">Os cartões são salvos na sua Conta do Google.</translation>
 <translation id="8981454092730389528">Controles de atividades do Google</translation>
 <translation id="8985320356172329008">Conectado(a) ao Google como</translation>
-<translation id="8986567980592931173">Faça login com sua Conta do Google para sincronizar senhas, histórico e muito mais.</translation>
 <translation id="8998289560386111590">Indisponível no seu dispositivo</translation>
 <translation id="8999545564078155498">Desbloquear com o Face ID</translation>
 <translation id="9000089900434778519">Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para excluir o histórico de pesquisa, se aplicável.</translation>
