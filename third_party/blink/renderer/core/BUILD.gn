@@ -1423,7 +1423,6 @@ source_set("unit_tests") {
   if (is_apple) {
     configs += [ "//build/config/compiler:enable_arc" ]
   }
-  defines = [ "ALLOW_IMPLICIT_ATOMIC_STRING_CONVERSIONS" ]
 
   deps = [
     ":core",
