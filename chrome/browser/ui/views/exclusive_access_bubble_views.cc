@@ -42,6 +42,7 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
     ExclusiveAccessBubbleViewsContext* context,
     const GURL& url,
     ExclusiveAccessBubbleType bubble_type,
+    bool notify_download,
     ExclusiveAccessBubbleHideCallback bubble_first_hide_callback)
     : ExclusiveAccessBubble(context->GetExclusiveAccessManager(),
                             url,
@@ -78,6 +79,7 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
   browser_fullscreen_exit_accelerator_ = accelerator.GetShortcutText();
 #endif
 
+  notify_download_ = notify_download;
   UpdateViewContent(bubble_type_);
 
   // Initialize the popup.
@@ -217,10 +219,11 @@ void ExclusiveAccessBubbleViews::UpdateBounds() {
 
 void ExclusiveAccessBubbleViews::UpdateViewContent(
     ExclusiveAccessBubbleType bubble_type) {
-  DCHECK_NE(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE, bubble_type);
+  DCHECK(notify_download_ || EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != bubble_type);
 
   std::u16string accelerator;
-  if (exclusive_access_bubble::IsExclusiveAccessModeBrowserFullscreen(
+  if ((notify_download_ && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
+      exclusive_access_bubble::IsExclusiveAccessModeBrowserFullscreen(
           bubble_type)) {
     accelerator = browser_fullscreen_exit_accelerator_;
   } else {

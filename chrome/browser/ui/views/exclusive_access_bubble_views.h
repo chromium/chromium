@@ -39,6 +39,7 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
       ExclusiveAccessBubbleViewsContext* context,
       const GURL& url,
       ExclusiveAccessBubbleType bubble_type,
+      bool notify_download,
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback);
 
   ExclusiveAccessBubbleViews(const ExclusiveAccessBubbleViews&) = delete;
