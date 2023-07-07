@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/component_export.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
 #include "services/viz/public/mojom/compositing/internal/singleplanar_format.mojom.h"
@@ -90,10 +91,23 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
   }
   bool is_multi_plane() const { return plane_type_ == PlaneType::kMultiPlane; }
 
-  // Stub function that always returns false for preferring external sampler.
-  // TODO(hitawala): Check if external sampler support is needed for clients and
-  // if needed return accordingly.
-  bool PrefersExternalSampler() const { return false; }
+  // Returns whether this format needs to be externally sampled. Note that
+  // external sampling is supported only on Ozone.
+  bool PrefersExternalSampler() const {
+#if BUILDFLAG(IS_OZONE)
+    return prefers_external_sampler_;
+#else
+    return false;
+#endif
+  }
+
+#if BUILDFLAG(IS_OZONE)
+  // Sets this format (which must be multiplanar) as needing external sampling.
+  void SetPrefersExternalSampler() {
+    CHECK(is_multi_plane());
+    prefers_external_sampler_ = true;
+  }
+#endif
 
   // Returns whether the resource format can be used as a software bitmap for
   // export to the display compositor.
@@ -211,6 +225,9 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
   }
 
   PlaneType plane_type_ = PlaneType::kUnknown;
+#if BUILDFLAG(IS_OZONE)
+  bool prefers_external_sampler_ = false;
+#endif
   // `format_` can only be SingleplanarFormat (for single plane, eg. RGBA) or
   // MultiplanarFormat at any given time.
   SharedImageFormatUnion format_;

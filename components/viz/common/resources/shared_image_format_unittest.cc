@@ -7,6 +7,7 @@
 #include <limits>
 #include <vector>
 
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace viz {
@@ -195,6 +196,18 @@ TEST_F(SharedImageFormatTest, EstimatedSizeInBytesOverflow) {
 
   // VerifySizeInBytes() should return false on overflow.
   EXPECT_FALSE(format.VerifySizeInBytes(max_size));
+}
+
+TEST_F(SharedImageFormatTest, PrefersExternalSampler) {
+  auto singleplanar_format = SinglePlaneFormat::kRGBA_F16;
+  auto multiplanar_format = MultiPlaneFormat::kNV12;
+  EXPECT_FALSE(singleplanar_format.PrefersExternalSampler());
+  EXPECT_FALSE(multiplanar_format.PrefersExternalSampler());
+
+#if BUILDFLAG(IS_OZONE)
+  multiplanar_format.SetPrefersExternalSampler();
+  EXPECT_TRUE(multiplanar_format.PrefersExternalSampler());
+#endif
 }
 
 }  // namespace
