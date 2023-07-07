@@ -161,7 +161,6 @@ def main(raw_args):
       help='Enable graphical window display on the emulator.')
   subparser.add_argument(
       '--gpu-mode',
-      default='swiftshader_indirect',
       help='Override the mode of hardware OpenGL ES emulation indicated by the '
       'AVD. See "emulator -help-gpu" for a full list of modes. Note when set '
       'to "host", it needs a valid DISPLAY env, even if "--emulator-window" is '
