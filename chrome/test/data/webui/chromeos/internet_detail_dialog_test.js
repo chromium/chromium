@@ -69,6 +69,19 @@ suite('internet-detail-dialog', () => {
     mojoApi_.resetForTest();
   });
 
+  teardown(function() {
+    // If a previous test was run with Jelly, the css needs to be removed.
+    const old_elements =
+        document.querySelectorAll('link[href*=\'chrome://theme/colors.css\']');
+    old_elements.forEach(function(node) {
+      node.remove();
+    });
+    assertFalse(
+        !!document.querySelector('link[href*=\'chrome://theme/colors.css\']'));
+
+    document.body.classList.remove('jelly-enabled');
+  });
+
   async function init() {
     internetDetailDialog = document.createElement('internet-detail-dialog');
     document.body.appendChild(internetDetailDialog);
