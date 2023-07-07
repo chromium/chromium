@@ -2,6 +2,7 @@ Name: Network Security Services (NSS)
 URL: http://www.mozilla.org/projects/security/pki/nss/
 Version: 3.23 RTM
 Security Critical: Yes
+Shipped: yes
 License: MPL 2
 License File: LICENSE
 
