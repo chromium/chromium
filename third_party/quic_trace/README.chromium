@@ -3,8 +3,9 @@ Short Name: quic-trace
 URL: https://github.com/google/quic-trace
 Version: git
 License: Apache 2.0
-License File: NOT_SHIPPED
+License File: src/LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 A format for transcribing all connection-related events that has occurred
