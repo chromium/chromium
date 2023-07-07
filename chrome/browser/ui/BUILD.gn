@@ -3372,7 +3372,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/settings/ash/files_page/mojom",
       "//chrome/browser/ui/webui/settings/ash/input_device_settings:mojom",
       "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom",
-      "//chrome/browser/ui/webui/settings/ash/search/mojom",
+      "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings",
       "//chrome/browser/web_applications",
       "//chrome/browser/webshare:storage",
       "//chrome/services/file_util/public/cpp",

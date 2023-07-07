@@ -7,7 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(is_chromeos_ash)
 
-mojom("mojom") {
+mojom("mojo_bindings") {
   sources = [
     "search.mojom",
     "search_result_icon.mojom",
