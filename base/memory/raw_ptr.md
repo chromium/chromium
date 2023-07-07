@@ -3,18 +3,26 @@
 `raw_ptr<T>` is a non-owning smart pointer that has improved memory-safety over
 raw pointers.  It behaves just like a raw pointer on platforms where
 USE_BACKUP_REF_PTR is off, and almost like one when it's on. The main
-difference is that when USE_BACKUP_REF_PTR is enabled, it's zero-initialized and
-cleared on destruction and move. (You should continue to explicitly initialize
-raw_ptr members to ensure consistent behavior on platforms where USE_BACKUP_REF_PTR
-is disabled.) Unlike `std::unique_ptr<T>`, `base::scoped_refptr<T>`, etc., it
-doesn’t manage ownership or lifetime of an allocated object - you are still
+difference is that when USE_BACKUP_REF_PTR is enabled, `raw_ptr<T>` is
+beneficial for security, because it can prevent a significant percentage of
+Use-after-Free (UaF) bugs from being exploitable. It does this by poisoning
+the freed memory and quarantining it as long as a dangling `raw_ptr<T>`
+exists.
+
+When USE_BACKUP_REF_PTR is on, `raw_ptr<T>` it is zero-initialized and cleared
+on destruction and move. However, when USE_BACKUP_REF_PTR is off, this is not
+the case. You must continue to explicitly initialize raw_ptr members to ensure
+consistent behavior across all cases. Because the underlying implementation
+may vary, always use the `raw_ptr<T> member_ = nullptr;` form of
+initialization rather than the so-called uniform initialization form
+(empty braces) `raw_ptr<T> member_{};' whose meaning varies with the
+implementation.
+
+Unlike `std::unique_ptr<T>`, `base::scoped_refptr<T>`, etc., `raw_ptr<T>`
+does not manage ownership or lifetime of an allocated object - you are still
 responsible for freeing the object when no longer used, just as you would
 with a raw C++ pointer.
 
-`raw_ptr<T>` is beneficial for security, because it can prevent a significant
-percentage of Use-after-Free
-(UaF) bugs from being exploitable (by poisoning the freed memory and
-quarantining it as long as a dangling `raw_ptr<T>` exists).
 `raw_ptr<T>` has limited impact on stability - dereferencing
 a dangling pointer remains Undefined Behavior (although poisoning may
 lead to earlier, easier to debug crashes).
