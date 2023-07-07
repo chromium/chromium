@@ -35,9 +35,15 @@ class HidConnectionTrackerTest : public DeviceConnectionTrackerTestBase {
   }
 
   MockDeviceSystemTrayIcon* GetMockDeviceSystemTrayIcon() override {
-    return static_cast<TestHidSystemTrayIcon*>(
-               TestingBrowserProcess::GetGlobal()->hid_system_tray_icon())
-        ->mock_device_system_tray_icon();
+    TestHidSystemTrayIcon* test_hid_system_tray_icon =
+        static_cast<TestHidSystemTrayIcon*>(
+            TestingBrowserProcess::GetGlobal()->hid_system_tray_icon());
+
+    if (!test_hid_system_tray_icon) {
+      return nullptr;
+    }
+
+    return test_hid_system_tray_icon->mock_device_system_tray_icon();
   }
 };
 
@@ -46,11 +52,8 @@ TEST_F(HidConnectionTrackerTest, DeviceConnectionExtensionOrigins) {
   TestDeviceConnectionExtensionOrigins(/*has_system_tray_icon=*/true);
 }
 
-// Test the scenario with null HID system tray icon and it doesn't cause crash.
-//
-// TODO(crbug.com/1459534): Disabled sheriff 2023-06-30 (crashes on ubsan)
 TEST_F(HidConnectionTrackerTest,
-       DISABLED_DeviceConnectionExtensionOriginsWithNullSystemTrayIcon) {
+       DeviceConnectionExtensionOriginsWithNullSystemTrayIcon) {
   TestingBrowserProcess::GetGlobal()->SetHidSystemTrayIcon(nullptr);
   TestDeviceConnectionExtensionOrigins(/*has_system_tray_icon=*/false);
 }
