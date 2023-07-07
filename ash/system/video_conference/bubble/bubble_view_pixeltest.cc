@@ -112,13 +112,15 @@ class BubbleViewPixelTest : public AshTestBase {
   }
 
   // Get the `ReturnToAppPanel` from the test `StatusAreaWidget`.
+  video_conference::ReturnToAppPanel* GetReturnToAppPanel() {
+    return static_cast<video_conference::ReturnToAppPanel*>(
+        video_conference_tray()->GetBubbleView()->GetViewByID(
+            video_conference::BubbleViewID::kReturnToApp));
+  }
+
   video_conference::ReturnToAppPanel::ReturnToAppContainer*
   GetReturnToAppContainer() {
-    auto* return_to_app_panel =
-        static_cast<video_conference::ReturnToAppPanel*>(
-            video_conference_tray()->GetBubbleView()->GetViewByID(
-                video_conference::BubbleViewID::kReturnToApp));
-    return return_to_app_panel->container_view_;
+    return GetReturnToAppPanel()->container_view_;
   }
 
   // Make the tray and buttons visible by setting `VideoConferenceMediaState`,
@@ -213,7 +215,7 @@ TEST_F(BubbleViewPixelTest, ReturnToApp) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_return_to_app_one_app",
-      /*revision_number=*/0, video_conference_tray()->GetBubbleView()));
+      /*revision_number=*/1, GetReturnToAppPanel()));
 
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
@@ -225,20 +227,21 @@ TEST_F(BubbleViewPixelTest, ReturnToApp) {
   LeftClickOn(toggle_bubble_button);
   ASSERT_TRUE(video_conference_tray()->GetBubbleView());
 
+  auto* return_to_app_panel = GetReturnToAppPanel();
+
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_return_to_app_two_apps_collapsed",
-      /*revision_number=*/0, video_conference_tray()->GetBubbleView()));
+      /*revision_number=*/1, return_to_app_panel));
 
   // Click the summary row to expand the panel.
-  auto* return_to_app_container = GetReturnToAppContainer();
   auto* summary_row = static_cast<video_conference::ReturnToAppButton*>(
-      return_to_app_container->children().front());
+      GetReturnToAppContainer()->children().front());
   LeftClickOn(summary_row);
   ASSERT_TRUE(summary_row->expanded());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_return_to_app_two_apps_expanded",
-      /*revision_number=*/0, video_conference_tray()->GetBubbleView()));
+      /*revision_number=*/1, return_to_app_panel));
 }
 
 }  // namespace ash::video_conference
