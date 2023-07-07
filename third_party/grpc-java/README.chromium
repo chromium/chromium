@@ -1,9 +1,11 @@
 Name: grpc-java
 URL: https://github.com/grpc/grpc-java
 License: Apache 2.0
+License File: LICENSE
 Version: v1.49.0
 Revision: dfbdfe82278a717896fac584fe0dd090493cd6a4
 Security Critical: yes
+Shipped: no
 
 Description:
 This directory contains build rules and the grpc-java protoc plugin source code.
