@@ -421,12 +421,18 @@ void CommandLine::RemoveSwitch(base::StringPiece switch_key_without_prefix) {
 }
 
 void CommandLine::CopySwitchesFrom(const CommandLine& source,
+                                   span<const char* const> switches) {
+  for (const char* entry : switches) {
+    if (source.HasSwitch(entry)) {
+      AppendSwitchNative(entry, source.GetSwitchValueNative(entry));
+    }
+  }
+}
+
+void CommandLine::CopySwitchesFrom(const CommandLine& source,
                                    const char* const switches[],
                                    size_t count) {
-  for (size_t i = 0; i < count; ++i) {
-    if (source.HasSwitch(switches[i]))
-      AppendSwitchNative(switches[i], source.GetSwitchValueNative(switches[i]));
-  }
+  CopySwitchesFrom(source, make_span(switches, count));
 }
 
 CommandLine::StringVector CommandLine::GetArgs() const {

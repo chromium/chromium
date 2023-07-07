@@ -2678,15 +2678,13 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       embedder_support::kUserAgent,
       switches::kUserDataDir,  // Make logs go to the right file.
   };
-  command_line->CopySwitchesFrom(browser_command_line, kCommonSwitchNames,
-                                 std::size(kCommonSwitchNames));
+  command_line->CopySwitchesFrom(browser_command_line, kCommonSwitchNames);
 
   static const char* const kDinosaurEasterEggSwitches[] = {
       error_page::switches::kDisableDinosaurEasterEgg,
   };
   command_line->CopySwitchesFrom(browser_command_line,
-                                 kDinosaurEasterEggSwitches,
-                                 std::size(kDinosaurEasterEggSwitches));
+                                 kDinosaurEasterEggSwitches);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS need to pass primary user homedir (in multi-profiles session).
@@ -2946,8 +2944,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     }
 #endif
 
-    command_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
-                                   std::size(kSwitchNames));
+    command_line->CopySwitchesFrom(browser_command_line, kSwitchNames);
   } else if (process_type == switches::kUtilityProcess) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     static const char* const kSwitchNames[] = {
@@ -2965,8 +2962,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                  << "\" instead";
     }
 
-    command_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
-                                   std::size(kSwitchNames));
+    command_line->CopySwitchesFrom(browser_command_line, kSwitchNames);
 #endif
     MaybeAppendSecureOriginsAllowlistSwitch(command_line);
   } else if (process_type == switches::kZygoteProcess) {
@@ -2978,22 +2974,19 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         switches::kVerboseLoggingInNacl,
     };
 
-    command_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
-                                   std::size(kSwitchNames));
+    command_line->CopySwitchesFrom(browser_command_line, kSwitchNames);
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Ensure zygote loads the resource bundle for the right locale.
     static const char* const kMoreSwitchNames[] = {switches::kLang};
-    command_line->CopySwitchesFrom(browser_command_line, kMoreSwitchNames,
-                                   std::size(kMoreSwitchNames));
+    command_line->CopySwitchesFrom(browser_command_line, kMoreSwitchNames);
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
     // This is called before feature flags are parsed, so pass them in their raw
     // form.
     static const char* const kMoreCrOSSwitchNames[] = {
         chromeos::switches::kFeatureFlags};
-    command_line->CopySwitchesFrom(browser_command_line, kMoreCrOSSwitchNames,
-                                   std::size(kMoreCrOSSwitchNames));
+    command_line->CopySwitchesFrom(browser_command_line, kMoreCrOSSwitchNames);
 #endif
   } else if (process_type == switches::kGpuProcess) {
     // If --ignore-gpu-blocklist is passed in, don't send in crash reports
@@ -3008,8 +3001,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     static const char* const kSwitchNames[] = {
         crash_reporter::switches::kCrashLoopBefore,
     };
-    command_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
-                                   std::size(kSwitchNames));
+    command_line->CopySwitchesFrom(browser_command_line, kSwitchNames);
   }
 #endif
 
@@ -5423,8 +5415,7 @@ void ChromeContentBrowserClient::MaybeCopyDisableWebRtcEncryptionSwitch(
     static const char* const kWebRtcDevSwitchNames[] = {
         switches::kDisableWebRtcEncryption,
     };
-    to_command_line->CopySwitchesFrom(from_command_line, kWebRtcDevSwitchNames,
-                                      std::size(kWebRtcDevSwitchNames));
+    to_command_line->CopySwitchesFrom(from_command_line, kWebRtcDevSwitchNames);
   }
 }
 

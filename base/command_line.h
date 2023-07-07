@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -205,6 +206,11 @@ class BASE_EXPORT CommandLine {
 
   // Copy a set of switches (and any values) from another command line.
   // Commonly used when launching a subprocess.
+  // Preferred version.
+  void CopySwitchesFrom(const CommandLine& source,
+                        span<const char* const> switches);
+
+  // Deprecation version of CopySwitchesFrom() above.
   void CopySwitchesFrom(const CommandLine& source,
                         const char* const switches[],
                         size_t count);

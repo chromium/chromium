@@ -1202,8 +1202,7 @@ absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
     const char* const kSwitchNames[] = {
         switches::kUserDataDir,
     };
-    interim_command_line.CopySwitchesFrom(command_line, kSwitchNames,
-                                          std::size(kSwitchNames));
+    interim_command_line.CopySwitchesFrom(command_line, kSwitchNames);
     interim_command_line.AppendSwitch(switches::kDiagnostics);
     interim_command_line.AppendSwitch(switches::kDiagnosticsRecovery);
 

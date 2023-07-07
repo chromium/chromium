@@ -236,8 +236,7 @@ void DeriveCommandLine(const GURL& start_url,
     policy::switches::kDeviceManagementUrl,
     wm::switches::kWindowAnimationsDisabled,
   };
-  command_line->CopySwitchesFrom(base_command_line, kForwardSwitches,
-                                 std::size(kForwardSwitches));
+  command_line->CopySwitchesFrom(base_command_line, kForwardSwitches);
 
   if (start_url.is_valid())
     command_line->AppendArg(start_url.spec());
