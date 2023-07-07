@@ -149,6 +149,14 @@
              HCM. */
           outline: var(--cr-focus-outline-hcm);
         }
+
+        :host-context([chrome-refresh-2023]):host {
+          /* Refresh styles either use color pipeline colors which automatically
+           * provide high-contrast colors in high-contrast mode, or use fallback
+           * vars that have high-contrast fallbacks for critically important
+           * states such as disabled state. */
+          forced-color-adjust: none;
+        }
       }
 
       :host-context([chrome-refresh-2023].focus-outline-visible):host(:focus) {
