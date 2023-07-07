@@ -5,6 +5,7 @@ CPEPrefix: cpe:/a:fontconfig_project:fontconfig:2.14.2
 License: MIT
 License File: src/COPYING
 Security Critical: yes
+Shipped: yes
 
 Description:
 Fontconfig is a library for configuring and customizing font access.
