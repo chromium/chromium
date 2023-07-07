@@ -2,8 +2,9 @@ Name: Accessibility-Test-Framework-for-Android
 URL: https://github.com/google/Accessibility-Test-Framework-for-Android
 Version: 2.1
 License: Apache 2.0
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 Description:
 Library that contains accessibility-related checks for Android View and
 AccessibilityNodeInfo objects.
