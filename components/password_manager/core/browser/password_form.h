@@ -195,6 +195,23 @@ struct PasswordForm {
     kMaxValue = kNegativeSignalSent,
   };
 
+  // Enum describing how PasswordForm was matched for a given FormDigest. This
+  // enum is a bitmask because each PasswordForm can be matched by multiple
+  // sources.
+  enum class MatchType {
+    // Default match type meaning signon_realm of a PasswordForm is identical to
+    // a requested URL.
+    kExact = 0,
+    // signon_realm of a PasswordForm is affiliated with a given URL.
+    // Affiliation information is provided by the affiliation service.
+    kAffiliated = 1 << 1,
+    // signon_realm of a PasswordForm has the same eTLD+1 as a given URL.
+    kPSL = 1 << 2,
+    // signon_realm of a PasswordForm is grouped with a given URL. Grouping
+    // information is provided by the affiliation service.
+    kGrouped = 1 << 3,
+  };
+
   // The primary key of the password record in the logins database. This is only
   // set when the credentials has been read from the login database. Password
   // forms parsed from the web, or manually added in settings don't have this
@@ -402,13 +419,20 @@ struct PasswordForm {
   bool was_parsed_using_autofill_predictions = false;
 
   // If true, this match was found using public suffix matching.
+  // TODO(crbug.com/1428539): Remove after match_type is adopted.
   bool is_public_suffix_match = false;
 
   // If true, this is a credential found using affiliation-based match.
+  // TODO(crbug.com/1428539): Remove after match_type is adopted.
   bool is_affiliation_based_match = false;
 
   // If true, this is a credential found using grouping match.
+  // TODO(crbug.com/1428539): Remove after match_type is adopted.
   bool is_grouped_match = false;
+
+  // Only available when PasswordForm was requested though
+  // PasswordStoreInterface::GetLogins(), empty otherwise.
+  absl::optional<MatchType> match_type;
 
   // The type of the event that was taken as an indication that this form is
   // being or has already been submitted. This field is not persisted and filled
@@ -552,6 +576,18 @@ constexpr PasswordForm::Store operator|(PasswordForm::Store lhs,
                                         PasswordForm::Store rhs) {
   return static_cast<PasswordForm::Store>(static_cast<int>(lhs) |
                                           static_cast<int>(rhs));
+}
+
+constexpr PasswordForm::MatchType operator&(PasswordForm::MatchType lhs,
+                                            PasswordForm::MatchType rhs) {
+  return static_cast<PasswordForm::MatchType>(static_cast<int>(lhs) &
+                                              static_cast<int>(rhs));
+}
+
+constexpr PasswordForm::MatchType operator|(PasswordForm::MatchType lhs,
+                                            PasswordForm::MatchType rhs) {
+  return static_cast<PasswordForm::MatchType>(static_cast<int>(lhs) |
+                                              static_cast<int>(rhs));
 }
 
 }  // namespace password_manager
