@@ -8,6 +8,7 @@ SHA-512: 2cb739121204a04dba868f3ee96bdde00d9c32489976d4d66795cd41d3b1e21a32e14da
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no
+Shipped: yes
 CPEPrefix: unknown
 
 Description:
