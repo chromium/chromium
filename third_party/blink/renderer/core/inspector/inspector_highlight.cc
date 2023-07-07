@@ -1506,8 +1506,8 @@ PhysicalRect TextFragmentRectInRootFrame(
     const LayoutObject* layout_object,
     const LayoutText::TextBoxInfo& text_box) {
   PhysicalRect absolute_coords_text_box_rect =
-      layout_object->LocalToAbsoluteRect(
-          layout_object->FlipForWritingMode(text_box.local_rect));
+      layout_object->LocalToAbsoluteRect(layout_object->FlipForWritingMode(
+          text_box.local_rect.ToLayoutRect()));
   LocalFrameView* local_frame_view = layout_object->GetFrameView();
   return local_frame_view ? local_frame_view->ConvertToRootFrame(
                                 absolute_coords_text_box_rect)

@@ -397,10 +397,8 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
         const unsigned box_length = clamped_end - clamped_start;
 
         // Compute rect of the legacy text box.
-        LayoutRect rect =
-            cursor.CurrentLocalRect(clamped_start, clamped_end).ToLayoutRect();
-        rect.MoveBy(
-            cursor.Current().OffsetInContainerFragment().ToLayoutPoint());
+        PhysicalRect rect = cursor.CurrentLocalRect(clamped_start, clamped_end);
+        rect.offset += cursor.Current().OffsetInContainerFragment();
 
         // Compute start of the legacy text box.
         if (unit.AssociatedNode()) {

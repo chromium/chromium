@@ -202,7 +202,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   // Compute the rect and offset of text boxes for this LayoutText.
   struct TextBoxInfo {
-    LayoutRect local_rect;
+    PhysicalRect local_rect;
     unsigned dom_start_offset;
     unsigned dom_length;
   };
