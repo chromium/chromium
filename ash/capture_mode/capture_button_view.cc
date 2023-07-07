@@ -219,6 +219,8 @@ void CaptureButtonView::SetupButton(views::Button* button) {
       button, base::BindRepeating(&CaptureButtonView::CreateFocusRingPath,
                                   base::Unretained(this), button,
                                   /*use_zero_insets=*/false));
+
+  StyleUtil::SetUpInkDropForButton(button);
 }
 
 std::unique_ptr<views::HighlightPathGenerator>
