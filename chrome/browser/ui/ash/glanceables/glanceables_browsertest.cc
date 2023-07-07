@@ -7,7 +7,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/glanceables_controller.h"
+#include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shell.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -29,6 +32,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -109,4 +113,25 @@ IN_PROC_BROWSER_TEST_F(GlanceablesBrowserTest, ShowsAndHide) {
 
   // Glanceables should close because a window opened.
   EXPECT_FALSE(glanceables_controller()->IsShowing());
+}
+
+class GlanceablesV2BrowserTest : public InProcessBrowserTest {
+ public:
+  ash::GlanceablesV2Controller* glanceables_controller() {
+    return ash::Shell::Get()->glanceables_v2_controller();
+  }
+
+ private:
+  base::test::ScopedFeatureList features_{ash::features::kGlanceablesV2};
+};
+
+IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, OpensClassroomUrlInBrowser) {
+  const auto classroom_url = GURL("https://classroom.google.com/u/0/h");
+
+  ASSERT_TRUE(glanceables_controller()->GetClassroomClient());
+
+  glanceables_controller()->GetClassroomClient()->OpenUrl(classroom_url);
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      classroom_url);
 }

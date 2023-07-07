@@ -19,9 +19,10 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/singleton_tabs.h"
 #include "google_apis/classroom/classroom_api_course_work_response_types.h"
 #include "google_apis/classroom/classroom_api_courses_response_types.h"
 #include "google_apis/classroom/classroom_api_list_course_work_request.h"
@@ -143,9 +144,11 @@ GroupStudentSubmissionsByCourseWorkId(
 }  // namespace
 
 GlanceablesClassroomClientImpl::GlanceablesClassroomClientImpl(
+    Profile* profile,
     const GlanceablesClassroomClientImpl::CreateRequestSenderCallback&
         create_request_sender_callback)
-    : create_request_sender_callback_(create_request_sender_callback) {}
+    : profile_(profile),
+      create_request_sender_callback_(create_request_sender_callback) {}
 
 GlanceablesClassroomClientImpl::~GlanceablesClassroomClientImpl() = default;
 
@@ -310,7 +313,12 @@ void GlanceablesClassroomClientImpl::GetGradedTeacherAssignments(
 }
 
 void GlanceablesClassroomClientImpl::OpenUrl(const GURL& url) const {
-  NOTIMPLEMENTED() << " " << url;
+  if (!url.is_valid()) {
+    return;
+  }
+
+  // TODO(b/283370862): consider opening PWA if installed.
+  ShowSingletonTabOverwritingNTP(profile_, url);
 }
 
 void GlanceablesClassroomClientImpl::FetchStudentCourses(

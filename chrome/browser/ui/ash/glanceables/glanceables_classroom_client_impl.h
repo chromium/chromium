@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "google_apis/common/api_error_codes.h"
@@ -21,6 +22,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
+class Profile;
 
 namespace google_apis::classroom {
 class Courses;
@@ -44,7 +46,8 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
           const std::vector<std::string>& scopes,
           const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)>;
 
-  explicit GlanceablesClassroomClientImpl(
+  GlanceablesClassroomClientImpl(
+      Profile* profile,
       const CreateRequestSenderCallback& create_request_sender_callback);
   GlanceablesClassroomClientImpl(const GlanceablesClassroomClientImpl&) =
       delete;
@@ -255,6 +258,9 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
 
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
+
+  // The profile for which this client was created.
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Callback passed from `GlanceablesKeyedService` that creates
   // `request_sender_`.

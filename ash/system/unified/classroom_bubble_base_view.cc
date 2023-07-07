@@ -98,10 +98,6 @@ void ClassroomBubbleBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void ClassroomBubbleBaseView::OpenUrl(const GURL& url) const {
-  if (!url.is_valid()) {
-    return;
-  }
-
   const auto* const client =
       Shell::Get()->glanceables_v2_controller()->GetClassroomClient();
   if (client) {

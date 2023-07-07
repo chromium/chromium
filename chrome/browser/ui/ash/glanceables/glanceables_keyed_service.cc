@@ -88,7 +88,7 @@ void GlanceablesKeyedService::CreateClients() {
       &GlanceablesKeyedService::CreateRequestSenderForClient,
       base::Unretained(this));
   classroom_client_ = std::make_unique<GlanceablesClassroomClientImpl>(
-      create_request_sender_callback);
+      profile_, create_request_sender_callback);
   tasks_client_ = std::make_unique<GlanceablesTasksClientImpl>(
       create_request_sender_callback);
 
