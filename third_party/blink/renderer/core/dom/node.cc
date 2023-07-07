@@ -2248,13 +2248,11 @@ Node::InsertionNotificationRequest Node::InsertedInto(
          IsContainerNode());
   if (insertion_point.isConnected()) {
     SetFlag(kIsConnectedFlag);
-    // TODO(crbug.com/1453291) This would need to be outside the isConnected
-    // check when DocumentFragments are supported.
-    InvalidateDOMParts();
 #if DCHECK_IS_ON()
     insertion_point.GetDocument().IncrementNodeCount();
 #endif
   }
+  InvalidateDOMParts();
   if (ParentOrShadowHostNode()->IsInShadowTree())
     SetFlag(kIsInShadowTreeFlag);
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
@@ -2272,13 +2270,11 @@ void Node::RemovedFrom(ContainerNode& insertion_point) {
     ClearNeedsStyleInvalidation();
     ClearChildNeedsStyleInvalidation();
     ClearFlag(kIsConnectedFlag);
-    // TODO(crbug.com/1453291) This would need to be outside the isConnected
-    // check when DocumentFragments are supported.
-    InvalidateDOMParts();
 #if DCHECK_IS_ON()
     insertion_point.GetDocument().DecrementNodeCount();
 #endif
   }
+  InvalidateDOMParts();
   if (IsInShadowTree() && !ContainingTreeScope().RootNode().IsShadowRoot())
     ClearFlag(kIsInShadowTreeFlag);
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {

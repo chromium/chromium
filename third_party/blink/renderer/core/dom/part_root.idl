@@ -8,6 +8,7 @@
 [RuntimeEnabled=DOMPartsAPI,Exposed=Window]
 interface PartRoot {
   FrozenArray<Part> getParts();
-  // TODO(crbug.com/1453291) Document what this does.
+  // This clones the PartRoot, along with the entire RootContainer tree it
+  // points to, and returns the cloned PartRoot.
   PartRoot clone();
 };
