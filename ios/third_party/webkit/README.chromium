@@ -3,8 +3,9 @@ Short Name: webkit
 URL: git://git.webkit.org/WebKit.git
 Version: 0
 License: BSD
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 The WebKit rendering framework.  Used by iOS developers who want to run Chromium
