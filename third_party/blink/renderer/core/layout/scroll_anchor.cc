@@ -85,7 +85,8 @@ static Corner CornerToAnchor(const ScrollableArea* scroller) {
   return Corner::kTopLeft;
 }
 
-static LayoutPoint CornerPointOfRect(LayoutRect rect, Corner which_corner) {
+static PhysicalOffset CornerPointOfRect(const PhysicalRect& rect,
+                                        Corner which_corner) {
   switch (which_corner) {
     case Corner::kTopLeft:
       return rect.MinXMinYCorner();
@@ -93,12 +94,12 @@ static LayoutPoint CornerPointOfRect(LayoutRect rect, Corner which_corner) {
       return rect.MaxXMinYCorner();
   }
   NOTREACHED();
-  return LayoutPoint();
+  return PhysicalOffset();
 }
 
 // Bounds of the LayoutObject relative to the scroller's visible content rect.
-static LayoutRect RelativeBounds(const LayoutObject* layout_object,
-                                 const ScrollableArea* scroller) {
+static PhysicalRect RelativeBounds(const LayoutObject* layout_object,
+                                   const ScrollableArea* scroller) {
   PhysicalRect local_bounds;
   if (const auto* box = DynamicTo<LayoutBox>(layout_object)) {
     local_bounds = box->PhysicalBorderBoxRect();
@@ -121,22 +122,22 @@ static LayoutRect RelativeBounds(const LayoutObject* layout_object,
     NOTREACHED();
   }
 
-  LayoutRect relative_bounds =
-      LayoutRect(scroller
-                     ->LocalToVisibleContentQuad(
-                         gfx::QuadF(gfx::RectF(local_bounds)), layout_object)
-                     .BoundingBox());
+  gfx::RectF relative_bounds =
+      scroller
+          ->LocalToVisibleContentQuad(gfx::QuadF(gfx::RectF(local_bounds)),
+                                      layout_object)
+          .BoundingBox();
 
-  return relative_bounds;
+  return PhysicalRect::FastAndLossyFromRectF(relative_bounds);
 }
 
 static LayoutPoint ComputeRelativeOffset(const LayoutObject* layout_object,
                                          const ScrollableArea* scroller,
                                          Corner corner) {
-  LayoutPoint offset =
+  PhysicalOffset offset =
       CornerPointOfRect(RelativeBounds(layout_object, scroller), corner);
   const LayoutBox* scroller_box = ScrollerLayoutBox(scroller);
-  return scroller_box->FlipForWritingMode(PhysicalOffset(offset));
+  return scroller_box->FlipForWritingMode(offset);
 }
 
 static bool CandidateMayMoveWithScroller(const LayoutObject* candidate,
@@ -283,9 +284,9 @@ static const String ComputeUniqueSelector(Node* anchor_node) {
   return builder.ToString();
 }
 
-static LayoutRect GetVisibleRect(ScrollableArea* scroller) {
+static PhysicalRect GetVisibleRect(ScrollableArea* scroller) {
   auto visible_rect =
-      ScrollerLayoutBox(scroller)->OverflowClipRect(LayoutPoint());
+      ScrollerLayoutBox(scroller)->OverflowClipRect(PhysicalOffset());
 
   const ComputedStyle* style = ScrollerLayoutBox(scroller)->Style();
   visible_rect.ContractEdges(
@@ -319,8 +320,8 @@ ScrollAnchor::ExamineResult ScrollAnchor::Examine(
   if (!CandidateMayMoveWithScroller(candidate, scroller_))
     return ExamineResult(kSkip);
 
-  LayoutRect candidate_rect = RelativeBounds(candidate, scroller_);
-  LayoutRect visible_rect = GetVisibleRect(scroller_);
+  PhysicalRect candidate_rect = RelativeBounds(candidate, scroller_);
+  PhysicalRect visible_rect = GetVisibleRect(scroller_);
 
   bool occupies_space =
       candidate_rect.Width() > 0 && candidate_rect.Height() > 0;
@@ -587,7 +588,7 @@ gfx::Vector2d ScrollAnchor::ComputeAdjustment() const {
                             anchor_object_, scroller_, corner_)) -
                         ToRoundedVector2d(saved_relative_offset_);
 
-  LayoutRect anchor_rect = RelativeBounds(anchor_object_, scroller_);
+  PhysicalRect anchor_rect = RelativeBounds(anchor_object_, scroller_);
   TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
                       "ComputeAdjustment", "anchor_object_",
                       anchor_object_->DebugName());
@@ -605,21 +606,22 @@ gfx::Vector2d ScrollAnchor::ComputeAdjustment() const {
     // See the effect delta would have on the anchor rect.
     // If the anchor is now off-screen (in block direction) then make sure it's
     // just at the edge.
-    anchor_rect.Move(-delta.x(), -delta.y());
+    anchor_rect.Move(-PhysicalOffset(delta));
     if (scroller_box->IsHorizontalWritingMode()) {
-      if (anchor_rect.MaxY() < 0)
-        delta.set_y(delta.y() + anchor_rect.MaxY().ToInt());
+      if (anchor_rect.Bottom() < 0) {
+        delta.set_y(delta.y() + anchor_rect.Bottom().ToInt());
+      }
     } else {
       // For the flipped blocks writing mode, we need to adjust the offset to
       // align the opposite edge of the block (MaxX edge instead of X edge).
       if (scroller_box->HasFlippedBlocksWritingMode()) {
         auto visible_rect = GetVisibleRect(scroller_);
-        if (anchor_rect.X() > visible_rect.MaxX()) {
+        if (anchor_rect.X() > visible_rect.Right()) {
           delta.set_x(delta.x() -
-                      (anchor_rect.X().ToInt() - visible_rect.MaxX().ToInt()));
+                      (anchor_rect.X().ToInt() - visible_rect.Right().ToInt()));
         }
-      } else if (anchor_rect.MaxX() < 0) {
-        delta.set_x(delta.x() + anchor_rect.MaxX().ToInt());
+      } else if (anchor_rect.Right() < 0) {
+        delta.set_x(delta.x() + anchor_rect.Right().ToInt());
       }
     }
   }
