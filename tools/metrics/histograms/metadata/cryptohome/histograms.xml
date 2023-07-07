@@ -740,6 +740,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.TimeToRelabelSELinuxContexts" units="ms"
+    expires_after="2023-12-10">
+  <owner>betuls@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The amount of time for ChromeOS cryptohome to relabel SELinux contexts for
+    all files in the user cryptohome.
+  </summary>
+</histogram>
+
+<histogram name="Cryptohome.TimeToSetupVault" units="ms"
+    expires_after="2023-12-10">
+  <owner>sarthakkukreti@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The amount of time for ChromeOS cryptohome to set up the encrypted user
+    vault for mount.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.TimeToUSSLoadPersisted" units="ms"
     expires_after="2023-12-24">
   <owner>thomascedeno@google.com</owner>
