@@ -528,8 +528,16 @@ class PageContentAnnotationsServiceRemoteMetadataBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(1463015): Fails on macOS 12
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_StoresAllTheThingsFromRemoteService \
+  DISABLED_StoresAllTheThingsFromRemoteService
+#else
+#define MAYBE_StoresAllTheThingsFromRemoteService \
+  StoresAllTheThingsFromRemoteService
+#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
-                       StoresAllTheThingsFromRemoteService) {
+                       MAYBE_StoresAllTheThingsFromRemoteService) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
@@ -609,8 +617,16 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
           history::VisitContentModelAnnotations::Category("category1", 85)));
 }
 
+// TODO(1463015): Fails on macOS 12
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_StoresAlternateTitleFromRemoteService \
+  DISABLED_StoresAlternateTitleFromRemoteService
+#else
+#define MAYBE_StoresAlternateTitleFromRemoteService \
+  StoresAlternateTitleFromRemoteService
+#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
-                       StoresAlternateTitleFromRemoteService) {
+                       MAYBE_StoresAlternateTitleFromRemoteService) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
