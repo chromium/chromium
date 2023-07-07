@@ -773,13 +773,6 @@ class CORE_EXPORT Node : public EventTargetWithInlineData {
   inline const ComputedStyle& ComputedStyleRef() const;
   bool ShouldSkipMarkingStyleDirty() const;
 
-  const ComputedStyle* EnsureComputedStyle(
-      PseudoId pseudo_element_specifier = kPseudoIdNone,
-      const AtomicString& pseudo_argument = g_null_atom) {
-    return VirtualEnsureComputedStyle(pseudo_element_specifier,
-                                      pseudo_argument);
-  }
-
   // ---------------------------------------------------------------------------
   // Notification of document structure changes (see container_node.h for more
   // notification methods)
@@ -1171,10 +1164,6 @@ class CORE_EXPORT Node : public EventTargetWithInlineData {
   void SetStyleChange(StyleChangeType change_type) {
     node_flags_ = (node_flags_ & ~kStyleChangeMask) | change_type;
   }
-
-  virtual const ComputedStyle* VirtualEnsureComputedStyle(
-      PseudoId = kPseudoIdNone,
-      const AtomicString& pseudo_argument = g_null_atom);
 
   // Used exclusively by |EnsureRareData|.
   NodeRareData& CreateRareData();
