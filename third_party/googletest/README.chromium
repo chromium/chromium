@@ -3,7 +3,8 @@ Short Name: googletest
 URL: https://github.com/google/googletest.git
 Version: unknown
 License: BSD
-License File: NOT_SHIPPED
+License File: src/LICENSE
+Shipped: no
 Security critical: no
 
 Google Test is imported as-is, to facilitate version bumping. However, the
