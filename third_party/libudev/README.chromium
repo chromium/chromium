@@ -2,7 +2,9 @@ Name: libudev
 URL: http://www.freedesktop.org/wiki/Software/systemd/
 Version: Varies
 Security Critical: no
+Shipped: yes
 License: LGPL 2.1
+License File: LICENSE
 
 Description:
 Just the headers from libudev0 and libudev1.
