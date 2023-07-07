@@ -11,7 +11,6 @@
 #include <shlobj.h>
 #include <windows.h>
 #include <wrl/client.h>
-#include <wtsapi32.h>
 
 #include <algorithm>
 #include <cstdlib>
@@ -209,75 +208,6 @@ HRESULT HRESULTFromLastError() {
   return (error_code != NO_ERROR) ? HRESULT_FROM_WIN32(error_code) : E_FAIL;
 }
 
-HMODULE GetModuleHandleFromAddress(void* address) {
-  MEMORY_BASIC_INFORMATION mbi = {0};
-  size_t result = ::VirtualQuery(address, &mbi, sizeof(mbi));
-  CHECK_EQ(result, sizeof(mbi));
-  return static_cast<HMODULE>(mbi.AllocationBase);
-}
-
-HMODULE GetCurrentModuleHandle() {
-  return GetModuleHandleFromAddress(
-      reinterpret_cast<void*>(&GetCurrentModuleHandle));
-}
-
-// The event name saved to the environment variable does not contain the
-// decoration added by GetNamedObjectAttributes.
-HRESULT CreateUniqueEventInEnvironment(const std::wstring& var_name,
-                                       UpdaterScope scope,
-                                       HANDLE* unique_event) {
-  CHECK(unique_event);
-
-  const std::wstring event_name =
-      base::ASCIIToWide(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  NamedObjectAttributes attr =
-      GetNamedObjectAttributes(event_name.c_str(), scope);
-
-  HRESULT hr = CreateEvent(&attr, unique_event);
-  if (FAILED(hr))
-    return hr;
-
-  if (!::SetEnvironmentVariable(var_name.c_str(), event_name.c_str()))
-    return HRESULTFromLastError();
-
-  return S_OK;
-}
-
-HRESULT OpenUniqueEventFromEnvironment(const std::wstring& var_name,
-                                       UpdaterScope scope,
-                                       HANDLE* unique_event) {
-  CHECK(unique_event);
-
-  wchar_t event_name[MAX_PATH] = {0};
-  if (!::GetEnvironmentVariable(var_name.c_str(), event_name,
-                                std::size(event_name))) {
-    return HRESULTFromLastError();
-  }
-
-  NamedObjectAttributes attr = GetNamedObjectAttributes(event_name, scope);
-  *unique_event = ::OpenEvent(EVENT_ALL_ACCESS, false, attr.name.c_str());
-
-  if (!*unique_event)
-    return HRESULTFromLastError();
-
-  return S_OK;
-}
-
-HRESULT CreateEvent(NamedObjectAttributes* event_attr, HANDLE* event_handle) {
-  CHECK(event_handle);
-  CHECK(event_attr);
-  CHECK(!event_attr->name.empty());
-  *event_handle = ::CreateEvent(&event_attr->sa,
-                                true,   // manual reset
-                                false,  // not signaled
-                                event_attr->name.c_str());
-
-  if (!*event_handle)
-    return HRESULTFromLastError();
-
-  return S_OK;
-}
-
 NamedObjectAttributes GetNamedObjectAttributes(const wchar_t* base_name,
                                                UpdaterScope scope) {
   CHECK(base_name);
@@ -419,33 +349,6 @@ int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
   CHECK_LE(downloaded_bytes, total_bytes);
   return 100 * std::clamp(static_cast<double>(downloaded_bytes) / total_bytes,
                            0.0, 1.0);
-}
-
-base::win::ScopedHandle GetUserTokenFromCurrentSessionId() {
-  base::win::ScopedHandle token_handle;
-
-  DWORD bytes_returned = 0;
-  DWORD* session_id_ptr = nullptr;
-  if (!::WTSQuerySessionInformation(
-          WTS_CURRENT_SERVER_HANDLE, WTS_CURRENT_SESSION, WTSSessionId,
-          reinterpret_cast<LPTSTR*>(&session_id_ptr), &bytes_returned)) {
-    PLOG(ERROR) << "WTSQuerySessionInformation failed.";
-    return token_handle;
-  }
-
-  CHECK_EQ(bytes_returned, sizeof(*session_id_ptr));
-  DWORD session_id = *session_id_ptr;
-  ::WTSFreeMemory(session_id_ptr);
-  VLOG(1) << "::WTSQuerySessionInformation session id: " << session_id;
-
-  HANDLE token_handle_raw = nullptr;
-  if (!::WTSQueryUserToken(session_id, &token_handle_raw)) {
-    PLOG(ERROR) << "WTSQueryUserToken failed";
-    return token_handle;
-  }
-
-  token_handle.Set(token_handle_raw);
-  return token_handle;
 }
 
 HResultOr<bool> IsTokenAdmin(HANDLE token) {

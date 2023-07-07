@@ -286,8 +286,6 @@ if (is_win || is_mac || is_linux) {
         "win/ui/ui_constants.cc",
         "win/ui/ui_constants.h",
         "win/ui/ui_ctls.h",
-        "win/ui/ui_displayed_event.cc",
-        "win/ui/ui_displayed_event.h",
         "win/ui/ui_util.cc",
         "win/ui/ui_util.h",
         "win/ui/yes_no_dialog.cc",

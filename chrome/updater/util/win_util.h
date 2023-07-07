@@ -149,22 +149,6 @@ bool IsProcessRunning(const wchar_t* executable);
 // Returns true if every running processes are stopped.
 bool WaitForProcessesStopped(const wchar_t* executable);
 
-// Gets the handle to the module containing the given executing address.
-HMODULE GetModuleHandleFromAddress(void* address);
-
-// Gets the handle to the currently executing module.
-HMODULE GetCurrentModuleHandle();
-
-// Creates a unique event name and stores it in the specified environment var.
-HRESULT CreateUniqueEventInEnvironment(const std::wstring& var_name,
-                                       UpdaterScope scope,
-                                       HANDLE* unique_event);
-
-// Obtains a unique event name from specified environment var and opens it.
-HRESULT OpenUniqueEventFromEnvironment(const std::wstring& var_name,
-                                       UpdaterScope scope,
-                                       HANDLE* unique_event);
-
 struct NamedObjectAttributes {
   NamedObjectAttributes(const std::wstring& name, const CSecurityDesc& sd);
   NamedObjectAttributes(const NamedObjectAttributes& other) = delete;
@@ -186,9 +170,6 @@ struct NamedObjectAttributes {
 // object first. The default DACL for SYSTEM will not allow Admins access.
 NamedObjectAttributes GetNamedObjectAttributes(const wchar_t* base_name,
                                                UpdaterScope scope);
-
-// Creates an event based on the provided attributes.
-HRESULT CreateEvent(NamedObjectAttributes* event_attr, HANDLE* event_handle);
 
 // Gets the security descriptor with the default DACL for the current process
 // user. The owner is the current user, the group is the current primary group.
@@ -239,9 +220,6 @@ bool SetRegistryKey(HKEY root,
 // Returns a value in the [0, 100] range or -1 if the progress could not
 // be computed.
 int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes);
-
-// Returns a logged on user token handle from the current session.
-base::win::ScopedHandle GetUserTokenFromCurrentSessionId();
 
 // Returns `true` if the token is an elevated administrator. If
 // `token` is `NULL`, the current thread token is used.
