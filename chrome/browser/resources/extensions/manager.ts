@@ -77,7 +77,7 @@ function compareExtensions(
 
 declare global {
   interface HTMLElementEventMap {
-    'load-error': CustomEvent<chrome.developerPrivate.LoadError>;
+    'load-error': CustomEvent<Error|chrome.developerPrivate.LoadError>;
   }
 }
 
@@ -559,7 +559,8 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
     }
   }
 
-  private onLoadError_(e: CustomEvent<chrome.developerPrivate.LoadError>) {
+  private onLoadError_(
+      e: CustomEvent<Error|chrome.developerPrivate.LoadError>) {
     this.showLoadErrorDialog_ = true;
     setTimeout(() => {
       const dialog = this.shadowRoot!.querySelector('extensions-load-error')!;

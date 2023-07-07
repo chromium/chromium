@@ -16,13 +16,13 @@
   <div slot="title">$i18n{loadErrorHeading}</div>
   <div slot="body">
     <div id="info">
-      <div id="file" class="description-row">
+      <div id="file" class="description-row" hidden$="[[!file_]]">
         <span class="row-label">$i18n{loadErrorFileLabel}</span>
-        <span class="row-value">[[loadError.path]]</span>
+        <span class="row-value">[[file_]]</span>
       </div>
       <div id="error" class="description-row">
         <span class="row-label">$i18n{loadErrorErrorLabel}</span>
-        <span class="row-value">[[loadError.error]]</span>
+        <span class="row-value">[[error_]]</span>
       </div>
     </div>
     <extensions-code-section id="code"

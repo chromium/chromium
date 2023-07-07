@@ -385,6 +385,14 @@ TEST_F('CrExtensionsLoadErrorTest', 'CodeSection', function() {
   this.runMochaTest(extension_load_error_tests.TestNames.CodeSection);
 });
 
+TEST_F('CrExtensionsLoadErrorTest', 'PathWithoutSource', function() {
+  this.runMochaTest(extension_load_error_tests.TestNames.PathWithoutSource);
+});
+
+TEST_F('CrExtensionsLoadErrorTest', 'GenericError', function() {
+  this.runMochaTest(extension_load_error_tests.TestNames.GenericError);
+});
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Manager Tests
 

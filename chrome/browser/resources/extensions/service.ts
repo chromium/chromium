@@ -265,10 +265,10 @@ export class Service implements ServiceInterface {
     return this.loadUnpackedHelper_();
   }
 
-  retryLoadUnpacked(retryGuid: string): Promise<boolean> {
+  retryLoadUnpacked(retryGuid?: string): Promise<boolean> {
     // Attempt to load an unpacked extension, optionally as another attempt at
     // a previously-specified load.
-    return this.loadUnpackedHelper_({retryGuid: retryGuid});
+    return this.loadUnpackedHelper_({retryGuid});
   }
 
   choosePackRootDirectory(): Promise<string> {
