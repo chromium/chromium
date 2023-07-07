@@ -5,5 +5,6 @@ Version: d516e52204dc9407899b6e37b662ade7cc76e91b
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 Description:
 Nearby connections library
