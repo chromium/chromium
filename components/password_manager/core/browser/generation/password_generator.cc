@@ -14,6 +14,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 
 namespace autofill {
 
@@ -22,6 +23,10 @@ namespace autofill {
 // crowd-sourcing server. (The server predicts password lengths only if the
 // prediction is smaller than the default.)
 const uint32_t kDefaultPasswordLength = 15;
+
+// The minimum length to chunk password in kChunkPassword variation of
+// password_manager::features::PasswordGenerationExperiment.
+const uint32_t kMinLengthToChunkPassword = 9;
 
 namespace {
 
@@ -83,6 +88,16 @@ bool IsDifficultToRead(const std::u16string& password) {
   return base::ranges::adjacent_find(password, [](auto a, auto b) {
            return a == b && (a == '-' || a == '_');
          }) != password.end();
+}
+
+bool ChunkingPasswordExperimentEnabled() {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+  return password_manager::features::kPasswordGenerationExperimentVariationParam
+             .Get() == password_manager::features::PasswordGenerationVariation::
+                           kChunkPassword;
+#else
+  return false;
+#endif
 }
 
 // Generates a password according to |spec| and tries to maximize the entropy
@@ -201,6 +216,40 @@ std::u16string GenerateMaxEntropyPassword(PasswordRequirementsSpec spec) {
   return password;
 }
 
+// Generates a max entropy password with a dash symbol every 4th character by
+// modifying `spec` in the following way:
+// * max_length() is reduced to make space for dashes,
+// * symbols() are removed to not conflict visually with the added dashes.
+//
+// If the modified `spec` contains all values for the required fields, then we
+// insert dash every 4th character. Otherwise, the password using default spec
+// is returned.
+std::u16string GenerateMaxEntropyChunkedPassword(
+    PasswordRequirementsSpec spec) {
+  // Disallow symbols so they do not conflict visually with the added dashes.
+  PasswordRequirementsSpec modified_spec = spec;
+  modified_spec.mutable_symbols()->set_min(0);
+  modified_spec.mutable_symbols()->set_max(0);
+  modified_spec.mutable_symbols()->mutable_character_set()->clear();
+  // Generate max entropy password without dashes.
+  int number_of_dashes = std::ceil(modified_spec.max_length() / 5.0) - 1;
+  modified_spec.set_max_length(modified_spec.max_length() - number_of_dashes);
+
+  std::u16string password =
+      GenerateMaxEntropyPassword(std::move(modified_spec));
+
+  // Catch cases where the modified spec is infeasible.
+  if (password.empty()) {
+    return GenerateMaxEntropyPassword(std::move(spec));
+  }
+
+  // Add dash every 4th character.
+  for (int i = 0; i < number_of_dashes; i++) {
+    password.insert((i + 1) * 4 + i, u"-");
+  }
+  return password;
+}
+
 }  // namespace
 
 void ConditionallyAddNumericDigitsToAlphabet(PasswordRequirementsSpec* spec) {
@@ -218,6 +267,15 @@ std::u16string GeneratePassword(const PasswordRequirementsSpec& spec) {
 
   // For passwords without letters, add the '0' and '1' to the numeric alphabet.
   ConditionallyAddNumericDigitsToAlphabet(&actual_spec);
+
+  // For specs that allow dash symbol and can be longer than 8 chars generate a
+  // chunked password when `kChunkPassword` variaton of
+  // kPasswordGenerationExperiment is enabled.
+  if (actual_spec.symbols().character_set().find('-') != std::string::npos &&
+      actual_spec.max_length() >= kMinLengthToChunkPassword &&
+      ChunkingPasswordExperimentEnabled()) {
+    return GenerateMaxEntropyChunkedPassword(std::move(actual_spec));
+  }
 
   std::u16string password = GenerateMaxEntropyPassword(std::move(actual_spec));
 

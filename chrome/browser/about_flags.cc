@@ -3726,6 +3726,11 @@ const FeatureEntry::FeatureParam kPasswordGenerationEditPassword[] = {
          .name,
      password_manager::features::kPasswordGenerationExperimentVariationOption[5]
          .name}};
+const FeatureEntry::FeatureParam kPasswordGenerationChunkPassword[] = {
+    {password_manager::features::kPasswordGenerationExperimentVariationParam
+         .name,
+     password_manager::features::kPasswordGenerationExperimentVariationOption[6]
+         .name}};
 
 const FeatureEntry::FeatureVariation kPasswordGenerationExperimentVariations[] =
     {
@@ -3741,6 +3746,8 @@ const FeatureEntry::FeatureVariation kPasswordGenerationExperimentVariations[] =
          std::size(kPasswordGenerationCrossDevice), nullptr},
         {"Edit password", kPasswordGenerationEditPassword,
          std::size(kPasswordGenerationEditPassword), nullptr},
+        {"Chunk password", kPasswordGenerationChunkPassword,
+         std::size(kPasswordGenerationChunkPassword), nullptr},
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 

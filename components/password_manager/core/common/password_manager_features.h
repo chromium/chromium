@@ -107,6 +107,8 @@ enum class PasswordGenerationVariation {
   kCrossDevice = 5,
   // Adds a row for switching to editing the suggested password directly.
   kEditPassword = 6,
+  // Adds chunking generated passwords into smaller readable parts.
+  kChunkPassword = 7,
 };
 
 inline constexpr base::FeatureParam<PasswordGenerationVariation>::Option
@@ -117,6 +119,7 @@ inline constexpr base::FeatureParam<PasswordGenerationVariation>::Option
         {PasswordGenerationVariation::kConvenience, "convenience"},
         {PasswordGenerationVariation::kCrossDevice, "cross_device"},
         {PasswordGenerationVariation::kEditPassword, "edit_password"},
+        {PasswordGenerationVariation::kChunkPassword, "chunk_password"},
 };
 
 inline constexpr base::FeatureParam<PasswordGenerationVariation>

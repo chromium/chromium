@@ -469,7 +469,10 @@ static_library("password_generator") {
     "generation/password_generator.h",
   ]
   public_deps = [ "//components/autofill/core/browser/proto" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/password_manager/core/common:features",
+  ]
 }
 
 if (is_android) {
