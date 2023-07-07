@@ -78,26 +78,25 @@ class OptimizationGuideKeyedService
   ~OptimizationGuideKeyedService() override;
 
   // optimization_guide::NewOptimizationGuideDecider implementation:
-  // WARNING: This API is not quite ready for general use. Use
-  // CanApplyOptimizationAsync or CanApplyOptimization using NavigationHandle
-  // instead.
-  void CanApplyOptimization(
-      const GURL& url,
-      optimization_guide::proto::OptimizationType optimization_type,
-      optimization_guide::OptimizationGuideDecisionCallback callback) override;
-
-  // optimization_guide::OptimizationGuideDecider implementation:
   void RegisterOptimizationTypes(
       const std::vector<optimization_guide::proto::OptimizationType>&
           optimization_types) override;
-  void CanApplyOptimizationAsync(
-      content::NavigationHandle* navigation_handle,
+  void CanApplyOptimization(
+      const GURL& url,
       optimization_guide::proto::OptimizationType optimization_type,
       optimization_guide::OptimizationGuideDecisionCallback callback) override;
   optimization_guide::OptimizationGuideDecision CanApplyOptimization(
       const GURL& url,
       optimization_guide::proto::OptimizationType optimization_type,
       optimization_guide::OptimizationMetadata* optimization_metadata) override;
+
+  // optimization_guide::OptimizationGuideDecider implementation:
+  // DEPRECATED. Should use |CanApplyOptimization| with void return type
+  // instead.
+  void CanApplyOptimizationAsync(
+      content::NavigationHandle* navigation_handle,
+      optimization_guide::proto::OptimizationType optimization_type,
+      optimization_guide::OptimizationGuideDecisionCallback callback) override;
 
   // optimization_guide::OptimizationGuideModelProvider implementation:
   void AddObserverForOptimizationTargetModel(
@@ -110,7 +109,7 @@ class OptimizationGuideKeyedService
 
   // Adds hints for a URL with provided metadata to the optimization guide.
   // For testing purposes only. This will flush any callbacks for |url| that
-  // were registered via |CanApplyOptimizationAsync|. If no applicable callbacks
+  // were registered via |CanApplyOptimization|. If no applicable callbacks
   // were registered, this will just add the hint for later use.
   void AddHintForTesting(
       const GURL& url,
@@ -178,7 +177,7 @@ class OptimizationGuideKeyedService
   // ProfileObserver implementation:
   void OnProfileInitializationComplete(Profile* profile) override;
 
-  // optimization_guide::OptimizationGuideDecider implementation:
+  // optimization_guide::NewOptimizationGuideDecider implementation:
   void CanApplyOptimizationOnDemand(
       const std::vector<GURL>& urls,
       const base::flat_set<optimization_guide::proto::OptimizationType>&

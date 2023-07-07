@@ -64,9 +64,9 @@ class OptimizationGuideConsumerWebContentsObserver
       OptimizationGuideKeyedService* service =
           OptimizationGuideKeyedServiceFactory::GetForProfile(
               Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-      service->CanApplyOptimizationAsync(navigation_handle,
-                                         optimization_guide::proto::NOSCRIPT,
-                                         std::move(callback_));
+      service->CanApplyOptimization(navigation_handle->GetURL(),
+                                    optimization_guide::proto::NOSCRIPT,
+                                    std::move(callback_));
     }
   }
 

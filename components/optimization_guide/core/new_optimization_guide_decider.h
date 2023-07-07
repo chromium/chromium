@@ -25,12 +25,6 @@ class ImageService;
 
 namespace optimization_guide {
 
-// WARNING: This class is not quite ready for use yet -- use
-// OptimizationGuideDecider instead.
-//
-// This class is eventually intended to replace the OptimizationGuideDecider
-// as an interface that can be used in the "core" directory of other components
-// (lacking any platform-sepcific dependencies).
 class NewOptimizationGuideDecider {
  public:
   // Registers the optimization types that intend to be queried during the
