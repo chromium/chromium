@@ -3,9 +3,10 @@ Short Name: dagger-spi
 URL: https://github.com/google/dagger
 Version: 2.30
 License: Apache 2.0
-License File: NOT_SHIPPED
+License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no
+Shipped: no
 
 Description:
 A fast dependency injector for Android and Java.
