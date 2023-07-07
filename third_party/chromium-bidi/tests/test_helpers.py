@@ -36,13 +36,13 @@ def get_next_command_id() -> int:
 
 
 async def subscribe(websocket,
-                    event_names: list[str],
+                    events: list[str],
                     context_ids: list[str] | None = None,
                     channel: None = None):
     command: dict = {
         "method": "session.subscribe",
         "params": {
-            "events": event_names
+            "events": events,
         }
     }
 

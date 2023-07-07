@@ -15,6 +15,7 @@
 
 import asyncio
 import os
+from uuid import uuid4
 
 import pytest
 import pytest_asyncio
@@ -87,7 +88,7 @@ async def sandbox_realm(websocket, context_id: str):
                 "expression": "globalThis",
                 "target": {
                     "context": context_id,
-                    "sandbox": 'some_sandbox'
+                    "sandbox": str(uuid4()),
                 },
                 "awaitPromise": True
             }
