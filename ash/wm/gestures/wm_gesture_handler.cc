@@ -174,8 +174,11 @@ WmGestureHandler::~WmGestureHandler() = default;
 
 bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
   // Disable touchpad swipe when screen is pinned.
-  if (Shell::Get()->screen_pinning_controller()->IsPinned())
+  // Also skip touchpad swipe in kiosk mode.
+  if (Shell::Get()->screen_pinning_controller()->IsPinned() ||
+      Shell::Get()->session_controller()->IsRunningInAppMode()) {
     return false;
+  }
 
   // ET_SCROLL_FLING_CANCEL means a touchpad swipe has started.
   if (event.type() == ui::ET_SCROLL_FLING_CANCEL) {
