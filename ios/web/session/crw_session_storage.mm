@@ -59,6 +59,11 @@ NSString* const kTabIdKey = @"TabId";
 
 - (instancetype)initWithProto:(const web::proto::WebStateStorage&)storage {
   if ((self = [super init])) {
+    // As the protobuf message does not contain the unique or stable
+    // identifiers, generate new random values.
+    _uniqueIdentifier = SessionID::NewUnique().id();
+    _stableIdentifier = [[NSUUID UUID] UUIDString];
+
     _hasOpener = storage.has_opener();
     _userAgentType = web::UserAgentTypeFromProto(storage.user_agent());
     _certPolicyCacheStorage = [[CRWSessionCertificatePolicyCacheStorage alloc]
@@ -115,7 +120,11 @@ NSString* const kTabIdKey = @"TabId";
           metadataStorage->mutable_active_page();
       pageMetadataStorage->set_page_title(
           base::UTF16ToUTF8(activePageItem.title));
-      pageMetadataStorage->set_page_url(activePageItem.URL.spec());
+      GURL pageURL = activePageItem.virtualURL;
+      if (!pageURL.is_valid()) {
+        pageURL = activePageItem.URL;
+      }
+      pageMetadataStorage->set_page_url(pageURL.spec());
     }
   }
 }
