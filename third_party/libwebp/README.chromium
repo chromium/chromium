@@ -7,6 +7,7 @@ CPEPrefix: cpe:/a:webmproject:libwebp:1.3.0
 License: BSD
 License File: LICENSE
 Security Critical: Yes
+Shipped: yes
 
 Description:
 WebP is an image format that does both lossy and lossless compression of
