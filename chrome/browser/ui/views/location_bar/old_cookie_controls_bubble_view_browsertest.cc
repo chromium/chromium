@@ -219,7 +219,6 @@ IN_PROC_BROWSER_TEST_F(OldCookieControlsBubbleViewTest, NonAllowedCookieSite) {
   // blocked, such as an internal chrome:// url, while the UI is shown, should
   // not crash.
   SetThirdPartyCookieBlocking(true);
-  NavigateToUrlWithThirdPartyCookies();
 
   // Open chrome://about in the background.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -227,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(OldCookieControlsBubbleViewTest, NonAllowedCookieSite) {
       WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  // Open bubble on the page with 3PC blocked.
+  // Navigate current tab and open bubble on the page with 3PC blocked.
   ShowUi("NotWorkingClicked");
 
   // While bubble is open, activate the chrome://about tab.
