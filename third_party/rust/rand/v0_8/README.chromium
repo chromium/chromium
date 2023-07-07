@@ -4,5 +4,6 @@ Description: Random number generators and other randomness functionality.
 
 Version: 0.8.5
 Security Critical: yes
+Shipped: no
 License: Apache 2.0
 Revision: 937320cbfeebd4352a23086d9c6e68f067f74644

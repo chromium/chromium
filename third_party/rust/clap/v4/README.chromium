@@ -3,4 +3,5 @@ URL: https://crates.io/crates/clap
 Description: A simple to use, efficient, and full-featured Command Line Argument Parser
 Version: 4.0.26
 Security Critical: no
+Shipped: no
 License: Apache 2.0

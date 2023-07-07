@@ -3,4 +3,5 @@ URL: https://crates.io/crates/winapi
 Description: Raw FFI bindings for all of Windows API.
 Version: 0.3.9
 Security Critical: no
+Shipped: yes
 License: Apache 2.0

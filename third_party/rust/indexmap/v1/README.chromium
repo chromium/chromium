@@ -12,4 +12,5 @@ This crate was initially published under the name ordermap, but it was renamed t
 indexmap.
 Version: 1.8.1
 Security Critical: no
+Shipped: yes
 License: Apache 2.0

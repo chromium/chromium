@@ -5,4 +5,5 @@ implementations of the standard Serialize/Deserialize traits for TOML data to
 facilitate deserializing and serializing Rust structures.
 Version: 0.5.9
 Security Critical: no
+Shipped: no
 License: Apache 2.0

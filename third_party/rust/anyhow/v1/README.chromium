@@ -3,5 +3,6 @@ URL: https://crates.io/crates/anyhow
 Description: Flexible concrete Error type built on std::error::Error
 Version: 1.0.70
 Security Critical: no
+Shipped: no
 License: Apache 2.0
 Revision: e4db1f96fd06cc97a6961e5f0d6918e24ee47fff

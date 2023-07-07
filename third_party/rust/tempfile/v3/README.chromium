@@ -3,4 +3,5 @@ URL: https://crates.io/crates/tempfile
 Description: A library for managing temporary files and directories.
 Version: 3.3.0
 Security Critical: no
+Shipped: no
 License: Apache 2.0

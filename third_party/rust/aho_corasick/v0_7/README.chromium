@@ -3,4 +3,5 @@ URL: https://crates.io/crates/aho-corasick
 Description: Fast multiple substring searching.
 Version: 0.7.18
 Security Critical: no
+Shipped: yes
 License: MIT

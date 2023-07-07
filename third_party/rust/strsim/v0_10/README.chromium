@@ -4,4 +4,5 @@ Description: Implementations of string similarity metrics. Includes Hamming, Lev
 OSA, Damerau-Levenshtein, Jaro, Jaro-Winkler, and Sørensen-Dice.
 Version: 0.10.0
 Security Critical: no
+Shipped: yes
 License: MIT
