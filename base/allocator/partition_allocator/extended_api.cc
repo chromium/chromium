@@ -15,7 +15,7 @@ namespace partition_alloc::internal {
 
 namespace {
 
-void DisableThreadCacheForRootIfEnabled(ThreadSafePartitionRoot* root) {
+void DisableThreadCacheForRootIfEnabled(PartitionRoot* root) {
   // Some platforms don't have a thread cache, or it could already have been
   // disabled.
   if (!root || !root->settings.with_thread_cache) {
@@ -29,8 +29,7 @@ void DisableThreadCacheForRootIfEnabled(ThreadSafePartitionRoot* root) {
   // time. For the main thread, we leak it.
 }
 
-void EnablePartitionAllocThreadCacheForRootIfDisabled(
-    ThreadSafePartitionRoot* root) {
+void EnablePartitionAllocThreadCacheForRootIfDisabled(PartitionRoot* root) {
   if (!root) {
     return;
   }
@@ -66,7 +65,7 @@ ThreadAllocStats GetAllocStatsForCurrentThread() {
 
 #if PA_CONFIG(THREAD_CACHE_SUPPORTED)
 ThreadCacheProcessScopeForTesting::ThreadCacheProcessScopeForTesting(
-    ThreadSafePartitionRoot* root)
+    PartitionRoot* root)
     : root_(root) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   auto* regular_allocator =

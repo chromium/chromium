@@ -106,7 +106,7 @@ void PartitionAllocGlobalUninitForTesting() {
   internal::g_oom_handling_function = nullptr;
 }
 
-namespace internal {
+PartitionAllocator::PartitionAllocator() = default;
 
 PartitionAllocator::~PartitionAllocator() {
   MemoryReclaimer::Instance()->UnregisterPartition(&partition_root_);
@@ -120,7 +120,5 @@ void PartitionAllocator::init(PartitionOptions opts) {
   partition_root_.Init(opts);
   MemoryReclaimer::Instance()->RegisterPartition(&partition_root_);
 }
-
-}  // namespace internal
 
 }  // namespace partition_alloc

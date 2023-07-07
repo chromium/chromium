@@ -35,8 +35,6 @@ static_assert(kAlignment <= 16,
               "PartitionAlloc doesn't support a fundamental alignment larger "
               "than 16 bytes.");
 
-constexpr bool ThreadSafe = true;
-
 struct SlotSpanMetadata;
 class PA_LOCKABLE Lock;
 
@@ -54,6 +52,9 @@ class PartitionStatsDumper;
 
 struct PartitionRoot;
 
+// TODO(787153): third_party/pdfium depends on ThreadSafePartitionRoot.
+//  After replacing the ThreadSafePartitionRoot with PartitionRoot, remove
+// ThreadSafePartitionRoot from partition_alloc_forward.h.
 using ThreadSafePartitionRoot = PartitionRoot;
 
 namespace internal {

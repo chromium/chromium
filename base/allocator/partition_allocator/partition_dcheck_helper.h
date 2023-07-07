@@ -63,10 +63,6 @@ PA_EXPORT_IF_DCHECK_IS_ON()
 void DCheckRootLockIsAcquired(PartitionRoot* root)
     PA_EMPTY_BODY_IF_DCHECK_IS_OFF();
 
-PA_EXPORT_IF_DCHECK_IS_ON()
-void DCheckRootLockOfSlotSpanIsAcquired(internal::SlotSpanMetadata* slot_span)
-    PA_EMPTY_BODY_IF_DCHECK_IS_OFF();
-
 }  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_DCHECK_HELPER_H_

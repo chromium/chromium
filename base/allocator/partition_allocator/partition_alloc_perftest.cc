@@ -98,10 +98,10 @@ class PartitionAllocator : public Allocator {
   void* Alloc(size_t size) override {
     return alloc_.AllocWithFlagsNoHooks(0, size, PartitionPageSize());
   }
-  void Free(void* data) override { ThreadSafePartitionRoot::FreeNoHooks(data); }
+  void Free(void* data) override { PartitionRoot::FreeNoHooks(data); }
 
  private:
-  ThreadSafePartitionRoot alloc_{PartitionOptions{}};
+  PartitionRoot alloc_{PartitionOptions{}};
 };
 
 class PartitionAllocatorWithThreadCache : public Allocator {
@@ -154,11 +154,11 @@ class PartitionAllocatorWithAllocationStackTraceRecorder : public Allocator {
     return alloc_.AllocWithFlags(0, size, nullptr);
   }
 
-  void Free(void* data) override { ThreadSafePartitionRoot::Free(data); }
+  void Free(void* data) override { PartitionRoot::Free(data); }
 
  private:
   bool const register_hooks_;
-  ThreadSafePartitionRoot alloc_{PartitionOptions{}};
+  PartitionRoot alloc_{PartitionOptions{}};
   ::base::allocator::dispatcher::Dispatcher& dispatcher_ =
       ::base::allocator::dispatcher::Dispatcher::GetInstance();
   ::base::debug::tracer::AllocationTraceRecorder recorder_;

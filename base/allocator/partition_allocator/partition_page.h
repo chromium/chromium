@@ -626,7 +626,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::Free(uintptr_t slot_start,
     // PartitionRootLock() is not defined inside partition_page.h, but
     // static analysis doesn't require the implementation.
     PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
-  DCheckRootLockOfSlotSpanIsAcquired(this);
+  DCheckRootLockIsAcquired(root);
   auto* entry = static_cast<internal::PartitionFreelistEntry*>(
       SlotStartAddr2Ptr(slot_start));
   // Catches an immediate double free.
@@ -656,7 +656,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::AppendFreeList(
     size_t number_of_freed,
     PartitionRoot* root) PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
-  DCheckRootLockOfSlotSpanIsAcquired(this);
+  DCheckRootLockIsAcquired(root);
   PA_DCHECK(!tail->GetNext(bucket->slot_size));
   PA_DCHECK(number_of_freed);
   PA_DCHECK(num_allocated_slots);

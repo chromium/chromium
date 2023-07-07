@@ -26,15 +26,13 @@ struct DerivedWithMixin : Base, Mixin {
   double d;
 };
 
-using PAAllocator = internal::PartitionAllocator;
-
 struct PADeleter final {
   void operator()(void* ptr) const { allocator_.root()->Free(ptr); }
-  PAAllocator& allocator_;
+  PartitionAllocator& allocator_;
 };
 
 template <typename T, typename... Args>
-std::unique_ptr<T, PADeleter> make_pa_unique(PAAllocator& alloc,
+std::unique_ptr<T, PADeleter> make_pa_unique(PartitionAllocator& alloc,
                                              Args&&... args) {
   T* result = new (alloc.root()->Alloc(sizeof(T), nullptr))
       T(std::forward<Args>(args)...);
@@ -42,7 +40,7 @@ std::unique_ptr<T, PADeleter> make_pa_unique(PAAllocator& alloc,
 }
 
 template <typename T>
-std::unique_ptr<T[], PADeleter> make_pa_array_unique(PAAllocator& alloc,
+std::unique_ptr<T[], PADeleter> make_pa_array_unique(PartitionAllocator& alloc,
                                                      size_t num) {
   T* result = new (alloc.root()->Alloc(sizeof(T) * num, nullptr)) T();
   return std::unique_ptr<T[], PADeleter>(result, PADeleter{alloc});
@@ -88,7 +86,7 @@ class CompressedPointerTest : public ::testing::Test {
   CompressedPointerTest() { allocator_.init(PartitionOptions{}); }
 
  protected:
-  internal::PartitionAllocator allocator_;
+  PartitionAllocator allocator_;
 };
 
 #if BUILDFLAG(ENABLE_POINTER_COMPRESSION)

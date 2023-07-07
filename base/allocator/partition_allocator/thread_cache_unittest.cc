@@ -30,7 +30,7 @@
 
 namespace partition_alloc {
 
-using BucketDistribution = ThreadSafePartitionRoot::BucketDistribution;
+using BucketDistribution = PartitionRoot::BucketDistribution;
 namespace {
 
 constexpr size_t kSmallSize = 33;  // Must be large enough to fit extras.
@@ -93,7 +93,7 @@ class PartitionAllocThreadCacheTest
 
  protected:
   void SetUp() override {
-    ThreadSafePartitionRoot* root = allocator_->root();
+    PartitionRoot* root = allocator_->root();
     switch (GetParam()) {
       case BucketDistribution::kDefault:
         root->ResetBucketDistributionForTesting();
@@ -130,14 +130,13 @@ class PartitionAllocThreadCacheTest
               GetBucketSizeForThreadCache());
   }
 
-  ThreadSafePartitionRoot* root() { return allocator_->root(); }
+  PartitionRoot* root() { return allocator_->root(); }
 
   // Returns the size of the smallest bucket fitting an allocation of
   // |sizeof(ThreadCache)| bytes.
   size_t GetBucketSizeForThreadCache() {
     size_t tc_bucket_index = root()->SizeToBucketIndex(
-        sizeof(ThreadCache),
-        ThreadSafePartitionRoot::BucketDistribution::kDefault);
+        sizeof(ThreadCache), PartitionRoot::BucketDistribution::kDefault);
     auto* tc_bucket = &root()->buckets[tc_bucket_index];
     return tc_bucket->slot_size;
   }
@@ -288,7 +287,7 @@ TEST_P(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
   EXPECT_EQ(kFillCountForSmallBucket,
             tcache->bucket_count_for_testing(bucket_index));
 
-  ThreadSafePartitionRoot::Free(ptr);
+  PartitionRoot::Free(ptr);
   EXPECT_EQ(kFillCountForSmallBucket,
             tcache->bucket_count_for_testing(bucket_index));
 }
@@ -355,7 +354,7 @@ TEST_P(PartitionAllocThreadCacheTest, DirectMappedReallocMetrics) {
 
 namespace {
 
-size_t FillThreadCacheAndReturnIndex(ThreadSafePartitionRoot* root,
+size_t FillThreadCacheAndReturnIndex(PartitionRoot* root,
                                      size_t size,
                                      BucketDistribution bucket_distribution,
                                      size_t count = 1) {
@@ -383,7 +382,7 @@ class ThreadDelegateForMultipleThreadCaches
     : public internal::base::PlatformThreadForTesting::Delegate {
  public:
   ThreadDelegateForMultipleThreadCaches(ThreadCache* parent_thread_cache,
-                                        ThreadSafePartitionRoot* root,
+                                        PartitionRoot* root,
                                         BucketDistribution bucket_distribution)
       : parent_thread_tcache_(parent_thread_cache),
         root_(root),
@@ -400,7 +399,7 @@ class ThreadDelegateForMultipleThreadCaches
 
  private:
   ThreadCache* parent_thread_tcache_ = nullptr;
-  ThreadSafePartitionRoot* root_ = nullptr;
+  PartitionRoot* root_ = nullptr;
   PartitionRoot::BucketDistribution bucket_distribution_;
 };
 
@@ -425,9 +424,8 @@ namespace {
 class ThreadDelegateForThreadCacheReclaimedWhenThreadExits
     : public internal::base::PlatformThreadForTesting::Delegate {
  public:
-  ThreadDelegateForThreadCacheReclaimedWhenThreadExits(
-      ThreadSafePartitionRoot* root,
-      void*& other_thread_ptr)
+  ThreadDelegateForThreadCacheReclaimedWhenThreadExits(PartitionRoot* root,
+                                                       void*& other_thread_ptr)
       : root_(root), other_thread_ptr_(other_thread_ptr) {}
 
   void ThreadMain() override {
@@ -439,7 +437,7 @@ class ThreadDelegateForThreadCacheReclaimedWhenThreadExits
   }
 
  private:
-  ThreadSafePartitionRoot* root_ = nullptr;
+  PartitionRoot* root_ = nullptr;
   void*& other_thread_ptr_;
 };
 
@@ -483,7 +481,7 @@ class ThreadDelegateForThreadCacheRegistry
     : public internal::base::PlatformThreadForTesting::Delegate {
  public:
   ThreadDelegateForThreadCacheRegistry(ThreadCache* parent_thread_cache,
-                                       ThreadSafePartitionRoot* root,
+                                       PartitionRoot* root,
                                        BucketDistribution bucket_distribution)
       : parent_thread_tcache_(parent_thread_cache),
         root_(root),
@@ -502,7 +500,7 @@ class ThreadDelegateForThreadCacheRegistry
 
  private:
   ThreadCache* parent_thread_tcache_ = nullptr;
-  ThreadSafePartitionRoot* root_ = nullptr;
+  PartitionRoot* root_ = nullptr;
   BucketDistribution bucket_distribution_;
 };
 
@@ -595,7 +593,7 @@ class ThreadDelegateForMultipleThreadCachesAccounting
     : public internal::base::PlatformThreadForTesting::Delegate {
  public:
   ThreadDelegateForMultipleThreadCachesAccounting(
-      ThreadSafePartitionRoot* root,
+      PartitionRoot* root,
       const ThreadCacheStats& wqthread_stats,
       int alloc_count,
       BucketDistribution bucket_distribution)
@@ -626,7 +624,7 @@ class ThreadDelegateForMultipleThreadCachesAccounting
   }
 
  private:
-  ThreadSafePartitionRoot* root_ = nullptr;
+  PartitionRoot* root_ = nullptr;
   BucketDistribution bucket_distribution_;
   const ThreadCacheStats wqthread_stats_;
   const int alloc_count_;
@@ -679,7 +677,7 @@ namespace {
 class ThreadDelegateForPurgeAll
     : public internal::base::PlatformThreadForTesting::Delegate {
  public:
-  ThreadDelegateForPurgeAll(ThreadSafePartitionRoot* root,
+  ThreadDelegateForPurgeAll(PartitionRoot* root,
                             ThreadCache*& other_thread_tcache,
                             std::atomic<bool>& other_thread_started,
                             std::atomic<bool>& purge_called,
@@ -715,7 +713,7 @@ class ThreadDelegateForPurgeAll
   }
 
  private:
-  ThreadSafePartitionRoot* root_ = nullptr;
+  PartitionRoot* root_ = nullptr;
   ThreadCache*& other_thread_tcache_;
   std::atomic<bool>& other_thread_started_;
   std::atomic<bool>& purge_called_;
@@ -810,7 +808,7 @@ TEST_P(PartitionAllocThreadCacheTest, PeriodicPurge) {
 
 namespace {
 
-void FillThreadCacheWithMemory(ThreadSafePartitionRoot* root,
+void FillThreadCacheWithMemory(PartitionRoot* root,
                                size_t target_cached_memory,
                                BucketDistribution bucket_distribution) {
   for (int batch : {1, 2, 4, 8, 16}) {
@@ -834,7 +832,7 @@ class ThreadDelegateForPeriodicPurgeSumsOverAllThreads
     : public internal::base::PlatformThreadForTesting::Delegate {
  public:
   ThreadDelegateForPeriodicPurgeSumsOverAllThreads(
-      ThreadSafePartitionRoot* root,
+      PartitionRoot* root,
       std::atomic<int>& allocations_done,
       std::atomic<bool>& can_finish,
       BucketDistribution bucket_distribution)
@@ -855,7 +853,7 @@ class ThreadDelegateForPeriodicPurgeSumsOverAllThreads
   }
 
  private:
-  ThreadSafePartitionRoot* root_ = nullptr;
+  PartitionRoot* root_ = nullptr;
   std::atomic<int>& allocations_done_;
   std::atomic<bool>& can_finish_;
   BucketDistribution bucket_distribution_;
@@ -1001,7 +999,7 @@ class ThreadDelegateForDynamicCountPerBucketMultipleThreads
     : public internal::base::PlatformThreadForTesting::Delegate {
  public:
   ThreadDelegateForDynamicCountPerBucketMultipleThreads(
-      ThreadSafePartitionRoot* root,
+      PartitionRoot* root,
       std::atomic<bool>& other_thread_started,
       std::atomic<bool>& threshold_changed,
       int bucket_index,
@@ -1034,7 +1032,7 @@ class ThreadDelegateForDynamicCountPerBucketMultipleThreads
   }
 
  private:
-  ThreadSafePartitionRoot* root_ = nullptr;
+  PartitionRoot* root_ = nullptr;
   std::atomic<bool>& other_thread_started_;
   std::atomic<bool>& threshold_changed_;
   const int bucket_index_;
@@ -1183,8 +1181,7 @@ TEST_P(PartitionAllocThreadCacheTest, MAYBE_Bookkeeping) {
   // The ThreadCache is allocated before we change buckets, so its size is
   // always based on the sparser distribution.
   size_t tc_bucket_index = root()->SizeToBucketIndex(
-      sizeof(ThreadCache),
-      ThreadSafePartitionRoot::BucketDistribution::kDefault);
+      sizeof(ThreadCache), PartitionRoot::BucketDistribution::kDefault);
   auto* tc_bucket = &root()->buckets[tc_bucket_index];
   size_t expected_allocated_size =
       tc_bucket->slot_size;  // For the ThreadCache itself.
@@ -1477,7 +1474,7 @@ TEST_P(PartitionAllocThreadCacheTest, AllocationRecordingRealloc) {
 // once we have enabled features.
 TEST(AlternateBucketDistributionTest, SwitchBeforeAlloc) {
   std::unique_ptr<PartitionAllocatorForTesting> allocator(CreateAllocator());
-  ThreadSafePartitionRoot* root = allocator->root();
+  PartitionRoot* root = allocator->root();
 
   root->SwitchToDenserBucketDistribution();
   constexpr size_t n = (1 << 12) * 3 / 2;
@@ -1500,7 +1497,7 @@ TEST(AlternateBucketDistributionTest, SwitchAfterAlloc) {
   EXPECT_NE(internal::BucketIndexLookup::GetIndex(n),
             internal::BucketIndexLookup::GetIndexForDefaultBuckets(n));
 
-  ThreadSafePartitionRoot* root = allocator->root();
+  PartitionRoot* root = allocator->root();
   void* ptr = root->Alloc(n, "");
 
   root->SwitchToDenserBucketDistribution();

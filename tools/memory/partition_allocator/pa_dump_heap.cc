@@ -42,7 +42,6 @@ using partition_alloc::internal::PartitionRefCountPointer;
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 using partition_alloc::internal::PartitionSuperPageExtentEntry;
 using partition_alloc::internal::SystemPageSize;
-using partition_alloc::internal::ThreadSafe;
 
 // See https://www.kernel.org/doc/Documentation/vm/pagemap.txt.
 struct PageMapEntry {

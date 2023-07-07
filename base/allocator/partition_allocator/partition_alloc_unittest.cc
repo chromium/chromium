@@ -222,7 +222,7 @@ class CountDanglingRawPtr {
 // For ease of reading, the tests are placed into the latter namespace.
 namespace partition_alloc::internal {
 
-using BucketDistribution = ThreadSafePartitionRoot::BucketDistribution;
+using BucketDistribution = PartitionRoot::BucketDistribution;
 using SlotSpan = SlotSpanMetadata;
 
 const size_t kTestAllocSize = 16;
@@ -237,7 +237,7 @@ const size_t kExtraAllocSizeWithoutRefCount = kCookieSize;
 
 const char* type_name = nullptr;
 
-void SetDistributionForPartitionRoot(ThreadSafePartitionRoot* root,
+void SetDistributionForPartitionRoot(PartitionRoot* root,
                                      BucketDistribution distribution) {
   switch (distribution) {
     case BucketDistribution::kDefault:

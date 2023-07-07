@@ -961,12 +961,12 @@ void UnmarkInCardTable(uintptr_t slot_start, SlotSpanMetadata* slot_span) {
   return slot_span->bucket->slot_size;
 }
 
-[[maybe_unused]] void SweepSuperPage(ThreadSafePartitionRoot* root,
+[[maybe_unused]] void SweepSuperPage(PartitionRoot* root,
                                      uintptr_t super_page,
                                      size_t epoch,
                                      SweepStat& stat) {
   auto* bitmap = StateBitmapFromAddr(super_page);
-  ThreadSafePartitionRoot::FromFirstSuperPage(super_page);
+  PartitionRoot::FromFirstSuperPage(super_page);
   bitmap->IterateUnmarkedQuarantined(epoch, [root,
                                              &stat](uintptr_t slot_start) {
     auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start);
@@ -975,7 +975,7 @@ void UnmarkInCardTable(uintptr_t slot_start, SlotSpanMetadata* slot_span) {
 }
 
 [[maybe_unused]] void SweepSuperPageAndDiscardMarkedQuarantine(
-    ThreadSafePartitionRoot* root,
+    PartitionRoot* root,
     uintptr_t super_page,
     size_t epoch,
     SweepStat& stat) {
@@ -1005,11 +1005,10 @@ void UnmarkInCardTable(uintptr_t slot_start, SlotSpanMetadata* slot_span) {
   });
 }
 
-[[maybe_unused]] void SweepSuperPageWithBatchedFree(
-    ThreadSafePartitionRoot* root,
-    uintptr_t super_page,
-    size_t epoch,
-    SweepStat& stat) {
+[[maybe_unused]] void SweepSuperPageWithBatchedFree(PartitionRoot* root,
+                                                    uintptr_t super_page,
+                                                    size_t epoch,
+                                                    SweepStat& stat) {
   using SlotSpan = SlotSpanMetadata;
 
   auto* bitmap = StateBitmapFromAddr(super_page);
@@ -1071,7 +1070,7 @@ void PCScanTask::SweepQuarantine() {
   StarScanSnapshot::SweepingView sweeping_view(*snapshot_);
   sweeping_view.VisitNonConcurrently(
       [this, &stat, should_discard](uintptr_t super_page) {
-        auto* root = ThreadSafePartitionRoot::FromFirstSuperPage(super_page);
+        auto* root = PartitionRoot::FromFirstSuperPage(super_page);
 
 #if PA_CONFIG(STARSCAN_BATCHED_FREE)
         SweepSuperPageWithBatchedFree(root, super_page, pcscan_epoch_, stat);

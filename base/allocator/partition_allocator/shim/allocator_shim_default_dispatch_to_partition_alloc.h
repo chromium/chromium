@@ -15,11 +15,11 @@ void PartitionAllocSetCallNewHandlerOnMallocFailure(bool value);
 
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocMalloc {
  public:
-  static partition_alloc::ThreadSafePartitionRoot* Allocator();
+  static partition_alloc::PartitionRoot* Allocator();
   // May return |nullptr|, will never return the same pointer as |Allocator()|.
-  static partition_alloc::ThreadSafePartitionRoot* OriginalAllocator();
+  static partition_alloc::PartitionRoot* OriginalAllocator();
   // May return the same pointer as |Allocator()|.
-  static partition_alloc::ThreadSafePartitionRoot* AlignedAllocator();
+  static partition_alloc::PartitionRoot* AlignedAllocator();
 };
 
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)

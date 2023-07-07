@@ -149,7 +149,7 @@ SlotSpanMetadata::SlotSpanMetadata(PartitionBucket* bucket)
     : bucket(bucket), can_store_raw_size_(bucket->CanStoreRawSize()) {}
 
 void SlotSpanMetadata::FreeSlowPath(size_t number_of_freed) {
-  DCheckRootLockOfSlotSpanIsAcquired(this);
+  DCheckRootLockIsAcquired(PartitionRoot::FromSlotSpan(this));
   PA_DCHECK(this != get_sentinel_slot_span());
 
   // The caller has already modified |num_allocated_slots|. It is a

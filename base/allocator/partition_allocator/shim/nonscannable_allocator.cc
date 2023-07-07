@@ -50,7 +50,7 @@ void* NonScannableAllocatorImpl<quarantinable>::Alloc(size_t size) {
 
 template <bool quarantinable>
 void NonScannableAllocatorImpl<quarantinable>::Free(void* ptr) {
-  partition_alloc::ThreadSafePartitionRoot::FreeNoHooks(ptr);
+  partition_alloc::PartitionRoot::FreeNoHooks(ptr);
 }
 
 template <bool quarantinable>

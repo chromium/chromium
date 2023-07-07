@@ -28,7 +28,7 @@ namespace {
 using configuration::kMaximumNumberOfObservers;
 using configuration::kMaximumNumberOfOptionalObservers;
 using partition_alloc::PartitionOptions;
-using partition_alloc::ThreadSafePartitionRoot;
+using partition_alloc::PartitionRoot;
 using testing::DispatcherTest;
 
 // A simple observer implementation. Since these tests plug in to Partition
@@ -109,7 +109,7 @@ struct PartitionAllocator {
   }
 
  private:
-  ThreadSafePartitionRoot alloc_{PartitionOptions{}};
+  PartitionRoot alloc_{PartitionOptions{}};
 };
 
 TEST_F(BaseAllocatorDispatcherTest, VerifyNotificationUsingPartitionAllocator) {

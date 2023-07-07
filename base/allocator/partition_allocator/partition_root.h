@@ -192,7 +192,7 @@ struct PartitionOptions {
   Cookie cookie = Cookie::kAllowed;
   BackupRefPtr backup_ref_ptr = BackupRefPtr::kDisabled;
   UseConfigurablePool use_configurable_pool = UseConfigurablePool::kNo;
-  size_t ref_count_size;
+  size_t ref_count_size = 0;
   MemoryTagging memory_tagging = MemoryTagging::kDisabled;
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   ThreadIsolationOption thread_isolation;
@@ -258,14 +258,14 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     bool brp_enabled_ = false;
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
     bool mac11_malloc_size_hack_enabled_ = false;
-    size_t mac11_malloc_size_hack_usable_size_;
+    size_t mac11_malloc_size_hack_usable_size_ = 0;
 #endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool use_configurable_pool = false;
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
     bool memory_tagging_enabled_ = false;
 #if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
-    size_t ref_count_size;
+    size_t ref_count_size = 0;
 #endif  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
 #endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
@@ -1681,7 +1681,7 @@ PA_ALWAYS_INLINE size_t PartitionRoot::GetUsableSize(void* ptr) {
     return 0;
   }
   auto* slot_span = SlotSpan::FromObjectInnerPtr(ptr);
-  auto* root = PartitionRoot::FromSlotSpan(slot_span);
+  auto* root = FromSlotSpan(slot_span);
   return root->GetSlotUsableSize(slot_span);
 }
 
@@ -1692,7 +1692,7 @@ PartitionRoot::GetUsableSizeWithMac11MallocSizeHack(void* ptr) {
     return 0;
   }
   auto* slot_span = SlotSpan::FromObjectInnerPtr(ptr);
-  auto* root = PartitionRoot::FromSlotSpan(slot_span);
+  auto* root = FromSlotSpan(slot_span);
   size_t usable_size = root->GetSlotUsableSize(slot_span);
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
   // Check |mac11_malloc_size_hack_enabled_| flag first as this doesn't
@@ -2155,8 +2155,6 @@ ThreadCache* PartitionRoot::GetOrCreateThreadCache() {
 ThreadCache* PartitionRoot::GetThreadCache() {
   return PA_LIKELY(settings.with_thread_cache) ? ThreadCache::Get() : nullptr;
 }
-
-using ThreadSafePartitionRoot = PartitionRoot;
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 // Usage in `raw_ptr.cc` is notable enough to merit a non-internal alias.

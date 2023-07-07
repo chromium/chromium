@@ -119,8 +119,7 @@ namespace internal {
 
 class PartitionRootEnumerator {
  public:
-  using EnumerateCallback = void (*)(ThreadSafePartitionRoot* root,
-                                     bool in_child);
+  using EnumerateCallback = void (*)(PartitionRoot* root, bool in_child);
   enum EnumerateOrder {
     kNormal,
     kReverse,
@@ -135,14 +134,14 @@ class PartitionRootEnumerator {
                  bool in_child,
                  EnumerateOrder order) PA_NO_THREAD_SAFETY_ANALYSIS {
     if (order == kNormal) {
-      ThreadSafePartitionRoot* root;
+      PartitionRoot* root;
       for (root = Head(partition_roots_); root != nullptr;
            root = root->next_root) {
         callback(root, in_child);
       }
     } else {
       PA_DCHECK(order == kReverse);
-      ThreadSafePartitionRoot* root;
+      PartitionRoot* root;
       for (root = Tail(partition_roots_); root != nullptr;
            root = root->prev_root) {
         callback(root, in_child);
@@ -150,8 +149,8 @@ class PartitionRootEnumerator {
     }
   }
 
-  void Register(ThreadSafePartitionRoot* root) {
-    internal::ScopedGuard guard(ThreadSafePartitionRoot::GetEnumeratorLock());
+  void Register(PartitionRoot* root) {
+    internal::ScopedGuard guard(PartitionRoot::GetEnumeratorLock());
     root->next_root = partition_roots_;
     root->prev_root = nullptr;
     if (partition_roots_) {
@@ -160,10 +159,10 @@ class PartitionRootEnumerator {
     partition_roots_ = root;
   }
 
-  void Unregister(ThreadSafePartitionRoot* root) {
-    internal::ScopedGuard guard(ThreadSafePartitionRoot::GetEnumeratorLock());
-    ThreadSafePartitionRoot* prev = root->prev_root;
-    ThreadSafePartitionRoot* next = root->next_root;
+  void Unregister(PartitionRoot* root) {
+    internal::ScopedGuard guard(PartitionRoot::GetEnumeratorLock());
+    PartitionRoot* prev = root->prev_root;
+    PartitionRoot* next = root->next_root;
     if (prev) {
       PA_DCHECK(prev->next_root == root);
       prev->next_root = next;
@@ -182,23 +181,20 @@ class PartitionRootEnumerator {
  private:
   constexpr PartitionRootEnumerator() = default;
 
-  ThreadSafePartitionRoot* Head(ThreadSafePartitionRoot* roots) {
-    return roots;
-  }
+  PartitionRoot* Head(PartitionRoot* roots) { return roots; }
 
-  ThreadSafePartitionRoot* Tail(ThreadSafePartitionRoot* roots)
-      PA_NO_THREAD_SAFETY_ANALYSIS {
+  PartitionRoot* Tail(PartitionRoot* roots) PA_NO_THREAD_SAFETY_ANALYSIS {
     if (!roots) {
       return nullptr;
     }
-    ThreadSafePartitionRoot* node = roots;
+    PartitionRoot* node = roots;
     for (; node->next_root != nullptr; node = node->next_root)
       ;
     return node;
   }
 
-  ThreadSafePartitionRoot* partition_roots_
-      PA_GUARDED_BY(ThreadSafePartitionRoot::GetEnumeratorLock()) = nullptr;
+  PartitionRoot* partition_roots_
+      PA_GUARDED_BY(PartitionRoot::GetEnumeratorLock()) = nullptr;
 };
 
 }  // namespace internal
@@ -219,7 +215,7 @@ void LockRoot(PartitionRoot* root, bool) PA_NO_THREAD_SAFETY_ANALYSIS {
 // PA_NO_THREAD_SAFETY_ANALYSIS: acquires the lock and doesn't release it, by
 // design.
 void BeforeForkInParent() PA_NO_THREAD_SAFETY_ANALYSIS {
-  // ThreadSafePartitionRoot::GetLock() is private. So use
+  // PartitionRoot::GetLock() is private. So use
   // g_root_enumerator_lock here.
   g_root_enumerator_lock.Acquire();
   internal::PartitionRootEnumerator::Instance().Enumerate(
@@ -252,7 +248,7 @@ void ReleaseLocks(bool in_child) PA_NO_THREAD_SAFETY_ANALYSIS {
       UnlockOrReinitRoot, in_child,
       internal::PartitionRootEnumerator::EnumerateOrder::kReverse);
 
-  // ThreadSafePartitionRoot::GetLock() is private. So use
+  // PartitionRoot::GetLock() is private. So use
   // g_root_enumerator_lock here.
   UnlockOrReinit(g_root_enumerator_lock, in_child);
 }
