@@ -32,14 +32,14 @@ namespace {
 constexpr int kNudgeYOffset = 8;
 // The time it takes for the nudge to fade in or out.
 constexpr base::TimeDelta kNudgeFadeDuration = base::Milliseconds(100);
-// The timer after the second bounce finishes until the nudge starts to fade
+// The time after the second bounce finishes until the nudge starts to fade
 // out.
-constexpr base::TimeDelta kNudgeFadeOutDelay = base::Milliseconds(150);
+constexpr base::TimeDelta kNudgeFadeOutDelay = base::Seconds(1);
 
 // The maximum distance the window translates by during the bounce.
 constexpr float kBounceDistance = 50.0f;
-// The time after the first bounce ends and the second bounce begins.
-constexpr base::TimeDelta kSecondBounceDelay = base::Seconds(1);
+// The delay before each bounce.
+constexpr base::TimeDelta kBounceDelay = base::Seconds(1);
 // The time for the window to move from its starting position to its furthest
 // position.
 constexpr base::TimeDelta kBounceStartDuration = base::Milliseconds(400);
@@ -160,26 +160,25 @@ void TabletModeTuckEducation::ActivateTuckEducation() {
   window_observation_.Reset();
 
   nudge_widget_ = CreateWidget(window_);
-
   nudge_widget_->Show();
+
   auto* nudge_layer = nudge_widget_->GetLayer();
   nudge_layer->SetOpacity(0.0f);
 
-  gfx::Size nudge_pref_size =
+  const gfx::Size nudge_pref_size =
       nudge_widget_->GetContentsView()->GetPreferredSize();
-  gfx::Rect window_bounds = window_->GetBoundsInScreen();
+  const gfx::Rect window_bounds = window_->GetBoundsInScreen();
+
   nudge_widget_->SetBounds(gfx::Rect(
       (window_bounds.width() - nudge_pref_size.width()) / 2,
       window_->GetProperty(aura::client::kTopViewInset) + kNudgeYOffset,
       nudge_pref_size.width(), nudge_pref_size.height()));
 
+  // Move window towards edge of screen.
   const display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
-
-  bool bounce_right =
+  const bool bounce_right =
       window_bounds.CenterPoint().x() > display.bounds().CenterPoint().x();
-
-  // Move window towards edge of screen.
   const gfx::Transform side_transform = gfx::Transform::MakeTranslation(
       bounce_right ? kBounceDistance : -kBounceDistance, 0);
 
@@ -199,12 +198,15 @@ void TabletModeTuckEducation::ActivateTuckEducation() {
       .SetPreemptionStrategy(ui::LayerAnimator::ENQUEUE_NEW_ANIMATION)
       // Set initial nudge position at the top of the window.
       .Once()
-      .SetTransform(nudge_widget_->GetLayer(), nudge_start_transform)
+      .SetTransform(nudge_layer, nudge_start_transform)
       // Fade nudge in and drop down to actual position.
       .Then()
       .SetDuration(kNudgeFadeDuration)
-      .SetOpacity(nudge_widget_->GetLayer(), 1.0f, gfx::Tween::LINEAR)
-      .SetTransform(nudge_widget_->GetLayer(), reset_transform)
+      .SetOpacity(nudge_layer, 1.0f, gfx::Tween::LINEAR)
+      .SetTransform(nudge_layer, reset_transform)
+      // Delay before first bounce.
+      .Then()
+      .SetDuration(kBounceDelay)
       // First bounce.
       .Then()
       .SetDuration(kBounceStartDuration)
@@ -214,7 +216,7 @@ void TabletModeTuckEducation::ActivateTuckEducation() {
       .SetTransform(window_, reset_transform, gfx::Tween::ACCEL_20_DECEL_100)
       // Delay before second bounce.
       .Then()
-      .SetDuration(kSecondBounceDelay)
+      .SetDuration(kBounceDelay)
       // Second bounce.
       .Then()
       .SetDuration(kBounceStartDuration)
@@ -228,7 +230,7 @@ void TabletModeTuckEducation::ActivateTuckEducation() {
       // Fade nudge out.
       .Then()
       .SetDuration(kNudgeFadeDuration)
-      .SetOpacity(nudge_widget_->GetLayer(), 0.0f, gfx::Tween::LINEAR);
+      .SetOpacity(nudge_layer, 0.0f, gfx::Tween::LINEAR);
 
   // Update the preferences.
   auto* pref_service =
@@ -246,9 +248,6 @@ void TabletModeTuckEducation::DismissNudge() {
     nudge_widget_->GetLayer()->GetAnimator()->AbortAllAnimations();
     nudge_widget_->CloseNow();
   }
-
-  // TODO(b/275420014): Destroy `this` once animations finish as no more actions
-  // need to be performed.
 }
 
 // static
