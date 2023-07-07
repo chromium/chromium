@@ -29,9 +29,9 @@ namespace partition_alloc::internal {
 
 namespace {
 
-[[noreturn]] PA_NOINLINE void FreelistCorruptionDetected(size_t extra) {
+[[noreturn]] PA_NOINLINE void FreelistCorruptionDetected(size_t slot_size) {
   // Make it visible in minidumps.
-  PA_DEBUG_DATA_ON_STACK("extra", extra);
+  PA_DEBUG_DATA_ON_STACK("slotsize", slot_size);
   PA_IMMEDIATE_CRASH();
 }
 
@@ -163,22 +163,22 @@ class PartitionFreelistEntry {
     encoded_next_.Override(EncodedPartitionFreelistEntryPtr::Transform(v));
   }
 
-  // Puts |extra| on the stack before crashing in case of memory
+  // Puts `slot_size` on the stack before crashing in case of memory
   // corruption. Meant to be used to report the failed allocation size.
   template <bool crash_on_corruption>
   PA_ALWAYS_INLINE PartitionFreelistEntry* GetNextForThreadCache(
-      size_t extra) const;
-  PA_ALWAYS_INLINE PartitionFreelistEntry* GetNext(size_t extra) const;
+      size_t slot_size) const;
+  PA_ALWAYS_INLINE PartitionFreelistEntry* GetNext(size_t slot_size) const;
 
-  PA_NOINLINE void CheckFreeList(size_t extra) const {
-    for (auto* entry = this; entry; entry = entry->GetNext(extra)) {
+  PA_NOINLINE void CheckFreeList(size_t slot_size) const {
+    for (auto* entry = this; entry; entry = entry->GetNext(slot_size)) {
       // |GetNext()| checks freelist integrity.
     }
   }
 
-  PA_NOINLINE void CheckFreeListForThreadCache(size_t extra) const {
+  PA_NOINLINE void CheckFreeListForThreadCache(size_t slot_size) const {
     for (auto* entry = this; entry;
-         entry = entry->GetNextForThreadCache<true>(extra)) {
+         entry = entry->GetNextForThreadCache<true>(slot_size)) {
       // |GetNextForThreadCache()| checks freelist integrity.
     }
   }
@@ -222,7 +222,7 @@ class PartitionFreelistEntry {
  private:
   template <bool crash_on_corruption>
   PA_ALWAYS_INLINE PartitionFreelistEntry* GetNextInternal(
-      size_t extra,
+      size_t slot_size,
       bool for_thread_cache) const;
 
   PA_ALWAYS_INLINE static bool IsSane(const PartitionFreelistEntry* here,
@@ -294,7 +294,7 @@ static_assert(kSmallestUsedBucket >=
 
 template <bool crash_on_corruption>
 PA_ALWAYS_INLINE PartitionFreelistEntry*
-PartitionFreelistEntry::GetNextInternal(size_t extra,
+PartitionFreelistEntry::GetNextInternal(size_t slot_size,
                                         bool for_thread_cache) const {
   // GetNext() can be called on discarded memory, in which case |encoded_next_|
   // is 0, and none of the checks apply. Don't prefetch nullptr either.
@@ -314,7 +314,7 @@ PartitionFreelistEntry::GetNextInternal(size_t extra,
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
       PA_DEBUG_DATA_ON_STACK("second", static_cast<size_t>(shadow_));
 #endif
-      FreelistCorruptionDetected(extra);
+      FreelistCorruptionDetected(slot_size);
     } else {
       return nullptr;
     }
@@ -333,13 +333,13 @@ PartitionFreelistEntry::GetNextInternal(size_t extra,
 
 template <bool crash_on_corruption>
 PA_ALWAYS_INLINE PartitionFreelistEntry*
-PartitionFreelistEntry::GetNextForThreadCache(size_t extra) const {
-  return GetNextInternal<crash_on_corruption>(extra, true);
+PartitionFreelistEntry::GetNextForThreadCache(size_t slot_size) const {
+  return GetNextInternal<crash_on_corruption>(slot_size, true);
 }
 
 PA_ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNext(
-    size_t extra) const {
-  return GetNextInternal<true>(extra, false);
+    size_t slot_size) const {
+  return GetNextInternal<true>(slot_size, false);
 }
 
 }  // namespace partition_alloc::internal
