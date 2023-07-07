@@ -25,6 +25,7 @@ const extension_detail_view_tests = {
         'no site access with enhanced site controls',
     InspectableViewSortOrder: 'inspectable view sort order',
     ShowAccessRequestsInToolbar: 'show access requests in toolbar',
+    SafetyCheckWarningCheck: 'safety check warning',
   },
 };
 
@@ -613,5 +614,27 @@ suite(extension_detail_view_tests.suiteName, function() {
                 .querySelector<ExtensionsToggleRowElement>(
                     '#show-access-requests-toggle')!.getLabel(),
             'setShowAccessRequestsInToolbar', [extensionData.id, false]);
+      });
+
+  test(
+      extension_detail_view_tests.TestNames.SafetyCheckWarningCheck,
+      function() {
+        // Ensure that the SafetyCheckWarningContainer is not visible
+        // before enabling the feature.
+        assertFalse(isVisible(
+            item.shadowRoot!.querySelector('#safetyCheckWarningContainer')));
+        loadTimeData.overrideValues({'safetyCheckShowReviewPanel': true});
+        item.set('data.safetyCheckText', {'detailString': 'Test Message'});
+        item.set('data.blacklistText', 'This item is blocklisted');  // nocheck
+        flush();
+        // Check to make sure the warning text is hidden due to the
+        // SafetyCheckWarningContainer being shown.
+        assertFalse(isVisible(item.shadowRoot!.querySelector(
+            '#blacklisted-warning')));  // nocheck
+        const safetyWarningText =
+            item.shadowRoot!.querySelector('#safetyCheckWarningContainer');
+        assertTrue(!!safetyWarningText);
+        assertTrue(isVisible(safetyWarningText));
+        assertTrue(safetyWarningText!.textContent!.includes('Test Message'));
       });
 });

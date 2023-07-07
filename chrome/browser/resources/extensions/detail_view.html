@@ -47,6 +47,36 @@
     padding: var(--cr-section-vertical-padding) var(--cr-section-padding);
   }
 
+  .safety-check-warning-container {
+    align-items: center;
+    background-color: var(--google-grey-50);
+    display: flex;
+    padding: 15px;
+  }
+
+  .safety-check-warning-container iron-icon {
+    border-radius: 50%;
+    height: var(--cr-icon-size);
+    padding: 6px;
+    width: var(--cr-icon-size);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .safety-check-warning-container {
+      background-color: unset;
+    }
+
+    .safety-check-icon {
+      background-color: var(--google-blue-300);
+      fill: var(--google-blue-600);
+    }
+  }
+
+  .keep-button {
+    margin-inline-end: 10px;
+    margin-inline-start: 40px;
+  }
+
   .cr-row.control-line {
     justify-content: space-between;
   }
@@ -162,6 +192,26 @@
         [[data.name]]
       </span>
     </div>
+    <div class="safety-check-warning-container" id="safetyCheckWarningContainer"
+        hidden$="[[!showSafetyCheck_]]">
+      <iron-icon role="img" icon="cr:extension"
+          class="safety-check-icon">
+      </iron-icon>
+      <div class="safety-check-wrapper">
+        <span class="section-title">
+          $i18n{safetyCheckExtensionsDetailPagePrimaryLabel}
+        </span>
+        <div class="section-content">
+          [[data.safetyCheckText.detailString]]
+        </div>
+      </div>
+      <cr-button class="keep-button" on-click="onKeepClick_">
+        $i18n{safetyCheckExtensionsKeep}
+      </cr-button>
+      <cr-button class="action-button" on-click="onRemoveClick_">
+        $i18n{remove}
+      </cr-button>
+    </div>
     <div class="cr-row first control-line" id="enable-section">
       <span class$="[[computeEnabledStyle_(data.state)]]">
         [[computeEnabledText_(data.state, '$i18nPolymer{itemOn}',
@@ -236,7 +286,7 @@
         </cr-button>
       </div>
       <div class="cr-row continuation warning" id="blacklisted-warning"
-          hidden$="[[!data.blacklistText]]">
+          hidden$="[[!showBlocklistText_]]">
         <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
         <span>[[data.blacklistText]]</span>
       </div>

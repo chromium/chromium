@@ -44,6 +44,18 @@ a[href] {
   margin: 0 8px;
 }
 
+.safety-check-wrapper {
+  flex: 1;
+  margin-inline-start: 15px;
+}
+
+.safety-check-icon {
+  background-color: var(--google-blue-50);
+  align-self: flex-start;
+  display: flex;
+  fill: var(--google-blue-600);
+}
+
 .matching-restricted-sites-warning {
   align-items: flex-start;
   display: flex;

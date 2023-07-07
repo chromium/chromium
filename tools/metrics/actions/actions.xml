@@ -28657,6 +28657,26 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SafetyCheck.DetailRemoveClicked">
+  <owner>psarouthakis@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    User clicks remove on the detail page of an extension that is showing a
+    safety check warning. This warning is shown when the extension needs a
+    safety review.
+  </description>
+</action>
+
+<action name="SafetyCheck.DetailWarningShown">
+  <owner>psarouthakis@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    User is shown a safety check warning after navigating to the details page of
+    an extension. This warning is shown when the extension needs a safety
+    review.
+  </description>
+</action>
+
 <action name="Save">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

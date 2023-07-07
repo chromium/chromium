@@ -130,6 +130,9 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
     {"anonymousFunction", IDS_EXTENSIONS_ERROR_ANONYMOUS_FUNCTION},
     {"errorContext", IDS_EXTENSIONS_ERROR_CONTEXT},
     {"errorContextUnknown", IDS_EXTENSIONS_ERROR_CONTEXT_UNKNOWN},
+    {"safetyCheckExtensionsDetailPagePrimaryLabel",
+     IDS_EXTENSIONS_SAFETY_CHECK_PRIMARY_LABEL},
+    {"safetyCheckExtensionsKeep", IDS_CONFIRM_DOWNLOAD},
     {"stackTrace", IDS_EXTENSIONS_ERROR_STACK_TRACE},
     // TODO(dpapad): Unify with Settings' IDS_SETTINGS_WEB_STORE.
     {"sidebarDiscoverMore", IDS_EXTENSIONS_SIDEBAR_DISCOVER_MORE},
@@ -407,6 +410,10 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
                          ::switches::kEnableExtensionActivityLogging));
 
   source->AddString(kLoadTimeClassesKey, GetLoadTimeClasses(in_dev_mode));
+
+  source->AddBoolean(
+      "safetyCheckExtensionsReviewEnabled",
+      base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
 
   source->AddBoolean(kEnableEnhancedSiteControls,
                      base::FeatureList::IsEnabled(

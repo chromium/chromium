@@ -47,6 +47,7 @@ export interface ExtensionsDetailViewElement {
     extensionsActivityLogLink: HTMLElement,
     extensionsOptions: CrLinkRowElement,
     parentDisabledPermissionsToolTip: CrTooltipIconElement,
+    safetyCheckWarningContainer: HTMLElement,
     source: HTMLElement,
   };
 }
@@ -98,6 +99,19 @@ export class ExtensionsDetailViewElement extends
         type: Array,
         computed: 'computeSortedViews_(data.views)',
       },
+
+      /** Whether the extensions safety check warning is shown. */
+      showSafetyCheck_: {
+        type: Boolean,
+        computed: 'computeShowSafetyCheck_(data.safetyCheckText)',
+        observer: 'onShowSafetyCheckChanged_',
+      },
+
+      /** Whether the extensions blocklist text is shown. */
+      showBlocklistText_: {
+        type: Boolean,
+        computed: 'computeShowBlocklistText_(data.blacklistText)',
+      },
     };
   }
 
@@ -112,8 +126,11 @@ export class ExtensionsDetailViewElement extends
   incognitoAvailable: boolean;
   showActivityLog: boolean;
   fromActivityLog: boolean;
+  private showSafetyCheck_: boolean;
+  private showBlocklistText_: boolean;
   private size_: string;
   private sortedViews_: chrome.developerPrivate.ExtensionView[];
+  private safetyCheckExtensionsEnabled_: boolean;
 
   override ready() {
     super.ready();
@@ -245,7 +262,15 @@ export class ExtensionsDetailViewElement extends
   }
 
   private onRemoveClick_() {
+    if (this.showSafetyCheck_) {
+      chrome.metricsPrivate.recordUserAction('SafetyCheck.DetailRemoveClicked');
+    }
     this.delegate.deleteItem(this.data.id);
+  }
+
+  private onKeepClick_() {
+    // TODO(crbug/1432194): Replace with keep extension API implementation
+    // and enable string variable.
   }
 
   private onRepairClick_() {
@@ -359,6 +384,25 @@ export class ExtensionsDetailViewElement extends
 
   private showReloadButton_(): boolean {
     return getEnableControl(this.data) === EnableControl.RELOAD;
+  }
+
+  private computeShowSafetyCheck_(): boolean {
+    if (!loadTimeData.getBoolean('safetyCheckShowReviewPanel')) {
+      return false;
+    }
+
+    return !!(
+        this.data.safetyCheckText && this.data.safetyCheckText.detailString);
+  }
+
+  private onShowSafetyCheckChanged_() {
+    if (this.showSafetyCheck_) {
+      chrome.metricsPrivate.recordUserAction('SafetyCheck.DetailWarningShown');
+    }
+  }
+
+  private computeShowBlocklistText_(): boolean {
+    return !this.showSafetyCheck_ && !!this.data.blacklistText;
   }
 
   private showRepairButton_(): boolean {

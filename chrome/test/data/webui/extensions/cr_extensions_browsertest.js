@@ -318,6 +318,11 @@ TEST_F('CrExtensionsDetailViewTest', 'ShowAccessRequestsInToolbar', function() {
       extension_detail_view_tests.TestNames.ShowAccessRequestsInToolbar);
 });
 
+TEST_F('CrExtensionsDetailViewTest', 'SafetyCheckWarningCheck', function() {
+  this.runMochaTest(
+      extension_detail_view_tests.TestNames.SafetyCheckWarningCheck);
+});
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Item List Tests
 
