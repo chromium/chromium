@@ -94,7 +94,8 @@ void LayoutMedia::PaintReplaced(const PaintInfo&,
   NOT_DESTROYED();
 }
 
-LayoutUnit LayoutMedia::ComputePanelWidth(const LayoutRect& media_rect) const {
+LayoutUnit LayoutMedia::ComputePanelWidth(
+    const PhysicalRect& media_rect) const {
   NOT_DESTROYED();
   // TODO(mlamouri): we don't know if the main frame has an horizontal scrollbar
   // if it is out of process. See https://crbug.com/662480
@@ -137,11 +138,11 @@ LayoutUnit LayoutMedia::ComputePanelWidth(const LayoutRect& media_rect) const {
   const LayoutUnit visible_width(page->GetVisualViewport().VisibleWidth());
   // The bottom left corner of the video.
   const gfx::PointF bottom_left_point(
-      LocalToAbsolutePoint(gfx::PointF(media_rect.X(), media_rect.MaxY()),
+      LocalToAbsolutePoint(gfx::PointF(media_rect.X(), media_rect.Bottom()),
                            kTraverseDocumentBoundaries));
   // The bottom right corner of the video.
   const gfx::PointF bottom_right_point(
-      LocalToAbsolutePoint(gfx::PointF(media_rect.MaxX(), media_rect.MaxY()),
+      LocalToAbsolutePoint(gfx::PointF(media_rect.Right(), media_rect.Bottom()),
                            kTraverseDocumentBoundaries));
 
   const bool bottom_left_corner_visible = bottom_left_point.x() < visible_width;

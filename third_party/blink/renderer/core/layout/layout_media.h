@@ -70,7 +70,7 @@ class LayoutMedia : public LayoutImage {
     return "LayoutMedia";
   }
 
-  LayoutUnit ComputePanelWidth(const LayoutRect& media_width) const;
+  LayoutUnit ComputePanelWidth(const PhysicalRect& media_width) const;
 
  protected:
   bool IsOfType(LayoutObjectType type) const override {
