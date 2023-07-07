@@ -40,7 +40,7 @@ try_.builder(
     mirrors = [
         "ci/win-asan",
     ],
-    execution_timeout = 6 * time.hour,
+    execution_timeout = 9 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
