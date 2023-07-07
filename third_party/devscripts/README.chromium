@@ -3,8 +3,8 @@ URL: http://anonscm.debian.org/gitweb/?p=devscripts/devscripts.git
 Version: 2.12.4
 CPEPrefix: cpe:/a:debian:devscripts:2.12.4
 Security Critical: no
+Shipped: no
 License: GPL 2.0
-License File: NOT_SHIPPED
 
 Description:
 This directory contains selected tools from the Debian's devscripts collection.
