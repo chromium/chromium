@@ -6,6 +6,7 @@ License: Apache Version 2.0
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: yes
+Shipped: yes
 
 Description:
 A set of annotations that provide additional information to the J2ObjC translator to modify the result of translation.
