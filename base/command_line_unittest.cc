@@ -488,8 +488,7 @@ TEST(CommandLineTest, Init) {
 
 // Test that copies of CommandLine have a valid StringPiece map.
 TEST(CommandLineTest, Copy) {
-  std::unique_ptr<CommandLine> initial(
-      new CommandLine(CommandLine::NO_PROGRAM));
+  auto initial = std::make_unique<CommandLine>(CommandLine::NO_PROGRAM);
   initial->AppendSwitch("a");
   initial->AppendSwitch("bbbbbbbbbbbbbbb");
   initial->AppendSwitch("c");
@@ -501,6 +500,29 @@ TEST(CommandLineTest, Copy) {
     EXPECT_TRUE(copy_constructed.HasSwitch(pair.first));
   for (const auto& pair : switch_map)
     EXPECT_TRUE(assigned.HasSwitch(pair.first));
+}
+
+TEST(CommandLineTest, CopySwitches) {
+  CommandLine source(CommandLine::NO_PROGRAM);
+  source.AppendSwitch("a");
+  source.AppendSwitch("bbbb");
+  source.AppendSwitch("c");
+  EXPECT_THAT(source.argv(), testing::ElementsAre(FILE_PATH_LITERAL(""),
+                                                  FILE_PATH_LITERAL("--a"),
+                                                  FILE_PATH_LITERAL("--bbbb"),
+                                                  FILE_PATH_LITERAL("--c")));
+
+  CommandLine cl(CommandLine::NO_PROGRAM);
+  EXPECT_THAT(cl.argv(), testing::ElementsAre(FILE_PATH_LITERAL("")));
+
+  cl.CopySwitchesFrom(source, nullptr, 0);
+  EXPECT_THAT(cl.argv(), testing::ElementsAre(FILE_PATH_LITERAL("")));
+
+  static const char* const kSwitchesToCopy[] = {"a", "nosuch", "c"};
+  cl.CopySwitchesFrom(source, kSwitchesToCopy, std::size(kSwitchesToCopy));
+  EXPECT_THAT(cl.argv(), testing::ElementsAre(FILE_PATH_LITERAL(""),
+                                              FILE_PATH_LITERAL("--a"),
+                                              FILE_PATH_LITERAL("--c")));
 }
 
 TEST(CommandLineTest, PrependSimpleWrapper) {
@@ -762,4 +784,4 @@ TEST(CommandLineDeathTest, ThreadChecks) {
 }
 #endif  // BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
 
-} // namespace base
+}  // namespace base
