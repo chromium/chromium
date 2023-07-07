@@ -35,6 +35,7 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/network_time/network_time_tracker.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/hashing.h"
@@ -102,10 +103,18 @@ void RecordCurrentTime(
     metrics::ChromeUserMetricsExtension::RealLocalTime* time) {
   // Record the current time and the clock used to determine the time.
   base::Time now;
-  // TODO(http://crbug.com/1257449): Enable network time on Android.
-  now = clock->Now();
-  time->set_time_source(
-      metrics::ChromeUserMetricsExtension::RealLocalTime::CLIENT_CLOCK);
+  if (network_time_tracker != nullptr &&
+      network_time_tracker->GetNetworkTime(&now, nullptr) ==
+          network_time::NetworkTimeTracker::NETWORK_TIME_AVAILABLE) {
+    // |network_time_tracker| can be null in certain settings such as WebView
+    // (which doesn't run a NetworkTimeTracker) and tests.
+    time->set_time_source(
+        metrics::ChromeUserMetricsExtension::RealLocalTime::NETWORK_TIME_CLOCK);
+  } else {
+    now = clock->Now();
+    time->set_time_source(
+        metrics::ChromeUserMetricsExtension::RealLocalTime::CLIENT_CLOCK);
+  }
   time->set_time_sec(now.ToTimeT());
 
   if (record_time_zone) {
