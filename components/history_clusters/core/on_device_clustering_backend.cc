@@ -19,13 +19,13 @@
 #include "components/history_clusters/core/cluster_finalizer.h"
 #include "components/history_clusters/core/cluster_interaction_state_processor.h"
 #include "components/history_clusters/core/cluster_processor.h"
+#include "components/history_clusters/core/cluster_similarity_heuristics_processor.h"
 #include "components/history_clusters/core/clusterer.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/content_annotations_cluster_processor.h"
 #include "components/history_clusters/core/content_visibility_cluster_finalizer.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/filter_cluster_processor.h"
-#include "components/history_clusters/core/full_membership_cluster_processor.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/keyword_cluster_finalizer.h"
 #include "components/history_clusters/core/label_cluster_finalizer.h"
@@ -533,7 +533,7 @@ OnDeviceClusteringBackend::GetClustersForUIOnBackgroundThread(
   cluster_processors.push_back(
       std::make_unique<ClusterInteractionStateProcessor>(filter_params));
   cluster_processors.push_back(
-      std::make_unique<FullMembershipClusterProcessor>());
+      std::make_unique<ClusterSimilarityHeuristicsProcessor>());
   if (GetConfig().content_clustering_enabled) {
     cluster_processors.push_back(
         std::make_unique<ContentAnnotationsClusterProcessor>(

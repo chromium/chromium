@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_clusters/core/full_membership_cluster_processor.h"
+#include "components/history_clusters/core/cluster_similarity_heuristics_processor.h"
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -17,10 +17,11 @@ namespace {
 using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
 
-class FullMembershipClusterProcessorTest : public ::testing::Test {
+class ClusterSimilarityHeuristicsProcessorTest : public ::testing::Test {
  public:
   void SetUp() override {
-    cluster_processor_ = std::make_unique<FullMembershipClusterProcessor>();
+    cluster_processor_ =
+        std::make_unique<ClusterSimilarityHeuristicsProcessor>();
   }
 
   void TearDown() override { cluster_processor_.reset(); }
@@ -30,10 +31,10 @@ class FullMembershipClusterProcessorTest : public ::testing::Test {
   }
 
  private:
-  std::unique_ptr<FullMembershipClusterProcessor> cluster_processor_;
+  std::unique_ptr<ClusterSimilarityHeuristicsProcessor> cluster_processor_;
 };
 
-TEST_F(FullMembershipClusterProcessorTest, Merged) {
+TEST_F(ClusterSimilarityHeuristicsProcessorTest, Merged) {
   std::vector<history::Cluster> clusters;
 
   history::AnnotatedVisit visit =
@@ -65,7 +66,41 @@ TEST_F(FullMembershipClusterProcessorTest, Merged) {
   ASSERT_EQ(clusters.size(), 1u);
 }
 
-TEST_F(FullMembershipClusterProcessorTest, NotMerged) {
+TEST_F(ClusterSimilarityHeuristicsProcessorTest, MergedSameSearchTerms) {
+  std::vector<history::Cluster> clusters;
+
+  history::AnnotatedVisit visit =
+      testing::CreateDefaultAnnotatedVisit(1, GURL("https://github.com/"));
+  history::AnnotatedVisit visit2 =
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/"));
+  history::AnnotatedVisit visit3 =
+      testing::CreateDefaultAnnotatedVisit(3, GURL("https://github.com/"));
+  visit3.content_annotations.search_terms = u"search term";
+  history::Cluster cluster1;
+  cluster1.visits = {testing::CreateClusterVisit(visit),
+                     testing::CreateClusterVisit(visit2),
+                     testing::CreateClusterVisit(visit3)};
+  clusters.push_back(cluster1);
+
+  // After the context clustering, visit5 will not be in the same cluster as
+  // visit, visit2, and visit4 but has the same search term as visit4.
+  history::AnnotatedVisit visit5 =
+      testing::CreateDefaultAnnotatedVisit(5, GURL("https://nomatch.com/"));
+  visit5.content_annotations.search_terms = u"search term";
+  history::Cluster cluster2;
+  cluster2.visits = {testing::CreateClusterVisit(visit5)};
+  clusters.push_back(cluster2);
+
+  ProcessClusters(&clusters);
+  EXPECT_THAT(testing::ToVisitResults(clusters),
+              ElementsAre(ElementsAre(
+                  testing::VisitResult(1, 1.0), testing::VisitResult(2, 1.0),
+                  testing::VisitResult(3, 1.0, {}, u"search term"),
+                  testing::VisitResult(5, 1.0, {}, u"search term"))));
+  ASSERT_EQ(clusters.size(), 1u);
+}
+
+TEST_F(ClusterSimilarityHeuristicsProcessorTest, NotMerged) {
   std::vector<history::Cluster> clusters;
 
   history::AnnotatedVisit visit7 =
@@ -95,6 +130,30 @@ TEST_F(FullMembershipClusterProcessorTest, NotMerged) {
                      testing::CreateClusterVisit(visit5)};
   clusters.push_back(cluster2);
 
+  // Not clustered together as there is no other cluster with same search terms.
+  history::AnnotatedVisit visit16 =
+      testing::CreateDefaultAnnotatedVisit(16, GURL("https://github.com/"));
+  visit16.content_annotations.search_terms = u"search term 1";
+  history::AnnotatedVisit visit17 = testing::CreateDefaultAnnotatedVisit(
+      17, GURL("https://someotherthing.com/"));
+  visit17.content_annotations.search_terms = u"search term 1";
+  history::Cluster cluster16;
+  cluster16.visits = {testing::CreateClusterVisit(visit16),
+                      testing::CreateClusterVisit(visit17)};
+  clusters.push_back(cluster16);
+
+  // Not clustered together as there is no other cluster with same search terms.
+  history::AnnotatedVisit visit18 =
+      testing::CreateDefaultAnnotatedVisit(18, GURL("https://different.com/"));
+  visit18.content_annotations.search_terms = u"search term 2";
+  history::AnnotatedVisit visit19 = testing::CreateDefaultAnnotatedVisit(
+      19, GURL("https://someotherthing.com/"));
+  visit19.content_annotations.search_terms = u"search term 2";
+  history::Cluster cluster17;
+  cluster17.visits = {testing::CreateClusterVisit(visit18),
+                      testing::CreateClusterVisit(visit19)};
+  clusters.push_back(cluster17);
+
   // This is a whole different visit.
   history::AnnotatedVisit visit6 =
       testing::CreateDefaultAnnotatedVisit(11, GURL("https://othervisit.com/"));
@@ -111,14 +170,19 @@ TEST_F(FullMembershipClusterProcessorTest, NotMerged) {
   clusters.push_back(cluster15);
 
   ProcessClusters(&clusters);
-  EXPECT_THAT(testing::ToVisitResults(clusters),
-              ElementsAre(ElementsAre(testing::VisitResult(12, 1.0),
-                                      testing::VisitResult(1, 1.0),
-                                      testing::VisitResult(2, 1.0),
-                                      testing::VisitResult(15, 1.0)),
-                          ElementsAre(testing::VisitResult(4, 1.0),
-                                      testing::VisitResult(5, 1.0)),
-                          ElementsAre(testing::VisitResult(11, 1.0))));
+  EXPECT_THAT(
+      testing::ToVisitResults(clusters),
+      ElementsAre(
+          ElementsAre(
+              testing::VisitResult(12, 1.0), testing::VisitResult(1, 1.0),
+              testing::VisitResult(2, 1.0), testing::VisitResult(15, 1.0)),
+          ElementsAre(testing::VisitResult(4, 1.0),
+                      testing::VisitResult(5, 1.0)),
+          ElementsAre(testing::VisitResult(16, 1.0, {}, u"search term 1"),
+                      testing::VisitResult(17, 1.0, {}, u"search term 1")),
+          ElementsAre(testing::VisitResult(18, 1.0, {}, u"search term 2"),
+                      testing::VisitResult(19, 1.0, {}, u"search term 2")),
+          ElementsAre(testing::VisitResult(11, 1.0))));
 }
 
 }  // namespace
