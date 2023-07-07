@@ -2,18 +2,14 @@
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Implements commands for managing Fuchsia repos via the pm tool."""
+"""Implements commands for managing Fuchsia repos via the ffx tool."""
 
 import argparse
-import os
-import subprocess
 import sys
 
 from typing import Iterable
 
-from common import SDK_TOOLS_DIR, read_package_paths, register_common_args
-
-_pm_tool = os.path.join(SDK_TOOLS_DIR, 'pm')
+from common import read_package_paths, register_common_args, run_ffx_command
 
 
 def publish_packages(packages: Iterable[str],
@@ -21,10 +17,13 @@ def publish_packages(packages: Iterable[str],
                      new_repo: bool = False) -> None:
     """Publish packages to a repo directory, initializing it if necessary."""
     if new_repo:
-        subprocess.run([_pm_tool, 'newrepo', '-repo', repo], check=True)
+        run_ffx_command(cmd=['repository', 'create', repo], check=True)
+
+    args = ['repository', 'publish']
     for package in packages:
-        subprocess.run([_pm_tool, 'publish', '-a', '-r', repo, '-f', package],
-                       check=True)
+        args += ['--package-archive', package]
+    args += [repo]
+    run_ffx_command(cmd=args, check=True)
 
 
 def register_package_args(parser: argparse.ArgumentParser,
