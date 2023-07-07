@@ -680,6 +680,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 - (void)dealloc {
   DCHECK_EQ(ios::SigninPromoViewState::Invalid, _signinPromoViewState)
       << base::SysNSStringToUTF8([self description]);
+  DUMP_WILL_BE_CHECK(!_browser);
 }
 
 - (SigninPromoViewConfigurator*)createConfigurator {
@@ -788,6 +789,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   _syncService = nullptr;
   _accountManagerServiceObserver.reset();
   _syncObserverBridge.reset();
+  _browser = nullptr;
 }
 
 #pragma mark - Public properties
