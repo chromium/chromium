@@ -9720,6 +9720,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"request-desktop-site-window-setting",
+     flag_descriptions::kRequestDesktopSiteWindowSettingName,
+     flag_descriptions::kRequestDesktopSiteWindowSettingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kRequestDesktopSiteWindowSetting)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
     {"request-desktop-site-zoom",
      flag_descriptions::kRequestDesktopSiteZoomName,
      flag_descriptions::kRequestDesktopSiteZoomDescription, kOsAndroid,

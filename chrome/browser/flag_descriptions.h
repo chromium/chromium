@@ -2426,6 +2426,9 @@ extern const char kRequestDesktopSiteDefaultsLoggingDescription[];
 extern const char kRequestDesktopSitePerSiteIphName[];
 extern const char kRequestDesktopSitePerSiteIphDescription[];
 
+extern const char kRequestDesktopSiteWindowSettingName[];
+extern const char kRequestDesktopSiteWindowSettingDescription[];
+
 extern const char kRequestDesktopSiteZoomName[];
 extern const char kRequestDesktopSiteZoomDescription[];
 

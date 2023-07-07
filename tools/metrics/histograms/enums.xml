@@ -62959,6 +62959,7 @@ from previous Chrome versions.
   <int value="-424701311" label="SignedHTTPExchange:disabled"/>
   <int value="-424689493" label="HistoryClustersHideVisits:enabled"/>
   <int value="-424584720" label="ClipboardFilenames:enabled"/>
+  <int value="-424261945" label="RequestDesktopSiteWindowSetting:disabled"/>
   <int value="-424134004" label="WebPaymentsExperimentalFeatures:disabled"/>
   <int value="-423134304" label="VirtualKeyboardMultitouch:disabled"/>
   <int value="-421428607" label="InheritNativeThemeFromParentWidget:disabled"/>
@@ -66239,6 +66240,7 @@ from previous Chrome versions.
   <int value="1280614081" label="show-overdraw-feedback"/>
   <int value="1281379527" label="AmbientSubpageUIChange:enabled"/>
   <int value="1281471853" label="UseButtonTranslateBubbleUI:disabled"/>
+  <int value="1283672117" label="RequestDesktopSiteWindowSetting:enabled"/>
   <int value="1283908088" label="ImprovedLanguageSettings:disabled"/>
   <int value="1283956865" label="force-tablet-mode"/>
   <int value="1283960113" label="disable-fixed-position-compositing"/>

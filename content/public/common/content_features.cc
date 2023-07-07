@@ -1521,6 +1521,11 @@ BASE_FEATURE(kRequestDesktopSiteAdditions,
              "RequestDesktopSiteAdditions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Request Desktop Site based on window width for Android.
+BASE_FEATURE(kRequestDesktopSiteWindowSetting,
+             "RequestDesktopSiteWindowSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Request Desktop Site zoom for Android. Apply a pre-defined page zoom level
 // when desktop user agent is used.
 BASE_FEATURE(kRequestDesktopSiteZoom,

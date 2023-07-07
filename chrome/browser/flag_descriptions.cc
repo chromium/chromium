@@ -4142,6 +4142,12 @@ const char kRequestDesktopSitePerSiteIphName[] =
 const char kRequestDesktopSitePerSiteIphDescription[] =
     "Provide in-product help for desktop site site-level settings.";
 
+const char kRequestDesktopSiteWindowSettingName[] =
+    "Window setting for request desktop site on Android.";
+const char kRequestDesktopSiteWindowSettingDescription[] =
+    "Secondary option in `Site settings` to request the desktop version of "
+    "websites based on window width.";
+
 const char kRequestDesktopSiteZoomName[] =
     "Default zoom for request desktop site on Android.";
 const char kRequestDesktopSiteZoomDescription[] =
