@@ -372,6 +372,7 @@ void PrintViewManagerBase::OnPrintSettingsDone(
   }
 
   if (!printer_query->cookie() || !printer_query->settings().dpi()) {
+    PRINTER_LOG(ERROR) << "Unable to update print settings";
     std::move(callback).Run(base::Value("Update settings failed"));
     return;
   }
