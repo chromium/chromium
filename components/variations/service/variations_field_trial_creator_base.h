@@ -284,11 +284,11 @@ class VariationsFieldTrialCreatorBase {
   // constructor.
   std::string application_locale_;
 
-  // Indiciate if OverrideVariationsPlatform has been used to set
+  // Indicate if OverrideVariationsPlatform has been used to set
   // |platform_override_|.
   bool has_platform_override_;
 
-  // Platform to be used for variations filtering, overridding the current
+  // Platform to be used for variations filtering, overriding the current
   // platform.
   Study::Platform platform_override_;
 
