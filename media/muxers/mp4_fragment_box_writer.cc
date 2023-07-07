@@ -134,7 +134,7 @@ void Mp4TrackFragmentHeaderBoxWriter::Write(BoxByteStream& writer) {
   if (box_.flags &
       static_cast<uint32_t>(mp4::writable_boxes::TrackFragmentHeaderFlags::
                                 kDefaultSampleDurationPresent)) {
-    writer.WriteU32(box_.default_sample_duration.InSeconds());
+    writer.WriteU32(box_.default_sample_duration.InMilliseconds());
   }
 
   if (box_.flags &
@@ -169,7 +169,7 @@ void Mp4TrackFragmentDecodeTimeBoxWriter::Write(BoxByteStream& writer) {
 
   writer.StartBox(mp4::FOURCC_TFDT);
 
-  writer.WriteU64(box_.base_media_decode_time.InSeconds());
+  writer.WriteU64(box_.base_media_decode_time.InMilliseconds());
 
   writer.EndBox();
 }
@@ -236,7 +236,7 @@ void Mp4TrackFragmentRunBoxWriter::Write(BoxByteStream& writer) {
 
   for (uint32_t i = 0; i < box_.sample_count; ++i) {
     if (duration_exists) {
-      writer.WriteU32(box_.sample_durations[i].InSeconds());
+      writer.WriteU32(box_.sample_durations[i].InMilliseconds());
     }
 
     if (size_exists) {

@@ -37,8 +37,8 @@ constexpr int32_t kDisplayIdentityMatrix[9] = {
     0x00010000, 0, 0, 0, 0x00010000, 0, 0, 0, 0x40000000};
 
 void WriteIsoTime(BoxByteStream& writer, base::Time time) {
-  uint64_t iso_time =
-      time.ToDeltaSinceWindowsEpoch().InSeconds() - k1601To1904DeltaInSeconds;
+  uint64_t iso_time = time.ToDeltaSinceWindowsEpoch().InMilliseconds() -
+                      k1601To1904DeltaInMilliseconds;
 
   writer.WriteU64(iso_time);
 }
@@ -104,7 +104,7 @@ void Mp4MovieHeaderBoxWriter::Write(BoxByteStream& writer) {
   WriteIsoTime(writer, box_.creation_time);
   WriteIsoTime(writer, box_.modification_time);
   writer.WriteU32(box_.timescale);
-  writer.WriteU64(box_.duration.InSeconds());
+  writer.WriteU64(box_.duration.InMilliseconds());
 
   writer.WriteU32(0x00010000);  // normal rate.
   writer.WriteU16(0x0100);      // full volume.
@@ -178,7 +178,7 @@ void Mp4MovieTrackExtendsBoxWriter::Write(BoxByteStream& writer) {
   writer.WriteU32(box_.track_id);
   writer.WriteU32(box_.default_sample_description_index);
   writer.WriteU32(
-      static_cast<uint32_t>(box_.default_sample_duration.InSeconds()));
+      static_cast<uint32_t>(box_.default_sample_duration.InMilliseconds()));
   writer.WriteU32(box_.default_sample_size);
   writer.WriteU32(box_.default_sample_flags);
 
@@ -228,7 +228,7 @@ void Mp4MovieTrackHeaderBoxWriter::Write(BoxByteStream& writer) {
 
   writer.WriteU32(box_.track_id);
   writer.WriteU32(0);  // reserved
-  writer.WriteU64(box_.duration.InSeconds());
+  writer.WriteU64(box_.duration.InMilliseconds());
   writer.WriteU32(0);  // reserved;
   writer.WriteU32(0);  // reserved;
   writer.WriteU16(0);  // layer, 0 is the normal value.
@@ -297,7 +297,7 @@ void Mp4MovieMediaHeaderBoxWriter::Write(BoxByteStream& writer) {
   WriteIsoTime(writer, box_.modification_time);
 
   writer.WriteU32(box_.timescale);
-  writer.WriteU64(box_.duration.InSeconds());
+  writer.WriteU64(box_.duration.InMilliseconds());
   uint16_t language_code = ConvertIso639LanguageCodeToU16(box_.language);
   writer.WriteU16(language_code);
   writer.WriteU16(0);  // pre_defined = 0;
