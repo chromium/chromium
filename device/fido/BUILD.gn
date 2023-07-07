@@ -485,3 +485,23 @@ if (is_mac) {
     configs += [ "//build/config/compiler:enable_arc" ]
   }
 }
+
+if (!is_android && !is_ios && !is_chromeos) {
+  # This is being prototyped and is only being built into a test harness.
+  # It will be moved into the fido component later.
+  static_library("enclave_device") {
+    testonly = true
+    sources = [
+      "enclave/enclave_http_client.cc",
+      "enclave/enclave_http_client.h",
+      "enclave/fido_enclave_device.cc",
+      "enclave/fido_enclave_device.h",
+    ]
+    deps = [
+      ":fido",
+      "//base",
+      "//components/device_event_log",
+      "//net",
+    ]
+  }
+}

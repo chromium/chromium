@@ -26,6 +26,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Noise {
   enum class HandshakeType {
     kKNpsk0,  // https://noiseexplorer.com/patterns/KNpsk0/
     kNKpsk0,  // https://noiseexplorer.com/patterns/NKpsk0/
+    kNK,      // https://noiseexplorer.com/patterns/NK/
   };
 
   Noise();

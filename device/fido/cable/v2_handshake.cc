@@ -855,15 +855,17 @@ bool& Crypter::GetNewConstructionFlagForTesting() {
 }
 
 HandshakeInitiator::HandshakeInitiator(
-    base::span<const uint8_t, 32> psk,
+    absl::optional<base::span<const uint8_t, 32>> psk,
     absl::optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
     absl::optional<base::span<const uint8_t, kQRSeedSize>> identity_seed)
-    : psk_(fido_parsing_utils::Materialize(psk)),
-      local_identity_(identity_seed ? ECKeyFromSeed(*identity_seed) : nullptr) {
+    : local_identity_(identity_seed ? ECKeyFromSeed(*identity_seed) : nullptr) {
   DCHECK(peer_identity.has_value() ^ static_cast<bool>(local_identity_));
   if (peer_identity) {
     peer_identity_ =
         fido_parsing_utils::Materialize<kP256X962Length>(*peer_identity);
+  }
+  if (psk) {
+    psk_ = fido_parsing_utils::Materialize(*psk);
   }
 }
 
@@ -872,19 +874,25 @@ HandshakeInitiator::~HandshakeInitiator() = default;
 std::vector<uint8_t> HandshakeInitiator::BuildInitialMessage() {
   uint8_t prologue[1];
 
-  if (peer_identity_) {
+  if (!psk_.has_value()) {
+    noise_.Init(Noise::HandshakeType::kNK);
+    prologue[0] = 0;
+    noise_.MixHash(prologue);
+    noise_.MixHash(*peer_identity_);
+  } else if (peer_identity_) {
     noise_.Init(Noise::HandshakeType::kNKpsk0);
     prologue[0] = 0;
     noise_.MixHash(prologue);
     noise_.MixHash(*peer_identity_);
+    noise_.MixKeyAndHash(*psk_);
   } else {
     noise_.Init(Noise::HandshakeType::kKNpsk0);
     prologue[0] = 1;
     noise_.MixHash(prologue);
     noise_.MixHashPoint(EC_KEY_get0_public_key(local_identity_.get()));
+    noise_.MixKeyAndHash(*psk_);
   }
 
-  noise_.MixKeyAndHash(psk_);
   ephemeral_key_.reset(EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
   const EC_GROUP* group = EC_KEY_get0_group(ephemeral_key_.get());
   CHECK(EC_KEY_generate_key(ephemeral_key_.get()));

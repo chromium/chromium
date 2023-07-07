@@ -279,8 +279,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) HandshakeInitiator {
  public:
   HandshakeInitiator(
       // psk is derived from the connection nonce and either QR-code secrets
-      // pairing secrets.
-      base::span<const uint8_t, 32> psk,
+      // pairing secrets. nullopt for enclave handshakes.
+      absl::optional<base::span<const uint8_t, 32>> psk,
       // peer_identity, if not nullopt, specifies that this is a paired
       // handshake and then contains a P-256 public key for the peer. Otherwise
       // this is a QR handshake.
@@ -303,7 +303,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) HandshakeInitiator {
 
  private:
   Noise noise_;
-  std::array<uint8_t, 32> psk_;
+  absl::optional<std::array<uint8_t, 32>> psk_;
 
   absl::optional<std::array<uint8_t, kP256X962Length>> peer_identity_;
   bssl::UniquePtr<EC_KEY> local_identity_;

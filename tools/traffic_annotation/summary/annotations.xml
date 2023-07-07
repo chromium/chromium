@@ -427,4 +427,5 @@ Refer to README.md for content description and update process.
  <item id="password_sharing_recipients" added_in_milestone="116" content_hash_code="00de3c6a" os_list="linux,windows,android,chromeos" file_path="components/password_manager/core/browser/sharing/password_sharing_recipients_downloader.cc" />
  <item id="ntp_image_url_verification" added_in_milestone="116" content_hash_code="08163e54" os_list="linux,windows,chromeos" file_path="chrome/browser/search/background/ntp_background_service.cc" />
  <item id="device_bound_session_register" added_in_milestone="116" content_hash_code="0682bd33" os_list="linux" file_path="chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.cc" />
+ <item id="passkey_enclave_client" added_in_milestone="117" content_hash_code="06c3fa70" os_list="linux,windows" file_path="device/fido/enclave/enclave_http_client.cc" />
 </annotations>
