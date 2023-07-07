@@ -3,9 +3,10 @@ Short Name: mockito-subclass
 URL: https://github.com/mockito/mockito
 Version: 5.4.0
 License: The MIT License
-License File: NOT_SHIPPED
+License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no
+Shipped: no
 
 Description:
 Mockito preconfigured subclass mock maker
