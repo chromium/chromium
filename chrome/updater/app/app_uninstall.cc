@@ -57,22 +57,13 @@ std::vector<base::FilePath> GetVersionExecutablePaths(UpdaterScope scope) {
                    const base::FilePath& version_folder_path) {
         // Skip the current version.
         if (version_folder_path == GetVersionedInstallDirectory(scope)) {
-          VLOG(1) << __func__
-                  << " : skipping the current version: " << version_folder_path;
           return;
         }
 
-#if BUILDFLAG(IS_WIN)
-        const base::Version folder_version(
-            base::WideToASCII(version_folder_path.BaseName().value()));
-#else
-        const base::Version folder_version(
-            version_folder_path.BaseName().value());
-#endif  // BUILDFLAG(IS_WIN)
-
         // Skip if the folder is not named as a valid version. All updater
         // version directories are named as valid versions.
-        if (!folder_version.IsValid()) {
+        if (!base::Version(version_folder_path.BaseName().MaybeAsASCII())
+                 .IsValid()) {
           return;
         }
 

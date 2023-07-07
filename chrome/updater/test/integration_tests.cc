@@ -608,6 +608,32 @@ TEST_F(IntegrationTest, QualifyUpdater) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+TEST_F(IntegrationTest, CleanupOldVersion) {
+  ASSERT_NO_FATAL_FAILURE(SetupFakeUpdaterLowerVersion());
+
+  // Since the old version is not working, the new version should install and
+  // become active.
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
+
+  // Waking the new version should clean up the old.
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  absl::optional<base::FilePath> path = GetInstallDirectory(GetTestScope());
+  ASSERT_TRUE(path);
+  int dirs = 0;
+  base::FileEnumerator(*path, false, base::FileEnumerator::DIRECTORIES)
+      .ForEach([&dirs](const base::FilePath& path) {
+        if (base::Version(path.BaseName().MaybeAsASCII()).IsValid()) {
+          ++dirs;
+        }
+      });
+  EXPECT_EQ(dirs, 1);
+
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 TEST_F(IntegrationTest, SelfUpdate) {
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());

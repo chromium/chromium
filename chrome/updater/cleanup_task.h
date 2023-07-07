@@ -23,14 +23,7 @@ class CleanupTask : public base::RefCountedThreadSafe<CleanupTask> {
 
  private:
   friend class base::RefCountedThreadSafe<CleanupTask>;
-  FRIEND_TEST_ALL_PREFIXES(CleanupTaskTest, RunCleanupObsoleteFiles);
   virtual ~CleanupTask();
-
-  // Runs Cleanup commands.
-  void RunCleanup();
-
-  // Cleans up any obsolete files.
-  [[nodiscard]] bool RunCleanupObsoleteFiles();
 
   SEQUENCE_CHECKER(sequence_checker_);
   UpdaterScope scope_;

@@ -532,8 +532,8 @@ void DeleteFile(UpdaterScope /*scope*/, const base::FilePath& path) {
 }
 
 void SetupFakeUpdaterLowerVersion(UpdaterScope scope) {
-  SetupFakeUpdaterVersion(scope, base::Version(kUpdaterVersion),
-                          /*major_version_offset=*/-1,
+  SetupFakeUpdaterVersion(scope, base::Version("100.0.0.0"),
+                          /*major_version_offset=*/0,
                           /*should_create_updater_executable=*/false);
 }
 
