@@ -5,6 +5,7 @@ Commit: commit 57a7c4e2629cb85c6f27faa91650e047c4220e15
 License: Microsoft Permissive License
 License File: Ms-PL.txt
 Security Critical: yes
+Shipped: yes
 
 Local changes (all part of wtl10.patch):
 - Fix calls to ATLVERIFY to avoid the error: expression result unused.
