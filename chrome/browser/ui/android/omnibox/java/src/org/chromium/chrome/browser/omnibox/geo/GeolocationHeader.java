@@ -24,7 +24,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -250,13 +249,11 @@ public class GeolocationHeader {
 
     private static boolean isGeoHeaderEnabledForDSE(
             Profile profile, TemplateUrlService templateService) {
-        return geoHeaderStateForUrl(profile, templateService.getUrlForSearchQuery(DUMMY_URL_QUERY),
-                       /* recordUma */ false)
+        return geoHeaderStateForUrl(profile, templateService.getUrlForSearchQuery(DUMMY_URL_QUERY))
                 == HeaderState.HEADER_ENABLED;
     }
 
-    private static @HeaderState int geoHeaderStateForUrl(
-            Profile profile, String url, boolean recordUma) {
+    private static @HeaderState int geoHeaderStateForUrl(Profile profile, String url) {
         try (TraceEvent e = TraceEvent.scoped("GeolocationHeader.geoHeaderStateForUrl")) {
             // Only send X-Geo in normal mode.
             if (profile.isOffTheRecord()) return HeaderState.INCOGNITO;
@@ -268,13 +265,11 @@ public class GeolocationHeader {
             if (!UrlConstants.HTTPS_SCHEME.equals(uri.getScheme())) return HeaderState.NOT_HTTPS;
 
             if (!hasGeolocationPermission()) {
-                if (recordUma) recordHistogram(UMA_LOCATION_DISABLED_FOR_CHROME_APP);
                 return HeaderState.LOCATION_PERMISSION_BLOCKED;
             }
 
             // Only send X-Geo header if the user hasn't disabled geolocation for url.
             if (isLocationDisabledForUrl(profile, uri)) {
-                if (recordUma) recordHistogram(UMA_LOCATION_DISABLED_FOR_GOOGLE_DOMAIN);
                 return HeaderState.LOCATION_PERMISSION_BLOCKED;
             }
 
@@ -345,20 +340,15 @@ public class GeolocationHeader {
             VisibleNetworks visibleNetworksToAttach = null;
             long locationAge = Long.MAX_VALUE;
             @HeaderState
-            int headerState = geoHeaderStateForUrl(profile, url, true);
+            int headerState = geoHeaderStateForUrl(profile, url);
             if (headerState == HeaderState.HEADER_ENABLED) {
                 locationToAttach = GeolocationTracker.getLastKnownLocation(
                         ContextUtils.getApplicationContext());
-                if (locationToAttach == null) {
-                    recordHistogram(UMA_LOCATION_NOT_AVAILABLE);
-                } else {
+                if (locationToAttach != null) {
                     locationAge = GeolocationTracker.getLocationAge(locationToAttach);
                     if (locationAge > MAX_LOCATION_AGE) {
                         // Do not attach the location
-                        recordHistogram(UMA_LOCATION_STALE);
                         locationToAttach = null;
-                    } else {
-                        recordHistogram(UMA_HEADER_SENT);
                     }
                 }
 
@@ -469,11 +459,6 @@ public class GeolocationHeader {
     @VisibleForTesting
     static long getFirstLocationTimeForTesting() {
         return sFirstLocationTime;
-    }
-
-    /** Records a data point for the Geolocation.HeaderSentOrNot histogram. */
-    private static void recordHistogram(int result) {
-        RecordHistogram.recordEnumeratedHistogram("Geolocation.HeaderSentOrNot", result, UMA_MAX);
     }
 
     /** Returns the location source. */
@@ -660,32 +645,6 @@ public class GeolocationHeader {
             }
         }
         return UmaPermission.UNKNOWN;
-    }
-
-    /**
-     * Determines the name for a Time Listening Histogram. Returns empty string if the location
-     * source is LOCATION_OFF as we do not record histograms for that case.
-     */
-    private static String getTimeListeningHistogramEnum(
-            int locationSource, boolean locationAttached) {
-        switch (locationSource) {
-            case LocationSource.HIGH_ACCURACY:
-                return locationAttached
-                        ? "Geolocation.Header.TimeListening.HighAccuracy.LocationAttached"
-                        : "Geolocation.Header.TimeListening.HighAccuracy.LocationNotAttached";
-            case LocationSource.GPS_ONLY:
-                return locationAttached
-                        ? "Geolocation.Header.TimeListening.GpsOnly.LocationAttached"
-                        : "Geolocation.Header.TimeListening.GpsOnly.LocationNotAttached";
-            case LocationSource.BATTERY_SAVING:
-                return locationAttached
-                        ? "Geolocation.Header.TimeListening.BatterySaving.LocationAttached"
-                        : "Geolocation.Header.TimeListening.BatterySaving.LocationNotAttached";
-            default:
-                Log.e(TAG, "Unexpected locationSource: " + locationSource);
-                assert false : "Unexpected locationSource: " + locationSource;
-                return null;
-        }
     }
 
     /**

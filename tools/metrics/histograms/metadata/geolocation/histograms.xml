@@ -89,12 +89,19 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Geolocation.HeaderSentOrNot" enum="GeolocationHeaderSentOrNot"
     expires_after="M85">
+  <obsolete>
+    Long expired.
+  </obsolete>
   <owner>kiyun@google.com</owner>
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>newt@chromium.org</owner>
   <summary>
     Reason why the X-Geo header was or was not included in a Google search from
-    the omnibox.
+    the omnibox. Not recorded in Incognito mode. (X-Geo headers are never
+    allowed to be added to such requests in Incognito mode.)
+
+    If multiple reasons for not sending the header are true, only the first
+    found during the code flow is recorded. Refer to the code for the order.
   </summary>
 </histogram>
 
