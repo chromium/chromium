@@ -167,7 +167,7 @@ Anything that involves talking to the operating system. Usually has to do with a
 - [/docs/webapps/os_integration.md][50]
 - [/docs/webapps/manifest_update_process.md][51]
 - [/docs/webapps/isolated_web_apps.md][52]
-- [/docs/webapps/webui_web_apps.md][54]
+- [/docs/webapps/webui_web_app.md][54]
 
 ## How To Use
 
@@ -285,8 +285,8 @@ This information is used when launching a web app (to determine what profile or 
 [23]: /chrome/browser/web_applications/external_install_options.h
 [24]: /chrome/browser/web_applications/web_app_install_finalizer.h
 [25]: /chrome/browser/web_applications/web_app_database.h
-[26]: /chrome/browser/web_applications/web_app_shortcut.h
-[27]: /chrome/browser/web_applications/web_app_file_handler_manager.h
+[26]: /chrome/browser/web_applications/os_integration/web_app_shortcut.h
+[27]: /chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h
 [28]: /chrome/browser/web_applications/os_integration/os_integration_manager.h
 [29]: /chrome/browser/ui/web_applications/web_app_ui_manager_impl.h
 [30]: /chrome/browser/web_applications/web_app_ui_manager.h
@@ -305,9 +305,9 @@ This information is used when launching a web app (to determine what profile or 
 [47]: /styleguide/c++/c++-dos-and-donts.md
 [48]: #public-interface
 [49]: #external-dependencies
-[50]: os-integration.md
+[50]: os_integration.md
 [51]: manifest_update_process.md
 [52]: isolated_web_apps.md
-[54]: webui_web_apps.md
+[54]: webui_web_app.md
 [57]: https://source.chromium.org/search?q=WebAppInternalsHandler::BuildDebugInfo
 [58]: testing.md
