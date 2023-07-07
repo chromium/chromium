@@ -267,6 +267,29 @@ class SCOPED_LOCKABLE AutoUnlockMaybeEventsDisallowed {
   base::Lock& lock_;
 };
 
+// Utility macro to add RecordReplayId to a class.
+// To be used in conjunction with INIT_RECORD_REPLAY_ID.
+#define HAS_RECORD_REPLAY_ID() \
+ private:                      \
+  int record_replay_id_ = 0;   \
+                               \
+ public:                       \
+  int RecordReplayId() const { \
+    return record_replay_id_;  \
+  }                            \
+  static_assert(true, "require semicolon")
+
+// Utility macro to initialize record_replay_id_ inside the ctor of a class of
+// given name.
+#define INIT_RECORD_REPLAY_ID(name) \
+  record_replay_id_ = recordreplay::NewIdAnyThread(#name)
+
+// Utility macro for optimized initialization of record_replay_id_ inside the
+// ctor of a class of given name, in case its only used on the main thread.
+#define INIT_RECORD_REPLAY_ID_MAIN_THREAD(name) \
+  record_replay_id_ = recordreplay::NewIdMainThread(#name)
+
+
 // This drop-in replacement for unique_ptr purposefully leaks owned memory
 // in non-deterministic execution paths, so as not to perform cleanup operations
 // that require deterministic execution.

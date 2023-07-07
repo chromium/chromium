@@ -151,6 +151,12 @@ Element* SVGURIReference::ObserveTarget(Member<IdTargetObserver>& observer,
     return nullptr;
   observer = MakeGarbageCollected<SVGElementReferenceObserver>(
       tree_scope, id, std::move(closure));
+
+  Element* el = tree_scope.getElementById(id);
+  recordreplay::Assert(
+      "[RUN-2313] SVGUseElement::ResolveTargetElement %d %d %s",
+      el ? el->RecordReplayId() : -1, observer->RecordReplayId(), id.Utf8().c_str());
+
   return tree_scope.getElementById(id);
 }
 

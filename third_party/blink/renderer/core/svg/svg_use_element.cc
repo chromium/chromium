@@ -329,7 +329,7 @@ SVGElement* SVGUseElement::InstanceRoot() const {
 
 void SVGUseElement::BuildPendingResource() {
   recordreplay::Assert(
-      "[RUN-1436-2237] SVGUseElement::BuildPendingResource A %d",
+      "[RUN-2313] SVGUseElement::BuildPendingResource A %d",
       RecordReplayId());
   if (!isConnected()) {
     DCHECK(!needs_shadow_tree_recreation_);
@@ -338,7 +338,7 @@ void SVGUseElement::BuildPendingResource() {
   CancelShadowTreeRecreation();
 
   recordreplay::Assert(
-      "[RUN-1436-2237] SVGUseElement::BuildPendingResource B");
+      "[RUN-2313] SVGUseElement::BuildPendingResource B");
 
   // Check if this element is scheduled (by an ancestor) to be replaced.
   SVGUseElement* ancestor = GeneratingUseElement();
@@ -348,7 +348,7 @@ void SVGUseElement::BuildPendingResource() {
     ancestor = ancestor->GeneratingUseElement();
   }
 
-  recordreplay::Assert("[RUN-1436-2237] SVGUseElement::BuildPendingResource C");
+  recordreplay::Assert("[RUN-2313] SVGUseElement::BuildPendingResource C");
 
   DetachShadowTree();
   ClearResourceReference();
@@ -481,7 +481,7 @@ void SVGUseElement::AttachShadowTree(SVGElement& target) {
   DCHECK(!needs_shadow_tree_recreation_);
 
   recordreplay::Assert(
-      "[RUN-1436-2237] SVGUseElement::AttachShadowTree A %d %d %d %d",
+      "[RUN-2313] SVGUseElement::AttachShadowTree A %d %d %d %d",
       RecordReplayId(),
       target.RecordReplayId(), IsDisallowedElement(target),
       HasCycleUseReferencing(*this, target));
@@ -499,7 +499,7 @@ void SVGUseElement::AttachShadowTree(SVGElement& target) {
   PostProcessInstanceTree(target, *instance_root);
 
   // Finally attach to the tree.
-  recordreplay::Assert("[RUN-1436-2237] SVGUseElement::AttachShadowTree B %d",
+  recordreplay::Assert("[RUN-2313] SVGUseElement::AttachShadowTree B %d",
                        UseShadowRoot().RecordReplayId());
   UseShadowRoot().AppendChild(instance_root);
 
@@ -585,7 +585,7 @@ bool SVGUseElement::ShadowTreeRebuildPending() const {
 
 void SVGUseElement::InvalidateShadowTree() {
   recordreplay::Assert(
-      "[RUN-1436-2286] SVGUseElement::InvalidateTargetReference A %d %d",
+      "[RUN-2313] SVGUseElement::InvalidateShadowTree %d %d",
       RecordReplayId(), ShadowTreeRebuildPending());
   if (ShadowTreeRebuildPending())
     return;

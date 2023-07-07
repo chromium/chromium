@@ -55,7 +55,7 @@ class CORE_EXPORT IdTargetObserverRegistry final
   void RemoveObserver(const AtomicString& id, IdTargetObserver*);
   void NotifyObserversInternal(const AtomicString& id);
 
-  typedef HeapHashSet<Member<IdTargetObserver>> ObserverSet;
+  typedef HeapHashSet<Member<IdTargetObserver>, WTF::MemberHashRecordReplayId<IdTargetObserver>> ObserverSet;
   typedef HeapHashMap<StringImpl*, Member<ObserverSet>> IdToObserverSetMap;
   IdToObserverSetMap registry_;
   Member<ObserverSet> notifying_observers_in_set_;
