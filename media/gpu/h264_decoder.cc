@@ -1476,6 +1476,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
       par_res = parser_.AdvanceToNextNALU(curr_nalu_.get());
       if (par_res == H264Parser::kEOStream) {
         CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
+        OutputAllRemainingPics();
         return kRanOutOfStreamData;
       } else if (par_res != H264Parser::kOk) {
         SET_ERROR_AND_RETURN();

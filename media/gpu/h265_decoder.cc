@@ -205,6 +205,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         curr_nalu_.reset();
         // We receive one frame per buffer, so we can output the frame now.
         CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
+        OutputAllRemainingPics();
         return kRanOutOfStreamData;
       }
       if (par_res != H265Parser::kOk) {
