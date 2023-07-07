@@ -356,6 +356,7 @@ void FakeDriveFs::SetMetadata(const FakeMetadata& metadata) {
   stored_metadata.folder_feature = metadata.folder_feature;
   stored_metadata.doc_id = metadata.doc_id;
   stored_metadata.pinned = metadata.pinned;
+  stored_metadata.dirty = metadata.dirty;
   stored_metadata.available_offline = metadata.available_offline;
   stored_metadata.shared = metadata.shared;
   if (metadata.shortcut) {
@@ -383,6 +384,15 @@ absl::optional<bool> FakeDriveFs::IsItemPinned(const std::string& path) {
   for (const auto& metadata : metadata_) {
     if (metadata.first.value() == path) {
       return metadata.second.pinned;
+    }
+  }
+  return absl::nullopt;
+}
+
+absl::optional<bool> FakeDriveFs::IsItemDirty(const std::string& path) {
+  for (const auto& metadata : metadata_) {
+    if (metadata.first.value() == path) {
+      return metadata.second.dirty;
     }
   }
   return absl::nullopt;
@@ -442,6 +452,7 @@ void FakeDriveFs::GetMetadata(const base::FilePath& path,
 
   const auto& stored_metadata = metadata_[path];
   metadata->pinned = stored_metadata.pinned;
+  metadata->dirty = stored_metadata.dirty;
   metadata->available_offline =
       stored_metadata.pinned || stored_metadata.available_offline;
   metadata->shared = stored_metadata.shared;

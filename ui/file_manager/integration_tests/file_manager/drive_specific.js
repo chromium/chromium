@@ -1832,3 +1832,31 @@ testcase.driveAllItemsShouldBeQueuedIfTrackedByPinManager = async () => {
       appId,
       '#file-list [file-name="hello.txt"][data-sync-status=not_found].pinned');
 };
+
+/**
+ * Tests that items that have the `dirty` metadata flag set to true have their
+ * sync_status property returned as "QUEUED".
+ */
+testcase.driveDirtyItemsShouldBeDisplayedAsQueued = async () => {
+  // Add a single test file with the dirty metadata set to "true" and load Files
+  // app up at the Drive root.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.dirty]);
+
+  // The file should be displayed as "queued" despite it not having received any
+  // progress events yet because dirty=true.
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="dirty.txt"][data-sync-status=queued]');
+
+  // Fake the file starting to sync.
+  await sendTestMessage({
+    name: 'setDriveSyncProgress',
+    path: `/root/${ENTRIES.dirty.targetPath}`,
+    progress: 50,
+  });
+
+  // Verify that the sync_state transitions to "in_progress".
+  await remoteCall.waitForElement(
+      appId,
+      '#file-list [file-name="dirty.txt"][data-sync-status=in_progress]');
+};

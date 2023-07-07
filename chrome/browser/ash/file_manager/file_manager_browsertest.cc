@@ -1617,6 +1617,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableInlineSyncStatusProgressEvents(),
         TestCase("driveAllItemsShouldBeQueuedIfTrackedByPinManager")
             .EnableBulkPinning()
+            .EnableInlineSyncStatusProgressEvents(),
+        TestCase("driveDirtyItemsShouldBeDisplayedAsQueued")
             .EnableInlineSyncStatusProgressEvents()
         // TODO(b/189173190): Enable
         // TestCase("driveEnableDocsOfflineDialog"),

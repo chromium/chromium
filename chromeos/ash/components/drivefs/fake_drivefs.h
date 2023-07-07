@@ -33,6 +33,7 @@ struct FakeMetadata {
   base::FilePath path;
   std::string mime_type;
   std::string original_name;
+  bool dirty = false;
   bool pinned = false;
   bool available_offline = false;
   bool shared = false;
@@ -127,6 +128,8 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
 
   absl::optional<bool> IsItemPinned(const std::string& path);
 
+  absl::optional<bool> IsItemDirty(const std::string& path);
+
   bool SetCanPin(const std::string& path, bool can_pin);
 
   struct FileMetadata {
@@ -136,6 +139,7 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
     ~FileMetadata();
 
     std::string mime_type;
+    bool dirty = false;
     bool pinned = false;
     bool hosted = false;
     bool shared = false;
