@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "build/config/coverage/buildflags.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_policy_impl.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -1740,7 +1741,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("saveAsNonDlpRestricted").EnableDlp(),
         TestCase("saveAsDlpRestrictedRedirectsToMyFiles").EnableDlp(),
         TestCase("openDlpRestrictedFile").EnableDlp(),
+// TODO(b/290329625): Enable this once we identify a way to collect coverage
+// when windows are closed before the test finishes.
+#if !BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
         TestCase("openFolderDlpRestricted").EnableDlp(),
+#endif
         TestCase("fileTasksDlpRestricted").EnableDlp(),
         TestCase("zipExtractRestrictedArchiveCheckContent").EnableDlp()));
 
