@@ -11,6 +11,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
@@ -29,7 +30,7 @@ import {disableNextButton, enableNextButton, focusPageTitle, isComplianceCheckEn
  * @implements {I18nBehaviorInterface}
  */
 const ReimagingDeviceInformationPageBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], CrContainerShadowMixin(PolymerElement));
 
 /** @polymer */
 export class ReimagingDeviceInformationPage extends

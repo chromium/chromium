@@ -15,6 +15,20 @@
     padding-inline-start: 2px;
   }
 
+  /*
+   * This CSS block is necessary for the correct functioning of the
+   * CrContainerShadowMixin intersection probe: that mixin uses an empty div
+   * with the IntersectionObserver API to track when the scroll container is
+   * scrolled all the way to the bottom (to hide/show the bottom shadow).
+   * When the scroll container has height 100%, the intersection probe div will
+   * never trigger, causing the bottom shadow to never disappear. This block
+   * of CSS moves the element up slightly so that it works correctly.
+   */
+  .input-wrapper-overflow > div:last-of-type {
+    position: relative;
+    top: -1px;
+  }
+
   hr,
   .input-row {
     margin-bottom: 30px;
@@ -111,7 +125,9 @@
     </div>
   </div>
   <div slot="right-pane">
-    <div class="input-wrapper input-wrapper-overflow">
+    <!-- The #container ID is necessary for the CrContainerShadowMixin to work. -->
+    <div id="container" class="input-wrapper input-wrapper-overflow"
+        show-bottom-shadow>
       <div class="input-row">
         <div class="input-holder">
           <cr-input id="serialNumber" value="{{serialNumber_}}"
