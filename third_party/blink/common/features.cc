@@ -1880,7 +1880,7 @@ BASE_FEATURE(kWebRtcIgnoreUnspecifiedColorSpace,
 
 BASE_FEATURE(kWebRtcInitializeEncoderOnFirstFrame,
              "WebRtcInitializeEncoderOnFirstFrame",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebRtcMetronome,
              "WebRtcMetronome",
