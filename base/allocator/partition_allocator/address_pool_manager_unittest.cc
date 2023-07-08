@@ -19,7 +19,7 @@ namespace partition_alloc::internal {
 class AddressSpaceStatsDumperForTesting final : public AddressSpaceStatsDumper {
  public:
   AddressSpaceStatsDumperForTesting() = default;
-  ~AddressSpaceStatsDumperForTesting() = default;
+  ~AddressSpaceStatsDumperForTesting() final = default;
 
   void DumpStats(
       const partition_alloc::AddressSpaceStats* address_space_stats) override {
