@@ -275081,6 +275081,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "de5f6a390b95bbe95ccdd9e3840adc3603712e6e",
+     []
+    ],
+    "mtime.json": [
+     "851d4722d4b8a415249d692c86e3a67f58fb15f1",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -320848,7 +320858,7 @@
       []
      ],
      "selection-target-expected.txt": [
-      "f874d542d4de3e5022d23199fb113d1a1ae9b2b0",
+      "fc26df28fe32770cdf60881c7dd6eae94c0cae0c",
       []
      ],
      "snap-after-initial-layout": {
@@ -342894,11 +342904,11 @@
       []
      ],
      "focus-visible-024-expected.txt": [
-      "c24a3e0808411346e0fa9cccbe74aeadb774157d",
+      "3a8d4d801f539a30aef9ed74feab7d360fd8b205",
       []
      ],
      "focus-visible-025-expected.txt": [
-      "c31c4570819946dd468b291d09db5066c4dcca75",
+      "7aac83bb3e959c3499e0d070adf9ec2fdb6186f1",
       []
      ],
      "focus-within-001-ref.html": [
@@ -345995,26 +346005,6 @@
       "30103a02cb0e4d901709a23e9526a47adfe66cdb",
       []
      ],
-     "edit-in-textcontrol-immediately-after-hidden.tentative_editor=input_hide-target=editor-expected.txt": [
-      "bbc89981384103aca243e3f5883f5955851bc805",
-      []
-     ],
-     "edit-in-textcontrol-immediately-after-hidden.tentative_editor=input_hide-target=parent-expected.txt": [
-      "bbc89981384103aca243e3f5883f5955851bc805",
-      []
-     ],
-     "edit-in-textcontrol-immediately-after-hidden.tentative_editor=textarea_hide-target=editor-expected.txt": [
-      "7db5618abad811c0c70db7be1616dd630f3de6d5",
-      []
-     ],
-     "edit-in-textcontrol-immediately-after-hidden.tentative_editor=textarea_hide-target=parent-expected.txt": [
-      "7db5618abad811c0c70db7be1616dd630f3de6d5",
-      []
-     ],
-     "editable-state-and-focus-in-shadow-dom-in-designMode.tentative-expected.txt": [
-      "7d3183040f7d38f20cc9c4e302d2b3f03eb3759a",
-      []
-     ],
      "editable-state-and-focus-in-shadow-dom-in-designMode.tentative.html.ini": [
       "cd6c57b830a4a93acf5e514d7dd5a891bed4a9d5",
       []
@@ -346247,32 +346237,12 @@
       "18f38954ba28cee9be8f9533a01eb3ac94779e17",
       []
      ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=normal_display=block_method=shift-enter-expected.txt": [
-      "3a743424aee09d732da8eeddeb8609c131e51bb5",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=normal_display=inline-block_method=shift-enter-expected.txt": [
-      "065494a253896db9f3a05b0ca9215394f191fb02",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=normal_display=inline_method=shift-enter-expected.txt": [
-      "6a70a7b92106700d259af967425d8d89d2061a97",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=normal_display=list-item_method=shift-enter-expected.txt": [
-      "35fac18a62c573d9fde39ec642d781d1ea6360ac",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=normal_display=table-cell_method=shift-enter-expected.txt": [
-      "2553206368a714f3fdf5ce82210680cee79d37da",
-      []
-     ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=block_method=enter-expected.txt": [
       "9afea60cfdb8bb02873c87255199ab3d3af075ef",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=block_method=shift-enter-expected.txt": [
-      "477ed6201016a1973c23cc4672ac43b7cabcd4e5",
+      "6d49be0de36f9de135531c0c9dc6f00f45449f59",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=inline-block_method=enter-expected.txt": [
@@ -346280,7 +346250,7 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=inline-block_method=shift-enter-expected.txt": [
-      "89b8220960a46c44382c7954bc78c64890a16505",
+      "3e42b939d39ee03573f7610dacb4ed447fbfeaf1",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=inline_method=enter-expected.txt": [
@@ -346288,7 +346258,7 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=inline_method=shift-enter-expected.txt": [
-      "fdcad7c17c0c053b1e46b5d5cbaeb377b00f9655",
+      "b41b9ed27668531c1c60f82f2524451143f4d341",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=list-item_method=enter-expected.txt": [
@@ -346296,7 +346266,7 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=list-item_method=shift-enter-expected.txt": [
-      "9c131b32e411dc9e120429f2eacf928aeda56c9a",
+      "2748b051ae0b51badd1e3979f72a955f01d4b816",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=table-cell_method=enter-expected.txt": [
@@ -346304,47 +346274,7 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=table-cell_method=shift-enter-expected.txt": [
-      "c116b10a22622cf588aa7c8e54712f1d597a5131",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-wrap_display=block_method=shift-enter-expected.txt": [
-      "60d66291fa4a4a1b42741a6945b9fd9adc1b57ad",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-wrap_display=inline-block_method=shift-enter-expected.txt": [
-      "35ab013ee9462eabf0b31519f3b5f0bf78f4a859",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-wrap_display=inline_method=shift-enter-expected.txt": [
-      "dab08b4133a47111d5c7f716ae1b15e841f9c3d9",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-wrap_display=list-item_method=shift-enter-expected.txt": [
-      "cd2e5a5e14493c995baba1746bf1e18f33e2f48d",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-wrap_display=table-cell_method=shift-enter-expected.txt": [
-      "b437977f040024ac4e36b8f521ed627e784f027f",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre_display=block_method=shift-enter-expected.txt": [
-      "f45fd65c64512f85aa5a4784eab00bf20c9b2526",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre_display=inline-block_method=shift-enter-expected.txt": [
-      "85711b7a36a75a28e35ea212017118067974949e",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre_display=inline_method=shift-enter-expected.txt": [
-      "0f09b48ca299ab0315daa746b91e8397cd533b67",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre_display=list-item_method=shift-enter-expected.txt": [
-      "b6dd775d25e63dc796f469bb5d45ed6a384bb859",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre_display=table-cell_method=shift-enter-expected.txt": [
-      "6d8833a5abd9a1099d23e99bcc26ba8a6b08d6c3",
+      "4d23389d200d0c6cf61151ef9214679ee61ef7ca",
       []
      ],
      "insertparagraph-in-non-splittable-element-expected.txt": [
@@ -346636,7 +346566,7 @@
       []
      ],
      "typing-space-in-editable-button.tentative-expected.txt": [
-      "0780f74c436192da2d350b0d406cd104500c32d6",
+      "99ebd5af13c499d804a75e169f0fec7af2df2379",
       []
      ],
      "typing-space-in-editable-button.tentative.html.ini": [
@@ -346644,7 +346574,7 @@
       []
      ],
      "typing-space-in-editable-summary.tentative-expected.txt": [
-      "0c1f3a50d4d235d74af36e822a1d16810b90fe13",
+      "1d1111c0c3f69589ed7442aaf1461bf3b50f624a",
       []
      ],
      "typing-space-in-editable-summary.tentative.html.ini": [
@@ -351803,6 +351733,10 @@
      ],
      "fenced-frame-no-preflight-required.tentative.https.window-expected.txt": [
       "b7540e37b1cf04e8ab9a98b5500a2ea4d2754314",
+      []
+     ],
+     "fenced-frame-no-preflight-required.tentative.https.window.js.ini": [
+      "4c29d4fa4c834313425ca679a21e3546c8bc4603",
       []
      ],
      "fenced-frame-subresource-fetch.tentative.https.window.js.ini": [
@@ -367787,7 +367721,7 @@
     "semantics": {
      "disabled-elements": {
       "event-propagate-disabled-keyboard.tentative-expected.txt": [
-       "7c9ee2ca78616835e2a1c988490324f067516f1b",
+       "316bb00c908d19c68b5ad583c33cbfb0edcd2454",
        []
       ],
       "event-propagate-disabled-keyboard.tentative.html.ini": [
@@ -370210,7 +370144,7 @@
       },
       "the-input-element": {
        "checkable-active-onblur-with-click-expected.txt": [
-        "b669a995f420fd1371b7cf05bd4ce910d82ed1c4",
+        "1eac700b1b5f75697a4abb8b76acf2b031f81ebd",
         []
        ],
        "checkable-active-onblur-with-click.html.ini": [
@@ -370218,15 +370152,11 @@
         []
        ],
        "checkable-active-space-key-being-disabled-expected.txt": [
-        "e912e19b797701717883fe7aa86130b536f30b6e",
+        "4beeca8b99333800972fbdbcabbcbb710caa1024",
         []
        ],
        "checkable-active-space-key-being-disabled.html.ini": [
         "c90e6f430ee502d62fc03361dd2109e54126c3e0",
-        []
-       ],
-       "checkable-active-space-key-prevented-default-expected.txt": [
-        "f9767a2ec58bdd1b0caad08e867007b5d03d71b8",
         []
        ],
        "hidden-charset-case-sensitive-child.html": [
@@ -376419,7 +376349,7 @@
      []
     ],
     "input-events-get-target-ranges-deleting-range-across-editing-host-boundaries.tentative-expected.txt": [
-     "ae553b9ff7cc8e5111aa7f0adf30c86fef5ce0c4",
+     "fce1fe20aeded0421b00526e263e8121f92bd39b",
      []
     ],
     "input-events-get-target-ranges-deleting-range-across-editing-host-boundaries.tentative.html.ini": [
@@ -383844,7 +383774,7 @@
     ],
     "compat": {
      "pointerevent_mouseevent_key_pressed-expected.txt": [
-      "2b436297a1573cbe990226c289fa5f6aeb7a58b3",
+      "fe0786fb81027e4dae1377e40c3dfde2a953a6e4",
       []
      ],
      "pointerevent_touch-action_two-finger_interaction.html.ini": [
@@ -383874,10 +383804,6 @@
     ],
     "pointerevent_click_is_a_pointerevent.html.ini": [
      "cf64bb9502d87da0d69f03d96bd5114940e81e06",
-     []
-    ],
-    "pointerevent_click_is_a_pointerevent_mouse-expected.txt": [
-     "db2190d9f626b7a23f998796782e144d155a8ec4",
      []
     ],
     "pointerevent_click_is_a_pointerevent_multiple_clicks.html.ini": [
@@ -388334,11 +388260,11 @@
       []
      ],
      "modifying-selection-with-middle-mouse-button.tentative-expected.txt": [
-      "ba89e5a13563f5f6159bbc3daffdb4d43da21256",
+      "0ad51932cfd4b056a37f773c6a269d2a21d78afc",
       []
      ],
      "modifying-selection-with-primary-mouse-button.tentative-expected.txt": [
-      "e597743144d55fa0c98548bbbeb13fb367f02020",
+      "47bafdf579f68669defc398caabec7f1696d8a94",
       []
      ]
     },
@@ -399415,7 +399341,7 @@
      []
     ],
     "full-cycle-test.https.any.js.ini": [
-     "d556985063a11426c733cf480786e1081e495234",
+     "9e8f7fcbd3954db350d14aae604492e33d51fb2e",
      []
     ],
     "h264.annexb": [
@@ -399459,7 +399385,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "8542eee90703d4efd08a3794768a6555e237189d",
+     "acae6f8ed53e015642cd62866d8621d29d144d99",
      []
     ],
     "sfx-aac.mp4": [
@@ -473957,7 +473883,7 @@
       ]
      ],
      "round-mod-rem-computed.html": [
-      "4b62ad129431a9554b0cc3332652d152c2246cd0",
+      "e20315e28f96379d050b7c06cf54d92006b9addc",
       [
        null,
        {}
@@ -521682,6 +521608,36 @@
        }
       ]
      ],
+     "hasStorageAccess.tentative.https.window.js": [
+      "bf33023793a4b32ea09162e5e43081e9a48928f1",
+      [
+       "html/anonymous-iframe/hasStorageAccess.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/html/cross-origin-embedder-policy/credentialless/resources/common.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "indexeddb.tentative.https.window.js": [
       "d2749c6be2f8e2e9bce6ea00637374e8c44f7ed1",
       [
@@ -521769,6 +521725,66 @@
       "bd80ff47295ded342c7dc3cb7faf9ecc857e0fb3",
       [
        "html/anonymous-iframe/local-storage.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/html/cross-origin-embedder-policy/credentialless/resources/common.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "requestStorageAccess.tentative.https.window.js": [
+      "b7fbcd84eb020dc30510ed779c18e80d0453b895",
+      [
+       "html/anonymous-iframe/requestStorageAccess.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/html/cross-origin-embedder-policy/credentialless/resources/common.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "requestStorageAccessFor.tentative.https.window.js": [
+      "fa2fc6576f60fdb0bdfe4cebe832707ec4d64a5a",
+      [
+       "html/anonymous-iframe/requestStorageAccessFor.tentative.https.window.html",
        {
         "script_metadata": [
          [
