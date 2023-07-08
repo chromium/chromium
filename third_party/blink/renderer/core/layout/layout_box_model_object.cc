@@ -82,8 +82,11 @@ bool NeedsAnchorScrollData(Element& element, const ComputedStyle& style) {
   if (!style.HasOutOfFlowPosition() || !style.AnchorScroll()) {
     return false;
   }
-  // There's an explicitly set `anchor-scroll` or `anchor-default` value.
-  if (!style.AnchorScroll()->IsDefault() || style.AnchorDefault()) {
+  // There's an explicitly set `anchor-scroll`, `anchor-default` or
+  // `position-fallback-bounds` value, indicating that we might need to track
+  // the scroll offset(s) of some element(s).
+  if (!style.AnchorScroll()->IsDefault() || style.AnchorDefault() ||
+      style.PositionFallbackBounds()) {
     return true;
   }
   // Now we have `anchor-scroll: default` and `anchor-default: implicit`. We
