@@ -17,8 +17,6 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome_os
 items:
 - caption: Enable color correction
   value: true
@@ -31,5 +29,7 @@ owners:
 - chromeos-a11y-eng@google.com
 schema:
   type: boolean
+supported_on:
+- chrome_os:117-
 tags: []
 type: main
