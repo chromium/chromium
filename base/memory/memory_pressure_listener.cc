@@ -10,6 +10,7 @@
 #include "base/observer_list_threadsafe.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/record_replay.h"
 #include "base/tracing_buildflags.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
@@ -48,6 +49,8 @@ class MemoryPressureObserver {
 
   void Notify(
       MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    recordreplay::AutoDisallowEvents disallow("MemoryPressureObserver::Notify");
+
     async_observers_->Notify(FROM_HERE, &MemoryPressureListener::Notify,
                              memory_pressure_level);
     AutoLock lock(sync_observers_lock_);

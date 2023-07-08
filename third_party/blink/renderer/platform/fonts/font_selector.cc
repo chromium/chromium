@@ -105,7 +105,7 @@ void FontSelector::Trace(Visitor* visitor) const {
 
 FontFallbackMap& FontSelector::GetFontFallbackMap() {
   recordreplay::Assert("[RUN-1436-2286] FontSelector::GetFontFallbackMap %d %d",
-                       record_replay_id_, !!font_fallback_map_);
+                       record_replay_id_, font_fallback_map_ ? font_fallback_map_->RecordReplayId() : -1);
   if (!font_fallback_map_) {
     font_fallback_map_ = MakeGarbageCollected<FontFallbackMap>(this);
     RegisterForInvalidationCallbacks(font_fallback_map_);
