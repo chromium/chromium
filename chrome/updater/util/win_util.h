@@ -93,14 +93,14 @@ class ProcessFilterName : public base::ProcessFilter {
   std::wstring process_name_;
 };
 
-namespace {
+namespace internal {
 
 template <typename T>
 using WrlRuntimeClass = Microsoft::WRL::RuntimeClass<
     Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
     T>;
 
-}  // namespace
+}  // namespace internal
 
 // Implements `DynamicIIDs` for interface `Interface`, where `Interface` is the
 // implemented interface. `iid_user` and `iid_system` are aliases for interface
@@ -109,10 +109,10 @@ using WrlRuntimeClass = Microsoft::WRL::RuntimeClass<
 // Usage: derive your COM class that implements interface `Interface` from
 // `DynamicIIDsImpl<Interface, iid_user, iid_system>`.
 template <typename Interface, REFIID iid_user, REFIID iid_system>
-class DynamicIIDsImpl : public WrlRuntimeClass<Interface> {
+class DynamicIIDsImpl : public internal::WrlRuntimeClass<Interface> {
  public:
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
-    return WrlRuntimeClass<Interface>::QueryInterface(
+    return internal::WrlRuntimeClass<Interface>::QueryInterface(
         riid == (IsSystemInstall() ? iid_system : iid_user)
             ? __uuidof(Interface)
             : riid,
