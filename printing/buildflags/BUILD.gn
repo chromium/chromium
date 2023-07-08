@@ -21,5 +21,6 @@ buildflag_header("buildflags") {
     "ENABLE_OOP_PRINTING=$enable_oop_printing",
     "ENABLE_PRINT_CONTENT_ANALYSIS=$enable_print_content_analysis",
     "USE_CUPS=$use_cups",
+    "USE_CUPS_IPP=$use_cups_ipp",
   ]
 }

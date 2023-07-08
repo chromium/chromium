@@ -56,8 +56,9 @@ TEST(PrintSettingsTest, GetColorModelForModel) {
     color_value.clear();
   }
 }
+#endif  // BUILDFLAG(USE_CUPS)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(USE_CUPS_IPP)
 TEST(PrintSettingsTest, GetIppColorModelForModel) {
   for (int model = static_cast<int>(mojom::ColorModel::kUnknownColorModel);
        model <= static_cast<int>(mojom::ColorModel::kMaxValue); ++model) {
@@ -65,7 +66,6 @@ TEST(PrintSettingsTest, GetIppColorModelForModel) {
                      .empty());
   }
 }
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // BUILDFLAG(USE_CUPS)
+#endif  // BUILDFLAG(USE_CUPS_IPP)
 
 }  // namespace printing
