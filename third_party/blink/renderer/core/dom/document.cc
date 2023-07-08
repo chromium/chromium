@@ -392,8 +392,8 @@ enum class RequestStorageResult {
   REJECTED_INCORRECT_FRAME = 8,
   REJECTED_INSECURE_CONTEXT = 9,
   APPROVED_PRIMARY_FRAME = 10,
-  APPROVED_SAMEORIGIN_WITH_PRIMARY_FRAME = 11,
-  kMaxValue = APPROVED_SAMEORIGIN_WITH_PRIMARY_FRAME,
+  REJECTED_CREDENTIALLESS_IFRAME = 11,
+  kMaxValue = REJECTED_CREDENTIALLESS_IFRAME,
 };
 void FireRequestStorageAccessHistogram(RequestStorageResult result) {
   base::UmaHistogramEnumeration("API.StorageAccess.RequestStorageAccess",
@@ -6248,6 +6248,11 @@ ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
       return false;
     }
 
+    // #?: if window.credentialless is true, return false.
+    if (dom_window_->credentialless()) {
+      return false;
+    }
+
     // #5: if global is not a secure context, return false.
     if (!dom_window_->isSecureContext()) {
       return false;
@@ -6325,6 +6330,10 @@ ScriptPromise Document::requestStorageAccessFor(ScriptState* script_state,
         "requestStorageAccessFor not allowed"));
     return promise;
   }
+
+  // `requestStorageAccessFor` must be rejected for any given iframe. In
+  // particular, it must have been rejected by credentialless iframes:
+  CHECK(!dom_window_->credentialless());
 
   if (!dom_window_->isSecureContext()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -6444,6 +6453,20 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
         "requestStorageAccess: Cannot be used by opaque origins."));
     FireRequestStorageAccessHistogram(
         RequestStorageResult::REJECTED_OPAQUE_ORIGIN);
+
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "requestStorageAccess not allowed"));
+    return promise;
+  }
+
+  if (dom_window_->credentialless()) {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "requestStorageAccess: May not be used in a credentialless iframe"));
+    FireRequestStorageAccessHistogram(
+        RequestStorageResult::REJECTED_CREDENTIALLESS_IFRAME);
 
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
