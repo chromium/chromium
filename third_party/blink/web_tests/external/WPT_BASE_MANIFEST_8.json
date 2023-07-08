@@ -1762,6 +1762,13 @@
         null,
         {}
        ]
+      ],
+      "contain-nested-relayout-boundary.html": [
+       "ce915728f48d0d3a564bf425c9c811bdd681e68c",
+       [
+        null,
+        {}
+       ]
       ]
      }
     },
@@ -253749,7 +253756,7 @@
       ]
      ],
      "fullscreen-root-fills-page.html": [
-      "f122e678f3fcd1b4c3c2d4673473a73a40a2ea3f",
+      "e2a6217346db1a4f7850446760f8be43532fa4d2",
       [
        null,
        [
@@ -268927,6 +268934,32 @@
      }
     },
     "layout": {
+     "svg-foreign-relayout-001.html": [
+      "2c8a8141526d0ddf759f32d038754ec919d93435",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "svg-foreign-relayout-002.html": [
+      "cebc2d492d6dce9f134261c07ae2d9f68aa1b867",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "svg-intrinsic-size-invalidation.html": [
       "7c3daf8e5c0c4b4c4cbb1f2ca38f237b480f8c9c",
       [
@@ -445282,6 +445315,13 @@
      ],
      "position-fallback-bounds-005.html": [
       "deb546a1e2eca11f9928cdbbf85299cc0bdce29c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "position-fallback-bounds-006.html": [
+      "5a19c59f3104aaa556186e7dfa93d237bf46ad79",
       [
        null,
        {}
