@@ -45,14 +45,12 @@ bool ShouldPageBeVisible(const GURL& url) {
 GURL CreateURLForNewTab(const GURL& original_url) {
   if (!IsValidLensResultUrl(original_url))
     return GURL();
-  // Set the side panel max size to zero, as this is not a side panel request.
-  gfx::Size side_panel_initial_size = gfx::Size();
 
   // Append or replace query parameters related to entry point.
   return AppendOrReplaceQueryParametersForLensRequest(
       original_url, EntryPoint::CHROME_OPEN_NEW_TAB_SIDE_PANEL,
       RenderingEnvironment::ONELENS_DESKTOP_WEB_FULLSCREEN,
-      /*is_side_panel_request=*/false, side_panel_initial_size);
+      /*is_side_panel_request=*/false);
 }
 
 void OpenLensSidePanel(Browser* browser,
