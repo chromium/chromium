@@ -3,9 +3,9 @@
 
 'use strict';
 
-// https://screen-share.github.io/mouse-events/
+// https://screen-share.github.io/captured-mouse-events/
 
 idl_test(
-  ['screen-capture-mouse-events.tentative'],
+  ['captured-mouse-events.tentative'],
   ['html', 'dom']
 );
