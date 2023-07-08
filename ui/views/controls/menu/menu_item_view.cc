@@ -1257,9 +1257,15 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
 
   const gfx::FontList& font_list = GetFontList();
 
-  const int standard_width = GetLabelStartForThisItem() +
-                             gfx::GetStringWidth(title_, font_list) +
-                             trailing_padding_;
+  const int title_width = gfx::GetStringWidth(title_, font_list);
+  int standard_width =
+      GetLabelStartForThisItem() + title_width + trailing_padding_;
+  // Add additional padding to ensure that titles have enough space between
+  // themselves and child views.
+  if (child_size.width() > 0 && title_width > 0) {
+    standard_width += LayoutProvider::Get()->GetDistanceMetric(
+        views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+  }
   if (GetMenuController() && GetMenuController()->use_ash_system_ui_layout()) {
     dimensions.height = menu_config.touchable_menu_height;
 
