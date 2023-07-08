@@ -135,10 +135,7 @@ class MockFilesPolicyDialogFactory : public FilesPolicyDialogFactory {
 
   MOCK_METHOD(views::Widget*,
               CreateErrorDialog,
-              (const BlockedFilesMap&,
-               DlpFileDestination,
-               dlp::FileAction,
-               gfx::NativeWindow),
+              (const BlockedFilesMap&, dlp::FileAction, gfx::NativeWindow),
               (override));
 };
 
@@ -430,8 +427,8 @@ IN_PROC_BROWSER_TEST_P(OnDlpErrorNotificationClickedTest,
   BlockedFilesMap blocked_map;
   blocked_map.emplace(base::FilePath("file1.txt"), Policy::kDlp);
   blocked_map.emplace(base::FilePath("file2.txt"), Policy::kDlp);
-  EXPECT_CALL(*factory_, CreateErrorDialog(blocked_map, testing::_, action,
-                                           testing::NotNull()))
+  EXPECT_CALL(*factory_,
+              CreateErrorDialog(blocked_map, action, testing::NotNull()))
       .Times(1);
 
   // No Files app opened.
@@ -466,8 +463,8 @@ IN_PROC_BROWSER_TEST_P(OnDlpErrorNotificationClickedTest,
   blocked_map.emplace(base::FilePath("file1.txt"), Policy::kDlp);
   blocked_map.emplace(base::FilePath("file2.txt"), Policy::kDlp);
   // Null modal parent means the dialog is a system modal.
-  EXPECT_CALL(*factory_, CreateErrorDialog(blocked_map, testing::_, action,
-                                           testing::IsNull()))
+  EXPECT_CALL(*factory_,
+              CreateErrorDialog(blocked_map, action, testing::IsNull()))
       .Times(1);
 
   // No Files app opened.
@@ -694,8 +691,8 @@ IN_PROC_BROWSER_TEST_P(OnIONotificationClickedTest,
   BlockedFilesMap blocked_map;
   blocked_map.emplace(base::FilePath("file1.txt"), Policy::kDlp);
   blocked_map.emplace(base::FilePath("file2.txt"), Policy::kDlp);
-  EXPECT_CALL(*factory_, CreateErrorDialog(blocked_map, testing::_, action,
-                                           testing::NotNull()))
+  EXPECT_CALL(*factory_,
+              CreateErrorDialog(blocked_map, action, testing::NotNull()))
       .Times(2);
 
   // No Files app opened.

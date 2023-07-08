@@ -43,6 +43,8 @@ class FilesPolicyWarnDialog : public FilesPolicyDialog {
   std::u16string GetMessage() override;
 
   std::vector<DlpConfidentialFile> files_;
+  // TODO(b/285568353): Remove.
+  DlpFileDestination destination_;
 };
 
 }  // namespace policy

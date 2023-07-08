@@ -32,10 +32,9 @@ std::u16string GetPolicyString(Policy policy) {
 
 FilesPolicyErrorDialog::FilesPolicyErrorDialog(
     const std::map<DlpConfidentialFile, Policy>& files,
-    DlpFileDestination destination,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent)
-    : FilesPolicyDialog(files.size(), destination, action, modal_parent) {
+    : FilesPolicyDialog(files.size(), action, modal_parent) {
   SetAcceptCallback(base::BindOnce(&FilesPolicyErrorDialog::Dismiss,
                                    weak_factory_.GetWeakPtr()));
   SetCancelCallback(base::BindOnce(&FilesPolicyErrorDialog::OpenHelpPage,

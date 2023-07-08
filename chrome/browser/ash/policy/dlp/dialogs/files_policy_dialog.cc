@@ -11,26 +11,15 @@
 #include <vector>
 
 #include "ash/style/typography.h"
-#include "base/check_op.h"
-#include "base/files/file_path.h"
-#include "base/functional/bind.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_error_dialog.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/vector_icons/vector_icons.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
@@ -39,10 +28,9 @@ namespace policy {
 FilesPolicyDialogFactory* factory_;
 
 FilesPolicyDialog::FilesPolicyDialog(size_t file_count,
-                                     DlpFileDestination destination,
                                      dlp::FileAction action,
                                      gfx::NativeWindow modal_parent)
-    : destination_(destination), action_(action), file_count_(file_count) {
+    : action_(action), file_count_(file_count) {
   ui::ModalType modal =
       modal_parent ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_SYSTEM;
 
@@ -74,17 +62,14 @@ views::Widget* FilesPolicyDialog::CreateWarnDialog(
 
 views::Widget* FilesPolicyDialog::CreateErrorDialog(
     const std::map<DlpConfidentialFile, Policy>& files,
-    DlpFileDestination destination,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent) {
   if (factory_) {
-    return factory_->CreateErrorDialog(std::move(files), destination, action,
-                                       modal_parent);
+    return factory_->CreateErrorDialog(files, action, modal_parent);
   }
 
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-      std::make_unique<FilesPolicyErrorDialog>(std::move(files), destination,
-                                               action, modal_parent),
+      std::make_unique<FilesPolicyErrorDialog>(files, action, modal_parent),
       /*context=*/nullptr, /*parent=*/modal_parent);
   widget->Show();
   return widget;

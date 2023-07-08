@@ -71,8 +71,9 @@ FilesPolicyWarnDialog::FilesPolicyWarnDialog(
     DlpFileDestination destination,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent)
-    : FilesPolicyDialog(files.size(), destination, action, modal_parent),
-      files_(files) {
+    : FilesPolicyDialog(files.size(), action, modal_parent),
+      files_(files),
+      destination_(destination) {
   SetOnDlpRestrictionCheckedCallback(std::move(callback));
   SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
   SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());

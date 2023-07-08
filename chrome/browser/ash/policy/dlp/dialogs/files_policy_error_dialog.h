@@ -24,7 +24,6 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
 
   FilesPolicyErrorDialog() = delete;
   FilesPolicyErrorDialog(const std::map<DlpConfidentialFile, Policy>& files,
-                         DlpFileDestination destination,
                          dlp::FileAction action,
                          gfx::NativeWindow modal_parent);
   FilesPolicyErrorDialog(const FilesPolicyErrorDialog&) = delete;

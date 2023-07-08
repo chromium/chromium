@@ -713,11 +713,8 @@ void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
       if (info.blocked_files.empty()) {
         return;
       }
-      // TODO(b/285568353): Remove destination.
-      FilesPolicyDialog::CreateErrorDialog(
-          info.blocked_files,
-          info.destination.value_or(DlpFileDestination("https://example.com")),
-          info.action, modal_parent);
+      FilesPolicyDialog::CreateErrorDialog(info.blocked_files, info.action,
+                                           modal_parent);
       break;
     case FilesDialogType::kWarning:
       if (!info.warning_info.has_value()) {
