@@ -3241,6 +3241,13 @@
        {}
       ]
      ],
+     "first-line-float-mapped-attribute-crash.html": [
+      "0cfecd3637bcdcce7b14f937057951fe090f0be0",
+      [
+       null,
+       {}
+      ]
+     ],
      "first-line-inherited-transition-crash.html": [
       "223a0060ebf9a5f9a564c7ccaef0aa09be663878",
       [
@@ -91825,7 +91832,139 @@
         ],
         {}
        ]
-      ]
+      ],
+      "subgrid": {
+       "subgrid-container-fragmentation-001.html": [
+        "959ff4a9053a20335081e6a7675845095f5b5a74",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-container-fragmentation-002.html": [
+        "9b28b37b4215759f2f5a5c1cff4774887b0da1b5",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-container-fragmentation-003.html": [
+        "3f1381a7b21db86f2dd727ed4785c758393769a9",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-container-fragmentation-004.html": [
+        "67c291fbc34e20f7edc020da2714ad82a8e989ad",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-container-fragmentation-005.html": [
+        "37babe299110bb5bbf488722ae3bafd5f68ba780",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-item-fragmentation-001.html": [
+        "1a26d816d0f99084d56beac62a8b46c73315c2bb",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-item-fragmentation-002.html": [
+        "24f7d997a3d81bab4d8bb729ff1db1c78ecda4ca",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-item-fragmentation-003.html": [
+        "49f0b5fc76568f8b1bdde0f621069ce54b0ff543",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-item-fragmentation-004.html": [
+        "85ed105f9605542ff0550b658ceb7405c0f0cb20",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "subgrid-item-fragmentation-005.html": [
+        "3832f0d16e148ceef8176817abb60f3e00235844",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ]
+      }
      },
      "increase-fragmentainer-size-tall-border.html": [
       "b7e716b23c4e7db17ef667f30c771d2d1df1cb9a",
@@ -274900,16 +275039,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "37610f658b2e5d00af50901143572b59fd455564",
-     []
-    ],
-    "mtime.json": [
-     "2d7de7ed233695f610cfbfd9628ee2e4736c9b1d",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -351630,6 +351759,10 @@
       "8995e3d7ef6ba5b7286c334842bd0b77426882a1",
       []
      ],
+     "fenced-frame-no-preflight-required.tentative.https.window-expected.txt": [
+      "b7540e37b1cf04e8ab9a98b5500a2ea4d2754314",
+      []
+     ],
      "fenced-frame-subresource-fetch.tentative.https.window.js.ini": [
       "85eb4213f4760d05257e356beb7e8431697364e2",
       []
@@ -351651,7 +351784,7 @@
       []
      ],
      "fenced-frame.tentative.https.window-expected.txt": [
-      "88cc0b8684728e0edd04a710ae9424d09c190006",
+      "d38e4b1dcd54150e4a7a2601c9687b97efe978f0",
       []
      ],
      "fenced-frame.tentative.https.window.js.ini": [
@@ -351796,7 +351929,7 @@
        []
       ],
       "support.sub.js": [
-       "ca8d2e61ee6406896b8a197296953dba514a7356",
+       "8550c5b97158deaed19d9e98c354fb11eb51f74d",
        []
       ],
       "worker-blob-fetcher.html": [
@@ -514331,6 +514464,37 @@
      ]
     },
     "local-network-access": {
+     "fenced-frame-no-preflight-required.tentative.https.window.js": [
+      "21233f61ea617cd8c53d598d5d6af14cf6b274dd",
+      [
+       "fetch/local-network-access/fenced-frame-no-preflight-required.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "script",
+          "/fenced-frame/resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "fenced-frame-subresource-fetch.tentative.https.window.js": [
       "2dff325e3e1bcffc885ac59b46dbe278c9d00c42",
       [
@@ -514511,7 +514675,7 @@
       ]
      ],
      "fenced-frame.tentative.https.window.js": [
-      "bdef699afc4c9897b4d979b282fe937d5a3403e5",
+      "370cc9fbe9d28b002238ff027a44cfdea058ae73",
       [
        "fetch/local-network-access/fenced-frame.tentative.https.window.html",
        {
