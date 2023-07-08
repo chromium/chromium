@@ -25,6 +25,8 @@ absl::optional<ax::mojom::Event> ToAXEvent(
     case mojom::AccessibilityEventType::VIEW_FOCUSED:
     case mojom::AccessibilityEventType::VIEW_ACCESSIBILITY_FOCUSED:
       return ax::mojom::Event::kFocus;
+    case mojom::AccessibilityEventType::VIEW_ACCESSIBILITY_FOCUS_CLEARED:
+      return ax::mojom::Event::kBlur;
     case mojom::AccessibilityEventType::VIEW_CLICKED:
     case mojom::AccessibilityEventType::VIEW_LONG_CLICKED:
       return ax::mojom::Event::kClicked;
@@ -36,11 +38,9 @@ absl::optional<ax::mojom::Event> ToAXEvent(
       if (focused_node) {
         return ax::mojom::Event::kFocus;
       } else {
-        return ax::mojom::Event::kLayoutComplete;
+        return absl::nullopt;
       }
     }
-    case mojom::AccessibilityEventType::NOTIFICATION_STATE_CHANGED:
-      return ax::mojom::Event::kLayoutComplete;
     case mojom::AccessibilityEventType::WINDOW_CONTENT_CHANGED:
       int live_region_type_int;
       if (source_node && source_node->GetNode() &&
@@ -65,8 +65,6 @@ absl::optional<ax::mojom::Event> ToAXEvent(
         }
       }
       return absl::nullopt;
-    case mojom::AccessibilityEventType::WINDOWS_CHANGED:
-      return ax::mojom::Event::kLayoutComplete;
     case mojom::AccessibilityEventType::VIEW_HOVER_ENTER:
       return ax::mojom::Event::kHover;
     case mojom::AccessibilityEventType::ANNOUNCEMENT: {
@@ -87,6 +85,11 @@ absl::optional<ax::mojom::Event> ToAXEvent(
         return ax::mojom::Event::kFocus;
       }
     }
+    case mojom::AccessibilityEventType::INVALID_ENUM_VALUE: {
+      NOTREACHED();
+      break;
+    }
+    case mojom::AccessibilityEventType::NOTIFICATION_STATE_CHANGED:
     case mojom::AccessibilityEventType::VIEW_HOVER_EXIT:
     case mojom::AccessibilityEventType::TOUCH_EXPLORATION_GESTURE_START:
     case mojom::AccessibilityEventType::TOUCH_EXPLORATION_GESTURE_END:
@@ -96,10 +99,9 @@ absl::optional<ax::mojom::Event> ToAXEvent(
     case mojom::AccessibilityEventType::GESTURE_DETECTION_END:
     case mojom::AccessibilityEventType::TOUCH_INTERACTION_START:
     case mojom::AccessibilityEventType::TOUCH_INTERACTION_END:
+    case mojom::AccessibilityEventType::WINDOWS_CHANGED:
     case mojom::AccessibilityEventType::VIEW_CONTEXT_CLICKED:
     case mojom::AccessibilityEventType::ASSIST_READING_CONTEXT:
-      return absl::nullopt;
-    default:
       return absl::nullopt;
   }
   return absl::nullopt;

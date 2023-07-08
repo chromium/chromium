@@ -66,10 +66,9 @@ TEST(AndroidAccessibilityUtilTest, WindowStateChangedEvent) {
   AccessibilityNodeInfoDataWrapper source_node_info_wrapper(
       nullptr, node_info_data.get());
 
-  // LayoutComplete if there's no focused node.
-  EXPECT_EQ(ax::mojom::Event::kLayoutComplete,
-            ToAXEvent(AXEventType::WINDOW_STATE_CHANGED,
-                      &source_node_info_wrapper, nullptr));
+  // No event type if there's no focused node.
+  EXPECT_EQ(absl::nullopt, ToAXEvent(AXEventType::WINDOW_STATE_CHANGED,
+                                     &source_node_info_wrapper, nullptr));
 
   // Focused event if there's a focused node.
   EXPECT_EQ(ax::mojom::Event::kFocus,
