@@ -1154,7 +1154,8 @@ void EventRouter::IncrementInFlightEvents(BrowserContext* context,
     ExtensionHost* host = pm->GetBackgroundHostForExtension(extension->id());
     if (host) {
       pm->IncrementLazyKeepaliveCount(extension, Activity::EVENT, event_name);
-      host->OnBackgroundEventDispatched(event_name, event_id);
+      host->OnBackgroundEventDispatched(event_name, dispatch_start_time,
+                                        event_id);
     }
   } else if (service_worker_version_id !=
              blink::mojom::kInvalidServiceWorkerVersionId) {

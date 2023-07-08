@@ -1253,6 +1253,10 @@ chromium-metrics-reviews@google.com.
     high-resolution clocks.
   </summary>
   <token key="BackgroundContextType">
+    <variant name="ExtensionEventPage"
+        summary="event page. Emitted when extensions browser code receives
+                 receives an ack from the renderer that it fired the event in
+                 the event page"/>
     <variant name="ExtensionServiceWorker"
         summary="service worker. Emitted shortly after extensions browser
                  code receives the ack from the renderer that it fired the

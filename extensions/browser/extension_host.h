@@ -110,7 +110,9 @@ class ExtensionHost : public DeferredStartRenderHost,
 
   // Called when an event is dispatched to the event page associated with this
   // ExtensionHost.
-  void OnBackgroundEventDispatched(const std::string& event_name, int event_id);
+  void OnBackgroundEventDispatched(const std::string& event_name,
+                                   base::TimeTicks dispatch_start_time,
+                                   int event_id);
 
   // Called by the ProcessManager when a network request is started by the
   // extension corresponding to this ExtensionHost.
@@ -182,7 +184,9 @@ class ExtensionHost : public DeferredStartRenderHost,
     // The event to dispatch.
     std::string event_name;
 
-    // TODO(crbug.com/1441221): add the dispatch time here.
+    // When the event router received the event to be dispatched to the
+    // extension. Used in UMA histograms.
+    base::TimeTicks dispatch_start_time;
   };
 
   // DeferredStartRenderHost:
