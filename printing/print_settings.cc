@@ -204,14 +204,9 @@ std::string GetIppColorModelForModel(mojom::ColorModel color_model) {
   if (color_model == mojom::ColorModel::kUnknownColorModel)
     return CUPS_PRINT_COLOR_MODE_MONOCHROME;
 
-  absl::optional<bool> is_color = IsColorModelSelected(color_model);
-  if (!is_color.has_value()) {
-    NOTREACHED();
-    return std::string();
-  }
-
-  return is_color.value() ? CUPS_PRINT_COLOR_MODE_COLOR
-                          : CUPS_PRINT_COLOR_MODE_MONOCHROME;
+  return IsColorModelSelected(color_model).value()
+             ? CUPS_PRINT_COLOR_MODE_COLOR
+             : CUPS_PRINT_COLOR_MODE_MONOCHROME;
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(USE_CUPS)
