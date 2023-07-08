@@ -953,6 +953,15 @@ void LayoutBox::UpdateFromStyle() {
 
 void LayoutBox::LayoutSubtreeRoot() {
   NOT_DESTROYED();
+
+  // Our own style may have changed which would disqualify us as a layout root
+  // (e.g. our containment/writing-mode/formatting-context status/etc changed).
+  // Skip subtree layout, and ensure our container chain needs layout.
+  if (SelfNeedsLayout()) {
+    MarkContainerChainForLayout();
+    return;
+  }
+
   const auto* previous_result = GetSingleCachedLayoutResult();
   DCHECK(previous_result);
   auto space = previous_result->GetConstraintSpaceForCaching();
