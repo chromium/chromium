@@ -7,7 +7,6 @@
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -51,6 +50,10 @@ EligibilitySpec CreateEligibilitySpec(std::string config_proto) {
     new_rule->set_thresholding_op(FeatureLibrary::GT);
     new_rule->set_threshold(0.01);
     new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
+    new_rule->set_feature_name(FeatureLibrary::IMAGE_FRACTION_VISIBLE);
+    new_rule->set_thresholding_op(FeatureLibrary::GT);
+    new_rule->set_threshold(0.45);
+    new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
     new_rule->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_WIDTH);
     new_rule->set_thresholding_op(FeatureLibrary::GT);
     new_rule->set_threshold(100);
@@ -62,7 +65,7 @@ EligibilitySpec CreateEligibilitySpec(std::string config_proto) {
     new_rule->set_feature_name(FeatureLibrary::IMAGE_VISIBLE_AREA);
     new_rule->set_normalizing_op(FeatureLibrary::BY_MAX_VALUE);
     new_rule->set_thresholding_op(FeatureLibrary::GT);
-    new_rule->set_threshold(0.01);
+    new_rule->set_threshold(0.5);
     auto* shopping_rule =
         eligibility_spec.add_classifier_score_rules()->add_rules();
     shopping_rule->set_feature_name(FeatureLibrary::SHOPPING_CLASSIFIER_SCORE);
@@ -91,7 +94,10 @@ void FindImageElements(blink::WebElement element,
     }
   } else {
     if (element.HasAttribute("src")) {
-      images.emplace_back(element);
+      auto index_value = element.GetComputedValue("z-index");
+      if (index_value.IsNull() || index_value.Ascii() != "-1") {
+        images.emplace_back(element);
+      }
     }
   }
 }
@@ -172,6 +178,8 @@ void VisualSearchClassifierAgent::StartVisualClassification(
     base::File visual_model,
     const std::string& config_proto,
     mojo::PendingRemote<mojom::VisualSuggestionsResultHandler> result_handler) {
+  LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.Agent.StartClassification",
+                          true);
   result_handler_.reset();
   result_handler_.Bind(std::move(result_handler));
   std::vector<SkBitmap> empty_results;

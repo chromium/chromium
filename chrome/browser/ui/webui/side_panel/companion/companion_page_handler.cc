@@ -264,7 +264,7 @@ void CompanionPageHandler::NotifyURLChanged(bool is_full_reload) {
     page_->UpdateCompanionPage(companion_update_proto);
   }
   if (visual_search_host_) {
-    visual_search_host_->CancelClassification();
+    visual_search_host_->CancelClassification(web_contents()->GetVisibleURL());
   }
 }
 

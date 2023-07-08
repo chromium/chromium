@@ -155,7 +155,8 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_WithCancellation) {
       base::BindOnce([](std::vector<std::string> results) {});
   visual_search_host_->StartClassification(
       web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
-  visual_search_host_->CancelClassification();
+  GURL url("https://foo.bar");
+  visual_search_host_->CancelClassification(url);
   base::RunLoop().RunUntilIdle();
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualSearch.ClassificationCancelled", true, 1);

@@ -46,6 +46,7 @@ class VisualSearchClassifierAgent : public content::RenderFrameObserver,
       mojo::PendingRemote<mojom::VisualSuggestionsResultHandler> result_handler)
       override;
 
+  // Callback used to find incoming receiver to reference in this class.
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::VisualSuggestionsRequestHandler>
           receiver);
