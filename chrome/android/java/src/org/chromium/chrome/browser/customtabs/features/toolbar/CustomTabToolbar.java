@@ -327,6 +327,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         // Find the title/url width threshold that turns the maximize button visible.
         int containerWidthPx = mLocationBar.mTitleUrlContainer.getWidth();
+        if (containerWidthPx == 0) return;
+
         int maximizeButtonWidthPx =
                 getResources().getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
         int titleUrlPaddingEndPx =
