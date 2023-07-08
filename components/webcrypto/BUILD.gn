@@ -94,6 +94,10 @@ source_set("unit_tests") {
     "//third_party/boringssl",
     "//third_party/re2",
   ]
+
+  if (is_ios) {
+    deps += [ "//components/test:webcrypto_test_bundle_data" ]
+  }
 }
 
 # Shared functionality for writing WebCrypto fuzzers at this layer (several

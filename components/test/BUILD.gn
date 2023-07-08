@@ -61,6 +61,7 @@ source_set("run_all_unittests") {
   deps = [ ":test_support" ]
 }
 
+# Keep in sync with /components/test/PRESUBMIT.py
 if (is_ios) {
   bundle_data_from_filelist("custom_handlers_test_bundle_data") {
     testonly = true
@@ -109,6 +110,10 @@ if (is_ios) {
   bundle_data_from_filelist("web_database_test_bundle_data") {
     testonly = true
     filelist_name = "data/web_database/unit_tests_bundle_data.filelist"
+  }
+  bundle_data_from_filelist("webcrypto_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/webcrypto/unit_tests_bundle_data.filelist"
   }
   bundle_data_from_filelist("web_package_test_bundle_data") {
     testonly = true
