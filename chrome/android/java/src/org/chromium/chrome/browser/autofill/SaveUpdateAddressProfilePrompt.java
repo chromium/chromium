@@ -56,8 +56,7 @@ public class SaveUpdateAddressProfilePrompt {
      */
     public SaveUpdateAddressProfilePrompt(SaveUpdateAddressProfilePromptController controller,
             ModalDialogManager modalDialogManager, Activity activity, Profile browserProfile,
-            PersonalDataManager.AutofillProfile autofillProfile, boolean isUpdate,
-            boolean isMigrationToAccount) {
+            AutofillProfile autofillProfile, boolean isUpdate, boolean isMigrationToAccount) {
         mController = controller;
         mModalDialogManager = modalDialogManager;
 
@@ -126,8 +125,7 @@ public class SaveUpdateAddressProfilePrompt {
     @CalledByNative
     private static @Nullable SaveUpdateAddressProfilePrompt create(WindowAndroid windowAndroid,
             SaveUpdateAddressProfilePromptController controller, Profile browserProfile,
-            PersonalDataManager.AutofillProfile autofillProfile, boolean isUpdate,
-            boolean isMigrationToAccount) {
+            AutofillProfile autofillProfile, boolean isUpdate, boolean isMigrationToAccount) {
         Activity activity = windowAndroid.getActivity().get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (activity == null || modalDialogManager == null) return null;

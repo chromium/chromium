@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
+#include "chrome/browser/autofill/android/jni_headers/AutofillProfile_jni.h"
 #include "chrome/browser/autofill/android/jni_headers/PersonalDataManager_jni.h"
 #include "chrome/browser/autofill/autofill_popup_controller_utils.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
