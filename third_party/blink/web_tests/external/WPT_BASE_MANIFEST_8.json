@@ -473324,7 +473324,7 @@
       ]
      ],
      "acos-asin-atan-atan2-serialize.html": [
-      "8462fb2e5a5594c5ba7727eb28131ebb978ef5c1",
+      "73ededd44ba64b5bd0d95df56c7036c667d6f686",
       [
        null,
        {}
@@ -473662,14 +473662,14 @@
       ]
      ],
      "hypot-pow-sqrt-invalid.html": [
-      "edb3138012687d3a6d75a1bdc1a6623aec8deb1d",
+      "4b04e5358ed1b0ee7beb06700eff0bf8f5b0b29b",
       [
        null,
        {}
       ]
      ],
      "hypot-pow-sqrt-serialize.html": [
-      "ab8c28cc5924492f014c760f272e39b07bb95373",
+      "ffaaaf4531d7d3ecc2c90d92ff60c10f3c1f6928",
       [
        null,
        {}
@@ -473907,7 +473907,7 @@
       ]
      ],
      "round-mod-rem-computed.html": [
-      "c5d05f18650422fc266781590cd99619393e82dc",
+      "4b62ad129431a9554b0cc3332652d152c2246cd0",
       [
        null,
        {}
@@ -473942,7 +473942,7 @@
       ]
      ],
      "signs-abs-serialize.html": [
-      "ea3d0cb433bb9ae631d67dcd3b6b96d494baab6c",
+      "5c49604ada6c08e10a8c87a3de2a7233991f0fb2",
       [
        null,
        {}
@@ -473963,7 +473963,7 @@
       ]
      ],
      "sin-cos-tan-serialize.html": [
-      "72287d6f3c5111b6dcc44e667a66f018a87ba732",
+      "f9b81c677e6f73a1e705de3d2cc23c6eabdc0902",
       [
        null,
        {}
