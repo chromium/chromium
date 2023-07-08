@@ -7524,6 +7524,15 @@
      ]
     ]
    },
+   "captured-mouse-events": {
+    "capturing-mouse-coordinates-manual.tentative.https.html": [
+     "19b2d6964182f64743ded4f764cb4793759d86ba",
+     [
+      null,
+      {}
+     ]
+    ]
+   },
    "clipboard-apis": {
     "clipboard-file-manual.html": [
      "e934f2fd0d17d2b960b4a7a4cb0205e4c3398deb",
@@ -376715,6 +376724,10 @@
      "37b2c61dac94c1d571aa2f6afad24ca01696478b",
      []
     ],
+    "captured-mouse-events.tentative.idl": [
+     "7b081cd9fd8a8a161c98b0bce2597c8a8ffd9df6",
+     []
+    ],
     "clipboard-apis.idl": [
      "3f2c9ba6f28253f6febaf689e150d188d4fc3374",
      []
@@ -377321,10 +377334,6 @@
     ],
     "scheduling-apis.idl": [
      "1e84e79cd1503946088888d02a5da45d5af7c5fe",
-     []
-    ],
-    "screen-capture-mouse-events.tentative.idl": [
-     "7b081cd9fd8a8a161c98b0bce2597c8a8ffd9df6",
      []
     ],
     "screen-capture.idl": [
@@ -430658,6 +430667,47 @@
      ]
     ]
    },
+   "captured-mouse-events": {
+    "capture-controller-oncapturedmousechange.https.html": [
+     "d42ba4ed4611be06d8f3222258aa4857b12c7254",
+     [
+      null,
+      {}
+     ]
+    ],
+    "captured-mouse-event-constructor-inherited.html": [
+     "2e25091eb5c685f35c249fb5a1c649929fc8357e",
+     [
+      null,
+      {}
+     ]
+    ],
+    "captured-mouse-event-constructor.html": [
+     "e9cfe971c004098472723a494e91daaaa18012b4",
+     [
+      null,
+      {}
+     ]
+    ],
+    "idlharness.https.window.js": [
+     "1dda955b10b69beac8b889fa6b06899210d42c52",
+     [
+      "captured-mouse-events/idlharness.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ]
+       ]
+      }
+     ]
+    ]
+   },
    "clear-site-data": {
     "executionContexts.sub.html": [
      "b3ae17576a3b09fe576c24d8d454b5ef504832a8",
@@ -473310,14 +473360,14 @@
       ]
      ],
      "acos-asin-atan-atan2-computed.html": [
-      "bc547d588e74d9962d1c803d4e53d86fc573df63",
+      "82e9dde6223381541dc0759ef72c72b90b17dd63",
       [
        null,
        {}
       ]
      ],
      "acos-asin-atan-atan2-invalid.html": [
-      "2f94c49ac8cac5139e63a319822cc46d21c083ed",
+      "727fc4df18a59df19f1f90b37bd96e76d50359f6",
       [
        null,
        {}
@@ -473599,21 +473649,21 @@
       ]
      ],
      "exp-log-compute.html": [
-      "3fa240004426d6968f01808a4ab1f3fba3114522",
+      "9efc1a7721c754828380deb61b530950f7efcea2",
       [
        null,
        {}
       ]
      ],
      "exp-log-invalid.html": [
-      "7fa56dc5bc196933c95b172587430896f4594d51",
+      "281baac28920206e7bd3bbaddc1f7899d8d34de6",
       [
        null,
        {}
       ]
      ],
      "exp-log-serialize.html": [
-      "6108278d9624daad216f2bde26e6d65b7dd6f50f",
+      "8946540a1a8afc35c317fcd268f3a071402fe605",
       [
        null,
        {}
@@ -473655,7 +473705,7 @@
       ]
      ],
      "hypot-pow-sqrt-computed.html": [
-      "3cc85a5230ca8dfc6310daf76ae89278a364169f",
+      "6ac416c0f5b35b1123722e945bcbc73d6b9de68b",
       [
        null,
        {}
