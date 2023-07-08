@@ -15,9 +15,26 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_APPLE)
+#include <atomic>
+
+#include "base/feature_list.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID) && __ANDROID_API__ < 21
 #define HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC 1
 #endif
+
+namespace {
+#if BUILDFLAG(IS_APPLE)
+// Under this feature a hack that was introduced to avoid crashes is skipped.
+// Use to evaluate if the hack is still needed. See https://crbug.com/517681.
+BASE_FEATURE(kSkipConditionVariableWakeupHack,
+             "SkipConditionVariableWakeupHack",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+std::atomic_bool g_skip_wakeup_hack = false;
+#endif
+}  // namespace
 
 namespace base {
 
@@ -52,7 +69,7 @@ ConditionVariable::~ConditionVariable() {
 #if BUILDFLAG(IS_APPLE)
   // This hack is necessary to avoid a fatal pthreads subsystem bug in the
   // Darwin kernel. http://crbug.com/517681.
-  {
+  if (!g_skip_wakeup_hack.load(std::memory_order_relaxed)) {
     base::Lock lock;
     base::AutoLock l(lock);
     struct timespec ts;
@@ -66,6 +83,15 @@ ConditionVariable::~ConditionVariable() {
   int rv = pthread_cond_destroy(&condition_);
   DCHECK_EQ(0, rv);
 }
+
+#if BUILDFLAG(IS_APPLE)
+// static
+void ConditionVariable::InitializeFeatures() {
+  g_skip_wakeup_hack.store(
+      base::FeatureList::IsEnabled(kSkipConditionVariableWakeupHack),
+      std::memory_order_relaxed);
+}
+#endif
 
 void ConditionVariable::Wait() {
   absl::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
