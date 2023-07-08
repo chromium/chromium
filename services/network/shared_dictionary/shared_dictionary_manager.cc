@@ -95,4 +95,8 @@ void SharedDictionaryManager::OnMemoryPressure(
   }
 }
 
+size_t SharedDictionaryManager::GetStorageCountForTesting() {
+  return storages_.size();
+}
+
 }  // namespace network

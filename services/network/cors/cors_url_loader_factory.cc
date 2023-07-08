@@ -103,6 +103,24 @@ base::debug::CrashKeyString* GetRequestInitiatorOriginLockCrashKey() {
   return crash_key;
 }
 
+bool IsTrustedNavigationRequestFromSecureContext(
+    const ResourceRequest& request) {
+  if (!request.trusted_params) {
+    return false;
+  }
+  if (request.mode != mojom::RequestMode::kNavigate) {
+    return false;
+  }
+
+  // `client_security_state` is not set for top-level navigation requests.
+  // TODO(crbug.com/1129326): Remove this when we set it for top-level
+  // navigation requests.
+  if (!request.trusted_params->client_security_state) {
+    return request.url.SchemeIsCryptographic();
+  }
+  return request.trusted_params->client_security_state->is_web_secure_context;
+}
+
 }  // namespace
 
 class CorsURLLoaderFactory::FactoryOverride final {
@@ -357,11 +375,10 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
 
     scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage =
         shared_dictionary_storage_;
-    if (isolation_info_ptr && !shared_dictionary_storage &&
-        context_->GetSharedDictionaryManager() && client_security_state_ &&
-        client_security_state_->is_web_secure_context) {
-      // For navigation requests, `shared_dictionary_storage_` is null. We need
-      // to get a storage using `isolation_info_ptr`.
+    if (context_->GetSharedDictionaryManager() &&
+        IsTrustedNavigationRequestFromSecureContext(resource_request)) {
+      // For trusted navigation requests, we need to get a storage using
+      // `isolation_info_ptr`.
       absl::optional<net::SharedDictionaryIsolationKey> isolation_key =
           net::SharedDictionaryIsolationKey::MaybeCreate(*isolation_info_ptr);
       if (isolation_key) {

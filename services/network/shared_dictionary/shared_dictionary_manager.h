@@ -31,6 +31,9 @@ class BackendFileOperationsFactory;
 }  // namespace disk_cache
 
 namespace network {
+namespace cors {
+class CorsURLLoaderSharedDictionaryTest;
+}
 
 class SharedDictionaryStorage;
 
@@ -103,6 +106,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
   }
 
  private:
+  friend class cors::CorsURLLoaderSharedDictionaryTest;
+
+  size_t GetStorageCountForTesting();
+
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
 

@@ -22,6 +22,7 @@ namespace network::cors {
 namespace {
 const std::string kTestData = "hello world";
 const std::string kTestOriginString = "https://origin.test/";
+const std::string kTestInsecureOriginString = "http://origin.test/";
 
 }  // namespace
 
@@ -52,13 +53,27 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
     CorsURLLoaderTestBase::ResetFactory(isolation_info_.frame_origin(),
                                         kRendererProcessId, factory_params);
   }
+  void ResetTrustedFactory() {
+    ResetFactoryParams factory_params;
+    factory_params.is_trusted = true;
+    CorsURLLoaderTestBase::ResetFactory(isolation_info_.frame_origin(),
+                                        kRendererProcessId, factory_params);
+  }
+
+  void ResetInsecureIsolationInfo() {
+    const url::Origin kInsecureOrigin =
+        url::Origin::Create(GURL(kTestInsecureOriginString));
+    isolation_info_ = net::IsolationInfo::Create(
+        net::IsolationInfo::RequestType::kOther, kInsecureOrigin,
+        kInsecureOrigin, net::SiteForCookies::FromOrigin(kInsecureOrigin));
+  }
 
   ResourceRequest CreateResourceRequest(
       bool shared_dictionary_writer_enabled = true) {
     ResourceRequest request;
     request.method = "GET";
     request.mode = mojom::RequestMode::kCors;
-    request.url = GURL("https://origin.test/test");
+    request.url = isolation_info_.frame_origin()->GetURL().Resolve("/test");
     request.request_initiator = isolation_info_.frame_origin();
     request.shared_dictionary_writer_enabled = shared_dictionary_writer_enabled;
     return request;
@@ -139,6 +154,12 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
   GetInMemoryDictionaryMap(SharedDictionaryStorage* storage) {
     return static_cast<SharedDictionaryStorageInMemory*>(storage)
         ->GetDictionaryMap();
+  }
+
+  size_t GetStorageCount() {
+    return network_context()
+        ->GetSharedDictionaryManager()
+        ->GetStorageCountForTesting();
   }
 
   net::IsolationInfo isolation_info_;
@@ -223,12 +244,15 @@ TEST_F(CorsURLLoaderSharedDictionaryTest,
 }
 
 TEST_F(CorsURLLoaderSharedDictionaryTest, SameOriginUrlNavigateModeRequest) {
-  ResetFactory();
+  ResetTrustedFactory();
 
   ResourceRequest request = CreateResourceRequest();
   request.mode = mojom::RequestMode::kNavigate;
   request.redirect_mode = mojom::RedirectMode::kManual;
   request.navigation_redirect_chain.push_back(request.url);
+  request.trusted_params = network::ResourceRequest::TrustedParams();
+  request.trusted_params->isolation_info = isolation_info_;
+  request.site_for_cookies = isolation_info_.site_for_cookies();
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
 
@@ -428,6 +452,103 @@ TEST_F(CorsURLLoaderSharedDictionaryTest, SharedDictionaryWriterDisabled) {
   // The response of should be stored to the dictionary storage because shared
   // dictionary writer is disabled.
   CheckDictionaryInStorage(/*expect_exists=*/false);
+}
+
+TEST_F(CorsURLLoaderSharedDictionaryTest, StorageCountForSecureContext) {
+  ResetFactory(/*is_web_secure_context=*/true);
+  // SharedDictionaryStorage should have been created for secure context
+  // factory.
+  EXPECT_EQ(1u, GetStorageCount());
+}
+
+TEST_F(CorsURLLoaderSharedDictionaryTest, StorageCountForUnsecureContext) {
+  ResetFactory(/*is_web_secure_context=*/false);
+  // SharedDictionaryStorage should not have been created for non-secure
+  // context factory.
+  EXPECT_EQ(0u, GetStorageCount());
+}
+
+TEST_F(CorsURLLoaderSharedDictionaryTest, StorageCountForTrustedFactory) {
+  ResetTrustedFactory();
+  // SharedDictionaryStorage should not have been created for trusted factory.
+  EXPECT_EQ(0u, GetStorageCount());
+}
+
+TEST_F(CorsURLLoaderSharedDictionaryTest,
+       StorageCountTopFrameNavigationSecureRequest) {
+  ResetTrustedFactory();
+
+  ResourceRequest request = CreateResourceRequest();
+  request.mode = mojom::RequestMode::kNavigate;
+  request.redirect_mode = mojom::RedirectMode::kManual;
+  request.navigation_redirect_chain.push_back(request.url);
+  request.trusted_params = network::ResourceRequest::TrustedParams();
+  request.trusted_params->isolation_info = isolation_info_;
+  request.site_for_cookies = isolation_info_.site_for_cookies();
+  CreateLoaderAndStart(request);
+
+  // Starting a secure navigation request should create a
+  // SharedDictionaryStorage.
+  EXPECT_EQ(1u, GetStorageCount());
+}
+
+TEST_F(CorsURLLoaderSharedDictionaryTest,
+       StorageCountTopFrameNavigationInsecureRequest) {
+  ResetInsecureIsolationInfo();
+  ResetTrustedFactory();
+
+  ResourceRequest request = CreateResourceRequest();
+  request.mode = mojom::RequestMode::kNavigate;
+  request.redirect_mode = mojom::RedirectMode::kManual;
+  request.navigation_redirect_chain.push_back(request.url);
+  request.trusted_params = network::ResourceRequest::TrustedParams();
+  request.trusted_params->isolation_info = isolation_info_;
+  request.site_for_cookies = isolation_info_.site_for_cookies();
+  CreateLoaderAndStart(request);
+
+  // Starting an insecure navigation request should not create a
+  // SharedDictionaryStorage.
+  EXPECT_EQ(0u, GetStorageCount());
+}
+
+TEST_F(CorsURLLoaderSharedDictionaryTest,
+       StorageCountSubFrameNavigationRequest) {
+  ResetTrustedFactory();
+
+  ResourceRequest request = CreateResourceRequest();
+  request.mode = mojom::RequestMode::kNavigate;
+  request.redirect_mode = mojom::RedirectMode::kManual;
+  request.navigation_redirect_chain.push_back(request.url);
+  request.trusted_params = network::ResourceRequest::TrustedParams();
+  request.trusted_params->isolation_info = isolation_info_;
+  request.trusted_params->client_security_state =
+      ClientSecurityStateBuilder().WithIsSecureContext(true).Build();
+  request.site_for_cookies = isolation_info_.site_for_cookies();
+  CreateLoaderAndStart(request);
+
+  // Starting a navigation request for secure context should create a
+  // SharedDictionaryStorage.
+  EXPECT_EQ(1u, GetStorageCount());
+}
+
+TEST_F(CorsURLLoaderSharedDictionaryTest,
+       StorageCountSubFrameNavigationRequestInsecureContext) {
+  ResetTrustedFactory();
+
+  ResourceRequest request = CreateResourceRequest();
+  request.mode = mojom::RequestMode::kNavigate;
+  request.redirect_mode = mojom::RedirectMode::kManual;
+  request.navigation_redirect_chain.push_back(request.url);
+  request.trusted_params = network::ResourceRequest::TrustedParams();
+  request.trusted_params->isolation_info = isolation_info_;
+  request.trusted_params->client_security_state =
+      ClientSecurityStateBuilder().WithIsSecureContext(false).Build();
+  request.site_for_cookies = isolation_info_.site_for_cookies();
+  CreateLoaderAndStart(request);
+
+  // Starting a navigation request for insecure context should not create a
+  // SharedDictionaryStorage.
+  EXPECT_EQ(0u, GetStorageCount());
 }
 
 }  // namespace network::cors
