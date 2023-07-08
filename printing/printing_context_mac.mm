@@ -80,6 +80,15 @@ PMPaper MatchPaper(CFArrayRef paper_list,
   return best_matching_paper;
 }
 
+bool IsIppColorModelColorful(mojom::ColorModel color_model) {
+  // Accept `kUnknownColorModel` as it can occur with raw CUPS printers.
+  // Treat it similarly to the behavior in  `GetColorModelForModel()`.
+  if (color_model == mojom::ColorModel::kUnknownColorModel) {
+    return false;
+  }
+  return IsColorModelSelected(color_model).value();
+}
+
 }  // namespace
 
 // static
@@ -422,7 +431,7 @@ bool PrintingContextMac::SetOutputColor(int color_mode) {
   // may still expect PPD color values if the printer was added to the system
   // with a PPD. To avoid parsing PPDs (which is the point of using CUPS IPP),
   // set every single known PPD color setting and hope that one of them sticks.
-  const bool is_color = IsColorModelSelected(color_model).value_or(false);
+  const bool is_color = IsIppColorModelColorful(color_model);
   for (const auto& setting : GetKnownPpdColorSettings()) {
     const base::StringPiece& color_setting_name = setting.name;
     const base::StringPiece& color_value =
