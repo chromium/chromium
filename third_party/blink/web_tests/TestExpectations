@@ -291,7 +291,9 @@ crbug.com/713049 [ Mac ] virtual/gpu-rasterization/images/color-profile-reflecti
 crbug.com/1050826 external/wpt/mixed-content/gen/top.http-rp/opt-in/object-tag.https.html [ Skip Timeout ]
 
 # Assorted WPT canvas tests failing
-crbug.com/1093709 external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html [ Failure Pass ]
+crbug.com/1093709 [ Mac11-arm64 Release ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html [ Failure Pass ]
+crbug.com/1093709 [ Mac12-arm64 Release ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html [ Failure Pass ]
+crbug.com/1093709 [ Mac13-arm64 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html [ Failure Pass ]
 crbug.com/1243128 [ Win ] external/wpt/html/canvas/element/wide-gamut-canvas/2d.color.space.p3.fillText.shadow.html [ Failure ]
 crbug.com/1315282 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/direction-inherit-rtl.html [ Failure ]
 crbug.com/1315282 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/direction-rtl.html [ Failure ]
@@ -864,8 +866,6 @@ crbug.com/1044742 external/wpt/css/compositing/compositing_simple_div.html [ Fai
 crbug.com/1044742 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-border-image.html [ Failure ]
 crbug.com/1044742 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-filter.html [ Failure ]
 crbug.com/1044742 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-stacking-context-001.html [ Failure ]
-crbug.com/1044742 [ Mac12-arm64 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Failure ]
-crbug.com/1044742 [ Release Win ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Failure ]
 
 crbug.com/1271275 external/wpt/css/compositing/background-blending/background-blend-mode-plus-lighter.html [ Failure ]
 
@@ -2583,8 +2583,6 @@ crbug.com/1029514 external/wpt/html/semantics/embedded-content/the-video-element
 crbug.com/1085772 external/wpt/css/css-pseudo/first-line-opacity-001.html [ Failure ]
 crbug.com/798257 external/wpt/css/css-pseudo/first-line-line-height-002.html [ Failure ]
 
-# motion-1 issues
-crbug.com/654669 external/wpt/css/motion/offset-path-shape.html [ Failure ]
 
 # Various css-values WPT failures
 crbug.com/759914 external/wpt/css/css-values/ch-unit-011.html [ Failure ]
@@ -3785,10 +3783,9 @@ crbug.com/814964 virtual/gpu-rasterization/images/yuv-decode-eligible/color-prof
 crbug.com/807110 external/wpt/html/semantics/embedded-content/media-elements/mime-types/canPlayType.html [ Failure Pass ]
 crbug.com/807110 external/wpt/media-source/mediasource-addsourcebuffer.html [ Failure Pass ]
 crbug.com/807110 external/wpt/media-source/mediasource-buffered.html [ Failure Pass ]
-crbug.com/807110 external/wpt/media-source/mediasource-config-change-mp4-a-bitrate.html [ Failure Pass ]
+crbug.com/807110 [ Release Win ] external/wpt/media-source/mediasource-config-change-mp4-a-bitrate.html [ Failure Pass ]
 crbug.com/807110 external/wpt/media-source/mediasource-config-change-mp4-v-bitrate.html [ Failure Pass Timeout ]
-crbug.com/807110 external/wpt/media-source/mediasource-config-change-mp4-v-framerate.html [ Failure Pass Timeout ]
-crbug.com/807110 external/wpt/media-source/mediasource-config-change-mp4-v-framesize.html [ Failure Pass ]
+crbug.com/807110 [ Release Win ] external/wpt/media-source/mediasource-config-change-mp4-v-framerate.html [ Failure Pass Timeout ]
 # Failure and Pass for crbug.com/807110 and Timeout for crbug.com/727252.
 crbug.com/727252 external/wpt/media-source/mediasource-endofstream.html [ Failure Pass Timeout ]
 crbug.com/807110 external/wpt/media-source/mediasource-sequencemode-append-buffer.html [ Failure Pass ]
@@ -4694,12 +4691,18 @@ crbug.com/1197041 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-em
 
 # Sheriff 2021-04-12
 
-crbug.com/1193979 [ Mac ] fast/events/tabindex-focus-blur-all.html [ Failure Pass ]
+crbug.com/1193979 [ Debug Mac13 ] fast/events/tabindex-focus-blur-all.html [ Failure Pass ]
 
 # Sheriff 2021-04-15
 crbug.com/1196118 plugins/mouse-move-over-plugin-in-frame.html [ Failure Pass ]
 crbug.com/1199528 http/tests/inspector-protocol/css/css-edit-redirected-css.js [ Failure Pass ]
-crbug.com/1196317 [ Mac ] scrollbars/custom-scrollbar-thumb-width-changed-on-inactive-pseudo.html [ Failure Pass ]
+crbug.com/1196317 [ Mac10.15 Release ] scrollbars/custom-scrollbar-thumb-width-changed-on-inactive-pseudo.html [ Failure Pass ]
+crbug.com/1196317 [ Mac11 Release ] scrollbars/custom-scrollbar-thumb-width-changed-on-inactive-pseudo.html [ Failure Pass ]
+crbug.com/1196317 [ Mac11-arm64 Release ] scrollbars/custom-scrollbar-thumb-width-changed-on-inactive-pseudo.html [ Failure Pass ]
+crbug.com/1196317 [ Mac12 Release ] scrollbars/custom-scrollbar-thumb-width-changed-on-inactive-pseudo.html [ Failure Pass ]
+crbug.com/1196317 [ Mac12-arm64 Release ] scrollbars/custom-scrollbar-thumb-width-changed-on-inactive-pseudo.html [ Failure Pass ]
+crbug.com/1196317 [ Mac13 ] scrollbars/custom-scrollbar-thumb-width-changed-on-inactive-pseudo.html [ Failure Pass ]
+crbug.com/1196317 [ Mac13-arm64 ] scrollbars/custom-scrollbar-thumb-width-changed-on-inactive-pseudo.html [ Failure Pass ]
 
 # Sheriff 2021-04-21
 crbug.com/1201225 external/wpt/pointerevents/pointerlock/pointerevent_pointerrawupdate_in_pointerlock.html [ Failure Pass Timeout ]
@@ -5193,7 +5196,6 @@ crbug.com/1273541 fast/block/float/float-on-clean-line-subsequently-dirtied.html
 crbug.com/1201879 http/tests/inspector-protocol/issues/mixed-content-issue-creation-js-within-oopif.js [ Failure Pass Timeout ]
 crbug.com/1274171 inspector-protocol/debugger/debugger-setTimeout-sourceUrl-dedicated-worker-loop.js [ Pass Timeout ]
 crbug.com/1271485 http/tests/inspector-protocol/network/load-network-resource-different-frame-cookie.js [ Failure Pass Timeout ]
-crbug.com/1228803 [ Linux ] fast/peerconnection/RTCPeerConnection-garbagecollected.html [ Failure Pass ]
 
 # Sheriff 2021-11-29
 crbug.com/1274458 external/wpt/audio-output/selectAudioOutput-permissions-policy.https.sub.html [ Failure Pass ]
@@ -5256,8 +5258,6 @@ crbug.com/1094436 [ Win ] http/tests/devtools/overrides/project-added-with-exist
 crbug.com/1256763 virtual/gpu-rasterization/images/color-profile-background-image-cover.html [ Failure Pass ]
 
 # Sheriff 2022-01-18
-crbug.com/1288264 [ Win ] http/tests/fetch/serviceworker-proxied/thorough/redirect-loop-base-https-other-https.html [ Pass Timeout ]
-crbug.com/1288264 [ Win ] http/tests/fetch/serviceworker/thorough/nocors-base-https-other-https.html [ Pass Timeout ]
 crbug.com/1288264 [ Win ] http/tests/security/aboutBlank/xss-DENIED-navigate-opener-document-write.html [ Pass Timeout ]
 
 
@@ -5313,8 +5313,6 @@ crbug.com/1293714 external/wpt/css/selectors/invalidation/has-complexity.html [ 
 
 # Sheriff 2022-02-22
 crbug.com/1299858 [ Win ] http/tests/fetch/serviceworker/thorough/redirect-nocors-base-https-other-https.html [ Pass Timeout ]
-crbug.com/1299858 [ Win ] http/tests/fetch/window/thorough/cors-base-https-other-https.html [ Pass Timeout ]
-crbug.com/1299858 [ Win ] http/tests/fetch/workers/thorough/cookie-nocors-base-https-other-https.html [ Pass Timeout ]
 crbug.com/1299948 [ Mac10.15 Release ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
 crbug.com/1299948 [ Mac11 Release ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
 crbug.com/1299948 [ Mac12 ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
@@ -5724,7 +5722,6 @@ crbug.com/1385870 [ Win ] external/wpt/screen-capture/getdisplaymedia-capture-co
 crbug.com/1386214 [ Win ] external/wpt/html/semantics/forms/the-input-element/selection-pointer.html [ Skip Timeout ]
 crbug.com/1386214 [ Win ] external/wpt/html/semantics/forms/the-input-element/show-picker-user-gesture.html [ Skip Timeout ]
 crbug.com/1392781 [ Win ] http/tests/fetch/serviceworker-proxied/thorough/auth-base-https-other-https.html [ Crash Failure Pass Timeout ]
-crbug.com/1392781 [ Win ] http/tests/fetch/serviceworker/thorough/cookie-base-https-other-https.html [ Crash Failure Pass Timeout ]
 crbug.com/1392781 [ Win ] http/tests/fetch/window/thorough/auth-base-https-other-https.html [ Crash Failure Pass Timeout ]
 crbug.com/1375147 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/singletap-on-overlay-closes-overflow-menu.html [ Failure ]
 crbug.com/1396079 [ Mac ] inspector-protocol/memory/forcibly-purge-javascript-memory.js [ Crash Failure ]
@@ -5734,8 +5731,6 @@ crbug.com/1406027 [ Win ] virtual/media-foundation-for-clear-dcomp/media/control
 crbug.com/1289607 [ Linux ] external/wpt/cookie-store/cookieStore_subscribe_arguments.https.any.html [ Failure ]
 crbug.com/1408294 [ Debug Linux ] virtual/gpu/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
 crbug.com/1392781 [ Win ] http/tests/fetch/serviceworker/thorough/auth-base-https-other-https.html [ Crash Failure Pass Timeout ]
-crbug.com/1392781 [ Win ] http/tests/fetch/window/thorough/auth-nocors-base-https-other-https.html [ Crash Failure Pass Timeout ]
-crbug.com/1392781 [ Win ] http/tests/fetch/workers/thorough/cors-preflight-base-https-other-https.html [ Crash Failure Pass Timeout ]
 crbug.com/1229708 [ Debug Linux ] fast/events/pointerevents/pointer-event-in-slop-region.html [ Failure ]
 crbug.com/1406896 [ Linux ] http/tests/inspector-protocol/cpu-profiler/record-cpu-profile-with-cpu-throttling.js [ Crash ]
 crbug.com/1370749 [ Debug Linux ] virtual/threaded-no-composited-antialiasing/animations/add-keyframes-recalc.html [ Failure ]
@@ -6474,7 +6469,11 @@ crbug.com/1449995 [ Mac13-arm64 ] virtual/text-antialias/whitespace/pre-wrap-las
 crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]
 
 # Sheriff 2023-05-30
-crbug.com/1450020 [ Mac ] compositing/geometry/preserve-3d-switching.html [ Failure Pass ]
+crbug.com/1450020 [ Mac10.15 Release ] compositing/geometry/preserve-3d-switching.html [ Failure Pass ]
+crbug.com/1450020 [ Mac11 Release ] compositing/geometry/preserve-3d-switching.html [ Failure Pass ]
+crbug.com/1450020 [ Mac11-arm64 Release ] compositing/geometry/preserve-3d-switching.html [ Failure Pass ]
+crbug.com/1450020 [ Mac12 Release ] compositing/geometry/preserve-3d-switching.html [ Failure Pass ]
+crbug.com/1450020 [ Mac12-arm64 Release ] compositing/geometry/preserve-3d-switching.html [ Failure Pass ]
 
 # Re-enable after adding changes https://bit.ly/3w5hn7y
 crbug.com/1450344 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
