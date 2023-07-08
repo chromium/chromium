@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">હાલની કીની જોડીનો ઉપયોગ કરો</translation>
 <translation id="2320295602967756579">ઝાંખી થીમ ચાલુ કરો</translation>
 <translation id="2323506179655536734">છોડ્યું</translation>
+<translation id="2324354238778375592">ફ્લોટિંગ વિન્ડો</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">નજીકનાં ડિવાઇસ શોધવા માટે Bluetooth ચાલુ કરો</translation>
 <translation id="2346474577291266260">ઉત્તમ (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> પરીક્ષણ</translation>
 <translation id="370665806235115550">લોડ કરી રહ્યું છે...</translation>
 <translation id="3708186454126126312">પહેલાં કનેક્ટ કરેલા</translation>
+<translation id="3715651196924935218">ફ્લોટિંગ વિન્ડોમાંથી બહાર નીકળો</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> રિવ્યૂ)</translation>
 <translation id="3748026146096797577">કનેક્ટેડ નથી</translation>
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">ડિસ્પ્લે</translation>
 <translation id="4155551848414053977">ખાતરી કરો કે સ્કૅનર ચાલુ કરેલું છે અને તમારા નેટવર્ક અથવા સીધા જોડાણ મારફતે ઉપલબ્ધ છે</translation>
+<translation id="4159238217853743776">આંશિક</translation>
 <translation id="4159784952369912983">જાંબલી</translation>
 <translation id="4170180284036919717">ફોટો લો</translation>
 <translation id="4170700058716978431">નિષ્ફળ થયું</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">કનેક્શનનું સેટઅપ કરવા અથવા તેને અપડેટ કરવા માટે, <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જાઓ.</translation>
 <translation id="4932733599132424254">તારીખ</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> ફર્મવેયર વર્ઝન <ph name="VERSION" /> પર અપડેટ કરાયું</translation>
+<translation id="4969079779290789265">વિભાજન કરો</translation>
 <translation id="4972592110715526173">મોડમાં ફેરફાર</translation>
 <translation id="498186245079027698">તમારું સ્કૅનર ચેક કરો અને ફરી પ્રયાસ કરો. ખાતરી કરો કે સ્કૅન કરેલી ફાઇલોને સાચવવા માટે પૂરતી સ્થાનિક સ્પેસ હોય.</translation>
 <translation id="4985509611418653372">ચલાવો</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">સર્વર હોસ્ટનું નામ</translation>
 <translation id="5089810972385038852">રાજ્ય</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">સંપૂર્ણ</translation>
 <translation id="5142961317498132443">પ્રમાણીકરણ</translation>
 <translation id="5154917547274118687">મેમરી</translation>
 <translation id="5160857336552977725">તમારા <ph name="DEVICE_TYPE" /> પર સાઇન ઇન કરો</translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">સાઇન આઉટ</translation>
 <translation id="522307662484862935">ઇમેઇલ ઍડ્રેસ શામેલ કરશો નહીં</translation>
 <translation id="5227902338748591677">ઘેરી થીમનું શેડ્યૂલ</translation>
+<translation id="5229344016299762883">પૂર્ણસ્ક્રીનમાંથી બહાર નીકળો</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
 <translation id="5252456968953390977">રોમિંગ</translation>
 <translation id="5257811368506016604">આછા રંગવાળો મોડ ચાલુ કરો</translation>
@@ -707,6 +713,7 @@
 <translation id="6566314079205407217">એકથી વધુ પેજ સ્કૅન કરો</translation>
 <translation id="6574762126505704998">પૂર્ણ સ્ક્રીન</translation>
 <translation id="6575134580692778371">ગોઠવેલું નથી</translation>
+<translation id="6576005492601044801">ડાબે</translation>
 <translation id="6579509898032828423">આ ફોટાનો ઉપયોગ કરો</translation>
 <translation id="6596816719288285829">IP સરનામું</translation>
 <translation id="6599673642868607614">તમારા પ્રતિસાદ બદલ આભાર. તમારો પ્રતિસાદ અમને Chromebookના અનુભવને બહેતર બનાવવામાં સહાય કરે છે અને અમારી ટીમ દ્વારા તેનો રિવ્યૂ કરવામાં આવશે. મોટી સંખ્યામાં મળેલા રિપોર્ટને કારણે, અમે કોઈ જવાબ મોકલી શકીશું નહીં.</translation>
@@ -812,6 +819,7 @@
 <translation id="7497215489070763236">સર્વર CA પ્રમાણપત્ર</translation>
 <translation id="7501957181231305652">અથવા</translation>
 <translation id="7502658306369382406">IPv6 સરનામું</translation>
+<translation id="7513770521371759388">સૌથી નીચે</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">સહાયક કન્ટેન્ટ ઉપલબ્ધ નથી</translation>
 <translation id="7535791657097741517">ઝાંખી થીમ ચાલુ કરો</translation>
@@ -950,6 +958,7 @@
 <translation id="8655295600908251630">ચેનલ</translation>
 <translation id="8655828773034788261">URL શેર કરો:</translation>
 <translation id="8660881923941176839">પાઉન્ડ</translation>
+<translation id="8670574982334489519">જમણે</translation>
 <translation id="8675354002693747642">પહેલેથી-શેર કરેલી કી</translation>
 <translation id="8677859815076891398">કોઈ આલ્બમ નથી. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />માં કોઈ આલ્બમ બનાવો.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> આ સુવિધા મેનેજ કરવા માટે ડાબી કે જમણી એરો કીનો ઉપયોગ કરો.</translation>
@@ -995,6 +1004,7 @@
 <translation id="8936793075252196307">ક્લાયન્ટનું IP ઍડ્રેસ</translation>
 <translation id="8944651180182756621">લૉન્ચરનો રંગ</translation>
 <translation id="894617464444543719">ડિવાઇસ એક ફોન છે.</translation>
+<translation id="8950424402482976779">સૌથી ઉપર</translation>
 <translation id="8968751544471797276">ચાર્જ થવાની ટકાવારી</translation>
 <translation id="8970109610781093811">ફરીથી ચલાવો</translation>
 <translation id="8983038754672563810">HSPA</translation>

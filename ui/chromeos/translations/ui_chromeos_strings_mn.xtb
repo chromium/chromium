@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Drive одоогоор боломжгүй байна. Google Drive ажиллаж эхлэхэд байршуулалт автоматиар эхэлнэ.</translation>
 <translation id="1307931752636661898">Linux-н файлуудыг харах боломжгүй байна</translation>
 <translation id="1313405956111467313">Автомат прокси тохиргоо</translation>
+<translation id="134645005685694099">Таны төхөөрөмжид синк хийхийг асаалттай байлгахад хадгалах сангийн хангалттай зай байхгүй байна. Шинэ файлуудыг цаашид автоматаар синк хийхгүй.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Файл болон хадгалалтын сан нь ашиглах боломжгүй байна.</translation>
 <translation id="1363028406613469049">Бичлэг</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP прокси</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> сүлжээ, унтраалттай</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
+<translation id="2468470447085858632">Файл синк хийхийн тусламжтайгаар Google Драйвын файлууддаа офлайн үед хандаарай</translation>
 <translation id="2470939964922472929">ПИН-г хэт олон удаа буруу оруулсан байна. Шинэ ПИН тохируулахын тулд танай оператор компаниас өгсөн 8 оронтой Хувийн блокоос гаргах түлхүүр (PUK)-ийг оруулна уу.</translation>
 <translation id="2500392669976258912">Гужарати авиа зүй</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -600,6 +602,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" />-г хогийн сав руу зөөсөн</translation>
 <translation id="5724172041621205163">Pattachote гартай тай</translation>
 <translation id="57383366388012121">Өнгөрсөн сар</translation>
+<translation id="575175778971367197">Энэ файлыг яг одоо синк хийх боломжгүй</translation>
 <translation id="5756666464756035725">Унгарын QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> зүйл сонгосон</translation>
 <translation id="5763377084591234761">Герман (Швейцар)</translation>
@@ -702,6 +705,7 @@
 <translation id="6558280019477628686">Алдаа гарлаа. Зарим зүйлийг устгаагүй байж болзошгүй.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" устгаж байна...</translation>
 <translation id="6581162200855843583">Google Drive холбоос</translation>
+<translation id="6588648400954570689">Файл синк хийх тохиргоо</translation>
 <translation id="6594855146910089723">Энэ фолдерыг Linux болон Parallels Desktop-тай хуваалцсан байна</translation>
 <translation id="6607272825297743757">Файлын мэдээлэл</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> фолдерыг Parallels Desktop-тай хуваалцсан</translation>
@@ -826,6 +830,7 @@
 <translation id="7547811415869834682">Голланд</translation>
 <translation id="7551643184018910560">Програмын жагсаалтын өмнө гаргах</translation>
 <translation id="7553492409867692754">Linux аппуудад <ph name="FOLDER_NAME" /> фолдерын файлуудад хандах зөвшөөрөл өгнө үү</translation>
+<translation id="7555339735447658365">Та одоогоор офлайн байна. Таныг интернэтэд холбогдсон үед файлыг үргэлжлүүлэн синк хийнэ</translation>
 <translation id="7589661784326793847">Түр хүлээнэ үү</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" />-г офлайнаар ашиглах боломжтой болгож байна</translation>
 <translation id="7600126690270271294">Серб</translation>
@@ -868,6 +873,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Сүлжээг тохируулахад алдаа гарлаа</translation>
+<translation id="7832093238954689746">Файлыг синк хийж дууслаа. Миний драйвын файлууд офлайн үед боломжтой.</translation>
 <translation id="7839804798877833423">Эдгээр файлуудыг татаж авчрахад гар утасны өгөгдлийн ойролцоогоор <ph name="FILE_SIZE" />-ийг ашиглах болно.</translation>
 <translation id="7846076177841592234">Сонголтыг цуцлах</translation>
 <translation id="7853966320808728790">Франц хэлний BÉPO</translation>
@@ -916,6 +922,7 @@
 <translation id="8179976553408161302">Нэвтрэх</translation>
 <translation id="8193175696669055101">Төхөөрөмжийн загвар:</translation>
 <translation id="8223479393428528563">Эдгээр файлыг интернетэд холбогдоогүй байхдаа ашиглахаар хадгалахын тулд интернетэд холбогдсоныхоо дараагаар холбогдох файл дээр очин хулганын баруун талд даран <ph name="OFFLINE_CHECKBOX_NAME" /> сонголтыг сонгоно уу.</translation>
+<translation id="8241139360630443550">Санах ойг харах</translation>
 <translation id="8249296373107784235">Цуцлах</translation>
 <translation id="8250690786522693009">Латин цагаан толгойгоор</translation>
 <translation id="8250920743982581267">Документ</translation>

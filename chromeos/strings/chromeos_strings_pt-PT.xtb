@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nova funcionalidade disponível, utilize a tecla da seta para cima para saber mais.</translation>
 <translation id="1059913517121127803">Não foi possível iniciar a digitalização.</translation>
+<translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall detetada</translation>
 <translation id="1075811647922107217">Tamanho da página</translation>
@@ -540,6 +541,7 @@
 <translation id="5257811368506016604">Ativar modo de cor clara</translation>
 <translation id="5264277876637023664">Executar teste da CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">O APN está desativado.</translation>
 <translation id="5275828089655680674">Executar novamente as Rotinas</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">cor da retroiluminação</translation>
@@ -605,6 +607,7 @@
 <translation id="5832805196449965646">Adicionar pessoa</translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
+<translation id="584953448295717128">O APN (Nome do Ponto de Acesso) é detetado automaticamente.</translation>
 <translation id="5849570051105887917">Código do fornecedor base</translation>
 <translation id="5859603669299126575">Álbum da galeria de arte</translation>
 <translation id="5860033963881614850">Desativado</translation>
@@ -885,6 +888,7 @@
 <translation id="8041089156583427627">Enviar feedback</translation>
 <translation id="8045012663542226664">Desativação do som do microfone</translation>
 <translation id="8050091914317269817">Ao selecionar esta imagem de fundo, ativa o modo escuro automático e a correspondência de cores da imagem de fundo.</translation>
+<translation id="8067126283828232460">O APN está ligado.</translation>
 <translation id="8075838845814659848">Carregamento restante</translation>
 <translation id="8076492880354921740">Separadores</translation>
 <translation id="8082366717211101304">Não é possível resolver o DNS a partir de apps Android</translation>
@@ -1031,6 +1035,7 @@
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="9122602430962285795">Para restabelecer ligação, aceda a Definições</translation>
 <translation id="9126720536733509015">Guardar várias páginas num PDF</translation>
+<translation id="9133104754938025929">Para poupar bateria, a proteção de ecrã só funciona durante o carregamento.</translation>
 <translation id="9137526406337347448">Serviços Google</translation>
 <translation id="9138630967333032450">Shift do lado esquerdo</translation>
 <translation id="9143347780818904997">durante <ph name="MINUTES" /> minutos</translation>

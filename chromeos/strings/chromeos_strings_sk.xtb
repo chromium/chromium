@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">Použitie aktuálneho páru kľúčov</translation>
 <translation id="2320295602967756579">Zapnúť svetlý motív</translation>
 <translation id="2323506179655536734">PRESKOČENÉ</translation>
+<translation id="2324354238778375592">Plávajúce</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ak chcete nájsť zariadenia v okolí, zapnite Bluetooth</translation>
 <translation id="2346474577291266260">Vynikajúce (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Načítava sa...</translation>
 <translation id="3708186454126126312">Predtým pripojené zariadenia</translation>
+<translation id="3715651196924935218">Ukončiť plávajúci režim</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (počet recenzií: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nepripojené</translation>
 <translation id="3749289110408117711">Názov súboru</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Fotky Google</translation>
 <translation id="4150201353443180367">Displej</translation>
 <translation id="4155551848414053977">Skontrolujte, či je skener zapnutý a dostupný prostredníctvom vašej siete alebo priameho pripojenia</translation>
+<translation id="4159238217853743776">Čiastočný</translation>
 <translation id="4159784952369912983">Purpurová</translation>
 <translation id="4170180284036919717">Nasnímať fotku</translation>
 <translation id="4170700058716978431">NEPODARILO SA</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">Ak chcete nastaviť alebo aktualizovať pripojenie, prejdite do <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Dátum</translation>
 <translation id="4950314376641394653">Firmvér zariadenia <ph name="DEVICE_NAME" /> bol aktualizovaný na verziu <ph name="VERSION" /></translation>
+<translation id="4969079779290789265">Rozdeliť</translation>
 <translation id="4972592110715526173">zmena režimu</translation>
 <translation id="498186245079027698">Skontrolujte skener a skúste to znova. Uistite sa, že na uloženie naskenovaných súborov je v zariadení dostatok priestoru.</translation>
 <translation id="4985509611418653372">Spustiť</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">Názov hostiteľského servera</translation>
 <translation id="5089810972385038852">Štát</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">Na celú obrazovku</translation>
 <translation id="5142961317498132443">Overenie totožnosti</translation>
 <translation id="5154917547274118687">Pamäť</translation>
 <translation id="5160857336552977725">Prihláste sa do svojho zariadenia <ph name="DEVICE_TYPE" /></translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">Odhlásiť sa</translation>
 <translation id="522307662484862935">Nezahŕňať e‑mailovú adresu</translation>
 <translation id="5227902338748591677">Plán tmavého motívu</translation>
+<translation id="5229344016299762883">Ukončiť režim celej obrazovky</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Povoliť svetlý farebný režim</translation>
@@ -707,6 +713,7 @@
 <translation id="6566314079205407217">Viacstránkový sken</translation>
 <translation id="6574762126505704998">Výplň</translation>
 <translation id="6575134580692778371">Nenakonfigurované</translation>
+<translation id="6576005492601044801">vľavo</translation>
 <translation id="6579509898032828423">Použiť túto fotku</translation>
 <translation id="6596816719288285829">Adresa IP</translation>
 <translation id="6599673642868607614">Ďakujeme vám za spätnú väzbu. Vaša spätná väzba nám pomáha zlepšiť prostredie Chromebooku a skontroluje ju náš tím. Vzhľadom na veľký počet hlásení vám nebudeme môcť odpovedať.</translation>
@@ -812,6 +819,7 @@
 <translation id="7497215489070763236">Certifikát CA servera</translation>
 <translation id="7501957181231305652">alebo</translation>
 <translation id="7502658306369382406">Adresa IPv6</translation>
+<translation id="7513770521371759388">dole</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Obsah pomocníka nie je k dispozícii</translation>
 <translation id="7535791657097741517">Zapnúť svetlý motív</translation>
@@ -950,6 +958,7 @@
 <translation id="8655295600908251630">Kanál</translation>
 <translation id="8655828773034788261">Webová adresa zdieľania:</translation>
 <translation id="8660881923941176839">libry</translation>
+<translation id="8670574982334489519">vpravo</translation>
 <translation id="8675354002693747642">Predzdieľaný kľúč</translation>
 <translation id="8677859815076891398">Žiadne albumy Vytvorte album vo <ph name="LINK_BEGIN" />Fotkách Google<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Spravujte túto funkciu pomocou ľavej alebo pravej šípky.</translation>
@@ -995,6 +1004,7 @@
 <translation id="8936793075252196307">Adresa IP klienta</translation>
 <translation id="8944651180182756621">Farba Spúšťača</translation>
 <translation id="894617464444543719">Zariadenie je telefón.</translation>
+<translation id="8950424402482976779">hore</translation>
 <translation id="8968751544471797276">Rýchlosť nabíjania</translation>
 <translation id="8970109610781093811">Spustiť znova</translation>
 <translation id="8983038754672563810">HSPA</translation>
