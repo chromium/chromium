@@ -66,11 +66,9 @@ import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -106,58 +104,16 @@ class AddressEditorMediator {
     @Nullable
     private PropertyModel mEditorModel;
 
-    /**
-     * The list of possible address fields for editing is determined statically.
-     *
-     * @return the list of address fields this address editor supports.
-     */
-    private static Map<Integer, PropertyModel> getAddressFields() {
-        Map<Integer, PropertyModel> addressFields = new HashMap<>();
-
-        // Don't use REGION_INPUT to avoid capitalizing all characters.
-        addressFields.put(ServerFieldType.ADDRESS_HOME_STATE,
-                new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_STATE)
-                        .build());
-
-        // City, dependent locality, and organization don't have any special formatting hints.
-        addressFields.put(ServerFieldType.ADDRESS_HOME_CITY,
-                new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_CITY)
-                        .build());
-        addressFields.put(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
-                new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY)
-                        .build());
-        addressFields.put(ServerFieldType.COMPANY_NAME,
-                new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_FIELD_TYPE, ServerFieldType.COMPANY_NAME)
-                        .build());
-
-        // Sorting code and postal code (a.k.a. ZIP code) should show both letters and digits on
-        // the keyboard, if possible.
-        addressFields.put(ServerFieldType.ADDRESS_HOME_SORTING_CODE,
-                new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_SORTING_CODE)
-                        .build());
-        addressFields.put(ServerFieldType.ADDRESS_HOME_ZIP,
-                new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_ZIP)
-                        .build());
-
-        // Street line field can contain \n to indicate line breaks.
-        addressFields.put(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS,
-                new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_STREET_ADDRESS)
-                        .build());
-
-        // Android has special formatting rules for names.
-        addressFields.put(ServerFieldType.NAME_FULL,
-                new PropertyModel.Builder(TEXT_ALL_KEYS)
-                        .with(TEXT_FIELD_TYPE, ServerFieldType.NAME_FULL)
-                        .build());
-
-        return addressFields;
+    private PropertyModel getFieldForFieldType(@ServerFieldType int fieldType) {
+        if (!mAddressFields.containsKey(fieldType)) {
+            // Address fields are cached.
+            mAddressFields.put(fieldType,
+                    new PropertyModel.Builder(TEXT_ALL_KEYS)
+                            .with(TEXT_FIELD_TYPE, fieldType)
+                            .with(VALUE, AutofillAddress.getProfileField(mProfileToEdit, fieldType))
+                            .build());
+        }
+        return mAddressFields.get(fieldType);
     }
 
     // TODO(crbug.com/1432505): remove temporary unsupported countries filtering.
@@ -193,6 +149,7 @@ class AddressEditorMediator {
                                 getSupportedCountries(isAccountAddressProfile()
                                         && mUserFlow != CREATE_NEW_ADDRESS_PROFILE))
                         .with(IS_REQUIRED, false)
+                        .with(VALUE, AutofillAddress.getCountryCode(mProfileToEdit))
                         .build();
 
         // Honorific prefix is present only for autofill settings.
@@ -204,12 +161,9 @@ class AddressEditorMediator {
                                   mContext.getString(
                                           R.string.autofill_profile_editor_honorific_prefix))
                           .with(IS_REQUIRED, false)
+                          .with(VALUE, mProfileToEdit.getHonorificPrefix())
                           .build()
                 : null;
-
-        // There's a finite number of fields for address editing. Changing the country will re-order
-        // and relabel the fields. The meaning of each field remains the same.
-        mAddressFields.putAll(getAddressFields());
 
         // Phone number is present for all countries.
         mPhoneField =
@@ -218,6 +172,7 @@ class AddressEditorMediator {
                         .with(LABEL,
                                 mContext.getString(R.string.autofill_profile_editor_phone_number))
                         .with(TEXT_FORMATTER, mPhoneFormatter)
+                        .with(VALUE, mProfileToEdit.getPhoneNumber())
                         .build();
 
         // Phone number is present for all countries.
@@ -227,6 +182,7 @@ class AddressEditorMediator {
                         .with(LABEL,
                                 mContext.getString(R.string.autofill_profile_editor_email_address))
                         .with(VALIDATOR, getEmailValidator())
+                        .with(VALUE, mProfileToEdit.getEmailAddress())
                         .build();
 
         // TODO(crbug.com/1445020): Use localized string.
@@ -240,30 +196,12 @@ class AddressEditorMediator {
                           .build()
                 : null;
 
-        // This should be called when all required fields are put in mAddressField.
-        setAddressFieldValues();
-
         assert mCountryField.get(VALUE) != null;
         mPhoneFormatter.setCountryCode(mCountryField.get(VALUE));
     }
 
     public void setAllowDelete(boolean allowDelete) {
         mAllowDelete = allowDelete;
-    }
-
-    private void setAddressFieldValues() {
-        mCountryField.set(VALUE, AutofillAddress.getCountryCode(mProfileToEdit));
-        if (mHonorificField != null) {
-            mHonorificField.set(VALUE, mProfileToEdit.getHonorificPrefix());
-        }
-        // Address fields are cached, so their values need to be updated for every new profile
-        // that's being edited.
-        for (Map.Entry<Integer, PropertyModel> entry : mAddressFields.entrySet()) {
-            entry.getValue().set(
-                    VALUE, AutofillAddress.getProfileField(mProfileToEdit, entry.getKey()));
-        }
-        mPhoneField.set(VALUE, mProfileToEdit.getPhoneNumber());
-        mEmailField.set(VALUE, mProfileToEdit.getEmailAddress());
     }
 
     public void setShouldTriggerDoneCallbackBeforeCloseAnimation(boolean shouldTrigger) {
@@ -364,18 +302,13 @@ class AddressEditorMediator {
         // In terms of order, country must be the first field.
         editorFields.add(new FieldItem(DROPDOWN, mCountryField, /*isFullLine=*/true));
 
-        for (int i = 0; i < mVisibleEditorFields.size(); i++) {
-            AutofillAddressUiComponent component = mVisibleEditorFields.get(i);
-
+        for (AutofillAddressUiComponent component : mVisibleEditorFields) {
             // Honorific prefix should go before name.
             if (component.id == ServerFieldType.NAME_FULL && mHonorificField != null) {
                 editorFields.add(new FieldItem(TEXT_INPUT, mHonorificField, /*isFullLine=*/true));
             }
 
-            assert mAddressFields.containsKey(component.id)
-                : "Unrecognized server field type: "
-                    + component.id;
-            PropertyModel field = mAddressFields.get(component.id);
+            PropertyModel field = getFieldForFieldType(component.id);
 
             // Labels depend on country, e.g., state is called province in some countries. These are
             // already localized.
@@ -460,20 +393,10 @@ class AddressEditorMediator {
         profile.setLanguageCode(mAutofillProfileBridge.getCurrentBestLanguageCode());
 
         // Collect data from all visible fields and store it in the autofill profile.
-        Set<Integer> visibleFields = new HashSet<>();
-        for (int i = 0; i < mVisibleEditorFields.size(); i++) {
-            AutofillAddressUiComponent component = mVisibleEditorFields.get(i);
-            visibleFields.add(component.id);
+        for (AutofillAddressUiComponent component : mVisibleEditorFields) {
             if (component.id != ServerFieldType.ADDRESS_HOME_COUNTRY) {
+                assert mAddressFields.containsKey(component.id);
                 setProfileField(profile, component.id, mAddressFields.get(component.id).get(VALUE));
-            }
-        }
-
-        // Clear the fields that are hidden from the user interface, so
-        // AutofillAddress.toPaymentAddress() will send them to the renderer as empty strings.
-        for (Map.Entry<Integer, PropertyModel> entry : mAddressFields.entrySet()) {
-            if (!visibleFields.contains(entry.getKey())) {
-                setProfileField(profile, entry.getKey(), "");
             }
         }
 

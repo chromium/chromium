@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.autofill.editors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.isEmptyString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -933,7 +932,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void edit_AlterAddressProfile_CommitChanges_InvisibleFieldsGetReset() {
+    public void edit_AlterAddressProfile_CommitChanges_InvisibleFieldsRemainSet() {
         // Whitelist only full name, admin area and locality.
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS.subList(0, 3));
         mAddressEditor = new AddressEditorCoordinator(mActivity, mHelpLauncher, mDelegate, mProfile,
@@ -964,11 +963,11 @@ public class AddressEditorTest {
         AutofillAddress address = mAddressCapture.getValue();
         Assert.assertNotNull(address);
         AutofillProfile profile = address.getProfile();
-        assertThat(profile.getStreetAddress(), isEmptyString());
-        assertThat(profile.getDependentLocality(), isEmptyString());
-        assertThat(profile.getCompanyName(), isEmptyString());
-        assertThat(profile.getPostalCode(), isEmptyString());
-        assertThat(profile.getSortingCode(), isEmptyString());
+        Assert.assertEquals(profile.getStreetAddress(), sLocalProfile.getStreetAddress());
+        Assert.assertEquals(profile.getDependentLocality(), sLocalProfile.getDependentLocality());
+        Assert.assertEquals(profile.getCompanyName(), sLocalProfile.getCompanyName());
+        Assert.assertEquals(profile.getPostalCode(), sLocalProfile.getPostalCode());
+        Assert.assertEquals(profile.getSortingCode(), sLocalProfile.getSortingCode());
     }
 
     @Test

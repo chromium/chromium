@@ -100,6 +100,17 @@ public class AddressEditor
     @Nullable
     private AddressErrors mAddressErrors;
 
+    private PropertyModel getFieldForFieldType(@ServerFieldType int fieldType) {
+        if (!mAddressFields.containsKey(fieldType)) {
+            mAddressFields.put(fieldType,
+                    new PropertyModel.Builder(TEXT_ALL_KEYS)
+                            .with(TEXT_FIELD_TYPE, fieldType)
+                            .build());
+        }
+
+        return mAddressFields.get(fieldType);
+    }
+
     /**
      * Builds an address editor.
      *
@@ -240,47 +251,6 @@ public class AddressEditor
         assert countryValue != null;
         mPhoneFormatter.setCountryCode(countryValue);
 
-        // There's a finite number of fields for address editing. Changing the country will re-order
-        // and relabel the fields. The meaning of each field remains the same.
-        if (mAddressFields.isEmpty()) {
-            // City, dependent locality, and organization don't have any special formatting hints.
-            mAddressFields.put(ServerFieldType.ADDRESS_HOME_CITY,
-                    new PropertyModel.Builder(TEXT_ALL_KEYS)
-                            .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_CITY)
-                            .build());
-            mAddressFields.put(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
-                    new PropertyModel.Builder(TEXT_ALL_KEYS)
-                            .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY)
-                            .build());
-            mAddressFields.put(ServerFieldType.COMPANY_NAME,
-                    new PropertyModel.Builder(TEXT_ALL_KEYS)
-                            .with(TEXT_FIELD_TYPE, ServerFieldType.COMPANY_NAME)
-                            .build());
-
-            // Sorting code and postal code (a.k.a. ZIP code) should show both letters and digits on
-            // the keyboard, if possible.
-            mAddressFields.put(ServerFieldType.ADDRESS_HOME_SORTING_CODE,
-                    new PropertyModel.Builder(TEXT_ALL_KEYS)
-                            .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_SORTING_CODE)
-                            .build());
-            mAddressFields.put(ServerFieldType.ADDRESS_HOME_ZIP,
-                    new PropertyModel.Builder(TEXT_ALL_KEYS)
-                            .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_ZIP)
-                            .build());
-
-            // Street line field can contain \n to indicate line breaks.
-            mAddressFields.put(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS,
-                    new PropertyModel.Builder(TEXT_ALL_KEYS)
-                            .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_STREET_ADDRESS)
-                            .build());
-
-            // Android has special formatting rules for names.
-            mAddressFields.put(ServerFieldType.NAME_FULL,
-                    new PropertyModel.Builder(TEXT_ALL_KEYS)
-                            .with(TEXT_FIELD_TYPE, ServerFieldType.NAME_FULL)
-                            .build());
-        }
-
         // Phone number is present for all countries.
         if (mPhoneField == null) {
             mPhoneField = new PropertyModel.Builder(TEXT_ALL_KEYS)
@@ -378,23 +348,12 @@ public class AddressEditor
         profile.setLanguageCode(mAutofillProfileBridge.getCurrentBestLanguageCode());
 
         // Collect data from all visible fields and store it in the autofill profile.
-        Set<Integer> visibleFields = new HashSet<>();
-        for (int i = 0; i < mAddressUiComponents.size(); i++) {
-            AutofillAddressUiComponent component = mAddressUiComponents.get(i);
-            visibleFields.add(component.id);
+        for (AutofillAddressUiComponent component : mAddressUiComponents) {
             PropertyModel fieldModel = component.id == ServerFieldType.ADDRESS_HOME_STATE
                     ? mAdminAreaField
                     : mAddressFields.get(component.id);
             if (component.id != ServerFieldType.ADDRESS_HOME_COUNTRY) {
                 setProfileField(profile, component.id, fieldModel.get(VALUE));
-            }
-        }
-
-        // Clear the fields that are hidden from the user interface, so
-        // AutofillAddress.toPaymentAddress() will send them to the renderer as empty strings.
-        for (Map.Entry<Integer, PropertyModel> entry : mAddressFields.entrySet()) {
-            if (!visibleFields.contains(entry.getKey())) {
-                setProfileField(profile, entry.getKey(), "");
             }
         }
 
@@ -492,9 +451,9 @@ public class AddressEditor
             // language code is "ja-Latn" or "ja".
             addAddressFieldsToEditor(mRecentlySelectedCountry, Locale.getDefault().getLanguage());
         } else {
-            // This should be called when all required fields are put in mAddressField.
-            setAddressFieldValuesFromCache();
             addAddressFieldsToEditor(mCountryField.get(VALUE), mProfile.getLanguageCode());
+            // Populate fields with values once they've been created.
+            setAddressFieldValuesFromCache();
             mEditorModel.set(VISIBLE, true);
         }
     }
@@ -549,19 +508,14 @@ public class AddressEditor
                 countryCode, languageCode, AddressValidationType.PAYMENT_REQUEST);
         // In terms of order, country must be the first field.
         editorFields.add(new FieldItem(DROPDOWN, mCountryField, /*isFullLine=*/true));
-        for (int i = 0; i < mAddressUiComponents.size(); i++) {
-            AutofillAddressUiComponent component = mAddressUiComponents.get(i);
-
+        for (AutofillAddressUiComponent component : mAddressUiComponents) {
             final PropertyModel field;
             final @ItemType int fieldType;
             if (component.id == ServerFieldType.ADDRESS_HOME_STATE) {
                 field = mAdminAreaField;
                 fieldType = mAdminAreaFieldType;
             } else {
-                assert mAddressFields.containsKey(component.id)
-                    : "Unrecognized server field type: "
-                        + component.id;
-                field = mAddressFields.get(component.id);
+                field = getFieldForFieldType(component.id);
                 fieldType = TEXT_INPUT;
             }
 
