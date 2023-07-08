@@ -67,6 +67,54 @@
     return foundFrame;
   }
 
+  let keyPressFunc, keyDownFunc, keyUpFunc;
+  const eventSender = window.eventSender;
+  if (eventSender) {
+    keyPressFunc = eventSender.keyDown.bind(eventSender);
+    keyDownFunc = eventSender.keyDownOnly.bind(eventSender);
+    keyUpFunc = eventSender.keyUp.bind(eventSender);
+  }
+
+  function sendKeysToEventSender(keys, func = keyPressFunc) {
+    if (!func) {
+      throw new Error("No eventSender");
+    }
+    for(var i = 0; i < keys.length; ++i) {
+      const charCode = keys.charCodeAt(i);
+      // See https://w3c.github.io/webdriver/#keyboard-actions and
+      // EventSender::KeyDown().
+      switch (charCode) {
+        case 0xE003: func("Backspace"); break;
+        case 0xE004: func("Tab"); break;
+        case 0xE006:
+        case 0xE007: func("Enter", "enter"); break;
+        case 0xE008: func("ShiftLeft", "shiftKey"); break;
+        case 0xE009: func("ControlLeft", "ctrlKey"); break;
+        case 0xE00A: func("AltLeft", "altKey"); break;
+        case 0xE00C: func("Escape"); break;
+        case 0xE00D: func(" "); break;
+        case 0xE00E: func("PageUp"); break;
+        case 0xE00F: func("PageDown"); break;
+        case 0xE010: func("End"); break;
+        case 0xE011: func("Home"); break;
+        case 0xE012: func("ArrowLeft"); break;
+        case 0xE013: func("ArrowUp"); break;
+        case 0xE014: func("ArrowRight"); break;
+        case 0xE015: func("ArrowDown"); break;
+        case 0xE016: func("Insert"); break;
+        case 0xE017: func("Delete"); break;
+        case 0xE03D: func("MetaLeft", "metaKey"); break;
+        case 0xE050: func("ShiftRight"); break;
+        default:
+          if (charCode >= 0xE000 && charCode <= 0xF8FF) {
+            throw new Error("No support for this code: U+" + charCode.toString(16));
+          }
+          func(keys[i]);
+          break;
+      }
+    }
+  }
+
   window.test_driver_internal.click = function(element, coords) {
     return new Promise(function(resolve, reject) {
       if (window.chrome && chrome.gpuBenchmarking) {
@@ -105,57 +153,12 @@
           return;
       }
       window.requestAnimationFrame(() => {
-        for(var i = 0; i < keys.length; ++i) {
-          let eventSenderKeys = keys[i];
-          let charCode = keys.charCodeAt(i);
-          let modifierValue;
-          // See https://w3c.github.io/webdriver/#keyboard-actions and
-          // EventSender::KeyDown().
-          if (charCode == 0xE004) {
-            eventSenderKeys = "Tab";
-          } else if (charCode == 0xE050) {
-            eventSenderKeys = "ShiftRight";
-          } else if (charCode == 0xE010) {
-            eventSenderKeys = "End";
-          } else if (charCode == 0xE011) {
-            eventSenderKeys = "Home";
-          } else if (charCode == 0xE012) {
-            eventSenderKeys = "ArrowLeft";
-          } else if (charCode == 0xE013) {
-            eventSenderKeys = "ArrowUp";
-          } else if (charCode == 0xE014) {
-            eventSenderKeys = "ArrowRight";
-          } else if (charCode == 0xE015) {
-            eventSenderKeys = "ArrowDown";
-          } else if (charCode == 0xE00C) {
-            eventSenderKeys = "Escape";
-          } else if (charCode == 0xE003) {
-            eventSenderKeys = "Backspace";
-          } else if (charCode == 0xE017) {
-            eventSenderKeys = "Delete";
-          } else if (charCode == 0xE009) {
-            eventSenderKeys = "ControlLeft";
-            modifierValue = "ctrlKey";
-          } else if (charCode == 0xE00A) {
-            eventSenderKeys = "AltLeft";
-            modifierValue = "altKey";
-          } else if (charCode == 0xE03D) {
-            eventSenderKeys = "MetaLeft";
-            modifierValue = "metaKey";
-          } else if (charCode == 0xE008) {
-            eventSenderKeys = "ShiftLeft";
-            modifierValue = "shiftKey";
-          } else if (charCode == 0xE006 || charCode == 0xE007) {
-            eventSenderKeys = "Enter";
-            modifierValue = "enter";
-          } else if (charCode >= 0xE000 && charCode <= 0xF8FF) {
-            reject(new Error("No support for this code: U+" + charCode.toString(16)));
-            return;
-          }
-
-          window.eventSender.keyDown(eventSenderKeys, modifierValue);
+        try {
+          sendKeysToEventSender(keys);
+          resolve();
+        } catch (e) {
+          reject(e);
         }
-        resolve();
       });
     });
   };
@@ -187,16 +190,32 @@
       return Promise.reject(new Error("can only send actions in top-level window"));
     }
 
+    let hasKeyActions = false;
+    let hasPointerActions = false;
     var didScrollIntoView = false;
     for (let i = 0; i < actions.length; i++) {
       var last_x_position = 0;
       var last_y_position = 0;
       var first_pointer_down = false;
       for (let j = 0; j < actions[i].actions.length; j++) {
-        if (actions[i].actions[j].type == "keyDown" ||
-            actions[i].actions[j].type == "keyUp") {
-          return Promise.reject(new Error("We do not support keydown and keyup actions, " +
-                                          "please use test_driver.send_keys. See crbug.com/893480."));
+        const action = actions[i].actions[j];
+        const type = action.type;
+        // TODO(crbug.com/893480): Currently, `gpuBenchmarking` handles pointer
+        // actions, while `EventSender` handles key actions. Mixing both types
+        // of actions in one action sequence is not supported.
+        if (type == "keyDown" || type == "keyUp") {
+          hasKeyActions = true;
+          if (!hasPointerActions) {
+            continue;
+          }
+        } else if (type != "pause") {
+          // "pause" is supported in both types of actions.
+          hasPointerActions = true
+        }
+        if (hasKeyActions && hasPointerActions) {
+          return Promise.reject(new Error(
+            "We do not support keydown and keyup mixed with other actions, " +
+            "please use test_driver.send_keys. See crbug.com/893480."));
         }
 
         if ('origin' in actions[i].actions[j]) {
@@ -263,8 +282,34 @@
       }
     }
 
-    return new Promise(function(resolve, reject) {
-      if (window.chrome && chrome.gpuBenchmarking) {
+    return new Promise(async function(resolve, reject) {
+      if (hasKeyActions) {
+        try {
+          if (!keyDownFunc || !keyUpFunc) {
+            throw new Error("No eventSender");
+          }
+          for (const innerActions of actions) {
+            for (const action of innerActions.actions) {
+              switch (action.type) {
+                case "keyDown":
+                  sendKeysToEventSender(action.value, keyDownFunc);
+                  break;
+                case "keyUp":
+                  sendKeysToEventSender(action.value, keyUpFunc);
+                  break;
+                case "pause":
+                  await new Promise((resolve) => setTimeout(resolve, action.duration));
+                  break;
+                default:
+                  throw new Error(`Unexpected key action type: ${action.type}`);
+              }
+            }
+          }
+          resolve();
+        } catch (e) {
+          reject(e);
+        }
+      } else if (window.chrome && chrome.gpuBenchmarking) {
         chrome.gpuBenchmarking.pointerActionSequence(actions, resolve);
       } else {
         reject(new Error("GPU benchmarking is not enabled."));

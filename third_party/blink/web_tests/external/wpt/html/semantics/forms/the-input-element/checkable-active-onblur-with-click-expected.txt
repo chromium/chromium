@@ -1,10 +1,18 @@
 This is a testharness.js-based test.
 PASS Wait for load
-FAIL Checkboxes should clear :active when the user tabs away from them while pressing it with a pointing device promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Radios should clear :active when the user tabs away from them while pressing it with a pointing device promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Checkboxes should clear :active when the user tabs away from them while pressing the parent label with a pointing device promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Radios should clear :active when the user tabs away from them while pressing the parent label with a pointing device promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Checkboxes should clear :active when the user tabs away from them while pressing the following label with a pointing device promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Radios should clear :active when the user tabs away from them while pressing the following label with a pointing device promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Checkboxes should clear :active when the user tabs away from them while pressing it with a pointing device assert_equals: Checkboxes should not be :active after tab is used to change focus. expected null but got Element node <html><head>
+<meta charset="utf-8">
+<script src="/resourc...
+FAIL Radios should clear :active when the user tabs away from them while pressing it with a pointing device assert_equals: Radios should not be :active after tab is used to change focus. expected null but got Element node <html><head>
+<meta charset="utf-8">
+<script src="/resourc...
+FAIL Checkboxes should clear :active when the user tabs away from them while pressing the parent label with a pointing device assert_equals: Checkboxes should be :active while the label is pressed expected Element node <input type="checkbox" id="cb2" checked=""></input> but got null
+FAIL Radios should clear :active when the user tabs away from them while pressing the parent label with a pointing device assert_equals: Radios should not be :active after tab is used to change focus. expected null but got Element node <html><head>
+<meta charset="utf-8">
+<script src="/resourc...
+FAIL Checkboxes should clear :active when the user tabs away from them while pressing the following label with a pointing device assert_equals: Checkboxes should not be :active after tab is used to change focus. expected null but got Element node <html><head>
+<meta charset="utf-8">
+<script src="/resourc...
+FAIL Radios should clear :active when the user tabs away from them while pressing the following label with a pointing device assert_equals: Radios should be :active while the label is pressed expected Element node <input type="radio" id="r1" checked=""></input> but got null
 Harness: the test ran to completion.
 

@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-FAIL Test scrolling into view when typing promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Test scrolling into view when typing assert_true: Scroll-padding should be respected expected true got false
 Harness: the test ran to completion.
 

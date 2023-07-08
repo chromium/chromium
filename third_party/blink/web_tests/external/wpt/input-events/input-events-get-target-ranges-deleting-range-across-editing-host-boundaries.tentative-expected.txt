@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
-FAIL Backspace at "<p>ab[c<span contenteditable="false">no]n-editable</span>def</p>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Backspace at "<p>abc<span contenteditable="false">non-[editable</span>de]f</p>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Backspace at "<p contenteditable="false"><span contenteditable>a[bc</span>non-editable<span contenteditable>de]f</span></p>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Backspace at "<p>a[bc<span contenteditable="false">non-editable<span contenteditable>de]f</span></span></p>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Backspace at "<p>ab[c<span contenteditable="false">no]n-editable</span>def</p>" assert_equals: If only editable text is deleted, its target range should be the deleted text range expected "(#text \"ab\", 2) - (#text \"ab\", 3)" but got "(#text \"ab\", 2) - (<span>, 0)"
+PASS Backspace at "<p>abc<span contenteditable="false">non-[editable</span>de]f</p>"
+FAIL Backspace at "<p contenteditable="false"><span contenteditable>a[bc</span>non-editable<span contenteditable>de]f</span></p>" assert_equals: If editable text before non-editable element is deleted, its input type should be deleteContent expected "deleteContent" but got "deleteContentBackward"
+FAIL Backspace at "<p>a[bc<span contenteditable="false">non-editable<span contenteditable>de]f</span></span></p>" assert_equals: If editable text before non-editable element is deleted, its target range should be only the deleted text expected "(#text \"a\", 1) - (#text \"a\", 3)" but got "(#text \"a\", 1) - (<span>, 0)"
 PASS Backspace at "<p><span contenteditable="false"><span contenteditable>a[bc</span>non-editable</span>de]f</p>"
 Harness: the test ran to completion.
 
