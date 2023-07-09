@@ -20,4 +20,9 @@ bool IsPinnedHomeTab(const TabStripModel* tab_strip_model, int index) {
   return HasPinnedHomeTab(tab_strip_model) && index == 0;
 }
 
+bool IsTabClosable(const TabStripModel* tab_strip_model, int index) {
+  return !IsPinnedHomeTab(tab_strip_model, index) ||
+         tab_strip_model->count() == 1;
+}
+
 }  // namespace web_app

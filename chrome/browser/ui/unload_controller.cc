@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -46,7 +47,8 @@ bool UnloadController::CanCloseContents(content::WebContents* contents) {
   if (is_attempting_to_close_browser_)
     ClearUnloadState(contents, true);
 
-  if (!browser_->tab_strip_model()->IsTabClosable(
+  if (!web_app::IsTabClosable(
+          browser_->tab_strip_model(),
           browser_->tab_strip_model()->GetIndexOfWebContents(contents))) {
     return false;
   }

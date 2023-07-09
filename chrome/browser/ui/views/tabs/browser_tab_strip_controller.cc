@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -316,7 +317,7 @@ void BrowserTabStripController::AddSelectionFromAnchorTo(int model_index) {
 
 bool BrowserTabStripController::BeforeCloseTab(int model_index,
                                                CloseTabSource source) {
-  if (!model_->IsTabClosable(model_index)) {
+  if (!web_app::IsTabClosable(model_, model_index)) {
     return false;
   }
 

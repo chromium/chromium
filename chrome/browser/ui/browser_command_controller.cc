@@ -1892,7 +1892,8 @@ void BrowserCommandController::UpdateCommandsForTabStripStateChanged() {
     return;
   }
   command_updater_.UpdateCommandEnabled(
-      IDC_CLOSE_TAB, browser_->tab_strip_model()->IsTabClosable(tab_index));
+      IDC_CLOSE_TAB,
+      web_app::IsTabClosable(browser_->tab_strip_model(), tab_index));
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_CLOSE_TABS_TO_RIGHT,
                                         CanCloseTabsToRight(browser_));
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_CLOSE_OTHER_TABS,
