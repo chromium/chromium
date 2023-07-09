@@ -326,7 +326,9 @@ crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-stat
 crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.blending.shadow.w.html [ Failure ]
 
 # Off by one pixel error on ref test
-crbug.com/1259367 [ Mac ] printing/offscreencanvas-webgl-printing.html [ Failure ]
+crbug.com/1259367 [ Mac11-arm64 Release ] printing/offscreencanvas-webgl-printing.html [ Failure ]
+crbug.com/1259367 [ Mac12-arm64 Release ] printing/offscreencanvas-webgl-printing.html [ Failure ]
+crbug.com/1259367 [ Mac13-arm64 ] printing/offscreencanvas-webgl-printing.html [ Failure ]
 
 # These are testing deprecated features: https://github.com/web-platform-tests/wpt/issues/35662
 external/wpt/editing/run/inserttext.html?2001-last [ Failure ]
@@ -2854,7 +2856,6 @@ crbug.com/626703 [ Mac11 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [
 crbug.com/626703 [ Mac12 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
 crbug.com/626703 [ Mac13 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-range-animation.html [ Timeout ]
-crbug.com/626703 [ Mac13 Release ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 [ Mac13 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac13 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/view-timelines/view-timeline-inset.html [ Pass Timeout ]
 crbug.com/626703 external/wpt/css/css-backgrounds/box-shadow-border-radius-001.html [ Failure ]
