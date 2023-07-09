@@ -1,22 +1,24 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>CSS Motion Path test: &lt;basic-shape&gt; xywh() path with explicit arguments</title>
-<link rel="author" title="Daniil Sakhapov" href="sakhapov@google.com">
-<link rel="match" href="offset-path-shape-xywh-001-ref.html">
+<title>CSS Motion Path test: offset-path:xywh() path with explicit arguments and padding-box</title>
+<link rel="match" href="offset-path-shape-xywh-003-ref.html">
 <link rel="help" href="https://drafts.fxtf.org/motion/#valdef-offset-path-basic-shape">
+<link rel="help" href="https://drafts.csswg.org/css-shapes-1/#funcdef-basic-shape-xywh">
 
 <style>
 #outer {
   top: 100px;
   left: 100px;
   position: relative;
-  width: 600px;
-  height: 400px;
+  width: 200px;
+  height: 100px;
+  padding: 50px;
+  border: 50px solid black;
 }
 #box {
   background-color: green;
   position: relative;
-  offset-path: xywh(10px 10px 300px 200px);
+  offset-path: xywh(10% 10% 80% 80%) padding-box;
   offset-distance: 40%;
   border-radius: 50% 50% 0 0;
   width: 100px;

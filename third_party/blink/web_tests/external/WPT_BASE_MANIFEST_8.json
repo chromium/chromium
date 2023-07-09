@@ -4999,7 +4999,7 @@
       ]
      ],
      "remove-editing-host-during-forwarddelete.html": [
-      "2b23c34607c3241e863cf5ea118ff08d2a9286b8",
+      "6013361ccb0e5078292beadc8fec537df9c325a2",
       [
        null,
        {}
@@ -147907,6 +147907,19 @@
          {}
         ]
        ],
+       "clip-path-xywh-interpolation-001.html": [
+        "853195aa27c56d610c8f8737ff452de2f7087e51",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-xywh-interpolation-001-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "two-clip-path-animation-diff-length1.html": [
         "f647c1af59095735217eb60e51291a64b79fce70",
         [
@@ -149725,6 +149738,61 @@
             [
              0,
              355
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "clip-path-xywh-001.html": [
+       "a3d55c277cad706fd36c94c73731b5f6c366fc0b",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-rectangle-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-xywh-002.html": [
+       "be317ec0d489c640507e7491416914e0c891f6c8",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-rectangle-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-xywh-003.html": [
+       "eb87c8ac36ed6862f7feb1e08a24ff584cbbb677",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-xywh-003-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             2
+            ],
+            [
+             0,
+             30
             ]
            ]
           ]
@@ -248668,7 +248736,7 @@
       ]
      ],
      "offset-path-shape-xywh-001.html": [
-      "ace1ee1c639ca0dd612f54e2c08321ada3bf74d9",
+      "0360b2fa3f32f8e1587ce0c872ad208f5838cf0e",
       [
        null,
        [
@@ -248681,7 +248749,7 @@
       ]
      ],
      "offset-path-shape-xywh-002.html": [
-      "65bf8aa2ee91543ce4ac81fcf132a3c83017f9bc",
+      "4c4f4ac86c1bab87b5a11678013a3470c7f733c0",
       [
        null,
        [
@@ -248697,16 +248765,29 @@
           [
            [
             0,
-            20
+            130
            ],
            [
             0,
-            20
+            250
            ]
           ]
          ]
         ]
        }
+      ]
+     ],
+     "offset-path-shape-xywh-003.html": [
+      "c367e27c8cf01e6737523174a05e21bee9a94257",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-xywh-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
       ]
      ],
      "offset-path-string-001.html": [
@@ -275083,11 +275164,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "1a7f67fc04f8df51717fcc7e53babd1775133680",
+     "804901fc4b79acea5bbc08f8b169035fede0c497",
      []
     ],
     "mtime.json": [
-     "219a49a03a393ca18d564233702109a417c0f481",
+     "b0ea8909fb31f06bd696d3121c2183e65a3ddf2f",
      []
     ]
    },
@@ -314679,6 +314760,14 @@
         "af164c30f06808c3394cf3210ca13bc41792d53c",
         []
        ],
+       "clip-path-xywh-interpolation-001-ref.html": [
+        "e3f646b3e049b0a04a00c59603f4c01045991a46",
+        []
+       ],
+       "clip-path-xywh-interpolation-001.html.ini": [
+        "d584af36121ae54e976b87de1b80c360931bb763",
+        []
+       ],
        "two-clip-path-animation-diff-length1-ref.html": [
         "0feacb50bae46f131931212122f2b5b0e96d9701",
         []
@@ -314992,6 +315081,18 @@
        "21bb32713d08c06bc9eae692ad5fe5b4fb34ca41",
        []
       ],
+      "clip-path-xywh-001.html.ini": [
+       "b72c92790535fcc216ae87b1810810e33f3e6fe9",
+       []
+      ],
+      "clip-path-xywh-002.html.ini": [
+       "7b02d1fe0ab2e2ab0d9010c4c90a41c70c9371cc",
+       []
+      ],
+      "clip-path-xywh-003.html.ini": [
+       "b39db4a0ff32e7d2e7cae98515b0425089444357",
+       []
+      ],
       "interpolation.html.ini": [
        "1686045ef7f0d5d67fbf05d0995730194b23d751",
        []
@@ -315123,6 +315224,10 @@
        ],
        "clip-path-transform-mutated-002-ref.html": [
         "f718ea6abfbab54333ba674ff0dcd320d8672bcd",
+        []
+       ],
+       "clip-path-xywh-003-ref.html": [
+        "12f219eca63d561c060fee3af79261fd257a394f",
         []
        ],
        "green-100x100.html": [
@@ -315886,8 +315991,16 @@
       }
      },
      "parsing": {
+      "clip-path-computed-expected.txt": [
+       "beb6ee9621f2c9ef5534e76db391b4a898809e36",
+       []
+      ],
+      "clip-path-computed.html.ini": [
+       "88acadb0efb8964a018b56b00b4d2e2c6cdd0997",
+       []
+      ],
       "clip-path-invalid-expected.txt": [
-       "55cffb464b96bbb001873b7b0d52a6ad701f33b5",
+       "8959a58fdc6bf7b5b45b8c1d9a15e61ae189b8fc",
        []
       ],
       "clip-path-invalid.html.ini": [
@@ -315903,11 +316016,11 @@
        []
       ],
       "clip-path-valid-expected.txt": [
-       "d7f4dc810f36f3a815a21ccb5f7df2780ccac9ac",
+       "1b69e4ec63912bb57693cce005b9ee5e8857bde4",
        []
       ],
       "clip-path-valid.html.ini": [
-       "275fb9e0aeacb4e4f83a549ac80ca3f44d0b8eb8",
+       "31eac86c0c9c7b9ff96c0bd082429ce8f6a6ec74",
        []
       ],
       "mask-position-valid-expected.txt": [
@@ -322811,6 +322924,10 @@
      ],
      "intrinsic-percent-non-replaced-005-ref.html": [
       "38f480c0acdbf4ca9605831e9e48a9998b1bcdd3",
+      []
+     ],
+     "intrinsic-percent-replaced-007.html.ini": [
+      "8ef036fb8ad0f86dd3cfda36663fb1e362dece83",
       []
      ],
      "intrinsic-percent-replaced-009-ref.html": [
@@ -342480,11 +342597,23 @@
       []
      ],
      "offset-path-shape-xywh-001-ref.html": [
-      "12f9668dd5c8884368fe89104474d287bb04b28b",
+      "a7fd10c76e74720813bd2b74a378f1da76d84113",
       []
      ],
      "offset-path-shape-xywh-002-ref.html": [
-      "1b672d1d98e712667d6c8d819f0c97c49985fc7b",
+      "8b9ca37aa4a6cf516ae8d6d0c0c18d93bc3014c0",
+      []
+     ],
+     "offset-path-shape-xywh-002.html.ini": [
+      "5f75d89bdabade7cd696306227fe3fce29b00530",
+      []
+     ],
+     "offset-path-shape-xywh-003-ref.html": [
+      "34e116f9cd751011f9374f5f0677d3577bdaf759",
+      []
+     ],
+     "offset-path-shape-xywh-003.html.ini": [
+      "9a2263dcecec899050dad6d63412834a019ed560",
       []
      ],
      "offset-path-string-ref.html": [
@@ -342512,8 +342641,12 @@
        "72cd2f9c91756992a282ff296743d16c3d4b09d1",
        []
       ],
+      "offset-path-computed-expected.txt": [
+       "d59210f459067d83a56f3f15fd28bcbb4b2c3a6a",
+       []
+      ],
       "offset-path-computed.html.ini": [
-       "1a9fa900ced9face67141b17eebe48fdb974a97b",
+       "444d7fe54e27f45fa1f13208785db7325454d69e",
        []
       ],
       "offset-path-parsing-invalid.html.ini": [
@@ -346494,7 +346627,7 @@
       []
      ],
      "join-pre-and-other-block.html.ini": [
-      "bbd25c1a90e5d032ca4c260d9b0db6c2c3cec6b6",
+      "20d0779b6f8e58f45074f440defff94f765c3dd3",
       []
      ],
      "link-boundaries-insertion-expected.txt": [
@@ -369266,7 +369399,7 @@
         []
        ],
        "sandbox-top-navigation-child-special-cases.tentative.sub.window.js.ini": [
-        "ca598a1dbf9ca6a016e0656344f2252cf6eb7aae",
+        "9333d24a1613df2f94de68bb5c4ece70f0dea61a",
         []
        ],
        "sandbox-top-navigation-child.tentative.sub.window.js.ini": [
@@ -384327,7 +384460,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "60dba6c417b33fa29c9e73ba95d34f8211639566",
+     "280def9ceec8fa52b021d93cfae43fc9014e0af6",
      []
     ],
     "modulepreload-expected.txt": [
@@ -399357,7 +399490,7 @@
      []
     ],
     "full-cycle-test.https.any.js.ini": [
-     "9e8f7fcbd3954db350d14aae604492e33d51fb2e",
+     "e585830e3a769859f9e324e6566dd3fe81bf88d1",
      []
     ],
     "h264.annexb": [
@@ -399401,7 +399534,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "acae6f8ed53e015642cd62866d8621d29d144d99",
+     "a213dbc71f39ddb8903cd9bb088ed73fd581ccf1",
      []
     ],
     "sfx-aac.mp4": [
@@ -458903,14 +459036,14 @@
        ]
       ],
       "clip-path-computed.html": [
-       "00a75cdefa8fb3c88dff5c5a14a8142f936b9d49",
+       "3dec39801a1dcbeaaabf4123ae1604f81e923ae7",
        [
         null,
         {}
        ]
       ],
       "clip-path-invalid.html": [
-       "1dbdb5acab0cc86ed0f98d79c245b24c147a7053",
+       "376cad3c520f116229e39ce5f3b064c0547a8de4",
        [
         null,
         {}
@@ -458924,7 +459057,7 @@
        ]
       ],
       "clip-path-valid.html": [
-       "fd268b429163854ecc5b64db8afc06ba0209f4b3",
+       "f495d46a24822a0008a70c067b4b35d10ee6a263",
        [
         null,
         {}
@@ -478079,21 +478212,21 @@
        ]
       ],
       "offset-path-computed.html": [
-       "5bd857f62d2fffa40a630518e1fbd371e00c2c64",
+       "8a0eca219e95790d711a23a83c255df2ff2de108",
        [
         null,
         {}
        ]
       ],
       "offset-path-parsing-invalid.html": [
-       "0c8f3ea04cd48c50052903b64dda3262d60fea6f",
+       "f2123d130c026b9a301800de794b576dbcb2ff9e",
        [
         null,
         {}
        ]
       ],
       "offset-path-parsing-valid.html": [
-       "be74ed08a40815864c7abb7a72d16c87aa9d9902",
+       "bad3f1b2cbacb36c85de35a93e7fa19406cd438c",
        [
         null,
         {}
@@ -591856,6 +591989,33 @@
      ],
      [
       "pointerevents/pointerevent_boundary_events_in_capturing.html?touch",
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointerevent_bubble_ancestors_none.html": [
+     "8908079cc8b3de1e8cb7892bbd39088df850a6bb",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointerevent_bubble_display_none.html": [
+     "d4c6ba1db73f7aa7836b6d8c5d250fda6bdb63a1",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointerevent_bubble_mousedown_mouseup_different_target.html": [
+     "c504e0df4357b168e359a5f7719edf0cb0d6d732",
+     [
+      null,
       {
        "testdriver": true
       }
