@@ -13309,6 +13309,15 @@
       ]
      ]
     },
+    "css-values": {
+     "absolute-length-units-manual.html": [
+      "7528bbbbd4965507719093db7e18784bb20d6858",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "css-writing-modes": {
      "alt-display-vertical-001-manual.html": [
       "2e9de77ccb0e24f562c9b3f5bf6bccc3acef8870",
@@ -275240,16 +275249,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "9a298efa7faa431b3bef4074f64159f12021f691",
-     []
-    ],
-    "mtime.json": [
-     "90c27a12e7548159cef3e975b6f54f59130a58b2",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -686524,15 +686523,6 @@
      ],
      "rotate-90-degrees-001.html": [
       "447a3cba7568f287699139ae3e5b0ef3fa731372",
-      [
-       null,
-       {}
-      ]
-     ]
-    },
-    "css-values": {
-     "absolute_length_units.html": [
-      "7528bbbbd4965507719093db7e18784bb20d6858",
       [
        null,
        {}
