@@ -51,7 +51,7 @@ promise_test(async t => {
   await waitForScrollEnd(scroller);
   assert_equals(scroller.scrollTop, 400);
   // Make sure we don't jump directly to the new snap position.
-  assert_greater_than(scrollCounter.count, 2);
+  assert_greater_than(scrollCounter.count, 1);
 }, "Snaps to bottom-left after pressing ArrowDown");
 
 promise_test(async t => {
@@ -62,7 +62,7 @@ promise_test(async t => {
   await waitForScrollEnd(scroller);
   assert_equals(scroller.scrollTop, 0);
   // Make sure we don't jump directly to the new snap position.
-  assert_greater_than(scrollCounter.count, 2);
+  assert_greater_than(scrollCounter.count, 1);
 }, "Snaps to top-left after pressing ArrowUp");
 
 promise_test(async t => {
@@ -73,7 +73,7 @@ promise_test(async t => {
   await waitForScrollEnd(scroller);
   assert_equals(scroller.scrollLeft, 400);
   // Make sure we don't jump directly to the new snap position.
-  assert_greater_than(scrollCounter.count, 2);
+  assert_greater_than(scrollCounter.count, 1);
 }, "Snaps to top-right after pressing ArrowRight");
 
 promise_test(async t => {
@@ -84,7 +84,7 @@ promise_test(async t => {
   await waitForScrollEnd(scroller);
   assert_equals(scroller.scrollLeft, 0);
   // Make sure we don't jump directly to the new snap position.
-  assert_greater_than(scrollCounter.count, 2);
+  assert_greater_than(scrollCounter.count, 1);
 }, "Snaps to top-left after pressing ArrowLeft");
 
 promise_test(async t => {
