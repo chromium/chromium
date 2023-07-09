@@ -19460,7 +19460,7 @@
    },
    "compat": {
     "webkit-background-origin-text.html": [
-     "dd38690dd969465a0b392d8ec86a5a64fdc17a27",
+     "38dfbc86ba8c2dbffe4f9e424b60ecefb2247168",
      [
       null,
       [
@@ -19480,7 +19480,7 @@
           ],
           [
            0,
-           4000
+           4400
           ]
          ]
         ]
@@ -19580,7 +19580,7 @@
      ]
     ],
     "webkit-linear-gradient-line-bottom.html": [
-     "ab45b5917d5764c2266d62b70269d3013ea19b4c",
+     "8e840f102552303ecca014768433a7a9977ddd5e",
      [
       null,
       [
@@ -19600,7 +19600,7 @@
           ],
           [
            0,
-           4000
+           4400
           ]
          ]
         ]
@@ -19609,7 +19609,7 @@
      ]
     ],
     "webkit-linear-gradient-line-left.html": [
-     "795a97bbfe23c43bbe4fd5a0103df6093285fd04",
+     "22c2e0b04ce4b007d6f01588e245eefb1ea60933",
      [
       null,
       [
@@ -19629,7 +19629,7 @@
           ],
           [
            0,
-           4000
+           4400
           ]
          ]
         ]
@@ -138589,7 +138589,7 @@
       ]
      ],
      "gradients-with-border.html": [
-      "cfe751da6b4ed348a91de75be6eca84160e7f8c9",
+      "51a5412d2a25e7191f920828bfc392a39b07f266",
       [
        null,
        [
@@ -138609,7 +138609,7 @@
            ],
            [
             0,
-            10955
+            11000
            ]
           ]
          ]
@@ -139122,7 +139122,7 @@
        ]
       ],
       "image-orientation-mask-image.html": [
-       "7bae0cf4dc336cebd621b50b335d760ade6ee2bd",
+       "2d5e5f6a1ed4d27e96ed5d14e88469e1a3bfb5bd",
        [
         null,
         [
@@ -139138,11 +139138,11 @@
            [
             [
              0,
-             2
+             1
             ],
             [
              0,
-             26
+             2
             ]
            ]
           ]
@@ -139926,7 +139926,7 @@
       ]
      ],
      "multiple-position-color-stop-linear.html": [
-      "806845da43b611b736494e360a9574b49ff85da0",
+      "206fbed20928eb434694f96b675b1de460224870",
       [
        null,
        [
@@ -139946,7 +139946,7 @@
            ],
            [
             0,
-            3665
+            4000
            ]
           ]
          ]
@@ -151686,7 +151686,7 @@
        ]
       ],
       "mask-image-clip-exclude.html": [
-       "375fe2de233ed44718e881f1fa5815f74f539415",
+       "21466670b01c3a41bc8afe7e2c2841c19e5d344b",
        [
         null,
         [
@@ -151706,7 +151706,7 @@
             ],
             [
              0,
-             1764
+             2000
             ]
            ]
           ]
@@ -169943,7 +169943,7 @@
       "shape-image": {
        "gradients": {
         "shape-outside-linear-gradient-001.html": [
-         "91550fefc72e0e704dfe0964893f3f834a8df29b",
+         "148b5cd6ef6bc43884428f880b01507bbab6c023",
          [
           null,
           [
@@ -169963,7 +169963,7 @@
               ],
               [
                0,
-               8000
+               8700
               ]
              ]
             ]
@@ -169972,7 +169972,7 @@
          ]
         ],
         "shape-outside-linear-gradient-002.html": [
-         "c956d7b58386d41afdd2b757da6beef070a77474",
+         "2b17a3f81e6d242045aaffa28cbffefef1afddff",
          [
           null,
           [
@@ -169992,7 +169992,7 @@
               ],
               [
                0,
-               7917
+               8700
               ]
              ]
             ]
@@ -170001,7 +170001,7 @@
          ]
         ],
         "shape-outside-linear-gradient-003.html": [
-         "3062aaed9584332ed89b618064df356673e138ae",
+         "e3f38a3c78da9a14ac40e3aca3f21476b92bccda",
          [
           null,
           [
@@ -170021,7 +170021,7 @@
               ],
               [
                0,
-               7917
+               8700
               ]
              ]
             ]
@@ -200855,7 +200855,7 @@
      ],
      "gradientTransform": {
       "svg-gradientTransform-001.html": [
-       "6db774b3d2ca6dabac22654a25ca1b1e31d83fce",
+       "c953a692320aaec7237f6403e92be949258dcc82",
        [
         null,
         [
@@ -200875,7 +200875,7 @@
             ],
             [
              0,
-             4000
+             4400
             ]
            ]
           ]
@@ -200884,7 +200884,7 @@
        ]
       ],
       "svg-gradientTransform-combination-001.html": [
-       "dbe942f1c36568edc23a7510033bffc94edb92f9",
+       "c43a0de30c83ce1fc7f8b25f1c645f44e64f9bd1",
        [
         null,
         [
@@ -200904,7 +200904,7 @@
             ],
             [
              0,
-             16000
+             18000
             ]
            ]
           ]
@@ -200913,7 +200913,7 @@
        ]
       ],
       "svg-gradientTransform-combination-003.html": [
-       "76208d26c2178fc567c94a584de509dbc65a2df8",
+       "694119b6ec75ed07e17c5fbbdfceb5d1730d8416",
        [
         null,
         [
@@ -200933,7 +200933,7 @@
             ],
             [
              0,
-             16000
+             18000
             ]
            ]
           ]
@@ -223167,7 +223167,7 @@
     },
     "css-values": {
      "angle-units-001.html": [
-      "38918d0439e13f92d9d417b5dac308ac720dadca",
+      "4491224f719a29acc03c5c2d122f68853c00d9f4",
       [
        null,
        [
@@ -223187,7 +223187,7 @@
            ],
            [
             0,
-            4000
+            4400
            ]
           ]
          ]
@@ -223196,7 +223196,7 @@
       ]
      ],
      "angle-units-002.html": [
-      "fa00b01dc0e35ac6a07857be99cea7384c8f839f",
+      "729123b6d0ed8ab271daa650b2a02bcbcfb258de",
       [
        null,
        [
@@ -223216,7 +223216,7 @@
            ],
            [
             0,
-            4000
+            4400
            ]
           ]
          ]
@@ -223225,7 +223225,7 @@
       ]
      ],
      "angle-units-003.html": [
-      "9ac677aad7f4a134fa9d90afff1a6978d8f99e4e",
+      "1fb929e1135c73063de2217ee26048826b5d0a13",
       [
        null,
        [
@@ -223245,7 +223245,7 @@
            ],
            [
             0,
-            4000
+            4400
            ]
           ]
          ]
@@ -223254,7 +223254,7 @@
       ]
      ],
      "angle-units-004.html": [
-      "e1069a75cca10bf0f1a27ed1e697e6f13ee48d52",
+      "fee440a0d0280f23db1de19d449e31b9742f1aaf",
       [
        null,
        [
@@ -223274,7 +223274,7 @@
            ],
            [
             0,
-            4000
+            4400
            ]
           ]
          ]
@@ -223283,7 +223283,7 @@
       ]
      ],
      "angle-units-005.html": [
-      "e67a3982f4f7d2530fefaa6dd912ff367949601c",
+      "55dbe683861b7f007ece39b4057df2386ea89069",
       [
        null,
        [
@@ -223303,7 +223303,7 @@
            ],
            [
             0,
-            4000
+            4400
            ]
           ]
          ]
@@ -227099,7 +227099,7 @@
       ]
      ],
      "vars-background-shorthand-001.html": [
-      "df02a8f5efc7fc278f3633559720db38580b561e",
+      "6f41923da20d48b57f4c5dec8cfc025d957c262a",
       [
        null,
        [
@@ -227119,7 +227119,7 @@
            ],
            [
             0,
-            17900
+            20000
            ]
           ]
          ]
@@ -245746,6 +245746,84 @@
         [
          [
           "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "filter-function-conic-gradient.html": [
+       "fd5f3965d9b7ec4061a89f8b79bc03d5911bd005",
+       [
+        null,
+        [
+         [
+          "/css/filter-effects/filter-function/filter-function-conic-gradient-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "filter-function-linear-gradient.html": [
+       "de965b1e9a0ffa15c2a8df264e47c4fc72b0c689",
+       [
+        null,
+        [
+         [
+          "/css/filter-effects/filter-function/filter-function-linear-gradient-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "filter-function-radial-gradient.html": [
+       "a1d88677448587966f25a8db2ad68a59508058bd",
+       [
+        null,
+        [
+         [
+          "/css/filter-effects/filter-function/filter-function-radial-gradient-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "filter-function-repeating-conic-gradient.html": [
+       "8920a8b31c36a7c4258f06dfc0cd203a2c7441fa",
+       [
+        null,
+        [
+         [
+          "/css/filter-effects/filter-function/filter-function-repeating-conic-gradient-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "filter-function-repeating-linear-gradient.html": [
+       "dc81e0995bb125b9e84b09974fd7ec48d96e6266",
+       [
+        null,
+        [
+         [
+          "/css/filter-effects/filter-function/filter-function-repeating-linear-gradient-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "filter-function-repeating-radial-gradient.html": [
+       "ec6c9bf83cd638f3dd10610a8de584ef37112e54",
+       [
+        null,
+        [
+         [
+          "/css/filter-effects/filter-function/filter-function-repeating-radial-gradient-ref.html",
           "=="
          ]
         ],
@@ -275164,11 +275242,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "804901fc4b79acea5bbc08f8b169035fede0c497",
+     "9a298efa7faa431b3bef4074f64159f12021f691",
      []
     ],
     "mtime.json": [
-     "b0ea8909fb31f06bd696d3121c2183e65a3ddf2f",
+     "90c27a12e7548159cef3e975b6f54f59130a58b2",
      []
     ]
    },
@@ -331019,7 +331097,7 @@
       []
      ],
      "rotated-clip-under-opacity.html.ini": [
-      "fe8fb9d0b3498f3f0136e9c3617d6361463e3c3e",
+      "dac27b7e9ee40193d51969cf6595ffb9af5afcca",
       []
      ],
      "scale": {
@@ -334573,6 +334651,10 @@
        "5b55ab87c0e4eecd17124488da4c4723dfd53a0d",
        []
       ],
+      "kind-of-widget-fallback-textarea-border-block-start-color-001.html.ini": [
+       "629292ce40b882ea9cc69ebe191a516f0e096163",
+       []
+      ],
       "kind-of-widget-fallback-textarea-border-block-start-style-001.html.ini": [
        "3e272ca820ca4e776ba9e84ed695c92dd0cd44fc",
        []
@@ -336241,11 +336323,11 @@
       []
      ],
      "clamp-length-serialize-expected.txt": [
-      "8f06a5a77dfd861af95d98207fe7250257bbadea",
+      "7aa00d11c614d81a432a2cc48e69fa43d6a0e994",
       []
      ],
      "clamp-length-serialize.html.ini": [
-      "1e1172241cedcee7bbd81607d9b95e130b5f7b90",
+      "15d64db5e8ccb542d18d61bbfd207be72edded50",
       []
      ],
      "ex-calc-expression-001-ref.html": [
@@ -341607,6 +341689,54 @@
        "1a6cf9c8bfa0f799d3883646c1acf91d8b7d9e19",
        []
       ],
+      "filter-function-conic-gradient-ref.html": [
+       "535feb40eba6a0a57ccfde85836bfcddfd200fc2",
+       []
+      ],
+      "filter-function-conic-gradient.html.ini": [
+       "94e9e2d932fd5e3d83f54269f5c7ec313881285f",
+       []
+      ],
+      "filter-function-linear-gradient-ref.html": [
+       "6758f16fb65eaa6bc498c547df7d822f21c79aee",
+       []
+      ],
+      "filter-function-linear-gradient.html.ini": [
+       "cf9936249650d3cd610bcafe134465832a906d86",
+       []
+      ],
+      "filter-function-radial-gradient-ref.html": [
+       "8c1667a3aad804852b1c22babc3031f020dcbe3a",
+       []
+      ],
+      "filter-function-radial-gradient.html.ini": [
+       "1a857a7ced3b300015fc4b602a960a0cc11db7ba",
+       []
+      ],
+      "filter-function-repeating-conic-gradient-ref.html": [
+       "fc104daaf03fb79547c0f12b38e92bbf498c94bb",
+       []
+      ],
+      "filter-function-repeating-conic-gradient.html.ini": [
+       "237204a13cf34bd60694e64450a2943cd61f3981",
+       []
+      ],
+      "filter-function-repeating-linear-gradient-ref.html": [
+       "5aca26e04127ccbf7dd88c4bd28c0e328e49af99",
+       []
+      ],
+      "filter-function-repeating-linear-gradient.html.ini": [
+       "899d8b1e0beb390bc505f3cf3fc4bbff14938c92",
+       []
+      ],
+      "filter-function-repeating-radial-gradient-ref.html": [
+       "b91a8bed2fe561dcd8e47a3bcfb3ce6d1df30c9d",
+       []
+      ],
+      "filter-function-repeating-radial-gradient.html.ini": [
+       "e1f259e2536081eeff72ffda0dfcd18d6b8c24c0",
+       []
+      ],
       "resources": {
        "green-transparent-100x100.png": [
         "fe89b0da37571c09e921a44c9efa05cbedc27620",
@@ -346627,7 +346757,7 @@
       []
      ],
      "join-pre-and-other-block.html.ini": [
-      "20d0779b6f8e58f45074f440defff94f765c3dd3",
+      "f2d8ff11905e47e14d49fba70373190ea8017bc2",
       []
      ],
      "link-boundaries-insertion-expected.txt": [
@@ -360560,6 +360690,10 @@
        ],
        "fontVariantCaps-4.html.ini": [
         "bd95cda9bd5d5ee94b10c816bef6ce499e364670",
+        []
+       ],
+       "fontVariantCaps-6.html.ini": [
+        "3ce9e5df20fa125d1b07d2ed1951f5d4d7e13b3d",
         []
        ],
        "reference": {
@@ -384460,7 +384594,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "280def9ceec8fa52b021d93cfae43fc9014e0af6",
+     "dbfeea7a732a8cf04a76c5ead2705c83f7dd1ad8",
      []
     ],
     "modulepreload-expected.txt": [
@@ -399490,7 +399624,7 @@
      []
     ],
     "full-cycle-test.https.any.js.ini": [
-     "e585830e3a769859f9e324e6566dd3fe81bf88d1",
+     "3ab9bc70ca186066623010711e305efef9910e48",
      []
     ],
     "h264.annexb": [
@@ -399534,7 +399668,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "a213dbc71f39ddb8903cd9bb088ed73fd581ccf1",
+     "20337a4d9ca724890095e8e51090d3d0a34a4915",
      []
     ],
     "sfx-aac.mp4": [
@@ -473710,7 +473844,7 @@
       ]
      ],
      "clamp-length-serialize.html": [
-      "d9b4e6f988d703a9b1381153e1dc42fcd0bd846e",
+      "36738447ed2a954daa1fff652dfe8fd9d63e24f2",
       [
        null,
        {}
