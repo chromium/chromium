@@ -208,16 +208,6 @@ NativeLibrary PinUser32Internal(NativeLibraryLoadError* error) {
   return user32_module;
 }
 
-NativeLibrary PinAdvapi32Internal(NativeLibraryLoadError* error) {
-  static NativeLibraryLoadError load_error;
-  static const NativeLibrary advapi32_module =
-      PinSystemLibrary(FILE_PATH_LITERAL("advapi32.dll"), &load_error);
-  if (!advapi32_module && error) {
-    error->code = load_error.code;
-  }
-  return advapi32_module;
-}
-
 }  // namespace
 
 // Uses the Windows 10 WRL API's to query the current system state. The API's
@@ -717,10 +707,6 @@ std::wstring WStringFromGUID(const ::GUID& rguid) {
 
 bool PinUser32(NativeLibraryLoadError* error) {
   return PinUser32Internal(error) != nullptr;
-}
-
-bool PinAdvapi32ForTesting(NativeLibraryLoadError* error) {
-  return PinAdvapi32Internal(error) != nullptr;
 }
 
 void* GetUser32FunctionPointer(const char* function_name,
