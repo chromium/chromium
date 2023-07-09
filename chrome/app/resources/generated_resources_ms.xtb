@@ -142,6 +142,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1110965959145884739">Pilih bahasa yang hendak dipasang pada peranti ini. Fail bahasa dikongsi antara beberapa pengguna untuk menjimatkan ruang cakera. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Tab latar belakang menggunakan Bluetooth</translation>
 <translation id="1112998165730922436">Penghantaran dijeda</translation>
+<translation id="1113807501859230251">Alih keluar Bruschetta daripada <ph name="DEVICE_TYPE" /> anda? Tindakan ini akan memadamkan semua apl dan data dalam mesin maya!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Berlian</translation>
 <translation id="1114427165525619358">Kata laluan pada peranti ini dan dalam Akaun Google anda</translation>
@@ -1567,6 +1568,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
     pusat bantuan<ph name="END_LINK" />.</translation>
 <translation id="2266957463645820432">IPP melalui USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth dilumpuhkan</translation>
+<translation id="2268182915828370037">Matikan penyegerakan fail?</translation>
 <translation id="2269895253281481171">Anda akan diberitahu jika terdapat risiko</translation>
 <translation id="2270450558902169558">Bertukar data dengan mana-mana peranti dalam domain <ph name="DOMAIN" /></translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />Pemasangan <ph name="BEGIN_BOLD" />akan memadamkan seluruh pemacu keras anda<ph name="END_BOLD" />. Pastikan data anda disandarkan.<ph name="END_PARAGRAPH1" />
@@ -2118,6 +2120,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2714393097308983682">Gedung Google Play</translation>
 <translation id="2715640894224696481">Permintaan kunci keselamatan</translation>
 <translation id="2715751256863167692">Peningkatan ini akan menetapkan semula Chromebook anda dan mengalih keluar data pengguna semasa.</translation>
+<translation id="2715934493766003251">Tidak dapat mengosongkan storan apabila penyegerakan fail dihidupkan</translation>
 <translation id="2716986496990888774">Tetapan ini diurus oleh ibu/bapa.</translation>
 <translation id="271749239614426244">Abaikan pergerakan kecil kursor</translation>
 <translation id="2718395828230677721">Cahaya Malam</translation>
@@ -2734,6 +2737,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Ralat rangkaian</translation>
 <translation id="3248902735035392926">Keselamatan adalah perkara penting. Luangkan masa dan <ph name="BEGIN_LINK" />semak sambungan anda<ph name="END_LINK" /></translation>
 <translation id="3249323165366527554">Daftar dan log masuk dengan pantas apabila kata laluan anda disimpan secara automatik pada <ph name="GOOGLE_PASSWORD_MANAGER" /> untuk <ph name="EMAIL" />.</translation>
+<translation id="3251119461199395237">Penyegerakan fail</translation>
 <translation id="3251714896659475029">Benarkan <ph name="SUPERVISED_USER_NAME" /> mengakses Google Assistant dengan “Ok Google”</translation>
 <translation id="3251759466064201842">&lt;Bukan Sebahagian Daripada Sijil&gt;</translation>
 <translation id="325238099842880997">Tetapkan peraturan asas digital untuk membantu kanak-kanak bermain, meneroka sesuatu dan membuat kerja sekolah di rumah</translation>
@@ -3111,6 +3115,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3567284462585300767">Untuk menerima fail daripada orang di sekitar anda, hidupkan keterlihatan</translation>
 <translation id="356738834800832239">Kata Laluan Anda Telah Disimpan</translation>
 <translation id="3569382839528428029">Adakah anda ingin <ph name="APP_NAME" /> berkongsi skrin anda?</translation>
+<translation id="3569614820047645079">Fail anda dalam My Drive disegerakkan dengan Chromebook anda secara automatik supaya anda boleh mengakses fail tersebut tanpa sambungan Internet.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> boleh melihat fail dan folder berikut</translation>
 <translation id="3571734092741541777">Sediakan</translation>
 <translation id="3575121482199441727">Benarkan untuk tapak ini</translation>
@@ -3543,6 +3548,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3916233823027929090">Semakan keselamatan selesai</translation>
 <translation id="3916445069167113093">Jenis fail ini boleh membahayakan komputer anda. Adakah anda mahu terus menyimpan <ph name="FILE_NAME" />?</translation>
 <translation id="3917184139185490151">Komputer anda mengandungi modul selamat, yang digunakan untuk melaksanakan banyak ciri keselamatan penting dalam Chrome OS. Lawati Pusat Bantuan Chromebook untuk mengetahui lebih lanjut: https://support.google.com/chromebook/?p=sm</translation>
+<translation id="3917644013202553949">Storan tidak mencukupi untuk menyegerakkan fail anda. Cuba kosongkan ruang.</translation>
 <translation id="3918972485393593704">Laporkan butiran kepada Google</translation>
 <translation id="3919145445993746351">Hidupkan penyegerakan untuk mendapatkan sambungan anda pada semua komputer anda</translation>
 <translation id="3919229493046408863">Matikan pemberitahuan apabila terdapat peranti berdekatan</translation>
@@ -3854,6 +3860,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4184803915913850597">Peranti HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - Carian <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="4187424053537113647">Menyediakan <ph name="APP_NAME" />...</translation>
+<translation id="4190492351494485814">Untuk persediaan permulaan, anda perlukan sambungan Internet supaya fail dapat disegerakkan kepada Chromebook anda</translation>
 <translation id="4190828427319282529">Serlahkan fokus papan kekunci</translation>
 <translation id="4193251682249731404">CA yang Dipercayai</translation>
 <translation id="4193575319002689239">Tunjukkan kad</translation>
@@ -4047,6 +4054,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4361745360460842907">Buka sebagai tab</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> ialah akaun lalai pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="4363215264289239958">Apl Bruschetta</translation>
+<translation id="4363262124589131906">Penyegerakan secara automatik fail baharu dalam My Drive kepada Chromebook ini akan dihentikan</translation>
 <translation id="4363771538994847871">Tiada destinasi Cast ditemui. Perlukan bantuan?</translation>
 <translation id="4364327530094270451">Tembikai</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> berkongsi tetingkap.</translation>
@@ -4471,6 +4479,7 @@ Isyarat peranti boleh menyertakan maklumat tentang penyemak imbas, OS, peranti, 
 <translation id="4715631922189108923">Edit nama pengguna</translation>
 <translation id="47158868804223727">Klik nama kumpulan untuk mengembangkan atau menguncupkannya</translation>
 <translation id="4716483597559580346">Powerwash untuk keselamatan tambahan</translation>
+<translation id="4716715661140829720">Ruang storan tidak mencukupi</translation>
 <translation id="471759229191973607">Tukar tema</translation>
 <translation id="4718046540206070045">Bukan sekadar penyemak imbas</translation>
 <translation id="4722735765955348426">Kata laluan untuk <ph name="USERNAME" /></translation>
@@ -4523,6 +4532,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> bukan akaun Google for Education yang sah. Hubungi pentadbir anda. Jika anda seorang pentadbir, anda boleh menyediakan organisasi anda dengan melawati: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Peranti ini akan disimpan selama 1 bulan dan anda boleh menyambung tanpa kod pada masa akan datang. Ini ditetapkan oleh pentadbir anda.}other{Peranti ini akan disimpan selama {MONTHS} bulan dan anda boleh menyambung tanpa kod pada masa akan datang. Ini ditetapkan oleh pentadbir anda.}}</translation>
 <translation id="4765582662863429759">Membenarkan Android Messages menyampaikan teks daripada telefon ke Chromebook anda</translation>
+<translation id="476563889641554689">Pilih kawasan untuk dicari dengan Lens</translation>
 <translation id="4766598565665644999">Semua sambungan boleh membaca &amp; menukar <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Ketahui lebih lanjut tentang sambungan yang dilumpuhkan.</translation>
 <translation id="4768332406694066911">Anda mempunyai sijil daripada organisasi ini yang mengenal pasti anda</translation>
@@ -4582,6 +4592,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="481574578487123132">Peranti terpaut</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, Butiran</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 penanda halaman dipadamkan}other{{COUNT} penanda halaman dipadamkan}}</translation>
+<translation id="481689174647911539">Fail ini mungkin virus atau perisian hasad.<ph name="LINE_BREAK" />Anda boleh menghantar fail ini kepada Penyemakan Imbas Selamat Google untuk disemak sama ada fail ini selamat atau tidak. Biasanya imbasan ini mengambil masa beberapa minit.</translation>
 <translation id="4816900689218414104">Buat kunci laluan pada telefon atau tablet</translation>
 <translation id="4819323978093861656">{0,plural, =0{Menutup sekarang.}=1{Menutup dalam masa: 1 saat}other{Menutup dalam masa: # saat}}</translation>
 <translation id="4819607494758673676">Pemberitahuan Google Assistant</translation>
@@ -5001,12 +5012,14 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5185386675596372454">Versi terbaharu "<ph name="EXTENSION_NAME" />" telah dilumpuhkan kerana ia memerlukan lebih banyak kebenaran.</translation>
 <translation id="5185500136143151980">Tiada Internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190577235024772869">Menggunakan <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Aktifkan port</translation>
 <translation id="5190959794678983197">Tiada mikrofon</translation>
 <translation id="5191094172448199359">PIN yang anda masukkan tidak sepadan</translation>
 <translation id="5191251636205085390">Ketahui tentang teknologi baharu yang disasarkan untuk menggantikan kuki pihak ketiga dan kawal teknologi tersebut</translation>
 <translation id="519185197579575131">Gunakan QT</translation>
 <translation id="5192062846343383368">Buka apl Family Link untuk melihat tetapan pengawasan anda</translation>
+<translation id="5193978546360574373">Tindakan ini akan mengalih keluar akses kepada Google Drive pada Chromebook ini, termasuk akses kepada sebarang fail yang telah dijadikan tersedia di luar talian</translation>
 <translation id="5193988420012215838">Disalin ke papan keratan anda</translation>
 <translation id="5194256020863090856">Tindakan ini hanya melibatkan tetingkap Inkognito</translation>
 <translation id="5195074424945754995">URL yang sepadan dengan peraturan ini tidak akan mencetuskan pertukaran penyemak imbas dan boleh dibuka dalam <ph name="BROWSER_NAME" /> atau <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
@@ -5089,6 +5102,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="526622169288322445">Lagi tindakan untuk <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5268373933383932086">Halaman anda, cara anda</translation>
 <translation id="5269977353971873915">Cetakan Gagal</translation>
+<translation id="5271578170655641944">Alih keluar akses Google Drive?</translation>
 <translation id="5273806377963980154">Edit URL laman</translation>
 <translation id="5273966423195882879">Warna berdasarkan tema</translation>
 <translation id="5275084684151588738">Kamus Pengguna</translation>
@@ -6351,6 +6365,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6345878117466430440">Tandai sebagai dibaca</translation>
 <translation id="6346952829206698721">Tampal daripada papan keratan</translation>
 <translation id="6347010704471250799">Tunjukkan pemberitahuan</translation>
+<translation id="6348805481186204412">Storan luar talian</translation>
 <translation id="634887995541211148">Jalankan Bruschetta pada peranti anda.</translation>
 <translation id="6349101878882523185">Pasang <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">Lengkung eliptik SECG secp256r1 (alias ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -6535,6 +6550,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6513247462497316522">Google Chrome akan menggunakan data mudah alih jika anda tidak disambungkan kepada rangkaian lain.</translation>
 <translation id="6514010653036109809">Peranti yang tersedia:</translation>
 <translation id="6514565641373682518">Halaman ini telah melumpuhkan kursor tetikus anda.</translation>
+<translation id="6517420300299531857">Fail anda dalam My Drive disegerakkan dengan Chromebook anda secara automatik supaya anda boleh mengakses fail tersebut tanpa sambungan Internet. Tindakan ini akan menggunakan anggaran <ph name="REQUIRED_SPACE" />. Pada masa ini anda mempunyai <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Peranti anda mungkin tidak lagi berfungsi dengan betul dan anda mungkin mengalami masalah keselamatan dan prestasi. Tindakan mematikan kemas kini boleh mempengaruhi hak anda untuk membuat tuntutan undang-undang jika anda mengalami sebarang isu.</translation>
 <translation id="6518014396551869914">Sal&amp;in imej</translation>
 <translation id="6518133107902771759">Sahkan</translation>
@@ -6794,6 +6810,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6736243959894955139">Alamat</translation>
 <translation id="6737393581255281855">Kosongkan data yang dipaparkan?</translation>
 <translation id="6737663862851963468">Alih keluar tiket Kerberos</translation>
+<translation id="6737931010859480781">Apl ini telah diprapasang pada peranti anda</translation>
 <translation id="6738180164164974883">Benarkan penetapkan kuki pihak ketiga</translation>
 <translation id="6738430949033571771">Mengesahkan akaun...</translation>
 <translation id="6739923123728562974">Tunjukkan pintasan desktop</translation>
@@ -8488,6 +8505,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8138217203226449454">Adakah anda bermaksud untuk menukar penyedia carian anda?</translation>
 <translation id="8138997515734480534">Status <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Fail Google Drive</translation>
+<translation id="8139643636835015859">Tindakan ini akan mengalih keluar <ph name="OFFLINE_STORAGE_SIZE" /> ruang yang digunakan oleh fail luar talian anda. Sesetengah fail masih tersedia luar talian. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141418916163800697">Anda boleh menyediakan lebih banyak ciri dalam tetapan Hab Telefon</translation>
 <translation id="8141584439523427891">Membuka dalam penyemak imbas alternatif sekarang</translation>
@@ -8579,6 +8597,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="821119981794423735">Untuk mengimport kata laluan pada Google Password Manager bagi <ph name="USER_EMAIL" />, pilih fail CSV</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Muat turun sedang berlangsung}other{Muat turun sedang berlangsung}}</translation>
 <translation id="8212601853154459483">Profil ini diurus oleh <ph name="PROFILE_MANAGER" /> dan memerlukan anda membuat profil berasingan untuk akaun <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="8212792694174629011">Tiada profil ditemukan. Cuba imbas Kod QR menggunakan kamera peranti anda atau masukkan kod pengaktifan yang diberikan oleh pembawa anda.</translation>
 <translation id="8214489666383623925">Buka Fail...</translation>
 <translation id="8215129063232901118">Akses keupayaan telefon anda daripada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="8217212468862726597">Serlahkan penuding</translation>
@@ -9123,6 +9142,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8680251145628383637">Log masuk untuk mendapatkan penanda halaman, sejarah, kata laluan dan tetapan anda yang lain pada semua peranti anda. Anda turut akan dilog masuk secara automatik ke perkhidmatan Google anda.</translation>
 <translation id="8681886425883659911">Iklan disekat di laman yang diketahui memaparkan iklan yang mengganggu atau mengelirukan</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> disambungkan dan sedia</translation>
+<translation id="8686142379631285985">Log masuk sebagai <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Batalkan <ph name="FILE_NAME" /></translation>
 <translation id="8688672835843460752">Tersedia</translation>
 <translation id="8689998525144040851">100</translation>

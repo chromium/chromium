@@ -255,6 +255,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2595587704210555261">{COUNT,plural, =1{Les pestanyes obertes que no utilitzis durant un dia o més es mouran a Pestanyes inactives perquè et puguis centrar fàcilment en les pestanyes que més facis servir. Pots canviar aquesta opció en qualsevol moment a la configuració.}other{Les pestanyes obertes que no utilitzis durant {COUNT} dies o més es mouran a Pestanyes inactives perquè et puguis centrar fàcilment en les pestanyes que més facis servir. Pots canviar aquesta opció en qualsevol moment a la configuració.}}</translation>
 <translation id="2600682495497606169">Esborra les galetes del lloc web</translation>
 <translation id="2609008503159898744">Vols tancar totes les pestanyes?</translation>
+<translation id="2617210333344098964">Mou l'adreça al compte</translation>
 <translation id="2625189173221582860">S'ha copiat la contrasenya</translation>
 <translation id="2626236249646841566">Comprova la connexió i torna a provar d'iniciar la sessió.</translation>
 <translation id="2637313651144986786">Cerca pestanyes</translation>
@@ -464,6 +465,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3851938967634752633">Les contrasenyes de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i <ph name="NUMBER_OF_ACCOUNTS" /> més se suprimiran. Els teus comptes no se suprimiran.</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3861486700625780712">Deixa de seguir</translation>
+<translation id="3861908220442487587">Aquesta adreça només es desa en aquest dispositiu. Per utilitzar-la en altres dispositius, mou-la al teu Compte de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="3863769054730344136">Envia als teus dispositius</translation>
 <translation id="387280738075653372">Baixa Chrome aquí.</translation>
 <translation id="3875783148670536197">Mostra'm com</translation>

@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">လက်ရှိကီးအတွဲကို သုံးရန်</translation>
 <translation id="2320295602967756579">လင်းသည့် အပြင်အဆင် ဖွင့်ရန်</translation>
 <translation id="2323506179655536734">ကျော်လိုက်သည်</translation>
+<translation id="2324354238778375592">မျှောရန်</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">အနီးတဝိုက်ရှိ စက်ပစ္စည်းများကို ရှာဖွေရန် ဘလူးတုသ်ကို ဖွင့်ပါ</translation>
 <translation id="2346474577291266260">အလွန်ကောင်း (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> စစ်ဆေးမှု</translation>
 <translation id="370665806235115550">တင်ပေးနေ...</translation>
 <translation id="3708186454126126312">ယခင် ချိတ်ဆက်ထားသည်များ</translation>
+<translation id="3715651196924935218">လွင့်မျောမှုမှ ထွက်ရန်</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (သုံးသပ်ချက် <ph name="AGGREGATED_COUNT" /> ခု)</translation>
 <translation id="3748026146096797577">ချိတ်ဆက် မထား</translation>
 <translation id="3749289110408117711">ဖိုင် အမည်</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">မျက်နှာပြင်ပြသမှု</translation>
 <translation id="4155551848414053977">စကင်ဖတ်စက်ဖွင့်ထားပြီး သင့်ကွန်ရက် (သို့) တိုက်ရိုက်ချိတ်ဆက်မှုမှတစ်ဆင့် သုံးနိုင်ကြောင်း သေချာပါစေ</translation>
+<translation id="4159238217853743776">တစ်စိတ်တစ်ပိုင်း</translation>
 <translation id="4159784952369912983">ခရမ်း</translation>
 <translation id="4170180284036919717">ဓာတ်ပုံရိုက်ရန်</translation>
 <translation id="4170700058716978431">မအောင်မြင်ပါ</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">ချိတ်ဆက်မှု စနစ်ထည့်သွင်းရန် (သို့) အပ်ဒိတ်လုပ်ရန် <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> သို့ သွားပါ။</translation>
 <translation id="4932733599132424254">ရက်စွဲ</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> ဖာမ်းဝဲကို <ph name="VERSION" /> ဗားရှင်းသို့ အပ်ဒိတ်လုပ်ထားသည်</translation>
+<translation id="4969079779290789265">ခွဲထုတ်ရန်</translation>
 <translation id="4972592110715526173">မုဒ်ပြောင်းရန်</translation>
 <translation id="498186245079027698">စကင်ဖတ်စက်ကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။ စကင်ဖတ်ထားသောဖိုင်များကို သိမ်းရန် စက်တွင်းနေရာ လုံလောက်ကြောင်း သေချာပါစေ။</translation>
 <translation id="4985509611418653372">စဖွင့်ရန်</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">ဆာဗာပင်ရင်းအမည်−</translation>
 <translation id="5089810972385038852">ပြည်နယ်</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">အပြည့်</translation>
 <translation id="5142961317498132443">အထောက်အထားစိစစ်မှု</translation>
 <translation id="5154917547274118687">မှတ်ဉာဏ်</translation>
 <translation id="5160857336552977725">သင့်<ph name="DEVICE_TYPE" /> သို့ လက်မှတ်ထိုးဝင်ရန်</translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">ထွက်ခွာရန်</translation>
 <translation id="522307662484862935">အီးမေးလ်လိပ်စာ မထည့်သွင်းပါနှင့်</translation>
 <translation id="5227902338748591677">အမှောင်နောက်ခံ အချိန်ဇယား</translation>
+<translation id="5229344016299762883">ဖန်သားပြင်အပြည့်မှ ထွက်ရန်</translation>
 <translation id="5234764350956374838">ပယ်ရန်</translation>
 <translation id="5252456968953390977">ရွမ်မင်း</translation>
 <translation id="5257811368506016604">အလင်းမုဒ် ဖွင့်ရန်</translation>
@@ -707,6 +713,7 @@
 <translation id="6566314079205407217">စာမျက်နှာများစွာ စကင်ဖတ်ရန်</translation>
 <translation id="6574762126505704998">ဖြည့်ရန်</translation>
 <translation id="6575134580692778371">စီစဉ်မဖွဲ့စည်းရသေး</translation>
+<translation id="6576005492601044801">ဘယ်</translation>
 <translation id="6579509898032828423">ဤပုံသုံးရန်</translation>
 <translation id="6596816719288285829">IP လိပ်စာ</translation>
 <translation id="6599673642868607614">သင့်အကြံပြုချက်အတွက် ကျေးဇူးတင်ပါသည်။ သင့်အကြံပြုချက်သည် Chromebook အသုံးပြုမှုကို ပိုမိုကောင်းမွန်စေရန် ကူညီပေးပြီး ၎င်းကို ကျွန်ုပ်တို့၏အဖွဲ့က စိစစ်ပါမည်။ အကြောင်းကြားချက်ပေးပို့မှု အလွန်များသဖြင့် အကြောင်းပြန်နိုင်မည် မဟုတ်ပါ။</translation>
@@ -812,6 +819,7 @@
 <translation id="7497215489070763236">ဆာဗာ CA အသိအမှတ်ပြုလက်မှတ်</translation>
 <translation id="7501957181231305652">သို့မဟုတ်</translation>
 <translation id="7502658306369382406">IPv6 လိပ်စာ</translation>
+<translation id="7513770521371759388">အောက်</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">အကူအညီ အကြောင်းအရာ မရနိုင်ပါ</translation>
 <translation id="7535791657097741517">လင်းသည့် အပြင်အဆင် ဖွင့်ရန်</translation>
@@ -950,6 +958,7 @@
 <translation id="8655295600908251630">လိုင်း</translation>
 <translation id="8655828773034788261">URL မျှဝေရန်-</translation>
 <translation id="8660881923941176839">ပေါင်</translation>
+<translation id="8670574982334489519">ညာ</translation>
 <translation id="8675354002693747642">ကြိုတင်မျှဝေထားသည့် ကီး</translation>
 <translation id="8677859815076891398">အယ်လ်ဘမ် မရှိပါ။ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> တွင် အယ်လ်ဘမ်တစ်ခု ပြုလုပ်ပါ။</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ဤဝန်ဆောင်မှုကို စီမံရန် ဘယ် သို့မဟုတ် ညာညွှန်မြားခလုတ်များ အသုံးပြုပါ။</translation>
@@ -995,6 +1004,7 @@
 <translation id="8936793075252196307">ကလိုင်းယင့် အိုင်ပီ (IP) လိပ်စာ</translation>
 <translation id="8944651180182756621">Launcher အရောင်</translation>
 <translation id="894617464444543719">ကိရိယာသည် ဖုန်းဖြစ်သည်။</translation>
+<translation id="8950424402482976779">ထိပ်</translation>
 <translation id="8968751544471797276">အားသွင်းနှုန်း</translation>
 <translation id="8970109610781093811">ထပ်လုပ်ဆောင်ရန်</translation>
 <translation id="8983038754672563810">HSPA</translation>

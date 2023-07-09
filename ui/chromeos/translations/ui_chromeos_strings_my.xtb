@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Drive ယခုမရသေးပါ။ Google Drive ပြန်လာသည်နှင့် တင်ခြင်း အလိုအလျောက် ပြန်စပါမည်။</translation>
 <translation id="1307931752636661898">Linux ဖိုင်များကို ကြည့်၍မရပါ</translation>
 <translation id="1313405956111467313">အလိုအလျောက် ပရောက်စီ စီစဉ်ဖွဲ့စည်းမှု</translation>
+<translation id="134645005685694099">ဖိုင်များစင့်ခ်လုပ်ခြင်းကို ဖွင့်ထားရန်အတွက် သင့်စက်တွင် သိုလှောင်မှုနေရာ လုံလောက်မှုမရှိပါ။ ဖိုင်အသစ်များက အလိုအလျောက် စင့်ခ်လုပ်တော့မည်မဟုတ်ပါ။</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ဖိုင်သို့မဟုတ် လမ်းကြောင်း အသုံးပြု၍ မရပါ။</translation>
 <translation id="1363028406613469049">သီချင်းပုဒ်</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP ပရောက်စီ</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> ကွန်ရက်၊ ပိတ်ထားသည်</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470447085858632">သင့် Google Drive ဖိုင်များကို ဖိုင်စင့်ခ်လုပ်ခြင်းဖြင့် အော့ဖ်လိုင်းအသုံးပြုပါ</translation>
 <translation id="2470939964922472929">ပင်နံပါတ်အမှားကို အကြိမ်များစွာ ထည့်ထားသည်။ ပင်နံပါတ်အသစ်သတ်မှတ်ရန် သင်၏မိုဘိုင်းဖုန်းကုမ္ပဏီက ပို့ထားသည့် ဂဏန်း ၈ လုံးပါ ‘ပင်နံပါတ် ပြန်ဖွင့်သည့် ကုဒ်’ (PUK) ထည့်ပါ။</translation>
 <translation id="2500392669976258912">ဂူဂျာရသီ အသံထွက်</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -602,6 +604,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> ကို အမှိုက်ပုံးသို့ ရွှေ့လိုက်သည်</translation>
 <translation id="5724172041621205163">Pattachote ကီးဘုတ်ဖြင့် ထိုင်း</translation>
 <translation id="57383366388012121">ယခင်လ</translation>
+<translation id="575175778971367197">ဤဖိုင်ကို ယခု ဖွင့်၍မရပါ</translation>
 <translation id="5756666464756035725">ဟန်ဂေရီ QWERTY</translation>
 <translation id="5760252553414789727">ဖိုင် <ph name="SELECTED_FILES_COUNT" /> ခု ရွေးလိုက်သည်</translation>
 <translation id="5763377084591234761">ဂျာမန် (ဆွစ်ဇာလန်)</translation>
@@ -704,6 +707,7 @@
 <translation id="6558280019477628686">အမှားအယွင်း ရှိနေပါသည်။ အချို့အရာများကို ဖျက်လိုက်ခြင်း မဖြစ်နိုင်ပါ။</translation>
 <translation id="656398493051028875">ဖျက်နေ "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Google ဒရိုက်ဗ် လင့်</translation>
+<translation id="6588648400954570689">ဖိုင်စင့်ခ်လုပ်ခြင်း ဆက်တင်များ</translation>
 <translation id="6594855146910089723">ဤဖိုင်တွဲကို Linux နှင့် Parallels Desktop တို့အား မျှဝေထားသည်</translation>
 <translation id="6607272825297743757">ဖိုင်အချက်အလက်</translation>
 <translation id="6609332149380188670">ဖိုင်တွဲ <ph name="NUMBER_OF_ITEMS" /> ခုကို Parallels Desktop အား မျှဝေထားသည်</translation>
@@ -828,6 +832,7 @@
 <translation id="7547811415869834682">ဒတ်ချ</translation>
 <translation id="7551643184018910560">စင်သို့ ပင်ထိုးရန်</translation>
 <translation id="7553492409867692754"><ph name="FOLDER_NAME" /> ဖိုင်တွဲရှိ ဖိုင်များကို Linux အား အသုံးပြုခွင့်ပေးမည်</translation>
+<translation id="7555339735447658365">လောလောဆယ် အော့ဖ်လိုင်းဖြစ်နေသည်။ အင်တာနက် ပြန်ရပါက ဖိုင်စင့်ခ်လုပ်ခြင်းကို ဆက်လုပ်ပါမည်</translation>
 <translation id="7589661784326793847">ခဏလေး</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> ကို အော့ဖ်လိုင်းသုံး၍ရအောင် ပြုလုပ်နေသည်</translation>
 <translation id="7600126690270271294">ဆားဘီးယား</translation>
@@ -870,6 +875,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">ကွန်ရက်စီစဉ်သတ်မှတ်ရာတွင် အမှားအယွင်းရှိပါသည်</translation>
+<translation id="7832093238954689746">ဖိုင်စင့်ခ်လုပ်ပြီးပြီ။ ‘ကျွန်ုပ်၏ Drive‘ ဖိုင်များကို အော့ဖ်လိုင်းရနိုင်ပါပြီ။</translation>
 <translation id="7839804798877833423">ဒီဖိုင်များကို ရယူခြင်းက မိုဘိုင်း ဒေတာ၏ <ph name="FILE_SIZE" />ခန့်ကို အသုံးပြုမည်။</translation>
 <translation id="7846076177841592234">ရွေးချယ်ထားသောဖိုင်များကို ပြန်ဖျက်ပါ</translation>
 <translation id="7853966320808728790">ပြင်သစ် BÉPO</translation>
@@ -918,6 +924,7 @@
 <translation id="8179976553408161302">အင်တာ</translation>
 <translation id="8193175696669055101">ကိရိယာ မော်ဒယ်လ်</translation>
 <translation id="8223479393428528563">အင်တာနက်ပေါ်တွင်မရှိသည့်အခါ အသုံးပြုရန်အတွက် ဤဖိုင်များအား သိမ်းရန်  အွန်လိုင်းပေါ်ပြန်လာပြီး ဖိုင်များအား ညာဘက်ကလစ်ခေါက်ပြီး <ph name="OFFLINE_CHECKBOX_NAME" /> ရွေးချယ်စရာအား ရွေးချယ်ပါ။</translation>
+<translation id="8241139360630443550">သိုလှောင်ခန်းကို ကြည့်ရန်</translation>
 <translation id="8249296373107784235">မလုပ်တော့ပါ</translation>
 <translation id="8250690786522693009">လက်တင်</translation>
 <translation id="8250920743982581267">စာရွက်စာတမ်းများ</translation>

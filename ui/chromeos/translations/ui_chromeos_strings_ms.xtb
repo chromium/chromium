@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Tetapan peranti</translation>
 <translation id="2084809735218147718">Mengucapkan terima kasih menggunakan bahasa isyarat</translation>
 <translation id="2088690981887365033">Rangkaian VPN</translation>
+<translation id="209653272837065803">Ruang storan tidak mencukupi untuk meneruskan penyegerakan fail</translation>
 <translation id="2111134541987263231">Hidupkan <ph name="BEGIN_BOLD" />Benarkan dalam mod Inkognito<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> item akan dipadam dan anda tidak akan dapat memulihkan item itu.</translation>
 <translation id="2122305276694332719">Tindakan menyambung secara automatik ke rangkaian tersembunyi akan membolehkan orang lain melihat peranti anda dan sesetengah tetapan rangkaian, maka tindakan ini tidak disyorkan.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Bahasa Cina Mudah</translation>
 <translation id="22085916256174561">Korea</translation>
 <translation id="2208919847696382164">Pasang dengan Linux</translation>
+<translation id="2215692307449050019">Bateri lemah. Penyegerakan fail akan disambung semula apabila anda disambungkan kepada bekalan kuasa.</translation>
 <translation id="2225536596944493418">Adakah anda pasti anda mahu memadamkan <ph name="NUMBER_OF_ITEMS" /> item?</translation>
 <translation id="2230062665678605299">Tidak dapat membuat folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Orang dengan kopi</translation>
+<translation id="2247561763838186830">Anda telah log keluar</translation>
 <translation id="2251368349685848079">Pulihkan daripada sampah</translation>
 <translation id="2278133026967558505">Akses fail oleh semua laman web dan url</translation>
 <translation id="2282155092769082568">URL autokonfigurasi:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Jenis fail ini tidak disokong. Sila lawati Kedai Web Chrome untuk mendapatkan apl yang boleh membuka jenis fail ini.</translation>
 <translation id="2326539130272988168">Bulgaria</translation>
 <translation id="2337715497728194187">Kongsi dengan Bruschetta</translation>
+<translation id="233822363739146957">Ruang storan tidak mencukupi untuk menyegerakkan semua fail anda</translation>
 <translation id="23721837607121582">Muat turun profil mudah alih, Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Tukar kepada paparan senarai</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folder dikongsi dengan Linux</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Ralat semasa memasang aplikasi Linux</translation>
 <translation id="2802583107108007218">Ketahui lebih lanjut tentang sekatan ini</translation>
 <translation id="2803375539583399270">Masukkan PIN</translation>
+<translation id="2819519502129272135">Penyegerakan fail dimatikan</translation>
 <translation id="2820957248982571256">Mengimbas…</translation>
 <translation id="2830077785865012357">Zhuyin Cina</translation>
 <translation id="2843806747483486897">Tukar lalai...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Penapis ditetapkan semula.</translation>
 <translation id="4603392156942865207">Menyalin <ph name="FILE_NAME" /> ke <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artis</translation>
+<translation id="4635373743001040938">Ruang storan sangat sedikit. Penyegerakan fail telah dimatikan.</translation>
 <translation id="4642769377300286600">Memasang profil mudah alih, Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Czech dengan papan kekunci Qwerty</translation>
 <translation id="4656777537938206294">Jadikan fail tersedia di luar talian</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">1 folder dikongsi dengan Parallels Desktop</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> dipulihkan</translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Tidak dapat menyelesaikan persediaan penyegerakan fail</translation>
 <translation id="4973523518332075481">Gunakan nama yang mengandungi tidak lebih daripada <ph name="MAX_LENGTH" /> aksara</translation>
 <translation id="4973970068702235170">Gagal mengezip, ralat tidak dijangka: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Jepun</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">Jerman (Belgium)</translation>
 <translation id="7339898014177206373">Tetingkap baharu</translation>
 <translation id="7343393116438664539">Teleks Vietnam</translation>
+<translation id="7347346221088620549">Fail disulitkan</translation>
 <translation id="7357762654218998920">Jenis fail ini tidak disokong. <ph name="BEGIN_LINK_HELP" />Ketahui Lebih Lanjut<ph name="END_LINK_HELP" /> tentang membuka fail pada Chrome OS.</translation>
 <translation id="7359359531237882347">Menyalin <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="7375951387215729722">Senarai fail diisih mengikut <ph name="COLUMN_NAME" /> dalam tertib menurun.</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">Iceland</translation>
 <translation id="863903787380594467">PIN salah. Anda mempunyai <ph name="RETRIES" /> percubaan lagi.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>
+<translation id="8656407365183407932">Fail luar talian anda terpaksa dialih keluar</translation>
 <translation id="8656768832129462377">Jangan periksa</translation>
 <translation id="8688591111840995413">Kata laluan salah</translation>
 <translation id="8698464937041809063">Lukisan Google</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">Pinyin Cina (Tradisional)</translation>
 <translation id="8998871447376656508">Ruang kosong tidak mencukupi dalam Google Drive anda untuk menyelesaikan muat naik.</translation>
 <translation id="9003940392834790328">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Diurus oleh Pentadbir anda, Butiran</translation>
+<translation id="9007990314804111233">Log masuk ke akaun Microsoft anda</translation>
 <translation id="9017798300203431059">Fonetik bahasa Rusia</translation>
 <translation id="9034924485347205037">Fail Linux</translation>
 <translation id="9035012421917565900">Items tidak boleh dialihkan kembali ke '<ph name="DESTINATION_NAME" />', oleh itu, anda tidak akan dapat membuat asal tindakan ini.</translation>

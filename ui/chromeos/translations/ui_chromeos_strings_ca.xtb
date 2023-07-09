@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">En aquest moment Google Drive no està disponible. La pujada es reiniciarà automàticament quan Google Drive torni a estar actiu.</translation>
 <translation id="1307931752636661898">No es poden mostrar fitxers de Linux</translation>
 <translation id="1313405956111467313">Configuració automàtica del servidor intermediari</translation>
+<translation id="134645005685694099">El dispositiu no té prou espai d'emmagatzematge per mantenir la sincronització de fitxers activada. Els fitxers nous ja no se sincronitzaran automàticament.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">El fitxer o directori no es pot fer servir.</translation>
 <translation id="1363028406613469049">Pista</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">Servidor intermediari HTTP</translation>
 <translation id="2467267713099745100">Xarxa <ph name="NETWORK_TYPE" /> (desactivada)</translation>
 <translation id="2468402215065996499">Tamagotxi</translation>
+<translation id="2468470447085858632">Accedeix sense connexió als teus fitxers de Google Drive amb la sincronització de fitxers</translation>
 <translation id="2470939964922472929">S'ha introduït un PIN incorrecte massa vegades. Per configurar un PIN nou, introdueix el número personal de desbloqueig (PUK) de 8 dígits proporcionat per l'operador.</translation>
 <translation id="2500392669976258912">Gujarati fonètic</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -603,6 +605,7 @@
 <translation id="5720028165859493293">S'ha mogut <ph name="FILE_NAME" /> a la paperera</translation>
 <translation id="5724172041621205163">Tai amb teclat pattachote</translation>
 <translation id="57383366388012121">Darrer mes</translation>
+<translation id="575175778971367197">Ara mateix no es pot sincronitzar aquest fitxer</translation>
 <translation id="5756666464756035725">QWERTY hongarès</translation>
 <translation id="5760252553414789727">S'han seleccionat <ph name="SELECTED_FILES_COUNT" /> elements</translation>
 <translation id="5763377084591234761">Alemany (Suïssa)</translation>
@@ -705,6 +708,7 @@
 <translation id="6558280019477628686">S'ha produït un error. És possible que alguns elements no s'hagin suprimit.</translation>
 <translation id="656398493051028875">S'està suprimint "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Enllaç de Google Drive</translation>
+<translation id="6588648400954570689">Configuració de la sincronització de fitxers</translation>
 <translation id="6594855146910089723">Aquesta carpeta es comparteix amb Linux i Parallels Desktop</translation>
 <translation id="6607272825297743757">Informació del fitxer</translation>
 <translation id="6609332149380188670">S'han compartit <ph name="NUMBER_OF_ITEMS" /> carpetes amb Parallels Desktop</translation>
@@ -829,6 +833,7 @@
 <translation id="7547811415869834682">Neerlandès</translation>
 <translation id="7551643184018910560">Fixa al prestatge</translation>
 <translation id="7553492409867692754">Dona permís a les aplicacions de Linux per accedir als fitxers de la carpeta <ph name="FOLDER_NAME" /></translation>
+<translation id="7555339735447658365">En aquests moments no tens connexió. La sincronització de fitxers es reprendrà quan tinguis connexió a Internet.</translation>
 <translation id="7589661784326793847">Espereu un moment.</translation>
 <translation id="7592775719802218421">S'està fent que <ph name="FILE_NAME" /> estigui disponible sense connexió</translation>
 <translation id="7600126690270271294">Serbi</translation>
@@ -871,6 +876,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">S'ha produït un error en configurar la xarxa</translation>
+<translation id="7832093238954689746">La sincronització dels fitxers s'ha completat. Els fitxers de La meva unitat estan disponibles sense connexió.</translation>
 <translation id="7839804798877833423">Per obtenir aquests fitxers s'utilitzaran aproximadament <ph name="FILE_SIZE" /> de dades mòbils.</translation>
 <translation id="7846076177841592234">Cancel·la la selecció</translation>
 <translation id="7853966320808728790">BÉPO francès</translation>
@@ -919,6 +925,7 @@
 <translation id="8179976553408161302">Retorn</translation>
 <translation id="8193175696669055101">Model de dispositiu</translation>
 <translation id="8223479393428528563">Per desar aquests fitxers per utilitzar-los fora de línia, connecteu-vos a una xarxa, feu clic amb el botó dret als fitxers i seleccioneu l'opció <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Mostra l'emmagatzematge</translation>
 <translation id="8249296373107784235">Cancel·la</translation>
 <translation id="8250690786522693009">Llatí</translation>
 <translation id="8250920743982581267">Documents</translation>
