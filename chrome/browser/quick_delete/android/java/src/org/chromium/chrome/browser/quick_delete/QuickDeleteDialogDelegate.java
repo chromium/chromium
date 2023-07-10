@@ -24,17 +24,12 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils.TimePeriodSpinnerOption;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.sync.ModelType;
-import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -273,7 +268,7 @@ class QuickDeleteDialogDelegate {
 
         title.setText(data.mDomainVisitsData.mLastVisitedDomain);
         row.setVisibility(View.VISIBLE);
-        if (isSyncingHistory()) {
+        if (QuickDeleteDelegate.isSyncingHistory(mProfile)) {
             subtitle.setVisibility(View.VISIBLE);
         }
     }
@@ -301,7 +296,7 @@ class QuickDeleteDialogDelegate {
      */
     private void addSearchHistoryDisambiguationTextIfRequired(
             @NonNull TextViewWithClickableSpans text) {
-        if (isSignedIn()) {
+        if (QuickDeleteDelegate.isSignedIn(mProfile)) {
             // Add search history and other activity links to search history disambiguation notice
             // in the dialog.
             final SpannableString searchHistoryText = SpanApplier.applySpans(
@@ -341,24 +336,6 @@ class QuickDeleteDialogDelegate {
                 mTabModelSelector.getCurrentTab(), false);
         mModalDialogManager.dismissDialog(
                 mModalDialogPropertyModel, DialogDismissalCause.ACTION_ON_CONTENT);
-    }
-
-    /**
-     * @return A boolean indicating whether the user is signed in or not.
-     */
-    private boolean isSignedIn() {
-        return IdentityServicesProvider.get().getIdentityManager(mProfile).hasPrimaryAccount(
-                ConsentLevel.SIGNIN);
-    }
-
-    /**
-     * @return A boolean indicating whether the user is syncing history and history deletions are
-     *         propagated.
-     */
-    private boolean isSyncingHistory() {
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
-        return syncService != null && syncService.isSyncFeatureEnabled()
-                && syncService.getActiveDataTypes().contains(ModelType.HISTORY_DELETE_DIRECTIVES);
     }
 
     /**

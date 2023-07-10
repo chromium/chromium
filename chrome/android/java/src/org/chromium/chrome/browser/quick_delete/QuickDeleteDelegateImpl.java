@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.browsing_data.TimePeriod;
  * An implementation of the {@link QuickDeleteDelegate} to handle quick delete operations
  * for Chrome.
  */
-public class QuickDeleteDelegateImpl implements QuickDeleteDelegate {
+public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
     @Override
     public void performQuickDelete(@NonNull Runnable onDeleteFinished, @TimePeriod int timePeriod) {
         // Note: clang-format does a bad job formatting lambdas so we turn it off here.
