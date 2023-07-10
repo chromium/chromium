@@ -54,6 +54,12 @@
 
   #savedPrintersContainer {
     border-bottom: var(--cr-separator-line);
+    padding-bottom: 8px;
+  }
+
+  #savedPrintersDescription {
+    height: 64px;
+    margin-bottom: 8px;
   }
 
   #enterprisePrintersContainer {
@@ -99,7 +105,7 @@
     border: 1px solid var(--cros-separator-color);
     border-radius: 12px;
     display: flex;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     padding: 16px 12px;
   }
 
@@ -133,7 +139,12 @@
   #noSavedPrinters {
     align-items: center;
     display: flex;
-    height: 75px;
+    height: 48px;
+    margin: 8px 0;
+  }
+
+  #addPrinterSectionRevamp {
+    height: 64px;
   }
 
   cr-button {
@@ -155,7 +166,7 @@
 <template is="dom-if" if="[[showSavedPrintersSection_(savedPrinters_)]]"
     restamp>
   <div id="savedPrintersContainer">
-    <div class="settings-box first">
+    <div id="savedPrintersDescription" class="settings-box first">
       <div class="start">
         <span aria-label$="[[savedPrintersAriaLabel_]]">
           $i18n{savedPrintersTitle}
