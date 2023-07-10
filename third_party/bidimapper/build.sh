@@ -4,6 +4,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+cd "$(dirname "${BASH_SOURCE}")"
+
 if [[ ! -f 'revision.info' ]]
 then
   echo "File not found: revision.info" >&2
@@ -25,7 +27,7 @@ fi
 npm --prefix src install
 npm --prefix src run build
 
-cp src/lib/iife/mapperTab.js ./mapper.js
+cp src/lib/iife/mapperTab.js mapper.js
 
 sed --regexp-extended \
   --expression "s/\\$\\{DATE\\}/$dt/gi" \
