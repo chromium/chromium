@@ -581,6 +581,13 @@ template("tast_test") {
         # A script needed to launch Lacros in Lacros Tast tests.
         "//build/lacros/mojo_connection_lacros_launcher.py",
       ]
+
+      # By default, tast tests download a lacros-chrome from a gcs location and
+      # use it for testing. To support running lacros tast tests from Chromium CI,
+      # a Var is added to support pointing the tast tests to use a specified
+      # pre-deployed lacros-chrome. The location is decided by:
+      # https://source.chromium.org/chromium/chromium/src/+/main:third_party/chromite/scripts/deploy_chrome.py;l=80;drc=86f1234a4be8e9574442e076cdc835897f7bea61
+      tast_vars = [ "lacros.DeployedBinary=/usr/local/lacros-chrome" ]
     }
   }
 }
