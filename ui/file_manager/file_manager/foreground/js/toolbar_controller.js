@@ -582,31 +582,38 @@ export class ToolbarController {
         this.cloudButtonIcon_.setAttribute('type', constants.ICON_TYPES.CLOUD);
         if (progress.bytesToPin === 0 ||
             progress.pinnedBytes / progress.bytesToPin === 1) {
+          this.cloudButton_.ariaLabel = str('BULK_PINNING_BUTTON_LABEL_ON');
           this.cloudStatusIcon_.setAttribute(
               'type', constants.ICON_TYPES.CLOUD_DONE);
         } else {
+          this.cloudButton_.ariaLabel =
+              str('BULK_PINNING_BUTTON_LABEL_SYNCING');
           this.cloudStatusIcon_.setAttribute(
               'type', constants.ICON_TYPES.CLOUD_SYNC);
         }
         break;
       case chrome.fileManagerPrivate.BulkPinStage.NOT_ENOUGH_SPACE:
+        this.cloudButton_.ariaLabel = str('BULK_PINNING_BUTTON_LABEL_ISSUE');
         this.cloudButtonIcon_.setAttribute('type', constants.ICON_TYPES.CLOUD);
         this.cloudStatusIcon_.setAttribute(
             'type', constants.ICON_TYPES.CLOUD_ERROR);
         break;
       case chrome.fileManagerPrivate.BulkPinStage.PAUSED_OFFLINE:
+        this.cloudButton_.ariaLabel = str('BULK_PINNING_BUTTON_LABEL_OFFLINE');
         this.cloudButtonIcon_.setAttribute(
             'type', constants.ICON_TYPES.BULK_PINNING_OFFLINE);
         this.cloudStatusIcon_.removeAttribute('type');
         this.cloudStatusIcon_.removeAttribute('size');
         break;
       case chrome.fileManagerPrivate.BulkPinStage.PAUSED_BATTERY_SAVER:
+        this.cloudButton_.ariaLabel = str('BULK_PINNING_BUTTON_LABEL_PAUSED');
         this.cloudButtonIcon_.setAttribute(
             'type', constants.ICON_TYPES.BULK_PINNING_BATTERY_SAVER);
         this.cloudStatusIcon_.removeAttribute('type');
         this.cloudStatusIcon_.removeAttribute('size');
         break;
       default:
+        this.cloudButton_.ariaLabel = str('BULK_PINNING_BUTTON_LABEL_ON');
         this.cloudButtonIcon_.setAttribute('type', constants.ICON_TYPES.CLOUD);
         this.cloudStatusIcon_.removeAttribute('type');
         this.cloudStatusIcon_.removeAttribute('size');
