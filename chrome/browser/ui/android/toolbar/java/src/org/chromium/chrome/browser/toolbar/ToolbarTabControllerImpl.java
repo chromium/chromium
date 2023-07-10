@@ -66,7 +66,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
         if (controlsCoordinator != null && controlsCoordinator.onBackPressed()) {
             return true;
         }
-        Tab tab = BackPressManager.isEnabled() ? mActivityTabSupplier.get() : mTabSupplier.get();
+        Tab tab = BackPressManager.shouldUseActivityTabProvider() ? mActivityTabSupplier.get()
+                                                                  : mTabSupplier.get();
         if (tab != null && tab.canGoBack()) {
             NativePage nativePage = tab.getNativePage();
             if (nativePage != null) {
@@ -148,7 +149,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
                         controlsCoordinator.getHandleBackPressChangedSupplier().get())) {
             return true;
         }
-        Tab tab = BackPressManager.isEnabled() ? mActivityTabSupplier.get() : mTabSupplier.get();
+        Tab tab = BackPressManager.shouldUseActivityTabProvider() ? mActivityTabSupplier.get()
+                                                                  : mTabSupplier.get();
         return tab != null && tab.canGoBack();
     }
 
