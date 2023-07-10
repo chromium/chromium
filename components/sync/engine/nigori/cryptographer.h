@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/protocol/encryption.pb.h"
 
 namespace syncer {
@@ -46,6 +47,11 @@ class Cryptographer {
   // notably includes the case where CanDecrypt() would have returned false.
   virtual bool DecryptToString(const sync_pb::EncryptedData& encrypted,
                                std::string* decrypted) const = 0;
+
+  // For testing purposes only: returns the Public-private key-pair associated
+  // with |version|.
+  virtual const CrossUserSharingPublicPrivateKeyPair&
+  GetCrossUserSharingKeyPairForTesting(uint32_t version) const = 0;
 
   // Convenience function to deal with protocol buffers. It uses EncryptString()
   // after serialization.

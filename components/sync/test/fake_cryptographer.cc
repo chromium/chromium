@@ -88,4 +88,10 @@ bool FakeCryptographer::DecryptToString(const sync_pb::EncryptedData& encrypted,
   return true;
 }
 
+const CrossUserSharingPublicPrivateKeyPair&
+FakeCryptographer::GetCrossUserSharingKeyPairForTesting(
+    uint32_t version) const {
+  return cross_user_sharing_key_pair;
+}
+
 }  // namespace syncer

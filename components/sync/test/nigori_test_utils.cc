@@ -8,8 +8,10 @@
 #include "base/check.h"
 #include "base/ranges/algorithm.h"
 #include "components/sync/base/time.h"
+#include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/nigori/cross_user_sharing_keys.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/nigori_key_bag.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
@@ -19,6 +21,19 @@
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+sync_pb::CrossUserSharingPublicKey PublicKeyToProto(
+    const syncer::CrossUserSharingPublicKey& public_key,
+    uint32_t key_pair_version) {
+  sync_pb::CrossUserSharingPublicKey output;
+  const auto key = public_key.GetRawPublicKey();
+  output.set_x25519_public_key(std::string(key.begin(), key.end()));
+  output.set_version(key_pair_version);
+  return output;
+}
+
+}  // namespace
 namespace syncer {
 
 KeyParamsForTesting KeystoreKeyParamsForTesting(
@@ -44,7 +59,8 @@ KeyParamsForTesting ScryptPassphraseKeyParamsForTesting(
 sync_pb::NigoriSpecifics BuildKeystoreNigoriSpecifics(
     const std::vector<KeyParamsForTesting>& keybag_keys_params,
     const KeyParamsForTesting& keystore_decryptor_params,
-    const KeyParamsForTesting& keystore_key_params) {
+    const KeyParamsForTesting& keystore_key_params,
+    const CrossUserSharingKeys& cross_user_sharing_keys) {
   DCHECK(!keybag_keys_params.empty());
 
   sync_pb::NigoriSpecifics specifics;
@@ -60,7 +76,14 @@ sync_pb::NigoriSpecifics BuildKeystoreNigoriSpecifics(
         key_params.derivation_params, key_params.password));
   }
 
-  EXPECT_TRUE(cryptographer->Encrypt(encryption_keybag.ToProto(),
+  sync_pb::NigoriKeyBag keys_for_encryption;
+
+  keys_for_encryption.mutable_key()->CopyFrom(
+      encryption_keybag.ToProto().key());
+  keys_for_encryption.mutable_cross_user_sharing_private_key()->CopyFrom(
+      cross_user_sharing_keys.ToProto().private_key());
+
+  EXPECT_TRUE(cryptographer->Encrypt(keys_for_encryption,
                                      specifics.mutable_encryption_keybag()));
 
   std::string serialized_keystore_decryptor =
@@ -75,6 +98,21 @@ sync_pb::NigoriSpecifics BuildKeystoreNigoriSpecifics(
 
   specifics.set_passphrase_type(sync_pb::NigoriSpecifics::KEYSTORE_PASSPHRASE);
   specifics.set_keystore_migration_time(TimeToProtoTime(base::Time::Now()));
+  return specifics;
+}
+
+sync_pb::NigoriSpecifics BuildKeystoreNigoriSpecificsWithCrossUserSharingKeys(
+    const std::vector<KeyParamsForTesting>& keybag_keys_params,
+    const KeyParamsForTesting& keystore_decryptor_params,
+    const KeyParamsForTesting& keystore_key_params,
+    const CrossUserSharingKeys& cross_user_sharing_keys,
+    const CrossUserSharingPublicKey& cross_user_sharing_public_key,
+    const uint32_t cross_user_sharing_public_key_version) {
+  sync_pb::NigoriSpecifics specifics = BuildKeystoreNigoriSpecifics(
+      keybag_keys_params, keystore_decryptor_params, keystore_key_params,
+      cross_user_sharing_keys);
+  *specifics.mutable_cross_user_sharing_public_key() = PublicKeyToProto(
+      cross_user_sharing_public_key, cross_user_sharing_public_key_version);
   return specifics;
 }
 

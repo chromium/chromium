@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_NIGORI_CRYPTOGRAPHER_IMPL_H_
 #define COMPONENTS_SYNC_NIGORI_CRYPTOGRAPHER_IMPL_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -61,6 +62,9 @@ class CryptographerImpl : public Cryptographer {
   // Does NOT set or change the default encryption key.
   void EmplaceKeysFrom(const NigoriKeyBag& key_bag);
 
+  // Adds all keys from |keys| that weren't previously known.
+  void EmplaceCrossUserSharingKeysFrom(const CrossUserSharingKeys& keys);
+
   // Adds the given Public-private key-pair associated with |version|.
   void EmplaceKeyPair(CrossUserSharingPublicPrivateKeyPair key_pair,
                       uint32_t version);
@@ -108,6 +112,8 @@ class CryptographerImpl : public Cryptographer {
                      sync_pb::EncryptedData* encrypted) const override;
   bool DecryptToString(const sync_pb::EncryptedData& encrypted,
                        std::string* decrypted) const override;
+  const CrossUserSharingPublicPrivateKeyPair&
+  GetCrossUserSharingKeyPairForTesting(uint32_t version) const override;
 
  private:
   CryptographerImpl(NigoriKeyBag key_bag,

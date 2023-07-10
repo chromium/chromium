@@ -75,7 +75,8 @@ MATCHER_P2(HasPublicKeyVersionAndValue, key_version, key_value, "") {
   }
   const sync_pb::NigoriSpecifics& specifics = entity_data->specifics.nigori();
   return specifics.has_cross_user_sharing_public_key() &&
-         specifics.cross_user_sharing_public_key().version() == key_version &&
+         specifics.cross_user_sharing_public_key().version() ==
+             (int32_t)key_version &&
          specifics.cross_user_sharing_public_key().x25519_public_key() ==
              key_value;
 }
@@ -362,6 +363,58 @@ TEST_F(NigoriSyncBridgeImplTest,
   bridge()->NotifyInitialStateToObservers();
   EXPECT_THAT(bridge()->GetKeystoreMigrationTime(), Not(NullTime()));
 
+  EXPECT_THAT(*cryptographer(), CanDecryptWith(kKeystoreKeyParams));
+  EXPECT_THAT(*cryptographer(), HasDefaultKeyDerivedFrom(kKeystoreKeyParams));
+}
+
+// Simplest case of keystore Nigori with CrossUserSharingKeys.
+TEST_F(
+    NigoriSyncBridgeImplTest,
+    ShouldAcceptKeysFromKeystoreNigoriWithCrossUserSharingKeysAndNotifyObservers) {
+  const KeyParamsForTesting kKeystoreKeyParams =
+      KeystoreKeyParamsForTesting(kRawKeystoreKey);
+  CrossUserSharingKeys cross_user_sharing_keys =
+      CrossUserSharingKeys::CreateEmpty();
+  CrossUserSharingPublicPrivateKeyPair key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+  const auto raw_private_key = key_pair.GetRawPrivateKey();
+  const auto raw_public_key = key_pair.GetRawPublicKey();
+  const uint32_t kKeyVersion = 0;
+  cross_user_sharing_keys.AddKeyPair(std::move(key_pair), kKeyVersion);
+  EntityData entity_data;
+  *entity_data.specifics.mutable_nigori() =
+      BuildKeystoreNigoriSpecificsWithCrossUserSharingKeys(
+          /*keybag_keys_params=*/{kKeystoreKeyParams},
+          /*keystore_decryptor_params=*/kKeystoreKeyParams,
+          /*keystore_key_params=*/kKeystoreKeyParams,
+          /*cross_user_sharing_keys=*/cross_user_sharing_keys,
+          /*cross_user_sharing_public_key=*/
+          CrossUserSharingPublicKey::CreateByImport(raw_public_key).value(),
+          /*cross_user_sharing_public_key_version*/ kKeyVersion);
+
+  EXPECT_CALL(*observer(), OnPassphraseRequired).Times(0);
+  EXPECT_CALL(*observer(), OnTrustedVaultKeyRequired()).Times(0);
+
+  EXPECT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
+
+  // The current implementation issues a redundant notification.
+  EXPECT_CALL(*observer(), OnCryptographerStateChanged(
+                               NotNull(), /*has_pending_keys=*/false))
+      .Times(2);
+  EXPECT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
+              Eq(absl::nullopt));
+  bridge()->NotifyInitialStateToObservers();
+
+  EXPECT_THAT(bridge()->GetData(),
+              HasPublicKeyVersionAndValue(
+                  kKeyVersion,
+                  std::string(raw_public_key.begin(), raw_public_key.end())));
+  const CrossUserSharingPublicPrivateKeyPair& key_pair_in_cryptographer =
+      cryptographer()->GetCrossUserSharingKeyPairForTesting(kKeyVersion);
+  EXPECT_THAT(key_pair_in_cryptographer.GetRawPrivateKey(),
+              testing::ElementsAreArray(raw_private_key));
+  EXPECT_THAT(key_pair_in_cryptographer.GetRawPublicKey(),
+              testing::ElementsAreArray(raw_public_key));
   EXPECT_THAT(*cryptographer(), CanDecryptWith(kKeystoreKeyParams));
   EXPECT_THAT(*cryptographer(), HasDefaultKeyDerivedFrom(kKeystoreKeyParams));
 }
@@ -1822,7 +1875,10 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest,
 // Public-private key-pairs.
 TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeystoreNigoriWithKeyPair) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kSharingOfferKeyPairBootstrap);
+  feature_list.InitWithFeatures(
+      {kSharingOfferKeyPairBootstrap, kSharingOfferKeyPairRead},
+      /*disabled_features*/ {});
+
   base::HistogramTester histogram_tester;
 
   const KeyParamsForTesting kKeystoreKeyParams =
@@ -1860,7 +1916,9 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeystoreNigoriWithKeyPair) {
 TEST_F(NigoriSyncBridgeImplTest,
        ShouldFailOnDifferentKeyInitializingKeystoreNigoriWithKeyPair) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kSharingOfferKeyPairBootstrap);
+  feature_list.InitWithFeatures(
+      {kSharingOfferKeyPairBootstrap, kSharingOfferKeyPairRead},
+      /*disabled_features*/ {});
   base::HistogramTester histogram_tester;
 
   const KeyParamsForTesting kKeystoreKeyParams =
@@ -1897,7 +1955,7 @@ TEST_F(NigoriSyncBridgeImplTest,
       "Sync.CrossUserSharingPublicPrivateKeyInitSuccess", false, 1);
 }
 
-// Tests that the an existing Nigori will be with initialized Public-private
+// Tests that an existing Nigori will be initialized with Public-private
 // key-pairs.
 TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeyPairForExistingNigori) {
   base::HistogramTester histogram_tester;
@@ -1936,7 +1994,9 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeyPairForExistingNigori) {
   ASSERT_THAT(bridge1->GetData(), Not(HasPublicKeyVersion(0)));
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kSharingOfferKeyPairBootstrap);
+  feature_list.InitWithFeatures(
+      {kSharingOfferKeyPairBootstrap, kSharingOfferKeyPairRead},
+      /*disabled_features*/ {});
 
   // Mimic the browser restart.
   auto storage2 = std::make_unique<testing::NiceMock<MockNigoriStorage>>();
@@ -2004,7 +2064,9 @@ TEST_F(NigoriSyncBridgeImplTest,
   ASSERT_THAT(bridge1->GetData(), Not(HasPublicKeyVersion(0)));
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kSharingOfferKeyPairBootstrap);
+  feature_list.InitWithFeatures(
+      {kSharingOfferKeyPairBootstrap, kSharingOfferKeyPairRead},
+      /*disabled_features*/ {});
 
   // Mimic the browser restart.
   auto storage2 = std::make_unique<testing::NiceMock<MockNigoriStorage>>();

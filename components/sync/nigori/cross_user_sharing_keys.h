@@ -49,6 +49,10 @@ class CrossUserSharingKeys {
   // derives the public-key from the private-key.
   bool AddKeyPairFromProto(const sync_pb::CrossUserSharingPrivateKey& key);
 
+  // Returns the Public-private key-pair associated with |version|.
+  const CrossUserSharingPublicPrivateKeyPair& GetKeyPair(
+      uint32_t version) const;
+
  private:
   CrossUserSharingKeys();
 

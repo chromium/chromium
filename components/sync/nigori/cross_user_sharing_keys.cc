@@ -110,6 +110,12 @@ void CrossUserSharingKeys::AddKeyPair(
   key_pairs_map_.emplace(version, std::move(key_pair));
 }
 
+const CrossUserSharingPublicPrivateKeyPair& CrossUserSharingKeys::GetKeyPair(
+    uint32_t version) const {
+  CHECK(HasKeyPair(version));
+  return key_pairs_map_.at(version);
+}
+
 CrossUserSharingKeys::CrossUserSharingKeys() = default;
 
 }  // namespace syncer

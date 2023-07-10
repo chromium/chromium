@@ -86,6 +86,11 @@ void CryptographerImpl::EmplaceKeysFrom(const NigoriKeyBag& key_bag) {
   key_bag_.AddAllUnknownKeysFrom(key_bag);
 }
 
+void CryptographerImpl::EmplaceCrossUserSharingKeysFrom(
+    const CrossUserSharingKeys& keys) {
+  cross_user_sharing_keys_.AddAllUnknownKeysFrom(keys);
+}
+
 void CryptographerImpl::SelectDefaultEncryptionKey(
     const std::string& key_name) {
   DCHECK(!key_name.empty());
@@ -129,6 +134,12 @@ std::unique_ptr<CryptographerImpl> CryptographerImpl::Clone() const {
 
 size_t CryptographerImpl::KeyBagSizeForTesting() const {
   return key_bag_.size();
+}
+
+const CrossUserSharingPublicPrivateKeyPair&
+CryptographerImpl::GetCrossUserSharingKeyPairForTesting(
+    uint32_t version) const {
+  return cross_user_sharing_keys_.GetKeyPair(version);
 }
 
 bool CryptographerImpl::CanEncrypt() const {

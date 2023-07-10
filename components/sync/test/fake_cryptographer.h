@@ -45,11 +45,15 @@ class FakeCryptographer : public Cryptographer {
                      sync_pb::EncryptedData* encrypted) const override;
   bool DecryptToString(const sync_pb::EncryptedData& encrypted,
                        std::string* decrypted) const override;
+  const CrossUserSharingPublicPrivateKeyPair&
+  GetCrossUserSharingKeyPairForTesting(uint32_t version) const override;
 
  private:
   std::set<std::string> known_key_names_;
   // The state with no default key is encoded with an empty string.
   std::string default_key_name_;
+  CrossUserSharingPublicPrivateKeyPair cross_user_sharing_key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
 };
 
 }  // namespace syncer

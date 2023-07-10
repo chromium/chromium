@@ -813,10 +813,9 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
   DCHECK(key_bag.HasKey(new_default_key_name));
 
   NigoriKeyBag new_key_bag = NigoriKeyBag::CreateEmpty();
-  base::ranges::for_each(decrypted_pending_keys.key(),
-                         [&new_key_bag](sync_pb::NigoriKey key) {
-                           new_key_bag.AddKeyFromProto(key);
-                         });
+  for (auto key : decrypted_pending_keys.key()) {
+    new_key_bag.AddKeyFromProto(key);
+  }
 
   if (!new_key_bag.HasKey(new_default_key_name)) {
     // Protocol violation.
@@ -829,6 +828,25 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
     // Protocol violation.
     return ModelError(FROM_HERE,
                       "Received keybag is missing the last trusted vault key.");
+  }
+
+  if (base::FeatureList::IsEnabled(kSharingOfferKeyPairRead)) {
+    CrossUserSharingKeys new_cross_user_sharing_keys =
+        CrossUserSharingKeys::CreateEmpty();
+    for (auto key_pair :
+         decrypted_pending_keys.cross_user_sharing_private_key()) {
+      new_cross_user_sharing_keys.AddKeyPairFromProto(key_pair);
+    }
+
+    if (state_.cross_user_sharing_key_pair_version.has_value() &&
+        !new_cross_user_sharing_keys.HasKeyPair(
+            state_.cross_user_sharing_key_pair_version.value())) {
+      return ModelError(FROM_HERE,
+                        "Received keybag is missing the last "
+                        "cross-user-sharing private key.");
+    }
+    state_.cryptographer->EmplaceCrossUserSharingKeysFrom(
+        new_cross_user_sharing_keys);
   }
 
   // Reset |last_default_trusted_vault_key_name| as |state_| might go out of

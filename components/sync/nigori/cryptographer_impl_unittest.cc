@@ -208,4 +208,21 @@ TEST(CryptographerImplTest, ShouldEmplaceExistingKeyPair) {
   EXPECT_TRUE(cryptographer->HasKeyPair(0));
 }
 
+TEST(CryptographerImplTest, ShouldEmplaceCrossUserSharingKeysFrom) {
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+  ASSERT_THAT(cryptographer, NotNull());
+  ASSERT_FALSE(cryptographer->HasKeyPair(0));
+  CrossUserSharingKeys keys = CrossUserSharingKeys::CreateEmpty();
+  keys.AddKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
+                  0);
+  keys.AddKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
+                  1);
+
+  cryptographer->EmplaceCrossUserSharingKeysFrom(keys);
+
+  EXPECT_TRUE(cryptographer->HasKeyPair(0));
+  EXPECT_TRUE(cryptographer->HasKeyPair(1));
+}
+
 }  // namespace syncer

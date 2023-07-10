@@ -50,6 +50,9 @@ inline constexpr base::FeatureParam<base::TimeDelta> kPasswordNotesAuthValidity{
 // key-bag.
 BASE_DECLARE_FEATURE(kSharingOfferKeyPairBootstrap);
 
+// Kill switch to read sharing-offer related keys.
+BASE_DECLARE_FEATURE(kSharingOfferKeyPairRead);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kSyncAndroidLimitNTPPromoImpressions);
 inline constexpr base::FeatureParam<int> kSyncAndroidNTPPromoMaxImpressions{
