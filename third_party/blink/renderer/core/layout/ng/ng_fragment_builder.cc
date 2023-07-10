@@ -208,10 +208,10 @@ void NGFragmentBuilder::PropagateFromFragment(
   // Compute |has_floating_descendants_for_paint_| to optimize tree traversal
   // in paint.
   if (!has_floating_descendants_for_paint_) {
-    if (child.IsFloating() || child.IsLegacyLayoutRoot() ||
-        (child.HasFloatingDescendantsForPaint() &&
-         !child.IsPaintedAtomically()))
+    if (child.IsFloating() || (child.HasFloatingDescendantsForPaint() &&
+                               !child.IsPaintedAtomically())) {
       has_floating_descendants_for_paint_ = true;
+    }
   }
 
   // The |has_adjoining_object_descendants_| is used to determine if a fragment
