@@ -18,11 +18,10 @@ regressions. 3 steps:
 
   // omnibox_feature_configs.h
 
-  struct MyFeature {
+  struct MyFeature : Config<MyFeature> {
     DECLARE_FEATURE(kMyFeature);
 
     MyFeature();
-    static const MyFeature& Get();
 
     bool enabled;
     int my_param;
@@ -38,12 +37,6 @@ regressions. 3 steps:
     enabled = base::FeatureList::IsEnabled(omnibox::kMyFeature);
     my_param =
         base::FeatureParam<int>(&omnibox::kMyFeature, "my_param", 0).Get();
-  }
-
-  // static
-  const MyFeature& MyFeature::Get() {
-    static MyFeature config;
-    return config;
   }
 
 
@@ -69,10 +62,19 @@ regressions. 3 steps:
 // A substitute for `BASE_DECLARE_FEATURE` for nesting in structs.
 #define DECLARE_FEATURE(feature) static CONSTINIT const base::Feature feature
 
-// Util for overriding configs in tests. `T` must have a `static const T& Get()`
-// method.
+// Base class other configs should inherit from.
 template <class T>
-class ScopedConfigForTesting {
+class Config {
+ public:
+  static const T& Get() {
+    static T config;
+    return config;
+  }
+};
+
+// Util for overriding configs in tests.
+template <class T>
+class ScopedConfigForTesting : Config<T> {
  public:
   ScopedConfigForTesting() : original_config_(T::Get()) { Reset(); }
   ScopedConfigForTesting(const ScopedConfigForTesting&) = delete;
@@ -87,10 +89,9 @@ class ScopedConfigForTesting {
 // Add new configs below, ordered alphabetically.
 
 // If enabled, the shortcut provider is more aggressive in scoring.
-struct ShortcutBoosting {
+struct ShortcutBoosting : Config<ShortcutBoosting> {
   DECLARE_FEATURE(kShortcutBoost);
   ShortcutBoosting();
-  static const ShortcutBoosting& Get();
   bool enabled;
   // The scores to use for boosting search and URL suggestions respectively.
   // Setting to 0 will prevent boosting.

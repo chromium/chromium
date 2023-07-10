@@ -26,10 +26,5 @@ ShortcutBoosting::ShortcutBoosting() {
                        &kShortcutBoost, "ShortcutBoostCounterfactual", false)
                        .Get();
 }
-// static
-const ShortcutBoosting& ShortcutBoosting::Get() {
-  static ShortcutBoosting config;
-  return config;
-}
 
 }  // namespace omnibox_feature_configs
