@@ -81,8 +81,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
   const VideoPixelFormat format = frame.format();
   const size_t num_textures = frame.NumTextures();
 
-  if (frame.RequiresExternalSampler() &&
-      frame.shared_image_format_type() == SharedImageFormatType::kLegacy) {
+  if (frame.RequiresExternalSampler()) {
     // The texture |target| can be 0 for Fuchsia.
     DCHECK(target == 0 || target == GL_TEXTURE_EXTERNAL_OES)
         << "Unsupported target " << gl::GLEnums::GetStringEnum(target);
@@ -90,9 +89,47 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     absl::optional<gfx::BufferFormat> buffer_format =
         VideoPixelFormatToGfxBufferFormat(format);
     DCHECK(buffer_format.has_value());
-    si_formats[0] = viz::GetSharedImageFormat(buffer_format.value());
+    if (frame.shared_image_format_type() == SharedImageFormatType::kLegacy) {
+      si_formats[0] = viz::GetSharedImageFormat(buffer_format.value());
+    } else {
+#if BUILDFLAG(IS_OZONE)
+      CHECK_EQ(frame.shared_image_format_type(),
+               SharedImageFormatType::kSharedImageFormatExternalSampler);
+
+      // The format must be one of NV12/YV12/P016LE, as these are the only
+      // formats for which VideoFrame::RequiresExternalSampler() will return
+      // true.
+      // NOTE: If this is ever expanded to include NV12A, it will be necessary
+      // to decide whether the value returned in that case should be RGB (as is
+      // done for other values here) or RGBA (as is done for the handling of
+      // NV12A with per-plane sampling below).
+      switch (format) {
+        case PIXEL_FORMAT_NV12:
+          si_formats[0] = viz::MultiPlaneFormat::kNV12;
+          break;
+        case PIXEL_FORMAT_YV12:
+          si_formats[0] = viz::MultiPlaneFormat::kYV12;
+          break;
+        case PIXEL_FORMAT_P016LE:
+          si_formats[0] = viz::MultiPlaneFormat::kP010;
+          break;
+        default:
+          NOTREACHED_NORETURN();
+      }
+      si_formats[0].SetPrefersExternalSampler();
+#else
+      // MultiplanarSharedImage with external sampling is supported only on
+      // Ozone, and VideoFrames with format type
+      // kSharedImageFormatExternalSampler should not be created on other
+      // platforms.
+      NOTREACHED_NORETURN();
+#endif
+    }
+
     return VideoFrameResourceType::RGB;
   }
+
+  CHECK(!frame.RequiresExternalSampler());
 
   switch (format) {
     case PIXEL_FORMAT_ARGB:
