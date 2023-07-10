@@ -17,7 +17,6 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -69,6 +68,11 @@ SearchResultImageListView::SearchResultImageListView(
       kPreferredTitleBottomMargins, kPreferredTitleHorizontalMargins)));
   title_label_->SetPaintToLayer();
   title_label_->layer()->SetFillsBoundsOpaquely(false);
+
+  SetAccessibleRole(ax::mojom::Role::kListBox);
+  SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_ACCESSIBLE_NAME,
+      title_label_->GetText()));
 
   image_view_container_ =
       AddChildView(std::make_unique<views::FlexLayoutView>());
@@ -195,11 +199,6 @@ void SearchResultImageListView::ConfigureLayoutForAvailableWidth(int width) {
   }
 }
 
-void SearchResultImageListView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kListBox;
-}
-
 void SearchResultImageListView::OnSelectedResultChanged() {
   // TODO(crbug.com/1352636) once result selection spec is available.
   return;
@@ -225,6 +224,7 @@ int SearchResultImageListView::DoUpdate() {
     }
   }
 
+  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
   return num_results;
 }
 

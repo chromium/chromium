@@ -12,7 +12,6 @@
 #include "ash/app_list/views/search_result_image_view_delegate.h"
 #include "ash/style/ash_color_id.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
@@ -42,7 +41,7 @@ constexpr gfx::Insets kFocusRingInsets =
 
 class ImagePreviewView : public views::ImageButton {
  public:
-  ImagePreviewView() = default;
+  ImagePreviewView() { SetInstallFocusRingOnFocus(false); }
   ImagePreviewView(const ImagePreviewView&) = delete;
   ImagePreviewView& operator=(const ImagePreviewView&) = delete;
   ~ImagePreviewView() override = default;
@@ -71,6 +70,7 @@ SearchResultImageView::SearchResultImageView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   result_image_ = AddChildView(std::make_unique<ImagePreviewView>());
   result_image_->SetCanProcessEventsWithinSubtree(false);
+  result_image_->GetViewAccessibility().OverrideIsIgnored(true);
 
   views::FocusRing::Install(this);
   views::FocusRing* const focus_ring = views::FocusRing::Get(this);
@@ -96,11 +96,6 @@ SearchResultImageView::SearchResultImageView(
 void SearchResultImageView::OnImageViewPressed(const ui::Event& event) {
   list_view_->SearchResultActivated(this, event.flags(),
                                     true /* by_button_press */);
-}
-
-void SearchResultImageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kListBoxOption;
-  node_data->SetName(result() ? result()->title() : u"");
 }
 
 void SearchResultImageView::OnGestureEvent(ui::GestureEvent* event) {
@@ -146,8 +141,12 @@ void SearchResultImageView::OnMetadataChanged() {
   }
 
   result_image_->SetImage(views::Button::STATE_NORMAL, image);
-  result_image_->SetTooltipText(result()->title());
-  result_image_->SetAccessibleName(result()->title());
+  SetTooltipText(result()->title());
+  UpdateAccessibleName();
+  // By default, the description will be set to the tooltip text, but the title
+  // is already announced in the accessible name.
+  SetAccessibleDescription(
+      u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 }
 
 SearchResultImageView::~SearchResultImageView() = default;

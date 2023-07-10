@@ -95,6 +95,7 @@ class ASH_EXPORT SearchResultBaseView : public views::Button,
 
   // views::View:
   const char* GetClassName() const override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   SearchResultActionsView* actions_view() { return actions_view_; }
 
