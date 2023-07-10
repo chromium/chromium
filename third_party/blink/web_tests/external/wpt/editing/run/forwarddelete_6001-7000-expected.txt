@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1000 tests; 961 PASS, 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1000 tests; 963 PASS, 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL [["forwarddelete",""]] "<ol><li>foo[<li>]bar</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foobar</li></ol>" but got "<ol><li>foo</li><li>bar</li></ol>"
 PASS [["forwarddelete",""]] "<ol><li>foo[<li>]bar</ol>" queryCommandIndeterm("forwarddelete") before
 PASS [["forwarddelete",""]] "<ol><li>foo[<li>]bar</ol>" queryCommandState("forwarddelete") before
@@ -789,7 +789,7 @@ PASS [["forwarddelete",""]] "<div style=white-space:pre-line>foo[]\n bar</div>" 
 PASS [["forwarddelete",""]] "<div style=white-space:pre-line>foo[]\n bar</div>" queryCommandValue("forwarddelete") after
 PASS [["forwarddelete",""]] "<div style=white-space:pre-line>foo[]\n\nbar</div>": execCommand("forwarddelete", false, "") return value
 PASS [["forwarddelete",""]] "<div style=white-space:pre-line>foo[]\n\nbar</div>" checks for modifications to non-editable content
-FAIL [["forwarddelete",""]] "<div style=white-space:pre-line>foo[]\n\nbar</div>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"white-space:pre-line\">foo\nbar</div>" but got "<div style=\"white-space:pre-line\">foo bar</div>"
+PASS [["forwarddelete",""]] "<div style=white-space:pre-line>foo[]\n\nbar</div>" compare innerHTML
 PASS [["forwarddelete",""]] "<div style=white-space:pre-line>foo[]\n\nbar</div>" queryCommandIndeterm("forwarddelete") before
 PASS [["forwarddelete",""]] "<div style=white-space:pre-line>foo[]\n\nbar</div>" queryCommandState("forwarddelete") before
 PASS [["forwarddelete",""]] "<div style=white-space:pre-line>foo[]\n\nbar</div>" queryCommandValue("forwarddelete") before
@@ -798,7 +798,7 @@ PASS [["forwarddelete",""]] "<div style=white-space:pre-line>foo[]\n\nbar</div>"
 PASS [["forwarddelete",""]] "<div style=white-space:pre-line>foo[]\n\nbar</div>" queryCommandValue("forwarddelete") after
 PASS [["forwarddelete",""]] "<div style=white-space:pre-line>[]f\nbar</div>": execCommand("forwarddelete", false, "") return value
 PASS [["forwarddelete",""]] "<div style=white-space:pre-line>[]f\nbar</div>" checks for modifications to non-editable content
-FAIL [["forwarddelete",""]] "<div style=white-space:pre-line>[]f\nbar</div>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"white-space:pre-line\">\nbar</div>" but got "<div style=\"white-space:pre-line\">&nbsp;bar</div>"
+PASS [["forwarddelete",""]] "<div style=white-space:pre-line>[]f\nbar</div>" compare innerHTML
 PASS [["forwarddelete",""]] "<div style=white-space:pre-line>[]f\nbar</div>" queryCommandIndeterm("forwarddelete") before
 PASS [["forwarddelete",""]] "<div style=white-space:pre-line>[]f\nbar</div>" queryCommandState("forwarddelete") before
 PASS [["forwarddelete",""]] "<div style=white-space:pre-line>[]f\nbar</div>" queryCommandValue("forwarddelete") before

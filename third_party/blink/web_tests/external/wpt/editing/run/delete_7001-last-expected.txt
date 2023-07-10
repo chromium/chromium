@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 593 tests; 578 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 593 tests; 580 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandIndeterm("delete") after
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandState("delete") after
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandValue("delete") after
@@ -122,7 +122,7 @@ PASS [["delete",""]] "<div style=white-space:pre-line>foo\n []bar</div>" queryCo
 PASS [["delete",""]] "<div style=white-space:pre-line>foo\n []bar</div>" queryCommandValue("delete") after
 PASS [["delete",""]] "<div style=white-space:pre-line>foo\n\n[]bar</div>": execCommand("delete", false, "") return value
 PASS [["delete",""]] "<div style=white-space:pre-line>foo\n\n[]bar</div>" checks for modifications to non-editable content
-FAIL [["delete",""]] "<div style=white-space:pre-line>foo\n\n[]bar</div>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"white-space:pre-line\">foo\nbar</div>" but got "<div style=\"white-space:pre-line\">foo bar</div>"
+PASS [["delete",""]] "<div style=white-space:pre-line>foo\n\n[]bar</div>" compare innerHTML
 PASS [["delete",""]] "<div style=white-space:pre-line>foo\n\n[]bar</div>" queryCommandIndeterm("delete") before
 PASS [["delete",""]] "<div style=white-space:pre-line>foo\n\n[]bar</div>" queryCommandState("delete") before
 PASS [["delete",""]] "<div style=white-space:pre-line>foo\n\n[]bar</div>" queryCommandValue("delete") before
@@ -131,7 +131,7 @@ PASS [["delete",""]] "<div style=white-space:pre-line>foo\n\n[]bar</div>" queryC
 PASS [["delete",""]] "<div style=white-space:pre-line>foo\n\n[]bar</div>" queryCommandValue("delete") after
 PASS [["delete",""]] "<div style=white-space:pre-line>foo\nb[]</div>": execCommand("delete", false, "") return value
 PASS [["delete",""]] "<div style=white-space:pre-line>foo\nb[]</div>" checks for modifications to non-editable content
-FAIL [["delete",""]] "<div style=white-space:pre-line>foo\nb[]</div>" compare innerHTML assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div style=\"white-space:pre-line\">foo&nbsp;<br></div>" not in array ["<div style=\"white-space:pre-line\">foo\n\n</div>", "<div style=\"white-space:pre-line\">foo\n<br></div>"]
+PASS [["delete",""]] "<div style=white-space:pre-line>foo\nb[]</div>" compare innerHTML
 PASS [["delete",""]] "<div style=white-space:pre-line>foo\nb[]</div>" queryCommandIndeterm("delete") before
 PASS [["delete",""]] "<div style=white-space:pre-line>foo\nb[]</div>" queryCommandState("delete") before
 PASS [["delete",""]] "<div style=white-space:pre-line>foo\nb[]</div>" queryCommandValue("delete") before
