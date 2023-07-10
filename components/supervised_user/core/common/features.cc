@@ -39,11 +39,6 @@ BASE_FEATURE(kEnableProtoApiForClassifyUrl,
              "EnableProtoApiForClassifyUrl",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables synchronous sign-in checking in the First Run Experience.
-BASE_FEATURE(kSynchronousSignInChecking,
-             "SynchronousSignInChecking",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the new local extension approvals experience, which requests approval
 // through a platform-specific Parent Access Widget. Available on ChromeOS.
 BASE_FEATURE(kLocalExtensionApprovalsV2,
@@ -143,10 +138,6 @@ BASE_FEATURE(kClearingCookiesKeepsSupervisedUsersSignedIn,
 constexpr base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl{
     &kEnableManagedByParentUi, "more_info_url",
     "https://familylink.google.com/setting/resource/94"};
-
-bool IsSynchronousSignInCheckingEnabled() {
-  return base::FeatureList::IsEnabled(kSynchronousSignInChecking);
-}
 
 bool IsLocalExtensionApprovalsV2Enabled() {
   return base::FeatureList::IsEnabled(kLocalExtensionApprovalsV2);

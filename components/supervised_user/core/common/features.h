@@ -14,8 +14,6 @@ BASE_DECLARE_FEATURE(kLocalWebApprovals);
 extern const char kLocalWebApprovalsPreferredButtonLocal[];
 extern const char kLocalWebApprovalsPreferredButtonRemote[];
 
-BASE_DECLARE_FEATURE(kSynchronousSignInChecking);
-
 // Flags related to supervision features on Desktop and iOS platforms.
 BASE_DECLARE_FEATURE(kEnableSupervisionOnDesktopAndIOS);
 BASE_DECLARE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
@@ -51,10 +49,6 @@ bool IsLocalWebApprovalThePreferredButton();
 
 // Returns whether the ClassifyUrl call uses proto apis.
 bool IsProtoApiForClassifyUrlEnabled();
-
-// Returns whether the First Run Experience will rely on checking the sign-in
-// status synchronously - http://b/264382308.
-bool IsSynchronousSignInCheckingEnabled();
 
 // Returns whether the new local extension approval experience is enabled.
 bool IsLocalExtensionApprovalsV2Enabled();
