@@ -713,7 +713,7 @@ TrainingDataCollectorImpl::ComputeDecisionTiming(
   absl::optional<uint64_t> delay_sec;
   for (int i = 0; i < training_config.observation_trigger_size(); i++) {
     const auto& trigger = training_config.observation_trigger(i);
-    if (trigger.has_delay_sec()) {
+    if (trigger.delay_sec() > 0) {
       delay_sec = trigger.delay_sec();
     }
   }
