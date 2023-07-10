@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_DISPLAY_FAKE_FAKE_DISPLAY_SNAPSHOT_H_
-#define UI_DISPLAY_FAKE_FAKE_DISPLAY_SNAPSHOT_H_
+#ifndef UI_DISPLAY_MANAGER_TEST_FAKE_DISPLAY_SNAPSHOT_H_
+#define UI_DISPLAY_MANAGER_TEST_FAKE_DISPLAY_SNAPSHOT_H_
 
 #include <stdint.h>
 
@@ -13,7 +13,6 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/display/fake/fake_display_export.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
@@ -24,7 +23,7 @@ namespace display {
 
 // A display snapshot that doesn't correspond to a physical display, used when
 // running off device.
-class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
+class FakeDisplaySnapshot : public DisplaySnapshot {
  public:
   class Builder {
    public:
@@ -171,4 +170,4 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
 
 }  // namespace display
 
-#endif  // UI_DISPLAY_FAKE_FAKE_DISPLAY_SNAPSHOT_H_
+#endif  // UI_DISPLAY_MANAGER_TEST_FAKE_DISPLAY_SNAPSHOT_H_

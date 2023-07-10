@@ -60,7 +60,7 @@
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/display/display_switches.h"
-#include "ui/display/fake/fake_display_delegate.h"
+#include "ui/display/manager/test/fake_display_delegate.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/util/display_util.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/display/fake/fake_display_delegate.h"
+#include "ui/display/manager/test/fake_display_delegate.h"
 
 #include <string>
 #include <utility>
@@ -16,7 +16,7 @@
 #include "base/time/time.h"
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"
-#include "ui/display/fake/fake_display_snapshot.h"
+#include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/native_display_observer.h"
 #include "ui/display/util/display_util.h"

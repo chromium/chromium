@@ -224,7 +224,7 @@ source_set("gbm_unittests") {
     # the system.
     "//third_party/libdrm",
     "//ui/base/ime",
-    "//ui/display/fake:fake",
+    "//ui/display:test_support",
     "//ui/gfx",
     "//ui/gfx/linux:drm",
     "//ui/gfx/linux:gbm",
