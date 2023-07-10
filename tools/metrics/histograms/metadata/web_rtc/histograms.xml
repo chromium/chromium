@@ -1023,7 +1023,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebRTC.DesktopCapture.Win.DesktopCapturerImpl"
     enum="WebRtcDesktopCapturerImpl" expires_after="2023-12-24">
   <owner>alcooper@chromium.org</owner>
-  <owner>auorion@microsoft.com</owner>
+  <owner>henrika@chromium.org</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
   <summary>
     This measures the frequency of use for each desktop capturer implementation,
@@ -1059,7 +1059,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebRTC.DesktopCapture.Win.WgcCapturerResult"
     enum="WebRtcWgcCapturerResult" expires_after="2023-10-22">
   <owner>alcooper@chromium.org</owner>
-  <owner>auorion@microsoft.com</owner>
+  <owner>henrika@chromium.org</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
   <summary>
     This records high level errors, or success, encountered across the entire
@@ -1070,7 +1070,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebRTC.DesktopCapture.Win.WgcCaptureSessionGetFrameResult"
     enum="WebRtcWgcCaptureSessionGetFrameResult" expires_after="2023-11-19">
   <owner>alcooper@chromium.org</owner>
-  <owner>auorion@microsoft.com</owner>
+  <owner>henrika@chromium.org</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
   <summary>
     This records the result from retrieving a frame from the WGC based capturer.
@@ -1080,7 +1080,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebRTC.DesktopCapture.Win.WgcCaptureSessionStartResult"
     enum="WebRtcWgcCaptureSessionStartResult" expires_after="2023-10-22">
   <owner>alcooper@chromium.org</owner>
-  <owner>auorion@microsoft.com</owner>
+  <owner>henrika@chromium.org</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
   <summary>
     This records the result from starting up the WGC based capturer.
@@ -1088,9 +1088,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.{Capturer}CapturerFrameTime"
-    units="ms" expires_after="2023-08-12">
+    units="ms" expires_after="2024-01-10">
   <owner>alcooper@chromium.org</owner>
-  <owner>auorion@microsoft.com</owner>
+  <owner>henrika@chromium.org</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
   <summary>This measures the performance of the {Capturer} capturer.</summary>
   <token key="Capturer">
