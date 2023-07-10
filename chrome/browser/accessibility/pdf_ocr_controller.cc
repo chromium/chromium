@@ -28,6 +28,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/prefs.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
 namespace {
 
 constexpr char kHtmlMimeType[] = "text/html";
@@ -166,6 +171,22 @@ void PdfOcrController::OnPdfOcrAlwaysActiveChanged() {
   bool is_always_active =
       profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive);
   VLOG(2) << "PDF OCR Always Active changed: " << is_always_active;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // This preference should be kept in sync with Ash.
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service ||
+      !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
+    VLOG(0) << "Cannot sync the preference with Ash.";
+  } else {
+    lacros_service->GetRemote<crosapi::mojom::Prefs>()->SetPref(
+        crosapi::mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
+        profile_->GetPrefs()
+            ->GetValue(prefs::kAccessibilityPdfOcrAlwaysActive)
+            .Clone(),
+        base::OnceClosure());
+  }
+#endif
 
   if (is_always_active) {
     RecordAcceptLanguages(
