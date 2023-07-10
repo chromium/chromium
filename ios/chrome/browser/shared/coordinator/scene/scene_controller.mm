@@ -868,9 +868,7 @@ void InjectNTP(Browser* browser) {
   DefaultBrowserPromoSceneAgent* defaultBrowserAgent =
       [[DefaultBrowserPromoSceneAgent alloc]
           initWithCommandDispatcher:mainCommandDispatcher];
-  if (IsDefaultBrowserInPromoManagerEnabled()) {
-    defaultBrowserAgent.promosManager = promosManager;
-  }
+  defaultBrowserAgent.promosManager = promosManager;
   [self.sceneState addAgent:defaultBrowserAgent];
   [self.sceneState
       addAgent:[[NonModalDefaultBrowserPromoSchedulerSceneAgent alloc] init]];
