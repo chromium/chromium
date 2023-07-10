@@ -4,6 +4,7 @@
 
 #import "ios/web/web_state/web_state_impl_serialized_data.h"
 
+#import "base/strings/string_util.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
@@ -70,9 +71,8 @@ SessionID WebStateImpl::SerializedData::GetUniqueIdentifier() const {
 }
 
 const std::u16string& WebStateImpl::SerializedData::GetTitle() const {
-  static const std::u16string kEmptyString16;
   CRWNavigationItemStorage* item = GetLastCommittedItem();
-  return item ? item.title : kEmptyString16;
+  return item ? item.title : base::EmptyString16();
 }
 
 const FaviconStatus& WebStateImpl::SerializedData::GetFaviconStatus() const {

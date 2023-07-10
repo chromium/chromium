@@ -803,7 +803,17 @@ TEST_F(WebStateImplTest, UncommittedRestoreSession) {
       web_state.BuildSessionStorage();
   EXPECT_EQ(0, extracted_session_storage.lastCommittedItemIndex);
   EXPECT_EQ(1U, extracted_session_storage.itemStorages.count);
-  EXPECT_NSEQ(@"Title", base::SysUTF16ToNSString(web_state.GetTitle()));
+  ASSERT_FALSE(web_state.IsRealized());
+  EXPECT_EQ(u"Title", web_state.GetTitle());
+  EXPECT_EQ(url, web_state.GetVisibleURL());
+
+  // Check that even if the WebState becomes realized, then GetTitle() and
+  // GetVisibleURL() are correct during the navigation history restoration.
+  web_state.SetWebUsageEnabled(false);
+  web_state.ForceRealized();
+
+  ASSERT_TRUE(web_state.IsRealized());
+  EXPECT_EQ(u"Title", web_state.GetTitle());
   EXPECT_EQ(url, web_state.GetVisibleURL());
 
   WebStateImpl restored_web_state(params, extracted_session_storage);
@@ -1122,4 +1132,5 @@ TEST_F(WebStateImplTest, ReadAndWriteSessionStateData) {
     return web_state_->GetVisibleURL() == web_state->GetVisibleURL();
   }));
 }
+
 }  // namespace web

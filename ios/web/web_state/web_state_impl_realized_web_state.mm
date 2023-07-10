@@ -8,7 +8,9 @@
 #import "base/compiler_specific.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "ios/web/common/features.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
@@ -65,6 +67,42 @@ NSData* FetchSessionDataBlob(base::WeakPtr<WebState> weak_web_state) {
 
 }  // namespace
 
+class WebStateImpl::RealizedWebState::PendingSession {
+ public:
+  PendingSession(proto::WebStateStorage storage, FaviconStatus favicon_status);
+
+  PendingSession(const PendingSession&) = delete;
+  PendingSession& operator=(const PendingSession&) = delete;
+
+  ~PendingSession() = default;
+
+  const proto::WebStateStorage& storage() const { return storage_; }
+
+  const FaviconStatus& favicon_status() const { return favicon_status_; }
+  void set_favicon_status(const FaviconStatus& favicon_status) {
+    favicon_status_ = favicon_status;
+  }
+
+  const std::u16string& title() const { return title_; }
+
+  const GURL& visible_url() const { return visible_url_; }
+
+ private:
+  const proto::WebStateStorage storage_;
+  FaviconStatus favicon_status_;
+  std::u16string title_;
+  GURL visible_url_;
+};
+
+WebStateImpl::RealizedWebState::PendingSession::PendingSession(
+    proto::WebStateStorage storage,
+    FaviconStatus favicon_status)
+    : storage_(std::move(storage)), favicon_status_(std::move(favicon_status)) {
+  const auto& active_page = storage_.metadata().active_page();
+  title_ = base::UTF8ToUTF16(active_page.page_title());
+  visible_url_ = GURL(active_page.page_url());
+}
+
 #pragma mark - WebStateImpl::RealizedWebState public methods
 
 WebStateImpl::RealizedWebState::RealizedWebState(WebStateImpl* owner,
@@ -102,7 +140,6 @@ void WebStateImpl::RealizedWebState::InitWithProto(
     proto::WebStateStorage storage,
     FaviconStatus favicon_status,
     base::Time last_active_time) {
-  favicon_status_ = std::move(favicon_status);
   creation_time_ = TimeFromProto(storage.metadata().creation_time());
   last_active_time_ = TimeFromProto(storage.metadata().last_active_time());
   user_agent_type_ = UserAgentTypeFromProto(storage.user_agent());
@@ -119,8 +156,8 @@ void WebStateImpl::RealizedWebState::InitWithProto(
   // actual restoration completes. This can happen to inactive tabs when
   // a navigation in the current tab triggers the serialization of all
   // tabs and when user clicks on tab switcher without switching to a tab.
-  cached_storage_ =
-      std::make_unique<proto::WebStateStorage>(std::move(storage));
+  restored_session_ = std::make_unique<PendingSession>(
+      std::move(storage), std::move(favicon_status));
 
   // The restoration of the session history in NavigationManagerImpl needs
   // the WebState to have a valid CRWWebController, so create both objects
@@ -132,21 +169,22 @@ void WebStateImpl::RealizedWebState::InitWithProto(
   // Restore the navigation history from the storage.
   navigation_manager_->SetNativeSessionFetcher(
       base::BindOnce(&FetchSessionDataBlob, owner_->GetWeakPtr()));
-  navigation_manager_->RestoreFromProto(cached_storage_->navigation());
+  navigation_manager_->RestoreFromProto(
+      restored_session_->storage().navigation());
 
   // Create the certificate policy cache with data from storage and update
   // the cache with the restored data.
   certificate_policy_cache_ =
       std::make_unique<SessionCertificatePolicyCacheImpl>(
-          browser_state, cached_storage_->certs_cache());
+          browser_state, restored_session_->storage().certs_cache());
   certificate_policy_cache_->UpdateCertificatePolicyCache();
 }
 
 void WebStateImpl::RealizedWebState::SerializeToProto(
     proto::WebStateStorage& storage) const {
   // If restorating is in progress, copy the currently cached storage.
-  if (cached_storage_) {
-    storage = *cached_storage_;
+  if (restored_session_) {
+    storage = restored_session_->storage();
     return;
   }
 
@@ -659,16 +697,12 @@ bool WebStateImpl::RealizedWebState::ContentIsHTML() const {
 }
 
 const std::u16string& WebStateImpl::RealizedWebState::GetTitle() const {
-  DCHECK(Configured());
-  // Empty string returned by reference if there is no navigation item.
-  // It is safe to return a function level static as they are thread-safe.
-  static const std::u16string kEmptyString16;
-  // TODO(crbug.com/1270778): Implement the NavigationManager logic necessary
-  // to match the WebContents implementation of this method.
-  NavigationItem* item = navigation_manager_->GetLastCommittedItem();
-  // Display title for the visible item makes more sense.
-  item = navigation_manager_->GetVisibleItem();
-  return item ? item->GetTitleForDisplay() : kEmptyString16;
+  if (UNLIKELY(restored_session_)) {
+    return restored_session_->title();
+  }
+
+  NavigationItem* item = navigation_manager_->GetVisibleItem();
+  return item ? item->GetTitleForDisplay() : base::EmptyString16();
 }
 
 bool WebStateImpl::RealizedWebState::IsLoading() const {
@@ -699,23 +733,24 @@ bool WebStateImpl::RealizedWebState::IsWebPageInFullscreenMode() const {
 }
 
 const FaviconStatus& WebStateImpl::RealizedWebState::GetFaviconStatus() const {
-  NavigationItem* item = navigation_manager_->GetLastCommittedItem();
-  if (item) {
-    const FaviconStatus& favicon_status = item->GetFaviconStatus();
-    if (favicon_status.valid) {
-      return favicon_status;
-    }
+  if (UNLIKELY(restored_session_)) {
+    return restored_session_->favicon_status();
   }
 
-  return favicon_status_;
+  static const FaviconStatus no_favicon;
+  NavigationItem* item = navigation_manager_->GetLastCommittedItem();
+  return item ? item->GetFaviconStatus() : no_favicon;
 }
 
 void WebStateImpl::RealizedWebState::SetFaviconStatus(
     const FaviconStatus& favicon_status) {
-  NavigationItem* item = navigation_manager_->GetLastCommittedItem();
-  if (item) {
+  if (UNLIKELY(restored_session_)) {
+    restored_session_->set_favicon_status(favicon_status);
+    return;
+  }
+
+  if (NavigationItem* item = navigation_manager_->GetLastCommittedItem()) {
     item->SetFaviconStatus(favicon_status);
-    favicon_status_ = FaviconStatus{};
   }
 }
 
@@ -724,11 +759,19 @@ int WebStateImpl::RealizedWebState::GetNavigationItemCount() const {
 }
 
 const GURL& WebStateImpl::RealizedWebState::GetVisibleURL() const {
+  if (UNLIKELY(restored_session_)) {
+    return restored_session_->visible_url();
+  }
+
   NavigationItem* item = navigation_manager_->GetVisibleItem();
   return item ? item->GetVirtualURL() : GURL::EmptyGURL();
 }
 
 const GURL& WebStateImpl::RealizedWebState::GetLastCommittedURL() const {
+  if (UNLIKELY(restored_session_)) {
+    return restored_session_->visible_url();
+  }
+
   NavigationItem* item = navigation_manager_->GetLastCommittedItem();
   return item ? item->GetVirtualURL() : GURL::EmptyGURL();
 }
@@ -936,7 +979,11 @@ void WebStateImpl::RealizedWebState::OnNavigationItemCommitted(
   // A committed navigation item indicates that NavigationManager has a new
   // valid session history so should invalidate the cached restored session
   // history.
-  cached_storage_.reset();
+  if (UNLIKELY(restored_session_)) {
+    item->SetFaviconStatus(restored_session_->favicon_status());
+    item->SetTitle(restored_session_->title());
+    restored_session_.reset();
+  }
 }
 
 WebState* WebStateImpl::RealizedWebState::GetWebState() {

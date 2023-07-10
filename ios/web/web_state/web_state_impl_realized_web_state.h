@@ -232,6 +232,11 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   GURL GetCurrentURL() const final;
 
  private:
+  // Class storing both a WebStateStorage and some metadata. Used to
+  // correctly implement methods returning const references during
+  // session restoration.
+  class PendingSession;
+
   // Creates a WebUIIOS object for `url` that is owned by the called. Returns
   // nullptr if `url` does not correspond to a WebUI page.
   std::unique_ptr<WebUIIOS> CreateWebUIIOS(const GURL& url);
@@ -296,7 +301,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
 
   // The data used for the in-progress navigation history restoration that has
   // not yet committed in the WKWebView. Reset in OnNavigationItemCommitted().
-  std::unique_ptr<proto::WebStateStorage> cached_storage_;
+  std::unique_ptr<PendingSession> restored_session_;
 
   // Favicons URLs received in OnFaviconUrlUpdated.
   // WebStateObserver:FaviconUrlUpdated must be called for same-document
@@ -309,10 +314,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
 
   // The User-Agent type.
   UserAgentType user_agent_type_ = UserAgentType::AUTOMATIC;
-
-  // The favicon status used while restoring the session from the storage.
-  // May be empty even during session restoration.
-  FaviconStatus favicon_status_;
 
   // The stable identifier. Set during `Init()` call. Never nil after this
   // method has been called. Stable across application restarts.
