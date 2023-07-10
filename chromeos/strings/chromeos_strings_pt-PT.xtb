@@ -579,7 +579,6 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Mude automaticamente para o tema escuro ao pôr do sol</translation>
-<translation id="5571714952674387371">Veja e edite os detalhes</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Ler novamente</translation>
 <translation id="5583640892426849032">Retrocesso</translation>
@@ -772,7 +771,6 @@
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" /> designado <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Nome do Ponto de Acesso (APN)</translation>
-<translation id="7131634559772719176">Confirme a predefinição</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7135814714616751706">Pesquise atalhos</translation>
 <translation id="7143207342074048698">A ligar</translation>
@@ -887,7 +885,6 @@
 <translation id="80398733265834479">Ativar modo de cor automática</translation>
 <translation id="8041089156583427627">Enviar feedback</translation>
 <translation id="8045012663542226664">Desativação do som do microfone</translation>
-<translation id="8050091914317269817">Ao selecionar esta imagem de fundo, ativa o modo escuro automático e a correspondência de cores da imagem de fundo.</translation>
 <translation id="8067126283828232460">O APN está ligado.</translation>
 <translation id="8075838845814659848">Carregamento restante</translation>
 <translation id="8076492880354921740">Separadores</translation>
@@ -898,7 +895,6 @@
 <translation id="8104083085214006426">Está a utilizar uma rede aberta e insegura</translation>
 <translation id="811820734797650957">(Android) É possível enviar ping ao gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8131740175452115882">Confirmar</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfego</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Selecionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1023,6 +1019,7 @@
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">A resolução de DNS tem uma latência elevada</translation>
+<translation id="9065203028668620118">Editar</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Usar este vídeo</translation>

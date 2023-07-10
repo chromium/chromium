@@ -571,7 +571,6 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Saulrietā automātiski pāriet uz tumšo motīvu</translation>
-<translation id="5571714952674387371">Detalizētās informācijas skatīšana un rediģēšana</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Atkārtoti skenēt</translation>
 <translation id="5583640892426849032">Atkāpšanās taustiņš</translation>
@@ -762,7 +761,6 @@
 <translation id="7103252855940681301"><ph name="INDEX" />. ierīce no <ph name="COUNT" />, nosaukums: <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">ievadīt</translation>
 <translation id="7130438335435247835">Piekļuves punkta nosaukums (APN)</translation>
-<translation id="7131634559772719176">Pirmsiestatījuma apstiprināšana</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nosaukumu serveris}zero{Nosaukumu serveri}one{Nosaukumu serveri}other{Nosaukumu serveri}}</translation>
 <translation id="7135814714616751706">Meklēt īsinājumtaustiņus</translation>
 <translation id="7143207342074048698">Notiek savienojuma izveide</translation>
@@ -876,7 +874,6 @@
 <translation id="80398733265834479">Iespējot automātisko krāsu režīmu</translation>
 <translation id="8041089156583427627">Sūtīt atsauksmes</translation>
 <translation id="8045012663542226664">Mikrofona izslēgšana</translation>
-<translation id="8050091914317269817">Atlasot šo fona tapeti, tiks ieslēgts automātiskais tumšais režīms un fona tapetes krāsu saskaņošana.</translation>
 <translation id="8075838845814659848">Atlikusī akumulatora enerģija</translation>
 <translation id="8076492880354921740">Cilnes</translation>
 <translation id="8082366717211101304">Nevar atrast DNS no Android lietotnēm</translation>
@@ -886,7 +883,6 @@
 <translation id="8104083085214006426">Jūs izmantojat atvērtu un nedrošu tīklu</translation>
 <translation id="811820734797650957">(Android) Vārteju var ehotestēt</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8131740175452115882">Apstiprināt</translation>
 <translation id="8132480444149501833">Pieprasīt datplūsmas skaitītājus</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Atlasīt <ph name="TOPIC_SOURCE" /> vienumu <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1009,6 +1005,7 @@
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS atrisei ir augsts latentums</translation>
+<translation id="9065203028668620118">Labot</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Izmantot šo videoklipu</translation>

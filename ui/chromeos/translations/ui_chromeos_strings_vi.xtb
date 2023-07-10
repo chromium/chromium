@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Cài đặt thiết bị</translation>
 <translation id="2084809735218147718">Ra hiệu cảm ơn</translation>
 <translation id="2088690981887365033">Mạng riêng ảo (VPN)</translation>
+<translation id="209653272837065803">Không gian lưu trữ không đủ để tiếp tục đồng bộ hoá tệp</translation>
 <translation id="2111134541987263231">Bật tuỳ chọn <ph name="BEGIN_BOLD" />Cho phép ở chế độ ẩn danh<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> mục sẽ bị xoá và không thể khôi phục.</translation>
 <translation id="2122305276694332719">Việc tự động kết nối vào một mạng ẩn sẽ cho phép những người khác nhìn thấy thiết bị và một số tùy chọn cài đặt mạng của bạn. Bạn không nên bật tùy chọn này.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Tiếng Trung giản thể</translation>
 <translation id="22085916256174561">Tiếng Hàn</translation>
 <translation id="2208919847696382164">Cài đặt Linux</translation>
+<translation id="2215692307449050019">Pin yếu. Quá trình đồng bộ hoá tệp sẽ tiếp tục khi thiết bị kết nối với nguồn điện.</translation>
 <translation id="2225536596944493418">Bạn có chắc chắn muốn xóa <ph name="NUMBER_OF_ITEMS" /> mục không?</translation>
 <translation id="2230062665678605299">Không thể tạo thư mục "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Người uống cà phê</translation>
+<translation id="2247561763838186830">Bạn đã bị đăng xuất</translation>
 <translation id="2251368349685848079">Khôi phục từ thùng rác</translation>
 <translation id="2278133026967558505">Hoạt động truy cập vào tệp qua mọi trang web và URL</translation>
 <translation id="2282155092769082568">URL tự động định cấu hình:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Loại tệp này không được hỗ trợ. Vui lòng truy cập Cửa hàng Chrome trực tuyến để tìm ứng dụng có thể mở loại tệp này.</translation>
 <translation id="2326539130272988168">Tiếng Bungary</translation>
 <translation id="2337715497728194187">Chia sẻ với Bruschetta</translation>
+<translation id="233822363739146957">Không gian lưu trữ không đủ để đồng bộ hoá tất cả các tệp của bạn</translation>
 <translation id="23721837607121582">Tải hồ sơ mạng di động xuống, Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Chuyển sang chế độ xem danh sách</translation>
 <translation id="2377590462528165447">Đã chia sẻ <ph name="NUMBER_OF_ITEMS" /> thư mục với Linux</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Lỗi khi cài đặt ứng dụng Linux</translation>
 <translation id="2802583107108007218">Tìm hiểu thêm về những hạn chế này</translation>
 <translation id="2803375539583399270">Nhập mã PIN</translation>
+<translation id="2819519502129272135">Tính năng đồng bộ hoá tệp đã tắt</translation>
 <translation id="2820957248982571256">Đang quét...</translation>
 <translation id="2830077785865012357">Tiếng Trung (chú âm)</translation>
 <translation id="2843806747483486897">Thay đổi ứng dụng mặc định...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Đã đặt lại bộ lọc.</translation>
 <translation id="4603392156942865207">Đang sao chép <ph name="FILE_NAME" /> sang <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Nghệ sĩ</translation>
+<translation id="4635373743001040938">Không gian lưu trữ sắp hết. Tính năng đồng bộ hoá tệp đã tắt.</translation>
 <translation id="4642769377300286600">Đang cài đặt hồ sơ mạng di động, Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Tiếng Séc bằng bàn phím Qwerty</translation>
 <translation id="4656777537938206294">Dùng tệp khi không có mạng</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">Đã chia sẻ 1 thư mục với ứng dụng Parallels Desktop</translation>
 <translation id="496656650103537022">Đã khôi phục <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Không thể hoàn tất quá trình thiết lập tính năng đồng bộ hoá tệp</translation>
 <translation id="4973523518332075481">Hãy sử dụng tên có tối đa <ph name="MAX_LENGTH" /> ký tự</translation>
 <translation id="4973970068702235170">Không nén được, lỗi ngoài mong đợi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Tiếng Nhật</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">Tiếng Đức (Bỉ)</translation>
 <translation id="7339898014177206373">Cửa sổ mới</translation>
 <translation id="7343393116438664539">Tiếng Việt (Telex)</translation>
+<translation id="7347346221088620549">Tệp đã mã hoá</translation>
 <translation id="7357762654218998920">Loại tệp này không được hỗ trợ. <ph name="BEGIN_LINK_HELP" />Tìm hiểu thêm<ph name="END_LINK_HELP" /> về cách mở tệp trên ChromeOS.</translation>
 <translation id="7359359531237882347">Đang sao chép <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
 <translation id="7375951387215729722">Danh sách tệp được sắp xếp giảm dần theo <ph name="COLUMN_NAME" />.</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">Tiếng Iceland</translation>
 <translation id="863903787380594467">Mã PIN không chính xác. Bạn còn <ph name="RETRIES" /> lần nhập.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Cổng</translation>
+<translation id="8656407365183407932">Hệ thống buộc phải xoá các tệp ngoại tuyến của bạn</translation>
 <translation id="8656768832129462377">Không kiểm tra</translation>
 <translation id="8688591111840995413">Mật khẩu không chính xác</translation>
 <translation id="8698464937041809063">Bản vẽ Google</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">Bính âm tiếng Trung (Phồn thể)</translation>
 <translation id="8998871447376656508">Google Drive không còn đủ dung lượng trống để hoàn tất quá trình tải lên.</translation>
 <translation id="9003940392834790328">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Do quản trị viên của bạn quản lý, Thông tin chi tiết</translation>
+<translation id="9007990314804111233">Đăng nhập vào tài khoản Microsoft của bạn</translation>
 <translation id="9017798300203431059">Ngữ âm tiếng Nga</translation>
 <translation id="9034924485347205037">Tệp Linux</translation>
 <translation id="9035012421917565900">Không thể chuyển lại các tệp này vào '<ph name="DESTINATION_NAME" />', do đó bạn sẽ không thể hoàn tác hành động này.</translation>

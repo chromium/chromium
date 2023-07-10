@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Drive учурда жеткиликтүү эмес. Google Drive кайтып келгенден кийин жүктөп берүү аракети автоматтык түрдө кайра аткарылат.</translation>
 <translation id="1307931752636661898">Linux Файлдарын көрүү мүмкүн болбой жатат</translation>
 <translation id="1313405956111467313">Автоматтык прокси конфигурациясы</translation>
+<translation id="134645005685694099">Файлдарды шайкештирүү үчүн түзмөгүңүздүн сактагычында орун жетишсиз. Жаңы файлдар мындан ары автоматтык түрдө шайкештирилбейт.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Файлды же каталогду колдонуу мүмкүн эмес.</translation>
 <translation id="1363028406613469049">Трек</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP проксиси</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> тармагы, өчүк</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
+<translation id="2468470447085858632">Файлды шайкештирип, Google Drive файлдарыңызга офлайн режиминде кириңиз</translation>
 <translation id="2470939964922472929">Туура эмес PIN код өтө көп жолу киргизилди. Жаңы PIN кодду коюу үчүн байланыш операторуңуз берген 8 орундуу Жеке бөгөттөн чыгаруу ачкычын (PUK) киргизиңиз.</translation>
 <translation id="2500392669976258912">Гужаратиче (фонетикалык)</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -602,6 +604,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> таштандыга ыргытылды</translation>
 <translation id="5724172041621205163">Тайча (Pattachote баскычтобу)</translation>
 <translation id="57383366388012121">Өткөн ай</translation>
+<translation id="575175778971367197">Бул файл азыр шайкештирилбей жатат</translation>
 <translation id="5756666464756035725">Венгерче QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> нерсе тандалды</translation>
 <translation id="5763377084591234761">Немисче (Швейцария)</translation>
@@ -704,6 +707,7 @@
 <translation id="6558280019477628686">Ката кетти. Айрым элементтер өчкөн жок окшойт.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />"… жок кылуу</translation>
 <translation id="6581162200855843583">Google Drive шилтемеси</translation>
+<translation id="6588648400954570689">Файлды шайкештирүү параметрлери</translation>
 <translation id="6594855146910089723">Бул папка Linux жана Parallels Desktop менен бөлүшүлдү</translation>
 <translation id="6607272825297743757">Файл тууралуу маалымат</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> папка Parallels Desktop менен бөлүшүлдү</translation>
@@ -828,6 +832,7 @@
 <translation id="7547811415869834682">Голландча</translation>
 <translation id="7551643184018910560">Текчеге кадап коюу</translation>
 <translation id="7553492409867692754">Linux колдонмолоруна <ph name="FOLDER_NAME" /> папкасындагы файлдарга кирүүгө уруксат бериңиз</translation>
+<translation id="7555339735447658365">Учурда офлайндасыз. Файлды шайкештирүү түзмөк Интернетке туташтырылганда улантылат</translation>
 <translation id="7589661784326793847">Бир секунд күтө туруңуз</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> файлы оффлайн режиминде колдонуу үчүн жүктөлүүдө</translation>
 <translation id="7600126690270271294">Сербче</translation>
@@ -870,6 +875,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> Тб</translation>
 <translation id="7831491651892296503">Тармакты конфигурациялоо учурунда ката кетти</translation>
+<translation id="7832093238954689746">Файл шайкештирилди. Менин Drive'ым файлдары офлайн режиминде жеткиликтүү.</translation>
 <translation id="7839804798877833423">Бул файлдар алынганда болжол менен мобилдик дайындардын <ph name="FILE_SIZE" /> колдонулат.</translation>
 <translation id="7846076177841592234">Тандоону жокко чыгаруу</translation>
 <translation id="7853966320808728790">Французча BÉPO</translation>
@@ -918,6 +924,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Түзмөктүн үлгүсү</translation>
 <translation id="8223479393428528563">Бул файлдарды оффлайнда колдонуу үчүн онлайн режимине кайтып, файлдарды оң баскыч менен чыкылдатып, андан соң <ph name="OFFLINE_CHECKBOX_NAME" /> параметрин тандаңыз.</translation>
+<translation id="8241139360630443550">Сактагычты көрүү</translation>
 <translation id="8249296373107784235">Токтотуу</translation>
 <translation id="8250690786522693009">Латын</translation>
 <translation id="8250920743982581267">Документтер</translation>

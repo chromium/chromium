@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Drive is momenteel niet beschikbaar. Het uploaden wordt automatisch gestart zodra Google Drive weer beschikbaar is.</translation>
 <translation id="1307931752636661898">Kan Linux-bestanden niet bekijken</translation>
 <translation id="1313405956111467313">Automatische proxyconfiguratie</translation>
+<translation id="134645005685694099">Je apparaat heeft onvoldoende opslagruimte om bestandssynchronisatie aan te houden. Nieuwe bestanden worden niet meer automatisch gesynchroniseerd.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Het bestand of de map is niet bruikbaar.</translation>
 <translation id="1363028406613469049">Track</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP-proxy</translation>
 <translation id="2467267713099745100">Netwerk: <ph name="NETWORK_TYPE" />, uit</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470447085858632">Je Google Drive-bestanden offline openen met bestandssynchronisatie</translation>
 <translation id="2470939964922472929">Je hebt te vaak een verkeerde pincode opgegeven. Als je een nieuwe pincode wilt instellen, geef je de 8-cijferige pukcode op die je van je provider hebt gekregen.</translation>
 <translation id="2500392669976258912">Gujarati (fonetisch)</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -604,6 +606,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> naar de prullenbak verplaatst</translation>
 <translation id="5724172041621205163">Thai met Pattachote-toetsenbord</translation>
 <translation id="57383366388012121">Vorige maand</translation>
+<translation id="575175778971367197">Dit bestand kan op dit moment niet worden gesynchroniseerd</translation>
 <translation id="5756666464756035725">Hongaars QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> items geselecteerd</translation>
 <translation id="5763377084591234761">Duits (Zwitserland)</translation>
@@ -706,6 +709,7 @@
 <translation id="6558280019477628686">Er is een fout opgetreden. Sommige items zijn mogelijk niet verwijderd.</translation>
 <translation id="656398493051028875"><ph name="FILENAME" /> verwijderen...</translation>
 <translation id="6581162200855843583">Google Drive-link</translation>
+<translation id="6588648400954570689">Instellingen voor bestandssynchronisatie</translation>
 <translation id="6594855146910089723">Deze map wordt gedeeld met Linux en Parallels Desktop</translation>
 <translation id="6607272825297743757">Bestandsinformatie</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> mappen gedeeld met Parallels Desktop</translation>
@@ -830,6 +834,7 @@
 <translation id="7547811415869834682">Nederlands</translation>
 <translation id="7551643184018910560">Vastzetten op plank</translation>
 <translation id="7553492409867692754">Linux-apps toegang geven tot bestanden in de map <ph name="FOLDER_NAME" /></translation>
+<translation id="7555339735447658365">Je bent op dit moment offline. De synchronisatie wordt hervat als je verbinding hebt met internet.</translation>
 <translation id="7589661784326793847">Een ogenblik geduld</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> offline beschikbaar maken</translation>
 <translation id="7600126690270271294">Servisch</translation>
@@ -872,6 +877,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Fout bij configureren van netwerk</translation>
+<translation id="7832093238954689746">Bestandssynchronisatie afgerond. Mijn Drive-bestanden zijn offline beschikbaar.</translation>
 <translation id="7839804798877833423">Voor het ophalen van deze bestanden wordt ongeveer <ph name="FILE_SIZE" /> aan mobiele data gebruikt.</translation>
 <translation id="7846076177841592234">Selectie opheffen</translation>
 <translation id="7853966320808728790">Franse BÉPO</translation>
@@ -920,6 +926,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Apparaatmodel</translation>
 <translation id="8223479393428528563">Als je deze bestanden wilt opslaan voor offline gebruik, ga je weer online, klik je met de rechtermuisknop op de bestanden en selecteer je de optie <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Opslag bekijken</translation>
 <translation id="8249296373107784235">Annuleren</translation>
 <translation id="8250690786522693009">Latijn</translation>
 <translation id="8250920743982581267">Documenten</translation>

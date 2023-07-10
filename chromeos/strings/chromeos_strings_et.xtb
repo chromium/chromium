@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">Kasuta praegust võtmepaari</translation>
 <translation id="2320295602967756579">Heleda teema lubamine</translation>
 <translation id="2323506179655536734">VAHELE JÄETUD</translation>
+<translation id="2324354238778375592">Hõljukaken</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Lülitage Bluetooth sisse, et läheduses olevaid seadmeid avastada</translation>
 <translation id="2346474577291266260">Suurepärane (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Laadimine...</translation>
 <translation id="3708186454126126312">Varem ühendatud</translation>
+<translation id="3715651196924935218">Välju hõljukaknast</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> arvustust)</translation>
 <translation id="3748026146096797577">Ühendus puudub</translation>
 <translation id="3749289110408117711">Faili nimi</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">Kuva</translation>
 <translation id="4155551848414053977">Veenduge, et skanner oleks sisse lülitatud ja teie võrgus või otseühenduse kaudu saadaval</translation>
+<translation id="4159238217853743776">Osaline</translation>
 <translation id="4159784952369912983">Lilla</translation>
 <translation id="4170180284036919717">Pildista</translation>
 <translation id="4170700058716978431">EBAÕNNESTUS</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">Ühenduse seadistamiseks või värskendamiseks avage leht <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Kuupäev</translation>
 <translation id="4950314376641394653">Seadme <ph name="DEVICE_NAME" /> püsivara on värskendatud versioonile <ph name="VERSION" /></translation>
+<translation id="4969079779290789265">Jagatud</translation>
 <translation id="4972592110715526173">muudab režiimi</translation>
 <translation id="498186245079027698">Kontrollige skannerit ja proovige uuesti. Veenduge, et skannitud failide salvestamiseks oleks piisavalt kohalikku ruumi.</translation>
 <translation id="4985509611418653372">Käitati</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">Serveri hosti nimi</translation>
 <translation id="5089810972385038852">Osariik/Maakond</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">Täisekraan</translation>
 <translation id="5142961317498132443">Autentimine</translation>
 <translation id="5154917547274118687">Mälu</translation>
 <translation id="5160857336552977725">Logige sisse seadmesse <ph name="DEVICE_TYPE" /></translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">Logi välja</translation>
 <translation id="522307662484862935">Ära lisa e-posti aadressi</translation>
 <translation id="5227902338748591677">Tumeda teema ajakava</translation>
+<translation id="5229344016299762883">Välju täisekraanilt</translation>
 <translation id="5234764350956374838">Loobu</translation>
 <translation id="5252456968953390977">Rändlus</translation>
 <translation id="5257811368506016604">Luba hele värvirežiim</translation>
@@ -571,7 +577,6 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Päikeseloojangul automaatselt tumedale teemale lülitumine</translation>
-<translation id="5571714952674387371">Üksikasjade vaatamine ja muutmine</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skanni uuesti</translation>
 <translation id="5583640892426849032">Tagasilükkeklahv</translation>
@@ -707,6 +712,7 @@
 <translation id="6566314079205407217">Mitme lehe skannimine</translation>
 <translation id="6574762126505704998">Täida</translation>
 <translation id="6575134580692778371">Ei ole konfigureeritud</translation>
+<translation id="6576005492601044801">vasak</translation>
 <translation id="6579509898032828423">Kasuta seda fotot</translation>
 <translation id="6596816719288285829">IP-aadress</translation>
 <translation id="6599673642868607614">Suur tänu tagasiside eest. Teie tagasiside aitab meil parandada Chromebooki kasutuskogemust ja meie tiim vaatab selle üle. Kuna saame rohkelt teavitusi, ei saa me teile vastata.</translation>
@@ -762,7 +768,6 @@
 <translation id="7103252855940681301">Seade <ph name="INDEX" />/<ph name="COUNT" /> nimega <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">sisestusklahv</translation>
 <translation id="7130438335435247835">Pääsupunkti nimi (APN)</translation>
-<translation id="7131634559772719176">Kinnita eelseadistus</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nimeserver}other{Nimeserverid}}</translation>
 <translation id="7135814714616751706">Otseteede otsing</translation>
 <translation id="7143207342074048698">Ühendamine</translation>
@@ -812,6 +817,7 @@
 <translation id="7497215489070763236">Serveri CA-sertifikaat</translation>
 <translation id="7501957181231305652">või</translation>
 <translation id="7502658306369382406">IPv6 aadress</translation>
+<translation id="7513770521371759388">alumine</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Abimaterjalid pole saadaval</translation>
 <translation id="7535791657097741517">Heleda teema sisselülitamine</translation>
@@ -876,7 +882,6 @@
 <translation id="80398733265834479">Luba automaatne värvirežiim</translation>
 <translation id="8041089156583427627">Saada tagasiside</translation>
 <translation id="8045012663542226664">Mikrofoni vaigistamise klahv</translation>
-<translation id="8050091914317269817">Selle taustapildi valimine lülitab sisse automaatse tumeda režiimi ja taustapildi värvi sobitamise.</translation>
 <translation id="8075838845814659848">Aku laetuse tase</translation>
 <translation id="8076492880354921740">Vahelehed</translation>
 <translation id="8082366717211101304">Ei saa Androidi rakendustest DNS-i lahendada</translation>
@@ -886,7 +891,6 @@
 <translation id="8104083085214006426">Kasutate avatud ja ebaturvalist võrku</translation>
 <translation id="811820734797650957">(Android) Lüüsi saab pingida</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8131740175452115882">Kinnita</translation>
 <translation id="8132480444149501833">Taotle liiklusloendureid</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Vali „<ph name="TOPIC_SOURCE" /> – <ph name="TOPIC_SOURCE_DESC" />”</translation>
@@ -950,6 +954,7 @@
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">Jaga URL:</translation>
 <translation id="8660881923941176839">naela</translation>
+<translation id="8670574982334489519">parem</translation>
 <translation id="8675354002693747642">Eeljagatud võti</translation>
 <translation id="8677859815076891398">Albumeid pole. Looge album teenuses <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Kasutage selle funktsiooni haldamiseks vasak- või paremnooleklahvi.</translation>
@@ -995,6 +1000,7 @@
 <translation id="8936793075252196307">Kliendi IP-aadress</translation>
 <translation id="8944651180182756621">Käivitaja värv</translation>
 <translation id="894617464444543719">Seade on telefon.</translation>
+<translation id="8950424402482976779">ülemine</translation>
 <translation id="8968751544471797276">Laadimiskiirus</translation>
 <translation id="8970109610781093811">Käita uuesti</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -1009,6 +1015,7 @@
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS-i eraldusvõimel on pikk latentsusaeg</translation>
+<translation id="9065203028668620118">Muuda</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Kasuta seda videot</translation>

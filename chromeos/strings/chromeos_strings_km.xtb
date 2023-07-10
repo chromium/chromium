@@ -577,7 +577,6 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">ប្ដូរទៅ​ជាទម្រង់រចនាងងឹត​នៅពេល​ថ្ងៃលិច​ដោយស្វ័យប្រវត្តិ</translation>
-<translation id="5571714952674387371">មើល​ និង​កែ​ព័ត៌មាន​លម្អិត</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ស្កេន​ឡើងវិញ</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -769,7 +768,6 @@
 <translation id="7103252855940681301">ឧបករណ៍ <ph name="INDEX" /> ក្នុងចំណោម <ph name="COUNT" /> មានឈ្មោះថា <ph name="NAME" />។</translation>
 <translation id="7108668606237948702">បញ្ចូល</translation>
 <translation id="7130438335435247835">ឈ្មោះ​ចំណុចចូលប្រើប្រាស់ (APN)</translation>
-<translation id="7131634559772719176">បញ្ជាក់ការកំណត់ជាមុន</translation>
 <translation id="7134436342991564651">{0,plural, =1{ដាក់ឈ្មោះ​ម៉ាស៊ីនមេ}other{ដាក់ឈ្មោះ​ម៉ាស៊ីនមេ}}</translation>
 <translation id="7135814714616751706">ស្វែងរកផ្លូវកាត់</translation>
 <translation id="7143207342074048698">កំពុងភ្ជាប់...</translation>
@@ -884,7 +882,6 @@
 <translation id="80398733265834479">បើកមុខងារពណ៌ស្វ័យប្រវត្តិ</translation>
 <translation id="8041089156583427627">ផ្ញើមតិ</translation>
 <translation id="8045012663542226664">ប៊ូតុងបិទ/បើកសំឡេងមីក្រូហ្វូន</translation>
-<translation id="8050091914317269817">ការជ្រើសរើសផ្ទាំងរូបភាពនេះនឹងបើកការផ្គូផ្គងពណ៌ផ្ទាំងរូបភាព និងមុខងារងងឹតស្វ័យប្រវត្តិ។</translation>
 <translation id="8075838845814659848">ការសាកថ្ម​ដែលនៅសល់</translation>
 <translation id="8076492880354921740">ផ្ទាំង</translation>
 <translation id="8082366717211101304">មិនអាចដោះស្រាយ DNS ពីកម្មវិធី Android បានទេ</translation>
@@ -894,7 +891,6 @@
 <translation id="8104083085214006426">អ្នកកំពុងប្រើបណ្ដាញចំហ និងគ្មានសុវត្ថិភាព</translation>
 <translation id="811820734797650957">(Android) អាចធ្វើតេស្ដ​ភីងលើច្រកបាន</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8131740175452115882">អះអាង</translation>
 <translation id="8132480444149501833">ស្នើសុំមុខងាររាប់ចំនួនចរាចរណ៍</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">ជ្រើសរើស <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1019,6 +1015,7 @@
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">ដំណោះស្រាយ DNS មានការ​ពន្យារខ្ពស់</translation>
+<translation id="9065203028668620118">កែប្រែ</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ប៊្លូធូស</translation>
 <translation id="9082718469794970195">ប្រើវីដេអូនេះ</translation>

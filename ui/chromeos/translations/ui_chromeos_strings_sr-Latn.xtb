@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google disk trenutno nije dostupan. Otpremanje će se automatski ponovo pokrenuti kada Google disk postane dostupan.</translation>
 <translation id="1307931752636661898">Prikaz Linux datoteka nije uspeo</translation>
 <translation id="1313405956111467313">Automatska konfiguracija proksija</translation>
+<translation id="134645005685694099">Na uređaju nema dovoljno memorijskog prostora da bi sinhronizacija fajlova bila uključena. Novi fajlovi se više neće automatski sinhronizovati.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Nije moguće koristiti datoteku ili direktorijum.</translation>
 <translation id="1363028406613469049">Pesma</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP proksi</translation>
 <translation id="2467267713099745100">Mreža <ph name="NETWORK_TYPE" />, isključena je</translation>
 <translation id="2468402215065996499">Tamagoči</translation>
+<translation id="2468470447085858632">Pristupajte fajlovima sa Google diska oflajn pomoću sinhronizacije fajlova</translation>
 <translation id="2470939964922472929">Previše puta ste uneli pogrešan PIN. Da biste podesili novi PIN, unesite osmocifrenu ličnu šifru za otključavanje (PUK) koju vam je dao mobilni operater.</translation>
 <translation id="2500392669976258912">gudžarati fonetska</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -603,6 +605,7 @@
 <translation id="5720028165859493293">Fajl <ph name="FILE_NAME" /> je premešten u otpad</translation>
 <translation id="5724172041621205163">tajski sa patašote tastaturom</translation>
 <translation id="57383366388012121">Prošlog meseca</translation>
+<translation id="575175778971367197">Trenutno ne možemo da sinhronizujemo ovaj fajl</translation>
 <translation id="5756666464756035725">Mađarska QWERTY</translation>
 <translation id="5760252553414789727">Izabranih stavki: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">nemački (Švajcarska)</translation>
@@ -705,6 +708,7 @@
 <translation id="6558280019477628686">Došlo je do greške. Neke stavke možda nisu izbrisane.</translation>
 <translation id="656398493051028875">Brisanje „<ph name="FILENAME" />“...</translation>
 <translation id="6581162200855843583">Veza Google diska</translation>
+<translation id="6588648400954570689">Podešavanja sinhronizacije fajlova</translation>
 <translation id="6594855146910089723">Ovaj folder se deli pomoću Linux-a i Parallels Desktop-a</translation>
 <translation id="6607272825297743757">Informacije o datoteci</translation>
 <translation id="6609332149380188670">Direktorijumi (<ph name="NUMBER_OF_ITEMS" />) se dele sa Parallels Desktop-om</translation>
@@ -829,6 +833,7 @@
 <translation id="7547811415869834682">holandski</translation>
 <translation id="7551643184018910560">Zakači na policu</translation>
 <translation id="7553492409867692754">Dozvolite da Linux aplikacije pristupaju fajlovima u folderu <ph name="FOLDER_NAME" /></translation>
+<translation id="7555339735447658365">Trenutno ste oflajn. Sinhronizacija će se nastaviti kada se povežete na internet</translation>
 <translation id="7589661784326793847">Sačekajte trenutak</translation>
 <translation id="7592775719802218421">Omogućava se da fajl <ph name="FILE_NAME" /> bude dostupan fajl</translation>
 <translation id="7600126690270271294">srpski</translation>
@@ -871,6 +876,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Greška pri konfiguraciji mreže</translation>
+<translation id="7832093238954689746">Sinhronizacija fajlova je završena. Fajlovi iz Mog diska su dostupni oflajn.</translation>
 <translation id="7839804798877833423">Preuzimanje ovih datoteka će iskoristiti oko <ph name="FILE_SIZE" /> podataka za mobilne uređaje.</translation>
 <translation id="7846076177841592234">Otkaži izbor</translation>
 <translation id="7853966320808728790">Francuska BÉPO</translation>
@@ -919,6 +925,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model uređaja</translation>
 <translation id="8223479393428528563">Da biste sačuvali ove datoteke za oflajn korišćenje, povežite se ponovo na internet, kliknite desnim tasterom na datoteke i izaberite opciju <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Prikaži memorijski prostor</translation>
 <translation id="8249296373107784235">Otkaži</translation>
 <translation id="8250690786522693009">latinica</translation>
 <translation id="8250920743982581267">Dokumenti</translation>

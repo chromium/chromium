@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">使用目前的金鑰組</translation>
 <translation id="2320295602967756579">啟用淺色主題</translation>
 <translation id="2323506179655536734">已略過</translation>
+<translation id="2324354238778375592">浮動</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">開啟藍牙即可偵測附近的裝置</translation>
 <translation id="2346474577291266260">極佳 (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
 <translation id="370665806235115550">載入中…</translation>
 <translation id="3708186454126126312">先前連線的裝置</translation>
+<translation id="3715651196924935218">結束浮動模式</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> 則評論)</translation>
 <translation id="3748026146096797577">尚未連線</translation>
 <translation id="3749289110408117711">檔案名稱</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Google 相簿</translation>
 <translation id="4150201353443180367">顯示設定</translation>
 <translation id="4155551848414053977">請確認掃描器已開啟，而且可供透過網路或直接連線使用</translation>
+<translation id="4159238217853743776">部分</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4170180284036919717">拍攝相片</translation>
 <translation id="4170700058716978431">失敗</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">如要設定或更新連線，請前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />頁面。</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4950314376641394653">「<ph name="DEVICE_NAME" />」的韌體已更新至版本 <ph name="VERSION" /></translation>
+<translation id="4969079779290789265">分割</translation>
 <translation id="4972592110715526173">變更模式</translation>
 <translation id="498186245079027698">請檢查掃描器，然後再試一次。另請確認本機有足夠空間可以儲存掃描的檔案。</translation>
 <translation id="4985509611418653372">執行</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">伺服器主機名稱</translation>
 <translation id="5089810972385038852">州</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">全螢幕</translation>
 <translation id="5142961317498132443">驗證</translation>
 <translation id="5154917547274118687">記憶體</translation>
 <translation id="5160857336552977725">登入您的 <ph name="DEVICE_TYPE" /></translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">登出</translation>
 <translation id="522307662484862935">請勿輸入電子郵件地址</translation>
 <translation id="5227902338748591677">深色主題時間表</translation>
+<translation id="5229344016299762883">結束全螢幕模式</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5252456968953390977">漫遊中</translation>
 <translation id="5257811368506016604">啟用淺色模式</translation>
@@ -571,7 +577,6 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">日落後自動切換到深色主題</translation>
-<translation id="5571714952674387371">查看和編輯詳細資料</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">重新掃描</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -707,6 +712,7 @@
 <translation id="6566314079205407217">多頁掃描</translation>
 <translation id="6574762126505704998">填滿</translation>
 <translation id="6575134580692778371">未設定</translation>
+<translation id="6576005492601044801">左側</translation>
 <translation id="6579509898032828423">使用這張相片</translation>
 <translation id="6596816719288285829">IP 位址</translation>
 <translation id="6599673642868607614">感謝你提供寶貴意見，你的意見將有助於我們改善 Chromebook 體驗，我們的團隊會檢閱你提供的內容。由於回報數量眾多，我們不會逐一回覆。</translation>
@@ -762,7 +768,6 @@
 <translation id="7103252855940681301">裝置 <ph name="INDEX" /> (共 <ph name="COUNT" /> 個)，名稱為<ph name="NAME" />。</translation>
 <translation id="7108668606237948702">輸入</translation>
 <translation id="7130438335435247835">存取點名稱 (APN)</translation>
-<translation id="7131634559772719176">確認預設設定</translation>
 <translation id="7134436342991564651">{0,plural, =1{名稱伺服器}other{名稱伺服器}}</translation>
 <translation id="7135814714616751706">搜尋捷徑</translation>
 <translation id="7143207342074048698">連線中</translation>
@@ -812,6 +817,7 @@
 <translation id="7497215489070763236">伺服器 CA 憑證</translation>
 <translation id="7501957181231305652">或</translation>
 <translation id="7502658306369382406">IPv6 位址</translation>
+<translation id="7513770521371759388">下方</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">無法存取說明內容</translation>
 <translation id="7535791657097741517">開啟淺色主題</translation>
@@ -876,7 +882,6 @@
 <translation id="80398733265834479">啟用自動色彩模式</translation>
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="8045012663542226664">將麥克風設為靜音</translation>
-<translation id="8050091914317269817">如果選取這張桌布，系統將開啟自動深色模式並調整桌布配色。</translation>
 <translation id="8075838845814659848">剩餘電量</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8082366717211101304">無法從 Android 應用程式解析 DNS</translation>
@@ -886,7 +891,6 @@
 <translation id="8104083085214006426">你目前使用的是未受保護的開放式網路</translation>
 <translation id="811820734797650957">(Android) 可連線偵測到閘道</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8131740175452115882">確認</translation>
 <translation id="8132480444149501833">要求流量計數器</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">選取「<ph name="TOPIC_SOURCE" /><ph name="TOPIC_SOURCE_DESC" />」</translation>
@@ -950,6 +954,7 @@
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655828773034788261">分享網址：</translation>
 <translation id="8660881923941176839">磅</translation>
+<translation id="8670574982334489519">右側</translation>
 <translation id="8675354002693747642">預先共用金鑰</translation>
 <translation id="8677859815076891398">沒有任何相簿。請在 <ph name="LINK_BEGIN" />Google 相簿<ph name="LINK_END" />中建立相簿。</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" />請使用向左鍵或向右鍵管理這項功能。</translation>
@@ -995,6 +1000,7 @@
 <translation id="8936793075252196307">用戶端 IP 位址</translation>
 <translation id="8944651180182756621">啟動器顏色</translation>
 <translation id="894617464444543719">裝置類型為手機。</translation>
+<translation id="8950424402482976779">上方</translation>
 <translation id="8968751544471797276">充電率</translation>
 <translation id="8970109610781093811">再執行一次</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -1009,6 +1015,7 @@
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS 解析延遲時間過長</translation>
+<translation id="9065203028668620118">編輯</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9082718469794970195">使用這部影片</translation>

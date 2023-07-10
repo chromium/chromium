@@ -571,7 +571,6 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Автоматично вмикати темну тему після заходу сонця</translation>
-<translation id="5571714952674387371">Переглянути й відредагувати деталі</translation>
 <translation id="5578477003638479617">Технологія UMTS</translation>
 <translation id="5578519639599103840">Сканувати ще раз</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -762,7 +761,6 @@
 <translation id="7103252855940681301">Пристрій <ph name="INDEX" /> з <ph name="COUNT" />: "<ph name="NAME" />".</translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7130438335435247835">Ім’я точки доступу (APN)</translation>
-<translation id="7131634559772719176">Підтвердити набір налаштувань</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер імен}one{Сервери імен}few{Сервери імен}many{Сервери імен}other{Сервери імен}}</translation>
 <translation id="7135814714616751706">Пошук комбінацій клавіш</translation>
 <translation id="7143207342074048698">Під’єднання</translation>
@@ -876,7 +874,6 @@
 <translation id="80398733265834479">Увімкнути режим автоматичного вибору кольору</translation>
 <translation id="8041089156583427627">Надіслати відгук</translation>
 <translation id="8045012663542226664">Вимкнення звуку мікрофона</translation>
-<translation id="8050091914317269817">Якщо вибрати цей фоновий малюнок, буде ввімкнено автоматичний темний режим і відповідний добір кольорів.</translation>
 <translation id="8075838845814659848">Рівень заряду</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8082366717211101304">Не вдається перетворити DNS із додатків для Android</translation>
@@ -886,7 +883,6 @@
 <translation id="8104083085214006426">Ви використовуєте відкриту та незахищену мережу</translation>
 <translation id="811820734797650957">Шлюз можна перевірити (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8131740175452115882">Підтвердити</translation>
 <translation id="8132480444149501833">Надіслати запит на лічильники трафіку</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Вибрати тему "<ph name="TOPIC_SOURCE" />" з описом "<ph name="TOPIC_SOURCE_DESC" />"</translation>
@@ -1009,6 +1005,7 @@
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Велика затримка перетворення DNS</translation>
+<translation id="9065203028668620118">Редагувати</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Використати це відео</translation>

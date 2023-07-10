@@ -571,7 +571,6 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">التبديل تلقائيًا إلى المظهر الداكن عند الغروب</translation>
-<translation id="5571714952674387371">عرض التفاصيل وتعديلها</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">إعادة المسح الضوئي</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -762,7 +761,6 @@
 <translation id="7103252855940681301">الجهاز <ph name="INDEX" /> من إجمالي <ph name="COUNT" /> اسمه <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">إدخال</translation>
 <translation id="7130438335435247835">‏اسم نقطة الوصول (APN)</translation>
-<translation id="7131634559772719176">تأكيد الإعداد المسبَق</translation>
 <translation id="7134436342991564651">{0,plural, =1{خادم أسماء واحد}zero{خوادم الأسماء}two{خادما أسماء}few{خوادم الأسماء}many{خوادم الأسماء}other{خوادم الأسماء}}</translation>
 <translation id="7135814714616751706">البحث في الاختصارات</translation>
 <translation id="7143207342074048698">اتصال</translation>
@@ -876,7 +874,6 @@
 <translation id="80398733265834479">تفعيل وضع الألوان التلقائية</translation>
 <translation id="8041089156583427627">إرسال ملاحظات</translation>
 <translation id="8045012663542226664">كتم صوت الميكروفون</translation>
-<translation id="8050091914317269817">سيؤدي اختيار هذه الخلفية إلى تفعيل الوضع الداكن التلقائي ومطابقة لون الخلفية.</translation>
 <translation id="8075838845814659848">شحن البطارية المتبقي</translation>
 <translation id="8076492880354921740">علامات التبويب</translation>
 <translation id="8082366717211101304">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS) من تطبيقات Android.</translation>
@@ -886,7 +883,6 @@
 <translation id="8104083085214006426">أنت تستخدم شبكةً مفتوحة وغير آمنة.</translation>
 <translation id="811820734797650957">‏(نظام التشغيل Android) اختبار إمكانية فحص اتصال البوابة</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° مئوية</translation>
-<translation id="8131740175452115882">التأكيد</translation>
 <translation id="8132480444149501833">طلب عدّادات حركة بيانات الشبكة</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">اختيار <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1009,6 +1005,7 @@
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">‫IPv6</translation>
 <translation id="9062831201344759865">‏يستغرق التحويل باستخدام نظام أسماء النطاقات (DNS) وقت استجابة طويلاً.</translation>
+<translation id="9065203028668620118">تعديل</translation>
 <translation id="9073281213608662541">‏بروتوكول مصادقة كلمات المرور (PAP)</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9082718469794970195">استخدام هذا الفيديو</translation>

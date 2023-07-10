@@ -428,6 +428,7 @@
           如果將封鎖清單的值設為「*」，系統會封鎖所有擴充功能 (許可清單中明確列出的擴充功能除外)。
 
           如果不設定這項政策，使用者將可在 <ph name="PRODUCT_NAME" /> 中安裝任何擴充功能。</translation>
+<translation id="1392703142209771447">用於比對印表機 ID 的規則運算式。</translation>
 <translation id="1393485621820363363">已啟用企業裝置印表機</translation>
 <translation id="1395505489889158859">允許將使用者名稱和檔案名稱傳送給原生印表機</translation>
 <translation id="1395988776118675626">為 Kerberos 啟用「記住密碼」功能</translation>
@@ -1761,6 +1762,13 @@
 
           指定政策值時需以毫秒為單位。設定值必須小於或等於閒置延遲時間。</translation>
 <translation id="2548572254685798999">回報安全瀏覽資訊</translation>
+<translation id="2549472870177108435">你可以透過這項政策設定 <ph name="PRODUCT_NAME" /> 預設印表機的選取規則及覆寫預設規則。使用者會在第一次嘗試列印時選取印表機，過程中 <ph name="PRODUCT_NAME" /> 會搜尋符合指定屬性的印表機。如果找不到完全相符的結果，可將 <ph name="PRODUCT_NAME" /> 設為選取任何部分相符的印表機 (依找到的順序為準)。
+
+如果不設定這項政策或設為無相符結果的屬性，系統會選取內建的 PDF 印表機做為預設印表機。如果沒有 PDF 印表機，<ph name="PRODUCT_NAME" /> 就不會有預設印表機。
+
+目前所有印表機都屬於 <ph name="PRINTER_TYPE_LOCAL" />，系統會將已連上 <ph name="CLOUD_PRINT_NAME" />服務的印表機視為 <ph name="PRINTER_TYPE_CLOUD" />，但系統不再支援 <ph name="CLOUD_PRINT_NAME" />服務。
+
+注意：如果省略欄位，就表示不限制特定欄位的值。舉例來說，如果未指定 idPattern，列印預覽功能就會接受所有印表機 ID。規則運算式模式必須符合 JavaScript RegExp 語法，而且系統比對時會區分大小寫。</translation>
 <translation id="2550593661567988768">僅限單面列印</translation>
 <translation id="2552318891854145040">你可以透過這項政策來設定書籤清單，其中的每個書籤都是一個包含「<ph name="NAME" />」和「<ph name="URL_LABEL" />」索引鍵的條目。這些索引鍵會指定書籤的名稱和目標網址。管理員如果要設定子資料夾，可以定義一個書籤，但不要指定「<ph name="URL_LABEL" />」索引鍵，並額外指定「<ph name="CHILDREN" />」索引鍵。這個索引鍵也會包含書籤清單，其中某些書籤也可以是資料夾。Chrome 會將有缺漏的網址修補完整，就像你在網址列中輸入網址時一樣。舉例來說，系統會自動將「<ph name="GOOGLE_COM" />」改成「<ph name="HTTPS_GOOGLE_COM" />」。
 

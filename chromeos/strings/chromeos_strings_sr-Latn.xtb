@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">Koristite aktuelni par ključeva</translation>
 <translation id="2320295602967756579">Omogućite svetlu temu</translation>
 <translation id="2323506179655536734">PRESKOČENO</translation>
+<translation id="2324354238778375592">Plutajuće</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da biste otkrili uređaje u blizini</translation>
 <translation id="2346474577291266260">Odličan (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Učitava se...</translation>
 <translation id="3708186454126126312">Prethodno povezani</translation>
+<translation id="3715651196924935218">Izađite iz plutajućeg prikaza</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (recenzije: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nije povezano</translation>
 <translation id="3749289110408117711">Naziv datoteke</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Google slike</translation>
 <translation id="4150201353443180367">Ekran</translation>
 <translation id="4155551848414053977">Proverite da li je skener uključen i dostupan preko mreže ili direktne veze</translation>
+<translation id="4159238217853743776">Delimično</translation>
 <translation id="4159784952369912983">Ljubičasta</translation>
 <translation id="4170180284036919717">Slikajte</translation>
 <translation id="4170700058716978431">NIJE USPELO</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">Da biste podesili ili ažurirali vezu, idite u <ph name="BEGIN_LINK" />Podešavanja<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4950314376641394653">Firmver <ph name="DEVICE_NAME" /> je ažuriran na verziju <ph name="VERSION" /></translation>
+<translation id="4969079779290789265">Podeli</translation>
 <translation id="4972592110715526173">promena režima</translation>
 <translation id="498186245079027698">Proverite skener i probajte ponovo. Uverite se da ima dovoljno lokalne memorije za čuvanje skeniranih fajlova.</translation>
 <translation id="4985509611418653372">Pokreni</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">Ime hosta servera</translation>
 <translation id="5089810972385038852">Država</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">Ceo ekran</translation>
 <translation id="5142961317498132443">Potvrda identiteta</translation>
 <translation id="5154917547274118687">Memorija</translation>
 <translation id="5160857336552977725">Prijavite se na <ph name="DEVICE_TYPE" /></translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">Odjavi me</translation>
 <translation id="522307662484862935">Ne navodite imejl adresu</translation>
 <translation id="5227902338748591677">Raspored tamne teme</translation>
+<translation id="5229344016299762883">Izađite iz prikaza preko celog ekrana</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5252456968953390977">Roming</translation>
 <translation id="5257811368506016604">Omogućite režim svetle boje</translation>
@@ -571,7 +577,6 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Automatski prelazite na tamnu temu u vreme zalaska sunca</translation>
-<translation id="5571714952674387371">Pregledajte i izmenite detalje</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skeniraj ponovo</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -707,6 +712,7 @@
 <translation id="6566314079205407217">Skeniranje više stranica</translation>
 <translation id="6574762126505704998">Popuni</translation>
 <translation id="6575134580692778371">Nije konfigurisan</translation>
+<translation id="6576005492601044801">leva</translation>
 <translation id="6579509898032828423">Koristi ovu sliku</translation>
 <translation id="6596816719288285829">IP adresa</translation>
 <translation id="6599673642868607614">Hvala vam na povratnim informacijama. Povratne informacije nam pomažu da poboljšamo doživljaj Chromebook-a i pregledaće ih naš tim. Zbog velikog broja izveštaja ne možemo da šaljemo odgovore.</translation>
@@ -762,7 +768,6 @@
 <translation id="7103252855940681301"><ph name="INDEX" />. uređaj od <ph name="COUNT" /> sa nazivom <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Naziv pristupne tačke (APN)</translation>
-<translation id="7131634559772719176">Potvrdite unapred određeno podešavanje</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server imena}one{Serveri imena}few{Serveri imena}other{Serveri imena}}</translation>
 <translation id="7135814714616751706">Pretražite prečice</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
@@ -812,6 +817,7 @@
 <translation id="7497215489070763236">CA sertifikat servera</translation>
 <translation id="7501957181231305652">ili</translation>
 <translation id="7502658306369382406">IPv6 adresa</translation>
+<translation id="7513770521371759388">dno</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Sadržaj pomoći nije dostupan</translation>
 <translation id="7535791657097741517">Uključite svetlu temu</translation>
@@ -876,7 +882,6 @@
 <translation id="80398733265834479">Omogućite režim autopodešavanja boja</translation>
 <translation id="8041089156583427627">Pošalji povratne informacije</translation>
 <translation id="8045012663542226664">Isključivanje zvuka mikrofona</translation>
-<translation id="8050091914317269817">Ako izaberete ovu pozadinu, uključićete automatski tamni režim i podudaranje boja pozadine.</translation>
 <translation id="8075838845814659848">Preostali nivo napunjenosti baterije</translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8082366717211101304">DNS ne može da se razreši iz Android aplikacija</translation>
@@ -886,7 +891,6 @@
 <translation id="8104083085214006426">Koristite otvorenu i neobezbeđenu mrežu</translation>
 <translation id="811820734797650957">(Android) Mrežni prolaz može da se pinguje</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8132480444149501833">Zatraži brojače saobraćaja</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Izaberite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -950,6 +954,7 @@
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">Deli URL:</translation>
 <translation id="8660881923941176839">funte</translation>
+<translation id="8670574982334489519">desna</translation>
 <translation id="8675354002693747642">Tajni ključ</translation>
 <translation id="8677859815076891398">Nema albuma. Napravite album u <ph name="LINK_BEGIN" />Google slikama<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Koristite taster sa strelicom nalevo ili nadesno da biste upravljali ovom funkcijom.</translation>
@@ -995,6 +1000,7 @@
 <translation id="8936793075252196307">IP adresa klijenta</translation>
 <translation id="8944651180182756621">Boja pokretača</translation>
 <translation id="894617464444543719">Uređaj je telefon.</translation>
+<translation id="8950424402482976779">gornja</translation>
 <translation id="8968751544471797276">Brzina punjenja</translation>
 <translation id="8970109610781093811">Ponovo pokreni</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -1009,6 +1015,7 @@
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPV6</translation>
 <translation id="9062831201344759865">DNS razrešavanje ima veliko kašnjenje</translation>
+<translation id="9065203028668620118">Izmeni</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Koristi ovaj video</translation>

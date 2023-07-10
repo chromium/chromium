@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Drive şu anda kullanılamıyor. Google Drive tekrar kullanılabilir olduğunda yükleme işlemi otomatik olarak yeniden başlayacak.</translation>
 <translation id="1307931752636661898">Linux dosyaları görüntülenemiyor</translation>
 <translation id="1313405956111467313">Otomatik proxy yapılandırması</translation>
+<translation id="134645005685694099">Cihazınızda, dosya senkronizasyonunu açık tutmak için yeterli depolama alanı yok. Yeni dosyalar artık otomatik olarak senkronize edilmeyecek.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Dosya veya dizin kullanılamıyor.</translation>
 <translation id="1363028406613469049">Takip numarası</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Cihaz ayarları</translation>
 <translation id="2084809735218147718">Teşekkürler yazısı</translation>
 <translation id="2088690981887365033">VPN ağı</translation>
+<translation id="209653272837065803">Dosyaları senkronize etmeye devam etmek için yeterli depolama alanı yok</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Gizli modda izin ver<ph name="END_BOLD" />'i açın</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> öğe silinecek ve bu öğeleri geri yükleyemeyeceksiniz.</translation>
 <translation id="2122305276694332719">Gizli bir ağa otomatik olarak bağlanmak başkalarının cihazınızı ve bazı ağ ayarlarını görmesine olanak sağladığından önerilmez.</translation>
@@ -146,9 +148,11 @@
 <translation id="2198315389084035571">Basitleştirilmiş Çince</translation>
 <translation id="22085916256174561">Korece</translation>
 <translation id="2208919847696382164">Linux ile yükle</translation>
+<translation id="2215692307449050019">Pil seviyesi düşük. Dosya senkronizasyonu, güç kaynağına bağlandığınızda devam edecek.</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> öğeyi silmek istediğiniz emin misiniz?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" klasörü oluşturulamıyor. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Elinde kahve tutan bir kişi</translation>
+<translation id="2247561763838186830">Oturumunuz kapatıldı</translation>
 <translation id="2251368349685848079">Çöp kutusundan geri yükle</translation>
 <translation id="2278133026967558505">Tüm web siteleri ve URL'ler tarafından dosya erişimi</translation>
 <translation id="2282155092769082568">Otomatik yapılandırma URL'si:</translation>
@@ -163,6 +167,7 @@
 <translation id="2325650632570794183">Bu dosya türü desteklenmiyor. Bu dosya türünü açabilecek bir uygulama bulmak için lütfen Chrome Web Mağazası'nı ziyaret edin.</translation>
 <translation id="2326539130272988168">Bulgarca</translation>
 <translation id="2337715497728194187">Bruschetta ile paylaşın</translation>
+<translation id="233822363739146957">Tüm dosyalarınızı senkronize etmek için yeterli depolama alanı yok</translation>
 <translation id="23721837607121582">Mobil profili indir, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> ağı</translation>
 <translation id="2377319039870049694">Liste görünümüne geç</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> klasör Linux ile paylaşıldı</translation>
@@ -180,6 +185,7 @@
 <translation id="2464089476039395325">HTTP Proxy'si</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> adlı ağ, kapalı</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470447085858632">Dosya senkronizasyonunu kullanarak Google Drive dosyalarınıza internet bağlantısı olmadan erişin</translation>
 <translation id="2470939964922472929">Çok sayıda yanlış PIN girildi. Yeni bir PIN oluşturmak için operatörünüz tarafından sağlanan 8 basamaklı Kişisel Engelleme Kaldırma Anahtarını (PUK) girin.</translation>
 <translation id="2500392669976258912">Guceratça Fonetik</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -215,6 +221,7 @@
 <translation id="2782104745158847185">Linux uygulaması yüklenirken hata oluştu</translation>
 <translation id="2802583107108007218">Bu kısıtlamalar hakkında daha fazla bilgi</translation>
 <translation id="2803375539583399270">PIN girin</translation>
+<translation id="2819519502129272135">Dosya senkronizasyonu devre dışı</translation>
 <translation id="2820957248982571256">Taranıyor...</translation>
 <translation id="2830077785865012357">Çince Zhuyin</translation>
 <translation id="2843806747483486897">Varsayılanı değiştir...</translation>
@@ -439,6 +446,7 @@
 <translation id="4599600860674643278">Filtre sıfırlandı.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> adlı dosya <ph name="FOLDER_NAME" /> klasörüne kopyalanıyor</translation>
 <translation id="4631887759990505102">Sanatçı</translation>
+<translation id="4635373743001040938">Depolama alanı çok azdı. Dosya senkronizasyonu devre dışı bırakıldı.</translation>
 <translation id="4642769377300286600">Mobil profil, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> ağ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> yükleniyor</translation>
 <translation id="4646813851450205600">Çekçe Qwerty klavye</translation>
 <translation id="4656777537938206294">Dosyaları çevrimdışı kullanıma sunma</translation>
@@ -492,6 +500,7 @@
 <translation id="4961158930123534723">1 klasör Parallels Desktop ile paylaşıldı</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> geri yüklendi</translation>
 <translation id="4969785127455456148">Albüm</translation>
+<translation id="4972330214479971536">Dosya senkronizasyonu kurulumu tamamlanamadı</translation>
 <translation id="4973523518332075481">En fazla <ph name="MAX_LENGTH" /> karakterden oluşan bir ad kullanın</translation>
 <translation id="4973970068702235170">Sıkıştırma işlemi başarısız oldu, beklenmedik hata oluştu: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japonca</translation>
@@ -603,6 +612,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> çöp kutusuna taşındı</translation>
 <translation id="5724172041621205163">Pattachote klavye ile Tayca</translation>
 <translation id="57383366388012121">Geçen ay</translation>
+<translation id="575175778971367197">Bu dosya şu anda senkronize edilemiyor</translation>
 <translation id="5756666464756035725">Macarca QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> öğe seçildi</translation>
 <translation id="5763377084591234761">Almanca (İsviçre)</translation>
@@ -705,6 +715,7 @@
 <translation id="6558280019477628686">Bir hata oluştu. Bazı öğeler silinmemiş olabilir.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" siliniyor...</translation>
 <translation id="6581162200855843583">Google Drive bağlantısı</translation>
+<translation id="6588648400954570689">Dosya senkronizasyon ayarları</translation>
 <translation id="6594855146910089723">Bu klasör, Linux ve Parallels Desktop ile paylaşılıyor</translation>
 <translation id="6607272825297743757">Dosya bilgileri</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> klasör Parallels Desktop ile paylaşıldı</translation>
@@ -803,6 +814,7 @@
 <translation id="7309413087278791451">Almanca (Belçika)</translation>
 <translation id="7339898014177206373">Yeni pencere</translation>
 <translation id="7343393116438664539">Vietnamca Teleks</translation>
+<translation id="7347346221088620549">Şifrelenmiş dosya</translation>
 <translation id="7357762654218998920">Bu dosya türü desteklenmiyor. ChromeOS'de dosya açma hakkında <ph name="BEGIN_LINK_HELP" />daha fazla bilgi alın<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> öğe kopyalanıyor.</translation>
 <translation id="7375951387215729722">Dosya <ph name="COLUMN_NAME" /> sütununa göre azalan düzende sıralandı.</translation>
@@ -829,6 +841,7 @@
 <translation id="7547811415869834682">Felemenkçe</translation>
 <translation id="7551643184018910560">Rafa sabitle</translation>
 <translation id="7553492409867692754">Linux uygulamalarına <ph name="FOLDER_NAME" /> klasöründeki dosyalara erişim izni verin</translation>
+<translation id="7555339735447658365">Şu anda çevrimdışısınız. Senkronizasyon, internete bağlandığınızda devam edecek.</translation>
 <translation id="7589661784326793847">Bir saniye bekleyin</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> çevrimdışı kullanılabilir hale getiriliyor</translation>
 <translation id="7600126690270271294">Sırpça</translation>
@@ -871,6 +884,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Ağ yapılandırılırken hata oluştu</translation>
+<translation id="7832093238954689746">Dosya senkronizasyonu tamamlandı. Drive'ım dosyalarını internet bağlantısı olmadan kullanabilirsiniz.</translation>
 <translation id="7839804798877833423">Bu dosyaları getirmek için yaklaşık olarak <ph name="FILE_SIZE" /> mobil veri kullanılacak.</translation>
 <translation id="7846076177841592234">Seçimi iptal et</translation>
 <translation id="7853966320808728790">Fransızca BÉPO</translation>
@@ -919,6 +933,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Cihaz modeli</translation>
 <translation id="8223479393428528563">Bu dosyaları çevrimdışı kullanım için kaydetmek üzere tekrar çevrimiçi olun, dosyaları sağ tıklayın ve <ph name="OFFLINE_CHECKBOX_NAME" /> seçeneğini belirleyin.</translation>
+<translation id="8241139360630443550">Depolama ayarlarını görüntüle</translation>
 <translation id="8249296373107784235">İptal Et</translation>
 <translation id="8250690786522693009">Latince</translation>
 <translation id="8250920743982581267">Dokümanlar</translation>
@@ -986,6 +1001,7 @@
 <translation id="8609695766746872526">İzlandaca</translation>
 <translation id="863903787380594467">Yanlış PIN. <ph name="RETRIES" /> deneme hakkınız kaldı.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Bağlantı noktası</translation>
+<translation id="8656407365183407932">Çevrimdışı dosyalarınızın kaldırılması gerekti</translation>
 <translation id="8656768832129462377">Kontrol etme</translation>
 <translation id="8688591111840995413">Yanlış şifre</translation>
 <translation id="8698464937041809063">Google çizimler</translation>
@@ -1021,6 +1037,7 @@
 <translation id="8997962250644902079">Çince (Geleneksel) Pinyin</translation>
 <translation id="8998871447376656508">Google Drive'ınızda yükleme işlemini tamamlayacak kadar yeterli boş alan yok.</translation>
 <translation id="9003940392834790328">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor, Ayrıntılar</translation>
+<translation id="9007990314804111233">Microsoft hesabınızda oturum açın</translation>
 <translation id="9017798300203431059">Rusça fonetik</translation>
 <translation id="9034924485347205037">Linux dosyaları</translation>
 <translation id="9035012421917565900">Öğeler "<ph name="DESTINATION_NAME" />" hedefine geri taşınamaz. Bu nedenle bu işlemi geri alamazsınız.</translation>

@@ -571,7 +571,6 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Newid yn awtomatig i thema dywyll ar fachlud haul</translation>
-<translation id="5571714952674387371">Gweld a golygu manylion</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Ail-sganio</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -762,7 +761,6 @@
 <translation id="7103252855940681301">Dyfais <ph name="INDEX" /> o <ph name="COUNT" /> o'r enw <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">rhowch yr allwedd</translation>
 <translation id="7130438335435247835">Enw Pwynt Mynediad (APN)</translation>
-<translation id="7131634559772719176">Cadarnhau rhagosodiad</translation>
 <translation id="7134436342991564651">{0,plural, =1{Gweinydd enwau}zero{Gweinyddion enwau}two{Gweinyddion enwau}few{Gweinyddion enwau}many{Gweinyddion enwau}other{Gweinyddion enwau}}</translation>
 <translation id="7135814714616751706">Chwilio llwybrau byr</translation>
 <translation id="7143207342074048698">Wrthi'n cysylltu</translation>
@@ -876,7 +874,6 @@
 <translation id="80398733265834479">Galluogi'r modd lliw awtomatig</translation>
 <translation id="8041089156583427627">Anfon adborth</translation>
 <translation id="8045012663542226664">Distewi'r meicroffon</translation>
-<translation id="8050091914317269817">Bydd dewis y papur wal hwn yn troi'r modd tywyll ymlaen yn awtomatig a pharu lliwiau papur wal.</translation>
 <translation id="8075838845814659848">Faint o fatri sy'n weddill</translation>
 <translation id="8076492880354921740">Tabiau</translation>
 <translation id="8082366717211101304">Methu â datrys DNS o apiau Android</translation>
@@ -886,7 +883,6 @@
 <translation id="8104083085214006426">Rydych yn defnyddio rhwydwaith agored anniogel</translation>
 <translation id="811820734797650957">Gall porth gael ei Bingio (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8131740175452115882">Cadarnhau</translation>
 <translation id="8132480444149501833">Gwneud cais am Rifyddion Traffig</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Dewiswch <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
@@ -1009,6 +1005,7 @@
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Mae gan y datrysiad DNS guddni uchel</translation>
+<translation id="9065203028668620118">Golygu</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Defnyddio'r fideo hwn</translation>

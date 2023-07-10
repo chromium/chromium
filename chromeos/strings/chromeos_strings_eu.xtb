@@ -571,7 +571,6 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Aldatu automatikoki gai ilunera ilunabarrean</translation>
-<translation id="5571714952674387371">Ikusi eta editatu xehetasunak</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Eskaneatu berriro</translation>
 <translation id="5583640892426849032">Atzera tekla</translation>
@@ -762,7 +761,6 @@
 <translation id="7103252855940681301"><ph name="INDEX" />/<ph name="COUNT" /> gailua (<ph name="NAME" />).</translation>
 <translation id="7108668606237948702">"sartu" tekla</translation>
 <translation id="7130438335435247835">Sarbide-puntuaren izena (APNa)</translation>
-<translation id="7131634559772719176">Berretsi aurrezarpena</translation>
 <translation id="7134436342991564651">{0,plural, =1{Izenen zerbitzaria}other{Izenen zerbitzariak}}</translation>
 <translation id="7135814714616751706">Bilatu lasterbideak</translation>
 <translation id="7143207342074048698">Konektatzen</translation>
@@ -876,7 +874,6 @@
 <translation id="80398733265834479">Gaitu kolore automatikoaren modua</translation>
 <translation id="8041089156583427627">Bidali oharrak</translation>
 <translation id="8045012663542226664">Mikrofonoa desaktibatzeko botoia</translation>
-<translation id="8050091914317269817">Horma-paper hau hautatuz gero, modu ilun automatikoa eta kolorea horma-paperarekin bat etorrarazteko aukera aktibatuko dira.</translation>
 <translation id="8075838845814659848">Geratzen den bateria</translation>
 <translation id="8076492880354921740">Fitxak</translation>
 <translation id="8082366717211101304">Ezin da ebatzi DNS Android-erako aplikazioetatik</translation>
@@ -886,7 +883,6 @@
 <translation id="8104083085214006426">Segurua ez den sare ireki bat ari zara erabiltzen</translation>
 <translation id="811820734797650957">Ping egin dakioke atebideari (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8131740175452115882">Berretsi</translation>
 <translation id="8132480444149501833">Eskatu trafiko-kontagailuak</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Hautatu <ph name="TOPIC_SOURCE" /> zerbitzuko <ph name="TOPIC_SOURCE_DESC" /> aukera</translation>
@@ -1009,6 +1005,7 @@
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS bidezko ebazpenak latentzia handia dauka</translation>
+<translation id="9065203028668620118">Editatu</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetootha</translation>
 <translation id="9082718469794970195">Erabili bideoa</translation>
