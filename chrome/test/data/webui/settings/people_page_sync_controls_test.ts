@@ -9,10 +9,11 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SettingsSyncControlsElement} from 'chrome://settings/lazy_load.js';
 import {CrLinkRowElement, CrRadioButtonElement, CrToggleElement, Router, StatusAction, SyncBrowserProxyImpl, SyncPrefs} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {getSyncAllPrefs, setupRouterWithSyncRoutes, SyncRoutes} from './sync_test_util.js';
+import {getSyncAllPrefs, getSyncAllPrefsManaged, setupRouterWithSyncRoutes, SyncRoutes} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // <if expr="chromeos_lacros">
@@ -49,16 +50,11 @@ suite('SyncControlsTest', async function() {
     assertTrue(!!customizeSync);
   });
 
-  teardown(function() {
-    syncControls.remove();
-  });
-
-
   function assertPrefs(
       prefs: SyncPrefs, datatypeControls: NodeListOf<CrToggleElement>) {
     const expected = getSyncAllPrefs();
     expected.syncAllDataTypes = false;
-    assertEquals(JSON.stringify(expected), JSON.stringify(prefs));
+    assertDeepEquals(expected, prefs);
 
     webUIListenerCallback('sync-prefs-changed', expected);
 
@@ -78,6 +74,15 @@ suite('SyncControlsTest', async function() {
       assertFalse(control.disabled);
       assertTrue(control.checked);
     }
+
+    // Assert that all policy indicators are hidden.
+    const policyIndicators =
+        syncControls.shadowRoot!.querySelectorAll('cr-policy-indicator');
+    assertTrue(policyIndicators.length > 0);
+    for (const indicator of policyIndicators) {
+      assertFalse(isVisible(indicator));
+    }
+
     browserProxy.resetResolver('setSyncDatatypes');
   }
 
@@ -202,10 +207,6 @@ suite('SyncControlsSubpageTest', function() {
         router.getCurrentRoute());
   });
 
-  teardown(function() {
-    syncControls.remove();
-  });
-
   test('SignedOut', function() {
     syncControls.syncStatus = {
       disabled: false,
@@ -243,5 +244,85 @@ suite('SyncControlsSubpageTest', function() {
     assertEquals(
         (router.getRoutes() as SyncRoutes).SYNC.path,
         router.getCurrentRoute().path);
+  });
+});
+
+// Test to check that toggles are disabled when sync types are managed by
+// policy.
+suite('SyncControlsManagedTest', async function() {
+  let syncControls: HTMLElement;
+  let browserProxy: TestSyncBrowserProxy;
+  let syncEverything: CrRadioButtonElement;
+  let customizeSync: CrRadioButtonElement;
+
+  setup(async function() {
+    setupRouterWithSyncRoutes();
+    browserProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(browserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    syncControls = document.createElement('settings-sync-controls');
+    document.body.appendChild(syncControls);
+
+    // Start with all prefs managed.
+    webUIListenerCallback('sync-prefs-changed', getSyncAllPrefsManaged());
+    flush();
+
+    await waitBeforeNextRender(syncControls);
+    syncEverything = syncControls.shadowRoot!.querySelector(
+        'cr-radio-button[name="sync-everything"]')!;
+    customizeSync = syncControls.shadowRoot!.querySelector(
+        'cr-radio-button[name="customize-sync"]')!;
+    assertTrue(!!syncEverything);
+    assertTrue(!!customizeSync);
+  });
+
+  test('SettingIndividualDatatypesManaged', async function() {
+    // The syncEverything and customizeSync buttons should not be affected by
+    // the managed state.
+    assertTrue(syncEverything.checked);
+    assertFalse(customizeSync.checked);
+
+    const datatypeControls =
+        syncControls.shadowRoot!.querySelectorAll<CrToggleElement>(
+            '.list-item:not([hidden]) > cr-toggle');
+    assertTrue(datatypeControls.length > 0);
+
+    // Assert that all toggles have the policy indicator icon visible when they
+    // are all managed.
+    const policyIndicators =
+        syncControls.shadowRoot!.querySelectorAll('cr-policy-indicator');
+    assertTrue(policyIndicators.length > 0);
+    for (const indicator of policyIndicators) {
+      assertTrue(isVisible(indicator));
+    }
+
+    // Assert that all the individual datatype controls are disabled and
+    // unchecked.
+    for (const control of datatypeControls) {
+      assertTrue(control.disabled);
+      assertFalse(control.checked);
+    }
+
+    customizeSync.click();
+    flush();
+    assertFalse(syncEverything.checked);
+    assertTrue(customizeSync.checked);
+
+    const prefs = await browserProxy.whenCalled('setSyncDatatypes');
+
+    const expected = getSyncAllPrefsManaged();
+    expected.syncAllDataTypes = false;
+    assertDeepEquals(expected, prefs);
+
+    webUIListenerCallback('sync-prefs-changed', expected);
+
+    // Assert that all the individual datatype controls are still unchecked and
+    // disabled.
+    for (const control of datatypeControls) {
+      assertTrue(control.disabled);
+      assertFalse(control.checked);
+    }
+    browserProxy.resetResolver('setSyncDatatypes');
   });
 });

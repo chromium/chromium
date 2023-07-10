@@ -64,32 +64,46 @@ export enum StatusAction {
 export interface SyncPrefs {
   appsRegistered: boolean;
   appsSynced: boolean;
+  appsManaged: boolean;
   autofillRegistered: boolean;
   autofillSynced: boolean;
+  autofillManaged: boolean;
   bookmarksRegistered: boolean;
   bookmarksSynced: boolean;
+  bookmarksManaged: boolean;
   customPassphraseAllowed: boolean;
   encryptAllData: boolean;
   extensionsRegistered: boolean;
   extensionsSynced: boolean;
+  extensionsManaged: boolean;
   passphraseRequired: boolean;
   passwordsRegistered: boolean;
   passwordsSynced: boolean;
+  passwordsManaged: boolean;
   paymentsIntegrationEnabled: boolean;
   preferencesRegistered: boolean;
   preferencesSynced: boolean;
+  preferencesManaged: boolean;
   readingListRegistered: boolean;
   readingListSynced: boolean;
+  readingListManaged: boolean;
+  savedTabGroupsRegistered: boolean;
+  savedTabGroupsSynced: boolean;
+  savedTabGroupsManaged: boolean;
   syncAllDataTypes: boolean;
   tabsRegistered: boolean;
   tabsSynced: boolean;
+  tabsManaged: boolean;
   themesRegistered: boolean;
   themesSynced: boolean;
+  themesManaged: boolean;
   trustedVaultKeysRequired: boolean;
   typedUrlsRegistered: boolean;
   typedUrlsSynced: boolean;
+  typedUrlsManaged: boolean;
   wifiConfigurationsRegistered: boolean;
   wifiConfigurationsSynced: boolean;
+  wifiConfigurationsManaged: boolean;
   explicitPassphraseTime?: string;
 }
 

@@ -1009,6 +1009,8 @@ void PeopleHandler::PushSyncPrefs() {
     const std::string type_name = syncer::GetUserSelectableTypeName(type);
     args.Set(type_name + "Registered", registered_types.Has(type));
     args.Set(type_name + "Synced", selected_types.Has(type));
+    args.Set(type_name + "Managed",
+             sync_user_settings->IsTypeManagedByPolicy(type));
   }
   args.Set("syncAllDataTypes", sync_user_settings->IsSyncEverythingEnabled());
   args.Set("paymentsIntegrationEnabled",
