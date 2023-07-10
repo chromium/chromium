@@ -1756,6 +1756,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-11-12">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
+  <owner>chrome-journeys@google.com</owner>
   <summary>
     Logs the position of &quot;Resume Journey&quot; omnibox actions actually
     selected by the user. The position index is 0-based, so a selected action in
@@ -1775,9 +1776,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordScore"
-    units="count" expires_after="2023-08-20">
-  <owner>junzou@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
+    units="count" expires_after="2023-11-12">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
   <summary>
     Logs the score of the matched cluster keyword of &quot;Resume Journey&quot;
     omnibox actions actually selected by the user.
@@ -1796,8 +1797,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordType"
     enum="HistoryClusterKeywordType" expires_after="2023-11-12">
-  <owner>junzou@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
   <summary>
     Logs the type of the matched cluster keyword of &quot;Resume Journey&quot;
     omnibox actions actually selected by the user.
@@ -1816,9 +1817,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordType.{ClusterKeywordTypeLabel}.CTR"
-    enum="BooleanSelected" expires_after="2022-12-10">
-  <owner>junzou@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
+    enum="BooleanSelected" expires_after="2023-12-10">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
   <summary>
     Emitted when the user uses the omnibox to go somewhere AND the &quot;Resume
     Journey&quot; chip triggered by {ClusterKeywordTypeLabel} was offered in any
@@ -1849,8 +1850,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.SuggestionUsed.ResumeJourney.PageEntityCollection"
     enum="OptimizationGuidePageEntityCollection" expires_after="2023-11-12">
-  <owner>junzou@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
   <summary>
     Logs the top entity collection of &quot;Resume Journey&quot; omnibox actions
     actually selected by the user.
@@ -1869,9 +1870,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.SuggestionUsed.ResumeJourney.PageEntityCollection.{CollectionLabel}.CTR"
-    enum="BooleanSelected" expires_after="2022-12-08">
-  <owner>junzou@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
+    enum="BooleanSelected" expires_after="2023-12-08">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
   <summary>
     Emitted when the user uses the omnibox to go somewhere AND the &quot;Resume
     Journey&quot; chip triggered by {CollectionLabel} was offered in any
