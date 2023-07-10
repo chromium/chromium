@@ -122,9 +122,7 @@ crbug.com/1405377 [ Mac ] css3/filters/filterRegions.html [ Failure Pass ]
 # Script preloaded: No
 crbug.com/1254940 http/tests/security/contentSecurityPolicy/nonces/scriptnonce-redirect.html [ Failure ]
 
-# Two paint failures:
-crbug.com/1254943 paint/invalidation/overflow/resize-child-within-overflow.html [ Failure ]
-crbug.com/1254943 fast/events/hit-test-counts.html [ Failure ]
+crbug.com/1459010 fast/events/hit-test-counts.html [ Failure ]
 
 # Image isn't present:
 crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-dom-intercept-attr.html [ Failure Pass ]
