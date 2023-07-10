@@ -9,8 +9,6 @@
 #include "components/permissions/permission_context_base.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 
-extern const int kDefaultImplicitGrantLimit;
-
 class GURL;
 
 namespace permissions {

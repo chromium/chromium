@@ -5,12 +5,9 @@
 #ifndef CHROME_BROWSER_TOP_LEVEL_STORAGE_ACCESS_API_TOP_LEVEL_STORAGE_ACCESS_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_TOP_LEVEL_STORAGE_ACCESS_API_TOP_LEVEL_STORAGE_ACCESS_PERMISSION_CONTEXT_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "components/permissions/permission_context_base.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
-
-extern const int kDefaultImplicitGrantLimit;
 
 class GURL;
 
