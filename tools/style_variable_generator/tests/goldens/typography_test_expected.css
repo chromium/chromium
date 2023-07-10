@@ -9,6 +9,16 @@
   color-scheme: light dark;
 }
 
+@font-face {
+  font-family: "GSR";
+  src: local("Google Sans Regular");
+}
+
+@font-face {
+  font-family: "GSTM";
+  src: local("Google Sans Text Medium");
+}
+
 html:not(body) {}
 html {
   /* font families */

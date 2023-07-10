@@ -33,6 +33,7 @@ class VariableType:
     UNTYPED_CSS = 'untyped_css'
     TYPEFACE = 'typeface'
     FONT_FAMILY = 'font_family'
+    FONT_FACE = 'font_face'
     LEGACY_MAPPING = 'legacy_mappings'
 
 
@@ -357,6 +358,13 @@ class Model(object):
         self.font_families = NamespacedModel(VariableType.FONT_FAMILY,
                                              CheckFontFamily)
         self.submodels[VariableType.FONT_FAMILY] = self.font_families
+
+        def CheckFontFace(name, value_obj, context):
+            assert name.startswith('face_')
+
+        self.font_faces = NamespacedModel(VariableType.FONT_FACE,
+                                          CheckFontFace)
+        self.submodels[VariableType.FONT_FACE] = self.font_faces
 
     def Add(self, variable_type, name, value_obj, context):
         '''Adds a new variable to the submodel for |variable_type|.
