@@ -314,8 +314,7 @@ XMLHttpRequest::State XMLHttpRequest::readyState() const {
   return state_;
 }
 
-v8::Local<v8::String> XMLHttpRequest::responseText(
-    ExceptionState& exception_state) {
+String XMLHttpRequest::responseText(ExceptionState& exception_state) {
   if (response_type_code_ != kResponseTypeDefault &&
       response_type_code_ != kResponseTypeText) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -323,19 +322,11 @@ v8::Local<v8::String> XMLHttpRequest::responseText(
                                       "object's 'responseType' is '' or 'text' "
                                       "(was '" +
                                           responseType() + "').");
-    return v8::Local<v8::String>();
+    return String();
   }
   if (error_ || (state_ != kLoading && state_ != kDone))
-    return v8::Local<v8::String>();
-  return response_text_.V8Value(isolate_);
-}
-
-v8::Local<v8::String> XMLHttpRequest::ResponseJSONSource() {
-  DCHECK_EQ(response_type_code_, kResponseTypeJSON);
-
-  if (error_ || state_ != kDone)
-    return v8::Local<v8::String>();
-  return response_text_.V8Value(isolate_);
+    return String();
+  return response_text_.Flatten(isolate_);
 }
 
 void XMLHttpRequest::InitResponseDocument() {
@@ -399,12 +390,28 @@ Document* XMLHttpRequest::responseXML(ExceptionState& exception_state) {
   return response_document_;
 }
 
+v8::Local<v8::Value> XMLHttpRequest::ResponseJSON(
+    v8::Isolate* isolate,
+    ExceptionState& exception_state) {
+  DCHECK_EQ(response_type_code_, kResponseTypeJSON);
+  DCHECK(!error_);
+  DCHECK_EQ(state_, kDone);
+  // Catch syntax error. Swallows an exception (when thrown) as the
+  // spec says. https://xhr.spec.whatwg.org/#response-body
+  v8::Local<v8::Value> json =
+      FromJSONString(isolate, isolate->GetCurrentContext(),
+                     response_text_.Flatten(isolate), exception_state);
+  if (exception_state.HadException()) {
+    exception_state.ClearException();
+    return v8::Null(isolate);
+  }
+  return json;
+}
+
 Blob* XMLHttpRequest::ResponseBlob() {
   DCHECK_EQ(response_type_code_, kResponseTypeBlob);
-
-  // We always return null before kDone.
-  if (error_ || state_ != kDone)
-    return nullptr;
+  DCHECK(!error_);
+  DCHECK_EQ(state_, kDone);
 
   if (!response_blob_) {
     auto blob_data = std::make_unique<BlobData>();
@@ -426,9 +433,8 @@ Blob* XMLHttpRequest::ResponseBlob() {
 
 DOMArrayBuffer* XMLHttpRequest::ResponseArrayBuffer() {
   DCHECK_EQ(response_type_code_, kResponseTypeArrayBuffer);
-
-  if (error_ || state_ != kDone)
-    return nullptr;
+  DCHECK(!error_);
+  DCHECK_EQ(state_, kDone);
 
   if (!response_array_buffer_ && !response_array_buffer_failure_) {
     if (binary_response_builder_ && binary_response_builder_->size()) {
@@ -455,6 +461,50 @@ DOMArrayBuffer* XMLHttpRequest::ResponseArrayBuffer() {
   }
 
   return response_array_buffer_;
+}
+
+// https://xhr.spec.whatwg.org/#dom-xmlhttprequest-response
+ScriptValue XMLHttpRequest::response(ScriptState* script_state,
+                                     ExceptionState& exception_state) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+
+  // The spec handles default or `text` responses as a special case, because
+  // these cases are allowed to access the response while still loading.
+  if (response_type_code_ == kResponseTypeDefault ||
+      response_type_code_ == kResponseTypeText) {
+    const auto& text = responseText(exception_state);
+    if (exception_state.HadException()) {
+      return ScriptValue();
+    }
+    return ScriptValue(isolate,
+                       ToV8Traits<IDLString>::ToV8(script_state, text));
+  }
+
+  if (error_ || state_ != kDone) {
+    return ScriptValue(isolate, v8::Null(isolate));
+  }
+
+  switch (response_type_code_) {
+    case kResponseTypeJSON:
+      return ScriptValue(isolate, ResponseJSON(isolate, exception_state));
+    case kResponseTypeDocument: {
+      Document* document = responseXML(exception_state);
+      if (exception_state.HadException()) {
+        return ScriptValue();
+      }
+      return ScriptValue(isolate,
+                         ToV8Traits<Document>::ToV8(script_state, document));
+    }
+    case kResponseTypeBlob:
+      return ScriptValue(isolate,
+                         ToV8Traits<Blob>::ToV8(script_state, ResponseBlob()));
+    case kResponseTypeArrayBuffer:
+      return ScriptValue(isolate, ToV8Traits<DOMArrayBuffer>::ToV8(
+                                      script_state, ResponseArrayBuffer()));
+    default:
+      NOTREACHED();
+      return ScriptValue();
+  }
 }
 
 void XMLHttpRequest::setTimeout(unsigned timeout,

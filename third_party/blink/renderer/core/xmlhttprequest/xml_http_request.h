@@ -70,6 +70,7 @@ class ExecutionContext;
 class FormData;
 class PrivateToken;
 class ScriptState;
+class ScriptValue;
 class TextResourceDecoder;
 class ThreadableLoader;
 class URLSearchParams;
@@ -153,11 +154,9 @@ class CORE_EXPORT XMLHttpRequest final
   void overrideMimeType(const AtomicString& override, ExceptionState&);
   String getAllResponseHeaders() const;
   const AtomicString& getResponseHeader(const AtomicString&) const;
-  v8::Local<v8::String> responseText(ExceptionState&);
-  v8::Local<v8::String> ResponseJSONSource();
+  String responseText(ExceptionState&);
   Document* responseXML(ExceptionState&);
-  Blob* ResponseBlob();
-  DOMArrayBuffer* ResponseArrayBuffer();
+  ScriptValue response(ScriptState*, ExceptionState&);
   unsigned timeout() const {
     return static_cast<unsigned>(timeout_.InMilliseconds());
   }
@@ -211,6 +210,10 @@ class CORE_EXPORT XMLHttpRequest final
   void NotifyParserStopped() override;
 
   void EndLoading();
+
+  v8::Local<v8::Value> ResponseJSON(v8::Isolate*, ExceptionState&);
+  Blob* ResponseBlob();
+  DOMArrayBuffer* ResponseArrayBuffer();
 
   // Returns the MIME type part of mime_type_override_ if present and
   // successfully parsed, or returns one of the "Content-Type" header value
