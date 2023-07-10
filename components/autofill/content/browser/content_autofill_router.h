@@ -297,10 +297,13 @@ class ContentAutofillRouter {
                        const FormData& form));
   void UndoAutofill(
       ContentAutofillDriver* source,
+      mojom::RendererFormDataAction renderer_action,
       const FormData& data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
-      void (*callback)(ContentAutofillDriver* target, const FormData& form));
+      void (*callback)(ContentAutofillDriver* target,
+                       const FormData& form,
+                       mojom::RendererFormDataAction renderer_action));
   void SendAutofillTypePredictionsToRenderer(
       ContentAutofillDriver* source,
       const std::vector<FormDataPredictions>& type_predictions,

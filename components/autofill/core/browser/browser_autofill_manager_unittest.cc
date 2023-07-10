@@ -520,7 +520,8 @@ class MockAutofillDriver : public TestAutofillDriver {
               (override));
   MOCK_METHOD(void,
               UndoAutofill,
-              (const FormData& data,
+              (mojom::RendererFormDataAction renderer_action,
+               const FormData& data,
                const url::Origin& triggered_origin,
                (const base::flat_map<FieldGlobalId, ServerFieldType>&)),
               (override));
@@ -2940,7 +2941,7 @@ TEST_F(BrowserAutofillManagerTest, UndoAutofillCallsDriver) {
       personal_data().GetProfiles().front(), /*optional_cvc=*/nullptr,
       form_structure, autofill_field);
 
-  EXPECT_CALL(*autofill_driver_, UndoAutofill(_, _, _));
+  EXPECT_CALL(*autofill_driver_, UndoAutofill);
   browser_autofill_manager_->UndoAutofill(mojom::RendererFormDataAction::kFill,
                                           form, form.fields.front());
 }

@@ -41,6 +41,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -702,7 +703,9 @@ void AutofillAgent::FillOrPreviewForm(const FormData& form,
   }
 }
 
-void AutofillAgent::UndoAutofill(const FormData& form) {
+void AutofillAgent::UndoAutofill(
+    const FormData& form,
+    mojom::RendererFormDataAction renderer_action) {
   // If `element_` is null or not focused, Undo was either triggered from
   // another frame or the `element_` has been detached from the DOM or the focus
   // was moved otherwise. If `element_` is from a different form than `form`,
@@ -726,7 +729,9 @@ void AutofillAgent::UndoAutofill(const FormData& form) {
   if (element_.IsNull()) {
     return;
   }
-  form_util::UndoForm(form, element_);
+  if (renderer_action == mojom::RendererFormDataAction::kFill) {
+    form_util::UndoForm(form, element_);
+  }
 }
 
 void AutofillAgent::FieldTypePredictionsAvailable(

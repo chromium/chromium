@@ -19,6 +19,7 @@
 #include "components/autofill/content/renderer/test_password_autofill_agent.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/render_view_test.h"
@@ -354,7 +355,7 @@ TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
       form_util::EXTRACT_VALUE, &form, nullptr));
 
   ASSERT_TRUE(autofill_agent_->focused_element().IsNull());
-  autofill_agent_->UndoAutofill(form);
+  autofill_agent_->UndoAutofill(form, mojom::RendererFormDataAction::kFill);
   EXPECT_FALSE(autofill_agent_->focused_element().IsNull());
 }
 

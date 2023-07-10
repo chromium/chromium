@@ -192,7 +192,8 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
     CallDone();
   }
 
-  void UndoAutofill(const FormData& form) override {}
+  void UndoAutofill(const FormData& form,
+                    mojom::RendererFormDataAction renderer_action) override {}
 
   void FieldTypePredictionsAvailable(
       const std::vector<FormDataPredictions>& forms) override {

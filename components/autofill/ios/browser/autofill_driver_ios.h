@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "ios/web/public/js_messaging/web_frame_user_data.h"
 #include "url/origin.h"
 
@@ -59,7 +60,8 @@ class AutofillDriverIOS : public AutofillDriver,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       override;
-  void UndoAutofill(const FormData& data,
+  void UndoAutofill(mojom::RendererFormDataAction renderer_action,
+                    const FormData& data,
                     const url::Origin& triggered_origin,
                     const base::flat_map<FieldGlobalId, ServerFieldType>&
                         field_type_map) override;

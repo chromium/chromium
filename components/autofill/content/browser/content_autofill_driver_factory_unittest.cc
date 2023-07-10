@@ -77,7 +77,11 @@ class MockAutofillAgent : public mojom::AutofillAgent {
               FillOrPreviewForm,
               (const FormData& form, mojom::RendererFormDataAction action),
               (override));
-  MOCK_METHOD(void, UndoAutofill, (const FormData& form), (override));
+  MOCK_METHOD(void,
+              UndoAutofill,
+              (const FormData& form,
+               mojom::RendererFormDataAction renderer_action),
+              (override));
   MOCK_METHOD(void,
               FieldTypePredictionsAvailable,
               (const std::vector<FormDataPredictions>& forms),

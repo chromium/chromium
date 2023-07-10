@@ -238,16 +238,18 @@ std::vector<FieldGlobalId> ContentAutofillDriver::FillOrPreviewForm(
 }
 
 void ContentAutofillDriver::UndoAutofill(
+    mojom::RendererFormDataAction renderer_action,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
   return autofill_router().UndoAutofill(
-      this, data, triggered_origin, field_type_map,
-      [](ContentAutofillDriver* target, const FormData& data) {
+      this, renderer_action, data, triggered_origin, field_type_map,
+      [](ContentAutofillDriver* target, const FormData& data,
+         mojom::RendererFormDataAction renderer_action) {
         if (!target->RendererIsAvailable()) {
           return;
         }
-        target->GetAutofillAgent()->UndoAutofill(data);
+        target->GetAutofillAgent()->UndoAutofill(data, renderer_action);
       });
 }
 

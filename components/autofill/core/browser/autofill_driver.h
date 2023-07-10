@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "net/base/isolation_info.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "url/origin.h"
@@ -162,6 +163,7 @@ class AutofillDriver {
   //
   // This method is a no-op if the renderer is not currently available.
   virtual void UndoAutofill(
+      mojom::RendererFormDataAction renderer_action,
       const FormData& data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) = 0;

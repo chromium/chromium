@@ -524,16 +524,19 @@ std::vector<FieldGlobalId> ContentAutofillRouter::FillOrPreviewForm(
 
 void ContentAutofillRouter::UndoAutofill(
     ContentAutofillDriver* source,
+    mojom::RendererFormDataAction renderer_action,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
-    void (*callback)(ContentAutofillDriver* target, const FormData& form)) {
+    void (*callback)(ContentAutofillDriver* target,
+                     const FormData& form,
+                     mojom::RendererFormDataAction renderer_action)) {
   internal::FormForest::RendererForms renderer_forms =
       form_forest_.GetRendererFormsOfBrowserForm(data, triggered_origin,
                                                  field_type_map);
   for (const FormData& renderer_form : renderer_forms.renderer_forms) {
     if (auto* target = DriverOfFrame(renderer_form.host_frame)) {
-      callback(target, renderer_form);
+      callback(target, renderer_form, renderer_action);
     }
   }
 }

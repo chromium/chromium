@@ -1379,7 +1379,7 @@ void BrowserAutofillManager::UndoAutofill(
         operation.GetAutofillValue(field.global_id());
   }
 
-  driver()->UndoAutofill(form, operation.GetOrigin(),
+  driver()->UndoAutofill(renderer_action, form, operation.GetOrigin(),
                          operation.GetFieldTypeMap());
   // Do not clear history on previews as it might be used for future previews or
   // for the filling.
