@@ -447,6 +447,13 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
     }
   }
 
+  if (base::FeatureList::IsEnabled(features::kSuspendToDisk)) {
+    values.hibernate_delay_sec =
+        features::kHibernateAfterTimeHours.Get() * 3600;
+  } else {
+    values.hibernate_delay_sec = 0;
+  }
+
   power_policy_controller_->ApplyPrefs(values);
 }
 

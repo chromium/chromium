@@ -131,6 +131,7 @@ std::string GetExpectedPowerPolicyForPrefs(PrefService* prefs,
       power_manager::PowerManagementPolicy::BatteryChargeMode::ADAPTIVE);
   expected_policy.set_boot_on_ac(false);
   expected_policy.set_usb_power_share(true);
+  expected_policy.set_hibernate_delay_sec(0);
 
   expected_policy.set_reason("Prefs");
   return chromeos::PowerPolicyController::GetPolicyDebugString(expected_policy);
