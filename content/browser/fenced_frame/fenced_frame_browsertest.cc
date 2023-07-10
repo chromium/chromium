@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, AboutBlankNavigation) {
   ASSERT_EQ(1ul, fenced_frames.size());
   FencedFrame* fenced_frame = fenced_frames.back();
 
-  // Exepct the origin is correct.
+  // Expect the origin is correct.
   EXPECT_EQ(url::Origin::Create(fenced_frame_url),
             EvalJs(fenced_frame->GetInnerRoot(), "self.origin;"));
 
@@ -283,8 +283,41 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, AboutBlankNavigation) {
                      "FencedFrameConfig('about:blank');"));
   observer.Wait();
 
-  EXPECT_TRUE(!fenced_frame->GetInnerRoot()->IsErrorDocument());
+  EXPECT_FALSE(fenced_frame->GetInnerRoot()->IsErrorDocument());
   EXPECT_EQ("null", EvalJs(fenced_frame->GetInnerRoot(), "self.origin;"));
+  EXPECT_EQ("about:blank",
+            EvalJs(fenced_frame->GetInnerRoot(), "window.location.href"));
+}
+
+IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
+                       SettingNullConfigNavigatesToAboutBlank) {
+  ASSERT_TRUE(https_server()->Start());
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHostImpl* primary_rfh = primary_main_frame_host();
+
+  const GURL fenced_frame_url =
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
+  fenced_frame_test_helper().CreateFencedFrame(primary_rfh, fenced_frame_url);
+
+  std::vector<FencedFrame*> fenced_frames = primary_rfh->GetFencedFrames();
+  ASSERT_EQ(1ul, fenced_frames.size());
+  FencedFrame* fenced_frame = fenced_frames.back();
+
+  // Expect the origin is correct.
+  EXPECT_EQ(url::Origin::Create(fenced_frame_url),
+            EvalJs(fenced_frame->GetInnerRoot(), "self.origin;"));
+
+  TestFrameNavigationObserver observer(fenced_frame->GetInnerRoot());
+  EXPECT_TRUE(ExecJs(primary_rfh,
+                     "document.querySelector('fencedframe').config = null;"));
+  observer.Wait();
+
+  EXPECT_FALSE(fenced_frame->GetInnerRoot()->IsErrorDocument());
+  EXPECT_EQ("null", EvalJs(fenced_frame->GetInnerRoot(), "self.origin;"));
+  EXPECT_EQ("about:blank",
+            EvalJs(fenced_frame->GetInnerRoot(), "window.location.href"));
 }
 
 IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, FrameIteration) {

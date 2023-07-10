@@ -114,7 +114,11 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   HTMLIFrameElement* InnerIFrameElement() const;
 
   FencedFrameConfig* config() const { return config_; }
+
+  // Sets the FencedFrameConfig that this FencedFrame uses, and navigates the
+  // frame to the config's URL. If `config` is null, navigates to about:blank.
   void setConfig(FencedFrameConfig* config);
+
   // Web-exposed API that returns whether an opaque-ads fenced frame would be
   // allowed to be created in the current active document of this node.
   // Note: This function is deprecated. Please use
