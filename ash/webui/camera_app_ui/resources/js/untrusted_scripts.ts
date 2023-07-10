@@ -4,6 +4,7 @@
 
 import {assert, assertExists} from './assert.js';
 import * as Comlink from './lib/comlink.js';
+import {isLocalDev} from './models/load_time_data.js';
 import {
   Ga4EventParams,
   Ga4MetricDimension,
@@ -27,9 +28,13 @@ export function createUntrustedIframe(): UntrustedIFrame {
   const untrustedPageReady = new WaitableEvent();
   const iframe = document.createElement('iframe');
   iframe.addEventListener('load', () => untrustedPageReady.signal());
-  iframe.setAttribute(
-      'src',
-      'chrome-untrusted://camera-app/views/untrusted_script_loader.html');
+  if (isLocalDev()) {
+    iframe.setAttribute('src', '/views/untrusted_script_loader.html');
+  } else {
+    iframe.setAttribute(
+        'src',
+        'chrome-untrusted://camera-app/views/untrusted_script_loader.html');
+  }
   iframe.hidden = true;
   document.body.appendChild(iframe);
   return {iframe, pageReadyEvent: untrustedPageReady};

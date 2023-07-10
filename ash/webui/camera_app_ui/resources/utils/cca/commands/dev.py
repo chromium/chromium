@@ -217,7 +217,11 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
             # This is not actually use since we returns jelly = false.
             return self._send_200("export const ColorChangeUpdater = null;")
 
-        if path.startswith("/js/"):
+        if path == "/js/lib/analytics.js" or path == "/js/lib/ffmpeg.js":
+            # These two files aren't compiled.
+            return super().do_GET()
+
+        if path.endswith('.js'):
             return self._run_handler(
                 PathHandler(root=self.tsc_root, transform=self._transform_js))
 
