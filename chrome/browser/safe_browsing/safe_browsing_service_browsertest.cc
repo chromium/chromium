@@ -865,7 +865,14 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
   EXPECT_TRUE(hit_report().is_subresource);
 }
 
-IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, SubResourceHitOnFreshTab) {
+#if (BUILDFLAG(IS_LINUX))
+// TODO(crbug.com/1463452): Address Linux-specific flaky failure.
+#define MAYBE_SubResourceHitOnFreshTab DISABLED_SubResourceHitOnFreshTab
+#else
+#define MAYBE_SubResourceHitOnFreshTab SubResourceHitOnFreshTab
+#endif
+IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
+                       MAYBE_SubResourceHitOnFreshTab) {
   // Allow popups.
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
       ->SetDefaultContentSetting(ContentSettingsType::POPUPS,
