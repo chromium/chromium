@@ -4607,8 +4607,6 @@ crbug.com/1171331 [ Mac11-arm64 Release ] tables/mozilla_expected_failures/bugs/
 crbug.com/1171331 [ Mac12 ] tables/mozilla_expected_failures/bugs/bug89315.html [ Failure Pass ]
 crbug.com/1171331 [ Mac12-arm64 Release ] tables/mozilla_expected_failures/bugs/bug89315.html [ Failure Pass ]
 
-# flaky test
-crbug.com/1173956 http/tests/xsl/xslt-transform-with-javascript-disabled.html [ Failure Pass ]
 
 # No support for key combinations like Alt + c in testdriver.Actions for content_shell
 crbug.com/893480 external/wpt/uievents/interface/keyboard-accesskey-click-event.html [ Timeout ]
@@ -6284,7 +6282,6 @@ crbug.com/1392077 external/wpt/screen-orientation/orientation-reading.html [ Fai
 crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/182.html [ Failure Pass ]
 crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/23-55.html [ Failure Pass ]
 crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/55.html [ Failure Pass ]
-crbug.com/1393056 [ Mac11-arm64 Release ] inspector-protocol/debugger/debugger-evaluate-in-worker-while-pause-in-page.js [ Failure Pass Timeout ]
 
 
 # Sheriff 2022-11-28
@@ -6442,7 +6439,6 @@ crbug.com/1443871 [ Mac10.15 ] virtual/text-antialias/mac-system-ui-weight.html 
 # Failures on Mac13 2023-05-18
 crbug.com/1446037 [ Debug Mac13 ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Timeout ]
 crbug.com/1446037 [ Debug Mac13 ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Timeout ]
-crbug.com/1446038 [ Debug Mac13 ] external/wpt/webaudio/the-audio-api/the-audioworklet-interface/audioworkletnode-output-channel-count.https.html [ Crash Failure ]
 crbug.com/1446038 [ Debug Mac13 ] external/wpt/webaudio/the-audio-api/the-audioworklet-interface/audioworkletprocessor-process-frozen-array.https.html [ Crash Failure ]
 crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.any.html [ Failure Pass ]
 crbug.com/1446040 [ Mac13 ] virtual/oopr-canvas2d/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
@@ -6517,7 +6513,6 @@ crbug.com/1452222 [ Debug Linux ] http/tests/devtools/sources/debugger-breakpoin
 crbug.com/1453235 [ Mac ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html [ Failure Pass Timeout ]
 crbug.com/1453398 [ Linux ] images/image-hover-display-alt.html [ Failure Pass ]
 crbug.com/1451895 [ Linux ] external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html [ Failure Pass ]
-crbug.com/1451895 [ Linux ] virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html [ Failure Pass ]
 
 # Since HTTPS upgrades run in the //chrome layer, these will fail when ran in content shell.
 external/wpt/https-upgrades/tentative/upgrade.https.sub.html [ Timeout ]
