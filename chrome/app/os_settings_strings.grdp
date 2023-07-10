@@ -1146,10 +1146,10 @@
   <message name="IDS_SETTINGS_HIGH_CONTRAST_DESCRIPTION" desc="Label for checkbox which enables high-contrast UI.">
     Turn light screens dark, and dark screens light. Press Search + Ctrl + H to turn color inversion on and off.
   </message>
-  <message name="IDS_SETTINGS_COLOR_FILTERING_LABEL" desc="Label for a checkbox which enables color filtering settings.">
+  <message name="IDS_SETTINGS_COLOR_FILTERING_LABEL" desc="Label for a checkbox which enables color correction settings.">
     Color correction
   </message>
-  <message name="IDS_SETTINGS_COLOR_FILTERING_DESCRIPTION" desc="Description for a checkbox which enables color filtering settings.">
+  <message name="IDS_SETTINGS_COLOR_FILTERING_DESCRIPTION" desc="Description for a checkbox which enables color correction settings.">
     Adjust how colors display on your screen
   </message>
   <message name="IDS_SETTINGS_GREYSCALE_LABEL" desc="Label for slider which controls grayscale UI filter.">
@@ -1176,31 +1176,31 @@
   <message name="IDS_SETTINGS_COLOR_FILTER_MAXIMUM_LABEL" desc="Label for the side of the color filter slider control that causes the most visual change.">
     100
   </message>
-  <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_INSTRUCTIONS" desc="The insructions for users to preview the effects of color filtering by looking at how some color swatches change as the filter settings change">
+  <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_INSTRUCTIONS" desc="The insructions for users to preview the effects of color correction by looking at how some color swatches change as the filter settings change">
     Adjust the color correction settings to make sure colors are distinct
   </message>
-  <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_RED" desc="The label for a swatch of red color which is shown for users to preview the effects of color filtering">
+  <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_RED" desc="The label for a swatch of red color which is shown for users to preview the effects of color correction.">
     Red
   </message>
-  <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_ORANGE" desc="The label for a swatch of orange color which is shown for users to preview the effects of color filtering">
+  <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_ORANGE" desc="The label for a swatch of orange color which is shown for users to preview the effects of color correction.">
     Orange
   </message>
-  <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_YELLOW" desc="The label for a swatch of yellow color which is shown for users to preview the effects of color filtering">
+  <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_YELLOW" desc="The label for a swatch of yellow color which is shown for users to preview the effects of color correction.">
     Yellow
   </message>
-    <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_GREEN" desc="The label for a swatch of green color which is shown for users to preview the effects of color filtering">
+    <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_GREEN" desc="The label for a swatch of green color which is shown for users to preview the effects of color correction.">
     Green
   </message>
-    <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_CYAN" desc="The label for a swatch of cyan color which is shown for users to preview the effects of color filtering">
+    <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_CYAN" desc="The label for a swatch of cyan color which is shown for users to preview the effects of color correction.">
     Cyan
   </message>
-    <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_BLUE" desc="The label for a swatch of blue color which is shown for users to preview the effects of color filtering">
+    <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_BLUE" desc="The label for a swatch of blue color which is shown for users to preview the effects of color correction.">
     Blue
   </message>
-  <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_PURPLE" desc="The label for a swatch of purple color which is shown for users to preview the effects of color filtering">
+  <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_PURPLE" desc="The label for a swatch of purple color which is shown for users to preview the effects of color correction.">
     Purple
   </message>
-  <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_GRAY" desc="The label for a swatch of gray color which is shown for users to preview the effects of color filtering">
+  <message name="IDS_SETTINGS_COLOR_FILTERING_PREVIEW_COLOR_GRAY" desc="The label for a swatch of gray color which is shown for users to preview the effects of color correction.">
     Gray
   </message>
   <message name="IDS_SETTINGS_STICKY_KEYS_LABEL" desc="Label for checkbox which enables sticky keys, with an explanation of the term 'sticky keys'.">
@@ -2074,8 +2074,11 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_TITLE" desc="In the settings tab, the title of a link that opens a screen allowing the user to change display and magnification accessibility features.">
     Display and magnification
   </message>
-  <message name="IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change keyboard and text input accessibility features.">
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change display and magnification accessibility features.">
     Color inversion, magnifier, and display settings
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_NEW_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change display and magnification accessibility features, including the new color correction feature.">
+    Color inversion, color correction, magnifier, and display settings
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_AND_TEXT_INPUT_LINK_TITLE" desc="In the settings tab, the title of a link that opens a screen allowing the user to change keyboard and text input accessibility features.">
     Keyboard and text input

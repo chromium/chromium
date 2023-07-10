@@ -460,6 +460,13 @@ bool AreTabletNavigationButtonsAllowed() {
          TabletMode::IsBoardTypeMarkedAsTabletCapable();
 }
 
+int GetDisplayAndMangificationLinkDescriptionResourceId() {
+  if (AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
+    return IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_NEW_DESCRIPTION;
+  }
+  return IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_DESCRIPTION;
+}
+
 }  // namespace
 
 AccessibilitySection::AccessibilitySection(
@@ -730,8 +737,6 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_ERROR},
       {"dictationLocaleSubLabelOffline",
        IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_OFFLINE},
-      {"displayAndMagnificationLinkDescription",
-       IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_DESCRIPTION},
       {"displayAndMagnificationLinkTitle",
        IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_TITLE},
       {"displayHeading", IDS_SETTINGS_ACCESSIBILITY_DISPLAY_HEADING},
@@ -1085,6 +1090,11 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddString("selectToSpeakLearnMoreUrl",
                          chrome::kSelectToSpeakLearnMoreURL);
+
+  html_source->AddString(
+      "displayAndMagnificationLinkDescription",
+      l10n_util::GetStringUTF16(
+          GetDisplayAndMangificationLinkDescriptionResourceId()));
 
   html_source->AddBoolean(
       "showExperimentalAccessibilitySwitchAccessImprovedTextInput",
