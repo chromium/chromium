@@ -91,12 +91,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.CookiesSize" units="MB" expires_after="2022-06-26">
-  <owner>etienneb@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <summary>Size of the cookies database.</summary>
-</histogram>
-
 <histogram name="Profile.DeleteProfileAction" enum="ProfileDeleteAction"
     expires_after="never">
 <!-- expires-never: Used to log the profile deletions actions and their source.
@@ -160,18 +154,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.ExtensionSize" units="MB" expires_after="2022-06-19">
-  <owner>etienneb@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <summary>Size of the extension cookies database.</summary>
-</histogram>
-
-<histogram name="Profile.FaviconsSize" units="MB" expires_after="2022-06-26">
-  <owner>etienneb@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <summary>Size of the favicons database.</summary>
-</histogram>
-
 <histogram name="Profile.Guest.ForcedByPolicy" enum="BooleanForced"
     expires_after="2023-08-27">
   <owner>rhalavati@chromium.org</owner>
@@ -201,12 +183,6 @@ chromium-metrics-reviews@google.com.
     first child (off-the-record) guest profile for the active parent guest
     profile. It is recorded during the guest profile creation.
   </summary>
-</histogram>
-
-<histogram name="Profile.HistorySize" units="MB" expires_after="2022-06-26">
-  <owner>etienneb@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <summary>Size of the history database.</summary>
 </histogram>
 
 <histogram name="Profile.Incognito.Lifetime" units="minutes"
@@ -565,19 +541,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.TopSitesSize" units="MB" expires_after="2022-07-03">
-  <owner>etienneb@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <summary>Size of the top sites database.</summary>
-</histogram>
-
-<histogram name="Profile.TotalHistorySize" units="MB"
-    expires_after="2022-08-01">
-  <owner>etienneb@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <summary>Total size of all history databases.</summary>
-</histogram>
-
 <histogram name="Profile.TotalSize" units="MB" expires_after="2023-08-27">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
@@ -632,19 +595,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.VisitedLinksSize" units="MB"
-    expires_after="2022-07-03">
-  <owner>etienneb@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <summary>Size of the visited links database.</summary>
-</histogram>
-
-<histogram name="Profile.WebDataSize" units="MB" expires_after="2022-07-03">
-  <owner>etienneb@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <summary>Size of the web data database.</summary>
-</histogram>
-
 <histogram name="Profile.ZombieProfileCount" units="profiles"
     expires_after="2023-12-10">
   <owner>nicolaso@chromium.org</owner>
@@ -668,6 +618,27 @@ chromium-metrics-reviews@google.com.
     See also Profile.LiveProfileCount, the number of profiles with a non-zero
     refcount.
   </summary>
+</histogram>
+
+<histogram name="Profile.{Database}Size" units="MB" expires_after="2023-12-30">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Size of the {Database} database.
+
+    These metrics were expired between July 2022 and June 2023 and may be
+    missing data.
+  </summary>
+  <token key="Database">
+    <variant name="Cookies"/>
+    <variant name="Extension"/>
+    <variant name="Favicons"/>
+    <variant name="History"/>
+    <variant name="TopSites"/>
+    <variant name="TotalHistory"/>
+    <variant name="VisitedLinks"/>
+    <variant name="WebData"/>
+  </token>
 </histogram>
 
 <histogram name="ProfileChooser.HasProfilesShown" enum="BooleanShown"
