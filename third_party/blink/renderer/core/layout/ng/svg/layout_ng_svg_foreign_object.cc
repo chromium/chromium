@@ -198,7 +198,7 @@ bool LayoutNGSVGForeignObject::NodeAtPointFromSVG(
   HitTestLocation local_without_offset(*local_location, -PhysicalLocation());
   HitTestResult layer_result(result.GetHitTestRequest(), local_without_offset);
   bool retval = Layer()->HitTest(local_without_offset, layer_result,
-                                 PhysicalRect(PhysicalRect::InfiniteIntRect()));
+                                 PhysicalRect(InfiniteIntRect()));
 
   // Preserve the "point in inner node frame" from the original request,
   // since |layer_result| is a hit test rooted at the <foreignObject> element,

@@ -450,7 +450,7 @@ template <typename Result>
 void ConversionContext<Result>::StartClip(
     const FloatRoundedRect& combined_clip_rect,
     const ClipPaintPropertyNode& lowest_combined_clip_node) {
-  if (combined_clip_rect.Rect() == gfx::RectF(LayoutRect::InfiniteIntRect())) {
+  if (combined_clip_rect.Rect() == gfx::RectF(InfiniteIntRect())) {
     PushState(StateEntry::kClipOmitted);
   } else {
     const auto& local_transform =

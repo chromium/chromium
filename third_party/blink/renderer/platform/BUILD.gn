@@ -764,6 +764,7 @@ component("platform") {
     "geometry/float_rounded_rect.h",
     "geometry/geometry_as_json.h",
     "geometry/geometry_hash_traits.h",
+    "geometry/infinite_int_rect.h",
     "geometry/layout_point.cc",
     "geometry/layout_point.h",
     "geometry/layout_rect.cc",

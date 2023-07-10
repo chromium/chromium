@@ -335,7 +335,7 @@ TEST_F(PaintLayerClipperTest, CSSClip) {
 
   PaintLayer* target = GetPaintLayerByElementId("target");
   ClipRectsContext context(target, &target->GetLayoutObject().FirstFragment());
-  PhysicalRect infinite_rect(LayoutRect::InfiniteIntRect());
+  PhysicalRect infinite_rect(InfiniteIntRect());
   PhysicalOffset layer_offset = infinite_rect.offset;
   ClipRect background_rect(infinite_rect);
   ClipRect foreground_rect(infinite_rect);
@@ -363,7 +363,7 @@ TEST_F(PaintLayerClipperTest, Filter) {
 
   // First test clip rects in the target layer itself.
   ClipRectsContext context(target, &target->GetLayoutObject().FirstFragment());
-  PhysicalRect infinite_rect(LayoutRect::InfiniteIntRect());
+  PhysicalRect infinite_rect(InfiniteIntRect());
   PhysicalOffset layer_offset = infinite_rect.offset;
   ClipRect background_rect(infinite_rect);
   ClipRect foreground_rect(infinite_rect);
@@ -413,7 +413,7 @@ TEST_F(PaintLayerClipperTest, IgnoreRootLayerClipWithCSSClip) {
   PaintLayer* target = GetPaintLayerByElementId("target");
   ClipRectsContext context(root, &root->GetLayoutObject().FirstFragment(),
                            kIgnoreOverlayScrollbarSize, kIgnoreOverflowClip);
-  PhysicalRect infinite_rect(LayoutRect::InfiniteIntRect());
+  PhysicalRect infinite_rect(InfiniteIntRect());
   PhysicalOffset layer_offset = infinite_rect.offset;
   ClipRect background_rect(infinite_rect);
   ClipRect foreground_rect(infinite_rect);
@@ -445,7 +445,7 @@ TEST_F(PaintLayerClipperTest, IgnoreRootLayerClipWithOverflowClip) {
   PaintLayer* target = GetPaintLayerByElementId("target");
   ClipRectsContext context(root, &root->GetLayoutObject().FirstFragment(),
                            kIgnoreOverlayScrollbarSize, kIgnoreOverflowClip);
-  PhysicalOffset layer_offset(LayoutRect::InfiniteIntRect().origin());
+  PhysicalOffset layer_offset(InfiniteIntRect().origin());
   ClipRect background_rect;
   ClipRect foreground_rect;
   target->Clipper().CalculateRects(
@@ -477,7 +477,7 @@ TEST_F(PaintLayerClipperTest, IgnoreRootLayerClipWithBothClip) {
   PaintLayer* target = GetPaintLayerByElementId("target");
   ClipRectsContext context(root, &root->GetLayoutObject().FirstFragment(),
                            kIgnoreOverlayScrollbarSize, kIgnoreOverflowClip);
-  PhysicalRect infinite_rect(LayoutRect::InfiniteIntRect());
+  PhysicalRect infinite_rect(InfiniteIntRect());
   PhysicalOffset layer_offset = infinite_rect.offset;
   ClipRect background_rect(infinite_rect);
   ClipRect foreground_rect(infinite_rect);

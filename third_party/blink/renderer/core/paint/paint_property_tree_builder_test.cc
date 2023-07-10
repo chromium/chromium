@@ -4756,8 +4756,7 @@ TEST_P(PaintPropertyTreeBuilderTest, PixelMovingFilter) {
   EXPECT_EQ(&clip->LocalTransformSpace(), &filter->LocalTransformSpace());
   EXPECT_EQ(filter, clip->PixelMovingFilter());
   EXPECT_TRUE(clip->LayoutClipRect().IsInfinite());
-  EXPECT_EQ(gfx::RectF(LayoutRect::InfiniteIntRect()),
-            clip->PaintClipRect().Rect());
+  EXPECT_EQ(gfx::RectF(InfiniteIntRect()), clip->PaintClipRect().Rect());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, SimpleFilterWithWillChangeTransform) {

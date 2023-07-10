@@ -235,7 +235,7 @@ LayoutRect LayoutSVGRoot::ComputeContentsVisualOverflow() const {
   // To condition, we intersect with something that we oftentimes
   // consider to be "infinity".
   return Intersection(EnclosingLayoutRect(content_visual_rect),
-                      LayoutRect(LayoutRect::InfiniteIntRect()));
+                      LayoutRect(InfiniteIntRect()));
 }
 
 void LayoutSVGRoot::PaintReplaced(const PaintInfo& paint_info,

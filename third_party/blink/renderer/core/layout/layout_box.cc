@@ -1915,7 +1915,7 @@ gfx::Vector2d LayoutBox::PixelSnappedScrolledContentOffset() const {
 
 PhysicalRect LayoutBox::ClippingRect(const PhysicalOffset& location) const {
   NOT_DESTROYED();
-  PhysicalRect result(PhysicalRect::InfiniteIntRect());
+  PhysicalRect result(InfiniteIntRect());
   if (ShouldClipOverflowAlongEitherAxis())
     result = OverflowClipRect(location);
 

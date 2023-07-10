@@ -68,7 +68,7 @@ SimCanvas::Commands SimCompositor::PaintFrame() {
   frame->View()->PaintOutsideOfLifecycleWithThrottlingAllowed(
       builder->Context(), PaintFlag::kOmitCompositingInfo);
 
-  auto infinite_rect = LayoutRect::InfiniteIntRect();
+  auto infinite_rect = InfiniteIntRect();
   SimCanvas canvas(infinite_rect.width(), infinite_rect.height());
   builder->EndRecording().Playback(&canvas);
   return canvas.GetCommands();

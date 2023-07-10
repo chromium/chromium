@@ -160,7 +160,7 @@ TEST_P(ViewPainterTest, FrameScrollHitTestProperties) {
   EXPECT_EQ(nullptr, scroll_hit_test_transform.ScrollNode());
   const auto& scroll_hit_test_clip =
       ToUnaliased(scroll_hit_test_chunk.properties.Clip());
-  EXPECT_EQ(gfx::RectF(LayoutRect::InfiniteIntRect()),
+  EXPECT_EQ(gfx::RectF(InfiniteIntRect()),
             scroll_hit_test_clip.PaintClipRect().Rect());
 
   // The scrolled contents should be scrolled and clipped.

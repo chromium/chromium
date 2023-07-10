@@ -213,7 +213,7 @@ absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
 
     if (!uses_zoomed_reference_box)
       bounding_box = gfx::ScaleRect(bounding_box, 1.f / zoom);
-    bounding_box.Intersect(gfx::RectF(LayoutRect::InfiniteIntRect()));
+    bounding_box.Intersect(gfx::RectF(InfiniteIntRect()));
     return bounding_box;
   }
 
@@ -233,7 +233,7 @@ absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
     // local space is shifted by paint offset.
     bounding_box.Offset(reference_box.OffsetFromOrigin());
   }
-  bounding_box.Intersect(gfx::RectF(LayoutRect::InfiniteIntRect()));
+  bounding_box.Intersect(gfx::RectF(InfiniteIntRect()));
   return bounding_box;
 }
 

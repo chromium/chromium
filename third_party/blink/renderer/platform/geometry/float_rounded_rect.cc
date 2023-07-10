@@ -32,7 +32,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -352,8 +352,9 @@ String FloatRoundedRect::Radii::ToString() const {
 }
 
 String FloatRoundedRect::ToString() const {
-  if (Rect() == gfx::RectF(LayoutRect::InfiniteIntRect()))
+  if (Rect() == gfx::RectF(InfiniteIntRect())) {
     return "InfiniteIntRect";
+  }
   if (GetRadii().IsZero())
     return String(Rect().ToString());
   return String(Rect().ToString()) + " radii:(" + GetRadii().ToString() + ")";

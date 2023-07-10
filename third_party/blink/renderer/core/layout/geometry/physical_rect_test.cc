@@ -6,6 +6,8 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -320,6 +322,26 @@ TEST(PhysicalRectTest, ExpandEdgesToPixelBoundaries) {
                                        LayoutUnit(199.6f), LayoutUnit(350.3f));
   fractional_negpos_rect3.ExpandEdgesToPixelBoundaries();
   EXPECT_EQ(PhysicalRect(-101, -151, 201, 352), fractional_negpos_rect3);
+}
+
+TEST(PhysicalRectTest, InfiniteIntRect) {
+  gfx::Rect r = InfiniteIntRect();
+  EXPECT_TRUE(r.Contains(gfx::Rect(-8000000, -8000000, 16000000, 16000000)));
+
+  // The rect can be converted to PhysicalRect and back without loss of
+  // accuracy.
+  EXPECT_EQ(ToEnclosingRect(PhysicalRect(r)), r);
+  EXPECT_EQ(ToPixelSnappedRect(PhysicalRect(r)), r);
+  for (int i = 0; i < 50; i++) {
+    // Modified rect with visible right/bottom can be converted to gfx::RectF
+    // or LayoutRect and back without loss of accuracy.
+    r.set_width(r.x() + i);
+    r.set_height(r.y() + i + 2000);
+    EXPECT_EQ(gfx::ToEnclosingRect(gfx::RectF(r)), r);
+    EXPECT_EQ(gfx::ToEnclosedRect(gfx::RectF(r)), r);
+    EXPECT_EQ(ToEnclosingRect(PhysicalRect(r)), r);
+    EXPECT_EQ(ToPixelSnappedRect(PhysicalRect(r)), r);
+  }
 }
 
 }  // namespace
