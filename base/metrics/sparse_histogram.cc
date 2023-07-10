@@ -53,7 +53,6 @@ HistogramBase* SparseHistogram::FactoryGet(const std::string& name,
     // persistent allocation fails (perhaps because it is full).
     if (!tentative_histogram) {
       DCHECK(!histogram_ref);  // Should never have been set.
-      DCHECK(!allocator);      // Shouldn't have failed.
       flags &= ~HistogramBase::kIsPersistent;
       tentative_histogram.reset(new SparseHistogram(GetPermanentName(name)));
       tentative_histogram->SetFlags(flags);

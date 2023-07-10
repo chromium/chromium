@@ -194,15 +194,15 @@ PersistentSampleMap::CreatePersistentRecord(
     Sample value) {
   SampleRecord* record = allocator->New<SampleRecord>();
   if (!record) {
+    if (!allocator->IsFull()) {
 #if !BUILDFLAG(IS_NACL)
-    // TODO(crbug/1432981): Remove these. They are used to investigate
-    // unexpected failures.
-    SCOPED_CRASH_KEY_BOOL("PersistentSampleMap", "full", allocator->IsFull());
-    SCOPED_CRASH_KEY_BOOL("PersistentSampleMap", "corrupted",
-                          allocator->IsCorrupt());
+      // TODO(crbug/1432981): Remove these. They are used to investigate
+      // unexpected failures.
+      SCOPED_CRASH_KEY_BOOL("PersistentSampleMap", "corrupted",
+                            allocator->IsCorrupt());
 #endif  // !BUILDFLAG(IS_NACL)
-    NOTREACHED() << "full=" << allocator->IsFull()
-                 << ", corrupt=" << allocator->IsCorrupt();
+      NOTREACHED() << "corrupt=" << allocator->IsCorrupt();
+    }
     return 0;
   }
 
