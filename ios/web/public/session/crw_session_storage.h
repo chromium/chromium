@@ -13,6 +13,7 @@
 
 namespace web {
 namespace proto {
+class WebStateMetadataStorage;
 class WebStateStorage;
 }  // namespace proto
 }  // namespace web
@@ -42,6 +43,9 @@ class WebStateStorage;
 
 // Serializes the CRWSessionStorage into `storage`.
 - (void)serializeToProto:(web::proto::WebStateStorage&)storage;
+
+// Serializes the metadata part of the CRWSessionStorage into `metadata`.
+- (void)serializeMetadataToProto:(web::proto::WebStateMetadataStorage&)metadata;
 
 @end
 

@@ -5,10 +5,15 @@
 #import "ios/web/web_state/web_state_impl_serialized_data.h"
 
 #import "base/strings/string_util.h"
+#import "base/strings/utf_string_conversions.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
-#import "ios/web/public/session/crw_navigation_item_storage.h"
-#import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/session/proto/metadata.pb.h"
+#import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/web_state_observer.h"
+
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -16,16 +21,25 @@
 
 namespace web {
 
-WebStateImpl::SerializedData::SerializedData(WebStateImpl* owner,
-                                             const CreateParams& create_params,
-                                             CRWSessionStorage* session_storage)
+WebStateImpl::SerializedData::SerializedData(
+    WebStateImpl* owner,
+    BrowserState* browser_state,
+    NSString* stable_identifier,
+    SessionID unique_identifier,
+    proto::WebStateMetadataStorage metadata,
+    WebStateStorageLoader storage_loader)
     : owner_(owner),
-      create_params_(create_params),
-      session_storage_(session_storage) {
+      browser_state_(browser_state),
+      stable_identifier_(stable_identifier),
+      unique_identifier_(unique_identifier),
+      creation_time_(TimeFromProto(metadata.creation_time())),
+      last_active_time_(TimeFromProto(metadata.last_active_time())),
+      page_title_(base::UTF8ToUTF16(metadata.active_page().page_title())),
+      page_visible_url_(metadata.active_page().page_url()),
+      navigation_item_count_(metadata.navigation_item_count()),
+      storage_loader_(std::move(storage_loader)) {
   DCHECK(owner_);
-  DCHECK(session_storage_);
-  DCHECK(session_storage_.stableIdentifier.length);
-  DCHECK(session_storage_.uniqueIdentifier.is_valid());
+  DCHECK(browser_state_);
 }
 
 WebStateImpl::SerializedData::~SerializedData() = default;
@@ -39,40 +53,46 @@ void WebStateImpl::SerializedData::TearDown() {
     observer.ResetWebState();
 }
 
-WebState::CreateParams WebStateImpl::SerializedData::GetCreateParams() const {
-  return create_params_;
-}
-
 CRWSessionStorage* WebStateImpl::SerializedData::GetSessionStorage() const {
+  DCHECK(!features::UseSessionSerializationOptimizations());
+  DCHECK(session_storage_);
   return session_storage_;
 }
 
-base::Time WebStateImpl::SerializedData::GetLastActiveTime() const {
-  if (!create_params_.last_active_time.is_null())
-    return create_params_.last_active_time;
+void WebStateImpl::SerializedData::SetSessionStorage(
+    CRWSessionStorage* storage) {
+  DCHECK(!features::UseSessionSerializationOptimizations());
+  session_storage_ = storage;
+  DCHECK(session_storage_);
+}
 
-  return session_storage_.lastActiveTime;
+WebStateImpl::WebStateStorageLoader
+WebStateImpl::SerializedData::TakeStorageLoader() {
+  return std::move(storage_loader_);
+}
+
+base::Time WebStateImpl::SerializedData::GetLastActiveTime() const {
+  return last_active_time_;
 }
 
 base::Time WebStateImpl::SerializedData::GetCreationTime() const {
-  return session_storage_.creationTime;
+  return creation_time_;
 }
 
 BrowserState* WebStateImpl::SerializedData::GetBrowserState() const {
-  return create_params_.browser_state;
+  return browser_state_;
 }
 
 NSString* WebStateImpl::SerializedData::GetStableIdentifier() const {
-  return session_storage_.stableIdentifier;
+  return stable_identifier_;
 }
 
 SessionID WebStateImpl::SerializedData::GetUniqueIdentifier() const {
-  return session_storage_.uniqueIdentifier;
+  return unique_identifier_;
 }
 
 const std::u16string& WebStateImpl::SerializedData::GetTitle() const {
-  CRWNavigationItemStorage* item = GetLastCommittedItem();
-  return item ? item.title : base::EmptyString16();
+  return page_title_;
 }
 
 const FaviconStatus& WebStateImpl::SerializedData::GetFaviconStatus() const {
@@ -85,42 +105,18 @@ void WebStateImpl::SerializedData::SetFaviconStatus(
 }
 
 int WebStateImpl::SerializedData::GetNavigationItemCount() const {
-  return session_storage_.itemStorages.count;
+  return navigation_item_count_;
 }
 
 const GURL& WebStateImpl::SerializedData::GetVisibleURL() const {
   // A restored WebState has no pending item. Thus the visible item is the
   // last committed item. This means that GetVisibleURL() must return the
   // same URL as GetLastCommittedURL().
-  return GetLastCommittedURL();
+  return page_visible_url_;
 }
 
 const GURL& WebStateImpl::SerializedData::GetLastCommittedURL() const {
-  CRWNavigationItemStorage* item = GetLastCommittedItem();
-  return item ? item.virtualURL : GURL::EmptyGURL();
-}
-
-// TODO(crbug.com/1264451): this private method allow to implement `GetTitle()`
-// and `GetLastCommittedURL()` without duplicating code. As of today, the title
-// and URL for the WebState are not saved directly, so this method access them
-// via the serialized NavigationManager state. This will be removed once the
-// format of the WebState serialization is changed to directly saved the title
-// and URL. This implementation allow to test unrealized WebState before the
-// new format is used. This slightly break encapsulation, but this is a private
-// method of a private class and the file format is quite stable, so this seem
-// reasonable as a temporary solution.
-CRWNavigationItemStorage* WebStateImpl::SerializedData::GetLastCommittedItem()
-    const {
-  const NSInteger index = session_storage_.lastCommittedItemIndex;
-  if (index < 0)
-    return nil;
-
-  const NSUInteger uindex = static_cast<NSUInteger>(index);
-  if (session_storage_.itemStorages.count <= uindex) {
-    return nil;
-  }
-
-  return session_storage_.itemStorages[uindex];
+  return page_visible_url_;
 }
 
 }  // namespace web

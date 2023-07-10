@@ -95,7 +95,20 @@ WebStateImpl::WebStateImpl(const CreateParams& params,
         session_storage.userData);
   }
 
-  saved_ = std::make_unique<SerializedData>(this, params, session_storage);
+  // Extract the metadata part from CRWSessionStorage to protobuf message.
+  // The callback convert the data to protobuf message to simulate loading
+  // from disk while using the non-optimised session storage serialization
+  // code.
+  proto::WebStateMetadataStorage metadata;
+  [session_storage serializeMetadataToProto:metadata];
+
+  saved_ = std::make_unique<SerializedData>(
+      this, params.browser_state, session_storage.stableIdentifier,
+      session_storage.uniqueIdentifier, std::move(metadata),
+      base::BindOnce(^(proto::WebStateStorage& inner_storage) {
+        [session_storage serializeToProto:inner_storage];
+      }));
+  saved_->SetSessionStorage(session_storage);
 
   SendGlobalCreationEvent();
 }
@@ -404,11 +417,9 @@ WebState* WebStateImpl::ForceRealized() {
     std::u16string page_title = saved_->GetTitle();
     GURL visible_url = saved_->GetVisibleURL();
 
-    // Convert the CRWSessionStorage to proto::WebStateStorage as this
-    // is the format used for RealizedWebState() serialisation.
+    // Load the storage from disk.
     proto::WebStateStorage storage;
-    CRWSessionStorage* session_storage = saved_->GetSessionStorage();
-    [session_storage serializeToProto:storage];
+    saved_->TakeStorageLoader().Run(storage);
 
     // Delete the SerializedData without calling TearDown() as the WebState
     // itself is not destroyed. The TearDown() method will be called on the

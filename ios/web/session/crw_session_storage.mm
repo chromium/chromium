@@ -102,13 +102,15 @@ NSString* const kTabIdKey = @"TabId";
     [itemStorage serializeToProto:*navigationStorage->add_items()];
   }
 
-  web::proto::WebStateMetadataStorage* metadataStorage =
-      storage.mutable_metadata();
-  web::SerializeTimeToProto(_creationTime,
-                            *metadataStorage->mutable_creation_time());
+  [self serializeMetadataToProto:*storage.mutable_metadata()];
+}
+
+- (void)serializeMetadataToProto:
+    (web::proto::WebStateMetadataStorage&)metadata {
+  web::SerializeTimeToProto(_creationTime, *metadata.mutable_creation_time());
   web::SerializeTimeToProto(_lastActiveTime,
-                            *metadataStorage->mutable_last_active_time());
-  metadataStorage->set_navigation_item_count(_itemStorages.count);
+                            *metadata.mutable_last_active_time());
+  metadata.set_navigation_item_count(_itemStorages.count);
 
   if (_lastCommittedItemIndex >= 0) {
     NSUInteger const activePageIndex =
@@ -117,7 +119,7 @@ NSString* const kTabIdKey = @"TabId";
       CRWNavigationItemStorage* const activePageItem =
           _itemStorages[activePageIndex];
       web::proto::PageMetadataStorage* pageMetadataStorage =
-          metadataStorage->mutable_active_page();
+          metadata.mutable_active_page();
       pageMetadataStorage->set_page_title(
           base::UTF16ToUTF8(activePageItem.title));
       GURL pageURL = activePageItem.virtualURL;

@@ -35,6 +35,9 @@
 enum WKPermissionDecision : NSInteger;
 
 namespace web {
+namespace proto {
+class WebStateStorage;
+}  // namespace proto
 
 class BrowserState;
 struct FaviconURL;
@@ -59,6 +62,11 @@ class WebFramesManagerImpl;
 //    writing them out for session saves.
 class WebStateImpl final : public WebState {
  public:
+  // Callback used to load the full information for the WebState when
+  // it will become realized.
+  using WebStateStorageLoader =
+      base::OnceCallback<void(proto::WebStateStorage&)>;
+
   // Empty structure used to mark the constructor used to implement Clone.
   struct CloneFrom {};
 
