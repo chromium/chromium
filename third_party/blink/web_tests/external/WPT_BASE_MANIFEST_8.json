@@ -107135,6 +107135,19 @@
         {}
        ]
       ],
+      "content-visibility-with-top-layer-in-auto-subtree-removal.html": [
+       "af7be8615260032798f7499dcd317638e6781701",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/container-with-child-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "dynamic-change-paint-fully-obscuring-child-001.html": [
        "781a11ca40a36b4ce5d99c6c0b665ee2ef4d4e2c",
        [
@@ -346435,10 +346448,6 @@
       "2c8ff0c337d845fd3c0a529ea81706e4463f4a14",
       []
      ],
-     "insertlinebreak-with-white-space-style.tentative_pre-line-expected.txt": [
-      "017d95716ba436a0d2efa6c6a9af6486dae3a83d",
-      []
-     ],
      "insertparagraph-in-child-of-head.tentative.html.ini": [
       "2cb60e617687946f61ec2bb2ddc8ed18d8abba04",
       []
@@ -346515,46 +346524,6 @@
       "18f38954ba28cee9be8f9533a01eb3ac94779e17",
       []
      ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=block_method=enter-expected.txt": [
-      "9afea60cfdb8bb02873c87255199ab3d3af075ef",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=block_method=shift-enter-expected.txt": [
-      "6d49be0de36f9de135531c0c9dc6f00f45449f59",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=inline-block_method=enter-expected.txt": [
-      "f23472520f62094b78feb7d08031f594b3a0b7de",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=inline-block_method=shift-enter-expected.txt": [
-      "3e42b939d39ee03573f7610dacb4ed447fbfeaf1",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=inline_method=enter-expected.txt": [
-      "7f2277fae10323a5d40755f24327df93c41bada0",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=inline_method=shift-enter-expected.txt": [
-      "b41b9ed27668531c1c60f82f2524451143f4d341",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=list-item_method=enter-expected.txt": [
-      "b7655e2d2bb1c522568b75a779cd6fa93cb079bb",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=list-item_method=shift-enter-expected.txt": [
-      "2748b051ae0b51badd1e3979f72a955f01d4b816",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=table-cell_method=enter-expected.txt": [
-      "849c35a1d44ba597ea41252201f8e9872e665fa1",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=table-cell_method=shift-enter-expected.txt": [
-      "4d23389d200d0c6cf61151ef9214679ee61ef7ca",
-      []
-     ],
      "insertparagraph-in-non-splittable-element-expected.txt": [
       "dec3f4e7ad997c7b8769ad80e61898bd78b3c48f",
       []
@@ -346565,14 +346534,6 @@
      ],
      "insertparagraph-with-white-space-style.tentative.html.ini": [
       "2f4874bddd3072a1700c5d86f3e34c1dff83082f",
-      []
-     ],
-     "insertparagraph-with-white-space-style.tentative_white-space=pre-line_command=insertParagraph-expected.txt": [
-      "0a1558f09a8a22d35229c09f6b9aaac5a0bf96a5",
-      []
-     ],
-     "insertparagraph-with-white-space-style.tentative_white-space=pre-line_command=insertText-expected.txt": [
-      "0a1558f09a8a22d35229c09f6b9aaac5a0bf96a5",
       []
      ],
      "join-different-white-space-style-left-line-and-right-paragraph.html.ini": [
@@ -346592,7 +346553,7 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=normal_right-white-space=pre-line-expected.txt": [
-      "2ae18e271435fd681e14b9931fe05fa716df6ad7",
+      "9e994b9bab7cd47228b12ed9f3294770da8bc2b5",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=normal_right-white-space=pre-wrap-expected.txt": [
@@ -346605,10 +346566,6 @@
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=nowrap_right-white-space=pre-expected.txt": [
       "665a3d6483090f36a3befb7a22168dbfe7340783",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=nowrap_right-white-space=pre-line-expected.txt": [
-      "d0cd30fe30ca4abbe3a5fcf22651c793d4ef3a03",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-line_right-white-space=normal-expected.txt": [
@@ -346628,15 +346585,11 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-wrap_right-white-space=pre-line-expected.txt": [
-      "ea4c93919c2b131929f3ab33cf2c9f438634fc4d",
+      "18dccde0d696511ef53941dd88f567a78ab1d67e",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre_right-white-space=nowrap-expected.txt": [
       "48837cc9dc35edec9e425c99856120e779f1d38a",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre_right-white-space=pre-line-expected.txt": [
-      "48e81c03adc962a97221567ee210570748740ecc",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre_right-white-space=pre-wrap-expected.txt": [
@@ -346648,7 +346601,7 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=normal_right-white-space=pre-line-expected.txt": [
-      "2a602d20d15c50ae2dedebe14bf44b69dffd01a8",
+      "703f17d847c1d1b613d4df5fc8ec7d2218f04124",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=normal_right-white-space=pre-wrap-expected.txt": [
@@ -346661,10 +346614,6 @@
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=nowrap_right-white-space=pre-expected.txt": [
       "acff8637214deddad29dd74a0feb59b4bcf16f10",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=nowrap_right-white-space=pre-line-expected.txt": [
-      "743d0d8f7cbf02dfc4f5a009f4f4498b6e1c1a54",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-line_right-white-space=normal-expected.txt": [
@@ -346684,15 +346633,11 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-wrap_right-white-space=pre-line-expected.txt": [
-      "b630f0b47584d7539d1d2cacb156afc58b3f36ac",
+      "7f9148b593bdde833b2c6cdf663d0e4a95537b78",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre_right-white-space=nowrap-expected.txt": [
       "ae57f8b93f6512886f550b721c15d27cb4794a55",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre_right-white-space=pre-line-expected.txt": [
-      "e124d4d1b1a8c02d6495a9c6900532e082401349",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre_right-white-space=pre-wrap-expected.txt": [
@@ -346704,7 +346649,7 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=normal_right-white-space=pre-line-expected.txt": [
-      "4619a11d6c9f8660ebd02b9135e247e5c36bad5a",
+      "437c55ab4d54169dd760fc6fceb4ba8991ca6258",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=normal_right-white-space=pre-wrap-expected.txt": [
@@ -346717,10 +346662,6 @@
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=nowrap_right-white-space=pre-expected.txt": [
       "dc9222d55006e1ceb4479d1281b9354ed6832a71",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=nowrap_right-white-space=pre-line-expected.txt": [
-      "08f14f68a10c961f90875e00975824ff62c20196",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-line_right-white-space=normal-expected.txt": [
@@ -346740,15 +346681,11 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-wrap_right-white-space=pre-line-expected.txt": [
-      "e3127525af942d463d952fb99881a36b6a469203",
+      "46bad199bc987c2012e5d8106bf5098f41502f4b",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre_right-white-space=nowrap-expected.txt": [
       "708f4697c18afa05190c5a3d97c241853a933ed3",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre_right-white-space=pre-line-expected.txt": [
-      "e7c0c51b47d0ae3600bde90ea9cb6e9ac6405a66",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre_right-white-space=pre-wrap-expected.txt": [
@@ -346922,7 +346859,7 @@
       []
      ],
      "delete_7001-last-expected.txt": [
-      "e06631b707a0d219c6cef23f433e60e4c5536201",
+      "de90821c16cd263bf876e31077bd39a2da12d172",
       []
      ],
      "fontname-expected.txt": [
@@ -347046,7 +346983,7 @@
       []
      ],
      "forwarddelete_6001-7000-expected.txt": [
-      "80804f985051867e11a7506f1cc180781bab67f9",
+      "581b7777980b439e6891fc4136c355126576a4bf",
       []
      ],
      "forwarddelete_6001-last-expected.txt": [
