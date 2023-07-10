@@ -33,6 +33,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -385,7 +386,7 @@ ServiceWorkerGlobalScope::GetInstalledScriptsManager() {
 }
 
 void ServiceWorkerGlobalScope::DidEvaluateScript() {
-  DCHECK(!did_evaluate_script_);
+  CHECK(!did_evaluate_script_);
   did_evaluate_script_ = true;
 
   int number_of_fetch_handlers =
@@ -1343,6 +1344,22 @@ void ServiceWorkerGlobalScope::OnBeforeStartEvent(bool is_offline_event) {
 
 void ServiceWorkerGlobalScope::OnIdleTimeout() {
   DCHECK(IsContextThread());
+  if (!did_evaluate_script_) {
+    // TODO(crbug.com/1462568): After investigating crash bug, the following
+    // DumpWithoutCrashing should be removed.
+    static bool has_dumped_without_crashing = false;
+    if (!has_dumped_without_crashing) {
+      has_dumped_without_crashing = true;
+      SCOPED_CRASH_KEY_BOOL("SWGlobalScope", "requested_termination",
+                            RequestedTermination());
+      SCOPED_CRASH_KEY_BOOL("SWGlobalScope", "is_installing", is_installing_);
+      SCOPED_CRASH_KEY_BOOL("SWGlobalScope", "did_idle_timeout",
+                            event_queue_->did_idle_timeout());
+      base::debug::DumpWithoutCrashing();
+    }
+  }
+  // Still we are not sure this is always true, hence DCHECK.
+  DCHECK(did_evaluate_script_);
   // RequestedTermination() returns true if ServiceWorkerEventQueue agrees
   // we should request the host to terminate this worker now.
   DCHECK(RequestedTermination());
