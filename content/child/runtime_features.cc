@@ -361,6 +361,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {"Fledge", raw_ref(features::kPrivacySandboxAdsAPIsM1Override),
      kSetOnlyIfOverridden},
     {"FledgeBiddingAndAuctionServer",
+     raw_ref(blink::features::kFledgeBiddingAndAuctionServer),
+     kSetOnlyIfOverridden},
+    {"FledgeBiddingAndAuctionServer",
      raw_ref(features::kPrivacySandboxAdsAPIsOverride), kSetOnlyIfOverridden},
 #if BUILDFLAG(USE_FONTATIONS_BACKEND)
     {"FontationsFontBackend", raw_ref(blink::features::kFontationsFontBackend)},
