@@ -29,22 +29,22 @@ class ReportingDelegateFactoryIOS : public ReportingDelegateFactory {
   ~ReportingDelegateFactoryIOS() override = default;
 
   std::unique_ptr<BrowserReportGenerator::Delegate>
-  GetBrowserReportGeneratorDelegate() override;
+  GetBrowserReportGeneratorDelegate() const override;
 
   std::unique_ptr<ProfileReportGenerator::Delegate>
-  GetProfileReportGeneratorDelegate() override;
+  GetProfileReportGeneratorDelegate() const override;
 
   std::unique_ptr<ReportGenerator::Delegate> GetReportGeneratorDelegate()
-      override;
+      const override;
 
   std::unique_ptr<ReportScheduler::Delegate> GetReportSchedulerDelegate()
-      override;
+      const override;
 
   std::unique_ptr<RealTimeReportGenerator::Delegate>
-  GetRealTimeReportGeneratorDelegate() override;
+  GetRealTimeReportGeneratorDelegate() const override;
 
   std::unique_ptr<RealTimeReportController::Delegate>
-  GetRealTimeReportControllerDelegate() override;
+  GetRealTimeReportControllerDelegate() const override;
 };
 
 }  // namespace enterprise_reporting

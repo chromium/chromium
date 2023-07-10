@@ -25,22 +25,22 @@ class ReportingDelegateFactory {
   virtual ~ReportingDelegateFactory() = default;
 
   virtual std::unique_ptr<BrowserReportGenerator::Delegate>
-  GetBrowserReportGeneratorDelegate() = 0;
+  GetBrowserReportGeneratorDelegate() const = 0;
 
   virtual std::unique_ptr<ProfileReportGenerator::Delegate>
-  GetProfileReportGeneratorDelegate() = 0;
+  GetProfileReportGeneratorDelegate() const = 0;
 
   virtual std::unique_ptr<ReportGenerator::Delegate>
-  GetReportGeneratorDelegate() = 0;
+  GetReportGeneratorDelegate() const = 0;
 
   virtual std::unique_ptr<ReportScheduler::Delegate>
-  GetReportSchedulerDelegate() = 0;
+  GetReportSchedulerDelegate() const = 0;
 
   virtual std::unique_ptr<RealTimeReportGenerator::Delegate>
-  GetRealTimeReportGeneratorDelegate() = 0;
+  GetRealTimeReportGeneratorDelegate() const = 0;
 
   virtual std::unique_ptr<RealTimeReportController::Delegate>
-  GetRealTimeReportControllerDelegate() = 0;
+  GetRealTimeReportControllerDelegate() const = 0;
 };
 
 }  // namespace enterprise_reporting
