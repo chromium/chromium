@@ -240,8 +240,9 @@ class PLATFORM_EXPORT ImageDecoder {
       String mime_type);
 
   void SetData(scoped_refptr<SegmentReader> data, bool all_data_received) {
-    if (failed_)
+    if (failed_) {
       return;
+    }
     data_ = std::move(data);
     is_all_data_received_ = all_data_received;
     OnSetData(data_.get());
@@ -330,10 +331,12 @@ class PLATFORM_EXPORT ImageDecoder {
   virtual bool SetSize(unsigned width, unsigned height) {
     unsigned decoded_bytes_per_pixel = 4;
     if (ImageIsHighBitDepth() &&
-        high_bit_depth_decoding_option_ == kHighBitDepthToHalfFloat)
+        high_bit_depth_decoding_option_ == kHighBitDepthToHalfFloat) {
       decoded_bytes_per_pixel = 8;
-    if (SizeCalculationMayOverflow(width, height, decoded_bytes_per_pixel))
+    }
+    if (SizeCalculationMayOverflow(width, height, decoded_bytes_per_pixel)) {
       return SetFailed();
+    }
 
     size_ = gfx::Size(width, height);
     size_available_ = true;
@@ -447,8 +450,9 @@ class PLATFORM_EXPORT ImageDecoder {
     if (frame_buffer_cache_.empty()) {
       // Ensure that InitializeNewFrame is called, after parsing if
       // necessary.
-      if (!FrameCount())
+      if (!FrameCount()) {
         return;
+      }
     }
 
     frame_buffer_cache_[0].SetMemoryAllocator(allocator);

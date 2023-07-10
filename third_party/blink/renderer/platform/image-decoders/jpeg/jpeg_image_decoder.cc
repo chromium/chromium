@@ -178,8 +178,9 @@ int Align(int size, int alignment) {
   DCHECK_GT(alignment, 0);
   DCHECK_LE(alignment, 32);
 
-  if (size % alignment == 0)
+  if (size % alignment == 0) {
     return size;
+  }
 
   return ((size + alignment) / alignment) * alignment;
 }
@@ -293,8 +294,9 @@ class JPEGImageReader final {
   }
 
   void SkipBytes(long num_bytes) {
-    if (num_bytes <= 0)
+    if (num_bytes <= 0) {
       return;
+    }
 
     wtf_size_t bytes_to_skip = static_cast<wtf_size_t>(num_bytes);
 
@@ -345,15 +347,17 @@ class JPEGImageReader final {
   }
 
   void SetData(SegmentReader* data) {
-    if (data_.get() == data)
+    if (data_.get() == data) {
       return;
+    }
 
     data_ = data;
 
     // If a restart is needed, the next call to fillBuffer will read from the
     // new SegmentReader.
-    if (needs_restart_)
+    if (needs_restart_) {
       return;
+    }
 
     // Otherwise, empty the buffer, and leave the position the same, so
     // FillBuffer continues reading from the same position in the new
@@ -381,12 +385,14 @@ class JPEGImageReader final {
   // hold valid values (i.e. 1, 2, 3, or 4). It also returns the maximal
   // horizontal and vertical sample factors via |max_h| and |max_v|.
   bool AreValidSampleFactorsAvailable(int* max_h, int* max_v) const {
-    if (!info_.num_components)
+    if (!info_.num_components) {
       return false;
+    }
 
     const jpeg_component_info* comp_info = info_.comp_info;
-    if (!comp_info)
+    if (!comp_info) {
       return false;
+    }
 
     *max_h = 0;
     *max_v = 0;
@@ -405,14 +411,16 @@ class JPEGImageReader final {
   // Decode the JPEG data.
   bool Decode(JPEGImageDecoder::DecodingMode decoding_mode) {
     // We need to do the setjmp here. Otherwise bad things will happen
-    if (setjmp(err_.setjmp_buffer))
+    if (setjmp(err_.setjmp_buffer)) {
       return decoder_->SetFailed();
+    }
 
     switch (state_) {
       case kJpegHeader: {
         // Read file parameters with jpeg_read_header().
-        if (jpeg_read_header(&info_, true) == JPEG_SUSPENDED)
+        if (jpeg_read_header(&info_, true) == JPEG_SUSPENDED) {
           return false;  // I/O suspension.
+        }
 
         switch (info_.jpeg_color_space) {
           case JCS_YCbCr:
@@ -449,8 +457,9 @@ class JPEGImageReader final {
         }
 
         // We can fill in the size now that the header is available.
-        if (!decoder_->SetSize(info_.image_width, info_.image_height))
+        if (!decoder_->SetSize(info_.image_width, info_.image_height)) {
           return false;
+        }
 
         // Calculate and set decoded size.
         int max_numerator = decoder_->DesiredScaleNumerator();
@@ -518,21 +527,25 @@ class JPEGImageReader final {
               switch (info_.jpeg_color_space) {
                 case JCS_CMYK:
                 case JCS_YCCK:
-                  if (data_color_space != skcms_Signature_CMYK)
+                  if (data_color_space != skcms_Signature_CMYK) {
                     profile = nullptr;
+                  }
                   break;
                 case JCS_GRAYSCALE:
                   if (data_color_space != skcms_Signature_Gray &&
-                      data_color_space != skcms_Signature_RGB)
+                      data_color_space != skcms_Signature_RGB) {
                     profile = nullptr;
+                  }
                   break;
                 default:
-                  if (data_color_space != skcms_Signature_RGB)
+                  if (data_color_space != skcms_Signature_RGB) {
                     profile = nullptr;
+                  }
                   break;
               }
-              if (profile)
+              if (profile) {
                 Decoder()->SetEmbeddedColorProfile(std::move(profile));
+              }
             } else {
               DLOG(ERROR) << "Failed to parse image ICC profile";
             }
@@ -595,8 +608,9 @@ class JPEGImageReader final {
         samples_ = AllocateSampleArray();
 
         // Start decompressor.
-        if (!jpeg_start_decompress(&info_))
+        if (!jpeg_start_decompress(&info_)) {
           return false;  // I/O suspension.
+        }
 
         // If this is a progressive JPEG ...
         state_ = (info_.buffered_image) ? kJpegDecompressProgressive
@@ -605,8 +619,9 @@ class JPEGImageReader final {
 
       case kJpegDecompressSequential:
         if (state_ == kJpegDecompressSequential) {
-          if (!decoder_->OutputScanlines())
+          if (!decoder_->OutputScanlines()) {
             return false;  // I/O suspension.
+          }
 
           // If we've completed image output...
           DCHECK_EQ(info_.output_scanline, info_.output_height);
@@ -633,8 +648,9 @@ class JPEGImageReader final {
           do {
             decoder_error_mgr* err =
                 reinterpret_cast_ptr<decoder_error_mgr*>(info_.err);
-            if (err->num_corrupt_warnings)
+            if (err->num_corrupt_warnings) {
               break;
+            }
             status = jpeg_consume_input(&info_);
             if (status == JPEG_REACHED_SOS || status == JPEG_REACHED_EOI ||
                 status == JPEG_SUSPENDED) {
@@ -658,34 +674,41 @@ class JPEGImageReader final {
               // a complete scan, force output of the last full scan, but only
               // if this last scan has seen DC data from all components.
               if (!info_.output_scan_number && (scan > first_scan_to_display) &&
-                  (status != JPEG_REACHED_EOI))
+                  (status != JPEG_REACHED_EOI)) {
                 --scan;
+              }
 
-              if (!jpeg_start_output(&info_, scan))
+              if (!jpeg_start_output(&info_, scan)) {
                 return false;  // I/O suspension.
+              }
             }
 
-            if (info_.output_scanline == 0xffffff)
+            if (info_.output_scanline == 0xffffff) {
               info_.output_scanline = 0;
+            }
 
             if (!decoder_->OutputScanlines()) {
-              if (decoder_->Failed())
+              if (decoder_->Failed()) {
                 return false;
+              }
               // If no scan lines were read, flag it so we don't call
               // jpeg_start_output() multiple times for the same scan.
-              if (!info_.output_scanline)
+              if (!info_.output_scanline) {
                 info_.output_scanline = 0xffffff;
+              }
 
               return false;  // I/O suspension.
             }
 
             if (info_.output_scanline == info_.output_height) {
-              if (!jpeg_finish_output(&info_))
+              if (!jpeg_finish_output(&info_)) {
                 return false;  // I/O suspension.
+              }
 
               if (jpeg_input_complete(&info_) &&
-                  (info_.input_scan_number == info_.output_scan_number))
+                  (info_.input_scan_number == info_.output_scan_number)) {
                 break;
+              }
 
               info_.output_scanline = 0;
             }
@@ -723,14 +746,16 @@ class JPEGImageReader final {
 // Some output color spaces don't need the sample array: don't allocate in that
 // case.
 #if defined(TURBO_JPEG_RGB_SWIZZLE)
-    if (turboSwizzled(info_.out_color_space))
+    if (turboSwizzled(info_.out_color_space)) {
       return nullptr;
+    }
 #endif
 
-    if (info_.out_color_space != JCS_YCbCr)
+    if (info_.out_color_space != JCS_YCbCr) {
       return (*info_.mem->alloc_sarray)(
           reinterpret_cast_ptr<j_common_ptr>(&info_), JPOOL_IMAGE,
           4 * info_.output_width, 1);
+    }
 
     // Compute the width of the Y plane in bytes.  This may be larger than the
     // output width, since the jpeg library requires that the allocated width be
@@ -797,8 +822,9 @@ void error_exit(
 }
 
 void emit_message(j_common_ptr cinfo, int msg_level) {
-  if (msg_level >= 0)
+  if (msg_level >= 0) {
     return;
+  }
 
   decoder_error_mgr* err = reinterpret_cast_ptr<decoder_error_mgr*>(cinfo->err);
   err->pub.num_warnings++;
@@ -806,10 +832,12 @@ void emit_message(j_common_ptr cinfo, int msg_level) {
   // Detect and count corrupt JPEG warning messages.
   const char* warning = nullptr;
   int code = err->pub.msg_code;
-  if (code > 0 && code <= err->pub.last_jpeg_message)
+  if (code > 0 && code <= err->pub.last_jpeg_message) {
     warning = err->pub.jpeg_message_table[code];
-  if (warning && !strncmp("Corrupt JPEG", warning, 12))
+  }
+  if (warning && !strncmp("Corrupt JPEG", warning, 12)) {
     err->num_corrupt_warnings++;
+  }
 }
 
 void init_source(j_decompress_ptr) {}
@@ -848,11 +876,13 @@ const AtomicString& JPEGImageDecoder::MimeType() const {
 }
 
 bool JPEGImageDecoder::SetSize(unsigned width, unsigned height) {
-  if (!ImageDecoder::SetSize(width, height))
+  if (!ImageDecoder::SetSize(width, height)) {
     return false;
+  }
 
-  if (!DesiredScaleNumerator())
+  if (!DesiredScaleNumerator()) {
     return SetFailed();
+  }
 
   SetDecodedSize(width, height);
   return true;
@@ -863,12 +893,14 @@ void JPEGImageDecoder::OnSetData(SegmentReader* data) {
     reader_->SetData(data);
 
     // Changing YUV decoding mode is not allowed after decompression starts.
-    if (reader_->HasStartedDecompression())
+    if (reader_->HasStartedDecompression()) {
       return;
+    }
   }
 
-  if (allow_decode_to_yuv_)
+  if (allow_decode_to_yuv_) {
     return;
+  }
 
   allow_decode_to_yuv_ =
       // Incremental YUV decoding is not currently supported (crbug.com/943519).
@@ -924,8 +956,9 @@ unsigned JPEGImageDecoder::DesiredScaleNumerator() const {
 unsigned JPEGImageDecoder::DesiredScaleNumerator(wtf_size_t max_decoded_bytes,
                                                  wtf_size_t original_bytes,
                                                  unsigned scale_denominator) {
-  if (original_bytes <= max_decoded_bytes)
+  if (original_bytes <= max_decoded_bytes) {
     return scale_denominator;
+  }
 
   // Downsample according to the maximum decoded size.
   return static_cast<unsigned>(floor(sqrt(
@@ -1076,12 +1109,14 @@ bool OutputRows(JPEGImageReader* reader, ImageFrame& buffer) {
     // save the scanline before calling it.
     int y = info->output_scanline;
     // Request one scanline: returns 0 or 1 scanlines.
-    if (jpeg_read_scanlines(info, samples, 1) != 1)
+    if (jpeg_read_scanlines(info, samples, 1) != 1) {
       return false;
+    }
 
     ImageFrame::PixelData* pixel = buffer.GetAddr(0, y);
-    for (int x = 0; x < width; ++pixel, ++x)
+    for (int x = 0; x < width; ++pixel, ++x) {
       SetPixel<colorSpace>(pixel, samples, x);
+    }
 
     ColorProfileTransform* xform = reader->Decoder()->ColorTransform();
     if (xform) {
@@ -1152,8 +1187,9 @@ static bool OutputRawData(JPEGImageReader* reader, ImagePlanes* image_planes) {
 
     JDIMENSION scanlines_read =
         jpeg_read_raw_data(info, bufferraw, y_scanlines_to_read);
-    if (!scanlines_read)
+    if (!scanlines_read) {
       return false;
+    }
   }
 
   info->output_scanline = std::min(info->output_scanline, info->output_height);
@@ -1162,11 +1198,13 @@ static bool OutputRawData(JPEGImageReader* reader, ImagePlanes* image_planes) {
 }
 
 bool JPEGImageDecoder::OutputScanlines() {
-  if (HasImagePlanes())
+  if (HasImagePlanes()) {
     return OutputRawData(reader_.get(), image_planes_.get());
+  }
 
-  if (frame_buffer_cache_.empty())
+  if (frame_buffer_cache_.empty()) {
     return false;
+  }
 
   jpeg_decompress_struct* info = reader_->Info();
 
@@ -1179,8 +1217,9 @@ bool JPEGImageDecoder::OutputScanlines() {
               static_cast<JDIMENSION>(decoded_size_.height()));
 
     if (!buffer.AllocatePixelData(info->output_width, info->output_height,
-                                  ColorSpaceForSkImages()))
+                                  ColorSpaceForSkImages())) {
       return SetFailed();
+    }
 
     buffer.ZeroFillPixelData();
     // The buffer is transparent outside the decoded area while the image is
@@ -1197,8 +1236,9 @@ bool JPEGImageDecoder::OutputScanlines() {
     while (info->output_scanline < info->output_height) {
       unsigned char* row = reinterpret_cast_ptr<unsigned char*>(
           buffer.GetAddr(0, info->output_scanline));
-      if (jpeg_read_scanlines(info, &row, 1) != 1)
+      if (jpeg_read_scanlines(info, &row, 1) != 1) {
         return false;
+      }
 
       ColorProfileTransform* xform = ColorTransform();
       if (xform) {
@@ -1228,8 +1268,9 @@ bool JPEGImageDecoder::OutputScanlines() {
 }
 
 void JPEGImageDecoder::Complete() {
-  if (frame_buffer_cache_.empty())
+  if (frame_buffer_cache_.empty()) {
     return;
+  }
 
   frame_buffer_cache_[0].SetHasAlpha(false);
   frame_buffer_cache_[0].SetStatus(ImageFrame::kFrameComplete);
@@ -1246,8 +1287,9 @@ inline bool IsComplete(const JPEGImageDecoder* decoder,
 }
 
 void JPEGImageDecoder::Decode(DecodingMode decoding_mode) {
-  if (Failed())
+  if (Failed()) {
     return;
+  }
 
   if (!reader_) {
     reader_ = std::make_unique<JPEGImageReader>(this, offset_);
@@ -1256,12 +1298,14 @@ void JPEGImageDecoder::Decode(DecodingMode decoding_mode) {
 
   // If we couldn't decode the image but have received all the data, decoding
   // has failed.
-  if (!reader_->Decode(decoding_mode) && IsAllDataReceived())
+  if (!reader_->Decode(decoding_mode) && IsAllDataReceived()) {
     SetFailed();
+  }
 
   // If decoding is done or failed, we don't need the JPEGImageReader anymore.
-  if (IsComplete(this, decoding_mode) || Failed())
+  if (IsComplete(this, decoding_mode) || Failed()) {
     reader_.reset();
+  }
 }
 
 }  // namespace blink

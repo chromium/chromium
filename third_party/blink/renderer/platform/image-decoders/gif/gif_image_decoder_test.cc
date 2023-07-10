@@ -458,7 +458,7 @@ namespace {
 class Allocator final : public SkBitmap::Allocator {
   bool allocPixelRef(SkBitmap* dst) override { return dst->tryAllocPixels(); }
 };
-}
+}  // namespace
 
 // Ensure that calling SetMemoryAllocator does not short-circuit
 // InitializeNewFrame.

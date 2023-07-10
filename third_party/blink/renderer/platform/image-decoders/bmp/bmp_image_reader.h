@@ -300,8 +300,9 @@ class PLATFORM_EXPORT BMPImageReader final {
                        unsigned green,
                        unsigned blue,
                        unsigned alpha) {
-    while (coord_.x() < end_coord)
+    while (coord_.x() < end_coord) {
       SetRGBA(red, green, blue, alpha);
+    }
   }
 
   // Resets the relevant local variables to start drawing at the left edge of

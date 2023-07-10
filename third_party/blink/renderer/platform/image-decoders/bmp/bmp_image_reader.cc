@@ -38,6 +38,7 @@ namespace {
 
 // See comments on lookup_table_addresses_ in the header.
 constexpr uint8_t nBitTo8BitlookupTable[] = {
+    // clang-format off
     // 1 bit
     0, 255,
     // 2 bits
@@ -63,6 +64,7 @@ constexpr uint8_t nBitTo8BitlookupTable[] = {
     173, 175, 177, 179, 181, 183, 185, 187, 189, 191, 193, 195, 197, 199, 201,
     203, 205, 207, 209, 211, 213, 215, 217, 219, 221, 223, 225, 227, 229, 231,
     233, 235, 237, 239, 241, 243, 245, 247, 249, 251, 253, 255,
+    // clang-format on
 };
 
 }  // namespace
@@ -87,8 +89,9 @@ BMPImageReader::~BMPImageReader() = default;
 void BMPImageReader::SetData(SegmentReader* data) {
   data_ = data;
   fast_reader_.SetData(data);
-  if (alternate_decoder_)
+  if (alternate_decoder_) {
     alternate_decoder_->SetData(data_.get(), parent_->IsAllDataReceived());
+  }
 }
 
 bool BMPImageReader::DecodeBMP(bool only_size) {
@@ -97,13 +100,15 @@ bool BMPImageReader::DecodeBMP(bool only_size) {
   fast_reader_.ClearCache();
 
   // Calculate size of info header.
-  if (!info_header_.size && !ReadInfoHeaderSize())
+  if (!info_header_.size && !ReadInfoHeaderSize()) {
     return false;
+  }
 
   const wtf_size_t header_end = header_offset_ + info_header_.size;
   // Read and process info header.
-  if ((decoded_offset_ < header_end) && !ProcessInfoHeader())
+  if ((decoded_offset_ < header_end) && !ProcessInfoHeader()) {
     return false;
+  }
 
   // If there is an applicable color profile, it must be processed now, since
   // once the image size is available, the decoding machinery assumes the color
@@ -113,8 +118,9 @@ bool BMPImageReader::DecodeBMP(bool only_size) {
   const bool use_alternate_decoder =
       (info_header_.compression == JPEG) || (info_header_.compression == PNG);
   if (!use_alternate_decoder && info_header_.profile_data &&
-      !ProcessEmbeddedColorProfile())
+      !ProcessEmbeddedColorProfile()) {
     return false;
+  }
 
   // Set our size if we haven't already.  In ICO files, IsDecodedSizeAvailable()
   // always returns true (since it reflects the size in the directory, which has
@@ -122,34 +128,41 @@ bool BMPImageReader::DecodeBMP(bool only_size) {
   // size here matches the directory.
   if ((is_in_ico_ || !parent_->IsDecodedSizeAvailable()) &&
       !parent_->SetSize(static_cast<unsigned>(info_header_.width),
-                        static_cast<unsigned>(info_header_.height)))
+                        static_cast<unsigned>(info_header_.height))) {
     return false;
+  }
 
-  if (only_size)
+  if (only_size) {
     return true;
+  }
 
-  if (use_alternate_decoder)
+  if (use_alternate_decoder) {
     return DecodeAlternateFormat();
+  }
 
   // Read and process the bitmasks, if needed.
-  if (need_to_process_bitmasks_ && !ProcessBitmasks())
+  if (need_to_process_bitmasks_ && !ProcessBitmasks()) {
     return false;
+  }
 
   // Read and process the color table, if needed.
-  if (need_to_process_color_table_ && !ProcessColorTable())
+  if (need_to_process_color_table_ && !ProcessColorTable()) {
     return false;
+  }
 
   // Initialize the framebuffer if needed.
   DCHECK(buffer_);  // Parent should set this before asking us to decode!
-  if ((buffer_->GetStatus() == ImageFrame::kFrameEmpty) && !InitFrame())
+  if ((buffer_->GetStatus() == ImageFrame::kFrameEmpty) && !InitFrame()) {
     return false;
+  }
 
   // Decode the data.
   if (!decoding_and_mask_ && !PastEndOfImage(0) &&
       !DecodePixelData((info_header_.compression != RLE4) &&
                        (info_header_.compression != RLE8) &&
-                       (info_header_.compression != RLE24)))
+                       (info_header_.compression != RLE24))) {
     return false;
+  }
 
   // If the image has an AND mask and there was no alpha data, process the
   // mask.
@@ -165,8 +178,9 @@ bool BMPImageReader::DecodeBMP(bool only_size) {
 
     decoding_and_mask_ = true;
   }
-  if (decoding_and_mask_ && !DecodePixelData(true))
+  if (decoding_and_mask_ && !DecodePixelData(true)) {
     return false;
+  }
 
   // Done!
   buffer_->SetStatus(ImageFrame::kFrameComplete);
@@ -177,8 +191,9 @@ bool BMPImageReader::ReadInfoHeaderSize() {
   // Get size of info header.
   DCHECK_EQ(decoded_offset_, header_offset_);
   if ((decoded_offset_ > data_->size()) ||
-      ((data_->size() - decoded_offset_) < 4))
+      ((data_->size() - decoded_offset_) < 4)) {
     return false;
+  }
   info_header_.size = ReadUint32(0);
   // Don't increment decoded_offset here, it just makes the code in
   // ProcessInfoHeader() more confusing.
@@ -188,24 +203,25 @@ bool BMPImageReader::ReadInfoHeaderSize() {
   // image data.
   const wtf_size_t header_end = header_offset_ + info_header_.size;
   if ((header_end < header_offset_) ||
-      (img_data_offset_ && (img_data_offset_ < header_end)))
+      (img_data_offset_ && (img_data_offset_ < header_end))) {
     return parent_->SetFailed();
+  }
 
   // See if this is a header size we understand.  See comments in
   // ReadInfoHeader() for more.
-  // OS/2 1.x (and Windows V2): 12
-  if (info_header_.size == 12)
+  if (info_header_.size == 12) {
+    // OS/2 1.x (and Windows V2): 12
     is_os21x_ = true;
-  // Windows V3+: 40, 52, 56, 108, 124
-  else if ((info_header_.size == 40) || HasRGBMasksInHeader())
-    ;
-  // OS/2 2.x: any multiple of 4 between 16 and 64, inclusive, or 42 or 46
-  else if ((info_header_.size >= 16) && (info_header_.size <= 64) &&
-           (!(info_header_.size & 3) || (info_header_.size == 42) ||
-            (info_header_.size == 46)))
+  } else if ((info_header_.size == 40) || HasRGBMasksInHeader()) {
+    // Windows V3+: 40, 52, 56, 108, 124
+  } else if ((info_header_.size >= 16) && (info_header_.size <= 64) &&
+             (!(info_header_.size & 3) || (info_header_.size == 42) ||
+              (info_header_.size == 46))) {
+    // OS/2 2.x: any multiple of 4 between 16 and 64, inclusive, or 42 or 46
     is_os22x_ = true;
-  else
+  } else {
     return parent_->SetFailed();
+  }
 
   return true;
 }
@@ -215,35 +231,40 @@ bool BMPImageReader::ProcessInfoHeader() {
   DCHECK_EQ(decoded_offset_, header_offset_);
   if ((decoded_offset_ > data_->size()) ||
       ((data_->size() - decoded_offset_) < info_header_.size) ||
-      !ReadInfoHeader())
+      !ReadInfoHeader()) {
     return false;
+  }
 
   // Sanity-check header values before doing further fixup.
-  if (!IsInfoHeaderValid())
+  if (!IsInfoHeaderValid()) {
     return parent_->SetFailed();
+  }
 
   // For paletted images, bitmaps can set clr_used to 0 to mean "all colors", so
   // set it to the maximum number of colors for this bit depth.  Also do this
   // for bitmaps that put too large a value here.
   if (info_header_.bit_count < 16) {
     const uint32_t max_colors = uint32_t{1} << info_header_.bit_count;
-    if (!info_header_.clr_used || (info_header_.clr_used > max_colors))
+    if (!info_header_.clr_used || (info_header_.clr_used > max_colors)) {
       info_header_.clr_used = max_colors;
+    }
   }
 
   // For any bitmaps that set their BitCount to the wrong value, reset the
   // counts now that we've calculated the number of necessary colors, since
   // other code relies on this value being correct.
-  if (info_header_.compression == RLE8)
+  if (info_header_.compression == RLE8) {
     info_header_.bit_count = 8;
-  else if (info_header_.compression == RLE4)
+  } else if (info_header_.compression == RLE4) {
     info_header_.bit_count = 4;
+  }
 
   // Tell caller what still needs to be processed.
-  if (info_header_.bit_count >= 16)
+  if (info_header_.bit_count >= 16) {
     need_to_process_bitmasks_ = true;
-  else if (info_header_.bit_count)
+  } else if (info_header_.bit_count) {
     need_to_process_color_table_ = true;
+  }
 
   decoded_offset_ += info_header_.size;
   return true;
@@ -286,15 +307,17 @@ bool BMPImageReader::ReadInfoHeader() {
 
   info_header_.width = ReadUint32(4);
   info_header_.height = ReadUint32(8);
-  if (is_in_ico_)
+  if (is_in_ico_) {
     info_header_.height /= 2;
+  }
   // Detect top-down BMPs.
   if (info_header_.height < 0) {
     // We can't negate INT32_MIN below to get a positive int32_t.
     // IsInfoHeaderValid() will reject heights of 1 << 16 or larger anyway,
     // so just reject this bitmap now.
-    if (info_header_.height == INT32_MIN)
+    if (info_header_.height == INT32_MIN) {
       return parent_->SetFailed();
+    }
     is_top_down_ = true;
     info_header_.height = -info_header_.height;
   }
@@ -320,8 +343,9 @@ bool BMPImageReader::ReadInfoHeader() {
   }
 
   // Read colors used, if present.
-  if (info_header_.size >= 36)
+  if (info_header_.size >= 36) {
     info_header_.clr_used = ReadUint32(32);
+  }
 
   // If we can safely read the four bitmasks from 40-56 bytes in, do that here.
   // If the bit depth is less than 16, these values will be ignored by the image
@@ -338,8 +362,9 @@ bool BMPImageReader::ReadInfoHeader() {
     bit_masks_[1] = ReadUint32(44);
     bit_masks_[2] = ReadUint32(48);
   }
-  if (HasAlphaMaskInHeader())
+  if (HasAlphaMaskInHeader()) {
     bit_masks_[3] = ReadUint32(52);
+  }
 
   // Read color space information, if present and desirable.
   if (HasColorSpaceInfoInHeader() && !parent_->IgnoresColorSpace()) {
@@ -418,9 +443,9 @@ bool BMPImageReader::ReadInfoHeader() {
         }
         break;
 
-      case kProfileLinked:     // Linked ICC profile.  Unsupported; presents
-                               // security concerns.
-      default:                 // Unknown.
+      case kProfileLinked:  // Linked ICC profile.  Unsupported; presents
+                            // security concerns.
+      default:              // Unknown.
         break;
     }
   }
@@ -431,12 +456,14 @@ bool BMPImageReader::ReadInfoHeader() {
 bool BMPImageReader::IsInfoHeaderValid() const {
   // Non-positive widths/heights are invalid.  (We've already flipped the
   // sign of the height for top-down bitmaps.)
-  if ((info_header_.width <= 0) || !info_header_.height)
+  if ((info_header_.width <= 0) || !info_header_.height) {
     return false;
+  }
 
   // Only Windows V3+ has ICOs and top-down bitmaps.
-  if ((is_in_ico_ || is_top_down_) && (is_os21x_ || is_os22x_))
+  if ((is_in_ico_ || is_top_down_) && (is_os21x_ || is_os22x_)) {
     return false;
+  }
 
   // Only bit depths of 1, 4, 8, or 24 are universally supported.
   if ((info_header_.bit_count != 1) && (info_header_.bit_count != 4) &&
@@ -445,8 +472,9 @@ bool BMPImageReader::IsInfoHeaderValid() const {
     // JPEG/PNG images), 2 (on Windows CE), 16, and 32.
     if (is_os21x_ || is_os22x_ ||
         (info_header_.bit_count && (info_header_.bit_count != 2) &&
-         (info_header_.bit_count != 16) && (info_header_.bit_count != 32)))
+         (info_header_.bit_count != 16) && (info_header_.bit_count != 32))) {
       return false;
+    }
   }
 
   // Each compression type is only valid with certain bit depths (except RGB,
@@ -454,8 +482,9 @@ bool BMPImageReader::IsInfoHeaderValid() const {
   // some compression types.
   switch (info_header_.compression) {
     case RGB:
-      if (!info_header_.bit_count)
+      if (!info_header_.bit_count) {
         return false;
+      }
       break;
 
     case RLE8:
@@ -463,42 +492,49 @@ bool BMPImageReader::IsInfoHeaderValid() const {
       // Compression = RLE4" (which means "4 bit, but with a 2-color table"),
       // so also allow the paletted RLE compression types to have too low a
       // bit count; we'll correct this later.
-      if (!info_header_.bit_count || (info_header_.bit_count > 8))
+      if (!info_header_.bit_count || (info_header_.bit_count > 8)) {
         return false;
+      }
       break;
 
     case RLE4:
       // See comments in RLE8.
-      if (!info_header_.bit_count || (info_header_.bit_count > 4))
+      if (!info_header_.bit_count || (info_header_.bit_count > 4)) {
         return false;
+      }
       break;
 
     case BITFIELDS:
     case ALPHABITFIELDS:
       // Only valid for Windows V3+.
       if (is_os21x_ || is_os22x_ ||
-          ((info_header_.bit_count != 16) && (info_header_.bit_count != 32)))
+          ((info_header_.bit_count != 16) && (info_header_.bit_count != 32))) {
         return false;
+      }
       break;
 
     case JPEG:
     case PNG:
       // Only valid for Windows V3+.  We don't support embedding these inside
       // ICO files.
-      if (is_os21x_ || is_os22x_ || info_header_.bit_count || !img_data_offset_)
+      if (is_os21x_ || is_os22x_ || info_header_.bit_count ||
+          !img_data_offset_) {
         return false;
+      }
       break;
 
     case HUFFMAN1D:
       // Only valid for OS/2 2.x.
-      if (!is_os22x_ || (info_header_.bit_count != 1))
+      if (!is_os22x_ || (info_header_.bit_count != 1)) {
         return false;
+      }
       break;
 
     case RLE24:
       // Only valid for OS/2 2.x.
-      if (!is_os22x_ || (info_header_.bit_count != 24))
+      if (!is_os22x_ || (info_header_.bit_count != 24)) {
         return false;
+      }
       break;
 
     default:
@@ -513,13 +549,15 @@ bool BMPImageReader::IsInfoHeaderValid() const {
   // in much use.
   // TODO(pkasting): Consider supporting these someday.
   //   * Bitmaps larger than 2^16 pixels in either dimension.
-  if ((info_header_.width >= (1 << 16)) || (info_header_.height >= (1 << 16)))
+  if ((info_header_.width >= (1 << 16)) || (info_header_.height >= (1 << 16))) {
     return false;
+  }
   //   * OS/2 2.x Huffman-encoded monochrome bitmaps (see
   //      http://www.fileformat.info/mirror/egff/ch09_05.htm , re: "G31D"
   //      algorithm; this seems to be used in TIFF files as well).
-  if (info_header_.compression == HUFFMAN1D)
+  if (info_header_.compression == HUFFMAN1D) {
     return false;
+  }
 
   return true;
 }
@@ -542,15 +580,17 @@ bool BMPImageReader::DecodeAlternateFormat() {
 
   // Decode the image.
   if (alternate_decoder_->IsSizeAvailable()) {
-    if (alternate_decoder_->Size() != parent_->Size())
+    if (alternate_decoder_->Size() != parent_->Size()) {
       return parent_->SetFailed();
+    }
 
     alternate_decoder_->SetMemoryAllocator(buffer_->GetAllocator());
     const auto* frame = alternate_decoder_->DecodeFrameBufferAtIndex(0);
     alternate_decoder_->SetMemoryAllocator(nullptr);
 
-    if (frame)
+    if (frame) {
       *buffer_ = *frame;
+    }
   }
   return alternate_decoder_->Failed()
              ? parent_->SetFailed()
@@ -560,16 +600,19 @@ bool BMPImageReader::DecodeAlternateFormat() {
 bool BMPImageReader::ProcessEmbeddedColorProfile() {
   // Ensure we have received the whole profile.
   if ((info_header_.profile_data > data_->size()) ||
-      ((data_->size() - info_header_.profile_data) < info_header_.profile_size))
+      ((data_->size() - info_header_.profile_data) <
+       info_header_.profile_size)) {
     return false;
+  }
 
   // Parse the profile.
   auto owned_buffer = std::make_unique<char[]>(info_header_.profile_size);
   const char* buffer = fast_reader_.GetConsecutiveData(
       info_header_.profile_data, info_header_.profile_size, owned_buffer.get());
   auto profile = ColorProfile::Create(buffer, info_header_.profile_size);
-  if (!profile)
+  if (!profile) {
     return parent_->SetFailed();
+  }
   parent_->SetEmbeddedColorProfile(std::move(profile));
 
   // Zero |profile_data| so we don't try to process the profile again in the
@@ -603,17 +646,20 @@ bool BMPImageReader::ProcessBitmasks() {
     const wtf_size_t kBitmasksSize = read_alpha ? 16 : 12;
     const wtf_size_t bitmasks_end = header_end + kBitmasksSize;
     if ((bitmasks_end < header_end) ||
-        (img_data_offset_ && (img_data_offset_ < bitmasks_end)))
+        (img_data_offset_ && (img_data_offset_ < bitmasks_end))) {
       return parent_->SetFailed();
+    }
 
     // Read bitmasks.
-    if ((data_->size() - decoded_offset_) < kBitmasksSize)
+    if ((data_->size() - decoded_offset_) < kBitmasksSize) {
       return false;
+    }
     bit_masks_[0] = ReadUint32(0);
     bit_masks_[1] = ReadUint32(4);
     bit_masks_[2] = ReadUint32(8);
-    if (read_alpha)
+    if (read_alpha) {
       bit_masks_[3] = ReadUint32(12);
+    }
 
     decoded_offset_ += kBitmasksSize;
   }
@@ -680,22 +726,26 @@ bool BMPImageReader::ProcessBitmasks() {
 
     // Make sure bitmask does not overlap any other bitmasks.
     for (int j = 0; j < i; ++j) {
-      if (temp_mask & bit_masks_[j])
+      if (temp_mask & bit_masks_[j]) {
         return parent_->SetFailed();
+      }
     }
 
     // Count offset into pixel data.
-    for (bit_shifts_right_[i] = 0; !(temp_mask & 1); temp_mask >>= 1)
+    for (bit_shifts_right_[i] = 0; !(temp_mask & 1); temp_mask >>= 1) {
       ++bit_shifts_right_[i];
+    }
 
     // Count size of mask.
     wtf_size_t num_bits = 0;
-    for (; temp_mask & 1; temp_mask >>= 1)
+    for (; temp_mask & 1; temp_mask >>= 1) {
       ++num_bits;
+    }
 
     // Make sure bitmask is contiguous.
-    if (temp_mask)
+    if (temp_mask) {
       return parent_->SetFailed();
+    }
 
     // Since RGBABuffer tops out at 8 bits per channel, adjust the shift
     // amounts to use the most significant 8 bits of the channel.
@@ -711,8 +761,9 @@ bool BMPImageReader::ProcessBitmasks() {
 
   // We've now decoded all the non-image data we care about.  Skip anything
   // else before the actual raster data.
-  if (img_data_offset_)
+  if (img_data_offset_) {
     decoded_offset_ = img_data_offset_;
+  }
   need_to_process_bitmasks_ = false;
   return true;
 }
@@ -725,8 +776,9 @@ bool BMPImageReader::ProcessColorTable() {
   wtf_size_t colors_in_palette = info_header_.clr_used;
   wtf_size_t table_size_in_bytes = colors_in_palette * bytes_per_color;
   const wtf_size_t table_end = header_end + table_size_in_bytes;
-  if (table_end < header_end)
+  if (table_end < header_end) {
     return parent_->SetFailed();
+  }
 
   // Some BMPs don't contain a complete palette.  Avoid reading off the end.
   if (img_data_offset_ && (img_data_offset_ < table_end)) {
@@ -736,8 +788,9 @@ bool BMPImageReader::ProcessColorTable() {
 
   // Read color table.
   if ((decoded_offset_ > data_->size()) ||
-      ((data_->size() - decoded_offset_) < table_size_in_bytes))
+      ((data_->size() - decoded_offset_) < table_size_in_bytes)) {
     return false;
+  }
   color_table_.resize(info_header_.clr_used);
 
   for (wtf_size_t i = 0; i < colors_in_palette; ++i) {
@@ -755,8 +808,9 @@ bool BMPImageReader::ProcessColorTable() {
 
   // We've now decoded all the non-image data we care about.  Skip anything
   // else before the actual raster data.
-  if (img_data_offset_)
+  if (img_data_offset_) {
     decoded_offset_ = img_data_offset_;
+  }
   need_to_process_color_table_ = false;
   return true;
 }
@@ -764,8 +818,9 @@ bool BMPImageReader::ProcessColorTable() {
 bool BMPImageReader::InitFrame() {
   if (!buffer_->AllocatePixelData(parent_->Size().width(),
                                   parent_->Size().height(),
-                                  parent_->ColorSpaceForSkImages()))
+                                  parent_->ColorSpaceForSkImages())) {
     return parent_->SetFailed();  // Unable to allocate.
+  }
 
   buffer_->ZeroFillPixelData();
   buffer_->SetStatus(ImageFrame::kFramePartial);
@@ -777,8 +832,9 @@ bool BMPImageReader::InitFrame() {
   // For BMPs, the frame always fills the entire image.
   buffer_->SetOriginalFrameRect(gfx::Rect(parent_->Size()));
 
-  if (!is_top_down_)
+  if (!is_top_down_) {
     coord_.set_y(parent_->Size().height() - 1);
+  }
   return true;
 }
 
@@ -786,14 +842,16 @@ bool BMPImageReader::DecodePixelData(bool non_rle) {
   const gfx::Point coord(coord_);
   const ProcessingResult result =
       non_rle ? ProcessNonRLEData(false, 0) : ProcessRLEData();
-  if (coord_ != coord)
+  if (coord_ != coord) {
     buffer_->SetPixelsChanged(true);
+  }
   return (result == kFailure) ? parent_->SetFailed() : (result == kSuccess);
 }
 
 BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
-  if (decoded_offset_ > data_->size())
+  if (decoded_offset_ > data_->size()) {
     return kInsufficientData;
+  }
 
   // RLE decoding is poorly specified.  Two main problems:
   // (1) Are EOL markers necessary?  What happens when we have too many
@@ -820,23 +878,26 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
   while (true) {
     // Every entry takes at least two bytes; bail if there isn't enough
     // data.
-    if ((data_->size() - decoded_offset_) < 2)
+    if ((data_->size() - decoded_offset_) < 2) {
       return kInsufficientData;
+    }
 
     // For every entry except EOF, we'd better not have reached the end of
     // the image.
     const uint8_t count = ReadUint8(0);
     const uint8_t code = ReadUint8(1);
-    if ((count || (code != 1)) && PastEndOfImage(0))
+    if ((count || (code != 1)) && PastEndOfImage(0)) {
       return kFailure;
+    }
 
     // Decode.
     if (!count) {
       switch (code) {
         case 0:  // Magic token: EOL
           // Skip any remaining pixels in this row.
-          if (coord_.x() < parent_->Size().width())
+          if (coord_.x() < parent_->Size().width()) {
             buffer_->SetHasAlpha(true);
+          }
           ColorCorrectCurrentRow();
           MoveBufferToNextRow();
 
@@ -847,8 +908,9 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
           // Skip any remaining pixels in the image.
           if ((coord_.x() < parent_->Size().width()) ||
               (is_top_down_ ? (coord_.y() < (parent_->Size().height() - 1))
-                            : (coord_.y() > 0)))
+                            : (coord_.y() > 0))) {
             buffer_->SetHasAlpha(true);
+          }
           ColorCorrectCurrentRow();
           // There's no need to move |coord_| here to trigger the caller
           // to call SetPixelsChanged().  If the only thing that's changed
@@ -859,8 +921,9 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
         case 2: {  // Magic token: Delta
           // The next two bytes specify dx and dy.  Bail if there isn't
           // enough data.
-          if ((data_->size() - decoded_offset_) < 4)
+          if ((data_->size() - decoded_offset_) < 4) {
             return kInsufficientData;
+          }
 
           // Fail if this takes us past the end of the desired row or
           // past the end of the image.
@@ -868,12 +931,14 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
           const uint8_t dy = ReadUint8(3);
           if (dx || dy) {
             buffer_->SetHasAlpha(true);
-            if (dy)
+            if (dy) {
               ColorCorrectCurrentRow();
+            }
           }
           if (((coord_.x() + dx) > parent_->Size().width()) ||
-              PastEndOfImage(dy))
+              PastEndOfImage(dy)) {
             return kFailure;
+          }
 
           // Skip intervening pixels.
           coord_.Offset(dx, is_top_down_ ? dy : -dy);
@@ -905,8 +970,9 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
 
       if (info_header_.compression == RLE24) {
         // Bail if there isn't enough data.
-        if ((data_->size() - decoded_offset_) < 4)
+        if ((data_->size() - decoded_offset_) < 4) {
           return kInsufficientData;
+        }
 
         // One BGR triple that we copy |count| times.
         FillRGBA(end_x, ReadUint8(3), ReadUint8(2), code, 0xff);
@@ -923,10 +989,11 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
         for (wtf_size_t which = 0; coord_.x() < end_x;) {
           // Some images specify color values past the end of the
           // color table; set these pixels to black.
-          if (color_indexes[which] < info_header_.clr_used)
+          if (color_indexes[which] < info_header_.clr_used) {
             SetI(color_indexes[which]);
-          else
+          } else {
             SetRGBA(0, 0, 0, 255);
+          }
           which = !which;
         }
 
@@ -939,16 +1006,19 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
 BMPImageReader::ProcessingResult BMPImageReader::ProcessNonRLEData(
     bool in_rle,
     int num_pixels) {
-  if (decoded_offset_ > data_->size())
+  if (decoded_offset_ > data_->size()) {
     return kInsufficientData;
+  }
 
-  if (!in_rle)
+  if (!in_rle) {
     num_pixels = parent_->Size().width();
+  }
 
   // Fail if we're being asked to decode more pixels than remain in the row.
   const int end_x = coord_.x() + num_pixels;
-  if (end_x > parent_->Size().width())
+  if (end_x > parent_->Size().width()) {
     return kFailure;
+  }
 
   // Determine how many bytes of data the requested number of pixels
   // requires.
@@ -968,8 +1038,9 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessNonRLEData(
   // one row, we've already checked that this condition is true.)
   while (!PastEndOfImage(0)) {
     // Bail if we don't have enough data for the desired number of pixels.
-    if ((data_->size() - decoded_offset_) < padded_num_bytes)
+    if ((data_->size() - decoded_offset_) < padded_num_bytes) {
       return kInsufficientData;
+    }
 
     if (info_header_.bit_count < 16) {
       // Paletted data.  Pixels are stored little-endian within bytes.
@@ -997,10 +1068,11 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessNonRLEData(
             }
           } else {
             // See comments near the end of ProcessRLEData().
-            if (color_index < info_header_.clr_used)
+            if (color_index < info_header_.clr_used) {
               SetI(color_index);
-            else
+            } else {
               SetRGBA(0, 0, 0, 255);
+            }
           }
           pixel_data <<= info_header_.bit_count;
         }
@@ -1040,8 +1112,9 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessNonRLEData(
 
     // Success, keep going.
     decoded_offset_ += (padded_num_bytes - unpadded_num_bytes);
-    if (in_rle)
+    if (in_rle) {
       return kSuccess;
+    }
     ColorCorrectCurrentRow();
     MoveBufferToNextRow();
   }
@@ -1055,12 +1128,14 @@ void BMPImageReader::MoveBufferToNextRow() {
 }
 
 void BMPImageReader::ColorCorrectCurrentRow() {
-  if (decoding_and_mask_)
+  if (decoding_and_mask_) {
     return;
+  }
   // Postprocess the image data according to the profile.
   const ColorProfileTransform* const transform = parent_->ColorTransform();
-  if (!transform)
+  if (!transform) {
     return;
+  }
   ImageFrame::PixelData* const row = buffer_->GetAddr(0, coord_.y());
   const skcms_PixelFormat fmt = XformColorFormat();
   const skcms_AlphaFormat alpha =

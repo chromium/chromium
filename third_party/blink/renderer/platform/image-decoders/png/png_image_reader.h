@@ -86,8 +86,9 @@ class PLATFORM_EXPORT PNGImageReader final {
   bool ParseCompleted() const { return parse_completed_; }
 
   bool FrameIsReceivedAtIndex(wtf_size_t index) const {
-    if (!index)
+    if (!index) {
       return FirstFrameFullyReceived();
+    }
     return index < FrameCount();
   }
 

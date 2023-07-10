@@ -18,7 +18,7 @@ std::unique_ptr<ImageDecoder> CreateICODecoder() {
       ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::TransformToSRGB(),
       ImageDecoder::kNoDecodedImageByteLimit);
 }
-}
+}  // namespace
 
 TEST(ICOImageDecoderTests, trunctedIco) {
   const Vector<char> data =
@@ -125,8 +125,9 @@ TEST_F(ICOImageDecoderCorpusTest, Decoding) {
 }
 
 TEST_F(ICOImageDecoderCorpusTest, ImageNonZeroFrameIndex) {
-  if (data_dir().empty())
+  if (data_dir().empty()) {
     return;
+  }
   // Test that the decoder decodes multiple sizes of icons which have them.
   // Load an icon that has both favicon-size and larger entries.
   base::FilePath multisize_icon_path(data_dir().AppendASCII("yahoo.ico"));

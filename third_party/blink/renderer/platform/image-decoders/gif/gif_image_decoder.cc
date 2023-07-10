@@ -72,8 +72,9 @@ const AtomicString& GIFImageDecoder::MimeType() const {
 
 void GIFImageDecoder::OnSetData(SegmentReader* data) {
   if (!data) {
-    if (segment_stream_)
+    if (segment_stream_) {
       segment_stream_->SetReader(nullptr);
+    }
     return;
   }
 
@@ -122,8 +123,9 @@ void GIFImageDecoder::OnSetData(SegmentReader* data) {
 }
 
 int GIFImageDecoder::RepetitionCount() const {
-  if (!codec_ || segment_stream_->IsCleared())
+  if (!codec_ || segment_stream_->IsCleared()) {
     return repetition_count_;
+  }
 
   DCHECK(!Failed());
 
@@ -161,14 +163,16 @@ int GIFImageDecoder::RepetitionCount() const {
 
 bool GIFImageDecoder::FrameIsReceivedAtIndex(wtf_size_t index) const {
   SkCodec::FrameInfo frame_info;
-  if (!codec_ || !codec_->getFrameInfo(index, &frame_info))
+  if (!codec_ || !codec_->getFrameInfo(index, &frame_info)) {
     return false;
+  }
   return frame_info.fFullyReceived;
 }
 
 base::TimeDelta GIFImageDecoder::FrameDurationAtIndex(wtf_size_t index) const {
-  if (index < frame_buffer_cache_.size())
+  if (index < frame_buffer_cache_.size()) {
     return frame_buffer_cache_[index].Duration();
+  }
   return base::TimeDelta();
 }
 
@@ -179,8 +183,9 @@ bool GIFImageDecoder::SetFailed() {
 }
 
 wtf_size_t GIFImageDecoder::ClearCacheExceptFrame(wtf_size_t index) {
-  if (frame_buffer_cache_.size() <= 1)
+  if (frame_buffer_cache_.size() <= 1) {
     return 0;
+  }
 
   // SkCodec attempts to report the earliest possible required frame. But it is
   // possible that frame has been evicted. A later frame which could also
@@ -200,8 +205,9 @@ wtf_size_t GIFImageDecoder::ClearCacheExceptFrame(wtf_size_t index) {
 }
 
 wtf_size_t GIFImageDecoder::DecodeFrameCount() {
-  if (!codec_ || segment_stream_->IsCleared())
+  if (!codec_ || segment_stream_->IsCleared()) {
     return frame_buffer_cache_.size();
+  }
 
   return codec_->getFrameCount();
 }
@@ -233,16 +239,18 @@ void GIFImageDecoder::InitializeNewFrame(wtf_size_t index) {
 }
 
 void GIFImageDecoder::Decode(wtf_size_t index) {
-  if (!codec_ || segment_stream_->IsCleared())
+  if (!codec_ || segment_stream_->IsCleared()) {
     return;
+  }
 
   DCHECK(!Failed());
 
   DCHECK_LT(index, frame_buffer_cache_.size());
 
   ImageFrame& frame = frame_buffer_cache_[index];
-  if (frame.GetStatus() == ImageFrame::kFrameComplete)
+  if (frame.GetStatus() == ImageFrame::kFrameComplete) {
     return;
+  }
 
   UpdateAggressivePurging(index);
 
@@ -373,8 +381,9 @@ wtf_size_t GIFImageDecoder::GetViableReferenceFrameIndex(
        i--) {
     const ImageFrame& frame = frame_buffer_cache_[i];
 
-    if (frame.GetDisposalMethod() == ImageFrame::kDisposeOverwritePrevious)
+    if (frame.GetDisposalMethod() == ImageFrame::kDisposeOverwritePrevious) {
       continue;
+    }
 
     if (frame.GetStatus() == ImageFrame::kFrameComplete) {
       return i;

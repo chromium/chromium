@@ -665,15 +665,17 @@ void ReadYUV(const char* file_name,
   auto metadata = decoder->MakeMetadataForDecodeAcceleration();
   EXPECT_EQ(cc::ImageType::kAVIF, metadata.image_type);
   EXPECT_EQ(size, metadata.image_size);
-  if (expected_y_size == expected_uv_size)
+  if (expected_y_size == expected_uv_size) {
     EXPECT_EQ(cc::YUVSubsampling::k444, metadata.yuv_subsampling);
-  else if (expected_y_size.height() == expected_uv_size.height())
+  } else if (expected_y_size.height() == expected_uv_size.height()) {
     EXPECT_EQ(cc::YUVSubsampling::k422, metadata.yuv_subsampling);
-  else
+  } else {
     EXPECT_EQ(cc::YUVSubsampling::k420, metadata.yuv_subsampling);
+  }
 
-  if (!rgb_pixel)
+  if (!rgb_pixel) {
     return;
+  }
 
   if (bit_depth > 8) {
     rgb_pixel->set_x(reinterpret_cast<uint16_t*>(planes[0])[0]);
