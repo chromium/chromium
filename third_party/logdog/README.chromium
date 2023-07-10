@@ -4,8 +4,8 @@ URL: https://chromium.googlesource.com/infra/luci/luci-py/client/libs/logdog
 Version: 17ec234f823f7bff6ada6584fdbbee9d54b8fc58
 Revision: 17ec234f823f7bff6ada6584fdbbee9d54b8fc58
 License: Apache 2.0
-License File: NOT_SHIPPED
 Security Critical: no
+Shipped: no
 
 Description:
 This is used from build/android/pylib/utils/logdog_helper.py
