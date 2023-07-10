@@ -746,14 +746,14 @@ bool HTMLTextAreaElement::IsInteractiveContent() const {
 
 void HTMLTextAreaElement::CloneNonAttributePropertiesFrom(
     const Element& source,
-    CloneChildrenFlag flag) {
+    NodeCloningData& data) {
   const auto& source_element = To<HTMLTextAreaElement>(source);
   SetValueCommon(source_element.Value(),
                  TextFieldEventBehavior::kDispatchNoEvent,
                  TextControlSetValueSelection::kSetSelectionToStart,
                  source_element.GetAutofillState());
   is_dirty_ = source_element.is_dirty_;
-  TextControlElement::CloneNonAttributePropertiesFrom(source, flag);
+  TextControlElement::CloneNonAttributePropertiesFrom(source, data);
 }
 
 String HTMLTextAreaElement::DefaultToolTip() const {

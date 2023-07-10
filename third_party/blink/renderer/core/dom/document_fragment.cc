@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
+#include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
@@ -58,10 +59,11 @@ bool DocumentFragment::ChildTypeAllowed(NodeType type) const {
   }
 }
 
-Node* DocumentFragment::Clone(Document& factory, CloneChildrenFlag flag) const {
+Node* DocumentFragment::Clone(Document& factory, NodeCloningData& data) const {
   DocumentFragment* clone = Create(factory);
-  if (flag != CloneChildrenFlag::kSkip)
-    clone->CloneChildNodesFrom(*this, flag);
+  if (data.Has(CloneOption::kIncludeDescendants)) {
+    clone->CloneChildNodesFrom(*this, data);
+  }
   return clone;
 }
 

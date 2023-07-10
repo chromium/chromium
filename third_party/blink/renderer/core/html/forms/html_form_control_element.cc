@@ -536,8 +536,8 @@ String HTMLFormControlElement::NameForAutofill() const {
 
 void HTMLFormControlElement::CloneNonAttributePropertiesFrom(
     const Element& source,
-    CloneChildrenFlag flag) {
-  HTMLElement::CloneNonAttributePropertiesFrom(source, flag);
+    NodeCloningData& data) {
+  HTMLElement::CloneNonAttributePropertiesFrom(source, data);
   SetNeedsValidityCheck();
 }
 

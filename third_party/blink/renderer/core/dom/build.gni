@@ -207,6 +207,8 @@ blink_core_sources_dom = [
   "node.h",
   "node_child_removal_tracker.cc",
   "node_child_removal_tracker.h",
+  "node_cloning_data.cc",
+  "node_cloning_data.h",
   "node_iterator.cc",
   "node_iterator.h",
   "node_iterator_base.cc",

@@ -103,7 +103,7 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
 
  private:
   void CloneNonAttributePropertiesFrom(const Element&,
-                                       CloneChildrenFlag) override;
+                                       NodeCloningData&) override;
   void DidMoveToNewDocument(Document& old_document) override;
 
   DocumentFragment* ContentInternal() const;

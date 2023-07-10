@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -693,8 +694,8 @@ VTTCueBox* VTTCue::GetDisplayTree() {
   CreateVTTNodeTree();
 
   cue_background_box_->RemoveChildren();
-  cue_background_box_->CloneChildNodesFrom(*vtt_node_tree_,
-                                           CloneChildrenFlag::kClone);
+  NodeCloningData data{CloneOption::kIncludeDescendants};
+  cue_background_box_->CloneChildNodesFrom(*vtt_node_tree_, data);
 
   if (!region()) {
     VTTDisplayParameters display_parameters = CalculateDisplayParameters();

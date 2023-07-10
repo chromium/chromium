@@ -179,7 +179,7 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   String ValueWithHardLineBreaks() const;
 
   void CloneNonAttributePropertiesFrom(const Element&,
-                                       CloneChildrenFlag) override;
+                                       NodeCloningData&) override;
 
  private:
   // Used by ComputeSelection() to specify which values are needed.

@@ -150,6 +150,7 @@
 #include "third_party/blink/renderer/core/dom/live_node_list.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/node_child_removal_tracker.h"
+#include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_iterator.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
@@ -1354,12 +1355,15 @@ Node* Document::importNode(Node* imported_node,
   // 2. Return a clone of node, with context object, the clone children flag set
   // if deep is true, and the clone shadows flag set if this is a
   // DocumentFragment whose host is an HTML template element.
-  auto* fragment = DynamicTo<DocumentFragment>(imported_node);
-  bool clone_shadows_flag = fragment && fragment->IsTemplateContent();
-  return imported_node->Clone(
-      *this, deep ? (clone_shadows_flag ? CloneChildrenFlag::kCloneWithShadows
-                                        : CloneChildrenFlag::kClone)
-                  : CloneChildrenFlag::kSkip);
+  NodeCloningData data;
+  if (deep) {
+    data.Put(CloneOption::kIncludeDescendants);
+    auto* fragment = DynamicTo<DocumentFragment>(imported_node);
+    if (fragment && fragment->IsTemplateContent()) {
+      data.Put(CloneOption::kIncludeShadowRoots);
+    }
+  }
+  return imported_node->Clone(*this, data);
 }
 
 Node* Document::adoptNode(Node* source, ExceptionState& exception_state) {
@@ -4902,7 +4906,7 @@ bool Document::CanAcceptChild(const Node& new_child,
   return true;
 }
 
-Node* Document::Clone(Document& factory, CloneChildrenFlag flag) const {
+Node* Document::Clone(Document& factory, NodeCloningData& data) const {
   DCHECK_EQ(this, &factory)
       << "Document::Clone() doesn't support importNode mode.";
 
@@ -4910,8 +4914,9 @@ Node* Document::Clone(Document& factory, CloneChildrenFlag flag) const {
     return nullptr;
   Document* clone = CloneDocumentWithoutChildren();
   clone->CloneDataFromDocument(*this);
-  if (flag != CloneChildrenFlag::kSkip)
-    clone->CloneChildNodesFrom(*this, flag);
+  if (data.Has(CloneOption::kIncludeDescendants)) {
+    clone->CloneChildNodesFrom(*this, data);
+  }
   return clone;
 }
 

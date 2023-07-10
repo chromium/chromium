@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/name_node_list.h"
 #include "third_party/blink/renderer/core/dom/node_child_removal_tracker.h"
+#include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
@@ -1088,10 +1089,11 @@ bool ContainerNode::ChildrenChangedAllChildrenRemovedNeedsList() const {
 }
 
 void ContainerNode::CloneChildNodesFrom(const ContainerNode& node,
-                                        CloneChildrenFlag flag) {
-  DCHECK_NE(flag, CloneChildrenFlag::kSkip);
-  for (const Node& child : NodeTraversal::ChildrenOf(node))
-    AppendChild(child.Clone(GetDocument(), flag));
+                                        NodeCloningData& data) {
+  CHECK(data.Has(CloneOption::kIncludeDescendants));
+  for (const Node& child : NodeTraversal::ChildrenOf(node)) {
+    AppendChild(child.Clone(GetDocument(), data));
+  }
 }
 
 PhysicalRect ContainerNode::BoundingBox() const {

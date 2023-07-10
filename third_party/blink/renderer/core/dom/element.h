@@ -466,8 +466,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   String nodeName() const override;
 
-  Element& CloneWithChildren(CloneChildrenFlag flag, Document* = nullptr) const;
-  Element& CloneWithoutChildren(Document* = nullptr) const;
+  Element& CloneWithChildren(NodeCloningData& data, Document* = nullptr) const;
+  Element& CloneWithoutChildren(NodeCloningData& data,
+                                Document* = nullptr) const;
+  Element& CloneWithoutChildren() const;
 
   void SetBooleanAttribute(const QualifiedName&, bool);
 
@@ -585,7 +587,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Step 5 of https://dom.spec.whatwg.org/#concept-node-clone
   virtual void CloneNonAttributePropertiesFrom(const Element&,
-                                               CloneChildrenFlag) {}
+                                               NodeCloningData&) {}
 
   // NOTE: This shadows Node::GetComputedStyle().
   // The definition is in node_computed_style.h.
@@ -1505,7 +1507,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Clone is private so that non-virtual CloneElementWithChildren and
   // CloneElementWithoutChildren are used instead.
-  Node* Clone(Document&, CloneChildrenFlag) const override;
+  Node* Clone(Document&, NodeCloningData&) const override;
   virtual Element& CloneWithoutAttributesAndChildren(Document& factory) const;
 
   QualifiedName tag_name_;

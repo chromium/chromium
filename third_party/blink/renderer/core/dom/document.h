@@ -2110,7 +2110,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   String nodeName() const final;
   bool ChildTypeAllowed(NodeType) const final;
-  Node* Clone(Document&, CloneChildrenFlag) const override;
+  Node* Clone(Document&, NodeCloningData&) const override;
   void CloneDataFromDocument(const Document&);
 
   void UpdateTitle(const String&);

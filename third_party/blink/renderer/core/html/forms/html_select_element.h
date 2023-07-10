@@ -189,7 +189,7 @@ class CORE_EXPORT HTMLSelectElement final
 
   void Trace(Visitor*) const override;
   void CloneNonAttributePropertiesFrom(const Element&,
-                                       CloneChildrenFlag) override;
+                                       NodeCloningData&) override;
 
   // These should be called only if UsesMenuList().
   Element& InnerElement() const;

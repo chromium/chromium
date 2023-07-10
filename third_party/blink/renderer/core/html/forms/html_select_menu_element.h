@@ -58,7 +58,7 @@ class CORE_EXPORT HTMLSelectMenuElement final
   bool ValueMissing() const override;
 
   void CloneNonAttributePropertiesFrom(const Element&,
-                                       CloneChildrenFlag) override;
+                                       NodeCloningData&) override;
   void ResetImpl() override;
 
   void Trace(Visitor*) const override;

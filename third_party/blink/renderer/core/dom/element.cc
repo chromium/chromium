@@ -105,6 +105,7 @@
 #include "third_party/blink/renderer/core/dom/mutation_observer_interest_group.h"
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
+#include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/presentation_attribute_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -630,14 +631,15 @@ bool Element::IsBaseElementFocusableStyle() const {
   return false;
 }
 
-Node* Element::Clone(Document& factory, CloneChildrenFlag flag) const {
-  if (flag == CloneChildrenFlag::kSkip) {
-    return &CloneWithoutChildren(&factory);
+Node* Element::Clone(Document& factory, NodeCloningData& data) const {
+  if (!data.Has(CloneOption::kIncludeDescendants)) {
+    CHECK(!data.Has(CloneOption::kIncludeShadowRoots));
+    return &CloneWithoutChildren(data, &factory);
   }
-  Element* copy = &CloneWithChildren(flag, &factory);
+  Element* copy = &CloneWithChildren(data, &factory);
   // 7. If node is a shadow host and the clone shadows flag is set, run these
   // steps:
-  if (flag == CloneChildrenFlag::kCloneWithShadows) {
+  if (data.Has(CloneOption::kIncludeShadowRoots)) {
     auto* shadow_root = GetShadowRoot();
     if (shadow_root && (shadow_root->GetType() == ShadowRootType::kOpen ||
                         shadow_root->GetType() == ShadowRootType::kClosed)) {
@@ -664,13 +666,13 @@ Node* Element::Clone(Document& factory, CloneChildrenFlag flag) const {
       // shadow root and append them to copy’s shadow root, with document as
       // specified, the clone children flag being set, and the clone shadows
       // flag being set.
-      cloned_shadow_root.CloneChildNodesFrom(*shadow_root, flag);
+      cloned_shadow_root.CloneChildNodesFrom(*shadow_root, data);
     }
   }
   return copy;
 }
 
-Element& Element::CloneWithChildren(CloneChildrenFlag flag,
+Element& Element::CloneWithChildren(NodeCloningData& data,
                                     Document* nullable_factory) const {
   Element& clone = CloneWithoutAttributesAndChildren(
       nullable_factory ? *nullable_factory : GetDocument());
@@ -679,12 +681,18 @@ Element& Element::CloneWithChildren(CloneChildrenFlag flag,
   DCHECK_EQ(IsHTMLElement(), clone.IsHTMLElement());
 
   clone.CloneAttributesFrom(*this);
-  clone.CloneNonAttributePropertiesFrom(*this, flag);
-  clone.CloneChildNodesFrom(*this, flag);
+  clone.CloneNonAttributePropertiesFrom(*this, data);
+  clone.CloneChildNodesFrom(*this, data);
   return clone;
 }
 
-Element& Element::CloneWithoutChildren(Document* nullable_factory) const {
+Element& Element::CloneWithoutChildren() const {
+  NodeCloningData data;
+  return CloneWithoutChildren(data);
+}
+
+Element& Element::CloneWithoutChildren(NodeCloningData& data,
+                                       Document* nullable_factory) const {
   Element& clone = CloneWithoutAttributesAndChildren(
       nullable_factory ? *nullable_factory : GetDocument());
   // This will catch HTML elements in the wrong namespace that are not correctly
@@ -692,7 +700,7 @@ Element& Element::CloneWithoutChildren(Document* nullable_factory) const {
   DCHECK_EQ(IsHTMLElement(), clone.IsHTMLElement());
 
   clone.CloneAttributesFrom(*this);
-  clone.CloneNonAttributePropertiesFrom(*this, CloneChildrenFlag::kSkip);
+  clone.CloneNonAttributePropertiesFrom(*this, data);
   return clone;
 }
 

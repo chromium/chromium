@@ -82,7 +82,7 @@ class CORE_EXPORT Text : public CharacterData {
 
  private:
   String nodeName() const override;
-  Node* Clone(Document&, CloneChildrenFlag) const override;
+  Node* Clone(Document&, NodeCloningData&) const override;
 
   bool IsTextNode() const =
       delete;  // This will catch anyone doing an unnecessary check.

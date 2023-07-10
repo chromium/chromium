@@ -258,8 +258,7 @@ TEST(SelectorQueryTest, FastPathScoped) {
   ShadowRoot& shadowRoot =
       scope->AttachShadowRootInternal(ShadowRootType::kOpen);
   // Make the inside the shadow root be identical to that of the outer document.
-  shadowRoot.appendChild(&document->documentElement()->CloneWithChildren(
-      CloneChildrenFlag::kClone));
+  shadowRoot.appendChild(document->documentElement()->cloneNode(/*deep*/ true));
   static const struct QueryTest kTestCases[] = {
       // Id in the right most selector.
       {"#first", false, 0, {0, 0, 0, 0, 0, 0, 0}},

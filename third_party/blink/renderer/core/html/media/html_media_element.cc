@@ -793,8 +793,8 @@ void HTMLMediaElement::ParserDidSetAttributes() {
 // operation. Indeed, it is required per spec to set the muted state based on
 // the content attribute when the object is created.
 void HTMLMediaElement::CloneNonAttributePropertiesFrom(const Element& other,
-                                                       CloneChildrenFlag flag) {
-  HTMLElement::CloneNonAttributePropertiesFrom(other, flag);
+                                                       NodeCloningData& data) {
+  HTMLElement::CloneNonAttributePropertiesFrom(other, data);
 
   if (FastHasAttribute(html_names::kMutedAttr))
     muted_ = true;

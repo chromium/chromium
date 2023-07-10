@@ -99,7 +99,7 @@ void Attr::setTextContentForBinding(const V8UnionStringOrTrustedScript* value,
   setNodeValue(string_value, exception_state);
 }
 
-Node* Attr::Clone(Document& factory, CloneChildrenFlag) const {
+Node* Attr::Clone(Document& factory, NodeCloningData&) const {
   return MakeGarbageCollected<Attr>(factory, name_, value());
 }
 

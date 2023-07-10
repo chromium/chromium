@@ -1232,11 +1232,11 @@ bool HTMLSelectMenuElement::ValueMissing() const {
 
 void HTMLSelectMenuElement::CloneNonAttributePropertiesFrom(
     const Element& source,
-    CloneChildrenFlag flag) {
+    NodeCloningData& data) {
   const auto& source_element =
       static_cast<const HTMLSelectMenuElement&>(source);
   user_has_edited_the_field_ = source_element.user_has_edited_the_field_;
-  HTMLFormControlElement::CloneNonAttributePropertiesFrom(source, flag);
+  HTMLFormControlElement::CloneNonAttributePropertiesFrom(source, data);
 }
 
 // https://html.spec.whatwg.org/C/#ask-for-a-reset

@@ -41,7 +41,7 @@ String DocumentType::nodeName() const {
   return name();
 }
 
-Node* DocumentType::Clone(Document& factory, CloneChildrenFlag) const {
+Node* DocumentType::Clone(Document& factory, NodeCloningData&) const {
   return MakeGarbageCollected<DocumentType>(&factory, name_, public_id_,
                                             system_id_);
 }

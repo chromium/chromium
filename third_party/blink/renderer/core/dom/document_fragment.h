@@ -65,7 +65,7 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
   String nodeName() const final;
 
  private:
-  Node* Clone(Document&, CloneChildrenFlag) const override;
+  Node* Clone(Document&, NodeCloningData&) const override;
   bool ChildTypeAllowed(NodeType) const override;
 
   Member<DocumentPartRoot> document_part_root_;

@@ -417,7 +417,7 @@ class CORE_EXPORT HTMLInputElement
   void FinishParsingChildren() final;
   void ParserDidSetAttributes() final;
 
-  void CloneNonAttributePropertiesFrom(const Element&, CloneChildrenFlag) final;
+  void CloneNonAttributePropertiesFrom(const Element&, NodeCloningData&) final;
 
   void AttachLayoutTree(AttachContext&) final;
 

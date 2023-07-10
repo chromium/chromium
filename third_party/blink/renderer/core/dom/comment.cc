@@ -36,7 +36,7 @@ String Comment::nodeName() const {
   return "#comment";
 }
 
-Node* Comment::Clone(Document& factory, CloneChildrenFlag) const {
+Node* Comment::Clone(Document& factory, NodeCloningData&) const {
   return Create(factory, data());
 }
 

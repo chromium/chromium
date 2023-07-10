@@ -438,7 +438,7 @@ class CORE_EXPORT HTMLMediaElement
   void AttachLayoutTree(AttachContext&) override;
   void ParserDidSetAttributes() override;
   void CloneNonAttributePropertiesFrom(const Element&,
-                                       CloneChildrenFlag) override;
+                                       NodeCloningData&) override;
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;

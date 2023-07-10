@@ -69,7 +69,7 @@ class CORE_EXPORT Attr final : public Node {
   void setNodeValue(const String&, ExceptionState&) override;
   void setTextContentForBinding(const V8UnionStringOrTrustedScript* value,
                                 ExceptionState& exception_state) override;
-  Node* Clone(Document&, CloneChildrenFlag) const override;
+  Node* Clone(Document&, NodeCloningData&) const override;
 
   bool IsAttributeNode() const override { return true; }
 

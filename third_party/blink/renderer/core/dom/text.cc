@@ -243,7 +243,7 @@ String Text::nodeName() const {
   return "#text";
 }
 
-Node* Text::Clone(Document& factory, CloneChildrenFlag) const {
+Node* Text::Clone(Document& factory, NodeCloningData&) const {
   return CloneWithData(factory, data());
 }
 
