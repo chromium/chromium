@@ -80,33 +80,8 @@ void HTMLSummaryElement::DefaultEventHandler(Event& event) {
       return;
     }
 
-    auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-    if (keyboard_event) {
-      if (event.type() == event_type_names::kKeydown &&
-          keyboard_event->key() == " ") {
-        SetActive(true);
-        // No setDefaultHandled() - IE dispatches a keypress in this case.
-        return;
-      }
-      if (event.type() == event_type_names::kKeypress) {
-        switch (keyboard_event->charCode()) {
-          case '\r':
-            DispatchSimulatedClick(&event);
-            event.SetDefaultHandled();
-            return;
-          case ' ':
-            // Prevent scrolling down the page.
-            event.SetDefaultHandled();
-            return;
-        }
-      }
-      if (event.type() == event_type_names::kKeyup &&
-          keyboard_event->key() == " ") {
-        if (IsActive())
-          DispatchSimulatedClick(&event);
-        event.SetDefaultHandled();
-        return;
-      }
+    if (HandleKeyboardActivation(event)) {
+      return;
     }
   }
 
