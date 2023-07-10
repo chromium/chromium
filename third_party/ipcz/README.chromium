@@ -2,6 +2,7 @@ Name: ipcz
 License: BSD
 License File: LICENSE
 Security Critical: Yes
+Shipped: yes
 
 Description:
 The //third_party/ipcz directory in the Chromium tree is the source-of-truth
