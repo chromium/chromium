@@ -114,7 +114,8 @@ chrome.inputMethodPrivate.AutoCapitalizeType = {
 chrome.inputMethodPrivate.InputContext;
 
 /**
- * User preference settings for a specific input method. Japanese input methods are not included because they are managed separately by Mozc module.
+ * User preference settings for a specific input method. Japanese input methods
+ * are not included because they are managed separately by Mozc module.
  * @typedef {{
  *   enableCompletion: (boolean|undefined),
  *   enableDoubleSpacePeriod: (boolean|undefined),
@@ -125,6 +126,7 @@ chrome.inputMethodPrivate.InputContext;
  *   physicalKeyboardAutoCorrectionLevel: (number|undefined),
  *   physicalKeyboardEnableCapitalization: (boolean|undefined),
  *   physicalKeyboardEnableDiacriticsOnLongpress: (boolean|undefined),
+ *   physicalKeyboardEnablePredictiveWriting: (boolean|undefined),
  *   virtualKeyboardAutoCorrectionLevel: (number|undefined),
  *   virtualKeyboardEnableCapitalization: (boolean|undefined),
  *   xkbLayout: (string|undefined),
