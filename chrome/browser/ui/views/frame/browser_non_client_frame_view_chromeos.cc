@@ -873,6 +873,14 @@ void BrowserNonClientFrameViewChromeOS::OnAddedToOrRemovedFromOverview() {
   // The WebAppFrameToolbarView is part of the BrowserView, so make sure the
   // BrowserView is re-layed out to take into account these changes.
   browser_view()->InvalidateLayout();
+
+  // In the overview mode, the native frame does not need rounding. (See
+  // `chromeos::GetFrameCornerRadius()` for more details.)
+  // We need to repaint the frame's header to ensure that the change is
+  // reflected.
+  if (frame_header_) {
+    frame_header_->view()->SchedulePaint();
+  }
 }
 
 std::unique_ptr<chromeos::FrameHeader>

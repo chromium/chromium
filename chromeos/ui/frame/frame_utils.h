@@ -36,8 +36,8 @@ bool ShouldUseRestoreFrame(const views::Widget* widget);
 // right/bottom. Takes into account the orientation of the display.
 SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top);
 
-// Returns the corner radius of frame based on the WindowStateType of the
-// `native_window` associated with the frame.
+// Returns the corner radius of frame based on the state of the `native_window`
+// associated with the frame.
 COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
 int GetFrameCornerRadius(const aura::Window* native_window);
 
