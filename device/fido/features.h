@@ -98,6 +98,10 @@ BASE_DECLARE_FEATURE(kWebAuthConditionalUIExperimentation);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnCableViaCredMan);
 
+// Allow some sites to experiment with removing caBLE linking in requests.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnLinkingExperimentation);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

@@ -128,6 +128,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       CtapGetAssertionRequest request);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  // no_cable_linking requests that QR-linked and pre-linked phones be ignored
+  // for this discovery.
+  //
+  // TODO(crbug.com/1459443): remove this and everything else from the CL that
+  // added it if this is unused by June 2024.
+  bool no_cable_linking = false;
+
  protected:
   static std::vector<std::unique_ptr<FidoDiscoveryBase>> SingleDiscovery(
       std::unique_ptr<FidoDiscoveryBase> discovery);

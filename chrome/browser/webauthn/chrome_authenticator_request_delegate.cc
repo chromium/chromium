@@ -597,13 +597,16 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
   const bool cablev2_extension_provided =
       base::Contains(pairings, device::CableDiscoveryData::Version::V2,
                      &device::CableDiscoveryData::version);
+  const bool ignore_linked_cable_devices =
+      origin.DomainIs("google.com") && discovery_factory->no_cable_linking;
 
   std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones;
   std::vector<AuthenticatorRequestDialogModel::PairedPhone>
       paired_phone_entries;
   base::RepeatingCallback<void(size_t)> contact_phone_callback;
-  if (!cable_extension_provided ||
-      base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere)) {
+  if (!ignore_linked_cable_devices &&
+      (!cable_extension_provided ||
+       base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere))) {
     DCHECK(phone_names_.empty());
     DCHECK(phone_public_keys_.empty());
 

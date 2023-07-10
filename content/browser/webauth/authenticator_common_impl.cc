@@ -99,6 +99,8 @@ enum class AttestationErasureOption {
 
 namespace {
 
+constexpr int kNoCableLinkingTimeoutMod1000 = 643;
+
 WebAuthenticationDelegate* GetWebAuthenticationDelegate() {
   return GetContentClient()->browser()->GetWebAuthenticationDelegate();
 }
@@ -429,6 +431,9 @@ struct AuthenticatorCommonImpl::RequestState {
   blink::mojom::AuthenticatorStatus error_awaiting_user_acknowledgement =
       blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
   bool discoverable_credential_request = false;
+  // no_cable_linking requests that both QR-linked and pre-linked phones be
+  // ignored for this request.
+  bool no_cable_linking = false;
 
   base::flat_set<RequestExtension> requested_extensions;
 
@@ -486,6 +491,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
     bool allow_skipping_pin_touch) {
   InitDiscoveryFactory();
 
+  discovery_factory()->no_cable_linking = req_state_->no_cable_linking;
   req_state_->request_delegate->ConfigureCable(
       req_state_->caller_origin, device::FidoRequestType::kMakeCredential,
       req_state_->make_credential_options->resident_key,
@@ -529,6 +535,7 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
     bool allow_skipping_pin_touch) {
   InitDiscoveryFactory();
 
+  discovery_factory()->no_cable_linking = req_state_->no_cable_linking;
   base::span<const device::CableDiscoveryData> cable_pairings;
   if (req_state_->ctap_get_assertion_request->cable_extension && IsFocused()) {
     cable_pairings = *req_state_->ctap_get_assertion_request->cable_extension;
@@ -596,6 +603,15 @@ void AuthenticatorCommonImpl::MakeCredential(
   req_state_ = std::make_unique<RequestState>();
 
   req_state_->make_credential_response_callback = std::move(callback);
+
+  // TODO(crbug.com/1459443): remove this and everything else from
+  // the CL that added it if this is unused by June 2024.
+  if (options->timeout &&
+      base::FeatureList::IsEnabled(device::kWebAuthnLinkingExperimentation) &&
+      options->timeout->InMilliseconds() % 1000 ==
+          kNoCableLinkingTimeoutMod1000) {
+    req_state_->no_cable_linking = true;
+  }
 
   BeginRequestTimeout(options->timeout);
 
@@ -906,6 +922,15 @@ void AuthenticatorCommonImpl::GetAssertion(
   req_state_ = std::make_unique<RequestState>();
 
   req_state_->get_assertion_response_callback = std::move(callback);
+
+  // TODO(crbug.com/1459443): remove this and everything else from
+  // the CL that added it if this is unused by June 2024.
+  if (options->timeout &&
+      base::FeatureList::IsEnabled(device::kWebAuthnLinkingExperimentation) &&
+      options->timeout->InMilliseconds() % 1000 ==
+          kNoCableLinkingTimeoutMod1000) {
+    req_state_->no_cable_linking = true;
+  }
 
   if (!options->is_conditional) {
     BeginRequestTimeout(options->timeout);
