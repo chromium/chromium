@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) MockInputMethod : public InputMethod {
   VirtualKeyboardController* GetVirtualKeyboardController() override;
 
  private:
-  raw_ptr<TextInputClient, DanglingUntriaged> text_input_client_;
+  raw_ptr<TextInputClient, DanglingUntriaged> text_input_client_ = nullptr;
   base::ObserverList<InputMethodObserver>::Unchecked observer_list_;
   raw_ptr<ImeKeyEventDispatcher> ime_key_event_dispatcher_;
 

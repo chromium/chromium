@@ -512,9 +512,8 @@ TEST_F(WindowEventDispatcherTest, ScrollEventDispatch) {
 }
 
 TEST_F(WindowEventDispatcherTest, PreDispatchKeyEventToIme) {
-  ui::MockInputMethod mock_ime(nullptr);
   TestImeKeyEventDispatcher dispatcher;
-  mock_ime.SetImeKeyEventDispatcher(&dispatcher);
+  ui::MockInputMethod mock_ime(&dispatcher);
   host()->SetSharedInputMethod(&mock_ime);
 
   ConsumeKeyHandler handler;
@@ -536,6 +535,8 @@ TEST_F(WindowEventDispatcherTest, PreDispatchKeyEventToIme) {
   DispatchEventUsingWindowDispatcher(&key_release);
   EXPECT_EQ(1, handler.num_key_events());
   EXPECT_EQ(1, dispatcher.dispatched_event_count());
+
+  host()->SetSharedInputMethod(nullptr);
 }
 
 namespace {
