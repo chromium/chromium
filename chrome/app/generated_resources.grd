@@ -15472,13 +15472,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         translateable="false">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.
       </message>
-      <message name="IDS_WAFFLE_FIRST_BUTTON_TITLE" desc="The title of the first button of the Waffle page."
+      <message name="IDS_WAFFLE_BUTTON_TITLE" desc="The title of the button of the Waffle page."
         translateable="false">
-        First button
-      </message>
-      <message name="IDS_WAFFLE_SECOND_BUTTON_TITLE" desc="The title of the second button of the Waffle page."
-        translateable="false">
-        Second button
+        Button
       </message>
     </if>
   </messages>
