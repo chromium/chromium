@@ -219,11 +219,12 @@ void MediaNotificationService::ShowDialogAsh(
   auto routes = media_router::WebContentsPresentationManager::Get(web_contents)
                     ->GetMediaRoutes();
   std::string item_id;
-  if (!routes.empty()) {
-    // It is possible for a sender page to connect to two routes. For the
-    // sake of the Zenith dialog, only one notification is needed.
-    item_id = routes.begin()->media_route_id();
-  } else {
+  // TODO(crbug.com/1462768): When `routes` is not empty, we'd ideally set
+  // `item_id` to be the ID of a MediaRoute so that we'd only show the
+  // corresponding notification item. However, MediaRoute IDs are not the same
+  // between Lacros and Ash, so we resort to showing all the items by leaving
+  // `item_id` empty.
+  if (routes.empty()) {
     item_id = content::MediaSession::GetRequestIdFromWebContents(web_contents)
                   .ToString();
   }
