@@ -37,17 +37,6 @@ std::u16string GetTitle(
           : IDS_EXTENSION_ENABLE_BLOCKED_BY_PARENT_PROMPT_TITLE;
   return l10n_util::GetStringFUTF16(title_id, extension_type);
 }
-
-std::u16string GetBodyText(
-    extensions::ExtensionInstalledBlockedByParentDialogAction action,
-    std::u16string extension_type) {
-  int body_id =
-      action == extensions::ExtensionInstalledBlockedByParentDialogAction::kAdd
-          ? IDS_EXTENSION_INSTALL_BLOCKED_BY_PARENT_PROMPT_MESSAGE
-          : IDS_EXTENSION_ENABLE_BLOCKED_BY_PARENT_PROMPT_MESSAGE;
-  return l10n_util::GetStringFUTF16(body_id, extension_type);
-}
-
 }  // namespace
 
 namespace extensions {
@@ -65,8 +54,8 @@ void ShowExtensionInstallBlockedByParentDialog(
           .SetTitle(GetTitle(action, extension_type))
           .SetIcon(ui::ImageModel::FromVectorIcon(
               chromeos::kNotificationSupervisedUserIcon, ui::kColorIcon))
-          .AddParagraph(
-              ui::DialogModelLabel(GetBodyText(action, extension_type)))
+          .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
+              IDS_EXTENSION_PERMISSIONS_BLOCKED_BY_PARENT_PROMPT_MESSAGE)))
           .AddOkButton(base::DoNothing(),
                        ui::DialogModelButton::Params().SetLabel(
                            l10n_util::GetStringUTF16(IDS_OK)))
