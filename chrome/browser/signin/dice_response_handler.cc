@@ -91,7 +91,7 @@ std::unique_ptr<RegistrationTokenHelper> BuildRegistrationTokenHelper(
     const GURL& registration_url,
     base::OnceCallback<void(absl::optional<RegistrationTokenHelper::Result>)>
         callback) {
-  return std::make_unique<RegistrationTokenHelper>(
+  return RegistrationTokenHelper::CreateForTokenBinding(
       unexportable_key_service, client_id, auth_code, registration_url,
       std::move(callback));
 }

@@ -33,12 +33,15 @@ base::Value Base64UrlEncodedJsonToValue(base::StringPiece input) {
 
 }  // namespace
 
-TEST(SessionBindingUtilsTest, CreateKeyRegistrationHeaderAndPayload) {
-  absl::optional<std::string> result = CreateKeyRegistrationHeaderAndPayload(
-      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-      std::vector<uint8_t>({1, 2, 3}), "test_client_id", "test_auth_code",
-      GURL("https://accounts.google.com/RegisterKey"),
-      base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123));
+TEST(SessionBindingUtilsTest,
+     CreateKeyRegistrationHeaderAndPayloadForTokenBinding) {
+  absl::optional<std::string> result =
+      CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
+          "test_client_id", "test_auth_code",
+          GURL("https://accounts.google.com/RegisterKey"),
+          crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+          std::vector<uint8_t>({1, 2, 3}),
+          base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123));
   ASSERT_TRUE(result.has_value());
 
   std::vector<base::StringPiece> header_and_payload = base::SplitStringPiece(
@@ -57,6 +60,40 @@ TEST(SessionBindingUtilsTest, CreateKeyRegistrationHeaderAndPayload) {
           .Set("aud", "https://accounts.google.com/RegisterKey")
           // Base64UrlEncode(SHA256("test_auth_code"));
           .Set("jti", "TQurqawiFBU95_obuobFjt-aOhaU14_YdtMTCEjyTkM")
+          .Set("iat", 17280000)
+          .Set("key", base::Value::Dict()
+                          .Set("kty",
+                               "accounts.google.com/.well-known/kty/"
+                               "SubjectPublicKeyInfo")
+                          .Set("SubjectPublicKeyInfo", "AQID"));
+
+  EXPECT_EQ(actual_header, expected_header);
+  EXPECT_EQ(actual_payload, expected_payload);
+}
+
+TEST(SessionBindingUtilsTest,
+     CreateKeyRegistrationHeaderAndPayloadForSessionBinding) {
+  absl::optional<std::string> result =
+      CreateKeyRegistrationHeaderAndPayloadForSessionBinding(
+          GURL("https://accounts.google.com/RegisterKey"),
+          crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
+          std::vector<uint8_t>({1, 2, 3}),
+          base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123));
+  ASSERT_TRUE(result.has_value());
+
+  std::vector<base::StringPiece> header_and_payload = base::SplitStringPiece(
+      *result, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  ASSERT_EQ(header_and_payload.size(), 2U);
+  base::Value actual_header =
+      Base64UrlEncodedJsonToValue(header_and_payload[0]);
+  base::Value actual_payload =
+      Base64UrlEncodedJsonToValue(header_and_payload[1]);
+
+  base::Value::Dict expected_header =
+      base::Value::Dict().Set("alg", "RS256").Set("typ", "jwt");
+  base::Value::Dict expected_payload =
+      base::Value::Dict()
+          .Set("aud", "https://accounts.google.com/RegisterKey")
           .Set("iat", 17280000)
           .Set("key", base::Value::Dict()
                           .Set("kty",

@@ -7,6 +7,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/signin/public/base/session_binding_utils.h"
@@ -33,25 +34,43 @@ RegistrationTokenHelper::Result::Result(
     std::vector<uint8_t> in_wrapped_binding_key,
     std::string in_registration_token)
     : binding_key_id(in_binding_key_id),
-      wrapped_binding_key(in_wrapped_binding_key),
-      registration_token(in_registration_token) {}
+      wrapped_binding_key(std::move(in_wrapped_binding_key)),
+      registration_token(std::move(in_registration_token)) {}
 
 RegistrationTokenHelper::Result::~Result() = default;
 RegistrationTokenHelper::Result::Result(Result&& other) = default;
 RegistrationTokenHelper::Result& RegistrationTokenHelper::Result::operator=(
     Result&& other) = default;
 
-RegistrationTokenHelper::RegistrationTokenHelper(
+// static
+std::unique_ptr<RegistrationTokenHelper>
+RegistrationTokenHelper::CreateForSessionBinding(
+    unexportable_keys::UnexportableKeyService& unexportable_key_service,
+    const GURL& registration_url,
+    base::OnceCallback<void(absl::optional<Result>)> callback) {
+  HeaderAndPayloadGenerator header_and_payload_generator = base::BindRepeating(
+      &signin::CreateKeyRegistrationHeaderAndPayloadForSessionBinding,
+      registration_url);
+  return base::WrapUnique(new RegistrationTokenHelper(
+      unexportable_key_service, std::move(header_and_payload_generator),
+      std::move(callback)));
+}
+
+// static
+std::unique_ptr<RegistrationTokenHelper>
+RegistrationTokenHelper::CreateForTokenBinding(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     base::StringPiece client_id,
     base::StringPiece auth_code,
     const GURL& registration_url,
-    base::OnceCallback<void(absl::optional<Result>)> callback)
-    : unexportable_key_service_(unexportable_key_service),
-      client_id_(client_id),
-      auth_code_(auth_code),
-      registration_url_(registration_url),
-      callback_(std::move(callback)) {}
+    base::OnceCallback<void(absl::optional<Result>)> callback) {
+  HeaderAndPayloadGenerator header_and_payload_generator = base::BindRepeating(
+      &signin::CreateKeyRegistrationHeaderAndPayloadForTokenBinding,
+      std::string(client_id), std::string(auth_code), registration_url);
+  return base::WrapUnique(new RegistrationTokenHelper(
+      unexportable_key_service, std::move(header_and_payload_generator),
+      std::move(callback)));
+}
 
 RegistrationTokenHelper::~RegistrationTokenHelper() = default;
 
@@ -64,6 +83,14 @@ void RegistrationTokenHelper::Start() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+RegistrationTokenHelper::RegistrationTokenHelper(
+    unexportable_keys::UnexportableKeyService& unexportable_key_service,
+    HeaderAndPayloadGenerator header_and_payload_generator,
+    base::OnceCallback<void(absl::optional<Result>)> callback)
+    : unexportable_key_service_(unexportable_key_service),
+      header_and_payload_generator_(std::move(header_and_payload_generator)),
+      callback_(std::move(callback)) {}
+
 void RegistrationTokenHelper::OnKeyGenerated(
     unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
         result) {
@@ -75,10 +102,10 @@ void RegistrationTokenHelper::OnKeyGenerated(
   key_id_ = *result;
 
   absl::optional<std::string> header_and_payload =
-      signin::CreateKeyRegistrationHeaderAndPayload(
+      header_and_payload_generator_.Run(
           *unexportable_key_service_->GetAlgorithm(key_id_),
           *unexportable_key_service_->GetSubjectPublicKeyInfo(key_id_),
-          client_id_, auth_code_, registration_url_, base::Time::Now());
+          base::Time::Now());
 
   if (!header_and_payload.has_value()) {
     // TODO(alexilin): Record a histogram.

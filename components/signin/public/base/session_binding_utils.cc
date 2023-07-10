@@ -49,31 +49,50 @@ std::string Base64UrlEncode(base::span<const uint8_t> data) {
       reinterpret_cast<const char*>(data.data()), data.size()));
 }
 
-base::Value::Dict CreateHeader(
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
+base::Value::Dict CreatePublicKeyInfo(base::span<const uint8_t> pubkey) {
   return base::Value::Dict()
-      .Set("alg", SignatureAlgorithmToString(algorithm))
-      .Set("typ", "jwt");
+      .Set("kty",
+           "accounts.google.com/.well-known/kty/"
+           "SubjectPublicKeyInfo")
+      .Set("SubjectPublicKeyInfo", Base64UrlEncode(pubkey));
 }
 
-}  // namespace
-
-absl::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
+absl::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-    base::span<const uint8_t> pubkey,
-    base::StringPiece client_id,
-    base::StringPiece auth_code,
-    const GURL& registration_url,
-    base::Time timestamp) {
-  base::Value::Dict header = CreateHeader(algorithm);
-  std::string header_serialized;
-  if (!base::JSONWriter::Write(header, &header_serialized)) {
+    const base::Value::Dict& payload) {
+  auto header = base::Value::Dict()
+                    .Set("alg", SignatureAlgorithmToString(algorithm))
+                    .Set("typ", "jwt");
+  absl::optional<std::string> header_serialized = base::WriteJson(header);
+  if (!header_serialized) {
     DVLOG(1) << "Unexpected JSONWriter error while serializing a registration "
                 "token header";
     return absl::nullopt;
   }
 
-  base::Value::Dict payload =
+  absl::optional<std::string> payload_serialized = base::WriteJsonWithOptions(
+      payload, base::JSONWriter::OPTIONS_OMIT_DOUBLE_TYPE_PRESERVATION);
+  if (!payload_serialized) {
+    DVLOG(1) << "Unexpected JSONWriter error while serializing a registration "
+                "token payload";
+    return absl::nullopt;
+  }
+
+  return base::StrCat({Base64UrlEncode(*header_serialized), ".",
+                       Base64UrlEncode(*payload_serialized)});
+}
+
+}  // namespace
+
+absl::optional<std::string>
+CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
+    base::StringPiece client_id,
+    base::StringPiece auth_code,
+    const GURL& registration_url,
+    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    base::span<const uint8_t> pubkey,
+    base::Time timestamp) {
+  auto payload =
       base::Value::Dict()
           .Set("sub", client_id)
           .Set("aud", registration_url.spec())
@@ -83,23 +102,26 @@ absl::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
           // there's no other option.
           .Set("iat", static_cast<double>(
                           (timestamp - base::Time::UnixEpoch()).InSeconds()))
-          .Set("key",
-               base::Value::Dict()
-                   .Set("kty",
-                        "accounts.google.com/.well-known/kty/"
-                        "SubjectPublicKeyInfo")
-                   .Set("SubjectPublicKeyInfo", Base64UrlEncode(pubkey)));
-  std::string payload_serialized;
-  if (!base::JSONWriter::WriteWithOptions(
-          payload, base::JSONWriter::OPTIONS_OMIT_DOUBLE_TYPE_PRESERVATION,
-          &payload_serialized)) {
-    DVLOG(1) << "Unexpected JSONWriter error while serializing a registration "
-                "token payload";
-    return absl::nullopt;
-  }
+          .Set("key", CreatePublicKeyInfo(pubkey));
+  return CreateHeaderAndPayloadWithCustomPayload(algorithm, payload);
+}
 
-  return base::StrCat({Base64UrlEncode(header_serialized), ".",
-                       Base64UrlEncode(payload_serialized)});
+absl::optional<std::string>
+CreateKeyRegistrationHeaderAndPayloadForSessionBinding(
+    const GURL& registration_url,
+    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    base::span<const uint8_t> pubkey,
+    base::Time timestamp) {
+  auto payload =
+      base::Value::Dict()
+          .Set("aud", registration_url.spec())
+          // Write out int64_t variable as a double.
+          // Note: this may discard some precision, but for `base::Value`
+          // there's no other option.
+          .Set("iat", static_cast<double>(
+                          (timestamp - base::Time::UnixEpoch()).InSeconds()))
+          .Set("key", CreatePublicKeyInfo(pubkey));
+  return CreateHeaderAndPayloadWithCustomPayload(algorithm, payload);
 }
 
 absl::optional<std::string> CreateKeyAssertionHeaderAndPayload(
@@ -108,31 +130,12 @@ absl::optional<std::string> CreateKeyAssertionHeaderAndPayload(
     base::StringPiece client_id,
     base::StringPiece challenge,
     const GURL& destination_url) {
-  base::Value::Dict header = CreateHeader(algorithm);
-  std::string header_serialized;
-  if (!base::JSONWriter::Write(header, &header_serialized)) {
-    DVLOG(1) << "Unexpected JSONWriter error while serializing a registration "
-                "token header";
-    return absl::nullopt;
-  }
-
-  base::Value::Dict payload =
-      base::Value::Dict()
-          .Set("sub", client_id)
-          .Set("aud", destination_url.spec())
-          .Set("jti", challenge)
-          .Set("iss", Base64UrlEncode(crypto::SHA256Hash(pubkey)));
-  std::string payload_serialized;
-  if (!base::JSONWriter::WriteWithOptions(
-          payload, base::JSONWriter::OPTIONS_OMIT_DOUBLE_TYPE_PRESERVATION,
-          &payload_serialized)) {
-    DVLOG(1) << "Unexpected JSONWriter error while serializing a registration "
-                "token payload";
-    return absl::nullopt;
-  }
-
-  return base::StrCat({Base64UrlEncode(header_serialized), ".",
-                       Base64UrlEncode(payload_serialized)});
+  auto payload = base::Value::Dict()
+                     .Set("sub", client_id)
+                     .Set("aud", destination_url.spec())
+                     .Set("jti", challenge)
+                     .Set("iss", Base64UrlEncode(crypto::SHA256Hash(pubkey)));
+  return CreateHeaderAndPayloadWithCustomPayload(algorithm, payload);
 }
 
 std::string AppendSignatureToHeaderAndPayload(

@@ -104,11 +104,15 @@ class DiceTestSigninClient : public TestSigninClient, public GaiaAuthConsumer {
 class FakeRegistrationTokenHelper : public RegistrationTokenHelper {
  public:
   FakeRegistrationTokenHelper()
-      : RegistrationTokenHelper(fake_unexportable_key_service_,
-                                "test_client_id",
-                                "test_auth_code",
-                                GURL("https://accounts.google.com/Register"),
-                                base::DoNothing()) {}
+      : RegistrationTokenHelper(
+            fake_unexportable_key_service_,
+            base::BindRepeating(
+                [](crypto::SignatureVerifier::SignatureAlgorithm,
+                   base::span<const uint8_t>,
+                   base::Time) -> absl::optional<std::string> {
+                  return absl::nullopt;
+                }),
+            base::DoNothing()) {}
 
   ~FakeRegistrationTokenHelper() override = default;
 

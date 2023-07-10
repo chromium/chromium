@@ -25,6 +25,19 @@ class RegistrationTokenHelperTest : public testing::Test {
 
   void RunBackgroundTasks() { task_environment_.RunUntilIdle(); }
 
+  void VerifyResult(const RegistrationTokenHelper::Result& result) {
+    crypto::SignatureVerifier::SignatureAlgorithm algorithm =
+        *unexportable_key_service().GetAlgorithm(result.binding_key_id);
+    std::vector<uint8_t> pubkey =
+        *unexportable_key_service().GetSubjectPublicKeyInfo(
+            result.binding_key_id);
+
+    EXPECT_TRUE(signin::VerifyJwtSignature(result.registration_token, algorithm,
+                                           pubkey));
+    EXPECT_EQ(result.wrapped_binding_key,
+              unexportable_key_service().GetWrappedKey(result.binding_key_id));
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::ThreadPoolExecutionMode::
@@ -34,29 +47,32 @@ class RegistrationTokenHelperTest : public testing::Test {
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
 };
 
-TEST_F(RegistrationTokenHelperTest, Success) {
+TEST_F(RegistrationTokenHelperTest, SuccessForTokenBinding) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
   base::test::TestFuture<absl::optional<RegistrationTokenHelper::Result>>
       future;
-  RegistrationTokenHelper helper(
-      unexportable_key_service(), "test_client_id", "test_auth_code",
-      GURL("https://accounts.google.com/Register"), future.GetCallback());
-  helper.Start();
+  std::unique_ptr<RegistrationTokenHelper> helper =
+      RegistrationTokenHelper::CreateForTokenBinding(
+          unexportable_key_service(), "test_client_id", "test_auth_code",
+          GURL("https://accounts.google.com/Register"), future.GetCallback());
+  helper->Start();
   RunBackgroundTasks();
   ASSERT_TRUE(future.Get().has_value());
+  VerifyResult(future.Get().value());
+}
 
-  const auto& registration_token = future.Get()->registration_token;
-  const auto& key_id = future.Get()->binding_key_id;
-  crypto::SignatureVerifier::SignatureAlgorithm algorithm =
-      *unexportable_key_service().GetAlgorithm(key_id);
-  std::vector<uint8_t> pubkey =
-      *unexportable_key_service().GetSubjectPublicKeyInfo(key_id);
-
-  EXPECT_TRUE(
-      signin::VerifyJwtSignature(registration_token, algorithm, pubkey));
-
-  const auto& wrapped_key = future.Get()->wrapped_binding_key;
-  EXPECT_EQ(wrapped_key, unexportable_key_service().GetWrappedKey(key_id));
+TEST_F(RegistrationTokenHelperTest, SuccessForSessionBinding) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  base::test::TestFuture<absl::optional<RegistrationTokenHelper::Result>>
+      future;
+  std::unique_ptr<RegistrationTokenHelper> helper =
+      RegistrationTokenHelper::CreateForSessionBinding(
+          unexportable_key_service(),
+          GURL("https://accounts.google.com/Register"), future.GetCallback());
+  helper->Start();
+  RunBackgroundTasks();
+  ASSERT_TRUE(future.Get().has_value());
+  VerifyResult(future.Get().value());
 }
 
 TEST_F(RegistrationTokenHelperTest, Failure) {
@@ -64,10 +80,11 @@ TEST_F(RegistrationTokenHelperTest, Failure) {
   crypto::ScopedNullUnexportableKeyProvider scoped_null_key_provider_;
   base::test::TestFuture<absl::optional<RegistrationTokenHelper::Result>>
       future;
-  RegistrationTokenHelper helper(
-      unexportable_key_service(), "test_client_id", "test_auth_code",
-      GURL("https://accounts.google.com/Register"), future.GetCallback());
-  helper.Start();
+  std::unique_ptr<RegistrationTokenHelper> helper =
+      RegistrationTokenHelper::CreateForTokenBinding(
+          unexportable_key_service(), "test_client_id", "test_auth_code",
+          GURL("https://accounts.google.com/Register"), future.GetCallback());
+  helper->Start();
   RunBackgroundTasks();
   EXPECT_FALSE(future.Get().has_value());
 }
