@@ -197,24 +197,11 @@ void LayoutSVGResourceContainer::MarkAllClientsForInvalidation(
   is_invalidating_ = false;
 }
 
-void LayoutSVGResourceContainer::InvalidateCacheAndMarkForLayout(
-    LayoutInvalidationReasonForTracing reason) {
-  NOT_DESTROYED();
-  SetNeedsLayoutAndFullPaintInvalidation(reason, kMarkContainerChain);
-  InvalidateCache();
-}
-
 void LayoutSVGResourceContainer::InvalidateCache() {
   NOT_DESTROYED();
   if (EverHadLayout()) {
     RemoveAllClientsFromCache();
   }
-}
-
-void LayoutSVGResourceContainer::InvalidateCacheAndMarkForLayout() {
-  NOT_DESTROYED();
-  InvalidateCacheAndMarkForLayout(
-      layout_invalidation_reason::kSvgResourceInvalidated);
 }
 
 static inline void RemoveFromCacheAndInvalidateDependencies(

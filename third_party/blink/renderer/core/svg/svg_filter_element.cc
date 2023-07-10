@@ -124,10 +124,6 @@ void SVGFilterElement::ChildrenChanged(const ChildrenChange& change) {
   if (change.ByParser() && !AssociatedResource())
     return;
 
-  if (LayoutObject* object = GetLayoutObject()) {
-    object->SetNeedsLayoutAndFullPaintInvalidation(
-        layout_invalidation_reason::kChildChanged);
-  }
   InvalidateFilterChain();
 }
 
