@@ -1018,20 +1018,15 @@ bool ObfuscatedFileUtil::DeleteDirectoryForBucketAndType(
     const BucketLocator& bucket_locator,
     const absl::optional<FileSystemType>& type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (bucket_locator.is_default &&
-      bucket_locator.storage_key.IsFirstPartyContext())
-    return DeleteDirectoryForStorageKeyAndType(bucket_locator.storage_key,
-                                               type);
-
   DestroyDirectoryDatabaseForBucket(bucket_locator, type);
 
   // Get the base path for the bucket without the type string appended.
-  base::FilePath path =
-      sandbox_delegate_->quota_manager_proxy()->GetClientBucketPath(
-          bucket_locator, QuotaClientType::kFileSystem);
-  base::File::Error error = GetDirectoryHelper(path, /*create=*/false);
-  if (error != base::File::FILE_OK || path.empty())
+  base::FileErrorOr<base::FilePath> path_without_type =
+      GetDirectoryForBucketAndType(bucket_locator, /*type=*/absl::nullopt,
+                                   /*create=*/false);
+  if (!path_without_type.has_value() || path_without_type->empty()) {
     return true;
+  }
 
   if (type) {
     // Delete the filesystem type directory.
@@ -1047,14 +1042,16 @@ bool ObfuscatedFileUtil::DeleteDirectoryForBucketAndType(
 
     // At this point we are sure we had successfully deleted the bucket/type
     // directory. Now we need to see if we have other sub-type-directories under
-    // the higher-level `path` directory. If so, we need to return early to
-    // avoid deleting the higher-level `path` directory.
+    // the higher-level `path_without_type` directory. If so, we need to return
+    // early to avoid deleting the higher-level `path_without_type` directory
     const std::string type_string =
         SandboxFileSystemBackendDelegate::GetTypeString(type.value());
     for (const std::string& known_type : known_type_strings_) {
-      if (known_type == type_string)
+      if (known_type == type_string) {
         continue;
-      if (delegate_->DirectoryExists(path.AppendASCII(known_type))) {
+      }
+      if (delegate_->DirectoryExists(
+              path_without_type->AppendASCII(known_type))) {
         // Other type's directory exists; return to avoid deleting the higher
         // level directory.
         return true;
@@ -1062,8 +1059,19 @@ bool ObfuscatedFileUtil::DeleteDirectoryForBucketAndType(
     }
   }
 
+  // No other directories seem to exist. If we have a first-party default
+  // bucket, try deleting the entire origin directory.
+  if (bucket_locator.is_default &&
+      bucket_locator.storage_key.IsFirstPartyContext()) {
+    InitOriginDatabase(bucket_locator.storage_key.origin(), false);
+    if (origin_database_) {
+      origin_database_->RemovePathForOrigin(
+          GetIdentifierFromOrigin(bucket_locator.storage_key.origin()));
+    }
+  }
   // Delete the higher-level directory.
-  return delegate_->DeleteFileOrDirectory(path, true /* recursive */);
+  return delegate_->DeleteFileOrDirectory(path_without_type.value(),
+                                          true /* recursive */);
 }
 
 std::unique_ptr<ObfuscatedFileUtil::AbstractStorageKeyEnumerator>
@@ -1115,8 +1123,8 @@ void ObfuscatedFileUtil::DestroyDirectoryDatabaseHelper(
       // bucket corresponding to the StorageKey.
       QuotaErrorOr<BucketLocator> default_bucket =
           GetOrCreateDefaultBucket(storage_key);
-      // If there is no default bucket for a given StorageKey, there is not a
-      // valid FileSystem to close, so we return.
+      // If looking up the default bucket for a given StorageKey fails, things
+      // are pretty broken, and there isn't anything this method can do.
       if (!default_bucket.has_value()) {
         return;
       }
