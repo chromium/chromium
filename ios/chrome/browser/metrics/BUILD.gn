@@ -32,11 +32,25 @@ source_set("accessor") {
     "//ios/chrome/browser/shared/model/application_context",
   ]
 }
-source_set("metrics") {
+
+source_set("google_groups_updater") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "google_groups_updater_service_factory.h",
     "google_groups_updater_service_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/ios",
+    "//components/variations/service",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+  ]
+}
+
+source_set("metrics") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
     "incognito_usage_app_state_agent.h",
     "incognito_usage_app_state_agent.mm",
     "incognito_web_state_observer.h",
@@ -104,11 +118,11 @@ source_set("metrics") {
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/ntp:features",
-    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",

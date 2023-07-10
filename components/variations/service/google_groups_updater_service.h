@@ -42,12 +42,18 @@ class GoogleGroupsUpdaterService : public KeyedService {
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  // Clears state that should only exist for a signed in syncing user.
+  // This should be called when the user signs out or disables sync, as this
+  // state is server-mastered state that is a property of the account rather
+  // than local state that is a property of the client.
+  void ClearSigninScopedState();
+
  private:
   // Update the group memberships in `target_prefs_`.
   // Called when `source_prefs_` have been initialized or modified.
   void UpdateGoogleGroups();
 
-  // The preferences to write to.
+  // The preferences to write to. These are the local-state prefs.
   // Preferences are guaranteed to outlive keyed services, so this reference
   // will stay valid for the lifetime of this service.
   const raw_ref<PrefService> target_prefs_;
@@ -57,7 +63,7 @@ class GoogleGroupsUpdaterService : public KeyedService {
   // across Chrome restarts).
   const std::string key_;
 
-  // The preferences to read from.
+  // The preferences to read from. These are the profile prefs.
   // Preferences are guaranteed to outlive keyed services, so this reference
   // will stay valid for the lifetime of this service.
   const raw_ref<PrefService> source_prefs_;

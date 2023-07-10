@@ -33,6 +33,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_user_events/user_event_service.h"
+#import "components/variations/service/google_groups_updater_service.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/consent_auditor/consent_auditor_factory.h"
@@ -40,6 +41,7 @@
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/invalidation/ios_chrome_profile_invalidation_provider_factory.h"
+#import "ios/chrome/browser/metrics/google_groups_updater_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
@@ -239,4 +241,10 @@ IOSChromeSyncClient::GetPreferenceProvider() {
 void IOSChromeSyncClient::OnLocalSyncTransportDataCleared() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   metrics::ClearDemographicsPrefs(browser_state_->GetPrefs());
+
+  GoogleGroupsUpdaterService* google_groups_updater =
+      GoogleGroupsUpdaterServiceFactory::GetForBrowserState(browser_state_);
+  if (google_groups_updater != nullptr) {
+    google_groups_updater->ClearSigninScopedState();
+  }
 }

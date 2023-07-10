@@ -19,6 +19,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/metrics/variations/google_groups_updater_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
@@ -226,6 +227,9 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(FaviconServiceFactory::GetInstance());
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
+  // Sync needs this service to still be present when the sync engine is
+  // disabled, so that preferences can be cleared.
+  DependsOn(GoogleGroupsUpdaterServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
