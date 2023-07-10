@@ -59,9 +59,9 @@ class CORE_EXPORT ListMarker {
       const ComputedStyle& list_item_style,
       LayoutUnit marker_inline_size);
 
-  static LayoutRect RelativeSymbolMarkerRect(const ComputedStyle&,
-                                             const AtomicString& list_style,
-                                             LayoutUnit);
+  static PhysicalRect RelativeSymbolMarkerRect(const ComputedStyle&,
+                                               const AtomicString& list_style,
+                                               LayoutUnit);
   static LayoutUnit WidthOfSymbol(const ComputedStyle&,
                                   const AtomicString& list_style);
 

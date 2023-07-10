@@ -6,6 +6,8 @@
 
 #include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource_style_image.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker_image.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
@@ -400,15 +402,16 @@ std::pair<LayoutUnit, LayoutUnit> ListMarker::InlineMarginsForOutside(
   return {margin_start, margin_end};
 }
 
-LayoutRect ListMarker::RelativeSymbolMarkerRect(const ComputedStyle& style,
-                                                const AtomicString& list_style,
-                                                LayoutUnit width) {
-  LayoutRect relative_rect;
+PhysicalRect ListMarker::RelativeSymbolMarkerRect(
+    const ComputedStyle& style,
+    const AtomicString& list_style,
+    LayoutUnit width) {
   const SimpleFontData* font_data = style.GetFont().PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
-    return LayoutRect();
+    return PhysicalRect();
 
+  LogicalRect relative_rect;
   // TODO(wkorman): Review and clean up/document the calculations below.
   // http://crbug.com/543193
   const FontMetrics& font_metrics = font_data->GetFontMetrics();
@@ -416,18 +419,19 @@ LayoutRect ListMarker::RelativeSymbolMarkerRect(const ComputedStyle& style,
   if (list_style == keywords::kDisclosureOpen ||
       list_style == keywords::kDisclosureClosed) {
     LayoutUnit marker_size = DisclosureSymbolSize(style);
-    relative_rect = LayoutRect(LayoutUnit(), ascent - marker_size, marker_size,
-                               marker_size);
+    relative_rect = LogicalRect(LayoutUnit(), ascent - marker_size, marker_size,
+                                marker_size);
   } else {
-    int bullet_width = (ascent * 2 / 3 + 1) / 2;
-    relative_rect = LayoutRect(1, 3 * (ascent - ascent * 2 / 3) / 2,
-                               bullet_width, bullet_width);
+    LayoutUnit bullet_width = LayoutUnit((ascent * 2 / 3 + 1) / 2);
+    relative_rect = LogicalRect(LayoutUnit(1),
+                                LayoutUnit(3 * (ascent - ascent * 2 / 3) / 2),
+                                bullet_width, bullet_width);
   }
-  if (!style.IsHorizontalWritingMode()) {
-    relative_rect = relative_rect.TransposedRect();
-    relative_rect.SetX(width - relative_rect.X() - relative_rect.Width());
-  }
-  return relative_rect;
+  // TextDirection and the outer height don't matter here.
+  WritingModeConverter converter(
+      {ToLineWritingMode(style.GetWritingMode()), TextDirection::kLtr},
+      PhysicalSize(width, LayoutUnit()));
+  return converter.ToPhysical(relative_rect);
 }
 
 const CounterStyle& ListMarker::GetCounterStyle(Document& document,
