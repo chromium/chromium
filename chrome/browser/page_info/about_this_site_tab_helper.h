@@ -11,7 +11,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace optimization_guide {
-class OptimizationGuideDecider;
+class NewOptimizationGuideDecider;
 class OptimizationMetadata;
 }  // namespace optimization_guide
 
@@ -30,13 +30,13 @@ class AboutThisSiteTabHelper
   AboutThisSiteTabHelper& operator=(const AboutThisSiteTabHelper&) = delete;
 
   // content::WebContentsObserver implementation
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
  private:
   explicit AboutThisSiteTabHelper(
       content::WebContents* web_contents,
-      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+      optimization_guide::NewOptimizationGuideDecider*
+          optimization_guide_decider,
       page_info::AboutThisSiteService* about_this_site_service);
   friend class content::WebContentsUserData<AboutThisSiteTabHelper>;
 
@@ -45,7 +45,7 @@ class AboutThisSiteTabHelper
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
-  raw_ptr<optimization_guide::OptimizationGuideDecider>
+  raw_ptr<optimization_guide::NewOptimizationGuideDecider>
       optimization_guide_decider_ = nullptr;
   raw_ptr<page_info::AboutThisSiteService> about_this_site_service_ = nullptr;
 
