@@ -1172,7 +1172,7 @@
       {
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "brya",
-        "cros_img": "brya-release/R117-15511.0.0",
+        "cros_img": "brya-release/R117-15519.0.0",
         "name": "chrome_all_tast_tests BRYA_RELEASE_LKGM",
         "shards": 10,
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
@@ -1185,7 +1185,7 @@
       {
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "brya",
-        "cros_img": "brya-release/R117-15511.0.0",
+        "cros_img": "brya-release/R117-15519.0.0",
         "experiment_percentage": 100,
         "name": "chrome_criticalstaging_tast_tests BRYA_RELEASE_LKGM",
         "shards": 10,
@@ -1199,7 +1199,7 @@
       {
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "brya",
-        "cros_img": "brya-release/R117-15511.0.0",
+        "cros_img": "brya-release/R117-15519.0.0",
         "experiment_percentage": 100,
         "name": "chrome_disabled_tast_tests BRYA_RELEASE_LKGM",
         "shards": 10,
@@ -1221,7 +1221,7 @@
       {
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R117-15511.0.0",
+        "cros_img": "jacuzzi-release/R117-15519.0.0",
         "name": "chrome_all_tast_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
         "shards": 10,
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
@@ -1243,7 +1243,7 @@
       {
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "kevin",
-        "cros_img": "kevin-release/R117-15511.0.0",
+        "cros_img": "kevin-release/R117-15519.0.0",
         "name": "chrome_all_tast_tests CROS_KEVIN_RELEASE_CHROME_FROM_TLS_LKGM",
         "shards": 10,
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
@@ -1265,7 +1265,7 @@
       {
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R117-15511.0.0",
+        "cros_img": "octopus-release/R117-15519.0.0",
         "name": "chrome_all_tast_tests OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM",
         "shards": 10,
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
@@ -1289,7 +1289,7 @@
       {
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "trogdor",
-        "cros_img": "trogdor-release/R117-15511.0.0",
+        "cros_img": "trogdor-release/R117-15519.0.0",
         "name": "chrome_all_tast_tests TROGDOR_RELEASE_LKGM",
         "shards": 10,
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
@@ -1311,7 +1311,7 @@
       {
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "volteer",
-        "cros_img": "volteer-release/R117-15511.0.0",
+        "cros_img": "volteer-release/R117-15519.0.0",
         "name": "chrome_all_tast_tests VOLTEER_RELEASE_LKGM",
         "shards": 10,
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
