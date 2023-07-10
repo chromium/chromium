@@ -4,10 +4,15 @@
 
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_warn_dialog.h"
 
+#include <string>
+
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -68,9 +73,9 @@ const std::u16string GetDestination(DlpFileDestination destination) {
 FilesPolicyWarnDialog::FilesPolicyWarnDialog(
     OnDlpRestrictionCheckedCallback callback,
     const std::vector<DlpConfidentialFile>& files,
-    DlpFileDestination destination,
     dlp::FileAction action,
-    gfx::NativeWindow modal_parent)
+    gfx::NativeWindow modal_parent,
+    absl::optional<DlpFileDestination> destination)
     : FilesPolicyDialog(files.size(), action, modal_parent),
       files_(files),
       destination_(destination) {
@@ -126,6 +131,27 @@ std::u16string FilesPolicyWarnDialog::GetCancelButton() {
 }
 
 std::u16string FilesPolicyWarnDialog::GetTitle() {
+  // TODO(b/279435843): Replace with translation strings.
+  if (DlpFilesController::kNewFilesPolicyUXEnabled) {
+    switch (action_) {
+      case dlp::FileAction::kDownload:
+        return u"Review is required before downloading";
+      case dlp::FileAction::kUpload:
+        return u"Review is required before uploading";
+      case dlp::FileAction::kCopy:
+        return u"Review is required before copying";
+      case dlp::FileAction::kMove:
+        return u"Review is required before moving";
+      case dlp::FileAction::kOpen:
+      case dlp::FileAction::kShare:
+        return u"Review is required before opening";
+      case dlp::FileAction::kTransfer:
+      case dlp::FileAction::kUnknown:  // TODO(crbug.com/1361900)
+                                       // Set proper text when file
+                                       // action is unknown
+        return u"Review is required before transferring";
+    }
+  }
   switch (action_) {
     case dlp::FileAction::kDownload:
       return l10n_util::GetPluralStringFUTF16(
@@ -154,11 +180,17 @@ std::u16string FilesPolicyWarnDialog::GetTitle() {
 }
 
 std::u16string FilesPolicyWarnDialog::GetMessage() {
+  if (DlpFilesController::kNewFilesPolicyUXEnabled) {
+    // TODO(b/279435843): Replace with translation strings.
+    return u"Files may contain sensitive content";
+  }
+  CHECK(destination_.has_value());
+  DlpFileDestination destination_val = destination_.value();
   std::u16string destination_str;
   int message_id;
   switch (action_) {
     case dlp::FileAction::kDownload:
-      destination_str = GetDestinationComponent(destination_);
+      destination_str = GetDestinationComponent(destination_val);
       // Download action is only allowed for one file.
       return base::ReplaceStringPlaceholders(
           l10n_util::GetPluralStringFUTF16(
@@ -166,26 +198,26 @@ std::u16string FilesPolicyWarnDialog::GetMessage() {
           destination_str,
           /*offset=*/nullptr);
     case dlp::FileAction::kUpload:
-      destination_str = GetDestinationURL(destination_);
+      destination_str = GetDestinationURL(destination_val);
       message_id = IDS_POLICY_DLP_FILES_UPLOAD_WARN_MESSAGE;
       break;
     case dlp::FileAction::kCopy:
-      destination_str = GetDestination(destination_);
+      destination_str = GetDestination(destination_val);
       message_id = IDS_POLICY_DLP_FILES_COPY_WARN_MESSAGE;
       break;
     case dlp::FileAction::kMove:
-      destination_str = GetDestination(destination_);
+      destination_str = GetDestination(destination_val);
       message_id = IDS_POLICY_DLP_FILES_MOVE_WARN_MESSAGE;
       break;
     case dlp::FileAction::kOpen:
     case dlp::FileAction::kShare:
-      destination_str = GetDestination(destination_);
+      destination_str = GetDestination(destination_val);
       message_id = IDS_POLICY_DLP_FILES_OPEN_WARN_MESSAGE;
       break;
     case dlp::FileAction::kTransfer:
     case dlp::FileAction::kUnknown:
       // TODO(crbug.com/1361900): Set proper text when file action is unknown.
-      destination_str = GetDestination(destination_);
+      destination_str = GetDestination(destination_val);
       message_id = IDS_POLICY_DLP_FILES_TRANSFER_WARN_MESSAGE;
       break;
   }

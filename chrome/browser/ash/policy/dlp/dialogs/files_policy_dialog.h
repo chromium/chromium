@@ -12,6 +12,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
@@ -40,9 +41,9 @@ class FilesPolicyDialogFactory {
   virtual views::Widget* CreateWarnDialog(
       OnDlpRestrictionCheckedCallback callback,
       const std::vector<DlpConfidentialFile>& files,
-      DlpFileDestination destination,
       dlp::FileAction action,
-      gfx::NativeWindow modal_parent) = 0;
+      gfx::NativeWindow modal_parent,
+      absl::optional<DlpFileDestination> destination) = 0;
 
   virtual views::Widget* CreateErrorDialog(
       const std::map<DlpConfidentialFile, Policy>& files,
@@ -69,9 +70,9 @@ class FilesPolicyDialog : public PolicyDialogBase {
   static views::Widget* CreateWarnDialog(
       OnDlpRestrictionCheckedCallback callback,
       const std::vector<DlpConfidentialFile>& files,
-      DlpFileDestination destination,
       dlp::FileAction action,
-      gfx::NativeWindow modal_parent);
+      gfx::NativeWindow modal_parent,
+      absl::optional<DlpFileDestination> destination = absl::nullopt);
 
   // Creates and shows an instance of FilesPolicyErrorDialog. Returns owning
   // Widget.

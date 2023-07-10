@@ -128,9 +128,9 @@ class MockFilesPolicyDialogFactory : public FilesPolicyDialogFactory {
               CreateWarnDialog,
               (OnDlpRestrictionCheckedCallback callback,
                const std::vector<DlpConfidentialFile>&,
-               DlpFileDestination,
                dlp::FileAction,
-               gfx::NativeWindow),
+               gfx::NativeWindow,
+               absl::optional<DlpFileDestination>),
               (override));
 
   MOCK_METHOD(views::Widget*,
@@ -278,11 +278,12 @@ IN_PROC_BROWSER_TEST_P(OnDlpWarningNotificationClickedTest,
   std::vector<base::FilePath> warning_files;
   warning_files.emplace_back("file1.txt");
   warning_files.emplace_back("file2.txt");
-  EXPECT_CALL(*factory_, CreateWarnDialog(
-                             base::test::IsNotNullCallback(),
-                             std::vector<DlpConfidentialFile>(
-                                 {warning_files.begin(), warning_files.end()}),
-                             destination, action, testing::NotNull()))
+  EXPECT_CALL(
+      *factory_,
+      CreateWarnDialog(base::test::IsNotNullCallback(),
+                       std::vector<DlpConfidentialFile>(
+                           {warning_files.begin(), warning_files.end()}),
+                       action, testing::NotNull(), testing::Eq(absl::nullopt)))
       .Times(2);
 
   // No Files app opened.
@@ -334,11 +335,12 @@ IN_PROC_BROWSER_TEST_P(OnDlpWarningNotificationClickedTest,
   warning_files.emplace_back("file1.txt");
   warning_files.emplace_back("file2.txt");
   // Null modal parent means the dialog is a system modal.
-  EXPECT_CALL(*factory_, CreateWarnDialog(
-                             base::test::IsNotNullCallback(),
-                             std::vector<DlpConfidentialFile>(
-                                 {warning_files.begin(), warning_files.end()}),
-                             destination, action, testing::IsNull()))
+  EXPECT_CALL(
+      *factory_,
+      CreateWarnDialog(base::test::IsNotNullCallback(),
+                       std::vector<DlpConfidentialFile>(
+                           {warning_files.begin(), warning_files.end()}),
+                       action, testing::IsNull(), testing::Eq(absl::nullopt)))
       .Times(1);
 
   // No Files app opened.
@@ -597,18 +599,16 @@ IN_PROC_BROWSER_TEST_P(OnIONotificationClickedTest,
   warning_files.emplace_back("file2.txt");
   EXPECT_CALL(
       *factory_,
-      CreateWarnDialog(
-          base::test::IsNotNullCallback(),
-          std::vector<DlpConfidentialFile>(
-              {warning_files.begin(), warning_files.end()}),
-          testing::_,  // destination is not important and will be removed.
-          action, testing::NotNull()))
+      CreateWarnDialog(base::test::IsNotNullCallback(),
+                       std::vector<DlpConfidentialFile>(
+                           {warning_files.begin(), warning_files.end()}),
+                       action, testing::NotNull(), testing::Eq(absl::nullopt)))
       .Times(2)
       .WillRepeatedly([](OnDlpRestrictionCheckedCallback callback,
                          std::vector<DlpConfidentialFile> files,
-                         DlpFileDestination destination,
                          dlp::FileAction file_action,
-                         gfx::NativeWindow modal_parent) {
+                         gfx::NativeWindow modal_parent,
+                         absl::optional<DlpFileDestination> destination) {
         // Cancel the task so it's deleted properly.
         std::move(callback).Run(/*should_proceed=*/false);
         return nullptr;

@@ -44,17 +44,17 @@ FilesPolicyDialog::~FilesPolicyDialog() = default;
 views::Widget* FilesPolicyDialog::CreateWarnDialog(
     OnDlpRestrictionCheckedCallback callback,
     const std::vector<DlpConfidentialFile>& files,
-    DlpFileDestination destination,
     dlp::FileAction action,
-    gfx::NativeWindow modal_parent) {
+    gfx::NativeWindow modal_parent,
+    absl::optional<DlpFileDestination> destination) {
   if (factory_) {
-    return factory_->CreateWarnDialog(std::move(callback), files, destination,
-                                      action, modal_parent);
+    return factory_->CreateWarnDialog(std::move(callback), files, action,
+                                      modal_parent, destination);
   }
 
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       std::make_unique<FilesPolicyWarnDialog>(
-          std::move(callback), files, destination, action, modal_parent),
+          std::move(callback), files, action, modal_parent, destination),
       /*context=*/nullptr, /*parent=*/modal_parent);
   widget->Show();
   return widget;

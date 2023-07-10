@@ -24,8 +24,6 @@
 #include "chrome/browser/ash/file_manager/url_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
-#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_error_dialog.h"
-#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
@@ -723,9 +721,7 @@ void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
       CHECK(!info.warning_info->warning_callback.is_null());
       FilesPolicyDialog::CreateWarnDialog(
           std::move(info.warning_info->dialog_callback),
-          info.warning_info->files,
-          info.destination.value_or(DlpFileDestination("https://example.com")),
-          info.action, modal_parent);
+          info.warning_info->files, info.action, modal_parent);
       break;
   }
   // TODO(ayaelattar): Timeout after total 5 minutes.
@@ -1037,8 +1033,8 @@ void FilesPolicyNotificationManager::ShowDlpWarningNotification(
         std::move(callback),
         std::vector<DlpConfidentialFile>{warning_files.begin(),
                                          warning_files.end()},
-        destination, action,
-        /*modal_parent=*/nullptr);
+        action,
+        /*modal_parent=*/nullptr, destination);
   }
   // TODO(ayaelattar): Timeout after total 5 minutes.
 }

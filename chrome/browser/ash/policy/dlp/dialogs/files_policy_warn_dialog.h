@@ -11,6 +11,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -25,9 +26,9 @@ class FilesPolicyWarnDialog : public FilesPolicyDialog {
   FilesPolicyWarnDialog() = delete;
   FilesPolicyWarnDialog(OnDlpRestrictionCheckedCallback callback,
                         const std::vector<DlpConfidentialFile>& files,
-                        DlpFileDestination destination,
                         dlp::FileAction action,
-                        gfx::NativeWindow modal_parent);
+                        gfx::NativeWindow modal_parent,
+                        absl::optional<DlpFileDestination> destination);
   FilesPolicyWarnDialog(const FilesPolicyWarnDialog&) = delete;
   FilesPolicyWarnDialog(FilesPolicyWarnDialog&&) = delete;
   FilesPolicyWarnDialog& operator=(const FilesPolicyWarnDialog&) = delete;
@@ -43,8 +44,8 @@ class FilesPolicyWarnDialog : public FilesPolicyDialog {
   std::u16string GetMessage() override;
 
   std::vector<DlpConfidentialFile> files_;
-  // TODO(b/285568353): Remove.
-  DlpFileDestination destination_;
+  // TODO(b/290329012): Remove.
+  absl::optional<DlpFileDestination> destination_;
 };
 
 }  // namespace policy
