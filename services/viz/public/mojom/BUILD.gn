@@ -625,7 +625,7 @@ mojom("singleplanar_format") {
   visibility = [
     ":mojom",
     ":shared_image_format",
-    "//components/viz/common:resource_format",
+    "//components/viz/common:shared_image_format",
   ]
 }
 

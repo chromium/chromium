@@ -178,7 +178,7 @@ source_set("raster_sources") {
   ]
   public_deps = [
     ":common",
-    "//components/viz/common:resource_format",
+    "//components/viz/common:shared_image_format",
   ]
 }
 

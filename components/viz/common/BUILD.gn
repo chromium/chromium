@@ -11,21 +11,37 @@ import("//testing/test.gni")
 
 import("//third_party/inspector_protocol/inspector_protocol.gni")
 
-viz_component("resource_format") {
-  output_name = "viz_resource_format"
+viz_component("shared_image_format") {
+  output_name = "viz_shared_image_format"
 
   defines = [ "IS_VIZ_SHARED_IMAGE_FORMAT_IMPL" ]
 
   sources = [
+    "resources/resource_sizes.h",
     "resources/shared_image_format.cc",
     "resources/shared_image_format.h",
+    "resources/shared_image_format_utils.cc",
+    "resources/shared_image_format_utils.h",
   ]
+  configs = [ "//third_party/khronos:khronos_headers" ]
   public_deps = [
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/viz/public/mojom:singleplanar_format",
   ]
-  deps = [ "//ui/gfx/geometry:geometry" ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//cc/base",
+    "//gpu/vulkan:buildflags",
+    "//skia",
+    "//third_party/dawn/include/dawn:cpp_headers",
+    "//ui/gfx:buffer_types",
+    "//ui/gfx/geometry",
+  ]
+  if (enable_vulkan) {
+    deps += [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers" ]
+  }
 }
 
 always_enable_blending_for_primary = is_castos || is_cast_android
@@ -38,36 +54,6 @@ buildflag_header("buildflags") {
     "ENABLE_CAST_OVERLAY_STRATEGY=$enable_cast_overlay_strategy",
     "ALWAYS_ENABLE_BLENDING_FOR_PRIMARY=$always_enable_blending_for_primary",
   ]
-}
-
-viz_component("resource_format_utils") {
-  output_name = "viz_resource_format_utils"
-
-  defines = [ "IS_VIZ_SHARED_IMAGE_FORMAT_IMPL" ]
-
-  sources = [
-    "resources/resource_sizes.h",
-    "resources/shared_image_format_utils.cc",
-    "resources/shared_image_format_utils.h",
-  ]
-
-  configs = [ "//third_party/khronos:khronos_headers" ]
-
-  public_deps = [ ":resource_format" ]
-
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-    "//cc/base:base",
-    "//gpu/vulkan:buildflags",
-    "//skia",
-    "//third_party/dawn/include/dawn:cpp_headers",
-    "//ui/gfx:buffer_types",
-    "//ui/gfx/geometry:geometry",
-  ]
-  if (enable_vulkan) {
-    deps += [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers" ]
-  }
 }
 
 if (skia_use_metal) {
@@ -332,7 +318,7 @@ viz_component("common") {
 
   public_deps = [
     ":buildflags",
-    ":resource_format_utils",
+    ":shared_image_format",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common",
     "//mojo/public/cpp/bindings",
