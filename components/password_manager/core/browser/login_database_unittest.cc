@@ -433,7 +433,6 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatching) {
                              /*should_PSL_matching_apply=*/true, &result));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ("https://foo.com/", result[0]->signon_realm);
-  EXPECT_TRUE(result[0]->is_public_suffix_match);
 
   // Do an exact match by excluding psl matches.
   result.clear();
@@ -479,9 +478,6 @@ TEST_F(LoginDatabaseTest, TestFederatedMatching) {
                                      GURL("https://foo.com/")};
   EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/true,
                              &result));
-  // Both forms are matched, only form2 is a PSL match.
-  form.is_public_suffix_match = false;
-  form2.is_public_suffix_match = true;
   EXPECT_THAT(result,
               UnorderedElementsAre(Pointee(HasPrimaryKeyAndEquals(form)),
                                    Pointee(HasPrimaryKeyAndEquals(form2))));
@@ -491,9 +487,6 @@ TEST_F(LoginDatabaseTest, TestFederatedMatching) {
   form_request.signon_realm = "https://mobile.foo.com/";
   EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/true,
                              &result));
-  // Both forms are matched, only form is a PSL match.
-  form.is_public_suffix_match = true;
-  form2.is_public_suffix_match = false;
   EXPECT_THAT(result,
               UnorderedElementsAre(Pointee(HasPrimaryKeyAndEquals(form)),
                                    Pointee(HasPrimaryKeyAndEquals(form2))));
@@ -632,7 +625,6 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainGoogle) {
       db().GetLogins(form2, /*should_PSL_matching_apply=*/true, &result));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(form.signon_realm, result[0]->signon_realm);
-  EXPECT_TRUE(result[0]->is_public_suffix_match);
 
   // There should be no PSL match on other subdomains.
   PasswordFormDigest form3 = {PasswordForm::Scheme::kHtml,
@@ -685,7 +677,6 @@ TEST_F(LoginDatabaseTest, TestFederatedMatchingWithoutPSLMatching) {
   form_request.signon_realm = form2.signon_realm;
   EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/false,
                              &result));
-  form.is_public_suffix_match = true;
   EXPECT_THAT(result, ElementsAre(Pointee(HasPrimaryKeyAndEquals(form2))));
 }
 
@@ -712,7 +703,6 @@ TEST_F(LoginDatabaseTest, TestFederatedPSLMatching) {
   std::vector<std::unique_ptr<PasswordForm>> result;
   EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/true,
                              &result));
-  form.is_public_suffix_match = true;
   EXPECT_THAT(result, ElementsAre(Pointee(HasPrimaryKeyAndEquals(form))));
 }
 
@@ -746,7 +736,6 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingDifferentSites) {
       db().GetLogins(form2, /*should_PSL_matching_apply=*/true, &result));
   EXPECT_EQ(1U, result.size());
   EXPECT_EQ("https://foo.com/", result[0]->signon_realm);
-  EXPECT_TRUE(result[0]->is_public_suffix_match);
   result.clear();
 
   // Add baz.com desktop site.
@@ -772,7 +761,6 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingDifferentSites) {
       db().GetLogins(form3, /*should_PSL_matching_apply=*/true, &result));
   EXPECT_EQ(1U, result.size());
   EXPECT_EQ("https://baz.com/", result[0]->signon_realm);
-  EXPECT_TRUE(result[0]->is_public_suffix_match);
 }
 
 PasswordForm GetFormWithNewSignonRealm(PasswordForm form,

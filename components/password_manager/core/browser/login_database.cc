@@ -2009,18 +2009,9 @@ FormRetrievalResult LoginDatabase::StatementToForms(
     }
     DCHECK_EQ(ENCRYPTION_RESULT_SUCCESS, result);
 
-    if (matched_form) {
-      switch (GetMatchResult(*new_form, *matched_form)) {
-        case MatchResult::NO_MATCH:
-          continue;
-        case MatchResult::EXACT_MATCH:
-        case MatchResult::FEDERATED_MATCH:
-          break;
-        case MatchResult::PSL_MATCH:
-        case MatchResult::FEDERATED_PSL_MATCH:
-          new_form->is_public_suffix_match = true;
-          break;
-      }
+    if (matched_form &&
+        GetMatchResult(*new_form, *matched_form) == MatchResult::NO_MATCH) {
+      continue;
     }
 
     forms->emplace_back(std::move(new_form));
