@@ -451,6 +451,10 @@ final class FakeUrlRequest extends UrlRequestBase {
     @Override
     public void cancel() {
         synchronized (mLock) {
+            if (mState == State.NOT_STARTED || isDone()) {
+                return;
+            }
+
             final UrlResponseInfo info = mUrlResponseInfo;
             final RefCountDelegate inflightDoneCallbackCount = setTerminalState(State.CANCELLED);
             if (inflightDoneCallbackCount != null) {

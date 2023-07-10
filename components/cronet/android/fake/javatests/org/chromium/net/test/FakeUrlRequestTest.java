@@ -1656,6 +1656,28 @@ public class FakeUrlRequestTest {
         assertThat(callback.mResponseAsString).isEqualTo("hello there!");
     }
 
+    @Test
+    @SmallTest
+    public void testCancelBeforeStart_doesNotCrash() {
+        // Setup the basic response.
+        String responseText = "response text";
+        String url = "TEST_URL";
+        FakeUrlResponse response =
+                new FakeUrlResponse.Builder().setResponseBody(responseText.getBytes()).build();
+        mFakeCronetController.addResponseForUrl(response, url);
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        FakeUrlRequest request =
+                (FakeUrlRequest) mFakeCronetEngine
+                        .newUrlRequestBuilder(url, callback, callback.getExecutor())
+                        .build();
+
+        request.cancel();
+        request.start();
+        callback.blockForDone();
+
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_SUCCEEDED);
+    }
+
     /**
      * A Cronet callback that does nothing.
      */
