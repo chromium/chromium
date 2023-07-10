@@ -159,7 +159,7 @@ std::unique_ptr<ClientMetadata> GetBasicClientMetadata() {
 
 BASE_FEATURE(kEnterpriseConnectorsEnabledOnMGS,
              "EnterpriseConnectorsEnabledOnMGS",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // --------------------------------
 // ConnectorsService implementation
