@@ -51,28 +51,6 @@ void ValidatingAbstractTextureImpl::SetParameteri(GLenum pname, GLint param) {
                                      texture_ref_.get(), pname, param);
 }
 
-#if BUILDFLAG(IS_OZONE)
-void ValidatingAbstractTextureImpl::SetBoundImage(GLImageNativePixmap* image) {
-  if (!texture_ref_) {
-    return;
-  }
-
-  const GLuint target = texture_ref_->texture()->target();
-  const GLint level = 0;
-
-  // Configure the new image.
-  if (image) {
-    GetTextureManager()->SetBoundLevelImage(texture_ref_.get(), target, level,
-                                            image);
-  } else {
-    GetTextureManager()->UnsetLevelImage(texture_ref_.get(), target, level);
-  }
-
-  GetTextureManager()->SetLevelCleared(texture_ref_.get(), target, level,
-                                       image);
-}
-#endif
-
 void ValidatingAbstractTextureImpl::SetCleared() {
   if (!texture_ref_)
     return;

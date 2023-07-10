@@ -31,10 +31,6 @@ namespace gl {
 class GLContext;
 }  // namespace gl
 
-namespace gpu {
-class GLImageNativePixmap;
-}
-
 namespace media {
 
 class PictureBufferManagerImpl;
@@ -130,15 +126,6 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
 
   // Sets the cleared flag on level 0 of the texture.
   virtual void SetCleared(GLuint service_id) = 0;
-
-#if BUILDFLAG(IS_OZONE)
-  // Binds level 0 of the texture to an image for which the sampler binding
-  // already exists.
-  //
-  // BindTexImage() will *not* be called when the texture is used.
-  virtual bool BindClientManagedImage(GLuint service_id,
-                                      gpu::GLImageNativePixmap* image) = 0;
-#endif
 
   // Add a callback to be called when our stub is destroyed. This callback
   // may not change the current context.

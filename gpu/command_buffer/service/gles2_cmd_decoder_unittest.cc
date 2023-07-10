@@ -29,10 +29,6 @@
 #include "ui/gl/gpu_timing_fake.h"
 #include "ui/gl/scoped_make_current.h"
 
-#if BUILDFLAG(IS_OZONE)
-#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "gpu/command_buffer/service/validating_abstract_texture_impl.h"
 #endif
@@ -261,28 +257,6 @@ TEST_P(GLES2DecoderTest, IsTexture) {
 }
 
 #if BUILDFLAG(IS_OZONE)
-TEST_P(GLES2DecoderTest, TestImageBindingForDecoderManagement) {
-  const GLuint service_id = 123;
-  EXPECT_CALL(*gl_, GenTextures(1, _))
-      .Times(1)
-      .WillOnce(SetArgPointee<1>(service_id))
-      .RetiresOnSaturation();
-  const GLenum target = GL_TEXTURE_EXTERNAL_OES;
-  std::unique_ptr<AbstractTexture> abstract_texture =
-      GetDecoder()->CreateAbstractTexture(target, GL_RGBA, 256, /* width */
-                                          256,                  /* height */
-                                          1,                    /* depth */
-                                          0,                    /* border */
-                                          GL_RGBA, GL_UNSIGNED_BYTE);
-  scoped_refptr<GLImageNativePixmap> image(
-      GLImageNativePixmap::CreateForTesting(gfx::Size(256, 256)));
-
-  abstract_texture->SetBoundImage(image.get());
-
-  EXPECT_CALL(*gl_, DeleteTextures(1, _)).Times(1).RetiresOnSaturation();
-  abstract_texture.reset();
-}
-
 TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
   const GLuint service_id = 123;
   EXPECT_CALL(*gl_, GenTextures(1, _))
@@ -314,20 +288,6 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
   EXPECT_CALL(*gl_, TexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
   abstract_texture->SetParameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   EXPECT_EQ(texture->min_filter(), static_cast<GLenum>(GL_LINEAR));
-
-  // Attach an image and see if it works.
-  scoped_refptr<GLImageNativePixmap> image(
-      GLImageNativePixmap::CreateForTesting(gfx::Size()));
-
-  abstract_texture->SetBoundImage(image.get());
-
-  // Binding an image should make the texture renderable.
-  EXPECT_EQ(texture->SafeToRenderFrom(), true);
-
-  // Unbinding should make it not renderable.
-  abstract_texture->SetBoundImage(nullptr);
-
-  EXPECT_EQ(texture->SafeToRenderFrom(), false);
 
   // Deleting |abstract_texture| should delete the platform texture as well,
   // since we haven't make a copy of the TextureRef.  Also make sure that the
