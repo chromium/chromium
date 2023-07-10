@@ -99,28 +99,52 @@ void FrameColorHelper::AddNativeChromeColors(
       SkColorSetRGB(0xE8, 0xE8, 0xE8);
   constexpr SkColor kSystemMicaDarkFrameColor = SkColorSetRGB(0x20, 0x20, 0x20);
 
+  absl::optional<ui::ColorTransform> active_frame_transform;
   if (auto color = get_theme_color(TP::COLOR_FRAME_ACTIVE)) {
-    mixer[ui::kColorFrameActive] = {color.value()};
+    active_frame_transform = {color.value()};
   } else if (dwm_frame_color_) {
-    mixer[ui::kColorFrameActive] = {dwm_frame_color_.value()};
+    active_frame_transform = {dwm_frame_color_.value()};
   } else if (ShouldDefaultThemeUseMicaTitlebar()) {
-    mixer[ui::kColorFrameActive] = {key.color_mode == ColorMode::kDark
-                                        ? kSystemMicaDarkFrameColor
-                                        : kSystemMicaLightFrameColor};
+    active_frame_transform = {key.color_mode == ColorMode::kDark
+                                  ? kSystemMicaDarkFrameColor
+                                  : kSystemMicaLightFrameColor};
   }
 
+  absl::optional<ui::ColorTransform> inactive_frame_transform;
   if (auto color = get_theme_color(TP::COLOR_FRAME_INACTIVE)) {
-    mixer[ui::kColorFrameInactive] = {color.value()};
+    inactive_frame_transform = {color.value()};
   } else if (dwm_inactive_frame_color_) {
-    mixer[ui::kColorFrameInactive] = {dwm_inactive_frame_color_.value()};
+    inactive_frame_transform = {dwm_inactive_frame_color_.value()};
   } else if (dwm_frame_color_) {
-    mixer[ui::kColorFrameInactive] =
+    inactive_frame_transform =
         ui::HSLShift({dwm_frame_color_.value()},
                      GetTint(ThemeProperties::TINT_FRAME_INACTIVE, key));
   } else if (ShouldDefaultThemeUseMicaTitlebar()) {
-    mixer[ui::kColorFrameInactive] = {key.color_mode == ColorMode::kDark
-                                          ? kSystemMicaDarkFrameColor
-                                          : kSystemMicaLightFrameColor};
+    inactive_frame_transform = {key.color_mode == ColorMode::kDark
+                                    ? kSystemMicaDarkFrameColor
+                                    : kSystemMicaLightFrameColor};
+  }
+
+  // If setting custom window frame colors ensure we also update the
+  // corresponding sys header colors. Although this diverges from chrome's
+  // material spec these overrides are necessary to ensure UI assigned to these
+  // color roles can continue to work as expected while respecting platform
+  // frame overrides.
+  if (active_frame_transform) {
+    mixer[ui::kColorFrameActive] = active_frame_transform.value();
+    mixer[ui::kColorSysHeader] = active_frame_transform.value();
+    mixer[ui::kColorSysOnHeaderDivider] =
+        GetColorWithMaxContrast(ui::kColorSysHeader);
+    mixer[ui::kColorSysOnHeaderPrimary] =
+        GetColorWithMaxContrast(ui::kColorSysHeader);
+  }
+  if (inactive_frame_transform) {
+    mixer[ui::kColorFrameInactive] = inactive_frame_transform.value();
+    mixer[ui::kColorSysHeaderInactive] = inactive_frame_transform.value();
+    mixer[ui::kColorSysOnHeaderDividerInactive] =
+        GetColorWithMaxContrast(ui::kColorSysHeaderInactive);
+    mixer[ui::kColorSysOnHeaderPrimaryInactive] =
+        GetColorWithMaxContrast(ui::kColorSysHeaderInactive);
   }
 
   if (ShouldDefaultThemeUseMicaTitlebar() && !key.app_controller) {

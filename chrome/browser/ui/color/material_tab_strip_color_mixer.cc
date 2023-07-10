@@ -37,10 +37,12 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabForegroundActiveFrameActive] = {ui::kColorSysOnSurface};
   mixer[kColorTabForegroundActiveFrameInactive] = {
       kColorTabForegroundActiveFrameActive};
-  mixer[kColorTabForegroundInactiveFrameActive] = {
-      ui::kColorSysOnSurfaceSecondary};
-  mixer[kColorTabForegroundInactiveFrameInactive] = {
-      kColorTabForegroundInactiveFrameActive};
+  mixer[kColorTabForegroundInactiveFrameActive] =
+      ui::BlendForMinContrast({ui::kColorSysOnSurfaceSecondary},
+                              {kColorTabBackgroundInactiveFrameActive});
+  mixer[kColorTabForegroundInactiveFrameInactive] =
+      ui::BlendForMinContrast({kColorTabForegroundInactiveFrameActive},
+                              {kColorTabBackgroundInactiveFrameInactive});
 
   mixer[kColorTabBackgroundHoverFrameActive] = {ui::kColorSysStateHeaderHover};
   mixer[kColorTabBackgroundHoverFrameInactive] = {
