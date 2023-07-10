@@ -349,9 +349,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // deletion, `callback` may be called with a kErrorAbort status.
   // TODO(estade): Consider removing the status code from `callback` as it's
   // unused outside of tests.
+  // TODO(crbug/1456643): DEPRECATED please prefer using `DeleteStorageKeyData`.
+  // This should be removed as part of `CookiesTreeModel` deprecation.
   void DeleteHostData(const std::string& host,
                       blink::mojom::StorageType type,
                       StatusCallback callback);
+
+  // Deletes buckets of a particular blink::StorageKey.
+  void DeleteStorageKeyData(const blink::StorageKey& storage_key,
+                            blink::mojom::StorageType type,
+                            StatusCallback callback);
 
   // Queries QuotaDatabase for the bucket with `storage_key` and `bucket_name`
   // for StorageType::kTemporary and deletes bucket data for all clients for the

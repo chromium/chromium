@@ -1554,6 +1554,26 @@ void QuotaManagerImpl::DeleteHostData(const std::string& host,
                     buckets_deleter_ptr->GetBucketDeletionCallback());
 }
 
+void QuotaManagerImpl::DeleteStorageKeyData(
+    const blink::StorageKey& storage_key,
+    blink::mojom::StorageType type,
+    StatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureDatabaseOpened();
+
+  DCHECK(client_types_.contains(type));
+  if (client_types_[type].empty()) {
+    return;
+  }
+  auto buckets_deleter = std::make_unique<BucketSetDataDeleter>(
+      this, base::BindOnce(&QuotaManagerImpl::DidDeleteBuckets,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
+  auto* buckets_deleter_ptr = buckets_deleter.get();
+  bucket_set_data_deleters_[buckets_deleter_ptr] = std::move(buckets_deleter);
+  GetBucketsForStorageKey(storage_key, type,
+                          buckets_deleter_ptr->GetBucketDeletionCallback());
+}
+
 // static
 void QuotaManagerImpl::DidDeleteBuckets(
     base::WeakPtr<QuotaManagerImpl> quota_manager,

@@ -35,6 +35,9 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
   void StartFetching(FetchResultCallback callback) override;
   void DeleteHostData(const std::string& host,
                       blink::mojom::StorageType type) override;
+  void DeleteStorageKeyData(const blink::StorageKey& storage_key,
+                            blink::mojom::StorageType type,
+                            base::OnceClosure completed) override;
 
   explicit BrowsingDataQuotaHelperImpl(storage::QuotaManager* quota_manager);
 
@@ -71,6 +74,13 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
 
   void DeleteHostDataOnIOThread(const std::string& host,
                                 blink::mojom::StorageType type);
+
+  void DeleteStorageKeyDataOnIOThread(const blink::StorageKey& storage_key,
+                                      blink::mojom::StorageType type,
+                                      base::OnceClosure completed);
+
+  void OnStorageKeyDeletionCompleted(base::OnceClosure completed,
+                                     blink::mojom::QuotaStatusCode status);
 
   scoped_refptr<storage::QuotaManager> quota_manager_;
 

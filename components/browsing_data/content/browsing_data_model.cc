@@ -241,10 +241,8 @@ void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
         blink::mojom::StorageType::kTemporary,
         blink::mojom::StorageType::kSyncable};
     for (auto type : quota_types) {
-      // TODO(crbug/1456335): This needs to be updated to delete by `StorageKey`
-      // to support partitioned storage deletion, instead of deleting everything
-      // the host stores.
-      helper->quota_helper_->DeleteHostData(storage_key.origin().host(), type);
+      helper->quota_helper_->DeleteStorageKeyData(
+          storage_key, type, helper->GetCompleteCallback());
     }
   }
 
