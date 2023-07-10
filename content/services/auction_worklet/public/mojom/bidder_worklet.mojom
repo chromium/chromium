@@ -444,8 +444,8 @@ interface BidderWorklet {
   //  signal has been provided to ReportWin(), corresponding to either the
   //  interest group name or a field on the registered ad itself.
   //
-  //  `reporting_id` The string value of the field described by
-  //   `reporting_id_field`.
+  // `reporting_id` The string value of the field described by
+  //  `reporting_id_field`.
   //
   // `auction_signals_json` The JSON representation of the auction signals for
   //  the auction, if specified by the publisher page and provided to bidder
@@ -459,19 +459,19 @@ interface BidderWorklet {
   //  publisher page. Null will be passed to the worklet in that case.
   //
   // `direct_from_seller_per_buyer_signals` The subresource URL of the
-  // DirectFromSellerSignals for the specific owner of this interest group, as
-  // produced by concatenating the `directFromSellerSignals` URL prefix field
-  // passed from runAdAuction() with "?perBuyerSignals=[buyer]" for the
-  // URL-encoded buyer origin for this buyer. Since this is fetched from a
-  // subresource bundle, it may only be fetched using the URLLoaderFactory
-  // passed in when creating the worklet.
+  //  DirectFromSellerSignals for the specific owner of this interest group, as
+  //  produced by concatenating the `directFromSellerSignals` URL prefix field
+  //  passed from runAdAuction() with "?perBuyerSignals=[buyer]" for the
+  //  URL-encoded buyer origin for this buyer. Since this is fetched from a
+  //  subresource bundle, it may only be fetched using the URLLoaderFactory
+  //  passed in when creating the worklet.
   //
   // `direct_from_seller_auction_signals` The subresource URL of the
-  // DirectFromSellerSignals for the seller and all buyers, as produced by
-  // concatenating the `directFromSellerSignals` URL prefix field passed from
-  // runAdAuction() with "?auctionSignals". Since this is fetched from a
-  // subresource bundle, it may only be fetched using the URLLoaderFactory
-  // passed in when creating the worklet.
+  //  DirectFromSellerSignals for the seller and all buyers, as produced by
+  //  concatenating the `directFromSellerSignals` URL prefix field passed from
+  //  runAdAuction() with "?auctionSignals". Since this is fetched from a
+  //  subresource bundle, it may only be fetched using the URLLoaderFactory
+  //  passed in when creating the worklet.
   //
   // `seller_signals_json` is a JSON representation of the object returned by
   //  the seller worklet's ReportResult method.
@@ -484,18 +484,18 @@ interface BidderWorklet {
   //  BidderWorklet's generateBid() method, invoked as part of BidderWorklet
   //  creation.
   //
-  // `browser_signal_bid` The numeric value of the winning bid. This is always
-  //  in the bidder's own currency.
+  // `browser_signal_bid` The stochastically rounded numeric value of the
+  //  winning bid. This is always in the bidder's own currency.
   //
   // `browser_signal_bid_currency` Currency for the winning bid.
   //  The client should redact the currency if it's not guaranteed by the
   //  auction configuration to avoid leaking information.
   //
-  // `browser_signal_highest_scoring_other_bid` The numeric value of the bid
-  //  that got the second highest score, or 0 if it's not available, either
-  //  because there is no such thing or because sellerCurrency is enabled, and
-  //  the relevant bid was in a different currency without scoreAd providing
-  //  a conversion for it.
+  // `browser_signal_highest_scoring_other_bid` The stochastically rounded
+  //  numeric value of the bid that got the second highest score, or 0 if it's
+  //  not available, either because there is no such thing or because
+  //  sellerCurrency is enabled, and the relevant bid was in a different
+  //  currency without scoreAd providing a conversion for it.
   //
   // `browser_signal_highest_scoring_other_bid_currency` The currency associated
   //  with `browser_signal_highest_scoring_other_bid`. If a concrete value is
@@ -505,12 +505,19 @@ interface BidderWorklet {
   //  the interest group that ReportWin() is being invoked on behalf of made
   //  all the second-highest scoring bids in the auction.
   //
-  // `browser_signal_ad_cost` The numeric value of the adCost associated with
-  //  the winning bid, if specified by `generateBid()`.
+  // `browser_signal_ad_cost` The stochastically rounded numeric value of the
+  //  adCost associated with the winning bid, if specified by `generateBid()`.
   //
-  //  `browser_signal_modeling_signals` The masked and noised numeric value of
+  // `browser_signal_modeling_signals` The masked and noised numeric value of
   //  the modelingSignals associated with the winning bid, if specified by
   //  `generateBid()`.
+  //
+  // `browser_signal_join_count` The masked and noised number of times this
+  //  device has joined this interest group in the last 30 days while the
+  //  interest group has been continuously stored.
+  //
+  // `browser_signal_recency` The masked and noised duration of time
+  //  (in minutes) from when this device joined this interest group until now.
   //
   // `browser_signal_seller_origin` The origin of the seller script running
   //  the auction. Typically a valid, non-opaque HTTPS origin.

@@ -45,8 +45,9 @@ struct ComponentAuctionReportResultParams {
   // Metadata returned by the top-level seller's ReportResult() method, as JSON.
   string top_level_seller_signals;
 
-  // The bid value returned by the component seller's ScoreAd() method. May
-  // be the same value as the original bid.
+  // The stochastically rounded numeric value of the bid returned by the
+  // component seller's ScoreAd() method. May be the same value as the original
+  // bid.
   double modified_bid;
 
   // True to indicate that `modified_bid` has been populated. False if the
@@ -281,19 +282,20 @@ interface SellerWorklet {
   //
   // `browser_signal_render_url` The render URL provided by the winning bid.
   //
-  // `browser_signal_bid` The numeric value of the winning bid.
+  // `browser_signal_bid` The stochastically rounded numeric value of the
+  //  winning bid.
   //
   // `browser_signal_bid_currency` The currency the bid is in. This is either
   //  the sellerCurrency from auction configuration, or unset to denote it's in
   //  the bidder's currency.
   //
-  // `browser_signal_desirability` The score returned by ScoreAd for the
-  //  winning bid.
+  // `browser_signal_desirability` The stochastically rounded numeric value of
+  //  the score returned by ScoreAd() for the winning bid.
   //
-  // `browser_signal_highest_scoring_other_bid` The numeric value of the bid
-  //  that got the second highest score, or 0 if it's not available, either
-  //  because there is no such thing or because no currency conversion was
-  //  performed.
+  // `browser_signal_highest_scoring_other_bid` The stochastically rounded
+  //  numeric value of the bid that got the second highest score, or 0 if it's
+  //  not available, either because there is no such thing or because no
+  //  currency conversion was performed.
   //
   // `browser_signal_highest_scoring_other_bid_currency` The currency associated
   //  with `browser_signal_highest_scoring_other_bid`. This is either the
