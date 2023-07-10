@@ -127,6 +127,12 @@ bool CanTrackPrice(const ProductInfo& info);
 bool CanTrackPrice(const absl::optional<ProductInfo>& info);
 bool CanTrackPrice(const power_bookmarks::ShoppingSpecifics& specifics);
 
+// If `url` is bookmarked, returns the name of the parent folder; otherwise
+// returns the name of the Other Bookmarks folder.
+const std::u16string& GetBookmarkParentNameOrDefault(
+    bookmarks::BookmarkModel* model,
+    const GURL& url);
+
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_PRICE_TRACKING_UTILS_H_

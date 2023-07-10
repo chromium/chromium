@@ -60,6 +60,7 @@ class MockDelegate : public ShoppingListHandler::Delegate {
               GetOrAddBookmarkForCurrentUrl,
               (),
               (override));
+  MOCK_METHOD(void, ShowBookmarkEditorForCurrentUrl, (), (override));
 
   void SetCurrentTabUrl(const GURL& url) {
     ON_CALL(*this, GetCurrentTabUrl)
@@ -541,6 +542,28 @@ TEST_F(ShoppingListHandlerTest, TestUntrackPriceForCurrentUrl) {
 
   handler_->SetDelegateForTesting(std::move(delegate));
   handler_->SetPriceTrackingStatusForCurrentUrl(false);
+}
+
+TEST_F(ShoppingListHandlerTest, TestGetParentBookmarkFolderNameForCurrentUrl) {
+  base::RunLoop run_loop;
+  const std::u16string& parent_name = bookmark_model_->other_node()->GetTitle();
+  handler_->GetParentBookmarkFolderNameForCurrentUrl(base::BindOnce(
+      [](base::RunLoop* run_loop, const std::u16string& parent_name,
+         const std::u16string& name) {
+        ASSERT_EQ(parent_name, name);
+        run_loop->Quit();
+      },
+      &run_loop, parent_name));
+
+  run_loop.Run();
+}
+
+TEST_F(ShoppingListHandlerTest, TestShowBookmarkEditorForCurrentUrl) {
+  auto delegate = std::make_unique<MockDelegate>();
+  EXPECT_CALL(*delegate, ShowBookmarkEditorForCurrentUrl).Times(1);
+
+  handler_->SetDelegateForTesting(std::move(delegate));
+  handler_->ShowBookmarkEditorForCurrentUrl();
 }
 
 class ShoppingListHandlerFeatureDisableTest : public testing::Test {

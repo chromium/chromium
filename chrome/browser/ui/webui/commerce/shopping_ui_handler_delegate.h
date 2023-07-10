@@ -34,6 +34,8 @@ class ShoppingUiHandlerDelegate : public ShoppingListHandler::Delegate {
 
   const bookmarks::BookmarkNode* GetOrAddBookmarkForCurrentUrl() override;
 
+  void ShowBookmarkEditorForCurrentUrl() override;
+
  private:
   // This delegate is owned by |insights_side_panel_ui_| so we expect
   // |insights_side_panel_ui_| to remain valid for the lifetime of |this|.

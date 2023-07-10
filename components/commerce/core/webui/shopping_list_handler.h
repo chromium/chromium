@@ -54,6 +54,8 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
     virtual void ShowInsightsSidePanelUI() = 0;
 
     virtual const bookmarks::BookmarkNode* GetOrAddBookmarkForCurrentUrl() = 0;
+
+    virtual void ShowBookmarkEditorForCurrentUrl() = 0;
   };
 
   ShoppingListHandler(
@@ -85,6 +87,9 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
   void GetPriceTrackingStatusForCurrentUrl(
       GetPriceTrackingStatusForCurrentUrlCallback callback) override;
   void SetPriceTrackingStatusForCurrentUrl(bool track) override;
+  void GetParentBookmarkFolderNameForCurrentUrl(
+      GetParentBookmarkFolderNameForCurrentUrlCallback callback) override;
+  void ShowBookmarkEditorForCurrentUrl() override;
 
   // SubscriptionsObserver
   void OnSubscribe(const CommerceSubscription& subscription,

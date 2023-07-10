@@ -4,6 +4,8 @@
 
 // TODO(b:283833590): Rename this file since it serves for all shopping features
 // now.
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+
 import {BookmarkProductInfo, PageCallbackRouter, PriceInsightsInfo, ProductInfo, ShoppingListHandlerFactory, ShoppingListHandlerRemote} from '../shopping_list.mojom-webui.js';
 
 let instance: ShoppingListApiProxy|null = null;
@@ -22,6 +24,8 @@ export interface ShoppingListApiProxy {
   isShoppingListEligible(): Promise<{eligible: boolean}>;
   getPriceTrackingStatusForCurrentUrl(): Promise<{tracked: boolean}>;
   setPriceTrackingStatusForCurrentUrl(track: boolean): void;
+  getParentBookmarkFolderNameForCurrentUrl(): Promise<{name: String16}>;
+  showBookmarkEditorForCurrentUrl(): void;
   getCallbackRouter(): PageCallbackRouter;
 }
 
@@ -78,6 +82,14 @@ export class ShoppingListApiProxyImpl implements ShoppingListApiProxy {
 
   setPriceTrackingStatusForCurrentUrl(track: boolean) {
     this.handler.setPriceTrackingStatusForCurrentUrl(track);
+  }
+
+  getParentBookmarkFolderNameForCurrentUrl() {
+    return this.handler.getParentBookmarkFolderNameForCurrentUrl();
+  }
+
+  showBookmarkEditorForCurrentUrl() {
+    this.handler.showBookmarkEditorForCurrentUrl();
   }
 
   getCallbackRouter() {

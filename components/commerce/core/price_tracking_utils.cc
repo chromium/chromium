@@ -444,4 +444,12 @@ bool CanTrackPrice(const power_bookmarks::ShoppingSpecifics& specifics) {
   return specifics.has_product_cluster_id();
 }
 
+const std::u16string& GetBookmarkParentNameOrDefault(
+    bookmarks::BookmarkModel* model,
+    const GURL& url) {
+  const bookmarks::BookmarkNode* node =
+      model->GetMostRecentlyAddedUserNodeForURL(url);
+  return node ? node->parent()->GetTitle() : model->other_node()->GetTitle();
+}
+
 }  // namespace commerce

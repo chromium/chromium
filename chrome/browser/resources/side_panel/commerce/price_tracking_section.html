@@ -13,6 +13,11 @@
     margin-bottom: 4px;
   }
 
+  #toggleAnnotationButton {
+    color: var(--cr-link-color);
+    text-decoration: none;
+  }
+
   #toggleAnnotation {
     display: inline;
     font-size: 11px;
@@ -38,8 +43,12 @@
 <div id="toggleSection">
   <div id="toggleText">
     <div id="toggleTitle">$i18n{trackPriceTitle}</div>
-    <div id="toggleAnnotation"
-        >[[getToggleAnnotationText_(isProductTracked_)]]</div>
+    <!-- This is a special handling to make sure that the annotation text,
+    folder name and period will be in the same line. -->
+    <div id="toggleAnnotation">[[toggleAnnotationText_]]<a href="#"
+        id="toggleAnnotationButton"
+        on-click="onFolderClicked_">[[folderName_]]</a><span>.</span>
+    </div>
   </div>
   <cr-toggle id="toggle" checked="{{isProductTracked_}}"
       on-change="onPriceTrackingToggled_" title="$i18n{trackPriceTitle}"

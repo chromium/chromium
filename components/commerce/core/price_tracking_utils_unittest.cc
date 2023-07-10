@@ -657,5 +657,20 @@ TEST_F(PriceTrackingUtilsTest, TestSubscriptionForClusterIdCreation) {
   ASSERT_EQ(sub.type, SubscriptionType::kPriceTrack);
 }
 
+TEST_F(PriceTrackingUtilsTest, TestGetBookmarkParentNameOrDefault) {
+  const GURL url = GURL("https://www.foo.com");
+
+  ASSERT_EQ(
+      bookmark_model_->other_node()->GetTitle(),
+      commerce::GetBookmarkParentNameOrDefault(bookmark_model_.get(), url));
+
+  bookmark_model_->AddURL(bookmark_model_->mobile_node(), 0, u"test", url,
+                          nullptr, absl::nullopt, absl::nullopt, true);
+
+  ASSERT_EQ(
+      bookmark_model_->mobile_node()->GetTitle(),
+      commerce::GetBookmarkParentNameOrDefault(bookmark_model_.get(), url));
+}
+
 }  // namespace
 }  // namespace commerce
