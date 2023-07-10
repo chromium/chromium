@@ -5681,6 +5681,11 @@ BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocationIfComposited()
   if (HasInsetBoxShadow(StyleRef()))
     return kBackgroundPaintInBorderBoxSpace;
 
+  // For simplicity, assume any border image can have inset, like the above.
+  if (StyleRef().BorderImage().GetImage()) {
+    return kBackgroundPaintInBorderBoxSpace;
+  }
+
   // Assume optimistically that the background can be painted in the scrolling
   // contents until we find otherwise.
   BackgroundPaintLocation paint_location = kBackgroundPaintInContentsSpace;

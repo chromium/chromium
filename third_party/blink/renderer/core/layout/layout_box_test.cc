@@ -2382,4 +2382,17 @@ TEST_P(LayoutBoxBackgroundPaintLocationTest, OutsetBoxShadow) {
   EXPECT_EQ(kBackgroundPaintInContentsSpace, ScrollerBackgroundPaintLocation());
 }
 
+TEST_P(LayoutBoxBackgroundPaintLocationTest, BorderImage) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+         style='background: white; border: 2px solid; border-image-width: 5px;
+                border-image-source: linear-gradient(blue, red)'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
+            ScrollerBackgroundPaintLocation());
+}
+
 }  // namespace blink
