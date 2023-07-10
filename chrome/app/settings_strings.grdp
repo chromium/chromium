@@ -3246,7 +3246,7 @@
     Not allowed to use your microphone
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_DESCRIPTION" desc="Description of the MIDI devices content setting.">
-    Sites usually connect to MIDI devices for features for creating and editing music
+    Sites usually connect to MIDI devices for creating and editing music
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_ALLOWED" desc="Label for the enabled option of the MIDI devices content setting.">
     Sites can ask to connect to MIDI devices
