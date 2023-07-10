@@ -50,37 +50,20 @@ void AccessCookieViaJSIn(content::WebContents* web_contents,
   observer.Wait();
 }
 
-void BlockUntilHelperProcessesPendingRequests(
-    content::WebContents* web_contents) {
-  base::SequenceBound<DIPSStorage>* storage =
-      DIPSServiceFactory::GetForBrowserContext(
-          web_contents->GetBrowserContext())
-          ->storage();
-  storage->FlushPostedTasksForTesting();
-}
-
-void StateForURL(content::WebContents* web_contents,
-                 const GURL& url,
-                 StateForURLCallback callback) {
-  DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
-      web_contents->GetBrowserContext());
-  dips_service->storage()
-      ->AsyncCall(&DIPSStorage::Read)
-      .WithArgs(url)
-      .Then(std::move(callback));
-}
-
-absl::optional<StateValue> GetDIPSState(content::WebContents* web_contents,
+absl::optional<StateValue> GetDIPSState(DIPSService* dips_service,
                                         const GURL& url) {
   absl::optional<StateValue> state;
 
-  StateForURL(web_contents, url,
-              base::BindLambdaForTesting([&](DIPSState loaded_state) {
-                if (loaded_state.was_loaded()) {
-                  state = loaded_state.ToStateValue();
-                }
-              }));
-  BlockUntilHelperProcessesPendingRequests(web_contents);
+  auto* storage = dips_service->storage();
+  DCHECK(storage);
+  storage->AsyncCall(&DIPSStorage::Read)
+      .WithArgs(url)
+      .Then(base::BindLambdaForTesting([&](const DIPSState& loaded_state) {
+        if (loaded_state.was_loaded()) {
+          state = loaded_state.ToStateValue();
+        }
+      }));
+  WaitOnStorage(dips_service);
 
   return state;
 }

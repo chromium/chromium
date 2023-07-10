@@ -1181,7 +1181,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   observer.Wait();
 
   // Verify interaction was recorded for d.test, before proceeding.
-  absl::optional<StateValue> state = GetDIPSState(web_contents, url);
+  absl::optional<StateValue> state =
+      GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_TRUE(state.has_value());
   ASSERT_TRUE(state->user_interaction_times.has_value());
 
@@ -1214,7 +1215,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
           "title1.html"),
       embedded_test_server()->GetURL("g.test", "/title1.html")));
   EndRedirectChain();
-  BlockUntilHelperProcessesPendingRequests(web_contents);
+  WaitOnStorage(GetDipsService(web_contents));
 
   EXPECT_THAT(reports, ElementsAre(("b.test"), ("c.test"), ("e.test, f.test")));
 }
@@ -2030,7 +2031,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify web authn assertion was recorded for `authn_hostname`, before
   // proceeding.
-  absl::optional<StateValue> state = GetDIPSState(web_contents, url);
+  absl::optional<StateValue> state =
+      GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_TRUE(state.has_value());
   ASSERT_FALSE(state->user_interaction_times.has_value());
   ASSERT_TRUE(state->web_authn_assertion_times.has_value());
@@ -2061,7 +2063,7 @@ IN_PROC_BROWSER_TEST_F(
       TestServer()->GetURL("g.test", "/title1.html")));
 
   EndRedirectChain();
-  BlockUntilHelperProcessesPendingRequests(web_contents);
+  WaitOnStorage(GetDipsService(web_contents));
 
   EXPECT_THAT(reports, ElementsAre(("d.test"), ("c.test"), ("e.test, f.test")));
 }

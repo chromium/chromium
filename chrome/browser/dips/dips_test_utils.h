@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -105,16 +106,18 @@ void AccessCookieViaJSIn(content::WebContents* web_contents,
                          content::RenderFrameHost* frame);
 
 // Helper function to block until all DIPS storage requests are complete.
-void BlockUntilHelperProcessesPendingRequests(
-    content::WebContents* web_contents);
-
-void StateForURL(content::WebContents* web_contents,
-                 const GURL& url,
-                 StateForURLCallback callback);
+inline void WaitOnStorage(DIPSService* dips_service) {
+  dips_service->storage()->FlushPostedTasksForTesting();
+}
 
 // Helper function to query the `url` state from DIPS storage.
-absl::optional<StateValue> GetDIPSState(content::WebContents* web_contents,
+absl::optional<StateValue> GetDIPSState(DIPSService* dips_service,
                                         const GURL& url);
+
+inline DIPSService* GetDipsService(content::WebContents* web_contents) {
+  return DIPSServiceFactory::GetForBrowserContext(
+      web_contents->GetBrowserContext());
+}
 
 class URLCookieAccessObserver : public content::WebContentsObserver {
  public:
