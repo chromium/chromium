@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/gaia_id_hash.h"

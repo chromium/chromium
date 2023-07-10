@@ -24,6 +24,8 @@ BASE_DECLARE_FEATURE(kBiometricAuthenticationInSettings);
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
 BASE_DECLARE_FEATURE(kDisablePasswordsDropdownForCvcFields);
 
+BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
+
 }  // namespace password_manager::features
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FEATURES_PASSWORD_FEATURES_H_

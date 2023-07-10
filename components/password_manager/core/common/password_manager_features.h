@@ -24,12 +24,6 @@ namespace password_manager::features {
 // alongside the definition of their values in the .cc file.
 BASE_DECLARE_FEATURE(kEnableOverwritingPlaceholderUsernames);
 
-BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
-inline constexpr base::FeatureParam<int>
-    kMaxAccountStorageNewFeatureIconImpressions = {
-        &kEnablePasswordsAccountStorage,
-        "max_account_storage_new_feature_icon_impressions", 5};
-
 BASE_DECLARE_FEATURE(kFillingAcrossAffiliatedWebsites);
 BASE_DECLARE_FEATURE(kFillingAcrossGroupedSites);
 BASE_DECLARE_FEATURE(kFillOnAccountSelect);

@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"

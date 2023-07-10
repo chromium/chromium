@@ -18,17 +18,6 @@ BASE_FEATURE(kEnableOverwritingPlaceholderUsernames,
              "EnableOverwritingPlaceholderUsernames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables a second, Gaia-account-scoped password store for users who are signed
-// in but not syncing.
-BASE_FEATURE(kEnablePasswordsAccountStorage,
-             "EnablePasswordsAccountStorage",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
-
 // Enables filling password on a website when there is saved password on
 // affiliated website.
 BASE_FEATURE(kFillingAcrossAffiliatedWebsites,
