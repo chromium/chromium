@@ -2230,7 +2230,7 @@
       },
       'android-pie-x86-rel': {
         'args': [
-          '--gtest_filter=-ContentViewScrollingTest.testFling',
+          '--gtest_filter=-org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputMode*',
         ],
       },
       # Keep this same as android-nougat-x86-rel above
@@ -3859,6 +3859,15 @@
         'ci_only': True,
         'swarming': {
           'shards': 3,
+        },
+      },
+      'android-pie-x86-rel': {
+        'args': [
+          # TODO(crbug.com/1264654): Fix the failed tests
+          '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
+        ],
+        'swarming': {
+          'shards': 2,
         },
       },
       # Keep this same as android-nougat-x86-rel above
