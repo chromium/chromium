@@ -17,7 +17,10 @@
 namespace WTF {
 
 // The underlying storage that keeps the map of unique AtomicStrings. This is
-// not thread safe and each Threading has one.
+// thread safe and there is a single table for all threads. Adding and removing
+// strings acquires locks and can cause blockage on other threads. `StringImpl`
+// has an atomic bit for caching to avoid most lookups for conversion to an
+// AtomicString.
 class WTF_EXPORT AtomicStringTable final {
   USING_FAST_MALLOC(AtomicStringTable);
 

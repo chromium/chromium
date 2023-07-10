@@ -2284,7 +2284,7 @@ void Node::RemovedFrom(ContainerNode& insertion_point) {
 
 String Node::DebugName() const {
   StringBuilder name;
-  name.Append(DebugNodeName());
+  name.Append(nodeName());
   if (const auto* this_element = DynamicTo<Element>(this)) {
     if (this_element->HasID()) {
       name.Append(" id=\'");
@@ -2303,10 +2303,6 @@ String Node::DebugName() const {
     }
   }
   return name.ReleaseString();
-}
-
-String Node::DebugNodeName() const {
-  return nodeName();
 }
 
 static void DumpAttributeDesc(const Node& node,

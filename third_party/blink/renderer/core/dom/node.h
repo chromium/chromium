@@ -1145,13 +1145,6 @@ class CORE_EXPORT Node : public EventTargetWithInlineData {
   inline const ComputedStyle* GetComputedStyleAssumingElement() const;
 
  private:
-  // Gets nodeName without caching AtomicStrings. Used by
-  // debugName. Compositor may call debugName from the "impl" thread
-  // during "commit". The main thread is stopped at that time, but
-  // it is not safe to cache AtomicStrings because those are
-  // per-thread.
-  virtual String DebugNodeName() const;
-
   Node* ToNode() final;
 
   bool IsUserActionElementActive() const;

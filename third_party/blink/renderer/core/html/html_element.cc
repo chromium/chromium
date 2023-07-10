@@ -221,18 +221,7 @@ void CheckSoftNavigationHeuristicsTracking(const Document& document,
 
 }  // anonymous namespace
 
-String HTMLElement::DebugNodeName() const {
-  if (IsA<HTMLDocument>(GetDocument())) {
-    return TagQName().HasPrefix() ? Element::nodeName().UpperASCII()
-                                  : TagQName().LocalName().UpperASCII();
-  }
-  return Element::nodeName();
-}
-
 String HTMLElement::nodeName() const {
-  // localNameUpper may intern and cache an AtomicString.
-  DCHECK(IsMainThread());
-
   // FIXME: Would be nice to have an atomicstring lookup based off uppercase
   // chars that does not have to copy the string on a hit in the hash.
   // FIXME: We should have a way to detect XHTML elements and replace the
