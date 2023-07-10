@@ -42,8 +42,8 @@ KeyedService* IdleManagerFactory::BuildServiceInstanceFor(
 
 content::BrowserContext* IdleManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return ExtensionsBrowserClient::Get()->GetRedirectedContextInIncognito(
-      context, /*force_guest_profile=*/true, /*force_system_profile=*/false);
+  return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
+      context, /*force_guest_profile=*/true);
 }
 
 bool IdleManagerFactory::ServiceIsCreatedWithBrowserContext() const {

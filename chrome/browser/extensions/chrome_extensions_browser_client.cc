@@ -237,17 +237,26 @@ content::BrowserContext* ChromeExtensionsBrowserClient::GetOriginalContext(
 }
 
 content::BrowserContext*
-ChromeExtensionsBrowserClient::GetRedirectedContextInIncognito(
+ChromeExtensionsBrowserClient::GetContextRedirectedToOriginal(
     content::BrowserContext* context,
-    bool force_guest_profile,
-    bool force_system_profile) {
+    bool force_guest_profile) {
   ProfileSelections::Builder builder;
   builder.WithRegular(ProfileSelection::kRedirectedToOriginal);
   if (force_guest_profile) {
     builder.WithGuest(ProfileSelection::kRedirectedToOriginal);
   }
-  if (force_system_profile) {
-    builder.WithSystem(ProfileSelection::kRedirectedToOriginal);
+
+  const ProfileSelections selections = builder.Build();
+  return selections.ApplyProfileSelection(Profile::FromBrowserContext(context));
+}
+
+content::BrowserContext* ChromeExtensionsBrowserClient::GetContextOwnInstance(
+    content::BrowserContext* context,
+    bool force_guest_profile) {
+  ProfileSelections::Builder builder;
+  builder.WithRegular(ProfileSelection::kOwnInstance);
+  if (force_guest_profile) {
+    builder.WithGuest(ProfileSelection::kOwnInstance);
   }
 
   const ProfileSelections selections = builder.Build();
@@ -255,33 +264,12 @@ ChromeExtensionsBrowserClient::GetRedirectedContextInIncognito(
 }
 
 content::BrowserContext*
-ChromeExtensionsBrowserClient::GetContextForRegularAndIncognito(
+ChromeExtensionsBrowserClient::GetContextForOriginalOnly(
     content::BrowserContext* context,
-    bool force_guest_profile,
-    bool force_system_profile) {
-  ProfileSelections::Builder builder;
-  builder.WithRegular(ProfileSelection::kOwnInstance);
-  if (force_guest_profile) {
-    builder.WithGuest(ProfileSelection::kOwnInstance);
-  }
-  if (force_system_profile) {
-    builder.WithSystem(ProfileSelection::kOwnInstance);
-  }
-
-  const ProfileSelections selections = builder.Build();
-  return selections.ApplyProfileSelection(Profile::FromBrowserContext(context));
-}
-
-content::BrowserContext* ChromeExtensionsBrowserClient::GetRegularProfile(
-    content::BrowserContext* context,
-    bool force_guest_profile,
-    bool force_system_profile) {
+    bool force_guest_profile) {
   ProfileSelections::Builder builder;
   if (force_guest_profile) {
     builder.WithGuest(ProfileSelection::kOriginalOnly);
-  }
-  if (force_system_profile) {
-    builder.WithSystem(ProfileSelection::kOriginalOnly);
   }
 
   ProfileSelections selections = builder.Build();

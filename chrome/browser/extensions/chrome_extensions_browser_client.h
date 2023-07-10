@@ -78,18 +78,15 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   content::BrowserContext* GetOriginalContext(
       content::BrowserContext* context) override;
 
-  content::BrowserContext* GetRedirectedContextInIncognito(
+  content::BrowserContext* GetContextRedirectedToOriginal(
       content::BrowserContext* context,
-      bool force_guest_profile,
-      bool force_system_profile) override;
-  content::BrowserContext* GetContextForRegularAndIncognito(
+      bool force_guest_profile) override;
+  content::BrowserContext* GetContextOwnInstance(
       content::BrowserContext* context,
-      bool force_guest_profile,
-      bool force_system_profile) override;
-  content::BrowserContext* GetRegularProfile(
+      bool force_guest_profile) override;
+  content::BrowserContext* GetContextForOriginalOnly(
       content::BrowserContext* context,
-      bool force_guest_profile,
-      bool force_system_profile) override;
+      bool force_guest_profile) override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string GetUserIdHashFromContext(

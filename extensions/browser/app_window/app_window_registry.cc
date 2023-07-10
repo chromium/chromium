@@ -244,8 +244,8 @@ bool AppWindowRegistry::Factory::ServiceIsCreatedWithBrowserContext() const {
 
 content::BrowserContext* AppWindowRegistry::Factory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return ExtensionsBrowserClient::Get()->GetRedirectedContextInIncognito(
-      context, /*force_guest_profile=*/true, /*force_system_profile=*/false);
+  return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
+      context, /*force_guest_profile=*/true);
 }
 
 }  // namespace extensions

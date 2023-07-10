@@ -152,30 +152,35 @@ class ExtensionsBrowserClient {
   virtual content::BrowserContext* GetOriginalContext(
       content::BrowserContext* context) = 0;
 
-  // The below methods include parameters to enforce the value given to Regular
-  // Profile type for Guest/System Profile types. Guest and System Profiles are
-  // defaulted to return no profile (which leads to no service constructed in
-  // terms of KeyedServices).
+  // The below methods are modeled off `Profile` and `ProfileSelections` in
+  // //chrome where their implementation filters out Profiles based on their
+  // types (Regular, Guest, System, etc..) and sub-implementation (Original vs
+  // OTR).
   //
-  // Returns the Original Profile for Regular Profile and redirects Incognito
-  // to the Original Profile.
-  // Force values to have the same behavior for Guest and System Profile.
-  virtual content::BrowserContext* GetRedirectedContextInIncognito(
+  // Returns the Original `BrowserContext` based on the input `context`:
+  // - if `context` is Original: returns itself.
+  // - if `context` is OTR: returns the equivalent parent context.
+  // - returns nullptr if the underlying implementation of `context` is of type
+  // System Profile, or of type Guest Profile if `force_guest_profile` is false.
+  virtual content::BrowserContext* GetContextRedirectedToOriginal(
       content::BrowserContext* context,
-      bool force_guest_profile,
-      bool force_system_profile) = 0;
-  // Returns Profile for Regular and Incognito.
-  // Force values to have the same behavior for Guest and System Profile.
-  virtual content::BrowserContext* GetContextForRegularAndIncognito(
+      bool force_guest_profile) = 0;
+  // Returns its own instance of `BrowserContext` based on the input `context`:
+  // - if `context` is Original: returns itself.
+  // - if `context` is OTR: returns nullptr.
+  // - returns nullptr if the underlying implementation of `context` is of type
+  // System Profile, or of type Guest Profile if `force_guest_profile` is false.
+  virtual content::BrowserContext* GetContextOwnInstance(
       content::BrowserContext* context,
-      bool force_guest_profile,
-      bool force_system_profile) = 0;
-  // Returns Profile only for Original Regular profile.
-  // Force values to have the same behavior for Guest and System Profile.
-  virtual content::BrowserContext* GetRegularProfile(
+      bool force_guest_profile) = 0;
+  // Returns the Original `BrowserContext` based on the input `context`:
+  // - if `context` is Original: returns itself.
+  // - if `context` is OTR: returns nullptr.
+  // - returns nullptr if the underlying implementation of `context` is of type
+  // System Profile, or of type Guest Profile if `force_guest_profile` is false.
+  virtual content::BrowserContext* GetContextForOriginalOnly(
       content::BrowserContext* context,
-      bool force_guest_profile,
-      bool force_system_profile) = 0;
+      bool force_guest_profile) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns a user id hash from |context| or an empty string if no hash could

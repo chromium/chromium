@@ -93,25 +93,21 @@ BrowserContext* TestExtensionsBrowserClient::GetOriginalContext(
 }
 
 content::BrowserContext*
-TestExtensionsBrowserClient::GetRedirectedContextInIncognito(
+TestExtensionsBrowserClient::GetContextRedirectedToOriginal(
     content::BrowserContext* context,
-    bool force_guest_profile,
-    bool force_system_profile) {
+    bool force_guest_profile) {
   return GetOriginalContext(context);
 }
 
-content::BrowserContext*
-TestExtensionsBrowserClient::GetContextForRegularAndIncognito(
+content::BrowserContext* TestExtensionsBrowserClient::GetContextOwnInstance(
     content::BrowserContext* context,
-    bool force_guest_profile,
-    bool force_system_profile) {
+    bool force_guest_profile) {
   return context;
 }
 
-content::BrowserContext* TestExtensionsBrowserClient::GetRegularProfile(
+content::BrowserContext* TestExtensionsBrowserClient::GetContextForOriginalOnly(
     content::BrowserContext* context,
-    bool force_guest_profile,
-    bool force_system_profile) {
+    bool force_guest_profile) {
   // Default implementation of
   // `BrowserContextKeyedServiceFactory::GetBrowserContextToUse()`.
   return context->IsOffTheRecord() ? nullptr : context;
