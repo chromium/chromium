@@ -120,10 +120,10 @@ TEST_F(PromiseAppIconCacheTest, GetIcon_Simple) {
                                    CreateBitmapWithColor(128, kRed)));
 }
 
-TEST_F(PromiseAppIconCacheTest, GetIcon_ReturnsNoIconIfAllIconsTooSmall) {
-  PromiseAppIconPtr icon_small = CreatePromiseAppIcon(/*width=*/10);
-  PromiseAppIconPtr icon_small_2 = CreatePromiseAppIcon(/*width=*/30);
-  PromiseAppIconPtr icon_small_3 = CreatePromiseAppIcon(/*width=*/50);
+TEST_F(PromiseAppIconCacheTest, GetIcon_ReturnsLargestIconIfAllIconsTooSmall) {
+  PromiseAppIconPtr icon_small = CreatePromiseAppIcon(/*width=*/10, kRed);
+  PromiseAppIconPtr icon_small_2 = CreatePromiseAppIcon(/*width=*/30, kGreen);
+  PromiseAppIconPtr icon_small_3 = CreatePromiseAppIcon(/*width=*/50, kBlue);
   icon_cache()->SaveIcon(kTestPackageId, std::move(icon_small));
   icon_cache()->SaveIcon(kTestPackageId, std::move(icon_small_2));
   icon_cache()->SaveIcon(kTestPackageId, std::move(icon_small_3));
@@ -132,30 +132,20 @@ TEST_F(PromiseAppIconCacheTest, GetIcon_ReturnsNoIconIfAllIconsTooSmall) {
       icon_cache()->GetIconsForTesting(kTestPackageId);
   EXPECT_EQ(icons_saved.size(), 3u);
 
+  // All icons returned should be the largest icon resized for our requested
+  // scales.
   gfx::ImageSkia returned_icon = icon_cache()->GetIcon(kTestPackageId, 128);
-  EXPECT_TRUE(returned_icon.isNull());
-}
+  EXPECT_FALSE(returned_icon.isNull());
 
-TEST_F(PromiseAppIconCacheTest,
-       GetIcon_ReturnsNoIconIfOneScaleFactorUnsupported) {
-  // DIP used for this test.
-  int dip = 256;
-  const std::vector<ui::ResourceScaleFactor>& scale_factors =
-      ui::GetSupportedResourceScaleFactors();
+  gfx::ImageSkiaRep image_rep = returned_icon.GetRepresentation(1.0f);
+  EXPECT_EQ(image_rep.pixel_width(), 128);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(image_rep.GetBitmap(),
+                                   CreateBitmapWithColor(128, kBlue)));
 
-  // Create and register an icon for every scale factor except the last one.
-  for (unsigned int i = 0; i < scale_factors.size() - 1; i++) {
-    float icon_scale = ui::GetScaleForResourceScaleFactor(scale_factors[i]);
-    int icon_size_in_px = apps_util::ConvertDipToPxForScale(dip, icon_scale);
-    PromiseAppIconPtr icon = CreatePromiseAppIcon(/*width=*/icon_size_in_px);
-    icon_cache()->SaveIcon(kTestPackageId, std::move(icon));
-  }
-
-  EXPECT_EQ(icon_cache()->GetIconsForTesting(kTestPackageId).size(),
-            scale_factors.size() - 1);
-
-  gfx::ImageSkia returned_icon = icon_cache()->GetIcon(kTestPackageId, dip);
-  EXPECT_TRUE(returned_icon.isNull());
+  image_rep = returned_icon.GetRepresentation(2.0f);
+  EXPECT_EQ(image_rep.pixel_width(), 256);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(image_rep.GetBitmap(),
+                                   CreateBitmapWithColor(256, kBlue)));
 }
 
 TEST_F(PromiseAppIconCacheTest,

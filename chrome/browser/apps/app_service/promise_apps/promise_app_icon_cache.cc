@@ -61,24 +61,25 @@ gfx::ImageSkia PromiseAppIconCache::GetIcon(const PackageId& package_id,
 
   gfx::ImageSkia image_skia;
 
-  // Get a representation for every scale factor. If we don't have icons that
-  // fit every scale factor, return an empty image to discourage showing the
-  // promise icon.
+  // Get a representation for every scale factor.
   for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     const float icon_scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     const int icon_size_in_px =
         apps_util::ConvertDipToPxForScale(size_in_dip, icon_scale);
 
-    const auto size_iter = icons->lower_bound(icon_size_in_px);
-    if (size_iter == icons->end() || size_iter->second->icon.empty()) {
-      return gfx::ImageSkia();
+    auto size_iter = icons->lower_bound(icon_size_in_px);
+
+    // If there isn't an icon that matches our minimum size requirement, use the
+    // largest icon available. Do this by decrementing the iterator to get the
+    // last icon in the map.
+    if (size_iter == icons->end()) {
+      --size_iter;
     }
 
     SkBitmap icon = size_iter->second->icon;
 
-    if (icon.empty()) {
-      return gfx::ImageSkia();
-    }
+    // The icon shouldn't be empty, as we never allowed saving empty icons.
+    CHECK(!icon.empty());
 
     // Resize |bitmap| to match |icon_scale|.
     if (icon.width() != icon_size_in_px) {
