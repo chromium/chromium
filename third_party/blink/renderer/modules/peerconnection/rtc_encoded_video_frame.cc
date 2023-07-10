@@ -339,6 +339,15 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
 
 void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
                                        ExceptionState& exception_state) {
+  const absl::optional<webrtc::VideoFrameMetadata> original_webrtc_metadata =
+      delegate_->GetMetadata();
+  if (!original_webrtc_metadata) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidModificationError,
+        "Cannot set metadata on an empty frame.");
+    return;
+  }
+
   if (!metadata->hasDependencies() || !metadata->hasWidth() ||
       !metadata->hasHeight() || !metadata->hasSpatialIndex() ||
       !metadata->hasTemporalIndex() ||
@@ -368,14 +377,6 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
     return;
   }
 
-  const absl::optional<webrtc::VideoFrameMetadata> original_webrtc_metadata =
-      delegate_->GetMetadata();
-  if (!original_metadata) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidModificationError,
-        "Internal error when calling setMetadata.");
-    return;
-  }
   // Initialize the new metadata from original_metadata to account for fields
   // not part of RTCEncodedVideoFrameMetadata.
   webrtc::VideoFrameMetadata webrtc_metadata = *original_webrtc_metadata;

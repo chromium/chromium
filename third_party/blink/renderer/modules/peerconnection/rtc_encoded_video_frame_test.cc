@@ -24,6 +24,21 @@ namespace blink {
 
 class RTCEncodedVideoFrameTest : public testing::Test {};
 
+webrtc::VideoFrameMetadata MockVP9Metadata(MockTransformableVideoFrame* frame) {
+  webrtc::VideoFrameMetadata webrtc_metadata;
+  webrtc_metadata.SetCodec(webrtc::VideoCodecType::kVideoCodecVP9);
+  webrtc::RTPVideoHeaderVP9 webrtc_vp9_specifics;
+  webrtc_vp9_specifics.InitRTPVideoHeaderVP9();
+  webrtc_vp9_specifics.inter_pic_predicted = true;
+  webrtc_vp9_specifics.flexible_mode = true;
+  webrtc_vp9_specifics.beginning_of_frame = true;
+  webrtc_metadata.SetRTPVideoHeaderCodecSpecifics(webrtc_vp9_specifics);
+
+  ON_CALL(*frame, Metadata()).WillByDefault(Return(webrtc_metadata));
+
+  return webrtc_metadata;
+}
+
 TEST_F(RTCEncodedVideoFrameTest, GetMetadataReturnsMetadata) {
   V8TestingScope v8_scope;
 
@@ -122,16 +137,7 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataPreservesVP9CodecSpecifics) {
 
   std::unique_ptr<MockTransformableVideoFrame> frame =
       std::make_unique<NiceMock<MockTransformableVideoFrame>>();
-
-  webrtc::VideoFrameMetadata webrtc_metadata;
-  webrtc_metadata.SetCodec(webrtc::VideoCodecType::kVideoCodecVP9);
-  webrtc::RTPVideoHeaderVP9 webrtc_vp9_specifics;
-  webrtc_vp9_specifics.InitRTPVideoHeaderVP9();
-  webrtc_vp9_specifics.inter_pic_predicted = true;
-  webrtc_vp9_specifics.flexible_mode = true;
-  webrtc_vp9_specifics.beginning_of_frame = true;
-  webrtc_metadata.SetRTPVideoHeaderCodecSpecifics(webrtc_vp9_specifics);
-  ON_CALL(*frame, Metadata()).WillByDefault(Return(webrtc_metadata));
+  webrtc::VideoFrameMetadata webrtc_metadata = MockVP9Metadata(frame.get());
 
   webrtc::VideoFrameMetadata actual_metadata;
   EXPECT_CALL(*frame, SetMetadata(_)).WillOnce(SaveArg<0>(&actual_metadata));
@@ -147,4 +153,25 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataPreservesVP9CodecSpecifics) {
             webrtc_metadata.GetRTPVideoHeaderCodecSpecifics());
 }
 
+TEST_F(RTCEncodedVideoFrameTest, SetMetadataOnEmptyFrameFails) {
+  V8TestingScope v8_scope;
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  MockVP9Metadata(frame.get());
+
+  RTCEncodedVideoFrame encoded_frame(std::move(frame));
+  RTCEncodedVideoFrameMetadata* metadata = encoded_frame.getMetadata();
+
+  // Move the WebRTC frame out, as if the frame had been written into
+  // an encoded insertable stream's WritableStream to be sent on.
+  encoded_frame.PassWebRtcFrame();
+
+  DummyExceptionStateForTesting exception_state;
+  encoded_frame.setMetadata(metadata, exception_state);
+
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Message(),
+            "Cannot set metadata on an empty frame.");
+}
 }  // namespace blink
