@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1215127405478249895">Tabbladen checken</translation>
+<translation id="1275718070701477396">Geselecteerd</translation>
 <translation id="1356944128023012143">De lijst met gesynchroniseerde apparaten en de geselecteerde tabbladen van die apparaten die moeten worden hersteld, is gesloten.</translation>
 <translation id="1816430105422765050">Kies andere gesynchroniseerde apparaten onder dit menu-item.</translation>
 <translation id="2575169127313449202">Je kunt tabbladen ophalen van het onderstaande apparaat</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Alles selecteren</translation>
 <translation id="5972844218283131174">Alles deselecteren</translation>
 <translation id="791922009843073162">Alle geselecteerde tabbladen worden gedeselecteerd. Alle gedeselecteerde tabbladen worden geselecteerd.</translation>
+<translation id="7927711904086083099">Niet geselecteerd</translation>
 <translation id="8003146088970081079">Kies het apparaat waarvan je tabbladen wilt ophalen</translation>
 <translation id="8019269305087157499">Openen vanuit</translation>
 </translationbundle>

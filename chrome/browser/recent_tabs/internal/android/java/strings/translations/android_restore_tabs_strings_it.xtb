@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1215127405478249895">Rivedi le schede</translation>
+<translation id="1275718070701477396">Selezionato</translation>
 <translation id="1356944128023012143">L'elenco dei dispositivi sincronizzati e delle schede selezionate da questi dispositivi da ripristinare al nuovo ripristino del flusso di lavoro è chiuso.</translation>
 <translation id="1816430105422765050">Passa ad altri dispositivi sincronizzati in questa voce di menu.</translation>
 <translation id="2575169127313449202">Puoi recuperare le schede dal dispositivo elencato di seguito</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Seleziona tutto</translation>
 <translation id="5972844218283131174">Deseleziona tutte</translation>
 <translation id="791922009843073162">Tutte le schede selezionate verranno deselezionate o tutte le schede deselezionate verranno selezionate.</translation>
+<translation id="7927711904086083099">Non selezionato</translation>
 <translation id="8003146088970081079">Scegli il dispositivo da cui vuoi recuperare le schede</translation>
 <translation id="8019269305087157499">Apri da</translation>
 </translationbundle>

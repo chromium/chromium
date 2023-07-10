@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="1215127405478249895">Tarkista välilehdet</translation>
+<translation id="1275718070701477396">Valittu</translation>
 <translation id="1356944128023012143">Lista synkronoiduista laitteista ja niiden valituista välilehdistä, jotka palautetaan uuden palautuksen aikana, on suljettu.</translation>
 <translation id="1816430105422765050">Vaihda muihin tämän valikon kohdan synkronoituihin laitteisiin.</translation>
 <translation id="2575169127313449202">Voit saada välilehtiä alla olevalta laitteelta</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Valitse kaikki</translation>
 <translation id="5972844218283131174">Poista valinta kaikista</translation>
 <translation id="791922009843073162">Kaikkien valittujen välilehtien valinta poistetaan tai kaikkien välilehdet valitaan.</translation>
+<translation id="7927711904086083099">Ei valittu</translation>
 <translation id="8003146088970081079">Valitse laite, jolta haluat tuoda välilehtiä</translation>
 <translation id="8019269305087157499">Avaa täältä:</translation>
 </translationbundle>

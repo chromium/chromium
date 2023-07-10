@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1215127405478249895">Berrikusi fitxak</translation>
+<translation id="1275718070701477396">Hautatua</translation>
 <translation id="1356944128023012143">Sinkronizatutako gailuen eta haietan leheneratzeko hautatutako fitxen zerrenda itxita dago. Leheneratze-prozesu berrietan leheneratuko dira fitxa horiek.</translation>
 <translation id="1816430105422765050">Aldatu sinkronizatutako beste gailuetara menuko aukera honetan.</translation>
 <translation id="2575169127313449202">Behean agertzen den gailuko fitxak berreskura ditzakezu</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Hautatu guztiak</translation>
 <translation id="5972844218283131174">Desautatu guztiak</translation>
 <translation id="791922009843073162">Hautatuta dauden fitxa guztiak desautatuko dira, edo desautatuta dauden fitxa guztiak hautatuko.</translation>
+<translation id="7927711904086083099">Hautatu gabe</translation>
 <translation id="8003146088970081079">Aukeratu zein gailutatik berreskuratu nahi dituzun fitxak</translation>
 <translation id="8019269305087157499">Ireki hemendik</translation>
 </translationbundle>

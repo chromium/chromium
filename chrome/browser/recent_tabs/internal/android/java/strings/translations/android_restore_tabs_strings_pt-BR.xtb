@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
 <translation id="1215127405478249895">Confira as guias</translation>
+<translation id="1275718070701477396">Linha selecionada</translation>
 <translation id="1356944128023012143">A lista de dispositivos sincronizados e as guias selecionadas deles que serão restauradas está fechada.</translation>
 <translation id="1816430105422765050">Mudar para outros dispositivos sincronizados neste item de menu.</translation>
 <translation id="2575169127313449202">Você pode recuperar guias do dispositivo listado abaixo</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Selecionar tudo</translation>
 <translation id="5972844218283131174">Desmarcar tudo</translation>
 <translation id="791922009843073162">Todas as guias selecionadas serão desmarcadas ou todas as desmarcadas serão selecionadas.</translation>
+<translation id="7927711904086083099">Não selecionado</translation>
 <translation id="8003146088970081079">Escolha o dispositivo que tem as guias que você quer recuperar</translation>
 <translation id="8019269305087157499">Abrir de</translation>
 </translationbundle>

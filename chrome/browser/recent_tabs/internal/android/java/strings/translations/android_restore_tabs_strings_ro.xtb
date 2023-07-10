@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="1215127405478249895">Examinează filele</translation>
+<translation id="1275718070701477396">Selectat</translation>
 <translation id="1356944128023012143">Lista dispozitivelor sincronizate și a filelor selectate de pe acele dispozitive care vor fi restabilite în noul flux de lucru de restabilire este închisă.</translation>
 <translation id="1816430105422765050">Treci la alte dispozitive sincronizate din acest element de meniu.</translation>
 <translation id="2575169127313449202">Poți să accesezi file de pe dispozitivul menționat mai jos</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
 <translation id="5972844218283131174">Deselectează tot</translation>
 <translation id="791922009843073162">Toate filele selectate vor fi deselectate sau toate filele deselectate vor fi selectate.</translation>
+<translation id="7927711904086083099">Neselectat</translation>
 <translation id="8003146088970081079">Alege dispozitivul de pe care dorești să accesezi file</translation>
 <translation id="8019269305087157499">Deschide din</translation>
 </translationbundle>

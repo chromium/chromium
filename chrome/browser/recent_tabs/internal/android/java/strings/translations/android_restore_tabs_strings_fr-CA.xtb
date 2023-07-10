@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
 <translation id="1215127405478249895">Vérifier les onglets</translation>
+<translation id="1275718070701477396">Sélectionné</translation>
 <translation id="1356944128023012143">La liste des appareils synchronisés et des onglets sélectionnés à partir de ces appareils à restaurer lors d'une nouvelle restauration de flux de travail est fermée.</translation>
 <translation id="1816430105422765050">Passer à d'autres appareils synchronisés sous cette option de menu.</translation>
 <translation id="2575169127313449202">Vous pouvez obtenir des onglets à partir de l'appareil répertorié ci-dessous</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Tout sélectionner</translation>
 <translation id="5972844218283131174">Tout désélectionner</translation>
 <translation id="791922009843073162">Tous les onglets sélectionnés seront désélectionnés ou tous les onglets désélectionnés seront sélectionnés.</translation>
+<translation id="7927711904086083099">Non sélectionné</translation>
 <translation id="8003146088970081079">Choisissez l'appareil à partir duquel vous souhaitez obtenir des onglets</translation>
 <translation id="8019269305087157499">Ouvrir à partir de l'appareil</translation>
 </translationbundle>

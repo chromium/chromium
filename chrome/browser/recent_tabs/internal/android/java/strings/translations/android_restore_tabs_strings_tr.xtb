@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="1215127405478249895">Sekmeleri inceleyin</translation>
+<translation id="1275718070701477396">Seçildi</translation>
 <translation id="1356944128023012143">Senkronize edilmiş cihazları ve yeni geri yükleme iş akışında geri yüklenmek üzere o cihazlardan seçilen sekmeleri içeren liste kapatıldı.</translation>
 <translation id="1816430105422765050">Bu menü öğesinin altından, senkronize edilmiş diğer cihazlara geçin</translation>
 <translation id="2575169127313449202">Aşağıda listelenen cihazdaki sekmelere ulaşabilirsiniz</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Tümünü seç</translation>
 <translation id="5972844218283131174">Tümünün seçimini kaldır</translation>
 <translation id="791922009843073162">Seçilen tüm sekmelerin seçimi kaldırılır veya seçili olmayan tüm sekmeler seçilir.</translation>
+<translation id="7927711904086083099">Seçili değil</translation>
 <translation id="8003146088970081079">Sekme almak istediğiniz cihazı seçin</translation>
 <translation id="8019269305087157499">Şuradan aç:</translation>
 </translationbundle>

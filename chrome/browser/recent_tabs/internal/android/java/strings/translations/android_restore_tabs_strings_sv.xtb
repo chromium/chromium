@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1215127405478249895">Granska flikar</translation>
+<translation id="1275718070701477396">Markerad</translation>
 <translation id="1356944128023012143">Listan över synkroniserade enheter och utvalda flikar från dessa enheter som ska återställas för det återställda arbetsflödet är stängd.</translation>
 <translation id="1816430105422765050">Ändra till andra synkroniserade enheter under detta menyalternativ.</translation>
 <translation id="2575169127313449202">Du kan hämta flikar från enheten nedan</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Markera alla</translation>
 <translation id="5972844218283131174">Avmarkera alla</translation>
 <translation id="791922009843073162">Alla markerade flikar avmarkeras, eller alla avmarkerade flikar markeras.</translation>
+<translation id="7927711904086083099">Inte markerat</translation>
 <translation id="8003146088970081079">Välj den enhet du vill hämta flikar från</translation>
 <translation id="8019269305087157499">Öppna från</translation>
 </translationbundle>

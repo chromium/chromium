@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
 <translation id="1215127405478249895">Прегледајте картице</translation>
+<translation id="1275718070701477396">Изабрано је</translation>
 <translation id="1356944128023012143">Затворен је ток рада листа синхронизованих уређаја и изабраних картица са тих уређаја које треба вратити новим враћањем.</translation>
 <translation id="1816430105422765050">Пређите на друге синхронизоване уређаје у оквиру ове ставке менија.</translation>
 <translation id="2575169127313449202">Можете да вратите картице са уређаја наведеног у наставку</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Избор свих ставки</translation>
 <translation id="5972844218283131174">Опозови све</translation>
 <translation id="791922009843073162">За све изабране картице избор ће бити поништен или ће све картице са поништеним избором бити изабране.</translation>
+<translation id="7927711904086083099">Није изабрано</translation>
 <translation id="8003146088970081079">Одаберите уређај са ког желите да враћате картице</translation>
 <translation id="8019269305087157499">Отворите са</translation>
 </translationbundle>

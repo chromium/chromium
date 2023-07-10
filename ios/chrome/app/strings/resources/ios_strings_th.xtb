@@ -310,7 +310,7 @@
 <translation id="2876369937070532032">ส่ง URL ของหน้าบางส่วนที่คุณเข้าชมไปให้ Google เมื่อการรักษาความปลอดภัยมีความเสี่ยง</translation>
 <translation id="2883151425485251736">ดูและแก้ไขหัวข้อที่คุณซ่อนไปจากบัญชี</translation>
 <translation id="288655811176831528">ปิดแท็บ</translation>
-<translation id="2890171748217283516">ระบบจะบันทึกเว็บไซต์ที่คุณติดตามไว้ในบัญชี Google โดยคุณจัดการเว็บไซต์เหล่านี้ได้ในการตั้งค่า Discover</translation>
+<translation id="2890171748217283516">ระบบจะบันทึกเว็บไซต์ที่คุณติดตามไว้ในบัญชี Google โดยคุณจัดการเว็บไซต์เหล่านี้ได้ในการตั้งค่าของฟีเจอร์สำรวจ</translation>
 <translation id="2898963176829412617">โฟลเดอร์ใหม่…</translation>
 <translation id="2902684821701498619">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="291754862089661335">จัดตำแหน่งโค้ด QR หรือบาร์โค้ดให้อยู่ในกรอบนี้</translation>
@@ -624,7 +624,7 @@
 <translation id="4894963374040315706">ช่วยให้คุณค้นหาด้วยเสียงได้</translation>
 <translation id="4901778704868714008">บันทึก...</translation>
 <translation id="4904877109095351937">ทำเครื่องหมายว่าอ่านแล้ว</translation>
-<translation id="4908869848243824489">Discover โดย Google</translation>
+<translation id="4908869848243824489">ฟีเจอร์สำรวจโดย Google</translation>
 <translation id="4916679969857390442">เลนส์</translation>
 <translation id="4922154083994158612">หากต้องการความปลอดภัยมากขึ้น</translation>
 <translation id="4930714375720679147">เปิด</translation>
@@ -1025,7 +1025,7 @@
 <translation id="730958329302570991">เพิ่มรหัสผ่านของเว็บไซต์ในเครื่องมือจัดการรหัสผ่านบน Google ได้ง่ายๆ ทุกเมื่อ</translation>
 <translation id="7313347584264171202">คุณจะเห็นแท็บที่ไม่ระบุตัวตนที่นี่</translation>
 <translation id="7336264872878993241">ดาวน์โหลดแล้ว <ph name="PERCENT" /> เปอร์เซ็นต์</translation>
-<translation id="7340958967809483333">ตัวเลือกสำหรับ Discover</translation>
+<translation id="7340958967809483333">ตัวเลือกสำหรับฟีดสำรวจ</translation>
 <translation id="7346909386216857016">รับทราบ</translation>
 <translation id="734758817008927353">ตัวเลือกในการบันทึกการ์ด</translation>
 <translation id="7351537303876921605">แตะ "สร้างลิงก์" ในเมนูตามบริบท</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
 <translation id="1215127405478249895">Pregledajte kartice</translation>
+<translation id="1275718070701477396">Izabrano je</translation>
 <translation id="1356944128023012143">Zatvoren je tok rada lista sinhronizovanih uređaja i izabranih kartica sa tih uređaja koje treba vratiti novim vraćanjem.</translation>
 <translation id="1816430105422765050">Pređite na druge sinhronizovane uređaje u okviru ove stavke menija.</translation>
 <translation id="2575169127313449202">Možete da vratite kartice sa uređaja navedenog u nastavku</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Izbor svih stavki</translation>
 <translation id="5972844218283131174">Opozovi sve</translation>
 <translation id="791922009843073162">Za sve izabrane kartice izbor će biti poništen ili će sve kartice sa poništenim izborom biti izabrane.</translation>
+<translation id="7927711904086083099">Nije izabrano</translation>
 <translation id="8003146088970081079">Odaberite uređaj sa kog želite da vraćate kartice</translation>
 <translation id="8019269305087157499">Otvorite sa</translation>
 </translationbundle>

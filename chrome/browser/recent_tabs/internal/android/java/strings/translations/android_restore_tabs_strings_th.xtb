@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
 <translation id="1215127405478249895">ตรวจสอบแท็บ</translation>
+<translation id="1275718070701477396">เลือกแล้ว</translation>
 <translation id="1356944128023012143">รายการอุปกรณ์ที่ซิงค์และแท็บที่เลือกจากอุปกรณ์เหล่านั้นซึ่งจะมีการคืนค่าในเวิร์กโฟลว์การคืนค่าใหม่ปิดอยู่</translation>
 <translation id="1816430105422765050">เปลี่ยนเป็นอุปกรณ์อื่นๆ ที่ซิงค์ไว้ในส่วนรายการในเมนูนี้</translation>
 <translation id="2575169127313449202">คุณรับแท็บจากอุปกรณ์ที่แสดงอยู่ด้านล่างได้</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>
 <translation id="5972844218283131174">ยกเลิกการเลือกทั้งหมด</translation>
 <translation id="791922009843073162">ระบบจะยกเลิกการเลือกแท็บทั้งหมดที่เลือกไว้ หรือจะเลือกแท็บทั้งหมดที่ไม่ได้เลือกไว้</translation>
+<translation id="7927711904086083099">ไม่ได้เลือก</translation>
 <translation id="8003146088970081079">เลือกอุปกรณ์ที่ต้องการจะคืนค่าแท็บ</translation>
 <translation id="8019269305087157499">เปิดจาก</translation>
 </translationbundle>

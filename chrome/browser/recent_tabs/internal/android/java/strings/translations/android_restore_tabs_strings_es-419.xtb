@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
 <translation id="1215127405478249895">Revisar las pestañas</translation>
+<translation id="1275718070701477396">Seleccionada</translation>
 <translation id="1356944128023012143">La lista de dispositivos sincronizados y de pestañas seleccionadas que se restablecerán de esos dispositivos cuando se reinicie el flujo de trabajo está cerrada.</translation>
 <translation id="1816430105422765050">Cambia a otros dispositivos sincronizados en este elemento de menú.</translation>
 <translation id="2575169127313449202">Puedes obtener las pestañas del dispositivo que se indica a continuación.</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5972844218283131174">Anular la selección</translation>
 <translation id="791922009843073162">Se anulará la selección de todas las pestañas, o bien se seleccionarán todas las pestañas no seleccionadas.</translation>
+<translation id="7927711904086083099">Sin seleccionar</translation>
 <translation id="8003146088970081079">Elige el dispositivo del que deseas obtener pestañas.</translation>
 <translation id="8019269305087157499">Abrir desde</translation>
 </translationbundle>

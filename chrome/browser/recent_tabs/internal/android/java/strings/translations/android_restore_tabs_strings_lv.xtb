@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="1215127405478249895">Ciļņu pārskatīšana</translation>
+<translation id="1275718070701477396">Atlasīta</translation>
 <translation id="1356944128023012143">Aizvērts saraksts ar sinhronizētajām ierīcēm un atlasītajām šo ierīču cilnēm, ko atjaunot jaunā atjaunošanas darbplūsmā.</translation>
 <translation id="1816430105422765050">Izmantojot šo izvēlnes vienumu, varat mainīt sinhronizētās ierīces pret citām.</translation>
 <translation id="2575169127313449202">Varat iegūt cilnes no tālāk norādītās ierīces.</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Atlasīt visu</translation>
 <translation id="5972844218283131174">Noņemt visu atlasi</translation>
 <translation id="791922009843073162">Tiks vai nu noņemta atlase visām atlasītajām cilnēm, vai atlasītas visas pašlaik neatlasītās cilnes.</translation>
+<translation id="7927711904086083099">Nav atlasīts</translation>
 <translation id="8003146088970081079">Izvēlieties ierīci, no kuras iegūt cilnes.</translation>
 <translation id="8019269305087157499">Ierīce, kurā atvērt</translation>
 </translationbundle>

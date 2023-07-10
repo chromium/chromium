@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1215127405478249895">בדיקת הכרטיסיות</translation>
+<translation id="1275718070701477396">נבחר</translation>
 <translation id="1356944128023012143">נסגרה רשימת המכשירים המסונכרנים והכרטיסיות שנבחרו לשחזור מהמכשירים האלה בתהליך העבודה לשחזור חדש.</translation>
 <translation id="1816430105422765050">בחירה במכשירים מסונכרנים אחרים באפשרות הזו בתפריט.</translation>
 <translation id="2575169127313449202">אפשר לשחזר כרטיסיות מהמכשיר שלמטה</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">בחירת הכול</translation>
 <translation id="5972844218283131174">ביטול הבחירה בכול הכרטיסיות</translation>
 <translation id="791922009843073162">תבוטל הבחירה בכל הכרטיסיות שנבחרו, או שייבחרו כל הכרטיסיות שלא נבחרו.</translation>
+<translation id="7927711904086083099">לא נבחר</translation>
 <translation id="8003146088970081079">בחירת המכשיר שממנו ישוחזרו כרטיסיות</translation>
 <translation id="8019269305087157499">פתיחה דרך</translation>
 </translationbundle>

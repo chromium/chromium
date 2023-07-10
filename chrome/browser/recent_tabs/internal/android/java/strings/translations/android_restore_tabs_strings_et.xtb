@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="1215127405478249895">Vahelehtede ülevaatamine</translation>
+<translation id="1275718070701477396">Valitud</translation>
 <translation id="1356944128023012143">Sünkroonitud seadmete loend ja nendest seadmetest valitud vahekaardid, mis tuleb värske taastamise tööprotsessi käigus taastada, on suletud.</translation>
 <translation id="1816430105422765050">Valige selle menüüelemendi all muud sünkroonitud seadmed.</translation>
 <translation id="2575169127313449202">Saate vahelehed hankida alltoodud seadmest</translation>
@@ -16,6 +17,7 @@
 <translation id="5494920125229734069">Valige kõik</translation>
 <translation id="5972844218283131174">Tühista kõik valikud</translation>
 <translation id="791922009843073162">Kõigi valitud vahelehtede valik tühistatakse või kõik valimata vahelehed valitakse.</translation>
+<translation id="7927711904086083099">Valimata</translation>
 <translation id="8003146088970081079">Valige seade, millest soovite vahelehti hankida</translation>
 <translation id="8019269305087157499">Avamine seadmest</translation>
 </translationbundle>
