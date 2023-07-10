@@ -115,6 +115,7 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
                           const V8UnionAudioSinkOptionsOrString*,
                           ExceptionState&);
 
+  void NotifySetSinkIdBegins();
   void NotifySetSinkIdIsDone(WebAudioSinkDescriptor);
 
   HeapDeque<Member<SetSinkIdResolver>>& GetSetSinkIdResolver() {
@@ -308,6 +309,10 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
 
   // Stores a list of identifiers for output device.
   HashSet<String> output_device_ids_;
+
+  // `wasRunning` flag for `setSinkId()` state transition. See the
+  // implementation of `NotifySetSinkIdBegins()` for details.
+  bool sink_transition_flag_was_running_ = false;
 };
 
 }  // namespace blink
