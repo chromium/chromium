@@ -17,6 +17,7 @@ include_rules = [
   "+components/webauthn/android",
   "+components/image_fetcher",
   "+services/device/public/java/src/org/chromium/device/geolocation",
+  "+ui/accessibility",
 
   # WebLayerNotificationWrapperBuilder should be used for all notifications.
   "-components/browser_ui/notifications/android/java/src/org/chromium/components/browser_ui/notifications/NotificationWrapperCompatBuilder.java",

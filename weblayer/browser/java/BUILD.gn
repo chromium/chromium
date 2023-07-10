@@ -294,6 +294,7 @@ android_library("java") {
     "//third_party/androidx:androidx_mediarouter_mediarouter_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
