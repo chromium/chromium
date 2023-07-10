@@ -538,8 +538,12 @@ void EnrollmentScreen::OnCancel() {
     return;
   }
 
-  // Record cancellation for that one enrollment mode.
-  UMA(policy::kMetricEnrollmentCancelled);
+  // Record cancellation here only if the enrollment is not forced.
+  // If enrollment is forced, pressing <esc> has no effect and should therefore
+  // not be logged.
+  if (!config_.is_forced()) {
+    UMA(policy::kMetricEnrollmentCancelled);
+  }
 
   if (AdvanceToNextAuth()) {
     Show(context());
