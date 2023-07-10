@@ -5,6 +5,8 @@
 #ifndef SERVICES_DEVICE_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_WIN_H_
 #define SERVICES_DEVICE_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_WIN_H_
 
+#include "base/task/sequenced_task_runner.h"
+#include "base/win/registry.h"
 #include "services/device/device_posture/device_posture_platform_provider.h"
 
 namespace device {
@@ -22,6 +24,16 @@ class DevicePosturePlatformProviderWin : public DevicePosturePlatformProvider {
   device::mojom::DevicePostureType GetDevicePosture() override;
   void StartListening() override;
   void StopListening() override;
+
+ private:
+  void OnRegistryKeyChanged();
+  void ComputePosture();
+
+  mojom::DevicePostureType current_posture_ =
+      mojom::DevicePostureType::kContinuous;
+  base::win::RegKey registry_key_;
+  bool initialized_ = false;
+  const scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 };
 
 }  // namespace device
