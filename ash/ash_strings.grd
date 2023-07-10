@@ -3476,7 +3476,7 @@ Connect your device to power.
         Shift+Esc
       </message>
       <message name="IDS_SHORTCUT_TASK_MANAGER_NEW" desc="the new shortcut to open the task manager.">
-        Search+Esc
+        search+esc
       </message>
       <message name="IDS_SHORTCUT_IME_BUBBLE_OLD" desc="the old deprecated shortcut to show the input options menu bubble in the shelf.">
         Alt+Shift+K
@@ -3484,16 +3484,23 @@ Connect your device to power.
       <message name="IDS_SHORTCUT_IME_BUBBLE_NEW" desc="the new shortcut to show the input options menu bubble in the shelf.">
         Search+Shift+K
       </message>
+      <message name="IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW" desc="the new shortcut to open the shortcut viewer app.">
+        ctrl+search+s
+      </message>
       <message name="IDS_DEPRECATED_SHOW_TASK_MANAGER_MSG"
                desc="Notification message to tell users about the deprecation of Shift+ESC shortcut to show the task manager.">
-        The shortcut to open the task manager has changed. Please use <ph name="NEW_SHORTCUT">$1<ex>Search+Esc</ex></ph> instead of <ph name="OLD_SHORTCUT">$2<ex>Shift+Esc</ex></ph>.
+        Open Task Manager app with "<ph name="NEW_SHORTCUT">$1<ex>Search+Esc</ex></ph>".
+      </message>
+      <message name="IDS_DEPRECATED_SHOW_SHORTCUT_VIEWER_MSG"
+               desc="Notification message to tell users about the deprecation of Ctrl+Alt+/ shortcut to show the shortcut viewer app.">
+        Open Key Shortcuts app with "<ph name="NEW_SHORTCUT">$1<ex>ctrl + search + s</ex></ph>".
       </message>
       <message name="IDS_DEPRECATED_SHOW_IME_BUBBLE_MSG"
                desc="Notification message to tell users about the deprecation of Alt+Shift+K shortcut to show the input options menu bubble in the shelf.">
         The shortcut to show the input options menu bubble in the shelf has changed. Please use <ph name="NEW_SHORTCUT">$1<ex>Search+Shift+K</ex></ph> instead of <ph name="OLD_SHORTCUT">$2<ex>Alt+Shift+K</ex></ph>.
       </message>
       <message name="IDS_DEPRECATED_SHORTCUT_TITLE" desc="Notification title to tell users that the keyboard accelerator is deprecated.">
-        Shortcut change
+        Use the updated shortcut
       </message>
 
       <!-- Notification that an accelerator was pressed, so the user knows how to toggle it back -->

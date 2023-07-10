@@ -665,7 +665,7 @@ const std::vector<ash::KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        IDS_KSV_DESCRIPTION_KEYBOARD_SHORTCUT_HELPER,
        {},
        // |accelerator_ids|
-       {{ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN}}},
+       {{ui::VKEY_S, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN}}},
 
       {// |categories|
        {ShortcutCategory::kTabAndWindow},

@@ -1533,7 +1533,7 @@ AcceleratorControllerImpl::MaybeDeprecatedAcceleratorPressed(
   ShowDeprecatedAcceleratorNotification(
       deprecated_data->uma_histogram_name,
       deprecated_data->notification_message_id,
-      deprecated_data->old_shortcut_id, deprecated_data->new_shortcut_id);
+      deprecated_data->new_shortcut_id);
 
   if (!deprecated_data->deprecated_enabled)
     return AcceleratorProcessingStatus::STOP;

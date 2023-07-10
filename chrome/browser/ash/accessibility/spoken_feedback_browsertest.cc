@@ -2248,13 +2248,13 @@ IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
   sm_.Replay();
 }
 
-// TODO(jimmyxgong): Update this suite after the old keyboard shortcut viewer
-// app is removed.
 class ShortcutsAppSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
  public:
   ShortcutsAppSpokenFeedbackTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        {features::kOnlyShowNewShortcutsApp});
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kShortcutCustomizationApp,
+         features::kOnlyShowNewShortcutsApp},
+        {});
   }
   ShortcutsAppSpokenFeedbackTest(const ShortcutsAppSpokenFeedbackTest&) =
       delete;
@@ -2266,37 +2266,41 @@ class ShortcutsAppSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ShortcutsAppSpokenFeedbackTest, KeyboardShortcutViewer) {
+// TODO(b/288602247): Linux ChromiumOS MSan is flaky for spoken feedback tests
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ShortcutCustomization DISABLED_ShortcutCustomization
+#else
+#define MAYBE_ShortcutCustomization ShortcutCustomization
+#endif
+
+IN_PROC_BROWSER_TEST_F(ShortcutsAppSpokenFeedbackTest,
+                       MAYBE_ShortcutCustomization) {
   EnableChromeVox();
   sm_.Call([this]() {
-    SendKeyPressWithControlAndAlt(ui::VKEY_OEM_2 /* forward slash */);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("chrome://shortcut-customization")));
   });
-  sm_.ExpectSpeech("Shortcuts, window");
+  sm_.ExpectSpeech("Search shortcuts");
 
   // Move through all tabs; make a few expectations along the way.
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Popular Shortcuts, tab");
-  sm_.ExpectSpeech("1 of 6");
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Accessibility, tab");
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Popular Shortcuts");
-  sm_.ExpectSpeech("Tab");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("General");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Accessibility");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Keyboard settings");
 
   // Moving forward again should dive into the list of shortcuts for the
   // category.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Copy selected content to the clipboard, Ctrl plus c");
-  sm_.ExpectSpeech("List item");
-  sm_.ExpectSpeech("1 of 21");
-  sm_.ExpectSpeech("Popular Shortcuts");
-  sm_.ExpectSpeech("Tab");
-  sm_.ExpectSpeech("List");
-  sm_.ExpectSpeech("with 21 items");
+  sm_.ExpectSpeech("General controls");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Open slash close Launcher");
+  sm_.ExpectSpeech("row 1 column 1");
   sm_.Replay();
 }
 }  // namespace ash

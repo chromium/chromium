@@ -35,8 +35,16 @@ namespace ash {
 //    shortcut_viewer_strings.grdp.
 const AcceleratorData kDeprecatedAccelerators[] = {
     {true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kShowTaskManager}};
+     AcceleratorAction::kShowTaskManager},
+    {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+     AcceleratorAction::kShowShortcutViewer},
+    {true, ui::VKEY_OEM_2,
+     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
+     AcceleratorAction::kShowShortcutViewer}};
 
+// `kShowShortcutViewer` has two accelerators that are deprecated but use the
+// same message.
+const size_t kNumDeprecatedAcceleratorsDuplicate = 1u;
 const size_t kDeprecatedAcceleratorsLength = std::size(kDeprecatedAccelerators);
 
 const DeprecatedAcceleratorData kDeprecatedAcceleratorsData[] = {
@@ -44,13 +52,18 @@ const DeprecatedAcceleratorData kDeprecatedAcceleratorsData[] = {
     // completely in M94.
     {AcceleratorAction::kShowTaskManager,
      "Ash.Accelerators.Deprecated.ShowTaskManager",
-     IDS_DEPRECATED_SHOW_TASK_MANAGER_MSG, IDS_SHORTCUT_TASK_MANAGER_OLD,
-     IDS_SHORTCUT_TASK_MANAGER_NEW, false}};
+     IDS_DEPRECATED_SHOW_TASK_MANAGER_MSG, IDS_SHORTCUT_TASK_MANAGER_NEW,
+     false},
+    {AcceleratorAction::kShowShortcutViewer,
+     "Ash.Accelerators.Deprecated.ShowShortcutViewer",
+     IDS_DEPRECATED_SHOW_SHORTCUT_VIEWER_MSG,
+     IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW, false}};
 
 const size_t kDeprecatedAcceleratorsDataLength =
     std::size(kDeprecatedAcceleratorsData);
 
-static_assert(kDeprecatedAcceleratorsLength ==
+static_assert(kDeprecatedAcceleratorsLength -
+                      kNumDeprecatedAcceleratorsDuplicate ==
                   kDeprecatedAcceleratorsDataLength,
               "Deprecated accelerator tables must be kept in sync");
 
