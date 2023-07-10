@@ -51,7 +51,7 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
   ~ICOImageDecoder() override;
 
   // ImageDecoder:
-  String FilenameExtension() const override { return "ico"; }
+  String FilenameExtension() const override;
   const AtomicString& MimeType() const override;
   void OnSetData(SegmentReader*) override;
   gfx::Size Size() const override;
@@ -91,9 +91,9 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
                              const IconDirectoryEntry& b);
 
   // ImageDecoder:
-  void DecodeSize() override { Decode(0, true); }
+  void DecodeSize() override;
   wtf_size_t DecodeFrameCount() override;
-  void Decode(wtf_size_t index) override { Decode(index, false); }
+  void Decode(wtf_size_t index) override;
 
   // TODO (scroggo): These functions are identical to functions in
   // BMPImageReader. Share code?

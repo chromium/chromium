@@ -89,7 +89,7 @@ class PLATFORM_EXPORT ImageFrame final {
   // SetHasAlpha() call ensures all state is set correctly, but it means we
   // need to initialize has_alpha_ to some value before calling the operator
   // lest any tools complain about using an uninitialized value.
-  ImageFrame(const ImageFrame& other) : has_alpha_(false) { operator=(other); }
+  ImageFrame(const ImageFrame& other);
 
   // For backends which refcount their data, this operator doesn't need to
   // create a new copy of the image data, only increase the ref count.

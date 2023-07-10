@@ -45,10 +45,10 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
   ~JPEGImageDecoder() override;
 
   // ImageDecoder:
-  String FilenameExtension() const override { return "jpg"; }
+  String FilenameExtension() const override;
   const AtomicString& MimeType() const override;
   void OnSetData(SegmentReader* data) override;
-  gfx::Size DecodedSize() const override { return decoded_size_; }
+  gfx::Size DecodedSize() const override;
   bool SetSize(unsigned width, unsigned height) override;
   cc::YUVSubsampling GetYUVSubsampling() const override;
   gfx::Size DecodedYUVSize(cc::YUVIndex) const override;
@@ -94,11 +94,8 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
 
  private:
   // ImageDecoder:
-  void DecodeSize() override { Decode(DecodingMode::kDecodeHeader); }
-  void Decode(wtf_size_t) override {
-    // Use DecodeToYUV for YUV decoding.
-    Decode(DecodingMode::kDecodeToBitmap);
-  }
+  void DecodeSize() override;
+  void Decode(wtf_size_t) override;
   cc::ImageHeaderMetadata MakeMetadataForDecodeAcceleration() const override;
 
   // Attempts to calculate the coded size of the JPEG image. Returns a zero

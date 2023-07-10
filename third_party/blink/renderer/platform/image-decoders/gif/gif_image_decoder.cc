@@ -65,6 +65,10 @@ GIFImageDecoder::GIFImageDecoder(AlphaOption alpha_option,
 
 GIFImageDecoder::~GIFImageDecoder() = default;
 
+String GIFImageDecoder::FilenameExtension() const {
+  return "gif";
+}
+
 const AtomicString& GIFImageDecoder::MimeType() const {
   DEFINE_STATIC_LOCAL(const AtomicString, gif_mime_type, ("image/gif"));
   return gif_mime_type;

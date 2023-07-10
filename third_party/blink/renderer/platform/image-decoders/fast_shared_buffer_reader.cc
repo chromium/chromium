@@ -39,6 +39,8 @@ FastSharedBufferReader::FastSharedBufferReader(
       segment_length_(0),
       data_position_(0) {}
 
+FastSharedBufferReader::~FastSharedBufferReader() = default;
+
 void FastSharedBufferReader::SetData(scoped_refptr<SegmentReader> data) {
   if (data == data_) {
     return;

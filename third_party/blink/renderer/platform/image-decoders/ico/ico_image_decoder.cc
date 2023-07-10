@@ -51,6 +51,10 @@ ICOImageDecoder::ICOImageDecoder(AlphaOption alpha_option,
 
 ICOImageDecoder::~ICOImageDecoder() = default;
 
+String ICOImageDecoder::FilenameExtension() const {
+  return "ico";
+}
+
 const AtomicString& ICOImageDecoder::MimeType() const {
   DEFINE_STATIC_LOCAL(const AtomicString, ico_mime_type,
                       ("image/vnd.microsoft.icon"));
@@ -131,6 +135,10 @@ bool ICOImageDecoder::CompareEntries(const IconDirectoryEntry& a,
                                         : (a_entry_area > b_entry_area);
 }
 
+void ICOImageDecoder::DecodeSize() {
+  Decode(0, true);
+}
+
 wtf_size_t ICOImageDecoder::DecodeFrameCount() {
   DecodeSize();
 
@@ -155,6 +163,10 @@ wtf_size_t ICOImageDecoder::DecodeFrameCount() {
     }
   }
   return dir_entries_.size();
+}
+
+void ICOImageDecoder::Decode(wtf_size_t index) {
+  Decode(index, false);
 }
 
 void ICOImageDecoder::SetDataForPNGDecoderAtIndex(wtf_size_t index) {

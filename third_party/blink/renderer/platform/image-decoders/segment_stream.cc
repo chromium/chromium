@@ -87,6 +87,14 @@ bool SegmentStream::rewind() {
   return true;
 }
 
+bool SegmentStream::hasPosition() const {
+  return true;
+}
+
+size_t SegmentStream::getPosition() const {
+  return position_;
+}
+
 bool SegmentStream::seek(size_t position) {
   position_ = position;
   return true;
@@ -95,6 +103,10 @@ bool SegmentStream::seek(size_t position) {
 bool SegmentStream::move(long offset) {
   DCHECK_GT(offset, 0);
   position_ += offset;
+  return true;
+}
+
+bool SegmentStream::hasLength() const {
   return true;
 }
 

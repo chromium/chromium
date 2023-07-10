@@ -380,6 +380,10 @@ AVIFImageDecoder::AVIFImageDecoder(AlphaOption alpha_option,
 
 AVIFImageDecoder::~AVIFImageDecoder() = default;
 
+String AVIFImageDecoder::FilenameExtension() const {
+  return "avif";
+}
+
 const AtomicString& AVIFImageDecoder::MimeType() const {
   DEFINE_STATIC_LOCAL(const AtomicString, avif_mime_type, ("image/avif"));
   return avif_mime_type;

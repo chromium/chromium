@@ -287,6 +287,14 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
   return decoder;
 }
 
+bool ImageDecoder::IsAllDataReceived() const {
+  return is_all_data_received_;
+}
+
+bool ImageDecoder::ImageIsHighBitDepth() {
+  return false;
+}
+
 bool ImageDecoder::HasSufficientDataToSniffMimeType(const SharedBuffer& data) {
   // At least kLongestSignatureLength bytes are needed to sniff the signature.
   if (data.size() < kLongestSignatureLength) {
@@ -439,6 +447,51 @@ bool ImageDecoder::IsSizeAvailable() {
   return true;
 }
 
+gfx::Size ImageDecoder::Size() const {
+  return size_;
+}
+
+Vector<SkISize> ImageDecoder::GetSupportedDecodeSizes() const {
+  return {};
+}
+
+bool ImageDecoder::GetGainmapInfoAndData(
+    SkGainmapInfo& out_gainmap_info,
+    scoped_refptr<SegmentReader>& out_gainmap_data) const {
+  return false;
+}
+
+gfx::Size ImageDecoder::DecodedSize() const {
+  return Size();
+}
+
+cc::YUVSubsampling ImageDecoder::GetYUVSubsampling() const {
+  return cc::YUVSubsampling::kUnknown;
+}
+
+gfx::Size ImageDecoder::DecodedYUVSize(cc::YUVIndex) const {
+  NOTREACHED();
+  return gfx::Size();
+}
+
+wtf_size_t ImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex) const {
+  NOTREACHED();
+  return 0;
+}
+
+SkYUVColorSpace ImageDecoder::GetYUVColorSpace() const {
+  NOTREACHED();
+  return SkYUVColorSpace::kIdentity_SkYUVColorSpace;
+}
+
+uint8_t ImageDecoder::GetYUVBitDepth() const {
+  return 8;
+}
+
+absl::optional<gfx::HDRMetadata> ImageDecoder::GetHDRMetadata() const {
+  return absl::nullopt;
+}
+
 cc::ImageHeaderMetadata ImageDecoder::MakeMetadataForDecodeAcceleration()
     const {
   DCHECK(IsDecodedSizeAvailable());
@@ -449,6 +502,21 @@ cc::ImageHeaderMetadata ImageDecoder::MakeMetadataForDecodeAcceleration()
   image_metadata.image_size = size_;
   image_metadata.has_embedded_color_profile = HasEmbeddedColorProfile();
   return image_metadata;
+}
+
+bool ImageDecoder::SetSize(unsigned width, unsigned height) {
+  unsigned decoded_bytes_per_pixel = 4;
+  if (ImageIsHighBitDepth() &&
+      high_bit_depth_decoding_option_ == kHighBitDepthToHalfFloat) {
+    decoded_bytes_per_pixel = 8;
+  }
+  if (SizeCalculationMayOverflow(width, height, decoded_bytes_per_pixel)) {
+    return SetFailed();
+  }
+
+  size_ = gfx::Size(width, height);
+  size_available_ = true;
+  return true;
 }
 
 wtf_size_t ImageDecoder::FrameCount() {
@@ -462,6 +530,10 @@ wtf_size_t ImageDecoder::FrameCount() {
     }
   }
   return new_size;
+}
+
+int ImageDecoder::RepetitionCount() const {
+  return kAnimationNone;
 }
 
 ImageFrame* ImageDecoder::DecodeFrameBufferAtIndex(wtf_size_t index) {
@@ -497,6 +569,15 @@ bool ImageDecoder::FrameIsDecodedAtIndex(wtf_size_t index) const {
          frame_buffer_cache_[index].GetStatus() == ImageFrame::kFrameComplete;
 }
 
+absl::optional<base::TimeDelta> ImageDecoder::FrameTimestampAtIndex(
+    wtf_size_t) const {
+  return absl::nullopt;
+}
+
+base::TimeDelta ImageDecoder::FrameDurationAtIndex(wtf_size_t) const {
+  return base::TimeDelta();
+}
+
 wtf_size_t ImageDecoder::FrameBytesAtIndex(wtf_size_t index) const {
   if (index >= frame_buffer_cache_.size() ||
       frame_buffer_cache_[index].GetStatus() == ImageFrame::kFrameEmpty) {
@@ -513,6 +594,11 @@ wtf_size_t ImageDecoder::FrameBytesAtIndex(wtf_size_t index) const {
   area *= size.height();
   area *= decoded_bytes_per_pixel;
   return area.ValueOrDie();
+}
+
+bool ImageDecoder::SetFailed() {
+  failed_ = true;
+  return false;
 }
 
 wtf_size_t ImageDecoder::ClearCacheExceptFrame(wtf_size_t clear_except_frame) {
@@ -559,6 +645,38 @@ wtf_size_t ImageDecoder::ClearCacheExceptFrame(wtf_size_t clear_except_frame) {
   return ClearCacheExceptTwoFrames(clear_except_frame, clear_except_frame2);
 }
 
+bool ImageDecoder::HotSpot(gfx::Point&) const {
+  return false;
+}
+
+void ImageDecoder::SetMemoryAllocator(SkBitmap::Allocator* allocator) {
+  // This currently doesn't work for images with multiple frames.
+  // Some animated image formats require extra guarantees:
+  // 1. The memory is cheaply readable, which isn't true for GPU memory, and
+  // 2. The memory's lifetime will persist long enough to allow reading past
+  //   frames, which isn't true for discardable memory.
+  // Not all animated image formats share these requirements. Blocking
+  // all animated formats is overly aggressive. If a need arises for an
+  // external memory allocator for animated images, this should be changed.
+  if (frame_buffer_cache_.empty()) {
+    // Ensure that InitializeNewFrame is called, after parsing if
+    // necessary.
+    if (!FrameCount()) {
+      return;
+    }
+  }
+
+  frame_buffer_cache_[0].SetMemoryAllocator(allocator);
+}
+
+void ImageDecoder::DecodeToYUV() {
+  NOTREACHED();
+}
+
+bool ImageDecoder::ImageHasBothStillAndAnimatedSubImages() const {
+  return false;
+}
+
 wtf_size_t ImageDecoder::ClearCacheExceptTwoFrames(
     wtf_size_t clear_except_frame1,
     wtf_size_t clear_except_frame2) {
@@ -575,6 +693,10 @@ wtf_size_t ImageDecoder::ClearCacheExceptTwoFrames(
 
 void ImageDecoder::ClearFrameBuffer(wtf_size_t frame_index) {
   frame_buffer_cache_[frame_index].ClearPixelData();
+}
+
+wtf_size_t ImageDecoder::DecodeFrameCount() {
+  return 1;
 }
 
 Vector<wtf_size_t> ImageDecoder::FindFramesToDecode(wtf_size_t index) const {
@@ -753,6 +875,13 @@ void ImageDecoder::UpdateAggressivePurging(wtf_size_t index) {
   }
 }
 
+bool ImageDecoder::FrameStatusSufficientForSuccessors(wtf_size_t index) {
+  DCHECK(index < frame_buffer_cache_.size());
+  ImageFrame::Status frame_status = frame_buffer_cache_[index].GetStatus();
+  return frame_status == ImageFrame::kFramePartial ||
+         frame_status == ImageFrame::kFrameComplete;
+}
+
 wtf_size_t ImageDecoder::FindRequiredPreviousFrame(wtf_size_t frame_index,
                                                    bool frame_rect_is_opaque) {
   DCHECK_LT(frame_index, frame_buffer_cache_.size());
@@ -846,6 +975,8 @@ wtf_size_t ImagePlanes::RowBytes(cc::YUVIndex index) const {
 ColorProfile::ColorProfile(const skcms_ICCProfile& profile,
                            std::unique_ptr<uint8_t[]> buffer)
     : profile_(profile), buffer_(std::move(buffer)) {}
+
+ColorProfile::~ColorProfile() = default;
 
 std::unique_ptr<ColorProfile> ColorProfile::Create(const void* buffer,
                                                    size_t size) {
@@ -978,6 +1109,10 @@ void ImageDecoder::UpdateSkImageColorSpaceAndTransform() {
 
   embedded_to_sk_image_transform_ =
       std::make_unique<ColorProfileTransform>(src_profile, &dst_profile);
+}
+
+bool ImageDecoder::CanReusePreviousFrameBuffer(wtf_size_t) const {
+  return false;
 }
 
 }  // namespace blink

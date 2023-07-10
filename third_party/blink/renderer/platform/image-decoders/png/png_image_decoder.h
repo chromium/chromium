@@ -45,7 +45,7 @@ class PLATFORM_EXPORT PNGImageDecoder final : public ImageDecoder {
   ~PNGImageDecoder() override;
 
   // ImageDecoder:
-  String FilenameExtension() const override { return "png"; }
+  String FilenameExtension() const override;
   const AtomicString& MimeType() const override;
   bool SetSize(unsigned, unsigned) override;
   int RepetitionCount() const override;
@@ -67,7 +67,7 @@ class PLATFORM_EXPORT PNGImageDecoder final : public ImageDecoder {
   using ParseQuery = PNGImageReader::ParseQuery;
 
   // ImageDecoder:
-  void DecodeSize() override { Parse(ParseQuery::kSize); }
+  void DecodeSize() override;
   void Decode(wtf_size_t) override;
   void Parse(ParseQuery);
   wtf_size_t DecodeFrameCount() override;

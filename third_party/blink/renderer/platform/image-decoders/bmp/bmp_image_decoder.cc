@@ -51,6 +51,10 @@ BMPImageDecoder::BMPImageDecoder(AlphaOption alpha_option,
 
 BMPImageDecoder::~BMPImageDecoder() = default;
 
+String BMPImageDecoder::FilenameExtension() const {
+  return "bmp";
+}
+
 const AtomicString& BMPImageDecoder::MimeType() const {
   DEFINE_STATIC_LOCAL(const AtomicString, bmp_mime_type, ("image/bmp"));
   return bmp_mime_type;
@@ -65,6 +69,14 @@ void BMPImageDecoder::OnSetData(SegmentReader* data) {
 bool BMPImageDecoder::SetFailed() {
   reader_.reset();
   return ImageDecoder::SetFailed();
+}
+
+void BMPImageDecoder::DecodeSize() {
+  Decode(true);
+}
+
+void BMPImageDecoder::Decode(wtf_size_t) {
+  Decode(false);
 }
 
 void BMPImageDecoder::Decode(bool only_size) {

@@ -870,6 +870,10 @@ JPEGImageDecoder::JPEGImageDecoder(AlphaOption alpha_option,
 
 JPEGImageDecoder::~JPEGImageDecoder() = default;
 
+String JPEGImageDecoder::FilenameExtension() const {
+  return "jpg";
+}
+
 const AtomicString& JPEGImageDecoder::MimeType() const {
   DEFINE_STATIC_LOCAL(const AtomicString, jpeg_mime_type, ("image/jpeg"));
   return jpeg_mime_type;
@@ -916,6 +920,10 @@ void JPEGImageDecoder::OnSetData(SegmentReader* data) {
       // data.
       !ColorTransform() &&
       SubsamplingSupportedByDecodeToYUV(GetYUVSubsampling());
+}
+
+gfx::Size JPEGImageDecoder::DecodedSize() const {
+  return decoded_size_;
 }
 
 void JPEGImageDecoder::SetDecodedSize(unsigned width, unsigned height) {
@@ -1049,6 +1057,15 @@ gfx::Size JPEGImageDecoder::GetImageCodedSize() const {
   const int coded_height = Align(Size().height(), max_v_samp_factor * 8);
 
   return gfx::Size(coded_width, coded_height);
+}
+
+void JPEGImageDecoder::DecodeSize() {
+  Decode(DecodingMode::kDecodeHeader);
+}
+
+void JPEGImageDecoder::Decode(wtf_size_t) {
+  // Use DecodeToYUV for YUV decoding.
+  Decode(DecodingMode::kDecodeToBitmap);
 }
 
 cc::ImageHeaderMetadata JPEGImageDecoder::MakeMetadataForDecodeAcceleration()

@@ -202,6 +202,10 @@ WEBPImageDecoder::~WEBPImageDecoder() {
   Clear();
 }
 
+String WEBPImageDecoder::FilenameExtension() const {
+  return "webp";
+}
+
 const AtomicString& WEBPImageDecoder::MimeType() const {
   DEFINE_STATIC_LOCAL(const AtomicString, webp_mime_type, ("image/webp"));
   return webp_mime_type;
@@ -632,6 +636,10 @@ void WEBPImageDecoder::ApplyPostProcessing(wtf_size_t frame_index) {
   buffer.SetPixelsChanged(true);
 }
 
+void WEBPImageDecoder::DecodeSize() {
+  UpdateDemuxer();
+}
+
 wtf_size_t WEBPImageDecoder::DecodeFrameCount() {
   // If UpdateDemuxer() fails, return the existing number of frames. This way if
   // we get halfway through the image before decoding fails, we won't suddenly
@@ -841,6 +849,11 @@ cc::ImageHeaderMetadata WEBPImageDecoder::MakeMetadataForDecodeAcceleration()
   image_metadata.webp_is_non_extended_lossy =
       IsSimpleLossyWebPImage(consolidated_data_);
   return image_metadata;
+}
+
+bool WEBPImageDecoder::FrameStatusSufficientForSuccessors(wtf_size_t index) {
+  DCHECK(index < frame_buffer_cache_.size());
+  return frame_buffer_cache_[index].GetStatus() == ImageFrame::kFrameComplete;
 }
 
 }  // namespace blink

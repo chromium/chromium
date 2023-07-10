@@ -106,6 +106,7 @@ class PLATFORM_EXPORT ColorProfile final {
   ColorProfile(const ColorProfile&) = delete;
   ColorProfile& operator=(const ColorProfile&) = delete;
   static std::unique_ptr<ColorProfile> Create(const void* buffer, size_t size);
+  ~ColorProfile();
 
   const skcms_ICCProfile* GetProfile() const { return &profile_; }
 
@@ -218,13 +219,13 @@ class PLATFORM_EXPORT ImageDecoder {
   virtual String FilenameExtension() const = 0;
   virtual const AtomicString& MimeType() const = 0;
 
-  bool IsAllDataReceived() const { return is_all_data_received_; }
+  bool IsAllDataReceived() const;
 
   // Returns true if the decoder supports decoding to high bit depth. The
   // decoded output will be high bit depth (half float backed bitmap) iff
   // encoded image is high bit depth and high_bit_depth_decoding_option_ is set
   // to kHighBitDepthToHalfFloat.
-  virtual bool ImageIsHighBitDepth() { return false; }
+  virtual bool ImageIsHighBitDepth();
 
   // Returns true if the buffer holds enough data to instantiate a decoder.
   // This is useful for callers to determine whether a decoder instantiation
@@ -259,59 +260,44 @@ class PLATFORM_EXPORT ImageDecoder {
 
   bool IsDecodedSizeAvailable() const { return !failed_ && size_available_; }
 
-  virtual gfx::Size Size() const { return size_; }
-  virtual Vector<SkISize> GetSupportedDecodeSizes() const { return {}; }
+  virtual gfx::Size Size() const;
+  virtual Vector<SkISize> GetSupportedDecodeSizes() const;
 
   // Check for the existence of a gainmap image. If one exists, extract the
   // SkGainmapInfo rendering parameters, and a SegmentReader for the embedded
   // gainmap image's encoded data, and return true.
   virtual bool GetGainmapInfoAndData(
       SkGainmapInfo& out_gainmap_info,
-      scoped_refptr<SegmentReader>& out_gainmap_data) const {
-    return false;
-  }
+      scoped_refptr<SegmentReader>& out_gainmap_data) const;
 
   // Decoders which downsample images should override this method to
   // return the actual decoded size.
-  virtual gfx::Size DecodedSize() const { return Size(); }
+  virtual gfx::Size DecodedSize() const;
 
   // The YUV subsampling of the image.
-  virtual cc::YUVSubsampling GetYUVSubsampling() const {
-    return cc::YUVSubsampling::kUnknown;
-  }
+  virtual cc::YUVSubsampling GetYUVSubsampling() const;
 
   // Image decoders that support YUV decoding must override this to
   // provide the size of each component.
-  virtual gfx::Size DecodedYUVSize(cc::YUVIndex) const {
-    NOTREACHED();
-    return gfx::Size();
-  }
+  virtual gfx::Size DecodedYUVSize(cc::YUVIndex) const;
 
   // Image decoders that support YUV decoding must override this to
   // return the width of each row of the memory allocation.
-  virtual wtf_size_t DecodedYUVWidthBytes(cc::YUVIndex) const {
-    NOTREACHED();
-    return 0;
-  }
+  virtual wtf_size_t DecodedYUVWidthBytes(cc::YUVIndex) const;
 
   // Image decoders that support YUV decoding must override this to
   // return the SkYUVColorSpace that is used to convert from YUV
   // to RGB.
-  virtual SkYUVColorSpace GetYUVColorSpace() const {
-    NOTREACHED();
-    return SkYUVColorSpace::kIdentity_SkYUVColorSpace;
-  }
+  virtual SkYUVColorSpace GetYUVColorSpace() const;
 
   // Image decoders that support high bit depth YUV decoding can override this.
   //
   // Note: If an implementation advertises a bit depth > 8 it must support both
   // kA16_unorm_SkColorType and kA16_float_SkColorType ImagePlanes.
-  virtual uint8_t GetYUVBitDepth() const { return 8; }
+  virtual uint8_t GetYUVBitDepth() const;
 
   // Image decoders that support HDR metadata can override this.
-  virtual absl::optional<gfx::HDRMetadata> GetHDRMetadata() const {
-    return absl::nullopt;
-  }
+  virtual absl::optional<gfx::HDRMetadata> GetHDRMetadata() const;
 
   // Returns the information required to decide whether or not hardware
   // acceleration can be used to decode this image. Callers of this function
@@ -328,20 +314,7 @@ class PLATFORM_EXPORT ImageDecoder {
 
   // Returns whether the size is legal (i.e. not going to result in
   // overflow elsewhere).  If not, marks decoding as failed.
-  virtual bool SetSize(unsigned width, unsigned height) {
-    unsigned decoded_bytes_per_pixel = 4;
-    if (ImageIsHighBitDepth() &&
-        high_bit_depth_decoding_option_ == kHighBitDepthToHalfFloat) {
-      decoded_bytes_per_pixel = 8;
-    }
-    if (SizeCalculationMayOverflow(width, height, decoded_bytes_per_pixel)) {
-      return SetFailed();
-    }
-
-    size_ = gfx::Size(width, height);
-    size_available_ = true;
-    return true;
-  }
+  virtual bool SetSize(unsigned width, unsigned height);
 
   // Calls DecodeFrameCount() to get the current frame count (if possible),
   // without decoding the individual frames.  Resizes |frame_buffer_cache_| to
@@ -351,7 +324,7 @@ class PLATFORM_EXPORT ImageDecoder {
   // information on the return value, see the comment for DecodeFrameCount().
   wtf_size_t FrameCount();
 
-  virtual int RepetitionCount() const { return kAnimationNone; }
+  virtual int RepetitionCount() const;
 
   // Decodes as much of the requested frame as possible, and returns an
   // ImageDecoder-owned pointer.
@@ -369,15 +342,11 @@ class PLATFORM_EXPORT ImageDecoder {
   // Timestamp for displaying a frame. This method is only used by animated
   // images. Only formats with timestamps (like AVIF) should implement this.
   virtual absl::optional<base::TimeDelta> FrameTimestampAtIndex(
-      wtf_size_t) const {
-    return absl::nullopt;
-  }
+      wtf_size_t) const;
 
   // Duration for displaying a frame. This method is only used by animated
   // images.
-  virtual base::TimeDelta FrameDurationAtIndex(wtf_size_t) const {
-    return base::TimeDelta();
-  }
+  virtual base::TimeDelta FrameDurationAtIndex(wtf_size_t) const;
 
   // Number of bytes in the decoded frame. Returns 0 if the decoder doesn't
   // have this frame cached (either because it hasn't been decoded, or because
@@ -419,10 +388,7 @@ class PLATFORM_EXPORT ImageDecoder {
   // many callers want to return false after calling this), returns false
   // to enable easy tailcalling.  Subclasses may override this to also
   // clean up any local data.
-  virtual bool SetFailed() {
-    failed_ = true;
-    return false;
-  }
+  virtual bool SetFailed();
 
   bool Failed() const { return failed_; }
 
@@ -436,32 +402,14 @@ class PLATFORM_EXPORT ImageDecoder {
 
   // If the image has a cursor hot-spot, stores it in the argument
   // and returns true. Otherwise returns false.
-  virtual bool HotSpot(gfx::Point&) const { return false; }
+  virtual bool HotSpot(gfx::Point&) const;
 
-  virtual void SetMemoryAllocator(SkBitmap::Allocator* allocator) {
-    // This currently doesn't work for images with multiple frames.
-    // Some animated image formats require extra guarantees:
-    // 1. The memory is cheaply readable, which isn't true for GPU memory, and
-    // 2. The memory's lifetime will persist long enough to allow reading past
-    //   frames, which isn't true for discardable memory.
-    // Not all animated image formats share these requirements. Blocking
-    // all animated formats is overly aggressive. If a need arises for an
-    // external memory allocator for animated images, this should be changed.
-    if (frame_buffer_cache_.empty()) {
-      // Ensure that InitializeNewFrame is called, after parsing if
-      // necessary.
-      if (!FrameCount()) {
-        return;
-      }
-    }
-
-    frame_buffer_cache_[0].SetMemoryAllocator(allocator);
-  }
+  virtual void SetMemoryAllocator(SkBitmap::Allocator* allocator);
 
   bool CanDecodeToYUV() const { return allow_decode_to_yuv_; }
   // Should only be called if CanDecodeToYuv() returns true, in which case
   // the subclass of ImageDecoder must override this method.
-  virtual void DecodeToYUV() { NOTREACHED(); }
+  virtual void DecodeToYUV();
   void SetImagePlanes(std::unique_ptr<ImagePlanes> image_planes) {
     image_planes_ = std::move(image_planes);
   }
@@ -470,7 +418,7 @@ class PLATFORM_EXPORT ImageDecoder {
   }
 
   // Indicates if the data contains both an animation and still image.
-  virtual bool ImageHasBothStillAndAnimatedSubImages() const { return false; }
+  virtual bool ImageHasBothStillAndAnimatedSubImages() const;
 
  protected:
   ImageDecoder(AlphaOption alpha_option,
@@ -520,7 +468,7 @@ class PLATFORM_EXPORT ImageDecoder {
   // parsed. Alternatively, if the total frame count is available in the image
   // header, this method may return the total frame count without checking how
   // many frames are received.
-  virtual wtf_size_t DecodeFrameCount() { return 1; }
+  virtual wtf_size_t DecodeFrameCount();
 
   // Called to initialize the frame buffer with the given index, based on the
   // provided and previous frame's characteristics. Returns true on success.
@@ -598,12 +546,7 @@ class PLATFORM_EXPORT ImageDecoder {
   //
   // Before calling this, verify that frame |index| exists by checking that
   // |index| is smaller than |frame_buffer_cache_|.size().
-  virtual bool FrameStatusSufficientForSuccessors(wtf_size_t index) {
-    DCHECK(index < frame_buffer_cache_.size());
-    ImageFrame::Status frame_status = frame_buffer_cache_[index].GetStatus();
-    return frame_status == ImageFrame::kFramePartial ||
-           frame_status == ImageFrame::kFrameComplete;
-  }
+  virtual bool FrameStatusSufficientForSuccessors(wtf_size_t index);
 
   // Note that |allow_decode_to_yuv_| being true merely means that the
   // ImageDecoder supports decoding to YUV. Other layers higher in the
@@ -636,7 +579,7 @@ class PLATFORM_EXPORT ImageDecoder {
 
   // Called by InitFrameBuffer to determine if it can take the bitmap of the
   // previous frame. This condition is different for GIF and WEBP.
-  virtual bool CanReusePreviousFrameBuffer(wtf_size_t) const { return false; }
+  virtual bool CanReusePreviousFrameBuffer(wtf_size_t) const;
 
   gfx::Size size_;
   bool size_available_ = false;

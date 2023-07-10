@@ -49,7 +49,7 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
   ~WEBPImageDecoder() override;
 
   // ImageDecoder:
-  String FilenameExtension() const override { return "webp"; }
+  String FilenameExtension() const override;
   const AtomicString& MimeType() const override;
   void OnSetData(SegmentReader* data) override;
   cc::YUVSubsampling GetYUVSubsampling() const override;
@@ -59,7 +59,7 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
 
  private:
   // ImageDecoder:
-  void DecodeSize() override { UpdateDemuxer(); }
+  void DecodeSize() override;
   wtf_size_t DecodeFrameCount() override;
   void InitializeNewFrame(wtf_size_t) override;
   void Decode(wtf_size_t) override;
@@ -84,10 +84,7 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
   //
   // Before calling this, verify that frame |index| exists by checking that
   // |index| is smaller than |frame_buffer_cache_|.size().
-  bool FrameStatusSufficientForSuccessors(wtf_size_t index) override {
-    DCHECK(index < frame_buffer_cache_.size());
-    return frame_buffer_cache_[index].GetStatus() == ImageFrame::kFrameComplete;
-  }
+  bool FrameStatusSufficientForSuccessors(wtf_size_t index) override;
 
   bool IsDoingYuvDecode() const {
     if (image_planes_) {

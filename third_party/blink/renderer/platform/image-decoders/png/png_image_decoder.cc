@@ -75,6 +75,10 @@ PNGImageDecoder::PNGImageDecoder(
 
 PNGImageDecoder::~PNGImageDecoder() = default;
 
+String PNGImageDecoder::FilenameExtension() const {
+  return "png";
+}
+
 const AtomicString& PNGImageDecoder::MimeType() const {
   DEFINE_STATIC_LOCAL(const AtomicString, png_mime_type, ("image/png"));
   return png_mime_type;
@@ -88,6 +92,10 @@ bool PNGImageDecoder::SetFailed() {
 wtf_size_t PNGImageDecoder::DecodeFrameCount() {
   Parse(ParseQuery::kMetaData);
   return Failed() ? frame_buffer_cache_.size() : reader_->FrameCount();
+}
+
+void PNGImageDecoder::DecodeSize() {
+  Parse(ParseQuery::kSize);
 }
 
 void PNGImageDecoder::Decode(wtf_size_t index) {
