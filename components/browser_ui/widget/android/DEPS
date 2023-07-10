@@ -1,6 +1,7 @@
 include_rules = [
   "+components/embedder_support/android",
   "+content/public/test/android",
+  "+ui/accessibility",
   "+ui/android",
 ]
 

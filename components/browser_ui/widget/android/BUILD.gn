@@ -139,6 +139,7 @@ android_library("java") {
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]
@@ -415,6 +416,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }

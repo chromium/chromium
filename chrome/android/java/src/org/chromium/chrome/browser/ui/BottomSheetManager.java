@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -107,7 +106,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
                 mCallbackController.makeCancelable(this::addLayoutStateObserver));
 
         mSheetController.addObserver(this);
-        mSheetController.setAccessibilityUtil(ChromeAccessibilityUtil.get());
 
         // TODO(1092686): We should wait to instantiate all of these observers until the bottom
         //                sheet is actually used.

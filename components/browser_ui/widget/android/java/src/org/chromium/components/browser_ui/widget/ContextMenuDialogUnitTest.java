@@ -41,8 +41,8 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowPhoneWindow;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
-import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.ui.widget.UiWidgetFactory;
 
 /** Unit test for {@link ContextMenuDialog}. */
@@ -66,8 +66,6 @@ public class ContextMenuDialogUnitTest {
     UiWidgetFactory mMockUiWidgetFactory;
     @Spy
     PopupWindow mSpyPopupWindow;
-    @Mock
-    AccessibilityUtil mMockAccessibilityUtil;
 
     @Before
     public void setup() {
@@ -98,6 +96,7 @@ public class ContextMenuDialogUnitTest {
 
     @After
     public void tearDown() {
+        AccessibilityState.setIsScreenReaderEnabledForTesting(false);
         UiWidgetFactory.setInstance(null);
         mActivity.finish();
     }
@@ -188,7 +187,7 @@ public class ContextMenuDialogUnitTest {
 
     @Test
     public void testShowPopupWindow_NotFocusableInA11y() throws Exception {
-        Mockito.doReturn(true).when(mMockAccessibilityUtil).isTouchExplorationEnabled();
+        AccessibilityState.setIsScreenReaderEnabledForTesting(true);
 
         mDialog = createContextMenuDialog(/*isPopup=*/true, /*shouldRemoveScrim=*/false);
         mDialog.show();
@@ -256,8 +255,7 @@ public class ContextMenuDialogUnitTest {
     private ContextMenuDialog createContextMenuDialog(boolean isPopup, boolean shouldRemoveScrim) {
         return new ContextMenuDialog(mActivity, 0, ContextMenuDialog.NO_CUSTOM_MARGIN,
                 ContextMenuDialog.NO_CUSTOM_MARGIN, mRootView, mMenuContentView, isPopup,
-                shouldRemoveScrim, 0, 0, mSpyDragDispatchingDestinationView, new Rect(0, 0, 0, 0),
-                mMockAccessibilityUtil);
+                shouldRemoveScrim, 0, 0, mSpyDragDispatchingDestinationView, new Rect(0, 0, 0, 0));
     }
 
     private void requestLayoutForRootView() {

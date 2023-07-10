@@ -56,7 +56,6 @@ import org.chromium.ui.dragdrop.DragStateTracker;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
@@ -89,7 +88,7 @@ public class ContextMenuCoordinatorTest {
                 int bottomMarginPx, View layout, View contentView, boolean isPopup,
                 boolean shouldRemoveScrim, @Nullable Integer popupMargin,
                 @Nullable Integer desiredPopupContentWidth, @Nullable View touchEventDelegateView,
-                Rect rect, @Nullable AccessibilityUtil accessibilityUtil) {
+                Rect rect) {
             mShouldRemoveScrim = shouldRemoveScrim;
             mTouchEventDelegateView = touchEventDelegateView;
             mRect = rect;

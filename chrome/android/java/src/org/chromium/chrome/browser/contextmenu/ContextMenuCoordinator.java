@@ -24,7 +24,6 @@ import androidx.appcompat.app.AlertDialog;
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -318,10 +317,10 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             Rect rect) {
         // TODO(sinansahin): Refactor ContextMenuDialog as well.
         boolean shouldRemoveScrim = ContextMenuUtils.usePopupContextMenuForContext(activity);
-        final ContextMenuDialog dialog = new ContextMenuDialog(activity,
-                R.style.ThemeOverlay_BrowserUI_AlertDialog, topMarginPx, bottomMarginPx, layout,
-                menuView, isPopup, shouldRemoveScrim, popupMargin, desiredPopupContentWidth,
-                dragDispatchingTargetView, rect, ChromeAccessibilityUtil.get());
+        final ContextMenuDialog dialog =
+                new ContextMenuDialog(activity, R.style.ThemeOverlay_BrowserUI_AlertDialog,
+                        topMarginPx, bottomMarginPx, layout, menuView, isPopup, shouldRemoveScrim,
+                        popupMargin, desiredPopupContentWidth, dragDispatchingTargetView, rect);
         dialog.setContentView(layout);
 
         return dialog;
