@@ -20,9 +20,19 @@ class AutofillPopupController;
 }
 
 namespace autofill {
+
+// To notify `PopupAutocompleteCellView` of mouse cursor entering or leaving the
+// button.
+class DeleteButtonDelegate {
+ public:
+  virtual void OnMouseEnteredDeleteButton() = 0;
+  virtual void OnMouseExitedDeleteButton() = 0;
+};
+
 // `PopupAutocompleteCellView` represents a single, selectable cell. However, It
 // contains the autocomplete value AND a button to delete the entry.
-class PopupAutocompleteCellView : public autofill::PopupCellView {
+class PopupAutocompleteCellView : public autofill::PopupCellView,
+                                  public DeleteButtonDelegate {
  public:
   PopupAutocompleteCellView(base::WeakPtr<AutofillPopupController> controller,
                             int line_number);
@@ -41,6 +51,10 @@ class PopupAutocompleteCellView : public autofill::PopupCellView {
   views::ImageButton* GetDeleteButton();
 
  private:
+  // DeleteButtonDelegate
+  void OnMouseEnteredDeleteButton() override;
+  void OnMouseExitedDeleteButton() override;
+
   void CreateDeleteButton();
   void OnButtonPropertyChanged();
   void DeleteAutocomplete();
@@ -49,7 +63,6 @@ class PopupAutocompleteCellView : public autofill::PopupCellView {
   void HandleKeyPressEventFocusOnContent();
 
   raw_ptr<views::ImageButton> button_;
-  base::CallbackListSubscription button_state_change_subscription_;
   // The controller for the parent view.
   const base::WeakPtr<AutofillPopupController> controller_;
   // The line number in the popup.

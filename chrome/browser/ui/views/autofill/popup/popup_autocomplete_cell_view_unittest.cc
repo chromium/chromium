@@ -40,10 +40,6 @@ using testing::StrictMock;
 
 namespace autofill {
 
-namespace {
-constexpr gfx::Point kOutOfBounds{1000, 1000};
-}  // namespace
-
 class PopupAutocompleteCellViewTest : public ChromeViewsTestBase {
  public:
   // views::ViewsTestBase:
@@ -118,23 +114,16 @@ TEST_F(PopupAutocompleteCellViewTest, ShowsOrHideDeleteIconOnSelected) {
 
   // Show delete button if row is selected.
   ASSERT_FALSE(button->GetVisible());
-  generator().MoveMouseTo(kOutOfBounds);
   view().SetSelected(true);
   ASSERT_TRUE(button->GetVisible());
 
-  // Hide delete button if moving away from the row.
-  generator().MoveMouseTo(kOutOfBounds);
+  // Hide delete button if row is not selected.
   view().SetSelected(false);
   ASSERT_FALSE(button->GetVisible());
-
-  // Show delete button if row is not selected but button is hovered.
-  generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
-  view().SetSelected(false);
-  ASSERT_TRUE(button->GetVisible());
 }
 
 TEST_F(PopupAutocompleteCellViewTest,
-       UpdateSelectedAndRunCallbacksOnButtonPropertyChanged) {
+       UpdateSelectedAndRunCallbacksOnButtonHovered) {
   views::ImageButton* button = CreateRowAndGetDeleteButton();
   views::View* table = view().children()[0];
 
@@ -151,13 +140,11 @@ TEST_F(PopupAutocompleteCellViewTest,
   // Selected is false if hovering button.
   EXPECT_CALL(unselected_callback, Run);
   generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
-  button->SetState(views::Button::STATE_HOVERED);
   ASSERT_FALSE(view().GetSelected());
 
   // Selected is true if hovering label when button state changes
   EXPECT_CALL(selected_callback, Run);
   generator().MoveMouseTo(table->GetBoundsInScreen().CenterPoint());
-  button->SetState(views::Button::STATE_NORMAL);
   ASSERT_TRUE(view().GetSelected());
 }
 
@@ -221,7 +208,7 @@ TEST_F(PopupAutocompleteCellViewTest,
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
 }
 
-TEST_F(PopupAutocompleteCellViewTest, CursorLeftRightDown) {
+TEST_F(PopupAutocompleteCellViewTest, KeyPressLeftRightEnter) {
   CreateRowAndGetDeleteButton();
   view().SetSelected(true);
 
@@ -236,6 +223,23 @@ TEST_F(PopupAutocompleteCellViewTest, CursorLeftRightDown) {
   // Pressing enter when the button is focused deletes the entry.
   EXPECT_CALL(controller(), RemoveSuggestion(0));
   SimulateKeyPress(ui::VKEY_RETURN);
+}
+
+TEST_F(PopupAutocompleteCellViewTest,
+       CursorVerticalNavigationAlwaysHidesButton) {
+  views::ImageButton* button = CreateRowAndGetDeleteButton();
+  view().SetSelected(true);
+  // In test env we have to manually set the bounds when a view becomes visible.
+  button->parent()->SetBoundsRect(gfx::Rect(0, 0, 30, 30));
+  generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(button->GetVisible());
+
+  // Pressing down to indicate vertical navigation.
+  SimulateKeyPress(ui::VKEY_DOWN);
+  // Set selected as false to simulate another row was selected.
+  view().SetSelected(false);
+
+  ASSERT_FALSE(button->GetVisible());
 }
 
 TEST_F(PopupAutocompleteCellViewTest, AutocompleteDeleteButtonHasTooltip) {
