@@ -216,7 +216,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
 
     // Determine storage_key_quota differently depending on type.
     if (is_unlimited_) {
-      SetDesiredStorageKeyQuota(blink::mojom::QuotaStatusCode::kOk, kNoLimit);
+      SetDesiredStorageKeyQuota(kNoLimit);
       manager()->GetStorageCapacity(
           base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotCapacity,
                          weak_factory_.GetWeakPtr(), barrier));
@@ -262,8 +262,10 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
       }
     }
 
-    std::move(callback_).Run(blink::mojom::QuotaStatusCode::kOk, usage_, quota,
-                             quota_override_size.has_value(),
+    std::move(callback_).Run(usage_ >= 0
+                                 ? blink::mojom::QuotaStatusCode::kOk
+                                 : blink::mojom::QuotaStatusCode::kUnknown,
+                             usage_, quota, quota_override_size.has_value(),
                              std::move(usage_breakdown_));
     if (type_ == StorageType::kTemporary && !is_incognito_ && !is_unlimited_ &&
         !bucket_info_) {
@@ -293,7 +295,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     const int64_t quota =
         manager()->GetQuotaForStorageKey(storage_key_, type_, settings);
     if (quota != kNoLimit) {
-      SetDesiredStorageKeyQuota(blink::mojom::QuotaStatusCode::kOk, quota);
+      SetDesiredStorageKeyQuota(quota);
     }
 
     barrier_closure.Run();
@@ -331,8 +333,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     std::move(barrier_closure).Run();
   }
 
-  void SetDesiredStorageKeyQuota(blink::mojom::QuotaStatusCode status,
-                                 int64_t quota) {
+  void SetDesiredStorageKeyQuota(int64_t quota) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_GE(quota, 0);
 
