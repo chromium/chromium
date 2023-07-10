@@ -54,15 +54,6 @@ class CONTENT_EXPORT DocumentState
     is_overriding_user_agent_ = state;
   }
 
-  // True if we have to reset the scroll and scale state of the page
-  // after the provisional load has been committed.
-  bool must_reset_scroll_and_scale_state() const {
-    return must_reset_scroll_and_scale_state_;
-  }
-  void set_must_reset_scroll_and_scale_state(bool state) {
-    must_reset_scroll_and_scale_state_ = state;
-  }
-
   // This is a fake navigation request id, which we send to the browser process
   // together with metrics. Note that renderer does not actually issue a request
   // for navigation (browser does it instead), but still reports metrics for it.
@@ -78,7 +69,6 @@ class CONTENT_EXPORT DocumentState
   bool was_load_data_with_base_url_request_ = false;
   GURL data_url_;
   bool is_overriding_user_agent_ = false;
-  bool must_reset_scroll_and_scale_state_ = false;
   int request_id_ = -1;
   std::unique_ptr<NavigationState> navigation_state_;
 };
