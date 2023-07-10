@@ -3665,12 +3665,6 @@ const char kAImageReaderDescription[] =
     " This feature is only available for android P+ devices. Disabling it also "
     " disables SurfaceControl.";
 
-const char kAndroidForceAppLanguagePromptName[] =
-    "Force second run app language prompt";
-const char kAndroidForceAppLanguagePromptDescription[] =
-    "When enabled the app language prompt to change the UI language will"
-    "always be shown.";
-
 const char kAndroidSurfaceControlName[] = "Android SurfaceControl";
 const char kAndroidSurfaceControlDescription[] =
     " Enables SurfaceControl to manage the buffer queue for the "

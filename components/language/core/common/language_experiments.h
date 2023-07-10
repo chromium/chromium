@@ -9,17 +9,6 @@
 
 namespace language {
 
-// The feature that enables a second run prompt to select the app UI language on
-// Android.
-BASE_DECLARE_FEATURE(kAppLanguagePrompt);
-
-// When enabled does not show the AppLanguagePrompt to users whose base UI
-// language is their top ULP language.
-BASE_DECLARE_FEATURE(kAppLanguagePromptULP);
-
-// This feature forces the app UI prompt even if it has already been shown.
-BASE_DECLARE_FEATURE(kForceAppLanguagePrompt);
-
 // This feature uses the existing UI for the Full Page Translate bubble.
 BASE_DECLARE_FEATURE(kUseButtonTranslateBubbleUi);
 

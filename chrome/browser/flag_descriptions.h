@@ -2129,9 +2129,6 @@ extern const char kAddToHomescreenIPHDescription[];
 extern const char kAImageReaderName[];
 extern const char kAImageReaderDescription[];
 
-extern const char kAndroidForceAppLanguagePromptName[];
-extern const char kAndroidForceAppLanguagePromptDescription[];
-
 extern const char kAndroidSurfaceControlName[];
 extern const char kAndroidSurfaceControlDescription[];
 

@@ -160,11 +160,6 @@
     "expiry_milestone": 119
   },
   {
-    "name": "android-force-app-language-prompt",
-    "owners": [ "perrier", "chrome-language@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "android-improved-bookmarks",
     "owners": ["wylieb", "skym", "bttk"],
     "expiry_milestone": 120

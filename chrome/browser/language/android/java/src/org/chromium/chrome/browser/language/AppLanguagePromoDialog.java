@@ -23,12 +23,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
 import org.chromium.chrome.browser.language.settings.LanguagesManager;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.language.AndroidLanguageMetricsBridge;
-import org.chromium.components.language.GeoLanguageProviderBridge;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -443,11 +441,7 @@ public class AppLanguagePromoDialog {
             Collection<LanguageItem> uiLanguages, LanguageItem currentOverrideLanguage) {
         LinkedHashSet<String> topLanguageCodes = new LinkedHashSet<>();
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LANGUAGE_PROMPT_ULP)) {
-            topLanguageCodes.addAll(LanguageBridge.getULPFromPreference());
-        } else {
-            topLanguageCodes.addAll(GeoLanguageProviderBridge.getCurrentGeoLanguages());
-        }
+        topLanguageCodes.addAll(LanguageBridge.getULPFromPreference());
         // Add current Accept-Languages to bottom of top languages list.
         topLanguageCodes.addAll(TranslateBridge.getUserLanguageCodes());
 
@@ -607,22 +601,14 @@ public class AppLanguagePromoDialog {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static boolean shouldShowPrompt(boolean isOnline) {
-        // Skip feature and preference checks if forced on for testing.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_APP_LANGUAGE_PROMPT)) {
-            // Don't show if prompt has already been shown.
-            if (TranslateBridge.getAppLanguagePromptShown()) return false;
-            @TopULPMatchType
-            int hasULPMatch =
-                    LanguageBridge.isTopULPBaseLanguage(Locale.getDefault().toLanguageTag());
-            recordTopULPMatchStatus(hasULPMatch);
-            // Don't show if not enabled.
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LANGUAGE_PROMPT)) return false;
-            // Don't show if ULP match is enabled and the UI language doesn't match the top ULP
-            // language.
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LANGUAGE_PROMPT_ULP)
-                    && hasULPMatch != TopULPMatchType.NO) {
-                return false;
-            }
+        // Don't show if prompt has already been shown.
+        if (TranslateBridge.getAppLanguagePromptShown()) return false;
+        @TopULPMatchType
+        int hasULPMatch = LanguageBridge.isTopULPBaseLanguage(Locale.getDefault().toLanguageTag());
+        recordTopULPMatchStatus(hasULPMatch);
+        // Don't show if UI language doesn't match the top ULP language.
+        if (hasULPMatch != TopULPMatchType.NO) {
+            return false;
         }
 
         recordOnlineStatus(isOnline);

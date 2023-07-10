@@ -8387,13 +8387,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(messages::kMessagesForAndroidStackingAnimation)},
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-    {"android-force-app-language-prompt",
-     flag_descriptions::kAndroidForceAppLanguagePromptName,
-     flag_descriptions::kAndroidForceAppLanguagePromptDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(language::kForceAppLanguagePrompt)},
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
     {"quick-commands", flag_descriptions::kQuickCommandsName,
