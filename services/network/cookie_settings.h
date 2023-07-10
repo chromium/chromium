@@ -170,24 +170,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
 
   // An enum that represents the scope of cookies to which the user's
   // third-party-cookie-blocking setting applies, in a given context.
-  enum class ThirdPartyBlockingScope {
-    // Access to all cookies (partitioned or unpartitioned) is blocked in this
-    // context.
-    kUnpartitionedAndPartitioned,
-    // Access to unpartitioned cookies is blocked in this context, but access to
-    // partitioned cookies is allowed.
-    kUnpartitionedOnly,
-  };
+  using ThirdPartyBlockingScope = CookieSettingsBase::ThirdPartyBlockingScope;
 
-  class CookieSettingWithMetadata {
+  class CookieSettingWithMetadata : public CookieSettingWithMetadataBase {
    public:
     CookieSettingWithMetadata(
         ContentSetting cookie_setting,
-        absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope);
-
-    // Returns true iff the setting is "block" due to the user's
-    // third-party-cookie-blocking setting.
-    bool BlockedByThirdPartyCookieBlocking() const;
+        absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope)
+        : CookieSettingWithMetadataBase(cookie_setting,
+                                        third_party_blocking_scope) {}
 
     // Returns whether the given cookie should be allowed to be sent, according
     // to the user's settings. Assumes that the `cookie.access_result` has been
@@ -198,21 +189,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     // Computes the PrivacySetting that should be used in this context.
     net::NetworkDelegate::PrivacySetting PrivacySetting() const;
 
-    ContentSetting cookie_setting() const { return cookie_setting_; }
-
    private:
     // Returns true iff a Partitioned cookie could be allowed to be sent in this
     // context.
     bool IsPartitionedStateAllowed() const;
-
-    // The setting itself.
-    ContentSetting cookie_setting_;
-
-    // The scope of cookies blocked by third-party-cookie-blocking.  The scope
-    // must only be nullopt if `cookie_setting_` is not "allow", and if the
-    // reason for blocking cookies is the third-party cookie blocking setting
-    // (rather than a site-specific setting).
-    absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope_;
   };
 
   // Determines the scope of third-party-cookie-blocking, i.e. whether it
