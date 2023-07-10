@@ -1722,12 +1722,6 @@ crbug.com/280342 http/tests/media/progress-events-generated-correctly.html [ Fai
 # This test is flaky when FixedElementsDontOverscroll is enabled.
 crbug.com/585766 fast/table/frame-and-rules.html [ Failure Pass Timeout ]
 
-
-crbug.com/520736 [ Linux ] media/W3C/video/networkState/networkState_during_progress.html [ Failure Pass ]
-crbug.com/909095 [ Mac10.15 Release ] media/W3C/video/networkState/networkState_during_progress.html [ Failure Pass ]
-crbug.com/909095 [ Mac11 Release ] media/W3C/video/networkState/networkState_during_progress.html [ Failure Pass ]
-crbug.com/909095 [ Mac12 ] media/W3C/video/networkState/networkState_during_progress.html [ Failure Pass ]
-
 # Hiding video::-webkit-media-controls breaks --force-overlay-fullscreen-video.
 crbug.com/1093447 virtual/android/fullscreen/rendering/backdrop-video.html [ Failure ]
 
