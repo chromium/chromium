@@ -171,13 +171,10 @@ void CompositorDependenciesAndroid::DoLowEndBackgroundCleanup() {
 
   // Next, notify the GPU process to do background processing, which will
   // lose all renderer contexts.
-  content::GpuProcessHost::CallOnUI(
-      FROM_HERE, content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
-      base::BindOnce([](content::GpuProcessHost* host) {
-        if (host) {
-          host->gpu_service()->OnBackgroundCleanup();
-        }
-      }));
+  auto* host = GpuProcessHost::Get();
+  if (host) {
+    host->gpu_service()->OnBackgroundCleanup();
+  }
 }
 
 void CompositorDependenciesAndroid::OnCompositorVisible(

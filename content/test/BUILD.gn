@@ -1619,6 +1619,10 @@ test("content_browsertests") {
     sources += [ "../browser/network/address_map_linux_browsertest.cc" ]
   }
 
+  if (is_android) {
+    sources += [ "../browser/gpu/gpu_background_kill_android_browsertest.cc" ]
+  }
+
   if (enable_reporting) {
     sources += [
       "../browser/network/cross_origin_opener_policy_reporting_browsertest.cc",
