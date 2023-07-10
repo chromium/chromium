@@ -307,9 +307,12 @@ bool InitializeICUFromDataFile() {
   wcscpy_s(debug_icu_pf_filename, g_debug_icu_pf_filename);
   debug::Alias(&debug_icu_pf_filename);
 #endif            // BUILDFLAG(IS_WIN)
+  // Excluding Chrome OS from this CHECK due to b/289684640.
+#if !BUILDFLAG(IS_CHROMEOS)
   // https://crbug.com/445616
   // https://crbug.com/1449816
   CHECK(result);
+#endif
 
   return result;
 }
