@@ -117,10 +117,13 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
   static get observers() {
     return [
       `updateDriveDisabled_(prefs.gdata.disabled.*)`,
+      `updateBulkPinningPrefEnabled_(prefs.drivefs.bulk_pinning_enabled.*)`,
     ];
   }
 
   private driveDisabled_: boolean;
+  private bulkPinningPrefEnabled_: boolean;
+  private isBulkPinningEnabled_: boolean;
   private showOfficeSettings_: boolean;
   private focusConfig_: Map<string, string>;
   private oneDriveConnectionState_: string;
@@ -181,9 +184,19 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
     this.driveDisabled_ = disabled;
   }
 
-  private googleDriveSignedInLabel_(): string {
-    return this.driveDisabled_ ? this.i18n('googleDriveDisabledLabel') :
-                                 this.i18n('googleDriveSignedInAs');
+  private updateBulkPinningPrefEnabled_(): void {
+    const enabled = this.getPref('drivefs.bulk_pinning_enabled').value;
+    this.bulkPinningPrefEnabled_ = enabled;
+  }
+
+  private googleDriveSublabel_(): string {
+    if (this.driveDisabled_) {
+      return this.i18n('googleDriveNotSignedInSublabel');
+    }
+
+    return (this.isBulkPinningEnabled_ && this.bulkPinningPrefEnabled_) ?
+        this.i18n('googleDriveFileSyncOnSublabel') :
+        this.i18n('googleDriveSignedInAs');
   }
 
   private async updateOneDriveEmail_() {

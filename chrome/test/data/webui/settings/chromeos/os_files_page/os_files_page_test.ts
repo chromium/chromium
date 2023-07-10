@@ -37,6 +37,11 @@ suite('<os-settings-files-page>', () => {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
       },
+      {
+        key: 'drivefs.bulk_pinning_enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
       // The OneDrive preferences that are required when navigating to the
       // officeFiles page route.
       {
@@ -229,6 +234,59 @@ suite('<os-settings-files-page>', () => {
       officeRow.click();
       flush();
       assertEquals(Router.getInstance().currentRoute, routes.OFFICE);
+    });
+  });
+
+  suite('with isBulkPinningEnabled_ set to true', () => {
+    let googleDriveRow: CrLinkRowElement;
+
+    setup(async () => {
+      await resetFilesPageWithLoadTimeData({
+        enableDriveFsBulkPinning: true,
+      });
+
+      googleDriveRow = filesPage.shadowRoot!.querySelector<CrLinkRowElement>(
+          '#GoogleDriveLink')!;
+      assert(googleDriveRow);
+    });
+
+    test('with gdata.disabled set to true, text shows appropriately', () => {
+      filesPage.setPrefValue('gdata.disabled', true);
+      flush();
+
+      assertEquals('Not signed in', googleDriveRow.subLabel);
+    });
+
+    test('with gdata.disabled set to false, but file sync disabled', () => {
+      filesPage.setPrefValue('drivefs.bulk_pinning_enabled', false);
+      flush();
+
+      assertTrue(googleDriveRow.subLabel.startsWith('Signed in as'));
+    });
+
+    test('with gdata.disabled set to false, and file sync enabled', () => {
+      filesPage.setPrefValue('drivefs.bulk_pinning_enabled', true);
+      flush();
+
+      assertEquals('File sync on', googleDriveRow.subLabel);
+    });
+
+    test('cycling through the prefs updates the sublabel texts', () => {
+      filesPage.setPrefValue('gdata.disabled', true);
+      filesPage.setPrefValue('drivefs.bulk_pinning_enabled', false);
+      flush();
+
+      assertEquals('Not signed in', googleDriveRow.subLabel);
+
+      filesPage.setPrefValue('gdata.disabled', false);
+      flush();
+
+      assertTrue(googleDriveRow.subLabel.startsWith('Signed in as'));
+
+      filesPage.setPrefValue('drivefs.bulk_pinning_enabled', true);
+      flush();
+
+      assertEquals('File sync on', googleDriveRow.subLabel);
     });
   });
 });

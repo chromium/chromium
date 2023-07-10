@@ -118,12 +118,14 @@ suite('<settings-google-drive-subpage>', function() {
     page.setPrefValue('gdata.disabled', true);
     flush();
     assertEquals(
-        connectDisconnectButton!.textContent!.trim(), 'Connect account');
+        'Connect account', connectDisconnectButton!.textContent!.trim());
 
-    // Update the preference and ensure the text has the value "Disconnect".
+    // Update the preference and ensure the text has the value "Remove Drive
+    // access".
     page.setPrefValue('gdata.disabled', false);
     flush();
-    assertEquals(connectDisconnectButton!.textContent!.trim(), 'Disconnect');
+    assertEquals(
+        'Remove Drive access', connectDisconnectButton!.textContent!.trim());
   });
 
   test('confirming drive disconnect updates pref', async function() {

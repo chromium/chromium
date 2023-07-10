@@ -279,8 +279,9 @@ export class SettingsGoogleDriveSubpageElement extends
    * depending on the current state.
    */
   private getConnectDisconnectButtonLabel_(): string {
-    return this.driveDisabled_ ? this.i18n('googleDriveConnectLabel') :
-                                 this.i18n('googleDriveDisconnectLabel');
+    return this.driveDisabled_ ?
+        this.i18n('googleDriveConnectLabel') :
+        this.i18n('googleDriveRemoveDriveAccessButtonText');
   }
 
   /**
