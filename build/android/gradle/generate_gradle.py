@@ -14,6 +14,7 @@ import logging
 import os
 import pathlib
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -112,12 +113,10 @@ def _RunGnGen(output_dir, args=None):
   subprocess.check_call(cmd)
 
 
-def _RunNinja(output_dir, args):
-  # Don't use version within _DEPOT_TOOLS_PATH, since most devs don't use
-  # that one when building.
-  cmd = ['autoninja', '-C', output_dir]
+def _BuildTargets(output_dir, args):
+  cmd = gn_helpers.CreateBuildCommand(output_dir)
   cmd.extend(args)
-  logging.info('Running: %r', cmd)
+  logging.info('Running: %s', shlex.join(cmd))
   subprocess.check_call(cmd)
 
 
@@ -829,7 +828,7 @@ def main():
       _RunGnGen(output_dir)
     else:
       # Faster than running "gn gen" in the no-op case.
-      _RunNinja(output_dir, ['build.ninja'])
+      _BuildTargets(output_dir, ['build.ninja'])
     # Query ninja for all __build_config_crbug_908819 targets.
     targets = _QueryForAllGnTargets(output_dir)
   else:
@@ -923,7 +922,7 @@ def main():
         p for p in _RebasePath(generated_inputs, output_dir)
         if not p.startswith(os.pardir)
     ]
-    _RunNinja(output_dir, targets)
+    _BuildTargets(output_dir, targets)
 
   print('Generated projects for Android Studio.')
   print('** Building using Android Studio / Gradle does not work.')

@@ -28,12 +28,16 @@ import collections
 import json
 import logging
 import os
+import shlex
 import shutil
 import subprocess
 import sys
 
 _SRC_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '..',
                                           '..'))
+sys.path.append(os.path.join(_SRC_ROOT, 'build'))
+import gn_helpers
+
 sys.path.append(os.path.join(_SRC_ROOT, 'build', 'android'))
 from pylib import constants
 
@@ -62,25 +66,9 @@ def _resolve_ninja():
   return 'ninja'
 
 
-def _resolve_autoninja():
-  # Prefer the version on PATH, but fallback to known version if PATH doesn't
-  # have one (e.g. on bots).
-  if shutil.which('autoninja') is None:
-    return os.path.join(_SRC_ROOT, 'third_party', 'depot_tools', 'autoninja')
-  return 'autoninja'
-
-
-def _run_ninja(output_dir, args, j_value=None, quiet=False):
-  if j_value:
-    cmd = [_resolve_ninja(), '-j', j_value]
-  else:
-    cmd = [_resolve_autoninja()]
-  cmd += [
-      '-C',
-      output_dir,
-  ]
-  cmd.extend(args)
-  logging.info('Running: %r', cmd)
+def _compile(output_dir, args, quiet=False):
+  cmd = gn_helpers.CreateBuildCommand(output_dir) + args
+  logging.info('Running: %s', shlex.join(cmd))
   if quiet:
     subprocess.run(cmd, check=True, capture_output=True)
   else:
@@ -231,7 +219,6 @@ def main():
                       '--query deps_info.unprocessed_jar_path to show a list '
                       'of all targets that have a non-empty deps_info dict and '
                       'non-empty "unprocessed_jar_path" value in that dict.')
-  parser.add_argument('-j', help='Use -j with ninja instead of autoninja.')
   parser.add_argument('-v', '--verbose', default=0, action='count')
   parser.add_argument('-q', '--quiet', default=0, action='count')
   args = parser.parse_args()
@@ -253,9 +240,8 @@ def main():
 
   if args.build:
     logging.warning('Building %d .build_config.json files...', len(entries))
-    _run_ninja(output_dir, [e.ninja_build_config_target for e in entries],
-               j_value=args.j,
-               quiet=args.quiet)
+    _compile(output_dir, [e.ninja_build_config_target for e in entries],
+             quiet=args.quiet)
 
   if args.type:
     entries = [e for e in entries if e.get_type() in args.type]

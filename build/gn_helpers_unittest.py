@@ -3,10 +3,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import mock
+import pathlib
+import shutil
 import sys
+import tempfile
 import textwrap
 import unittest
+from unittest import mock
 
 import gn_helpers
 
@@ -310,6 +313,30 @@ class UnitTest(unittest.TestCase):
       parser = gn_helpers.GNValueParser(
           textwrap.dedent('import("some/relative/args/file.gni")'))
       parser.ReplaceImports()
+
+  def test_CreateBuildCommand(self):
+    with tempfile.TemporaryDirectory() as temp_dir:
+      suffix = '.bat' if sys.platform.startswith('win32') else ''
+      with self.assertRaisesRegex(Exception, 'Found neither'):
+        gn_helpers.CreateBuildCommand(temp_dir)
+
+      siso_deps = pathlib.Path(temp_dir) / '.siso_deps'
+      siso_deps.touch()
+      self.assertEqual(f'autosiso{suffix}',
+                       gn_helpers.CreateBuildCommand(temp_dir)[0])
+
+      ninja_deps = pathlib.Path(temp_dir) / '.ninja_deps'
+      ninja_deps.touch()
+
+      with self.assertRaisesRegex(Exception, 'Found both'):
+        gn_helpers.CreateBuildCommand(temp_dir)
+
+      siso_deps.unlink()
+      self.assertEqual(f'autoninja{suffix}',
+                       gn_helpers.CreateBuildCommand(temp_dir)[0])
+
+      with mock.patch('shutil.which', lambda x: None):
+        self.assertIn('depot_tools', gn_helpers.CreateBuildCommand(temp_dir)[0])
 
 
 if __name__ == '__main__':

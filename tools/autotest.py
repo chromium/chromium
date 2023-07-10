@@ -33,6 +33,7 @@ import locale
 import os
 import json
 import re
+import shlex
 import subprocess
 import sys
 
@@ -42,6 +43,9 @@ from pathlib import Path
 USE_PYTHON_3 = f'This script will only run under python3.'
 
 SRC_DIR = Path(__file__).parent.parent.resolve()
+sys.path.append(str(SRC_DIR / 'build'))
+import gn_helpers
+
 sys.path.append(str(SRC_DIR / 'build' / 'android'))
 from pylib import constants
 
@@ -131,18 +135,10 @@ def RunCommand(cmd, **kwargs):
     raise CommandError(e.cmd, e.returncode, e.output) from None
 
 
-def BuildTestTargets(out_dir, targets, dry_run, use_siso):
+def BuildTestTargets(out_dir, targets, dry_run):
   """Builds the specified targets with ninja"""
-  # Use autoninja from PATH to match version used for manual builds.
-  if use_siso:
-    ninja_path = 'autosiso'
-  else:
-    ninja_path = 'autoninja'
-
-  if sys.platform.startswith('win32'):
-    ninja_path += '.bat'
-  cmd = [ninja_path, '-C', out_dir] + targets
-  print('Building: ' + ' '.join(cmd))
+  cmd = gn_helpers.CreateBuildCommand(out_dir) + targets
+  print('Building: ' + shlex.join(cmd))
   if (dry_run):
     return True
   try:
@@ -410,7 +406,7 @@ def RunTestTargets(out_dir, targets, gtest_filter, extra_args, dry_run,
       extra_args = extra_args + ['--fast-local-dev']
 
     cmd = [path, f'--gtest_filter={gtest_filter}'] + extra_args
-    print('Running test: ' + ' '.join(cmd))
+    print('Running test: ' + shlex.join(cmd))
     if not dry_run:
       StreamCommandOrExit(cmd)
 
@@ -476,10 +472,6 @@ def main():
   parser.add_argument('--no-fast-local-dev',
                       action='store_true',
                       help='Do not add --fast-local-dev for Android tests.')
-  parser.add_argument('--siso',
-                      '-s',
-                      action='store_true',
-                      help='Use siso to build instead of ninja.')
   parser.add_argument('files',
                       metavar='FILE_NAME',
                       nargs="+",
@@ -510,7 +502,7 @@ def main():
     ExitWithMessage('Failed to derive a gtest filter')
 
   assert targets
-  build_ok = BuildTestTargets(out_dir, targets, args.dry_run, args.siso)
+  build_ok = BuildTestTargets(out_dir, targets, args.dry_run)
 
   # If we used the target cache, it's possible we chose the wrong target because
   # a gn file was changed. The build step above will check for gn modifications
@@ -524,7 +516,7 @@ def main():
       # Note that this can happen, for example, if you rename a test target.
       print('gn config was changed, trying to build again', file=sys.stderr)
       targets = new_targets
-      build_ok = BuildTestTargets(out_dir, targets, args.dry_run, args.siso)
+      build_ok = BuildTestTargets(out_dir, targets, args.dry_run)
 
   if not build_ok: sys.exit(1)
 
