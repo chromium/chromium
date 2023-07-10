@@ -19,6 +19,7 @@
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/test/history_service_test_util.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/content/browser/test_page_content_annotator.h"
 #include "components/optimization_guide/core/execution_status.h"
@@ -326,6 +327,17 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     service->Annotate(visit);
   }
 
+  void WaitForHistoryServiceToFinish() {
+    base::RunLoop().RunUntilIdle();
+    history::HistoryService* history_service =
+        HistoryServiceFactory::GetForProfile(
+            browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
+    if (!history_service) {
+      return;
+    }
+    history::BlockUntilHistoryProcessesPendingRequests(history_service);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   bool load_model_on_startup_ = true;
@@ -528,16 +540,8 @@ class PageContentAnnotationsServiceRemoteMetadataBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(1463015): Fails on macOS 12
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_StoresAllTheThingsFromRemoteService \
-  DISABLED_StoresAllTheThingsFromRemoteService
-#else
-#define MAYBE_StoresAllTheThingsFromRemoteService \
-  StoresAllTheThingsFromRemoteService
-#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
-                       MAYBE_StoresAllTheThingsFromRemoteService) {
+                       StoresAllTheThingsFromRemoteService) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
@@ -559,6 +563,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
       ->AddHintForTesting(url, proto::PAGE_ENTITIES, metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  WaitForHistoryServiceToFinish();
 
   absl::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
@@ -573,16 +578,9 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
           history::VisitContentModelAnnotations::Category("category1", 85)));
   EXPECT_EQ(got_content_annotations->alternative_title, "alternative title");
 }
-// TODO(1463015): Fails on macOS 12
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_StoresPageEntitiesAndCategoriesFromRemoteService \
-  DISABLED_StoresPageEntitiesAndCategoriesFromRemoteService
-#else
-#define MAYBE_StoresPageEntitiesAndCategoriesFromRemoteService \
-  StoresPageEntitiesAndCategoriesFromRemoteService
-#endif
+
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
-                       MAYBE_StoresPageEntitiesAndCategoriesFromRemoteService) {
+                       StoresPageEntitiesAndCategoriesFromRemoteService) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
@@ -603,6 +601,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
       ->AddHintForTesting(url, proto::PAGE_ENTITIES, metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  WaitForHistoryServiceToFinish();
 
   absl::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
@@ -617,16 +616,8 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
           history::VisitContentModelAnnotations::Category("category1", 85)));
 }
 
-// TODO(1463015): Fails on macOS 12
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_StoresAlternateTitleFromRemoteService \
-  DISABLED_StoresAlternateTitleFromRemoteService
-#else
-#define MAYBE_StoresAlternateTitleFromRemoteService \
-  StoresAlternateTitleFromRemoteService
-#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
-                       MAYBE_StoresAlternateTitleFromRemoteService) {
+                       StoresAlternateTitleFromRemoteService) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
@@ -639,6 +630,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
       ->AddHintForTesting(url, proto::PAGE_ENTITIES, metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  WaitForHistoryServiceToFinish();
 
   absl::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
@@ -731,16 +723,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(got_content_annotations.has_url_keyed_image);
 }
 
-// TODO(1463015): Fails on macOS 12
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_MetadataWithNonEmptyUrlStored \
-  DISABLED_MetadataWithNonEmptyUrlStored
-#else
-#define MAYBE_MetadataWithNonEmptyUrlStored MetadataWithNonEmptyUrlStored
-#endif
 IN_PROC_BROWSER_TEST_F(
     PageContentAnnotationsServiceSalientImageMetadataBrowserTest,
-    MAYBE_MetadataWithNonEmptyUrlStored) {
+    MetadataWithNonEmptyUrlStored) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
@@ -755,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(
       ->AddHintForTesting(url, proto::SALIENT_IMAGE, metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  base::RunLoop().RunUntilIdle();
+  WaitForHistoryServiceToFinish();
 
   absl::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
