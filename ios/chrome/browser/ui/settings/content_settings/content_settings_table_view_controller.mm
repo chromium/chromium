@@ -482,6 +482,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)settingsWillBeDismissed {
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(_browser);
   [_disablePopupsSetting stop];
   _disablePopupsSetting.observer = nil;
   _disablePopupsSetting = nil;
