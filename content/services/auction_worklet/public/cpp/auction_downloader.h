@@ -77,7 +77,6 @@ class CONTENT_EXPORT AuctionDownloader {
                   std::vector<std::string>* removed_headers);
   void OnResponseStarted(const GURL& final_url,
                          const network::mojom::URLResponseHead& response_head);
-  std::string GetRequestId();
   void TraceResult(bool failure,
                    base::TimeTicks completion_time,
                    int64_t encoded_data_length,
@@ -85,8 +84,8 @@ class CONTENT_EXPORT AuctionDownloader {
 
   const GURL source_url_;
   const MimeType mime_type_;
-  // Filled in lazily if tracing is actually used.
-  absl::optional<base::UnguessableToken> request_id_;
+  // A UnguessableToken string to be used in devtools.
+  std::string request_id_;
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   AuctionDownloaderCallback auction_downloader_callback_;

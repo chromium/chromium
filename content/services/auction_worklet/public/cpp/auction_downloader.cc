@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
+#include "base/unguessable_token.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -158,18 +159,16 @@ AuctionDownloader::AuctionDownloader(
     AuctionDownloaderCallback auction_downloader_callback)
     : source_url_(source_url),
       mime_type_(mime_type),
+      request_id_(base::UnguessableToken::Create().ToString()),
       auction_downloader_callback_(std::move(auction_downloader_callback)) {
   DCHECK(auction_downloader_callback_);
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = source_url;
   resource_request->redirect_mode = network::mojom::RedirectMode::kError;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  // TODO(morlovich): We may need to set devtools_request_id here, and pass it
-  // along in AuctionUrlLoaderFactoryProxy when supporting the devtools network
-  // tab. At that point GetRequestId() should probably get a cheaper
-  // implementation.
   resource_request->enable_load_timing =
       *TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("devtools.timeline");
+  resource_request->devtools_request_id = request_id_;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       MimeTypeToString(mime_type_));
 
@@ -180,7 +179,7 @@ AuctionDownloader::AuctionDownloader(
       "devtools.timeline", "ResourceSendRequest", TRACE_EVENT_SCOPE_THREAD,
       base::TimeTicks::Now(), "data", [&](perfetto::TracedValue dest) {
         auto dict = std::move(dest).WriteDictionary();
-        dict.Add("requestId", GetRequestId());
+        dict.Add("requestId", request_id_);
         dict.Add("url", source_url.spec());
       });
 
@@ -320,7 +319,7 @@ void AuctionDownloader::OnResponseStarted(
       "devtools.timeline", "ResourceReceiveResponse", TRACE_EVENT_SCOPE_THREAD,
       "data", [&](perfetto::TracedValue dest) {
         perfetto::TracedDictionary dict = std::move(dest).WriteDictionary();
-        dict.Add("requestId", GetRequestId());
+        dict.Add("requestId", request_id_);
         if (response_head.headers) {
           dict.Add("statusCode", response_head.headers->response_code());
         }
@@ -362,13 +361,6 @@ void AuctionDownloader::OnResponseStarted(
       });
 }
 
-std::string AuctionDownloader::GetRequestId() {
-  if (!request_id_.has_value()) {
-    request_id_ = base::UnguessableToken::Create();
-  }
-  return request_id_->ToString();
-}
-
 void AuctionDownloader::TraceResult(bool failure,
                                     base::TimeTicks completion_time,
                                     int64_t encoded_data_length,
@@ -377,7 +369,7 @@ void AuctionDownloader::TraceResult(bool failure,
       "devtools.timeline", "ResourceFinish", TRACE_EVENT_SCOPE_THREAD, "data",
       [&](perfetto::TracedValue dest) {
         perfetto::TracedDictionary dict = std::move(dest).WriteDictionary();
-        dict.Add("requestId", GetRequestId());
+        dict.Add("requestId", request_id_);
         dict.Add("didFail", failure);
         dict.Add("encodedDataLength", encoded_data_length);
         dict.Add("decodedBodyLength", decoded_body_length);

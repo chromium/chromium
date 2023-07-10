@@ -42,6 +42,11 @@ class AuctionDownloaderTest
   std::unique_ptr<std::string> RunRequest() {
     DCHECK(!run_loop_);
 
+    url_loader_factory_.SetInterceptor(
+        base::BindRepeating([](const network::ResourceRequest& request) {
+          EXPECT_TRUE(request.devtools_request_id);
+        }));
+
     AuctionDownloader downloader(
         &url_loader_factory_, url_, download_mode(), mime_type_,
         base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
