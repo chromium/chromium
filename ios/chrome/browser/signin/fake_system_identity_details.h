@@ -7,16 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
-#include <map>
 #include <string>
 
+#include "base/containers/flat_map.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "ios/chrome/browser/signin/capabilities_types.h"
 
 @class FakeRefreshAccessTokenError;
 @protocol SystemIdentity;
 
-using FakeSystemIdentityCapabilitiesMap =
-    std::map<std::string, SystemIdentityCapabilityResult>;
+using FakeSystemIdentityCapabilitiesMap = base::flat_map<std::string, bool>;
 
 // Helper object used by FakeSystemIdentityManager to attach state to
 // a SystemIdentity object via an association.
@@ -26,7 +26,7 @@ using FakeSystemIdentityCapabilitiesMap =
 @property(nonatomic, readonly, strong) id<SystemIdentity> identity;
 
 // The capabilities for the associated SystemIdentity.
-@property(nonatomic, assign)
+@property(nonatomic, readonly)
     const FakeSystemIdentityCapabilitiesMap& capabilities;
 
 // The avatar cached for the associated SystemIdentity. May be nil.
@@ -36,6 +36,10 @@ using FakeSystemIdentityCapabilitiesMap =
 // will be considered as failing, and the `error` value will be passed
 // to the observers.
 @property(nonatomic, strong) FakeRefreshAccessTokenError* error;
+
+// Allows callers to modify internal capability state mappings for tests.
+@property(nonatomic, readonly)
+    AccountCapabilitiesTestMutator* capabilitiesMutator;
 
 // Designated initializer.
 - (instancetype)initWithIdentity:(id<SystemIdentity>)identity

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
-#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/signin/capabilities_types.h"
@@ -41,14 +40,6 @@ void VerifySigninPromoSufficientlyVisible() {
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForUIElementTimeout, condition),
              @"Sign-in promo not visible");
-}
-
-ios::CapabilitiesDict* GetCapabilitiesDictionary(
-    SystemIdentityCapabilityResult result) {
-  return @{
-    @(kCanOfferExtendedChromeSyncPromosCapabilityName) :
-        @(static_cast<int>(result)),
-  };
 }
 
 }  // namespace
@@ -93,9 +84,8 @@ ios::CapabilitiesDict* GetCapabilitiesDictionary(
 - (void)DISABLED_testStartupSigninPromoUserSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setCapabilities:GetCapabilitiesDictionary(
-                                      SystemIdentityCapabilityResult::kTrue)
-                      forIdentity:fakeIdentity];
+  [SigninEarlGrey setCanOfferExtendedChromeSyncPromos:YES
+                                          forIdentity:fakeIdentity];
 
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -110,9 +100,9 @@ ios::CapabilitiesDict* GetCapabilitiesDictionary(
 - (void)testStartupSigninPromoNotShownForMinor {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setCapabilities:GetCapabilitiesDictionary(
-                                      SystemIdentityCapabilityResult::kFalse)
-                      forIdentity:fakeIdentity];
+  [SigninEarlGrey setCanOfferExtendedChromeSyncPromos:NO
+                                          forIdentity:fakeIdentity];
+
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
 
@@ -125,9 +115,9 @@ ios::CapabilitiesDict* GetCapabilitiesDictionary(
 - (void)DISABLED_testStartupSigninPromoShownForNoneMinor {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setCapabilities:GetCapabilitiesDictionary(
-                                      SystemIdentityCapabilityResult::kTrue)
-                      forIdentity:fakeIdentity];
+  [SigninEarlGrey setCanOfferExtendedChromeSyncPromos:YES
+                                          forIdentity:fakeIdentity];
+
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
   VerifySigninPromoSufficientlyVisible();
@@ -143,9 +133,9 @@ ios::CapabilitiesDict* GetCapabilitiesDictionary(
                                 error:nil];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setCapabilities:GetCapabilitiesDictionary(
-                                      SystemIdentityCapabilityResult::kTrue)
-                      forIdentity:fakeIdentity];
+  [SigninEarlGrey setCanOfferExtendedChromeSyncPromos:YES
+                                          forIdentity:fakeIdentity];
+
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   [ChromeEarlGreyUI waitForAppToIdle];
 

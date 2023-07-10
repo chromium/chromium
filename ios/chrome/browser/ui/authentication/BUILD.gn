@@ -191,6 +191,7 @@ source_set("eg_app_support+eg2") {
     "//components/bookmarks/browser",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",

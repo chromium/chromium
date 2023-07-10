@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -37,12 +36,7 @@
 - (void)testSupervisedUserSignin {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  ios::CapabilitiesDict* capabilities = @{
-    @(kIsSubjectToParentalControlsCapabilityName) :
-        @(static_cast<int>(SystemIdentityCapabilityResult::kTrue))
-  };
-  [SigninEarlGrey setCapabilities:capabilities forIdentity:fakeIdentity];
+  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];

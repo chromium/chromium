@@ -7,7 +7,6 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
-#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/ntp/features.h"
@@ -1423,12 +1422,7 @@ id<GREYMatcher> notPracticallyVisible() {
   // through the fake identity service.
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:identity];
-
-  ios::CapabilitiesDict* capabilities = @{
-    @(kIsSubjectToParentalControlsCapabilityName) :
-        @(static_cast<int>(SystemIdentityCapabilityResult::kTrue))
-  };
-  [SigninEarlGrey setCapabilities:capabilities forIdentity:identity];
+  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:identity];
 
   [SigninEarlGreyUI signinWithFakeIdentity:identity];
 

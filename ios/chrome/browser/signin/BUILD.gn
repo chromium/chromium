@@ -227,6 +227,8 @@ source_set("fake_system_identity_manager") {
     ":system_identity",
     ":system_identity_manager",
     ":test_constants",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
     "//google_apis",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
   ]

@@ -9,7 +9,6 @@
 #import "base/time/time.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/policy/policy_constants.h"
-#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
@@ -99,12 +98,7 @@ void SetParentalControlsCapabilityForIdentity(FakeSystemIdentity* identity) {
   // The identity must exist in the test storage to be able to set capabilities
   // through the fake identity service.
   [SigninEarlGrey addFakeIdentity:identity];
-
-  ios::CapabilitiesDict* capabilities = @{
-    @(kIsSubjectToParentalControlsCapabilityName) :
-        @(static_cast<int>(SystemIdentityCapabilityResult::kTrue))
-  };
-  [SigninEarlGrey setCapabilities:capabilities forIdentity:identity];
+  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:identity];
 }
 // Closes the sign-in import data dialog and choose either to combine the data
 // or keep the data separate.

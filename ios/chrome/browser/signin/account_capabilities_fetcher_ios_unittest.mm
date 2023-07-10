@@ -8,7 +8,6 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
-#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -63,12 +62,6 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
 
-    std::map<std::string, SystemIdentityCapabilityResult> capabilities;
-    if (capability_fetched.has_value()) {
-      capabilities.insert({kCanHaveEmailAddressDisplayedCapabilityName,
-                           capability_fetched.value()});
-    }
-
     CoreAccountInfo account_info =
         identity_test_environment_.MakeAccountAvailable(kTestEmail);
 
@@ -78,7 +71,16 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
                    gaiaID:base::SysUTF8ToNSString(account_info.gaia)
                      name:@"Jane Doe"];
     system_identity_manager->AddIdentity(identity);
-    system_identity_manager->SetCapabilities(identity, capabilities);
+
+    if (capability_fetched.has_value() &&
+        capability_fetched.value() !=
+            SystemIdentityCapabilityResult::kUnknown) {
+      AccountCapabilitiesTestMutator* mutator =
+          system_identity_manager->GetCapabilitiesMutator(identity);
+      bool has_capability =
+          capability_fetched.value() == SystemIdentityCapabilityResult::kTrue;
+      mutator->set_can_have_email_address_displayed(has_capability);
+    }
 
     // Check that the capabilities are correctly converted.
     base::RunLoop run_loop;

@@ -44,6 +44,7 @@ class AccountCapabilities {
 
 #if BUILDFLAG(IS_IOS)
   AccountCapabilities(base::flat_map<std::string, bool> capabilities);
+  const base::flat_map<std::string, bool>& ConvertToAccountCapabilitiesIOS();
 #endif
   // Keep sorted alphabetically.
 

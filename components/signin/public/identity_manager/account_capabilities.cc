@@ -170,4 +170,9 @@ AccountCapabilities::ConvertToJavaAccountCapabilities(JNIEnv* env) const {
 AccountCapabilities::AccountCapabilities(
     base::flat_map<std::string, bool> capabilities)
     : capabilities_map_(std::move(capabilities)) {}
+
+const base::flat_map<std::string, bool>&
+AccountCapabilities::ConvertToAccountCapabilitiesIOS() {
+  return capabilities_map_;
+}
 #endif

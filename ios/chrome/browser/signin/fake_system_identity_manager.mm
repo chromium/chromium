@@ -103,14 +103,12 @@ void FakeSystemIdentityManager::ForgetIdentityFromOtherApplication(
   ForgetIdentityAsync(identity, base::DoNothing(), /*notify_user*/ true);
 }
 
-void FakeSystemIdentityManager::SetCapabilities(
-    id<SystemIdentity> identity,
-    const std::map<std::string, CapabilityResult>& capabilities) {
+AccountCapabilitiesTestMutator*
+FakeSystemIdentityManager::GetCapabilitiesMutator(id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK([storage_ containsIdentity:identity]);
   FakeSystemIdentityDetails* details = [storage_ detailsForIdentity:identity];
-  details.capabilities = capabilities;
-  FireIdentityUpdatedNotification(identity);
+  return details.capabilitiesMutator;
 }
 
 void FakeSystemIdentityManager::FireSystemIdentityReloaded() {
@@ -387,13 +385,14 @@ void FakeSystemIdentityManager::FetchCapabilitiesAsync(
   FakeSystemIdentityDetails* details = [storage_ detailsForIdentity:identity];
   const FakeSystemIdentityCapabilitiesMap& capabilities = details.capabilities;
 
-  FakeSystemIdentityCapabilitiesMap result;
+  std::map<std::string, CapabilityResult> result;
   for (const std::string& name : names) {
     const auto& iter = capabilities.find(name);
     if (iter == capabilities.end()) {
       result.insert({name, CapabilityResult::kUnknown});
     } else {
-      result.insert({name, iter->second});
+      result.insert({name, iter->second ? CapabilityResult::kTrue
+                                        : CapabilityResult::kFalse});
     }
   }
 

@@ -15,6 +15,7 @@
 #import "components/bookmarks/browser/titled_url_match.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
@@ -53,32 +54,6 @@
 + (void)addFakeIdentityForSSOAuthAddAccountFlow:
     (FakeSystemIdentity*)fakeIdentity {
   FakeSystemIdentityInteractionManager.identity = fakeIdentity;
-}
-
-+ (void)setCapabilities:(ios::CapabilitiesDict*)capabilities
-            forIdentity:(FakeSystemIdentity*)fakeIdentity {
-  using CapabilityResult = SystemIdentityCapabilityResult;
-  std::map<std::string, CapabilityResult> capabilitiesMap;
-  for (NSString* name in capabilities) {
-    const std::string key = base::SysNSStringToUTF8(name);
-    NSNumber* number = base::mac::ObjCCastStrict<NSNumber>(capabilities[name]);
-    switch (number.intValue) {
-      case static_cast<int>(CapabilityResult::kFalse):
-      case static_cast<int>(CapabilityResult::kTrue):
-      case static_cast<int>(CapabilityResult::kUnknown):
-        capabilitiesMap.insert(
-            {key, static_cast<CapabilityResult>(number.intValue)});
-        break;
-
-      default:
-        NOTREACHED() << "unexpected capability value: " << number.intValue;
-        break;
-    }
-  }
-  FakeSystemIdentityManager* systemIdentityManager =
-      FakeSystemIdentityManager::FromSystemIdentityManager(
-          GetApplicationContext()->GetSystemIdentityManager());
-  systemIdentityManager->SetCapabilities(fakeIdentity, capabilitiesMap);
 }
 
 + (void)forgetFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
@@ -160,6 +135,38 @@
 
 + (void)presentSignInAccountsViewControllerIfNecessary {
   chrome_test_util::PresentSignInAccountsViewControllerIfNecessary();
+}
+
+#pragma mark - Capability Setters
+
++ (void)setIsSubjectToParentalControls:(BOOL)value
+                           forIdentity:(FakeSystemIdentity*)fakeIdentity {
+  FakeSystemIdentityManager* systemIdentityManager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  AccountCapabilitiesTestMutator* mutator =
+      systemIdentityManager->GetCapabilitiesMutator(fakeIdentity);
+  mutator->set_is_subject_to_parental_controls(value);
+}
+
++ (void)setCanHaveEmailAddressDisplayed:(BOOL)value
+                            forIdentity:(FakeSystemIdentity*)fakeIdentity {
+  FakeSystemIdentityManager* systemIdentityManager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  AccountCapabilitiesTestMutator* mutator =
+      systemIdentityManager->GetCapabilitiesMutator(fakeIdentity);
+  mutator->set_can_have_email_address_displayed(value);
+}
+
++ (void)setCanOfferExtendedChromeSyncPromos:(BOOL)value
+                                forIdentity:(FakeSystemIdentity*)fakeIdentity {
+  FakeSystemIdentityManager* systemIdentityManager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  AccountCapabilitiesTestMutator* mutator =
+      systemIdentityManager->GetCapabilitiesMutator(fakeIdentity);
+  mutator->set_can_offer_extended_chrome_sync_promos(value);
 }
 
 @end

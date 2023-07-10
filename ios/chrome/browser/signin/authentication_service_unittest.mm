@@ -15,7 +15,6 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_registry_simple.h"
-#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/device_accounts_synchronizer.h"

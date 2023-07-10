@@ -31,10 +31,22 @@ using base::test::ios::WaitUntilConditionOrTimeout;
       addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity];
 }
 
-- (void)setCapabilities:(ios::CapabilitiesDict*)capabilities
-            forIdentity:(FakeSystemIdentity*)fakeIdentity {
-  [SigninEarlGreyAppInterface setCapabilities:capabilities
-                                  forIdentity:fakeIdentity];
+- (void)setIsSubjectToParentalControls:(BOOL)value
+                           forIdentity:(FakeSystemIdentity*)fakeIdentity {
+  [SigninEarlGreyAppInterface setIsSubjectToParentalControls:value
+                                                 forIdentity:fakeIdentity];
+}
+
+- (void)setCanHaveEmailAddressDisplayed:(BOOL)value
+                            forIdentity:(FakeSystemIdentity*)fakeIdentity {
+  [SigninEarlGreyAppInterface setCanHaveEmailAddressDisplayed:value
+                                                  forIdentity:fakeIdentity];
+}
+
+- (void)setCanOfferExtendedChromeSyncPromos:(BOOL)value
+                                forIdentity:(FakeSystemIdentity*)fakeIdentity {
+  [SigninEarlGreyAppInterface setCanOfferExtendedChromeSyncPromos:value
+                                                      forIdentity:fakeIdentity];
 }
 
 - (void)forgetFakeIdentity:(FakeSystemIdentity*)fakeIdentity {

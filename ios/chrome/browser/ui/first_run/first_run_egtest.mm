@@ -8,7 +8,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
-#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
@@ -886,13 +885,8 @@ void DismissDefaultBrowserPromo() {
   FakeSystemIdentity* fakeSupervisedIdentity =
       [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeSupervisedIdentity];
-
-  ios::CapabilitiesDict* capabilities = @{
-    @(kIsSubjectToParentalControlsCapabilityName) :
-        @(static_cast<int>(SystemIdentityCapabilityResult::kTrue))
-  };
-  [SigninEarlGrey setCapabilities:capabilities
-                      forIdentity:fakeSupervisedIdentity];
+  [SigninEarlGrey setIsSubjectToParentalControls:YES
+                                     forIdentity:fakeSupervisedIdentity];
 
   // Verify 2 step FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:

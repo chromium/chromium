@@ -32,11 +32,6 @@ enum class ConsentLevel;
 + (void)addFakeIdentityForSSOAuthAddAccountFlow:
     (FakeSystemIdentity*)fakeIdentity;
 
-// Maps `capabilities` to the `fakeIdentity`.
-// Must be called after `addFakeIdentity`.
-+ (void)setCapabilities:(ios::CapabilitiesDict*)capabilities
-            forIdentity:(FakeSystemIdentity*)fakeIdentity;
-
 // Removes `fakeIdentity` from the fake chrome identity service asynchronously
 // to simulate identity removal from the device.
 + (void)forgetFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
@@ -72,6 +67,16 @@ enum class ConsentLevel;
 
 // Presents the signed-in accounts view controller if it needs to be presented.
 + (void)presentSignInAccountsViewControllerIfNecessary;
+
+// Capability setters for `fakeIdentity`.
+// Capabilities can only be set after the identity has been added to storage.
+// Must be called after `addFakeIdentity`.
++ (void)setIsSubjectToParentalControls:(BOOL)value
+                           forIdentity:(FakeSystemIdentity*)fakeIdentity;
++ (void)setCanHaveEmailAddressDisplayed:(BOOL)value
+                            forIdentity:(FakeSystemIdentity*)fakeIdentity;
++ (void)setCanOfferExtendedChromeSyncPromos:(BOOL)value
+                                forIdentity:(FakeSystemIdentity*)fakeIdentity;
 
 @end
 

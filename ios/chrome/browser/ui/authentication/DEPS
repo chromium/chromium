@@ -1,6 +1,5 @@
 include_rules = [
   "+components/consent_auditor",
-  "+components/signin/internal/identity_manager/account_capabilities_constants.h",
   "+ios/chrome/browser/ui/settings",
   "+ios/chrome/browser/ui/screen",
   "+ios/chrome/browser/ui/first_run",
