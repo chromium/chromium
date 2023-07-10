@@ -85,7 +85,7 @@ void SVGRadialGradientElement::SvgAttributeChanged(
       attr_name == svg_names::kRAttr || attr_name == svg_names::kFrAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     UpdateRelativeLengthsInformation();
-    InvalidateGradient(layout_invalidation_reason::kAttributeChanged);
+    InvalidateGradient();
     return;
   }
 

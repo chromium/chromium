@@ -99,7 +99,7 @@ void SVGPatternElement::BuildPendingResource() {
   if (auto* pattern = DynamicTo<SVGPatternElement>(target))
     AddReferenceTo(pattern);
 
-  InvalidatePattern(layout_invalidation_reason::kSvgResourceInvalidated);
+  InvalidatePattern();
 }
 
 void SVGPatternElement::ClearResourceReferences() {
@@ -143,7 +143,7 @@ void SVGPatternElement::SvgAttributeChanged(
     if (is_length_attr)
       UpdateRelativeLengthsInformation();
 
-    InvalidatePattern(layout_invalidation_reason::kAttributeChanged);
+    InvalidatePattern();
     return;
   }
 
@@ -174,20 +174,18 @@ void SVGPatternElement::ChildrenChanged(const ChildrenChange& change) {
   SVGElement::ChildrenChanged(change);
 
   if (!change.ByParser())
-    InvalidatePattern(layout_invalidation_reason::kChildChanged);
+    InvalidatePattern();
 }
 
-void SVGPatternElement::InvalidatePattern(
-    LayoutInvalidationReasonForTracing reason) {
+void SVGPatternElement::InvalidatePattern() {
   if (auto* layout_object = To<LayoutSVGResourceContainer>(GetLayoutObject()))
-    layout_object->InvalidateCacheAndMarkForLayout(reason);
+    layout_object->InvalidateCache();
 }
 
 void SVGPatternElement::InvalidateDependentPatterns() {
   NotifyIncomingReferences([](SVGElement& element) {
     if (auto* pattern = DynamicTo<SVGPatternElement>(element)) {
-      pattern->InvalidatePattern(
-          layout_invalidation_reason::kSvgResourceInvalidated);
+      pattern->InvalidatePattern();
     }
   });
 }

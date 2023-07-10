@@ -44,6 +44,10 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
 
   virtual void RemoveAllClientsFromCache() = 0;
 
+  // Like RemoveAllClientsFromCache(), but predicated on if layout has been
+  // performed at all.
+  void InvalidateCache();
+
   // Remove any cached data for the |client|, and return true if so.
   virtual bool RemoveClientFromCache(SVGResourceClient&) {
     NOT_DESTROYED();

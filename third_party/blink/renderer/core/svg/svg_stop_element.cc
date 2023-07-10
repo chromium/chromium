@@ -51,8 +51,9 @@ void InvalidateInstancesAndAncestorResources(SVGStopElement* stop_element) {
   SVGElement::InvalidationGuard invalidation_guard(stop_element);
 
   Element* parent = stop_element->parentElement();
-  if (auto* gradient = DynamicTo<SVGGradientElement>(parent))
-    gradient->InvalidateGradient(layout_invalidation_reason::kChildChanged);
+  if (auto* gradient = DynamicTo<SVGGradientElement>(parent)) {
+    gradient->InvalidateGradient();
+  }
 }
 
 }  // namespace

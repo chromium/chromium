@@ -201,9 +201,14 @@ void LayoutSVGResourceContainer::InvalidateCacheAndMarkForLayout(
     LayoutInvalidationReasonForTracing reason) {
   NOT_DESTROYED();
   SetNeedsLayoutAndFullPaintInvalidation(reason, kMarkContainerChain);
+  InvalidateCache();
+}
 
-  if (EverHadLayout())
+void LayoutSVGResourceContainer::InvalidateCache() {
+  NOT_DESTROYED();
+  if (EverHadLayout()) {
     RemoveAllClientsFromCache();
+  }
 }
 
 void LayoutSVGResourceContainer::InvalidateCacheAndMarkForLayout() {
