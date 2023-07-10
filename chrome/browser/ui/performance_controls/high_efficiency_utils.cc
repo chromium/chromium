@@ -49,12 +49,13 @@ void AddSiteToExceptionsList(PrefService* pref_service,
 }
 
 uint64_t GetDiscardedMemorySavingsInBytes(content::WebContents* contents) {
-  CHECK(contents->WasDiscarded());
   const auto* const pre_discard_resource_usage =
       performance_manager::user_tuning::UserPerformanceTuningManager::
           PreDiscardResourceUsage::FromWebContents(contents);
-  CHECK(pre_discard_resource_usage);
-  return pre_discard_resource_usage->memory_footprint_estimate_kb() * 1024;
+  return pre_discard_resource_usage == nullptr
+             ? 0
+             : pre_discard_resource_usage->memory_footprint_estimate_kb() *
+                   1024;
 }
 
 }  //  namespace high_efficiency

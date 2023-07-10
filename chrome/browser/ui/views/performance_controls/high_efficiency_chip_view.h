@@ -53,7 +53,7 @@ class HighEfficiencyChipView : public PageActionIconView,
   void OnHighEfficiencyModeChanged() override;
 
   bool ShouldHighlightMemorySavingsWithExpandedChip(
-      HighEfficiencyChipTabHelper* high_efficiency_tab_helper,
+      content::WebContents* web_contents,
       PrefService* pref_service);
 
   const raw_ptr<Browser> browser_;

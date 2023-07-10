@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
+#include "chrome/browser/ui/performance_controls/high_efficiency_utils.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -98,9 +99,10 @@ void HighEfficiencyChipView::UpdateImpl() {
                                  times_rendered + 1);
         RecordHighEfficiencyChipState(
             HighEfficiencyChipState::kExpandedEducation);
-      } else if (ShouldHighlightMemorySavingsWithExpandedChip(tab_helper,
+      } else if (ShouldHighlightMemorySavingsWithExpandedChip(web_contents,
                                                               pref_service)) {
-        int const memory_savings = tab_helper->GetMemorySavingsInBytes();
+        int const memory_savings =
+            high_efficiency::GetDiscardedMemorySavingsInBytes(web_contents);
         std::u16string memory_savings_string = ui::FormatBytes(memory_savings);
         SetLabel(
             l10n_util::GetStringFUTF16(IDS_HIGH_EFFICIENCY_CHIP_SAVINGS_LABEL,
@@ -166,7 +168,7 @@ void HighEfficiencyChipView::OnHighEfficiencyModeChanged() {
 }
 
 bool HighEfficiencyChipView::ShouldHighlightMemorySavingsWithExpandedChip(
-    HighEfficiencyChipTabHelper* high_efficiency_tab_helper,
+    content::WebContents* web_contents,
     PrefService* pref_service) {
   if (!base::FeatureList::IsEnabled(
           performance_manager::features::kMemorySavingsReportingImprovements)) {
@@ -174,7 +176,8 @@ bool HighEfficiencyChipView::ShouldHighlightMemorySavingsWithExpandedChip(
   }
 
   bool const savings_over_threshold =
-      (int)high_efficiency_tab_helper->GetMemorySavingsInBytes() >
+      static_cast<int>(
+          high_efficiency::GetDiscardedMemorySavingsInBytes(web_contents)) >
       performance_manager::features::kExpandedHighEfficiencyChipThresholdBytes
           .Get();
 

@@ -115,9 +115,8 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
 
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  HighEfficiencyChipTabHelper* const tab_helper =
-      HighEfficiencyChipTabHelper::FromWebContents(web_contents);
-  const uint64_t memory_savings = tab_helper->GetMemorySavingsInBytes();
+  const uint64_t memory_savings =
+      high_efficiency::GetDiscardedMemorySavingsInBytes(web_contents);
 
   ui::DialogModelLabel::TextReplacement memory_savings_text =
       ui::DialogModelLabel::CreatePlainText(ui::FormatBytes(memory_savings));

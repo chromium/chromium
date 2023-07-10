@@ -39,9 +39,6 @@ class HighEfficiencyChipTabHelper
   // away from and to another tab.
   bool HasChipBeenHidden();
 
-  // Returns the memory savings (in bytes) of the previously discarded tab.
-  uint64_t GetMemorySavingsInBytes() const;
-
   // content::WebContentsObserver
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;

@@ -11,11 +11,6 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/common/url_constants.h"
 
-namespace {
-// Conversion constant for bytes to kilobytes.
-constexpr size_t kKiloByte = 1024;
-}  // namespace
-
 HighEfficiencyChipTabHelper::~HighEfficiencyChipTabHelper() = default;
 
 bool HighEfficiencyChipTabHelper::ShouldChipBeVisible() const {
@@ -32,16 +27,6 @@ void HighEfficiencyChipTabHelper::SetWasAnimated() {
 
 bool HighEfficiencyChipTabHelper::HasChipBeenHidden() {
   return was_chip_hidden_;
-}
-
-uint64_t HighEfficiencyChipTabHelper::GetMemorySavingsInBytes() const {
-  auto* pre_discard_resource_usage =
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          PreDiscardResourceUsage::FromWebContents(&GetWebContents());
-  return pre_discard_resource_usage == nullptr
-             ? 0
-             : pre_discard_resource_usage->memory_footprint_estimate_kb() *
-                   kKiloByte;
 }
 
 void HighEfficiencyChipTabHelper::DidStartNavigation(
