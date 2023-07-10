@@ -112,9 +112,7 @@ LocationSystemPermissionStatus SystemGeolocationSourceMac::GetSystemPermission()
 
 void SystemGeolocationSourceMac::TrackGeolocationAttempted() {
 #if BUILDFLAG(IS_IOS)
-  if (@available(ios 8.0, macOS 10.15, *)) {
-    [location_manager_ requestWhenInUseAuthorization];
-  }
+  [location_manager_ requestWhenInUseAuthorization];
 #endif
 }
 
@@ -146,10 +144,8 @@ void SystemGeolocationSourceMac::TrackGeolocationAttempted() {
   }
 
 #if BUILDFLAG(IS_IOS)
-  if (@available(iOS 8.0, *)) {
-    if (status == kCLAuthorizationStatusAuthorizedWhenInUse) {
-      _hasPermission = YES;
-    }
+  if (status == kCLAuthorizationStatusAuthorizedWhenInUse) {
+    _hasPermission = YES;
   }
 #endif
 
