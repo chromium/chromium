@@ -5,16 +5,12 @@
 #ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_EXTERNAL_BEGIN_FRAME_SOURCE_IOS_H_
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_EXTERNAL_BEGIN_FRAME_SOURCE_IOS_H_
 
+#include <memory>
+
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/viz_service_export.h"
-
-#if defined(__OBJC__)
-@class CADisplayLinkImpl;
-#else
-class CADisplayLinkImpl;
-#endif
 
 namespace viz {
 
@@ -53,10 +49,10 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceIOS
   // Toggles VSync updates.
   void SetEnabled(bool enabled);
 
-  // Wrapper around CADisplayLink.
-  CADisplayLinkImpl* display_link_impl_;
-
   BeginFrameArgsGenerator begin_frame_args_generator_;
+
+  struct ObjCStorage;
+  std::unique_ptr<ObjCStorage> objc_storage_;
 };
 
 }  // namespace viz

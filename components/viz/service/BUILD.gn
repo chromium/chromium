@@ -314,6 +314,7 @@ viz_component("service") {
     ]
 
     deps += [ "//ui/accelerated_widget_mac" ]
+    viz_add_configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "IOSurface.framework" ]
     if (is_ios) {
       sources += [
@@ -584,6 +585,7 @@ viz_source_set("unit_tests") {
       "display/overlay_ca_unittest.cc",
       "display_embedder/software_output_device_mac_unittest.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "IOSurface.framework" ]
   }
 

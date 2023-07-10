@@ -4,13 +4,13 @@
 
 #include "components/viz/common/gpu/metal_context_provider.h"
 
+#include <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
@@ -21,15 +21,18 @@
 #include "third_party/skia/include/gpu/graphite/mtl/MtlBackendContext.h"
 #include "third_party/skia/include/gpu/graphite/mtl/MtlGraphiteUtils.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace viz {
 
 struct MetalContextProvider::ObjCStorage {
-  base::scoped_nsprotocol<id<MTLDevice>> device;
+  id<MTLDevice> __strong device;
   std::unique_ptr<skgpu::graphite::Context> graphite_context;
 };
 
-MetalContextProvider::MetalContextProvider(
-    base::scoped_nsprotocol<id<MTLDevice>> device)
+MetalContextProvider::MetalContextProvider(id<MTLDevice> device)
     : objc_storage_(std::make_unique<ObjCStorage>()) {
   objc_storage_->device = device;
   CHECK(objc_storage_->device);
@@ -40,8 +43,7 @@ MetalContextProvider::~MetalContextProvider() = default;
 // static
 std::unique_ptr<MetalContextProvider> MetalContextProvider::Create() {
   // First attempt to find a low power device to use.
-  base::scoped_nsprotocol<id<MTLDevice>> device(metal::GetDefaultDevice(),
-                                                base::scoped_policy::RETAIN);
+  id<MTLDevice> device = metal::GetDefaultDevice();
   if (!device) {
     DLOG(ERROR) << "Failed to find MTLDevice.";
     return nullptr;
@@ -55,8 +57,11 @@ bool MetalContextProvider::InitializeGraphiteContext(
   CHECK(objc_storage_->device);
 
   skgpu::graphite::MtlBackendContext backend_context = {};
-  backend_context.fDevice.retain(objc_storage_->device);
-  backend_context.fQueue.reset([objc_storage_->device newCommandQueue]);
+  // ARC note: MtlBackendContext contains two owning smart pointers of CFTypeRef
+  // so give them owning references.
+  backend_context.fDevice.reset(CFBridgingRetain(objc_storage_->device));
+  backend_context.fQueue.reset(
+      CFBridgingRetain([objc_storage_->device newCommandQueue]));
   objc_storage_->graphite_context =
       skgpu::graphite::ContextFactory::MakeMetal(backend_context, options);
   if (!objc_storage_->graphite_context) {
@@ -72,7 +77,7 @@ skgpu::graphite::Context* MetalContextProvider::GetGraphiteContext() {
 }
 
 id<MTLDevice> MetalContextProvider::GetMTLDevice() {
-  return objc_storage_->device.get();
+  return objc_storage_->device;
 }
 
 }  // namespace viz

@@ -12,7 +12,6 @@
 #include "third_party/skia/include/gpu/graphite/mtl/MtlGraphiteTypes.h"
 
 #if __OBJC__
-#include "base/mac/scoped_nsobject.h"
 @protocol MTLDevice;
 #endif  // __OBJC__
 
@@ -48,7 +47,7 @@ class VIZ_METAL_CONTEXT_PROVIDER_EXPORT MetalContextProvider {
 
  private:
 #if __OBJC__
-  explicit MetalContextProvider(base::scoped_nsprotocol<id<MTLDevice>> device);
+  explicit MetalContextProvider(id<MTLDevice> device);
 #endif  // __OBJC__
 
   struct ObjCStorage;
