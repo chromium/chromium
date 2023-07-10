@@ -6,6 +6,7 @@ package org.chromium.ui;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -36,6 +37,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 
 import java.io.File;
@@ -461,5 +463,13 @@ public class UiUtils {
             systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         }
         rootView.setSystemUiVisibility(systemUiVisibility);
+    }
+
+    /**
+     * @return True if a hardware keyboard is detected.
+     */
+    public static boolean isHardwareKeyboardAttached() {
+        return ContextUtils.getApplicationContext().getResources().getConfiguration().keyboard
+                != Configuration.KEYBOARD_NOKEYS;
     }
 }

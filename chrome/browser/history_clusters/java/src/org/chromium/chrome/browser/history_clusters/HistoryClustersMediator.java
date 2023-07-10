@@ -175,8 +175,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mClearBrowsingDataItem = new ListItem(ItemType.CLEAR_BROWSING_DATA, clearBrowsingDataModel);
         mDelegate.shouldShowClearBrowsingDataSupplier().addObserver(show -> ensureHeaders());
 
-        mIsScrollToLoadDisabled = mAccessibilityUtil.isAccessibilityEnabled()
-                || AccessibilityUtil.isHardwareKeyboardAttached(mResources.getConfiguration());
+        mIsScrollToLoadDisabled =
+                mAccessibilityUtil.isAccessibilityEnabled() || UiUtils.isHardwareKeyboardAttached();
         @State
         int buttonState = mIsScrollToLoadDisabled ? State.BUTTON : State.LOADING;
         PropertyModel moreProgressModel =

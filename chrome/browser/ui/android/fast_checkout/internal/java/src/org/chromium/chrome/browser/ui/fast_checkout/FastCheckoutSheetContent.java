@@ -15,9 +15,9 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.LocalizationUtils;
 
 /**
@@ -153,8 +153,7 @@ public class FastCheckoutSheetContent implements BottomSheetContent {
         // Always got to FULL state in accessibility mode or when an external keyboard is connected
         // to allow scrolling the RecyclerView with e.g. side swipes or the Tab key.
         if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()
-                || ChromeAccessibilityUtil.isHardwareKeyboardAttached(
-                        ContextUtils.getApplicationContext().getResources().getConfiguration())) {
+                || UiUtils.isHardwareKeyboardAttached()) {
             return true;
         }
         // If there are 1 or 2 Autofill profiles, it shows all items fully. For 3+ suggestions, it

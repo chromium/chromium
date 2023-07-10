@@ -17,13 +17,13 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.autofill.bottom_sheet_utils.DetailScreenScrollListener;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -63,10 +63,7 @@ public class DetailScreenCoordinator {
                     // Request "accessibility-focus" for TalkBack.
                     toolbarA11yOverlay.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
                 }
-                if (ChromeAccessibilityUtil.isHardwareKeyboardAttached(
-                            ContextUtils.getApplicationContext()
-                                    .getResources()
-                                    .getConfiguration())) {
+                if (UiUtils.isHardwareKeyboardAttached()) {
                     // Request focus for keyboard navigation.
                     toolbarA11yOverlay.requestFocus();
                 }

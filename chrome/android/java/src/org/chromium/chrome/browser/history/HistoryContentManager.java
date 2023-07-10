@@ -48,6 +48,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
@@ -157,8 +158,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mShouldShowClearDataIfAvailable = shouldShowClearDataIfAvailable;
         mHostName = hostName;
         mIsScrollToLoadDisabled = ChromeAccessibilityUtil.get().isAccessibilityEnabled()
-                || ChromeAccessibilityUtil.isHardwareKeyboardAttached(
-                        mActivity.getResources().getConfiguration());
+                || UiUtils.isHardwareKeyboardAttached();
         mSelectionDelegate = selectionDelegate != null
                 ? selectionDelegate
                 : new SelectionDelegate<HistoryItem>() {
