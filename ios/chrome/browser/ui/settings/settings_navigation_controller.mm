@@ -586,6 +586,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   // Reset the delegate to prevent any queued transitions from attempting to
   // close the settings.
   self.settingsNavigationDelegate = nil;
+  self.snackbarCommandsHandler = nil;
+  self.currentPresentedViewController = nil;
 }
 
 - (void)closeSettings {
