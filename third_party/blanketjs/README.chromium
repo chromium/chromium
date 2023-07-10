@@ -3,7 +3,9 @@ Short Name: Blanket
 URL: https://github.com/alex-seville/blanket
 Version: 1.1.5
 License: MIT
+License File: LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 Blanket.js is an easy to install, easy to configure, and easy to use JavaScript
