@@ -5,9 +5,68 @@
 #include "components/ml/webnn/graph_validation_utils.h"
 
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 
 namespace webnn {
+
+namespace {
+
+bool IsFloatingPointType(Operand::DataType data_type) {
+  switch (data_type) {
+    case Operand::DataType::kFloat32:
+    case Operand::DataType::kFloat16:
+      return true;
+    case Operand::DataType::kInt32:
+    case Operand::DataType::kUint32:
+    case Operand::DataType::kInt8:
+    case Operand::DataType::kUint8:
+      return false;
+  }
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace
+
+Operand::Operand(DataType data_type, std::vector<uint32_t> dimensions) {
+  this->data_type = data_type;
+  this->dimensions = std::move(dimensions);
+}
+
+Operand::Operand(DataType data_type, base::span<const uint32_t> dimensions) {
+  this->data_type = data_type;
+  this->dimensions.assign(dimensions.begin(), dimensions.end());
+}
+
+Operand::~Operand() = default;
+
+Operand::Operand(Operand&& other) = default;
+Operand& Operand::operator=(Operand&& other) = default;
+
+bool Operand::operator==(const Operand& other) const {
+  return data_type == other.data_type && dimensions == other.dimensions;
+}
+
+bool Operand::operator!=(const Operand& other) const {
+  return !(*this == other);
+}
+
+base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(
+    Operand input) {
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softmax, The input must be
+  // a 2-D tensor.
+  if (input.dimensions.size() != 2) {
+    return base::unexpected("The input must be a 2-D tensor.");
+  }
+  // The input type must be one of the floating point types.
+  if (!IsFloatingPointType(input.data_type)) {
+    return base::unexpected(
+        "The input type must be one of the floating point types.");
+  }
+  // The output tensor of softmax is the same shape as the input tensor.
+  return Operand(input.data_type, std::move(input.dimensions));
+}
 
 base::expected<size_t, std::string> ValidateAndCalculateElementsNumber(
     base::span<const uint32_t> dimensions) {

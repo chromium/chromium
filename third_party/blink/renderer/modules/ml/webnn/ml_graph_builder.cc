@@ -61,6 +61,49 @@ bool IsFloatingPointType(V8MLOperandType::Enum operand_type) {
   }
 }
 
+blink::V8MLOperandType::Enum ComponentOperandTypeToBlink(
+    webnn::Operand::DataType type) {
+  switch (type) {
+    case webnn::Operand::DataType::kFloat32:
+      return blink::V8MLOperandType::Enum::kFloat32;
+    case webnn::Operand::DataType::kFloat16:
+      return blink::V8MLOperandType::Enum::kFloat16;
+    case webnn::Operand::DataType::kInt32:
+      return blink::V8MLOperandType::Enum::kInt32;
+    case webnn::Operand::DataType::kUint32:
+      return blink::V8MLOperandType::Enum::kUint32;
+    case webnn::Operand::DataType::kInt8:
+      return blink::V8MLOperandType::Enum::kInt8;
+    case webnn::Operand::DataType::kUint8:
+      return blink::V8MLOperandType::Enum::kUint8;
+  }
+  NOTREACHED_NORETURN();
+}
+
+webnn::Operand::DataType BlinkOperandTypeToComponent(
+    blink::V8MLOperandType::Enum type) {
+  switch (type) {
+    case blink::V8MLOperandType::Enum::kFloat32:
+      return webnn::Operand::DataType::kFloat32;
+    case blink::V8MLOperandType::Enum::kFloat16:
+      return webnn::Operand::DataType::kFloat16;
+    case blink::V8MLOperandType::Enum::kInt32:
+      return webnn::Operand::DataType::kInt32;
+    case blink::V8MLOperandType::Enum::kUint32:
+      return webnn::Operand::DataType::kUint32;
+    case blink::V8MLOperandType::Enum::kInt8:
+      return webnn::Operand::DataType::kInt8;
+    case blink::V8MLOperandType::Enum::kUint8:
+      return webnn::Operand::DataType::kUint8;
+  }
+  NOTREACHED_NORETURN();
+}
+
+webnn::Operand ConvertToComponentOperand(const blink::MLOperand* ml_operand) {
+  return webnn::Operand(BlinkOperandTypeToComponent(ml_operand->Type()),
+                        ml_operand->Dimensions());
+}
+
 bool ValidateClampOptions(const MLClampOptions* options,
                           ExceptionState& exception_state) {
   // The generated code of MLClampOptions uses blink::ToRestrictedFloat to
@@ -1864,26 +1907,19 @@ MLOperand* MLGraphBuilder::slice(const MLOperand* input,
 
 MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
                                    ExceptionState& exception_state) {
-  // According to WebNN spec:
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softmax, The input must be
-  // a 2-D tensor.
-  if (input->Dimensions().size() != 2) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The input must be a 2-D tensor.");
-    return nullptr;
-  }
-  // The input type must be one of the floating point types.
-  if (!IsFloatingPointType(input->Type())) {
+  auto validated_output =
+      webnn::ValidateSoftmaxAndInferOutput(ConvertToComponentOperand(input));
+  if (!validated_output.has_value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
-        "The input type must be one of the floating point types.");
+        WTF::String::FromUTF8(validated_output.error()));
     return nullptr;
   }
   auto* softmax = MakeGarbageCollected<MLOperator>(
       this, MLOperator::OperatorKind::kSoftmax);
-  // The output tensor has the same shape as the input tensor.
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, input->Type(), input->Dimensions(), softmax);
+      this, ComponentOperandTypeToBlink(validated_output.value().data_type),
+      Vector<uint32_t>(validated_output.value().dimensions), softmax);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       output.error());
