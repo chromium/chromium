@@ -990,6 +990,30 @@
           'scripts': 'chromium_android_scripts',
         },
       },
+      'android-oreo-x86-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'oreo-x86-emulator',
+          'emulator-4-cores',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'additional_compile_targets': [
+          'chrome_nocompile_tests',
+        ],
+        'args': [
+          '--use-persistent-shell',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          # TODO(https://crbug.com/1459433): Rename the test group name
+          # after the migration
+          'gtest_tests': 'android_nougat_emulator_gtests',
+          'isolated_scripts': 'nougat_isolated_scripts',
+          'scripts': 'chromium_android_scripts',
+        },
+      },
       'android-pie-arm64-dbg': {
         'mixins': [
           'has_native_resultdb_integration',

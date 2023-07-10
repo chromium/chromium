@@ -111,6 +111,12 @@
           'shards': 9,
         },
       },
+      'android-oreo-x86-rel': {
+        'ci_only': True,
+        'swarming': {
+          'shards': 9,
+        },
+      },
       'android-pie-arm64-rel': {
         'args': [
           '--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode', # https://crbug.com/1034001
@@ -174,6 +180,12 @@
       },
       # If you change this, make similar changes in android-x86-code-coverage below
       'android-nougat-x86-rel': {
+        'ci_only': True,
+        'swarming': {
+          'shards': 2,
+        },
+      },
+      'android-oreo-x86-rel': {
         'ci_only': True,
         'swarming': {
           'shards': 2,
@@ -1567,6 +1579,17 @@
           ],
         },
       },
+      'android-oreo-x86-rel': {
+        'swarming': {
+          'shards': 75,
+          'dimension_sets': [
+            {
+              # use 8-core to shorten runtime
+              'cores': '8',
+            },
+          ],
+        },
+      },
       'android-pie-arm64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.chrome_public_test_apk.filter', # https://crbug.com/1010211
@@ -1741,6 +1764,11 @@
       },
       # If you change this, make similar changes in android-x86-code-coverage below
       'android-nougat-x86-rel': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
+      'android-oreo-x86-rel': {
         'swarming': {
           'shards': 4,
         },
@@ -2016,6 +2044,17 @@
           ],
         },
       },
+      'android-oreo-x86-rel': {
+        'swarming': {
+          'shards': 75,
+          'dimension_sets': [
+            {
+              # use 8-core to shorten runtime
+              'cores': '8',
+            },
+          ],
+        },
+      },
       'android-pie-arm64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter',
@@ -2167,7 +2206,8 @@
   'content_shell_crash_test': {
     'remove_from': [
       'android-nougat-x86-rel', # crbug.com/1084353. If you remove this, also remove android-x86-code-coverage.
-      'android-x86-code-coverage'
+      'android-oreo-x86-rel',
+      'android-x86-code-coverage',
     ],
     'modifications': {
       'Win10 Tests x64 (dbg)': {
@@ -2218,6 +2258,17 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_shell_test_apk.filter',
         ],
+        'swarming': {
+          'shards': 6,
+          'dimension_sets': [
+            {
+              # use 8-core to shorten runtime
+              'cores': '8',
+            },
+          ],
+        },
+      },
+      'android-oreo-x86-rel': {
         'swarming': {
           'shards': 6,
           'dimension_sets': [
@@ -3144,6 +3195,7 @@
     'remove_from': [
       # TODO(https://crbug.com/1432753): Runs too slowly in this configuration.
       'android-nougat-x86-rel',
+      'android-oreo-x86-rel',
     ],
   },
   'mac_signing_tests': {
@@ -3861,6 +3913,12 @@
           'shards': 3,
         },
       },
+      'android-oreo-x86-rel': {
+        'ci_only': True,
+        'swarming': {
+          'shards': 3,
+        },
+      },
       'android-pie-x86-rel': {
         'args': [
           # TODO(crbug.com/1264654): Fix the failed tests
@@ -4049,6 +4107,9 @@
       'android-nougat-x86-rel': {
         'ci_only': True,
       },
+      'android-oreo-x86-rel': {
+        'ci_only': True,
+      },
       # Keep this same as android-nougat-x86-rel above
       'android-x86-code-coverage': {
         'ci_only': True,
@@ -4059,6 +4120,9 @@
     'modifications': {
       # If you change this, make similar changes in android-x86-code-coverage below
       'android-nougat-x86-rel': {
+        'ci_only': True,
+      },
+      'android-oreo-x86-rel': {
         'ci_only': True,
       },
       # Keep this same as android-nougat-x86-rel above
@@ -4092,6 +4156,14 @@
       },
       # If you change this, make similar changes in android-x86-code-coverage below
       'android-nougat-x86-rel': {
+        'args': [
+          # For whatever reason, automatic browser selection on this bot chooses
+          # webview instead of the full browser, so explicitly specify it here.
+          '--browser=android-chromium',
+        ],
+        'ci_only': True,
+      },
+      'android-oreo-x86-rel': {
         'args': [
           # For whatever reason, automatic browser selection on this bot chooses
           # webview instead of the full browser, so explicitly specify it here.
@@ -4477,6 +4549,9 @@
       },
       # If you change this, make similar changes in android-x86-code-coverage below
       'android-nougat-x86-rel': {
+        'ci_only': True,
+      },
+      'android-oreo-x86-rel': {
         'ci_only': True,
       },
       'android-pie-arm64-rel': {
@@ -4944,6 +5019,9 @@
       'android-nougat-x86-rel': {
         'ci_only': True,
       },
+      'android-oreo-x86-rel': {
+        'ci_only': True,
+      },
       'android-pie-arm64-rel': {
         'ci_only': True,
       },
@@ -5049,6 +5127,14 @@
       },
       # If you change this, make similar changes in android-x86-code-coverage below
       'android-nougat-x86-rel': {
+        'args': [
+          '--use-persistent-shell',
+        ],
+        'swarming': {
+          'shards': 27,
+        },
+      },
+      'android-oreo-x86-rel': {
         'args': [
           '--use-persistent-shell',
         ],
