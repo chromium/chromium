@@ -49,13 +49,13 @@ TEST_F(AnchorScrollDataTest, HasDataAndTranslation) {
         dolor sit amet
         <div style="height: 100px"></div>
       </div>
-      <div id="anchored" style="position: absolute; anchor-scroll: --a1">
+      <div id="anchored" style="position: absolute; anchor-default: --a1">
         anchored
       </div>
-      <div id="no-anchor" style="position: absolute; anchor-scroll: --b1">
+      <div id="no-anchor" style="position: absolute; anchor-default: --b1">
         anchor not found
       </div>
-      <div id="not-anchor-positioned" style="anchor-scroll: --a1">
+      <div id="not-anchor-positioned" style="anchor-default: --a1">
         not anchor positioned
       </div>
     </div>
@@ -75,10 +75,10 @@ TEST_F(AnchorScrollDataTest, HasDataAndTranslation) {
 }
 
 // Tests that AnchorScrollData should be properly detached if an element changes
-// from using anchor-scroll to no longer using anchor-scroll
+// from anchor-positioned to no longer anchor-positioned
 TEST_F(AnchorScrollDataTest, Detach) {
   SetBodyInnerHTML(R"HTML(
-    <style>.anchored { position: absolute; anchor-scroll: --a1; }</style>
+    <style>.anchored { position: absolute; anchor-default: --a1; }</style>
     <div style="position: relative>
       <div style="overflow: scroll; height: 20px;">
         Lorem ipsum
@@ -133,7 +133,7 @@ TEST_F(AnchorScrollDataTest, ScrollerSizeChange) {
       #anchored {
         position: absolute;
         top: anchor(--a top);
-        anchor-scroll: --a;
+        anchor-default: --a;
       }
     </style>
     <div style="position: relative">
@@ -195,7 +195,7 @@ TEST_F(AnchorScrollDataTest, ScrollContentSizeChange) {
       #anchored {
         position: absolute;
         top: anchor(--a top);
-        anchor-scroll: --a;
+        anchor-default: --a;
       }
     </style>
     <div style="position: relative">

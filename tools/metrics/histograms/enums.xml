@@ -69550,7 +69550,7 @@ Called by update_use_counter_css.py.-->
   <int value="718" label="toggle"/>
   <int value="719" label="anchor-name"/>
   <int value="720" label="position-fallback"/>
-  <int value="721" label="anchor-scroll"/>
+  <int value="721" label="anchor-scroll (obsolete)"/>
   <int value="722" label="popover-show-delay"/>
   <int value="723" label="popover-hide-delay"/>
   <int value="724" label="hyphenate-character"/>

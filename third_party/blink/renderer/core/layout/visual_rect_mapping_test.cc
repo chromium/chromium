@@ -1323,7 +1323,7 @@ TEST_P(VisualRectMappingTest, AnchorScroll) {
         bottom: anchor(--anchor top);
         width: 50px;
         height: 50px;
-        anchor-scroll: --anchor;
+        anchor-default: --anchor;
       }
     </style>
     <div id=cb>
@@ -1345,7 +1345,7 @@ TEST_P(VisualRectMappingTest, AnchorScroll) {
       GetScrollableArea(To<LayoutBlock>(GetLayoutBoxByElementId("scroller")));
   scrollable_area->ScrollToAbsolutePosition(gfx::PointF(400, 0));
 
-  // Simulates a frame to update anchor-scroll snapshots.
+  // Simulates a frame to update snapshotted scroll offset.
   GetPage().Animator().ServiceScriptedAnimations(
       GetAnimationClock().CurrentTime() + base::Milliseconds(100));
   UpdateAllLifecyclePhasesForTest();

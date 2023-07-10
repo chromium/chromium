@@ -774,7 +774,7 @@ enum CSSSampleId {
     kToggle = 718,
     kAnchorName = 719,
     kPositionFallback = 720,
-    kAnchorScroll = 721,
+    // kAnchorScroll = 721,
     kPopoverShowDelay = 722,
     kPopoverHideDelay = 723,
     kHyphenateCharacter = 724,

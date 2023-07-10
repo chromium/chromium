@@ -10,7 +10,6 @@ alignmentBaseline
 all
 anchorDefault
 anchorName
-anchorScroll
 animation
 animationComposition
 animationDelay

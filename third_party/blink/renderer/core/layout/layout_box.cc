@@ -763,15 +763,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
   if (IsCustomItem())
     GetCustomLayoutChild()->styleMap()->UpdateStyle(GetDocument(), StyleRef());
 
-  if (diff.NeedsNormalPaintInvalidation()) {
-    if (const AnchorSpecifierValue* old_anchor_scroll =
-            old_style ? old_style->AnchorScroll() : nullptr;
-        !base::ValuesEquivalent(StyleRef().AnchorScroll().Get(),
-                                old_anchor_scroll)) {
-      SetNeedsPaintPropertyUpdate();
-    }
-  }
-
   // Non-atomic inlines should be LayoutInline or LayoutText, not LayoutBox.
   DCHECK(!IsInline() || IsAtomicInlineLevel());
 }

@@ -168,8 +168,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return base::ValuesEquivalent(a.AnchorDefault(), b.AnchorDefault());
     case CSSPropertyID::kAnchorName:
       return base::ValuesEquivalent(a.AnchorName(), b.AnchorName());
-    case CSSPropertyID::kAnchorScroll:
-      return base::ValuesEquivalent(a.AnchorScroll(), b.AnchorScroll());
     case CSSPropertyID::kAppearance:
       return a.Appearance() == b.Appearance();
     case CSSPropertyID::kAppRegion:

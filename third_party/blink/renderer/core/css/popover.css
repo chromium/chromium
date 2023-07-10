@@ -36,11 +36,10 @@ dialog:popover-open {
   display:block;
 }
 
-/* Popovers using anchor positioning get their inset and anchor-scroll properties
-   reset, to make it easier to position them. */
+/* Popovers using anchor positioning get their inset properties reset, to make
+ * it easier to position them. */
 [popover][anchor] {
   inset:auto;
-  anchor-scroll: implicit;
 }
 
 /* This rule matches popovers (dialog or not) that are currently open as a

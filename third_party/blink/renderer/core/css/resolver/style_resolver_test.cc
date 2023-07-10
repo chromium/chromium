@@ -3164,17 +3164,17 @@ TEST_F(StyleResolverTest, ScopedAnchorName) {
       *inner_anchor->ComputedStyleRef().AnchorName());
 }
 
-TEST_F(StyleResolverTest, ScopedAnchorScroll) {
+TEST_F(StyleResolverTest, ScopedAnchorDefault) {
   GetDocument()
       .documentElement()
       ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
-    <div id="outer-anchor" style="anchor-scroll: --outer"></div>
-    <style>#host::part(anchor) { anchor-scroll: --part; }</style>
+    <div id="outer-anchor" style="anchor-default: --outer"></div>
+    <style>#host::part(anchor) { anchor-default: --part; }</style>
     <div id="host">
       <template shadowroot=open>
-        <style>:host { anchor-scroll: --host; }</style>
+        <style>:host { anchor-default: --host; }</style>
         <div id="part" part="anchor"></div>
-        <div id="inner-anchor" style="anchor-scroll: --inner"></div>
+        <div id="inner-anchor" style="anchor-default: --inner"></div>
       </template>
     </div>
   )HTML");
@@ -3189,16 +3189,16 @@ TEST_F(StyleResolverTest, ScopedAnchorScroll) {
 
   EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>(AtomicString("--outer"),
                                                  &GetDocument()),
-            outer_anchor->ComputedStyleRef().AnchorScroll()->GetName());
+            *outer_anchor->ComputedStyleRef().AnchorDefault());
   EXPECT_EQ(
       *MakeGarbageCollected<ScopedCSSName>(AtomicString("--host"), shadow),
-      host->ComputedStyleRef().AnchorScroll()->GetName());
+      *host->ComputedStyleRef().AnchorDefault());
   EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>(AtomicString("--part"),
                                                  &GetDocument()),
-            part->ComputedStyleRef().AnchorScroll()->GetName());
+            *part->ComputedStyleRef().AnchorDefault());
   EXPECT_EQ(
       *MakeGarbageCollected<ScopedCSSName>(AtomicString("--inner"), shadow),
-      inner_anchor->ComputedStyleRef().AnchorScroll()->GetName());
+      *inner_anchor->ComputedStyleRef().AnchorDefault());
 }
 
 // |length| must be a calculated value of a single anchor query node.

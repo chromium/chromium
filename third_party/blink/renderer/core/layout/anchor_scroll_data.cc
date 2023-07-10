@@ -15,28 +15,14 @@ namespace blink {
 
 namespace {
 
-// Finds the LayoutObject of the anchor element given by anchor-scroll.
-const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
+// Finds the LayoutObject of the anchor element given by anchor-default.
+const LayoutObject* AnchorDefaultObject(const LayoutObject* layout_object) {
   if (!layout_object || !layout_object->IsOutOfFlowPositioned())
     return nullptr;
-  const ComputedStyle& style = layout_object->StyleRef();
-  const AnchorSpecifierValue* value = style.AnchorScroll();
-  if (!value)
-    return nullptr;
-
   const LayoutBox* box = To<LayoutBox>(layout_object);
-  const LayoutObject* anchor = nullptr;
-  if (value->IsNamed()) {
-    anchor = box->FindTargetAnchor(value->GetName());
-  } else if (value->IsDefault() && style.AnchorDefault()) {
-    anchor = box->FindTargetAnchor(*style.AnchorDefault());
-  } else {
-    DCHECK(value->IsImplicit() ||
-           (value->IsDefault() && !style.AnchorDefault()));
-    anchor = box->AcceptableImplicitAnchor();
-  }
-
-  return anchor;
+  const ComputedStyle& style = box->StyleRef();
+  return style.AnchorDefault() ? box->FindTargetAnchor(*style.AnchorDefault())
+                               : box->AcceptableImplicitAnchor();
 }
 
 // Finds the LayoutObject of the element given by position-fallback-bounds.
@@ -118,8 +104,8 @@ AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
   DCHECK(IsActive());
 
   const LayoutObject* layout_object = owner_->GetLayoutObject();
-  ScrollContainersData new_scrollers_data =
-      GetScrollContainersData(layout_object, AnchorScrollObject(layout_object));
+  ScrollContainersData new_scrollers_data = GetScrollContainersData(
+      layout_object, AnchorDefaultObject(layout_object));
 
   gfx::Vector2dF new_additional_bounds_scroll_offset;
   if (const LayoutObject* position_fallback_bounds_object =

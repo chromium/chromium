@@ -123,7 +123,6 @@ selectmenu::-internal-selectmenu-listbox {
   inset: auto;
   min-inline-size: anchor-size(self-inline);
   min-block-size: 1lh;
-  anchor-scroll: implicit;
   position-fallback: -internal-selectmenu-listbox-default-fallbacks;
 }
 

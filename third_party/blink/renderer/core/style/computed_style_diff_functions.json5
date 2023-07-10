@@ -341,10 +341,6 @@
             predicate: "a.StrokeDashArrayDataEquivalent(b)",
             field_dependencies: ["stroke-dasharray"]
           },
-	  {
-	    predicate: "a.AnchorScrollDataEquivalent(b)",
-	    field_dependencies: ["anchor-scroll"],
-	  },
         ]
     },
     {

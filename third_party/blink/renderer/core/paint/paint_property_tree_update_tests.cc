@@ -2188,7 +2188,7 @@ TEST_P(PaintPropertyTreeUpdateTest, AnchorPositioningScrollUpdate) {
     <div id="anchor" style="
         anchor-name: --a; width: 100px; height: 100px"></div>
     <div id="target" style="
-        position: fixed; anchor-scroll: --a;
+        position: fixed; anchor-default: --a;
         width: 100px; height: 100px; bottom: anchor(--a top)"></div>
   )HTML");
 
@@ -2197,11 +2197,11 @@ TEST_P(PaintPropertyTreeUpdateTest, AnchorPositioningScrollUpdate) {
 
   GetFrame().DomWindow()->scrollBy(0, 300);
 
-  // anchor-scroll update requires animation frame.
+  // Snapshotted scroll offset update requires animation frame.
   SimulateFrame();
   UpdateAllLifecyclePhasesExceptPaint();
 
-  // The anchor-scroll translation should be updated on main thread.
+  // The anchor positioning translation should be updated on main thread.
   EXPECT_EQ(PaintPropertiesForElement("target")
                 ->AnchorScrollTranslation()
                 ->Get2dTranslation(),

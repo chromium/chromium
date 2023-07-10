@@ -77,20 +77,18 @@ void CollapseLoneAnonymousBlockChild(LayoutBox* parent, LayoutObject* child) {
 }
 
 bool NeedsAnchorScrollData(Element& element, const ComputedStyle& style) {
-  // `anchor-scroll` has no effect if the element is not absolutely positioned
-  // or when the property value is `none`.
-  if (!style.HasOutOfFlowPosition() || !style.AnchorScroll()) {
+  // `AnchorScrollData` is for anchor positioned elements, which must be
+  // absolutely positioned.
+  if (!style.HasOutOfFlowPosition()) {
     return false;
   }
-  // There's an explicitly set `anchor-scroll`, `anchor-default` or
-  // `position-fallback-bounds` value, indicating that we might need to track
-  // the scroll offset(s) of some element(s).
-  if (!style.AnchorScroll()->IsDefault() || style.AnchorDefault() ||
-      style.PositionFallbackBounds()) {
+  // There's an explicitly set default anchor or additional fallback-bounds rect
+  // to track.
+  if (style.AnchorDefault() || style.PositionFallbackBounds()) {
     return true;
   }
-  // Now we have `anchor-scroll: default` and `anchor-default: implicit`. We
-  // need AnchorScrollData only if there's an implicit anchor element.
+  // Now we have `anchor-default: implicit`. We need `AnchorScrollData` only if
+  // there's an implicit anchor element to track.
   return element.ImplicitAnchorElement();
 }
 
