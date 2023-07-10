@@ -5,7 +5,6 @@
 #include "chrome/browser/storage_access_api/storage_access_api_tab_helper.h"
 
 #include "chrome/browser/storage_access_api/storage_access_api_service.h"
-#include "chrome/browser/storage_access_api/storage_access_api_service_factory.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -15,7 +14,6 @@ StorageAccessAPITabHelper::~StorageAccessAPITabHelper() = default;
 void StorageAccessAPITabHelper::FrameReceivedUserActivation(
     content::RenderFrameHost* rfh) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(service_);
 
   if (rfh->IsInPrimaryMainFrame()) {
     // No need to do anything in a main frame.
@@ -37,9 +35,8 @@ StorageAccessAPITabHelper::StorageAccessAPITabHelper(
     StorageAccessAPIService* service)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<StorageAccessAPITabHelper>(*web_contents),
-      service_(service) {
+      service_(raw_ref<StorageAccessAPIService>::from_ptr(service)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(service_);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(StorageAccessAPITabHelper);

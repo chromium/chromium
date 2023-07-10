@@ -12,8 +12,9 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 constexpr base::TimeDelta kTimerPeriod = base::Days(1);

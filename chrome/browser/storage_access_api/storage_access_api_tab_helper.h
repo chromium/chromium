@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_STORAGE_ACCESS_API_STORAGE_ACCESS_API_TAB_HELPER_H_
 #define CHROME_BROWSER_STORAGE_ACCESS_API_STORAGE_ACCESS_API_TAB_HELPER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "content/public/browser/render_frame_host.h"
@@ -26,13 +27,14 @@ class StorageAccessAPITabHelper
   void FrameReceivedUserActivation(content::RenderFrameHost* rfh) override;
 
  private:
+  // `service` must be non-null and must outlive `this`.
   StorageAccessAPITabHelper(content::WebContents* web_contents,
                             StorageAccessAPIService* service);
   friend class content::WebContentsUserData<StorageAccessAPITabHelper>;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-  raw_ptr<StorageAccessAPIService> service_
+  raw_ref<StorageAccessAPIService> service_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
