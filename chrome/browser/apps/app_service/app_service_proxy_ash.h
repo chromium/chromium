@@ -20,6 +20,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_writer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
+#include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publisher_host.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
@@ -156,6 +157,12 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   // Add or update a promise app in the Promise App Registry Cache.
   void OnPromiseApp(PromiseAppPtr delta);
+
+  // Retrieves the icon for a promise app and applies any specified effects.
+  void LoadPromiseIcon(const PackageId& package_id,
+                       int32_t size_hint_in_dip,
+                       IconEffects icon_effects,
+                       apps::LoadIconCallback callback);
 
   // Remove all details of a promise app from the Promise App Service.
   void RemovePromiseApp(const PackageId& package_id);

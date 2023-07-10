@@ -40,9 +40,14 @@ class AppServicePromiseAppItem : public ChromeAppListItem {
                            GetMenuModelCallback callback) override;
   app_list::AppContextMenu* GetAppContextMenu() override;
 
+  void OnLoadIcon(apps::IconValuePtr icon_value);
+
   // Used to indicate the installation progress in the promise icon progress
   // bar.
   absl::optional<float> progress_;
+  apps::PromiseStatus status_;
+
+  base::WeakPtrFactory<AppServicePromiseAppItem> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_APP_SERVICE_APP_SERVICE_PROMISE_APP_ITEM_H_

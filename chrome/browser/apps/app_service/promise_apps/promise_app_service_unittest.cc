@@ -4,7 +4,10 @@
 
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.h"
@@ -14,13 +17,16 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 
@@ -58,7 +64,7 @@ class PromiseAppServiceTest : public testing::Test,
 
   PromiseAppService* service() { return service_.get(); }
 
-  PromiseAppIconPtr CreateIcon(int width) {
+  PromiseAppIconPtr CreatePromiseAppIcon(int width) {
     PromiseAppIconPtr icon = std::make_unique<PromiseAppIcon>();
     icon->icon = gfx::test::CreateBitmap(width, width);
     icon->width_in_pixels = width;
@@ -73,6 +79,19 @@ class PromiseAppServiceTest : public testing::Test,
     gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, true, &compressed);
     std::string image_string(compressed.begin(), compressed.end());
     return image_string;
+  }
+
+  SkBitmap ApplyEffectsToBitmap(SkBitmap bitmap, IconEffects effects) {
+    auto iv = std::make_unique<apps::IconValue>();
+    iv->uncompressed = gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
+    iv->icon_type = apps::IconType::kUncompressed;
+
+    base::test::TestFuture<IconValuePtr> image_with_effects;
+    ApplyIconEffects(/*profile=*/nullptr, /*app_id=*/absl::nullopt, effects,
+                     bitmap.width(), std::move(iv),
+                     image_with_effects.GetCallback());
+
+    return *image_with_effects.Get()->uncompressed.bitmap();
   }
 
   // Set the number of updates we expect the Promise App Registry Cache to
@@ -242,6 +261,51 @@ TEST_F(PromiseAppServiceTest, OnPromiseApp_FailedIconDownload) {
   EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
 }
 
+TEST_F(PromiseAppServiceTest, LoadIcon_NoIcons) {
+  // Check that we don't have any icons yet.
+  std::vector<PromiseAppIcon*> icons_saved =
+      icon_cache()->GetIconsForTesting(kTestPackageId);
+  EXPECT_EQ(icons_saved.size(), 0u);
+
+  // Attempt to load icon for test package.
+  base::test::TestFuture<std::unique_ptr<apps::IconValue>> test_callback;
+  service()->LoadIcon(kTestPackageId, 512, IconEffects::kCrOsStandardMask,
+                      test_callback.GetCallback());
+
+  // Confirm that there is no icon in the callback.
+  IconValue* result_icon = test_callback.Get().get();
+  EXPECT_TRUE(result_icon->uncompressed.isNull());
+}
+
+TEST_F(PromiseAppServiceTest, LoadIcon) {
+  PromiseAppIconPtr icon = CreatePromiseAppIcon(512);
+  icon_cache()->SaveIcon(kTestPackageId, std::move(icon));
+
+  // Confirm that we have an icon in the icon cache.
+  std::vector<PromiseAppIcon*> icons_saved =
+      icon_cache()->GetIconsForTesting(kTestPackageId);
+  EXPECT_EQ(icons_saved.size(), 1u);
+
+  // Attempt to load icon for test package.
+  base::test::TestFuture<std::unique_ptr<apps::IconValue>> test_callback;
+  service()->LoadIcon(kTestPackageId, 128, IconEffects::kCrOsStandardMask,
+                      test_callback.GetCallback());
+
+  // Confirm the details of the icon in the callback.
+  IconValue* result_icon = test_callback.Get().get();
+  EXPECT_FALSE(result_icon->uncompressed.isNull());
+  EXPECT_EQ(result_icon->icon_type, IconType::kStandard);
+  EXPECT_FALSE(result_icon->is_placeholder_icon);
+  EXPECT_TRUE(result_icon->is_maskable_icon);
+  EXPECT_EQ(result_icon->uncompressed.bitmap()->width(), 128);
+
+  // Confirm that the icon has the correct effects applied to it.
+  SkBitmap expected_bitmap = ApplyEffectsToBitmap(
+      gfx::test::CreateBitmap(128, 128), kCrOsStandardMask);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(*result_icon->uncompressed.bitmap(),
+                                   expected_bitmap));
+}
+
 TEST_F(PromiseAppServiceTest, RemovePromiseApp) {
   // Register test promise app.
   PromiseAppPtr promise_app = std::make_unique<PromiseApp>(kTestPackageId);
@@ -258,8 +322,8 @@ TEST_F(PromiseAppServiceTest, RemovePromiseApp) {
   EXPECT_EQ(promise_app_registered->status, PromiseStatus::kInstalling);
 
   // Add test icons.
-  icon_cache()->SaveIcon(kTestPackageId, CreateIcon(100));
-  icon_cache()->SaveIcon(kTestPackageId, CreateIcon(200));
+  icon_cache()->SaveIcon(kTestPackageId, CreatePromiseAppIcon(100));
+  icon_cache()->SaveIcon(kTestPackageId, CreatePromiseAppIcon(200));
   EXPECT_TRUE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
 
   // Remove the promise app.

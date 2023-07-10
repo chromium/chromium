@@ -9,6 +9,8 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.h"
@@ -17,11 +19,13 @@
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "google_apis/google_api_keys.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace {
@@ -235,5 +239,37 @@ void PromiseAppService::OnIconDownloaded(
   PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
   promise_app->should_show = true;
   promise_app_registry_cache_->OnPromiseApp(std::move(promise_app));
+}
+
+void PromiseAppService::LoadIcon(const PackageId& package_id,
+                                 int32_t size_hint_in_dip,
+                                 apps::IconEffects icon_effects,
+                                 apps::LoadIconCallback callback) {
+  // We will always be able to synchronously get the icon from the cache because
+  // we already downloaded them all immediately after the promise app was
+  // registered, and verified that all the icons were valid before allowing the
+  // promise app to surface in the Launcher or Shelf.
+  gfx::ImageSkia icon =
+      promise_app_icon_cache_->GetIcon(package_id, size_hint_in_dip);
+
+  if (icon.isNull()) {
+    VLOG(1) << "No icon loaded for Package ID: " << package_id.ToString();
+    std::move(callback).Run(std::make_unique<apps::IconValue>());
+    return;
+  }
+
+  IconValuePtr icon_value = std::make_unique<IconValue>();
+  icon_value->icon_type = IconType::kStandard;
+  icon_value->is_placeholder_icon = false;
+  icon_value->is_maskable_icon = true;
+  icon_value->uncompressed = icon;
+
+  if (icon_effects == apps::IconEffects::kNone) {
+    std::move(callback).Run(std::move(icon_value));
+    return;
+  }
+  apps::ApplyIconEffects(
+      /*profile=*/nullptr, /*app_id=*/absl::nullopt, icon_effects,
+      size_hint_in_dip, std::move(icon_value), std::move(callback));
 }
 }  // namespace apps

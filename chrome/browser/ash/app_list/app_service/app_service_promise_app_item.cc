@@ -4,10 +4,33 @@
 
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_item.h"
 
+#include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/check.h"
+#include "base/notreached.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
+
+namespace {
+
+// TODO(b/261907495): Update this method to return the appropriate icon effects
+// for each promise status. These icon effects are currently placeholders.
+apps::IconEffects GetIconEffectsForPromiseStatus(apps::PromiseStatus status) {
+  switch (status) {
+    case apps::PromiseStatus::kUnknown:
+      // Fallthrough.
+    case apps::PromiseStatus::kPending:
+      return apps::IconEffects::kPaused;
+    case apps::PromiseStatus::kInstalling:
+      return apps::IconEffects::kCrOsStandardMask;
+    case apps::PromiseStatus::kRemove:
+      NOTREACHED();
+      return apps::IconEffects::kNone;
+  }
+}
+}  // namespace
 
 // static
 const char AppServicePromiseAppItem::kItemType[] = "AppServicePromiseAppItem";
@@ -17,6 +40,7 @@ AppServicePromiseAppItem::AppServicePromiseAppItem(
     AppListModelUpdater* model_updater,
     const apps::PromiseAppUpdate& update)
     : ChromeAppListItem(profile, update.PackageId().ToString()) {
+  status_ = update.Status();
   InitializeItem(update);
 
   // Promise icons should not be synced as they are transient and only present
@@ -47,10 +71,29 @@ void AppServicePromiseAppItem::OnPromiseAppUpdate(
   if (update.ProgressChanged() && update.Progress().has_value()) {
     progress_ = update.Progress();
   }
+  // Each status has its own set of visual effects.
+  if (update.StatusChanged()) {
+    status_ = update.Status();
+    LoadIcon();
+  }
 }
 
 void AppServicePromiseAppItem::LoadIcon() {
-  // TODO(b/261907495): Retrieve icon from Promise App Icon Cache.
+  apps::AppServiceProxyFactory::GetForProfile(profile())->LoadPromiseIcon(
+      apps::PackageId::FromString(id()).value(),
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+      GetIconEffectsForPromiseStatus(status_),
+      base::BindOnce(&AppServicePromiseAppItem::OnLoadIcon,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AppServicePromiseAppItem::OnLoadIcon(apps::IconValuePtr icon_value) {
+  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard) {
+    // TODO(b/261907495): Hide the promise app item from the user when there is
+    // no icon to show.
+    return;
+  }
+  SetIcon(icon_value->uncompressed, icon_value->is_placeholder_icon);
 }
 
 void AppServicePromiseAppItem::InitializeItem(

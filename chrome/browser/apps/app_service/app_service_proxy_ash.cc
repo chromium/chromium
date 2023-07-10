@@ -416,6 +416,14 @@ void AppServiceProxyAsh::RemovePromiseApp(const PackageId& package_id) {
   promise_app_service_->RemovePromiseApp(package_id);
 }
 
+void AppServiceProxyAsh::LoadPromiseIcon(const PackageId& package_id,
+                                         int32_t size_hint_in_dip,
+                                         IconEffects icon_effects,
+                                         apps::LoadIconCallback callback) {
+  PromiseAppService()->LoadIcon(package_id, size_hint_in_dip, icon_effects,
+                                std::move(callback));
+}
+
 void AppServiceProxyAsh::RegisterShortcutPublisher(
     AppType app_type,
     ShortcutPublisher* publisher) {

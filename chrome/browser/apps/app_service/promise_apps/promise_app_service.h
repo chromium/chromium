@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_icon_cache.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -63,6 +64,12 @@ class PromiseAppService {
   // fields provided in `delta`. For new promise app registrations, we send a
   // request to the Almanac API to retrieve additional promise app info.
   void OnPromiseApp(PromiseAppPtr delta);
+
+  // Retrieves the icon for a package ID and applies any specified effects.
+  void LoadIcon(const PackageId& package_id,
+                int32_t size_hint_in_dip,
+                apps::IconEffects icon_effects,
+                apps::LoadIconCallback callback);
 
   // Remove all details about a promise app from the PromiseAppRegistryCache and
   // PromiseAppIconCache.
