@@ -112,68 +112,6 @@ TEST_F(NGPhysicalBoxFragmentTest, FloatingDescendantsBlockFormattingContext) {
   EXPECT_TRUE(has_floats_2.HasFloatingDescendantsForPaint());
 }
 
-// TODO(layout-dev): Design more straightforward way to ensure old layout
-// instead of using |contenteditable|.
-
-// Tests that a normal old layout root box fragment has correct box type.
-TEST_F(NGPhysicalBoxFragmentTest, DISABLED_NormalLegacyLayoutRoot) {
-  SetBodyInnerHTML("<div contenteditable>X</div>");
-  const NGPhysicalFragment* fragment =
-      GetBodyFragment().Children().front().get();
-  ASSERT_TRUE(fragment);
-  EXPECT_TRUE(fragment->IsBox());
-  EXPECT_EQ(NGPhysicalFragment::kNormalBox, fragment->BoxType());
-  EXPECT_TRUE(fragment->IsLegacyLayoutRoot());
-  EXPECT_TRUE(fragment->IsFormattingContextRoot());
-}
-
-// TODO(editing-dev): Once LayoutNG supports editing, we should change this
-// test to use LayoutNG tree.
-// Tests that a float old layout root box fragment has correct box type.
-TEST_F(NGPhysicalBoxFragmentTest, DISABLED_FloatLegacyLayoutRoot) {
-  SetBodyInnerHTML("<span contenteditable style='float:left'>X</span>foo");
-  const NGPhysicalFragment* fragment =
-      GetBodyFragment().Children().front().get();
-  ASSERT_TRUE(fragment);
-  EXPECT_TRUE(fragment->IsBox());
-  EXPECT_EQ(NGPhysicalFragment::kFloating, fragment->BoxType());
-  EXPECT_TRUE(fragment->IsLegacyLayoutRoot());
-  EXPECT_TRUE(fragment->IsFormattingContextRoot());
-}
-
-// TODO(editing-dev): Once LayoutNG supports editing, we should change this
-// test to use LayoutNG tree.
-// Tests that an inline block old layout root box fragment has correct box type.
-TEST_F(NGPhysicalBoxFragmentTest, DISABLED_InlineBlockLegacyLayoutRoot) {
-  SetBodyInnerHTML(
-      "<span contenteditable style='display:inline-block'>X</span>foo");
-  const auto* line_box = GetBodyFragment().Children().front().get();
-  const NGPhysicalFragment* fragment = line_box->Children().front().get();
-  ASSERT_TRUE(fragment);
-  EXPECT_TRUE(fragment->IsBox());
-  EXPECT_EQ(NGPhysicalFragment::kAtomicInline, fragment->BoxType());
-  EXPECT_TRUE(fragment->IsLegacyLayoutRoot());
-  EXPECT_TRUE(fragment->IsFormattingContextRoot());
-}
-
-// TODO(editing-dev): Once LayoutNG supports editing, we should change this
-// test to use LayoutNG tree.
-// Tests that an out-of-flow positioned old layout root box fragment has correct
-// box type.
-TEST_F(NGPhysicalBoxFragmentTest,
-       DISABLED_OutOfFlowPositionedLegacyLayoutRoot) {
-  SetBodyInnerHTML(
-      "<style>body {position: absolute}</style>"
-      "<div contenteditable style='position: absolute'>X</div>");
-  const NGPhysicalFragment* fragment =
-      GetBodyFragment().Children().front().get();
-  ASSERT_TRUE(fragment);
-  EXPECT_TRUE(fragment->IsBox());
-  EXPECT_EQ(NGPhysicalFragment::kOutOfFlowPositioned, fragment->BoxType());
-  EXPECT_TRUE(fragment->IsLegacyLayoutRoot());
-  EXPECT_TRUE(fragment->IsFormattingContextRoot());
-}
-
 TEST_F(NGPhysicalBoxFragmentTest, ReplacedBlock) {
   SetBodyInnerHTML(R"HTML(
     <img id="target" style="display: block">
