@@ -12,6 +12,6 @@ found in the LICENSE file.
     android:viewportHeight="12">
     <path
         android:pathData="M0 6L1.0575 7.0575L5.25 2.8725V12H6.75V2.8725L10.935 7.065L12 6L6 0L0 6Z"
-        android:fillColor="@color/baseline_neutral_700"
+        android:fillColor="@color/baseline_neutral_30"
         android:fillType="nonZero"/>
 </vector>

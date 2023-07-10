@@ -7,6 +7,6 @@ found in the LICENSE file.
 -->
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/baseline_neutral_1000" />
+    <solid android:color="@color/baseline_neutral_0" />
     <corners android:radius="2dp" />
 </shape>

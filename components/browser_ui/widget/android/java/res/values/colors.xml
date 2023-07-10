@@ -32,8 +32,8 @@ found in the LICENSE file.
     <color name="default_chip_outline_color_dark">@color/baseline_neutral_variant_500</color>
     <color name="default_chip_outline_color" tools:ignore="UnusedResources">@color/default_chip_outline_color_dark</color>
     <!-- Same as ?attr/colorOnSurface -->
-    <color name="chip_outline_focused_color_dark">@color/baseline_neutral_900</color>
-    <color name="chip_outline_focused_color_light">@color/baseline_neutral_100</color>
+    <color name="chip_outline_focused_color_dark">@color/baseline_neutral_10</color>
+    <color name="chip_outline_focused_color_light">@color/baseline_neutral_90</color>
     <color name="chip_outline_focused_color_baseline" tools:ignore="UnusedResources">@color/chip_outline_focused_color_dark</color>
 
     <color name="menu_chip_background_color_dark">@color/modern_blue_600_alpha_6</color>

@@ -76,7 +76,7 @@ public class StripLayoutTabTest {
 
         // Incognito inactive tab color.
         expectedColor = mContext.getResources().getColor(
-                R.color.baseline_neutral_900_with_neutral_1000_alpha_30);
+                R.color.baseline_neutral_10_with_neutral_0_alpha_30);
         assertEquals("Incognito inactive tab should match the baseline color.", expectedColor,
                 mIncognitoTab.getTint(false));
     }
@@ -164,7 +164,7 @@ public class StripLayoutTabTest {
 
         // Incognito inactive tab outline.
         expectedColor = mContext.getResources().getColor(
-                R.color.baseline_neutral_900_with_neutral_1000_alpha_30_with_neutral_variant_400_alpha_15);
+                R.color.baseline_neutral_10_with_neutral_0_alpha_30_with_neutral_variant_400_alpha_15);
         assertEquals("Inactive tab outline should match the baseline color.", expectedColor,
                 mIncognitoTab.getOutlineTint(false));
     }
