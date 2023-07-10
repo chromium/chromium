@@ -18,12 +18,12 @@
 
 namespace blink {
 
-namespace {
-
 // Allow all fields to be set when calling RTCEncodedVideoFrame.setMetadata.
 BASE_FEATURE(kAllowRTCEncodedVideoFrameSetMetadataAllFields,
              "AllowRTCEncodedVideoFrameSetMetadataAllFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+namespace {
 
 // Allow CSRCs to be set when calling RTCEncodedVideoFrame.setMetadata.
 BASE_FEATURE(kAllowRTCEncodedVideoFrameSetMetadataCsrcs,
@@ -355,7 +355,7 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
       !metadata->hasIsLastFrameInPicture() || !metadata->hasSimulcastIdx() ||
       !metadata->hasCodec() ||
       (!metadata->hasCodecSpecifics() && (metadata->codec() == "vp8")) ||
-      !metadata->hasSynchronizationSource()) {
+      !metadata->hasSynchronizationSource() || !metadata->hasFrameType()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
         "Member(s) missing in RTCEncodedVideoFrameMetadata.");
