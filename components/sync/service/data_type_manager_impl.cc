@@ -151,10 +151,7 @@ void DataTypeManagerImpl::Configure(ModelTypeSet preferred_types,
     allowed_types.Put(type);
 
     // Ensure that the initial precondition state is accurate, and clear
-    // existing metadata if necessary. Note that this happens for *all* data
-    // types, not just the preferred ones!
-    // TODO(crbug.com/897628): For non-preferred types, metadata should probably
-    // be cleared independent of the precondition state.
+    // existing metadata if necessary.
     DataTypePreconditionChanged(type);
   }
 
@@ -752,8 +749,6 @@ ModelTypeSet DataTypeManagerImpl::GetPurgedDataTypes() const {
   ModelTypeSet purged_types;
 
   for (const auto& [type, controller] : *controllers_) {
-    // TODO(crbug.com/897628): NOT_RUNNING doesn't necessarily mean the sync
-    // metadata was cleared, if KEEP_METADATA was used when stopping.
     if (controller->state() == DataTypeController::NOT_RUNNING) {
       purged_types.Put(type);
     }

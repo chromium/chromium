@@ -122,7 +122,7 @@ class BridgeBuilder {
         std::make_unique<ClientTagBasedModelTypeProcessor>(type, dump_stack);
 
     // |syncable_service| can be null in tests.
-    // TODO(crbug.com/897628): Remove test-only code-path.
+    // TODO(crbug.com/1418351): Remove test-only code-path.
     if (syncable_service) {
       bridge_ = std::make_unique<SyncableServiceBasedBridge>(
           type, std::move(store_factory), std::move(processor),
