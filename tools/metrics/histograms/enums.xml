@@ -27319,6 +27319,8 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="78" label="Filesystem source selected"/>
   <int value="79" label="Overrides source selected"/>
   <int value="80" label="Stylesheet request initiator link clicked"/>
+  <int value="81" label="Breakpoint removed from gutter context menu"/>
+  <int value="82" label="Breakpoint removed from gutter toggle"/>
 </enum>
 
 <enum name="DevToolsBackgroundService">
