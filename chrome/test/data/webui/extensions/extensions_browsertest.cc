@@ -460,3 +460,135 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsCodeSectionTest, Layout) {
 IN_PROC_BROWSER_TEST_F(CrExtensionsCodeSectionTest, LongSource) {
   RunTestCase("LongSource");
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+////////////////////////////////////////////////////////////////////////////////
+// kiosk mode tests.
+
+class CrExtensionsKioskModeTest : public ExtensionsBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    ExtensionsBrowserTest::RunTest(
+        "extensions/kiosk_mode_test.js",
+        base::StringPrintf("runMochaTest('KioskModeTests', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsKioskModeTest, AddButton) {
+  RunTestCase("AddButton");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsKioskModeTest, Layout) {
+  RunTestCase("Layout");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsKioskModeTest, AutoLaunch) {
+  RunTestCase("AutoLaunch");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsKioskModeTest, Bailout) {
+  RunTestCase("Bailout");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsKioskModeTest, Updated) {
+  RunTestCase("Updated");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsKioskModeTest, AddError) {
+  RunTestCase("AddError");
+}
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
+// Extension Navigation Helper Tests
+
+class CrExtensionsNavigationHelperTest : public ExtensionsBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    ExtensionsBrowserTest::RunTest(
+        "extensions/navigation_helper_test.js",
+        base::StringPrintf(
+            "runMochaTest('ExtensionNavigationHelperTest', '%s');",
+            testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsNavigationHelperTest, Basic) {
+  RunTestCase("Basic");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsNavigationHelperTest, Conversions) {
+  RunTestCase("Conversions");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsNavigationHelperTest, PushAndReplaceState) {
+  RunTestCase("PushAndReplaceState");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsNavigationHelperTest, SupportedRoutes) {
+  RunTestCase("SupportedRoutes");
+}
+
+typedef ExtensionsBrowserTest CrExtensionsToggleRowTest;
+IN_PROC_BROWSER_TEST_F(CrExtensionsToggleRowTest, ToggleRowTest) {
+  RunTest("extensions/toggle_row_test.js", "mocha.run()");
+}
+
+typedef ExtensionsBrowserTest CrExtensionsRuntimeHostsDialogTest;
+IN_PROC_BROWSER_TEST_F(CrExtensionsRuntimeHostsDialogTest, All) {
+  RunTest("extensions/runtime_hosts_dialog_test.js", "mocha.run()");
+}
+
+typedef ExtensionsBrowserTest CrExtensionsRuntimeHostPermissionsTest;
+IN_PROC_BROWSER_TEST_F(CrExtensionsRuntimeHostPermissionsTest, All) {
+  RunTest("extensions/runtime_host_permissions_test.js", "mocha.run()");
+}
+
+typedef ExtensionsBrowserTest CrExtensionsHostPermissionsToggleListTest;
+IN_PROC_BROWSER_TEST_F(CrExtensionsHostPermissionsToggleListTest, All) {
+  RunTest("extensions/host_permissions_toggle_list_test.js", "mocha.run()");
+}
+
+typedef ExtensionsBrowserTest CrExtensionsSafetyCheckReviewPanelTest;
+IN_PROC_BROWSER_TEST_F(CrExtensionsSafetyCheckReviewPanelTest, All) {
+  RunTest("extensions/review_panel_test.js", "mocha.run()");
+}
+
+typedef ExtensionsBrowserTest CrExtensionsSitePermissionsTest;
+IN_PROC_BROWSER_TEST_F(CrExtensionsSitePermissionsTest, All) {
+  RunTest("extensions/site_permissions_test.js", "mocha.run()");
+}
+
+typedef ExtensionsBrowserTest CrExtensionsSitePermissionsBySiteTest;
+IN_PROC_BROWSER_TEST_F(CrExtensionsSitePermissionsBySiteTest, All) {
+  RunTest("extensions/site_permissions_by_site_test.js", "mocha.run()");
+}
+
+typedef ExtensionsBrowserTest CrExtensionsSitePermissionsEditUrlDialogTest;
+IN_PROC_BROWSER_TEST_F(CrExtensionsSitePermissionsEditUrlDialogTest, All) {
+  RunTest("extensions/site_permissions_edit_url_dialog_test.js", "mocha.run()");
+}
+
+typedef ExtensionsBrowserTest CrExtensionsSitePermissionsListTest;
+IN_PROC_BROWSER_TEST_F(CrExtensionsSitePermissionsListTest, All) {
+  RunTest("extensions/site_permissions_list_test.js", "mocha.run()");
+}
+
+typedef ExtensionsBrowserTest CrUrlUtilTest;
+IN_PROC_BROWSER_TEST_F(CrUrlUtilTest, All) {
+  RunTest("extensions/url_util_test.js", "mocha.run()");
+}
+
+typedef ExtensionsBrowserTest
+    CrExtensionsSitePermissionsEditPermissionsDialogTest;
+IN_PROC_BROWSER_TEST_F(CrExtensionsSitePermissionsEditPermissionsDialogTest,
+                       All) {
+  RunTest("extensions/site_permissions_edit_permissions_dialog_test.js",
+          "mocha.run()");
+}
+
+typedef ExtensionsBrowserTest CrExtensionsSitePermissionsSiteGroupTest;
+IN_PROC_BROWSER_TEST_F(CrExtensionsSitePermissionsSiteGroupTest, All) {
+  RunTest("extensions/site_permissions_site_group_test.js", "mocha.run()");
+}
