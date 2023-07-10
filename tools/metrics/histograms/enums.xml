@@ -103980,6 +103980,21 @@ would be helpful to identify which type is being sent.
   <int value="18" label="RELOAD_BUTTON"/>
 </enum>
 
+<enum name="TopLevelStorageAccessRequestOutcome">
+  <summary>
+    Possible outcomes of a Top-Level Storage Access API permission request.
+  </summary>
+  <int value="0" label="Granted by First-Party Set"/>
+  <int value="1" label="(Obsolete) Granted by implicit grant allowance"/>
+  <int value="2" label="(Obsolete) Granted by user"/>
+  <int value="3" label="Denied by First-Party Set"/>
+  <int value="4" label="(Obsolete) Denied by user"/>
+  <int value="5"
+      label="Denied by missing prerequisite (user gesture, feature enabled)"/>
+  <int value="6" label="(Obsolete) Dismissed by user"/>
+  <int value="7" label="(Obsolete) Reused previous decision (made by user)"/>
+</enum>
+
 <enum name="TopToolbarAllowCaptureReason">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="FORCE_CAPTURE"/>

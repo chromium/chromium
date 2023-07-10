@@ -33,7 +33,7 @@ namespace {
 
 constexpr base::TimeDelta kGrantDuration = base::Hours(24);
 
-void RecordOutcomeSample(CookieRequestOutcome outcome) {
+void RecordOutcomeSample(TopLevelStorageAccessRequestOutcome outcome) {
   base::UmaHistogramEnumeration("API.TopLevelStorageAccess.RequestOutcome",
                                 outcome);
 }
@@ -70,14 +70,16 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
   if (!user_gesture ||
       !base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) ||
       !requesting_origin.is_valid() || !embedding_origin.is_valid()) {
-    RecordOutcomeSample(CookieRequestOutcome::kDeniedByPrerequisites);
+    RecordOutcomeSample(
+        TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
 
   if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
     // First-Party Sets is disabled, so reject the request.
-    RecordOutcomeSample(CookieRequestOutcome::kDeniedByPrerequisites);
+    RecordOutcomeSample(
+        TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
@@ -110,24 +112,24 @@ void TopLevelStorageAccessPermissionContext::CheckForAutoGrantOrAutoDenial(
     // Service domains are not allowed to request storage access on behalf
     // of other domains, even in the same First-Party Set.
     if (metadata.top_frame_entry()->site_type() == net::SiteType::kService) {
-      NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
-                                  std::move(callback),
-                                  /*persist=*/true, CONTENT_SETTING_BLOCK,
-                                  CookieRequestOutcome::kDeniedByPrerequisites);
+      NotifyPermissionSetInternal(
+          id, requesting_origin, embedding_origin, std::move(callback),
+          /*persist=*/true, CONTENT_SETTING_BLOCK,
+          TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
       return;
     }
     // Since the sites are in the same First-Party Set, risk of abuse due to
     // allowing access is considered to be low.
-    NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
-                                std::move(callback),
-                                /*persist=*/true, CONTENT_SETTING_ALLOW,
-                                CookieRequestOutcome::kGrantedByFirstPartySet);
+    NotifyPermissionSetInternal(
+        id, requesting_origin, embedding_origin, std::move(callback),
+        /*persist=*/true, CONTENT_SETTING_ALLOW,
+        TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet);
     return;
   }
-  NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
-                              std::move(callback),
-                              /*persist=*/true, CONTENT_SETTING_BLOCK,
-                              CookieRequestOutcome::kDeniedByFirstPartySet);
+  NotifyPermissionSetInternal(
+      id, requesting_origin, embedding_origin, std::move(callback),
+      /*persist=*/true, CONTENT_SETTING_BLOCK,
+      TopLevelStorageAccessRequestOutcome::kDeniedByFirstPartySet);
 }
 
 ContentSetting
@@ -180,8 +182,8 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSet(
       id, requesting_origin, embedding_origin, std::move(callback), persist,
       content_setting,
       content_setting == CONTENT_SETTING_ALLOW
-          ? CookieRequestOutcome::kGrantedByFirstPartySet
-          : CookieRequestOutcome::kDeniedByFirstPartySet);
+          ? TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet
+          : TopLevelStorageAccessRequestOutcome::kDeniedByFirstPartySet);
 }
 
 void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
@@ -191,7 +193,7 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
     permissions::BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
-    CookieRequestOutcome outcome) {
+    TopLevelStorageAccessRequestOutcome outcome) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {

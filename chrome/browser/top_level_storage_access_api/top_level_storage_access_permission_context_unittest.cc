@@ -4,8 +4,6 @@
 
 #include "chrome/browser/top_level_storage_access_api/top_level_storage_access_permission_context.h"
 
-#include "base/barrier_callback.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -23,7 +21,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
-#include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/global_first_party_sets.h"
@@ -164,7 +161,7 @@ TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
   EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram,
-                CookieRequestOutcome::kDeniedByPrerequisites),
+                TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites),
             1);
 }
 
@@ -231,7 +228,7 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
   EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram,
-                CookieRequestOutcome::kGrantedByFirstPartySet),
+                TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet),
             1);
 
   // Check the `SessionModel::NonRestorableUserSession` settings granted by FPS.
@@ -312,7 +309,7 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
   EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram,
-                CookieRequestOutcome::kDeniedByFirstPartySet),
+                TopLevelStorageAccessRequestOutcome::kDeniedByFirstPartySet),
             1);
 
   // Check the `SessionModel::NonRestorableUserSession` settings.
@@ -403,7 +400,7 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest,
   EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram,
-                CookieRequestOutcome::kDeniedByPrerequisites),
+                TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites),
             1);
 
   // Check the `SessionModel::NonRestorableUserSession` settings granted by FPS.
