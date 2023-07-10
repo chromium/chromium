@@ -45,6 +45,9 @@ struct IncomingSharingInvitation {
   base::Time date_created;
 };
 
+PasswordForm IncomingSharingInvitationToPasswordForm(
+    const IncomingSharingInvitation& invitation);
+
 // For testing.
 #if defined(UNIT_TEST)
 bool operator==(const IncomingSharingInvitation& lhs,

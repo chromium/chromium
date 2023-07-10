@@ -48,4 +48,21 @@ std::ostream& operator<<(std::ostream& os,
             << "\ndate_created: " << invitation.date_created << "\n)\n";
 }
 
+PasswordForm IncomingSharingInvitationToPasswordForm(
+    const IncomingSharingInvitation& invitation) {
+  PasswordForm form;
+  form.url = invitation.url;
+  form.username_element = invitation.username_element;
+  form.username_value = invitation.username_value;
+  form.password_element = invitation.password_element;
+  form.signon_realm = invitation.signon_realm;
+  form.password_value = invitation.password_value;
+  form.scheme = invitation.scheme;
+  form.display_name = invitation.display_name;
+  form.date_created = base::Time::Now();
+  // TODO(crbug.com/1448235): add the shared password metadata too.
+  // TODO(crbug.com/1448235): set the correct password type.
+  return form;
+}
+
 }  // namespace password_manager

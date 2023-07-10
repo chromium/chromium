@@ -1,0 +1,119 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/password_manager/core/browser/sharing/password_receiver_service.h"
+
+#include <memory>
+
+#include "base/test/task_environment.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
+#include "components/password_manager/core/browser/test_password_store.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace password_manager {
+
+namespace {
+
+const std::string kUrl = "https://test.com";
+const std::u16string kUsername = u"username";
+const std::u16string kPassword = u"password";
+
+IncomingSharingInvitation CreateIncomingSharingInvitation() {
+  IncomingSharingInvitation invitation;
+  invitation.url = GURL(kUrl);
+  invitation.signon_realm = invitation.url.spec();
+  invitation.username_value = kUsername;
+  invitation.password_value = kPassword;
+  return invitation;
+}
+
+}  // namespace
+
+class PasswordReceiverServiceTest : public testing::Test {
+ public:
+  PasswordReceiverServiceTest() {
+    password_store_ = base::MakeRefCounted<TestPasswordStore>();
+    password_store_->Init(/*prefs=*/nullptr,
+                          /*affiliated_match_helper=*/nullptr);
+
+    password_receiver_service_ = std::make_unique<PasswordReceiverService>(
+        /*sync_bridge=*/nullptr, password_store_.get());
+  }
+
+  void TearDown() override {
+    password_store_->ShutdownOnUIThread();
+    testing::Test::TearDown();
+  }
+
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+
+  void AddLoginAndWait(const PasswordForm& form) {
+    password_store_->AddLogin(form);
+    RunUntilIdle();
+  }
+
+  PasswordReceiverServiceInterface* password_receiver_service() {
+    return password_receiver_service_.get();
+  }
+
+  TestPasswordStore& password_store() { return *password_store_; }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  scoped_refptr<TestPasswordStore> password_store_;
+  std::unique_ptr<PasswordReceiverService> password_receiver_service_;
+};
+
+TEST_F(PasswordReceiverServiceTest,
+       ShouldAcceptIncomingInvitationWhenStoreIsEmpty) {
+  IncomingSharingInvitation invitation = CreateIncomingSharingInvitation();
+
+  password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
+
+  RunUntilIdle();
+
+  PasswordForm stored_password =
+      IncomingSharingInvitationToPasswordForm(invitation);
+  stored_password.in_store = PasswordForm::Store::kProfileStore;
+  EXPECT_THAT(password_store().stored_passwords().at(invitation.url.spec()),
+              testing::ElementsAre(stored_password));
+}
+
+TEST_F(PasswordReceiverServiceTest,
+       ShouldIgnoreIncomingInvitationWhenPasswordAlreadyExists) {
+  IncomingSharingInvitation invitation = CreateIncomingSharingInvitation();
+  PasswordForm stored_password =
+      IncomingSharingInvitationToPasswordForm(invitation);
+  stored_password.in_store = PasswordForm::Store::kProfileStore;
+  AddLoginAndWait(stored_password);
+
+  password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
+
+  RunUntilIdle();
+
+  EXPECT_THAT(password_store().stored_passwords().at(invitation.url.spec()),
+              testing::ElementsAre(stored_password));
+}
+
+TEST_F(PasswordReceiverServiceTest,
+       ShouldIgnoreIncomingInvitationWhenConflictingPasswordExists) {
+  IncomingSharingInvitation invitation = CreateIncomingSharingInvitation();
+  PasswordForm conflicting_password =
+      IncomingSharingInvitationToPasswordForm(invitation);
+  conflicting_password.password_value = u"AnotherPassword";
+  conflicting_password.in_store = PasswordForm::Store::kProfileStore;
+  AddLoginAndWait(conflicting_password);
+
+  password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
+
+  RunUntilIdle();
+
+  EXPECT_THAT(password_store().stored_passwords().at(invitation.url.spec()),
+              testing::ElementsAre(conflicting_password));
+}
+
+}  // namespace password_manager

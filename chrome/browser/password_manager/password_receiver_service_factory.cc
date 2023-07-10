@@ -61,5 +61,8 @@ KeyedService* PasswordReceiverServiceFactory::BuildServiceInstanceFor(
       password_manager::IncomingPasswordSharingInvitationSyncBridge>(
       std::move(change_processor));
 
-  return new password_manager::PasswordReceiverService(std::move(sync_bridge));
+  return new password_manager::PasswordReceiverService(
+      std::move(sync_bridge), PasswordStoreFactory::GetForProfile(
+                                  profile, ServiceAccessType::EXPLICIT_ACCESS)
+                                  .get());
 }
