@@ -31,6 +31,9 @@ const char AccessCodeCastMetrics::kHistogramFreezeCount[] =
     "AccessCodeCast.Session.FreezeCount";
 const char AccessCodeCastMetrics::kHistogramFreezeDuration[] =
     "AccessCodeCast.Session.FreezeDuration";
+const char AccessCodeCastMetrics::kHistogramNewDeviceRouteCreationDuration[] =
+    "AccessCodeCast.Session.NewDeviceRouteCreationDuration";
+
 const char AccessCodeCastMetrics::kHistogramRememberedDevicesCount[] =
     "AccessCodeCast.Discovery.RememberedDevicesCount";
 const char AccessCodeCastMetrics::kHistogramRouteDiscoveryTypeAndSource[] =
@@ -193,5 +196,13 @@ void AccessCodeCastMetrics::RecordSavedDeviceConnectDuration(
     base::TimeDelta duration) {
   base::UmaHistogramMediumTimes(
       /*name=*/kHistogramSavedDeviceRouteCreationDuration,
+      /*sample=*/duration);
+}
+
+// static
+void AccessCodeCastMetrics::RecordNewDeviceConnectDuration(
+    base::TimeDelta duration) {
+  base::UmaHistogramMediumTimes(
+      /*name=*/kHistogramNewDeviceRouteCreationDuration,
       /*sample=*/duration);
 }

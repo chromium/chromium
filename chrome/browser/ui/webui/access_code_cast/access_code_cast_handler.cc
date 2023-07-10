@@ -183,6 +183,7 @@ void AccessCodeCastHandler::AddSink(
           std::move(callback), AddSinkResultCode::UNKNOWN_ERROR);
   add_sink_callback_ = std::move(base::BindOnce(&AddSinkMetricsCallback))
                            .Then(std::move(callback_with_default_invoker));
+  add_sink_request_time_ = base::Time::Now();
 
   if (!media_route_starter_) {
     std::move(add_sink_callback_).Run(AddSinkResultCode::UNKNOWN_ERROR);
@@ -366,6 +367,8 @@ void AccessCodeCastHandler::OnRouteResponse(MediaCastMode cast_mode,
     return;
   }
 
+  AccessCodeCastMetrics::RecordNewDeviceConnectDuration(base::Time::Now() -
+                                                        add_sink_request_time_);
   base::UmaHistogramSparse("MediaRouter.Source.CastingSource", cast_mode);
   std::move(dialog_callback).Run(RouteRequestResultCode::OK);
 }

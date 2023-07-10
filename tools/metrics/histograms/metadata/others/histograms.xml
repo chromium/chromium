@@ -237,6 +237,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="AccessCodeCast.Session.NewDeviceRouteCreationDuration"
+    units="ms" expires_after="2023-11-12">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    The amount of time in milliseconds that it takes to connect to a new device.
+    It is the combination of connecting to our server, validating the access
+    code, constructing a cast device, opening a channel to that device, and then
+    waiting for success. It is only recorded if the request was successful; not
+    recorded for non-local routes. Logged only on desktop platforms.
+  </summary>
+</histogram>
+
 <histogram name="AccessCodeCast.Session.RouteDiscoveryTypeAndSource"
     enum="AccessCodeCastDiscoveryTypeAndSource" expires_after="2023-11-12">
   <owner>bzielinski@google.com</owner>
