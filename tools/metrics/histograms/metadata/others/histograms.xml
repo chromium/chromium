@@ -8092,14 +8092,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiProfile.UsersPerSessionIncremental" units="units"
-    expires_after="2022-04-10">
+    expires_after="2023-12-06">
   <owner>skuhne@chromium.org</owner>
+  <owner>antrim@chromium.org</owner>
   <summary>
     The number of users simultaneously signed into a multiprofile session on
     Chrome OS. This is recorded whenever a user gets added to the session. To
     get the correct count, all following counts must be subtracted. Example: If
     100 single user, 20 two user and 5 three user sessions, there were
     100-20-5=75 single user sessions, 100-80=20 dual user sessions and so on.
+    Warning: this histogram was expired from 2022-04-10 till 2023-07-10.
   </summary>
 </histogram>
 
