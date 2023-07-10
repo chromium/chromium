@@ -176,6 +176,7 @@ using l10n_util::GetNSString;
   [self.advancedSettingsSigninMediator
       saveUserPreferenceForSigninResult:signinResult
                     originalSigninState:self.signinStateForCancel];
+  [self.advancedSettingsSigninNavigationController cleanUpSettings];
   self.advancedSettingsSigninNavigationController.navigationDelegate = nil;
   self.advancedSettingsSigninNavigationController = nil;
   self.advancedSettingsSigninMediator = nil;
