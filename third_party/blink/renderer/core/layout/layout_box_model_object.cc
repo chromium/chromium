@@ -611,18 +611,17 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
     sticky_container = sticky_container->ContainingBlock();
   }
 
+  DCHECK(scroll_container_layer->GetLayoutBox());
+  auto& scroll_container = *scroll_container_layer->GetLayoutBox();
+  const PhysicalOffset scroll_container_border_offset(
+      scroll_container.BorderLeft(), scroll_container.BorderTop());
+
   // The sticky position constraint rects should be independent of the current
   // scroll position therefore we should ignore the scroll offset when
   // calculating the quad.
   // TODO(crbug.com/966131): Is kIgnoreTransforms correct here?
   MapCoordinatesFlags flags =
       kIgnoreTransforms | kIgnoreScrollOffset | kIgnoreStickyOffset;
-  PhysicalOffset skipped_containers_offset =
-      location_container->LocalToAncestorPoint(PhysicalOffset(),
-                                               sticky_container, flags);
-  DCHECK(scroll_container_layer);
-  DCHECK(scroll_container_layer->GetLayoutBox());
-  auto& scroll_container = *scroll_container_layer->GetLayoutBox();
 
   LayoutUnit max_container_width =
       IsA<LayoutView>(sticky_container)
@@ -637,25 +636,20 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
 
   // Map the containing block to the inner corner of the scroll ancestor without
   // transforms.
-  PhysicalRect scroll_container_relative_padding_box_rect;
+  PhysicalRect scroll_container_relative_containing_block_rect;
   if (sticky_container == &scroll_container) {
-    scroll_container_relative_padding_box_rect =
+    scroll_container_relative_containing_block_rect =
         sticky_container->PhysicalLayoutOverflowRect();
   } else {
     PhysicalRect local_rect = sticky_container->PhysicalPaddingBoxRect();
-    scroll_container_relative_padding_box_rect =
+    scroll_container_relative_containing_block_rect =
         sticky_container->LocalToAncestorRect(local_rect, &scroll_container,
                                               flags);
   }
 
-  // Remove top-left border offset from overflow scroller.
-  PhysicalOffset scroll_container_border_offset(scroll_container.BorderLeft(),
-                                                scroll_container.BorderTop());
-  scroll_container_relative_padding_box_rect.Move(
+  // Make relative to the padding-box instead of border-box.
+  scroll_container_relative_containing_block_rect.Move(
       -scroll_container_border_offset);
-
-  PhysicalRect scroll_container_relative_containing_block_rect(
-      scroll_container_relative_padding_box_rect);
 
   // This is removing the padding of the containing block's overflow rect to get
   // the flow box rectangle and removing the margin of the sticky element to
@@ -679,30 +673,29 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   constraints->scroll_container_relative_containing_block_rect =
       scroll_container_relative_containing_block_rect;
 
+  // Compute the sticky-box rect.
   PhysicalRect sticky_box_rect;
-  if (IsLayoutInline()) {
-    sticky_box_rect = To<LayoutInline>(this)->PhysicalLinesBoundingBox();
-  } else if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
-    const LayoutBox& box = To<LayoutBox>(*this);
-    sticky_box_rect = PhysicalRect(box.PhysicalLocation(), box.Size());
-  } else {
-    sticky_box_rect =
-        sticky_container->FlipForWritingMode(To<LayoutBox>(this)->FrameRect());
-  }
-  PhysicalOffset sticky_location =
-      sticky_box_rect.offset + skipped_containers_offset;
+  {
+    if (IsLayoutInline()) {
+      sticky_box_rect = To<LayoutInline>(this)->PhysicalLinesBoundingBox();
+    } else if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
+      const LayoutBox& box = To<LayoutBox>(*this);
+      sticky_box_rect = PhysicalRect(box.PhysicalLocation(), box.Size());
+    } else {
+      sticky_box_rect = sticky_container->FlipForWritingMode(
+          To<LayoutBox>(this)->FrameRect());
+    }
 
-  // The scroll_container_relative_sticky_box_rect position is the padding box
-  // so we need to remove the border when finding the position of the sticky box
-  // within the scroll ancestor if the container is not our scroll ancestor. If
-  // the container is our scroll ancestor, we also need to remove the border
-  // box because we want the position from within the scroller border.
-  PhysicalOffset container_border_offset(sticky_container->BorderLeft(),
-                                         sticky_container->BorderTop());
-  sticky_location -= container_border_offset;
-  constraints->scroll_container_relative_sticky_box_rect = PhysicalRect(
-      scroll_container_relative_padding_box_rect.offset + sticky_location,
-      sticky_box_rect.size);
+    PhysicalRect scroll_container_relative_sticky_box_rect =
+        location_container->LocalToAncestorRect(sticky_box_rect,
+                                                &scroll_container, flags);
+
+    // Make relative to the padding-box instead of border-box.
+    scroll_container_relative_sticky_box_rect.Move(
+        -scroll_container_border_offset);
+    constraints->scroll_container_relative_sticky_box_rect =
+        scroll_container_relative_sticky_box_rect;
+  }
 
   // To correctly compute the offsets, the constraints need to know about any
   // nested position:sticky elements between themselves and their
