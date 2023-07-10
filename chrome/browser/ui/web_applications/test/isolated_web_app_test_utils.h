@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/version.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
@@ -133,9 +134,14 @@ TestSignedWebBundle BuildDefaultTestSignedWebBundle(
 
 // Adds an Isolated Web App to the WebAppRegistrar. The IWA will have an empty
 // filepath for |IsolatedWebAppLocation|.
-AppId AddDummyIsolatedAppToRegistry(Profile* profile,
-                                    const GURL& start_url,
-                                    const std::string& name);
+AppId AddDummyIsolatedAppToRegistry(
+    Profile* profile,
+    const GURL& start_url,
+    const std::string& name,
+    const WebApp::IsolationData& isolation_data =
+        WebApp::IsolationData(InstalledBundle{.path = base::FilePath()},
+                              base::Version("1.0.0")));
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_WEB_APP_TEST_UTILS_H_

@@ -11,6 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/test/test_future.h"
+#include "base/version.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -233,9 +235,17 @@ TestSignedWebBundle BuildDefaultTestSignedWebBundle(
   return builder.Build();
 }
 
-AppId AddDummyIsolatedAppToRegistry(Profile* profile,
-                                    const GURL& start_url,
-                                    const std::string& name) {
+// TODO(crbug.com/1459157): This function should probably be built on top of
+// `test::InstallDummyWebApp`, instead of committing the update and triggering
+// `NotifyWebAppInstalled` manually. However, the `InstallFromInfoCommand` used
+// by that function does not currently allow setting the `WebApp::IsolationData`
+// (which is good for non-test-code, as all real IWA installs must go through
+// the `InstallIsolatedWebAppCommand`).
+AppId AddDummyIsolatedAppToRegistry(
+    Profile* profile,
+    const GURL& start_url,
+    const std::string& name,
+    const WebApp::IsolationData& isolation_data) {
   CHECK(profile);
   WebAppProvider* provider = WebAppProvider::GetForTest(profile);
   CHECK(provider);
@@ -244,11 +254,16 @@ AppId AddDummyIsolatedAppToRegistry(Profile* profile,
   const AppId app_id = isolated_web_app->app_id();
   isolated_web_app->SetName(name);
   isolated_web_app->SetScope(isolated_web_app->start_url());
-  isolated_web_app->SetIsolationData(WebApp::IsolationData(
-      InstalledBundle{.path = base::FilePath()}, base::Version("1.0.0")));
+  isolated_web_app->SetIsolationData(isolation_data);
 
-  ScopedRegistryUpdate update(&provider->sync_bridge_unsafe());
-  update->CreateApp(std::move(isolated_web_app));
+  base::test::TestFuture<bool> future;
+  {
+    ScopedRegistryUpdate update(&provider->sync_bridge_unsafe(),
+                                future.GetCallback());
+    update->CreateApp(std::move(isolated_web_app));
+  }
+  EXPECT_TRUE(future.Take());
+  provider->install_manager().NotifyWebAppInstalled(app_id);
   return app_id;
 }
 }  // namespace web_app

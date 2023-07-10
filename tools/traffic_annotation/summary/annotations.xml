@@ -428,4 +428,6 @@ Refer to README.md for content description and update process.
  <item id="ntp_image_url_verification" added_in_milestone="116" content_hash_code="08163e54" os_list="linux,windows,chromeos" file_path="chrome/browser/search/background/ntp_background_service.cc" />
  <item id="device_bound_session_register" added_in_milestone="116" content_hash_code="0682bd33" os_list="linux" file_path="chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.cc" />
  <item id="passkey_enclave_client" added_in_milestone="117" content_hash_code="06c3fa70" os_list="linux,windows" file_path="device/fido/enclave/enclave_http_client.cc" />
+ <item id="iwa_update_discovery_update_manifest" added_in_milestone="117" type="partial" second_id="iwa_update_manifest_fetcher" content_hash_code="021e8cdf" os_list="chromeos" semantics_fields="1,2,3,7,8,9" policy_fields="3,4" file_path="chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.cc" />
+ <item id="iwa_update_discovery_web_bundle" added_in_milestone="117" type="partial" second_id="iwa_bundle_downloader" content_hash_code="044a85c3" os_list="chromeos" semantics_fields="1,2,3,7,8,9" policy_fields="3,4" file_path="chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.cc" />
 </annotations>
