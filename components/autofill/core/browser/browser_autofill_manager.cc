@@ -243,6 +243,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
     case PopupItemId::kAddressEntry:
     case PopupItemId::kCreditCardEntry:
+    case PopupItemId::kDeleteAddressProfile:
       NOTREACHED();
   }
   NOTREACHED();

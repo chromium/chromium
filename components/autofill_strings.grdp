@@ -109,6 +109,10 @@
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM" desc="Screen reader announcement indicating that current form was autofilled.">
     The form was filled in
   </message>
+  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that delete autofill profile option was selected." translateable="false">
+    The delete address option was selected
+  </message>
 
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM" desc="Screen reader announcement indicating that current form autofilled values were cleared.">
     The autofilled info was cleared from the form
@@ -120,6 +124,10 @@
 
   <message name="IDS_AUTOFILL_MANAGE" desc="The text displayed at the bottom of the Autofill popup to allow the user to manage their Autofill preferences for addresses, credit cards, and passwords. Imperative. When the user clicks on it, opens the Autofill settings page." meaning="Manage addresses, credit cards and passwords in the user profile that can be used by Chrome Autofill.">
     Manage...
+  </message>
+
+  <message name="IDS_AUTOFILL_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the bottom of the Autofill sub menu to open the delete address profile dialog." meaning="Entry point to address profile deletion." translateable="false">
+    Delete address
   </message>
 
   <if expr="not use_titlecase">

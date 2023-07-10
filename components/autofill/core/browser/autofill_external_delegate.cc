@@ -280,6 +280,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       autofill_metrics::LogAutofillSelectedManageEntry(popup_type_);
       manager_->ShowAutofillSettings(popup_type_);
       break;
+    case PopupItemId::kDeleteAddressProfile:
+      // TODO(crbug.com/1459990): call the manager to display the delete address
+      // profile dialog.
+      break;
     case PopupItemId::kClearForm:
       // This serves as a clear form or undo autofill suggestion, depending on
       // the state of the feature `kAutofillUndo`.

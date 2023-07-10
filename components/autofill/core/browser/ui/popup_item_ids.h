@@ -39,6 +39,7 @@ enum class PopupItemId : int {
   kSeePromoCodeDetails,
   kWebauthnSignInWithAnotherDevice,
   kIbanEntry,
+  kDeleteAddressProfile,
 };
 
 // List of `PopupItemId` that trigger filling a value into an input element

@@ -546,6 +546,7 @@ bool IsFooterFrontendId(PopupItemId frontend_id) {
     case PopupItemId::kClearForm:
     case PopupItemId::kAutofillOptions:
     case PopupItemId::kSeePromoCodeDetails:
+    case PopupItemId::kDeleteAddressProfile:
       return true;
     default:
       return false;
