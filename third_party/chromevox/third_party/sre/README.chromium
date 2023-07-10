@@ -2,7 +2,9 @@ Name: Speech Rule Engine
 URL: https://github.com/zorkow/speech-rule-engine
 Version: 2.3.0-beta
 License: Apache 2.0
+License File: LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 Speech rule engine (SRE) can translate XML expressions into speech strings
