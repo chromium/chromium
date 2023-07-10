@@ -852,7 +852,12 @@ bool ServiceWorkerMainResourceLoader::IsEligibleForRecordingTimingMetrics() {
     return false;
   }
 
-  CHECK(!find_registration_start_time_.is_null());
+  // Don't record metrics when DevTools specify force_update_on_page_load to
+  // reduce noise.
+  if (find_registration_start_time_.is_null()) {
+    return false;
+  }
+
   DCHECK(!completion_time_.is_null());
 
   return true;
