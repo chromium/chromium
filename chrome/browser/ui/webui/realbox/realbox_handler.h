@@ -67,6 +67,9 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
 
   ~RealboxHandler() override;
 
+  // Returns true if the page remote is bound and ready to receive calls.
+  bool IsRemoteBound() const;
+
   // omnibox::mojom::PageHandler:
   void SetPage(mojo::PendingRemote<omnibox::mojom::Page> pending_page) override;
   void OnFocusChanged(bool focused) override;
