@@ -81,7 +81,7 @@ class CORE_EXPORT CSSAnimations final {
                                       Element& animating_element,
                                       const ComputedStyleBuilder&);
   static void CalculateAnimationUpdate(CSSAnimationUpdate&,
-                                       const Element& animating_element,
+                                       Element& animating_element,
                                        Element&,
                                        const ComputedStyleBuilder&,
                                        const ComputedStyle* parent_style,

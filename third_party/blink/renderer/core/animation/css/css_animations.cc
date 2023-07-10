@@ -1508,7 +1508,7 @@ void CSSAnimations::CalculateTimelineUpdate(
 
 void CSSAnimations::CalculateAnimationUpdate(
     CSSAnimationUpdate& update,
-    const Element& animating_element,
+    Element& animating_element,
     Element& element,
     const ComputedStyleBuilder& style_builder,
     const ComputedStyle* parent_style,
@@ -1669,7 +1669,7 @@ void CSSAnimations::CalculateAnimationUpdate(
 
         AnimationTimeline* timeline = existing_animation->Timeline();
         if (!is_animation_style_change && !animation->GetIgnoreCSSTimeline()) {
-          timeline = ComputeTimeline(&element, style_timeline, update,
+          timeline = ComputeTimeline(&animating_element, style_timeline, update,
                                      existing_animation->Timeline());
         }
 
@@ -1705,8 +1705,9 @@ void CSSAnimations::CalculateAnimationUpdate(
         }
       } else {
         DCHECK(!is_animation_style_change);
-        AnimationTimeline* timeline = ComputeTimeline(
-            &element, style_timeline, update, /* existing_timeline */ nullptr);
+        AnimationTimeline* timeline =
+            ComputeTimeline(&animating_element, style_timeline, update,
+                            /* existing_timeline */ nullptr);
 
         CSSAnimationProxy animation_proxy(timeline, /* animation */ nullptr,
                                           is_paused, range_start, range_end,
