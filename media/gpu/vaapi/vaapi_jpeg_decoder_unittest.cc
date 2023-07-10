@@ -549,33 +549,11 @@ TEST_P(VaapiJpegDecoderWithDmaBufsTest, DecodeSucceeds) {
   if (exported_pixmap->pixmap->GetBufferFormat() == gfx::BufferFormat::YVU_420)
     std::swap(handle.planes[1], handle.planes[2]);
 
-  LocalGpuMemoryBufferManager gpu_memory_buffer_manager;
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-      gpu_memory_buffer_manager.ImportDmaBuf(
+  std::unique_ptr<vaapi_test_utils::DecodedImage> decoded_image =
+      vaapi_test_utils::NativePixmapToDecodedImage(
           handle, exported_pixmap->pixmap->GetBufferSize(),
           exported_pixmap->pixmap->GetBufferFormat());
-  ASSERT_TRUE(gpu_memory_buffer);
-  ASSERT_TRUE(gpu_memory_buffer->Map());
-  vaapi_test_utils::DecodedImage decoded_image{};
-  const gfx::BufferFormat format = gpu_memory_buffer->GetFormat();
-  if (format == gfx::BufferFormat::YVU_420) {
-    decoded_image.fourcc = VA_FOURCC_I420;
-    decoded_image.number_of_planes = 3u;
-  } else if (format == gfx::BufferFormat::YUV_420_BIPLANAR) {
-    decoded_image.fourcc = VA_FOURCC_NV12;
-    decoded_image.number_of_planes = 2u;
-  } else {
-    ASSERT_TRUE(false) << "Unsupported format "
-                       << gfx::BufferFormatToString(format);
-  }
-  decoded_image.size = gpu_memory_buffer->GetSize();
-  for (size_t plane = 0u;
-       plane < base::strict_cast<size_t>(decoded_image.number_of_planes);
-       plane++) {
-    decoded_image.planes[plane].data =
-        static_cast<uint8_t*>(gpu_memory_buffer->memory(plane));
-    decoded_image.planes[plane].stride = gpu_memory_buffer->stride(plane);
-  }
+  ASSERT_TRUE(decoded_image);
 
   // Decode the image using libyuv. Using |temp_*| for resource management.
   std::vector<uint8_t> temp_y;
@@ -585,9 +563,8 @@ TEST_P(VaapiJpegDecoderWithDmaBufsTest, DecodeSucceeds) {
       GetSwDecode(encoded_image, &temp_y, &temp_u, &temp_v);
   ASSERT_TRUE(sw_decoded_jpeg);
 
-  EXPECT_TRUE(vaapi_test_utils::CompareImages(*sw_decoded_jpeg, decoded_image,
+  EXPECT_TRUE(vaapi_test_utils::CompareImages(*sw_decoded_jpeg, *decoded_image,
                                               kMinSsim));
-  gpu_memory_buffer->Unmap();
 }
 
 // Make sure that JPEGs whose size is below the supported size range are

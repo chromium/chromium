@@ -196,6 +196,9 @@ source_set("vaapi_test_utils") {
     "//testing/gtest",
     "//third_party/libyuv:libyuv",
   ]
+  if (is_chromeos_ash) {
+    deps += [ "//media/gpu/test:local_gpu_memory_buffer_manager" ]
+  }
   public_deps = [ "//ui/gfx/geometry" ]
 }
 
