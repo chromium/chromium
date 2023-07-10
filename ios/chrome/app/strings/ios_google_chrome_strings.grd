@@ -615,13 +615,10 @@ Things to consider:
         Google Password Manager couldn't check all passwords. Try again later.
       </message>
       <message name="IDS_IOS_WHATS_NEW_APP_SETTINGS" desc="Text of the row indicating the step of opening the app settings. [iOS only]">
-        Go to Chrome Settings
+        Go to Chrome Settings.
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_STEP_3" desc="Text of the row indicating the third step to turn on Incognito Lock. [iOS only]">
-        Turn on “Lock Incognito Tabs When You Close Chrome”.
-      </message>
-      <message name="IDS_IOS_WHATS_NEW_CALENDAR_TITLE" desc="Google calendar title displayed in What's New. [iOS only]">
-        Create Calendar Events on Chrome
+        Turn on “Lock Incognito Tabs When You Close Chrome.”
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_SUBTITLE" desc="Incognito Lock subtitle displayed in What's New. [iOS only]">
         Lock your incognito when you leave Chrome or switch to a different app.
@@ -630,7 +627,7 @@ Things to consider:
         Maps in Chrome
       </message>
       <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_STEP_2" desc="Text of the row indicating the second step of of the Mini Maps feature. [iOS only]">
-        Tap “View with Google Maps on Chrome”
+        Tap “View with Google Maps on Chrome.”
       </message>
       <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED" desc="Text inside Password Details screen shown when password was compromised. [iOS only]" meaning="Text which explains the user that current password is compromised and it should be changed.">
           Your password was exposed in a data breach. Google Password Manager recommends changing it now.
