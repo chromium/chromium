@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/uuid.h"
 #include "content/public/browser/page_user_data.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_client.h"
 #include "url/origin.h"
@@ -49,9 +50,9 @@ class CONTENT_EXPORT AdAuctionPageData
   const std::set<std::string>& GetAuctionSignalsForOrigin(
       const url::Origin& origin) const;
 
-  void RegisterAdAuctionRequestContext(const std::string& id,
+  void RegisterAdAuctionRequestContext(const base::Uuid& id,
                                        AdAuctionRequestContext context);
-  AdAuctionRequestContext* GetContextForAdAuctionRequest(const std::string& id);
+  AdAuctionRequestContext* GetContextForAdAuctionRequest(const base::Uuid& id);
 
  private:
   explicit AdAuctionPageData(Page& page);
@@ -61,7 +62,7 @@ class CONTENT_EXPORT AdAuctionPageData
 
   std::map<url::Origin, std::set<std::string>> origin_auction_result_map_;
   std::map<url::Origin, std::set<std::string>> origin_auction_signals_map_;
-  std::map<std::string, AdAuctionRequestContext> context_map_;
+  std::map<base::Uuid, AdAuctionRequestContext> context_map_;
 };
 
 }  // namespace content

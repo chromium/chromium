@@ -259,6 +259,38 @@ void AuctionRunner::ResolvedDirectFromSellerSignalsPromise(
   NotifyPromiseResolved(auction_id.get(), config);
 }
 
+void AuctionRunner::ResolvedAuctionAdResponsePromise(
+    blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
+    mojo_base::BigBuffer response) {
+  if (state_ == State::kFailed) {
+    return;
+  }
+  blink::AuctionConfig* config =
+      LookupAuction(*owned_auction_config_, auction_id);
+  if (!config) {
+    mojo::ReportBadMessage(
+        "Invalid auction ID in ResolvedDirectFromSellerSignalsPromise");
+    return;
+  }
+  // If we aren't in B&A mode or we already have the response it's an error.
+  if (!config->server_response ||
+      (config->server_response && config->server_response->got_response)) {
+    mojo::ReportBadMessage(
+        "ResolvedAuctionAdResponsePromise updating non-promise");
+    return;
+  }
+  if (!auction_id->is_main_auction()) {
+    // TODO(1457241): Add support for multi-level auctions including server-side
+    // auctions.
+    mojo::ReportBadMessage(
+        "ResolvedAuctionAdResponsePromise only supported in main auction");
+    return;
+  }
+  config->server_response->got_response = true;
+  // TODO(1442274): Handle response.
+  // FailAuction(false);
+}
+
 void AuctionRunner::Abort() {
   // Don't abort if the auction already finished (either as success or failure;
   // this includes the case of multiple promise arguments rejecting).
@@ -353,6 +385,10 @@ AuctionRunner::AuctionRunner(
                std::move(log_private_aggregation_requests_callback)) {}
 
 void AuctionRunner::StartAuction() {
+  if (owned_auction_config_->server_response) {
+    // TODO(1442274): handle server response for single-level auction.
+    return;
+  }
   auction_.StartLoadInterestGroupsPhase(
       is_interest_group_api_allowed_callback_,
       base::BindOnce(&AuctionRunner::OnLoadInterestGroupsComplete,

@@ -50,13 +50,13 @@ const std::set<std::string>& AdAuctionPageData::GetAuctionSignalsForOrigin(
 }
 
 void AdAuctionPageData::RegisterAdAuctionRequestContext(
-    const std::string& id,
+    const base::Uuid& id,
     AdAuctionRequestContext context) {
   context_map_.insert(std::make_pair(id, std::move(context)));
 }
 
 AdAuctionRequestContext* AdAuctionPageData::GetContextForAdAuctionRequest(
-    const std::string& id) {
+    const base::Uuid& id) {
   auto it = context_map_.find(id);
   if (it == context_map_.end()) {
     return nullptr;

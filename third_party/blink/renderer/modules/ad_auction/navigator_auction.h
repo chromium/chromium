@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
@@ -216,9 +217,10 @@ class MODULES_EXPORT NavigatorAuction final
   // Completion callback for Mojo call made by deprecatedReplaceInURNComplete().
   void ReplaceInURNComplete(ScriptPromiseResolver* resolver);
 
-  void GetInterestGroupAdAuctionDataComplete(ScriptPromiseResolver* resolver,
-                                             mojo_base::BigBuffer request,
-                                             const WTF::String& request_id);
+  void GetInterestGroupAdAuctionDataComplete(
+      ScriptPromiseResolver* resolver,
+      mojo_base::BigBuffer request,
+      const absl::optional<base::Uuid>& request_id);
 
   // Manage queues of cross-site join and leave operations that have yet to be
   // sent to the browser process.

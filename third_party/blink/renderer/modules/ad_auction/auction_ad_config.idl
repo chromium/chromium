@@ -16,7 +16,13 @@ dictionary AuctionReportBuyersConfig {
 
 dictionary AuctionAdConfig {
   required USVString seller;
-  /* required */ USVString decisionLogicURL;
+
+  // Used for B&A auctions. If present we only look at the seller and
+  // interestGroupBuyers.
+  Promise<Uint8Array> serverResponse;
+  USVString requestId;
+
+  USVString decisionLogicURL;
   [ImplementedAs=decisionLogicUrlDeprecated]
   USVString decisionLogicUrl;
   USVString trustedScoringSignalsURL;

@@ -175,6 +175,21 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
         interest_group_buyers_;
   };
 
+  class ServerResponseResolved : public ScriptFunction::Callable {
+   public:
+    ServerResponseResolved(AuctionHandle* auction_handle,
+                           mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
+                           const String& seller_name);
+
+    ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
+    void Trace(Visitor* visitor) const override;
+
+   private:
+    Member<AuctionHandle> auction_handle_;
+    const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
+    const String seller_name_;
+  };
+
   class ResolveToConfigResolved : public ScriptFunction::Callable {
    public:
     ResolveToConfigResolved(AuctionHandle* auction_handle);
@@ -254,6 +269,13 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
       mojom::blink::DirectFromSellerSignalsPtr direct_from_seller_signals) {
     abortable_ad_auction_->ResolvedDirectFromSellerSignalsPromise(
         std::move(auction), std::move(direct_from_seller_signals));
+  }
+
+  void ResolvedAuctionAdResponsePromise(
+      mojom::blink::AuctionAdConfigAuctionIdPtr auction,
+      mojo_base::BigBuffer response) {
+    abortable_ad_auction_->ResolvedAuctionAdResponsePromise(
+        std::move(auction), std::move(response));
   }
 
   // AbortSignal::Algorithm implementation:
@@ -1017,6 +1039,54 @@ bool CopySellerFromIdlToMojo(ExceptionState& exception_state,
     return false;
   }
   output.seller = seller;
+  return true;
+}
+
+bool CopyServerResponseFromIdlToMojo(
+    NavigatorAuction::AuctionHandle* auction_handle,
+    mojom::blink::AuctionAdConfigAuctionId* auction_id,
+    ScriptState& script_state,
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasServerResponse()) {
+    if (input.hasRequestId()) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+          input, "requestId", input.requestId(),
+          "should not be specified without 'serverResponse'"));
+      return false;
+    }
+    // If it has neither field we have nothing to do, so return success.
+    return true;
+  }
+  if (!input.hasRequestId()) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, "serverResponse", "Promise",
+        "should not be specified without 'requestId'"));
+    return false;
+  }
+  output.server_response = mojom::blink::AuctionAdServerResponseConfig::New();
+  base::Uuid request_id = base::Uuid::ParseLowercase(input.requestId().Ascii());
+  if (!request_id.is_valid()) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, "serverResponse.requestId", input.requestId(),
+        "must be a valid request ID provided by the API."));
+    return false;
+  }
+  output.server_response->request_id = std::move(request_id);
+
+  if (!auction_handle) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "serverResponse for AuctionAdConfig is not supported");
+    return false;
+  }
+
+  auction_handle->AttachPromiseHandler(
+      script_state, input.serverResponse(),
+      MakeGarbageCollected<
+          NavigatorAuction::AuctionHandle::ServerResponseResolved>(
+          auction_handle, auction_id->Clone(), input.seller()));
   return true;
 }
 
@@ -1819,12 +1889,23 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
   mojom::blink::AuctionAdConfigAuctionIdPtr auction_id;
   if (is_top_level) {
     auction_id = mojom::blink::AuctionAdConfigAuctionId::NewMainAuction(0);
+    // For single-level auctions we need either a server response or a decision
+    // logic URL. For multi-level auctions we always need a decision logic URL.
+    if (!config.hasDecisionLogicURL() &&
+        !(config.hasServerResponse() && !config.hasComponentAuctions())) {
+      exception_state.ThrowTypeError(ErrorMissingRequired(
+          "ad auction config decisionLogicURL or serverResponse"));
+      return nullptr;
+    }
   } else {
     auction_id =
         mojom::blink::AuctionAdConfigAuctionId::NewComponentAuction(nested_pos);
   }
 
   if (!CopySellerFromIdlToMojo(exception_state, config, *mojo_config) ||
+      !CopyServerResponseFromIdlToMojo(auction_handle, auction_id.get(),
+                                       script_state, exception_state, config,
+                                       *mojo_config) ||
       !CopyDecisionLogicUrlFromIdlToMojo(context, exception_state, config,
                                          *mojo_config) ||
       !CopyTrustedScoringSignalsFromIdlToMojo(context, exception_state, config,
@@ -1869,6 +1950,14 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
     return mojom::blink::AuctionAdConfigPtr();
   }
 
+  if (mojo_config->server_response && !is_top_level) {
+    // TODO(1457241): Add support for multi-level auctions including server-side
+    // auctions.
+    exception_state.ThrowTypeError(
+        "Only top-level auctions may have 'serverResponse'.");
+    return mojom::blink::AuctionAdConfigPtr();
+  }
+
   if (config.hasSellerTimeout()) {
     mojo_config->auction_ad_config_non_shared_params->seller_timeout =
         base::Milliseconds(config.sellerTimeout());
@@ -1906,6 +1995,14 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
         exception_state.ThrowTypeError(
             "Auctions listed in componentAuctions may not have their own "
             "nested componentAuctions.");
+        return mojom::blink::AuctionAdConfigPtr();
+      }
+      // We need decision logic for component auctions even if they have a
+      // server response. We perform reporting client-side for component
+      // auctions.
+      if (!idl_component_auction->hasDecisionLogicURL()) {
+        exception_state.ThrowTypeError(ErrorMissingRequired(
+            "ad auction config decisionLogicURL or serverResponse"));
         return mojom::blink::AuctionAdConfigPtr();
       }
 
@@ -2132,11 +2229,6 @@ bool HandleOldDictNamesRun(AuctionAdConfig* config,
     } else {
       config->setDecisionLogicURL(config->decisionLogicUrlDeprecated());
     }
-  }
-  if (!config->hasDecisionLogicURL()) {
-    exception_state.ThrowTypeError(
-        ErrorMissingRequired("ad auction config decisionLogicURL"));
-    return false;
   }
 
   if (config->hasTrustedScoringSignalsUrlDeprecated()) {
@@ -2423,6 +2515,41 @@ NavigatorAuction::AuctionHandle::DirectFromSellerSignalsResolved::Call(
 }
 
 void NavigatorAuction::AuctionHandle::DirectFromSellerSignalsResolved::Trace(
+    Visitor* visitor) const {
+  visitor->Trace(auction_handle_);
+  Callable::Trace(visitor);
+}
+
+NavigatorAuction::AuctionHandle::ServerResponseResolved::ServerResponseResolved(
+    AuctionHandle* auction_handle,
+    mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
+    const String& seller_name)
+    : auction_handle_(auction_handle),
+      auction_id_(std::move(auction_id)),
+      seller_name_(seller_name) {}
+
+ScriptValue NavigatorAuction::AuctionHandle::ServerResponseResolved::Call(
+    ScriptState* script_state,
+    ScriptValue value) {
+  ExceptionState exception_state(script_state->GetIsolate(),
+                                 ExceptionState::kExecutionContext,
+                                 "NavigatorAuction", "runAdAuction");
+  v8::Local<v8::Value> v8_value = value.V8Value();
+  if (!v8_value->IsUint8Array()) {
+    exception_state.ThrowTypeError("'serverResponse' should be a Uint8Array");
+    auction_handle_->Abort();
+    return ScriptValue();
+  }
+
+  v8::Local<v8::Uint8Array> typed_array = v8_value.As<v8::Uint8Array>();
+  mojo_base::BigBuffer buffer(typed_array->ByteLength());
+  typed_array->CopyContents(buffer.data(), buffer.size());
+  auction_handle_->ResolvedAuctionAdResponsePromise(auction_id_->Clone(),
+                                                    std::move(buffer));
+  return ScriptValue();
+}
+
+void NavigatorAuction::AuctionHandle::ServerResponseResolved::Trace(
     Visitor* visitor) const {
   visitor->Trace(auction_handle_);
   Callable::Trace(visitor);
@@ -3385,12 +3512,16 @@ ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
 void NavigatorAuction::GetInterestGroupAdAuctionDataComplete(
     ScriptPromiseResolver* resolver,
     mojo_base::BigBuffer data,
-    const WTF::String& request_id) {
+    const absl::optional<base::Uuid>& request_id) {
   AdAuctionData* result = AdAuctionData::Create();
   auto not_shared =
       NotShared<DOMUint8Array>(DOMUint8Array::Create(data.data(), data.size()));
   result->setRequest(std::move(not_shared));
-  result->setRequestId(request_id);
+  std::string request_id_str;
+  if (request_id) {
+    request_id_str = request_id->AsLowercaseString();
+  }
+  result->setRequestId(WebString::FromLatin1(request_id_str));
   resolver->Resolve(result);
 }
 

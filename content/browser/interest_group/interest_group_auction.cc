@@ -2941,7 +2941,7 @@ void InterestGroupAuction::RequestSellerWorklet() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "request_seller_worklet",
                                     *trace_id_);
   auction_worklet_manager_->RequestSellerWorklet(
-      config_->decision_logic_url, config_->trusted_scoring_signals_url,
+      *config_->decision_logic_url, config_->trusted_scoring_signals_url,
       config_->seller_experiment_group_id,
       base::BindOnce(&InterestGroupAuction::OnSellerWorkletReceived,
                      base::Unretained(this)),

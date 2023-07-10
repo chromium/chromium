@@ -14,6 +14,8 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "base/uuid.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -152,6 +154,21 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
 
   // Typemapped to blink::mojom::AuctionAdConfigMaybePromiseBuyerCurrencies
   using MaybePromiseBuyerCurrencies = MaybePromise<BuyerCurrencies>;
+
+  // Server response and the request ID (for server side auctions). If this
+  // field is present then this auction is assumed to have run on the server.
+  struct BLINK_COMMON_EXPORT ServerResponseConfig {
+    ServerResponseConfig();
+    ServerResponseConfig(const ServerResponseConfig&);
+    ServerResponseConfig(ServerResponseConfig&&);
+    ~ServerResponseConfig();
+
+    ServerResponseConfig& operator=(const ServerResponseConfig&);
+    ServerResponseConfig& operator=(ServerResponseConfig&&);
+
+    base::Uuid request_id;
+    bool got_response = false;
+  };
 
   // Subset of AuctionConfig that is not shared by all auctions that are
   // using the same SellerWorklet object (so it's "not shared" between
@@ -297,8 +314,10 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // Seller running the auction.
   url::Origin seller;
 
+  absl::optional<ServerResponseConfig> server_response;
+
   // Both URLS, if present, must be same-origin to `seller`.
-  GURL decision_logic_url;
+  absl::optional<GURL> decision_logic_url;
   absl::optional<GURL> trusted_scoring_signals_url;
 
   // Other parameters are grouped in a struct that is passed to SellerWorklets.

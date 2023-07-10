@@ -4141,7 +4141,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Missing "
-      "required field ad auction config decisionLogicURL",
+      "required field ad auction config decisionLogicURL or serverResponse",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
   })"));

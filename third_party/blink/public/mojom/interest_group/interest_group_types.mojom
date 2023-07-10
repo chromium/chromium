@@ -7,6 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "mojo/public/mojom/base/uuid.mojom";
 import "third_party/blink/public/mojom/interest_group/ad_display_size.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -261,6 +262,11 @@ union AuctionAdConfigMaybePromiseDirectFromSellerSignals {
   DirectFromSellerSignals? value;
 };
 
+struct AuctionAdServerResponseConfig {
+  // The response will be filled in later when a promise resolves.
+  mojo_base.mojom.Uuid request_id;
+};
+
 // For each report type, provides the bucket offset and scalar multiplier for
 // that report.
 //
@@ -405,8 +411,12 @@ struct AuctionAdConfig {
   // seller and publisher could be different entities, or the same entity.
   url.mojom.Origin seller;
 
+  // Server response and the request ID (for server side auctions). If this
+  // field is present then this auction is assumed to have run on the server.
+  AuctionAdServerResponseConfig? server_response;
+
   // `decision_logic_url`'s origin must match the seller's origin.
-  url.mojom.Url decision_logic_url;
+  url.mojom.Url? decision_logic_url;
 
   // Base URL for per-bid data passed to the seller worklet. Must be same
   // origin with `seller`.

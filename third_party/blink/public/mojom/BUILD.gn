@@ -775,6 +775,16 @@ mojom("mojom_platform") {
     {
       types = [
         {
+          mojom = "blink.mojom.AuctionAdServerResponseConfig"
+          cpp = "::blink::AuctionConfig::ServerResponseConfig"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/interest_group/auction_config_mojom_traits.h" ]
+      traits_public_deps = [ "//url/mojom:mojom_traits" ]
+    },
+    {
+      types = [
+        {
           mojom = "blink.mojom.AuctionAdConfig"
           cpp = "::blink::AuctionConfig"
         },

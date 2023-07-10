@@ -375,7 +375,7 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
     std::vector<v8::Local<v8::Value>> component_auction_vector;
     for (const auto& component_auction : component_auctions) {
       if (!AppendAuctionConfig(
-              v8_helper, context, component_auction.decision_logic_url,
+              v8_helper, context, *component_auction.decision_logic_url,
               component_auction.trusted_scoring_signals_url,
               experiment_group_id, component_auction.non_shared_params,
               &component_auction_vector)) {

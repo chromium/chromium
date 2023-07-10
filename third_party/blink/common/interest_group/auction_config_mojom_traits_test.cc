@@ -281,6 +281,16 @@ bool SerializeAndDeserialize(const AdCurrency& in) {
   return success;
 }
 
+bool SerializeAndDeserialize(const AuctionConfig::ServerResponseConfig& in) {
+  AuctionConfig::ServerResponseConfig out;
+  bool success = mojo::test::SerializeAndDeserialize<
+      blink::mojom::AuctionAdServerResponseConfig>(in, out);
+  if (success) {
+    EXPECT_EQ(in.request_id, out.request_id);
+  }
+  return success;
+}
+
 TEST(AuctionConfigMojomTraitsTest, Empty) {
   AuctionConfig auction_config;
   EXPECT_FALSE(SerializeAndDeserialize(auction_config));
@@ -307,7 +317,7 @@ TEST(AuctionConfigMojomTraitsTest, SellerDecisionUrlMismatch) {
   // scheme is wrong.
   auction_config.decision_logic_url = GURL("blob:https://seller.test/foo");
   ASSERT_EQ(auction_config.seller,
-            url::Origin::Create(auction_config.decision_logic_url));
+            url::Origin::Create(*auction_config.decision_logic_url));
   EXPECT_FALSE(SerializeAndDeserialize(auction_config));
 }
 
@@ -614,6 +624,14 @@ TEST(AuctionConfigMojomTraitsTest, MaybePromiseDirectFromSellerSignals) {
         SerializeAndDeserialize<
             blink::mojom::AuctionAdConfigMaybePromiseDirectFromSellerSignals>(
             signals));
+  }
+}
+
+TEST(AuctionConfigMojomTraitsTest, ServerResponseConfig) {
+  {
+    AuctionConfig::ServerResponseConfig config;
+    config.request_id = base::Uuid::GenerateRandomV4();
+    EXPECT_TRUE(SerializeAndDeserialize(config));
   }
 }
 

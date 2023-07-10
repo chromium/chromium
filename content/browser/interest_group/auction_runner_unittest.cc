@@ -133,6 +133,8 @@ const char kTopLevelPostAuctionSignalsPlaceholder[] =
     "topLevelWinningBidCurrency=${topLevelWinningBidCurrency}&"
     "topLevelMadeWinningBid=${topLevelMadeWinningBid}";
 
+const char kRequestId[] = "fakeRequestId";
+
 const auction_worklet::mojom::PrivateAggregationRequestPtr
     kExpectedGenerateBidPrivateAggregationRequest =
         auction_worklet::mojom::PrivateAggregationRequest::New(
@@ -1550,6 +1552,11 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
           MaybePromiseDirectFromSellerSignals::FromPromise();
     }
 
+    if (server_response_request_id_) {
+      auction_config.server_response.emplace();
+      auction_config.server_response->request_id = *server_response_request_id_;
+    }
+
     auction_config.non_shared_params.interest_group_buyers = std::move(buyers);
 
     auction_config.non_shared_params.seller_signals = MakeSellerSignals(
@@ -2743,6 +2750,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   uint16_t all_buyers_group_limit_ = std::numeric_limits<std::uint16_t>::max();
   absl::optional<base::flat_map<std::string, double>>
       all_buyers_priority_signals_;
+
+  // This is also tested only with promises at this level.
+  absl::optional<base::Uuid> server_response_request_id_;
 
   absl::optional<std::vector<absl::uint128>> auction_report_buyer_keys_;
   absl::optional<base::flat_map<
@@ -7864,6 +7874,62 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise8) {
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), absl::nullopt);
   task_environment()->RunUntilIdle();
   EXPECT_EQ("ResolvedDirectFromSellerSignalsPromise updating non-promise",
+            TakeBadMessage());
+}
+
+// Server response was not passed in, but promise response called.
+TEST_F(AuctionRunnerTest, PromiseServerResponseUpdateNonPromise) {
+  server_response_request_id_ = absl::nullopt;
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  abortable_ad_auction_->ResolvedAuctionAdResponsePromise(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      mojo_base::BigBuffer());
+
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ("ResolvedAuctionAdResponsePromise updating non-promise",
+            TakeBadMessage());
+}
+
+// Server response passed in, but promise response called twice.
+TEST_F(AuctionRunnerTest, PromiseServerResponseResolveTwice) {
+  server_response_request_id_ = base::Uuid::ParseLowercase(kRequestId);
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder2, kBidder2Name, kBidder2Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
+      /*ad_component_urls=*/absl::nullopt));
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  abortable_ad_auction_->ResolvedAuctionAdResponsePromise(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      mojo_base::BigBuffer());
+
+  abortable_ad_auction_->ResolvedAuctionAdResponsePromise(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      mojo_base::BigBuffer());
+
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ("ResolvedAuctionAdResponsePromise updating non-promise",
             TakeBadMessage());
 }
 

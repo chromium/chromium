@@ -9,6 +9,7 @@ import "third_party/blink/public/mojom/parakeet/ad_request.mojom";
 import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/uuid.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -75,6 +76,14 @@ interface AbortableAdAuction {
   ResolvedDirectFromSellerSignalsPromise(
       AuctionAdConfigAuctionId auction,
       DirectFromSellerSignals? direct_from_seller_signals);
+
+  // Used to provide result of resolving a promise specifying the Server
+  // Response for an AuctionConfig that uses AuctionAdServerResponseConfig.
+  // `result` is an encrypted payload containing the response from the bidding
+  // and auction server.
+  ResolvedAuctionAdResponsePromise(
+    AuctionAdConfigAuctionId auction,
+    mojo_base.mojom.BigBuffer result);
 
   // Aborts the auction for which the receiver for this pipe was passed to
   // RunAdAuction(), unless the auction has already finished (with at most
@@ -207,8 +216,6 @@ interface AdAuctionService {
 
   // Gets the ad auction data for running an external auction on a bidding and
   // auction server.
-  // `request_id` is an RFC 4122 UUID encoded using only lowercase hexadecimal
-  // digits, like "f81d4fae-7dec-11d0-a765-00a0c91e6bf6".
   GetInterestGroupAdAuctionData(url.mojom.Origin seller)
-      => (mojo_base.mojom.BigBuffer request, string request_id);
+      => (mojo_base.mojom.BigBuffer request, mojo_base.mojom.Uuid? request_id);
 };

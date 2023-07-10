@@ -378,7 +378,7 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
   // If the interest group API is not allowed for this origin do nothing.
   if (!IsInterestGroupAPIAllowed(
           ContentBrowserClient::InterestGroupApiOperation::kSell, origin())) {
-    std::move(callback).Run({}, "");
+    std::move(callback).Run({}, {});
     return;
   }
 
@@ -723,7 +723,7 @@ void AdAuctionServiceImpl::OnGotAuctionData(
     BiddingAndAuctionDataConstructionState state,
     BiddingAndAuctionData data) {
   if (data.request.empty()) {
-    std::move(state.callback).Run({}, "");
+    std::move(state.callback).Run({}, {});
     return;
   }
 
@@ -738,7 +738,7 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
     BiddingAndAuctionDataConstructionState state,
     absl::optional<BiddingAndAuctionServerKey> maybe_key) {
   if (!maybe_key) {
-    std::move(state.callback).Run({}, "");
+    std::move(state.callback).Run({}, {});
     return;
   }
 
@@ -752,13 +752,12 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
           std::string(state.data.request.begin(), state.data.request.end()),
           maybe_key->key, maybe_key_config.value());
   if (!maybe_request.ok()) {
-    std::move(state.callback).Run({}, "");
+    std::move(state.callback).Run({}, {});
     return;
   }
 
   std::string data = maybe_request->EncapsulateAndSerialize();
   const auto* bytes = reinterpret_cast<const uint8_t*>(data.data());
-  std::string request_id_str = state.request_id.AsLowercaseString();
 
   AdAuctionPageData* ad_auction_page_data =
       PageUserData<AdAuctionPageData>::GetOrCreateForPage(
@@ -767,13 +766,13 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
   AdAuctionRequestContext context(std::move(state.seller),
                                   std::move(state.data.group_names),
                                   std::move(*maybe_request).ReleaseContext());
-  ad_auction_page_data->RegisterAdAuctionRequestContext(request_id_str,
+  ad_auction_page_data->RegisterAdAuctionRequestContext(state.request_id,
                                                         std::move(context));
 
   std::move(state.callback)
       .Run(mojo_base::BigBuffer(
                base::make_span(bytes, data.size() * sizeof(char))),
-           request_id_str);
+           state.request_id);
 }
 
 InterestGroupManagerImpl& AdAuctionServiceImpl::GetInterestGroupManager()

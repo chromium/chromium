@@ -7820,7 +7820,7 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
 
   struct AdAuctionDataAndId {
     std::string request;
-    std::string request_id;
+    absl::optional<base::Uuid> request_id;
   };
 
   // Gets auction data in the frame `rfh`. If `rfh` is nullptr, uses the main
@@ -7835,8 +7835,9 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
     base::RunLoop run_loop;
     absl::optional<AdAuctionDataAndId> output;
     interest_service->GetInterestGroupAdAuctionData(
-        seller, base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
-                                               const std::string& id) {
+        seller,
+        base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
+                                       const absl::optional<base::Uuid>& id) {
           AdAuctionDataAndId data;
           data.request = std::string(reinterpret_cast<char*>(result.data()),
                                      result.size());
@@ -8213,8 +8214,9 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
   AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
       static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
   ASSERT_TRUE(page_data);
+  ASSERT_TRUE(result.value().request_id);
   AdAuctionRequestContext* context =
-      page_data->GetContextForAdAuctionRequest(result.value().request_id);
+      page_data->GetContextForAdAuctionRequest(*result.value().request_id);
   ASSERT_TRUE(context);
   EXPECT_EQ(test_origin, context->seller);
   EXPECT_THAT(context->group_names,

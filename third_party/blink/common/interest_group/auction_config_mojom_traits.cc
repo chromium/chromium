@@ -10,6 +10,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
@@ -150,6 +151,13 @@ bool StructTraits<
   return true;
 }
 
+bool StructTraits<blink::mojom::AuctionAdServerResponseConfigDataView,
+                  blink::AuctionConfig::ServerResponseConfig>::
+    Read(blink::mojom::AuctionAdServerResponseConfigDataView data,
+         blink::AuctionConfig::ServerResponseConfig* out) {
+  return data.ReadRequestId(&out->request_id);
+}
+
 bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
                   blink::AuctionConfig::NonSharedParams>::
     Read(blink::mojom::AuctionAdConfigNonSharedParamsDataView data,
@@ -205,6 +213,8 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
   }
 
   for (const auto& component_auction : out->component_auctions) {
+    // TODO(1457241): Add support for multi-level auctions including server-side
+    // auctions.
     // Component auctions may not have their own nested component auctions.
     if (!component_auction.non_shared_params.component_auctions.empty())
       return false;
@@ -217,6 +227,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
     Read(blink::mojom::AuctionAdConfigDataView data,
          blink::AuctionConfig* out) {
   if (!data.ReadSeller(&out->seller) ||
+      !data.ReadServerResponse(&out->server_response) ||
       !data.ReadDecisionLogicUrl(&out->decision_logic_url) ||
       !data.ReadTrustedScoringSignalsUrl(&out->trusted_scoring_signals_url) ||
       !data.ReadAuctionAdConfigNonSharedParams(&out->non_shared_params) ||
@@ -237,11 +248,28 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
   if (out->seller.scheme() != url::kHttpsScheme)
     return false;
 
+  // We need at least 1 of server response and decision logic url.
+  if (!out->server_response && !out->decision_logic_url) {
+    return false;
+  }
+  // We always need decision logic for multi-level auctions.
+  if (!out->non_shared_params.component_auctions.empty() &&
+      !out->decision_logic_url) {
+    return false;
+  }
+  for (const auto& component_auction :
+       out->non_shared_params.component_auctions) {
+    if (!component_auction.decision_logic_url) {
+      return false;
+    }
+  }
+
   // `decision_logic_url` and, if present, `trusted_scoring_signals_url` must
   // share the seller's origin, and must be HTTPS. Need to explicitly check the
   // scheme because some non-HTTPS URLs may have HTTPS origins (e.g., blob
   // URLs).
-  if (!out->IsHttpsAndMatchesSellerOrigin(out->decision_logic_url) ||
+  if ((out->decision_logic_url &&
+       !out->IsHttpsAndMatchesSellerOrigin(*out->decision_logic_url)) ||
       (out->trusted_scoring_signals_url &&
        !out->IsHttpsAndMatchesSellerOrigin(
            *out->trusted_scoring_signals_url))) {
