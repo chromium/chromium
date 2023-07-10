@@ -2458,14 +2458,13 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
   // iHD driver.
   const bool use_drm_prime_2 = false;
 #else
-  // TODO(b/233894465): use the DRM_PRIME_2 API with the Mesa Gallium driver
-  // when AMD supports it.
   // TODO(b/233924862): use the DRM_PRIME_2 API with protected content.
   // TODO(b/233929647): use the DRM_PRIME_2 API with the i965 driver.
   // TODO(b/236746283): remove the kNoModifier check once the modifier is
   // plumbed for JPEG decoding and encoding.
   const bool use_drm_prime_2 =
-      GetImplementationType() == VAImplementation::kIntelIHD &&
+      (GetImplementationType() == VAImplementation::kIntelIHD ||
+       GetImplementationType() == VAImplementation::kMesaGallium) &&
       !protected_content &&
       pixmap->GetBufferFormatModifier() != gfx::NativePixmapHandle::kNoModifier;
 #endif
