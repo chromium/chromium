@@ -29,6 +29,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -82,7 +83,7 @@ public class PersonalDataManager {
          * @param profile The profile with the normalized address.
          */
         @CalledByNative("NormalizedAddressRequestDelegate")
-        void onAddressNormalized(AutofillProfile profile);
+        void onAddressNormalized(org.chromium.chrome.browser.autofill.AutofillProfile profile);
 
         /**
          * Called when the address could not be normalized.
@@ -90,555 +91,84 @@ public class PersonalDataManager {
          * @param profile The non normalized profile.
          */
         @CalledByNative("NormalizedAddressRequestDelegate")
-        void onCouldNotNormalize(AutofillProfile profile);
+        void onCouldNotNormalize(org.chromium.chrome.browser.autofill.AutofillProfile profile);
     }
 
-    @VisibleForTesting
-    static class ValueWithStatus {
-        static final ValueWithStatus EMPTY = new ValueWithStatus("", VerificationStatus.NO_STATUS);
-
-        private final String mValue;
-        private final @VerificationStatus int mStatus;
-
-        ValueWithStatus(String value, @VerificationStatus int status) {
-            mValue = value;
-            mStatus = status;
+    // This is a temporary compatibility interface to avoid breaking chrome
+    // internal try bots.
+    // TODO(crbug.com/1441904): remove this interface.
+    public interface AutofillProfile {
+        static org.chromium.chrome.browser.autofill.AutofillProfile.Builder builder() {
+            return new org.chromium.chrome.browser.autofill.AutofillProfile.Builder();
         }
 
-        String getValue() {
-            return mValue;
-        }
-
-        @VerificationStatus
-        int getStatus() {
-            return mStatus;
-        }
-    }
-
-    /**
-     * Autofill address information.
-     * The creation and/or modification of an AutofillProfile is assumed to involve the user (e.g.
-     * data reviewed by the user in the {@link
-     * org.chromium.chrome.browser.autofill.settings.AddressEditor}), therefore all new values gain
-     * {@link VerificationStatus.USER_VERIFIED} status.
-     */
-    public static class AutofillProfile {
-        private String mGUID;
-        private boolean mIsLocal;
-        private @Source int mSource;
-        private ValueWithStatus mHonorificPrefix;
-        private ValueWithStatus mFullName;
-        private ValueWithStatus mCompanyName;
-        private ValueWithStatus mStreetAddress;
-        private ValueWithStatus mRegion;
-        private ValueWithStatus mLocality;
-        private ValueWithStatus mDependentLocality;
-        private ValueWithStatus mPostalCode;
-        private ValueWithStatus mSortingCode;
-        private ValueWithStatus mCountryCode;
-        private ValueWithStatus mPhoneNumber;
-        private ValueWithStatus mEmailAddress;
-        private String mLabel;
-        private String mLanguageCode;
-
-        /**
-         * Builder for the {@link AutofillProfile}.
-         */
-        public static final class Builder {
-            private String mGUID = "";
-            private boolean mIsLocal = true;
-            private @Source int mSource = Source.LOCAL_OR_SYNCABLE;
-            private ValueWithStatus mHonorificPrefix = ValueWithStatus.EMPTY;
-            private ValueWithStatus mFullName = ValueWithStatus.EMPTY;
-            private ValueWithStatus mCompanyName = ValueWithStatus.EMPTY;
-            private ValueWithStatus mStreetAddress = ValueWithStatus.EMPTY;
-            private ValueWithStatus mRegion = ValueWithStatus.EMPTY;
-            private ValueWithStatus mLocality = ValueWithStatus.EMPTY;
-            private ValueWithStatus mDependentLocality = ValueWithStatus.EMPTY;
-            private ValueWithStatus mPostalCode = ValueWithStatus.EMPTY;
-            private ValueWithStatus mSortingCode = ValueWithStatus.EMPTY;
-            private ValueWithStatus mCountryCode = ValueWithStatus.EMPTY;
-            private ValueWithStatus mPhoneNumber = ValueWithStatus.EMPTY;
-            private ValueWithStatus mEmailAddress = ValueWithStatus.EMPTY;
-            private String mLabel = "";
-            private String mLanguageCode = "";
-
-            public Builder setGUID(String guid) {
-                mGUID = guid;
-                return this;
-            }
-
-            public Builder setIsLocal(boolean isLocal) {
-                mIsLocal = isLocal;
-                return this;
-            }
-
-            public Builder setSource(@Source int source) {
-                mSource = source;
-                return this;
-            }
-
-            public Builder setHonorificPrefix(String honorificPrefix) {
-                mHonorificPrefix =
-                        new ValueWithStatus(honorificPrefix, VerificationStatus.USER_VERIFIED);
-                return this;
-            }
-
-            public Builder setHonorificPrefix(
-                    String honorificPrefix, @VerificationStatus int status) {
-                mHonorificPrefix = new ValueWithStatus(honorificPrefix, status);
-                return this;
-            }
-
-            public Builder setFullName(String fullName) {
-                mFullName = new ValueWithStatus(fullName, VerificationStatus.USER_VERIFIED);
-                return this;
-            }
-
-            public Builder setFullName(String fullName, @VerificationStatus int status) {
-                mFullName = new ValueWithStatus(fullName, status);
-                return this;
-            }
-
-            public Builder setCompanyName(String companyName) {
-                mCompanyName = new ValueWithStatus(companyName, VerificationStatus.USER_VERIFIED);
-                return this;
-            }
-
-            public Builder setCompanyName(String companyName, @VerificationStatus int status) {
-                mCompanyName = new ValueWithStatus(companyName, status);
-                return this;
-            }
-
-            public Builder setStreetAddress(String streetAddress) {
-                mStreetAddress =
-                        new ValueWithStatus(streetAddress, VerificationStatus.USER_VERIFIED);
-                return this;
-            }
-
-            public Builder setStreetAddress(String streetAddress, @VerificationStatus int status) {
-                mStreetAddress = new ValueWithStatus(streetAddress, status);
-                return this;
-            }
-
-            public Builder setRegion(String region) {
-                mRegion = new ValueWithStatus(region, VerificationStatus.USER_VERIFIED);
-                return this;
-            }
-
-            public Builder setRegion(String region, @VerificationStatus int status) {
-                mRegion = new ValueWithStatus(region, status);
-                return this;
-            }
-
-            public Builder setLocality(String locality) {
-                mLocality = new ValueWithStatus(locality, VerificationStatus.USER_VERIFIED);
-                return this;
-            }
-
-            public Builder setLocality(String locality, @VerificationStatus int status) {
-                mLocality = new ValueWithStatus(locality, status);
-                return this;
-            }
-
-            public Builder setDependentLocality(String dependentLocality) {
-                mDependentLocality =
-                        new ValueWithStatus(dependentLocality, VerificationStatus.USER_VERIFIED);
-                return this;
-            }
-
-            public Builder setDependentLocality(
-                    String dependentLocality, @VerificationStatus int status) {
-                mDependentLocality = new ValueWithStatus(dependentLocality, status);
-                return this;
-            }
-
-            public Builder setPostalCode(String postalCode) {
-                mPostalCode = new ValueWithStatus(postalCode, VerificationStatus.USER_VERIFIED);
-                return this;
-            }
-
-            public Builder setPostalCode(String postalCode, @VerificationStatus int status) {
-                mPostalCode = new ValueWithStatus(postalCode, status);
-                return this;
-            }
-
-            public Builder setSortingCode(String sortingCode) {
-                mSortingCode = new ValueWithStatus(sortingCode, VerificationStatus.USER_VERIFIED);
-                return this;
-            }
-
-            public Builder setSortingCode(String sortingCode, @VerificationStatus int status) {
-                mSortingCode = new ValueWithStatus(sortingCode, status);
-                return this;
-            }
-
-            public Builder setCountryCode(String countryCode) {
-                mCountryCode = new ValueWithStatus(countryCode, VerificationStatus.USER_VERIFIED);
-                return this;
-            }
-
-            public Builder setCountryCode(String countryCode, @VerificationStatus int status) {
-                mCountryCode = new ValueWithStatus(countryCode, status);
-                return this;
-            }
-
-            public Builder setPhoneNumber(String phoneNumber) {
-                mPhoneNumber = new ValueWithStatus(phoneNumber, VerificationStatus.USER_VERIFIED);
-                return this;
-            }
-
-            public Builder setPhoneNumber(String phoneNumber, @VerificationStatus int status) {
-                mPhoneNumber = new ValueWithStatus(phoneNumber, status);
-                return this;
-            }
-
-            public Builder setEmailAddress(String emailAddress) {
-                mEmailAddress = new ValueWithStatus(emailAddress, VerificationStatus.USER_VERIFIED);
-                return this;
-            }
-
-            public Builder setEmailAddress(String emailAddress, @VerificationStatus int status) {
-                mEmailAddress = new ValueWithStatus(emailAddress, status);
-                return this;
-            }
-
-            public Builder setLabel(String label) {
-                mLabel = label;
-                return this;
-            }
-
-            public Builder setLanguageCode(String languageCode) {
-                mLanguageCode = languageCode;
-                return this;
-            }
-
-            public AutofillProfile build() {
-                return new AutofillProfile(mGUID, mIsLocal, mSource, mHonorificPrefix, mFullName,
-                        mCompanyName, mStreetAddress, mRegion, mLocality, mDependentLocality,
-                        mPostalCode, mSortingCode, mCountryCode, mPhoneNumber, mEmailAddress,
-                        mLanguageCode);
-            }
-        }
-
-        public static Builder builder() {
-            return new Builder();
-        }
-
-        @CalledByNative("AutofillProfile")
-        private static AutofillProfile create(String guid, boolean isLocal, @Source int source,
-                String honorificPrefix, @VerificationStatus int honorificPrefixStatus,
-                String fullName, @VerificationStatus int fullNameStatus, String companyName,
-                @VerificationStatus int companyNameStatus, String streetAddress,
-                @VerificationStatus int streetAddressStatus, String region,
-                @VerificationStatus int regionStatus, String locality,
-                @VerificationStatus int localityStatus, String dependentLocality,
-                @VerificationStatus int dependentLocalityStatus, String postalCode,
-                @VerificationStatus int postalCodeStatus, String sortingCode,
-                @VerificationStatus int sortingCodeStatus, String countryCode,
-                @VerificationStatus int countryCodeStatus, String phoneNumber,
-                @VerificationStatus int phoneNumberStatus, String emailAddress,
-                @VerificationStatus int emailAddressStatus, String languageCode) {
-            return new AutofillProfile(guid, isLocal, source,
-                    new ValueWithStatus(honorificPrefix, honorificPrefixStatus),
-                    new ValueWithStatus(fullName, fullNameStatus),
-                    new ValueWithStatus(companyName, companyNameStatus),
-                    new ValueWithStatus(streetAddress, streetAddressStatus),
-                    new ValueWithStatus(region, regionStatus),
-                    new ValueWithStatus(locality, localityStatus),
-                    new ValueWithStatus(dependentLocality, dependentLocalityStatus),
-                    new ValueWithStatus(postalCode, postalCodeStatus),
-                    new ValueWithStatus(sortingCode, sortingCodeStatus),
-                    new ValueWithStatus(countryCode, countryCodeStatus),
-                    new ValueWithStatus(phoneNumber, phoneNumberStatus),
-                    new ValueWithStatus(emailAddress, emailAddressStatus), languageCode);
-        }
-
-        // TODO(crbug/1408117): remove duplicate constructors when the source is unnecessary.
-        private AutofillProfile(String guid, boolean isLocal, @Source int source,
-                ValueWithStatus honorificPrefix, ValueWithStatus fullName,
-                ValueWithStatus companyName, ValueWithStatus streetAddress, ValueWithStatus region,
-                ValueWithStatus locality, ValueWithStatus dependentLocality,
-                ValueWithStatus postalCode, ValueWithStatus sortingCode,
-                ValueWithStatus countryCode, ValueWithStatus phoneNumber,
-                ValueWithStatus emailAddress, String languageCode) {
-            mGUID = guid;
-            mIsLocal = isLocal;
-            mSource = source;
-            mHonorificPrefix = honorificPrefix;
-            mFullName = fullName;
-            mCompanyName = companyName;
-            mStreetAddress = streetAddress;
-            mRegion = region;
-            mLocality = locality;
-            mDependentLocality = dependentLocality;
-            mPostalCode = postalCode;
-            mSortingCode = sortingCode;
-            mCountryCode = countryCode;
-            mPhoneNumber = phoneNumber;
-            mEmailAddress = emailAddress;
-            mLanguageCode = languageCode;
-        }
-
-        /* Builds an AutofillProfile that is an exact copy of the one passed as parameter. */
-        public AutofillProfile(AutofillProfile profile) {
-            mGUID = profile.getGUID();
-            mIsLocal = profile.getIsLocal();
-            mSource = profile.getSource();
-            mHonorificPrefix = new ValueWithStatus(
-                    profile.getHonorificPrefix(), profile.getHonorificPrefixStatus());
-            mFullName = new ValueWithStatus(profile.getFullName(), profile.getFullNameStatus());
-            mCompanyName =
-                    new ValueWithStatus(profile.getCompanyName(), profile.getCompanyNameStatus());
-            mStreetAddress = new ValueWithStatus(
-                    profile.getStreetAddress(), profile.getStreetAddressStatus());
-            mRegion = new ValueWithStatus(profile.getRegion(), profile.getRegionStatus());
-            mLocality = new ValueWithStatus(profile.getLocality(), profile.getLocalityStatus());
-            mDependentLocality = new ValueWithStatus(
-                    profile.getDependentLocality(), profile.getDependentLocalityStatus());
-            mPostalCode =
-                    new ValueWithStatus(profile.getPostalCode(), profile.getPostalCodeStatus());
-            mSortingCode =
-                    new ValueWithStatus(profile.getSortingCode(), profile.getSortingCodeStatus());
-            mCountryCode =
-                    new ValueWithStatus(profile.getCountryCode(), profile.getCountryCodeStatus());
-            mPhoneNumber =
-                    new ValueWithStatus(profile.getPhoneNumber(), profile.getPhoneNumberStatus());
-            mEmailAddress =
-                    new ValueWithStatus(profile.getEmailAddress(), profile.getEmailAddressStatus());
-            mLanguageCode = profile.getLanguageCode();
-            mLabel = profile.getLabel();
-        }
-
-        @CalledByNative("AutofillProfile")
-        public String getGUID() {
-            return mGUID;
-        }
-
-        @CalledByNative("AutofillProfile")
-        public @Source int getSource() {
-            return mSource;
-        }
-
-        @CalledByNative("AutofillProfile")
-        public String getHonorificPrefix() {
-            return mHonorificPrefix.getValue();
-        }
-
-        @CalledByNative("AutofillProfile")
-        private @VerificationStatus int getHonorificPrefixStatus() {
-            return mHonorificPrefix.getStatus();
-        }
-
-        @CalledByNative("AutofillProfile")
-        public String getFullName() {
-            return mFullName.getValue();
-        }
-
-        @CalledByNative("AutofillProfile")
-        @VisibleForTesting
-        @VerificationStatus
-        int getFullNameStatus() {
-            return mFullName.getStatus();
-        }
-
-        @CalledByNative("AutofillProfile")
-        public String getCompanyName() {
-            return mCompanyName.getValue();
-        }
-
-        @CalledByNative("AutofillProfile")
-        @VerificationStatus
-        int getCompanyNameStatus() {
-            return mCompanyName.getStatus();
-        }
-
-        @CalledByNative("AutofillProfile")
-        public String getStreetAddress() {
-            return mStreetAddress.getValue();
-        }
-
-        @CalledByNative("AutofillProfile")
-        @VisibleForTesting
-        @VerificationStatus
-        int getStreetAddressStatus() {
-            return mStreetAddress.getStatus();
-        }
-
-        @CalledByNative("AutofillProfile")
-        public String getRegion() {
-            return mRegion.getValue();
-        }
-
-        @CalledByNative("AutofillProfile")
-        @VisibleForTesting
-        @VerificationStatus
-        int getRegionStatus() {
-            return mRegion.getStatus();
-        }
-
-        @CalledByNative("AutofillProfile")
-        public String getLocality() {
-            return mLocality.getValue();
-        }
-
-        @CalledByNative("AutofillProfile")
-        @VisibleForTesting
-        @VerificationStatus
-        int getLocalityStatus() {
-            return mLocality.getStatus();
-        }
-
-        @CalledByNative("AutofillProfile")
-        public String getDependentLocality() {
-            return mDependentLocality.getValue();
-        }
-
-        @CalledByNative("AutofillProfile")
-        private @VerificationStatus int getDependentLocalityStatus() {
-            return mDependentLocality.getStatus();
-        }
-
-        public String getLabel() {
-            return mLabel;
-        }
-
-        @CalledByNative("AutofillProfile")
-        public String getPostalCode() {
-            return mPostalCode.getValue();
-        }
-
-        @CalledByNative("AutofillProfile")
-        @VisibleForTesting
-        @VerificationStatus
-        int getPostalCodeStatus() {
-            return mPostalCode.getStatus();
-        }
-
-        @CalledByNative("AutofillProfile")
-        public String getSortingCode() {
-            return mSortingCode.getValue();
-        }
-
-        @CalledByNative("AutofillProfile")
-        private @VerificationStatus int getSortingCodeStatus() {
-            return mSortingCode.getStatus();
-        }
-
-        @CalledByNative("AutofillProfile")
-        public String getCountryCode() {
-            return mCountryCode.getValue();
-        }
-
-        @CalledByNative("AutofillProfile")
-        private @VerificationStatus int getCountryCodeStatus() {
-            return mCountryCode.getStatus();
-        }
-
-        @CalledByNative("AutofillProfile")
-        public String getPhoneNumber() {
-            return mPhoneNumber.getValue();
-        }
-
-        @CalledByNative("AutofillProfile")
-        private @VerificationStatus int getPhoneNumberStatus() {
-            return mPhoneNumber.getStatus();
-        }
-
-        @CalledByNative("AutofillProfile")
-        public String getEmailAddress() {
-            return mEmailAddress.getValue();
-        }
-
-        @CalledByNative("AutofillProfile")
-        private @VerificationStatus int getEmailAddressStatus() {
-            return mEmailAddress.getStatus();
-        }
-
-        @CalledByNative("AutofillProfile")
-        public String getLanguageCode() {
-            return mLanguageCode;
-        }
-
-        public boolean getIsLocal() {
-            return mIsLocal;
-        }
-
-        public void setGUID(String guid) {
-            mGUID = guid;
-        }
-
-        public void setLabel(String label) {
-            mLabel = label;
-        }
-
-        public void setSource(@Source int source) {
-            mSource = source;
-        }
-
-        public void setHonorificPrefix(String honorificPrefix) {
-            mHonorificPrefix =
-                    new ValueWithStatus(honorificPrefix, VerificationStatus.USER_VERIFIED);
-        }
-
-        public void setFullName(String fullName) {
-            mFullName = new ValueWithStatus(fullName, VerificationStatus.USER_VERIFIED);
-        }
-
-        public void setCompanyName(String companyName) {
-            mCompanyName = new ValueWithStatus(companyName, VerificationStatus.USER_VERIFIED);
-        }
-
-        public void setStreetAddress(String streetAddress) {
-            mStreetAddress = new ValueWithStatus(streetAddress, VerificationStatus.USER_VERIFIED);
-        }
-
-        public void setRegion(String region) {
-            mRegion = new ValueWithStatus(region, VerificationStatus.USER_VERIFIED);
-        }
-
-        public void setLocality(String locality) {
-            mLocality = new ValueWithStatus(locality, VerificationStatus.USER_VERIFIED);
-        }
-
-        public void setDependentLocality(String dependentLocality) {
-            mDependentLocality =
-                    new ValueWithStatus(dependentLocality, VerificationStatus.USER_VERIFIED);
-        }
-
-        public void setPostalCode(String postalCode) {
-            mPostalCode = new ValueWithStatus(postalCode, VerificationStatus.USER_VERIFIED);
-        }
-
-        public void setSortingCode(String sortingCode) {
-            mSortingCode = new ValueWithStatus(sortingCode, VerificationStatus.USER_VERIFIED);
-        }
-
-        public void setCountryCode(String countryCode) {
-            mCountryCode = new ValueWithStatus(countryCode, VerificationStatus.USER_VERIFIED);
-        }
-
-        public void setPhoneNumber(String phoneNumber) {
-            mPhoneNumber = new ValueWithStatus(phoneNumber, VerificationStatus.USER_VERIFIED);
-        }
-
-        public void setEmailAddress(String emailAddress) {
-            mEmailAddress = new ValueWithStatus(emailAddress, VerificationStatus.USER_VERIFIED);
-        }
-
-        public void setLanguageCode(String languageCode) {
-            mLanguageCode = languageCode;
-        }
-
-        public void setIsLocal(boolean isLocal) {
-            mIsLocal = isLocal;
-        }
-
-        /** Used by ArrayAdapter in credit card settings. */
-        @Override
-        public String toString() {
-            return mLabel;
-        }
+        public String getGUID();
+
+        public @Source int getSource();
+
+        public String getHonorificPrefix();
+
+        public String getFullName();
+
+        public String getCompanyName();
+
+        public String getStreetAddress();
+
+        public String getRegion();
+
+        public String getLocality();
+
+        public String getDependentLocality();
+
+        public String getLabel();
+
+        public String getPostalCode();
+
+        public String getSortingCode();
+
+        public String getCountryCode();
+
+        public String getPhoneNumber();
+
+        public String getEmailAddress();
+
+        public String getLanguageCode();
+
+        public boolean getIsLocal();
+
+        public void setGUID(String guid);
+
+        public void setLabel(String label);
+
+        public void setSource(@Source int source);
+
+        public void setHonorificPrefix(String honorificPrefix);
+
+        public void setFullName(String fullName);
+
+        public void setCompanyName(String companyName);
+
+        public void setStreetAddress(String streetAddress);
+
+        public void setRegion(String region);
+
+        public void setLocality(String locality);
+
+        public void setDependentLocality(String dependentLocality);
+
+        public void setPostalCode(String postalCode);
+
+        public void setSortingCode(String sortingCode);
+
+        public void setCountryCode(String countryCode);
+
+        public void setPhoneNumber(String phoneNumber);
+
+        public void setEmailAddress(String emailAddress);
+
+        public void setLanguageCode(String languageCode);
+
+        public void setIsLocal(boolean isLocal);
     }
 
     /**
@@ -989,12 +519,16 @@ public class PersonalDataManager {
      *
      * @return The list of profiles to show in the settings.
      */
-    public List<AutofillProfile> getProfilesForSettings() {
+    public List<org.chromium.chrome.browser.autofill.AutofillProfile> getAutofillProfilesForSettings() {
         ThreadUtils.assertOnUiThread();
         return getProfilesWithLabels(PersonalDataManagerJni.get().getProfileLabelsForSettings(
                                              mPersonalDataManagerAndroid, PersonalDataManager.this),
                 PersonalDataManagerJni.get().getProfileGUIDsForSettings(
                         mPersonalDataManagerAndroid, PersonalDataManager.this));
+    }
+
+    public List<AutofillProfile> getProfilesForSettings() {
+      return getAutofillProfilesForSettings().stream().map(profile -> (AutofillProfile) profile).collect(Collectors.toList());
     }
 
     /**
@@ -1006,7 +540,8 @@ public class PersonalDataManager {
      * @param includeNameInLabel Whether to include the name in the profile's label.
      * @return The list of profiles to suggest to the user.
      */
-    public ArrayList<AutofillProfile> getProfilesToSuggest(boolean includeNameInLabel) {
+    public ArrayList<org.chromium.chrome.browser.autofill.AutofillProfile> getProfilesToSuggest(
+            boolean includeNameInLabel) {
         ThreadUtils.assertOnUiThread();
         return getProfilesWithLabels(
                 PersonalDataManagerJni.get().getProfileLabelsToSuggest(mPersonalDataManagerAndroid,
@@ -1027,8 +562,8 @@ public class PersonalDataManager {
      *
      * @return The list of billing addresses to suggest to the user.
      */
-    public ArrayList<AutofillProfile> getBillingAddressesToSuggest(
-            boolean includeOrganizationInLabel) {
+    public ArrayList<org.chromium.chrome.browser.autofill.AutofillProfile>
+    getBillingAddressesToSuggest(boolean includeOrganizationInLabel) {
         ThreadUtils.assertOnUiThread();
         return getProfilesWithLabels(
                 PersonalDataManagerJni.get().getProfileLabelsToSuggest(mPersonalDataManagerAndroid,
@@ -1038,12 +573,15 @@ public class PersonalDataManager {
                         mPersonalDataManagerAndroid, PersonalDataManager.this));
     }
 
-    private ArrayList<AutofillProfile> getProfilesWithLabels(
+    private ArrayList<org.chromium.chrome.browser.autofill.AutofillProfile> getProfilesWithLabels(
             String[] profileLabels, String[] profileGUIDs) {
-        ArrayList<AutofillProfile> profiles = new ArrayList<AutofillProfile>(profileGUIDs.length);
+        ArrayList<org.chromium.chrome.browser.autofill.AutofillProfile> profiles =
+                new ArrayList<org.chromium.chrome.browser.autofill.AutofillProfile>(
+                        profileGUIDs.length);
         for (int i = 0; i < profileGUIDs.length; i++) {
-            AutofillProfile profile = PersonalDataManagerJni.get().getProfileByGUID(
-                    mPersonalDataManagerAndroid, PersonalDataManager.this, profileGUIDs[i]);
+            org.chromium.chrome.browser.autofill.AutofillProfile profile =
+                    PersonalDataManagerJni.get().getProfileByGUID(
+                            mPersonalDataManagerAndroid, PersonalDataManager.this, profileGUIDs[i]);
             profile.setLabel(profileLabels[i]);
             profiles.add(profile);
         }
@@ -1051,7 +589,7 @@ public class PersonalDataManager {
         return profiles;
     }
 
-    public AutofillProfile getProfile(String guid) {
+    public org.chromium.chrome.browser.autofill.AutofillProfile getProfile(String guid) {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().getProfileByGUID(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
@@ -1063,13 +601,17 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
     }
 
-    public String setProfile(AutofillProfile profile) {
+    public String setProfile(org.chromium.chrome.browser.autofill.AutofillProfile profile) {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().setProfile(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
     }
 
-    public String setProfileToLocal(AutofillProfile profile) {
+    public String setProfile(AutofillProfile profile) {
+        return setProfile((org.chromium.chrome.browser.autofill.AutofillProfile) profile);
+    }
+
+    public String setProfileToLocal(org.chromium.chrome.browser.autofill.AutofillProfile profile) {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().setProfileToLocal(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
@@ -1163,17 +705,20 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
     }
 
-    public String getShippingAddressLabelWithCountryForPaymentRequest(AutofillProfile profile) {
+    public String getShippingAddressLabelWithCountryForPaymentRequest(
+            org.chromium.chrome.browser.autofill.AutofillProfile profile) {
         return PersonalDataManagerJni.get().getShippingAddressLabelWithCountryForPaymentRequest(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
     }
 
-    public String getShippingAddressLabelWithoutCountryForPaymentRequest(AutofillProfile profile) {
+    public String getShippingAddressLabelWithoutCountryForPaymentRequest(
+            org.chromium.chrome.browser.autofill.AutofillProfile profile) {
         return PersonalDataManagerJni.get().getShippingAddressLabelWithoutCountryForPaymentRequest(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
     }
 
-    public String getBillingAddressLabelForPaymentRequest(AutofillProfile profile) {
+    public String getBillingAddressLabelForPaymentRequest(
+            org.chromium.chrome.browser.autofill.AutofillProfile profile) {
         return PersonalDataManagerJni.get().getBillingAddressLabelForPaymentRequest(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
     }
@@ -1338,8 +883,8 @@ public class PersonalDataManager {
      * @param profile The profile to normalize.
      * @param delegate The object requesting the normalization.
      */
-    public void normalizeAddress(
-            AutofillProfile profile, NormalizedAddressRequestDelegate delegate) {
+    public void normalizeAddress(org.chromium.chrome.browser.autofill.AutofillProfile profile,
+            NormalizedAddressRequestDelegate delegate) {
         ThreadUtils.assertOnUiThread();
         PersonalDataManagerJni.get().startAddressNormalization(mPersonalDataManagerAndroid,
                 PersonalDataManager.this, profile, sRequestTimeoutSeconds, delegate);
@@ -1556,24 +1101,25 @@ public class PersonalDataManager {
         String[] getProfileLabelsToSuggest(long nativePersonalDataManagerAndroid,
                 PersonalDataManager caller, boolean includeNameInLabel,
                 boolean includeOrganizationInLabel, boolean includeCountryInLabel);
-        AutofillProfile getProfileByGUID(
+        org.chromium.chrome.browser.autofill.AutofillProfile getProfileByGUID(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);
         boolean isEligibleForAddressAccountStorage(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller);
         boolean isCountryEligibleForAccountStorage(long nativePersonalDataManagerAndroid,
                 PersonalDataManager caller, String countryCode);
         String setProfile(long nativePersonalDataManagerAndroid, PersonalDataManager caller,
-                AutofillProfile profile);
+                org.chromium.chrome.browser.autofill.AutofillProfile profile);
         String setProfileToLocal(long nativePersonalDataManagerAndroid, PersonalDataManager caller,
-                AutofillProfile profile);
+                org.chromium.chrome.browser.autofill.AutofillProfile profile);
         String getShippingAddressLabelWithCountryForPaymentRequest(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller,
-                AutofillProfile profile);
+                org.chromium.chrome.browser.autofill.AutofillProfile profile);
         String getShippingAddressLabelWithoutCountryForPaymentRequest(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller,
-                AutofillProfile profile);
+                org.chromium.chrome.browser.autofill.AutofillProfile profile);
         String getBillingAddressLabelForPaymentRequest(long nativePersonalDataManagerAndroid,
-                PersonalDataManager caller, AutofillProfile profile);
+                PersonalDataManager caller,
+                org.chromium.chrome.browser.autofill.AutofillProfile profile);
         String[] getCreditCardGUIDsForSettings(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller);
         String[] getCreditCardGUIDsToSuggest(
@@ -1621,7 +1167,8 @@ public class PersonalDataManager {
         void loadRulesForSubKeys(long nativePersonalDataManagerAndroid, PersonalDataManager caller,
                 String regionCode);
         void startAddressNormalization(long nativePersonalDataManagerAndroid,
-                PersonalDataManager caller, AutofillProfile profile, int timeoutSeconds,
+                PersonalDataManager caller,
+                org.chromium.chrome.browser.autofill.AutofillProfile profile, int timeoutSeconds,
                 NormalizedAddressRequestDelegate delegate);
         void startRegionSubKeysRequest(long nativePersonalDataManagerAndroid,
                 PersonalDataManager caller, String regionCode, int timeoutSeconds,

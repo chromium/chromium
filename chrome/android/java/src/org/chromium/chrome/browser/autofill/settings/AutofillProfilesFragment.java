@@ -27,8 +27,8 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
+import org.chromium.chrome.browser.autofill.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.Source;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
@@ -172,7 +172,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         });
         getPreferenceScreen().addPreference(autofillSwitch);
 
-        for (AutofillProfile profile : PersonalDataManager.getInstance().getProfilesForSettings()) {
+        for (AutofillProfile profile : PersonalDataManager.getInstance().getAutofillProfilesForSettings()) {
             assert profile.getIsLocal();
             // Add a preference for the profile.
             Preference pref = new AutofillProfileEditorPreference(getStyledContext());

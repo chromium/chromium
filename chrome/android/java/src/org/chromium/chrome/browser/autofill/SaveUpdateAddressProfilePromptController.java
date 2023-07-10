@@ -9,7 +9,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 
 /**
  * JNI wrapper for C++ SaveUpdateAddressProfilePromptController.

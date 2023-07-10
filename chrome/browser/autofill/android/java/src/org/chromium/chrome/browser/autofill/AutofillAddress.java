@@ -13,7 +13,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.StrictModeContext;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.autofill.ServerFieldType;
 import org.chromium.payments.mojom.PaymentAddress;

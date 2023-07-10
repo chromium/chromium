@@ -16,8 +16,8 @@ import android.widget.Spinner;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
+import org.chromium.chrome.browser.autofill.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -55,7 +55,7 @@ abstract class AutofillCreditCardEditor
         noSelection.setLabel(getActivity().getString(R.string.select));
         profilesAdapter.add(noSelection);
 
-        List<AutofillProfile> profiles = PersonalDataManager.getInstance().getProfilesForSettings();
+        List<AutofillProfile> profiles = PersonalDataManager.getInstance().getAutofillProfilesForSettings();
         for (int i = 0; i < profiles.size(); i++) {
             AutofillProfile profile = profiles.get(i);
             if (profile.getIsLocal() && !TextUtils.isEmpty(profile.getStreetAddress())) {

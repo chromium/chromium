@@ -10,7 +10,6 @@ import static org.chromium.content_public.browser.test.util.TestThreadUtils.runO
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.content_public.browser.WebContents;
@@ -52,7 +51,7 @@ public class AutofillTestHelper {
 
     List<AutofillProfile> getProfilesForSettings() {
         return runOnUiThreadBlockingNoException(
-                () -> PersonalDataManager.getInstance().getProfilesForSettings());
+                () -> PersonalDataManager.getInstance().getAutofillProfilesForSettings());
     }
 
     int getNumberOfProfilesToSuggest() {
