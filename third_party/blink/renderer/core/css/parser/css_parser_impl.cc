@@ -1760,17 +1760,14 @@ StyleRulePositionFallback* CSSParserImpl::ConsumePositionFallbackRule(
   }
 
   const bool has_max_length = context_->Mode() != kUASheetMode;
-  auto* position_fallback_rule =
-      MakeGarbageCollected<StyleRulePositionFallback>(AtomicString(name));
+  HeapVector<Member<StyleRuleBase>> try_rules;
   ConsumeRuleList(
       stream, kPositionFallbackRuleList, CSSNestingType::kNone,
       /*parent_rule_for_nesting=*/nullptr,
-      [position_fallback_rule, has_max_length](StyleRuleBase* try_rule,
-                                               wtf_size_t) {
-        if (!has_max_length || position_fallback_rule->TryRules().size() <
-                                   kPositionFallbackRuleMaxLength) {
-          position_fallback_rule->ParserAppendTryRule(
-              To<StyleRuleTry>(try_rule));
+      [&try_rules, has_max_length](StyleRuleBase* try_rule, wtf_size_t) {
+        if (!has_max_length ||
+            try_rules.size() < kPositionFallbackRuleMaxLength) {
+          try_rules.push_back(try_rule);
         }
       });
 
@@ -1778,7 +1775,8 @@ StyleRulePositionFallback* CSSParserImpl::ConsumePositionFallbackRule(
     observer_->EndRuleBody(stream.Offset());
   }
 
-  return position_fallback_rule;
+  return MakeGarbageCollected<StyleRulePositionFallback>(AtomicString(name),
+                                                         std::move(try_rules));
 }
 
 StyleRuleTry* CSSParserImpl::ConsumeTryRule(CSSParserTokenStream& stream) {

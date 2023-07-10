@@ -475,6 +475,20 @@ TEST_F(CascadeExpansionTest, FilterHighlight) {
             e[1]->ref.GetProperty().PropertyID());
 }
 
+TEST_F(CascadeExpansionTest, FilterPositionFallback) {
+  MatchResult result;
+  result.BeginAddingAuthorRulesForTreeScope(GetDocument());
+  result.AddMatchedProperties(
+      ParseDeclarationBlock("display:inline;position:static;left:auto"),
+      CascadeOrigin::kAuthor,
+      {
+          .valid_property_filter = ValidPropertyFilter::kPositionFallback,
+      });
+  auto e = ExpansionAt(result, 0);
+  ASSERT_EQ(1u, e.size());
+  EXPECT_EQ(CSSPropertyID::kLeft, e[0]->ref.GetProperty().PropertyID());
+}
+
 TEST_F(CascadeExpansionTest, Importance) {
   MatchResult result;
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());

@@ -1219,7 +1219,7 @@ InspectorCSSAgent::PositionFallbackRulesForNode(Element* element) {
     InspectorStyleSheet* inspector_style_sheet =
         BindStyleSheet(css_position_fallback_rule->parentStyleSheet());
     try_rules->emplace_back(inspector_style_sheet->BuildObjectForTryRule(
-        css_position_fallback_rule->Item(j)));
+        To<CSSTryRule>(css_position_fallback_rule->Item(j))));
   }
 
   InspectorStyleSheet* inspector_style_sheet =

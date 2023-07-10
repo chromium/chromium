@@ -10,7 +10,6 @@
 
 namespace blink {
 
-class CSSPositionFallbackRule;
 class StyleRuleCSSStyleDeclaration;
 
 class StyleRuleTry final : public StyleRuleBase {
@@ -36,7 +35,7 @@ class CSSTryRule final : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  CSSTryRule(StyleRuleTry*, CSSPositionFallbackRule* parent);
+  explicit CSSTryRule(StyleRuleTry*);
   ~CSSTryRule() final;
 
   CSSStyleDeclaration* style() const;

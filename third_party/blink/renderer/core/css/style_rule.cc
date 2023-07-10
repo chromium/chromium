@@ -352,8 +352,12 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
       rule = MakeGarbageCollected<CSSStartingStyleRule>(
           To<StyleRuleStartingStyle>(self), parent_sheet);
       break;
-    case kFontFeature:
     case kTry:
+      // @try rules must be child rules of @position-fallback.
+      CHECK(!parent_sheet);
+      rule = MakeGarbageCollected<CSSTryRule>(To<StyleRuleTry>(self));
+      break;
+    case kFontFeature:
     case kKeyframe:
     case kCharset:
       NOTREACHED();

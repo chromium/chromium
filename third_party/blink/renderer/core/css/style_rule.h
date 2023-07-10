@@ -605,7 +605,7 @@ struct DowncastTraits<StyleRuleGroup> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsMediaRule() || rule.IsSupportsRule() ||
            rule.IsContainerRule() || rule.IsLayerBlockRule() ||
-           rule.IsScopeRule();
+           rule.IsScopeRule() || rule.IsPositionFallbackRule();
   }
 };
 

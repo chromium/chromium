@@ -943,7 +943,7 @@ TEST(CSSParserImplTest, PositionFallbackRuleMaxLength) {
 
   // We allow only 5 @try rules at maximum. See kPositionFallbackRuleMaxLength
   // in css_parser_impl.cc.
-  EXPECT_EQ(5u, rule->TryRules().size());
+  EXPECT_EQ(5u, rule->ChildRules().size());
 }
 
 }  // namespace blink

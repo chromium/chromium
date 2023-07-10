@@ -2918,11 +2918,12 @@ scoped_refptr<const ComputedStyle> StyleResolver::ResolvePositionFallbackStyle(
       ResolvePositionFallbackRule(tree_scope, position_fallback->GetName());
 
   if (!position_fallback_rule ||
-      index >= position_fallback_rule->TryRules().size()) {
+      index >= position_fallback_rule->ChildRules().size()) {
     return nullptr;
   }
 
-  StyleRuleTry* try_rule = position_fallback_rule->TryRules()[index];
+  StyleRuleTry* try_rule =
+      To<StyleRuleTry>(position_fallback_rule->ChildRules()[index].Get());
   StyleResolverState state(GetDocument(), element);
   state.SetStyle(base_style);
   state.SetIsResolvingPositionFallbackStyle();
@@ -2930,8 +2931,10 @@ scoped_refptr<const ComputedStyle> StyleResolver::ResolvePositionFallbackStyle(
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
   cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(*tree_scope);
-  cascade.MutableMatchResult().AddMatchedProperties(&properties,
-                                                    CascadeOrigin::kAuthor);
+  AddMatchedPropertiesOptions options;
+  options.valid_property_filter = ValidPropertyFilter::kPositionFallback;
+  cascade.MutableMatchResult().AddMatchedProperties(
+      &properties, CascadeOrigin::kAuthor, options);
   cascade.Apply();
 
   return state.TakeStyle();
