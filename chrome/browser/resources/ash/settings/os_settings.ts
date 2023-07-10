@@ -96,6 +96,7 @@ export {LocalizedLinkElement} from 'chrome://resources/cr_components/localized_l
 export {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
 export {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
 export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 export {CrSearchableDropDownElement} from 'chrome://resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
 export {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';

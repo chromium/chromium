@@ -40,7 +40,6 @@ build_webui_tests("build") {
     "fake_system_display.js",
     "fake_user_action_recorder.js",
     "fake_users_private.js",
-    "input_page_test.js",
     "internet_detail_menu_test.js",
     "internet_known_networks_subpage_tests.js",
     "internet_page_tests.js",
@@ -78,7 +77,7 @@ build_webui_tests("build") {
     "test_bluetooth_page_browser_proxy.js",
     "test_crostini_browser_proxy.js",
     "test_device_name_browser_proxy.js",
-    "test_os_languages_browser_proxy.js",
+    "test_os_languages_browser_proxy.ts",
     "test_os_languages_metrics_proxy.js",
     "test_os_lifetime_browser_proxy.js",
     "test_os_reset_browser_proxy.js",
@@ -226,6 +225,7 @@ build_webui_tests("build") {
     "os_files_page/one_drive_test_browser_proxy.ts",
 
     "os_languages_page/input_method_options_page_test.ts",
+    "os_languages_page/input_page_test.ts",
     "os_languages_page/os_clear_personalization_data_page_test.ts",
     "os_languages_page/smart_inputs_page_test.ts",
 

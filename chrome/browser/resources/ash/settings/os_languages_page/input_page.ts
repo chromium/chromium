@@ -47,14 +47,14 @@ import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} 
 const OsSettingsInputPageElementBase =
     RouteObserverMixin(PrefsMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
 
-interface OsSettingsInputPageElement {
+export interface OsSettingsInputPageElement {
   $: {
     addInputMethod: CrButtonElement,
     editDictionarySubpageTrigger: CrLinkRowElement,
   };
 }
 
-class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
+export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   static get is() {
     return 'os-settings-input-page' as const;
   }

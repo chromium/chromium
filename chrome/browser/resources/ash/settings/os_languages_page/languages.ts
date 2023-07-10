@@ -76,8 +76,8 @@ interface ModelArgs {
  */
 const SettingsLanguagesElementBase = PrefsMixin(PolymerElement);
 
-class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
-    LanguageHelper {
+export class SettingsLanguagesElement extends SettingsLanguagesElementBase
+    implements LanguageHelper {
   static get is() {
     return 'settings-languages' as const;
   }

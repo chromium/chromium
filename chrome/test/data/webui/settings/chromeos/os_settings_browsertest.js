@@ -263,7 +263,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['EsimRenameDialog', 'esim_rename_dialog_test.js'],
  ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
  ['GuestOsSharedUsbDevices', 'guest_os/guest_os_shared_usb_devices_test.js'],
- ['InputPage', 'input_page_test.js'],
  ['InternetDetailMenu', 'internet_detail_menu_test.js'],
  [
    'InternetKnownNetworksSubpage', 'internet_known_networks_subpage_tests.js', {
@@ -581,6 +580,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'OsLanguagesPageInputMethodOptionsPage',
    'os_languages_page/input_method_options_page_test.js'
  ],
+ ['OsLanguagesPageInputPage', 'os_languages_page/input_page_test.js'],
  [
    'OsLanguagesPageOsClearPersonalizationDataPage',
    'os_languages_page/os_clear_personalization_data_page_test.js'

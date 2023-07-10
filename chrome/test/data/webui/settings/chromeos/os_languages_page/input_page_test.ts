@@ -2,48 +2,51 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {InputsShortcutReminderState, LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from 'chrome://os-settings/lazy_load.js';
-import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/os_settings.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import 'chrome://os-settings/lazy_load.js';
+
+import {CrCheckboxWithPolicyElement, InputsShortcutReminderState, LanguageHelper, LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction, OsSettingsAddItemsDialogElement, OsSettingsInputPageElement, SettingsLanguagesElement} from 'chrome://os-settings/lazy_load.js';
+import {CrCheckboxElement, CrSettingsPrefs, Router, routes, settingMojom, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertGT, assertNotEquals, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
-import {FakeSettingsPrivate} from './fake_settings_private.js';
-import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.js';
-import {TestLanguagesMetricsProxy} from './test_os_languages_metrics_proxy.js';
+import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from '../fake_language_settings_private.js';
+import {FakeSettingsPrivate} from '../fake_settings_private.js';
+import {TestLanguagesBrowserProxy} from '../test_os_languages_browser_proxy.js';
+import {TestLanguagesMetricsProxy} from '../test_os_languages_metrics_proxy.js';
 
-suite('input page', () => {
-  /** @type {!SettingsInputPageElement} */
-  let inputPage;
-  /** @type {!LanguagesMetricsProxy} */
-  let metricsProxy;
-  /** @type {!LanguagesBrowserProxy} */
-  let browserProxy;
-  /** @type {!LanguagesHelper} */
-  let languageHelper;
+suite('<os-settings-input-page>', () => {
+  let inputPage: OsSettingsInputPageElement;
+  let metricsProxy: TestLanguagesMetricsProxy;
+  let browserProxy: TestLanguagesBrowserProxy;
+  let languageHelper: LanguageHelper;
+  let settingsLanguages: SettingsLanguagesElement;
 
   suiteSetup(() => {
     CrSettingsPrefs.deferInitialization = true;
   });
 
-  setup(() => {
+  setup(async () => {
     document.body.innerHTML = '';
-    const prefElement = document.createElement('settings-prefs');
+    const prefElement: SettingsPrefsElement =
+        document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
-    prefElement.initialize(settingsPrivate);
+    prefElement.initialize(
+        settingsPrivate as unknown as typeof chrome.settingsPrivate);
 
     /**
      * Prefs listener to emulate SpellcheckService listeners.
      * As we use a mocked prefs object in tests, we also need to mock the
      * behavior of SpellcheckService as it relies on a C++ PrefChangeRegistrar
      * to listen to pref changes - which do not work when the prefs are mocked.
-     * @param {!Array<!chrome.settingsPrivate.PrefObject>} prefs
      */
-    function spellCheckServiceListener(prefs) {
+    async function spellCheckServiceListener(
+        prefs: chrome.settingsPrivate.PrefObject[]): Promise<void> {
       for (const pref of prefs) {
         switch (pref.key) {
           case 'spellcheck.dictionaries':
@@ -52,7 +55,7 @@ suite('input page', () => {
             // to false.
             if (pref.value.length === 0) {
               settingsPrivate.setPref(
-                  'browser.enable_spellchecking', false, '', () => {});
+                  'browser.enable_spellchecking', false, '');
             }
             break;
         }
@@ -71,122 +74,139 @@ suite('input page', () => {
 
     document.body.appendChild(prefElement);
 
-    return CrSettingsPrefs.initialized.then(() => {
-      // Set up test browser proxy.
-      browserProxy = new TestLanguagesBrowserProxy();
-      LanguagesBrowserProxyImpl.setInstanceForTesting(browserProxy);
+    await CrSettingsPrefs.initialized;
+    // Set up test browser proxy.
+    browserProxy = new TestLanguagesBrowserProxy();
+    LanguagesBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
-      // Sets up test metrics proxy.
-      metricsProxy = new TestLanguagesMetricsProxy();
-      LanguagesMetricsProxyImpl.setInstanceForTesting(metricsProxy);
+    // Sets up test metrics proxy.
+    metricsProxy = new TestLanguagesMetricsProxy();
+    LanguagesMetricsProxyImpl.setInstanceForTesting(metricsProxy);
 
-      // Set up fake languageSettingsPrivate API.
-      const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
-      languageSettingsPrivate.setSettingsPrefs(prefElement);
+    // Set up fake languageSettingsPrivate API.
+    const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate() as
+        unknown as FakeLanguageSettingsPrivate;
+    languageSettingsPrivate.setSettingsPrefs(prefElement);
 
-      // Instantiate the data model with data bindings for prefs.
-      const settingsLanguages = document.createElement('settings-languages');
-      settingsLanguages.prefs = prefElement.prefs;
-      fakeDataBind(prefElement, settingsLanguages, 'prefs');
-      document.body.appendChild(settingsLanguages);
+    // Instantiate the data model with data bindings for prefs.
+    settingsLanguages = document.createElement('settings-languages');
+    settingsLanguages.prefs = prefElement.prefs;
+    fakeDataBind(prefElement, settingsLanguages, 'prefs');
+    document.body.appendChild(settingsLanguages);
 
-      // Create page with data bindings for prefs and data model.
-      inputPage = document.createElement('os-settings-input-page');
-      inputPage.prefs = prefElement.prefs;
-      fakeDataBind(prefElement, inputPage, 'prefs');
-      inputPage.languages = settingsLanguages.languages;
-      fakeDataBind(settingsLanguages, inputPage, 'languages');
-      inputPage.languageHelper = settingsLanguages.languageHelper;
-      fakeDataBind(settingsLanguages, inputPage, 'language-helper');
-      languageHelper = inputPage.languageHelper;
-      document.body.appendChild(inputPage);
-    });
+    // Create page with data bindings for prefs and data model.
+    inputPage = document.createElement('os-settings-input-page');
+    inputPage.prefs = prefElement.prefs;
+    fakeDataBind(prefElement, inputPage, 'prefs');
+    inputPage.languages = settingsLanguages.languages;
+    fakeDataBind(settingsLanguages, inputPage, 'languages');
+    inputPage.languageHelper = settingsLanguages.languageHelper;
+    fakeDataBind(settingsLanguages, inputPage, 'language-helper');
+    languageHelper = inputPage.languageHelper;
+    document.body.appendChild(inputPage);
   });
 
-  teardown(function() {
+  teardown(() => {
+    inputPage.remove();
+    settingsLanguages.remove();
     Router.getInstance().resetRouteForTesting();
   });
 
   suite('language pack notice', () => {
     test('is shown when needed', () => {
-      inputPage.shouldShowLanguagePacksNotice_ = true;
+      inputPage.set('shouldShowLanguagePacksNotice_', true);
       loadTimeData.overrideValues({languagePacksHandwritingEnabled: true});
       flush();
 
       assertTrue(isVisible(
-          inputPage.shadowRoot.querySelector('#languagePacksNotice')));
+          inputPage.shadowRoot!.querySelector('#languagePacksNotice')));
     });
 
     test('is hidden when needed', () => {
-      inputPage.shouldShowLanguagePacksNotice_ = false;
+      inputPage.set('shouldShowLanguagePacksNotice_', false);
       loadTimeData.overrideValues({languagePacksHandwritingEnabled: false});
       flush();
 
       assertFalse(isVisible(
-          inputPage.shadowRoot.querySelector('#languagePacksNotice')));
+          inputPage.shadowRoot!.querySelector('#languagePacksNotice')));
     });
   });
 
   suite('input method list', () => {
     test('displays correctly', () => {
       const inputMethodsList =
-          inputPage.shadowRoot.querySelector('#inputMethodsList');
+          inputPage.shadowRoot!.querySelector('#inputMethodsList');
       assertTrue(!!inputMethodsList);
 
       // The test input methods should appear.
       const items = inputMethodsList.querySelectorAll('.list-item');
       // Two items for input methods and one item for add input methods.
       assertEquals(3, items.length);
-      assertEquals(
-          'US keyboard',
-          items[0].querySelector('.display-name').textContent.trim());
-      assertTrue(!!items[0].querySelector('.internal-wrapper'));
-      assertFalse(!!items[0].querySelector('.external-wrapper'));
-      assertFalse(!!items[0].querySelector('.icon-clear').disabled);
-      assertEquals(
-          'US Dvorak keyboard',
-          items[1].querySelector('.display-name').textContent.trim());
-      assertTrue(!!items[1].querySelector('.external-wrapper'));
-      assertFalse(!!items[1].querySelector('.internal-wrapper'));
-      assertFalse(!!items[1].querySelector('.icon-clear').disabled);
+      let name = items[0]!.querySelector('.display-name');
+      assertTrue(!!name);
+      assertEquals('US keyboard', name.textContent?.trim());
+      assertTrue(!!items[0]!.querySelector('.internal-wrapper'));
+      assertNull(items[0]!.querySelector('.external-wrapper'));
+      let icon = items[0]!.querySelector<HTMLButtonElement>('.icon-clear');
+      assertTrue(!!icon);
+      assertFalse(icon.disabled);
+      name = items[1]!.querySelector('.display-name');
+      assertTrue(!!name);
+      assertEquals('US Dvorak keyboard', name.textContent?.trim());
+      assertTrue(!!items[1]!.querySelector('.external-wrapper'));
+      assertNull(items[1]!.querySelector('.internal-wrapper'));
+      icon = items[1]!.querySelector<HTMLButtonElement>('.icon-clear');
+      assertTrue(!!icon);
+      assertFalse(icon.disabled);
     });
 
     test('navigates to input method options page', () => {
-      const inputMethodsList = inputPage.$.inputMethodsList;
+      const inputMethodsList =
+          inputPage.shadowRoot!.querySelector('#inputMethodsList');
+      assertTrue(!!inputMethodsList);
       const items = inputMethodsList.querySelectorAll('.list-item');
-      items[0].querySelector('.subpage-arrow').click();
+      const button =
+          items[0]!.querySelector<HTMLButtonElement>('.subpage-arrow');
+      assertTrue(!!button);
+      button.click();
       const router = Router.getInstance();
       assertEquals(
-          router.currentRoute.getAbsolutePath(),
-          'chrome://os-settings/osLanguages/inputMethodOptions');
+          'chrome://os-settings/osLanguages/inputMethodOptions',
+          router.currentRoute.getAbsolutePath());
       assertEquals(
-          router.getQueryParameters().get('id'),
-          '_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:us::eng');
+          '_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:us::eng',
+          router.getQueryParameters().get('id'));
     });
 
     test('removes an input method', () => {
       const inputMethodName = 'US keyboard';
 
-      let inputMethodsList = inputPage.$.inputMethodsList;
+      let inputMethodsList =
+          inputPage.shadowRoot!.querySelector('#inputMethodsList');
+      assertTrue(!!inputMethodsList);
       let items = inputMethodsList.querySelectorAll('.list-item');
       assertEquals(3, items.length);
-      assertEquals(
-          inputMethodName,
-          items[0].querySelector('.display-name').textContent.trim());
+      let name = items[0]!.querySelector('.display-name');
+      assertTrue(!!name);
+      assertEquals(inputMethodName, name.textContent?.trim());
 
       // clicks remove input method button.
-      items[0].querySelector('.icon-clear').click();
+      const icon = items[0]!.querySelector<HTMLButtonElement>('.icon-clear');
+      assertTrue(!!icon);
+      icon.click();
       flush();
 
-      inputMethodsList = inputPage.$.inputMethodsList;
+      inputMethodsList =
+          inputPage.shadowRoot!.querySelector('#inputMethodsList');
+      assertTrue(!!inputMethodsList);
       items = inputMethodsList.querySelectorAll('.list-item');
       assertEquals(2, items.length);
-      assertTrue(
-          items[0].querySelector('.display-name').textContent.trim() !==
-          inputMethodName);
+      name = items[0]!.querySelector('.display-name');
+      assertTrue(!!name);
+      assertNotEquals(inputMethodName, name.textContent?.trim());
     });
 
-    test('disables remove input method option', async () => {
+    test('disables remove input method option', () => {
       // Add US Swahili keyboard, a third party IME
       languageHelper.addInputMethod(
           'ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:sw');
@@ -195,44 +215,53 @@ suite('input page', () => {
           '_comp_ime_fgoepimhcoialccpbmpnnblemnepkkaoxkb:us:dvorak:eng');
       flush();
 
-      const inputMethodsList = inputPage.$.inputMethodsList;
+      const inputMethodsList =
+          inputPage.shadowRoot!.querySelector('#inputMethodsList');
+      assertTrue(!!inputMethodsList);
       const items = inputMethodsList.querySelectorAll('.list-item');
       assertEquals(3, items.length);
-      assertEquals(
-          'US keyboard',
-          items[0].querySelector('.display-name').textContent.trim());
-      assertTrue(!!items[0].querySelector('.icon-clear').disabled);
-      assertEquals(
-          'US Swahili keyboard',
-          items[1].querySelector('.display-name').textContent.trim());
-      assertFalse(!!items[1].querySelector('.icon-clear').disabled);
+      let name = items[0]!.querySelector('.display-name');
+      assertTrue(!!name);
+      assertEquals('US keyboard', name.textContent?.trim());
+      let icon = items[0]!.querySelector<HTMLButtonElement>('.icon-clear');
+      assertTrue(!!icon);
+      assertTrue(icon.disabled);
+      name = items[1]!.querySelector('.display-name');
+      assertTrue(!!name);
+      assertEquals('US Swahili keyboard', name.textContent?.trim());
+      icon = items[1]!.querySelector<HTMLButtonElement>('.icon-clear');
+      assertTrue(!!icon);
+      assertFalse(icon.disabled);
     });
 
     test('shows managed input methods label', () => {
       const inputMethodsManagedbyPolicy =
-          inputPage.shadowRoot.querySelector('#inputMethodsManagedbyPolicy');
-      assertFalse(!!inputMethodsManagedbyPolicy);
+          inputPage.shadowRoot!.querySelector('#inputMethodsManagedbyPolicy');
+      assertNull(inputMethodsManagedbyPolicy);
 
       inputPage.setPrefValue(
           'settings.language.allowed_input_methods', ['xkb:us::eng']);
       flush();
 
-      assertTrue(
-          !!inputPage.shadowRoot.querySelector('#inputMethodsManagedbyPolicy'));
+      assertTrue(!!inputPage.shadowRoot!.querySelector(
+          '#inputMethodsManagedbyPolicy'));
     });
   });
 
   suite('input page', () => {
     test('Deep link to spell check', async () => {
       const params = new URLSearchParams();
-      params.append('settingId', '1207');
+      params.append('settingId', settingMojom.Setting.kSpellCheck.toString());
       Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT, params);
 
       flush();
 
+      const enableSpellcheckingToggle =
+          inputPage.shadowRoot!.querySelector('#enableSpellcheckingToggle');
+      assertTrue(!!enableSpellcheckingToggle);
       const deepLinkElement =
-          inputPage.shadowRoot.querySelector('#enableSpellcheckingToggle')
-              .shadowRoot.querySelector('cr-toggle');
+          enableSpellcheckingToggle.shadowRoot!.querySelector('cr-toggle');
+      assertTrue(!!deepLinkElement);
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -241,59 +270,85 @@ suite('input page', () => {
   });
 
   suite('add input methods dialog', () => {
-    let dialog;
-    let suggestedList;
-    let allImesList;
-    let cancelButton;
-    let actionButton;
+    let dialog: OsSettingsAddItemsDialogElement;
+    let suggestedList: IronListElement;
+    let allImesList: IronListElement;
+    let cancelButton: HTMLButtonElement;
+    let actionButton: HTMLButtonElement;
 
     setup(() => {
-      assertFalse(!!inputPage.shadowRoot.querySelector(
-          'os-settings-add-input-methods-dialog'));
-      inputPage.shadowRoot.querySelector('#addInputMethod').click();
+      let element = inputPage.shadowRoot!.querySelector(
+          'os-settings-add-input-methods-dialog');
+      assertNull(element);
+      const addInputMethod =
+          inputPage.shadowRoot!.querySelector<HTMLButtonElement>(
+              '#addInputMethod');
+      assertTrue(!!addInputMethod);
+      addInputMethod.click();
       flush();
 
-      dialog = inputPage.shadowRoot
-                   .querySelector('os-settings-add-input-methods-dialog')
-                   .shadowRoot.querySelector('os-settings-add-items-dialog');
-      assertTrue(!!dialog);
+      element = inputPage.shadowRoot!.querySelector(
+          'os-settings-add-input-methods-dialog');
+      assertTrue(!!element);
+      const dialogElement =
+          element.shadowRoot!.querySelector('os-settings-add-items-dialog');
+      assertTrue(!!dialogElement);
+      dialog = dialogElement;
 
-      actionButton = dialog.shadowRoot.querySelector('.action-button');
-      assertTrue(!!actionButton);
-      cancelButton = dialog.shadowRoot.querySelector('.cancel-button');
-      assertTrue(!!cancelButton);
+      const button =
+          dialog.shadowRoot!.querySelector<HTMLButtonElement>('.action-button');
+      assertTrue(!!button);
+      actionButton = button;
+      const cancel =
+          dialog.shadowRoot!.querySelector<HTMLButtonElement>('.cancel-button');
+      assertTrue(!!cancel);
+      cancelButton = cancel;
 
-      suggestedList = dialog.shadowRoot.querySelector('#suggested-items-list');
-      assertTrue(!!suggestedList);
+      const list = dialog.shadowRoot!.querySelector<IronListElement>(
+          '#suggested-items-list');
+      assertTrue(!!list);
+      suggestedList = list;
 
-      allImesList = dialog.shadowRoot.querySelector('#filtered-items-list');
-      assertTrue(!!allImesList);
+      const allList = dialog.shadowRoot!.querySelector<IronListElement>(
+          '#filtered-items-list');
+      assertTrue(!!allList);
+      allImesList = allList;
 
       // No input methods has been selected, so the action button is disabled.
       assertTrue(actionButton.disabled);
       assertFalse(cancelButton.disabled);
     });
 
+    teardown(() => {
+      inputPage.remove();
+      dialog.remove();
+    });
+
     test('has action button working correctly', () => {
-      const listItems = suggestedList.querySelectorAll('.list-item');
+      const listItems =
+          suggestedList.querySelectorAll<HTMLButtonElement>('.list-item');
+      assertTrue(!!listItems);
       // selecting a language enables action button
-      listItems[0].click();
+      listItems[0]!.click();
       assertFalse(actionButton.disabled);
 
       // selecting the same language again disables action button
-      listItems[0].click();
+      listItems[0]!.click();
       assertTrue(actionButton.disabled);
     });
 
     test('has correct structure and adds input methods', () => {
-      const suggestedItems = suggestedList.querySelectorAll('.list-item');
+      const suggestedItems =
+          suggestedList.querySelectorAll<HTMLElement>('.list-item');
+      assertTrue(!!suggestedItems);
       // input methods are based on and ordered by enabled languages
       // only allowed input methods are shown.
       assertEquals(2, suggestedItems.length);
-      assertEquals('US Swahili keyboard', suggestedItems[0].textContent.trim());
-      assertEquals('Swahili keyboard', suggestedItems[1].textContent.trim());
+      assertEquals(
+          'US Swahili keyboard', suggestedItems[0]!.textContent?.trim());
+      assertEquals('Swahili keyboard', suggestedItems[1]!.textContent?.trim());
       // selecting Swahili keyboard.
-      suggestedItems[1].click();
+      suggestedItems[1]!.click();
 
       const allItems = allImesList.querySelectorAll('.list-item');
       // All input methods should appear and ordered based on fake settings
@@ -328,29 +383,28 @@ suite('input page', () => {
       ];
 
       for (let i = 0; i < allItems.length; i++) {
-        assertTrue(
-            allItems[i].textContent.includes(expectedItems[i].name),
-            `expect ${allItems[i].textContent} to include ${
-                expectedItems[i].name}`);
+        const checkbox = allItems[i]!.shadowRoot!.querySelector('cr-checkbox');
+        assertTrue(!!checkbox);
+        assertStringContains(allItems[i]!.textContent!, expectedItems[i]!.name);
         assertEquals(
-            expectedItems[i].checkboxDisabled,
-            allItems[i].shadowRoot.querySelector('cr-checkbox').disabled,
-            `expect ${expectedItems[i].name}'s checkbox disabled state to be ${
-                expectedItems[i].checkboxDisabled}`);
+            expectedItems[i]!.checkboxDisabled, checkbox.disabled,
+            `expect ${expectedItems[i]!.name}'s checkbox disabled state to be ${
+                expectedItems[i]!.checkboxDisabled}`);
         assertEquals(
-            expectedItems[i].checkboxChecked,
-            allItems[i].shadowRoot.querySelector('cr-checkbox').checked,
-            `expect ${expectedItems[i].name}'s checkbox checked state to be ${
-                expectedItems[i].checkboxChecked}`);
+            expectedItems[i]!.checkboxChecked, checkbox.checked,
+            `expect ${expectedItems[i]!.name}'s checkbox checked state to be ${
+                expectedItems[i]!.checkboxChecked}`);
         assertEquals(
-            expectedItems[i].policyIcon,
-            !!allItems[i].shadowRoot.querySelector('iron-icon'),
-            `expect ${expectedItems[i].name}'s policy icon presence to be ${
-                expectedItems[i].policyIcon}`);
+            expectedItems[i]!.policyIcon,
+            !!allItems[i]!.shadowRoot!.querySelector('iron-icon'),
+            `expect ${expectedItems[i]!.name}'s policy icon presence to be ${
+                expectedItems[i]!.policyIcon}`);
       }
 
       // selecting Vietnamese keyboard
-      allItems[3].shadowRoot.querySelector('cr-checkbox').click();
+      const checkbox = allItems[3]!.shadowRoot!.querySelector('cr-checkbox');
+      assertTrue(!!checkbox);
+      checkbox.click();
 
       actionButton.click();
 
@@ -363,38 +417,42 @@ suite('input page', () => {
     });
 
     test('suggested input methods hidden when no languages is enabled', () => {
-      languageHelper.setPrefValue('intl.accept_languages', '');
-      languageHelper.setPrefValue('settings.language.preferred_languages', '');
+      inputPage.setPrefValue('intl.accept_languages', '');
+      inputPage.setPrefValue('settings.language.preferred_languages', '');
       flush();
 
-      suggestedList = dialog.shadowRoot.querySelector('#suggestedInputMethods');
+      const suggestedMethods =
+          dialog.shadowRoot!.querySelector('#suggestedInputMethods');
       // suggested input methods is rendered previously.
-      assertFalse(isVisible(suggestedList));
+      assertFalse(isVisible(suggestedMethods));
     });
 
     test('suggested input methods hidden when no input methods left', () => {
       const languageCode = 'sw';
-      languageHelper.setPrefValue('intl.accept_languages', languageCode);
-      languageHelper.setPrefValue(
+      inputPage.setPrefValue('intl.accept_languages', languageCode);
+      inputPage.setPrefValue(
           'settings.language.preferred_languages', languageCode);
       languageHelper.getInputMethodsForLanguage(languageCode)
-          .forEach(inputMethod => {
-            languageHelper.addInputMethod(inputMethod.id);
-          });
+          .forEach(
+              (inputMethod: chrome.languageSettingsPrivate.InputMethod) => {
+                languageHelper.addInputMethod(inputMethod.id);
+              });
       flush();
 
-      suggestedList = dialog.shadowRoot.querySelector('#suggestedInputMethods');
-      assertFalse(isVisible(suggestedList));
+      const suggestedMethods =
+          dialog.shadowRoot!.querySelector('#suggestedInputMethods');
+      assertFalse(isVisible(suggestedMethods));
     });
 
     test('searches input methods correctly', () => {
-      const searchInput = dialog.shadowRoot.querySelector('cr-search-field');
-      const getItems = function() {
+      const searchInput = dialog.shadowRoot!.querySelector('cr-search-field');
+      assertTrue(!!searchInput);
+      const getItems = () => {
         return allImesList.querySelectorAll('.list-item:not([hidden])');
       };
 
       assertTrue(
-          isVisible(dialog.shadowRoot.querySelector('#filtered-items-label')));
+          isVisible(dialog.shadowRoot!.querySelector('#filtered-items-label')));
       assertTrue(isVisible(suggestedList));
 
       // Expecting a few languages to be displayed when no query exists.
@@ -404,24 +462,25 @@ suite('input page', () => {
       searchInput.setValue('v');
       flush();
       assertFalse(
-          isVisible(dialog.shadowRoot.querySelector('#filtered-items-label')));
+          isVisible(dialog.shadowRoot!.querySelector('#filtered-items-label')));
       assertFalse(isVisible(suggestedList));
 
       // Search input methods name
       searchInput.setValue('vietnamese');
       flush();
       assertEquals(1, getItems().length);
-      assertTrue(getItems()[0].textContent.includes('Vietnamese'));
+      assertStringContains(getItems()[0]!.textContent!, 'Vietnamese');
 
       // Search input methods' language
       searchInput.setValue('Turkmen');
       flush();
       assertEquals(1, getItems().length);
-      assertTrue(getItems()[0].textContent.includes('Swahili keyboard'));
+      assertStringContains(getItems()[0]!.textContent!, 'Swahili keyboard');
     });
 
-    test('has escape key behavior working correctly', function() {
-      const searchInput = dialog.shadowRoot.querySelector('cr-search-field');
+    test('has escape key behavior working correctly', () => {
+      const searchInput = dialog.shadowRoot!.querySelector('cr-search-field');
+      assertTrue(!!searchInput);
       searchInput.setValue('dummyquery');
 
       // Test that dialog is not closed if 'Escape' is pressed on the input
@@ -440,7 +499,11 @@ suite('input page', () => {
   suite('records metrics', () => {
     test('when deactivating show ime menu', async () => {
       inputPage.setPrefValue('settings.language.ime_menu_activated', true);
-      inputPage.shadowRoot.querySelector('#showImeMenu').click();
+      const showImeMenu =
+          inputPage.shadowRoot!.querySelector<HTMLButtonElement>(
+              '#showImeMenu');
+      assertTrue(!!showImeMenu);
+      showImeMenu.click();
       flush();
 
       assertFalse(
@@ -449,7 +512,11 @@ suite('input page', () => {
 
     test('when activating show ime menu', async () => {
       inputPage.setPrefValue('settings.language.ime_menu_activated', false);
-      inputPage.shadowRoot.querySelector('#showImeMenu').click();
+      const showImeMenu =
+          inputPage.shadowRoot!.querySelector<HTMLButtonElement>(
+              '#showImeMenu');
+      assertTrue(!!showImeMenu);
+      showImeMenu.click();
       flush();
 
       assertTrue(
@@ -457,7 +524,11 @@ suite('input page', () => {
     });
 
     test('when adding input methods', async () => {
-      inputPage.shadowRoot.querySelector('#addInputMethod').click();
+      const addInputMethod =
+          inputPage.shadowRoot!.querySelector<HTMLButtonElement>(
+              '#addInputMethod');
+      assertTrue(!!addInputMethod);
+      addInputMethod.click();
       flush();
 
       await metricsProxy.whenCalled('recordAddInputMethod');
@@ -465,12 +536,13 @@ suite('input page', () => {
 
     test('when switch input method', async () => {
       const inputMethodsList =
-          inputPage.shadowRoot.querySelector('#inputMethodsList');
+          inputPage.shadowRoot!.querySelector('#inputMethodsList');
       assertTrue(!!inputMethodsList);
 
       // The test input methods should appear.
-      const items = inputMethodsList.querySelectorAll('.list-item');
-      items[0].click();
+      const items =
+          inputMethodsList.querySelectorAll<HTMLButtonElement>('.list-item');
+      items[0]!.click();
       assertEquals(
           LanguagesPageInteraction.SWITCH_INPUT_METHOD,
           await metricsProxy.whenCalled('recordInteraction'));
@@ -479,8 +551,13 @@ suite('input page', () => {
     test('when dismissing shortcut reminder', async () => {
       // Default shortcut reminder with two elements should show "last used IME"
       // reminder.
-      inputPage.shadowRoot.querySelector('keyboard-shortcut-banner')
-          .$.dismiss.click();
+      let element =
+          inputPage.shadowRoot!.querySelector('keyboard-shortcut-banner');
+      assertTrue(!!element);
+      let dismissButton =
+          element.shadowRoot!.querySelector<HTMLButtonElement>('#dismiss');
+      assertTrue(!!dismissButton);
+      dismissButton.click();
       assertEquals(
           InputsShortcutReminderState.LAST_USED_IME,
           await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
@@ -492,8 +569,12 @@ suite('input page', () => {
       flush();
 
       // Shortcut reminder should show "next IME" shortcut.
-      inputPage.shadowRoot.querySelector('keyboard-shortcut-banner')
-          .$.dismiss.click();
+      element = inputPage.shadowRoot!.querySelector('keyboard-shortcut-banner');
+      assertTrue(!!element);
+      dismissButton =
+          element.shadowRoot!.querySelector<HTMLButtonElement>('#dismiss');
+      assertTrue(!!dismissButton);
+      dismissButton.click();
       assertEquals(
           InputsShortcutReminderState.NEXT_IME,
           await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
@@ -507,43 +588,50 @@ suite('input page', () => {
       flush();
 
       // Shortcut reminder should show both shortcuts.
-      inputPage.shadowRoot.querySelector('keyboard-shortcut-banner')
-          .$.dismiss.click();
+      element = inputPage.shadowRoot!.querySelector('keyboard-shortcut-banner');
+      assertTrue(!!element);
+      dismissButton =
+          element.shadowRoot!.querySelector<HTMLButtonElement>('#dismiss');
+      assertTrue(!!dismissButton);
+      dismissButton.click();
       assertEquals(
           InputsShortcutReminderState.LAST_USED_IME_AND_NEXT_IME,
           await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
     });
 
     test('when clicking on "learn more" about language packs', async () => {
-      inputPage.shouldShowLanguagePacksNotice_ = true;
+      inputPage.set('shouldShowLanguagePacksNotice_', true);
       loadTimeData.overrideValues({languagePacksHandwritingEnabled: true});
       flush();
 
-      const anchor = inputPage.shadowRoot.querySelector('#languagePacksNotice')
-                         .shadowRoot.querySelector('a');
+      const languagePacksNotice =
+          inputPage.shadowRoot!.querySelector('#languagePacksNotice');
+      assertTrue(!!languagePacksNotice);
+      const anchor = languagePacksNotice.shadowRoot!.querySelector('a');
+      assertTrue(!!anchor);
       // The below would normally create a new window, which would change the
       // focus from this test to the new window.
       // Prevent this from happening by adding an event listener on the anchor
       // element which stops the default behaviour (of opening a new window).
-      anchor.addEventListener('click', (e) => e.preventDefault());
+      anchor.addEventListener('click', (e: Event) => e.preventDefault());
       anchor.click();
       assertEquals(
-          await metricsProxy.whenCalled('recordInteraction'),
-          LanguagesPageInteraction.OPEN_LANGUAGE_PACKS_LEARN_MORE);
+          LanguagesPageInteraction.OPEN_LANGUAGE_PACKS_LEARN_MORE,
+          await metricsProxy.whenCalled('recordInteraction'));
     });
   });
 
   suite('spell check v2', () => {
-    let spellCheckToggle;
-    let spellCheckListContainer;
+    let spellCheckToggle: SettingsToggleButtonElement;
+    let spellCheckListContainer: HTMLElement;
     // This list is not dynamically updated.
-    let spellCheckList;
+    let spellCheckList: NodeListOf<HTMLElement>;
 
     setup(() => {
       // Enable grammar check.
       // We use the property directly instead of loadTimeData, as overriding
       // loadTimeData does not work as the property is set using a value().
-      inputPage.onDeviceGrammarCheckEnabled_ = true;
+      inputPage.set('onDeviceGrammarCheckEnabled_', true);
       // However, we should still set loadTimeData as some other code may use
       // it (such as languages.js).
       loadTimeData.overrideValues({
@@ -556,30 +644,38 @@ suite('input page', () => {
       // hidden. <dom-if>s use a `display: none;` inline style to hide elements.
       // Because we do not use inline styles, the button which is not hidden
       // does not have a `style` attribute, and the one which is hidden does.
-      spellCheckToggle = inputPage.shadowRoot.querySelector(
-          '#enableSpellcheckingToggle:not([style])');
-      assertTrue(!!spellCheckToggle);
+      const toggle =
+          inputPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              '#enableSpellcheckingToggle:not([style])');
+      assertTrue(!!toggle);
+      spellCheckToggle = toggle;
       assertTrue(spellCheckToggle.checked);
 
-      spellCheckListContainer =
-          inputPage.shadowRoot.querySelector('#spellCheckLanguagesListV2');
-      assertTrue(!!spellCheckListContainer);
+      const list = inputPage.shadowRoot!.querySelector<HTMLElement>(
+          '#spellCheckLanguagesListV2');
+      assertTrue(!!list);
+      spellCheckListContainer = list;
 
       // The spell check list should only have en-US (excluding the "add
       // languages" button).
       spellCheckList = spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(1 + 1, spellCheckList.length);
-      assertTrue(
-          spellCheckList[0].textContent.includes('English (United States)'));
-      assertTrue(spellCheckList[1].textContent.includes('Add languages'));
+      assertStringContains(
+          spellCheckList[0]!.textContent!, 'English (United States)');
+      assertStringContains(spellCheckList[1]!.textContent!, 'Add languages');
+    });
+
+    teardown(() => {
+      inputPage.remove();
     });
 
     test('can remove enabled language from spell check list', () => {
       assertDeepEquals(
-          ['en-US'], languageHelper.prefs.spellcheck.dictionaries.value);
+          ['en-US'], inputPage.prefs.spellcheck.dictionaries.value);
       // Get remove button for en-US.
       const spellCheckLanguageToggle =
-          spellCheckList[0].querySelector('cr-icon-button');
+          spellCheckList[0]!.querySelector<HTMLButtonElement>('cr-icon-button');
+      assertTrue(!!spellCheckLanguageToggle);
 
       // Remove the language.
       spellCheckLanguageToggle.click();
@@ -590,12 +686,12 @@ suite('input page', () => {
       // The spell check list should just have "add languages".
       assertEquals(0 + 1, newSpellCheckList.length);
 
-      assertDeepEquals([], languageHelper.prefs.spellcheck.dictionaries.value);
+      assertDeepEquals([], inputPage.prefs.spellcheck.dictionaries.value);
     });
 
     test('can remove non-enabled language from spell check list', () => {
       // Add a new non-enabled language to spellcheck.dictionaries.
-      languageHelper.setPrefValue('spellcheck.dictionaries', ['en-US', 'nb']);
+      inputPage.setPrefValue('spellcheck.dictionaries', ['en-US', 'nb']);
       flush();
 
       let newSpellCheckList =
@@ -603,28 +699,31 @@ suite('input page', () => {
 
       // The spell check list should have en-US, nb and "add languages".
       assertEquals(2 + 1, newSpellCheckList.length);
-      assertTrue(
-          newSpellCheckList[0].textContent.includes('English (United States)'));
-      assertTrue(newSpellCheckList[1].textContent.includes('Norwegian Bokmål'));
+      assertStringContains(
+          newSpellCheckList[0]!.textContent!, 'English (United States)');
+      assertStringContains(
+          newSpellCheckList[1]!.textContent!, 'Norwegian Bokmål');
 
       // Remove nb.
-      newSpellCheckList[1].querySelector('cr-icon-button').click();
+      const icon = newSpellCheckList[1]!.querySelector('cr-icon-button');
+      assertTrue(!!icon);
+      icon.click();
       flush();
       newSpellCheckList =
           spellCheckListContainer.querySelectorAll('.list-item');
 
       // The spell check list should have en-US and "add languages".
       assertEquals(1 + 1, newSpellCheckList.length);
-      assertTrue(
-          newSpellCheckList[0].textContent.includes('English (United States)'));
+      assertStringContains(
+          newSpellCheckList[0]!.textContent!, 'English (United States)');
 
       assertDeepEquals(
-          ['en-US'], languageHelper.prefs.spellcheck.dictionaries.value);
+          ['en-US'], inputPage.prefs.spellcheck.dictionaries.value);
     });
 
     test('shows force-on spell check language turned on by user', () => {
       // Force-enable a spell check language originally set by the user.
-      languageHelper.setPrefValue('spellcheck.forced_dictionaries', ['en-US']);
+      inputPage.setPrefValue('spellcheck.forced_dictionaries', ['en-US']);
       flush();
 
       const newSpellCheckList =
@@ -634,21 +733,24 @@ suite('input page', () => {
       assertEquals(1 + 1, newSpellCheckList.length);
 
       const forceEnabledEnUSLanguageRow = newSpellCheckList[0];
-      assertTrue(forceEnabledEnUSLanguageRow.textContent.includes(
-          'English (United States)'));
+      assertTrue(!!forceEnabledEnUSLanguageRow);
+      assertStringContains(
+          forceEnabledEnUSLanguageRow.textContent!, 'English (United States)');
       assertTrue(!!forceEnabledEnUSLanguageRow.querySelector(
           'cr-policy-pref-indicator'));
       // Polymer sometimes hides the old enabled element by using a
       // display: none, so we use the managed-button class to get a reference to
       // the new disabled button.
       const managedButton =
-          forceEnabledEnUSLanguageRow.querySelector('.managed-button');
+          forceEnabledEnUSLanguageRow.querySelector<HTMLButtonElement>(
+              '.managed-button');
+      assertTrue(!!managedButton);
       assertTrue(managedButton.disabled);
     });
 
     test('shows force-on enabled spell check language', () => {
       // Force-enable an enabled language via policy.
-      languageHelper.setPrefValue('spellcheck.forced_dictionaries', ['sw']);
+      inputPage.setPrefValue('spellcheck.forced_dictionaries', ['sw']);
       flush();
 
       const newSpellCheckList =
@@ -656,21 +758,24 @@ suite('input page', () => {
 
       // The spell check list should have en-US, sw and "add languages".
       assertEquals(2 + 1, newSpellCheckList.length);
-      assertTrue(
-          newSpellCheckList[0].textContent.includes('English (United States)'));
+      assertStringContains(
+          newSpellCheckList[0]!.textContent!, 'English (United States)');
 
       const forceEnabledSwLanguageRow = newSpellCheckList[1];
-      assertTrue(forceEnabledSwLanguageRow.textContent.includes('Swahili'));
+      assertTrue(!!forceEnabledSwLanguageRow);
+      assertStringContains(forceEnabledSwLanguageRow.textContent!, 'Swahili');
       assertTrue(!!forceEnabledSwLanguageRow.querySelector(
           'cr-policy-pref-indicator'));
       const managedButton =
-          forceEnabledSwLanguageRow.querySelector('.managed-button');
+          forceEnabledSwLanguageRow.querySelector<HTMLButtonElement>(
+              '.managed-button');
+      assertTrue(!!managedButton);
       assertTrue(managedButton.disabled);
     });
 
     test('shows force-on non-enabled spell check language', () => {
       // Force-enable a non-enabled language via policy.
-      languageHelper.setPrefValue('spellcheck.forced_dictionaries', ['nb']);
+      inputPage.setPrefValue('spellcheck.forced_dictionaries', ['nb']);
       flush();
 
       const newSpellCheckList =
@@ -678,22 +783,25 @@ suite('input page', () => {
 
       // The spell check list should have en-US, nb and "add languages".
       assertEquals(2 + 1, newSpellCheckList.length);
-      assertTrue(
-          newSpellCheckList[0].textContent.includes('English (United States)'));
+      assertStringContains(
+          newSpellCheckList[0]!.textContent!, 'English (United States)');
 
       const forceEnabledNbLanguageRow = newSpellCheckList[1];
-      assertTrue(
-          forceEnabledNbLanguageRow.textContent.includes('Norwegian Bokmål'));
+      assertTrue(!!forceEnabledNbLanguageRow);
+      assertStringContains(
+          forceEnabledNbLanguageRow.textContent!, 'Norwegian Bokmål');
       assertTrue(!!forceEnabledNbLanguageRow.querySelector(
           'cr-policy-pref-indicator'));
       const managedButton =
-          forceEnabledNbLanguageRow.querySelector('.managed-button');
+          forceEnabledNbLanguageRow.querySelector<HTMLButtonElement>(
+              '.managed-button');
+      assertTrue(!!managedButton);
       assertTrue(managedButton.disabled);
     });
 
     test('does not show force-off spell check language enabled by user', () => {
       // Force-disable a spell check language originally set by the user.
-      languageHelper.setPrefValue('spellcheck.blocked_dictionaries', ['en-US']);
+      inputPage.setPrefValue('spellcheck.blocked_dictionaries', ['en-US']);
       flush();
 
       // The spell check list should just have "add languages".
@@ -704,45 +812,53 @@ suite('input page', () => {
 
     test('does not show force-off enabled spell check language', () => {
       // Force-disable an enabled language via policy.
-      languageHelper.setPrefValue('spellcheck.blocked_dictionaries', ['sw']);
+      inputPage.setPrefValue('spellcheck.blocked_dictionaries', ['sw']);
       flush();
 
       // The spell check list should be the same (en-US, "add languages").
       const newSpellCheckList =
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(1 + 1, newSpellCheckList.length);
-      assertTrue(
-          newSpellCheckList[0].textContent.includes('English (United States)'));
+      assertStringContains(
+          newSpellCheckList[0]!.textContent!, 'English (United States)');
     });
 
     test('does not show force-off non-enabled spell check language', () => {
       // Force-disable a non-enabled language via policy.
-      languageHelper.setPrefValue('spellcheck.blocked_dictionaries', ['nb']);
+      inputPage.setPrefValue('spellcheck.blocked_dictionaries', ['nb']);
       flush();
 
       // The spell check list should be the same (en-US, "add languages").
       const newSpellCheckList =
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(1 + 1, newSpellCheckList.length);
-      assertTrue(
-          newSpellCheckList[0].textContent.includes('English (United States)'));
+      assertStringContains(
+          newSpellCheckList[0]!.textContent!, 'English (United States)');
     });
 
     test('toggle off disables buttons', () => {
       assertTrue(spellCheckToggle.checked);
-      assertFalse(spellCheckList[0].querySelector('cr-icon-button').disabled);
+      let iconButton = spellCheckList[0]!.querySelector('cr-icon-button');
+      assertTrue(!!iconButton);
+      assertFalse(iconButton.disabled);
       // "Add languages" uses a cr-button instead of a cr-icon-button.
-      assertFalse(spellCheckList[1].querySelector('cr-button').disabled);
+      let button = spellCheckList[1]!.querySelector('cr-button');
+      assertTrue(!!button);
+      assertFalse(button.disabled);
 
       spellCheckToggle.click();
 
       assertFalse(spellCheckToggle.checked);
-      assertTrue(spellCheckList[0].querySelector('cr-icon-button').disabled);
-      assertTrue(spellCheckList[1].querySelector('cr-button').disabled);
+      iconButton = spellCheckList[0]!.querySelector('cr-icon-button');
+      assertTrue(!!iconButton);
+      assertTrue(iconButton.disabled);
+      button = spellCheckList[1]!.querySelector('cr-button');
+      assertTrue(!!button);
+      assertTrue(button.disabled);
     });
 
     test('languages are in sorted order', () => {
-      languageHelper.setPrefValue(
+      inputPage.setPrefValue(
           'spellcheck.dictionaries', ['sw', 'en-US', 'nb', 'en-CA']);
       flush();
       // The spell check list should be sorted by display name:
@@ -751,18 +867,21 @@ suite('input page', () => {
       const newSpellCheckList =
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(4 + 1, newSpellCheckList.length);
-      assertTrue(newSpellCheckList[0].textContent.includes('English (Canada)'));
-      assertTrue(
-          newSpellCheckList[1].textContent.includes('English (United States)'));
-      assertTrue(newSpellCheckList[2].textContent.includes('Norwegian Bokmål'));
-      assertTrue(newSpellCheckList[3].textContent.includes('Swahili'));
+      assertStringContains(
+          newSpellCheckList[0]!.textContent!, 'English (Canada)');
+      assertStringContains(
+          newSpellCheckList[1]!.textContent!, 'English (United States)');
+      assertStringContains(
+          newSpellCheckList[2]!.textContent!, 'Norwegian Bokmål');
+      assertStringContains(newSpellCheckList[3]!.textContent!, 'Swahili');
     });
 
     test('removing all languages, then adding enabled language works', () => {
       // See https://crbug.com/1197386 for more information.
       // Remove en-US so there are no spell check languages.
       const spellCheckLanguageToggle =
-          spellCheckList[0].querySelector('cr-icon-button');
+          spellCheckList[0]!.querySelector('cr-icon-button');
+      assertTrue(!!spellCheckLanguageToggle);
       spellCheckLanguageToggle.click();
       flush();
 
@@ -791,8 +910,8 @@ suite('input page', () => {
           spellCheckListContainer.querySelectorAll('.list-item');
       // The spell check list should now have en-US.
       assertEquals(1 + 1, newSpellCheckList.length);
-      assertTrue(
-          newSpellCheckList[0].textContent.includes('English (United States)'));
+      assertStringContains(
+          newSpellCheckList[0]!.textContent!, 'English (United States)');
       // Spell check should still be enabled.
       assertTrue(spellCheckToggle.checked);
     });
@@ -807,8 +926,8 @@ suite('input page', () => {
       let newSpellCheckList =
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(1 + 1, newSpellCheckList.length);
-      assertTrue(
-          newSpellCheckList[0].textContent.includes('English (United States)'));
+      assertStringContains(
+          newSpellCheckList[0]!.textContent!, 'English (United States)');
 
       // Add a spell check language not in Accept-Language.
       languageHelper.toggleSpellCheck('nb', true);
@@ -818,9 +937,10 @@ suite('input page', () => {
       newSpellCheckList =
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(2 + 1, newSpellCheckList.length);
-      assertTrue(
-          newSpellCheckList[0].textContent.includes('English (United States)'));
-      assertTrue(newSpellCheckList[1].textContent.includes('Norwegian Bokmål'));
+      assertStringContains(
+          newSpellCheckList[0]!.textContent!, 'English (United States)');
+      assertStringContains(
+          newSpellCheckList[1]!.textContent!, 'Norwegian Bokmål');
 
       // Add an arbitrary language to Accept-Language.
       languageHelper.enableLanguage('tk');
@@ -830,9 +950,10 @@ suite('input page', () => {
       newSpellCheckList =
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(2 + 1, newSpellCheckList.length);
-      assertTrue(
-          newSpellCheckList[0].textContent.includes('English (United States)'));
-      assertTrue(newSpellCheckList[1].textContent.includes('Norwegian Bokmål'));
+      assertStringContains(
+          newSpellCheckList[0]!.textContent!, 'English (United States)');
+      assertStringContains(
+          newSpellCheckList[1]!.textContent!, 'Norwegian Bokmål');
     });
 
     // TODO(crbug.com/1201540): Add test to ensure that it is impossible to
@@ -847,20 +968,24 @@ suite('input page', () => {
 
     test('error handling', () => {
       // Enable Swahili so we have two languages for testing.
-      languageHelper.setPrefValue('spellcheck.dictionaries', ['en-US', 'sw']);
+      inputPage.setPrefValue('spellcheck.dictionaries', ['en-US', 'sw']);
       flush();
-      const checkAllHidden = nodes => {
+      const checkAllHidden = (nodes: HTMLElement[]) => {
         assertTrue(nodes.every(node => node.hidden));
       };
 
-      const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
-      const errorDivs = Array.from(
-          spellCheckListContainer.querySelectorAll('.name-with-error div'));
+      const languageSettingsPrivate =
+          browserProxy.getLanguageSettingsPrivate() as unknown as
+          FakeLanguageSettingsPrivate;
+      const errorDivs =
+          Array.from(spellCheckListContainer.querySelectorAll<HTMLElement>(
+              '.name-with-error div'));
       assertEquals(2, errorDivs.length);
       checkAllHidden(errorDivs);
 
-      const retryButtons = Array.from(spellCheckListContainer.querySelectorAll(
-          'cr-button:not(#addSpellcheckLanguages)'));
+      const retryButtons = Array.from(
+          spellCheckListContainer.querySelectorAll<HTMLButtonElement>(
+              'cr-button:not(#addSpellcheckLanguages)'));
       assertEquals(2, retryButtons.length);
 
       const languageCode = inputPage.get('languages.enabled.0.language.code');
@@ -869,13 +994,13 @@ suite('input page', () => {
       ]);
 
       flush();
-      assertFalse(errorDivs[0].hidden);
-      assertFalse(retryButtons[0].hidden);
-      assertFalse(retryButtons[0].disabled);
+      assertFalse(errorDivs[0]!.hidden);
+      assertFalse(retryButtons[0]!.hidden);
+      assertFalse(retryButtons[0]!.disabled);
 
       // turns off spell check disable retry button.
       spellCheckToggle.click();
-      assertTrue(retryButtons[0].disabled);
+      assertTrue(retryButtons[0]!.disabled);
 
       // turns spell check back on and enable download.
       spellCheckToggle.click();
@@ -884,13 +1009,15 @@ suite('input page', () => {
       ]);
 
       flush();
-      assertTrue(errorDivs[0].hidden);
-      assertTrue(retryButtons[0].hidden);
+      assertTrue(errorDivs[0]!.hidden);
+      assertTrue(retryButtons[0]!.hidden);
     });
 
     test('toggle off disables edit dictionary', () => {
       const editDictionarySubpageTrigger =
-          inputPage.shadowRoot.querySelector('#editDictionarySubpageTrigger');
+          inputPage.shadowRoot!.querySelector<HTMLButtonElement>(
+              '#editDictionarySubpageTrigger');
+      assertTrue(!!editDictionarySubpageTrigger);
       assertFalse(editDictionarySubpageTrigger.disabled);
       spellCheckToggle.click();
 
@@ -899,27 +1026,29 @@ suite('input page', () => {
 
     test('opens edit dictionary page', () => {
       const editDictionarySubpageTrigger =
-          inputPage.shadowRoot.querySelector('#editDictionarySubpageTrigger');
+          inputPage.shadowRoot!.querySelector<HTMLButtonElement>(
+              '#editDictionarySubpageTrigger');
+      assertTrue(!!editDictionarySubpageTrigger);
       editDictionarySubpageTrigger.click();
       const router = Router.getInstance();
       assertEquals(
-          router.currentRoute.getAbsolutePath(),
-          'chrome://os-settings/osLanguages/editDictionary');
+          'chrome://os-settings/osLanguages/editDictionary',
+          router.currentRoute.getAbsolutePath());
     });
   });
 
   suite('add spell check languages dialog', () => {
-    let dialog;
-    let suggestedList;
-    let allLangsList;
-    let cancelButton;
-    let actionButton;
+    let dialog: OsSettingsAddItemsDialogElement;
+    let suggestedList: IronListElement;
+    let allLangsList: IronListElement;
+    let cancelButton: HTMLButtonElement;
+    let actionButton: HTMLButtonElement;
 
     /**
      * Returns the list items in the dialog.
-     * @return {!Array<!Element>}
      */
-    function getAllLanguagesCheckboxWithPolicies() {
+    function getAllLanguagesCheckboxWithPolicies():
+        CrCheckboxWithPolicyElement[] {
       // If an element (the <iron-list> in this case) is hidden in Polymer,
       // Polymer will intelligently not update the DOM of the hidden element
       // to prevent DOM updates that the user can't see. However, this means
@@ -938,52 +1067,77 @@ suite('input page', () => {
 
     /**
      * Returns the internal cr-checkboxes in allLanguages.
-     * @return {!Array<!Element>}
      */
-    function getAllLanguagesCheckboxes() {
+    function getAllLanguagesCheckboxes(): CrCheckboxElement[] {
       const checkboxWithPolicies = getAllLanguagesCheckboxWithPolicies();
-      return checkboxWithPolicies.map(
-          checkboxWithPolicy => checkboxWithPolicy.$.checkbox);
+      return checkboxWithPolicies.map(checkboxWithPolicy => {
+        const checkBox =
+            checkboxWithPolicy.shadowRoot!.querySelector<CrCheckboxElement>(
+                '#checkbox');
+        assertTrue(!!checkBox);
+        return checkBox;
+      });
     }
 
     setup(() => {
-      assertFalse(!!inputPage.shadowRoot.querySelector(
-          'os-settings-add-spellcheck-languages-dialog'));
-      inputPage.shadowRoot.querySelector('#addSpellcheckLanguages').click();
+      let element = inputPage.shadowRoot!.querySelector(
+          'os-settings-add-spellcheck-languages-dialog');
+      assertNull(element);
+      const addSpellcheckLanguages =
+          inputPage.shadowRoot!.querySelector<HTMLButtonElement>(
+              '#addSpellcheckLanguages');
+      assertTrue(!!addSpellcheckLanguages);
+      addSpellcheckLanguages.click();
       flush();
 
-      dialog = inputPage.shadowRoot
-                   .querySelector('os-settings-add-spellcheck-languages-dialog')
-                   .shadowRoot.querySelector('os-settings-add-items-dialog');
-      assertTrue(!!dialog);
+      element = inputPage.shadowRoot!.querySelector(
+          'os-settings-add-spellcheck-languages-dialog');
+      assertTrue(!!element);
+      const dialogElement =
+          element.shadowRoot!.querySelector('os-settings-add-items-dialog');
+      assertTrue(!!dialogElement);
+      dialog = dialogElement;
       assertTrue(dialog.$.dialog.open);
 
-      suggestedList = dialog.shadowRoot.querySelector('#suggested-items-list');
-      assertTrue(!!suggestedList);
-      allLangsList = dialog.shadowRoot.querySelector('#filtered-items-list');
-      assertTrue(!!allLangsList);
+      const list = dialog.shadowRoot!.querySelector<IronListElement>(
+          '#suggested-items-list');
+      assertTrue(!!list);
+      suggestedList = list;
+      const langList = dialog.shadowRoot!.querySelector<IronListElement>(
+          '#filtered-items-list');
+      assertTrue(!!langList);
+      allLangsList = langList;
 
-      actionButton = dialog.shadowRoot.querySelector('.action-button');
-      assertTrue(!!actionButton);
-      cancelButton = dialog.shadowRoot.querySelector('.cancel-button');
-      assertTrue(!!cancelButton);
+      const button =
+          dialog.shadowRoot!.querySelector<HTMLButtonElement>('.action-button');
+      assertTrue(!!button);
+      actionButton = button;
+      const cancel =
+          dialog.shadowRoot!.querySelector<HTMLButtonElement>('.cancel-button');
+      assertTrue(!!cancel);
+      cancelButton = cancel;
+    });
+
+    teardown(() => {
+      inputPage.remove();
+      dialog.remove();
     });
 
     test('action button is enabled and disabled when necessary', () => {
       // Mimic $$, but with a querySelectorAll instead of querySelector.
       const checkboxes = getAllLanguagesCheckboxes();
-      assertTrue(checkboxes.length > 0);
+      assertGT(checkboxes.length, 0);
 
       // By default, no languages have been selected so the action button is
       // disabled.
       assertTrue(actionButton.disabled);
 
       // Selecting a language enables the action button.
-      checkboxes[0].click();
+      checkboxes[0]!.click();
       assertFalse(actionButton.disabled);
 
       // Selecting the same language again disables the action button.
-      checkboxes[0].click();
+      checkboxes[0]!.click();
       assertTrue(actionButton.disabled);
     });
 
@@ -995,17 +1149,17 @@ suite('input page', () => {
       // As Swahili is an enabled language, it should be shown as a suggested
       // language.
       const suggestedItems = suggestedList.querySelectorAll('cr-checkbox');
-      assertEquals(suggestedItems.length, 1);
-      assertTrue(suggestedItems[0].textContent.includes('Swahili'));
+      assertEquals(1, suggestedItems.length);
+      assertStringContains(suggestedItems[0]!.textContent!, 'Swahili');
 
       // There are four languages with spell check enabled in
       // fake_language_settings_private.js: en-US, en-CA, sw, nb.
       // en-US shouldn't be displayed as it is already enabled.
       const allItems = getAllLanguagesCheckboxWithPolicies();
-      assertEquals(allItems.length, 3);
-      assertTrue(allItems[0].textContent.includes('English (Canada)'));
-      assertTrue(allItems[1].textContent.includes('Swahili'));
-      assertTrue(allItems[2].textContent.includes('Norwegian Bokmål'));
+      assertEquals(3, allItems.length);
+      assertStringContains(allItems[0]!.textContent!, 'English (Canada)');
+      assertStringContains(allItems[1]!.textContent!, 'Swahili');
+      assertStringContains(allItems[2]!.textContent!, 'Norwegian Bokmål');
 
       // By default, all checkboxes should not be disabled, and should not be
       // checked.
@@ -1015,13 +1169,11 @@ suite('input page', () => {
 
       // There should be a label for both sections.
       const suggestedLabel =
-          dialog.shadowRoot.querySelector('#suggested-items-label');
-      assertTrue(!!suggestedLabel);
+          dialog.shadowRoot!.querySelector('#suggested-items-label');
       assertTrue(isVisible(suggestedLabel));
 
       const allLangsLabel =
-          dialog.shadowRoot.querySelector('#filtered-items-label');
-      assertTrue(!!allLangsLabel);
+          dialog.shadowRoot!.querySelector('#filtered-items-label');
       assertTrue(isVisible(allLangsLabel));
     });
 
@@ -1029,10 +1181,12 @@ suite('input page', () => {
       const checkboxes = getAllLanguagesCheckboxes();
       const swCheckbox = checkboxes[1];
       const nbCheckbox = checkboxes[2];
+      assertTrue(!!swCheckbox);
+      assertTrue(!!nbCheckbox);
 
       // By default, en-US should be the only enabled spell check dictionary.
       assertDeepEquals(
-          ['en-US'], languageHelper.prefs.spellcheck.dictionaries.value);
+          ['en-US'], inputPage.prefs.spellcheck.dictionaries.value);
 
       swCheckbox.click();
       assertTrue(swCheckbox.checked);
@@ -1046,7 +1200,7 @@ suite('input page', () => {
 
       actionButton.click();
       assertDeepEquals(
-          ['en-US', 'sw'], languageHelper.prefs.spellcheck.dictionaries.value);
+          ['en-US', 'sw'], inputPage.prefs.spellcheck.dictionaries.value);
       assertFalse(dialog.$.dialog.open);
     });
 
@@ -1054,42 +1208,43 @@ suite('input page', () => {
       const checkboxes = getAllLanguagesCheckboxes();
 
       assertDeepEquals(
-          ['en-US'], languageHelper.prefs.spellcheck.dictionaries.value);
+          ['en-US'], inputPage.prefs.spellcheck.dictionaries.value);
 
       // Click en-CA and nb.
-      checkboxes[0].click();
-      assertTrue(checkboxes[0].checked);
-      checkboxes[2].click();
-      assertTrue(checkboxes[2].checked);
+      checkboxes[0]!.click();
+      assertTrue(checkboxes[0]!.checked);
+      checkboxes[2]!.click();
+      assertTrue(checkboxes[2]!.checked);
 
       actionButton.click();
       // The two possible results are en-US, en-CA, nb OR en-US, nb, en-CA.
       // We do not care about the ordering of the last two, but the first one
       // should still be en-US.
-      assertEquals(
-          'en-US', languageHelper.prefs.spellcheck.dictionaries.value[0]);
+      assertEquals('en-US', inputPage.prefs.spellcheck.dictionaries.value[0]);
       // Note that .sort() mutates the array, but as this is the end of the test
       // the prefs will be reset after this anyway.
       assertDeepEquals(
           ['en-CA', 'en-US', 'nb'],
-          languageHelper.prefs.spellcheck.dictionaries.value.sort());
+          inputPage.prefs.spellcheck.dictionaries.value.sort());
       assertFalse(dialog.$.dialog.open);
     });
 
     test('policy disabled languages cannot be selected and show icon', () => {
       // Force-disable sw.
-      languageHelper.setPrefValue('spellcheck.blocked_dictionaries', ['sw']);
+      inputPage.setPrefValue('spellcheck.blocked_dictionaries', ['sw']);
       flush();
 
       const swCheckboxWithPolicy = getAllLanguagesCheckboxWithPolicies()[1];
+      assertTrue(!!swCheckboxWithPolicy);
       const swCheckbox =
-          swCheckboxWithPolicy.shadowRoot.querySelector('cr-checkbox');
+          swCheckboxWithPolicy.shadowRoot!.querySelector('cr-checkbox');
+      assertTrue(!!swCheckbox);
       const swPolicyIcon =
-          swCheckboxWithPolicy.shadowRoot.querySelector('iron-icon');
+          swCheckboxWithPolicy.shadowRoot!.querySelector('iron-icon');
+      assertTrue(!!swPolicyIcon);
 
       assertTrue(swCheckbox.disabled);
       assertFalse(swCheckbox.checked);
-      assertTrue(!!swPolicyIcon);
     });
 
     test('labels do not appear if there are no suggested languages', () => {
@@ -1105,50 +1260,52 @@ suite('input page', () => {
 
     test('input method languages appear as suggested languages', () => {
       // Remove en-US from the dictionary list AND the enabled languages list.
-      languageHelper.setPrefValue('spellcheck.dictionaries', []);
+      inputPage.setPrefValue('spellcheck.dictionaries', []);
       languageHelper.disableLanguage('en-US');
       flush();
 
       // Both Swahili (as it is an enabled language) and English (US) (as it is
       // enabled as an input method) should appear in the list.
       const suggestedListItems = suggestedList.querySelectorAll('.list-item');
-      assertEquals(suggestedListItems.length, 2);
-      assertTrue(suggestedListItems[0].textContent.includes(
-          'English (United States)'));
-      assertTrue(suggestedListItems[1].textContent.includes('Swahili'));
+      assertEquals(2, suggestedListItems.length);
+      assertStringContains(
+          suggestedListItems[0]!.textContent!, 'English (United States)');
+      assertStringContains(suggestedListItems[1]!.textContent!, 'Swahili');
 
       // en-US should also appear in the all languages list now.
-      assertEquals(allLangsList.querySelectorAll('.list-item').length, 4);
+      assertEquals(4, allLangsList.querySelectorAll('.list-item').length);
     });
 
     test('searches languages on display name', () => {
-      const searchInput = dialog.shadowRoot.querySelector('cr-search-field');
-
+      const searchInput = dialog.shadowRoot!.querySelector('cr-search-field');
+      assertTrue(!!searchInput);
       // Expecting a few languages to be displayed when no query exists.
       assertGE(getAllLanguagesCheckboxWithPolicies().length, 1);
 
       // Issue query that matches the |displayedName| in lowercase.
       searchInput.setValue('norwegian');
       flush();
-      assertEquals(getAllLanguagesCheckboxWithPolicies().length, 1);
-      assertTrue(getAllLanguagesCheckboxWithPolicies()[0].textContent.includes(
-          'Norwegian Bokmål'));
+      assertEquals(1, getAllLanguagesCheckboxWithPolicies().length);
+      assertStringContains(
+          getAllLanguagesCheckboxWithPolicies()[0]!.textContent!,
+          'Norwegian Bokmål');
 
       // Issue query that matches the |nativeDisplayedName|.
       searchInput.setValue('norsk');
       flush();
-      assertEquals(getAllLanguagesCheckboxWithPolicies().length, 1);
+      assertEquals(1, getAllLanguagesCheckboxWithPolicies().length);
 
       // Issue query that does not match any language.
       searchInput.setValue('egaugnal');
       flush();
-      assertEquals(getAllLanguagesCheckboxWithPolicies().length, 0);
+      assertEquals(0, getAllLanguagesCheckboxWithPolicies().length);
       assertTrue(
-          isVisible(dialog.shadowRoot.querySelector('#no-search-results')));
+          isVisible(dialog.shadowRoot!.querySelector('#no-search-results')));
     });
 
-    test('has escape key behavior working correctly', function() {
-      const searchInput = dialog.shadowRoot.querySelector('cr-search-field');
+    test('has escape key behavior working correctly', () => {
+      const searchInput = dialog.shadowRoot!.querySelector('cr-search-field');
+      assertTrue(!!searchInput);
       searchInput.setValue('dummyquery');
 
       // Test that dialog is not closed if 'Escape' is pressed on the input
