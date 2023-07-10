@@ -75,7 +75,8 @@ void IgnoreOverRealizationCheck() {
 WebStateImpl::WebStateImpl(const CreateParams& params) {
   AddWebStateImplMarker();
 
-  pimpl_ = std::make_unique<RealizedWebState>(this, [[NSUUID UUID] UUIDString],
+  pimpl_ = std::make_unique<RealizedWebState>(this, base::Time::Now(),
+                                              [[NSUUID UUID] UUIDString],
                                               SessionID::NewUnique());
   pimpl_->Init(params.browser_state, params.last_active_time,
                params.created_with_opener);
@@ -106,10 +107,12 @@ WebStateImpl::WebStateImpl(CloneFrom, const RealizedWebState& pimpl) {
   proto::WebStateStorage storage;
   pimpl.SerializeToProto(storage);
 
-  pimpl_ = std::make_unique<RealizedWebState>(this, [[NSUUID UUID] UUIDString],
+  pimpl_ = std::make_unique<RealizedWebState>(this, pimpl.GetCreationTime(),
+                                              [[NSUUID UUID] UUIDString],
                                               SessionID::NewUnique());
-  pimpl_->InitWithProto(pimpl.GetBrowserState(), std::move(storage),
-                        pimpl.GetFaviconStatus(), base::Time::Now());
+  pimpl_->InitWithProto(pimpl.GetBrowserState(), base::Time::Now(),
+                        pimpl.GetTitle(), pimpl.GetVisibleURL(),
+                        pimpl.GetFaviconStatus(), std::move(storage));
 
   SendGlobalCreationEvent();
 }
@@ -384,23 +387,28 @@ WebState* WebStateImpl::ForceRealized() {
 
   if (UNLIKELY(!pimpl_)) {
     DCHECK(saved_);
-    const CreateParams params = saved_->GetCreateParams();
-    CRWSessionStorage* session_storage = saved_->GetSessionStorage();
-    FaviconStatus favicon_status = saved_->GetFaviconStatus();
-    DCHECK(session_storage);
-
-    // Convert the CRWSessionStorage to proto::WebStateStorage as this
-    // is the format used for RealizedWebState() serialisation.
-    proto::WebStateStorage storage;
-    [session_storage serializeToProto:storage];
 
     // Create the RealizedWebState. At this point the WebStateImpl has
     // both `pimpl_` and `saved_` that are non-null. This is one of the
     // reason why the initialisation of the RealizedWebState needs to
     // be done after the constructor is done.
-    pimpl_ = std::make_unique<RealizedWebState>(
-        this, session_storage.stableIdentifier,
-        session_storage.uniqueIdentifier);
+    pimpl_ = std::make_unique<RealizedWebState>(this, saved_->GetCreationTime(),
+                                                saved_->GetStableIdentifier(),
+                                                saved_->GetUniqueIdentifier());
+
+    // Copy the information from SerializedData that is needed to initialize
+    // the RealizedWebState before deleting the object.
+    BrowserState* browser_state = saved_->GetBrowserState();
+    base::Time last_active_time = saved_->GetLastActiveTime();
+    FaviconStatus favicon_status = saved_->GetFaviconStatus();
+    std::u16string page_title = saved_->GetTitle();
+    GURL visible_url = saved_->GetVisibleURL();
+
+    // Convert the CRWSessionStorage to proto::WebStateStorage as this
+    // is the format used for RealizedWebState() serialisation.
+    proto::WebStateStorage storage;
+    CRWSessionStorage* session_storage = saved_->GetSessionStorage();
+    [session_storage serializeToProto:storage];
 
     // Delete the SerializedData without calling TearDown() as the WebState
     // itself is not destroyed. The TearDown() method will be called on the
@@ -410,8 +418,9 @@ WebState* WebStateImpl::ForceRealized() {
     // Perform the initialisation of the RealizedWebState. No outside
     // code should be able to observe the WebStateImpl with both `saved_`
     // and `pimpl_` set.
-    pimpl_->InitWithProto(params.browser_state, std::move(storage),
-                          std::move(favicon_status), params.last_active_time);
+    pimpl_->InitWithProto(browser_state, last_active_time,
+                          std::move(page_title), std::move(visible_url),
+                          std::move(favicon_status), std::move(storage));
 
     // Notify all observers that the WebState has become realized.
     for (auto& observer : observers_)

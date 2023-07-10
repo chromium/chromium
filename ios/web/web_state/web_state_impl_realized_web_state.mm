@@ -69,7 +69,10 @@ NSData* FetchSessionDataBlob(base::WeakPtr<WebState> weak_web_state) {
 
 class WebStateImpl::RealizedWebState::PendingSession {
  public:
-  PendingSession(proto::WebStateStorage storage, FaviconStatus favicon_status);
+  PendingSession(proto::WebStateStorage storage,
+                 std::u16string page_title,
+                 GURL page_visible_url,
+                 FaviconStatus favicon_status);
 
   PendingSession(const PendingSession&) = delete;
   PendingSession& operator=(const PendingSession&) = delete;
@@ -83,33 +86,36 @@ class WebStateImpl::RealizedWebState::PendingSession {
     favicon_status_ = favicon_status;
   }
 
-  const std::u16string& title() const { return title_; }
+  const std::u16string& page_title() const { return page_title_; }
 
-  const GURL& visible_url() const { return visible_url_; }
+  const GURL& page_visible_url() const { return page_visible_url_; }
 
  private:
   const proto::WebStateStorage storage_;
+  const std::u16string page_title_;
+  const GURL page_visible_url_;
   FaviconStatus favicon_status_;
-  std::u16string title_;
-  GURL visible_url_;
 };
 
 WebStateImpl::RealizedWebState::PendingSession::PendingSession(
     proto::WebStateStorage storage,
+    std::u16string page_title,
+    GURL page_visible_url,
     FaviconStatus favicon_status)
-    : storage_(std::move(storage)), favicon_status_(std::move(favicon_status)) {
-  const auto& active_page = storage_.metadata().active_page();
-  title_ = base::UTF8ToUTF16(active_page.page_title());
-  visible_url_ = GURL(active_page.page_url());
-}
+    : storage_(std::move(storage)),
+      page_title_(std::move(page_title)),
+      page_visible_url_(std::move(page_visible_url)),
+      favicon_status_(std::move(favicon_status)) {}
 
 #pragma mark - WebStateImpl::RealizedWebState public methods
 
 WebStateImpl::RealizedWebState::RealizedWebState(WebStateImpl* owner,
+                                                 base::Time creation_time,
                                                  NSString* stable_identifier,
                                                  SessionID unique_identifier)
     : owner_(owner),
       interface_binder_(owner),
+      creation_time_(creation_time),
       user_agent_type_(UserAgentType::AUTOMATIC),
       stable_identifier_([stable_identifier copy]),
       unique_identifier_(unique_identifier) {
@@ -125,7 +131,6 @@ void WebStateImpl::RealizedWebState::Init(BrowserState* browser_state,
                                           bool created_with_opener) {
   created_with_opener_ = created_with_opener;
   last_active_time_ = last_active_time;
-  creation_time_ = base::Time::Now();
 
   navigation_manager_ =
       std::make_unique<NavigationManagerImpl>(browser_state, this);
@@ -137,18 +142,14 @@ void WebStateImpl::RealizedWebState::Init(BrowserState* browser_state,
 
 void WebStateImpl::RealizedWebState::InitWithProto(
     BrowserState* browser_state,
-    proto::WebStateStorage storage,
+    base::Time last_active_time,
+    std::u16string page_title,
+    GURL page_visible_url,
     FaviconStatus favicon_status,
-    base::Time last_active_time) {
-  creation_time_ = TimeFromProto(storage.metadata().creation_time());
-  last_active_time_ = TimeFromProto(storage.metadata().last_active_time());
+    proto::WebStateStorage storage) {
+  last_active_time_ = last_active_time;
   user_agent_type_ = UserAgentTypeFromProto(storage.user_agent());
   created_with_opener_ = storage.has_opener();
-
-  // If not null, `last_active_time` overrides the restored value.
-  if (!last_active_time.is_null()) {
-    last_active_time_ = last_active_time;
-  }
 
   // Session storage restore is asynchronous because it involves a page
   // load in WKWebView. Temporarily cache the restored session so it can
@@ -157,7 +158,8 @@ void WebStateImpl::RealizedWebState::InitWithProto(
   // a navigation in the current tab triggers the serialization of all
   // tabs and when user clicks on tab switcher without switching to a tab.
   restored_session_ = std::make_unique<PendingSession>(
-      std::move(storage), std::move(favicon_status));
+      std::move(storage), std::move(page_title), std::move(page_visible_url),
+      std::move(favicon_status));
 
   // The restoration of the session history in NavigationManagerImpl needs
   // the WebState to have a valid CRWWebController, so create both objects
@@ -698,7 +700,7 @@ bool WebStateImpl::RealizedWebState::ContentIsHTML() const {
 
 const std::u16string& WebStateImpl::RealizedWebState::GetTitle() const {
   if (UNLIKELY(restored_session_)) {
-    return restored_session_->title();
+    return restored_session_->page_title();
   }
 
   NavigationItem* item = navigation_manager_->GetVisibleItem();
@@ -760,7 +762,7 @@ int WebStateImpl::RealizedWebState::GetNavigationItemCount() const {
 
 const GURL& WebStateImpl::RealizedWebState::GetVisibleURL() const {
   if (UNLIKELY(restored_session_)) {
-    return restored_session_->visible_url();
+    return restored_session_->page_visible_url();
   }
 
   NavigationItem* item = navigation_manager_->GetVisibleItem();
@@ -769,7 +771,7 @@ const GURL& WebStateImpl::RealizedWebState::GetVisibleURL() const {
 
 const GURL& WebStateImpl::RealizedWebState::GetLastCommittedURL() const {
   if (UNLIKELY(restored_session_)) {
-    return restored_session_->visible_url();
+    return restored_session_->page_visible_url();
   }
 
   NavigationItem* item = navigation_manager_->GetLastCommittedItem();
@@ -981,7 +983,7 @@ void WebStateImpl::RealizedWebState::OnNavigationItemCommitted(
   // history.
   if (UNLIKELY(restored_session_)) {
     item->SetFaviconStatus(restored_session_->favicon_status());
-    item->SetTitle(restored_session_->title());
+    item->SetTitle(restored_session_->page_title());
     restored_session_.reset();
   }
 }

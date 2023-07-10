@@ -34,6 +34,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   // Creates a RealizedWebState with a non-null pointer to the owning
   // WebStateImpl.
   RealizedWebState(WebStateImpl* owner,
+                   base::Time creation_time,
                    NSString* stable_identifier,
                    SessionID unique_identifier);
 
@@ -62,12 +63,16 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
             bool created_with_opener);
 
   // Initializes the RealizedWebState with `browser_state`, serialized data
-  // from `storage` and `favicon_status`. The other parameters are described
-  // in `WebState::CreateParams`.
+  // from `storage`. The `last_active_time`, `page_title` and `visible_url`
+  // comes from the metadata loaded when the WebState was created in the
+  // unrealized state, and `favicon_status` may have been changed before
+  // the realisation.
   void InitWithProto(BrowserState* browser_state,
-                     proto::WebStateStorage storage,
+                     base::Time last_active_time,
+                     std::u16string page_title,
+                     GURL page_visible_url,
                      FaviconStatus favicon_status,
-                     base::Time last_active_time);
+                     proto::WebStateStorage storage);
 
   // Serializes the object to `storage`.
   void SerializeToProto(proto::WebStateStorage& storage) const;
@@ -260,7 +265,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
       base::OnceCallback<void(Args...)> callback);
 
   // Owner. Never null. Owns this object.
-  WebStateImpl* owner_ = nullptr;
+  WebStateImpl* const owner_;
 
   // The InterfaceBinder exposed by WebStateImpl. Used to handle Mojo
   // interface requests from the main frame.
@@ -297,7 +302,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   base::Time last_active_time_ = base::Time::Now();
 
   // The WebState's creation time.
-  base::Time creation_time_ = base::Time::Now();
+  const base::Time creation_time_;
 
   // The data used for the in-progress navigation history restoration that has
   // not yet committed in the WKWebView. Reset in OnNavigationItemCommitted().
@@ -317,7 +322,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
 
   // The stable identifier. Set during `Init()` call. Never nil after this
   // method has been called. Stable across application restarts.
-  __strong NSString* stable_identifier_ = nil;
+  __strong NSString* const stable_identifier_;
 
   // The unique identifier. Stable across application restarts.
   const SessionID unique_identifier_;
