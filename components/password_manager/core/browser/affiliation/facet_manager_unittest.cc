@@ -77,7 +77,7 @@ class TestFacetManagerNotifier {
   NotificationAccuracy accuracy_;
   const base::TimeDelta too_late_delay_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  raw_ptr<FacetManager, DanglingUntriaged> facet_manager_;
+  raw_ptr<FacetManager> facet_manager_;
 };
 
 // Stub/mock implementation for FacetManagerHost.
@@ -508,6 +508,7 @@ TEST_F(FacetManagerTest,
     EXPECT_FALSE(facet_manager()->IsCachedDataFresh());
     EXPECT_TRUE(facet_manager()->CanBeDiscarded());
     EXPECT_FALSE(main_task_runner()->HasPendingTask());
+    DestroyFacetManager();
   }
 }
 
