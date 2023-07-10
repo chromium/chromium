@@ -604,6 +604,8 @@ void PendingScreencastManager::SendDrivePatchRequest(
         ash::ProjectorAppClient::Get()->GetUrlLoaderFactory());
   }
 
+  // TODO(b/288457397): Pass the primary account email after email become
+  // required to send request with OAuth token.
   xhr_sender_->Send(
       GURL(base::StrCat({ash::kDriveV3BaseUrl, file_id})),
       ash::projector::mojom::RequestType::kPatch, request_body,

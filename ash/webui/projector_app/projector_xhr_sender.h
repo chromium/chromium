@@ -57,6 +57,8 @@ class ProjectorXhrSender {
   // 2. Account email: By default, primary account email is used to get OAuth
   // token for authorizing the request. If `account_email` is specified, it
   // will be used instead.
+  // TODO(b/288457397): Clean up so that account email is required when sending
+  // request with OAuth token.
   // 3. Credentials: when `use_credentials` is true, the request will be sent
   // with cookie alongs with auth token. One use case is allowing
   // get_video_info response to add streaming auth token in cookie. There is

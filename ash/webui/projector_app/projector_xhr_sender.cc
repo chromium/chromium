@@ -175,8 +175,11 @@ void ProjectorXhrSender::Send(
     return;
   }
 
-  if (ash::features::IsProjectorViewerUseSecondaryAccountEnabled() &&
-      !IsValidEmail(account_email)) {
+  // Send request with OAuth token.
+  // TODO(b/288457397): Currenlty, absent of account email is considered valid
+  // email so it will fallback to use primary account email. We want to clean it
+  // up so that account email is required.
+  if (!IsValidEmail(account_email)) {
     std::move(callback).Run(
         /*response_body=*/std::string(),
         /*response_code=*/projector::mojom::XhrResponseCode::
@@ -186,8 +189,7 @@ void ProjectorXhrSender::Send(
   }
 
   std::string email;
-  if (account_email.has_value() && !account_email->empty() &&
-      ash::features::IsProjectorViewerUseSecondaryAccountEnabled()) {
+  if (account_email.has_value() && !account_email->empty()) {
     email = *account_email;
   } else {
     email = ProjectorAppClient::Get()
@@ -324,6 +326,8 @@ bool ProjectorXhrSender::IsValidEmail(
     const absl::optional<std::string>& email_check) {
   const auto email = email_check.value_or(std::string());
   if (email.empty()) {
+    // TODO(b/288457397): Return false here and clean up to require account
+    // email when sending with OAuth token.
     return true;
   }
   const std::vector<AccountInfo> accounts = oauth_token_fetcher_.GetAccounts();

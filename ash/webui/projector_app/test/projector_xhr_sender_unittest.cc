@@ -239,9 +239,6 @@ TEST_F(ProjectorXhrSenderTest, UnsupportedUrl) {
 }
 
 TEST_F(ProjectorXhrSenderTest, SuccessWithPrimaryEmail) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(
-      features::kProjectorViewerUseSecondaryAccount, true /* use */);
   SendRequestFuture future;
 
   const std::string& test_response_body = "{}";
@@ -262,9 +259,6 @@ TEST_F(ProjectorXhrSenderTest, SuccessWithPrimaryEmail) {
 }
 
 TEST_F(ProjectorXhrSenderTest, InvalidAccountEmail) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(
-      features::kProjectorViewerUseSecondaryAccount, true /* use */);
   SendRequestFuture future;
 
   sender()->Send(
@@ -278,9 +272,6 @@ TEST_F(ProjectorXhrSenderTest, InvalidAccountEmail) {
 }
 
 TEST_F(ProjectorXhrSenderTest, SuccessWithSecondaryEmail) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(
-      features::kProjectorViewerUseSecondaryAccount, true /* use */);
   SendRequestFuture future;
 
   const std::string& test_response_body = "{}";

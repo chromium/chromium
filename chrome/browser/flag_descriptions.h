@@ -3710,9 +3710,6 @@ extern const char kProductivityLauncherDescription[];
 extern const char kProductivityLauncherImageSearchName[];
 extern const char kProductivityLauncherImageSearchDescription[];
 
-extern const char kProjectorLocalPlaybackName[];
-extern const char kProjectorLocalPlaybackDescription[];
-
 extern const char kProjectorAppDebugName[];
 extern const char kProjectorAppDebugDescription[];
 

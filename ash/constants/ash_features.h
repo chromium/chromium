@@ -422,6 +422,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kImeUsEnglishModelUpdate);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kImprovedLoginErrorHandling);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kInstantTethering);
+// TODO(b/288273641): Clean up the server speech recognition related flags.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kInternalServerSideSpeechRecognition);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -572,9 +573,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPrivacyIndicators);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProductivityLauncher);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProjectorManagedUser);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProjectorAppDebug);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kProjectorTutorialVideoView);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProjectorCustomThumbnail);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kProjectorManagedUserIgnorePolicy);
@@ -583,18 +581,9 @@ BASE_DECLARE_FEATURE(kProjectorShowShortPseudoTranscript);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kProjectorUpdateIndexableText);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kProjectorUseOAuthForGetVideoInfo);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProjectorLocalPlayback);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kProjectorBleedingEdgeExperience);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProjectorWebReportCrash);
-BASE_DECLARE_FEATURE(kProjectorUseApiKeyForTranslation);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kProjectorViewerUseSecondaryAccount);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kProjectorAccountSwitchNotification);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kProjectorFoldShortGapIntoPreviousTranscript);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kProjectorServerSideRecognitionFallbackImpl);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPromiseIcons);
@@ -981,26 +970,15 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProductivityLauncherImageSearchEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorManagedUserEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorAppDebugMode();
-
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorTutorialVideoViewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorCustomThumbnailEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorLocalPlaybackEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorManagedUserIgnorePolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorShowShortPseudoTranscript();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorUpdateIndexableTextEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsProjectorUseOAuthForGetVideoInfoEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsProjectorViewerUseSecondaryAccountEnabled();
+// TODO(b/288273641): Clean up the server speech recognition related flags.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorAccountSwitchNotificationEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorWebReportCrashEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsProjectorUseApiKeyForTranslationEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsProjectorFoldShortGapIntoPreviousTranscriptEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorServerSideRecognitionFallbackImplEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQsRevampEnabled();

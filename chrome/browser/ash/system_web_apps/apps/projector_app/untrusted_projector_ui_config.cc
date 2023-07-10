@@ -24,28 +24,12 @@ void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
   version_info::Channel channel = chrome::GetChannel();
   source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
   source->AddBoolean("isDebugMode", ash::features::IsProjectorAppDebugMode());
-  source->AddBoolean("isTutorialVideoViewEnabled",
-                     ash::features::IsProjectorTutorialVideoViewEnabled());
   source->AddBoolean("isCustomThumbnailEnabled",
                      ash::features::IsProjectorCustomThumbnailEnabled());
-  source->AddBoolean("isShowShortPseudoTranscriptEnabled",
-                     ash::features::IsProjectorShowShortPseudoTranscript());
-  source->AddBoolean(
-      "isUseOAuthForGetVideoInfoEnabled",
-      ash::features::IsProjectorUseOAuthForGetVideoInfoEnabled());
+  // The local playback feature depends on the file handling API.
   source->AddBoolean(
       "isLocalPlaybackEnabled",
-      ash::features::IsProjectorLocalPlaybackEnabled() &&
-          // The local playback feature depends on the file handling API.
-          base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI));
-  source->AddBoolean("isReportToCrash2Enabled",
-                     ash::features::IsProjectorWebReportCrashEnabled());
-  source->AddBoolean(
-      "isUseApiKeyForTranslationEnabled",
-      ash::features::IsProjectorUseApiKeyForTranslationEnabled());
-  source->AddBoolean(
-      "isViewerUseSecondaryAccountEnabled",
-      ash::features::IsProjectorViewerUseSecondaryAccountEnabled());
+      base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI));
   source->AddBoolean(
       "isAccountSwitchNotificationEnabled",
       ash::features::IsProjectorAccountSwitchNotificationEnabled());
@@ -53,9 +37,6 @@ void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
   source->AddBoolean(
       "isInternalServerSideSpeechRecognitionEnabled",
       ash::features::IsInternalServerSideSpeechRecognitionEnabled());
-  source->AddBoolean(
-      "isFoldShortGapIntoPreviousTranscriptEnabled",
-      ash::features::IsProjectorFoldShortGapIntoPreviousTranscriptEnabled());
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
 }
 

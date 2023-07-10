@@ -1980,21 +1980,10 @@ BASE_FEATURE(kProjectorAppDebug,
              "ProjectorAppDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to fold short gap between transcript into the previous
-// transcript.
-BASE_FEATURE(kProjectorFoldShortGapIntoPreviousTranscript,
-             "ProjectorFoldShortGapIntoPreviousTranscript",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Constrols whether fallback implementation is enabled when streaming
 // connection fails for server side speech recognition.
 BASE_FEATURE(kProjectorServerSideRecognitionFallbackImpl,
              "ProjectorServerSideRecognititionFallbackImpl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether Projector's tutorial videos are displayed.
-BASE_FEATURE(kProjectorTutorialVideoView,
-             "ProjectorTutorialVideoView",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether Projector use custom thumbnail in gallery page.
@@ -2020,43 +2009,14 @@ BASE_FEATURE(kProjectorUpdateIndexableText,
              "ProjectorUpdateIndexableText",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to use OAuth token for getting streaming URL from
-// get_video_info endpoint.
-BASE_FEATURE(kProjectorUseOAuthForGetVideoInfo,
-             "ProjectorUseOAuthForGetVideoInfo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether to allow viewing screencast with local playback URL when
-// screencast is being transcoded.
-BASE_FEATURE(kProjectorLocalPlayback,
-             "ProjectorLocalPlayback",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to enable features that are not ready to enable by
 // default but ready for internal testing.
 BASE_FEATURE(kProjectorBleedingEdgeExperience,
              "ProjectorBleedingEdgeExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to enable crash report from the Projector web component.
-BASE_FEATURE(kProjectorWebReportCrash,
-             "ProjectorWebReportCrash",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether to use API key instead of OAuth token for translation
-// requests.
-BASE_FEATURE(kProjectorUseApiKeyForTranslation,
-             "ProjectorUseApiKeyForTranslation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable or disable quick settings revamped view (go/qsrevamp).
 BASE_FEATURE(kQsRevamp, "QsRevamp", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether the Projector Viewer supports the user experience for
-// secondary account.
-BASE_FEATURE(kProjectorViewerUseSecondaryAccount,
-             "ProjectorViewerUseSecondaryAccount",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to show toast notification when account switches.
 BASE_FEATURE(kProjectorAccountSwitchNotification,
@@ -3581,10 +3541,6 @@ bool IsProjectorAppDebugMode() {
   return base::FeatureList::IsEnabled(kProjectorAppDebug);
 }
 
-bool IsProjectorTutorialVideoViewEnabled() {
-  return base::FeatureList::IsEnabled(kProjectorTutorialVideoView);
-}
-
 bool IsProjectorCustomThumbnailEnabled() {
   return base::FeatureList::IsEnabled(kProjectorCustomThumbnail);
 }
@@ -3601,38 +3557,12 @@ bool IsProjectorUpdateIndexableTextEnabled() {
   return base::FeatureList::IsEnabled(kProjectorUpdateIndexableText);
 }
 
-bool IsProjectorUseOAuthForGetVideoInfoEnabled() {
-  return base::FeatureList::IsEnabled(kProjectorUseOAuthForGetVideoInfo);
-}
-
-bool IsProjectorLocalPlaybackEnabled() {
-  return base::FeatureList::IsEnabled(kProjectorLocalPlayback) ||
-         base::FeatureList::IsEnabled(kProjectorBleedingEdgeExperience);
-}
-
-bool IsProjectorWebReportCrashEnabled() {
-  return base::FeatureList::IsEnabled(kProjectorWebReportCrash);
-}
-
-bool IsProjectorUseApiKeyForTranslationEnabled() {
-  return base::FeatureList::IsEnabled(kProjectorUseApiKeyForTranslation);
-}
-
 bool IsQsRevampEnabled() {
   return base::FeatureList::IsEnabled(kQsRevamp);
 }
 
-bool IsProjectorViewerUseSecondaryAccountEnabled() {
-  return base::FeatureList::IsEnabled(kProjectorViewerUseSecondaryAccount);
-}
-
 bool IsProjectorAccountSwitchNotificationEnabled() {
   return base::FeatureList::IsEnabled(kProjectorAccountSwitchNotification);
-}
-
-bool IsProjectorFoldShortGapIntoPreviousTranscriptEnabled() {
-  return base::FeatureList::IsEnabled(
-      kProjectorFoldShortGapIntoPreviousTranscript);
 }
 
 bool IsProjectorServerSideRecognitionFallbackImplEnabled() {
