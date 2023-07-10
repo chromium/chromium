@@ -111,7 +111,8 @@
   <div slot="button-container">
     <div>
       <cr-button id="restoreDefault" on-click="onRestoreDefaultButtonClicked"
-          hidden$="[[isAcceleratorCapturing]]">
+          hidden$="[[shouldHideRestoreDefaults(isAcceleratorCapturing,
+              observableDefaultAcceleratorsWithConflict.*)]]">
         [[i18n('restoreDefaults')]]
       </cr-button>
     </div>

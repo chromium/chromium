@@ -89,6 +89,14 @@ export class AcceleratorEditDialogElement extends
         type: Boolean,
         value: false,
       },
+
+      // `Set` is not an observable type in Polymer, so this `Array` mirrors
+      // `defaultAcceleratorsWithConflict` but is observable to template
+      // observers functions.
+      observableDefaultAcceleratorsWithConflict: {
+        type: Array,
+        value: () => [],
+      },
     };
   }
 
@@ -97,6 +105,7 @@ export class AcceleratorEditDialogElement extends
   action: number;
   source: AcceleratorSource;
   protected isAcceleratorCapturing: boolean;
+  protected observableDefaultAcceleratorsWithConflict: string[];
   private pendingNewAcceleratorState: number;
   private shouldSnapshotConflictDefaults: boolean;
   private defaultAcceleratorsWithConflict: Set<string> = new Set<string>();
@@ -124,6 +133,7 @@ export class AcceleratorEditDialogElement extends
     this.set('acceleratorInfos', []);
     this.shouldSnapshotConflictDefaults = false;
     this.defaultAcceleratorsWithConflict.clear();
+    this.updateObservableAcceleratorsWithConflict();
   }
 
   private getViewList(): DomRepeat {
@@ -142,6 +152,7 @@ export class AcceleratorEditDialogElement extends
             isStandardAcceleratorInfo(acceleratorInfo)) {
           this.defaultAcceleratorsWithConflict.add(
               JSON.stringify(getAccelerator(acceleratorInfo)));
+          this.updateObservableAcceleratorsWithConflict();
         }
       }
     }
@@ -173,6 +184,7 @@ export class AcceleratorEditDialogElement extends
       e: CustomEvent<{stringifiedAccelerator: string}>): void {
     assert(this.defaultAcceleratorsWithConflict.delete(
         e.detail.stringifiedAccelerator));
+    this.updateObservableAcceleratorsWithConflict();
   }
 
   private focusAcceleratorItemContainer(): void {
@@ -250,6 +262,17 @@ export class AcceleratorEditDialogElement extends
       composed: true,
       detail: {source, action},
     }));
+  }
+
+  private updateObservableAcceleratorsWithConflict(): void {
+    this.set(
+        'observableDefaultAcceleratorsWithConflict',
+        Array.from(this.defaultAcceleratorsWithConflict));
+  }
+
+  protected shouldHideRestoreDefaults(): boolean {
+    return this.isAcceleratorCapturing ||
+        this.defaultAcceleratorsWithConflict.size !== 0;
   }
 }
 

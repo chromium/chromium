@@ -316,7 +316,7 @@ suite('acceleratorEditDialogTest', function() {
     };
 
     provider.setRestoreDefault(fakeResult);
-    const restoreDefaultButton =
+    let restoreDefaultButton =
         dialog!.querySelector('#restoreDefault') as CrButtonElement;
     restoreDefaultButton.click();
     await flushTasks();
@@ -337,6 +337,11 @@ suite('acceleratorEditDialogTest', function() {
         dialog.querySelectorAll('accelerator-edit-view');
     assertEquals(1, updatedAcceleratorElements.length);
 
+    // Verify that the restore button is hidden.
+    restoreDefaultButton =
+        dialog!.querySelector('#restoreDefault') as CrButtonElement;
+    assertTrue(restoreDefaultButton.hidden);
+
     // Click on the trash button to effectively ignore the conflict.
     const cancelButton =
         updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
@@ -351,6 +356,11 @@ suite('acceleratorEditDialogTest', function() {
     updatedAcceleratorElements =
         dialog.querySelectorAll('accelerator-edit-view');
     assertEquals(0, updatedAcceleratorElements.length);
+
+    // Verify that the restore button is shown.
+    restoreDefaultButton =
+        dialog!.querySelector('#restoreDefault') as CrButtonElement;
+    assertFalse(restoreDefaultButton.hidden);
   });
 
   test('RestoreDefaultButtonFixConflict', async () => {
