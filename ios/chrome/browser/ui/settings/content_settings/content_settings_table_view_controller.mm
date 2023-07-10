@@ -483,10 +483,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)settingsWillBeDismissed {
   [_disablePopupsSetting stop];
+  _disablePopupsSetting.observer = nil;
+  _disablePopupsSetting = nil;
   [_requestDesktopSetting stop];
+  _requestDesktopSetting.observer = nil;
+  _requestDesktopSetting = nil;
   [_linkPreviewEnabled stop];
+  _linkPreviewEnabled.observer = nil;
+  _linkPreviewEnabled = nil;
   [_webInspectorEnabled stop];
-  [_webInspectorStateViewCoordinator stop];
+  _webInspectorEnabled.observer = nil;
+  [self.webInspectorStateViewCoordinator stop];
+  self.webInspectorStateViewCoordinator = nil;
   _browser = nullptr;
 }
 
