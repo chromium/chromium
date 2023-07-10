@@ -664,6 +664,10 @@ TEST_F(RedactionToolTest, RedactChunk) {
   ExpectBucketCount(kCreditCardRedactionHistogram, kRepeatedChars, 0);
   ExpectBucketCount(kCreditCardRedactionHistogram, kDoesntValidate, 0);
   ExpectBucketCount(kCreditCardRedactionHistogram, kValidated, 0);
+  EXPECT_EQ(metrics_tester_->GetNumBucketEntries(
+                RedactionToolMetricsRecorder::
+                    GetTimeSpentRedactingHistogramNameForTesting()),
+            0u);
 
   for (int enum_int = static_cast<int>(PIIType::kNone) + 1;
        enum_int <= static_cast<int>(PIIType::kMaxValue); ++enum_int) {
@@ -700,6 +704,10 @@ TEST_F(RedactionToolTest, RedactChunk) {
   ExpectBucketCount(kCreditCardRedactionHistogram, kRepeatedChars, 1);
   ExpectBucketCount(kCreditCardRedactionHistogram, kDoesntValidate, 8);
   ExpectBucketCount(kCreditCardRedactionHistogram, kValidated, 5);
+  EXPECT_EQ(metrics_tester_->GetNumBucketEntries(
+                RedactionToolMetricsRecorder::
+                    GetTimeSpentRedactingHistogramNameForTesting()),
+            1u);
 }
 
 TEST_F(RedactionToolTest, RedactAndKeepSelected) {

@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 
 namespace redaction {
@@ -47,6 +49,14 @@ class RedactionToolMetricsRecorder {
   // Records the `step` that was reached when validating a series of numbers
   // against credit card checks.
   virtual void RecordCreditCardRedactionHistogram(CreditCardDetection step) = 0;
+
+  // Records the `time_spent` in milliseconds for redacting an input text.
+  virtual void RecordTimeSpentRedactingHistogram(
+      base::TimeDelta time_spent) = 0;
+
+  // Returns the platform specific metric name used to measure how long it took
+  // to redact the input.
+  static base::StringPiece GetTimeSpentRedactingHistogramNameForTesting();
 };
 
 }  // namespace redaction

@@ -6040,6 +6040,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.RedactionTool.TimeSpentRedacting" units="ms"
+    expires_after="2024-01-01">
+  <owner>cschlosser@chromium.org</owner>
+  <owner>dpchromeos-core-eng@google.com</owner>
+  <summary>
+    Records how many milliseconds elapsed while redacting the input text by the
+    redaction_tool. This metric is recorded after each redaction (JS error or
+    feedback report). This metric should be a rough control so we aren't running
+    a very long time in the background after a report.
+  </summary>
+</histogram>
+
+<histogram name="Feedback.RedactionTool.TimeSpentRedactingCrash" units="ms"
+    expires_after="2024-01-01">
+  <owner>cschlosser@chromium.org</owner>
+  <owner>dpchromeos-core-eng@google.com</owner>
+  <summary>
+    Records how many milliseconds elapsed while redacting the logs of a crash
+    inside ChromeOS's crash_reporter. This metric is recorded for each crash
+    that has text logs that need redaction, at the time the crash happens. This
+    metric should be a rough control so we aren't running a very long time after
+    a crash and the user has to wait for the frozen screen to disappear.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.ReportSending.Online" units="boolean"
     expires_after="2023-11-12">
   <owner>xiangdongkong@google.com</owner>

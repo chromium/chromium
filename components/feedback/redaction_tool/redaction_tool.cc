@@ -595,6 +595,8 @@ std::string RedactionTool::RedactAndKeepSelected(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::AssertLongCPUWorkAllowed();
 
+  const base::TimeTicks redaction_start = base::TimeTicks::Now();
+
   // Copy |input| so we can modify it.
   std::string redacted = input;
 
@@ -630,6 +632,10 @@ std::string RedactionTool::RedactAndKeepSelected(
       pii_types_to_keep.find(PIIType::kIBAN) == pii_types_to_keep.end()) {
     redacted = RedactIbans(std::move(redacted), nullptr);
   }
+
+  metrics_recorder_->RecordTimeSpentRedactingHistogram(base::TimeTicks::Now() -
+                                                       redaction_start);
+
   return redacted;
 }
 

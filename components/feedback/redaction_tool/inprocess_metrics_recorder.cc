@@ -6,6 +6,11 @@
 
 #include "base/metrics/histogram_macros.h"
 
+namespace {
+constexpr char kTimeSpentRedactingHistogram[] =
+    "Feedback.RedactionTool.TimeSpentRedacting";
+}
+
 namespace redaction {
 
 std::unique_ptr<RedactionToolMetricsRecorder>
@@ -20,6 +25,16 @@ void InprocessMetricsRecorder::RecordPIIRedactedHistogram(PIIType pii_type) {
 void InprocessMetricsRecorder::RecordCreditCardRedactionHistogram(
     CreditCardDetection step) {
   UMA_HISTOGRAM_ENUMERATION(kCreditCardRedactionHistogram, step);
+}
+
+void InprocessMetricsRecorder::RecordTimeSpentRedactingHistogram(
+    base::TimeDelta time_spent) {
+  UMA_HISTOGRAM_MEDIUM_TIMES(kTimeSpentRedactingHistogram, time_spent);
+}
+
+base::StringPiece
+RedactionToolMetricsRecorder::GetTimeSpentRedactingHistogramNameForTesting() {
+  return kTimeSpentRedactingHistogram;
 }
 
 }  // namespace redaction

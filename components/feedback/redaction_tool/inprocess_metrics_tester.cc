@@ -17,6 +17,11 @@ size_t InprocessMetricsTester::GetBucketCount(base::StringPiece histogram_name,
   return histogram_tester_.GetBucketCount(histogram_name, histogram_value);
 }
 
+size_t InprocessMetricsTester::GetNumBucketEntries(
+    base::StringPiece histogram_name) {
+  return histogram_tester_.GetAllSamples(histogram_name).size();
+}
+
 std::unique_ptr<RedactionToolMetricsRecorder>
 InprocessMetricsTester::SetupRecorder() {
   return std::make_unique<InprocessMetricsRecorder>();

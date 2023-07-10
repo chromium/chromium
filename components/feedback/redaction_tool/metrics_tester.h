@@ -29,6 +29,9 @@ class MetricsTester {
   virtual size_t GetBucketCount(base::StringPiece histogram_name,
                                 int histogram_value) = 0;
 
+  // Get the number of entries for the `histogram_name`.
+  virtual size_t GetNumBucketEntries(base::StringPiece histogram_name) = 0;
+
   // Create a `RedactionToolMetricsRecorder` that is configured so it can return
   // metric values in `GetBucketCount()`.
   virtual std::unique_ptr<RedactionToolMetricsRecorder> SetupRecorder() = 0;
