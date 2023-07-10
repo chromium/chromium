@@ -1215,7 +1215,7 @@ const CGFloat kSymbolSize = 18;
           change.As<WebStateListChangeInsert>();
       TabView* view =
           [self createTabViewForWebState:insertChange.inserted_web_state()
-                              isSelected:selection.activating];
+                              isSelected:selection.active_state_change];
       [_tabArray insertObject:view
                       atIndex:[self indexForWebStateListIndex:selection.index]];
       [[self tabStripView] addSubview:view];

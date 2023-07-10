@@ -555,7 +555,7 @@ void TabUsageRecorderBrowserAgent::WebStateListDidChange(
       const WebStateListChangeInsert& insert_change =
           change.As<WebStateListChangeInsert>();
       web::WebState* inserted_web_state = insert_change.inserted_web_state();
-      if (selection.activating) {
+      if (selection.active_state_change) {
         web_state_created_selected_ = inserted_web_state;
       }
 

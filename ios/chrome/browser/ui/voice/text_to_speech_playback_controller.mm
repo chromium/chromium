@@ -108,7 +108,7 @@ void TextToSpeechPlaybackController::WebStateListDidChange(
     case WebStateListChange::Type::kInsert: {
       const WebStateListChangeInsert& insert_change =
           change.As<WebStateListChangeInsert>();
-      if (selection.activating) {
+      if (selection.active_state_change) {
         SetWebState(insert_change.inserted_web_state());
       }
       break;

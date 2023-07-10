@@ -111,7 +111,7 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
       const WebStateListChangeInsert& insert_change =
           change.As<WebStateListChangeInsert>();
       LogTabInsertedAt(GetTabId(insert_change.inserted_web_state()),
-                       selection.index, selection.activating);
+                       selection.index, selection.active_state_change);
       break;
     }
   }

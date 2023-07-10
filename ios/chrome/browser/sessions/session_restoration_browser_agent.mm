@@ -394,7 +394,7 @@ void SessionRestorationBrowserAgent::WebStateListDidChange(
     case WebStateListChange::Type::kInsert: {
       const WebStateListChangeInsert& insert_change =
           change.As<WebStateListChangeInsert>();
-      if (selection.activating ||
+      if (selection.active_state_change ||
           insert_change.inserted_web_state()->IsLoading()) {
         return;
       }

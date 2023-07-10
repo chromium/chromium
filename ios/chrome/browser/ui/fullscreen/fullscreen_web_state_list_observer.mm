@@ -104,7 +104,7 @@ void FullscreenWebStateListObserver::WebStateListDidChange(
     }
     case WebStateListChange::Type::kInsert: {
       DCHECK_EQ(web_state_list_, web_state_list);
-      if (selection.activating) {
+      if (selection.active_state_change) {
         controller_->ExitFullscreen();
       }
       break;

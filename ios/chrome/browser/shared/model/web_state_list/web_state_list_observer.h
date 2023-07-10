@@ -192,12 +192,9 @@ struct WebStateSelection {
   // The index to be changed. A WebState is no longer in WebStateList at the
   // `index` position when a WebState is detached.
   const int index;
-  // True when the WebState at `index` is being activated.
-  // TODO(crbug.com/1442546): Remove `activating` and introduce `active_index`,
-  // the index of the currently active WebState, once WebStateActivatedAt() is
-  // merged into WebStateListChange() because WebStateListChange() will be able
-  // to handle an operation with the activation at the same time.
-  const bool activating;
+  // True when the active WebState is updated. The new active index can be
+  // obtained via `WebStateList::active_index()`.
+  const bool active_state_change;
   // True when the pinned state of the WebState at `index` in WebStateList is
   // updated.
   const bool pinned_state_change;
@@ -231,11 +228,6 @@ class WebStateListObserver : public base::CheckedObserver {
 
   ~WebStateListObserver() override;
 
-  /// Invoked when WebStateList is updated.
-  virtual void WebStateListDidChange(WebStateList* web_state_list,
-                                     const WebStateListChange& change,
-                                     const WebStateSelection& selection);
-
   // Invoked before the specified WebState is updated. Is is currently used to
   // notify the event before a WebState is detached from WebStateList. So the
   // type of `change` is always `WebStateListChangeDetach`.
@@ -243,6 +235,11 @@ class WebStateListObserver : public base::CheckedObserver {
       WebStateList* web_state_list,
       const WebStateListChangeDetach& detach_change,
       const WebStateSelection& selection);
+
+  /// Invoked when WebStateList is updated.
+  virtual void WebStateListDidChange(WebStateList* web_state_list,
+                                     const WebStateListChange& change,
+                                     const WebStateSelection& selection);
 
   // Invoked after `new_web_state` was activated at the specified index. Both
   // WebState are either valid or null (if there was no selection or there is

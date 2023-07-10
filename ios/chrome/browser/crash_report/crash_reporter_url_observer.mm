@@ -282,7 +282,7 @@ void CrashReporterURLObserver::WebStateListDidChange(
       web::WebState* inserted_web_state = insert_change.inserted_web_state();
       web_state_to_group_[inserted_web_state] =
           GroupForWebStateList(web_state_list);
-      if (selection.activating) {
+      if (selection.active_state_change) {
         RecordURLForWebState(inserted_web_state);
       }
       break;

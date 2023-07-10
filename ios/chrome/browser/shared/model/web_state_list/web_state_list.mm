@@ -361,8 +361,9 @@ int WebStateList::InsertWebStateImpl(int index,
   }
 
   const WebStateListChangeInsert insert_change(web_state_ptr);
-  const WebStateSelection selection = {
-      .index = index, .activating = activating, .pinned_state_change = false};
+  const WebStateSelection selection = {.index = index,
+                                       .active_state_change = activating,
+                                       .pinned_state_change = false};
   for (auto& observer : observers_) {
     observer.WebStateListDidChange(this, insert_change, selection);
   }
@@ -371,6 +372,11 @@ int WebStateList::InsertWebStateImpl(int index,
     SetOpenerOfWebStateAt(index, opener);
   }
 
+  // TODO(crbug.com/1442546): Remove calling `ActivateWebStateAtImpl()` because
+  // the observers should handle the activation in `WebStateListDidChange()`
+  // with `kInsert` type. Also, `active_index_` should be updated before calling
+  // `WebStateListDidChange()` when calling `ActivateWebStateAtImpl()` is
+  // removed.
   if (activating) {
     ActivateWebStateAtImpl(index, ActiveWebStateChangeReason::Inserted);
   }
@@ -393,7 +399,9 @@ void WebStateList::MoveWebStateAtImpl(int from_index,
       const WebStateListChangeSelectionOnly selection_only_change(
           web_state_wrappers_[to_index]->web_state());
       const WebStateSelection selection = {
-          .index = to_index, .activating = false, .pinned_state_change = true};
+          .index = to_index,
+          .active_state_change = (to_index == active_index_),
+          .pinned_state_change = true};
       for (auto& observer : observers_) {
         observer.WebStateListDidChange(this, selection_only_change, selection);
       }
@@ -422,7 +430,7 @@ void WebStateList::MoveWebStateAtImpl(int from_index,
   const WebStateListChangeMove move_change(web_state, from_index);
   const WebStateSelection selection = {
       .index = to_index,
-      .activating = false,
+      .active_state_change = (to_index == active_index_),
       .pinned_state_change = pinned_state_change};
   for (auto& observer : observers_) {
     observer.WebStateListDidChange(this, move_change, selection);
@@ -446,17 +454,23 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
 
   const WebStateListChangeReplace replace_change(replaced_web_state.get(),
                                                  web_state_ptr);
-  const WebStateSelection selection = {.index = index,
-                                       .activating = (index == active_index_),
-                                       .pinned_state_change = false};
+  const WebStateSelection selection = {
+      .index = index,
+      .active_state_change = (index == active_index_),
+      .pinned_state_change = false};
   for (auto& observer : observers_) {
     observer.WebStateListDidChange(this, replace_change, selection);
   }
 
-  // When the active WebState is replaced, notify the observers as nearly
-  // all of them needs to treat a replacement as the selection changed.
-  NotifyIfActiveWebStateChanged(replaced_web_state.get(),
-                                ActiveWebStateChangeReason::Replaced);
+  // TODO(crbug.com/1442546): Remove calling `NotifyIfActiveWebStateChanged()`
+  // because the observers should handle the activation in
+  // `WebStateListDidChange()` with `kReplace` type.
+  if (index == active_index_) {
+    // When the active WebState is replaced, notify the observers as nearly
+    // all of them needs to treat a replacement as the selection changed.
+    NotifyIfActiveWebStateChanged(replaced_web_state.get(),
+                                  ActiveWebStateChangeReason::Replaced);
+  }
 
   delegate_->WebStateDetached(replaced_web_state.get());
   return replaced_web_state;
@@ -471,13 +485,13 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   DCHECK(ContainsIndex(index));
 
   web::WebState* web_state = web_state_wrappers_[index]->web_state();
+  const bool active_web_state_was_closed = (index == active_index_);
   const WebStateListChangeDetach detach_change(web_state, is_closing,
                                                is_user_action);
-  // TODO(crbug.com/1442546): Remove `activating` and introduce `active_index`
-  // which is the index of the currently active WebState.
   const WebStateSelection selection = {
-      .index = index, .activating = false, .pinned_state_change = false};
-
+      .index = index,
+      .active_state_change = active_web_state_was_closed,
+      .pinned_state_change = false};
   for (auto& observer : observers_) {
     observer.WebStateListWillChange(this, detach_change, selection);
   }
@@ -486,7 +500,6 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   // as the active one but only send the WebStateActivatedAt notification after
   // the WebStateDetachedAt one.
   WebStateListOrderController order_controller(*this);
-  const bool active_web_state_was_closed = (index == active_index_);
   active_index_ =
       order_controller.DetermineNewActiveIndex(active_index_, {index});
 
@@ -506,6 +519,9 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     observer.WebStateListDidChange(this, detach_change, selection);
   }
 
+  // TODO(crbug.com/1442546): Remove calling `NotifyIfActiveWebStateChanged()`
+  // because the observers should handle the activation in
+  // `WebStateListDidChange()` with `kDetach` type.
   if (active_web_state_was_closed) {
     NotifyIfActiveWebStateChanged(web_state,
                                   ActiveWebStateChangeReason::Closed);
@@ -579,6 +595,8 @@ void WebStateList::ActivateWebStateAtImpl(int index,
   }
 
   active_index_ = index;
+  // TODO(crbug.com/1442546): Call `WebStateListDidChange()` with
+  // `kSelectionOnly` type and remove calling `NotifyIfActiveWebStateChanged()`.
   NotifyIfActiveWebStateChanged(
       old_web_state_wrapper ? old_web_state_wrapper->web_state() : nullptr,
       reason);
@@ -647,6 +665,9 @@ void WebStateList::NotifyIfActiveWebStateChanged(
     new_web_state->ForceRealized();
   }
 
+  // TODO(crbug.com/1442546): Remove `WebStateActivatedAt()` after observers are
+  // updated to handle the activation and another operation (e.g. the insertion)
+  // at the same time.
   for (auto& observer : observers_) {
     observer.WebStateActivatedAt(this, old_web_state, new_web_state,
                                  active_index_, reason);

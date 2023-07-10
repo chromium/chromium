@@ -108,7 +108,7 @@ void WebUsageEnablerBrowserAgent::WebStateListDidChange(
           change.As<WebStateListChangeInsert>();
       UpdateWebUsageForAddedWebState(
           insert_change.inserted_web_state(),
-          /*triggers_initial_load=*/selection.activating);
+          /*triggers_initial_load=*/selection.active_state_change);
       break;
     }
   }

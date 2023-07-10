@@ -188,7 +188,7 @@
       }
 
       [self.consumer setTabCount:_webStateList->count()
-               addedInBackground:!selection.activating];
+               addedInBackground:!selection.active_state_change];
       break;
     }
   }

@@ -67,14 +67,14 @@ WebStateListObserver::~WebStateListObserver() {
          "list before their destruction.";
 }
 
-void WebStateListObserver::WebStateListDidChange(
-    WebStateList* web_state_list,
-    const WebStateListChange& change,
-    const WebStateSelection& selection) {}
-
 void WebStateListObserver::WebStateListWillChange(
     WebStateList* web_state_list,
     const WebStateListChangeDetach& detach_change,
+    const WebStateSelection& selection) {}
+
+void WebStateListObserver::WebStateListDidChange(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
     const WebStateSelection& selection) {}
 
 void WebStateListObserver::WebStateActivatedAt(

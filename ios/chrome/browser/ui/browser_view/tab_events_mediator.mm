@@ -188,7 +188,7 @@
       // If a tab is inserted in the background (not activating), trigger an
       // animation. (The animation for foreground tab insertion is handled in
       // `didChangeActiveWebState`).
-      if (!selection.activating) {
+      if (!selection.active_state_change) {
         [self.consumer initiateNewTabBackgroundAnimation];
       }
       break;

@@ -304,7 +304,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
       // opened.
       if (self.currentPromoReason == PromoReasonExternalLink &&
           self.webStateList->GetActiveWebState() == self.webStateToListenTo &&
-          selection.activating) {
+          selection.active_state_change) {
         const WebStateListChangeInsert& insertChange =
             change.As<WebStateListChangeInsert>();
         self.webStateToListenTo = insertChange.inserted_web_state();
