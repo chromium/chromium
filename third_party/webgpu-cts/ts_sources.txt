@@ -571,6 +571,7 @@ src/webgpu/shader/validation/shader_io/id.spec.ts
 src/webgpu/shader/validation/shader_io/interpolate.spec.ts
 src/webgpu/shader/validation/shader_io/invariant.spec.ts
 src/webgpu/shader/validation/shader_io/locations.spec.ts
+src/webgpu/shader/validation/shader_io/size.spec.ts
 src/webgpu/shader/validation/shader_io/workgroup_size.spec.ts
 src/webgpu/shader/validation/types/alias.spec.ts
 src/webgpu/shader/validation/types/struct.spec.ts
