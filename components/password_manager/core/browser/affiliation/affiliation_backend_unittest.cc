@@ -322,6 +322,10 @@ class AffiliationBackendTest : public testing::TestWithParam<bool> {
 
   void DestroyBackend() {
     mock_fetch_throttler_ = nullptr;
+    // `backend_` owns the fetcher factory to which `fake_affiliation_api_`
+    // keeps a raw pointer, so this raw pointer needs to be reset prior to
+    // destroying `backend_`.
+    fake_affiliation_api_.SetFetcherFactory(nullptr);
     backend_.reset();
   }
 

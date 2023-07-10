@@ -52,8 +52,7 @@ class FakeAffiliationAPI {
   }
 
  private:
-  raw_ptr<FakeAffiliationFetcherFactory, DanglingUntriaged>
-      fake_fetcher_factory_ = nullptr;
+  raw_ptr<FakeAffiliationFetcherFactory> fake_fetcher_factory_ = nullptr;
   std::vector<AffiliatedFacets> preset_equivalence_relation_;
   std::vector<GroupedFacets> groups_;
 };

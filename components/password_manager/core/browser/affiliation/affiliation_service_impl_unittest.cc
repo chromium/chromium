@@ -151,7 +151,10 @@ class AffiliationServiceImplTest : public testing::Test {
     service_->Init(network_connection_tracker, database_path);
   }
 
-  void DestroyService() { service_->Shutdown(); }
+  void DestroyService() {
+    fake_affiliation_api_.SetFetcherFactory(nullptr);
+    service_->Shutdown();
+  }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
@@ -586,7 +589,7 @@ class AffiliationServiceImplTestWithFetcherFactory
 };
 
 TEST_F(AffiliationServiceImplTestWithFetcherFactory,
-       GetAffiliationsAndBrandingSucceds) {
+       GetAffiliationsAndBrandingSucceeds) {
   // The first request allows on-demand fetching, and should trigger a fetch.
   // Then, it should succeed after the fetch is complete.
   service()->GetAffiliationsAndBranding(
