@@ -3,7 +3,7 @@ Short Name: libaom
 URL: https://aomedia.googlesource.com/aom/
 Version: 0
 Date: Friday June 30 2023
-Revision: 17d4c38e4f5dc257bf517558886c7685fb767176
+Revision: 7e0293d9c6433ba4af81fb1e067ded2a13dccc36
 CPEPrefix: cpe:/a:aomedia:aomedia:3.6.0
 License: BSD
 License File: source/libaom/LICENSE
