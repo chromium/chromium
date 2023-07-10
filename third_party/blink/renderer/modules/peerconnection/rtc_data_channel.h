@@ -151,7 +151,7 @@ class MODULES_EXPORT RTCDataChannel final
 
     const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
     WeakPersistent<RTCDataChannel> blink_channel_;
-    rtc::scoped_refptr<webrtc::DataChannelInterface> webrtc_channel_;
+    const rtc::scoped_refptr<webrtc::DataChannelInterface> webrtc_channel_;
   };
 
   void OnStateChange(webrtc::DataChannelInterface::DataState state);
@@ -199,7 +199,11 @@ class MODULES_EXPORT RTCDataChannel final
   unsigned buffered_amount_ = 0u;
   bool stopped_ = false;
   bool closed_from_owner_ = false;
-  scoped_refptr<Observer> observer_;
+  // Keep the `observer_` reference const to make it clear that we don't want
+  // to free the underlying channel (or callback observer) until the
+  // `RTCDataChannel` instance goes away. This allows properties to be queried
+  // after the state reaches `kClosed`.
+  const scoped_refptr<Observer> observer_;
   scoped_refptr<base::SingleThreadTaskRunner> signaling_thread_;
   THREAD_CHECKER(thread_checker_);
 };
