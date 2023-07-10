@@ -17,6 +17,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "components/device_signals/core/browser/signals_types.h"
+#endif
+
 namespace content {
 class BrowserContext;
 }
@@ -189,6 +193,23 @@ class RealtimeReportingClient : public KeyedService,
 
   base::WeakPtrFactory<RealtimeReportingClient> weak_ptr_factory_{this};
 };
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Populate event dict with CrowdStrike signal values. If those signals are
+// available in `response`, this function returns a Dict with the following
+// fields added:
+// "securityAgents" : [
+//   {
+//     "crowdstrike": {
+//       "agentId": "agent-123",
+//       "customerId": "customer-123"
+//     }
+//   }
+// ]
+void AddCrowdstrikeSignalsToEvent(
+    base::Value::Dict& event,
+    const device_signals::SignalsAggregationResponse& response);
+#endif
 
 }  // namespace enterprise_connectors
 
