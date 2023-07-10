@@ -26,6 +26,7 @@
 #include "components/favicon_base/favicon_util.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -337,8 +338,10 @@ void LensUnifiedSidePanelView::MaybeLoadURLWithParams() {
 
   // Manually set web contents to the size of side panel view on initial load.
   // This prevents a bug in Lens Web that renders the page as if it was 0px
-  // wide.
+  // wide. Also, set the viewport width and height param of the request url.
   GetWebContents()->Resize(bounds());
+  side_panel_url_params_->url = lens::AppendOrReplaceViewportSizeForRequest(
+      side_panel_url_params_->url, bounds().size());
   GetWebContents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(*side_panel_url_params_));
   side_panel_url_params_.reset();

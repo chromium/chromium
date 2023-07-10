@@ -31,25 +31,26 @@ extern void AppendLogsQueryParam(
     std::string* query_string,
     const std::vector<lens::mojom::LatencyLogPtr>& log_data);
 
+// Appends the viewport width and height query params to the Lens or companion
+// request GURL if the width and height of the input size is not zero,
+// respectively.
+extern GURL AppendOrReplaceViewportSizeForRequest(
+    const GURL& url,
+    const gfx::Size& viewport_size);
+
 // Returns a modified GURL with appended or replaced parameters depending on the
-// entrypoint and other parameters. The width and height of the side panel
-// initial size are ignored if they are 0 or if the request is not a side panel
-// request.
+// entrypoint and other parameters.
 extern GURL AppendOrReplaceQueryParametersForLensRequest(
     const GURL& url,
     lens::EntryPoint ep,
     lens::RenderingEnvironment re,
-    bool is_side_panel_request,
-    const gfx::Size& side_panel_initial_size_upper_bound);
+    bool is_side_panel_request);
 
 // Returns a query string with all relevant query parameters. Needed for when a
-// GURL is unavailable to append to. The width and height of the side panel
-// initial size are ignored if they are 0 or if the request is not a Lens side
-// panel or companion request.
+// GURL is unavailable to append to.
 extern std::string GetQueryParametersForLensRequest(
     lens::EntryPoint ep,
     bool is_lens_side_panel_request,
-    const gfx::Size& side_panel_initial_size_upper_bound,
     bool is_full_screen_region_search_request,
     bool is_companion_request = false);
 

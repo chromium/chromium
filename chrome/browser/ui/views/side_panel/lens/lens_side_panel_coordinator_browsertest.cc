@@ -56,7 +56,7 @@ constexpr char kExpectedLensSidePanelContentUrlRegex[] =
     ".*ep=ccm&re=dcsp&s=4&st=\\d+&lm=.+&p=somepayload&ep=ccmupload&"
     "sideimagesearch=1";
 constexpr char kExpected3PDseSidePanelContentUrlRegex[] =
-    ".*p=somepayload&sideimagesearch=1";
+    ".*p=somepayload&sideimagesearch=1&vpw=\\d+&vph=\\d+";
 constexpr char kExpectedNewTabContentUrlRegex[] = ".*p=somepayload";
 
 // Maintains image search test state. In particular, note that |menu_observer_|
