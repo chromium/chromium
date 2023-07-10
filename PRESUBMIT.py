@@ -2023,16 +2023,26 @@ def CheckNoStrCatRedefines(input_api, output_api):
     return []
 
 
+def _CheckNoUNIT_TESTInSourceFiles(input_api, f):
+    problems = []
+
+    unit_test_macro = input_api.re.compile(
+        '^\s*#.*(?:ifn?def\s+UNIT_TEST|defined\s*\(?\s*UNIT_TEST\s*\)?)(?:$|\s+)')
+    for line_num, line in f.ChangedContents():
+        if unit_test_macro.match(line):
+            problems.append('    %s:%d' % (f.LocalPath(), line_num))
+
+    return problems
+
+
 def CheckNoUNIT_TESTInSourceFiles(input_api, output_api):
     """Checks to make sure no source files use UNIT_TEST."""
     problems = []
     for f in input_api.AffectedFiles():
         if (not f.LocalPath().endswith(('.cc', '.mm'))):
             continue
-
-        for line_num, line in f.ChangedContents():
-            if 'UNIT_TEST ' in line or line.endswith('UNIT_TEST'):
-                problems.append('    %s:%d' % (f.LocalPath(), line_num))
+        problems.extend(
+            _CheckNoUNIT_TESTInSourceFiles(input_api, f))
 
     if not problems:
         return []

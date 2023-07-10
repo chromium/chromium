@@ -184,11 +184,46 @@ class InvalidIfDefinedMacroNamesTest(unittest.TestCase):
 
   def testValidIfDefinedMacroNames(self):
     lines = ['#if defined(FOO)',
-             '#ifdef BAR']
+             '#ifdef BAR',
+             '#if TARGET_IPHONE_SIMULATOR']
     errors = PRESUBMIT._CheckForInvalidIfDefinedMacrosInFile(
         MockInputApi(), MockFile('some/path/source.cc', lines))
     self.assertEqual(0, len(errors))
 
+
+class CheckNoUNIT_TESTInSourceFilesTest(unittest.TestCase):
+  def testUnitTestMacros(self):
+    lines = ['#if defined(UNIT_TEST)',
+             '#if defined UNIT_TEST',
+             '#if !defined(UNIT_TEST)',
+             '#elif defined(UNIT_TEST)',
+             '#ifdef UNIT_TEST',
+             ' # ifdef UNIT_TEST',
+             '#ifndef UNIT_TEST',
+             '# if defined(VALID) || defined(UNIT_TEST)',
+             '# if defined(UNIT_TEST) && defined(VALID)',
+             '# else  // defined(UNIT_TEST)',
+             '#endif  // defined(UNIT_TEST)']
+    errors = PRESUBMIT._CheckNoUNIT_TESTInSourceFiles(
+        MockInputApi(), MockFile('some/path/source.cc', lines))
+    self.assertEqual(len(lines), len(errors))
+
+  def testNotUnitTestMacros(self):
+    lines = ['// Comment about "#if defined(UNIT_TEST)"',
+             '/* Comment about #if defined(UNIT_TEST)" */',
+             '#ifndef UNIT_TEST_H',
+             '#define UNIT_TEST_H',
+             '#ifndef TEST_UNIT_TEST',
+             '#define TEST_UNIT_TEST',
+             '#if defined(_UNIT_TEST)',
+             '#if defined(UNIT_TEST_)',
+             '#ifdef _UNIT_TEST',
+             '#ifdef UNIT_TEST_',
+             '#ifndef _UNIT_TEST',
+             '#ifndef UNIT_TEST_']
+    errors = PRESUBMIT._CheckNoUNIT_TESTInSourceFiles(
+        MockInputApi(), MockFile('some/path/source.cc', lines))
+    self.assertEqual(0, len(errors))
 
 class CheckAddedDepsHaveTestApprovalsTest(unittest.TestCase):
 
