@@ -9,6 +9,9 @@
       "default_component": "DEFAULT"
     }
   },
+  "component_overrides": {
+    "third_party/container": "ContainerOverride"
+  },
   "native_files": {
     "smalltest.so": {
       "component": "SMALL"

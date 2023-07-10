@@ -302,7 +302,7 @@ def _CreatePakSymbols(*, pak_spec, pak_id_map, apk_spec, output_directory):
 
 def _CreateContainerSymbols(container_spec, apk_file_manager,
                             apk_analyzer_results, pak_id_map,
-                            dex_deobfuscator_cache):
+                            component_overrides, dex_deobfuscator_cache):
   container_name = container_spec.container_name
   apk_spec = container_spec.apk_spec
   pak_spec = container_spec.pak_spec
@@ -352,6 +352,7 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
     else:
       dir_metadata.PopulateComponents(new_raw_symbols,
                                       source_directory,
+                                      component_overrides,
                                       default_component=default_component)
     raw_symbols.extend(new_raw_symbols)
 
@@ -985,13 +986,8 @@ def _IsOnDemand(apk_path):
   return on_demand
 
 
-def _CreateAllContainerSpecs(apk_file_manager, top_args, on_config_error):
-  json_config_path = top_args.json_config
-  if not json_config_path:
-    json_config_path = path_util.GetDefaultJsonConfigPath()
-    logging.info('Using --json-config=%s', json_config_path)
-  json_config = json_config_parser.Parse(json_config_path, on_config_error)
-
+def _CreateAllContainerSpecs(apk_file_manager, top_args, json_config,
+                             on_config_error):
   main_file = _IdentifyInputFile(top_args, on_config_error)
   if top_args.no_output_directory:
     top_args.output_directory = None
@@ -1066,7 +1062,8 @@ def _FilterContainerSpecs(container_specs, container_re=None):
   return ret
 
 
-def CreateSizeInfo(container_specs, build_config, apk_file_manager):
+def CreateSizeInfo(container_specs, build_config, json_config,
+                   apk_file_manager):
   def sort_key(container_spec):
     # Native containers come first to ensure pak_id_map is populated before
     # any pak_spec is encountered.
@@ -1102,6 +1099,7 @@ def CreateSizeInfo(container_specs, build_config, apk_file_manager):
   for container_spec in container_specs:
     raw_symbols = _CreateContainerSymbols(container_spec, apk_file_manager,
                                           apk_analyzer_results, pak_id_map,
+                                          json_config.ComponentOverrides(),
                                           dex_deobfuscator_cache)
     assert raw_symbols, f'{container_spec.container_name} had no symbols.'
     raw_symbols_list.append(raw_symbols)
@@ -1143,17 +1141,23 @@ def Run(top_args, on_config_error):
     except Exception as e:
       on_config_error(f'Bad --container-filter input: {e}')
 
-  # Iterate over each container.
+  json_config_path = top_args.json_config
+  if not json_config_path:
+    json_config_path = path_util.GetDefaultJsonConfigPath()
+    logging.info('Using --json-config=%s', json_config_path)
+  json_config = json_config_parser.Parse(json_config_path, on_config_error)
+
   with zip_util.ApkFileManager() as apk_file_manager:
     container_specs = _CreateAllContainerSpecs(apk_file_manager, top_args,
-                                               on_config_error)
+                                               json_config, on_config_error)
     container_specs = _FilterContainerSpecs(container_specs, container_re)
 
     build_config = CreateBuildConfig(top_args.output_directory,
                                      top_args.source_directory,
                                      url=top_args.url,
                                      title=top_args.title)
-    size_info = CreateSizeInfo(container_specs, build_config, apk_file_manager)
+    size_info = CreateSizeInfo(container_specs, build_config, json_config,
+                               apk_file_manager)
 
   if logging.getLogger().isEnabledFor(logging.DEBUG):
     for line in data_quality.DescribeSizeInfoCoverage(size_info):

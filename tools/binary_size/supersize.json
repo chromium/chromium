@@ -20,6 +20,9 @@
     }
   },
   "apk_splits": {
+    "auxiliary_search": {
+      "default_component": "auxiliary_search"
+    },
     "cablev2_authenticator": {
       "default_component": "Blink>WebAuthentication"
     },
@@ -44,6 +47,14 @@
     "weblayer": {
       "default_component": "Internals>WebLayer"
     }
+  },
+  "component_overrides": {
+    "third_party/webrtc": "Blink>WebRTC",
+    "logging/rtc_event_log": "Blink>WebRTC",
+    "modules": "Blink>WebRTC",
+    "third_party/androidx/libs/androidx_appsearch_appsearch": "auxiliary_search",
+    "third_party/androidx/libs/androidx_mediarouter": "Internals>Cast",
+    "third_party/androidx/libs/androidx_privacysandbox": "UI>Settings>Privacy"
   },
   "native_files": {
     "libarcore_sdk_c.so": {

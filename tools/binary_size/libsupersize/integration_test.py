@@ -21,6 +21,7 @@ import data_quality
 import describe
 import diff
 import file_format
+import json_config_parser
 import models
 import pakfile
 import test_util
@@ -63,6 +64,7 @@ _TEST_APK_OTHER_FILE_PATH = 'assets/icudtl.dat'
 _TEST_APK_RES_FILE_PATH = 'res/drawable-v13/test.xml'
 
 _TEST_CONFIG_JSON = os.path.join(_TEST_DATA_DIR, 'supersize.json')
+_TEST_JSON_CONFIG = json_config_parser.Parse(_TEST_CONFIG_JSON, None)
 _TEST_PATH_DEFAULTS = {
     'assets/icudtl.dat': '../../third_party/icu/android/icudtl.dat',
 }
@@ -304,7 +306,7 @@ class IntegrationTest(unittest.TestCase):
                                                  _TEST_SOURCE_DIR)
         container_specs = list(iter_specs())
         size_info = archive.CreateSizeInfo(container_specs, build_config,
-                                           apk_file_manager)
+                                           _TEST_JSON_CONFIG, apk_file_manager)
         IntegrationTest.cached_size_info[cache_key] = size_info
 
     return copy.deepcopy(IntegrationTest.cached_size_info[cache_key])
