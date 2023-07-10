@@ -92,28 +92,6 @@ public abstract class BrowserServicesIntentDataProvider {
     /** Side shset's slide-in behavior for side-wise animation. */
     public static final int ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE = 2;
 
-    @IntDef({ACTIVITY_HEIGHT_DEFAULT, ACTIVITY_HEIGHT_ADJUSTABLE, ACTIVITY_HEIGHT_FIXED})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ActivityHeightResizeBehavior {}
-
-    /**
-     * Applies the default height resize behavior for the Custom Tab Activity when it behaves as a
-     * bottom sheet. Same as {@link #ACTIVITY_HEIGHT_ADJUSTABLE}.
-     */
-    public static final int ACTIVITY_HEIGHT_DEFAULT = 0;
-
-    /**
-     * The Custom Tab Activity, when it behaves as a bottom sheet, can have its height manually
-     * resized by the user.
-     */
-    public static final int ACTIVITY_HEIGHT_ADJUSTABLE = 1;
-
-    /**
-     * The Custom Tab Activity, when it behaves as a bottom sheet, cannot have its height manually
-     * resized by the user.
-     */
-    public static final int ACTIVITY_HEIGHT_FIXED = 2;
-
     @IntDef({ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE,
             ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
             ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER})

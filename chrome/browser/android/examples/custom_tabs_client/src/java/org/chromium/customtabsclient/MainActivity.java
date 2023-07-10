@@ -3,6 +3,12 @@
 // found in the LICENSE file.
 package org.chromium.customtabsclient;
 
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_HEIGHT_FIXED;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_POSITION;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_RADIUS_DP;
+
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
@@ -105,7 +111,6 @@ public class MainActivity
     private static final int CLOSE_ICON_CHECK = 2;
     private static final int UNCHECKED = 0;
     private static final int CHECKED = 1;
-    private static final int ACTIVITY_HEIGHT_FIXED = 2;
     private static final int BACKGROUND_INTERACT_OFF_VALUE = 2;
 
     /** Extra that enables the maximization button on the side sheet Custom Tab toolbar. */
@@ -870,18 +875,12 @@ public class MainActivity
         if (isPCCT) {
             editor.putString(SHARED_PREF_CCT, "Partial CCT");
             int toolbarCornerRadiusDp = mToolbarCornerRadiusSlider.getProgress();
-            int toolbarCornerRadiusPx =
-                    Math.round(toolbarCornerRadiusDp * getResources().getDisplayMetrics().density);
-            customTabsIntent.intent.putExtra(
-                    "androidx.browser.customtabs.extra.CLOSE_BUTTON_POSITION", closeButtonPosition);
-            customTabsIntent.intent.putExtra(
-                    "androidx.browser.customtabs.extra.TOOLBAR_CORNER_RADIUS_IN_PIXEL",
-                    toolbarCornerRadiusPx);
+            customTabsIntent.intent.putExtra(EXTRA_CLOSE_BUTTON_POSITION, closeButtonPosition);
+            customTabsIntent.intent.putExtra(EXTRA_TOOLBAR_CORNER_RADIUS_DP, toolbarCornerRadiusDp);
             int pcctInitialHeightPx = mPcctInitialHeightSlider.getProgress();
             if (pcctInitialHeightPx != 0) {
                 customTabsIntent.intent.putExtra(
-                        "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL",
-                        pcctInitialHeightPx);
+                        EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, pcctInitialHeightPx);
             }
             int pcctInitialWidthPx = mPcctInitialWidthSlider.getProgress();
             if (pcctInitialWidthPx != 0) {
@@ -899,8 +898,7 @@ public class MainActivity
             }
             if (!mPcctHeightResizableCheckbox.isChecked()) {
                 customTabsIntent.intent.putExtra(
-                        "androidx.browser.customtabs.extra.ACTIVITY_HEIGHT_RESIZE_BEHAVIOR",
-                        ACTIVITY_HEIGHT_FIXED);
+                        EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR, ACTIVITY_HEIGHT_FIXED);
             }
             if (!mBackgroundInteractCheckbox.isChecked()) {
                 customTabsIntent.intent.putExtra(
@@ -929,8 +927,7 @@ public class MainActivity
             customTabsIntent.intent.putExtra(
                     "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB",
                     mCctType.equals("Incognito CCT"));
-            customTabsIntent.intent.putExtra(
-                    "androidx.browser.customtabs.extra.CLOSE_BUTTON_POSITION", closeButtonPosition);
+            customTabsIntent.intent.putExtra(EXTRA_CLOSE_BUTTON_POSITION, closeButtonPosition);
         }
         if (mForceEngagementSignalsCheckbox.isChecked()) {
             // NOTE: this may not work because this app is not a trusted 1st party app,

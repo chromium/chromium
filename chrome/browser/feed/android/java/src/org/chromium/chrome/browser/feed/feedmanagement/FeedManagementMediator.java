@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.feed.feedmanagement;
 
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -101,8 +103,7 @@ public class FeedManagementMediator {
     // TODO(katzz): Replace with intent extras to be defined in AndroidX;
     static final String EXTRA_ACTIVITY_INITIAL_WIDTH_PX =
             "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_WIDTH_PX";
-    static final String EXTRA_ACTIVITY_INITIAL_HEIGHT_PX =
-            "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_PX";
+
     static final String EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP =
             "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_BREAKPOINT_DP";
     static final String EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION =
@@ -127,7 +128,7 @@ public class FeedManagementMediator {
             customTabsIntent.intent.putExtra(
                     TRUSTED_APPLICATION_CODE_EXTRA, getAuthenticationToken());
             customTabsIntent.intent.setData(Uri.parse(uri));
-            customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_INITIAL_HEIGHT_PX, initialHeight);
+            customTabsIntent.intent.putExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, initialHeight);
             customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_INITIAL_WIDTH_PX, initialWidth);
             customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, breakPoint);
             customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION, true);
