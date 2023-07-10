@@ -107,6 +107,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return self;
 }
 
+- (void)dealloc {
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!self.dataSource);
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -219,7 +224,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // TODO(crbug.com/1454777)
   DUMP_WILL_BE_CHECK(self.dataSource);
   [self.dataSource stopObservingModel];
-  _dataSource = nil;
+  self.dataSource = nil;
 }
 
 #pragma mark - UITableViewDelegate
