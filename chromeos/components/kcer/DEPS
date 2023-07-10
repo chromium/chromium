@@ -1,4 +1,6 @@
 include_rules = [
   "+net/cert",
-  "+third_party/boringssl/src/include"
+  "+third_party/boringssl/src/include",
+  "+content/public/browser",
+  "+content/public/test",
 ]

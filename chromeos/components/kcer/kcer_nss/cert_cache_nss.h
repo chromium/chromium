@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_KCER_NSS_CERT_CACHE_NSS_H_
-#define CHROME_BROWSER_CHROMEOS_KCER_NSS_CERT_CACHE_NSS_H_
+#ifndef CHROMEOS_COMPONENTS_KCER_KCER_NSS_CERT_CACHE_NSS_H_
+#define CHROMEOS_COMPONENTS_KCER_KCER_NSS_CERT_CACHE_NSS_H_
 
 #include <set>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/cert/scoped_nss_types.h"
@@ -18,7 +19,8 @@ class Cert;
 namespace internal {
 
 // Cache for a collection of scoped_refptr<const Cert>-s.
-class CertCacheNss {
+// Exported for unit tests only.
+class COMPONENT_EXPORT(KCER) CertCacheNss {
  public:
   // Empty cache.
   CertCacheNss();
@@ -56,4 +58,4 @@ class CertCacheNss {
 }  // namespace internal
 }  // namespace kcer
 
-#endif  // CHROME_BROWSER_CHROMEOS_KCER_NSS_CERT_CACHE_NSS_H_
+#endif  // CHROMEOS_COMPONENTS_KCER_KCER_NSS_CERT_CACHE_NSS_H_

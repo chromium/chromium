@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_KCER_NSS_KCER_TOKEN_IMPL_NSS_H_
-#define CHROME_BROWSER_CHROMEOS_KCER_NSS_KCER_TOKEN_IMPL_NSS_H_
+#ifndef CHROMEOS_COMPONENTS_KCER_KCER_NSS_KCER_TOKEN_IMPL_NSS_H_
+#define CHROMEOS_COMPONENTS_KCER_KCER_NSS_KCER_TOKEN_IMPL_NSS_H_
 
 #include <stdint.h>
 
@@ -11,9 +11,10 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
-#include "chrome/browser/chromeos/kcer_nss/cert_cache_nss.h"
+#include "chromeos/components/kcer/kcer_nss/cert_cache_nss.h"
 #include "chromeos/components/kcer/kcer_token.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/cert_database.h"
@@ -31,7 +32,10 @@ using CertProvisioningIdAttributeId =
                       pkcs11_custom_attributes::CkAttributeType>;
 
 // Implementation of KcerToken that uses NSS as a permanent storage.
-class KcerTokenImplNss : public KcerToken, public net::CertDatabase::Observer {
+// Exported for unit tests only.
+class COMPONENT_EXPORT(KCER) KcerTokenImplNss
+    : public KcerToken,
+      public net::CertDatabase::Observer {
  public:
   enum class State {
     // Cache must be updated before it can be used.
@@ -168,4 +172,4 @@ class KcerTokenImplNss : public KcerToken, public net::CertDatabase::Observer {
 
 }  // namespace kcer::internal
 
-#endif  // CHROME_BROWSER_CHROMEOS_KCER_NSS_KCER_TOKEN_IMPL_NSS_H_
+#endif  // CHROMEOS_COMPONENTS_KCER_KCER_NSS_KCER_TOKEN_IMPL_NSS_H_

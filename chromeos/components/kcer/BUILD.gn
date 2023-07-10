@@ -15,6 +15,10 @@ component("kcer") {
     "kcer_impl.h",
     "kcer_notifier_net.cc",
     "kcer_notifier_net.h",
+    "kcer_nss/cert_cache_nss.cc",
+    "kcer_nss/cert_cache_nss.h",
+    "kcer_nss/kcer_token_impl_nss.cc",
+    "kcer_nss/kcer_token_impl_nss.h",
     "kcer_token.h",
     "token_key_finder.cc",
     "token_key_finder.h",
@@ -24,8 +28,12 @@ component("kcer") {
   deps = [
     ":key_permissions_proto",
     "//base",
+    "//content/public/browser",
     "//net",
   ]
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/ash/components/chaps_util" ]
+  }
 }
 
 proto_library("key_permissions_proto") {
@@ -39,6 +47,8 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "kcer_nss/cert_cache_nss_unittest.cc",
+    "kcer_nss/kcer_nss_unittest.cc",
     "token_key_finder_unittest.cc",
     "token_results_merger_unittest.cc",
   ]
@@ -47,7 +57,11 @@ source_set("unit_tests") {
     ":kcer",
     ":key_permissions_proto",
     "//base/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//crypto:test_support",
     "//net",
+    "//net:test_support",
     "//testing/gtest",
   ]
 }
