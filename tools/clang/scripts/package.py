@@ -457,10 +457,12 @@ def main():
         # Builtins for C/C++.
         'lib/clang/$V/lib/windows/clang_rt.builtins-i386.lib',
         'lib/clang/$V/lib/windows/clang_rt.builtins-x86_64.lib',
+        'lib/clang/$V/lib/windows/clang_rt.builtins-aarch64.lib',
 
         # Profile runtime (used by profiler and code coverage).
         'lib/clang/$V/lib/windows/clang_rt.profile-i386.lib',
         'lib/clang/$V/lib/windows/clang_rt.profile-x86_64.lib',
+        'lib/clang/$V/lib/windows/clang_rt.profile-aarch64.lib',
 
         # UndefinedBehaviorSanitizer C runtime (pure C won't link with *_cxx).
         'lib/clang/$V/lib/windows/clang_rt.ubsan_standalone-x86_64.lib',

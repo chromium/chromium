@@ -1165,6 +1165,18 @@ def main():
         "sanitizers":
         True,
     }
+    runtimes_triples_args['aarch64-pc-windows-msvc'] = {
+        "args": [
+            'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
+            'LLVM_WINSYSROOT="%s"' % sysroot,
+            # Can't run tests on x86 host.
+            'LLVM_INCLUDE_TESTS=OFF',
+        ],
+        "profile":
+        True,
+        "sanitizers":
+        False,
+    }
   elif sys.platform == 'darwin':
     # compiler-rt is built for all platforms/arches with a single
     # configuration, we should only specify one target triple. 'default' is
