@@ -40,21 +40,22 @@ __filegroups = {
 }
 
 __input_deps = {
-        # need this because we use
-        # buildtools/third_party/libc++/trunk/include:headers,
-        # but scandeps doesn't scan `__config` file, which uses
-        # `#include <__config_site>`
-        # TODO: remove buildtools/third_party/lib* once migrated to third_party/lib*
-        "buildtools/third_party/libc++": [
-            "buildtools/third_party/libc++/__config_site",
-        ],
-        "third_party/libc++": [
-            "third_party/libc++/__config_site",
-        ],
+    # need this because we use
+    # buildtools/third_party/libc++/trunk/include:headers,
+    # but scandeps doesn't scan `__config` file, which uses
+    # `#include <__config_site>`
+    # TODO: remove buildtools/third_party/lib* once migrated to third_party/lib*
+    "buildtools/third_party/libc++": [
+        "buildtools/third_party/libc++/__config_site",
+    ],
+    "third_party/libc++": [
+        "third_party/libc++/__config_site",
+        "buildtools/third_party/libc++/__config_site",
+    ],
 }
 
 clang_all = module(
-   "clang_all",
-   filegroups = __filegroups,
-   input_deps = __input_deps,
+    "clang_all",
+    filegroups = __filegroups,
+    input_deps = __input_deps,
 )
