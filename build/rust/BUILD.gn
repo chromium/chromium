@@ -28,10 +28,15 @@ if (toolchain_has_rust) {
 
     defines = [ "RUST_CXX_NO_EXCEPTIONS" ]
 
-    if (is_win) {
-      defines += [ "CXX_RS_EXPORT=__declspec(dllexport)" ]
+    # We cannot depend on base/base_export.h because base depends on us.
+    if (is_component_build) {
+      if (is_win) {
+        defines += [ "CXX_RS_EXPORT=__declspec(dllexport)" ]
+      } else {
+        defines += [ "CXX_RS_EXPORT=__attribute__((visibility(\"default\")))" ]
+      }
     } else {
-      defines += [ "CXX_RS_EXPORT=__attribute__((visibility(\"default\")))" ]
+      defines += [ "CXX_RS_EXPORT=" ]
     }
 
     # Depending on the C++ bindings side of cxx then requires also depending
