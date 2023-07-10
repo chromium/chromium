@@ -293,53 +293,24 @@ AutofillProfile PersonalDataManagerAndroid::CreateNativeProfileFromJava(
   if (!guid.empty())
     profile.set_guid(guid);
 
-  MaybeSetInfoWithVerificationStatus(
-      &profile, NAME_FULL, Java_AutofillProfile_getFullName(env, jprofile),
-      Java_AutofillProfile_getFullNameStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, NAME_HONORIFIC_PREFIX,
-      Java_AutofillProfile_getHonorificPrefix(env, jprofile),
-      Java_AutofillProfile_getHonorificPrefixStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, COMPANY_NAME,
-      Java_AutofillProfile_getCompanyName(env, jprofile),
-      Java_AutofillProfile_getCompanyNameStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, ADDRESS_HOME_STREET_ADDRESS,
-      Java_AutofillProfile_getStreetAddress(env, jprofile),
-      Java_AutofillProfile_getStreetAddressStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, ADDRESS_HOME_STATE,
-      Java_AutofillProfile_getRegion(env, jprofile),
-      Java_AutofillProfile_getRegionStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, ADDRESS_HOME_CITY,
-      Java_AutofillProfile_getLocality(env, jprofile),
-      Java_AutofillProfile_getLocalityStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, ADDRESS_HOME_DEPENDENT_LOCALITY,
-      Java_AutofillProfile_getDependentLocality(env, jprofile),
-      Java_AutofillProfile_getDependentLocalityStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, ADDRESS_HOME_ZIP,
-      Java_AutofillProfile_getPostalCode(env, jprofile),
-      Java_AutofillProfile_getPostalCodeStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, ADDRESS_HOME_SORTING_CODE,
-      Java_AutofillProfile_getSortingCode(env, jprofile),
-      Java_AutofillProfile_getSortingCodeStatus(env, jprofile));
-  MaybeSetInfoWithVerificationStatus(
-      &profile, ADDRESS_HOME_COUNTRY,
-      Java_AutofillProfile_getCountryCode(env, jprofile),
-      Java_AutofillProfile_getCountryCodeStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, PHONE_HOME_WHOLE_NUMBER,
-      Java_AutofillProfile_getPhoneNumber(env, jprofile),
-      Java_AutofillProfile_getPhoneNumberStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, EMAIL_ADDRESS,
-      Java_AutofillProfile_getEmailAddress(env, jprofile),
-      Java_AutofillProfile_getEmailAddressStatus(env, jprofile));
+  for (ServerFieldType fieldType : {NAME_FULL, ADDRESS_HOME_COUNTRY}) {
+    MaybeSetInfoWithVerificationStatus(
+        &profile, fieldType,
+        Java_AutofillProfile_getInfo(env, jprofile, fieldType),
+        Java_AutofillProfile_getInfoStatus(env, jprofile, fieldType));
+  }
+
+  for (ServerFieldType fieldType :
+       {NAME_HONORIFIC_PREFIX, COMPANY_NAME, ADDRESS_HOME_STREET_ADDRESS,
+        ADDRESS_HOME_STATE, ADDRESS_HOME_CITY, ADDRESS_HOME_DEPENDENT_LOCALITY,
+        ADDRESS_HOME_ZIP, ADDRESS_HOME_SORTING_CODE, PHONE_HOME_WHOLE_NUMBER,
+        EMAIL_ADDRESS}) {
+    MaybeSetRawInfoWithVerificationStatus(
+        &profile, fieldType,
+        Java_AutofillProfile_getInfo(env, jprofile, fieldType),
+        Java_AutofillProfile_getInfoStatus(env, jprofile, fieldType));
+  }
+
   profile.set_language_code(ConvertJavaStringToUTF8(
       Java_AutofillProfile_getLanguageCode(env, jprofile)));
   profile.FinalizeAfterImport();
