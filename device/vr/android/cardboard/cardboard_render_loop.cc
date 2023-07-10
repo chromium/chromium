@@ -99,6 +99,16 @@ void CardboardRenderLoop::CreateSession(
   enabled_features_.insert(options->optional_features.begin(),
                            options->optional_features.end());
 
+  if (!InitializeGl(drawing_widget)) {
+    std::move(session_request_callback_).Run(nullptr);
+    return;
+  }
+
+  cardboard_image_transport_->Initialize(
+      webxr_.get(),
+      base::BindOnce(&CardboardRenderLoop::OnCardboardImageTransportReady,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   left_eye_ = mojom::XRView::New();
   left_eye_->eye = mojom::XREye::kLeft;
   left_eye_->viewport =
@@ -117,16 +127,6 @@ void CardboardRenderLoop::CreateSession(
   right_eye_->mojo_from_view = gfx::Transform();
   right_eye_->field_of_view =
       cardboard_image_transport_->GetFOV(CardboardEye::kRight);
-
-  if (!InitializeGl(drawing_widget)) {
-    std::move(session_request_callback_).Run(nullptr);
-    return;
-  }
-
-  cardboard_image_transport_->Initialize(
-      webxr_.get(),
-      base::BindOnce(&CardboardRenderLoop::OnCardboardImageTransportReady,
-                     weak_ptr_factory_.GetWeakPtr()));
 
   head_tracker_ = internal::ScopedCardboardObject<CardboardHeadTracker*>(
       CardboardHeadTracker_create());
