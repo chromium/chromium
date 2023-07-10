@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.modules.readaloud;
 
-import java.time.Duration;
-
 /** Represents a single audio playback session. */
 public interface Playback {
     /**
@@ -33,24 +31,25 @@ public interface Playback {
 
     /**
      * Seek playback relative to the current position.
-     * @param seekDuration Relative time by which to seek. Rewind by passing a negative duration.
+     * @param seekDurationNanos Relative time by which to seek, nanoseconds. Rewind by passing a
+     *         negative duration.
      */
-    default void seekRelative(Duration seekDuration) {}
+    default void seekRelative(long seekDurationNanos) {}
 
     /**
      * Seek playback to an absolute position. Throws exception if duration is negative or past the
      * end.
-     * @param absolutePosition Seek target time relative to beginning of audio.
+     * @param absolutePositionNanos Seek target time relative to beginning of audio. Nanoseconds.
      */
-    default void seek(Duration absolutePosition) {}
+    default void seek(long absolutePositionNanos) {}
 
     /**
      * Seek playback to the given paragraph and time offset within the paragraph. Throws an
      * exception if paragraph is out of range or offset is out of paragraph range.
      * @param paragraphIndex Index of paragraph to seek to.
-     * @param offset Seek time relative to beginning of paragraph.
+     * @param offsetNanos Seek time relative to beginning of paragraph. Nanoseconds.
      */
-    default void seekToParagraph(int paragraphIndex, Duration offset) {}
+    default void seekToParagraph(int paragraphIndex, long offsetNanos) {}
 
     /**
      * Seek playback to the given paragraph and word. Throws an exception if paragraph is out of

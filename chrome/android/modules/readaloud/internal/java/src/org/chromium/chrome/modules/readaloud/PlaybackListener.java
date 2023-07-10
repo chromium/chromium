@@ -8,7 +8,6 @@ import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.time.Duration;
 
 /** Interface for receiving updates on playback state during playback. */
 public interface PlaybackListener {
@@ -38,14 +37,14 @@ public interface PlaybackListener {
         int state();
         /** Current paragraph index. */
         int paragraphIndex();
-        /** Audio position relative to beginning of paragraph. */
-        Duration positionInParagraph();
-        /** Duration of the current paragraph. */
-        Duration paragraphDuration();
-        /** Audio position, absolute. */
-        Duration absolutePosition();
-        /** Total audio duration. */
-        Duration totalDuration();
+        /** Audio position in nanoseconds relative to beginning of paragraph. */
+        long positionInParagraphNanos();
+        /** Duration of the current paragraph in nanoseconds. */
+        long paragraphDurationNanos();
+        /** Absolute audio position in nanoseconds. */
+        long absolutePositionNanos();
+        /** Total audio duration in nanoseconds. */
+        long totalDurationNanos();
     }
 
     /**
