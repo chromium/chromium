@@ -739,11 +739,13 @@ class BrowserAutofillManagerTest : public testing::Test {
         browser_autofill_manager_->fast_checkout_delegate());
   }
 
-  void GetAutofillSuggestions(const FormData& form,
-                              const FormFieldData& field) {
-    browser_autofill_manager_->OnAskForValuesToFill(
-        form, field, gfx::RectF(),
-        AutofillSuggestionTriggerSource::kTextFieldDidChange);
+  void GetAutofillSuggestions(
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source =
+          AutofillSuggestionTriggerSource::kTextFieldDidChange) {
+    browser_autofill_manager_->OnAskForValuesToFill(form, field, gfx::RectF(),
+                                                    trigger_source);
   }
 
   void TryToShowTouchToFill(const FormData& form,
@@ -1497,8 +1499,8 @@ TEST_F(BrowserAutofillManagerTest,
 }
 
 // Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,
-// ac=unrecognized fields still don't trigger any suggestions (even though the
-// field has a type).
+// ac=unrecognized fields only activate suggestions when triggered through
+// manual fallbacks (even though the field has a type in both cases).
 TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_UnrecognizedAttribute_Predictions) {
   base::test::ScopedFeatureList feature(
@@ -1511,13 +1513,21 @@ TEST_F(BrowserAutofillManagerTest,
       AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
   FormsSeen({form});
 
-  // Expect that no suggestions are returned for the first field.
-  GetAutofillSuggestions(form, form.fields[0]);
-  external_delegate_->CheckNoSuggestions(form.fields[0].global_id());
+  // Expect that no suggestions are returned for the first field by default.
+  const FormFieldData& field0 = form.fields[0];
+  GetAutofillSuggestions(form, field0);
+  external_delegate_->CheckNoSuggestions(field0.global_id());
 
-  // Expect that two suggestions are returned for all other fields.
+  // When triggering suggestions through manual fallbacks, expect that two
+  // suggestions are returned.
   // Two, because the fixture created three profiles during set up, one of which
   // is empty and cannot be suggested (see `CreateTestAutofillProfiles()`).
+  GetAutofillSuggestions(form, field0,
+                         AutofillSuggestionTriggerSource::
+                             kManualFallbackForAutocompleteUnrecognized);
+  external_delegate_->CheckSuggestionCount(field0.global_id(), 2);
+
+  // Expect that two suggestions are returned for all other fields.
   for (size_t i = 1; i < form.fields.size(); i++) {
     GetAutofillSuggestions(form, form.fields[i]);
     external_delegate_->CheckSuggestionCount(form.fields[i].global_id(), 2);
@@ -3670,8 +3680,10 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm) {
 }
 
 // Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,
-// ac=unrecognized fields are not filled (even though they have a prediction).
-TEST_F(BrowserAutofillManagerTest, DontFillAutocompleteUnrecognizedFields) {
+// ac=unrecognized fields:
+// - Are not filled by default.
+// - Are filled through manual fallbacks.
+TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFillingBehavior) {
   base::test::ScopedFeatureList feature(
       features::kAutofillPredictionsForAutocompleteUnrecognized);
 
@@ -3683,13 +3695,26 @@ TEST_F(BrowserAutofillManagerTest, DontFillAutocompleteUnrecognizedFields) {
       AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
   FormsSeen({form});
 
-  // Fill the `form` and expect that everything but the middle name was filled.
+  // Fill the `form` regularly and expect that everything but the middle name
+  // gets filled.
   FormData filled_form;
   FillAutofillFormDataAndSaveResults(form, form.fields[0], kElvisProfileGuid,
                                      &filled_form);
   TestAddressFillData fill_data = kElvisAddressFillData;
   fill_data.middle = "";
   ExpectFilledForm(filled_form, fill_data, /*card_fill_data=*/absl::nullopt);
+
+  // Fill the `form` as-if through manual fallbacks. Expect that every field
+  // gets filled.
+  EXPECT_CALL(*autofill_driver_, FillOrPreviewForm)
+      .WillOnce(DoAll(testing::SaveArg<1>(&filled_form),
+                      testing::Return(std::vector<FieldGlobalId>{})));
+  browser_autofill_manager_->FillOrPreviewForm(
+      mojom::RendererFormDataAction::kFill, form, form.fields[0],
+      Suggestion::BackendId(kElvisProfileGuid),
+      AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized);
+  ExpectFilledForm(filled_form, kElvisAddressFillData,
+                   /*card_fill_data=*/absl::nullopt);
 }
 
 // Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,

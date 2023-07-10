@@ -555,7 +555,8 @@ class BrowserAutofillManager : public AutofillManager,
           profile_or_credit_card,
       absl::optional<FillEventId> fill_event_id,
       const std::u16string* optional_cvc,
-      bool is_refill);
+      bool is_refill,
+      AutofillTriggerSource trigger_source);
 
   // CreditCardAccessManager::Accessor
   void OnCreditCardFetched(CreditCardFetchResult result,
@@ -741,12 +742,15 @@ class BrowserAutofillManager : public AutofillManager,
   void AnalyzeJavaScriptChangedAutofilledValue(const FormData& form,
                                                const FormFieldData& field);
 
-  // Replaces the contents of |suggestions| with available suggestions for
-  // |field|. |context| will contain additional information about the
-  // suggestions, such as if they correspond to credit card suggestions and
-  // if the context is secure.
+  // Replaces the contents of `suggestions` with available suggestions for
+  // `field`. Which fields of the `form` are filled depends on the
+  // `trigger_source`.
+  // `context` will contain additional information about the suggestions, such
+  // as if they correspond to credit card suggestions and if the context is
+  // secure.
   void GetAvailableSuggestions(const FormData& form,
                                const FormFieldData& field,
+                               AutofillSuggestionTriggerSource trigger_source,
                                std::vector<Suggestion>* suggestions,
                                SuggestionsContext* context);
 

@@ -526,4 +526,7 @@ enum AutofillSuggestionTriggerSource {
   // This code currently doesn't distinguish between different suggestion
   // trigger sources. They are all treated as `kiOS`. See crbug.com/1448447.
   kiOS,
+  // Suggestions triggered by selecting the manual fallback entry for
+  // autocomplete=unrecognized fields in the context menu.
+  kManualFallbackForAutocompleteUnrecognized,
 };

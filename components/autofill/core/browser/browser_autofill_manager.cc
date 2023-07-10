@@ -1107,7 +1107,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 
   std::vector<Suggestion> suggestions;
   SuggestionsContext context;
-  GetAvailableSuggestions(form, field, &suggestions, &context);
+  GetAvailableSuggestions(form, field, trigger_source, &suggestions, &context);
 
   const bool form_element_was_clicked =
       trigger_source ==
@@ -1503,8 +1503,17 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   // TODO(https://crbug.com/848427): Add metrics for performance impact.
   std::vector<Suggestion> suggestions;
   SuggestionsContext context;
-  GetAvailableSuggestions(form, field, &suggestions, &context);
-
+  // This code path checks if suggestions to be announced to a screen reader are
+  // available when the focus on a form field changes. This cannot happen in
+  // `OnAskForValuesToFillImpl()`, since the `AutofillState` is a sticky flag
+  // and needs to be reset when a non-autofillable field is focused.
+  // The suggestion trigger source doesn't influence the set of suggestions
+  // generated, but only the way suggestions behave when they are accepted. For
+  // this reason, checking whether suggestions are available can be done with
+  // the `kUnspecified` suggestion trigger source.
+  GetAvailableSuggestions(form, field,
+                          AutofillSuggestionTriggerSource::kUnspecified,
+                          &suggestions, &context);
   external_delegate_->OnAutofillAvailabilityEvent(
       (context.suppress_reason == SuppressReason::kNotSuppressed &&
        !suggestions.empty())
@@ -2213,7 +2222,8 @@ std::vector<size_t> BrowserAutofillManager::GetFieldsToFill(
         profile_or_credit_card,
     absl::optional<FillEventId> fill_event_id,
     const std::u16string* optional_cvc,
-    bool is_refill) {
+    bool is_refill,
+    AutofillTriggerSource trigger_source) {
   LogBuffer buffer(IsLoggingActive(log_manager()));
   FillingContext* filling_context = GetFillingContext(form_structure);
   // Counts the number of times a type was seen in the section to be filled.
@@ -2259,10 +2269,11 @@ std::vector<size_t> BrowserAutofillManager::GetFieldsToFill(
       continue;
     }
 
-    // Address fields with unrecognized autocomplete attribute have a type, but
-    // are not filled.
-    // TODO(crbug.com/1446318): Fill them.
-    if (autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+    // Address fields with unrecognized autocomplete attribute are only filled
+    // when triggered through manual fallbacks.
+    if (trigger_source !=
+            AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized &&
+        autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
       LOG_AF(buffer) << Tr{} << "Skipped: Unrecognized autocomplete attribute";
       LogSkippedStatusIfFill(SkipStatus::kUnrecognizedAutocompleteAttribute);
       continue;
@@ -2470,9 +2481,10 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     result.fields[i].section = form_structure->field(i)->section;
   }
 
-  for (size_t i : GetFieldsToFill(
-           action, result, *form_structure, field, *autofill_trigger_field,
-           profile_or_credit_card, fill_event_id, optional_cvc, is_refill)) {
+  for (size_t i : GetFieldsToFill(action, result, *form_structure, field,
+                                  *autofill_trigger_field,
+                                  profile_or_credit_card, fill_event_id,
+                                  optional_cvc, is_refill, trigger_source)) {
     AutofillField* autofill_field = form_structure->field(i);
     if (could_attempt_refill) {
       filling_context->type_groups_originally_filled.insert(
@@ -3259,6 +3271,7 @@ void BrowserAutofillManager::TriggerRefill(
 void BrowserAutofillManager::GetAvailableSuggestions(
     const FormData& form,
     const FormFieldData& field,
+    AutofillSuggestionTriggerSource trigger_source,
     std::vector<Suggestion>* suggestions,
     SuggestionsContext* context) {
   DCHECK(suggestions);
@@ -3273,9 +3286,11 @@ void BrowserAutofillManager::GetAvailableSuggestions(
       // Don't send suggestions or track forms that should not be parsed.
       context->form_structure->ShouldBeParsed();
 
-  // Do not offer suggestions for fields that have an unrecognized autocomplete
-  // attribute, unless those are credit card fields.
-  if (context->focused_field &&
+  // Do not offer suggestions for address fields that have an unrecognized
+  // autocomplete attribute, unless triggered through manual fallbacks.
+  if (trigger_source != AutofillSuggestionTriggerSource::
+                            kManualFallbackForAutocompleteUnrecognized &&
+      context->focused_field &&
       context->focused_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
     context->suppress_reason = SuppressReason::kAutocompleteUnrecognized;
     suggestions->clear();
@@ -3333,6 +3348,9 @@ void BrowserAutofillManager::GetAvailableSuggestions(
         GetCreditCardSuggestions(field, context->focused_field->Type(),
                                  context->should_display_gpay_logo);
   } else {
+    // TODO(crbug.com/1446318): Pass the `trigger_source` on to
+    // `GetProfileSuggestions()` to take the right set of fields into
+    // consideration when generating suggestion labels.
     *suggestions = GetProfileSuggestions(*context->form_structure, field,
                                          *context->focused_field);
   }

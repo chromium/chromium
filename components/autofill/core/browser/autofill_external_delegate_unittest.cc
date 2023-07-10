@@ -703,6 +703,42 @@ TEST_F(AutofillExternalDelegateUnitTest,
       2, kDefaultTriggerSource);  // Row 2
 }
 
+// Tests that when accepting a suggestion, the `AutofillSuggestionTriggerSource`
+// is converted to the correct `AutofillTriggerSource`.
+TEST_F(AutofillExternalDelegateUnitTest,
+       ExternalDelegateAcceptAutofillSuggestion_TriggerSource) {
+  Suggestion suggestion =
+      test::CreateAutofillSuggestion(PopupItemId::kAddressEntry);
+
+  // Expect that `kFormControlElementClicked` translates to source `kPopup` or
+  // `kKeyboardAccessory`, depending on the platform.
+  auto suggestion_source =
+      AutofillSuggestionTriggerSource::kFormControlElementClicked;
+  auto expected_source =
+#if BUILDFLAG(IS_ANDROID)
+      AutofillTriggerSource::kKeyboardAccessory;
+#else
+      AutofillTriggerSource::kPopup;
+#endif
+  EXPECT_CALL(*browser_autofill_manager_,
+              FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _, _,
+                                expected_source));
+  external_delegate_->DidAcceptSuggestion(suggestion, /*position=*/1,
+                                          suggestion_source);
+
+  // Expect that `kManualFallbackForAutocompleteUnrecognized` translates to
+  // trigger source of the same name.
+  suggestion_source = AutofillSuggestionTriggerSource::
+      kManualFallbackForAutocompleteUnrecognized;
+  expected_source =
+      AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized;
+  EXPECT_CALL(*browser_autofill_manager_,
+              FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _, _,
+                                expected_source));
+  external_delegate_->DidAcceptSuggestion(suggestion, /*position=*/1,
+                                          suggestion_source);
+}
+
 class AutofillExternalDelegateUnitTest_UndoAutofill
     : public AutofillExternalDelegateUnitTest,
       public testing::WithParamInterface<bool> {

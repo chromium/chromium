@@ -51,6 +51,45 @@ bool IsAutofillWarningEntry(PopupItemId popup_item_id) {
          popup_item_id == PopupItemId::kMixedFormMessage;
 }
 
+// The `AutofillTriggerSource` indicates what caused an Autofill fill or preview
+// to happen. This can happen by selecting a suggestion, but also through a
+// dynamic change (refills) or through a surface that doesn't use suggestions,
+// like TTF. This function is concerned with the first case: A suggestion that
+// was generated through the `suggestion_trigger_source` got selected. This
+// function returns the appropriate `AutofillTriggerSource`.
+// Note that an `AutofillSuggestionTriggerSource` is different from a
+// `AutofillTriggerSource`. The former describes what caused the suggestion
+// itself to appear. For example, depending on the completeness of the form,
+// clicking into a field (the suggestion trigger source) can cause
+// the keyboard accessory or TTF/fast checkout to appear (the trigger source).
+AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
+    AutofillSuggestionTriggerSource suggestion_trigger_source) {
+  switch (suggestion_trigger_source) {
+    case AutofillSuggestionTriggerSource::kUnspecified:
+    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
+    case AutofillSuggestionTriggerSource::kTextFieldDidChange:
+    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
+    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
+    case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
+    case AutofillSuggestionTriggerSource::kPasswordManager:
+    case AutofillSuggestionTriggerSource::kAndroidWebView:
+    case AutofillSuggestionTriggerSource::kiOS:
+      // On Android, no popup exists. Instead, the keyboard accessory is used.
+#if BUILDFLAG(IS_ANDROID)
+      return AutofillTriggerSource::kKeyboardAccessory;
+#else
+      return AutofillTriggerSource::kPopup;
+#endif  // BUILDFLAG(IS_ANDROID)
+    case AutofillSuggestionTriggerSource::
+        kManualFallbackForAutocompleteUnrecognized:
+      // Manual fallbacks are both a suggestion trigger source (e.g. through the
+      // context menu) and a trigger source (by selecting a suggestion generated
+      // through the context menu).
+      return AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized;
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace
 
 AutofillExternalDelegate::AutofillExternalDelegate(
@@ -211,8 +250,9 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     case PopupItemId::kAddressEntry:
     case PopupItemId::kCreditCardEntry:
-      FillAutofillFormData(suggestion.popup_item_id, backend_id, true,
-                           AutofillTriggerSource::kKeyboardAccessory);
+      FillAutofillFormData(
+          suggestion.popup_item_id, backend_id, true,
+          TriggerSourceFromSuggestionTriggerSource(trigger_source));
       break;
     case PopupItemId::kAutocompleteEntry:
     case PopupItemId::kIbanEntry:
@@ -320,9 +360,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
         autofill_metrics::LogAutofillSuggestionAcceptedIndex(
             position, popup_type_, manager_->client()->IsOffTheRecord());
       }
-      FillAutofillFormData(suggestion.popup_item_id,
-                           suggestion.GetPayload<Suggestion::BackendId>(),
-                           false, AutofillTriggerSource::kPopup);
+      FillAutofillFormData(
+          suggestion.popup_item_id,
+          suggestion.GetPayload<Suggestion::BackendId>(), false,
+          TriggerSourceFromSuggestionTriggerSource(trigger_source));
       break;
   }
 
