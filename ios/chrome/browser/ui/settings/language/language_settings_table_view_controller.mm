@@ -216,7 +216,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)settingsWillBeDismissed {
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(self.dataSource);
   [self.dataSource stopObservingModel];
+  _dataSource = nil;
 }
 
 #pragma mark - UITableViewDelegate
