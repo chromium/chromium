@@ -80,6 +80,10 @@
 #error "This file requires ARC support."
 #endif
 
+BASE_FEATURE(kEnableFocusOmniboxWorkaround,
+             "EnableFocusOmniboxWorkaround",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 const size_t kMaxURLDisplayChars = 32 * 1024;
 }  // namespace
@@ -305,7 +309,12 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   if (immediately) {
     [self loadURLForQuery:sanitizedQuery];
   } else {
-    [self.omniboxCoordinator focusOmnibox];
+    // TODO(crbug.com/1463766): Clean up the kill switch and else branch.
+    if (base::FeatureList::IsEnabled(kEnableFocusOmniboxWorkaround)) {
+      [self focusOmnibox];
+    } else {
+      [self.omniboxCoordinator focusOmnibox];
+    }
     [self.omniboxCoordinator
         insertTextToOmnibox:base::SysUTF16ToNSString(sanitizedQuery)];
   }
