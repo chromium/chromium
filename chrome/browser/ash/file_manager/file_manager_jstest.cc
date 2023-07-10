@@ -370,6 +370,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, SearchContainer) {
   RunTestURL("containers/search_container_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfBulkPinningDialog) {
+  RunTestURL("widgets/xf_bulk_pinning_dialog_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfConflictDialog) {
   RunTestURL("widgets/xf_conflict_dialog_unittest.js");
 }
