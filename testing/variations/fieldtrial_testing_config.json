@@ -3658,21 +3658,6 @@
             ]
         }
     ],
-    "ConsistencyNewAccountInterface": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230707",
-                    "enable_features": [
-                        "ConsistencyNewAccountInterface"
-                    ]
-                }
-            ]
-        }
-    ],
     "ConsolidatedIPCForProxyCreation": [
         {
             "platforms": [
