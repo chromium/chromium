@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+/**
+ * @fileoverview
+ * This file is checked via TS, so we suppress Closure checks.
+ * @suppress {checkTypes}
+ */
 
 import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
-import {Banner} from '../../../../externs/banner.js';
+
+import {getTemplate} from './local_disk_low_space_banner.html.js';
 import {WarningBanner} from './warning_banner.js';
 
 /**
  * The custom element tag name.
- * @type {string}
  */
 export const TAG_NAME = 'local-disk-low-space-banner';
-
-/** @const {!HTMLTemplateElement} */
-const htmlTemplate = html`{__html_template__}`;
 
 /**
  * A banner that shows a warning when the remaining space on a local disk goes
@@ -25,18 +26,19 @@ const htmlTemplate = html`{__html_template__}`;
 export class LocalDiskLowSpaceBanner extends WarningBanner {
   /**
    * Returns the HTML template for this banner.
-   * @returns {!Node}
    */
-  getTemplate() {
-    return htmlTemplate.content.cloneNode(true);
+  override getTemplate() {
+    const template = document.createElement('template');
+    template.innerHTML = getTemplate() as unknown as string;
+    const fragment = template.content.cloneNode(true);
+    return fragment;
   }
 
   /**
    * Show the banner when the Downloads volume (local disk) is less than or
    * equal to 1 GB of remaining space.
-   * @returns {!Banner.DiskThresholdMinSize}
    */
-  diskThreshold() {
+  override diskThreshold() {
     return {
       type: VolumeManagerCommon.VolumeType.DOWNLOADS,
       minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
@@ -46,10 +48,15 @@ export class LocalDiskLowSpaceBanner extends WarningBanner {
   /**
    * Only show the banner when the user has navigated to the Downloads volume
    * type (this includes the My files directory).
-   * @returns {!Array<!Banner.AllowedVolume>}
    */
-  allowedVolumes() {
+  override allowedVolumes() {
     return [{type: VolumeManagerCommon.VolumeType.DOWNLOADS}];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [TAG_NAME]: LocalDiskLowSpaceBanner;
   }
 }
 

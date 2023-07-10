@@ -2,16 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+/**
+ * @fileoverview
+ * This file is checked via TS, so we suppress Closure checks.
+ * @suppress {checkTypes}
+ */
+
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {mockUtilVisitURL} from '../../../../common/js/mock_util.js';
-import {Banner} from '../../../../externs/banner.js';
 
 import {EducationalBanner} from './educational_banner.js';
+import {Banner, BannerEvent} from './types.js';
 
-/** @type{!EducationalBanner} */
-let educationalBanner;
+let educationalBanner: EducationalBanner;
 
 export function setUp() {
   const htmlTemplate = `<educational-banner>
@@ -26,20 +31,21 @@ export function setUp() {
     </educational-banner>
     `;
   document.body.innerHTML = htmlTemplate;
-  educationalBanner = /** @type{!EducationalBanner} */ (
-      document.body.querySelector('educational-banner'));
+  educationalBanner =
+      document.body.querySelector<EducationalBanner>('educational-banner')!;
 }
 
 /**
  * Test that the dismiss handler bubbles the correct event on click.
  */
-export async function testDismissHandlerEmitsEvent(done) {
+export async function testDismissHandlerEmitsEvent(done: () => void) {
   const handler = () => {
     done();
   };
   educationalBanner.addEventListener(
-      Banner.Event.BANNER_DISMISSED_FOREVER, handler);
-  educationalBanner.querySelector('[slot="dismiss-button"]').click();
+      BannerEvent.BANNER_DISMISSED_FOREVER, handler);
+  educationalBanner.querySelector<CrButtonElement>(
+                       '[slot="dismiss-button"]')!.click();
 }
 
 /**
@@ -47,7 +53,7 @@ export async function testDismissHandlerEmitsEvent(done) {
  * emits the BANNER_DISMISSED_FOREVER event if no dismiss button has been
  * supplied.
  */
-export async function testDefaultDismissButtonEmitsEvent(done) {
+export async function testDefaultDismissButtonEmitsEvent(done: () => void) {
   const htmlTemplate = `<educational-banner>
       <span slot="title">Banner title text</span>
       <span slot="subtitle">Banner subtitle text</span>
@@ -57,15 +63,16 @@ export async function testDefaultDismissButtonEmitsEvent(done) {
     </educational-banner>
     `;
   document.body.innerHTML = htmlTemplate;
-  educationalBanner = /** @type{!EducationalBanner} */ (
-      document.body.querySelector('educational-banner'));
+  educationalBanner =
+      document.body.querySelector<EducationalBanner>('educational-banner')!;
 
   const handler = () => {
     done();
   };
   educationalBanner.addEventListener(
-      Banner.Event.BANNER_DISMISSED_FOREVER, handler);
-  educationalBanner.shadowRoot.querySelector('#dismiss-button').click();
+      BannerEvent.BANNER_DISMISSED_FOREVER, handler);
+  educationalBanner.shadowRoot!
+      .querySelector<CrButtonElement>('#dismiss-button')!.click();
 }
 
 /**
@@ -74,7 +81,8 @@ export async function testDefaultDismissButtonEmitsEvent(done) {
  */
 export async function testAdditionalButtonCanBeClicked() {
   const mockVisitURL = mockUtilVisitURL();
-  educationalBanner.querySelector('[slot="extra-button"]').click();
+  educationalBanner.querySelector<CrButtonElement>(
+                       '[slot="extra-button"]')!.click();
   assertEquals(mockVisitURL.getURL(), 'http://test.com');
   mockVisitURL.restoreVisitURL();
 }
@@ -96,7 +104,8 @@ export function testEducationalBannerDefaults() {
  * Test that if extra button slot has attribute dismiss-banner-when-clicked the
  * banner emits a DISMISS_FOREVER event.
  */
-export async function testDismissBannerWhenClickedAttributeWorks(done) {
+export async function testDismissBannerWhenClickedAttributeWorks(
+    done: () => void) {
   const htmlTemplate = `<educational-banner>
       <span slot="title">Banner title</span>
       <span slot="subtitle">Subtitle</span>
@@ -106,32 +115,35 @@ export async function testDismissBannerWhenClickedAttributeWorks(done) {
     </educational-banner>
     `;
   document.body.innerHTML = htmlTemplate;
-  educationalBanner = /** @type{!EducationalBanner} */ (
-      document.body.querySelector('educational-banner'));
-  const handler = (event) => {
+  educationalBanner =
+      document.body.querySelector<EducationalBanner>('educational-banner')!;
+  const handler = (event: BannerDismissedEvent) => {
     assertEquals(event.detail.banner.constructor, EducationalBanner);
     done();
   };
   educationalBanner.addEventListener(
-      Banner.Event.BANNER_DISMISSED_FOREVER, handler);
-  educationalBanner.querySelector('[slot="extra-button"]').click();
+      BannerEvent.BANNER_DISMISSED_FOREVER, handler);
+  educationalBanner.querySelector<CrButtonElement>(
+                       '[slot="extra-button"]')!.click();
 }
 
 /**
  * Test that when the custom attribute to dismiss a banner emits a
  * DISMISS_FOREVER event, the banner instance attached is the correct instance.
  */
-export async function testDismissWhenClickedAttributeWorksComponents(done) {
+export async function testDismissWhenClickedAttributeWorksComponents(
+    done: () => void) {
   const bannerTagName = 'test-educational-banner-dismiss-attribute';
 
-  const htmlTemplate = html`<educational-banner>
-    <button slot="extra-button" href="http://test.com" dismiss-banner-when-clicked>
-      Test Button
-    </button>
-  </educational-banner>`;
+  const htmlTemplate = document.createElement('template');
+  htmlTemplate.innerHTML = `<educational-banner>
+  <button slot="extra-button" href="http://test.com" dismiss-banner-when-clicked>
+    Test Button
+  </button>
+</educational-banner>`;
 
   class TestEducationalBanner extends EducationalBanner {
-    getTemplate() {
+    override getTemplate() {
       return htmlTemplate.content.cloneNode(true);
     }
   }
@@ -139,15 +151,16 @@ export async function testDismissWhenClickedAttributeWorksComponents(done) {
   customElements.define(bannerTagName, TestEducationalBanner);
 
   document.body.innerHTML = `<${bannerTagName} />`;
-  const banner = document.body.querySelector(bannerTagName);
-  const handler = (event) => {
+  const banner = document.body.querySelector<Banner>(bannerTagName)!;
+  const handler = (event: BannerDismissedEvent) => {
     assertEquals(event.detail.banner.constructor, TestEducationalBanner);
     done();
   };
-  banner.addEventListener(Banner.Event.BANNER_DISMISSED_FOREVER, handler);
+  banner.addEventListener(BannerEvent.BANNER_DISMISSED_FOREVER, handler);
 
   const mockVisitURL = mockUtilVisitURL();
-  banner.shadowRoot.querySelector('[slot="extra-button"]').click();
+  banner.shadowRoot!.querySelector<CrButtonElement>(
+                        '[slot="extra-button"]')!.click();
   assertEquals(mockVisitURL.getURL(), 'http://test.com');
   mockVisitURL.restoreVisitURL();
 }

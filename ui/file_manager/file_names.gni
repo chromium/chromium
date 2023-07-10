@@ -74,7 +74,6 @@ static_js_files = [
   "file_manager/externs/background/file_manager_base.js",
   "file_manager/externs/background/file_operation_manager.js",
   "file_manager/externs/background/progress_center.js",
-  "file_manager/externs/banner.js",
   "file_manager/externs/command_handler_deps.js",
   "file_manager/externs/directory_change_event.js",
   "file_manager/externs/drive_dialog_controller.js",
@@ -97,7 +96,6 @@ static_js_files = [
   "file_manager/foreground/js/actions_model.js",
   "file_manager/foreground/js/android_app_list_model.js",
   "file_manager/foreground/js/app_state_controller.js",
-  "file_manager/foreground/js/banner_controller.js",
   "file_manager/foreground/js/constants.js",
   "file_manager/foreground/js/crossover_search_utils.js",
   "file_manager/foreground/js/crostini_controller.js",
@@ -304,12 +302,33 @@ ts_files = [
   "file_manager/widgets/xf_cloud_panel.ts",
   "file_manager/widgets/xf_tree.ts",
   "file_manager/widgets/xf_tree_item.ts",
+  "file_manager/foreground/js/ui/banners/drive_bulk_pinning_banner.ts",
+  "file_manager/foreground/js/ui/banners/drive_low_individual_space_banner.ts",
+  "file_manager/foreground/js/ui/banners/drive_low_shared_drive_space_banner.ts",
+  "file_manager/foreground/js/ui/banners/drive_offline_pinning_banner.ts",
+  "file_manager/foreground/js/ui/banners/drive_out_of_individual_space_banner.ts",
+  "file_manager/foreground/js/ui/banners/drive_out_of_organization_space_banner.ts",
+  "file_manager/foreground/js/ui/banners/drive_out_of_shared_drive_space_banner.ts",
+  "file_manager/foreground/js/ui/banners/drive_welcome_banner.ts",
+  "file_manager/foreground/js/ui/banners/google_one_offer_banner.ts",
+  "file_manager/foreground/js/ui/banners/holding_space_welcome_banner.ts",
+  "file_manager/foreground/js/ui/banners/invalid_usb_filesystem_banner.ts",
+  "file_manager/foreground/js/ui/banners/local_disk_low_space_banner.ts",
+  "file_manager/foreground/js/ui/banners/photos_welcome_banner.ts",
+  "file_manager/foreground/js/ui/banners/shared_with_crostini_pluginvm_banner.ts",
+  "file_manager/foreground/js/ui/banners/state_banner.ts",
+  "file_manager/foreground/js/ui/banners/trash_banner.ts",
+  "file_manager/foreground/js/ui/banners/educational_banner.ts",
+  "file_manager/foreground/js/ui/banners/warning_banner.ts",
+  "file_manager/foreground/js/ui/banners/dlp_restricted_banner.ts",
+  "file_manager/foreground/js/ui/banners/types.ts",
 
   # Background.
   "file_manager/background/js/crostini.ts",
   "file_manager/background/js/drive_sync_handler.ts",
 
   # Foreground.
+  "file_manager/foreground/js/banner_controller.ts",
   "file_manager/foreground/js/file_tasks.ts",
   "file_manager/foreground/js/task_controller.ts",
   "file_manager/foreground/js/uma_enums.gen.ts",
@@ -332,11 +351,31 @@ ts_templates = [
   "file_manager/widgets/xf_dlp_restriction_details_dialog.html",
   "file_manager/widgets/xf_nudge.html",
   "file_manager/widgets/xf_search_options.html",
+  "file_manager/foreground/js/ui/banners/drive_bulk_pinning_banner.html",
+  "file_manager/foreground/js/ui/banners/drive_low_individual_space_banner.html",
+  "file_manager/foreground/js/ui/banners/drive_low_shared_drive_space_banner.html",
+  "file_manager/foreground/js/ui/banners/drive_offline_pinning_banner.html",
+  "file_manager/foreground/js/ui/banners/drive_out_of_individual_space_banner.html",
+  "file_manager/foreground/js/ui/banners/drive_out_of_organization_space_banner.html",
+  "file_manager/foreground/js/ui/banners/drive_out_of_shared_drive_space_banner.html",
+  "file_manager/foreground/js/ui/banners/drive_welcome_banner.html",
+  "file_manager/foreground/js/ui/banners/google_one_offer_banner.html",
+  "file_manager/foreground/js/ui/banners/holding_space_welcome_banner.html",
+  "file_manager/foreground/js/ui/banners/invalid_usb_filesystem_banner.html",
+  "file_manager/foreground/js/ui/banners/local_disk_low_space_banner.html",
+  "file_manager/foreground/js/ui/banners/photos_welcome_banner.html",
+  "file_manager/foreground/js/ui/banners/shared_with_crostini_pluginvm_banner.html",
+  "file_manager/foreground/js/ui/banners/state_banner.html",
+  "file_manager/foreground/js/ui/banners/educational_banner.html",
+  "file_manager/foreground/js/ui/banners/warning_banner.html",
+  "file_manager/foreground/js/ui/banners/trash_banner.html",
+  "file_manager/foreground/js/ui/banners/dlp_restricted_banner.html",
 ]
 
 ts_test_files = [
   # Common.
   "file_manager/common/js/entry_utils_unittest.ts",
+  "file_manager/common/js/mock_util.ts",
 
   # Containers
   "file_manager/containers/breadcrumb_container_unittest.ts",
@@ -384,10 +423,16 @@ ts_test_files = [
   "file_manager/background/js/drive_sync_handler_unittest.ts",
 
   # Foreground:
+  "file_manager/foreground/js/banner_controller_unittest.ts",
+  "file_manager/foreground/js/banner_util_unittest.ts",
   "file_manager/foreground/js/file_tasks_unittest.ts",
   "file_manager/foreground/js/guest_os_controller_unittest.ts",
   "file_manager/foreground/js/task_controller_unittest.ts",
   "file_manager/foreground/js/metadata/dlp_metadata_provider_unittest.ts",
+  "file_manager/foreground/js/ui/banners/state_banner_unittest.ts",
+  "file_manager/foreground/js/ui/banners/warning_banner_unittest.ts",
+  "file_manager/foreground/js/ui/banners/educational_banner_unittest.ts",
+  "file_manager/foreground/js/ui/banners/dlp_restricted_banner_unittest.ts",
 ]
 
 ts_generated_templates = []
@@ -441,25 +486,6 @@ generated_js_files = [
   "file_manager/foreground/elements/xf_circular_progress.js",
   "file_manager/foreground/elements/xf_display_panel.js",
   "file_manager/foreground/elements/xf_panel_item.js",
-  "file_manager/foreground/js/ui/banners/drive_low_individual_space_banner.js",
-  "file_manager/foreground/js/ui/banners/drive_low_shared_drive_space_banner.js",
-  "file_manager/foreground/js/ui/banners/drive_out_of_individual_space_banner.js",
-  "file_manager/foreground/js/ui/banners/drive_out_of_organization_space_banner.js",
-  "file_manager/foreground/js/ui/banners/drive_out_of_shared_drive_space_banner.js",
-  "file_manager/foreground/js/ui/banners/drive_offline_pinning_banner.js",
-  "file_manager/foreground/js/ui/banners/drive_bulk_pinning_banner.js",
-  "file_manager/foreground/js/ui/banners/drive_welcome_banner.js",
-  "file_manager/foreground/js/ui/banners/google_one_offer_banner.js",
-  "file_manager/foreground/js/ui/banners/educational_banner.js",
-  "file_manager/foreground/js/ui/banners/holding_space_welcome_banner.js",
-  "file_manager/foreground/js/ui/banners/invalid_usb_filesystem_banner.js",
-  "file_manager/foreground/js/ui/banners/dlp_restricted_banner.js",
-  "file_manager/foreground/js/ui/banners/local_disk_low_space_banner.js",
-  "file_manager/foreground/js/ui/banners/photos_welcome_banner.js",
-  "file_manager/foreground/js/ui/banners/shared_with_crostini_pluginvm_banner.js",
-  "file_manager/foreground/js/ui/banners/state_banner.js",
-  "file_manager/foreground/js/ui/banners/trash_banner.js",
-  "file_manager/foreground/js/ui/banners/warning_banner.js",
 ]
 
 # END: generated_js_files.
@@ -501,10 +527,8 @@ unittest_files = [
   "file_manager/foreground/js/thumbnail_loader_unittest.js",
   "file_manager/foreground/js/directory_contents_unittest.js",
   "file_manager/foreground/js/file_list_model_unittest.js",
-  "file_manager/foreground/js/banner_controller_unittest.js",
   "file_manager/foreground/js/providers_model_unittest.js",
   "file_manager/foreground/js/spinner_controller_unittest.js",
-  "file_manager/foreground/js/banner_util_unittest.js",
   "file_manager/foreground/js/list_thumbnail_loader_unittest.js",
   "file_manager/foreground/js/file_type_filters_controller_unittest.js",
   "file_manager/foreground/js/path_component_unittest.js",
@@ -529,10 +553,6 @@ unittest_files = [
   "file_manager/foreground/js/ui/multi_menu_unittest.js",
   "file_manager/foreground/js/ui/position_util_unittest.js",
   "file_manager/foreground/js/ui/splitter_unittest.js",
-  "file_manager/foreground/js/ui/banners/dlp_restricted_banner_unittest.js",
-  "file_manager/foreground/js/ui/banners/state_banner_unittest.js",
-  "file_manager/foreground/js/ui/banners/educational_banner_unittest.js",
-  "file_manager/foreground/js/ui/banners/warning_banner_unittest.js",
   "file_manager/foreground/js/ui/file_list_selection_model_unittest.js",
   "file_manager/foreground/js/ui/directory_tree_unittest.js",
   "file_manager/foreground/js/navigation_list_model_unittest.js",
@@ -552,7 +572,5 @@ unittest_files += [
   # Test harness
   "base/js/test_harness.html",
   "base/js/test_harness.js",
-
-  "file_manager/common/js/mock_util.js",
 ]
 # END: Test files.

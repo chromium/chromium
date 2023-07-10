@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+/**
+ * @fileoverview
+ * This file is checked via TS, so we suppress Closure checks.
+ * @suppress {checkTypes}
+ */
 
 import {util} from '../../../../common/js/util.js';
-import {Banner} from '../../../../externs/banner.js';
 
-/** @const {!HTMLTemplateElement} */
-const htmlTemplate = html`{__html_template__}`;
+import {getTemplate} from './educational_banner.html.js';
+import {AllowedVolumeOrType, Banner, BannerEvent, DismissedForeverEventSource} from './types.js';
 
 /**
  * EducationalBanner is a type of banner that is the second highest priority
@@ -61,20 +64,21 @@ export class EducationalBanner extends Banner {
 
   /**
    * Returns the HTML template for the Educational Banner.
-   * @returns {!Node}
    */
-  getTemplate() {
-    return htmlTemplate.content.cloneNode(true);
+  override getTemplate() {
+    const template = document.createElement('template');
+    template.innerHTML = getTemplate() as unknown as string;
+    const fragment = template.content.cloneNode(true);
+    return fragment;
   }
 
   /**
    * Get the concrete banner instance.
-   * @returns {!EducationalBanner}
-   * @private
    */
-  getBannerInstance_() {
-    const parent = this.getRootNode() && this.getRootNode().host;
-    let bannerInstance = this;
+  private getBannerInstance_() {
+    const parent =
+        this.getRootNode() && (this.getRootNode() as ShadowRoot).host;
+    let bannerInstance: EducationalBanner = this;
     // In the case the educational-banner web component is not the root node
     // (e.g. it is contained within another web component) prefer the outer
     // component.
@@ -89,7 +93,7 @@ export class EducationalBanner extends Banner {
    * for both the inner warning-banner component and the concrete
    * implementations that extend from it.
    */
-  connectedCallback() {
+  override connectedCallback() {
     // If an EducationalBanner subclass overrides the default dismiss button
     // the button will not exist in the shadowRoot. Add the event listener to
     // the overridden dismiss button first and fall back to the default button
@@ -97,19 +101,17 @@ export class EducationalBanner extends Banner {
     const overridenDismissButton =
         this.querySelector('[slot="dismiss-button"]');
     const defaultDismissButton =
-        this.shadowRoot.querySelector('#dismiss-button');
+        this.shadowRoot!.querySelector('#dismiss-button');
     if (overridenDismissButton) {
       overridenDismissButton.addEventListener(
           'click',
-          event => this.onDismissClickHandler_(
-              event,
-              Banner.DismissedForeverEventSource.OVERRIDEN_DISMISS_BUTTON));
+          (event: Event) => this.onDismissClickHandler_(
+              event, DismissedForeverEventSource.OVERRIDEN_DISMISS_BUTTON));
     } else if (defaultDismissButton) {
       defaultDismissButton.addEventListener(
           'click',
-          event => this.onDismissClickHandler_(
-              event,
-              Banner.DismissedForeverEventSource.DEFAULT_DISMISS_BUTTON));
+          (event: Event) => this.onDismissClickHandler_(
+              event, DismissedForeverEventSource.DEFAULT_DISMISS_BUTTON));
     }
 
     // Attach an onclick handler to the extra-button slot. This enables a new
@@ -118,17 +120,17 @@ export class EducationalBanner extends Banner {
     // button clicks.
     const extraButton = this.querySelector('[slot="extra-button"]');
     const href = extraButton?.getAttribute('href');
-    if (href) {
+    if (href && extraButton) {
       extraButton.addEventListener('click', (e) => {
         util.visitURL(/** @type {!string} */ (href));
         if (extraButton.hasAttribute('dismiss-banner-when-clicked')) {
           this.dispatchEvent(
-              new CustomEvent(Banner.Event.BANNER_DISMISSED_FOREVER, {
+              new CustomEvent(BannerEvent.BANNER_DISMISSED_FOREVER, {
                 bubbles: true,
                 composed: true,
                 detail: {
                   banner: this.getBannerInstance_(),
-                  eventSource: Banner.DismissedForeverEventSource.EXTRA_BUTTON,
+                  eventSource: DismissedForeverEventSource.EXTRA_BUTTON,
                 },
               }));
         }
@@ -140,9 +142,8 @@ export class EducationalBanner extends Banner {
   /**
    * Only show the banner 3 Files app sessions (unless dismissed). Please refer
    * to the Banner externs for information about Files app session.
-   * @returns {number}
    */
-  showLimit() {
+  override showLimit() {
     return 3;
   }
 
@@ -150,22 +151,18 @@ export class EducationalBanner extends Banner {
    * All banners that inherit this class should override with their own
    * volume types to allow. Setting this explicitly as an empty array ensures
    * banners that don't override this are not shown by default.
-   * @returns {!Array<!Banner.AllowedVolume>}
    */
-  allowedVolumes() {
+  override allowedVolumes(): AllowedVolumeOrType[] {
     return [];
   }
 
   /**
    * Handler for the dismiss button on click, switches to the custom banner
    * dismissal event to ensure the controller can catch the event.
-   * @param {!Event} event The click event.
-   * @param {!Banner.DismissedForeverEventSource} dismissedForeverEventSource A
-   *     source of this event.
-   * @private
    */
-  onDismissClickHandler_(event, dismissedForeverEventSource) {
-    this.dispatchEvent(new CustomEvent(Banner.Event.BANNER_DISMISSED_FOREVER, {
+  private onDismissClickHandler_(
+      _: Event, dismissedForeverEventSource: DismissedForeverEventSource) {
+    this.dispatchEvent(new CustomEvent(BannerEvent.BANNER_DISMISSED_FOREVER, {
       bubbles: true,
       composed: true,
       detail: {
@@ -173,6 +170,12 @@ export class EducationalBanner extends Banner {
         eventSource: dismissedForeverEventSource,
       },
     }));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'educational-banner': EducationalBanner;
   }
 }
 

@@ -65,7 +65,6 @@ js_type_check("closure_compile_jsmodules") {
     ":metrics",
     ":metrics_base",
     ":mock_entry",
-    ":mock_util",
     ":notifications",
     ":progress_center_common",
     ":recent_date_bucket",
@@ -250,10 +249,6 @@ js_library("mock_chrome") {
 }
 
 js_library("mock_entry") {
-  deps = [ ":util" ]
-}
-
-js_library("mock_util") {
   deps = [ ":util" ]
 }
 

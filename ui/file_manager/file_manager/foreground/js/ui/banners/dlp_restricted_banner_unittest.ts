@@ -8,16 +8,15 @@ import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js
 
 import {DlpRestrictedBanner} from './dlp_restricted_banner.js';
 
-/** @type{!DlpRestrictedBanner} */
-let dlpRestrictedBanner;
+let dlpRestrictedBanner: DlpRestrictedBanner;
 
 export function setUp() {
   const htmlTemplate = `<dlp-restricted-banner>
           <span slot="text"></span>
           </dlp-restricted-banner>`;
   document.body.innerHTML = htmlTemplate;
-  dlpRestrictedBanner = /** @type{!DlpRestrictedBanner} */ (
-      document.body.querySelector('dlp-restricted-banner'));
+  dlpRestrictedBanner = document.body.querySelector<DlpRestrictedBanner>(
+      'dlp-restricted-banner')!;
 }
 
 /**

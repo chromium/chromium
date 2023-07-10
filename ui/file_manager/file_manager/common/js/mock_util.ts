@@ -7,12 +7,11 @@ import {util} from './util.js';
 /**
  * Mocks out the util.visitURL function and returns a restore function and a
  * function to interrogate the URL visitURL was invoked with.
- * @returns {!Object<string, !function()>}
  */
 export function mockUtilVisitURL() {
   const oldVisitURL = util.visitURL;
-  let visitedURL;
-  util.visitURL = function(url) {
+  let visitedURL: string;
+  util.visitURL = function(url: string) {
     visitedURL = url;
   };
   const getURL = () => {

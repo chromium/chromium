@@ -2,22 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {str} from '../../../../common/js/util.js';
+/**
+ * @fileoverview
+ * This file is checked via TS, so we suppress Closure checks.
+ * @suppress {checkTypes}
+ */
 
+import {str} from '../../../../common/js/util.js';
 import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
-import {Banner} from '../../../../externs/banner.js';
 import {constants} from '../../constants.js';
+
+import {getTemplate} from './shared_with_crostini_pluginvm_banner.html.js';
 import {StateBanner} from './state_banner.js';
+import {BANNER_INFINITE_TIME} from './types.js';
 
 /**
  * The custom element tag name.
- * @type {string}
  */
 export const TAG_NAME = 'shared-with-crostini-pluginvm-banner';
-
-/** @const {!HTMLTemplateElement} */
-const htmlTemplate = html`{__html_template__}`;
 
 /**
  * A banner that shows if the current navigated directory has been shared with
@@ -26,19 +28,20 @@ const htmlTemplate = html`{__html_template__}`;
 export class SharedWithCrostiniPluginVmBanner extends StateBanner {
   /**
    * Returns the HTML template for this banner.
-   * @returns {!Node}
    */
-  getTemplate() {
-    return htmlTemplate.content.cloneNode(true);
+  override getTemplate() {
+    const template = document.createElement('template');
+    template.innerHTML = getTemplate() as unknown as string;
+    const fragment = template.content.cloneNode(true);
+    return fragment;
   }
 
   /**
    * This banner relies on a custom trigger registered in the BannerController
    * and thus the following list are root types where sharing to Crostini or
    * PluginVM is allowed and thus a banner may appear.
-   * @returns {!Array<!Banner.AllowedVolume>}
    */
-  allowedVolumes() {
+  override allowedVolumes() {
     return [
       {root: VolumeManagerCommon.RootType.DOWNLOADS},
       {root: VolumeManagerCommon.RootType.REMOVABLE},
@@ -57,10 +60,9 @@ export class SharedWithCrostiniPluginVmBanner extends StateBanner {
 
   /**
    * Persist the banner at all times if the folder is shared.
-   * @returns {number}
    */
-  timeLimit() {
-    return Banner.INIFINITE_TIME;
+  override timeLimit() {
+    return BANNER_INFINITE_TIME;
   }
 
   /**
@@ -68,16 +70,16 @@ export class SharedWithCrostiniPluginVmBanner extends StateBanner {
    * context to the banner. This type is used to identify if this folder is
    * shared with Crostini, PluginVM or both and update the text and links
    * accordingly.
-   * @param {!Object} context The type of VM sharing this folder.
    */
-  onFilteredContext(context) {
+  override onFilteredContext(context: {type: string}) {
     if (!context || !context.type) {
       console.warn('Context not supplied or type key missing');
       return;
     }
-    const text = this.shadowRoot.querySelector('span[slot="text"]');
-    const button =
-        this.shadowRoot.querySelector('cr-button[slot="extra-button"]');
+    const text =
+        this.shadowRoot!.querySelector<HTMLSpanElement>('span[slot="text"]')!;
+    const button = this.shadowRoot!.querySelector<HTMLButtonElement>(
+        'cr-button[slot="extra-button"]')!;
     if (context.type ===
         (constants.DEFAULT_CROSTINI_VM + constants.PLUGIN_VM)) {
       text.innerText = str('MESSAGE_FOLDER_SHARED_WITH_CROSTINI_AND_PLUGIN_VM');
@@ -93,6 +95,12 @@ export class SharedWithCrostiniPluginVmBanner extends StateBanner {
     }
     text.innerText = str('MESSAGE_FOLDER_SHARED_WITH_CROSTINI');
     button.setAttribute('href', 'chrome://os-settings/crostini/sharedPaths');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [TAG_NAME]: SharedWithCrostiniPluginVmBanner;
   }
 }
 

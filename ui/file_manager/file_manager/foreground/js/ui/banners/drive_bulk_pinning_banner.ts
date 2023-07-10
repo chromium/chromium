@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+/**
+ * @fileoverview
+ * This file is checked via TS, so we suppress Closure checks.
+ * @suppress {checkTypes}
+ */
 
 import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
-import {Banner} from '../../../../externs/banner.js';
+import {XfBulkPinningDialog} from '../../../../widgets/xf_bulk_pinning_dialog.js';
 
+import {getTemplate} from './drive_bulk_pinning_banner.html.js';
 import {EducationalBanner} from './educational_banner.js';
 
 /**
  * The custom element tag name.
- * @type {string}
  */
 export const TAG_NAME = 'drive-bulk-pinning-banner';
-
-/** @const {!HTMLTemplateElement} */
-const htmlTemplate = html`{__html_template__}`;
 
 /**
  * A banner that prompts users to bulk pin their files.
@@ -25,30 +26,30 @@ export class DriveBulkPinningBanner extends EducationalBanner {
   constructor() {
     super();
 
-    this.shadowRoot.querySelector('.action-button')
-        .addEventListener('click', (e) => {
+    this.shadowRoot!.querySelector('.action-button')!.addEventListener(
+        'click', (e: Event) => {
           e.preventDefault();
-          const dialog = document.querySelector('xf-bulk-pinning-dialog');
+          const dialog = document.querySelector<XfBulkPinningDialog>(
+              'xf-bulk-pinning-dialog')!;
           dialog.show();
         });
   }
 
   /**
-   * Returns the HTML template for the Drive Bulk Pinning educational banner.
-   * @returns {!Node}
-   * @override
+   * Returns the HTML template for the Bulk pinning banner.
    */
-  getTemplate() {
-    return htmlTemplate.content.cloneNode(true);
+  override getTemplate() {
+    const template = document.createElement('template');
+    template.innerHTML = getTemplate() as unknown as string;
+    const fragment = template.content.cloneNode(true);
+    return fragment;
   }
 
   /**
    * Only show the banner when the user has navigated to the Drive volume type
    * and the feature flag is enabled.
-   * @returns {!Array<!Banner.AllowedVolume>}
-   * @override
    */
-  allowedVolumes() {
+  override allowedVolumes() {
     return [{
       type: VolumeManagerCommon.VolumeType.DRIVE,
       root: VolumeManagerCommon.RootType.DRIVE,
@@ -57,11 +58,15 @@ export class DriveBulkPinningBanner extends EducationalBanner {
 
   /**
    * Show this banner for an unlimited number of sessions.
-   * @returns {number}
-   * @override
    */
-  showLimit() {
+  override showLimit() {
     return 0;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [TAG_NAME]: DriveBulkPinningBanner;
   }
 }
 

@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+/**
+ * @fileoverview
+ * This file is checked via TS, so we suppress Closure checks.
+ * @suppress {checkTypes}
+ */
 
 import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
-import {Banner} from '../../../../externs/banner.js';
+
+import {getTemplate} from './drive_welcome_banner.html.js';
 import {EducationalBanner} from './educational_banner.js';
 
 /**
  * The custom element tag name.
- * @type {string}
  */
 export const TAG_NAME = 'drive-welcome-banner';
-
-/** @const {!HTMLTemplateElement} */
-const htmlTemplate = html`{__html_template__}`;
 
 /**
  * A banner that shows when a user navigates to the Google Drive volume. This
@@ -25,21 +26,28 @@ const htmlTemplate = html`{__html_template__}`;
 export class DriveWelcomeBanner extends EducationalBanner {
   /**
    * Returns the HTML template for the Drive Welcome educational banner.
-   * @returns {!Node}
    */
-  getTemplate() {
-    return htmlTemplate.content.cloneNode(true);
+  override getTemplate() {
+    const template = document.createElement('template');
+    template.innerHTML = getTemplate() as unknown as string;
+    const fragment = template.content.cloneNode(true);
+    return fragment;
   }
 
   /**
    * Only show the banner when the user has navigated to the Drive volume type.
-   * @returns {!Array<!Banner.AllowedVolume>}
    */
-  allowedVolumes() {
+  override allowedVolumes() {
     return [{
       type: VolumeManagerCommon.VolumeType.DRIVE,
       root: VolumeManagerCommon.RootType.DRIVE,
     }];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [TAG_NAME]: DriveWelcomeBanner;
   }
 }
 

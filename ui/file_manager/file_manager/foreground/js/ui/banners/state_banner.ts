@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * This file is checked via TS, so we suppress Closure checks.
+ * @suppress {checkTypes}
+ */
+
 import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
-import {Command} from '../command.js';
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {util} from '../../../../common/js/util.js';
-import {Banner} from '../../../../externs/banner.js';
+import {Command} from '../command.js';
 
-/** @const {!HTMLTemplateElement} */
-const htmlTemplate = html`{__html_template__}`;
+import {getTemplate} from './state_banner.html.js';
+import {AllowedVolumeOrType, Banner} from './types.js';
 
 /**
  * State banner is a type of banner that indicates the Files app has reached a
@@ -50,10 +54,12 @@ export class StateBanner extends Banner {
 
   /**
    * Returns the HTML template for the State Banner.
-   * @returns {!Node}
    */
-  getTemplate() {
-    return htmlTemplate.content.cloneNode(true);
+  override getTemplate() {
+    const template = document.createElement('template');
+    template.innerHTML = getTemplate() as unknown as string;
+    const fragment = template.content.cloneNode(true);
+    return fragment;
   }
 
   /**
@@ -61,14 +67,14 @@ export class StateBanner extends Banner {
    * for both the inner state-banner component and the concrete
    * implementations that extend from it.
    */
-  connectedCallback() {
+  override connectedCallback() {
     // Attach an onclick handler to the extra-button slot. This enables a new
     // element to leverage the href tag on the element to have a URL opened.
     // TODO(crbug.com/1228128): Add UMA trigger to capture number of extra
     // button clicks.
     const extraButton = this.querySelector('[slot="extra-button"]');
     if (extraButton) {
-      extraButton.addEventListener('click', (e) => {
+      extraButton.addEventListener('click', (e: Event) => {
         const href = extraButton.getAttribute('href');
         const chromeOsSettingsSubpage =
             href && href.replace('chrome://os-settings/', '');
@@ -85,8 +91,9 @@ export class StateBanner extends Banner {
           // Unit tests don't enclose a StateBanner inside a concrete banner,
           // so we want to ensure the event is appropriately dispatched from the
           // outer scope otherwise it won't bubble up to the commands.
-          let bannerInstance = this;
-          const parentBanner = this.getRootNode() && this.getRootNode().host;
+          let bannerInstance: StateBanner = this;
+          const parentBanner =
+              this.getRootNode() && (this.getRootNode() as ShadowRoot).host;
           if (parentBanner && parentBanner instanceof StateBanner) {
             bannerInstance = parentBanner;
           }
@@ -94,7 +101,7 @@ export class StateBanner extends Banner {
           e.preventDefault();
           return;
         }
-        util.visitURL(extraButton.getAttribute('href'));
+        util.visitURL(extraButton.getAttribute('href')!);
         e.preventDefault();
       });
     }
@@ -104,10 +111,15 @@ export class StateBanner extends Banner {
    * All banners that inherit this class should override with their own
    * volume types to allow. Setting this explicitly as an empty array ensures
    * banners that don't override this are not shown by default.
-   * @returns {!Array<!Banner.AllowedVolume>}
    */
-  allowedVolumes() {
+  override allowedVolumes(): AllowedVolumeOrType[] {
     return [];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'state-banner': StateBanner;
   }
 }
 

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {decorate} from '../../../../common/js/ui.js';
-import {Command} from '../command.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {mockUtilVisitURL} from '../../../../common/js/mock_util.js';
 import {waitUntil} from '../../../../common/js/test_error_reporting.js';
+import {decorate} from '../../../../common/js/ui.js';
+import {Command} from '../command.js';
 
 import {StateBanner} from './state_banner.js';
 
-/** @type{!StateBanner} */
-let stateBanner;
+let stateBanner: StateBanner;
 
 /**
  * Mocks out the chrome.fileManagerPrivate.openSettingsSubpage function to
@@ -22,9 +22,8 @@ let stateBanner;
 function mockOpenSettingsSubpage() {
   const actualOpenSettingsSubpage =
       chrome.fileManagerPrivate.openSettingsSubpage;
-  /** @type {string} */
-  let subpage;
-  chrome.fileManagerPrivate.openSettingsSubpage = settingsSubpage => {
+  let subpage: string;
+  chrome.fileManagerPrivate.openSettingsSubpage = (settingsSubpage: string) => {
     subpage = settingsSubpage;
   };
   const restore = () => {
@@ -45,8 +44,7 @@ export function setUp() {
     </state-banner>
     `;
   document.body.innerHTML = html;
-  stateBanner =
-      /** @type{!StateBanner} */ (document.body.querySelector('state-banner'));
+  stateBanner = document.body.querySelector<StateBanner>('state-banner')!;
 }
 
 /**
@@ -55,7 +53,7 @@ export function setUp() {
  */
 export async function testAdditionalButtonCanBeClicked() {
   const mockVisitURL = mockUtilVisitURL();
-  stateBanner.querySelector('[slot="extra-button"]').click();
+  stateBanner.querySelector<CrButtonElement>('[slot="extra-button"]')!.click();
   assertEquals(mockVisitURL.getURL(), 'http://test.com');
   mockVisitURL.restoreVisitURL();
 }
@@ -86,9 +84,8 @@ export async function testChromeOsSettingsLink() {
   </state-banner>
   `;
   document.body.innerHTML = html;
-  stateBanner =
-      /** @type{!StateBanner} */ (document.body.querySelector('state-banner'));
-  stateBanner.querySelector('[slot="extra-button"]').click();
+  stateBanner = document.body.querySelector<StateBanner>('state-banner')!;
+  stateBanner.querySelector<CrButtonElement>('[slot="extra-button"]')!.click();
   assertEquals(mockSettingsSubpage.getSubpage(), subpage);
   mockSettingsSubpage.restore();
 }
@@ -109,9 +106,8 @@ export async function testChromeOsSettingsNoSubpageLink() {
     </state-banner>
     `;
   document.body.innerHTML = html;
-  stateBanner =
-      /** @type{!StateBanner} */ (document.body.querySelector('state-banner'));
-  stateBanner.querySelector('[slot="extra-button"]').click();
+  stateBanner = document.body.querySelector<StateBanner>('state-banner')!;
+  stateBanner.querySelector<CrButtonElement>('[slot="extra-button"]')!.click();
   assertEquals(mockVisitURL.getURL(), osSettingsLink);
   mockVisitURL.restoreVisitURL();
 }
@@ -120,7 +116,7 @@ export async function testChromeOsSettingsNoSubpageLink() {
  * Test that an extra-button with a command triggers an Event of the correct
  * type.
  */
-export async function testCommandsCanBeUsedForExtraButtons(done) {
+export async function testCommandsCanBeUsedForExtraButtons(done: () => void) {
   const html = `<command id="format">
     <state-banner>
       <span slot="text">Banner title</span>
@@ -137,22 +133,21 @@ export async function testCommandsCanBeUsedForExtraButtons(done) {
   // setup in the unittest environment, the event bubbles up to the body and
   // we can listen for it there.
   let commandReceived = false;
-  let commandEvent = null;
+  let commandEvent: Event|null = null;
   document.body.addEventListener('command', (e) => {
     commandReceived = true;
     commandEvent = e;
   });
 
   // Click the extra button with a command associated with it.
-  stateBanner =
-      /** @type{!StateBanner} */ (document.body.querySelector('state-banner'));
-  stateBanner.querySelector('[slot="extra-button"]').click();
+  stateBanner = document.body.querySelector<StateBanner>('state-banner')!;
+  stateBanner.querySelector<CrButtonElement>('[slot="extra-button"]')!.click();
 
   // Wait until the command has been received.
   await waitUntil(() => commandReceived == true);
 
   // Assert the event type received is a command.
-  assertEquals(commandEvent.type, 'command');
+  assertEquals(commandEvent!.type, 'command');
 
   done();
 }

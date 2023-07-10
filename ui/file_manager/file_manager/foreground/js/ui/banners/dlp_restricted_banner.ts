@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+/**
+ * @fileoverview
+ * This file is checked via TS, so we suppress Closure checks.
+ * @suppress {checkTypes}
+ */
 
 import {DialogType} from '../../../../common/js/dialog_type.js';
 import {str} from '../../../../common/js/util.js';
 import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
-import {Banner} from '../../../../externs/banner.js';
 
+import {getTemplate} from './dlp_restricted_banner.html.js';
 import {StateBanner} from './state_banner.js';
+import {BANNER_INFINITE_TIME} from './types.js';
 
 /**
  * The custom element tag name.
- * @type {string}
  */
 export const TAG_NAME = 'dlp-restricted-banner';
-
-/** @const {!HTMLTemplateElement} */
-const htmlTemplate = html`{__html_template__}`;
 
 /**
  * A banner that shows that some of the files or folders in the current
@@ -27,10 +28,12 @@ const htmlTemplate = html`{__html_template__}`;
 export class DlpRestrictedBanner extends StateBanner {
   /**
    * Returns the HTML template for this banner.
-   * @returns {!Node}
    */
-  getTemplate() {
-    return htmlTemplate.content.cloneNode(true);
+  override getTemplate() {
+    const template = document.createElement('template');
+    template.innerHTML = getTemplate() as unknown as string;
+    const fragment = template.content.cloneNode(true);
+    return fragment;
   }
 
   /**
@@ -40,32 +43,30 @@ export class DlpRestrictedBanner extends StateBanner {
    * when some destinations are restricted. Regardless of the dialog type, the
    * user can navigate to different roots so the banner can be shown in any of
    * them.
-   * @returns {!Array<!Banner.AllowedVolume>}
    */
-  allowedVolumes() {
+  override allowedVolumes() {
     return Object.values(VolumeManagerCommon.RootType).map(x => ({root: x}));
   }
 
   /**
    * Persist the banner at all times if the folder is shared.
-   * @returns {number}
    */
-  timeLimit() {
-    return Banner.INIFINITE_TIME;
+  override timeLimit() {
+    return BANNER_INFINITE_TIME;
   }
 
   /**
    * When the custom filter shows this banner in the controller, it passes the
    * context to the banner. The type, which is either File Picker or File Saver,
    * determines the text used in the banner.
-   * @param {!Object} context The type of the dialog.
    */
-  onFilteredContext(context) {
+  override onFilteredContext(context: {type: DialogType}) {
     if (!context || context.type == null) {
       console.warn('Context not supplied or dialog type key missing.');
       return;
     }
-    const text = this.shadowRoot.querySelector('span[slot="text"]');
+    const text =
+        this.shadowRoot!.querySelector('span[slot="text"]')! as HTMLSpanElement;
     switch (context.type) {
       case DialogType.SELECT_OPEN_FILE:
       case DialogType.SELECT_OPEN_MULTI_FILE:
@@ -78,6 +79,12 @@ export class DlpRestrictedBanner extends StateBanner {
         console.warn(`The DLP banner should not be shown for ${context.type}.`);
         return;
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [TAG_NAME]: DlpRestrictedBanner;
   }
 }
 

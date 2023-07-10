@@ -5,41 +5,38 @@
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {Banner} from '../../externs/banner.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {isAllowedVolume, isBelowThreshold} from './banner_controller.js';
+import {AllowedVolumeOrType, MinDiskThreshold} from './ui/banners/types.js';
 
-/** @type {!Array<!Banner.AllowedVolume>} */
-let allowedVolumes = [];
+let allowedVolumes: AllowedVolumeOrType[] = [];
 
 /**
  * Returns a VolumeInfo with the type and id set.
- * @param {!VolumeManagerCommon.VolumeType} volumeType
- * @param {?string=} volumeId
- * @returns {!VolumeInfo}
  */
-function createAndSetVolumeInfo(volumeType, volumeId = null) {
+function createAndSetVolumeInfo(
+    volumeType: VolumeManagerCommon.VolumeType, volumeId: string|null = null) {
   class FakeVolumeInfo {
+    public volumeType: VolumeManagerCommon.VolumeType;
+    public volumeId: string|null;
     constructor() {
       this.volumeType = volumeType;
       this.volumeId = volumeId;
     }
   }
 
-  return /** @type {!VolumeInfo} */ (new FakeVolumeInfo());
+  return new FakeVolumeInfo() as VolumeInfo;
 }
 
 /**
  * Creates a chrome.fileManagerPrivate.MountPointSizeStats type.
- * @param {number} remainingSize
- * @returns {!chrome.fileManagerPrivate.MountPointSizeStats}
  */
-function createRemainingSizeStats(remainingSize) {
+function createRemainingSizeStats(remainingSize: number) {
   return {
     totalSize: 20 * 1024 * 1024 * 1024,  // 20 GB
     remainingSize,
-  };
+  } as chrome.fileManagerPrivate.MountPointSizeStats;
 }
 
 export function tearDown() {
@@ -342,10 +339,12 @@ export function testUndefinedThresholdAndSizeStats() {
     remainingSize: 0,                    // full
   };
 
-  assertFalse(isBelowThreshold(undefined, undefined));
+  assertFalse(
+      isBelowThreshold(undefined as unknown as MinDiskThreshold, undefined));
   assertFalse(isBelowThreshold(testMinSizeThreshold, undefined));
   assertFalse(isBelowThreshold(testMinRatioThreshold, undefined));
-  assertFalse(isBelowThreshold(undefined, testSizeStats));
+  assertFalse(isBelowThreshold(
+      undefined as unknown as MinDiskThreshold, testSizeStats));
   assertTrue(isBelowThreshold(testMinRatioThreshold, testSizeStatsFull));
 }
 
@@ -354,7 +353,7 @@ export function testUndefinedThresholdAndSizeStats() {
  * results.
  */
 export function testMinSizeReturnsCorrectly() {
-  const createMinSizeThreshold = (minSize) => ({
+  const createMinSizeThreshold = (minSize: number) => ({
     type: VolumeManagerCommon.VolumeType.DOWNLOADS,
     minSize,
   });
@@ -380,7 +379,7 @@ export function testMinSizeReturnsCorrectly() {
  * results.
  */
 export function testMinRatioReturnsCorrectly() {
-  const createMinRatioThreshold = (minRatio) => ({
+  const createMinRatioThreshold = (minRatio: number) => ({
     type: VolumeManagerCommon.VolumeType.DOWNLOADS,
     minRatio,
   });
