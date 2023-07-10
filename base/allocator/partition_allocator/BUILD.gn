@@ -557,10 +557,8 @@ source_set("raw_ptr") {
     ]
   } else if (use_hookable_raw_ptr) {
     sources += [
-      # TODO(tsepez): separate hookable impl from noop impl.
       "pointers/raw_ptr_hookable_impl.cc",
       "pointers/raw_ptr_hookable_impl.h",
-      "pointers/raw_ptr_noop_impl.h",
     ]
   } else if (use_asan_unowned_ptr) {
     sources += [

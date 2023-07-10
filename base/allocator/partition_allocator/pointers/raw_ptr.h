@@ -53,9 +53,7 @@
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 #include "base/allocator/partition_allocator/pointers/raw_ptr_asan_unowned_impl.h"
 #elif BUILDFLAG(USE_HOOKABLE_RAW_PTR)
-// TODO(tsepez): separate hookable impl from noop impl.
 #include "base/allocator/partition_allocator/pointers/raw_ptr_hookable_impl.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr_noop_impl.h"
 #else
 #include "base/allocator/partition_allocator/pointers/raw_ptr_noop_impl.h"
 #endif
@@ -94,8 +92,7 @@ enum class RawPtrTraits : unsigned {
   // instead.
   kMayDangle = (1 << 0),
 
-  // Disables any hooks, by switching to NoOpImpl when building with hooks
-  // (see BUILDFLAG(USE_HOOKABLE_RAW_PTR)).
+  // Disables any hooks, when building with BUILDFLAG(USE_HOOKABLE_RAW_PTR).
   //
   // Internal use only.
   kDisableHooks = (1 << 2),
@@ -391,10 +388,9 @@ struct TraitsToImpl {
       Contains(Traits, RawPtrTraits::kMayDangle)>;
 
 #elif BUILDFLAG(USE_HOOKABLE_RAW_PTR)
-  using UnderlyingImpl =
-      std::conditional_t<Contains(Traits, RawPtrTraits::kDisableHooks),
-                         internal::RawPtrNoOpImpl,
-                         internal::RawPtrHookableImpl>;
+  using UnderlyingImpl = internal::RawPtrHookableImpl<
+      /*EnableHooks=*/!Contains(Traits, RawPtrTraits::kDisableHooks)>;
+
 #else
   using UnderlyingImpl = internal::RawPtrNoOpImpl;
 #endif
