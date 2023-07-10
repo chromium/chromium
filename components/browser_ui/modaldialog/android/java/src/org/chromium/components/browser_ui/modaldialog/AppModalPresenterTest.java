@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkCurrentPresenter;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkDialogDismissalCause;
@@ -20,12 +21,15 @@ import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtil
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.os.Build;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.matcher.BoundedMatcher;
+import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Description;
@@ -42,6 +46,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.browser_ui.modaldialog.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -195,6 +200,39 @@ public class AppModalPresenterTest {
         showDialog(sManager, dialog1, ModalDialogType.APP);
         onView(withText(R.string.cancel)).check(matches(not(hasCurrentTextColor(Color.WHITE))));
         onView(withText(R.string.ok)).check(matches(hasCurrentTextColor(Color.WHITE)));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    public void testFullscreenDarkStyle() {
+        PropertyModel dialog = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
+                @Override
+                public void onDismiss(
+                        PropertyModel model, @DialogDismissalCause int dismissalCause) {}
+
+                @Override
+                public void onClick(PropertyModel model, int buttonType) {}
+            };
+            return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                    .with(ModalDialogProperties.CONTROLLER, controller)
+                    .with(ModalDialogProperties.FULLSCREEN_DIALOG, true)
+                    .with(ModalDialogProperties.FULLSCREEN_FORCE_DARK_STYLE, true)
+                    .build();
+        });
+        showDialog(sManager, dialog, ModalDialogType.APP);
+        Window window = ((AppModalPresenter) sManager.getCurrentPresenterForTest()).getWindow();
+
+        assertEquals(sActivity.getColor(R.color.toolbar_background_primary_dark),
+                window.getStatusBarColor());
+        assertEquals(sActivity.getColor(R.color.toolbar_background_primary_dark),
+                window.getNavigationBarColor());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            assertEquals(sActivity.getColor(R.color.bottom_system_nav_divider_color_light),
+                    window.getNavigationBarDividerColor());
+        }
     }
 
     private static Matcher<View> hasCurrentTextColor(int expected) {

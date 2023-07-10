@@ -89,6 +89,10 @@ public class ModalDialogViewBinder
             assert !(model.get(ModalDialogProperties.FULLSCREEN_DIALOG)
                     && model.get(ModalDialogProperties.DIALOG_WHEN_LARGE))
                 : "Both FULLSCREEN_DIALOG and DIALOG_WHEN_LARGE cannot be set to true.";
+        } else if (ModalDialogProperties.FULLSCREEN_FORCE_DARK_STYLE == propertyKey) {
+            assert !(model.get(ModalDialogProperties.FULLSCREEN_FORCE_DARK_STYLE)
+                    && !model.get(ModalDialogProperties.FULLSCREEN_DIALOG))
+                : "FULLSCREEN_FORCE_DARK_STYLE cannot be set to true if FULLSCREEN_DIALOG is false.";
         } else if (ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS == propertyKey) {
             view.setButtonTapProtectionDurationMs(
                     model.get(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS));

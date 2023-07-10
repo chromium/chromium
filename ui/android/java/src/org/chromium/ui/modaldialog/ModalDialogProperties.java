@@ -169,6 +169,16 @@ public class ModalDialogProperties {
             new ReadableBooleanPropertyKey();
 
     /**
+     * Whether the status and navigation bar of the fullscreen dialog should follow dark style.
+     * {@code FULLSCREEN_DIALOG} has to be true for {@code FULLSCREEN_FORCE_DARK_STYLE} to be true.
+     * This is only supported for Android versions >= O.
+     * TODO(crbug.com/1449618): Refactor this to a DIALOG_STYLE property that encapsulates
+     * FULLSCREEN_DIALOG, FULLSCREEN_FORCE_DARK_STYLE, and DIALOG_WHEN_LARGE properties.
+     */
+    public static final ReadableBooleanPropertyKey FULLSCREEN_FORCE_DARK_STYLE =
+            new ReadableBooleanPropertyKey();
+
+    /**
      * Whether the dialog is of DialogWhenLarge style i.e. fullscreen on phone, and dialog on large
      * screen. Both {@code FULLSCREEN_DIALOG} and {@code DIALOG_WHEN_LARGE} cannot be set to true.
      */
@@ -203,7 +213,7 @@ public class ModalDialogProperties {
             POSITIVE_BUTTON_CONTENT_DESCRIPTION, POSITIVE_BUTTON_DISABLED, NEGATIVE_BUTTON_TEXT,
             NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED, FOOTER_MESSAGE,
             CANCEL_ON_TOUCH_OUTSIDE, FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK,
-            TITLE_SCROLLABLE, BUTTON_STYLES, FULLSCREEN_DIALOG, DIALOG_WHEN_LARGE, FOCUS_DIALOG,
-            EXCEED_MAX_HEIGHT, APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+            TITLE_SCROLLABLE, BUTTON_STYLES, FULLSCREEN_DIALOG, FULLSCREEN_FORCE_DARK_STYLE,
+            DIALOG_WHEN_LARGE, FOCUS_DIALOG, EXCEED_MAX_HEIGHT, APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
             BUTTON_TAP_PROTECTION_PERIOD_MS};
 }
