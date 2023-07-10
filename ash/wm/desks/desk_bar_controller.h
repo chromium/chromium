@@ -50,6 +50,7 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
+  void OnKeyEvent(ui::KeyEvent* event) override;
 
   // OverviewObserver:
   void OnOverviewModeWillStart() override;
@@ -68,6 +69,9 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
   // Returns desk bar view in `root`. If there is no such desk bar, nullptr is
   // returned.
   DeskBarViewBase* GetDeskBarView(aura::Window* root) const;
+
+  // Returns true when there is a visible desk bar.
+  bool IsShowingDeskBar() const;
 
   // Opens the desk bar in 'root'.
   void OpenDeskBar(aura::Window* root);

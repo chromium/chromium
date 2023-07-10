@@ -7,10 +7,9 @@
 #include <algorithm>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/close_button.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_action_view.h"
@@ -27,7 +26,7 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -133,15 +132,41 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
       [](const DeskMiniView* mini_view, const views::View* view) {
         const auto* desk_preview = views::AsViewClass<DeskPreviewView>(view);
         CHECK(desk_preview);
-        return desk_preview->IsViewHighlighted() ||
-               (mini_view->owner_bar_->dragged_item_over_bar() &&
+        switch (mini_view->owner_bar()->type()) {
+          case DeskBarViewBase::Type::kOverview:
+            // Show focus ring for the overview bar when:
+            //   1) it's highlighted via the customized highlight controller;
+            if (desk_preview->IsViewHighlighted()) {
+              return true;
+            }
+            //   2) dragging an overview item over this mini view;
+            if (mini_view->owner_bar_->dragged_item_over_bar() &&
                 mini_view->IsPointOnMiniView(
                     mini_view->owner_bar_
-                        ->last_dragged_item_screen_location())) ||
-               (mini_view->desk_ && mini_view->desk_->is_active() &&
+                        ->last_dragged_item_screen_location())) {
+              return true;
+            }
+            //   3) it's the active desk and not currently showing library page;
+            if (mini_view->desk_ && mini_view->desk_->is_active() &&
                 mini_view->owner_bar_->overview_grid() &&
                 !mini_view->owner_bar_->overview_grid()
-                     ->IsShowingSavedDeskLibrary());
+                     ->IsShowingSavedDeskLibrary()) {
+              return true;
+            }
+
+            return false;
+          case DeskBarViewBase::Type::kDeskButton:
+            // Show focus ring for the desk button bar when:
+            //   1) it's focused via focus manager;
+            if (desk_preview->HasFocus()) {
+              return true;
+            }
+            //   2) it's the active desk;
+            if (mini_view->desk_ && mini_view->desk_->is_active()) {
+              return true;
+            }
+            return false;
+        }
       },
       base::Unretained(this)));
 
@@ -232,26 +257,44 @@ void DeskMiniView::OnWidgetGestureTap(const gfx::Rect& screen_rect,
     UpdateDeskButtonVisibility();
 }
 
-void DeskMiniView::UpdateFocusColor() {
-  DCHECK(desk_);
-  absl::optional<ui::ColorId> new_focus_color_id;
+absl::optional<ui::ColorId> DeskMiniView::GetFocusColor() const {
+  CHECK(desk_);
+  const ui::ColorId focused_desk_color_id = ui::kColorAshFocusRing;
+  const ui::ColorId active_desk_color_id =
+      chromeos::features::IsJellyrollEnabled()
+          ? cros_tokens::kCrosSysTertiary
+          : static_cast<ui::ColorId>(kColorAshCurrentDeskColor);
 
-  if ((owner_bar_->dragged_item_over_bar() &&
-       IsPointOnMiniView(owner_bar_->last_dragged_item_screen_location())) ||
-      desk_preview_->IsViewHighlighted()) {
-    new_focus_color_id = ui::kColorAshFocusRing;
-  } else if (desk_->is_active() && owner_bar_->overview_grid() &&
-             !owner_bar_->overview_grid()->IsShowingSavedDeskLibrary()) {
-    new_focus_color_id =
-        chromeos::features::IsJellyrollEnabled()
-            ? cros_tokens::kCrosSysTertiary
-            : static_cast<ui::ColorId>(kColorAshCurrentDeskColor);
-  } else {
-    new_focus_color_id = absl::nullopt;
+  switch (owner_bar_->type()) {
+    case DeskBarViewBase::Type::kOverview:
+      if ((owner_bar_->dragged_item_over_bar() &&
+           IsPointOnMiniView(
+               owner_bar_->last_dragged_item_screen_location())) ||
+          desk_preview_->IsViewHighlighted()) {
+        return focused_desk_color_id;
+      } else if (desk_->is_active() && owner_bar_->overview_grid() &&
+                 !owner_bar_->overview_grid()->IsShowingSavedDeskLibrary()) {
+        return active_desk_color_id;
+      }
+      break;
+    case DeskBarViewBase::Type::kDeskButton:
+      if (desk_preview_->HasFocus()) {
+        return focused_desk_color_id;
+      } else if (desk_->is_active()) {
+        return active_desk_color_id;
+      }
+      break;
   }
 
-  if (desk_preview_->focus_color_id() == new_focus_color_id)
+  return absl::nullopt;
+}
+
+void DeskMiniView::UpdateFocusColor() {
+  absl::optional<ui::ColorId> new_focus_color_id = GetFocusColor();
+
+  if (desk_preview_->focus_color_id() == new_focus_color_id) {
     return;
+  }
 
   auto* focus_ring = views::FocusRing::Get(desk_preview_);
 
@@ -510,7 +553,7 @@ void DeskMiniView::OnViewFocused(views::View* observed_view) {
   should_commit_name_changes_ = true;
 
   // Set the Overview highlight to move focus with the DeskNameView.
-  if (owner_bar_->overview_grid()) {
+  if (owner_bar_->type() == DeskBarViewBase::Type::kOverview) {
     UpdateOverviewHighlightForFocus(desk_name_view_);
   }
 

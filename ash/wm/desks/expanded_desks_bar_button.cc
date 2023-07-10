@@ -141,21 +141,23 @@ ExpandedDesksBarButton::ExpandedDesksBarButton(
 
   views::InstallRoundRectHighlightPathGenerator(
       inner_button_, gfx::Insets(kFocusRingHaloInset), kBorderCornerRadius);
-  auto* focus_ring = views::FocusRing::Get(inner_button_);
-  focus_ring->SetHasFocusPredicate(base::BindRepeating(
-      [](const ExpandedDesksBarButton* desks_bar_button,
-         const views::View* view) {
-        const auto* inner_button =
-            views::AsViewClass<InnerExpandedDesksBarButton>(view);
-        CHECK(inner_button);
-        return inner_button->IsViewHighlighted() ||
-               ((desks_bar_button->bar_view_->dragged_item_over_bar() &&
-                 desks_bar_button->IsPointOnButton(
-                     desks_bar_button->bar_view_
-                         ->last_dragged_item_screen_location())) ||
-                desks_bar_button->active_);
-      },
-      base::Unretained(this)));
+  if (bar_view_->type() == DeskBarViewBase::Type::kOverview) {
+    auto* focus_ring = views::FocusRing::Get(inner_button_);
+    focus_ring->SetHasFocusPredicate(base::BindRepeating(
+        [](const ExpandedDesksBarButton* desks_bar_button,
+           const views::View* view) {
+          const auto* inner_button =
+              views::AsViewClass<InnerExpandedDesksBarButton>(view);
+          CHECK(inner_button);
+          return inner_button->IsViewHighlighted() ||
+                 ((desks_bar_button->bar_view_->dragged_item_over_bar() &&
+                   desks_bar_button->IsPointOnButton(
+                       desks_bar_button->bar_view_
+                           ->last_dragged_item_screen_location())) ||
+                  desks_bar_button->active_);
+        },
+        base::Unretained(this)));
+  }
 }
 
 DeskButtonBase* ExpandedDesksBarButton::GetInnerButton() {

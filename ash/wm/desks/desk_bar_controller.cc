@@ -13,17 +13,22 @@
 #include "ash/wm/desks/desk_bar_view.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_button/desk_button.h"
+#include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
+#include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -63,6 +68,93 @@ void DeskBarController::OnTouchEvent(ui::TouchEvent* event) {
   if (event->type() == ui::ET_TOUCH_PRESSED) {
     OnMaybePressOffBar(*event);
   }
+}
+
+void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
+  const bool is_key_press = event->type() == ui::ET_KEY_PRESSED;
+  if (!is_key_press || !IsShowingDeskBar()) {
+    return;
+  }
+
+  const bool is_control_down = event->IsControlDown();
+  for (auto* bar_view : desk_bar_views_) {
+    if (!bar_view->GetVisible()) {
+      continue;
+    }
+
+    auto* bar_widget = bar_view->GetWidget();
+    CHECK(bar_widget);
+    auto* focus_manager = bar_widget->GetFocusManager();
+    views::View* focused_view = focus_manager->GetFocusedView();
+    DeskPreviewView* focused_preview =
+        views::AsViewClass<DeskPreviewView>(focused_view);
+    DeskNameView* focused_name_view =
+        views::AsViewClass<DeskNameView>(focused_view);
+
+    // TODO(b/290651821): Consolidates arrow key behaviors for the desk bar.
+    switch (event->key_code()) {
+      case ui::VKEY_BROWSER_BACK:
+      case ui::VKEY_ESCAPE:
+        if (focused_name_view) {
+          return;
+        }
+        CloseAllDeskBars();
+        break;
+      case ui::VKEY_UP:
+      case ui::VKEY_DOWN:
+        focus_manager->AdvanceFocus(/*reverse=*/event->key_code() ==
+                                    ui::VKEY_UP);
+        break;
+      case ui::VKEY_TAB:
+        focus_manager->AdvanceFocus(/*reverse=*/event->IsShiftDown());
+        break;
+      case ui::VKEY_LEFT:
+      case ui::VKEY_RIGHT:
+        if (focused_name_view) {
+          return;
+        }
+        if (is_control_down) {
+          if (focused_preview) {
+            focused_preview->Swap(
+                /*right=*/event->key_code() == ui::VKEY_RIGHT);
+          } else {
+            return;
+          }
+        } else {
+          focus_manager->AdvanceFocus(/*reverse=*/event->key_code() ==
+                                      ui::VKEY_LEFT);
+        }
+        break;
+      case ui::VKEY_W:
+        if (!is_control_down) {
+          return;
+        }
+
+        if (focused_preview) {
+          focused_preview->Close(
+              /*primary_action=*/!event->IsShiftDown());
+        } else {
+          return;
+        }
+
+        break;
+      case ui::VKEY_Z:
+        // Ctrl + Z undos a close all operation if the toast has not yet
+        // expired. Ctrl + Alt + Z triggers ChromeVox so we don't do anything
+        // here to interrupt that.
+        if (!is_control_down || (is_control_down && event->IsAltDown())) {
+          return;
+        }
+
+        DesksController::Get()->MaybeCancelDeskRemoval();
+        break;
+      default:
+        return;
+    }
+  }
+
+  event->SetHandled();
+  event->StopPropagation();
 }
 
 void DeskBarController::OnOverviewModeWillStart() {
@@ -114,6 +206,12 @@ void DeskBarController::OnWindowActivated(ActivationReason reason,
 DeskBarViewBase* DeskBarController::GetDeskBarView(aura::Window* root) const {
   auto it = base::ranges::find(desk_bar_views_, root, &DeskBarViewBase::root);
   return it != desk_bar_views_.end() ? *it : nullptr;
+}
+
+bool DeskBarController::IsShowingDeskBar() const {
+  return base::ranges::any_of(desk_bar_views_, [](DeskBarViewBase* bar_view) {
+    return bar_view->GetVisible();
+  });
 }
 
 void DeskBarController::OpenDeskBar(aura::Window* root) {

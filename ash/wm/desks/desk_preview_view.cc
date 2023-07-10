@@ -20,7 +20,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -28,23 +27,20 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/layer_type.h"
-#include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-#include "ui/gfx/skia_paint_util.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 
@@ -464,6 +460,31 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
   Layout();
 }
 
+void DeskPreviewView::Close(bool primary_action) {
+  // The primary action (Ctrl + W) is to remove the desk and not close the
+  // windows (combine the desk with one on the right or left). The secondary
+  // action (Ctrl + Shift + W) is to close the desk and all its applications.
+  mini_view_->OnRemovingDesk(primary_action
+                                 ? DeskCloseType::kCombineDesks
+                                 : DeskCloseType::kCloseAllWindowsAndWait);
+}
+
+void DeskPreviewView::Swap(bool right) {
+  const int old_index = mini_view_->owner_bar()->GetMiniViewIndex(mini_view_);
+  CHECK_NE(old_index, -1);
+
+  int new_index = right ? old_index + 1 : old_index - 1;
+  if (new_index < 0 ||
+      new_index ==
+          static_cast<int>(mini_view_->owner_bar()->mini_views().size())) {
+    return;
+  }
+
+  auto* desks_controller = DesksController::Get();
+  desks_controller->ReorderDesk(old_index, new_index);
+  desks_controller->UpdateDesksDefaultNames();
+}
+
 void DeskPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // Avoid failing accessibility checks if we don't have a name.
   views::Button::GetAccessibleNodeData(node_data);
@@ -554,8 +575,8 @@ void DeskPreviewView::OnThemeChanged() {
 }
 
 void DeskPreviewView::OnFocus() {
-  if (mini_view_->owner_bar()->overview_grid()) {
-    UpdateOverviewHighlightForFocusAndSpokenFeedback(this);
+  if (mini_view_->owner_bar()->type() == DeskBarViewBase::Type::kOverview) {
+    UpdateOverviewHighlightForFocus(this);
   }
 
   mini_view_->UpdateFocusColor();
@@ -577,28 +598,11 @@ void DeskPreviewView::MaybeActivateHighlightedView() {
 }
 
 void DeskPreviewView::MaybeCloseHighlightedView(bool primary_action) {
-  // The primary action (Ctrl + W) is to remove the desk and not close the
-  // windows (combine the desk with one on the right or left). The secondary
-  // action (Ctrl + Shift + W) is to close the desk and all its applications.
-  mini_view_->OnRemovingDesk(primary_action
-                                 ? DeskCloseType::kCombineDesks
-                                 : DeskCloseType::kCloseAllWindowsAndWait);
+  Close(primary_action);
 }
 
 void DeskPreviewView::MaybeSwapHighlightedView(bool right) {
-  const int old_index = mini_view_->owner_bar()->GetMiniViewIndex(mini_view_);
-  DCHECK_NE(old_index, -1);
-
-  int new_index = right ? old_index + 1 : old_index - 1;
-  if (new_index < 0 ||
-      new_index ==
-          static_cast<int>(mini_view_->owner_bar()->mini_views().size())) {
-    return;
-  }
-
-  auto* desks_controller = DesksController::Get();
-  desks_controller->ReorderDesk(old_index, new_index);
-  desks_controller->UpdateDesksDefaultNames();
+  Swap(right);
 }
 
 bool DeskPreviewView::MaybeActivateHighlightedViewOnOverviewExit(

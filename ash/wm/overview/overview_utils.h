@@ -12,11 +12,7 @@
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "ui/compositor/layer_type.h"
-#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace aura {
@@ -92,10 +88,6 @@ bool ShouldUseTabletModeGridLayout();
 ASH_EXPORT gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect);
 
 void UpdateOverviewHighlightForFocus(OverviewHighlightableView* target_view);
-
-void UpdateOverviewHighlightForFocusAndSpokenFeedback(
-    OverviewHighlightableView* target_view);
-
 }  // namespace ash
 
 #endif  // ASH_WM_OVERVIEW_OVERVIEW_UTILS_H_

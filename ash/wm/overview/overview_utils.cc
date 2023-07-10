@@ -8,7 +8,6 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/shelf_config.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
@@ -37,8 +36,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform_util.h"
-#include "ui/gfx/scoped_canvas.h"
-#include "ui/views/background.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -353,22 +350,6 @@ void UpdateOverviewHighlightForFocus(OverviewHighlightableView* target_view) {
   DCHECK(highlight_controller);
 
   highlight_controller->MoveHighlightToView(target_view);
-}
-
-void UpdateOverviewHighlightForFocusAndSpokenFeedback(
-    OverviewHighlightableView* target_view) {
-  AccessibilityControllerImpl* a11y_controller =
-      Shell::Get()->accessibility_controller();
-  DCHECK(a11y_controller);
-  auto* highlight_controller = Shell::Get()
-                                   ->overview_controller()
-                                   ->overview_session()
-                                   ->highlight_controller();
-  DCHECK(highlight_controller);
-  DCHECK(a11y_controller);
-  if (a11y_controller->spoken_feedback().enabled()) {
-    UpdateOverviewHighlightForFocus(target_view);
-  }
 }
 
 }  // namespace ash

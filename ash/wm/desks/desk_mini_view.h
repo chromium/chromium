@@ -62,6 +62,7 @@ class ASH_EXPORT DeskMiniView : public views::View,
   DeskActionView* desk_action_view() { return desk_action_view_; }
 
   DeskBarViewBase* owner_bar() { return owner_bar_; }
+  const DeskBarViewBase* owner_bar() const { return owner_bar_; }
   const DeskPreviewView* desk_preview() const { return desk_preview_; }
   DeskPreviewView* desk_preview() { return desk_preview_; }
 
@@ -96,8 +97,12 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // This is useful for touch-only UIs.
   void OnWidgetGestureTap(const gfx::Rect& screen_rect, bool is_long_gesture);
 
-  // Updates the focus color of the `DeskPreviewView` based on the activation
-  // state of the corresponding desk and whether the saved desk grid is visible.
+  // Returns the expected focus color of `DeskPreviewView` based on the
+  // activation state of the corresponding desk and whether the saved desk
+  // library is visible.
+  absl::optional<ui::ColorId> GetFocusColor() const;
+
+  // Updates the focus color of `DeskPreviewView`.
   void UpdateFocusColor();
 
   // Gets the preview border's insets.

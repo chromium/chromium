@@ -6,10 +6,7 @@
 
 #include <algorithm>
 
-#include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
-#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
@@ -17,12 +14,10 @@
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "base/check_op.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -77,21 +72,23 @@ CrOSNextDeskIconButton::CrOSNextDeskIconButton(
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(kFocusRingHaloInset),
       GetFocusRingRadiusForState(state_));
-  views::FocusRing::Get(this)->SetHasFocusPredicate(
-      base::BindRepeating([](const views::View* view) {
-        const auto* v = views::AsViewClass<CrOSNextDeskIconButton>(view);
-        CHECK(v);
-        if (v->IsViewHighlighted()) {
-          return true;
-        }
-        if (v->state_ != State::kActive) {
-          return false;
-        }
-        return v->paint_as_active_ ||
-               (v->bar_view_->dragged_item_over_bar() &&
-                v->IsPointOnButton(
-                    v->bar_view_->last_dragged_item_screen_location()));
-      }));
+  if (bar_view_->type() == DeskBarViewBase::Type::kOverview) {
+    views::FocusRing::Get(this)->SetHasFocusPredicate(
+        base::BindRepeating([](const views::View* view) {
+          const auto* v = views::AsViewClass<CrOSNextDeskIconButton>(view);
+          CHECK(v);
+          if (v->IsViewHighlighted()) {
+            return true;
+          }
+          if (v->state_ != State::kActive) {
+            return false;
+          }
+          return v->paint_as_active_ ||
+                 (v->bar_view_->dragged_item_over_bar() &&
+                  v->IsPointOnButton(
+                      v->bar_view_->last_dragged_item_screen_location()));
+        }));
+  }
 }
 
 CrOSNextDeskIconButton::~CrOSNextDeskIconButton() = default;

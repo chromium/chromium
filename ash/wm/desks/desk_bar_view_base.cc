@@ -35,6 +35,7 @@
 #include "base/uuid.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event_observer.h"
@@ -502,10 +503,12 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
       base::BindRepeating(&DeskBarViewBase::ScrollToPreviousPage,
                           base::Unretained(this)),
       /*is_left_arrow=*/true, this));
+  left_scroll_button_->RemoveFromFocusList();
   right_scroll_button_ = AddChildView(std::make_unique<ScrollArrowButton>(
       base::BindRepeating(&DeskBarViewBase::ScrollToNextPage,
                           base::Unretained(this)),
       /*is_left_arrow=*/false, this));
+  right_scroll_button_->RemoveFromFocusList();
 
   // Make the scroll content view animatable by painting to a layer.
   scroll_view_contents_ =

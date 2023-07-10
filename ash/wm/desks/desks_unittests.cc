@@ -5,8 +5,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "ash/wm/desks/desks_histogram_enums.h"
-#include "build/build_config.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
@@ -19,7 +17,6 @@
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/ash_prefs.h"
-#include "ash/public/cpp/debug_utils.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/multi_user_window_manager_delegate.h"
@@ -60,6 +57,7 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desk_textfield.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
@@ -75,6 +73,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
+#include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -90,13 +89,9 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/callback_forward.h"
-#include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
@@ -9298,6 +9293,18 @@ class DeskBarTest
     EXPECT_TRUE(GetDeskBarView(root, DeskBarViewBase::Type::kOverview));
   }
 
+  void CheckHighlight(OverviewHighlightableView* view, bool highlighted) {
+    if (bar_type_ == DeskBarViewBase::Type::kOverview) {
+      ASSERT_EQ(view->IsViewHighlighted(), highlighted);
+    }
+  }
+
+  void CheckFocus(views::View* view, bool focused) {
+    if (bar_type_ == DeskBarViewBase::Type::kDeskButton) {
+      ASSERT_EQ(view->HasFocus(), focused);
+    }
+  }
+
   bool use_touch_gestures_;
   bool use_16_desks_;
   bool enable_jellyroll_;
@@ -9802,7 +9809,7 @@ TEST_P(DeskBarTest, CombineOrCloseDesk) {
   CloseDeskBar();
 }
 
-TEST_P(DeskBarTest, DeskRenameEsc) {
+TEST_P(DeskBarTest, DeskRenameKeyEsc) {
   NewDesk();
   OpenDeskBar();
 
@@ -9825,7 +9832,7 @@ TEST_P(DeskBarTest, DeskRenameEsc) {
   CloseDeskBar();
 }
 
-TEST_P(DeskBarTest, DeskRenameReturn) {
+TEST_P(DeskBarTest, DeskRenameKeyReturn) {
   NewDesk();
   OpenDeskBar();
 
@@ -9844,6 +9851,56 @@ TEST_P(DeskBarTest, DeskRenameReturn) {
   EXPECT_FALSE(desk_name_view->HasFocus());
   EXPECT_TRUE(desk->is_name_set_by_user());
   EXPECT_THAT(desk_name_view->GetText(), u"D1");
+
+  CloseDeskBar();
+}
+
+TEST_P(DeskBarTest, DeskRenameKeyTab) {
+  NewDesk();
+  OpenDeskBar();
+
+  auto* desk_bar_view = GetDeskBarView();
+  Desk* desk = DesksController::Get()->desks().front().get();
+  auto* mini_view = desk_bar_view->FindMiniViewForDesk(desk);
+  auto* desk_name_view = mini_view->desk_name_view();
+
+  ClickOrPressOnView(desk_name_view);
+  ASSERT_TRUE(desk_name_view->HasFocus());
+
+  // Commit by pressing tab on keyboard.
+  SendKey(ui::VKEY_D, ui::EF_SHIFT_DOWN);
+  SendKey(ui::VKEY_1);
+  SendKey(ui::VKEY_TAB);
+  EXPECT_FALSE(desk_name_view->HasFocus());
+  EXPECT_TRUE(desk->is_name_set_by_user());
+  EXPECT_THAT(desk_name_view->GetText(), u"D1");
+  CheckHighlight(desk_bar_view->mini_views()[1]->desk_preview(), true);
+  CheckFocus(desk_bar_view->mini_views()[1]->desk_preview(), true);
+
+  CloseDeskBar();
+}
+
+TEST_P(DeskBarTest, DeskRenameKeyShiftTab) {
+  NewDesk();
+  OpenDeskBar();
+
+  auto* desk_bar_view = GetDeskBarView();
+  Desk* desk = DesksController::Get()->desks().front().get();
+  auto* mini_view = desk_bar_view->FindMiniViewForDesk(desk);
+  auto* desk_name_view = mini_view->desk_name_view();
+
+  ClickOrPressOnView(desk_name_view);
+  ASSERT_TRUE(desk_name_view->HasFocus());
+
+  // Commit by pressing shift+tab on keyboard.
+  SendKey(ui::VKEY_D, ui::EF_SHIFT_DOWN);
+  SendKey(ui::VKEY_1);
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_FALSE(desk_name_view->HasFocus());
+  EXPECT_TRUE(desk->is_name_set_by_user());
+  EXPECT_THAT(desk_name_view->GetText(), u"D1");
+  CheckHighlight(mini_view->desk_preview(), true);
+  CheckFocus(mini_view->desk_preview(), true);
 
   CloseDeskBar();
 }
@@ -9900,7 +9957,7 @@ TEST_P(DeskBarTest, DeskRenameClickOffBar) {
   CloseDeskBar();
 }
 
-TEST_P(DeskBarTest, AutoHide) {
+TEST_P(DeskBarTest, AutoHideClickOrPress) {
   OpenDeskBar();
   auto* desk_bar_view = GetDeskBarView();
 
@@ -9909,6 +9966,308 @@ TEST_P(DeskBarTest, AutoHide) {
   empty_point.Offset(0, 2);
   ClickOrPressOnPoint(empty_point);
   EXPECT_FALSE(GetDeskBarView());
+}
+
+TEST_P(DeskBarTest, AutoHideKeyEsc) {
+  OpenDeskBar();
+  ASSERT_TRUE(GetDeskBarView());
+
+  // Pressing `Esc` hides the bar.
+  SendKey(ui::VKEY_ESCAPE);
+  EXPECT_FALSE(GetDeskBarView());
+}
+
+TEST_P(DeskBarTest, AutoHideKeyBack) {
+  OpenDeskBar();
+  ASSERT_TRUE(GetDeskBarView());
+
+  // Pressing `Back` hides the bar.
+  SendKey(ui::VKEY_BROWSER_BACK);
+  EXPECT_FALSE(GetDeskBarView());
+}
+
+TEST_P(DeskBarTest, ForwardTabbing) {
+  // Add a saved desk, so that the library button can show up.
+  AddSavedDeskEntry(desk_model(), base::Uuid::GenerateRandomV4(),
+                    "saved_desk_1", base::Time::Now(),
+                    DeskTemplateType::kSaveAndRecall);
+
+  // Create `max - 1` number of desks.
+  for (size_t i = 2; i <= desks_util::GetMaxNumberOfDesks() - 1; i++) {
+    NewDesk();
+  }
+  auto* desk_controller = DesksController::Get();
+  ASSERT_EQ(desk_controller->GetNumberOfDesks(),
+            static_cast<int>(desks_util::GetMaxNumberOfDesks()) - 1);
+
+  OpenDeskBar();
+  auto* desk_bar_view = GetDeskBarView();
+  ASSERT_TRUE(desk_bar_view);
+
+  // Tab through all desks.
+  for (int i = 0; i < desk_controller->GetNumberOfDesks(); i++) {
+    SendKey(ui::VKEY_TAB);
+    CheckHighlight(desk_bar_view->mini_views()[i]->desk_preview(), true);
+    CheckFocus(desk_bar_view->mini_views()[i]->desk_preview(), true);
+    SendKey(ui::VKEY_TAB);
+    CheckHighlight(desk_bar_view->mini_views()[i]->desk_name_view(), true);
+    CheckFocus(desk_bar_view->mini_views()[i]->desk_name_view(), true);
+  }
+
+  // Tab through new desk button.
+  SendKey(ui::VKEY_TAB);
+  if (enable_jellyroll_) {
+    CheckHighlight(desk_bar_view->new_desk_button(), true);
+    CheckFocus(desk_bar_view->new_desk_button(), true);
+  } else {
+    CheckHighlight(
+        desk_bar_view->expanded_state_new_desk_button()->GetInnerButton(),
+        true);
+    CheckFocus(
+        desk_bar_view->expanded_state_new_desk_button()->GetInnerButton(),
+        true);
+  }
+
+  // Tab through library button.
+  SendKey(ui::VKEY_TAB);
+  if (enable_jellyroll_) {
+    CheckHighlight(desk_bar_view->library_button(), true);
+    CheckFocus(desk_bar_view->library_button(), true);
+  } else {
+    CheckHighlight(
+        desk_bar_view->expanded_state_library_button()->GetInnerButton(), true);
+    CheckFocus(desk_bar_view->expanded_state_library_button()->GetInnerButton(),
+               true);
+  }
+
+  CloseDeskBar();
+}
+
+TEST_P(DeskBarTest, ReverseTabbing) {
+  // Add a saved desk, so that the library button can show up.
+  AddSavedDeskEntry(desk_model(), base::Uuid::GenerateRandomV4(),
+                    "saved_desk_1", base::Time::Now(),
+                    DeskTemplateType::kSaveAndRecall);
+
+  // Create `max - 1` number of desks.
+  for (size_t i = 2; i <= desks_util::GetMaxNumberOfDesks() - 1; i++) {
+    NewDesk();
+  }
+  auto* desk_controller = DesksController::Get();
+  ASSERT_EQ(desk_controller->GetNumberOfDesks(),
+            static_cast<int>(desks_util::GetMaxNumberOfDesks()) - 1);
+
+  OpenDeskBar();
+  auto* desk_bar_view = GetDeskBarView();
+  ASSERT_TRUE(desk_bar_view);
+
+  // Tab through library button.
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  if (enable_jellyroll_) {
+    CheckHighlight(desk_bar_view->library_button(), true);
+    CheckFocus(desk_bar_view->library_button(), true);
+  } else {
+    CheckHighlight(
+        desk_bar_view->expanded_state_library_button()->GetInnerButton(), true);
+    CheckFocus(desk_bar_view->expanded_state_library_button()->GetInnerButton(),
+               true);
+  }
+
+  // Tab through new desk button.
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  if (enable_jellyroll_) {
+    CheckHighlight(desk_bar_view->new_desk_button(), true);
+    CheckFocus(desk_bar_view->new_desk_button(), true);
+  } else {
+    CheckHighlight(
+        desk_bar_view->expanded_state_new_desk_button()->GetInnerButton(),
+        true);
+    CheckFocus(
+        desk_bar_view->expanded_state_new_desk_button()->GetInnerButton(),
+        true);
+  }
+
+  // Tab through all desks.
+  for (int i = desk_controller->GetNumberOfDesks() - 1; i >= 0; i--) {
+    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+    CheckHighlight(desk_bar_view->mini_views()[i]->desk_name_view(), true);
+    CheckFocus(desk_bar_view->mini_views()[i]->desk_name_view(), true);
+    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+    CheckHighlight(desk_bar_view->mini_views()[i]->desk_preview(), true);
+    CheckFocus(desk_bar_view->mini_views()[i]->desk_preview(), true);
+  }
+
+  CloseDeskBar();
+}
+
+TEST_P(DeskBarTest, CloseActiveDesk) {
+  // Create one app window and two more desks.
+  WindowHolder window_holder(CreateAppWindow());
+  NewDesk();
+  NewDesk();
+
+  // Move window to desk #1 and active the desk.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->desks()[0]->MoveWindowToDesk(
+      window_holder.window(), desks_controller->desks()[1].get(),
+      window_holder.window()->GetRootWindow(), /*unminimize=*/true);
+  ActivateDesk(desks_controller->desks()[1].get());
+
+  OpenDeskBar();
+  auto* desk_bar_view = GetDeskBarView();
+  ASSERT_TRUE(desk_bar_view);
+
+  // Highlight desk #1. For `kOverview` bar, it requires one more tab since
+  // there is an overview item.
+  const int tab_count = (bar_type_ == DeskBarViewBase::Type::kOverview ? 4 : 3);
+  for (int i = 0; i < tab_count; i++) {
+    SendKey(ui::VKEY_TAB);
+  }
+  CheckHighlight(desk_bar_view->mini_views()[1]->desk_preview(), true);
+  CheckFocus(desk_bar_view->mini_views()[1]->desk_preview(), true);
+
+  // Close active desk.
+  if (bar_type_ == DeskBarViewBase::Type::kOverview) {
+    // Closing the active desk in overview should remain in the current overview
+    // session.
+    SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+    EXPECT_TRUE(GetDeskBarView());
+    CloseDeskBar();
+  } else {
+    // Closing the active desk in desk button desk bar should trigger a desk
+    // switch and hide the bar.
+    DeskSwitchAnimationWaiter waiter;
+    SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+    waiter.Wait();
+    EXPECT_FALSE(GetDeskBarView());
+  }
+  EXPECT_THAT(desks_controller->GetActiveDeskIndex(), 0);
+  EXPECT_THAT(desks_controller->desks().size(), 2);
+  WaitForMilliseconds(
+      ToastData::kDefaultToastDuration.InMilliseconds() +
+      DesksController::kCloseAllWindowCloseTimeout.InMilliseconds());
+  EXPECT_FALSE(window_holder.is_valid());
+}
+
+TEST_P(DeskBarTest, MergeActiveDesk) {
+  // Create one app window and two more desks.
+  WindowHolder window_holder(CreateAppWindow());
+  NewDesk();
+  NewDesk();
+
+  // Move window to desk #1 and active the desk.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->desks()[0]->MoveWindowToDesk(
+      window_holder.window(), desks_controller->desks()[1].get(),
+      window_holder.window()->GetRootWindow(), /*unminimize=*/true);
+  ActivateDesk(desks_controller->desks()[1].get());
+
+  OpenDeskBar();
+  auto* desk_bar_view = GetDeskBarView();
+  ASSERT_TRUE(desk_bar_view);
+
+  // Highlight desk #1. For `kOverview` bar, it requires one more tab since
+  // there is an overview item.
+  const int tab_count = (bar_type_ == DeskBarViewBase::Type::kOverview ? 4 : 3);
+  for (int i = 0; i < tab_count; i++) {
+    SendKey(ui::VKEY_TAB);
+  }
+  CheckHighlight(desk_bar_view->mini_views()[1]->desk_preview(), true);
+  CheckFocus(desk_bar_view->mini_views()[1]->desk_preview(), true);
+
+  // Merge active desk.
+  if (bar_type_ == DeskBarViewBase::Type::kOverview) {
+    // Merging the active desk in overview should remain in the current overview
+    // session.
+    SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
+    EXPECT_TRUE(GetDeskBarView());
+    CloseDeskBar();
+  } else {
+    // Merging the active desk in desk button desk bar should trigger a desk
+    // switch and hide the bar.
+    DeskSwitchAnimationWaiter waiter;
+    SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
+    waiter.Wait();
+    EXPECT_FALSE(GetDeskBarView());
+  }
+  EXPECT_THAT(desks_controller->GetActiveDeskIndex(), 0);
+  EXPECT_THAT(desks_controller->desks().size(), 2);
+  EXPECT_TRUE(window_holder.is_valid());
+  EXPECT_TRUE(desks_controller->desks()[0]
+                  ->GetDeskContainerForRoot(Shell::GetPrimaryRootWindow())
+                  ->Contains(window_holder.window()));
+}
+
+TEST_P(DeskBarTest, CloseNonActiveDesk) {
+  // Create one app window and two more desks.
+  WindowHolder window_holder(CreateAppWindow());
+  NewDesk();
+  NewDesk();
+
+  // Move window to desk #1.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->desks()[0]->MoveWindowToDesk(
+      window_holder.window(), desks_controller->desks()[1].get(),
+      window_holder.window()->GetRootWindow(), /*unminimize=*/true);
+
+  OpenDeskBar();
+  auto* desk_bar_view = GetDeskBarView();
+  ASSERT_TRUE(desk_bar_view);
+
+  // Highlight desk #1.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  CheckHighlight(desk_bar_view->mini_views()[1]->desk_preview(), true);
+  CheckFocus(desk_bar_view->mini_views()[1]->desk_preview(), true);
+
+  // Close non-active desk.
+  SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(GetDeskBarView());
+  EXPECT_THAT(desks_controller->GetActiveDeskIndex(), 0);
+  EXPECT_THAT(desks_controller->desks().size(), 2);
+  WaitForMilliseconds(
+      ToastData::kDefaultToastDuration.InMilliseconds() +
+      DesksController::kCloseAllWindowCloseTimeout.InMilliseconds());
+  EXPECT_FALSE(window_holder.is_valid());
+
+  CloseDeskBar();
+}
+
+TEST_P(DeskBarTest, MergeNonActiveDesk) {
+  // Create one app window and two more desks.
+  WindowHolder window_holder(CreateAppWindow());
+  NewDesk();
+  NewDesk();
+
+  // Move window to desk #1.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->desks()[0]->MoveWindowToDesk(
+      window_holder.window(), desks_controller->desks()[1].get(),
+      window_holder.window()->GetRootWindow(), /*unminimize=*/true);
+
+  OpenDeskBar();
+  auto* desk_bar_view = GetDeskBarView();
+  ASSERT_TRUE(desk_bar_view);
+
+  // Highlight desk #1.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  CheckHighlight(desk_bar_view->mini_views()[1]->desk_preview(), true);
+  CheckFocus(desk_bar_view->mini_views()[1]->desk_preview(), true);
+
+  // Close non-active desk.
+  SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
+  EXPECT_TRUE(GetDeskBarView());
+  EXPECT_THAT(desks_controller->GetActiveDeskIndex(), 0);
+  EXPECT_THAT(desks_controller->desks().size(), 2);
+  EXPECT_TRUE(window_holder.is_valid());
+  EXPECT_TRUE(desks_controller->desks()[0]
+                  ->GetDeskContainerForRoot(Shell::GetPrimaryRootWindow())
+                  ->Contains(window_holder.window()));
+
+  CloseDeskBar();
 }
 
 namespace {

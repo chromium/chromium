@@ -53,19 +53,21 @@ CrOSNextDeskButtonBase::CrOSNextDeskButtonBase(
       this, gfx::Insets(kFocusRingHaloInset), kFocusRingRadius);
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
-  focus_ring->SetHasFocusPredicate(
-      base::BindRepeating([](const views::View* view) {
-        const auto* v = views::AsViewClass<CrOSNextDeskButtonBase>(view);
-        CHECK(v);
-        return v->IsViewHighlighted();
-      }));
+  if (bar_view_->type() == DeskBarViewBase::Type::kOverview) {
+    focus_ring->SetHasFocusPredicate(
+        base::BindRepeating([](const views::View* view) {
+          const auto* v = views::AsViewClass<CrOSNextDeskButtonBase>(view);
+          CHECK(v);
+          return v->IsViewHighlighted();
+        }));
+  }
 }
 
 CrOSNextDeskButtonBase::~CrOSNextDeskButtonBase() = default;
 
 void CrOSNextDeskButtonBase::OnFocus() {
-  if (bar_view_->overview_grid()) {
-    UpdateOverviewHighlightForFocusAndSpokenFeedback(this);
+  if (bar_view_->type() == DeskBarViewBase::Type::kOverview) {
+    UpdateOverviewHighlightForFocus(this);
   }
   UpdateFocusState();
   View::OnFocus();

@@ -4,10 +4,9 @@
 
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
 
-#include "ash/style/ash_color_provider.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/desks/templates/saved_desk_constants.h"
-#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -78,7 +77,7 @@ void SavedDeskSaveDeskButton::OnViewUnhighlighted() {
 }
 
 void SavedDeskSaveDeskButton::OnFocus() {
-  UpdateOverviewHighlightForFocusAndSpokenFeedback(this);
+  UpdateOverviewHighlightForFocus(this);
   OnViewHighlighted();
   View::OnFocus();
 }
