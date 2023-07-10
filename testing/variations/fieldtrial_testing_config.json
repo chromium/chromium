@@ -8661,6 +8661,29 @@
             ]
         }
     ],
+    "NTPRealboxSize": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "NtpRealboxWidthBehaviorParam": "wide"
+                    },
+                    "enable_features": [
+                        "NtpRealboxIsTall",
+                        "NtpRealboxWidthBehavior"
+                    ]
+                }
+            ]
+        }
+    ],
     "NaCLGPURefactorings": [
         {
             "platforms": [
