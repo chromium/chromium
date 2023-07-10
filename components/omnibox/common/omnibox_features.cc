@@ -584,20 +584,20 @@ BASE_FEATURE(kReportAssistedQueryStats,
 // resorts to recalculating it each time its needed.
 BASE_FEATURE(kRedoCurrentMatch,
              "OmniboxRedoCurrentMatch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, when reverting `OmniboxView`, it will first revert the
 // `OmniboxEditModel` before closing the popup. This should be more performant;
 // see comments in `OmniboxView::RevertAll()`.
 BASE_FEATURE(kRevertModelBeforeClosingPopup,
              "OmniboxRevertModelBeforeClosingPopup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, an existing `AutocompleteClient` will be used instead of
 // generating a new one in `OmniboxEditModel`.
 BASE_FEATURE(kUseExistingAutocompleteClient,
              "OmniboxUseExistingAutocompleteClient",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Omnibox reports the Searchbox Stats in the gs_lcrp= param in the
 // Search Results Page URL.
