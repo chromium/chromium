@@ -638,6 +638,16 @@ void BindLocalStoredCvcToStatement(const CreditCard& credit_card,
   s->BindInt64(index++, modification_date.ToTimeT());
 }
 
+void BindServerStoredCvcToStatement(int64_t instrument_id,
+                                    const std::u16string& cvc,
+                                    const AutofillTableEncryptor& encryptor,
+                                    sql::Statement* s) {
+  int index = 0;
+  s->BindInt64(index++, instrument_id);
+  BindEncryptedValueToColumn(s, index++, cvc, encryptor);
+  s->BindInt64(index++, AutofillClock::Now().ToTimeT());
+}
+
 void BindIBANToStatement(const IBAN& iban,
                          sql::Statement* s,
                          const AutofillTableEncryptor& encryptor) {
@@ -2196,6 +2206,40 @@ bool AutofillTable::UnmaskServerCreditCard(const CreditCard& masked,
 
 bool AutofillTable::MaskServerCreditCard(const std::string& id) {
   return DeleteFromUnmaskedCreditCards(id);
+}
+
+bool AutofillTable::AddServerCvc(int64_t instrument_id,
+                                 const std::u16string& cvc) {
+  sql::Statement s;
+  InsertBuilder(db_, s, kServerStoredCvcTable,
+                {kInstrumentId, kValueEncrypted, kLastUpdatedTimestamp});
+  BindServerStoredCvcToStatement(instrument_id, cvc, *autofill_table_encryptor_,
+                                 &s);
+  s.Run();
+  return db_->GetLastChangeCount() > 0;
+}
+
+bool AutofillTable::UpdateServerCvc(int64_t instrument_id,
+                                    const std::u16string& cvc) {
+  sql::Statement s;
+  UpdateBuilder(db_, s, kServerStoredCvcTable,
+                {kInstrumentId, kValueEncrypted, kLastUpdatedTimestamp},
+                "instrument_id=?1");
+  BindServerStoredCvcToStatement(instrument_id, cvc, *autofill_table_encryptor_,
+                                 &s);
+
+  s.Run();
+  return db_->GetLastChangeCount() > 0;
+}
+
+std::u16string AutofillTable::GetServerCvcForTesting(int64_t instrument_id) {
+  sql::Statement s;
+  SelectBuilder(db_, s, kServerStoredCvcTable, {kValueEncrypted},
+                "WHERE instrument_id = ?");
+  s.BindInt64(0, instrument_id);
+
+  return s.Step() ? UnencryptValueFromColumn(s, 0, *autofill_table_encryptor_)
+                  : u"";
 }
 
 bool AutofillTable::AddServerCardMetadata(

@@ -159,15 +159,23 @@ class AutofillTableTest : public testing::Test {
 
   void TearDown() override { OSCryptMocker::TearDown(); }
 
-  // Update tests verify that the date_modified is set correctly in the `column`
-  // of `table`. This function simplifies accessing it.
-  time_t GetDateModified(const std::string& guid,
+  // Get date_modifed `column` of `table_name` with specific `instrument_id` or
+  // `guid`.
+  time_t GetDateModified(base::StringPiece table_name,
                          base::StringPiece column,
-                         base::StringPiece table) {
+                         absl::variant<std::string, int64_t> id) {
     sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(
-        base::StrCat({"SELECT ", column, " FROM ", table, " WHERE guid = ?"})
+        base::StrCat({"SELECT ", column, " FROM ", table_name, " WHERE ",
+                      absl::holds_alternative<std::string>(id)
+                          ? "guid"
+                          : "instrument_id",
+                      " = ?"})
             .c_str()));
-    s.BindString(0, guid);
+    if (const std::string* guid = absl::get_if<std::string>(&id)) {
+      s.BindString(0, *guid);
+    } else {
+      s.BindInt64(0, absl::get<int64_t>(id));
+    }
     EXPECT_TRUE(s.Step());
     return s.ColumnInt64(0);
   }
@@ -1250,8 +1258,8 @@ TEST_F(AutofillTableTest, CreditCardCvc) {
   EXPECT_EQ(card.cvc(), db_card->cvc());
 
   // Verify last_updated_timestamp in local_stored_cvc table is set correctly.
-  EXPECT_EQ(GetDateModified(card.guid(), "last_updated_timestamp",
-                            "local_stored_cvc"),
+  EXPECT_EQ(GetDateModified("local_stored_cvc", "last_updated_timestamp",
+                            card.guid()),
             arbitrary_time.ToTimeT());
 
   // Set the current time to another value.
@@ -1262,11 +1270,11 @@ TEST_F(AutofillTableTest, CreditCardCvc) {
   card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Charles Grady");
   EXPECT_TRUE(table_->UpdateCreditCard(card));
   // credit_card table date_modified should be updated.
-  EXPECT_EQ(GetDateModified(card.guid(), "date_modified", "credit_cards"),
+  EXPECT_EQ(GetDateModified("credit_cards", "date_modified", card.guid()),
             some_later_time.ToTimeT());
   // local_stored_cvc table timestamp should not be updated.
-  EXPECT_EQ(GetDateModified(card.guid(), "last_updated_timestamp",
-                            "local_stored_cvc"),
+  EXPECT_EQ(GetDateModified("local_stored_cvc", "last_updated_timestamp",
+                            card.guid()),
             arbitrary_time.ToTimeT());
 
   // Set the current time to another value.
@@ -1281,8 +1289,8 @@ TEST_F(AutofillTableTest, CreditCardCvc) {
   // CVC should be updated to new CVC.
   EXPECT_EQ(u"234", db_card->cvc());
   // local_stored_cvc table timestamp should be updated.
-  EXPECT_EQ(GetDateModified(card.guid(), "last_updated_timestamp",
-                            "local_stored_cvc"),
+  EXPECT_EQ(GetDateModified("local_stored_cvc", "last_updated_timestamp",
+                            card.guid()),
             much_later_time.ToTimeT());
 
   // Remove the credit card. It should also remove cvc from local_stored_cvc
@@ -1294,6 +1302,36 @@ TEST_F(AutofillTableTest, CreditCardCvc) {
   cvc_removed_statement.BindString(0, card.guid());
   ASSERT_TRUE(cvc_removed_statement.is_valid());
   EXPECT_FALSE(cvc_removed_statement.Step());
+}
+
+// Tests that verify add, update server cvc function working as expected.
+TEST_F(AutofillTableTest, ServerCvc) {
+  const base::Time kArbitraryTime = base::Time::FromDoubleT(25);
+  TestAutofillClock test_clock;
+  test_clock.SetNow(kArbitraryTime);
+
+  int64_t kInstrumentId = 1111;
+  const std::u16string kCvc = u"123";
+  EXPECT_TRUE(table_->AddServerCvc(kInstrumentId, kCvc));
+  // Database does not allow adding same instrument_id twice.
+  EXPECT_FALSE(table_->AddServerCvc(kInstrumentId, kCvc));
+  EXPECT_EQ(table_->GetServerCvcForTesting(kInstrumentId), kCvc);
+  // Verify last_updated_timestamp in server_stored_cvc table is set correctly.
+  EXPECT_EQ(GetDateModified("server_stored_cvc", "last_updated_timestamp",
+                            kInstrumentId),
+            kArbitraryTime.ToTimeT());
+
+  // Set the current time to another value.
+  const base::Time kSomeLaterTime = base::Time::FromDoubleT(1000);
+  test_clock.SetNow(kSomeLaterTime);
+
+  const std::u16string kNewCvc = u"234";
+  EXPECT_TRUE(table_->UpdateServerCvc(kInstrumentId, kNewCvc));
+  EXPECT_EQ(table_->GetServerCvcForTesting(kInstrumentId), kNewCvc);
+  // Verify last_updated_timestamp in server_stored_cvc table is set correctly.
+  EXPECT_EQ(GetDateModified("server_stored_cvc", "last_updated_timestamp",
+                            kInstrumentId),
+            kSomeLaterTime.ToTimeT());
 }
 
 TEST_F(AutofillTableTest, AddFullServerCreditCard) {

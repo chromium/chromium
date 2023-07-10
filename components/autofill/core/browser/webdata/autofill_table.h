@@ -713,6 +713,16 @@ class AutofillTable : public WebDatabaseTable,
                               const std::u16string& full_number);
   bool MaskServerCreditCard(const std::string& id);
 
+  // Methods to add, update cvc in the `server_stored_cvc` table. Return value
+  // indicates if the operation is succeeded and value actually changed. It may
+  // return false when operation is success but no data is changed, e.g. delete
+  // an empty table.
+  bool AddServerCvc(int64_t instrument_id, const std::u16string& cvc);
+  bool UpdateServerCvc(int64_t instrument_id, const std::u16string& cvc);
+  // Methods for getting cvc from server_stored_cvc. For testing purpose only
+  // because CVC is populated to CreditCard via GetServerCreditCards.
+  std::u16string GetServerCvcForTesting(int64_t instrument_id);
+
   // Methods to add, update, remove and get the metadata for server cards and
   // addresses.
   bool AddServerCardMetadata(const AutofillMetadata& card_metadata);
