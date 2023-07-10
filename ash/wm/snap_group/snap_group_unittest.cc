@@ -1168,8 +1168,10 @@ class SnapGroupEntryPointArm2Test : public SnapGroupTest {
     EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
               secondary_window_state->GetStateType());
 
-    // TODO(b/276992238): add the snap ratio check back after the calculation is
-    // fixed.
+    EXPECT_EQ(work_area_bounds().width() * chromeos::kDefaultSnapRatio,
+              primary_window->bounds().width());
+    EXPECT_EQ(work_area_bounds().width() * chromeos::kDefaultSnapRatio,
+              secondary_window->bounds().width());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

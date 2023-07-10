@@ -1378,8 +1378,9 @@ int SplitViewController::GetDividerPosition(SnapPosition snap_position,
   int next_divider_position = snap_position == SnapPosition::kPrimary
                                   ? snap_width
                                   : divider_end_position - snap_width;
-  if (split_view_type_ == SplitViewType::kTabletType ||
-      IsSnapGroupEnabledInClamshellMode()) {
+  if (split_view_divider_) {
+    // The divider may be visible in tablet mode, or between two windows in a
+    // snap group in clamshell mode.
     next_divider_position -= kSplitviewDividerShortSideLength / 2;
   }
   return next_divider_position;
