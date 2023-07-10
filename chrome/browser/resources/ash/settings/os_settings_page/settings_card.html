@@ -4,15 +4,9 @@
     flex-direction: column;
     outline: none;
     position: relative;
-
-    /* The margin and padding here are doing two things: make the total
-    * separation 24px; and make scrollIntoView align the section header
-    * with the top item in the side nav menu. Both things are desired
-    * by Alan (bettes@). */
-    margin-bottom: 3px;
   }
 
-  #header .title {
+  #headerText {
     color: var(--cr-primary-text-color);
     font-size: 108%;
     font-weight: 400;
@@ -37,8 +31,10 @@
   }
 </style>
 <div id="header">
-  <h2 class="title" tabindex="-1"
-      aria-hidden$="[[getTitleHiddenStatus_(pageTitle)]]">[[pageTitle]]</h2>
+  <h2 id="headerText" tabindex="-1"
+      aria-hidden$="[[getHeaderTextAriaHidden_(headerText)]]">
+    [[headerText]]
+  </h2>
 </div>
 <div id="card">
   <slot></slot>

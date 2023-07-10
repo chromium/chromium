@@ -15,8 +15,8 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
-import '../os_settings_page/os_settings_section.js';
 import '../os_settings_page/os_settings_subpage.js';
+import '../os_settings_page/settings_card.js';
 import './metrics_consent_toggle_button.js';
 import './peripheral_data_access_protection_dialog.js';
 

@@ -3,7 +3,7 @@
     section="[[section_]]"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
-    <os-settings-section page-title="$i18n{printingPageTitle}">
+    <settings-card header-text="$i18n{printingPageTitle}">
       <cr-link-row id="cupsPrinters" label="$i18n{cupsPrintersTitle}"
           on-click="onTapCupsPrinters_"
           role-description="$i18n{subpageArrowRoleDescription}">
@@ -22,7 +22,7 @@
           external
           deep-link-focus-id$="[[Setting.kScanningApp]]">
       </cr-link-row>
-    </os-settings-section>
+    </settings-card>
   </div>
 
   <template is="dom-if" route-path="/cupsPrinters">

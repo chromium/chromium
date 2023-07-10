@@ -16,7 +16,7 @@
     focus-config="[[focusConfig_]]">
 
   <div route-path="default">
-    <os-settings-section page-title="$i18n{privacyPageTitle}">
+    <settings-card header-text="$i18n{privacyPageTitle}">
       <template is="dom-if" if="[[!isGuestMode_]]" restamp>
         <cr-link-row id="lockScreenSubpageTrigger"
             on-click="onConfigureLockClick_"
@@ -133,7 +133,7 @@
       <template is="dom-if" if="[[showSecureDnsSetting_]]">
         <settings-secure-dns prefs="{{prefs}}"></settings-secure-dns>
       </template>
-    </os-settings-section>
+    </settings-card>
   </div>
 
   <template is="dom-if" if="[[!isGuestMode_]]" restamp>

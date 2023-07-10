@@ -8,7 +8,7 @@
     section="[[section_]]"
     focus-config="[[focusConfig_]]">
   <div id="main" route-path="default">
-    <os-settings-section page-title="$i18n{dateTimePageTitle}">
+    <settings-card header-text="$i18n{dateTimePageTitle}">
       <template is="dom-if"
           if="[[!prefs.cros.flags.fine_grained_time_zone_detection_enabled.value]]"
           restamp>
@@ -51,7 +51,7 @@
           <cr-policy-indicator indicator-type="parent"></cr-policy-indicator>
         </template>
       </cr-link-row>
-    </os-settings-section>
+    </settings-card>
   </div>
 
   <template is="dom-if" route-path="/dateTime/timeZone">

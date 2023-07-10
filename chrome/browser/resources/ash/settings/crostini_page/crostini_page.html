@@ -4,7 +4,7 @@
     section="[[section_]]"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
-    <os-settings-section page-title="$i18n{crostiniPageTitle}">
+    <settings-card header-text="$i18n{crostiniPageTitle}">
       <div id="crostini" class="settings-box two-line first"
           actionable$="[[prefs.crostini.enabled.value]]"
           on-click="onSubpageClick_">
@@ -77,7 +77,7 @@
           </template>
         </div>
       </template>
-    </os-settings-section>
+    </settings-card>
   </div>
 
   <template is="dom-if" route-path="/crostini/details">

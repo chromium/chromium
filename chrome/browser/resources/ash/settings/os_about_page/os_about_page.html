@@ -84,7 +84,7 @@
       section="[[section_]]"
       focus-config="[[focusConfig_]]">
     <div route-path="default">
-      <os-settings-section page-title="$i18n{aboutOsPageTitle}">
+      <settings-card header-text="$i18n{aboutOsPageTitle}">
         <div class="settings-box two-line first">
           <img id="product-logo" on-click="onProductLogoClick_"
               srcset="chrome://theme/current-channel-logo@1x 1x,
@@ -238,9 +238,9 @@
             hidden$="[[!isManaged_]]"
             external>
         </cr-link-row>
-      </os-settings-section>
+      </settings-card>
 
-      <os-settings-section>
+      <settings-card>
         <div class="settings-box padded block first">
           <div class="info-section">
             <div class="secondary">$i18n{aboutOsProductTitle}</div>
@@ -282,7 +282,7 @@
           <img src="[[regulatoryInfo_.url]]" alt="[[regulatoryInfo_.text]]"
             hidden$="[[!shouldShowRegulatoryInfo_(regulatoryInfo_)]]">
         </div>
-      </os-settings-section>
+      </settings-card>
     </div>
 
     <template is="dom-if" route-path="/help/details">

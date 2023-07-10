@@ -1,7 +1,7 @@
 <style include="settings-shared"></style>
 
 <div route-path="default">
-  <os-settings-section page-title="$i18n{resetPageTitle}">
+  <settings-card header-text="$i18n{resetPageTitle}">
     <div class="settings-box two-line first">
       <div class="start" id="title" aria-hidden="true">
         $i18n{powerwashTitle}
@@ -19,7 +19,7 @@
         $i18n{powerwashButton}
       </cr-button>
     </div>
-  </os-settings-section>
+  </settings-card>
 </div>
 
 <template is="dom-if" if="[[showPowerwashDialog_]]" restamp>

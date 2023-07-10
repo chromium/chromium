@@ -44,7 +44,7 @@
     section="[[section_]]"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
-    <os-settings-section page-title="$i18n{osPeoplePageTitle}">
+    <settings-card header-text="$i18n{osPeoplePageTitle}">
       <div class="settings-box first two-line">
         <template is="dom-if" if="[[syncStatus]]">
           <!-- Does not use <cr-link-row> due to custom aria label. -->
@@ -87,7 +87,7 @@
         <settings-parental-controls-page>
         </settings-parental-controls-page>
       </template>
-    </os-settings-section>
+    </settings-card>
   </div>
 
   <template is="dom-if" route-path="/osSyncSetup">

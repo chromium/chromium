@@ -13,7 +13,7 @@
     section="[[section_]]"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
-    <os-settings-section page-title="$i18n{osSearchPageTitle}">
+    <settings-card header-text="$i18n{osSearchPageTitle}">
       <template is="dom-if" if="[[!shouldShowQuickAnswersSettings_]]">
         <settings-search-engine
             deep-link-focus-id$="[[Setting.kPreferredSearchEngine]]">
@@ -39,7 +39,7 @@
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
       </template>
-    </os-settings-section>
+    </settings-card>
   </div>
 
   <template is="dom-if" if="[[shouldShowQuickAnswersSettings_]]">
