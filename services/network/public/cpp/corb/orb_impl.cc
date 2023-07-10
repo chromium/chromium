@@ -218,6 +218,7 @@ Decision OpaqueResponseBlockingAnalyzer::Init(
     const GURL& request_url,
     const absl::optional<url::Origin>& request_initiator,
     mojom::RequestMode request_mode,
+    mojom::RequestDestination request_destination_from_renderer,
     const network::mojom::URLResponseHead& response) {
   // Exclude responses that ORB doesn't apply to.
   if (!IsOpaqueResponse(request_initiator, request_mode, response))
@@ -248,6 +249,8 @@ Decision OpaqueResponseBlockingAnalyzer::Init(
   // media) and to the subsequent range requests (deciding which URLs from the
   // chain to validate against the ones in the store of validated URLs).
   final_request_url_ = request_url;
+
+  request_destination_from_renderer_ = request_destination_from_renderer;
 
   // 1. Let mimeType be the result of extracting a MIME type from response's
   //    header list.
@@ -462,11 +465,21 @@ bool OpaqueResponseBlockingAnalyzer::ShouldReportBlockedResponse() const {
 ResponseAnalyzer::BlockedResponseHandling
 OpaqueResponseBlockingAnalyzer::ShouldHandleBlockedResponseAs() const {
   // "ORB v0.1" uses CORB-style error handling with injecting an empty response.
-  // Later versions use ORB-specified error handling, by injecting a network
-  // error.
-  return base::FeatureList::IsEnabled(features::kOpaqueResponseBlockingV02)
-             ? BlockedResponseHandling::kNetworkError
-             : BlockedResponseHandling::kEmptyResponse;
+  // "ORB v0.2" uses ORB-specified error handling (injecting a network error)
+  // for non-script fetches, by injecting a network error.
+  // "ORB errors-for-all-fetches" uses ORB-specified error handling everywhere.
+
+  if (base::FeatureList::IsEnabled(
+          features::kOpaqueResponseBlockingErrorsForAllFetches)) {
+    return BlockedResponseHandling::kNetworkError;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kOpaqueResponseBlockingV02) &&
+      request_destination_from_renderer_ != mojom::RequestDestination::kEmpty) {
+    return BlockedResponseHandling::kNetworkError;
+  }
+
+  return BlockedResponseHandling::kEmptyResponse;
 }
 
 void OpaqueResponseBlockingAnalyzer::ReportOrbBlockedAndCorbDidnt() const {

@@ -103,8 +103,9 @@ CrossOriginReadBlockingChecker::CrossOriginReadBlockingChecker(
   DCHECK(!callback_.is_null());
 
   corb_analyzer_ = network::corb::ResponseAnalyzer::Create(corb_state);
-  auto decision = corb_analyzer_->Init(request.url, request.request_initiator,
-                                       request.mode, response);
+  auto decision =
+      corb_analyzer_->Init(request.url, request.request_initiator, request.mode,
+                           request.destination, response);
   switch (decision) {
     case network::corb::ResponseAnalyzer::Decision::kBlock:
       OnBlocked();

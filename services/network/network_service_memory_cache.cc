@@ -132,9 +132,9 @@ bool CheckCrossOriginReadBlocking(const ResourceRequest& resource_request,
   // here.
   corb::PerFactoryState state;
   auto analyzer = corb::ResponseAnalyzer::Create(state);
-  corb::ResponseAnalyzer::Decision decision =
-      analyzer->Init(resource_request.url, resource_request.request_initiator,
-                     resource_request.mode, response);
+  corb::ResponseAnalyzer::Decision decision = analyzer->Init(
+      resource_request.url, resource_request.request_initiator,
+      resource_request.mode, resource_request.destination, response);
 
   if (decision == corb::ResponseAnalyzer::Decision::kSniffMore) {
     const size_t size =

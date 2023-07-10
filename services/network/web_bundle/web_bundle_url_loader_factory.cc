@@ -908,9 +908,9 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
   }
 
   auto corb_analyzer = corb::ResponseAnalyzer::Create(corb_state_);
-  auto decision =
-      corb_analyzer->Init(loader->url(), loader->request_initiator(),
-                          loader->request_mode(), *response_head);
+  auto decision = corb_analyzer->Init(
+      loader->url(), loader->request_initiator(), loader->request_mode(),
+      loader->request_destination(), *response_head);
   switch (decision) {
     case network::corb::ResponseAnalyzer::Decision::kBlock:
       loader->BlockResponseForCorb(std::move(response_head));

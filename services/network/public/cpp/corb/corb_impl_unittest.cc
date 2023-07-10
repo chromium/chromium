@@ -2021,8 +2021,9 @@ class ResponseAnalyzerTest : public testing::Test,
     // Note that the `analyzer` will be destructed when `analyzer` goes out of
     // scope (the destructor may trigger logging of UMAs that some callers of
     // RunAnalyzerOnScenario attempt to verify).
-    ResponseAnalyzer::Decision decision = analyzer->Init(
-        request->url(), request->initiator(), request_mode, response);
+    ResponseAnalyzer::Decision decision =
+        analyzer->Init(request->url(), request->initiator(), request_mode,
+                       mojom::RequestDestination::kEmpty, response);
 
     // This vector holds the packets to be delivered.
     std::vector<const char*> packets_vector(scenario.packets);

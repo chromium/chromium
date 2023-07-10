@@ -1770,7 +1770,7 @@ void URLLoader::ContinueOnResponseStarted() {
     is_more_corb_sniffing_needed_ = true;
     auto decision =
         corb_analyzer_->Init(url_request_->url(), url_request_->initiator(),
-                             request_mode_, *response_);
+                             request_mode_, request_destination_, *response_);
     if (MaybeBlockResponseForCorb(decision))
       return;
   }
@@ -2506,17 +2506,19 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
 
   // todo(lukasza/vogelheim): https://crbug.com/827633#c5:
   // This preserves compatibility with current implementations, which use
-  // net::ERR_ABORTED when the resource is detachable. We will not carry this
-  // forward past "ORB v0.1", so that this check will go away once
-  // OpaqueResponseBlockingV02 is perma-enabled.
+  // net::ERR_ABORTED when the resource is detachable. This is also used for
+  // resources with an empty destination in "ORB v0.2". This behaviour will
+  // no longer be used once kOpaqueResponseBlockingErrorsForAllFetches is
+  // perma-enabled.
   if (corb_detachable_ && blocked_error_code == net::OK) {
-    CHECK(!base::FeatureList::IsEnabled(features::kOpaqueResponseBlockingV02));
+    CHECK(!base::FeatureList::IsEnabled(
+        features::kOpaqueResponseBlockingErrorsForAllFetches));
     blocked_error_code = net::ERR_ABORTED;
   }
 
   // Send empty body to the real URLLoaderClient. This preserves "ORB v0.1"
-  // behaviour and will also go away once OpaqueResponseBlockingV02 is
-  // perma-enabled.
+  // behaviour and will also go away once
+  // OpaqueResponseBlockingErrorsForAllFetches is perma-enabled.
   if (blocked_error_code == net::OK || blocked_error_code == net::ERR_ABORTED) {
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;

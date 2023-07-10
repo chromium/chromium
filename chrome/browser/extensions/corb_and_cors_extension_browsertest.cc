@@ -287,12 +287,12 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
     EXPECT_TRUE(resource_load_observer_->GetResource(url));
     EXPECT_EQ(0, (*resource_load_observer_->GetResource(url))->raw_body_bytes);
 
-    // For ORB "v0.2" the error code lets us determine precisely whether a
-    // fetch was blocked by ORB. For previous versions, we have to rely on
-    // circumstantial evidence (like an empty body, which could have other
-    // reasons).
+    // For later versions of ORB the error code lets us determine precisely
+    // whether a fetch was blocked by ORB. For "v0.1" and "v0.2" (for
+    // JS-initiated fetches), we have to rely on circumstantial evidence (like
+    // an empty body, which could have other reasons).
     if (base::FeatureList::IsEnabled(
-            network::features::kOpaqueResponseBlockingV02)) {
+            network::features::kOpaqueResponseBlockingErrorsForAllFetches)) {
       EXPECT_EQ(net::ERR_BLOCKED_BY_ORB,
                 (*resource_load_observer_->GetResource(url))->net_error);
     }
@@ -1677,10 +1677,13 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     // URLLoaderFactoryParams::is_corb_enabled set to the default, secure value
     // of `true`.
     //
-    // ORB v0.2 (and higher): Error message, because the fetch failed.
+    // ORB ErrorsForAllFetches: Error message, because the fetch failed.
+    // ORB v0.2: Empty result. ORB v0.2 can result in either network errors
+    //   or empty results. But in this test all fetches are initiated by script,
+    //   for which ORB v0.2 delivers empty responses, like earlier versions.
     // CORB & ORB v0.1: Empty result, because of no-cors.
     if (base::FeatureList::IsEnabled(
-            network::features::kOpaqueResponseBlockingV02)) {
+            network::features::kOpaqueResponseBlockingErrorsForAllFetches)) {
       EXPECT_THAT(fetch_result, HasSubstr("TypeError: Failed to fetch"));
     } else {
       EXPECT_EQ(fetch_result, "");

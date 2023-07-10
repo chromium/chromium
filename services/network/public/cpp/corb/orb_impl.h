@@ -36,6 +36,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer final
   Decision Init(const GURL& request_url,
                 const absl::optional<url::Origin>& request_initiator,
                 mojom::RequestMode request_mode,
+                mojom::RequestDestination request_destination_from_renderer,
                 const network::mojom::URLResponseHead& response) override;
   Decision Sniff(base::StringPiece data) override;
   Decision HandleEndOfSniffableResponseBody() override;
@@ -93,6 +94,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer final
 
   BlockingDecisionReason blocking_decision_reason_ =
       BlockingDecisionReason::kInvalid;
+
+  // The request destination. Note that this value always originates from
+  // the renderer.
+  mojom::RequestDestination request_destination_from_renderer_ =
+      mojom::RequestDestination::kEmpty;
 };
 
 }  // namespace corb

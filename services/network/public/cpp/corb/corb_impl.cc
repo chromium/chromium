@@ -585,6 +585,7 @@ Decision CrossOriginReadBlocking::CorbResponseAnalyzer::Init(
     const GURL& request_url,
     const absl::optional<url::Origin>& request_initiator,
     mojom::RequestMode request_mode,
+    mojom::RequestDestination /*request_destination_from_renderer*/,
     const mojom::URLResponseHead& response) {
   seems_sensitive_from_cors_heuristic_ =
       SeemsSensitiveFromCORSHeuristic(response);

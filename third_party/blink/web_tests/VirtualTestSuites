@@ -1874,7 +1874,16 @@
   {
     "prefix": "orb-v02",
     "platforms": ["Linux"],
-    "args": ["--enable-features=OpaqueResponseBlockingV01,OpaqueResponseBlockingV02"],
+    "args": ["--enable-features=OpaqueResponseBlockingV01,OpaqueResponseBlockingV02", "--disable-features=OpaqueResponseBlockingErrorsForAllFetches"],
+    "bases": [
+      "external/wpt/fetch/corb"
+    ],
+    "expires": "Jul 1, 2024"
+  },
+  {
+    "prefix": "orb-errors-for-all-fetches",
+    "platforms": ["Linux"],
+    "args": ["--enable-features=OpaqueResponseBlockingV01,OpaqueResponseBlockingV02,OpaqueResponseBlockingErrorsForAllFetches"],
     "bases": [
       "external/wpt/fetch/corb"
     ],

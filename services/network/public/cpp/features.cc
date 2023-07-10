@@ -120,10 +120,19 @@ BASE_FEATURE(kMdnsResponderGeneratedNameListing,
 
 // Enables ORB blocked responses being treated as errors (according to the spec)
 // rather than the current, CORB-style handling of injecting an empty response.
+// This exempts fetches initiated by scripts. (Technically, fetches with an
+// empty destination.)
 // This is ORB v0.2.
 // Implementing ORB in Chromium is tracked in https://crbug.com/1178928
 BASE_FEATURE(kOpaqueResponseBlockingV02,
              "OpaqueResponseBlockingV02",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Treat ORB blocked responses to script-initiated fetches as errors too.
+// Complements ORB v0.2, which exempts script-initiated fetches.
+// Implementing ORB in Chromium is tracked in https://crbug.com/1178928
+BASE_FEATURE(kOpaqueResponseBlockingErrorsForAllFetches,
+             "OpaqueResponseBlockingErrorsForAllFetches",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables preprocessing the Attribution API's trigger registration ping
