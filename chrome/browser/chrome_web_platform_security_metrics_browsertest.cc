@@ -2563,6 +2563,71 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   )"));
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CSPEESameOriginBlanketEnforcement) {
+  GURL url = https_server().GetURL("a.test", "/empty.html");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    const iframe = document.createElement("iframe");
+    iframe.csp = "script-src 'none'";
+    iframe.src = location.href;
+    document.body.appendChild(iframe);
+  )"));
+  CheckCounter(WebFeature::kCSPEESameOriginBlanketEnforcement, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CSPEECrossOrigin) {
+  GURL url = https_server().GetURL("a.test", "/empty.html");
+  GURL cross_origin_url = https_server().GetURL("b.test", "/empty.html");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_TRUE(
+      content::ExecJs(web_contents(), content::JsReplace(R"(
+    const iframe = document.createElement("iframe");
+    iframe.csp = "script-src 'none'";
+    iframe.src = $1;
+    document.body.appendChild(iframe);
+  )",
+                                                         cross_origin_url)));
+  CheckCounter(WebFeature::kCSPEESameOriginBlanketEnforcement, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CSPEESameOriginWithAllowCSPHeader) {
+  GURL url = http_server().GetURL("a.test",
+                                  "/set-header?"
+                                  "Allow-CSP-From: *");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_TRUE(content::ExecJs(web_contents(), content::JsReplace(R"(
+    const iframe = document.createElement("iframe");
+    iframe.csp = "script-src 'none'";
+    iframe.src = $1;
+    document.body.appendChild(iframe);
+  )",
+                                                                 url)));
+  CheckCounter(WebFeature::kCSPEESameOriginBlanketEnforcement, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CSPEESameOriginWithSameCSPHeader) {
+  GURL url = http_server().GetURL("a.test",
+                                  "/set-header?"
+                                  "Content-Security-Policy: img-src 'none'");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_TRUE(content::ExecJs(web_contents(), content::JsReplace(R"(
+    const iframe = document.createElement("iframe");
+    iframe.csp = "img-src 'none'";
+    iframe.src = $1;
+    document.body.appendChild(iframe);
+  )",
+                                                                 url)));
+  CheckCounter(WebFeature::kCSPEESameOriginBlanketEnforcement, 0);
+}
+
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:
 // [ ] CrossOriginOpenerPolicySameOrigin
 // [ ] CrossOriginOpenerPolicySameOriginAllowPopups

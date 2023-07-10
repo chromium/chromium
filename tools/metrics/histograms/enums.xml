@@ -43398,6 +43398,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4596" label="ContainerQueryEvalUnknown"/>
   <int value="4597" label="EventTimingPresentationPromiseResolvedAfterReport"/>
   <int value="4598" label="GetCoalescedEventsInInsecureContext"/>
+  <int value="4599" label="CSPEESameOriginBlanketEnforcement"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
