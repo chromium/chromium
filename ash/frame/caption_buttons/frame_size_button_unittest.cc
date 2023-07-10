@@ -1156,4 +1156,22 @@ TEST_F(MultitaskMenuTest, TabAndArrowKeyTraversal) {
   EXPECT_EQ(float_button, focus_manager->GetFocusedView());
 }
 
+// Tests that the menu always fits the display work area.
+TEST_F(MultitaskMenuTest, AdjustedMenuBounds) {
+  // Position the window so that the size button is slightly offscreen.
+  const gfx::Rect work_area_bounds_in_screen =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  GetWidget()->SetBounds(
+      gfx::Rect(gfx::Point(work_area_bounds_in_screen.right() - 50, 0),
+                GetWidget()->GetWindowBoundsInScreen().size()));
+  ASSERT_FALSE(
+      work_area_bounds_in_screen.Contains(size_button()->GetBoundsInScreen()));
+
+  // Hover over the visible part of the size button. Test that the menu fits
+  // onscreen.
+  ShowMultitaskMenu();
+  EXPECT_TRUE(work_area_bounds_in_screen.Contains(
+      GetMultitaskMenu()->GetBoundsInScreen()));
+}
+
 }  // namespace ash
