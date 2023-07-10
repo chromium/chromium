@@ -38,6 +38,25 @@ SurveyBitsData GetPrivacySettingsProductSpecificBitsData(Profile* profile) {
           {"Privacy Sandbox enabled", privacy_sandbox_enabled}};
 }
 
+// Generate the Product Specific bits data which accompanies M1 Ad Privacy
+// survey responses from |profile|.
+SurveyBitsData GetAdPrivacyProductSpecificBitsData(Profile* profile) {
+  const bool third_party_cookies_blocked =
+      static_cast<content_settings::CookieControlsMode>(
+          profile->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
+      content_settings::CookieControlsMode::kBlockThirdParty;
+
+  return {
+      {"3P cookies blocked", third_party_cookies_blocked},
+      {"Topics enabled",
+       profile->GetPrefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled)},
+      {"Fledge enabled",
+       profile->GetPrefs()->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled)},
+      {"Ad Measurement enabled",
+       profile->GetPrefs()->GetBoolean(
+           prefs::kPrivacySandboxM1AdMeasurementEnabled)},
+  };
+}
 }  // namespace
 
 namespace settings {
@@ -79,50 +98,112 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
   if (!hats_service)
     return;
 
-  if (interaction == TrustSafetyInteraction::OPENED_PRIVACY_SANDBOX) {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerPrivacySandbox, web_ui()->GetWebContents(),
-        features::kHappinessTrackingSurveysForDesktopPrivacySandboxTime.Get()
-            .InMilliseconds(),
-        GetPrivacySettingsProductSpecificBitsData(profile),
-        /*product_specific_string_data=*/{},
-        /*require_same_origin=*/true);
-  } else if (interaction == TrustSafetyInteraction::RAN_SAFETY_CHECK ||
-             interaction == TrustSafetyInteraction::USED_PRIVACY_CARD) {
-    // The control group for the Privacy guide HaTS experiment will need to see
-    // either safety check or the privacy page to be eligible and have never
-    // seen privacy guide.
-    if (features::kHappinessTrackingSurveysForDesktopSettingsPrivacyNoGuide
-            .Get() &&
-        Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
-            prefs::kPrivacyGuideViewed)) {
+  std::string trigger = "";
+  int timeout_ms = 0;
+  SurveyBitsData product_specific_bits_data = {};
+  bool require_same_origin = false;
+
+  switch (interaction) {
+    case TrustSafetyInteraction::OPENED_PRIVACY_SANDBOX: {
+      trigger = kHatsSurveyTriggerPrivacySandbox;
+      timeout_ms =
+          features::kHappinessTrackingSurveysForDesktopPrivacySandboxTime.Get()
+              .InMilliseconds();
+      product_specific_bits_data =
+          GetPrivacySettingsProductSpecificBitsData(profile);
+      require_same_origin = true;
+      break;
+    }
+    case TrustSafetyInteraction::RAN_SAFETY_CHECK:
+      [[fallthrough]];
+    case TrustSafetyInteraction::USED_PRIVACY_CARD: {
+      // The control group for the Privacy guide HaTS experiment will need to
+      // see either safety check or the privacy page to be eligible and have
+      // never seen privacy guide.
+      if (features::kHappinessTrackingSurveysForDesktopSettingsPrivacyNoGuide
+              .Get() &&
+          Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
+              prefs::kPrivacyGuideViewed)) {
+        return;
+      }
+      // If the privacy settings survey is explicitly targeting users who have
+      // not viewed the Privacy Sandbox page, and this user has viewed the page,
+      // do not attempt to show the privacy settings survey.
+      if (features::kHappinessTrackingSurveysForDesktopSettingsPrivacyNoSandbox
+              .Get() &&
+          Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
+              prefs::kPrivacySandboxPageViewed)) {
+        return;
+      }
+      trigger = kHatsSurveyTriggerSettingsPrivacy;
+      timeout_ms =
+          features::kHappinessTrackingSurveysForDesktopSettingsPrivacyTime.Get()
+              .InMilliseconds();
+      product_specific_bits_data =
+          GetPrivacySettingsProductSpecificBitsData(profile);
+      require_same_origin = true;
+      break;
+    }
+    case TrustSafetyInteraction::COMPLETED_PRIVACY_GUIDE: {
+      trigger = kHatsSurveyTriggerPrivacyGuide;
+      timeout_ms =
+          features::kHappinessTrackingSurveysForDesktopPrivacyGuideTime.Get()
+              .InMilliseconds();
+      require_same_origin = true;
+      break;
+    }
+    case TrustSafetyInteraction::OPENED_AD_PRIVACY: {
+      trigger = kHatsSurveyTriggerM1AdPrivacyPage;
+      timeout_ms =
+          features::kHappinessTrackingSurveysForDesktopM1AdPrivacyPageTime.Get()
+              .InMilliseconds();
+      require_same_origin = true;
+      product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
+      break;
+    }
+    case TrustSafetyInteraction::OPENED_TOPICS_SUBPAGE: {
+      trigger = kHatsSurveyTriggerM1TopicsSubpage;
+      timeout_ms =
+          features::kHappinessTrackingSurveysForDesktopM1TopicsSubpageTime.Get()
+              .InMilliseconds();
+      require_same_origin = true;
+      product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
+      break;
+    }
+    case TrustSafetyInteraction::OPENED_FLEDGE_SUBPAGE: {
+      trigger = kHatsSurveyTriggerM1FledgeSubpage;
+      timeout_ms =
+          features::kHappinessTrackingSurveysForDesktopM1FledgeSubpageTime.Get()
+              .InMilliseconds();
+      require_same_origin = true;
+      product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
+      break;
+    }
+    case TrustSafetyInteraction::OPENED_AD_MEASUREMENT_SUBPAGE: {
+      trigger = kHatsSurveyTriggerM1AdMeasurementSubpage;
+      timeout_ms =
+          features::
+              kHappinessTrackingSurveysForDesktopM1AdMeasurementSubpageTime
+                  .Get()
+                  .InMilliseconds();
+      require_same_origin = true;
+      product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
+      break;
+    }
+    case TrustSafetyInteraction::OPENED_PASSWORD_MANAGER:
+      [[fallthrough]];
+    case TrustSafetyInteraction::RAN_PASSWORD_CHECK: {
+      // Only relevant for the sentiment service
       return;
     }
-    // If the privacy settings survey is explicitly targeting users who have not
-    // viewed the Privacy Sandbox page, and this user has viewed the page, do
-    // not attempt to show the privacy settings survey.
-    if (features::kHappinessTrackingSurveysForDesktopSettingsPrivacyNoSandbox
-            .Get() &&
-        Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
-            prefs::kPrivacySandboxPageViewed)) {
-      return;
-    }
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerSettingsPrivacy, web_ui()->GetWebContents(),
-        features::kHappinessTrackingSurveysForDesktopSettingsPrivacyTime.Get()
-            .InMilliseconds(),
-        GetPrivacySettingsProductSpecificBitsData(profile),
-        /*product_specific_string_data=*/{},
-        /*require_same_origin=*/true);
-  } else if (interaction == TrustSafetyInteraction::COMPLETED_PRIVACY_GUIDE) {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerPrivacyGuide, web_ui()->GetWebContents(),
-        features::kHappinessTrackingSurveysForDesktopPrivacyGuideTime.Get()
-            .InMilliseconds(),
-        /*product_specific_bits_data=*/{},
-        /*product_specific_string_data=*/{},
-        /*require_same_origin=*/true);
   }
+  // If we haven't returned, a trigger must have been set in the switch above.
+  CHECK_NE(trigger, "");
+
+  hats_service->LaunchDelayedSurveyForWebContents(
+      trigger, web_ui()->GetWebContents(), timeout_ms,
+      product_specific_bits_data,
+      /*product_specific_string_data=*/{}, require_same_origin);
 }
 
 void HatsHandler::InformSentimentService(TrustSafetyInteraction interaction) {

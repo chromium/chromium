@@ -46,6 +46,11 @@
 constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
 constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
 constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
+constexpr char kHatsSurveyTriggerM1AdPrivacyPage[] = "m1-ad-privacy-page";
+constexpr char kHatsSurveyTriggerM1TopicsSubpage[] = "m1-topics-subpage";
+constexpr char kHatsSurveyTriggerM1FledgeSubpage[] = "m1-fledge-subpage";
+constexpr char kHatsSurveyTriggerM1AdMeasurementSubpage[] =
+    "m1-ad-measurement-subpage";
 constexpr char kHatsSurveyTriggerNtpModules[] = "ntp-modules";
 constexpr char kHatsSurveyTriggerNtpPhotosModuleOptOut[] =
     "ntp-photos-module-opt-out";
@@ -209,6 +214,30 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
       /*presupplied_trigger_id=*/absl::nullopt,
       std::vector<std::string>{"3P cookies blocked",
                                "Privacy Sandbox enabled"});
+
+  const auto ad_privacy_product_specific_bits_data =
+      std::vector<std::string>{"3P cookies blocked", "Topics enabled",
+                               "Fledge enabled", "Ad Measurement enabled"};
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForDesktopM1AdPrivacyPage,
+      kHatsSurveyTriggerM1AdPrivacyPage,
+      /*presupplied_trigger_id=*/absl::nullopt,
+      ad_privacy_product_specific_bits_data);
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForDesktopM1TopicsSubpage,
+      kHatsSurveyTriggerM1TopicsSubpage,
+      /*presupplied_trigger_id=*/absl::nullopt,
+      ad_privacy_product_specific_bits_data);
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForDesktopM1FledgeSubpage,
+      kHatsSurveyTriggerM1FledgeSubpage,
+      /*presupplied_trigger_id=*/absl::nullopt,
+      ad_privacy_product_specific_bits_data);
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForDesktopM1AdMeasurementSubpage,
+      kHatsSurveyTriggerM1AdMeasurementSubpage,
+      /*presupplied_trigger_id=*/absl::nullopt,
+      ad_privacy_product_specific_bits_data);
 
   // NTP modules survey.
   survey_configs.emplace_back(

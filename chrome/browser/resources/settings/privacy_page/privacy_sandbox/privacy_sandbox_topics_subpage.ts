@@ -17,6 +17,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../../hats_browser_proxy.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../../metrics_browser_proxy.js';
 
 import {PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest, TopicsState} from './privacy_sandbox_browser_proxy.js';
@@ -109,6 +110,9 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
 
     this.$.footer.querySelectorAll('a').forEach(
         link => link.title = this.i18n('opensInNewTab'));
+
+    HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
+        TrustSafetyInteraction.OPENED_TOPICS_SUBPAGE);
   }
 
   private isTopicsPrefManaged_(): boolean {
