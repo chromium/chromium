@@ -503,6 +503,8 @@ src/webgpu/shader/execution/shader_io/shared_structs.spec.ts
 src/webgpu/shader/execution/statement/increment_decrement.spec.ts
 src/webgpu/shader/validation/shader_validation_test.ts
 src/webgpu/shader/validation/const_assert/const_assert.spec.ts
+src/webgpu/shader/validation/decl/const.spec.ts
+src/webgpu/shader/validation/decl/override.spec.ts
 src/webgpu/shader/validation/decl/util.ts
 src/webgpu/shader/validation/decl/var_access_mode.spec.ts
 src/webgpu/shader/validation/expression/access/vector.spec.ts
