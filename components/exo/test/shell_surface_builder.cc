@@ -246,6 +246,13 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetAsMenu() {
   return SetAsPopup();
 }
 
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetClientSubmitsInPixelCoordinates(
+    bool enabled) {
+  DCHECK(!built_);
+  client_submits_surfaces_in_pixel_coordinates_ = enabled;
+  return *this;
+}
+
 ShellSurfaceBuilder& ShellSurfaceBuilder::SetWindowState(
     chromeos::WindowStateType window_state) {
   DCHECK(!built_);
@@ -307,6 +314,10 @@ std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
     shell_surface->SetPopup();
   if (menu_)
     shell_surface->SetMenu();
+  if (client_submits_surfaces_in_pixel_coordinates_.has_value()) {
+    shell_surface->set_client_submits_surfaces_in_pixel_coordinates(
+        client_submits_surfaces_in_pixel_coordinates_.value());
+  }
 
   SetCommonPropertiesAndCommitIfNecessary(shell_surface.get());
 

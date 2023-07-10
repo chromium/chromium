@@ -61,6 +61,7 @@ class ShellSurfaceBuilder {
   ShellSurfaceBuilder& SetParent(ShellSurface* shell_surface);
   ShellSurfaceBuilder& SetAsPopup();
   ShellSurfaceBuilder& SetAsMenu();
+  ShellSurfaceBuilder& SetClientSubmitsInPixelCoordinates(bool enabled);
 
   // Sets parameters defined in ClientControlledShellSurface.
   ShellSurfaceBuilder& SetWindowState(chromeos::WindowStateType window_state);
@@ -110,6 +111,7 @@ class ShellSurfaceBuilder {
   raw_ptr<ShellSurface, ExperimentalAsh> parent_shell_surface_ = nullptr;
   bool popup_ = false;
   bool menu_ = false;
+  absl::optional<bool> client_submits_surfaces_in_pixel_coordinates_;
 
   // ClientControlledShellSurface-specific parameters.
   absl::optional<chromeos::WindowStateType> window_state_;
