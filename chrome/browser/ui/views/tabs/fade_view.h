@@ -79,11 +79,11 @@ class FadeView : public views::View {
   }
 
  protected:
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
                            HoverCardFooterUpdates);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
                            HoverCardFooterShowsDiscardStatus);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
                            HoverCardFooterShowsMemoryUsage);
   raw_ptr<T> primary_view_ = nullptr;
   raw_ptr<U> fade_out_view_ = nullptr;

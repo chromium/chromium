@@ -349,7 +349,11 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
     : BubbleDialogDelegateView(tab,
                                views::BubbleBorder::TOP_LEFT,
                                views::BubbleBorder::STANDARD_SHADOW),
-      tab_style_(TabStyle::Get()) {
+      tab_style_(TabStyle::Get()),
+      discard_tab_treatment_enabled_(base::FeatureList::IsEnabled(
+          performance_manager::features::kDiscardedTabTreatment)),
+      memory_usage_in_hovercards_enabled_(base::FeatureList::IsEnabled(
+          performance_manager::features::kMemoryUsageInHovercards)) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   // Remove the accessible role so that hover cards are not read when they
@@ -381,7 +385,10 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
     thumbnail_view_ = AddChildView(std::make_unique<ThumbnailView>(this));
     thumbnail_view_->SetRoundedCorners(true, corner_radius_);
   }
-  footer_view_ = AddChildView(std::make_unique<FooterView>());
+
+  if (discard_tab_treatment_enabled_ || memory_usage_in_hovercards_enabled_) {
+    footer_view_ = AddChildView(std::make_unique<FooterView>());
+  }
 
   // Set up layout.
 
@@ -519,13 +526,9 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   domain_label_->SetData({domain, false});
 
   bool show_footer = alert_state_.has_value();
-  const bool discard_tab_treatment_enabled = base::FeatureList::IsEnabled(
-      performance_manager::features::kDiscardedTabTreatment);
-  const bool memory_usage_in_hovercards_enabled = base::FeatureList::IsEnabled(
-      performance_manager::features::kMemoryUsageInHovercards);
-  if (discard_tab_treatment_enabled || memory_usage_in_hovercards_enabled) {
+  if (discard_tab_treatment_enabled_ || memory_usage_in_hovercards_enabled_) {
     const bool show_discard_status =
-        tab_data.should_show_discard_status && discard_tab_treatment_enabled;
+        tab_data.should_show_discard_status && discard_tab_treatment_enabled_;
     const uint64_t tab_memory_usage_in_bytes =
         tab_data.tab_resource_usage
             ? tab_data.tab_resource_usage->memory_usage_in_bytes()
@@ -554,7 +557,9 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
 void TabHoverCardBubbleView::SetTextFade(double percent) {
   title_label_->SetFade(percent);
   domain_label_->SetFade(percent);
-  footer_view_->SetFade(percent);
+  if (footer_view_) {
+    footer_view_->SetFade(percent);
+  }
 }
 
 void TabHoverCardBubbleView::SetTargetTabImage(gfx::ImageSkia preview_image) {

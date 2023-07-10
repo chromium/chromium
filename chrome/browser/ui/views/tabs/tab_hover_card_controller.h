@@ -71,7 +71,7 @@ class TabHoverCardController
                            SetPreviewWithNoHoverCardDoesntCrash);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest, ShowPreviewsForTab);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest, DisablePreviewsForTab);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
                            HoverCardFooterShowsMemoryUsage);
   class EventSniffer;
 

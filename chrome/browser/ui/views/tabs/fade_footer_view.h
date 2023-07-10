@@ -55,11 +55,11 @@ class FooterRow : public FadeWrapper<views::View, T> {
   void UpdateIconAndLabelLayout(int max_footer_width);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
                            HoverCardFooterUpdates);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
                            HoverCardFooterShowsDiscardStatus);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
                            HoverCardFooterShowsMemoryUsage);
   raw_ptr<views::Label> footer_label_ = nullptr;
   raw_ptr<views::ImageView> icon_ = nullptr;
