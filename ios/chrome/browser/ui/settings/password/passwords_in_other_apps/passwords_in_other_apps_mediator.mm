@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check.h"
-#import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/histograms.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_manager.h"
 #import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
 
@@ -35,14 +34,12 @@
   // Since this action is appended to the main queue, at this stage,
   // self.consumer should have already been setup.
   DCHECK(self.consumer);
-  RecordEventOnUMA(PasswordsInOtherAppsActionAutoFillStatusChange);
   [self.consumer updateInstructionsWithCurrentPasswordAutoFillStatus];
 }
 
 #pragma mark - PasswordsInOtherAppsViewControllerDelegate
 
 - (void)openApplicationSettings {
-  RecordEventOnUMA(PasswordsInOtherAppsActionGoToIOSSetting);
   ios::provider::PasswordsInOtherAppsOpensSettings();
 }
 
