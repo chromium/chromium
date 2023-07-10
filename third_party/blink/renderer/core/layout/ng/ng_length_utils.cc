@@ -1595,9 +1595,11 @@ LogicalSize CalculateChildPercentageSize(
     const NGConstraintSpace& space,
     const NGBlockNode node,
     const LogicalSize child_available_size) {
-  // Anonymous block or spaces should pass the percent size straight through.
-  if (space.IsAnonymous() || node.IsAnonymousBlock())
-    return space.PercentageResolutionSize();
+  // Anonymous block or spaces should use the parent percent block-size.
+  if (space.IsAnonymous() || node.IsAnonymousBlock()) {
+    return {child_available_size.inline_size,
+            space.PercentageResolutionBlockSize()};
+  }
 
   // Table cell children don't apply the "percentage-quirk". I.e. if their
   // percentage resolution block-size is indefinite, they don't pass through
@@ -1615,9 +1617,11 @@ LogicalSize CalculateReplacedChildPercentageSize(
     const LogicalSize child_available_size,
     const NGBoxStrut& border_scrollbar_padding,
     const NGBoxStrut& border_padding) {
-  // Anonymous block or spaces should pass the percent size straight through.
-  if (space.IsAnonymous() || node.IsAnonymousBlock())
-    return space.ReplacedPercentageResolutionSize();
+  // Anonymous block or spaces should use the parent percent block-size.
+  if (space.IsAnonymous() || node.IsAnonymousBlock()) {
+    return {child_available_size.inline_size,
+            space.PercentageResolutionBlockSize()};
+  }
 
   // Table cell children don't apply the "percentage-quirk". I.e. if their
   // percentage resolution block-size is indefinite, they don't pass through
