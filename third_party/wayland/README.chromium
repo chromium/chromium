@@ -5,6 +5,7 @@ CPEPrefix: cpe:/a:wayland:wayland:1.19.0
 License: MIT
 License File: src/COPYING
 Security Critical: yes
+Shipped: yes
 
 Description:
 Wayland is a protocol for a compositor to talk to its clients as well as a C
