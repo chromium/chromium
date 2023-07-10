@@ -13,7 +13,7 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
   SigninCoordinatorResultCanceledByUser,
   // Sign-in has been done, but the user didn’t accept nor refuse to sync.
   SigninCoordinatorResultInterrupted,
-  // Sign-in has been done, the user has been explicitly accepted or refused
+  // Sign-in has been done, the user has explicitly accepted or refused
   // sync.
   SigninCoordinatorResultSuccess,
 };
