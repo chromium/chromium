@@ -7,13 +7,20 @@
     grid-template-columns: minmax(min-content, 286px) 50%;
   }
 
+  /* Show edit-button when user hover on the row container. */
   #container:hover accelerator-view::part(edit-icon),
-  #container:hover .edit-icon-container {
+  #container:hover .edit-button {
     opacity: 1;
   }
 
-  #container:focus-within accelerator-view::part(edit-icon),
-  #container:focus .edit-icon-container {
+  /* Show edit-button when user tab on the row container. */
+  #container:focus-visible accelerator-view::part(edit-icon),
+  #container:focus-visible .edit-button {
+    opacity: 1;
+  }
+
+  /* Show edit-button when tab on the edit-button itself. */
+  .edit-button:focus-visible {
     opacity: 1;
   }
 

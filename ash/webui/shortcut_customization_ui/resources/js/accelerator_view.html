@@ -25,6 +25,11 @@
     --iron-icon-width: 16px;
   }
 
+  /* Show edit-button when tab on the button itself. */
+  .edit-button:focus-visible {
+    opacity: 1;
+  }
+
 </style>
 
 <div id="container" class="flex-row" tabindex="-1">
@@ -42,9 +47,9 @@
         hidden="[[!shouldShowLockIcon(acceleratorInfo.locked, sourceIsLocked)]]">
       <iron-icon icon="shortcut-customization:lock"></iron-icon>
     </div>
-    <div class="edit-icon-container" part="edit-icon" on-click="onEditIconClicked"
+    <div class="edit-icon-container" on-click="onEditIconClicked"
         hidden="[[!shouldShowEditIcon(acceleratorInfo.locked, sourceIsLocked)]]">
-      <cr-icon-button class="edit-button" class="clickable-button"
+      <cr-icon-button class="edit-button" class="clickable-button" part="edit-icon"
           iron-icon="shortcut-customization:edit">
       </cr-icon-button>
     </div>
