@@ -36,6 +36,7 @@ class QuickDeleteBridge {
   // visited on all devices in the last 15 minutes.
   void GetLastVisitedDomainAndUniqueDomainCount(
       JNIEnv* env,
+      const jint time_period,
       const JavaParamRef<jobject>& j_callback);
 
  private:

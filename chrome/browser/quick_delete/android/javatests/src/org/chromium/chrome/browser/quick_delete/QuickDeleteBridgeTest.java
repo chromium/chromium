@@ -91,7 +91,9 @@ public class QuickDeleteBridgeTest {
     public void testLastVisitedDomainAndUniqueDomains_WhenNoVisits() throws TimeoutException {
         DomainVisitsCallback callback = new DomainVisitsCallback();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mQuickDeleteBridge.getLastVisitedDomainAndUniqueDomainCount(callback));
+                ()
+                        -> mQuickDeleteBridge.getLastVisitedDomainAndUniqueDomainCount(
+                                TimePeriod.LAST_15_MINUTES, callback));
 
         callback.mCallbackHelper.waitForCallback(0);
 
@@ -108,7 +110,9 @@ public class QuickDeleteBridgeTest {
 
         DomainVisitsCallback callback = new DomainVisitsCallback();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mQuickDeleteBridge.getLastVisitedDomainAndUniqueDomainCount(callback));
+                ()
+                        -> mQuickDeleteBridge.getLastVisitedDomainAndUniqueDomainCount(
+                                TimePeriod.LAST_15_MINUTES, callback));
 
         callback.mCallbackHelper.waitForCallback(0);
 

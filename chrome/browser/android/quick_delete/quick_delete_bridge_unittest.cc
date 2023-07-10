@@ -8,6 +8,7 @@
 #include "base/time/time_override.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/history/core/browser/history_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -93,5 +94,6 @@ TEST_F(QuickDeleteBridgeTest, GetLastVisitedDomainAndUniqueDomainCount) {
       .Times(1);
 
   bridge()->GetLastVisitedDomainAndUniqueDomainCount(
-      env(), JavaParamRef<jobject>(nullptr));
+      env(), static_cast<jint>(browsing_data::TimePeriod::LAST_15_MINUTES),
+      JavaParamRef<jobject>(nullptr));
 }

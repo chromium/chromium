@@ -71,11 +71,13 @@ public class QuickDeleteController implements QuickDeleteBridge.DomainVisitsCall
         mAnimationView = animationView;
         mAnimationView.setBackgroundResource(R.drawable.quick_delete_animation);
 
-        new QuickDeleteBridge(profile).getLastVisitedDomainAndUniqueDomainCount(this);
+        // Update the time period here to make it derived from the spinner.
+        new QuickDeleteBridge(profile).getLastVisitedDomainAndUniqueDomainCount(
+                TimePeriod.LAST_15_MINUTES, this);
     }
 
     /**
-     * @return True, if quick delete feature flag is enabled, false otherwise.
+     * @return True, if quick delete feature flag is enabled, false otherwise
      */
     public static boolean isQuickDeleteEnabled() {
         return sQuickDeleteForAndroidFlag.isEnabled();

@@ -19,8 +19,6 @@ using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 
 namespace {
-constexpr browsing_data::TimePeriod kTimePeriod =
-    browsing_data::TimePeriod::LAST_15_MINUTES;
 
 struct QuickDeleteDomainResult {
   std::string last_visited_domain;
@@ -53,9 +51,13 @@ void QuickDeleteBridge::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
 
 void QuickDeleteBridge::GetLastVisitedDomainAndUniqueDomainCount(
     JNIEnv* env,
+    const jint time_period,
     const JavaParamRef<jobject>& j_callback) {
-  base::Time begin_time = CalculateBeginDeleteTime(kTimePeriod);
-  base::Time end_time = CalculateEndDeleteTime(kTimePeriod);
+  browsing_data::TimePeriod period =
+      static_cast<browsing_data::TimePeriod>(time_period);
+
+  base::Time begin_time = CalculateBeginDeleteTime(period);
+  base::Time end_time = CalculateEndDeleteTime(period);
 
   history_service_->GetUniqueDomainsVisited(
       begin_time, end_time,

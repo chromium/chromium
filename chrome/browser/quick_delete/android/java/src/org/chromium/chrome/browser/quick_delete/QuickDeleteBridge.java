@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** The JNI bridge for Quick Delete on Android to fetch browsing history data. */
@@ -54,9 +55,10 @@ class QuickDeleteBridge {
      * minutes.
      * @param callback The callback to call with the last visited domain and domain count.
      */
-    public void getLastVisitedDomainAndUniqueDomainCount(@NonNull DomainVisitsCallback callback) {
+    public void getLastVisitedDomainAndUniqueDomainCount(
+            @TimePeriod int timePeriod, @NonNull DomainVisitsCallback callback) {
         QuickDeleteBridgeJni.get().getLastVisitedDomainAndUniqueDomainCount(
-                mNativeQuickDeleteBridge, callback);
+                mNativeQuickDeleteBridge, timePeriod, callback);
     }
 
     @CalledByNative
@@ -70,6 +72,6 @@ class QuickDeleteBridge {
         long init(QuickDeleteBridge caller, Profile profile);
         void destroy(long nativeQuickDeleteBridge, QuickDeleteBridge caller);
         void getLastVisitedDomainAndUniqueDomainCount(
-                long nativeQuickDeleteBridge, DomainVisitsCallback callback);
+                long nativeQuickDeleteBridge, int timePeriod, DomainVisitsCallback callback);
     }
 }
