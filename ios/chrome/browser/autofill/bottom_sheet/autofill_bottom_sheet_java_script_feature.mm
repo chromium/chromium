@@ -40,13 +40,13 @@ AutofillBottomSheetJavaScriptFeature::GetInstance() {
 }
 
 AutofillBottomSheetJavaScriptFeature::AutofillBottomSheetJavaScriptFeature()
-    : web::JavaScriptFeature(web::ContentWorld::kIsolatedWorld,
-                             {FeatureScript::CreateWithFilename(
-                                 kScriptName,
-                                 FeatureScript::InjectionTime::kDocumentEnd,
-                                 FeatureScript::TargetFrames::kAllFrames,
-                                 FeatureScript::ReinjectionBehavior::
-                                     kReinjectOnDocumentRecreation)}) {}
+    : web::JavaScriptFeature(
+          web::ContentWorld::kIsolatedWorld,
+          {FeatureScript::CreateWithFilename(
+              kScriptName,
+              FeatureScript::InjectionTime::kDocumentStart,
+              FeatureScript::TargetFrames::kAllFrames,
+              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)}) {}
 
 AutofillBottomSheetJavaScriptFeature::~AutofillBottomSheetJavaScriptFeature() =
     default;
