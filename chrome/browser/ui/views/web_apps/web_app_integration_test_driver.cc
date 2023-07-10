@@ -4017,6 +4017,10 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(Profile* profile,
   // App Service.
   if (app == nullptr) {
     app_registration_waiter.Await();
+
+    // Ensure the completion of any additional sub app uninstalls that were
+    // triggered.
+    provider->command_manager().AwaitAllCommandsCompleteForTesting();
   }
   if (app == nullptr && active_app_id_ == id) {
     active_app_id_.clear();
