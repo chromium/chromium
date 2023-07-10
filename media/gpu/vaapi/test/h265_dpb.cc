@@ -37,8 +37,8 @@ void H265DPB::StorePicture(scoped_refptr<H265Picture> pic,
                            H265Picture::ReferenceType ref) {
   DCHECK_LT(pics_.size(), max_num_pics_);
   LOG_PIC_INFO(__func__, pic, fetch_policy_);
-  LOG(INFO) << "Adding PicNum: " << pic->pic_order_cnt_val_
-            << " ref: " << static_cast<int>(ref);
+  DVLOG(3) << "Adding PicNum: " << pic->pic_order_cnt_val_
+           << " ref: " << static_cast<int>(ref);
   pic->ref_ = ref;
   pics_.push_back(std::move(pic));
 }

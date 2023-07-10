@@ -887,8 +887,8 @@ VideoDecoder::Result H265Decoder::DecodeNextFrame() {
 
   last_decoded_surface_ = output_queue.front()->surface;
   LOG_PIC_INFO(__func__, output_queue.front(), fetch_policy_);
-  LOG(INFO) << "Outputting frame poc: "
-            << output_queue.front()->pic_order_cnt_val_;
+  DVLOG(3) << "Outputting frame poc: "
+           << output_queue.front()->pic_order_cnt_val_;
   last_decoded_frame_visible_ = output_queue.front()->pic_output_flag_;
   output_queue.pop();
   return VideoDecoder::kOk;
