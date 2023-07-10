@@ -477,7 +477,7 @@ void LocalPrinterAsh::CreatePrintJob(mojom::PrintJobPtr job,
       ash::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
   ash::printing::proto::PrintSettings settings;
   settings.set_color(
-      printing::IsColorModelSelected(job->color_mode)
+      printing::IsColorModelSelected(job->color_mode).value()
           ? ash::printing::proto::PrintSettings_ColorMode_COLOR
           : ash::printing::proto::PrintSettings_ColorMode_BLACK_AND_WHITE);
   settings.set_duplex(
