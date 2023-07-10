@@ -5,6 +5,7 @@
 #include "net/base/ip_address.h"
 
 #include <algorithm>
+#include <array>
 #include <climits>
 
 #include "base/check_op.h"
@@ -209,10 +210,8 @@ IPAddress::IPAddress(const uint8_t* address, size_t address_len)
     : ip_address_(address, address_len) {}
 
 IPAddress::IPAddress(uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3) {
-  ip_address_.push_back(b0);
-  ip_address_.push_back(b1);
-  ip_address_.push_back(b2);
-  ip_address_.push_back(b3);
+  const uint8_t bytes[] = {b0, b1, b2, b3};
+  ip_address_.Assign(bytes, std::size(bytes));
 }
 
 IPAddress::IPAddress(uint8_t b0,
@@ -231,22 +230,9 @@ IPAddress::IPAddress(uint8_t b0,
                      uint8_t b13,
                      uint8_t b14,
                      uint8_t b15) {
-  ip_address_.push_back(b0);
-  ip_address_.push_back(b1);
-  ip_address_.push_back(b2);
-  ip_address_.push_back(b3);
-  ip_address_.push_back(b4);
-  ip_address_.push_back(b5);
-  ip_address_.push_back(b6);
-  ip_address_.push_back(b7);
-  ip_address_.push_back(b8);
-  ip_address_.push_back(b9);
-  ip_address_.push_back(b10);
-  ip_address_.push_back(b11);
-  ip_address_.push_back(b12);
-  ip_address_.push_back(b13);
-  ip_address_.push_back(b14);
-  ip_address_.push_back(b15);
+  const uint8_t bytes[] = {b0, b1, b2,  b3,  b4,  b5,  b6,  b7,
+                           b8, b9, b10, b11, b12, b13, b14, b15};
+  ip_address_.Assign(bytes, std::size(bytes));
 }
 
 IPAddress::~IPAddress() = default;
