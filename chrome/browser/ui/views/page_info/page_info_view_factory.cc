@@ -663,8 +663,10 @@ const ui::ImageModel PageInfoViewFactory::GetManagedPermissionIcon(
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon() {
-  return ui::ImageModel::FromVectorIcon(views::kEyeCrossedIcon, ui::kColorIcon,
-                                        GetIconSize());
+  return ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
+                                            ? views::kEyeCrossedRefreshIcon
+                                            : views::kEyeCrossedIcon,
+                                        ui::kColorIcon, GetIconSize());
 }
 
 // static
