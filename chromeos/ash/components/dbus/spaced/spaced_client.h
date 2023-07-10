@@ -29,6 +29,7 @@ class COMPONENT_EXPORT(SPACED_CLIENT) SpacedClient {
   };
 
   using GetSizeCallback = chromeos::DBusMethodCallback<int64_t>;
+  using BoolCallback = chromeos::DBusMethodCallback<bool>;
 
   SpacedClient(const SpacedClient&) = delete;
   SpacedClient& operator=(const SpacedClient&) = delete;
@@ -56,6 +57,23 @@ class COMPONENT_EXPORT(SPACED_CLIENT) SpacedClient {
 
   // Gets the total disk space available in bytes for usage on the device.
   virtual void GetRootDeviceSize(GetSizeCallback callback) = 0;
+
+  // Gets whether the user's cryptohome is mounted with quota enabled.
+  virtual void IsQuotaSupported(const std::string& path,
+                                BoolCallback callback) = 0;
+
+  // Gets the current disk space used by the given uid.
+  virtual void GetQuotaCurrentSpaceForUid(const std::string& path,
+                                          uint32_t uid,
+                                          GetSizeCallback callback) = 0;
+  // Gets the current disk space used by the given gid.
+  virtual void GetQuotaCurrentSpaceForGid(const std::string& path,
+                                          uint32_t gid,
+                                          GetSizeCallback callback) = 0;
+  // Gets the current disk space used by the given project_id.
+  virtual void GetQuotaCurrentSpaceForProjectId(const std::string& path,
+                                                uint32_t project_id,
+                                                GetSizeCallback callback) = 0;
 
   // Adds an observer.
   void AddObserver(Observer* const observer) {

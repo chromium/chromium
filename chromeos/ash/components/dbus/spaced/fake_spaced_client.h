@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_SPACED_FAKE_SPACED_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_SPACED_FAKE_SPACED_CLIENT_H_
 
+#include <map>
+
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
@@ -34,6 +36,19 @@ class COMPONENT_EXPORT(SPACED_CLIENT) FakeSpacedClient : public SpacedClient {
 
   void GetRootDeviceSize(GetSizeCallback callback) override;
 
+  void IsQuotaSupported(const std::string& path,
+                        BoolCallback callback) override;
+
+  void GetQuotaCurrentSpaceForUid(const std::string& path,
+                                  uint32_t uid,
+                                  GetSizeCallback callback) override;
+  void GetQuotaCurrentSpaceForGid(const std::string& path,
+                                  uint32_t gid,
+                                  GetSizeCallback callback) override;
+  void GetQuotaCurrentSpaceForProjectId(const std::string& path,
+                                        uint32_t project_id,
+                                        GetSizeCallback callback) override;
+
   void set_free_disk_space(absl::optional<int64_t> space) {
     free_disk_space_ = space;
   }
@@ -46,12 +61,32 @@ class COMPONENT_EXPORT(SPACED_CLIENT) FakeSpacedClient : public SpacedClient {
     root_device_size_ = size;
   }
 
+  void set_quota_supported(absl::optional<bool> quota_supported) {
+    quota_supported_ = quota_supported;
+  }
+
+  void set_quota_current_space_uid(uint32_t uid, int64_t space) {
+    quota_current_space_uid_[uid] = space;
+  }
+
+  void set_quota_current_space_gid(uint32_t gid, int64_t space) {
+    quota_current_space_gid_[gid] = space;
+  }
+
+  void set_quota_current_space_project_id(uint32_t project_id, int64_t space) {
+    quota_current_space_project_id_[project_id] = space;
+  }
+
   void set_connected(bool connected) { connected_ = connected; }
 
  private:
   absl::optional<int64_t> free_disk_space_;
   absl::optional<int64_t> total_disk_space_;
   absl::optional<int64_t> root_device_size_;
+  absl::optional<bool> quota_supported_;
+  std::map<uint32_t, int64_t> quota_current_space_uid_;
+  std::map<uint32_t, int64_t> quota_current_space_gid_;
+  std::map<uint32_t, int64_t> quota_current_space_project_id_;
 
   base::WeakPtrFactory<FakeSpacedClient> weak_ptr_factory_{this};
 };
