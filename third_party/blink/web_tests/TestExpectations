@@ -6631,4 +6631,4 @@ crbug.com/1456677 http/tests/devtools/security/interstitial-sidebar.js [ Failure
 crbug.com/1462462 http/tests/history/replacestate-post-to-get-2.html [ Failure Pass ]
 
 # Gardener 2023-07-10
-crbug.com/1463743 [ Linux ] external/wpt/scroll-animations/css/pseudo-on-scroller.html [ Failure Pass ]
+crbug.com/1463743 external/wpt/scroll-animations/css/pseudo-on-scroller.html [ Failure Pass ]
