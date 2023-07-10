@@ -45,7 +45,7 @@ void WebIDBCursor::Advance(uint32_t count, IDBRequest* request) {
 
   cursor_->Advance(
       count, WTF::BindOnce(&WebIDBCursor::AdvanceCallback,
-                           WTF::Unretained(this), WrapPersistent(request)));
+                           WTF::Unretained(this), WrapWeakPersistent(request)));
 }
 
 void WebIDBCursor::AdvanceCallback(IDBRequest* request,
@@ -79,7 +79,7 @@ void WebIDBCursor::CursorContinue(const IDBKey* key,
       cursor_->Prefetch(
           prefetch_amount_,
           WTF::BindOnce(&WebIDBCursor::PrefetchCallback, WTF::Unretained(this),
-                        WrapPersistent(request)));
+                        WrapWeakPersistent(request)));
 
       // Increase prefetch_amount_ exponentially.
       prefetch_amount_ *= 2;
@@ -98,7 +98,7 @@ void WebIDBCursor::CursorContinue(const IDBKey* key,
   cursor_->CursorContinue(
       IDBKey::Clone(key), IDBKey::Clone(primary_key),
       WTF::BindOnce(&WebIDBCursor::AdvanceCallback, WTF::Unretained(this),
-                    WrapPersistent(request)));
+                    WrapWeakPersistent(request)));
 }
 
 void WebIDBCursor::PrefetchCallback(IDBRequest* request,
