@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_result.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
+#include "content/browser/interest_group/bidding_and_auction_response.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/browser/interest_group/interest_group_storage.h"
@@ -31,6 +32,7 @@
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -44,6 +46,8 @@ struct AuctionConfig;
 
 namespace content {
 
+class AdAuctionPageData;
+struct AdAuctionRequestContext;
 class AuctionMetricsRecorder;
 class BrowserContext;
 class InterestGroupManagerImpl;
@@ -473,6 +477,12 @@ class CONTENT_EXPORT InterestGroupAuction
       base::OnceClosure on_seller_receiver_callback,
       AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback);
 
+  // Starts an auction based on a server response.
+  void StartFromServerResponse(
+      mojo_base::BigBuffer response,
+      AdAuctionPageData* ad_auction_page_data,
+      AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback);
+
   // Creates an InterestGroupAuctionReporter, after the auction has completed.
   // Takes ownership of the `auction_config`, so that the reporter can outlive
   // other auction-related classes.
@@ -608,6 +618,10 @@ class CONTENT_EXPORT InterestGroupAuction
   // join the k-anon sets if it's informed the winning ad has been navigated to,
   // so there's no need for anything else to invoke this method.
   base::flat_set<std::string> GetKAnonKeysToJoin() const;
+
+  BiddingAndAuctionResponse TakeBiddingAndAuctionResponse() {
+    return std::move(saved_response_).value();
+  }
 
   // Depending on the requests present and whether the features have already
   // been logged for this page, may log one or more Private Aggregation API web
@@ -929,11 +943,25 @@ class CONTENT_EXPORT InterestGroupAuction
   // creating it if needed.
   SubresourceUrlBuilder* SubresourceUrlBuilderIfReady();
 
+  void OnDecompressedServerResponse(
+      std::unique_ptr<data_decoder::DataDecoder> decoder,
+      AdAuctionRequestContext* request_context,
+      base::expected<mojo_base::BigBuffer, std::string> result);
+
+  void OnParsedServerResponse(
+      std::unique_ptr<data_decoder::DataDecoder> decoder,
+      AdAuctionRequestContext* request_context,
+      data_decoder::DataDecoder::ValueOrError result);
+
+  void OnLoadedWinningGroup(BiddingAndAuctionResponse response,
+                            absl::optional<StorageInterestGroup> maybe_group);
+
   // Tracing ID associated with the Auction. A nestable
-  // async "Auction" trace event lasts for the combined lifetime of `this` and a
-  // possible InterestGroupAuctionReporter. Sequential events that apply to the
-  // entire auction are logged using this ID, including potentially
-  // out-of-process events by bidder and seller worklet reporting methods.
+  // async "Auction" trace event lasts for the combined lifetime of `this`
+  // and a possible InterestGroupAuctionReporter. Sequential events that
+  // apply to the entire auction are logged using this ID, including
+  // potentially out-of-process events by bidder and seller worklet
+  // reporting methods.
   //
   // Cleared if the ID got transferred to InterestGroupAuctionReporter.
   absl::optional<uint64_t> trace_id_;
@@ -1080,6 +1108,8 @@ class CONTENT_EXPORT InterestGroupAuction
   base::RepeatingCallback<void(
       const PrivateAggregationRequests& private_aggregation_requests)>
       maybe_log_private_aggregation_web_features_callback_;
+
+  absl::optional<BiddingAndAuctionResponse> saved_response_;
 
   // All errors reported by worklets thus far.
   std::vector<std::string> errors_;

@@ -5588,6 +5588,9 @@ others/histograms.xml -->
   <int value="7" label="All bids rejected"/>
   <int value="8" label="(obsolete) Winning bidder worklet crashed"/>
   <int value="9" label="Seller can't use API"/>
+  <int value="10" label="Component lost top-level auction"/>
+  <int value="11" label="(obsolete) Winning component seller worklet crashed"/>
+  <int value="12" label="Invalid server response"/>
 </enum>
 
 <enum name="AudioCaptureDeviceError">
@@ -54701,6 +54704,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="Running component seller reportResult()"/>
   <int value="3" label="Running buyer reportWin()"/>
   <int value="4" label="All worklets completed running"/>
+  <int value="5" label="Initial state"/>
 </enum>
 
 <enum name="InterestingCookiePorts">

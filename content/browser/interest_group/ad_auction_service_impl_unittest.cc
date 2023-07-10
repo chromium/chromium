@@ -60,6 +60,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/test/fenced_frame_test_utils.h"
 #include "content/test/test_content_browser_client.h"
+#include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -7850,6 +7851,46 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
     return output;
   }
 
+  // Runs an ad auction using the config specified in `auction_config` in the
+  // frame `rfh`. Calls the provided `promise_callback` during the auction so
+  // that test code can resolve any promises. Returns the result of the
+  // auction, which is either a URL to the winning ad, or absl::nullopt if no
+  // ad won the auction.
+  absl::optional<GURL> RunAdAuctionWithPromiseAndFlushForFrame(
+      const blink::AuctionConfig& auction_config,
+      base::OnceCallback<void(mojo::Remote<blink::mojom::AbortableAdAuction>&
+                                  runner)> promise_callback,
+      RenderFrameHost* rfh) {
+    // Use a new service for each call. Keep the service alive as some calls
+    // (e.g., sending reports via the URN callback) require it not be deleted.
+    ad_auction_service_.reset();
+    mojo::Remote<blink::mojom::AbortableAdAuction> abortable_ad_auction;
+    AdAuctionServiceImpl::CreateMojoService(
+        rfh, ad_auction_service_.BindNewPipeAndPassReceiver());
+
+    base::RunLoop run_loop;
+    absl::optional<blink::FencedFrame::RedactedFencedFrameConfig> maybe_config;
+    ad_auction_service_->RunAdAuction(
+        auction_config, abortable_ad_auction.BindNewPipeAndPassReceiver(),
+        base::BindLambdaForTesting(
+            [&run_loop, &maybe_config](
+                bool manually_aborted,
+                const absl::optional<
+                    blink::FencedFrame::RedactedFencedFrameConfig>& config) {
+              EXPECT_FALSE(manually_aborted);
+              maybe_config = config;
+              run_loop.Quit();
+            }));
+    std::move(promise_callback).Run(abortable_ad_auction);
+    ad_auction_service_.FlushForTesting();
+    run_loop.Run();
+    if (!maybe_config) {
+      return absl::nullopt;
+    }
+    CHECK(maybe_config->urn_uuid().has_value());
+    return maybe_config->urn_uuid();
+  }
+
  protected:
   const GURL kKeyUrl = kUrlA.Resolve(kBAndAKeyPath);
   base::test::ScopedFeatureList feature_list_;
@@ -8251,6 +8292,93 @@ TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {
       GetAdAuctionDataAndFlushForFrame(test_origin);
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ("", result.value().request);
+}
+
+TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
+                     /*size_group=*/absl::nullopt,
+                     /*buyer_reporting_id=*/absl::nullopt,
+                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build(),
+      GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  absl::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  std::string response;
+  // CBOR response computed using https://cbor.me/
+  /* Response:
+  {
+    "adRenderURL":"https://c.test/ad.html",
+    "interestGroupName":"cars",
+    "interestGroupOwner":"https://a.test/",
+    "biddingGroups": {
+      "https://a.test/": [0]
+      },
+    "winReportingUrls": {
+      "buyerReportingUrls": {
+        "reportingUrl": "https://d.test/buyerReporting",
+        "interactionReportingUrls": {
+          "click": "https://e.test/buyerInteractionReporting"
+          }
+        },
+      "topLevelSellerReportingUrls": {
+        "reportingUrl": "https://d.test/sellerReporting",
+        "interactionReportingUrls": {
+          "click": "https://e.test/sellerInteractionReporting"
+          }
+        }
+      }
+    }
+  */
+  // Converted to base64 with `cat | sed 's/#.*//' | xxd -r -p | gzip | base64`
+  ASSERT_TRUE(base::Base64Decode(
+      "H4sIAAAAAAAAA4WQTQrCMBCFPYYgutZNu/"
+      "cCIhSFSg+QJoMNTZM4mf649CgVvKelpdCUost5vO/"
+      "xMZ+"
+      "ciRi0AEziqMqIrDuGIQ8IHIVMBBkVqkilEFLfT2hK61ozttjQeq1sLXUM1iB1rQSVe2NaPgH"
+      "9TOHkbLbjihhWfKBZS02AjJM0/nQLXEmeN/uRhwl/XoCaDRkbQQXqBkr9ltrNpJxP/"
+      "Lc6zKyGgSWtRz/VdfqvXlgBgjN06MXXWgPO//0F95RNebMBAAA=",
+      &response));
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(
+                    base::as_bytes(base::make_span(encrypted_response))));
+          }),
+      main_rfh());
+  EXPECT_TRUE(result);
 }
 
 }  // namespace content

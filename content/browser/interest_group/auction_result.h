@@ -51,7 +51,11 @@ enum class AuctionResult {
   // Obsolete:
   // kWinningComponentSellerWorkletCrashed = 11,
 
-  kMaxValue = kComponentLostAuction
+  // The bidding and auction server response could not be parsed or was
+  // invalid.
+  kInvalidServerResponse = 12,
+
+  kMaxValue = kInvalidServerResponse
 };
 
 }  // namespace content

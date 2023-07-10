@@ -33,6 +33,7 @@ struct AuctionConfig;
 
 namespace content {
 
+class AdAuctionPageData;
 class InterestGroupAuctionReporter;
 class BrowserContext;
 class InterestGroupManagerImpl;
@@ -89,6 +90,9 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   using IsInterestGroupApiAllowedCallback =
       InterestGroupAuction::IsInterestGroupApiAllowedCallback;
 
+  using GetAdAuctionPageDataCallback =
+      base::RepeatingCallback<AdAuctionPageData*()>;
+
   // Creates an entire FLEDGE auction. Single-use object.
   //
   // Arguments: `auction_worklet_manager`, `interest_group_manager`,
@@ -134,6 +138,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
+      GetAdAuctionPageDataCallback get_page_data_callback,
       mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
       RunAuctionCallback callback);
 
@@ -201,6 +206,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
+      GetAdAuctionPageDataCallback get_page_data_callback,
       mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
       RunAuctionCallback callback);
 
@@ -217,6 +223,13 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // groups that bid) or starts the reporting phase, depending on the value of
   // `success`.
   void OnBidsGeneratedAndScored(bool success);
+
+  // Invoked asynchronously by `auction_` once an auction started from a server
+  // response has completed. Performs much the same function as
+  // `OnBidsGeneratedAndScored()` but also provides reporting information from
+  // the server response to the `InterestGroupAuctionReporter`, so that the
+  // reporter skips running the worklets and uses the results from the server.
+  void OnServerResponseAuctionComplete(bool success);
 
   // Invoked asynchronously by `auction_` once the reporting phase has
   // completed. Records `interest_groups_that_bid`. If `success` is false, fails
@@ -257,6 +270,8 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // For checking if operations like running auctions, updating interest groups,
   // etc. are allowed or not.
   IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback_;
+
+  GetAdAuctionPageDataCallback get_page_data_callback_;
 
   mojo::Receiver<blink::mojom::AbortableAdAuction> abort_receiver_;
 

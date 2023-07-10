@@ -44,6 +44,7 @@ struct AuctionConfig;
 namespace content {
 
 class AuctionWorkletManager;
+struct BiddingAndAuctionResponse;
 class BrowserContext;
 class InterestGroupManagerImpl;
 class PrivateAggregationManager;
@@ -84,7 +85,11 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     kBuyerReportWin = 3,
     // All needed worklet reporting methods were invoked.
     kAllWorkletsCompleted = 4,
-    kMaxValue = kAllWorkletsCompleted
+
+    // This reporter has not yet started. Used as the initial value before
+    // `Start()` or `InitializeFromServerResponse()` are called.
+    kNotStarted = 5,
+    kMaxValue = kNotStarted
   };
 
   using PrivateAggregationRequests =
@@ -245,6 +250,11 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // reports itself, and decouple its lifetime from the frame, so that it can
   // continue running scripts after a frame is navigated away from.
   void Start(base::OnceClosure callback);
+
+  // Initializes the reporter based on the provided server response. This skips
+  // running reporting worklets and instead uses the results provided in the
+  // `response`. `Start()` still needs to be invoked to start reporting.
+  void InitializeFromServerResponse(const BiddingAndAuctionResponse& response);
 
   // Returns a callback that should be invoked once a fenced frame has been
   // navigated to the winning ad. May be invoked multiple times, safe to invoke
@@ -464,10 +474,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // destruction, if `navigated_to_winning_ad_` is true, this is the logged to
   // UMA. Otherwise, kAdNotUsed is.
   //
-  // The initial value should never be logged, as it's overwritten on Start(),
-  // which should always be invoked, and `navigated_to_winning_ad_` starts off
-  // as false, which means kAdNotUsed will take precedence, anyways.
-  ReporterState reporter_worklet_state_ = ReporterState::kAllWorkletsCompleted;
+  // The initial value should never be logged, as it's overwritten on `Start()`
+  // or `InitializeFromServerResponse()`, which should always be invoked.
+  ReporterState reporter_worklet_state_ = ReporterState::kNotStarted;
 
   base::WeakPtrFactory<InterestGroupAuctionReporter> weak_ptr_factory_{this};
 };

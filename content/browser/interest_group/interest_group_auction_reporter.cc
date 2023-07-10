@@ -218,8 +218,18 @@ void InterestGroupAuctionReporter::Start(base::OnceClosure callback) {
   }
   callback_ = std::move(callback);
 
+  if (reporter_worklet_state_ == ReporterState::kAllWorkletsCompleted) {
+    OnReportingComplete();
+    return;
+  }
   RequestSellerWorklet(&top_level_seller_winning_bid_info_,
                        /*top_seller_signals=*/absl::nullopt);
+}
+
+void InterestGroupAuctionReporter::InitializeFromServerResponse(
+    const BiddingAndAuctionResponse& response) {
+  reporter_worklet_state_ = ReporterState::kAllWorkletsCompleted;
+  // TODO(behamilton): Handle reporting.
 }
 
 base::RepeatingClosure

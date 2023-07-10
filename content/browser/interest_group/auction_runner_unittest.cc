@@ -33,6 +33,7 @@
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
+#include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_result.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
@@ -46,6 +47,7 @@
 #include "content/browser/interest_group/test_interest_group_manager_impl.h"
 #include "content/browser/interest_group/test_interest_group_private_aggregation_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
@@ -62,11 +64,13 @@
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "content/test/test_content_browser_client.h"
+#include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -1676,7 +1680,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     }
 
     interest_group_manager_->ClearLoggedData();
-
     source_id_ = ukm::AssignNewSourceId();
 
     task_environment()->FastForwardBy(between_join_run_auction_delay_);
@@ -1689,7 +1692,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
         private_aggregation_manager_.GetLogPrivateAggregationRequestsCallback(),
         std::move(auction_config), top_frame_origin_, frame_origin_, source_id_,
         GetClientSecurityState(), dummy_report_shared_url_loader_factory_,
-        IsInterestGroupApiAllowedCallback(),
+        IsInterestGroupApiAllowedCallback(), base::BindLambdaForTesting([&]() {
+          return ad_auction_page_data_.get();
+        }),
         abortable_ad_auction_.BindNewPipeAndPassReceiver(),
         base::BindOnce(&AuctionRunnerTest::OnAuctionComplete,
                        base::Unretained(this)));
@@ -2753,6 +2758,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
   // This is also tested only with promises at this level.
   absl::optional<base::Uuid> server_response_request_id_;
+  raw_ptr<AdAuctionPageData> ad_auction_page_data_;
 
   absl::optional<std::vector<absl::uint128>> auction_report_buyer_keys_;
   absl::optional<base::flat_map<
@@ -7905,7 +7911,48 @@ TEST_F(AuctionRunnerTest, PromiseServerResponseUpdateNonPromise) {
 
 // Server response passed in, but promise response called twice.
 TEST_F(AuctionRunnerTest, PromiseServerResponseResolveTwice) {
-  server_response_request_id_ = base::Uuid::ParseLowercase(kRequestId);
+  data_decoder::test::InProcessDataDecoder data_decoder;
+  const base::Uuid request_id = base::Uuid::ParseLowercase(kRequestId);
+  server_response_request_id_ = request_id;
+
+  const char kResponse[] = "{}";
+
+  // Same as the key in ad_auction_service_impl_unittest.cc.
+  // Randomly generated using EVP_HPKE_KEY_generate.
+  const uint8_t kTestPublicKey[] = {
+      0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b, 0x99, 0x59, 0x70,
+      0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
+      0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
+  };
+
+  quiche::ObliviousHttpHeaderKeyConfig config =
+      quiche::ObliviousHttpHeaderKeyConfig::Create(
+          '0', EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+          EVP_HPKE_AES_256_GCM)
+          .value();
+  quiche::ObliviousHttpRequest request =
+      quiche::ObliviousHttpRequest::CreateClientObliviousRequest(
+          "{}",
+          std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                      sizeof(kTestPublicKey)),
+          config)
+          .value();
+  quiche::ObliviousHttpRequest::Context client_context =
+      std::move(request).ReleaseContext();
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          kResponse, client_context)
+          ->EncapsulateAndSerialize();
+
+  std::string witnessed_hash = crypto::SHA256HashString(encrypted_response);
+  ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
+      web_contents()->GetPrimaryPage());
+  ad_auction_page_data_->AddAuctionResultWitnessForOrigin(kSeller,
+                                                          witnessed_hash);
+
+  AdAuctionRequestContext context(kSeller, {}, std::move(client_context));
+  ad_auction_page_data_->RegisterAdAuctionRequestContext(request_id,
+                                                         std::move(context));
 
   std::vector<StorageInterestGroup> bidders;
   bidders.emplace_back(MakeInterestGroup(
@@ -7922,15 +7969,20 @@ TEST_F(AuctionRunnerTest, PromiseServerResponseResolveTwice) {
 
   abortable_ad_auction_->ResolvedAuctionAdResponsePromise(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-      mojo_base::BigBuffer());
+      mojo_base::BigBuffer(
+          base::as_bytes(base::make_span(encrypted_response))));
 
   abortable_ad_auction_->ResolvedAuctionAdResponsePromise(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-      mojo_base::BigBuffer());
+      mojo_base::BigBuffer(
+          base::as_bytes(base::make_span(encrypted_response))));
 
   task_environment()->RunUntilIdle();
   EXPECT_EQ("ResolvedAuctionAdResponsePromise updating non-promise",
             TakeBadMessage());
+
+  // Clear this before the page expires to avoid the dangling ptr error.
+  ad_auction_page_data_ = nullptr;
 }
 
 // Trying to update perBuyerCurrencies twice.

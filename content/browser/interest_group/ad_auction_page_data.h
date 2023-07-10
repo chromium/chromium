@@ -18,7 +18,7 @@
 
 namespace content {
 
-struct AdAuctionRequestContext {
+struct CONTENT_EXPORT AdAuctionRequestContext {
   AdAuctionRequestContext(
       url::Origin seller,
       base::flat_map<url::Origin, std::vector<std::string>> group_names,

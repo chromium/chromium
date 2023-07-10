@@ -271,6 +271,8 @@ void AdAuctionServiceImpl::RunAdAuction(
       GetRefCountedTrustedURLLoaderFactory(),
       base::BindRepeating(&AdAuctionServiceImpl::IsInterestGroupAPIAllowed,
                           base::Unretained(this)),
+      base::BindRepeating(&AdAuctionServiceImpl::GetAdAuctionPageData,
+                          base::Unretained(this)),
       std::move(abort_receiver),
       base::BindOnce(&AdAuctionServiceImpl::OnAuctionComplete,
                      base::Unretained(this), std::move(callback),
@@ -560,6 +562,11 @@ bool AdAuctionServiceImpl::IsInterestGroupAPIAllowed(
   return GetContentClient()->browser()->IsInterestGroupAPIAllowed(
       &render_frame_host(), interest_group_api_operation, main_frame_origin_,
       origin);
+}
+
+AdAuctionPageData* AdAuctionServiceImpl::GetAdAuctionPageData() {
+  return PageUserData<AdAuctionPageData>::GetForPage(
+      render_frame_host().GetPage());
 }
 
 void AdAuctionServiceImpl::OnAuctionComplete(
