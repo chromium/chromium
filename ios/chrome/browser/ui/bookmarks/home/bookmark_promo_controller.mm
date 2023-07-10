@@ -80,7 +80,8 @@
 }
 
 - (void)dealloc {
-  CHECK(!_browser);
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!_browser);
 }
 
 - (void)shutdown {

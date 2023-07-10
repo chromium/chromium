@@ -143,7 +143,8 @@
 }
 
 - (void)dealloc {
-  CHECK(!self.authenticationService);
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!self.authenticationService);
 }
 
 #pragma mark - Private

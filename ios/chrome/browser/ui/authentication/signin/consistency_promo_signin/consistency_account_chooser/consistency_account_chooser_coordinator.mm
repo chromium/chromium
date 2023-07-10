@@ -63,7 +63,8 @@
 }
 
 - (void)dealloc {
-  CHECK(!self.mediator);
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!self.mediator);
 }
 
 #pragma mark - Properties

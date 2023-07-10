@@ -56,7 +56,8 @@
 }
 
 - (void)dealloc {
-  CHECK(!_historySyncCoordinator);
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!_historySyncCoordinator);
 }
 
 #pragma mark - Private

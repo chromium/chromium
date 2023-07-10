@@ -1222,7 +1222,8 @@ void InjectNTP(Browser* browser) {
 }
 
 - (void)dealloc {
-  CHECK(!self.sceneState.UIEnabled);
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!self.sceneState.UIEnabled);
 }
 
 // Formats string for display on iPadOS application switcher with the
