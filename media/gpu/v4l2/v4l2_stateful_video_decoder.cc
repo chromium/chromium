@@ -146,7 +146,6 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
   if (OUTPUT_queue_) {
     // This will also Deallocate() all buffers and issue a VIDIOC_STREAMOFF.
     OUTPUT_queue_.reset();
-    CAPTURE_queue_.reset();
   }
 
   // At this point we initialize the |OUTPUT_queue_| only, following
@@ -200,14 +199,14 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
   }
 
   profile_ = config.profile();
-  aspect_ratio_ = config.aspect_ratio();
   std::move(init_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                       DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(OUTPUT_queue_) << "V4L2StatefulVideoDecoder hasn't been Initialize()d";
+  DCHECK(OUTPUT_queue_)
+      << "V4L2StatefulVideoDecoder has not been Initialize()d.";
   DVLOGF(3) << buffer->AsHumanReadableString(/*verbose=*/false);
 
   if (buffer->end_of_stream()) {
@@ -233,12 +232,6 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     }
   }
 
-  DVLOGF(4) << "|OUTPUT_queue_| " << OUTPUT_queue_->QueuedBuffersCount() << "/"
-            << OUTPUT_queue_->AllocatedBuffersCount() << ", |CAPTURE_queue_| "
-            << (CAPTURE_queue_ ? CAPTURE_queue_->QueuedBuffersCount() : 0)
-            << "/"
-            << (CAPTURE_queue_ ? CAPTURE_queue_->AllocatedBuffersCount() : 0);
-
   absl::optional<V4L2WritableBufferRef> v4l2_buffer =
       OUTPUT_queue_->GetFreeBuffer();
   if (!v4l2_buffer) {
@@ -262,9 +255,7 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   if (PollOnceForResolutionChangeEvent()) {
     VLOGF(3) << "Got a resolution change event.";
-    if (!CAPTURE_queue_) {  // It's the first configuration event.
-      InitializeCAPTUREQueue();
-    }
+    // TODO(mcasas): Initialize |CAPTURE_queue|.
   }
 
   std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
@@ -314,10 +305,8 @@ void V4L2StatefulVideoDecoder::ApplyResolutionChange() {
 
 size_t V4L2StatefulVideoDecoder::GetMaxOutputFramePoolSize() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // VIDEO_MAX_FRAME is used as a size in V4L2 decoder drivers like Qualcomm
-  // Venus. We should not exceed this limit for the frame pool that the decoder
-  // writes into.
-  return VIDEO_MAX_FRAME;
+  NOTIMPLEMENTED();
+  return 0;
 }
 
 void V4L2StatefulVideoDecoder::SetDmaIncoherentV4L2(bool incoherent) {
@@ -367,186 +356,6 @@ bool V4L2StatefulVideoDecoder::PollOnceForResolutionChangeEvent() {
   DCHECK_EQ(event.type, static_cast<unsigned int>(V4L2_EVENT_SOURCE_CHANGE));
   DCHECK(event.u.src_change.changes & V4L2_EVENT_SRC_CH_RESOLUTION);
   return true;
-}
-
-bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(OUTPUT_queue_) << "V4L2StatefulVideoDecoder hasn't been Initialize()d";
-
-  CAPTURE_queue_ = base::WrapRefCounted(
-      new V4L2Queue(base::BindRepeating(&HandledIoctl, device_fd_.get()),
-                    /*schedule_poll_cb=*/base::DoNothing(),
-                    /*mmap_cb=*/base::BindRepeating(&Mmap, device_fd_.get()),
-                    V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE,
-                    /*destroy_cb=*/base::DoNothing()));
-
-  const auto v4l2_format_or_error = CAPTURE_queue_->GetFormat();
-  if (!v4l2_format_or_error.first || v4l2_format_or_error.second != kIoctlOk) {
-    return false;
-  }
-  const struct v4l2_format v4l2_format = *(v4l2_format_or_error.first);
-  VLOG(3) << "Out-of-the-box |CAPTURE_queue_| configuration: "
-          << V4L2FormatToString(v4l2_format);
-
-  const gfx::Size coded_size(v4l2_format.fmt.pix_mp.width,
-                             v4l2_format.fmt.pix_mp.height);
-  std::vector<ImageProcessor::PixelLayoutCandidate> candidates =
-      EnumeratePixelLayoutCandidates(coded_size);
-
-  // |visible_rect| is a subset of |coded_size| and represents the "natural"
-  // size of the video, e.g. a 1080p sequence could have 1920x1080 "natural" or
-  // |visible_rect|, but |coded_size| of 1920x1088 because of codec block
-  // alignment of 16 samples.
-  absl::optional<gfx::Rect> visible_rect = CAPTURE_queue_->GetVisibleRect();
-  if (!visible_rect) {
-    return false;
-  }
-  CHECK(gfx::Rect(coded_size).Contains(*visible_rect));
-
-  const auto num_codec_reference_frames = GetNumberOfReferenceFrames();
-
-  // Ask the pipeline to pick the output format from |CAPTURE_queue_|'s
-  // |candidates|. If needed, it will try to instantiate an ImageProcessor.
-  CroStatus::Or<ImageProcessor::PixelLayoutCandidate> status_or_output_format =
-      client_->PickDecoderOutputFormat(
-          candidates, *visible_rect,
-          aspect_ratio_.GetNaturalSize(*visible_rect),
-          /*output_size=*/absl::nullopt, num_codec_reference_frames,
-          /*use_protected=*/false, /*need_aux_frame_pool=*/false,
-          /*allocator=*/absl::nullopt);
-  if (!status_or_output_format.has_value()) {
-    return false;
-  }
-
-  const ImageProcessor::PixelLayoutCandidate output_format =
-      std::move(status_or_output_format).value();
-  const auto chosen_fourcc = output_format.fourcc;
-  const auto chosen_size = output_format.size;
-  const auto chosen_modifier = output_format.modifier;
-
-  // If our |client_| has a VideoFramePool to allocate buffers for us, we'll
-  // use it, otherwise we have to ask the driver.
-  const bool use_v4l2_allocated_buffers = !client_->GetVideoFramePool();
-
-  const v4l2_memory buffer_type =
-      use_v4l2_allocated_buffers ? V4L2_MEMORY_MMAP : V4L2_MEMORY_DMABUF;
-  // If we don't |use_v4l2_allocated_buffers|, request as many as possible
-  // (VIDEO_MAX_FRAME) since they are shallow allocations. Otherwise, allocate
-  // |num_codec_reference_frames| plus one for the video frame being decoded,
-  // and one for our client (presumably |client_|s ImageProcessor).
-  const size_t v4l2_num_buffers = use_v4l2_allocated_buffers
-                                      ? num_codec_reference_frames + 2
-                                      : VIDEO_MAX_FRAME;
-
-  VLOG(2) << "Chosen CAPTURE queue format: " << chosen_fourcc.ToString() << " "
-          << chosen_size.ToString() << " (modifier: 0x" << std::hex
-          << chosen_modifier << std::dec << "). Using " << v4l2_num_buffers
-          << " " << (use_v4l2_allocated_buffers ? "driver" : "|client_|s")
-          << " allocated buffers";
-
-  const auto allocated_buffers = CAPTURE_queue_->AllocateBuffers(
-      v4l2_num_buffers, buffer_type, /*incoherent=*/false);
-  CHECK_GE(allocated_buffers, v4l2_num_buffers);
-
-  if (!CAPTURE_queue_->Streamon()) {
-    return false;
-  }
-
-  if (use_v4l2_allocated_buffers) {
-    while (auto v4l2_buffer = CAPTURE_queue_->GetFreeBuffer()) {
-      if (!std::move(*v4l2_buffer).QueueMMap()) {
-        LOG(ERROR) << "CAPTURE queue failed to enqueue an MMAP buffer.";
-        return false;
-      }
-    }
-  } else {
-    while (auto v4l2_buffer = CAPTURE_queue_->GetFreeBuffer()) {
-      // At this point we haven't started decoding properly so if |client_|s
-      // frame pool is emptied, is because it has given us all its VideoFrames.
-      if (client_->GetVideoFramePool()->IsExhausted()) {
-        break;
-      }
-
-      auto video_frame = client_->GetVideoFramePool()->GetFrame();
-      CHECK(video_frame);
-      if (!std::move(*v4l2_buffer).QueueDMABuf(std::move(video_frame))) {
-        LOG(ERROR) << "CAPTURE queue failed to enqueue a DmaBuf buffer.";
-        return false;
-      }
-    }
-  }
-
-  return true;
-}
-
-std::vector<ImageProcessor::PixelLayoutCandidate>
-V4L2StatefulVideoDecoder::EnumeratePixelLayoutCandidates(
-    const gfx::Size& coded_size) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(CAPTURE_queue_) << "|CAPTURE_queue_| must be created at this point";
-
-  const auto v4l2_pix_fmts = EnumerateSupportedPixFmts(
-      base::BindRepeating(&HandledIoctl, device_fd_.get()),
-      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
-
-  std::vector<ImageProcessor::PixelLayoutCandidate> candidates;
-  for (const uint32_t& pixfmt : v4l2_pix_fmts) {
-    const auto candidate_fourcc = Fourcc::FromV4L2PixFmt(pixfmt);
-    if (!candidate_fourcc) {
-      continue;  // This is fine: means we don't recognize |candidate_fourcc|.
-    }
-
-    // TODO(mcasas): Consider what to do when the input bitstream is of higher
-    // bit depth: Some drivers (QC?) will support and enumerate both a high bit
-    // depth and a low bit depth pixel formats. We'd like to choose the higher
-    // bit depth and let Chrome's display pipeline decide what to do.
-
-    absl::optional<struct v4l2_format> readback_format =
-        CAPTURE_queue_->TryFormat(pixfmt, coded_size, /*buffer_size=*/0);
-    if (!readback_format) {
-      continue;
-    }
-    const gfx::Size adjusted_coded_size(readback_format->fmt.pix_mp.width,
-                                        readback_format->fmt.pix_mp.height);
-
-    candidates.emplace_back(ImageProcessor::PixelLayoutCandidate{
-        .fourcc = *candidate_fourcc, .size = adjusted_coded_size});
-
-    VLOG(2) << "CAPTURE queue candidate format: "
-            << candidate_fourcc->ToString() << ", "
-            << adjusted_coded_size.ToString();
-  }
-  return candidates;
-}
-
-size_t V4L2StatefulVideoDecoder::GetNumberOfReferenceFrames() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(CAPTURE_queue_) << "|CAPTURE_queue_| must be created at this point";
-
-  // Estimate the number of buffers needed for the |CAPTURE_queue_| and for
-  // codec reference requirements. For VP9 and AV1, the maximum number of
-  // reference frames is constant and 8 (for VP8 is 4); for H.264 and other
-  // ITU-T codecs, it depends on the bitstream. Here we query it from the
-  // driver anyway.
-  constexpr size_t kDefaultNumReferenceFrames = 8;
-  size_t num_codec_reference_frames = kDefaultNumReferenceFrames;
-
-  struct v4l2_ext_control ctrl = {.id = V4L2_CID_MIN_BUFFERS_FOR_CAPTURE};
-  struct v4l2_ext_controls ext_ctrls = {.count = 1, .controls = &ctrl};
-  if (HandledIoctl(device_fd_.get(), VIDIOC_G_EXT_CTRLS, &ext_ctrls) ==
-      kIoctlOk) {
-    num_codec_reference_frames = std::max(
-        base::checked_cast<size_t>(ctrl.value), num_codec_reference_frames);
-  }
-  VLOG(2) << "Driver wants " << ctrl.value << " CAPTURE buffers. We'll use "
-          << num_codec_reference_frames;
-
-  // Verify |num_codec_reference_frames| has a reasonable value. Anecdotally 16
-  // is the largest amount of reference frames seen, on an ITU-T H.264 test
-  // vector (CAPCM*1_Sand_E.h264).
-  CHECK_LE(num_codec_reference_frames, 16u);
-
-  return num_codec_reference_frames;
 }
 
 }  // namespace media
