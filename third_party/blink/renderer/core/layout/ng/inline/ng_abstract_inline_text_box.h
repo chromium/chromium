@@ -40,7 +40,7 @@ class CORE_EXPORT NGAbstractInlineTextBox final
 
   void Detach();
   NGAbstractInlineTextBox* NextInlineTextBox() const;
-  LayoutRect LocalBounds() const;
+  PhysicalRect LocalBounds() const;
   unsigned Len() const;
   // Given a text offset in this inline text box, returns the equivalent text
   // offset in this box's formatting context. The formatting context is the
