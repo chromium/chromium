@@ -90,6 +90,11 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
   return self;
 }
 
+- (void)dealloc {
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!_prefs);
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.title = l10n_util::GetNSString(IDS_IOS_TRANSLATE_SETTING);
