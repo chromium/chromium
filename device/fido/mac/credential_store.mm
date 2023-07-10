@@ -641,6 +641,8 @@ bool TouchIdCredentialStore::DeleteCredentialById(
   // `kSecUseDataProtectionKeychain` to force a query to the right keychain, but
   // we need to support older versions of macOS for now. Hence, we must delete
   // keychain items by credential ID (stored in `kSecAttrApplicationLabel`).
+  // TODO(https://crbug.com/1463798): Update to this better approach that
+  // requires 10.15 now that Chromium requires 10.15.
   base::ScopedCFTypeRef<CFMutableDictionaryRef> query(CFDictionaryCreateMutable(
       kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
       &kCFTypeDictionaryValueCallBacks));
