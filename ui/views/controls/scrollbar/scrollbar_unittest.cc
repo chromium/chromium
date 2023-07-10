@@ -209,6 +209,10 @@ TEST_F(ScrollBarViewsTest, ThumbFullLengthOfTrack) {
   // Emulate a key down.
   scrollbar_->ScrollByAmount(ScrollBar::ScrollAmount::kNextLine);
   EXPECT_EQ(0, scrollbar_->GetPosition());
+  // Emulate a programmatic scroll to a non-zero offset. See crbug.com/1447967.
+  scrollbar_->Update(100, 100, 10);
+  EXPECT_EQ(scrollbar_->GetTrackBounds().width(),
+            scrollbar_->GetThumbLengthForTesting());
 }
 
 TEST_F(ScrollBarViewsTest, AccessibleRole) {

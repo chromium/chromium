@@ -451,8 +451,14 @@ int ScrollBar::CalculateThumbPosition(int contents_scroll_offset) const {
   // simple division can be rounded and there could be 1 pixel gap even when the
   // contents scroll down to the bottom. See crbug.com/244671.
   int thumb_max = GetTrackSize() - thumb_->GetLength();
-  if (contents_scroll_offset + viewport_size_ == contents_size_)
+  if (contents_scroll_offset + viewport_size_ == contents_size_) {
     return thumb_max;
+  }
+  // Avoid dividing by zero if contents and viewport are the same size. See
+  // crbug.com/1447967.
+  if (viewport_size_ == contents_size_) {
+    return 0;
+  }
   return (contents_scroll_offset * thumb_max) /
          (contents_size_ - viewport_size_);
 }
