@@ -635,6 +635,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }
 
 - (void)settingsWillBeDismissed {
+  CHECK(self.prefService);
   _accountManagerServiceObserver.reset();
   self.prefService = nullptr;
 }
