@@ -24,6 +24,13 @@ static_library("browser") {
     "password_requirements_service_factory.h",
   ]
 
+  if (is_android) {
+    sources += [
+      "keyboard_replacing_surface_visibility_controller.cc",
+      "keyboard_replacing_surface_visibility_controller.h",
+    ]
+  }
+
   public_deps = [
     "//base",
     "//components/autofill/content/browser",
@@ -60,6 +67,12 @@ source_set("unit_tests") {
     "password_change_success_tracker_factory_unittest.cc",
     "password_manager_log_router_factory_unittest.cc",
   ]
+
+  if (is_android) {
+    sources +=
+        [ "keyboard_replacing_surface_visibility_controller_unittest.cc" ]
+  }
+
   deps = [
     ":browser",
     ":test_support",
