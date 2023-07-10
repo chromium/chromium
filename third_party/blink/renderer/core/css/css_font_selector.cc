@@ -247,12 +247,9 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
   if (!font_family.FamilyIsGeneric()) {
     if (CSSSegmentedFontFace* face =
             font_face_cache_->Get(request_description, family_name)) {
-      ReportWebFontFamily(family_name);
       return face->GetFontData(request_description);
     }
   }
-
-  ReportSystemFontFamily(family_name);
 
   // Try to return the correct font based off our settings, in case we were
   // handed the generic font family name.

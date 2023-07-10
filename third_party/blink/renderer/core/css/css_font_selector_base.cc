@@ -111,16 +111,6 @@ void CSSFontSelectorBase::ReportNotDefGlyph() const {
                     WebFeature::kFontShapingNotDefGlyphObserved);
 }
 
-void CSSFontSelectorBase::ReportSystemFontFamily(
-    const AtomicString& font_family_name) {
-  GetFontMatchingMetrics()->ReportSystemFontFamily(font_family_name);
-}
-
-void CSSFontSelectorBase::ReportWebFontFamily(
-    const AtomicString& font_family_name) {
-  GetFontMatchingMetrics()->ReportWebFontFamily(font_family_name);
-}
-
 void CSSFontSelectorBase::WillUseFontData(
     const FontDescription& font_description,
     const FontFamily& family,

@@ -87,9 +87,6 @@ class CORE_EXPORT CSSFontSelectorBase : public FontSelector {
 
   AtomicString FamilyNameFromSettings(const FontDescription&,
                                       const FontFamily& generic_family_name);
-  void ReportSystemFontFamily(const AtomicString& font_family_name);
-  void ReportWebFontFamily(const AtomicString& font_family_name);
-
   Member<FontFaceCache> font_face_cache_;
   GenericFontFamilySettings generic_font_family_settings_;
   HashSet<AtomicString> prewarmed_generic_families_;

@@ -45,11 +45,8 @@ scoped_refptr<FontData> OffscreenFontSelector::GetFontData(
   const auto& family_name = font_family.FamilyName();
   if (CSSSegmentedFontFace* face =
           font_face_cache_->Get(font_description, family_name)) {
-    ReportWebFontFamily(family_name);
     return face->GetFontData(font_description);
   }
-
-  ReportSystemFontFamily(family_name);
 
   // Try to return the correct font based off our settings, in case we were
   // handed the generic font family name.
