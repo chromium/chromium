@@ -1033,14 +1033,10 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : animation-name
-                                        value : -ua-view-transition-fade-out
-                                    }
-                                    [1] : {
                                         name : animation-duration
                                         value : inherit
                                     }
-                                    [2] : {
+                                    [1] : {
                                         name : animation-fill-mode
                                         value : inherit
                                     }
@@ -1084,8 +1080,8 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : mix-blend-mode
-                                        value : plus-lighter
+                                        name : animation-name
+                                        value : -ua-view-transition-fade-out, -ua-mix-blend-mode-plus-lighter
                                     }
                                 ]
                                 shorthandEntries : [
@@ -1349,14 +1345,10 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : animation-name
-                                        value : -ua-view-transition-fade-out
-                                    }
-                                    [1] : {
                                         name : animation-duration
                                         value : inherit
                                     }
-                                    [2] : {
+                                    [1] : {
                                         name : animation-fill-mode
                                         value : inherit
                                     }
@@ -1400,8 +1392,8 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : mix-blend-mode
-                                        value : plus-lighter
+                                        name : animation-name
+                                        value : -ua-view-transition-fade-out, -ua-mix-blend-mode-plus-lighter
                                     }
                                 ]
                                 shorthandEntries : [
@@ -1665,14 +1657,10 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : animation-name
-                                        value : -ua-view-transition-fade-in
-                                    }
-                                    [1] : {
                                         name : animation-duration
                                         value : inherit
                                     }
-                                    [2] : {
+                                    [1] : {
                                         name : animation-fill-mode
                                         value : inherit
                                     }
@@ -1716,8 +1704,8 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : mix-blend-mode
-                                        value : plus-lighter
+                                        name : animation-name
+                                        value : -ua-view-transition-fade-in, -ua-mix-blend-mode-plus-lighter
                                     }
                                 ]
                                 shorthandEntries : [
@@ -1828,14 +1816,10 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : animation-name
-                                        value : -ua-view-transition-fade-in
-                                    }
-                                    [1] : {
                                         name : animation-duration
                                         value : inherit
                                     }
-                                    [2] : {
+                                    [1] : {
                                         name : animation-fill-mode
                                         value : inherit
                                     }
@@ -1879,8 +1863,8 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : mix-blend-mode
-                                        value : plus-lighter
+                                        name : animation-name
+                                        value : -ua-view-transition-fade-in, -ua-mix-blend-mode-plus-lighter
                                     }
                                 ]
                                 shorthandEntries : [
@@ -2536,14 +2520,10 @@ Dumping styles for : ::view-transition-old with id root{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : animation-name
-                                value : -ua-view-transition-fade-out
-                            }
-                            [1] : {
                                 name : animation-duration
                                 value : inherit
                             }
-                            [2] : {
+                            [1] : {
                                 name : animation-fill-mode
                                 value : inherit
                             }
@@ -2587,8 +2567,8 @@ Dumping styles for : ::view-transition-old with id root{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : mix-blend-mode
-                                value : plus-lighter
+                                name : animation-name
+                                value : -ua-view-transition-fade-out, -ua-mix-blend-mode-plus-lighter
                             }
                         ]
                         shorthandEntries : [
@@ -2858,14 +2838,10 @@ Dumping styles for : ::view-transition-new with id root{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : animation-name
-                                value : -ua-view-transition-fade-in
-                            }
-                            [1] : {
                                 name : animation-duration
                                 value : inherit
                             }
-                            [2] : {
+                            [1] : {
                                 name : animation-fill-mode
                                 value : inherit
                             }
@@ -2909,8 +2885,8 @@ Dumping styles for : ::view-transition-new with id root{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : mix-blend-mode
-                                value : plus-lighter
+                                name : animation-name
+                                value : -ua-view-transition-fade-in, -ua-mix-blend-mode-plus-lighter
                             }
                         ]
                         shorthandEntries : [
@@ -3416,14 +3392,10 @@ Dumping styles for : ::view-transition-old with id shared{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : animation-name
-                                value : -ua-view-transition-fade-out
-                            }
-                            [1] : {
                                 name : animation-duration
                                 value : inherit
                             }
-                            [2] : {
+                            [1] : {
                                 name : animation-fill-mode
                                 value : inherit
                             }
@@ -3467,8 +3439,8 @@ Dumping styles for : ::view-transition-old with id shared{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : mix-blend-mode
-                                value : plus-lighter
+                                name : animation-name
+                                value : -ua-view-transition-fade-out, -ua-mix-blend-mode-plus-lighter
                             }
                         ]
                         shorthandEntries : [
@@ -3738,14 +3710,10 @@ Dumping styles for : ::view-transition-new with id shared{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : animation-name
-                                value : -ua-view-transition-fade-in
-                            }
-                            [1] : {
                                 name : animation-duration
                                 value : inherit
                             }
-                            [2] : {
+                            [1] : {
                                 name : animation-fill-mode
                                 value : inherit
                             }
@@ -3789,8 +3757,8 @@ Dumping styles for : ::view-transition-new with id shared{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : mix-blend-mode
-                                value : plus-lighter
+                                name : animation-name
+                                value : -ua-view-transition-fade-in, -ua-mix-blend-mode-plus-lighter
                             }
                         ]
                         shorthandEntries : [

@@ -22,13 +22,11 @@ class ViewTransitionStyleBuilder {
 
   void AddUAStyle(const String& style);
 
-  void AddSelector(const String& name, const String& tag);
-  void AddPlusLighter(const String& tag);
+  enum class AnimationType { kOldOnly, kNewOnly, kBoth };
+  void AddAnimations(AnimationType type,
+                     const String& tag,
+                     const ContainerProperties& source_properties);
 
-  void AddAnimationAndBlending(const String& tag,
-                               const ContainerProperties& source_properties);
-
-  void AddContainerStyles(const String& tag, const String& rules);
   void AddContainerStyles(const String& tag,
                           const ContainerProperties& properties,
                           WritingMode writing_mode);
@@ -40,6 +38,7 @@ class ViewTransitionStyleBuilder {
   String AddKeyframes(const String& tag,
                       const ContainerProperties& source_properties);
   void AddRules(const String& selector, const String& tag, const String& rules);
+  void AddSelector(const String& name, const String& tag);
 
   StringBuilder builder_;
 };

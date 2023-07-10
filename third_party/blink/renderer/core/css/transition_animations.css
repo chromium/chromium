@@ -9,22 +9,10 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
-
-html::view-transition-group(*) {
-  animation-duration: 0.25s;
-  animation-fill-mode: both;
-}
-
 @keyframes -ua-view-transition-fade-in {
   from {
     opacity: 0;
   }
-}
-
-html::view-transition-new(*) {
-  animation-name: -ua-view-transition-fade-in;
-  animation-duration: inherit;
-  animation-fill-mode: inherit;
 }
 
 @keyframes -ua-view-transition-fade-out {
@@ -33,13 +21,27 @@ html::view-transition-new(*) {
   }
 }
 
-html::view-transition-old(*) {
-  animation-name: -ua-view-transition-fade-out;
+@keyframes -ua-mix-blend-mode-plus-lighter {
+  from { mix-blend-mode: plus-lighter }
+  to { mix-blend-mode: plus-lighter }
+}
+
+html::view-transition-group(*) {
+  animation-duration: 0.25s;
+  animation-fill-mode: both;
+}
+
+html::view-transition-image-pair(*) {
   animation-duration: inherit;
   animation-fill-mode: inherit;
 }
 
-html::view-transition-image-pair(*) {
+html::view-transition-new(*) {
+  animation-duration: inherit;
+  animation-fill-mode: inherit;
+}
+
+html::view-transition-old(*) {
   animation-duration: inherit;
   animation-fill-mode: inherit;
 }

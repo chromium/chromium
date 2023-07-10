@@ -12,30 +12,34 @@ promise_test(() => {
   return new Promise(async (resolve, reject) => {
     let transition = document.startViewTransition();
     transition.ready.then(() => {
-      let foundGroupAnimation = false;
-      let foundOldAnimation = false;
-      let foundNewAnimation = false;
+      let groupAnimationCount = 0;
+      let oldAnimationCount = 0;
+      let newAnimationCount = 0;
 
       document.getAnimations().forEach((animation) => {
         let pseudo = animation.effect.pseudoElement;
         if (pseudo == "::view-transition-group(root)") {
-          assert_false(foundGroupAnimation);
-          foundGroupAnimation = true;
+          groupAnimationCount++;
         } else if (pseudo == "::view-transition-new(root)") {
-          assert_false(foundNewAnimation);
-          foundNewAnimation = true;
+          newAnimationCount++;
         } else if (pseudo == "::view-transition-old(root)") {
-          assert_false(foundOldAnimation);
-          foundOldAnimation = true;
+          oldAnimationCount++;
         } else {
           reject();
         }
       });
 
-      if (foundGroupAnimation && foundOldAnimation && foundNewAnimation)
+      let total =
+        groupAnimationCount + oldAnimationCount + newAnimationCount;
+      // Old/new images have 2 animations : opacity and mix-blend-mode.
+      if (total == 5) {
+        assert_equals(groupAnimationCount, 1);
+        assert_equals(oldAnimationCount, 2);
+        assert_equals(newAnimationCount, 2);
         resolve();
-      else
+      } else {
         reject();
+      }
     });
   });
 }, "incorrect UA animations for root transition");

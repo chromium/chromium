@@ -1543,16 +1543,27 @@ const String& ViewTransitionStyleTracker::UAStyleSheet() {
     if (element_data->container_properties.empty())
       continue;
 
+    // This updates the styles on the pseudo-elements as described in
+    // https://drafts.csswg.org/css-view-transitions-1/#style-transition-pseudo-elements-algorithm.
     builder.AddContainerStyles(view_transition_name,
                                element_data->container_properties.back(),
                                element_data->container_writing_mode);
 
-    // TODO(khushalsagar) : We'll need to retarget the animation if the final
-    // value changes during the start phase.
-    if (add_animations && element_data->old_snapshot_id.IsValid() &&
-        element_data->new_snapshot_id.IsValid()) {
-      builder.AddAnimationAndBlending(
-          view_transition_name, element_data->cached_container_properties);
+    // This sets up the styles to animate the pseudo-elements as described in
+    // https://drafts.csswg.org/css-view-transitions-1/#setup-transition-pseudo-elements-algorithm.
+    if (add_animations) {
+      CHECK(element_data->old_snapshot_id.IsValid() ||
+            element_data->new_snapshot_id.IsValid());
+
+      auto type = ViewTransitionStyleBuilder::AnimationType::kBoth;
+      if (!element_data->old_snapshot_id.IsValid()) {
+        type = ViewTransitionStyleBuilder::AnimationType::kNewOnly;
+      } else if (!element_data->new_snapshot_id.IsValid()) {
+        type = ViewTransitionStyleBuilder::AnimationType::kOldOnly;
+      }
+
+      builder.AddAnimations(type, view_transition_name,
+                            element_data->cached_container_properties);
     }
   }
 
