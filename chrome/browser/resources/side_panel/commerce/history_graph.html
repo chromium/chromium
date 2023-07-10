@@ -5,20 +5,20 @@
     line-height: 20px;
   }
 
-  .axis
-  .circle
+  .axis,
+  .circle,
   .path {
     stroke-width: 2px;
   }
 
-  .divider
+  .divider,
   .dash-line {
     stroke-width: 1px;
   }
 
   .axis,
   .divider {
-    stroke: rgba(0, 0, 0, .14);
+    stroke: var(--google-grey-300);
     stroke-linecap: round;
   }
 
@@ -59,7 +59,7 @@
   @media (prefers-color-scheme: dark) {
     .axis,
     .divider {
-      stroke: rgba(255, 255, 255, .14);
+      stroke: var(--google-grey-800);
     }
 
     .path,
@@ -73,8 +73,7 @@
     }
 
     .bubble {
-      /* TODO(b:289240209): Avoid using the custom color. */
-      fill: #5C5E62;
+      fill: var(--google-grey-700);
     }
   }
 </style>

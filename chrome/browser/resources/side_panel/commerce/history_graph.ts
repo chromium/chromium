@@ -77,7 +77,8 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
 
     const previousDay = new Date();
     previousDay.setDate(previousDay.getDate() - 1);
-    if (this.points[i].date.getDate() === previousDay.getDate()) {
+    if (this.points[i].date.getDate() === previousDay.getDate() &&
+        this.points[i].date.getMonth() === previousDay.getMonth()) {
       formattedDate = loadTimeData.getString('yesterday');
     }
 

@@ -34,6 +34,8 @@ class ShoppingUiHandlerDelegate : public ShoppingListHandler::Delegate {
 
   const bookmarks::BookmarkNode* GetOrAddBookmarkForCurrentUrl() override;
 
+  void OpenUrlInNewTab(const GURL& url) override;
+
   void ShowBookmarkEditorForCurrentUrl() override;
 
  private:

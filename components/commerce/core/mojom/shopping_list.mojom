@@ -132,6 +132,9 @@ interface ShoppingListHandler {
   // Sets the price tracking status of the current URL.
   SetPriceTrackingStatusForCurrentUrl(bool track);
 
+  // Open url in a new tab.
+  OpenUrlInNewTab(url.mojom.Url url);
+
   // Returns the name of the parent bookmark folder of the current URL. This
   // will only be called when the current page is bookmarked.
   GetParentBookmarkFolderNameForCurrentUrl() => (mojo_base.mojom.String16 name);
