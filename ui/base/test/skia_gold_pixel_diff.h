@@ -102,7 +102,10 @@ class SkiaGoldPixelDiff {
   bool Initialized() const { return initialized_; }
 
  private:
-  void InitSkiaGold(TestEnvironmentMap test_environment);
+  void InitSkiaGold() const;
+  // Calculate a diff and save locally to aid in local development.
+  void GenerateLocalDiff(const std::string& test_name,
+                         const base::FilePath& test_output_path) const;
   // Prefix for every golden images.
   std::string prefix_;
   bool initialized_ = false;
@@ -124,6 +127,8 @@ class SkiaGoldPixelDiff {
   std::string code_review_system_;
   // The working dir for goldctl. It's the dir for storing temporary files.
   base::FilePath working_dir_;
+  // The key-value pairs that will be associated with screenshot baselines.
+  TestEnvironmentMap test_environment_;
 };
 
 }  // namespace test

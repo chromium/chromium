@@ -4,21 +4,21 @@
 
 #include "ui/base/test/skia_gold_pixel_diff.h"
 
-#include "base/notreached.h"
-#include "build/build_config.h"
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#include "third_party/skia/include/core/SkBitmap.h"
-
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -26,8 +26,10 @@
 #include "base/test/test_switches.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/test/skia_gold_matching_algorithm.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
@@ -37,6 +39,7 @@ namespace ui {
 namespace test {
 
 const char* kSkiaGoldInstance = "chrome";
+const char* kSkiaGoldPublicInstance = "chrome-public";
 
 #if BUILDFLAG(IS_WIN)
 const wchar_t* kSkiaGoldCtl = L"tools/skia_goldctl/win/goldctl.exe";
@@ -158,10 +161,10 @@ const char* TestEnvironmentKeyToString(TestEnvironmentKey key) {
   NOTREACHED_NORETURN();
 }
 
-bool WriteTestEnvironmentToFile(TestEnvironmentMap test_environment,
+bool WriteTestEnvironmentToFile(const TestEnvironmentMap& test_environment,
                                 const base::FilePath& keys_file) {
   base::Value::Dict ds;
-  for (auto& [key, value] : test_environment) {
+  for (const auto& [key, value] : test_environment) {
     ds.Set(TestEnvironmentKeyToString(key), value);
   }
 
@@ -186,6 +189,34 @@ bool BotModeEnabled(const base::CommandLine* command_line) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   return command_line->HasSwitch(switches::kTestLauncherBotMode) ||
          env->HasVar("CHROMIUM_TEST_LAUNCHER_BOT_MODE");
+}
+
+const char* GetDiffGoldInstance() {
+  // TODO(skbug.com/10610): Decide whether to use the public or non-public
+  // instance once authentication is fixed for the non-public instance.
+  return kSkiaGoldPublicInstance;
+}
+
+absl::optional<std::string> FormatPathForTerminalOutput(
+    absl::optional<base::FilePath>& path) {
+  if (path.has_value()) {
+    base::FilePath path_absolute = path.value();
+    if (!path_absolute.IsAbsolute()) {
+      path_absolute = base::PathService::CheckedGet(base::DIR_CURRENT)
+                          .Append(path_absolute);
+    }
+
+    base::FilePath path_normalized;
+    if (!base::NormalizeFilePath(path_absolute, &path_normalized)) {
+      return {path->MaybeAsASCII()};
+    }
+
+    return {std::string("file:///") +
+            path_normalized.NormalizePathSeparatorsTo(FILE_PATH_LITERAL('/'))
+                .MaybeAsASCII()};
+  } else {
+    return absl::nullopt;
+  }
 }
 
 }  // namespace
@@ -220,7 +251,7 @@ int SkiaGoldPixelDiff::LaunchProcess(const base::CommandLine& cmdline) const {
   return exit_code;
 }
 
-void SkiaGoldPixelDiff::InitSkiaGold(TestEnvironmentMap test_environment) {
+void SkiaGoldPixelDiff::InitSkiaGold() const {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kBypassSkiaGoldFunctionality)) {
     LOG(WARNING) << "Bypassing Skia Gold initialization due to "
@@ -239,12 +270,9 @@ void SkiaGoldPixelDiff::InitSkiaGold(TestEnvironmentMap test_environment) {
   int exit_code = LaunchProcess(cmd);
   ASSERT_EQ(exit_code, 0);
 
-  FillInSystemEnvironment(test_environment);
-
   base::FilePath json_temp_file =
       working_dir_.Append(FILE_PATH_LITERAL("keys_file.txt"));
-  ASSERT_TRUE(
-      WriteTestEnvironmentToFile(std::move(test_environment), json_temp_file));
+  ASSERT_TRUE(WriteTestEnvironmentToFile(test_environment_, json_temp_file));
   base::FilePath failure_temp_file =
       working_dir_.Append(FILE_PATH_LITERAL("failure.log"));
   cmd = base::CommandLine(GetAbsoluteSrcRelativePath(kSkiaGoldCtl));
@@ -315,7 +343,10 @@ void SkiaGoldPixelDiff::Init(const std::string& screenshot_prefix,
   base::CreateNewTempDirectory(FILE_PATH_LITERAL("SkiaGoldTemp"),
                                &working_dir_);
 
-  InitSkiaGold(std::move(test_environment));
+  FillInSystemEnvironment(test_environment);
+  test_environment_ = std::move(test_environment);
+
+  InitSkiaGold();
 }
 
 bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
@@ -412,7 +443,102 @@ bool SkiaGoldPixelDiff::CompareScreenshot(
                << ". Return code: " << ret_code;
     return false;
   }
-  return UploadToSkiaGoldServer(temporary_path, name, algorithm);
+  bool success = UploadToSkiaGoldServer(temporary_path, name, algorithm);
+  if (!success && !BotModeEnabled(base::CommandLine::ForCurrentProcess())) {
+    GenerateLocalDiff(name, temporary_path);
+  }
+
+  return success;
+}
+
+void SkiaGoldPixelDiff::GenerateLocalDiff(
+    const std::string& test_name,
+    const base::FilePath& test_output_path) const {
+  base::CommandLine* process_command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (!process_command_line->HasSwitch(kPngFilePathDebugging)) {
+    LOG(WARNING)
+        << "Please use --" << kPngFilePathDebugging
+        << " to generate local diff images for this screenshot mismatch.";
+    return;
+  }
+  base::FilePath path =
+      process_command_line->GetSwitchValuePath(kPngFilePathDebugging);
+  if (!base::PathExists(path)) {
+    base::CreateDirectory(path);
+  }
+
+  auto output_dir = path.AppendASCII(test_name);
+  if (!base::PathExists(output_dir)) {
+    base::CreateDirectory(output_dir);
+  }
+
+  // TODO(skbug.com/10611): Remove this temporary work dir and instead just use
+  // |working_dir_| once `goldctl diff` stops clobbering the auth files in the
+  // provided work directory.
+  auto temp_dir = base::ScopedTempDir();
+  if (!temp_dir.CreateUniqueTempDir()) {
+    LOG(WARNING) << "Failed to create a local diff temp work dir.";
+    return;
+  }
+  if (!base::CopyDirectory(working_dir_, temp_dir.GetPath(), true)) {
+    LOG(WARNING) << "Failed to copy working dir to local diff temp work dir.";
+    return;
+  }
+  // |CopyDirectory| will copy the source directory itself, rather than its
+  // contents, so we need to locate the copy.
+  base::FilePath temp_work_dir =
+      base::FileEnumerator(temp_dir.GetPath(), false,
+                           base::FileEnumerator::DIRECTORIES,
+                           working_dir_.BaseName().value())
+          .Next();
+  CHECK(!temp_work_dir.empty());
+
+  base::CommandLine cmd(GetAbsoluteSrcRelativePath(kSkiaGoldCtl));
+  cmd.AppendSwitchASCII("corpus", corpus_);
+  cmd.AppendSwitchASCII("instance", GetDiffGoldInstance());
+  cmd.AppendSwitchASCII("test", test_name);
+  cmd.AppendSwitchPath("input", test_output_path);
+  cmd.AppendSwitchPath("work-dir", temp_work_dir);
+  cmd.AppendSwitchPath("out-dir", output_dir);
+  AppendArgsJustAfterProgram(cmd, {FILE_PATH_LITERAL("diff")});
+
+  base::CommandLine::StringType cmd_str = cmd.GetCommandLineString();
+  LOG(INFO) << "Skia Gold Commandline: " << cmd_str;
+  int exit_code = LaunchProcess(cmd);
+  CHECK_EQ(exit_code, 0);
+
+  struct DiffLinks {
+    absl::optional<base::FilePath> given_image;
+    absl::optional<base::FilePath> closest_image;
+    absl::optional<base::FilePath> diff_image;
+  };
+
+  DiffLinks results;
+  base::FileEnumerator e(output_dir, false, base::FileEnumerator::FILES,
+                         FILE_PATH_LITERAL("*.png"));
+  for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
+    std::string png_file_name = name.BaseName().MaybeAsASCII();
+    if (png_file_name.starts_with("input-")) {
+      results.given_image = {name};
+    } else if (png_file_name.starts_with("closest-")) {
+      results.closest_image = {name};
+    } else if (png_file_name == "diff.png") {
+      results.diff_image = {name};
+    }
+  }
+
+  const char* failure_message = "Unable to retrieve link";
+  LOG(INFO) << "\n  Generated image: "
+            << FormatPathForTerminalOutput(results.given_image)
+                   .value_or(failure_message)
+            << "\n  Closest image: "
+            << FormatPathForTerminalOutput(results.closest_image)
+                   .value_or(failure_message)
+            << "\n  Diff image: "
+            << FormatPathForTerminalOutput(results.diff_image)
+                   .value_or(failure_message)
+            << "\n";
 }
 
 }  // namespace test
