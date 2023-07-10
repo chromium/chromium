@@ -409,6 +409,9 @@ extern const char kBorealisLinuxModeDescription[];
 extern const char kBorealisPermittedName[];
 extern const char kBorealisPermittedDescription[];
 
+extern const char kBorealisProvisionName[];
+extern const char kBorealisProvisionDescription[];
+
 extern const char kBorealisStorageBallooningName[];
 extern const char kBorealisStorageBallooningDescription[];
 

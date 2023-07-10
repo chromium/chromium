@@ -735,6 +735,14 @@ const char kBorealisPermittedDescription[] =
     "other reasons, including: administrator settings, device hardware "
     "capabilities, or other security measures.";
 
+const char kBorealisProvisionName[] = "Borealis Provision";
+const char kBorealisProvisionDescription[] =
+    "Uses the experimental 'provision' option when mounting borealis stateful. "
+    "The feature causes allocations on thinly provisioned storage, such as "
+    "sparse vm images, to be passed to the underyling storage layers. "
+    "Resulting in allocations in the Borealis being backed by physical "
+    "storage.";
+
 const char kBorealisStorageBallooningName[] = "Borealis Storage Ballooning";
 const char kBorealisStorageBallooningDescription[] =
     "Enables storage balloning for Borealis. This takes precedence over the "

@@ -308,6 +308,14 @@ BASE_FEATURE(kBorealisLinuxMode,
              "BorealisLinuxMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable the "provision" flag when mounting Borealis' stateful disk.
+// TODO(b/288361720): This is temporary while we test the 'provision'
+// mount option. Once we're satisfied things are stable, we'll make this
+// the default and remove this feature/flag.
+BASE_FEATURE(kBorealisProvision,
+             "BorealisProvision",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable storage ballooning for Borealis. This takes precedence over
 // kBorealisDiskManagement.
 BASE_FEATURE(kBorealisStorageBallooning,
