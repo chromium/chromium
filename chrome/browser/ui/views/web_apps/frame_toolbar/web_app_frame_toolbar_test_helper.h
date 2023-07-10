@@ -54,6 +54,11 @@ class WebAppFrameToolbarTestHelper {
       net::test_server::EmbeddedTestServer* embedded_test_server,
       base::ScopedTempDir* temp_dir);
 
+  // Loads a page where the whole WebContents is a draggable region.
+  GURL LoadWholeAppIsDraggableTestPageWithDataAndGetURL(
+      net::test_server::EmbeddedTestServer* embedded_test_server,
+      base::ScopedTempDir* temp_dir);
+
   // WebContents is used to run JS to parse rectangle values into a list value.
   static base::Value::List GetXYWidthHeightListValue(
       content::WebContents* web_contents,

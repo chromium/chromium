@@ -135,6 +135,32 @@ GURL WebAppFrameToolbarTestHelper::
                                        kTestHTML);
 }
 
+GURL WebAppFrameToolbarTestHelper::
+    LoadWholeAppIsDraggableTestPageWithDataAndGetURL(
+        net::test_server::EmbeddedTestServer* embedded_test_server,
+        base::ScopedTempDir* temp_dir) {
+  constexpr char kTestHTML[] =
+      "<!DOCTYPE html>"
+      "<style>"
+      "  div {"
+      "    app-region: drag;"
+      "    width: 100%;"
+      "    height: 100%;"
+      "    padding: 0px;"
+      "    margin: 0px;"
+      "    position: absolute;"
+      "  }"
+      "  body {"
+      "    padding: 0px;"
+      "    margin: 0px;"
+      "  }"
+      "</style>"
+      "<div>Hello draggable world</div>";
+
+  return LoadTestPageWithDataAndGetURL(embedded_test_server, temp_dir,
+                                       kTestHTML);
+}
+
 GURL WebAppFrameToolbarTestHelper::LoadTestPageWithDataAndGetURL(
     net::test_server::EmbeddedTestServer* embedded_test_server,
     base::ScopedTempDir* temp_dir,
