@@ -148,10 +148,9 @@ void ProcessMetricsDecorator::RefreshMetrics() {
       &ProcessMetricsDecorator::DidGetMemoryUsage, weak_factory_.GetWeakPtr()));
 }
 
-void ProcessMetricsDecorator::RefreshMetricsForTesting() {
-  // Tests may refresh the metrics outside the normal schedule. Make sure the
-  // timer isn't running so that RefreshMetrics() can call StartTimer() to
-  // schedule the next refresh.
+void ProcessMetricsDecorator::RequestImmediateMetrics() {
+  // Stop the timer so the next metrics sample will be 2 minutes after this to
+  // avoid re-sampling shortly after updating the metrics.
   StopTimer();
   RefreshMetrics();
 }

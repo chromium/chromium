@@ -72,7 +72,8 @@ class ProcessMetricsDecorator
     return refresh_timer_.GetCurrentDelay();
   }
 
-  void RefreshMetricsForTesting();
+  // Immediately refreshes the metrics for all the process nodes.
+  virtual void RequestImmediateMetrics();
 
  protected:
   class ScopedMetricsInterestTokenImpl;
