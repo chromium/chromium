@@ -598,7 +598,6 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   constraints->containing_scroll_container_layer = scroll_container_layer;
   constraints->is_fixed_to_view = is_fixed_to_view;
 
-  PhysicalOffset skipped_containers_offset;
   LayoutBlock* sticky_container = StickyContainer();
   // The location container for boxes is not always the containing block.
   LayoutObject* location_container =
@@ -618,14 +617,12 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   // TODO(crbug.com/966131): Is kIgnoreTransforms correct here?
   MapCoordinatesFlags flags =
       kIgnoreTransforms | kIgnoreScrollOffset | kIgnoreStickyOffset;
-  skipped_containers_offset = location_container->LocalToAncestorPoint(
-      PhysicalOffset(), sticky_container, flags);
+  PhysicalOffset skipped_containers_offset =
+      location_container->LocalToAncestorPoint(PhysicalOffset(),
+                                               sticky_container, flags);
   DCHECK(scroll_container_layer);
   DCHECK(scroll_container_layer->GetLayoutBox());
   auto& scroll_container = *scroll_container_layer->GetLayoutBox();
-
-  constraints->constraining_rect =
-      scroll_container.ComputeStickyConstrainingRect();
 
   LayoutUnit max_container_width =
       IsA<LayoutView>(sticky_container)
@@ -640,9 +637,11 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
 
   // Map the containing block to the inner corner of the scroll ancestor without
   // transforms.
-  PhysicalRect scroll_container_relative_padding_box_rect(
-      sticky_container->LayoutOverflowRect());
-  if (sticky_container != &scroll_container) {
+  PhysicalRect scroll_container_relative_padding_box_rect;
+  if (sticky_container == &scroll_container) {
+    scroll_container_relative_padding_box_rect =
+        sticky_container->PhysicalLayoutOverflowRect();
+  } else {
     PhysicalRect local_rect = sticky_container->PhysicalPaddingBoxRect();
     scroll_container_relative_padding_box_rect =
         sticky_container->LocalToAncestorRect(local_rect, &scroll_container,
@@ -717,56 +716,53 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   constraints->nearest_sticky_layer_shifting_containing_block =
       sticky_container->FindFirstStickyContainer(&scroll_container);
 
-  // We skip the right or top sticky offset if there is not enough space to
-  // honor both the left/right or top/bottom offsets.
-  LayoutUnit constraining_width = constraints->constraining_rect.Width();
-  LayoutUnit constraining_height = constraints->constraining_rect.Height();
-  LayoutUnit horizontal_offsets =
-      MinimumValueForLength(StyleRef().UsedRight(), constraining_width) +
-      MinimumValueForLength(StyleRef().UsedLeft(), constraining_width);
-  bool skip_right = false;
-  bool skip_left = false;
-  if (!StyleRef().UsedLeft().IsAuto() && !StyleRef().UsedRight().IsAuto()) {
-    if (horizontal_offsets + sticky_box_rect.Width() > constraining_width) {
-      skip_right = StyleRef().IsLeftToRightDirection();
-      skip_left = !skip_right;
+  constraints->constraining_rect =
+      scroll_container.ComputeStickyConstrainingRect();
+
+  // Compute the insets.
+  {
+    auto ResolveInset = [](const Length& length,
+                           LayoutUnit size) -> absl::optional<LayoutUnit> {
+      if (length.IsAuto()) {
+        return absl::nullopt;
+      }
+      return MinimumValueForLength(length, size);
+    };
+
+    const PhysicalSize available_size = constraints->constraining_rect.size;
+    const auto& style = StyleRef();
+    absl::optional<LayoutUnit> left =
+        ResolveInset(style.UsedLeft(), available_size.width);
+    absl::optional<LayoutUnit> right =
+        ResolveInset(style.UsedRight(), available_size.width);
+    absl::optional<LayoutUnit> top =
+        ResolveInset(style.UsedTop(), available_size.height);
+    absl::optional<LayoutUnit> bottom =
+        ResolveInset(style.UsedBottom(), available_size.height);
+
+    // Skip the end inset if there is not enough space to honor both insets.
+    if (left && right) {
+      if (*left + *right + sticky_box_rect.Width() > available_size.width) {
+        if (style.IsLeftToRightDirection()) {
+          right = absl::nullopt;
+        } else {
+          left = absl::nullopt;
+        }
+      }
     }
-  }
+    if (top && bottom) {
+      // TODO(flackr): Exclude top or bottom edge offset depending on the
+      // writing mode when related sections are fixed in spec. See
+      // http://lists.w3.org/Archives/Public/www-style/2014May/0286.html
+      if (*top + *bottom + sticky_box_rect.Height() > available_size.height) {
+        bottom = absl::nullopt;
+      }
+    }
 
-  if (!StyleRef().UsedLeft().IsAuto() && !skip_left) {
-    constraints->left_offset =
-        MinimumValueForLength(StyleRef().UsedLeft(), constraining_width);
-    constraints->is_anchored_left = true;
-  }
-
-  if (!StyleRef().UsedRight().IsAuto() && !skip_right) {
-    constraints->right_offset =
-        MinimumValueForLength(StyleRef().UsedRight(), constraining_width);
-    constraints->is_anchored_right = true;
-  }
-
-  bool skip_bottom = false;
-  // TODO(flackr): Exclude top or bottom edge offset depending on the writing
-  // mode when related sections are fixed in spec.
-  // See http://lists.w3.org/Archives/Public/www-style/2014May/0286.html
-  LayoutUnit vertical_offsets =
-      MinimumValueForLength(StyleRef().UsedTop(), constraining_height) +
-      MinimumValueForLength(StyleRef().UsedBottom(), constraining_height);
-  if (!StyleRef().UsedTop().IsAuto() && !StyleRef().UsedBottom().IsAuto() &&
-      vertical_offsets + sticky_box_rect.Height() > constraining_height) {
-    skip_bottom = true;
-  }
-
-  if (!StyleRef().UsedTop().IsAuto()) {
-    constraints->top_offset =
-        MinimumValueForLength(StyleRef().UsedTop(), constraining_height);
-    constraints->is_anchored_top = true;
-  }
-
-  if (!StyleRef().UsedBottom().IsAuto() && !skip_bottom) {
-    constraints->bottom_offset =
-        MinimumValueForLength(StyleRef().UsedBottom(), constraining_height);
-    constraints->is_anchored_bottom = true;
+    constraints->left_inset = left;
+    constraints->right_inset = right;
+    constraints->top_inset = top;
+    constraints->bottom_inset = bottom;
   }
 
   scrollable_area->AddStickyLayer(Layer());

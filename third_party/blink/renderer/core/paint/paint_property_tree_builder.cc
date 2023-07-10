@@ -757,17 +757,23 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
             scroll_container_properties->Scroll() == context_.current.scroll;
         if (scroll_container_scrolls) {
           auto constraint = std::make_unique<CompositorStickyConstraint>();
-          constraint->is_anchored_left = layout_constraint->is_anchored_left;
-          constraint->is_anchored_right = layout_constraint->is_anchored_right;
-          constraint->is_anchored_top = layout_constraint->is_anchored_top;
+          constraint->is_anchored_left =
+              layout_constraint->left_inset.has_value();
+          constraint->is_anchored_right =
+              layout_constraint->right_inset.has_value();
+          constraint->is_anchored_top =
+              layout_constraint->top_inset.has_value();
           constraint->is_anchored_bottom =
-              layout_constraint->is_anchored_bottom;
+              layout_constraint->bottom_inset.has_value();
 
-          constraint->left_offset = layout_constraint->left_offset.ToFloat();
-          constraint->right_offset = layout_constraint->right_offset.ToFloat();
-          constraint->top_offset = layout_constraint->top_offset.ToFloat();
+          constraint->left_offset =
+              layout_constraint->left_inset.value_or(LayoutUnit()).ToFloat();
+          constraint->right_offset =
+              layout_constraint->right_inset.value_or(LayoutUnit()).ToFloat();
+          constraint->top_offset =
+              layout_constraint->top_inset.value_or(LayoutUnit()).ToFloat();
           constraint->bottom_offset =
-              layout_constraint->bottom_offset.ToFloat();
+              layout_constraint->bottom_inset.value_or(LayoutUnit()).ToFloat();
           constraint->constraint_box_rect =
               gfx::RectF(layout_constraint->constraining_rect);
           constraint->scroll_container_relative_sticky_box_rect = gfx::RectF(

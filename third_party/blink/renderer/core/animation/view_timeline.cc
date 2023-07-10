@@ -402,30 +402,30 @@ void ViewTimeline::ApplyStickyAdjustments(ScrollOffsets& scroll_offsets,
   // The maximum adjustment from each offset property is the available room
   // from the opposite edge of the sticky element in its static position.
   if (is_horizontal) {
-    if (constraints->is_anchored_left) {
+    if (constraints->left_inset) {
       max_forward_adjust = (container.Right() - sticky_rect.Right()).ToDouble();
       forward_stickiness =
-          ComputeStickinessRange(constraints->left_offset, sticky_rect.X(),
+          ComputeStickinessRange(*constraints->left_inset, sticky_rect.X(),
                                  viewport_size, target_size, target_offset);
     }
-    if (constraints->is_anchored_right) {
+    if (constraints->right_inset) {
       max_backward_adjust = (container.X() - sticky_rect.X()).ToDouble();
       backward_stickiness = ComputeStickinessRange(
-          viewport_size - constraints->right_offset - sticky_rect.Width(),
+          viewport_size - *constraints->right_inset - sticky_rect.Width(),
           sticky_rect.X(), viewport_size, target_size, target_offset);
     }
   } else {  // Vertical.
-    if (constraints->is_anchored_top) {
+    if (constraints->top_inset) {
       max_forward_adjust =
           (container.Bottom() - sticky_rect.Bottom()).ToDouble();
       forward_stickiness =
-          ComputeStickinessRange(constraints->top_offset, sticky_rect.Y(),
+          ComputeStickinessRange(*constraints->top_inset, sticky_rect.Y(),
                                  viewport_size, target_size, target_offset);
     }
-    if (constraints->is_anchored_bottom) {
+    if (constraints->bottom_inset) {
       max_backward_adjust = (container.Y() - sticky_rect.Y()).ToDouble();
       backward_stickiness = ComputeStickinessRange(
-          viewport_size - constraints->bottom_offset - sticky_rect.Height(),
+          viewport_size - *constraints->bottom_inset - sticky_rect.Height(),
           sticky_rect.Y(), viewport_size, target_size, target_offset);
     }
   }

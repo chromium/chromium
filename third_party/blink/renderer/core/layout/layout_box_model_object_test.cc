@@ -54,7 +54,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionConstraints) {
   const auto* constraints = sticky->StickyConstraints();
   ASSERT_TRUE(constraints);
   EXPECT_TRUE(scrollable_area->HasStickyLayer(sticky->Layer()));
-  ASSERT_EQ(0.f, constraints->top_offset);
+  ASSERT_EQ(0.f, constraints->top_inset);
 
   // The coordinates of the constraint rects should all be with respect to the
   // unscrolled scroller.
@@ -148,7 +148,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionInlineConstraints) {
   const auto* constraints = sticky->StickyConstraints();
   ASSERT_TRUE(constraints);
   EXPECT_TRUE(scrollable_area->HasStickyLayer(sticky->Layer()));
-  EXPECT_EQ(10.f, constraints->top_offset);
+  EXPECT_EQ(10.f, constraints->top_inset);
 
   // The coordinates of the constraint rects should all be with respect to the
   // unscrolled scroller.
@@ -206,7 +206,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionVerticalRLInlineConstraints) {
   const auto* constraints = sticky->StickyConstraints();
   ASSERT_TRUE(constraints);
   EXPECT_TRUE(scrollable_area->HasStickyLayer(sticky->Layer()));
-  EXPECT_EQ(10.f, constraints->top_offset);
+  EXPECT_EQ(10.f, constraints->top_inset);
 
   // The coordinates of the constraint rects should all be with respect to the
   // unscrolled scroller.
@@ -247,7 +247,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionTransforms) {
   const auto* constraints = sticky->StickyConstraints();
   ASSERT_TRUE(constraints);
   EXPECT_TRUE(scrollable_area->HasStickyLayer(sticky->Layer()));
-  ASSERT_EQ(0.f, constraints->top_offset);
+  ASSERT_EQ(0.f, constraints->top_inset);
 
   // The coordinates of the constraint rects should all be with respect to the
   // unscrolled scroller.
@@ -285,7 +285,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionPercentageStyles) {
   const auto* constraints = sticky->StickyConstraints();
   ASSERT_TRUE(constraints);
   EXPECT_TRUE(scrollable_area->HasStickyLayer(sticky->Layer()));
-  ASSERT_EQ(0.f, constraints->top_offset);
+  ASSERT_EQ(0.f, constraints->top_inset);
 
   ASSERT_EQ(gfx::Rect(25, 145, 200, 330),
             ToEnclosingRect(
