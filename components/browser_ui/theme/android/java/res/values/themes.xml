@@ -25,10 +25,10 @@ found in the LICENSE file.
         <item name="colorOnBackground">@color/baseline_neutral_10</item>
         <item name="colorSurface">@color/baseline_neutral_100</item>
         <item name="colorOnSurface">@color/baseline_neutral_10</item>
-        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_100</item>
-        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_700</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_90</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_95</item>
-        <item name="colorOutline">@color/baseline_neutral_variant_500</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_50</item>
         <item name="colorError">@color/baseline_error_600</item>
 
         <!-- Text colors-->
@@ -125,10 +125,10 @@ found in the LICENSE file.
         <item name="colorOnBackground">@color/baseline_neutral_10</item>
         <item name="colorSurface">@color/baseline_neutral_100</item>
         <item name="colorOnSurface">@color/baseline_neutral_10</item>
-        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_100</item>
-        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_700</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_90</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_95</item>
-        <item name="colorOutline">@color/baseline_neutral_variant_500</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_50</item>
         <item name="colorError">@color/baseline_error_600</item>
 
         <!-- Text colors-->
@@ -192,10 +192,10 @@ found in the LICENSE file.
         <item name="colorOnBackground">@color/baseline_neutral_10</item>
         <item name="colorSurface">@color/baseline_neutral_100</item>
         <item name="colorOnSurface">@color/baseline_neutral_10</item>
-        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_100</item>
-        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_700</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_90</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_95</item>
-        <item name="colorOutline">@color/baseline_neutral_variant_500</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_50</item>
         <item name="colorError">@color/baseline_error_600</item>
 
         <!-- Text colors-->

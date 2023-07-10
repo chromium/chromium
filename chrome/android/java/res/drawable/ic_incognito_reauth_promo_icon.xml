@@ -15,7 +15,7 @@ found in the LICENSE file.
     android:viewportHeight="52">
   <path
       android:pathData="M21,26m21,0a21,21 0,1 0,-42 0a21,21 0,1 0,42 0"
-      android:fillColor="@color/baseline_neutral_variant_500"/>
+      android:fillColor="@color/baseline_neutral_variant_50"/>
   <path
       android:pathData="M43,26C40.817,26 39,27.828 39,30.143V36H47V30.143C47,27.828 45.183,26 43,26Z"
       android:strokeWidth="2"

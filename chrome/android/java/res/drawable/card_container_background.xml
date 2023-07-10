@@ -9,5 +9,5 @@ found in the LICENSE file.
     android:shape="rectangle">
     <corners
         android:radius="12dp" />
-    <solid android:color="@color/baseline_neutral_variant_200_alpha_15"  />
+    <solid android:color="@color/baseline_neutral_variant_80_alpha_15"  />
 </shape>

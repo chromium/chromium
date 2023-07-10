@@ -10,7 +10,7 @@ found in the LICENSE file.
     android:shape="rectangle">
     <stroke
         android:width="@dimen/drag_shadow_border_size"
-        android:color="@color/baseline_neutral_variant_100_alpha_20"/>
+        android:color="@color/baseline_neutral_variant_90_alpha_20"/>
     <corners
         android:topLeftRadius="@dimen/drag_shadow_border_corner_radius"
         android:topRightRadius="@dimen/drag_shadow_border_corner_radius"

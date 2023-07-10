@@ -437,7 +437,7 @@ public class StripLayoutTab implements VirtualView {
 
         if (mIncognito) {
             return mContext.getResources().getColor(
-                    R.color.baseline_neutral_10_with_neutral_0_alpha_30_with_neutral_variant_400_alpha_15);
+                    R.color.baseline_neutral_10_with_neutral_0_alpha_30_with_neutral_variant_60_alpha_15);
         }
 
         final int baseColor = getTint(false);

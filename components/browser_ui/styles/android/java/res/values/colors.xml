@@ -26,7 +26,7 @@ found in the LICENSE file.
     <color name="control_highlight_color" tools:ignore="UnusedResources">
         @color/default_control_color_highlight_light
     </color>
-    <color name="switch_enabled_unchecked_color_baseline_dark" tools:ignore="UnusedResources">@color/baseline_neutral_variant_500</color>
+    <color name="switch_enabled_unchecked_color_baseline_dark" tools:ignore="UnusedResources">@color/baseline_neutral_variant_50</color>
     <color name="switch_enabled_unchecked_color_baseline_light">@color/baseline_neutral_90</color>
     <color name="switch_track_disabled_color_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_10</color>
     <color name="switch_track_disabled_color_baseline_light">@color/baseline_neutral_90</color>

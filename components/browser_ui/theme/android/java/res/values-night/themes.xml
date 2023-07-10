@@ -21,10 +21,10 @@ found in the LICENSE file.
         <item name="colorOnBackground">@color/baseline_neutral_90</item>
         <item name="colorSurface">@color/baseline_neutral_10</item>
         <item name="colorOnSurface">@color/baseline_neutral_90</item>
-        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_700</item>
-        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_200</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
-        <item name="colorOutline">@color/baseline_neutral_variant_400</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_60</item>
         <item name="colorError">@color/baseline_error_200</item>
 
         <!-- Elevation overlays -->
@@ -45,10 +45,10 @@ found in the LICENSE file.
         <item name="colorOnBackground">@color/baseline_neutral_90</item>
         <item name="colorSurface">@color/baseline_neutral_10</item>
         <item name="colorOnSurface">@color/baseline_neutral_90</item>
-        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_700</item>
-        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_200</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
-        <item name="colorOutline">@color/baseline_neutral_variant_400</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_60</item>
         <item name="colorError">@color/baseline_error_200</item>
 
         <!-- Elevation overlays -->
@@ -69,10 +69,10 @@ found in the LICENSE file.
         <item name="colorOnBackground">@color/baseline_neutral_90</item>
         <item name="colorSurface">@color/baseline_neutral_10</item>
         <item name="colorOnSurface">@color/baseline_neutral_90</item>
-        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_700</item>
-        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_200</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
-        <item name="colorOutline">@color/baseline_neutral_variant_400</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_60</item>
         <item name="colorError">@color/baseline_error_200</item>
 
         <!-- Elevation overlays -->
