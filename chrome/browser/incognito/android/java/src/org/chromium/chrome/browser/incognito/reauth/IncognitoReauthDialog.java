@@ -52,9 +52,8 @@ class IncognitoReauthDialog {
                         .with(ModalDialogProperties.CONTROLLER, mModalDialogController)
                         .with(ModalDialogProperties.CUSTOM_VIEW, incognitoReauthView)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
-                        .with(ModalDialogProperties.FULLSCREEN_DIALOG, true)
-                        .with(ModalDialogProperties.FULLSCREEN_FORCE_DARK_STYLE, true)
-                        .with(ModalDialogProperties.EXCEED_MAX_HEIGHT, true)
+                        .with(ModalDialogProperties.DIALOG_STYLES,
+                                ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG)
                         .with(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
                                 backPressedCallback)
                         .build();

@@ -74,13 +74,14 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
                         R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_Fullscreen,
                         R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_DialogWhenLarge,
                         R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_Fullscreen_Dark}};
-        int index = 0;
-        if (model.get(ModalDialogProperties.FULLSCREEN_DIALOG)) {
-            boolean shouldForceDarkStyle = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                    && model.get(ModalDialogProperties.FULLSCREEN_FORCE_DARK_STYLE);
-            index = shouldForceDarkStyle ? 3 : 1;
-        } else if (model.get(ModalDialogProperties.DIALOG_WHEN_LARGE)) {
-            index = 2;
+        int dialogIndex = 0;
+        int dialogStyle = model.get(ModalDialogProperties.DIALOG_STYLES);
+        if (dialogStyle == ModalDialogProperties.DialogStyles.FULLSCREEN_DIALOG) {
+            dialogIndex = 1;
+        } else if (dialogStyle == ModalDialogProperties.DialogStyles.DIALOG_WHEN_LARGE) {
+            dialogIndex = 2;
+        } else if (dialogStyle == ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG) {
+            dialogIndex = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? 3 : 1;
         }
         int buttonIndex = 0;
         int buttonStyle = model.get(ModalDialogProperties.BUTTON_STYLES);
@@ -90,7 +91,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
                 == ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED) {
             buttonIndex = 2;
         }
-        mDialog = new ComponentDialog(mContext, styles[buttonIndex][index]);
+        mDialog = new ComponentDialog(mContext, styles[buttonIndex][dialogIndex]);
         mDialog.setOnCancelListener(dialogInterface
                 -> dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE));
 

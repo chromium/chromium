@@ -59,6 +59,30 @@ public class ModalDialogTestUtils {
     public static PropertyModel createDialog(Activity activity, ModalDialogManager manager,
             String title, @Nullable TestDialogDismissedObserver observer,
             @ModalDialogProperties.ButtonStyles int buttonStyles) {
+        return createDialog(activity, manager, title, observer, buttonStyles,
+                ModalDialogProperties.DialogStyles.NORMAL);
+    }
+
+    /**
+     * @return A {@link PropertyModel} of a modal dialog that is used for testing with
+     *         dialog style
+     */
+    public static PropertyModel createDialogWithDialogStyle(Activity activity,
+            ModalDialogManager manager, String title,
+            @Nullable TestDialogDismissedObserver observer,
+            @ModalDialogProperties.DialogStyles int dialogStyles) {
+        return createDialog(activity, manager, title, observer,
+                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE, dialogStyles);
+    }
+
+    /**
+     * @return A {@link PropertyModel} of a modal dialog that is used for testing with
+     *         primary or negative button filled and dialog style.
+     */
+    public static PropertyModel createDialog(Activity activity, ModalDialogManager manager,
+            String title, @Nullable TestDialogDismissedObserver observer,
+            @ModalDialogProperties.ButtonStyles int buttonStyles,
+            @ModalDialogProperties.DialogStyles int dialogStyles) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
                 @Override
@@ -86,6 +110,7 @@ public class ModalDialogTestUtils {
                     .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.ok)
                     .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources, R.string.cancel)
                     .with(ModalDialogProperties.BUTTON_STYLES, buttonStyles)
+                    .with(ModalDialogProperties.DIALOG_STYLES, dialogStyles)
                     .build();
         });
     }

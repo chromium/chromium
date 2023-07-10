@@ -17,6 +17,7 @@ import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtil
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkDialogDismissalCause;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkPendingSize;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.createDialog;
+import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.createDialogWithDialogStyle;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.showDialog;
 
 import android.app.Activity;
@@ -143,10 +144,10 @@ public class AppModalPresenterTest {
     @SmallTest
     @Feature({"ModalDialog"})
     public void testDismiss_DismissalCause_BackPressed() throws Exception {
-        PropertyModel dialog1 = createDialog(sActivity, sManager, "1", mTestObserver);
+        PropertyModel dialog = createDialog(sActivity, sManager, "title", mTestObserver);
         mExpectedDismissalCause = DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE;
 
-        showDialog(sManager, dialog1, ModalDialogType.APP);
+        showDialog(sManager, dialog, ModalDialogType.APP);
 
         // Dismiss the tab modal dialog and verify dismissal cause.
         int callCount = mTestObserver.onDialogDismissedCallback.getCallCount();
@@ -160,7 +161,7 @@ public class AppModalPresenterTest {
     @SmallTest
     @Feature({"ModalDialog"})
     public void testBackPressedCallback_ModalDialogProperty_IsFired() throws TimeoutException {
-        PropertyModel dialog1 = createDialog(sActivity, sManager, "1", null);
+        PropertyModel dialog = createDialog(sActivity, sManager, "title", null);
         CallbackHelper callbackHelper = new CallbackHelper();
         final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
             @Override
@@ -170,11 +171,11 @@ public class AppModalPresenterTest {
         };
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            dialog1.set(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+            dialog.set(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
                     onBackPressedCallback);
         });
 
-        showDialog(sManager, dialog1, ModalDialogType.APP);
+        showDialog(sManager, dialog, ModalDialogType.APP);
 
         Espresso.pressBack();
         callbackHelper.waitForCallback(0);
@@ -184,9 +185,9 @@ public class AppModalPresenterTest {
     @SmallTest
     @Feature({"ModalDialog"})
     public void testButton_negativeButtonFilled() throws Exception {
-        PropertyModel dialog1 = createDialog(sActivity, sManager, "1", mTestObserver,
+        PropertyModel dialog = createDialog(sActivity, sManager, "title", mTestObserver,
                 ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED);
-        showDialog(sManager, dialog1, ModalDialogType.APP);
+        showDialog(sManager, dialog, ModalDialogType.APP);
         onView(withText(R.string.cancel)).check(matches(hasCurrentTextColor(Color.WHITE)));
         onView(withText(R.string.ok)).check(matches(not(hasCurrentTextColor(Color.WHITE))));
     }
@@ -195,9 +196,9 @@ public class AppModalPresenterTest {
     @SmallTest
     @Feature({"ModalDialog"})
     public void testButton_primaryButtonFilled() throws Exception {
-        PropertyModel dialog1 = createDialog(sActivity, sManager, "1", mTestObserver,
+        PropertyModel dialog = createDialog(sActivity, sManager, "title", mTestObserver,
                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
-        showDialog(sManager, dialog1, ModalDialogType.APP);
+        showDialog(sManager, dialog, ModalDialogType.APP);
         onView(withText(R.string.cancel)).check(matches(not(hasCurrentTextColor(Color.WHITE))));
         onView(withText(R.string.ok)).check(matches(hasCurrentTextColor(Color.WHITE)));
     }
@@ -207,21 +208,8 @@ public class AppModalPresenterTest {
     @Feature({"ModalDialog"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testFullscreenDarkStyle() {
-        PropertyModel dialog = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
-                @Override
-                public void onDismiss(
-                        PropertyModel model, @DialogDismissalCause int dismissalCause) {}
-
-                @Override
-                public void onClick(PropertyModel model, int buttonType) {}
-            };
-            return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                    .with(ModalDialogProperties.CONTROLLER, controller)
-                    .with(ModalDialogProperties.FULLSCREEN_DIALOG, true)
-                    .with(ModalDialogProperties.FULLSCREEN_FORCE_DARK_STYLE, true)
-                    .build();
-        });
+        PropertyModel dialog = createDialogWithDialogStyle(sActivity, sManager, "title",
+                mTestObserver, ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG);
         showDialog(sManager, dialog, ModalDialogType.APP);
         Window window = ((AppModalPresenter) sManager.getCurrentPresenterForTest()).getWindow();
 

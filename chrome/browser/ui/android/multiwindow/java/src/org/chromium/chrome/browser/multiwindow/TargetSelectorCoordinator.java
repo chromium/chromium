@@ -128,7 +128,8 @@ public class TargetSelectorCoordinator {
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
                         R.string.target_selector_move)
                 .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources, R.string.cancel)
-                .with(ModalDialogProperties.DIALOG_WHEN_LARGE, true)
+                .with(ModalDialogProperties.DIALOG_STYLES,
+                        ModalDialogProperties.DialogStyles.DIALOG_WHEN_LARGE)
                 .build();
     }
 
