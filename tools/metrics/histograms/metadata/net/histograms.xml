@@ -1688,16 +1688,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.ErrorCodesForImages2" enum="NetErrorCodes"
-    expires_after="M85">
-  <owner>skonig@chromium.org</owner>
-  <owner>hbengali@chromium.org</owner>
-  <summary>
-    Net error codes that requests for images end with, including net::OK and
-    net:ERR_ABORTED.
-  </summary>
-</histogram>
-
 <histogram name="Net.ErrorCodesForIsolatedAppScheme" enum="NetErrorCodes"
     expires_after="2023-11-08">
   <owner>cmfcmf@chromium.org</owner>
