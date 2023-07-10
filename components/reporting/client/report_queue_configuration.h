@@ -34,16 +34,65 @@ enum class EventType { kDevice, kUser };
 class ReportQueueConfiguration {
  public:
   // PolicyCheckCallbacks should return error::UNAUTHENTICATED if a policy check
-  // fails due to policies. Any other error as appropriate, and OK if a policy
+  // fails due to policies, any other error as appropriate, and OK if a policy
   // check is successful.
   using PolicyCheckCallback = base::RepeatingCallback<Status(void)>;
+
+  // Transient settings used by `ReportQueueConfiguration` instantiation.
+  struct Settings {
+    EventType event_type = EventType::kDevice;
+    Destination destination = Destination::UNDEFINED_DESTINATION;
+    int64_t reserved_space = 0L;
+  };
+
+  // Transient moveable helper class for composing `ReportQueueConfiguration`
+  // out of settings and then allowing to set non-trivial fields.
+  class Builder {
+   public:
+    explicit Builder(const Settings& settings);
+    Builder(Builder&&);
+    Builder& operator=(const Builder&) = delete;
+    ~Builder();
+
+    // Modifiers for non-trivial fields.
+    Builder SetPolicyCheckCallback(PolicyCheckCallback policy_check_callback);
+    Builder SetRateLimiter(std::unique_ptr<RateLimiterInterface> rate_limiter);
+    Builder SetDMToken(base::StringPiece dm_token);
+
+    // Finalizes the builder (no modifications are accepted after that) and
+    // outputs the final `ReportQueueConfiguration` or status.
+    StatusOr<std::unique_ptr<ReportQueueConfiguration>> Build();
+
+   private:
+    StatusOr<std::unique_ptr<ReportQueueConfiguration>> final_value_;
+  };
 
   ~ReportQueueConfiguration();
   ReportQueueConfiguration(const ReportQueueConfiguration& other) = delete;
   ReportQueueConfiguration& operator=(const ReportQueueConfiguration& other) =
       delete;
 
-  // Deprecated and should not be used.
+  // Factory for generating a `ReportQueueConfiguration`.
+  // The factory produces `Builder` thus allowing to set non-trivial fields.
+  // Once everything is set, `Builder` can be assigned (once!) using
+  // cast operator to `StatusOr<std::unique_ptr<ReportQueueConfiguration>>()`.
+  //
+  // Example usage:
+  //   StatusOr<reporting::ReportQueueConfiguration> config_result =
+  //       reporting::ReportQueueConfiguration::Create(
+  //           {.event_type = EventType::kUser,
+  //            .destination = Destination::HEART_BEAT})
+  //           .SetRateLimiter(std::make_unique<RateLimiterTokenBucket>(
+  //               /*max_level=*/1024,
+  //               /*filling_time=*/base::Minutes(10)))
+  //           .Build();
+  //   if (!config_result.ok()) {
+  //     return config_result.status();
+  //   }
+  //   auto config = config_result.ValueOrDie();
+  static Builder Create(const Settings& settings);
+
+  // Deprecated and should not be used. Use `Create({settings})` instead.
   //
   // Factory for generating a ReportQueueConfiguration.
   // If any of the parameters are invalid, will return error::INVALID_ARGUMENT.
@@ -60,6 +109,8 @@ class ReportQueueConfiguration {
       std::unique_ptr<RateLimiterInterface> rate_limiter = nullptr,
       int64_t reserved_space = 0L);
 
+  // Deprecated and should not be used. Use `Create({settings})` instead.
+  //
   // Factory for generating a ReportQueueConfiguration.
   // `event_type` is the type of event being reported, and is indirectly used to
   // retrieve DM tokens for downstream processing when building the report
@@ -99,13 +150,15 @@ class ReportQueueConfiguration {
   Status CheckPolicy() const;
 
  private:
+  friend class Builder;
+
   ReportQueueConfiguration();
 
   Status SetEventType(EventType event_type);
   Status SetDestination(Destination destination);
+  Status SetReservedSpace(int64_t reserved_space);
   Status SetPolicyCheckCallback(PolicyCheckCallback policy_check_callback);
   Status SetRateLimiter(std::unique_ptr<RateLimiterInterface> rate_limiter);
-  Status SetReservedSpace(int64_t reserved_space);
 
   std::string dm_token_;
   EventType event_type_;

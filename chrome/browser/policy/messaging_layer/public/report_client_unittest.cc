@@ -149,8 +149,11 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   }
 
   StatusOr<std::unique_ptr<ReportQueue>> CreateQueue() {
-    auto config_result = ReportQueueConfiguration::Create(
-        EventType::kUser, destination_, policy_checker_callback_);
+    auto config_result =
+        ReportQueueConfiguration::Create(
+            {.event_type = EventType::kUser, .destination = destination_})
+            .SetPolicyCheckCallback(policy_checker_callback_)
+            .Build();
     EXPECT_TRUE(config_result.ok()) << config_result.status();
     return CreateQueueWithConfig(std::move(config_result.ValueOrDie()));
   }
@@ -173,8 +176,11 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
 
   std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
   CreateSpeculativeQueue() {
-    auto config_result = ReportQueueConfiguration::Create(
-        EventType::kUser, destination_, policy_checker_callback_);
+    auto config_result =
+        ReportQueueConfiguration::Create(
+            {.event_type = EventType::kUser, .destination = destination_})
+            .SetPolicyCheckCallback(policy_checker_callback_)
+            .Build();
     EXPECT_TRUE(config_result.ok()) << config_result.status();
 
     return CreateSpeculativeQueueWithConfig(
@@ -293,12 +299,15 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
 // This scenario will eventually be deleted once we have migrated all events
 // over to use event types instead.
 TEST_P(ReportClientTest, CreatesReportQueueWithDMToken) {
-  const base::StringPiece random_dm_token = "RANDOM DM TOKEN";
-  auto report_queue_config_result = ReportQueueConfiguration::Create(
-      random_dm_token, destination_, policy_checker_callback_);
-  EXPECT_OK(report_queue_config_result);
+  static constexpr char random_dm_token[] = "RANDOM DM TOKEN";
+  auto config_result =
+      ReportQueueConfiguration::Create({.destination = destination_})
+          .SetDMToken(random_dm_token)
+          .SetPolicyCheckCallback(policy_checker_callback_)
+          .Build();
+  EXPECT_OK(config_result);
   auto report_queue_result =
-      CreateQueueWithConfig(std::move(report_queue_config_result.ValueOrDie()));
+      CreateQueueWithConfig(std::move(config_result.ValueOrDie()));
   ASSERT_OK(report_queue_result);
   ASSERT_THAT(std::move(report_queue_result.ValueOrDie()).get(), Ne(nullptr));
   EXPECT_THAT(report_queue_config_->dm_token(), StrEq(random_dm_token));

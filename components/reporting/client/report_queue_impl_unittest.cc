@@ -71,10 +71,11 @@ class ReportQueueImplTest : public testing::Test {
     ON_CALL(mocked_policy_check_, Call())
         .WillByDefault(Return(Status::StatusOK()));
 
-    StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
-        ReportQueueConfiguration::Create(dm_token_, destination_,
-                                         policy_check_callback_);
-
+    auto config_result =
+        ReportQueueConfiguration::Create({.destination = destination_})
+            .SetDMToken(dm_token_)
+            .SetPolicyCheckCallback(policy_check_callback_)
+            .Build();
     ASSERT_OK(config_result) << config_result.status();
 
     test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
@@ -162,11 +163,12 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecord) {
 TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithRateLimiter) {
   auto rate_limiter = std::make_unique<MockRateLimiter>();
   auto* const mock_rate_limiter = rate_limiter.get();
-  StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
-      ReportQueueConfiguration::Create(dm_token_, destination_,
-                                       policy_check_callback_,
-                                       std::move(rate_limiter));
-
+  auto config_result =
+      ReportQueueConfiguration::Create({.destination = destination_})
+          .SetDMToken(dm_token_)
+          .SetPolicyCheckCallback(policy_check_callback_)
+          .SetRateLimiter(std::move(rate_limiter))
+          .Build();
   ASSERT_OK(config_result) << config_result.status();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
@@ -212,11 +214,12 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithRateLimiter) {
 
 TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithReservedSpace) {
   static constexpr int64_t kReservedSpace = 12345L;
-  StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
+  auto config_result =
       ReportQueueConfiguration::Create(
-          dm_token_, destination_, policy_check_callback_,
-          /*rate_limiter=*/nullptr, kReservedSpace);
-
+          {.destination = destination_, .reserved_space = kReservedSpace})
+          .SetDMToken(dm_token_)
+          .SetPolicyCheckCallback(policy_check_callback_)
+          .Build();
   ASSERT_OK(config_result) << config_result.status();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
@@ -362,11 +365,12 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecord) {
 TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecordWithRateLimiter) {
   auto rate_limiter = std::make_unique<MockRateLimiter>();
   auto* const mock_rate_limiter = rate_limiter.get();
-  StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
-      ReportQueueConfiguration::Create(dm_token_, destination_,
-                                       policy_check_callback_,
-                                       std::move(rate_limiter));
-
+  auto config_result =
+      ReportQueueConfiguration::Create({.destination = destination_})
+          .SetDMToken(dm_token_)
+          .SetPolicyCheckCallback(policy_check_callback_)
+          .SetRateLimiter(std::move(rate_limiter))
+          .Build();
   ASSERT_OK(config_result) << config_result.status();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
@@ -413,11 +417,12 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecordWithRateLimiter) {
 TEST_F(ReportQueueImplTest,
        SuccessfulSpeculativeStringRecordWithReservedSpace) {
   static constexpr int64_t kReservedSpace = 12345L;
-  StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
+  auto config_result =
       ReportQueueConfiguration::Create(
-          dm_token_, destination_, policy_check_callback_,
-          /*rate_limiter=*/nullptr, kReservedSpace);
-
+          {.destination = destination_, .reserved_space = kReservedSpace})
+          .SetDMToken(dm_token_)
+          .SetPolicyCheckCallback(policy_check_callback_)
+          .Build();
   ASSERT_OK(config_result) << config_result.status();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;

@@ -151,11 +151,10 @@ class RecordHandlerUploadTest : public ::testing::Test {
         base::MakeRefCounted<ResourceManager>(4u * 1024LLu * 1024LLu);  // 4 MiB
 
     // Create a queue and post event, in order to let ReportClient set storage.
-    auto config_result = ReportQueueConfiguration::Create(
-        EventType::kDevice, LOG_UPLOAD,
-        /*policy_check_callback=*/base::BindRepeating([]() {
-          return Status::StatusOK();
-        }));
+    auto config_result =
+        ReportQueueConfiguration::Create(
+            {.event_type = EventType::kDevice, .destination = LOG_UPLOAD})
+            .Build();
     EXPECT_OK(config_result) << config_result.status();
     test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> create_queue_event;
     ReportQueueProvider::CreateQueue(std::move(config_result.ValueOrDie()),

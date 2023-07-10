@@ -58,80 +58,115 @@ class ReportQueueConfigurationTest : public ::testing::Test {
 // ReportQueueConfiguration.
 TEST_F(ReportQueueConfigurationTest,
        ValidateConfigurationWithInvalidDestination) {
-  EXPECT_FALSE(ReportQueueConfiguration::Create(kDmToken, kInvalidDestination,
-                                                kValidCallback)
-                   .ok());
+  StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
+      ReportQueueConfiguration::Builder({.destination = kInvalidDestination})
+          .SetDMToken(kDmToken)
+          .SetPolicyCheckCallback(kValidCallback)
+          .Build();
+  EXPECT_FALSE(config_result.ok());
 }
 
 TEST_F(ReportQueueConfigurationTest,
        ValidateConfigurationWithInvalidDestinationInvalidCallback) {
-  EXPECT_FALSE(ReportQueueConfiguration::Create(
-                   /*dm_token=*/kDmToken, kInvalidDestination, kInvalidCallback)
-                   .ok());
+  auto config_result =
+      ReportQueueConfiguration::Create({.destination = kInvalidDestination})
+          .SetPolicyCheckCallback(kInvalidCallback)
+          .SetDMToken(kDmToken)
+          .Build();
+  EXPECT_FALSE(config_result.ok());
 }
 
 TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithValidParams) {
-  EXPECT_OK(ReportQueueConfiguration::Create(
-      /*dm_token*=*/kDmToken, kValidDestination, kValidCallback));
+  auto config_result =
+      ReportQueueConfiguration::Create({.destination = kValidDestination})
+          .SetDMToken(kDmToken)
+          .SetPolicyCheckCallback(kValidCallback)
+          .Build();
+  EXPECT_OK(config_result) << config_result.status();
 }
 
 TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithNoDMToken) {
-  EXPECT_OK(ReportQueueConfiguration::Create(
-      /*dm_token*=*/"", kValidDestination, kValidCallback));
+  auto config_result =
+      ReportQueueConfiguration::Create({.destination = kValidDestination})
+          .SetPolicyCheckCallback(kValidCallback)
+          .Build();
+  EXPECT_OK(config_result) << config_result.status();
 }
 
 TEST_F(ReportQueueConfigurationTest,
        ValidateConfigurationWithNoDMTokenInvalidDestination) {
-  EXPECT_FALSE(ReportQueueConfiguration::Create(
-                   /*dm_token*=*/"", kInvalidDestination, kValidCallback)
-                   .ok());
+  auto config_result =
+      ReportQueueConfiguration::Create({.destination = kInvalidDestination})
+          .SetPolicyCheckCallback(kValidCallback)
+          .Build();
+  EXPECT_FALSE(config_result.ok());
 }
 
 TEST_F(ReportQueueConfigurationTest,
        ValidateConfigurationWithNoDMTokenInvalidCallback) {
-  EXPECT_FALSE(ReportQueueConfiguration::Create(
-                   /*dm_token=*/"", kValidDestination, kInvalidCallback)
-                   .ok());
+  auto config_result =
+      ReportQueueConfiguration::Create({.destination = kValidDestination})
+          .SetPolicyCheckCallback(kInvalidCallback)
+          .Build();
+  EXPECT_FALSE(config_result.ok());
 }
 
 TEST_F(ReportQueueConfigurationTest,
        ValidateConfigurationWithNoDMTokenInvalidDestinationInvalidCallback) {
-  EXPECT_FALSE(ReportQueueConfiguration::Create(
-                   /*dm_token*=*/"", kInvalidDestination, kInvalidCallback)
-                   .ok());
+  auto config_result =
+      ReportQueueConfiguration::Create({.destination = kInvalidDestination})
+          .SetPolicyCheckCallback(kInvalidCallback)
+          .Build();
+  EXPECT_FALSE(config_result.ok());
 }
 
 TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithDeviceEventType) {
-  EXPECT_OK(ReportQueueConfiguration::Create(
-      EventType::kDevice, kValidDestination, kValidCallback));
+  auto config_result =
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kDevice, .destination = kValidDestination})
+          .SetPolicyCheckCallback(kValidCallback)
+          .Build();
+  EXPECT_OK(config_result) << config_result.status();
 }
 
 TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithUserEventType) {
-  EXPECT_OK(ReportQueueConfiguration::Create(
-      EventType::kUser, kValidDestination, kValidCallback));
+  auto config_result =
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kUser, .destination = kValidDestination})
+          .SetPolicyCheckCallback(kValidCallback)
+          .Build();
+  EXPECT_OK(config_result) << config_result.status();
 }
 
 TEST_F(ReportQueueConfigurationTest,
        ValidateConfigurationWithEventTypeInvalidDestination) {
-  EXPECT_FALSE(ReportQueueConfiguration::Create(
-                   EventType::kDevice, kInvalidDestination, kValidCallback)
-                   .ok());
+  auto config_result =
+      ReportQueueConfiguration::Create({.event_type = EventType::kDevice,
+                                        .destination = kInvalidDestination})
+          .SetPolicyCheckCallback(kValidCallback)
+          .Build();
+  EXPECT_FALSE(config_result.ok());
 }
 
 TEST_F(ReportQueueConfigurationTest,
        ValidateConfigurationWithEventTypeInvalidCallback) {
-  EXPECT_FALSE(ReportQueueConfiguration::Create(
-                   EventType::kDevice, kValidDestination, kInvalidCallback)
-                   .ok());
+  auto config_result =
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kDevice, .destination = kValidDestination})
+          .SetPolicyCheckCallback(kInvalidCallback)
+          .Build();
+  EXPECT_FALSE(config_result.ok());
 }
 
 TEST_F(ReportQueueConfigurationTest,
        ValidateConfigurationWithEventTypeInvalidReservedSpace) {
-  EXPECT_FALSE(ReportQueueConfiguration::Create(
-                   EventType::kDevice, kValidDestination, kValidCallback,
-                   /*rate_limiter=*/nullptr,
-                   /*reserved_space=*/-1L)
-                   .ok());
+  auto config_result =
+      ReportQueueConfiguration::Create({.event_type = EventType::kDevice,
+                                        .destination = kValidDestination,
+                                        .reserved_space = -1L})
+          .SetPolicyCheckCallback(kValidCallback)
+          .Build();
+  EXPECT_FALSE(config_result.ok());
 }
 
 TEST_F(ReportQueueConfigurationTest, UsesProvidedPolicyCheckCallback) {
@@ -140,10 +175,13 @@ TEST_F(ReportQueueConfigurationTest, UsesProvidedPolicyCheckCallback) {
   testing::MockFunction<Status(void)> mock_handler;
   EXPECT_CALL(mock_handler, Call()).WillOnce(Return(Status::StatusOK()));
 
-  auto config_result = ReportQueueConfiguration::Create(
-      kDmToken, destination,
-      base::BindRepeating(&::testing::MockFunction<Status(void)>::Call,
-                          base::Unretained(&mock_handler)));
+  auto config_result =
+      ReportQueueConfiguration::Create({.destination = destination})
+          .SetDMToken(kDmToken)
+          .SetPolicyCheckCallback(
+              base::BindRepeating(&::testing::MockFunction<Status(void)>::Call,
+                                  base::Unretained(&mock_handler)))
+          .Build();
   ASSERT_OK(config_result) << config_result.status();
 
   const auto config = std::move(config_result.ValueOrDie());
@@ -155,8 +193,11 @@ TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithRateLimiter) {
   auto rate_limiter = std::make_unique<MockRateLimiter>();
   auto* const mock_rate_limiter = rate_limiter.get();
   auto config_result =
-      ReportQueueConfiguration::Create(EventType::kDevice, kValidDestination,
-                                       kValidCallback, std::move(rate_limiter));
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kDevice, .destination = kValidDestination})
+          .SetPolicyCheckCallback(kValidCallback)
+          .SetRateLimiter(std::move(rate_limiter))
+          .Build();
   ASSERT_OK(config_result) << config_result.status();
   const auto config = std::move(config_result.ValueOrDie());
   const auto is_event_allowed_cb = config->is_event_allowed_cb();
@@ -177,8 +218,11 @@ TEST_F(ReportQueueConfigurationTest,
        ValidateConfigurationWithRateLimiterAfterRemoval) {
   auto rate_limiter = std::make_unique<MockRateLimiter>();
   auto config_result =
-      ReportQueueConfiguration::Create(EventType::kDevice, kValidDestination,
-                                       kValidCallback, std::move(rate_limiter));
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kDevice, .destination = kValidDestination})
+          .SetPolicyCheckCallback(kValidCallback)
+          .SetRateLimiter(std::move(rate_limiter))
+          .Build();
   ASSERT_OK(config_result) << config_result.status();
   auto config = std::move(config_result.ValueOrDie());
   const auto is_event_allowed_cb = config->is_event_allowed_cb();
@@ -193,9 +237,12 @@ TEST_F(ReportQueueConfigurationTest,
 TEST_F(ReportQueueConfigurationTest,
        ValidateConfigurationWithReservedSpaceSetting) {
   static constexpr int64_t kReservedSpace = 12345L;
-  auto config_result = ReportQueueConfiguration::Create(
-      EventType::kDevice, kValidDestination, kValidCallback,
-      /*rate_limiter=*/nullptr, kReservedSpace);
+  auto config_result =
+      ReportQueueConfiguration::Create({.event_type = EventType::kDevice,
+                                        .destination = kValidDestination,
+                                        .reserved_space = kReservedSpace})
+          .SetPolicyCheckCallback(kValidCallback)
+          .Build();
   ASSERT_OK(config_result) << config_result.status();
 
   const auto config = std::move(config_result.ValueOrDie());

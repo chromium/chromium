@@ -32,10 +32,12 @@ void ReportQueueFactory::Create(
     int64_t reserved_space) {
   DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
 
-  auto config_result = ReportQueueConfiguration::Create(
-      event_type, destination,
-      base::BindRepeating([]() { return Status::StatusOK(); }),
-      std::move(rate_limiter), reserved_space);
+  auto config_result =
+      ReportQueueConfiguration::Create({.event_type = event_type,
+                                        .destination = destination,
+                                        .reserved_space = reserved_space})
+          .SetRateLimiter(std::move(rate_limiter))
+          .Build();
   if (!config_result.ok()) {
     LOG_WITH_STATUS(1, "ReportQueueConfiguration is invalid.", config_result);
     return;
@@ -59,10 +61,12 @@ ReportQueueFactory::CreateSpeculativeReportQueue(
     int64_t reserved_space) {
   DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
 
-  auto config_result = ReportQueueConfiguration::Create(
-      event_type, destination,
-      base::BindRepeating([]() { return Status::StatusOK(); }),
-      std::move(rate_limiter), reserved_space);
+  auto config_result =
+      ReportQueueConfiguration::Create({.event_type = event_type,
+                                        .destination = destination,
+                                        .reserved_space = reserved_space})
+          .SetRateLimiter(std::move(rate_limiter))
+          .Build();
   if (!config_result.ok()) {
     DVLOG(1)
         << "Cannot initialize report queue. Invalid ReportQueueConfiguration: "

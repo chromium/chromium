@@ -63,10 +63,10 @@ void ReportQueueManualTestContext::OnStart() {
     return;
   }
 
-  ReportQueueConfiguration::PolicyCheckCallback policy_check_cb =
-      base::BindRepeating([]() -> Status { return Status::StatusOK(); });
-  auto config_result = ReportQueueConfiguration::Create(
-      EventType::kDevice, destination_, std::move(policy_check_cb));
+  auto config_result =
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kDevice, .destination = destination_})
+          .Build();
   if (!config_result.ok()) {
     Complete(config_result.status());
     return;
