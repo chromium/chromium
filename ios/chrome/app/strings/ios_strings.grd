@@ -2733,7 +2733,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Crash report sent.
       </message>
       <message name="IDS_IOS_SAFE_MODE_RELOAD_CHROME" desc="The label of a button used to start Chrome from safe mode.  Clicking this button dismisses the safe mode UI and launches Chrome. [Length: 30em]">
-        Try again
+        Try Again
       </message>
       <message name="IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT" desc="The message indicating that Chrome is sending a crash report. [Length: 140em]">
         Sending crash report...

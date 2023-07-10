@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-@class PrimaryActionButton;
-
 // A protocol required by delegates of the SafeModeViewController.
 @protocol SafeModeViewControllerDelegate
 @required
