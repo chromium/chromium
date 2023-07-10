@@ -2227,8 +2227,17 @@ bool AutofillTable::UpdateServerCvc(int64_t instrument_id,
                 "instrument_id=?1");
   BindServerStoredCvcToStatement(instrument_id, cvc, *autofill_table_encryptor_,
                                  &s);
-
   s.Run();
+  return db_->GetLastChangeCount() > 0;
+}
+
+bool AutofillTable::RemoveServerCvc(int64_t instrument_id) {
+  DeleteWhereColumnEq(db_, kServerStoredCvcTable, kInstrumentId, instrument_id);
+  return db_->GetLastChangeCount() > 0;
+}
+
+bool AutofillTable::ClearServerCvcs() {
+  Delete(db_, kServerStoredCvcTable);
   return db_->GetLastChangeCount() > 0;
 }
 
@@ -2240,6 +2249,18 @@ std::u16string AutofillTable::GetServerCvcForTesting(int64_t instrument_id) {
 
   return s.Step() ? UnencryptValueFromColumn(s, 0, *autofill_table_encryptor_)
                   : u"";
+}
+
+std::vector<std::u16string> AutofillTable::GetAllServerCvcForTesting() {
+  std::vector<std::u16string> cvc_list;
+  sql::Statement s;
+  SelectBuilder(db_, s, kServerStoredCvcTable, {kValueEncrypted});
+  while (s.Step()) {
+    cvc_list.push_back(
+        UnencryptValueFromColumn(s, 0, *autofill_table_encryptor_));
+  }
+
+  return cvc_list;
 }
 
 bool AutofillTable::AddServerCardMetadata(

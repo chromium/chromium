@@ -1304,7 +1304,8 @@ TEST_F(AutofillTableTest, CreditCardCvc) {
   EXPECT_FALSE(cvc_removed_statement.Step());
 }
 
-// Tests that verify add, update server cvc function working as expected.
+// Tests that verify add, update and clear server cvc function working as
+// expected.
 TEST_F(AutofillTableTest, ServerCvc) {
   const base::Time kArbitraryTime = base::Time::FromDoubleT(25);
   TestAutofillClock test_clock;
@@ -1332,6 +1333,22 @@ TEST_F(AutofillTableTest, ServerCvc) {
   EXPECT_EQ(GetDateModified("server_stored_cvc", "last_updated_timestamp",
                             kInstrumentId),
             kSomeLaterTime.ToTimeT());
+
+  // Remove the server cvc. It should also remove cvc from server_stored_cvc
+  // table.
+  EXPECT_TRUE(table_->RemoveServerCvc(kInstrumentId));
+  EXPECT_TRUE(table_->GetServerCvcForTesting(kInstrumentId).empty());
+
+  // Remove non-exist cvc will return false.
+  EXPECT_FALSE(table_->RemoveServerCvc(kInstrumentId));
+
+  // Clear the server_stored_cvc table.
+  table_->AddServerCvc(kInstrumentId, kCvc);
+  EXPECT_TRUE(table_->ClearServerCvcs());
+  EXPECT_TRUE(table_->GetAllServerCvcForTesting().empty());
+
+  // Clear the server_stored_cvc table when table is empty will return false.
+  EXPECT_FALSE(table_->ClearServerCvcs());
 }
 
 TEST_F(AutofillTableTest, AddFullServerCreditCard) {
