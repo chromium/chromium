@@ -43,18 +43,8 @@ export function reportPromise(promise, callback) {
  * @return {!Promise} A promise which is fulfilled when the testFunction
  *     becomes true.
  */
-export function waitUntil(testFunction) {
-  const INTERVAL_FOR_WAIT_UNTIL = 100;  // ms
-
-  return new Promise((resolve) => {
-    const tryTestFunction = () => {
-      if (testFunction()) {
-        resolve();
-      } else {
-        setTimeout(tryTestFunction, INTERVAL_FOR_WAIT_UNTIL);
-      }
-    };
-
-    tryTestFunction();
-  });
+export async function waitUntil(testFunction) {
+  while (!testFunction()) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
 }
