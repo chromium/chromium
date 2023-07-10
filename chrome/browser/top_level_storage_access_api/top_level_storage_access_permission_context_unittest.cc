@@ -214,7 +214,7 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  DCHECK(settings_map);
+  CHECK(settings_map);
 
   // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
   ContentSettingsForOneType non_restorable_grants =
@@ -249,7 +249,7 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  DCHECK(settings_map);
+  CHECK(settings_map);
 
   // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
   ContentSettingsForOneType non_restorable_grants =
@@ -295,7 +295,7 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  DCHECK(settings_map);
+  CHECK(settings_map);
 
   // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
   ContentSettingsForOneType non_restorable_grants =
@@ -331,7 +331,7 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  DCHECK(settings_map);
+  CHECK(settings_map);
 
   // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
   ContentSettingsForOneType non_restorable_grants =
@@ -386,7 +386,7 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest,
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  DCHECK(settings_map);
+  CHECK(settings_map);
 
   // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
   ContentSettingsForOneType non_restorable_grants =

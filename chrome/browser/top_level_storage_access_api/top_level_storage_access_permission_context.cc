@@ -84,7 +84,7 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
 
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(id.global_render_frame_host_id());
-  DCHECK(rfh);
+  CHECK(rfh);
 
   net::SchemefulSite embedding_site(embedding_origin);
 
@@ -173,8 +173,8 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSet(
     ContentSetting content_setting,
     bool is_one_time,
     bool is_final_decision) {
-  DCHECK(!is_one_time);
-  DCHECK(is_final_decision);
+  CHECK(!is_one_time);
+  CHECK(is_final_decision);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   NotifyPermissionSetInternal(
       id, requesting_origin, embedding_origin, std::move(callback), persist,
@@ -214,8 +214,8 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser_context());
-  DCHECK(settings_map);
-  DCHECK(persist);
+  CHECK(settings_map);
+  CHECK(persist);
 
   // This permission was allowed, so store it. Because this is a superset of the
   // regular storage access permission, we also store that one.
@@ -272,7 +272,7 @@ void TopLevelStorageAccessPermissionContext::UpdateContentSetting(
     const GURL& embedding_origin,
     ContentSetting content_setting,
     bool is_one_time) {
-  DCHECK(!is_one_time);
+  CHECK(!is_one_time);
   // We need to notify the network service of content setting updates before we
   // run our callback. As a result we do our updates when we're notified of a
   // permission being set and should not be called here.
