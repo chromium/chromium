@@ -4,50 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-# Prefer to depend on the component's public target
-# "//components/services/app_service" instead of several individual targets in
-# this directory.
-
-source_set("app_file_handling") {
-  sources = [
-    "file_handler.cc",
-    "file_handler.h",
-    "file_handler_info.cc",
-    "file_handler_info.h",
-  ]
-
-  public_deps = [ ":app_icon_info" ]
-
-  deps = [
-    "//base",
-    "//url",
-  ]
-}
-
-source_set("app_icon_info") {
-  sources = [
-    "icon_info.cc",
-    "icon_info.h",
-  ]
-
-  deps = [
-    "//base",
-    "//url",
-  ]
-}
-
-source_set("app_share_target") {
-  sources = [
-    "share_target.cc",
-    "share_target.h",
-  ]
-
-  deps = [
-    "//base",
-    "//url",
-  ]
-}
-
 # Component for the core data structures and types used by App Service. Large
 # parts of the codebase are dependent on this target (via
 # //chromeos/crosapi/mojom), so this must have minimal deps to avoid circular
@@ -97,8 +53,101 @@ component("app_types") {
   }
 }
 
+# This target is separate from //components/services/app_service because not all
+# clients of App Service are allowed to have a dependency on //content.
+if (is_chromeos_ash) {
+  source_set("instance_update") {
+    sources = [
+      "instance.cc",
+      "instance.h",
+      "instance_registry.cc",
+      "instance_registry.h",
+      "instance_update.cc",
+      "instance_update.h",
+    ]
+    deps = [
+      ":macros",
+      "//ash/public/cpp",
+      "//content/public/browser",
+      "//skia",
+      "//ui/aura",
+      "//ui/compositor",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "intent_test_util.cc",
+    "intent_test_util.h",
+    "stub_icon_loader.cc",
+    "stub_icon_loader.h",
+  ]
+
+  deps = [
+    ":app_types",
+    ":icon_loader",
+    ":intents",
+    "//skia",
+    "//third_party/abseil-cpp:absl",
+    "//ui/gfx",
+  ]
+}
+
+# Prefer to depend on the component's public target
+# "//components/services/app_service" instead of individual implementation
+# targets from below.
+
+source_set("app_file_handling") {
+  sources = [
+    "file_handler.cc",
+    "file_handler.h",
+    "file_handler_info.cc",
+    "file_handler_info.h",
+  ]
+
+  public_deps = [ ":app_icon_info" ]
+
+  deps = [
+    "//base",
+    "//url",
+  ]
+}
+
+source_set("app_icon_info") {
+  sources = [
+    "icon_info.cc",
+    "icon_info.h",
+  ]
+
+  deps = [
+    "//base",
+    "//url",
+  ]
+}
+
+source_set("app_share_target") {
+  sources = [
+    "share_target.cc",
+    "share_target.h",
+  ]
+
+  deps = [
+    "//base",
+    "//url",
+  ]
+}
+
 source_set("macros") {
   sources = [ "macros.h" ]
+
+  # Only exposed to App Service code.
+  visibility = [
+    "//chrome/browser/apps/app_service/*",
+    "//components/services/app_service/*",
+  ]
 }
 
 component("app_update") {
@@ -139,27 +188,6 @@ source_set("app_url_handling") {
   deps = [ "//url" ]
 }
 
-if (is_chromeos_ash) {
-  source_set("instance_update") {
-    sources = [
-      "instance.cc",
-      "instance.h",
-      "instance_registry.cc",
-      "instance_registry.h",
-      "instance_update.cc",
-      "instance_update.h",
-    ]
-    deps = [
-      ":macros",
-      "//ash/public/cpp:cpp",
-      "//content/public/browser",
-      "//skia",
-      "//ui/aura",
-      "//ui/compositor",
-    ]
-  }
-}
-
 source_set("icon_loader") {
   sources = [
     "icon_cache.cc",
@@ -172,19 +200,6 @@ source_set("icon_loader") {
 
   deps = [
     ":app_types",
-    "//ui/gfx:gfx",
-  ]
-}
-
-source_set("icon_loader_test_support") {
-  sources = [
-    "stub_icon_loader.cc",
-    "stub_icon_loader.h",
-  ]
-
-  deps = [
-    ":icon_loader",
-    "//skia",
     "//ui/gfx:gfx",
   ]
 }
@@ -233,21 +248,6 @@ source_set("preferred_apps") {
     ":intents",
     "//base",
     "//url",
-  ]
-}
-
-source_set("test_support") {
-  testonly = true
-
-  sources = [
-    "intent_test_util.cc",
-    "intent_test_util.h",
-  ]
-
-  deps = [
-    ":app_types",
-    ":intents",
-    "//third_party/abseil-cpp:absl",
   ]
 }
 

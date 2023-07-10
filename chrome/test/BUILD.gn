@@ -7666,7 +7666,6 @@ test("unit_tests") {
       "//components/safety_check:test_support",
       "//components/send_tab_to_self:test_support",
       "//components/services/app_service",
-      "//components/services/app_service/public/cpp:icon_loader_test_support",
       "//components/services/app_service/public/cpp:test_support",
       "//components/services/app_service/public/cpp:unit_tests",
       "//components/session_proto_db:session_proto_db",

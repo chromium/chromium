@@ -6140,7 +6140,6 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/search_engines",
     "//components/services/app_service",
-    "//components/services/app_service/public/cpp:icon_loader_test_support",
     "//components/services/app_service/public/cpp:test_support",
     "//components/services/app_service/public/protos",
     "//components/services/filesystem/public/mojom",
