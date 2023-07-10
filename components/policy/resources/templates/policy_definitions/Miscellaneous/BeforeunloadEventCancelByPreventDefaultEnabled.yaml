@@ -1,27 +1,23 @@
-caption: Control the new behavior for beforeunload event showing cancel confirmation dialog when preventDefault gets called
+caption: Control new behavior for the cancel dialog produced by the beforeunload event
 default: null
 desc: |-
-  This policy allows to control whether confirmation dialog is shown when a page calls preventDefault for beforeunload event. Historically, <ph name="PRODUCT_NAME">Google Chrome</ph> didn't show these dialogs, but the default behavior is being changed. This policy is a temporary escape hatch, meant for the enterprises whose websites got broken because of the new behavior and that need some time before they get fixed.
+  This policy provides a temporary opt-out for two related fixes to the behavior of the confirmation dialog shown by the beforeunload event.
+  When this policy is Enabled, the new and correct behavior will be used. When this policy is Disabled, the old and legacy behavior will be used. When this policy is not set, the default behavior will be used.
+  This policy is a temporary workaround and will be removed soon.
 
-  If this policy is enabled, then the cancel confirmation dialog is shown when a page calls preventDefault for beforeunload event.
+  New and correct behavior: In `beforeunload`, calling `event.preventDefault()` will trigger the confirmation dialog. Setting `event.returnValue` to the empty string will not trigger the confirmation dialog.
 
-  If this policy is disabled, then no cancel confirmation dialog is shown when a page calls preventDefault for beforeunload event.
-
-  If this policy is not set, the default behavior will be used, according to <ph name="PRODUCT_NAME">Google Chrome</ph> feature rollout plan.
+  Old and legacy behavior: In `beforeunload`, calling `event.preventDefault()` will not trigger the confirmation dialog. Setting `event.returnValue` to the empty string will trigger the confirmation dialog.
 example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
 future_on:
 - fuchsia
-- chrome.*
-- chrome_os
-- android
-- webview_android
 items:
-- caption: Show cancel dialog when beforeunload event.preventDefault() is called.
+- caption: Show cancel dialog when event.preventDefault() is called for beforeunload event. Do not show cancel dialog when event.returnValue is the empty string for beforeunload event.
   value: true
-- caption: Do not show cancel dialog when beforeunload event.preventDefault() is called.
+- caption: Do not show cancel dialog when event.preventDefault() is called for beforeunload event. Show cancel dialog when beforeunload event.returnValue is the empty string for beforeunload event.
   value: false
 - caption: Use default behavior of feature rollout plan.
   value: null
@@ -30,5 +26,10 @@ owners:
 - dom-dev@chromium.org
 schema:
   type: boolean
+supported_on:
+- chrome.*:117-127
+- chrome_os:117-127
+- android:117-127
+- webview_android:117-127
 tags: []
 type: main

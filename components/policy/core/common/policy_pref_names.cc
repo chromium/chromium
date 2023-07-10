@@ -135,7 +135,9 @@ const char kHideWebStoreIcon[] = "hide_web_store_icon";
 const char kIncognitoModeAvailability[] = "incognito.mode_availability";
 
 // A boolean indicating whether the new behavior for beforeunload show cancel
-// dialog if event.preventDefault() gets called is in effect.
+// dialog is in effect. If true, then
+// 1. If event.preventDefault() is called, prompt cancel dialog.
+// 2. If event.returnValue is the empty string, do not prompt cancel dialog.
 const char kBeforeunloadEventCancelByPreventDefaultEnabled[] =
     "policy.beforeunload_event_cancel_by_prevent_default_enabled";
 

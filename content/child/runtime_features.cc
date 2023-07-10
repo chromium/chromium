@@ -528,12 +528,12 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
     if (value ==
         blink::switches::
             kBeforeunloadEventCancelByPreventDefaultPolicy_ForceEnable) {
-      WebRuntimeFeatures::EnableOffsetParentNewSpecBehavior(true);
+      WebRuntimeFeatures::EnableBeforeunloadEventCancelByPreventDefault(true);
     }
     if (value ==
         blink::switches::
             kBeforeunloadEventCancelByPreventDefaultPolicy_ForceDisable) {
-      WebRuntimeFeatures::EnableOffsetParentNewSpecBehavior(false);
+      WebRuntimeFeatures::EnableBeforeunloadEventCancelByPreventDefault(false);
     }
   }
 }
