@@ -3,15 +3,14 @@
 // found in the LICENSE file.
 
 #include "ash/wm/workspace/multi_window_resize_controller.h"
-#include "base/memory/raw_ptr.h"
 
-#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/test/test_non_client_frame_view_ash.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/wm_event.h"
@@ -20,6 +19,7 @@
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -36,25 +36,6 @@ using chromeos::kResizeOutsideBoundsSize;
 using chromeos::WindowStateType;
 
 namespace ash {
-
-namespace {
-
-// WidgetDelegate for a resizable widget which creates a NonClientFrameView
-// which is actually used in Ash.
-class TestWidgetDelegate : public views::WidgetDelegateView {
- public:
-  TestWidgetDelegate() = default;
-  TestWidgetDelegate(const TestWidgetDelegate&) = delete;
-  TestWidgetDelegate& operator=(const TestWidgetDelegate&) = delete;
-  ~TestWidgetDelegate() override = default;
-
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
-      views::Widget* widget) override {
-    return std::make_unique<NonClientFrameViewAsh>(widget);
-  }
-};
-
-}  // namespace
 
 class MultiWindowResizeControllerTest : public AshTestBase {
  public:
@@ -150,8 +131,7 @@ TEST_F(MultiWindowResizeControllerTest, IsOverWindows) {
   //  |________|________|
   std::unique_ptr<views::Widget> w1(new views::Widget);
   views::Widget::InitParams params1;
-  params1.delegate = new TestWidgetDelegate;
-  params1.delegate->SetCanResize(true);
+  params1.delegate = new TestWidgetDelegateAsh();
   params1.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params1.bounds = gfx::Rect(100, 200);
   params1.context = GetContext();
@@ -160,8 +140,7 @@ TEST_F(MultiWindowResizeControllerTest, IsOverWindows) {
 
   std::unique_ptr<views::Widget> w2(new views::Widget);
   views::Widget::InitParams params2;
-  params2.delegate = new TestWidgetDelegate;
-  params2.delegate->SetCanResize(true);
+  params2.delegate = new TestWidgetDelegateAsh();
   params2.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params2.bounds = gfx::Rect(100, 0, 100, 100);
   params2.context = GetContext();
@@ -170,8 +149,7 @@ TEST_F(MultiWindowResizeControllerTest, IsOverWindows) {
 
   std::unique_ptr<views::Widget> w3(new views::Widget);
   views::Widget::InitParams params3;
-  params3.delegate = new TestWidgetDelegate;
-  params3.delegate->SetCanResize(true);
+  params3.delegate = new TestWidgetDelegateAsh();
   params3.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params3.bounds = gfx::Rect(100, 100, 100, 100);
   params3.context = GetContext();

@@ -3650,6 +3650,8 @@ test("ash_unittests") {
     "wm/tablet_mode/tablet_mode_multitask_menu_unittest.cc",
     "wm/tablet_mode/tablet_mode_toggle_fullscreen_event_handler_unittest.cc",
     "wm/tablet_mode/tablet_mode_window_manager_unittest.cc",
+    "wm/test/test_non_client_frame_view_ash.cc",
+    "wm/test/test_non_client_frame_view_ash.h",
     "wm/toplevel_window_event_handler_unittest.cc",
     "wm/video_detector_unittest.cc",
     "wm/window_animations_unittest.cc",

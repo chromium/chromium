@@ -33,6 +33,7 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/test/test_non_client_frame_view_ash.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -120,43 +121,6 @@ class WindowLayerRecreatedCounter : public aura::WindowObserver {
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
-};
-
-// A subclass of `NonClientFrameViewAsh` that allows us to set a custom minimum
-// size.
-class TestNonClientFrameView : public NonClientFrameViewAsh {
- public:
-  explicit TestNonClientFrameView(views::Widget* widget)
-      : NonClientFrameViewAsh(widget) {}
-  TestNonClientFrameView(const TestNonClientFrameView&) = delete;
-  TestNonClientFrameView& operator=(const TestNonClientFrameView&) = delete;
-  ~TestNonClientFrameView() override = default;
-
-  void SetMinimumSize(const gfx::Size& size) {
-    minimum_size_ = size;
-    frame()->OnSizeConstraintsChanged();
-  }
-
-  // NonClientFrameViewAsh:
-  gfx::Size GetMinimumSize() const override { return minimum_size_; }
-
- private:
-  gfx::Size minimum_size_;
-};
-
-// A test widget delegate that creates `TestNonClientFrameView` as its frame.
-class TestWidgetDelegate : public views::WidgetDelegate {
- public:
-  TestWidgetDelegate() { SetHasWindowSizeControls(true); }
-  TestWidgetDelegate(const TestWidgetDelegate& other) = delete;
-  TestWidgetDelegate& operator=(const TestWidgetDelegate& other) = delete;
-  ~TestWidgetDelegate() override = default;
-
-  // views::WidgetDelegateView:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
-      views::Widget* widget) override {
-    return std::make_unique<TestNonClientFrameView>(widget);
-  }
 };
 
 }  // namespace
@@ -1332,14 +1296,11 @@ TEST_F(TabletWindowFloatTest, MinimumSizeChangeOnTablet) {
 
   // Create a window in clamshell mode without a minimum size, and larger than
   // its tablet minimum size.
-  auto test_widget_delegate = std::make_unique<TestWidgetDelegate>();
-  auto window = CreateAppWindow(gfx::Rect(500, 500), AppType::SYSTEM_APP,
-                                kShellWindowId_DeskContainerA,
-                                test_widget_delegate.get());
-  auto* custom_frame = static_cast<TestNonClientFrameView*>(
-      views::Widget::GetWidgetForNativeWindow(window.get())
-          ->non_client_view()
-          ->frame_view());
+  auto window =
+      CreateAppWindow(gfx::Rect(500, 500), AppType::SYSTEM_APP,
+                      kShellWindowId_DeskContainerA, new TestWidgetDelegateAsh);
+  auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
+      NonClientFrameViewAsh::Get(window.get()));
   wm::ActivateWindow(window.get());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());

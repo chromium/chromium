@@ -4,7 +4,6 @@
 
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 
-#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/root_window_controller.h"
@@ -14,6 +13,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/test/test_non_client_frame_view_ash.h"
 #include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -126,26 +126,6 @@ class ConsumeEventHandler : public ui::test::TestEventHandler {
 
 /////////////////////////////////////////////////////////////////////////////
 
-class TestWidgetDelegate : public views::WidgetDelegateView {
- public:
-  TestWidgetDelegate() {
-    SetCanMaximize(true);
-    SetCanResize(true);
-  }
-
-  TestWidgetDelegate(const TestWidgetDelegate&) = delete;
-  TestWidgetDelegate& operator=(const TestWidgetDelegate&) = delete;
-
-  ~TestWidgetDelegate() override = default;
-
-  // views::WidgetDelegateView:
-  bool CanActivate() const override { return true; }
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
-      views::Widget* widget) override {
-    return std::make_unique<NonClientFrameViewAsh>(widget);
-  }
-};
-
 class ImmersiveFullscreenControllerTest : public AshTestBase {
  public:
   enum Modality {
@@ -202,7 +182,8 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
 
     widget_ = new views::Widget();
     views::Widget::InitParams params;
-    params.delegate = new TestWidgetDelegate();
+    params.activatable = views::Widget::InitParams::Activatable::kYes;
+    params.delegate = new TestWidgetDelegateAsh();
     params.context = GetContext();
     widget_->Init(std::move(params));
     widget_->Show();

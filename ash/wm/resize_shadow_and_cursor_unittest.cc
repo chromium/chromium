@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -10,6 +9,7 @@
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
+#include "ash/wm/test/test_non_client_frame_view_ash.h"
 #include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -24,38 +24,12 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/cursor_manager.h"
 
 using chromeos::kResizeInsideBoundsSize;
 using chromeos::kResizeOutsideBoundsSize;
 
 namespace ash {
-
-namespace {
-
-// views::WidgetDelegate which uses ash::NonClientFrameViewAsh.
-class TestWidgetDelegate : public views::WidgetDelegateView {
- public:
-  TestWidgetDelegate() {
-    SetCanMaximize(true);
-    SetCanMinimize(true);
-    SetCanResize(true);
-  }
-
-  TestWidgetDelegate(const TestWidgetDelegate&) = delete;
-  TestWidgetDelegate& operator=(const TestWidgetDelegate&) = delete;
-
-  ~TestWidgetDelegate() override = default;
-
-  // views::WidgetDelegateView overrides:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
-      views::Widget* widget) override {
-    return std::make_unique<NonClientFrameViewAsh>(widget);
-  }
-};
-
-}  // namespace
 
 // The test tests that the mouse cursor is changed and that the resize shadows
 // are shown when the mouse is hovered over the window edge.
@@ -74,7 +48,7 @@ class ResizeShadowAndCursorTest : public AshTestBase {
     AshTestBase::SetUp();
 
     views::Widget* widget = views::Widget::CreateWindowWithContext(
-        new TestWidgetDelegate(), GetContext(), gfx::Rect(0, 0, 200, 100));
+        new TestWidgetDelegateAsh(), GetContext(), gfx::Rect(0, 0, 200, 100));
     widget->Show();
     window_ = widget->GetNativeView();
 
@@ -289,7 +263,7 @@ TEST_F(ResizeShadowAndCursorTest, NoResizeShadowOnNonToplevelWindow) {
   ASSERT_TRUE(WindowState::Get(window())->IsNormalStateType());
 
   auto* embedded = views::Widget::CreateWindowWithContext(
-      new TestWidgetDelegate(), GetContext(), gfx::Rect(0, 0, 100, 100));
+      new TestWidgetDelegateAsh(), GetContext(), gfx::Rect(0, 0, 100, 100));
   embedded->Show();
   window()->AddChild(embedded->GetNativeWindow());
 
