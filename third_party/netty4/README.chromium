@@ -5,8 +5,9 @@ SHA: 3b0025e08168eebc97b232fef333a716dc4d42bd  netty-4.1.9.Final.tar.bz2
 Version: 4.1.9.Final
 Date: March 10, 2017
 License: Apache 2.0
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 The library is not security critical because it is used for tests only.
 Do not link it into production code.
 
