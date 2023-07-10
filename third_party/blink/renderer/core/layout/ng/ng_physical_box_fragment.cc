@@ -1799,10 +1799,8 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
   // layout. This occurs when an OOF-descendant changes from "fixed" to
   // "absolute" (or visa versa) changing its containing block.
 
-  // Legacy layout can (incorrectly) shift baseline position(s) during
-  // "simplified" layout.
-  DCHECK(IsLegacyLayoutRoot() || FirstBaseline() == other.FirstBaseline());
-  DCHECK(IsLegacyLayoutRoot() || LastBaseline() == other.LastBaseline());
+  DCHECK(FirstBaseline() == other.FirstBaseline());
+  DCHECK(LastBaseline() == other.LastBaseline());
 
   if (IsTableNG()) {
     DCHECK_EQ(TableGridRect(), other.TableGridRect());
