@@ -1,6 +1,7 @@
 Name: Fuchsia GN SDK
 Version: 0
 Security Critical: no
+Shipped: yes
 License: BSD 2-Clause
 License File: LICENSE
 
