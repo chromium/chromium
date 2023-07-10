@@ -62,7 +62,6 @@ const V8ControlValue* RestoreFromFormControlState(
     return nullptr;
   }
   if (state[index] != section_title) {
-    NOTREACHED();
     return nullptr;
   }
   const V8ControlValue* restored_value = nullptr;
