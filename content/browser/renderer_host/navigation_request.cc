@@ -1982,7 +1982,10 @@ NavigationRequest::~NavigationRequest() {
     loading_mem_tracker_->Cancel();
   ResetExpectedProcess();
   if (!HasCommitted()) {
-    if (state_ >= WILL_START_NAVIGATION) {
+    // If we're before WILL_START_NAVIGATION, we haven't reported request start
+    // to DevTools yet.
+    // If we're in WILL_FAIL_REQUEST, the failure has been reported already.
+    if (state_ >= WILL_START_NAVIGATION && state_ != WILL_FAIL_REQUEST) {
       devtools_instrumentation::OnNavigationRequestFailed(
           *this, network::URLLoaderCompletionStatus(net::ERR_ABORTED));
     }

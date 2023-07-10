@@ -1,0 +1,14 @@
+Tests that loadingFinished is correctly reported once when navigation is aborted.
+intercepted: http://127.0.0.1:8000/inspector-protocol/resources/basic.html, aborting
+{
+    method : Network.loadingFailed
+    params : {
+        canceled : true
+        errorText : net::ERR_ABORTED
+        requestId : <string>
+        timestamp : <number>
+        type : Document
+    }
+    sessionId : <string>
+}
+
