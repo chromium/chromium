@@ -162,9 +162,9 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
                                 std::string encoded_alpha,
                                 base::TimeTicks timestamp,
                                 bool is_key_frame) {
-    media_recorder_handler_->OnEncodedVideo(params, std::move(encoded_data),
-                                            std::move(encoded_alpha), timestamp,
-                                            is_key_frame);
+    media_recorder_handler_->OnEncodedVideo(
+        params, std::move(encoded_data), std::move(encoded_alpha),
+        absl::nullopt, timestamp, is_key_frame);
   }
 
   void OnEncodedAudioForTesting(const media::AudioParameters& params,

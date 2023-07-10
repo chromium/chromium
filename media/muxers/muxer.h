@@ -61,11 +61,13 @@ class MEDIA_EXPORT Muxer {
   // `encoded_alpha` represents the encode output of alpha channel when
   // available, can be empty otherwise.
   // Returns true if the data is accepted by the muxer, false otherwise.
-  virtual bool OnEncodedVideo(const VideoParameters& params,
-                              std::string encoded_data,
-                              std::string encoded_alpha,
-                              base::TimeTicks timestamp,
-                              bool is_key_frame) = 0;
+  virtual bool OnEncodedVideo(
+      const VideoParameters& params,
+      std::string encoded_data,
+      std::string encoded_alpha,
+      absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp,
+      bool is_key_frame) = 0;
   virtual bool OnEncodedAudio(
       const AudioParameters& params,
       std::string encoded_data,

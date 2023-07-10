@@ -22,11 +22,13 @@ Mp4Muxer::~Mp4Muxer() {
   NOTIMPLEMENTED();
 }
 
-bool Mp4Muxer::OnEncodedVideo(const Muxer::VideoParameters& params,
-                              std::string encoded_data,
-                              std::string encoded_alpha,
-                              base::TimeTicks timestamp,
-                              bool is_key_frame) {
+bool Mp4Muxer::OnEncodedVideo(
+    const Muxer::VideoParameters& params,
+    std::string encoded_data,
+    std::string encoded_alpha,
+    absl::optional<VideoEncoder::CodecDescription> codec_description,
+    base::TimeTicks timestamp,
+    bool is_key_frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTIMPLEMENTED();
 
@@ -36,7 +38,7 @@ bool Mp4Muxer::OnEncodedVideo(const Muxer::VideoParameters& params,
 bool Mp4Muxer::OnEncodedAudio(
     const AudioParameters& params,
     std::string encoded_data,
-    absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+    absl::optional<AudioEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return true;

@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "media/base/video_encoder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/web/modules/mediastream/encoded_video_frame.h"
@@ -100,11 +101,13 @@ class MODULES_EXPORT MediaRecorderHandler final
   void TrackRemoved(const WebString& track_id) override;
 
   // VideoTrackRecorder::CallbackInterface overrides.
-  void OnEncodedVideo(const media::Muxer::VideoParameters& params,
-                      std::string encoded_data,
-                      std::string encoded_alpha,
-                      base::TimeTicks timestamp,
-                      bool is_key_frame) override;
+  void OnEncodedVideo(
+      const media::Muxer::VideoParameters& params,
+      std::string encoded_data,
+      std::string encoded_alpha,
+      absl::optional<media::VideoEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp,
+      bool is_key_frame) override;
   void OnPassthroughVideo(const media::Muxer::VideoParameters& params,
                           std::string encoded_data,
                           std::string encoded_alpha,
@@ -124,11 +127,13 @@ class MODULES_EXPORT MediaRecorderHandler final
 
   void OnStreamChanged(const String& message);
 
-  void HandleEncodedVideo(const media::Muxer::VideoParameters& params,
-                          std::string encoded_data,
-                          std::string encoded_alpha,
-                          base::TimeTicks timestamp,
-                          bool is_key_frame);
+  void HandleEncodedVideo(
+      const media::Muxer::VideoParameters& params,
+      std::string encoded_data,
+      std::string encoded_alpha,
+      absl::optional<media::VideoEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp,
+      bool is_key_frame);
   void WriteData(base::StringPiece data);
 
   // Updates recorded tracks live and enabled.

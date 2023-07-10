@@ -194,7 +194,7 @@ void Mp4TrackFragmentRunBoxWriter::Write(BoxByteStream& writer) {
   {
     // `data_offset`.
 
-    // `movie-fragment relative addressing` should exist must by
+    // `movie-fragment relative addressing` should exist by
     // `https://www.w3.org/TR/mse-byte-stream-format-isobmff/`.
     CHECK(box_.flags &
           static_cast<uint16_t>(

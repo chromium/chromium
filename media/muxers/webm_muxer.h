@@ -108,11 +108,13 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
   // to WebM Segment. Either one returns true on success.
   // |encoded_alpha| represents the encode output of alpha channel when
   // available, can be nullptr otherwise.
-  bool OnEncodedVideo(const VideoParameters& params,
-                      std::string encoded_data,
-                      std::string encoded_alpha,
-                      base::TimeTicks timestamp,
-                      bool is_key_frame) override;
+  bool OnEncodedVideo(
+      const VideoParameters& params,
+      std::string encoded_data,
+      std::string encoded_alpha,
+      absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp,
+      bool is_key_frame) override;
   bool OnEncodedAudio(
       const AudioParameters& params,
       std::string encoded_data,

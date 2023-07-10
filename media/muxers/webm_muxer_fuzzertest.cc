@@ -78,7 +78,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         parameters.codec = video_codec;
         muxer.OnEncodedVideo(parameters, str,
                              has_alpha_frame ? str : std::string(),
-                             base::TimeTicks(), is_key_frame);
+                             absl::nullopt, base::TimeTicks(), is_key_frame);
         base::RunLoop().RunUntilIdle();
       }
 

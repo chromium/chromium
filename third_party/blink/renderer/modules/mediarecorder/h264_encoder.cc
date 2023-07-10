@@ -184,7 +184,7 @@ void H264Encoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   metrics_provider_->IncrementEncodedFrameCount();
   const bool is_key_frame = info.eFrameType == videoFrameTypeIDR;
   on_encoded_video_cb_.Run(video_params, std::move(data), std::string(),
-                           capture_timestamp, is_key_frame);
+                           absl::nullopt, capture_timestamp, is_key_frame);
 }
 
 bool H264Encoder::ConfigureEncoder(const gfx::Size& size) {

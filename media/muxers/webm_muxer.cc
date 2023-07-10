@@ -277,11 +277,13 @@ void WebmMuxer::SetMaximumDurationToForceDataOutput(base::TimeDelta interval) {
   max_data_output_interval_ = std::max(interval, kMinimumForcedClusterDuration);
 }
 
-bool WebmMuxer::OnEncodedVideo(const VideoParameters& params,
-                               std::string encoded_data,
-                               std::string encoded_alpha,
-                               base::TimeTicks timestamp,
-                               bool is_key_frame) {
+bool WebmMuxer::OnEncodedVideo(
+    const VideoParameters& params,
+    std::string encoded_data,
+    std::string encoded_alpha,
+    absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+    base::TimeTicks timestamp,
+    bool is_key_frame) {
   TRACE_EVENT2("media", __func__, "timestamp", timestamp - base::TimeTicks(),
                "is_key_frame", is_key_frame);
   DVLOG(2) << __func__ << " - " << encoded_data.size() << "B ts " << timestamp;

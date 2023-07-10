@@ -589,6 +589,7 @@ void MediaRecorderHandler::OnEncodedVideo(
     const media::Muxer::VideoParameters& params,
     std::string encoded_data,
     std::string encoded_alpha,
+    absl::optional<media::VideoEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp,
     bool is_key_frame) {
   DCHECK(IsMainThread());
@@ -600,7 +601,8 @@ void MediaRecorderHandler::OnEncodedVideo(
   params_with_codec.codec =
       MediaVideoCodecFromCodecId(video_codec_profile_.codec_id);
   HandleEncodedVideo(params_with_codec, std::move(encoded_data),
-                     std::move(encoded_alpha), timestamp, is_key_frame);
+                     std::move(encoded_alpha), std::move(codec_description),
+                     timestamp, is_key_frame);
 }
 
 void MediaRecorderHandler::OnPassthroughVideo(
@@ -614,13 +616,14 @@ void MediaRecorderHandler::OnPassthroughVideo(
   // Update |video_codec_profile_| so that ActualMimeType() works.
   video_codec_profile_.codec_id = CodecIdFromMediaVideoCodec(params.codec);
   HandleEncodedVideo(params, std::move(encoded_data), std::move(encoded_alpha),
-                     timestamp, is_key_frame);
+                     absl::nullopt, timestamp, is_key_frame);
 }
 
 void MediaRecorderHandler::HandleEncodedVideo(
     const media::Muxer::VideoParameters& params,
     std::string encoded_data,
     std::string encoded_alpha,
+    absl::optional<media::VideoEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp,
     bool is_key_frame) {
   DCHECK(IsMainThread());
@@ -637,9 +640,9 @@ void MediaRecorderHandler::HandleEncodedVideo(
   }
   if (!muxer_)
     return;
-  if (!muxer_->OnEncodedVideo(params, std::move(encoded_data),
-                              std::move(encoded_alpha), timestamp,
-                              is_key_frame)) {
+  if (!muxer_->OnEncodedVideo(
+          params, std::move(encoded_data), std::move(encoded_alpha),
+          std::move(codec_description), timestamp, is_key_frame)) {
     recorder_->OnError(DOMExceptionCode::kUnknownError,
                        "Error muxing video data");
   }

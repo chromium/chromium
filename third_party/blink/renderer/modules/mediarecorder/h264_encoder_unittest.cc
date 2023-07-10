@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"
+#include "media/base/video_encoder.h"
 #include "media/base/video_frame.h"
 #include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -128,11 +129,13 @@ class H264EncoderFixture : public ::testing::Test {
             kELevelIdcToLevel.find(eLevelIdc)->value};
   }
 
-  void OnEncodedVideo(const media::Muxer::VideoParameters& params,
-                      std::string encoded_data,
-                      std::string encoded_alpha,
-                      base::TimeTicks capture_timestamp,
-                      bool is_key_frame) {}
+  void OnEncodedVideo(
+      const media::Muxer::VideoParameters& params,
+      std::string encoded_data,
+      std::string encoded_alpha,
+      absl::optional<media::VideoEncoder::CodecDescription> codec_description,
+      base::TimeTicks capture_timestamp,
+      bool is_key_frame) {}
 
   const absl::optional<media::VideoCodecProfile> profile_;
   const absl::optional<uint8_t> level_;

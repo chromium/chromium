@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "media/base/video_encoder.h"
 #include "media/base/video_frame_pool.h"
 #include "media/muxers/webm_muxer.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
@@ -88,11 +89,13 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     // Called to indicate there is encoded video data available. |encoded_alpha|
     // represents the encode output of alpha channel when available, can be
     // empty otherwise.
-    virtual void OnEncodedVideo(const media::Muxer::VideoParameters& params,
-                                std::string encoded_data,
-                                std::string encoded_alpha,
-                                base::TimeTicks timestamp,
-                                bool is_key_frame) = 0;
+    virtual void OnEncodedVideo(
+        const media::Muxer::VideoParameters& params,
+        std::string encoded_data,
+        std::string encoded_alpha,
+        absl::optional<media::VideoEncoder::CodecDescription> codec_description,
+        base::TimeTicks timestamp,
+        bool is_key_frame) = 0;
 
     virtual std::unique_ptr<media::MojoVideoEncoderMetricsProvider>
     CreateMojoVideoEncoderMetricsProvider() = 0;
@@ -119,12 +122,13 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
                  uint8_t level);
   };
 
-  using OnEncodedVideoCB =
-      base::RepeatingCallback<void(const media::Muxer::VideoParameters& params,
-                                   std::string encoded_data,
-                                   std::string encoded_alpha,
-                                   base::TimeTicks capture_timestamp,
-                                   bool is_key_frame)>;
+  using OnEncodedVideoCB = base::RepeatingCallback<void(
+      const media::Muxer::VideoParameters& params,
+      std::string encoded_data,
+      std::string encoded_alpha,
+      absl::optional<media::VideoEncoder::CodecDescription> codec_description,
+      base::TimeTicks capture_timestamp,
+      bool is_key_frame)>;
   using OnErrorCB = base::RepeatingClosure;
 
   // MediaStreamVideoSink implementation

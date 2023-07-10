@@ -10,6 +10,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/base/audio_encoder.h"
+#include "media/base/video_encoder.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/writable_box_definitions.h"
 #include "media/muxers/muxer.h"
@@ -31,9 +32,11 @@ class MEDIA_EXPORT Mp4MuxerDelegate {
   Mp4MuxerDelegate(const Mp4MuxerDelegate&) = delete;
   Mp4MuxerDelegate& operator=(const Mp4MuxerDelegate&) = delete;
 
-  void AddVideoFrame(const Muxer::VideoParameters& params,
-                     base::StringPiece encoded_data,
-                     base::TimeTicks timestamp);
+  void AddVideoFrame(
+      const Muxer::VideoParameters& params,
+      base::StringPiece encoded_data,
+      absl::optional<VideoEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp);
 
   void AddAudioFrame(const AudioParameters& params,
                      base::StringPiece encoded_data,

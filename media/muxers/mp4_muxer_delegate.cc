@@ -13,9 +13,11 @@ Mp4MuxerDelegate::Mp4MuxerDelegate(Muxer::WriteDataCB write_callback) {}
 
 Mp4MuxerDelegate::~Mp4MuxerDelegate() = default;
 
-void Mp4MuxerDelegate::AddVideoFrame(const Muxer::VideoParameters& params,
-                                     base::StringPiece encoded_data,
-                                     base::TimeTicks timestamp) {
+void Mp4MuxerDelegate::AddVideoFrame(
+    const Muxer::VideoParameters& params,
+    base::StringPiece encoded_data,
+    absl::optional<VideoEncoder::CodecDescription> codec_description,
+    base::TimeTicks timestamp) {
   if (video_track_index_ == -1) {
     video_track_index_ = GetNextTrackIndex();
     PopulateInitialVideoTrack(params, encoded_data, video_track_index_);
@@ -99,4 +101,5 @@ int Mp4MuxerDelegate::GetNextTrackIndex() {
 }
 
 Mp4MuxerDelegate::Fragment::Fragment() = default;
+
 }  // namespace media.

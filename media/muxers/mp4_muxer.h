@@ -33,15 +33,17 @@ class MEDIA_EXPORT Mp4Muxer : public Muxer {
   ~Mp4Muxer() override;
 
   void SetMaximumDurationToForceDataOutput(base::TimeDelta interval) override;
-  bool OnEncodedVideo(const VideoParameters& params,
-                      std::string encoded_data,
-                      std::string encoded_alpha,
-                      base::TimeTicks timestamp,
-                      bool is_key_frame) override;
+  bool OnEncodedVideo(
+      const VideoParameters& params,
+      std::string encoded_data,
+      std::string encoded_alpha,
+      absl::optional<VideoEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp,
+      bool is_key_frame) override;
   bool OnEncodedAudio(
       const AudioParameters& params,
       std::string encoded_data,
-      absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+      absl::optional<AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) override;
 
   void SetLiveAndEnabled(bool track_live_and_enabled, bool is_video) override;

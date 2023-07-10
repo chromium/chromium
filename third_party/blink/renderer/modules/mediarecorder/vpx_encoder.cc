@@ -164,7 +164,7 @@ void VpxEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
 
   metrics_provider_->IncrementEncodedFrameCount();
   on_encoded_video_cb_.Run(video_params, std::move(data), std::move(alpha_data),
-                           capture_timestamp, keyframe);
+                           absl::nullopt, capture_timestamp, keyframe);
 }
 
 void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,

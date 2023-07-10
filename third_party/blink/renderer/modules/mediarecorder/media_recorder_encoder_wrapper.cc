@@ -210,7 +210,7 @@ void MediaRecorderEncoderWrapper::EncodeDone(media::EncoderStatus status) {
 
 void MediaRecorderEncoderWrapper::OutputEncodeData(
     media::VideoEncoderOutput output,
-    absl::optional<media::VideoEncoder::CodecDescription> /*description*/) {
+    absl::optional<media::VideoEncoder::CodecDescription> description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("media", "MediaRecorderEncoderWrapper::OutputEncodeData");
   if (state_ == State::kInError) {
@@ -230,7 +230,8 @@ void MediaRecorderEncoderWrapper::OutputEncodeData(
       video_params,
       std::string(reinterpret_cast<const char*>(output.data.get()),
                   output.size),
-      /*encoded_alpha=*/std::string(), capture_timestamp, output.key_frame);
+      /*encoded_alpha=*/std::string(), std::move(description),
+      capture_timestamp, output.key_frame);
 }
 
 }  // namespace blink

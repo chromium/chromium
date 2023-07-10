@@ -114,7 +114,8 @@ void VEAEncoder::BitstreamBufferReady(
   }
 
   on_encoded_video_cb_.Run(front_frame.first, std::move(data), std::string(),
-                           front_frame.second, metadata.key_frame);
+                           absl::nullopt, front_frame.second,
+                           metadata.key_frame);
 
   UseOutputBitstreamBufferId(bitstream_buffer_id);
 }
