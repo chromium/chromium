@@ -26,11 +26,17 @@ const NSTimeInterval kSixDays = 6 * 24 * 60 * 60;
 // Returns whether today is the 6th and more day after the FRE. This is used to
 // decide to register What's New promo in the promo manager or not.
 bool IsSixDaysAfterFre() {
-  NSDate* startDate = [[NSUserDefaults standardUserDefaults]
-      objectForKey:kWhatsNewDaysAfterFre];
+  // TODO(crbug.com/1462404): Clean up unused user defaults and find a better
+  // solution to update existing user defaults for future versions of What's
+  // New.
+  NSString* const daysAfterFre = IsWhatsNewM116Enabled()
+                                     ? kWhatsNewM116DaysAfterFre
+                                     : kWhatsNewDaysAfterFre;
+  NSDate* startDate =
+      [[NSUserDefaults standardUserDefaults] objectForKey:daysAfterFre];
   if (!startDate) {
     [[NSUserDefaults standardUserDefaults] setObject:[NSDate date]
-                                              forKey:kWhatsNewDaysAfterFre];
+                                              forKey:daysAfterFre];
     return false;
   }
 
@@ -44,8 +50,15 @@ bool IsSixDaysAfterFre() {
 // Returns whether this launch is the 6th and more launches after the FRE. This
 // is used to decide to register What's New promo in the promo manager or not.
 bool IsSixLaunchAfterFre() {
-  NSInteger num = [[NSUserDefaults standardUserDefaults]
-      integerForKey:kWhatsNewLaunchesAfterFre];
+  // TODO(crbug.com/1462404): Clean up unused user defaults and find a better
+  // solution to update existing user defaults for future versions of What's
+  // New.
+  NSString* const launchesAfterFre = IsWhatsNewM116Enabled()
+                                         ? kWhatsNewM116LaunchesAfterFre
+                                         : kWhatsNewLaunchesAfterFre;
+
+  NSInteger num =
+      [[NSUserDefaults standardUserDefaults] integerForKey:launchesAfterFre];
 
   if (num >= 6) {
     return true;
@@ -53,12 +66,20 @@ bool IsSixLaunchAfterFre() {
 
   num++;
   [[NSUserDefaults standardUserDefaults] setInteger:num
-                                             forKey:kWhatsNewLaunchesAfterFre];
+                                             forKey:launchesAfterFre];
   return false;
 }
 
 // Returns whether What's New promo has been registered in the promo manager.
 bool IsWhatsNewPromoRegistered() {
+  if (IsWhatsNewM116Enabled()) {
+    return [[NSUserDefaults standardUserDefaults]
+        boolForKey:kWhatsNewM116PromoRegistrationKey];
+  }
+
+  // TODO(crbug.com/1462404): Clean up unused user defaults and find a better
+  // solution to update existing user defaults for future versions of What's
+  // New.
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kWhatsNewPromoRegistrationKey];
 }
@@ -71,13 +92,13 @@ BASE_FEATURE(kWhatsNewIOSM116,
 
 bool WasWhatsNewUsed() {
   if (IsWhatsNewM116Enabled()) {
-    // Remove the previous user defaults
-    [[NSUserDefaults standardUserDefaults]
-        removeObjectForKey:kWhatsNewUsageEntryKey];
     return [[NSUserDefaults standardUserDefaults]
         boolForKey:kWhatsNewM116UsageEntryKey];
   }
 
+  // TODO(crbug.com/1462404): Clean up unused user defaults and find a better
+  // solution to update existing user defaults for future versions of What's
+  // New.
   return
       [[NSUserDefaults standardUserDefaults] boolForKey:kWhatsNewUsageEntryKey];
 }
@@ -101,6 +122,13 @@ void SetWhatsNewUsed(PromosManager* promosManager) {
 }
 
 void setWhatsNewPromoRegistration() {
+  if (IsWhatsNewM116Enabled()) {
+    [[NSUserDefaults standardUserDefaults]
+        setBool:YES
+         forKey:kWhatsNewM116PromoRegistrationKey];
+    return;
+  }
+
   [[NSUserDefaults standardUserDefaults] setBool:YES
                                           forKey:kWhatsNewPromoRegistrationKey];
 }
