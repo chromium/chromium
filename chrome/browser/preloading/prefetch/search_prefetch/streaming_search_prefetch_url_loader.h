@@ -301,6 +301,12 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
       const network::ResourceRequest& resource_request,
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);
+  // Helper function for investigating crbug.com/1463000.
+  static void CheckedCreateResponseReaderForPrerender(
+      base::WeakPtr<StreamingSearchPrefetchURLLoader> self,
+      const network::ResourceRequest& resource_request,
+      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);
 
   // Forwards all queued events to |forwarding_client_|.
   void RunEventQueue();
