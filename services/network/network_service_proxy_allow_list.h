@@ -26,7 +26,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
 
   mojom::CustomProxyConfigPtr GetCustomProxyConfig();
 
+  // Returns true if the allow list is eligible to be used but does not indicate
+  // that allow list is currently populated.
   bool IsEnabled();
+
+  // Returns true if there are entries in the allow list and it is possible to
+  // match on them. If false, `Matches` will always return false.
+  bool IsPopulated();
 
   // Determines if the pair of URLs are eligible for the proxy by determining
   // if the request is an eligible domain and if the top frame domain is

@@ -60,10 +60,10 @@ TEST_F(MaskedDomainListComponentInstallerPolicyTest,
   RegisterMaskedDomainListComponent(service.get());
   env_.RunUntilIdle();
 
-  // If no file has been passed, the allow list is not enabled.
+  // If no file has been passed, the allow list is not populated.
   EXPECT_FALSE(network::NetworkService::GetNetworkServiceForTesting()
                    ->network_service_proxy_allow_list()
-                   ->IsEnabled());
+                   ->IsPopulated());
 }
 
 }  // namespace component_updater

@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -15,50 +16,52 @@ namespace {
 using masked_domain_list::MaskedDomainList;
 }  // namespace
 
-class NetworkServiceProxyAllowlistTest : public ::testing::Test {};
+class NetworkServiceProxyAllowListTest : public ::testing::Test {};
 
-TEST_F(NetworkServiceProxyAllowlistTest, NotEnabled) {
+TEST_F(NetworkServiceProxyAllowListTest, NotEnabled) {
   NetworkServiceProxyAllowList allowList;
   EXPECT_FALSE(allowList.IsEnabled());
 }
 
-TEST_F(NetworkServiceProxyAllowlistTest, NotEnabled_NoCustomProxyConfigExists) {
+TEST_F(NetworkServiceProxyAllowListTest, IsEnabled) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      net::features::kEnableIpProtectionProxy);
+  scoped_feature_list_.InitWithFeatures(
+      {net::features::kEnableIpProtectionProxy,
+       network::features::kMaskedDomainList},
+      {});
 
   NetworkServiceProxyAllowList allowList;
-  EXPECT_FALSE(allowList.IsEnabled());
-}
-
-TEST_F(NetworkServiceProxyAllowlistTest, IsEnabled_ByFeatureAndConfigPresence) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      net::features::kEnableIpProtectionProxy);
-
-  MaskedDomainList mdl;
-  auto* resourceOwner = mdl.add_resource_owners();
-  resourceOwner->set_owner_name("foo");
-  resourceOwner->add_owned_resources()->set_domain("example.com");
-
-  NetworkServiceProxyAllowList allowList;
-  allowList.UseMaskedDomainList(mdl);
 
   EXPECT_TRUE(allowList.IsEnabled());
   EXPECT_TRUE(allowList.GetCustomProxyConfig()
                   ->rules.restrict_to_network_service_proxy_allow_list);
 }
 
-TEST_F(NetworkServiceProxyAllowlistTest,
-       UseMaskedDomainList_MdlHasNoResources) {
+TEST_F(NetworkServiceProxyAllowListTest, IsPopulated) {
   NetworkServiceProxyAllowList allowList;
   MaskedDomainList mdl;
+  auto* resourceOwner = mdl.add_resource_owners();
+  resourceOwner->set_owner_name("foo");
+  resourceOwner->add_owned_resources()->set_domain("example.com");
   allowList.UseMaskedDomainList(mdl);
 
-  EXPECT_FALSE(allowList.IsEnabled());
+  EXPECT_TRUE(allowList.IsPopulated());
 }
 
-TEST_F(NetworkServiceProxyAllowlistTest, Matches_TopFrameIsMatched) {
+TEST_F(NetworkServiceProxyAllowListTest, IsPopulated_Empty) {
+  NetworkServiceProxyAllowList allowList;
+  EXPECT_FALSE(allowList.IsPopulated());
+}
+
+TEST_F(NetworkServiceProxyAllowListTest, Matches_AllowListNotPopulated) {
+  NetworkServiceProxyAllowList allowList;
+
+  EXPECT_FALSE(allowList.IsPopulated());
+  EXPECT_FALSE(allowList.Matches(GURL("http://example.com"),
+                                 GURL("http://example2.com")));
+}
+
+TEST_F(NetworkServiceProxyAllowListTest, Matches_TopFrameIsMatched) {
   NetworkServiceProxyAllowList allowList;
 
   MaskedDomainList mdl;
@@ -73,7 +76,7 @@ TEST_F(NetworkServiceProxyAllowlistTest, Matches_TopFrameIsMatched) {
                                  GURL("http://example2.com")));
 }
 
-TEST_F(NetworkServiceProxyAllowlistTest, Matches_TopFrameIsNotMatched) {
+TEST_F(NetworkServiceProxyAllowListTest, Matches_TopFrameIsNotMatched) {
   NetworkServiceProxyAllowList allowList;
 
   MaskedDomainList mdl;
@@ -88,7 +91,7 @@ TEST_F(NetworkServiceProxyAllowlistTest, Matches_TopFrameIsNotMatched) {
                                 GURL("http://example3.com")));
 }
 
-TEST_F(NetworkServiceProxyAllowlistTest, Matches_TopFrameUrlIsEmpty) {
+TEST_F(NetworkServiceProxyAllowListTest, Matches_TopFrameUrlIsEmpty) {
   NetworkServiceProxyAllowList allowList;
 
   MaskedDomainList mdl;
@@ -102,7 +105,7 @@ TEST_F(NetworkServiceProxyAllowlistTest, Matches_TopFrameUrlIsEmpty) {
   EXPECT_FALSE(allowList.Matches(GURL("http://example.com"), GURL()));
 }
 
-TEST_F(NetworkServiceProxyAllowlistTest, Matches_RequestSameAsTopFrame) {
+TEST_F(NetworkServiceProxyAllowListTest, Matches_RequestSameAsTopFrame) {
   NetworkServiceProxyAllowList allowList;
 
   MaskedDomainList mdl;
@@ -117,7 +120,7 @@ TEST_F(NetworkServiceProxyAllowlistTest, Matches_RequestSameAsTopFrame) {
                                  GURL("http://example.com")));
 }
 
-TEST_F(NetworkServiceProxyAllowlistTest, Matches_RequestNotInAllowList) {
+TEST_F(NetworkServiceProxyAllowListTest, Matches_RequestNotInAllowList) {
   NetworkServiceProxyAllowList allowList;
 
   MaskedDomainList mdl;

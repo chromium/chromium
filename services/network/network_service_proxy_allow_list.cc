@@ -6,6 +6,7 @@
 #include "base/command_line.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/proxy_resolution/proxy_bypass_rules.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 
 namespace network {
@@ -62,8 +63,13 @@ NetworkServiceProxyAllowList NetworkServiceProxyAllowList::CreateForTesting(
 }
 
 bool NetworkServiceProxyAllowList::IsEnabled() {
-  return !allow_list_with_bypass_map_.empty() &&
-         base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy);
+  return base::FeatureList::IsEnabled(
+             net::features::kEnableIpProtectionProxy) &&
+         base::FeatureList::IsEnabled(network::features::kMaskedDomainList);
+}
+
+bool NetworkServiceProxyAllowList::IsPopulated() {
+  return !allow_list_with_bypass_map_.empty();
 }
 
 mojom::CustomProxyConfigPtr
@@ -73,6 +79,10 @@ NetworkServiceProxyAllowList::GetCustomProxyConfig() {
 
 bool NetworkServiceProxyAllowList::Matches(const GURL& request_url,
                                            const GURL& top_frame_url) {
+  if (!IsPopulated()) {
+    return false;
+  }
+
   // If there is no top frame URL, the request should not be proxied because it
   // is not to a 3P resource.
   if (top_frame_url.is_empty()) {

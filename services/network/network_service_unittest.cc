@@ -1050,10 +1050,10 @@ TEST_F(NetworkServiceTest, DisableCTEnforcement) {
 
 TEST_F(NetworkServiceTest, SetMaskedDomainList) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      net::features::kEnableIpProtectionProxy);
-
-  EXPECT_FALSE(service()->network_service_proxy_allow_list()->IsEnabled());
+  scoped_feature_list_.InitWithFeatures(
+      {net::features::kEnableIpProtectionProxy,
+       network::features::kMaskedDomainList},
+      {});
 
   masked_domain_list::MaskedDomainList mdl;
   auto* resourceOwner = mdl.add_resource_owners();
@@ -1062,7 +1062,7 @@ TEST_F(NetworkServiceTest, SetMaskedDomainList) {
 
   service()->UpdateMaskedDomainList(mdl.SerializeAsString());
 
-  EXPECT_TRUE(service()->network_service_proxy_allow_list()->IsEnabled());
+  EXPECT_TRUE(service()->network_service_proxy_allow_list()->IsPopulated());
 }
 
 class NetworkServiceTestWithService : public testing::Test {
