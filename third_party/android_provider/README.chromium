@@ -2,7 +2,9 @@ Name: MediaStoreUtils Android sample.
 URL: https://android.googlesource.com/platform/cts/+/master/tests/tests/provider/src/android/provider/cts/MediaStoreUtils.java
 Version: 50f25a19f2a3de940d6ef7eac84b37d1c62f1b5f
 License: Apache 2.0
+License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 This contains a modified copy of MediaStoreUtils.java. Please don't modify this.
