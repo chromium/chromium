@@ -770,8 +770,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Hibernate.ResumeTime.HibernateResumeReady"
-    units="seconds" expires_after="2024-06-08">
+<histogram name="Platform.Hibernate.ResumeTime.HibernateResumeReady" units="ms"
+    expires_after="2024-06-08">
   <owner>mka@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-hibernate@google.com</owner>
