@@ -25,9 +25,14 @@ enum class RestoreOption {
   kMaxValue = kDoNotRestore,
 };
 
-extern const char kRestoreAppsEnabled[];
-extern const char kGhostWindowEnabled[];
-extern const char kRestoreAppsAndPagesPrefName[];
+// Prefs to define whether the features are enabled by policy.
+inline constexpr char kRestoreAppsEnabled[] = "settings.restore_apps_enabled";
+inline constexpr char kGhostWindowEnabled[] = "settings.ghost_window_enabled";
+
+// An integer pref to define whether restore apps and web pages on startup.
+// Refer to |RestoreOption|.
+inline constexpr char kRestoreAppsAndPagesPrefName[] =
+    "settings.restore_apps_and_pages";
 
 // Registers the restore pref |kRestoreAppsAndPagesPrefName|.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
