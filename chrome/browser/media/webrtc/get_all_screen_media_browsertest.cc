@@ -14,8 +14,11 @@
 #include "base/strings/string_split.h"
 #include "base/test/gtest_tags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
@@ -229,6 +232,141 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,
   EXPECT_FALSE(
       RunGetAllScreensMedia(contents_, stream_ids, track_ids, &error_name));
   EXPECT_EQ("NotAllowedError", error_name);
+}
+
+// Test that getDisplayMedia and getAllScreensMedia are independent,
+// so stopping one will not stop the other.
+class InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest
+    : public GetAllScreensMediaBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Flags use to automatically select the right desktop source and get
+    // around security restrictions.
+    // TODO(crbug.com/1459164): Use a less error-prone flag.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
+                                    "Display");
+#else
+    command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
+                                    "Entire screen");
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
+    StartDisplayMediaThenAllScreenMediaThenCloseDisplayMedia) {
+  SetScreens(/*screen_count=*/1u);
+
+  // Start DisplayMedia.
+  EXPECT_EQ(true, content::EvalJs(contents_, "startDisplayMedia();"));
+
+  // Start AllScreensMedia.
+  EXPECT_EQ(true, content::EvalJs(contents_, "startAllScreensMedia();"));
+
+  // Stop DisplayMedia.
+  EXPECT_EQ(true, content::EvalJs(contents_, "stopDisplayMedia();"));
+
+  // AllScreensMedia should be still running.
+  EXPECT_EQ(true, content::EvalJs(contents_, "checkAllScreensMediaRunning();"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
+    StartAllScreenMediaThenDisplayMediaThenCloseDisplayMedia) {
+  SetScreens(/*screen_count=*/1u);
+
+  // Start AllScreensMedia.
+  EXPECT_EQ(true, content::EvalJs(contents_, "startAllScreensMedia();"));
+
+  // Start DisplayMedia.
+  EXPECT_EQ(true, content::EvalJs(contents_, "startDisplayMedia();"));
+
+  // Stop DisplayMedia.
+  EXPECT_EQ(true, content::EvalJs(contents_, "stopDisplayMedia();"));
+
+  // AllScreensMedia should be still running.
+  EXPECT_EQ(true, content::EvalJs(contents_, "checkAllScreensMediaRunning();"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
+    StartDisplayMediaThenAllScreenMediaThenStopAllScreensMedia) {
+  SetScreens(/*screen_count=*/1u);
+
+  // Start DisplayMedia.
+  EXPECT_EQ(true, content::EvalJs(contents_, "startDisplayMedia();"));
+
+  // Start AllScreensMedia.
+  EXPECT_EQ(true, content::EvalJs(contents_, "startAllScreensMedia();"));
+
+  // Stop AllScreensMedia.
+  EXPECT_EQ(true, content::EvalJs(contents_, "stopAllScreensMedia();"));
+
+  // AllScreensMedia should be still running.
+  EXPECT_EQ(true, content::EvalJs(contents_, "checkDisplayMediaRunning();"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
+    StartAllScreenMediaThenDisplayMediaThenStopAllScreensMedia) {
+  SetScreens(/*screen_count=*/1u);
+
+  // Start AllScreensMedia.
+  EXPECT_EQ(true, content::EvalJs(contents_, "startAllScreensMedia();"));
+
+  // Start DisplayMedia.
+  EXPECT_EQ(true, content::EvalJs(contents_, "startDisplayMedia();"));
+
+  // Stop AllScreensMedia.
+  EXPECT_EQ(true, content::EvalJs(contents_, "stopAllScreensMedia();"));
+
+  // AllScreensMedia should be still running.
+  EXPECT_EQ(true, content::EvalJs(contents_, "checkDisplayMediaRunning();"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
+    StartDisplayMediaThenAllScreenMediaThenStopMediaCapturing) {
+  SetScreens(/*screen_count=*/1u);
+
+  // Start DisplayMedia.
+  EXPECT_EQ(true, content::EvalJs(contents_, "startDisplayMedia();"));
+
+  // Start AllScreensMedia.
+  EXPECT_EQ(true, content::EvalJs(contents_, "startAllScreensMedia();"));
+
+  // StopScreenShare.
+  MediaCaptureDevicesDispatcher::GetInstance()
+      ->GetMediaStreamCaptureIndicator()
+      ->StopMediaCapturing(
+          contents_, MediaStreamCaptureIndicator::MediaType::kDisplayMedia);
+  EXPECT_EQ(true, content::EvalJs(contents_, "waitForDisplayMediaToStop();"));
+
+  // AllScreensMedia should be still running.
+  EXPECT_EQ(true, content::EvalJs(contents_, "checkAllScreensMediaRunning();"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
+    StartAllScreenMediaThenDisplayMediaThenStopMediaCapturing) {
+  SetScreens(/*screen_count=*/1u);
+
+  // Start AllScreensMedia.
+  EXPECT_EQ(true, content::EvalJs(contents_, "startAllScreensMedia();"));
+
+  // Start DisplayMedia.
+  EXPECT_EQ(true, content::EvalJs(contents_, "startDisplayMedia();"));
+
+  // StopScreenShare.
+  MediaCaptureDevicesDispatcher::GetInstance()
+      ->GetMediaStreamCaptureIndicator()
+      ->StopMediaCapturing(
+          contents_, MediaStreamCaptureIndicator::MediaType::kDisplayMedia);
+  EXPECT_EQ(true, content::EvalJs(contents_, "waitForDisplayMediaToStop();"));
+
+  // AllScreensMedia should be still running.
+  EXPECT_EQ(true, content::EvalJs(contents_, "checkAllScreensMediaRunning();"));
 }
 
 #endif  // #if BUILDFLAG(IS_CHROMEOS)

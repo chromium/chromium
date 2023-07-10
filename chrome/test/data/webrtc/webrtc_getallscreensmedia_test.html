@@ -7,6 +7,7 @@
     'use strict';
 
     let stored_media_streams;
+    let stored_display_stream;
 
     async function runGetAllScreensMedia() {
       try {
@@ -53,6 +54,84 @@
       } catch (error) {
         return logAndReturn("error-screen-detailed");
       }
+    }
+
+    async function startAllScreensMedia() {
+      await runGetAllScreensMedia();
+      return checkAllScreensMediaRunning();
+    }
+
+    function stopAllScreensMedia() {
+      // Stops tracks of each stream.
+      stored_media_streams.forEach((stream) => {
+        stream.getTracks().forEach((track) => {
+          track.stop();
+        });
+      });
+      return isAllScreensMediaStopped();
+    }
+
+    async function startDisplayMedia() {
+      stored_display_stream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: true,
+      });
+      return checkDisplayMediaRunning();
+    }
+
+    function stopDisplayMedia() {
+      // Stops each track.
+      stored_display_stream.getTracks().forEach((track) => {
+        track.stop();
+      });
+      return isDisplayMediaStopped();
+    }
+
+    // Check the streams are at expectedState.
+    function checkStreamState(streams, expectedState) {
+      // streams should not be empty.
+      if (streams.length == 0) {
+        throw Error('checkStreamState: stream should not be empty.');
+      }
+
+      streams.forEach((stream) => {
+        if (stream.active != (expectedState == 'live')) {
+          return false;
+        }
+
+        // All tracks should be in the expectedReadyState.
+        stream.getTracks().forEach((track) => {
+          if (track.readyState != expectedState) {
+            return false;
+          }
+        });
+      })
+
+      return true;
+    }
+
+    function checkDisplayMediaRunning() {
+      return checkStreamState([stored_display_stream], 'live');
+    }
+
+    function isDisplayMediaStopped() {
+      return checkStreamState([stored_display_stream], 'ended');
+    }
+
+    function checkAllScreensMediaRunning() {
+      return checkStreamState(stored_media_streams, 'live');
+    }
+
+    function isAllScreensMediaStopped() {
+      return checkStreamState(stored_media_streams, 'ended');
+    }
+
+    async function waitForDisplayMediaToStop() {
+      while (!isDisplayMediaStopped()) {
+        // Wait for 10 milliseconds.
+        await new Promise(resolve => setTimeout(resolve, 10));
+      }
+      return true;
     }
 
   </script>
