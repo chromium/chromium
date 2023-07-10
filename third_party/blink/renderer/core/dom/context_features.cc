@@ -46,12 +46,6 @@ ContextFeatures& ContextFeatures::DefaultSwitch() {
   return *instance;
 }
 
-bool ContextFeatures::PagePopupEnabled(Document* document) {
-  if (!document)
-    return false;
-  return document->GetContextFeatures().IsEnabled(document, kPagePopup, false);
-}
-
 bool ContextFeatures::MutationEventsEnabled(Document* document) {
   DCHECK(document);
   if (!document)

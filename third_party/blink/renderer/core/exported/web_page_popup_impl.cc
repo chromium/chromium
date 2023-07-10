@@ -311,18 +311,6 @@ class PagePopupChromeClient final : public EmptyChromeClient {
   WebPagePopupImpl* popup_;
 };
 
-class PagePopupFeaturesClient : public ContextFeaturesClient {
-  bool IsEnabled(Document*, ContextFeatures::FeatureType, bool) override;
-};
-
-bool PagePopupFeaturesClient::IsEnabled(Document*,
-                                        ContextFeatures::FeatureType type,
-                                        bool default_value) {
-  if (type == ContextFeatures::kPagePopup)
-    return true;
-  return default_value;
-}
-
 // WebPagePopupImpl ----------------------------------------------------------
 
 WebPagePopupImpl::WebPagePopupImpl(
@@ -368,8 +356,6 @@ WebPagePopupImpl::WebPagePopupImpl(
 
   popup_client_->AdjustSettings(page_->GetSettings());
   popup_client_->CreatePagePopupController(*page_, *this);
-
-  ProvideContextFeaturesTo(*page_, std::make_unique<PagePopupFeaturesClient>());
 
   // Creating new WindowAgentFactory because page popup content is owned by the
   // user agent and should be isolated from the main frame. However, if we are a

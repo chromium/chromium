@@ -44,14 +44,12 @@ class ContextFeatures final : public GarbageCollected<ContextFeatures>,
   static const char kSupplementName[];
 
   enum FeatureType {
-    kPagePopup = 0,
-    kMutationEvents,
+    kMutationEvents = 0,
     kFeatureTypeSize  // Should be the last entry.
   };
 
   static ContextFeatures& DefaultSwitch();
 
-  static bool PagePopupEnabled(Document*);
   static bool MutationEventsEnabled(Document*);
 
   explicit ContextFeatures(std::unique_ptr<ContextFeaturesClient> client)
