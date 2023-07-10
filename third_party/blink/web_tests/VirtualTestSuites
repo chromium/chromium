@@ -1826,7 +1826,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "http/tests/inspector-protocol/issues/cookie-domain-non-ascii.js" ],
     "args": ["--enable-features=CookieDomainRejectNonASCII"],
-    "expires": "Jul 1, 2023"
+    "owners": ["johannhof@chromium.org"],
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "pending-beacon",
