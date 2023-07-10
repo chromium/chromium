@@ -1792,9 +1792,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_LANGUAGES_ITEM_OPTION_OFFER_TO_TRANSLATE" desc="Option in language item menu. User can click the 'Offer to translate' option to toggle whether they want Chrome to translate pages in this language. [CHAR_LIMIT=32]">
         Offer to translate
       </message>
-      <message name="IDS_LANGUAGES_EXPLICIT_ASK_TITLE" desc="Title of the dialog that explicitly asks the user which languages they can read.">
-        What languages do you read?
-      </message>
       <message name="IDS_LANGUAGES_SRP_TITLE" desc="Title of the dialog that explicitly asks the user what language they want Chrome on Android to be in.">
         Pick Chrome’s language
       </message>

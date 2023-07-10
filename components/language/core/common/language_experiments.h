@@ -9,10 +9,6 @@
 
 namespace language {
 
-// The feature that enables explicitly asking for user preferred
-// Accept-Languages on second run on Android. Replaced by kAppLanguagePrompt.
-BASE_DECLARE_FEATURE(kExplicitLanguageAsk);
-
 // The feature that enables a second run prompt to select the app UI language on
 // Android.
 BASE_DECLARE_FEATURE(kAppLanguagePrompt);

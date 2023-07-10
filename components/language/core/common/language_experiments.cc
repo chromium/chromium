@@ -11,9 +11,6 @@
 
 namespace language {
 // Features:
-BASE_FEATURE(kExplicitLanguageAsk,
-             "ExplicitLanguageAsk",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAppLanguagePrompt,
              "AppLanguagePrompt",
              base::FEATURE_ENABLED_BY_DEFAULT);

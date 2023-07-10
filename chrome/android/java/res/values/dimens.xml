@@ -341,9 +341,6 @@ found in the LICENSE file.
     <item type="dimen" name="dialog_fixed_height_major">100%</item>
     <item type="dimen" name="dialog_fixed_height_minor">100%</item>
 
-    <!-- Explicit Language Ask Prompt dimensions -->
-    <dimen name="explicit_ask_checkbox_end_padding">4dp</dimen>
-
     <!-- History Navigation UI Item -->
     <dimen name="navigation_bubble_size">44dp</dimen>
     <dimen name="navigation_bubble_arrow_size">32dp</dimen>

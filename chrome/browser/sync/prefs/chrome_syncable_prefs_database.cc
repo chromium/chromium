@@ -50,7 +50,7 @@ enum {
   // common_syncable_prefs_database.cc and
   // ios_chrome_syncable_prefs_database.cc.
   kAppLanguagePromptShown = 100000,
-  kPrefExplicitLanguageAskShown = 100001,
+  // kPrefExplicitLanguageAskShown = 100001,  // depreccated
   kContextualSearchEnabled = 100002,
   kContextualSearchWasFullyPrivacyEnabled = 100003,
   kAccessibilityImageLabelsEnabledAndroid = 100004,
@@ -276,9 +276,6 @@ const auto& SyncablePreferences() {
 #if BUILDFLAG(IS_ANDROID)
     {language::prefs::kAppLanguagePromptShown,
      {syncable_prefs_ids::kAppLanguagePromptShown, syncer::PREFERENCES, false}},
-        {translate::TranslatePrefs::kPrefExplicitLanguageAskShown,
-         {syncable_prefs_ids::kPrefExplicitLanguageAskShown,
-          syncer::PREFERENCES, false}},
         {prefs::kContextualSearchEnabled,
          {syncable_prefs_ids::kContextualSearchEnabled, syncer::PREFERENCES,
           false}},

@@ -445,21 +445,6 @@ static void JNI_TranslateBridge_SetLanguageBlockedState(
   }
 }
 
-static jboolean JNI_TranslateBridge_GetExplicitLanguageAskPromptShown(
-    JNIEnv* env) {
-  std::unique_ptr<translate::TranslatePrefs> translate_prefs =
-      ChromeTranslateClient::CreateTranslatePrefs(GetPrefService());
-  return translate_prefs->GetExplicitLanguageAskPromptShown();
-}
-
-static void JNI_TranslateBridge_SetExplicitLanguageAskPromptShown(
-    JNIEnv* env,
-    jboolean shown) {
-  std::unique_ptr<translate::TranslatePrefs> translate_prefs =
-      ChromeTranslateClient::CreateTranslatePrefs(GetPrefService());
-  translate_prefs->SetExplicitLanguageAskPromptShown(shown);
-}
-
 static jboolean JNI_TranslateBridge_GetAppLanguagePromptShown(JNIEnv* env) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefService());

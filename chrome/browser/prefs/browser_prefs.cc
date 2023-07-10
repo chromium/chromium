@@ -906,6 +906,12 @@ const char kSAMLLastGAIASignInTime[] = "saml.last_gaia_sign_in_time";
 const char kVideoPreviewsType[] = "ntp_snippets.video_previews_type";
 #endif  // BUILDFLAG(ENABLE_FEED_V2)
 
+// Deprecated 06/2023.
+#if BUILDFLAG(IS_ANDROID)
+const char kPrefExplicitLanguageAskShown[] =
+    "translate_explicit_language_ask_shown";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Deprecated 07/2023.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 const char kUnifiedConsentMigrationState[] = "unified_consent.migration_state";
@@ -1304,6 +1310,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterTimePref(kGaiaLastOnlineSignInTime, base::Time());
   registry->RegisterTimePref(kSAMLLastGAIASignInTime, base::Time());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 06/2023.
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(kPrefExplicitLanguageAskShown, false);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Deprecated 07/2023.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2442,6 +2453,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kGaiaLastOnlineSignInTime);
   profile_prefs->ClearPref(kSAMLLastGAIASignInTime);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 06/2023.
+#if BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kPrefExplicitLanguageAskShown);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Added 07/2023.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

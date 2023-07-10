@@ -818,14 +818,6 @@ void TranslatePrefs::ResetTranslationAutoNeverCount(
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
-bool TranslatePrefs::GetExplicitLanguageAskPromptShown() const {
-  return prefs_->GetBoolean(kPrefExplicitLanguageAskShown);
-}
-
-void TranslatePrefs::SetExplicitLanguageAskPromptShown(bool shown) {
-  prefs_->SetBoolean(kPrefExplicitLanguageAskShown, shown);
-}
-
 bool TranslatePrefs::GetAppLanguagePromptShown() const {
   return prefs_->GetBoolean(language::prefs::kAppLanguagePromptShown);
 }
@@ -952,12 +944,6 @@ void TranslatePrefs::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(
       kPrefTranslateAutoNeverCount,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-  registry->RegisterBooleanPref(
-      kPrefExplicitLanguageAskShown, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 #endif
 

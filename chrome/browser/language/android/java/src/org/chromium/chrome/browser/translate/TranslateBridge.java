@@ -227,21 +227,6 @@ public class TranslateBridge {
     }
 
     /**
-     * @return Whether the explicit language prompt was shown at least once.
-     */
-    public static boolean getExplicitLanguageAskPromptShown() {
-        return TranslateBridgeJni.get().getExplicitLanguageAskPromptShown();
-    }
-
-    /**
-     * @param shown The value to set the underlying pref to: whether the prompt
-     * was shown to the user at least once.
-     */
-    public static void setExplicitLanguageAskPromptShown(boolean shown) {
-        TranslateBridgeJni.get().setExplicitLanguageAskPromptShown(shown);
-    }
-
-    /**
      * @return Whether the app language prompt has been shown or not.
      */
     public static boolean getAppLanguagePromptShown() {
@@ -282,8 +267,6 @@ public class TranslateBridge {
         void setLanguageOrder(String[] codes);
         boolean isBlockedLanguage(String language);
         void setLanguageBlockedState(String language, boolean blocked);
-        boolean getExplicitLanguageAskPromptShown();
-        void setExplicitLanguageAskPromptShown(boolean shown);
         boolean getAppLanguagePromptShown();
         void setAppLanguagePromptShown();
         void setIgnoreMissingKeyForTesting(boolean ignore);

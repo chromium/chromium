@@ -346,7 +346,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &language::kAppLanguagePromptULP,
     &language::kCctAutoTranslate,
     &language::kDetailedLanguageSettings,
-    &language::kExplicitLanguageAsk,
     &language::kForceAppLanguagePrompt,
     &language::kTranslateAssistContent,
     &language::kTranslateIntent,

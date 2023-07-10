@@ -1649,7 +1649,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   TranslateService::Initialize();
   if (base::FeatureList::IsEnabled(features::kGeoLanguage) ||
-      base::FeatureList::IsEnabled(language::kExplicitLanguageAsk) ||
       language::GetOverrideLanguageModel() ==
           language::OverrideLanguageModel::GEO) {
     language::GeoLanguageProvider::GetInstance()->StartUp(

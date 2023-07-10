@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFa
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthTopToolbarDelegate;
 import org.chromium.chrome.browser.language.AppLanguagePromoDialog;
-import org.chromium.chrome.browser.language.LanguageAskPrompt;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -968,11 +967,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     mActivity, mWindowAndroid, false /* ignoreMaxCount */)) {
             return true;
         }
-        if (AppLanguagePromoDialog.maybeShowPrompt(mActivity, mModalDialogManagerSupplier,
-                    () -> ApplicationLifetime.terminate(true))) {
-            return true;
-        }
-        return LanguageAskPrompt.maybeShowLanguageAskPrompt(mActivity, mModalDialogManagerSupplier);
+        return AppLanguagePromoDialog.maybeShowPrompt(
+                mActivity, mModalDialogManagerSupplier, () -> ApplicationLifetime.terminate(true));
     }
 
     @VisibleForTesting

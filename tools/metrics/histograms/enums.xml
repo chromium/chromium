@@ -60200,6 +60200,7 @@ from previous Chrome versions.
   <int value="-1853570433" label="AdvancedPpdAttributes:enabled"/>
   <int value="-1853050064" label="FullRestoreForLacros:enabled"/>
   <int value="-1851980281" label="TabGroupsCollapse:enabled"/>
+  <int value="-1850988416" label="(Obsolete) ExplicitLanguageAsk:disabled"/>
   <int value="-1850155382" label="EnablePerfettoSystemTracing:enabled"/>
   <int value="-1849706663" label="enable-password-force-saving:disabled"/>
   <int value="-1847835522" label="disable-touch-adjustment"/>
@@ -61146,7 +61147,6 @@ from previous Chrome versions.
   <int value="-1362431915" label="RelatedSearches:disabled"/>
   <int value="-1361493814" label="FCMInvalidations:disabled"/>
   <int value="-1358669137" label="enable-supervised-user-blacklist"/>
-  <int value="-1357778876" label="ExplicitLanguageAsk:enabled"/>
   <int value="-1357655121" label="enable-iframe-based-signin"/>
   <int value="-1357008397" label="ContextualSuggestionsCarousel:disabled"/>
   <int value="-1356379431" label="GlobalMediaControlsOverlayControls:enabled"/>
@@ -61878,7 +61878,6 @@ from previous Chrome versions.
   <int value="-994044484" label="TemporaryUnexpireFlagsM76:disabled"/>
   <int value="-993583908" label="GuestOsFiles:disabled"/>
   <int value="-993476089" label="AutoScreenBrightness:disabled"/>
-  <int value="-992785453" label="ExplicitLanguageAsk:disabled"/>
   <int value="-992554993" label="TemporaryHoldingSpacePreviews:disabled"/>
   <int value="-991416218" label="PdfViewerPresentationMode:enabled"/>
   <int value="-991412904" label="SettingsLandingPageRedesign:disabled"/>
@@ -66216,6 +66215,7 @@ from previous Chrome versions.
       label="SyncPseudoUSSHistoryDeleteDirectives:disabled"/>
   <int value="1259798038" label="AllowAmbientEQ:disabled"/>
   <int value="1260186484" label="spurious-power-button-screen-accel"/>
+  <int value="1260234477" label="(Obsolete) ExplicitLanguageAsk:enabled"/>
   <int value="1261379424" label="DecodeLossyWebPImagesToYUV:disabled"/>
   <int value="1261620998" label="IntentPickerPWAPersistence:disabled"/>
   <int value="1261713150" label="ChromeHomeOptOutSnackbar:disabled"/>
@@ -102119,7 +102119,7 @@ would be helpful to identify which type is being sent.
   <int value="62" label="PrefDogfoodGroups"/>
   <int value="64" label="AutofillPaymentCvcStorageAndFilling"/>
   <int value="100000" label="AppLanguagePromptShown"/>
-  <int value="100001" label="PrefExplicitLanguageAskShown"/>
+  <int value="100001" label="(Obsolete) PrefExplicitLanguageAskShown"/>
   <int value="100002" label="ContextualSearchEnabled_Android"/>
   <int value="100003" label="ContextualSearchWasFullyPrivacyEnabled"/>
   <int value="100004" label="AccessibilityImageLabelsEnabledAndroid"/>

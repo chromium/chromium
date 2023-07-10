@@ -128,11 +128,6 @@ class TranslatePrefs {
       "translate_auto_never_count";
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-  static constexpr char kPrefExplicitLanguageAskShown[] =
-      "translate_explicit_language_ask_shown";
-#endif
-
   // This parameter specifies how the language should be moved within the list.
   enum RearrangeSpecifier {
     // No-op enumerator.
@@ -310,11 +305,6 @@ class TranslatePrefs {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  // These methods are used to determine whether the explicit language ask
-  // prompt was displayed to the user already.
-  bool GetExplicitLanguageAskPromptShown() const;
-  void SetExplicitLanguageAskPromptShown(bool shown);
-
   // These methods are used to determine whether the app language prompt was
   // displayed to the user already. Once shown it can not be unset.
   bool GetAppLanguagePromptShown() const;
