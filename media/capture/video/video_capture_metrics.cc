@@ -201,4 +201,29 @@ void LogCaptureDeviceHashedModelId(
   UMA_HISTOGRAM_SPARSE("Media.VideoCapture.Device.Opened.ByModelId", mapping);
 }
 
+void LogCaptureCurrentDeviceResolution(int width, int height) {
+  // This method combines width and height into a single uint32_t value.
+  constexpr int kMinValue = 0;
+  constexpr int kMaxValue = 65535;
+  uint32_t result = 0;
+
+  // Check if width and height are valid, otherwise metric will be 0.
+  if (width > kMinValue && width <= kMaxValue && height > kMinValue &&
+      height <= kMaxValue) {
+    // Store the width in the first 16 bits
+    result |= static_cast<uint16_t>(width) << 16;
+    // Store the height in the last 16 bits
+    result |= static_cast<uint16_t>(height);
+  }
+  base::UmaHistogramSparse("Media.VideoCapture.Device.Opened.Resolution",
+                           result);
+}
+
+void LogCaptureCurrentDevicePixelFormat(
+    const media::VideoPixelFormat pixel_format) {
+  base::UmaHistogramEnumeration("Media.VideoCapture.Device.Opened.PixelFormat",
+                                pixel_format,
+                                media::VideoPixelFormat::PIXEL_FORMAT_MAX);
+}
+
 }  // namespace media
