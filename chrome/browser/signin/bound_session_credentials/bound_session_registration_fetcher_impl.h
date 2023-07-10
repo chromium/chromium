@@ -34,8 +34,7 @@ class BoundSessionRegistrationFetcherImpl
   explicit BoundSessionRegistrationFetcherImpl(
       BoundSessionRegistrationFetcherParam registration_params,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-      unexportable_keys::UnexportableKeyService* key_service,
-      Id id);
+      unexportable_keys::UnexportableKeyService* key_service);
 
   BoundSessionRegistrationFetcherImpl(
       BoundSessionRegistrationFetcherImpl&& other) = delete;
@@ -66,7 +65,6 @@ class BoundSessionRegistrationFetcherImpl
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  const Id id_;
   RegistrationCompleteCallback callback_;
 
   base::WeakPtrFactory<BoundSessionRegistrationFetcherImpl> weak_ptr_factory_{

@@ -97,16 +97,10 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, NoService) {
   BoundSessionRegistrationFetcherParam params =
       BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
           GURL("http://accounts.google.com"), CreateAlgArray());
-  BoundSessionRegistrationFetcher::Id::Generator
-      registration_request_id_generator;
-  BoundSessionRegistrationFetcher::Id id =
-      registration_request_id_generator.GenerateNextId();
   std::unique_ptr<BoundSessionRegistrationFetcher> fetcher =
       std::make_unique<BoundSessionRegistrationFetcherImpl>(
-          std::move(params), url_loader_factory.GetSafeWeakWrapper(), nullptr,
-          id);
+          std::move(params), url_loader_factory.GetSafeWeakWrapper(), nullptr);
   base::test::TestFuture<
-      BoundSessionRegistrationFetcher::Id,
       absl::optional<bound_session_credentials::RegistrationParams>>
       future;
 
@@ -139,16 +133,11 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
   BoundSessionRegistrationFetcherParam params =
       BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
           GURL("https://www.google.com/startsession"), CreateAlgArray());
-  BoundSessionRegistrationFetcher::Id::Generator
-      registration_request_id_generator;
-  BoundSessionRegistrationFetcher::Id id =
-      registration_request_id_generator.GenerateNextId();
   std::unique_ptr<BoundSessionRegistrationFetcher> fetcher =
       std::make_unique<BoundSessionRegistrationFetcherImpl>(
           std::move(params), url_loader_factory.GetSafeWeakWrapper(),
-          &unexportable_key_service(), id);
+          &unexportable_key_service());
   base::test::TestFuture<
-      BoundSessionRegistrationFetcher::Id,
       absl::optional<bound_session_credentials::RegistrationParams>>
       future;
 
@@ -158,7 +147,6 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
   EXPECT_FALSE(future.IsReady());
   RunBackgroundTasks();
   EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get<0>(), id);
-  EXPECT_THAT(future.Get<1>(), ParamMatching(CreateTestRegistrationParams()));
+  EXPECT_THAT(future.Get<>(), ParamMatching(CreateTestRegistrationParams()));
   ASSERT_TRUE(made_download);
 }

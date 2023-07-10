@@ -13,6 +13,7 @@
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -49,12 +50,10 @@ std::string GetAlgoName(crypto::SignatureVerifier::SignatureAlgorithm algo) {
 BoundSessionRegistrationFetcherImpl::BoundSessionRegistrationFetcherImpl(
     BoundSessionRegistrationFetcherParam registration_params,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-    unexportable_keys::UnexportableKeyService* key_service,
-    Id id)
+    unexportable_keys::UnexportableKeyService* key_service)
     : registration_params_(std::move(registration_params)),
       key_service_(key_service),
-      url_loader_factory_(std::move(loader_factory)),
-      id_(id) {}
+      url_loader_factory_(std::move(loader_factory)) {}
 
 BoundSessionRegistrationFetcherImpl::~BoundSessionRegistrationFetcherImpl() =
     default;
@@ -70,7 +69,7 @@ void BoundSessionRegistrationFetcherImpl::Start(
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     // Early fail of request, object is invalid after this
-    std::move(callback_).Run(id_, absl::nullopt);
+    std::move(callback_).Run(absl::nullopt);
   }
 }
 
@@ -108,14 +107,14 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
   }
 
   // Finish the request, object is invalid after this
-  std::move(callback_).Run(id_, return_value);
+  std::move(callback_).Run(return_value);
 }
 
 void BoundSessionRegistrationFetcherImpl::OnKeyCreated(
     unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
         created_key) {
   if (!created_key.has_value()) {
-    std::move(callback_).Run(id_, absl::nullopt);
+    std::move(callback_).Run(absl::nullopt);
     return;
   }
   unexportable_keys::UnexportableKeyId key_id = *created_key;
@@ -132,7 +131,7 @@ void BoundSessionRegistrationFetcherImpl::OnKeyCreated(
       algo_used = key_service_->GetAlgorithm(key_id);
   std::string algo_string = GetAlgoName(algo_used.value());
   if (algo_string.empty()) {
-    std::move(callback_).Run(id_, absl::nullopt);
+    std::move(callback_).Run(absl::nullopt);
     return;
   }
 

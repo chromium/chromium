@@ -91,7 +91,6 @@ class BoundSessionCookieRefreshServiceImpl
   }
 
   void OnRegistrationRequestComplete(
-      BoundSessionRegistrationFetcher::Id id,
       absl::optional<bound_session_credentials::RegistrationParams>
           registration_params);
 
@@ -125,11 +124,8 @@ class BoundSessionCookieRefreshServiceImpl
   // feature is still WIP.
   bool force_terminate_bound_session_ = false;
 
-  BoundSessionRegistrationFetcher::Id::Generator
-      registration_request_id_generator_;
-  base::flat_map<BoundSessionRegistrationFetcher::Id,
-                 std::unique_ptr<BoundSessionRegistrationFetcher>>
-      active_registration_requests_;
+  // There is only one active session registration at a time.
+  std::unique_ptr<BoundSessionRegistrationFetcher> active_registration_request_;
 
   base::WeakPtrFactory<BoundSessionCookieRefreshService> weak_ptr_factory_{
       this};

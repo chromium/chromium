@@ -270,15 +270,19 @@ void BoundSessionCookieRefreshServiceImpl::OnRequestBlockedOnCookie(
 void BoundSessionCookieRefreshServiceImpl::CreateRegistrationRequest(
     BoundSessionRegistrationFetcherParam registration_params,
     unexportable_keys::UnexportableKeyService* key_service) {
-  BoundSessionRegistrationFetcher::Id id =
-      registration_request_id_generator_.GenerateNextId();
-  auto [it, was_inserted] = active_registration_requests_.emplace(
-      id, std::make_unique<BoundSessionRegistrationFetcherImpl>(
-              std::move(registration_params), client_->GetURLLoaderFactory(),
-              key_service, id));
+  if (active_registration_request_) {
+    // If there are multiple racing registration requests, only one will be
+    // processed and it will contain the most up-to-date set of cookies.
+    return;
+  }
+
+  active_registration_request_ =
+      std::make_unique<BoundSessionRegistrationFetcherImpl>(
+          std::move(registration_params), client_->GetURLLoaderFactory(),
+          key_service);
   // `base::Unretained(this)` is safe here because `this` owns the fetcher via
   // `active_registration_requests_`
-  it->second->Start(base::BindOnce(
+  active_registration_request_->Start(base::BindOnce(
       &BoundSessionCookieRefreshServiceImpl::OnRegistrationRequestComplete,
       base::Unretained(this)));
 }
@@ -289,7 +293,6 @@ BoundSessionCookieRefreshServiceImpl::GetWeakPtr() {
 }
 
 void BoundSessionCookieRefreshServiceImpl::OnRegistrationRequestComplete(
-    BoundSessionRegistrationFetcher::Id id,
     absl::optional<bound_session_credentials::RegistrationParams>
         registration_params) {
   if (registration_params.has_value() &&
@@ -297,7 +300,7 @@ void BoundSessionCookieRefreshServiceImpl::OnRegistrationRequestComplete(
     RegisterNewBoundSession(*registration_params);
   }
 
-  active_registration_requests_.erase(id);
+  active_registration_request_.reset();
 }
 
 void BoundSessionCookieRefreshServiceImpl::OnCookieExpirationDateChanged() {
