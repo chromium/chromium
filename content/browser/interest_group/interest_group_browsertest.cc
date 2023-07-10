@@ -14943,6 +14943,48 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
   }
 }
 
+// Check that the renderer doesn't crash if we don't have a decision logic URL.
+IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
+                       DecisionLogicURLNotRequired) {
+  GURL test_url = https_server_->GetURL("a.test", "/interest_group/empty.html");
+
+  std::string auction_config = R"({
+    seller: "https://seller.example.com",
+    interestGroupBuyers: ["https://buyer.example.com"],
+    serverResponse: new Uint8Array(20),
+    requestId: "00000000-0000-0000-0000-000000000000",
+  })";
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  EXPECT_EQ(nullptr, RunAuctionAndWait(auction_config));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
+                       DecisionLogicURLRequiredForComponent) {
+  GURL test_url = https_server_->GetURL("a.test", "/interest_group/empty.html");
+
+  std::string auction_config = R"({
+    seller: "https://seller.example.com",
+    serverResponse: new Uint8Array(20),
+    requestId: "00000000-0000-0000-0000-000000000000",
+    componentAuctions: [{
+      seller: "https://seller2.example.com",
+      // No decision logic.
+      interestGroupBuyers: ["https://buyer.example.com"],
+      serverResponse: new Uint8Array(20),
+      requestId: "00000000-0000-0000-0000-000000000000",
+    }]
+  })";
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Missing "
+      "required field ad auction config decisionLogicURL or serverResponse",
+      RunAuctionAndWait(auction_config));
+}
+
 class InterestGroupBiddingAndAuctionServerRestrictedPermissionsPolicyBrowserTest
     : public InterestGroupBiddingAndAuctionServerBrowserTest {
  public:

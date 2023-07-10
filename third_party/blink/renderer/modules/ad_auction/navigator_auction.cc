@@ -1094,6 +1094,9 @@ bool CopyDecisionLogicUrlFromIdlToMojo(const ExecutionContext& context,
                                        ExceptionState& exception_state,
                                        const AuctionAdConfig& input,
                                        mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasDecisionLogicURL()) {
+    return true;
+  }
   KURL decision_logic_url = context.CompleteURL(input.decisionLogicURL());
   if (!decision_logic_url.IsValid()) {
     exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
