@@ -28,4 +28,17 @@ BASE_FEATURE(kRestoreUmaClientIdIndependentLogs,
              "RestoreUmaClientIdIndependentLogs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSubprocessMetricsAsync,
+             "SubprocessMetricsAsync",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kPeriodicMergeAsync{&kSubprocessMetricsAsync,
+                                                   "PeriodicMergeAsync", false};
+
+const base::FeatureParam<bool> kDeregisterAsync{&kSubprocessMetricsAsync,
+                                                "DeregisterAsync", false};
+
+const base::FeatureParam<bool> kDeregisterSequenced{
+    &kSubprocessMetricsAsync, "DeregisterSequenced", false};
+
 }  // namespace metrics::features

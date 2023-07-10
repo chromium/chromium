@@ -8,10 +8,12 @@
 #include <map>
 #include <memory>
 
-#include "base/gtest_prod_util.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "components/metrics/metrics_provider.h"
 #include "content/public/browser/browser_child_process_observer.h"
@@ -49,11 +51,34 @@ class SubprocessMetricsProvider
 
   // Merge histograms for all subprocesses. This is used by tests that don't
   // have access to the internal instance of this class.
-  static void MergeHistogramDeltasForTesting();
+  static void MergeHistogramDeltasForTesting(
+      bool async = false,
+      base::OnceClosure done_callback = base::DoNothing());
 
  private:
   friend class SubprocessMetricsProviderTest;
-  friend class SubprocessMetricsProviderBrowserTest;
+
+  // Wrapper to add reference counting to an allocator so that it is only
+  // released it when all tasks have finished with it. Note that this is
+  // RefCounted and not RefCountedThreadSafe, meaning that references should
+  // only be created/destroyed on the same sequence (the implementation has
+  // DCHECKs to enforce this).
+  class RefCountedAllocator : public base::RefCounted<RefCountedAllocator> {
+   public:
+    explicit RefCountedAllocator(
+        std::unique_ptr<base::PersistentHistogramAllocator> allocator);
+
+    RefCountedAllocator(const RefCountedAllocator& other) = delete;
+    RefCountedAllocator& operator=(const RefCountedAllocator& other) = delete;
+
+    base::PersistentHistogramAllocator* allocator() { return allocator_.get(); }
+
+   private:
+    friend class base::RefCounted<RefCountedAllocator>;
+    ~RefCountedAllocator();
+
+    std::unique_ptr<base::PersistentHistogramAllocator> allocator_;
+  };
 
   // The global instance should be accessed through Get().
   SubprocessMetricsProvider();
@@ -98,11 +123,36 @@ class SubprocessMetricsProvider
       const content::ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
+  // Re-creates |sequenced_task_runner_|. Used for testing.
+  void RecreateTaskRunnerForTesting();
+
+  // Merges all histograms of |allocator| to the global StatisticsRecorder. This
+  // is called periodically during UMA metrics collection (if enabled) and
+  // possibly on-demand for other purposes. May be called on a background
+  // thread.
+  static void MergeHistogramDeltasFromAllocator(int id,
+                                                RefCountedAllocator* allocator);
+
+  // Merges all histograms of the |allocators| to the global StatisticsRecorder.
+  // Does not have any form of ownership on the allocators. May be called on a
+  // background thread.
+  using AllocatorByIdMap = std::map<int, scoped_refptr<RefCountedAllocator>>;
+  static void MergeHistogramDeltasFromAllocators(AllocatorByIdMap* allocators);
+
+  // Callback for when MergeHistogramDeltasFromAllocator() is called in a
+  // background thread.
+  static void OnMergeHistogramDeltasFromAllocator(
+      scoped_refptr<RefCountedAllocator> allocator);
+
+  // Callback for when MergeHistogramDeltasFromAllocators() is called in a
+  // background thread.
+  static void OnMergeHistogramDeltasFromAllocators(
+      std::unique_ptr<AllocatorByIdMap> allocators,
+      base::OnceClosure done_callback);
+
   THREAD_CHECKER(thread_checker_);
 
   // All of the shared-persistent-allocators for known sub-processes.
-  using AllocatorByIdMap =
-      std::map<int, std::unique_ptr<base::PersistentHistogramAllocator>>;
   AllocatorByIdMap allocators_by_id_;
 
   // Track all observed render processes to un-observe them on exit.
@@ -112,6 +162,9 @@ class SubprocessMetricsProvider
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>
       scoped_observations_{this};
+
+  // Used to asynchronously merge metrics from subprocesses that have exited.
+  scoped_refptr<base::TaskRunner> task_runner_;
 
   base::WeakPtrFactory<SubprocessMetricsProvider> weak_ptr_factory_{this};
 };

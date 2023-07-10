@@ -39,6 +39,21 @@ BASE_DECLARE_FEATURE(kMergeSubprocessMetricsOnBgAndFg);
 // the case in cloned installs.
 BASE_DECLARE_FEATURE(kRestoreUmaClientIdIndependentLogs);
 
+// Determines whether to allow merging subprocess metrics asynchronously. By
+// itself, the feature does nothing. But the different params below allow
+// toggling specific async behaviours.
+BASE_DECLARE_FEATURE(kSubprocessMetricsAsync);
+// Determines whether to merge subprocess metrics asynchronously when creating
+// periodic ongoing UMA logs.
+extern const base::FeatureParam<bool> kPeriodicMergeAsync;
+// Determines whether to merge the last metrics of a subprocess that has just
+// exited asynchronously.
+extern const base::FeatureParam<bool> kDeregisterAsync;
+// Determines whether the tasks posted when deregistering a subprocess
+// asynchronously are sequenced. This param only applies when |kDeregisterAsync|
+// is true.
+extern const base::FeatureParam<bool> kDeregisterSequenced;
+
 }  // namespace metrics::features
 
 #endif  // COMPONENTS_METRICS_METRICS_FEATURES_H_
