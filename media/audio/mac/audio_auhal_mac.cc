@@ -20,8 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "base/trace_event/common/trace_event_common.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "media/audio/mac/core_audio_util_mac.h"
 #include "media/base/audio_pull_fifo.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -310,9 +309,14 @@ OSStatus AUHALStream::Render(AudioUnitRenderActionFlags* flags,
   if (!source_)
     return kAudioUnitErr_Uninitialized;
 
-  TRACE_EVENT_BEGIN2("audio", "AUHALStream::Render", "input buffer size",
-                     params_.frames_per_buffer(), "output buffer size",
-                     number_of_frames);
+  TRACE_EVENT_BEGIN(
+      "audio", "AUHALStream::Render", [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_mac_auhal_stream();
+        data->set_input_buffer_size(params_.frames_per_buffer());
+        data->set_output_buffer_size(number_of_frames);
+        data->set_sample_rate(params_.sample_rate());
+      });
 
   UpdatePlayoutTimestamp(output_time_stamp);
 
@@ -354,14 +358,22 @@ OSStatus AUHALStream::Render(AudioUnitRenderActionFlags* flags,
 
   last_number_of_frames_ = number_of_frames;
 
-  TRACE_EVENT_END1("audio", "AUHALStream::Render", "current_playout_time_",
-                   current_playout_time_);
+  TRACE_EVENT_END("audio", [&](perfetto::EventContext ctx) {
+    auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+    auto* data = event->set_mac_auhal_stream();
+    data->set_os_request_playout_timeticks_us(
+        (current_playout_time_ - base::TimeTicks()).InMicroseconds());
+  });
   return noErr;
 }
 
 void AUHALStream::ProvideInput(int frame_delay, AudioBus* dest) {
-  TRACE_EVENT_BEGIN1("audio", "AUHALStream::ProvideInput", "frames",
-                     dest->frames());
+  TRACE_EVENT_BEGIN(
+      "audio", "AUHALStream::ProvideInput", [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_mac_auhal_stream();
+        data->set_source_request_frames(dest->frames());
+      });
 
   lock_.AssertAcquired();
   DCHECK(source_);
@@ -372,7 +384,12 @@ void AUHALStream::ProvideInput(int frame_delay, AudioBus* dest) {
   const base::TimeTicks now = base::TimeTicks::Now();
   const base::TimeDelta delay = playout_time - now;
 
-  TRACE_COUNTER_ID1("audio", "AUHALStream delay", this, delay.InMilliseconds());
+  TRACE_EVENT_INSTANT(
+      "audio", "AUHALStream delay", [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_mac_auhal_stream();
+        data->set_source_request_playout_delay_us(delay.InMicroseconds());
+      });
 
   UMA_HISTOGRAM_COUNTS_1000("Media.Audio.Render.SystemDelay",
                             delay.InMilliseconds());
@@ -380,8 +397,14 @@ void AUHALStream::ProvideInput(int frame_delay, AudioBus* dest) {
   source_->OnMoreData(BoundedDelay(delay), now,
                       glitch_info_accumulator_.GetAndReset(), dest);
   dest->Scale(volume_);
-  TRACE_EVENT_END2("audio", "AUHALStream::ProvideInput", "playout_time",
-                   playout_time, "now", now);
+  TRACE_EVENT_END("audio", [&](perfetto::EventContext ctx) {
+    auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+    auto* data = event->set_mac_auhal_stream();
+    data->set_source_request_playout_timeticks_us(
+        (playout_time - base::TimeTicks()).InMicroseconds());
+    data->set_source_request_current_timeticks_us(
+        (now - base::TimeTicks()).InMicroseconds());
+  });
 }
 
 // AUHAL callback.
@@ -402,25 +425,38 @@ OSStatus AUHALStream::InputProc(void* user_data,
 
 base::TimeTicks AUHALStream::GetPlayoutTime(
     const AudioTimeStamp* output_time_stamp) {
-  TRACE_EVENT_BEGIN1(TRACE_DISABLED_BY_DEFAULT("audio"),
-                     "AUHALStream::GetPlayoutTime", "hardware_latency_",
-                     hardware_latency_);
+  TRACE_EVENT_BEGIN(
+      TRACE_DISABLED_BY_DEFAULT("audio"), "AUHALStream::GetPlayoutTime",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_mac_auhal_stream();
+        data->set_hardware_latency_us(hardware_latency_.InMicroseconds());
+      });
   // A platform bug has been observed where the platform sometimes reports that
   // the next frames will be output at an invalid time or a time in the past.
   // Because the target playout time cannot be invalid or in the past, return
   // "now" in these cases.
   if ((output_time_stamp->mFlags & kAudioTimeStampHostTimeValid) == 0) {
-    TRACE_EVENT_END1(TRACE_DISABLED_BY_DEFAULT("audio"),
-                     "AUHALStream::GetPlayoutTime", "hostTimeValid", 0);
+    TRACE_EVENT_END(
+        TRACE_DISABLED_BY_DEFAULT("audio"), [&](perfetto::EventContext ctx) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* data = event->set_mac_auhal_stream();
+          data->set_audiotimestamp_host_time_valid(false);
+        });
     return base::TimeTicks::Now();
   }
 
-  base::TimeTicks machTime =
+  base::TimeTicks mach_time =
       base::TimeTicks::FromMachAbsoluteTime(output_time_stamp->mHostTime);
-  TRACE_EVENT_END2(TRACE_DISABLED_BY_DEFAULT("audio"),
-                   "AUHALStream::GetPlayoutTime", "hostTimeValid", 1,
-                   "machTime", machTime);
-  return std::max(machTime, base::TimeTicks::Now()) + hardware_latency_;
+  TRACE_EVENT_END(
+      TRACE_DISABLED_BY_DEFAULT("audio"), [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_mac_auhal_stream();
+        data->set_audiotimestamp_host_time_valid(true);
+        data->set_audiotimestamp_mach_timeticks_us(
+            (mach_time - base::TimeTicks()).InMicroseconds());
+      });
+  return std::max(mach_time, base::TimeTicks::Now()) + hardware_latency_;
 }
 
 void AUHALStream::UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp) {
@@ -429,9 +465,18 @@ void AUHALStream::UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp) {
   if ((timestamp->mFlags & kAudioTimeStampSampleTimeValid) == 0)
     return;
 
-  TRACE_EVENT2("audio", "AUHALStream::UpdatePlayoutTimestamp",
-               "timestamp->mSampleTime", timestamp->mSampleTime,
-               "last_sample_time_", last_sample_time_);
+  // Compiler will complain that we pass a lock-guarded variable into the lambda
+  // otherwise.
+  Float64 lock_free_last_sample_time_ = last_sample_time_;
+  TRACE_EVENT(
+      "audio", "AUHALStream::UpdatePlayoutTimestamp",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_mac_auhal_stream();
+        data->set_audiotimestamp_sample_time_frames(timestamp->mSampleTime);
+        data->set_audiotimestamp_last_sample_time_frames(
+            lock_free_last_sample_time_);
+      });
 
   // if mSampleTime jumps backwards, do not look for glitches.
   if (last_sample_time_ && last_sample_time_ <= timestamp->mSampleTime) {
@@ -442,8 +487,14 @@ void AUHALStream::UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp) {
     UInt32 lost_frames = sample_time_diff - last_number_of_frames_;
     base::TimeDelta lost_audio_duration =
         AudioTimestampHelper::FramesToTime(lost_frames, params_.sample_rate());
-    TRACE_COUNTER_ID1("audio", "AUHALStream lost_audio_duration", this,
-                      lost_audio_duration.InMilliseconds());
+    TRACE_EVENT_INSTANT(
+        "audio", "AUHALStream lost_audio_duration",
+        [&](perfetto::EventContext ctx) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* data = event->set_mac_auhal_stream();
+          data->set_lost_audio_duration_us(
+              lost_audio_duration.InMicroseconds());
+        });
     glitch_reporter_.UpdateStats(lost_audio_duration);
     if (!lost_audio_duration.is_zero()) {
       glitch_info_accumulator_.Add(AudioGlitchInfo::SingleBoundedGlitch(

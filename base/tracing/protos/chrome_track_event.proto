@@ -1243,9 +1243,47 @@ message WinRenderAudioFromSource {
   optional int64 playout_delay_ms = 11;
 };
 
+// Debug information for system layer of audio rendering on Mac.
+message MacAUHALStream {
+  // The number of frames that the stream requests from the audio source.
+  optional int32 input_buffer_size = 1;
+  // The number of frames that the OS requests for playout.
+  optional uint32 output_buffer_size = 2;
+  // Sample rate of the stream.
+  optional int32 sample_rate = 3;
+  // The time that the audio requested by the OS is expected to play out.
+  optional int64 os_request_playout_timeticks_us = 4;
+  // Total number of frames requested from the audio source.
+  optional int32 source_request_frames = 5;
+  // The delay between the request for audio from the source and when the audio
+  // is expected to be played out.
+  optional int64 source_request_playout_delay_us = 6;
+  // The time when the audio that is requested from the source is expected to
+  // play out.
+  optional int64 source_request_playout_timeticks_us = 7;
+  // The time when audio audio is requested from the source.
+  optional int64 source_request_current_timeticks_us = 8;
+  // The audio playout latency that comes from hardware, in milliseconds.
+  optional int64 hardware_latency_us = 9;
+  // Whether the kAudioTimeStampHostTimeValid is set on the output
+  // AudioTimeStamp.
+  optional bool audiotimestamp_host_time_valid = 10;
+  // The playout time based on the machine time from AudioTimeStamp.
+  optional int64 audiotimestamp_mach_timeticks_us = 11;
+  // The time that the audio requested by the os is expected to be consumed by
+  // the hardware. Measured in frames since the start of playout.
+  optional double audiotimestamp_sample_time_frames = 12;
+  // The time that the previous audio requested by the os was expected to be
+  // consumed by the hardware. Measured in frames since the start of playout.
+  optional double audiotimestamp_last_sample_time_frames = 13;
+  // The duration of audio that was estimated to be lost in the case of a
+  // glitch.
+  optional int64 lost_audio_duration_us = 14;
+};
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1048
+  // Next ID: 1050
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -1349,5 +1387,7 @@ message ChromeTrackEvent {
     optional ScrollDeltas scroll_deltas = 1047;
 
     optional WinRenderAudioFromSource win_render_audio_from_source = 1048;
+
+    optional MacAUHALStream mac_auhal_stream = 1049;
   }
 }
