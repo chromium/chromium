@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_UTIL_H_
 
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -74,7 +75,8 @@ bool IsInstalled(Profile* profile, const guest_os::GuestId& guest_id);
 
 absl::optional<const base::Value::Dict*> GetConfigForGuest(
     Profile* profile,
-    const guest_os::GuestId& guest_id);
+    const guest_os::GuestId& guest_id,
+    prefs::PolicyEnabledState enabled_level);
 
 absl::optional<RunningVmPolicy> GetLaunchPolicyForConfig(Profile* profile,
                                                          std::string config_id);

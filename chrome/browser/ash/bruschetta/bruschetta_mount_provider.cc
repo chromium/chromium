@@ -26,7 +26,8 @@ Profile* BruschettaMountProvider::profile() {
 }
 
 std::string BruschettaMountProvider::DisplayName() {
-  auto config = GetConfigForGuest(profile_, guest_id_);
+  auto config = GetConfigForGuest(profile_, guest_id_,
+                                  prefs::PolicyEnabledState::BLOCKED);
   if (!config.has_value() || !config.value()) {
     // If the config doesn't exist this provider should have been removed.
     NOTREACHED();

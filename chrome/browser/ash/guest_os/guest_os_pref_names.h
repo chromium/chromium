@@ -49,6 +49,8 @@ extern const char kContainerColorKey[];
 extern const char kTerminalSupportedKey[];
 // The display name to use in the terminal.
 extern const char kTerminalLabel[];
+// Should the terminal show the disabled by enterprise policy icon.
+extern const char kTerminalPolicyDisabled[];
 extern const char kContainerSharedVmDevicesKey[];
 extern const char kBruschettaConfigId[];
 

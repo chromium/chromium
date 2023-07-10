@@ -31,6 +31,10 @@ class GuestOsTerminalProvider {
   // false.
   virtual bool RecoveryRequired(int64_t display_id) = 0;
 
+  // Returns false if the terminal should show this entry as being disabled by
+  // the user's IT administrator, otherwise return true.
+  virtual bool AllowedByPolicy() = 0;
+
   // Sets up `url` to be the initial working directory of a terminal session,
   // returning the path inside the guest.
   virtual std::string PrepareCwd(storage::FileSystemURL path) = 0;

@@ -1210,25 +1210,28 @@ CrostiniManager::CrostiniManager(Profile* profile)
 
   // It's possible for us to have containers in prefs while Crostini isn't
   // enabled, for example, maybe policy changed and now Crostini isn't allowed
-  // any more. Only register containers to show up if this profile is allowed to
-  // use Crostini. Note: This means changes only take effect after a restart,
+  // any more. We still need to call RegisterContainer to update the terminal
+  // prefs. Note: This means changes only take effect after a restart,
   // which is fine, since e.g. force-quitting a running VM because policy
   // changed isn't something we're going to do.
-  if (crostini::CrostiniFeatures::Get()->IsEnabled(profile_)) {
-    for (const auto& container :
-         guest_os::GetContainers(profile_, kCrostiniDefaultVmType)) {
-      // For a short while in M106 Bruschetta was getting added to prefs without
-      // a VM type, which meant it defaulted to Termina. If we've got it in
-      // prefs remove it instead of registering it. This'll break anyone who
-      // really has a vm named "bru" which is unfortunate, but we can't tell the
-      // difference between a correct and incorrect pref, so hopefully no one's
-      // done so.
-      // TODO(b/241043433): This code can be removed after M118.
-      if (container.vm_name == bruschetta::kBruschettaVmName) {
-        guest_os::RemoveContainerFromPrefs(profile, container);
-        continue;
-      }
+  for (const auto& container :
+       guest_os::GetContainers(profile_, kCrostiniDefaultVmType)) {
+    // For a short while in M106 Bruschetta was getting added to prefs without
+    // a VM type, which meant it defaulted to Termina. If we've got it in
+    // prefs remove it instead of registering it. This'll break anyone who
+    // really has a vm named "bru" which is unfortunate, but we can't tell the
+    // difference between a correct and incorrect pref, so hopefully no one's
+    // done so.
+    // TODO(b/241043433): This code can be removed after M118.
+    if (container.vm_name == bruschetta::kBruschettaVmName) {
+      guest_os::RemoveContainerFromPrefs(profile, container);
+      continue;
+    }
+
+    if (crostini::CrostiniFeatures::Get()->IsEnabled(profile_)) {
       RegisterContainer(container);
+    } else {
+      RegisterContainerTerminal(container);
     }
   }
 }
@@ -3920,7 +3923,8 @@ void CrostiniManager::HandleContainerShutdown(
   }
 }
 
-void CrostiniManager::RegisterContainer(const guest_os::GuestId& container_id) {
+void CrostiniManager::RegisterContainerTerminal(
+    const guest_os::GuestId& container_id) {
   if (terminal_provider_ids_.find(container_id) ==
       terminal_provider_ids_.end()) {
     auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
@@ -3928,11 +3932,15 @@ void CrostiniManager::RegisterContainer(const guest_os::GuestId& container_id) {
     terminal_provider_ids_[container_id] = registry->Register(
         std::make_unique<CrostiniTerminalProvider>(profile_, container_id));
   }
+}
+
+void CrostiniManager::RegisterContainer(const guest_os::GuestId& container_id) {
+  RegisterContainerTerminal(container_id);
 
   if (CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_) &&
       container_id != DefaultContainerId()) {
-    // TODO(b/217469540): The default container is still using sshfs for now, so
-    // start off using this approach only for non-default.
+    // TODO(b/217469540): The default container is still using sshfs for now,
+    // so start off using this approach only for non-default.
     if (mount_provider_ids_.find(container_id) == mount_provider_ids_.end()) {
       auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
                            ->MountProviderRegistry();

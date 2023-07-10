@@ -153,7 +153,8 @@ std::string GetVmUsername(const Profile* profile) {
 
 absl::optional<const base::Value::Dict*> GetConfigForGuest(
     Profile* profile,
-    const guest_os::GuestId& guest_id) {
+    const guest_os::GuestId& guest_id,
+    prefs::PolicyEnabledState enabled_level) {
   const auto* config_id_val = guest_os::GetContainerPrefValue(
       profile, guest_id, guest_os::prefs::kBruschettaConfigId);
   if (!config_id_val) {
@@ -162,8 +163,7 @@ absl::optional<const base::Value::Dict*> GetConfigForGuest(
 
   const auto& config_id = config_id_val->GetString();
 
-  return GetConfigWithEnabledLevel(profile, config_id,
-                                   prefs::PolicyEnabledState::BLOCKED);
+  return GetConfigWithEnabledLevel(profile, config_id, enabled_level);
 }
 
 }  // namespace bruschetta

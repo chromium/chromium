@@ -52,6 +52,7 @@ const char kContainerOsPrettyNameKey[] = "container_os_pretty_name";
 const char kContainerColorKey[] = "badge_color";
 const char kTerminalSupportedKey[] = "terminal_supported";
 const char kTerminalLabel[] = "terminal_label";
+const char kTerminalPolicyDisabled[] = "terminal_policy_disabled";
 const char kContainerSharedVmDevicesKey[] = "container_shared_vm_devices";
 const char kBruschettaConfigId[] = "bruschetta_config_id";
 

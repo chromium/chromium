@@ -27,6 +27,7 @@ static const base::NoDestructor<std::vector<std::string>> kPropertiesAllowList{{
     prefs::kContainerColorKey,
     prefs::kTerminalSupportedKey,
     prefs::kTerminalLabel,
+    prefs::kTerminalPolicyDisabled,
     prefs::kContainerSharedVmDevicesKey,
     prefs::kBruschettaConfigId,
 }};

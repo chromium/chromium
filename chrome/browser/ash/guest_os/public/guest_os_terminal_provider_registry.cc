@@ -93,6 +93,9 @@ void GuestOsTerminalProviderRegistry::SyncPrefs(
                       prefs::kTerminalSupportedKey, base::Value(true));
   UpdateContainerPref(profile_, provider->GuestId(), prefs::kTerminalLabel,
                       base::Value(provider->Label()));
+  UpdateContainerPref(profile_, provider->GuestId(),
+                      prefs::kTerminalPolicyDisabled,
+                      base::Value(!provider->AllowedByPolicy()));
 }
 
 std::unique_ptr<GuestOsTerminalProvider>

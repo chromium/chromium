@@ -806,6 +806,9 @@ class CrostiniManager : public KeyedService,
   // triggering observers.
   void HandleContainerShutdown(const guest_os::GuestId& container_id);
 
+  // Registers a container with the GuestOsService's terminal provider registry.
+  void RegisterContainerTerminal(const guest_os::GuestId& container_id);
+
   // Registers a container with GuestOsService's registries. No-op if it's
   // already registered.
   void RegisterContainer(const guest_os::GuestId& container_id);

@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-shared.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -95,6 +96,10 @@ bool CrostiniTerminalProvider::RecoveryRequired(int64_t display_id) {
     return true;
   }
   return false;
+}
+
+bool CrostiniTerminalProvider::AllowedByPolicy() {
+  return CrostiniFeatures::Get()->IsAllowedNow(profile_);
 }
 
 std::string CrostiniTerminalProvider::PrepareCwd(storage::FileSystemURL url) {
