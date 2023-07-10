@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/browsing_data/content/browsing_data_model.h"
@@ -477,6 +478,10 @@ class PageSpecificContentSettings
 
   explicit PageSpecificContentSettings(content::Page& page, Delegate* delegate);
 
+  // Updates `microphone_camera_state_` after audio/video is started/finished.
+  void OnCapturingStateChangedInternal(ContentSettingsType type,
+                                       bool is_capturing);
+
   // content_settings::Observer implementation.
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
                                const ContentSettingsPattern& secondary_pattern,
@@ -597,6 +602,13 @@ class PageSpecificContentSettings
   bool camera_was_just_granted_on_site_level_ = false;
   bool mic_was_just_granted_on_site_level_ = false;
   bool geolocation_was_just_granted_on_site_level_ = false;
+
+  // The time when the media indicator was displayed.
+  base::TimeTicks media_indicator_time_;
+
+  // Stores timers for delaying hiding an activity indicators.
+  std::map<ContentSettingsType, base::OneShotTimer>
+      indicators_hiding_delay_timer_;
 
   // Observer to watch for content settings changed.
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>

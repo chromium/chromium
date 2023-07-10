@@ -69,6 +69,12 @@ using LifecycleState = content::RenderFrameHost::LifecycleState;
 namespace content_settings {
 namespace {
 
+// A delay before the media indicator disappears if they were previously used
+// longer than `kMediaIndicatorMinimumHoldDuration`.
+constexpr auto kMediaIndicatorHoldAfterUseDuration = base::Seconds(1);
+// A minimum delay the before media indicator disappears.
+constexpr auto kMediaIndicatorMinimumHoldDuration = base::Seconds(5);
+
 // Determines which taxonomy is used to generate sample topics for the Topics
 // API.
 constexpr int kTopicsAPISampleDataTaxonomy = 1;
@@ -1410,6 +1416,50 @@ void PageSpecificContentSettings::OnCapturingStateChanged(
   DCHECK(type == ContentSettingsType::MEDIASTREAM_MIC ||
          type == ContentSettingsType::MEDIASTREAM_CAMERA);
 
+  // If `is_capturing` is true, we should not hide an indicator. Erasing an
+  // entry from `indicators_hiding_delay_timer_` will stop a dedicated timer.
+  if (indicators_hiding_delay_timer_.contains(type) && is_capturing) {
+    indicators_hiding_delay_timer_.erase(type);
+  }
+
+  // Check if media indicators should be hidden.
+  if (is_capturing) {
+    if (media_indicator_time_ == base::TimeTicks()) {
+      media_indicator_time_ = base::TimeTicks::Now();
+    }
+    OnCapturingStateChangedInternal(type, is_capturing);
+  } else {
+    // Add a delay before the media indicator disappears.
+    if ((type == ContentSettingsType::MEDIASTREAM_CAMERA &&
+         !microphone_camera_state_.Has(kMicrophoneAccessed)) ||
+        (type == ContentSettingsType::MEDIASTREAM_MIC &&
+         !microphone_camera_state_.Has(kCameraAccessed))) {
+      base::TimeDelta indicator_display_time =
+          base::TimeTicks::Now() - media_indicator_time_;
+      base::TimeDelta delay;
+
+      // A total duration of an indicator should never be less than
+      // `kMediaIndicatorMinimumHoldDuration`.
+      if (indicator_display_time < kMediaIndicatorMinimumHoldDuration) {
+        delay = kMediaIndicatorMinimumHoldDuration - indicator_display_time;
+      } else {
+        delay = kMediaIndicatorHoldAfterUseDuration;
+      }
+
+      indicators_hiding_delay_timer_[type].Start(
+          FROM_HERE, delay,
+          base::BindOnce(
+              &PageSpecificContentSettings::OnCapturingStateChangedInternal,
+              weak_factory_.GetWeakPtr(), type, is_capturing));
+    } else {
+      OnCapturingStateChangedInternal(type, is_capturing);
+    }
+  }
+}
+
+void PageSpecificContentSettings::OnCapturingStateChangedInternal(
+    ContentSettingsType type,
+    bool is_capturing) {
   MicrophoneCameraStateFlags state =
       type == ContentSettingsType::MEDIASTREAM_MIC ? kMicrophoneAccessed
                                                    : kCameraAccessed;
@@ -1422,8 +1472,10 @@ void PageSpecificContentSettings::OnCapturingStateChanged(
 
   // If `kMicrophoneAccessed` and `kCameraAccessed` not set, reset
   // `microphone_camera_state_`.
-  if (microphone_camera_state_.HasAny({kMicrophoneAccessed, kCameraAccessed})) {
+  if (!microphone_camera_state_.HasAny(
+          {kMicrophoneAccessed, kCameraAccessed})) {
     microphone_camera_state_.Clear();
+    media_indicator_time_ = base::TimeTicks();
   }
 
   MaybeUpdateLocationBar();

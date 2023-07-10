@@ -79,6 +79,10 @@ blink::StorageKey CreateFirstPartyStorageKey(const GURL& url) {
 class PageSpecificContentSettingsTest
     : public content::RenderViewHostTestHarness {
  public:
+  PageSpecificContentSettingsTest()
+      : content::RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
@@ -1263,6 +1267,108 @@ TEST_F(PageSpecificContentSettingsWithFencedFrameTest,
 
   ff_pscs->OnContentBlocked(ContentSettingsType::JAVASCRIPT);
   ff_pscs->OnContentAllowed(ContentSettingsType::COOKIES);
+}
+
+TEST_F(PageSpecificContentSettingsTest, MediaIndicatorsMinHoldDurationDelay) {
+  NavigateAndCommit(GURL("http://google.com"));
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(pscs, nullptr);
+
+  EXPECT_FALSE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, true);
+
+  EXPECT_TRUE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, false);
+
+  // `kCameraAccessed` is true because of min hold duration.
+  EXPECT_TRUE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+
+  // Min hold duration equals to 5 seconds.
+  task_environment()->AdvanceClock(base::Seconds(2));
+  base::RunLoop().RunUntilIdle();
+
+  // `kCameraAccessed` is still true because only 2 seconds passed.
+  EXPECT_TRUE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+
+  task_environment()->AdvanceClock(base::Seconds(4));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+}
+
+TEST_F(PageSpecificContentSettingsTest,
+       MediaIndicatorsHoldAfterUseDurationDelay) {
+  NavigateAndCommit(GURL("http://google.com"));
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(pscs, nullptr);
+
+  EXPECT_FALSE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, true);
+
+  EXPECT_TRUE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+
+  // Min hold duration equals to 5 seconds.
+  task_environment()->AdvanceClock(base::Seconds(6));
+  base::RunLoop().RunUntilIdle();
+
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, false);
+
+  // `kCameraAccessed` is true because of hold after use duration.
+  EXPECT_TRUE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+
+  // Hold after use duration equals to 1 seconds.
+  task_environment()->AdvanceClock(base::Seconds(2));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+}
+
+TEST_F(PageSpecificContentSettingsTest,
+       MediaIndicatorsReenableCameraWhileMinHoldDurationDelay) {
+  NavigateAndCommit(GURL("http://google.com"));
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(pscs, nullptr);
+
+  EXPECT_FALSE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, true);
+
+  EXPECT_TRUE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, false);
+
+  // `kCameraAccessed` is true because of the min hold duration.
+  EXPECT_TRUE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+
+  // Reenabling a camera indicator
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, true);
+
+  EXPECT_TRUE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+
+  task_environment()->AdvanceClock(base::Seconds(6));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(pscs->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
 }
 
 }  // namespace content_settings
