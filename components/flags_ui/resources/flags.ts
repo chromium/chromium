@@ -89,7 +89,7 @@ function render(experimentalFeaturesData: ExperimentalFeaturesData) {
   // <if expr="not is_ios">
   renderExperiments(
       experimentalFeaturesData.unsupportedFeatures,
-      getRequiredElement('unavailable-experiments'));
+      getRequiredElement('unavailable-experiments'), true);
   // </if>
 
   showRestartToast(experimentalFeaturesData.needsRestart);
@@ -209,12 +209,16 @@ function resetAllFlags() {
   requestExperimentalFeaturesData();
 }
 
-function renderExperiments(features: Feature[], container: HTMLElement) {
+function renderExperiments(
+    features: Feature[], container: HTMLElement, unsupported = false) {
   const fragment = document.createDocumentFragment();
   for (const feature of features) {
     const experiment = document.createElement('flags-experiment');
+
+    experiment.toggleAttribute('unsupported', unsupported);
     experiment.data = feature;
     experiment.id = feature.internal_name;
+
     const select = experiment.getSelect();
     if (select) {
       experiment.addEventListener('select-change', () => {
