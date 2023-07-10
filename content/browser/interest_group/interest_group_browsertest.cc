@@ -1736,9 +1736,9 @@ try {
 };
 
 // Make sure that FLEDGE has protections against making local network requests..
-class InterestGroupLocalNetworkBrowserTest : public InterestGroupBrowserTest {
+class InterestGroupPrivateNetworkBrowserTest : public InterestGroupBrowserTest {
  protected:
-  InterestGroupLocalNetworkBrowserTest()
+  InterestGroupPrivateNetworkBrowserTest()
       : remote_test_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {
     feature_list_.InitWithFeatures(
         /*`enabled_features`=*/
@@ -12095,8 +12095,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FinalizeAdWorks) {
 
 // The bidder worklet is served from a private network, everything else from a
 // public network. The auction should fail.
-IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
-                       BidderOnLocalNetwork) {
+IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
+                       BidderOnPrivateNetwork) {
   URLLoaderMonitor url_loader_monitor;
 
   // Learn the bidder IG, served from the local server.
@@ -12150,8 +12150,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
                   network::mojom::IPAddressSpace::kUnknown)));
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
-                       SellerOnLocalNetwork) {
+IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
+                       SellerOnPrivateNetwork) {
   GURL seller_url =
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
 
@@ -12207,9 +12207,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
 }
 
 // Have the auction and worklets server from public IPs, but send reports to a
-// local network. The reports should be blocked.
-IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
-                       ReportToLocalNetwork) {
+// private network. The reports should be blocked.
+IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
+                       ReportToPrivateNetwork) {
   // Use `remote_test_server_` exclusively with hostname "a.test" for root page
   // and script URLs.
   GURL test_url =
@@ -12287,7 +12287,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
 // Have all requests for an auction served from a public network, and all
 // reports send there as well. The auction should succeed, and all reports
 // should be sent.
-IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
                        ReportToPublicNetwork) {
   // Use `remote_test_server_` exclusively with hostname "a.test" for root page
   // and script URLs.
@@ -12390,10 +12390,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
 // respected for the update request. Does this by adding an interest group,
 // trying to update it from a public page, and expecting the request to be
 // blocked, and then adding another interest group and updating it from a
-// local page, which should succeed. Have to use two interest groups to avoid
+// private page, which should succeed. Have to use two interest groups to avoid
 // the delay between updates.
-IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
-                       UpdatePublicVsLocalNetwork) {
+IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
+                       UpdatePublicVsPrivateNetwork) {
   const char kPubliclyUpdateGroupName[] = "Publicly updated group";
   const char kLocallyUpdateGroupName[] = "Locally updated group";
 
@@ -12420,7 +12420,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
     GURL test_url;
     std::string group_name;
     if (public_address_space) {
-      // This header treats a response from a server on a local IP as if the
+      // This header treats a response from a server on a private IP as if the
       // server were on public address space.
       test_url = https_server_->GetURL(
           "a.test",
@@ -12501,14 +12501,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
 }
 
 // Create three interest groups, each belonging to different origins. Update one
-// on a local network, but delay its server response. Update the second on a
+// on a private network, but delay its server response. Update the second on a
 // public network (thus expecting the request to be blocked). Update the final
-// interest group on a local interest group -- it should be updated after the
+// interest group on a private interest group -- it should be updated after the
 // first two. After the server responds to the first update request, all updates
 // should proceed -- the first should succeed, and the second should be blocked
 // since the page is on a public network, and the third should succeed.
-IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
-                       LocalNetProtectionsApplyToSubsequentUpdates) {
+IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
+                       PrivateNetProtectionsApplyToSubsequentUpdates) {
   constexpr char kLocallyUpdateGroupName[] = "Locally updated group";
   constexpr char kPubliclyUpdateGroupName[] = "Publicly updated group";
 
@@ -12553,7 +12553,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
       JsReplace(kUpdateContentTemplate, new_bidding_url_c));
 
   // First, create an interest group in a.test and start updating it from a
-  // local site. The update doesn't finish yet because the network response
+  // private site. The update doesn't finish yet because the network response
   // is delayed.
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
@@ -12593,7 +12593,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
 
   EXPECT_EQ("done", UpdateInterestGroupsInJS());
 
-  // Finally, create and update the last interest group on a local network --
+  // Finally, create and update the last interest group on a private network --
   // this update shouldn't be blocked.
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("c.test", "/echo")));
 
@@ -12641,20 +12641,20 @@ IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
   EXPECT_EQ(b_groups[0].interest_group.bidding_url, initial_bidding_url_b);
 }
 
-// Join interest groups with local update URLs, and run auctions from
-// both a a main frame loaded with public address space, and with a local
+// Join interest groups with local (private) update URLs, and run auctions from
+// both a a main frame loaded with public address space, and with a private
 // address space. The auctions trigger updates the interest groups, but only the
-// frame using a local address space successfully updates the IG, since frames
+// frame using a private address space successfully updates the IG, since frames
 // from public address spaces are blocked from making requests to servers with
-// local addresses.
+// private addresses.
 //
 // Different interest groups (with different origins) are used for the public
-// and local auction, to avoid running into update rate limits.
-IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
-                       LocalNetProtectionsApplyToPostAuctionUpdates) {
+// and private auction, to avoid running into update rate limits.
+IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
+                       PrivateNetProtectionsApplyToPostAuctionUpdates) {
   // Fetches for the interest group-related scripts and updates are always
   // local, it's where they're updated from that matters. Interest group A will
-  // be updated from an auction on a public origin, and B from a local one.
+  // be updated from an auction on a public origin, and B from a private one.
   // Only the second update will succeed.
   //
   // It's important to do the successful update last, so that the first update
@@ -12694,7 +12694,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
   } kTestCases[] = {
       {interest_group_a_origin,
        /*run_auction_from_public_address_space=*/true,
-       // This header treats a response from a server on a local IP as if the
+       // This header treats a response from a server on a private IP as if the
        // server were on public address space.
        https_server_->GetURL(
            "c.test",
