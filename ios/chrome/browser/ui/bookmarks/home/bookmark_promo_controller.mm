@@ -140,6 +140,9 @@
     }
     return;
   }
+  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     // If the user is already syncing, the promo should not be visible.
     self.shouldShowSigninPromo = NO;
@@ -178,6 +181,8 @@
     [self handlePrimaryAccountChange:event
                         consentLevel:signin::ConsentLevel::kSignin];
   } else {
+    // TODO(crbug.com/1462552): This instance of signin::ConsentLevel::kSync
+    // should be removed once `kEnableBookmarksAccountStorage` launches.
     [self handlePrimaryAccountChange:event
                         consentLevel:signin::ConsentLevel::kSync];
   }

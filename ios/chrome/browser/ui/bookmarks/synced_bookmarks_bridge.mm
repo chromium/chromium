@@ -31,10 +31,6 @@ SyncedBookmarksObserverBridge::~SyncedBookmarksObserverBridge() {}
 
 #pragma mark - Signin and syncing status
 
-bool SyncedBookmarksObserverBridge::HasSyncConsent() {
-  return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
-}
-
 bool SyncedBookmarksObserverBridge::IsPerformingInitialSync() {
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForBrowserState(browser_state_);
