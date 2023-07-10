@@ -2608,7 +2608,35 @@ chromium-metrics-reviews@google.com.
   <summary>
     {KeySystem} support query status and result, as reported by
     RequestMediaKeySystemAccess. Each value will be reported at most once per
-    renderer process.
+    frame.
+  </summary>
+  <token key="KeySystem" variants="KeySystem"/>
+</histogram>
+
+<histogram
+    name="Media.EME.RequestMediaKeySystemAccess.{KeySystem}.TimeTo.Reject"
+    units="ms" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The time spent to reject RequestMediaKeySystemAccess() for {KeySystem}. Each
+    time will be reported at most once per process. Only one of TimeTo.Resolve
+    or TimeTo.Reject will be reported at most once per process for a
+    {KeySystem}.
+  </summary>
+  <token key="KeySystem" variants="KeySystem"/>
+</histogram>
+
+<histogram
+    name="Media.EME.RequestMediaKeySystemAccess.{KeySystem}.TimeTo.Resolve"
+    units="ms" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The time spent to resolve RequestMediaKeySystemAccess() for {KeySystem}.
+    Each time will be reported at most once per process. Only one of
+    TimeTo.Resolve or TimeTo.Reject will be reported at most once per process
+    for a {KeySystem}.
   </summary>
   <token key="KeySystem" variants="KeySystem"/>
 </histogram>
