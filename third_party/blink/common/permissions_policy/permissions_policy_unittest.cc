@@ -11,6 +11,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
 #include "url/gurl.h"
@@ -20,16 +22,20 @@ namespace blink {
 
 namespace {
 
-mojom::PermissionsPolicyFeature kDefaultOnFeature =
+const mojom::PermissionsPolicyFeature kDefaultOnFeature =
     static_cast<mojom::PermissionsPolicyFeature>(
         static_cast<int>(mojom::PermissionsPolicyFeature::kMaxValue) + 1);
 
-mojom::PermissionsPolicyFeature kDefaultSelfFeature =
+const mojom::PermissionsPolicyFeature kDefaultSelfFeature =
     static_cast<mojom::PermissionsPolicyFeature>(
         static_cast<int>(mojom::PermissionsPolicyFeature::kMaxValue) + 2);
 
+const mojom::PermissionsPolicyFeature kDefaultOffFeature =
+    static_cast<mojom::PermissionsPolicyFeature>(
+        static_cast<int>(mojom::PermissionsPolicyFeature::kMaxValue) + 3);
+
 // This feature is defined in code, but not present in the feature list.
-mojom::PermissionsPolicyFeature kUnavailableFeature =
+const mojom::PermissionsPolicyFeature kUnavailableFeature =
     static_cast<mojom::PermissionsPolicyFeature>(
         static_cast<int>(mojom::PermissionsPolicyFeature::kMaxValue) + 4);
 
@@ -42,6 +48,8 @@ class PermissionsPolicyTest : public testing::Test {
             {{kDefaultOnFeature, PermissionsPolicyFeatureDefault::EnableForAll},
              {kDefaultSelfFeature,
               PermissionsPolicyFeatureDefault::EnableForSelf},
+             {kDefaultOffFeature,
+              PermissionsPolicyFeatureDefault::EnableForNone},
              {mojom::PermissionsPolicyFeature::kBrowsingTopics,
               PermissionsPolicyFeatureDefault::EnableForSelf},
              {mojom::PermissionsPolicyFeature::kClientHintDPR,
@@ -118,6 +126,39 @@ TEST_F(PermissionsPolicyTest, TestInitialPolicy) {
       CreateFromParentPolicy(nullptr, origin_a_);
   EXPECT_TRUE(policy1->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_TRUE(policy1->IsFeatureEnabled(kDefaultSelfFeature));
+  EXPECT_FALSE(policy1->IsFeatureEnabled(kDefaultOffFeature));
+}
+
+TEST_F(PermissionsPolicyTest, TestCanEnableOffFeatureWithAll) {
+  // +-----------------------------------+
+  // |(1)Origin A                        |
+  // |Permissions-Policy: default-off=*  |
+  // +-----------------------------------+
+  // Default-off feature be enabled with header policy *.
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr, origin_a_);
+  policy1->SetHeaderPolicy({{{kDefaultOffFeature,
+                              /*allowed_origins=*/{},
+                              /*self_if_matches=*/absl::nullopt,
+                              /*matches_all_origins=*/true,
+                              /*matches_opaque_src=*/false}}});
+  EXPECT_TRUE(policy1->IsFeatureEnabled(kDefaultOffFeature));
+}
+
+TEST_F(PermissionsPolicyTest, TestCanEnableOffFeatureWithSelf) {
+  // +--------------------------------------+
+  // |(1)Origin A                           |
+  // |Permissions-Policy: default-off=self  |
+  // +--------------------------------------+
+  // Default-off feature be enabled with header policy self.
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr, origin_a_);
+  policy1->SetHeaderPolicy({{{kDefaultOffFeature,
+                              /*allowed_origins=*/{},
+                              /*self_if_matches=*/origin_a_,
+                              /*matches_all_origins=*/false,
+                              /*matches_opaque_src=*/false}}});
+  EXPECT_TRUE(policy1->IsFeatureEnabled(kDefaultOffFeature));
 }
 
 TEST_F(PermissionsPolicyTest, TestInitialSameOriginChildPolicy) {
@@ -130,13 +171,14 @@ TEST_F(PermissionsPolicyTest, TestInitialSameOriginChildPolicy) {
   // | +-------------+ |
   // +-----------------+
   // Default-on and Default-self features should be enabled in a same-origin
-  // child frame. Default-off features should be disabled.
+  // child frame. Default-off feature should be disabled.
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, origin_a_);
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentPolicy(policy1.get(), origin_a_);
   EXPECT_TRUE(policy2->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_TRUE(policy2->IsFeatureEnabled(kDefaultSelfFeature));
+  EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultOffFeature));
 }
 
 TEST_F(PermissionsPolicyTest, TestInitialCrossOriginChildPolicy) {
@@ -149,13 +191,14 @@ TEST_F(PermissionsPolicyTest, TestInitialCrossOriginChildPolicy) {
   // | +-------------+ |
   // +-----------------+
   // Default-on features should be enabled in child frame. Default-self and
-  // Default-off features should be disabled.
+  // Default-off feature should be disabled.
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, origin_a_);
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentPolicy(policy1.get(), origin_b_);
   EXPECT_TRUE(policy2->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultSelfFeature));
+  EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultOffFeature));
 }
 
 TEST_F(PermissionsPolicyTest, TestCrossOriginChildCannotEnableFeature) {
@@ -179,6 +222,197 @@ TEST_F(PermissionsPolicyTest, TestCrossOriginChildCannotEnableFeature) {
                               /*matches_all_origins=*/false,
                               /*matches_opaque_src=*/false}}});
   EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultSelfFeature));
+}
+
+TEST_F(PermissionsPolicyTest, TestSameOriginChildCannotEnableOffFeature) {
+  // +------------------------------------------+
+  // |(1) Origin A                              |
+  // |No Policy                                 |
+  // | +--------------------------------------+ |
+  // | |(2) Origin A                          | |
+  // | |Permissions-Policy: default-off=*     | |
+  // | +--------------------------------------+ |
+  // +------------------------------------------+
+  // Default-off feature should be disabled in same origin frame, if no
+  // policy was specified in the parent frame.
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr, origin_a_);
+  EXPECT_FALSE(policy1->IsFeatureEnabled(kDefaultOffFeature));
+
+  std::unique_ptr<PermissionsPolicy> policy2 =
+      CreateFromParentPolicy(policy1.get(), origin_a_);
+  policy2->SetHeaderPolicy({{{kDefaultOffFeature,
+                              /*allowed_origins=*/{},
+                              /*self_if_matches=*/absl::nullopt,
+                              /*matches_all_origins=*/true,
+                              /*matches_opaque_src=*/false}}});
+  EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultOffFeature));
+}
+
+TEST_F(PermissionsPolicyTest,
+       TestSameOriginChildWithParentEnabledCannotEnableOffFeature) {
+  // +------------------------------------------+
+  // |(1) Origin A                              |
+  // |Permissions-Policy: default-off=*         |
+  // | +--------------------------------------+ |
+  // | |(2) Origin A                          | |
+  // | |No Policy                             | |
+  // | +--------------------------------------+ |
+  // +------------------------------------------+
+  // Default-off feature should be disabled in same origin subframe, if no
+  // policy was specified in the subframe.
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr, origin_a_);
+  policy1->SetHeaderPolicy({{{kDefaultOffFeature,
+                              /*allowed_origins=*/{},
+                              /*self_if_matches=*/absl::nullopt,
+                              /*matches_all_origins=*/true,
+                              /*matches_opaque_src=*/false}}});
+  ASSERT_TRUE(policy1->IsFeatureEnabled(kDefaultOffFeature));
+  std::unique_ptr<PermissionsPolicy> policy2 =
+      CreateFromParentPolicy(policy1.get(), origin_a_);
+  EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultOffFeature));
+}
+
+TEST_F(PermissionsPolicyTest,
+       TestSameOriginChildWithParentEnabledCannotEnableOffFeatureWithoutAllow) {
+  // +------------------------------------------+
+  // |(1) Origin A                              |
+  // |Permissions-Policy: default-off=*         |
+  // | +--------------------------------------+ |
+  // | |(2) Origin A                          | |
+  // | |Permissions-Policy: default-off=*     | |
+  // | +--------------------------------------+ |
+  // | +--------------------------------------+ |
+  // | |(3) Origin B                          | |
+  // | |Permissions-Policy: default-off=*     | |
+  // | +--------------------------------------+ |
+  // +------------------------------------------+
+  // Default-off feature should be disabled in same origin subframe, if no
+  // iframe allow is present.
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr, origin_a_);
+  policy1->SetHeaderPolicy({{{kDefaultOffFeature,
+                              /*allowed_origins=*/{},
+                              /*self_if_matches=*/absl::nullopt,
+                              /*matches_all_origins=*/true,
+                              /*matches_opaque_src=*/false}}});
+  ASSERT_TRUE(policy1->IsFeatureEnabled(kDefaultOffFeature));
+  std::unique_ptr<PermissionsPolicy> policy2 =
+      CreateFromParentPolicy(policy1.get(), origin_a_);
+  policy2->SetHeaderPolicy({{{kDefaultOffFeature,
+                              /*allowed_origins=*/{},
+                              /*self_if_matches=*/absl::nullopt,
+                              /*matches_all_origins=*/true,
+                              /*matches_opaque_src=*/false}}});
+  EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultOffFeature));
+  std::unique_ptr<PermissionsPolicy> policy3 =
+      CreateFromParentPolicy(policy1.get(), origin_b_);
+  policy3->SetHeaderPolicy({{{kDefaultOffFeature,
+                              /*allowed_origins=*/{},
+                              /*self_if_matches=*/absl::nullopt,
+                              /*matches_all_origins=*/true,
+                              /*matches_opaque_src=*/false}}});
+  EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultOffFeature));
+}
+
+TEST_F(PermissionsPolicyTest,
+       TestSameOriginChildWithParentEnabledCanEnableOffFeatureWithAllow) {
+  // +-----------------------------------------------+
+  // |(1) Origin A                                   |
+  // |Permissions-Policy: default-off=self           |
+  // | <iframe allow="default-off OriginA OriginB">  |
+  // | +--------------------------------------+      |
+  // | |(2) Origin A                          |      |
+  // | |Permissions-Policy: default-off=self |       |
+  // | +--------------------------------------+      |
+  // | +--------------------------------------+      |
+  // | |(3) Origin B                          |      |
+  // | |Permissions-Policy: default-off=self |       |
+  // | +--------------------------------------+      |
+  // +-----------------------------------------------+
+  // Default-off feature should be enabled in same origin subframe, if a
+  // self policy was specified in both subframe and main frame and an iframe
+  // allow is present for that origin. It should not be enabled in a
+  // cross-origin subframe.
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr, origin_a_);
+  policy1->SetHeaderPolicy({{{kDefaultOffFeature,
+                              /*allowed_origins=*/{},
+                              /*self_if_matches=*/origin_a_,
+                              /*matches_all_origins=*/false,
+                              /*matches_opaque_src=*/false}}});
+  ASSERT_TRUE(policy1->IsFeatureEnabled(kDefaultOffFeature));
+  ParsedPermissionsPolicy frame_policy = {
+      {{kDefaultOffFeature, /*allowed_origins=*/
+        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            origin_a_,
+            /*has_subdomain_wildcard=*/false)},
+        /*self_if_matches=*/absl::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false},
+       {kDefaultOffFeature, /*allowed_origins=*/
+        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            origin_b_,
+            /*has_subdomain_wildcard=*/false)},
+        /*self_if_matches=*/absl::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false}}};
+  std::unique_ptr<PermissionsPolicy> policy2 =
+      CreateFromParentWithFramePolicy(policy1.get(), frame_policy, origin_a_);
+  policy2->SetHeaderPolicy({{{kDefaultOffFeature,
+                              /*allowed_origins=*/{},
+                              /*self_if_matches=*/origin_a_,
+                              /*matches_all_origins=*/false,
+                              /*matches_opaque_src=*/false}}});
+  EXPECT_TRUE(policy2->IsFeatureEnabled(kDefaultOffFeature));
+  std::unique_ptr<PermissionsPolicy> policy3 =
+      CreateFromParentWithFramePolicy(policy1.get(), frame_policy, origin_b_);
+  policy3->SetHeaderPolicy({{{kDefaultOffFeature,
+                              /*allowed_origins=*/{},
+                              /*self_if_matches=*/origin_b_,
+                              /*matches_all_origins=*/false,
+                              /*matches_opaque_src=*/false}}});
+  EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultOffFeature));
+}
+
+TEST_F(PermissionsPolicyTest,
+       TestCrossOriginChildWithParentEnabledCanEnableOffFeatureWithAllow) {
+  // +------------------------------------------+
+  // |(1) Origin A                              |
+  // |Permissions-Policy: default-off=*         |
+  // | <iframe allow="default-off OriginB">     |
+  // | +--------------------------------------+ |
+  // | |(2) Origin B                          | |
+  // | |Permissions-Policy: default-off=self  | |
+  // | +--------------------------------------+ |
+  // +------------------------------------------+
+  // Default-off feature should be enabled in cross origin subframe, if a
+  // policy was specified in both frames and an iframe allow is present.
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr, origin_a_);
+  policy1->SetHeaderPolicy({{{kDefaultOffFeature,
+                              /*allowed_origins=*/{},
+                              /*self_if_matches=*/absl::nullopt,
+                              /*matches_all_origins=*/true,
+                              /*matches_opaque_src=*/false}}});
+  ASSERT_TRUE(policy1->IsFeatureEnabled(kDefaultOffFeature));
+  ParsedPermissionsPolicy frame_policy = {
+      {{kDefaultOffFeature, /*allowed_origins=*/
+        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            origin_b_,
+            /*has_subdomain_wildcard=*/false)},
+        /*self_if_matches=*/absl::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false}}};
+  std::unique_ptr<PermissionsPolicy> policy2 =
+      CreateFromParentWithFramePolicy(policy1.get(), frame_policy, origin_b_);
+  policy2->SetHeaderPolicy({{{kDefaultOffFeature,
+                              /*allowed_origins=*/{},
+                              /*self_if_matches=*/origin_b_,
+                              /*matches_all_origins=*/false,
+                              /*matches_opaque_src=*/false}}});
+  EXPECT_TRUE(policy2->IsFeatureEnabled(kDefaultOffFeature));
 }
 
 TEST_F(PermissionsPolicyTest, TestFrameSelfInheritance) {

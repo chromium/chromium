@@ -31,7 +31,16 @@ enum class PermissionsPolicyFeatureDefault {
 
   // Equivalent to ["*"]. If in effect for a frame, then the feature is
   // enabled for that frame and all of its children.
-  EnableForAll
+  EnableForAll,
+
+  // Equivalent to ["()"]. If in effect for a frame, the feature is disabled
+  // for that frame and any child frames. For the feature to be enabled, it
+  // must be enabled by the headers and allowlists of this and all ancestor
+  // frames.
+  // This option is not yet standardized and should not be used except behind a
+  // flag.
+  // https://github.com/w3c/webappsec-permissions-policy/pull/515
+  EnableForNone,
 };
 
 using PermissionsPolicyFeatureList =

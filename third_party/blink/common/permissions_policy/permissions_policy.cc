@@ -223,9 +223,19 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForDevTools(
     return maybe_allow_list.value();
 
   // Note: |allowlists_| purely comes from HTTP header. If a feature is not
-  // declared in HTTP header, all origins are implicitly allowed.
+  // declared in HTTP header, all origins are implicitly allowed unless the
+  // default is `EnableForNone`.
   PermissionsPolicy::Allowlist default_allowlist;
-  default_allowlist.AddAll();
+  const PermissionsPolicyFeatureDefault default_policy =
+      feature_list_->at(feature);
+  switch (default_policy) {
+    case PermissionsPolicyFeatureDefault::EnableForAll:
+    case PermissionsPolicyFeatureDefault::EnableForSelf:
+      default_allowlist.AddAll();
+      break;
+    case PermissionsPolicyFeatureDefault::EnableForNone:
+      break;
+  }
 
   return default_allowlist;
 }
@@ -249,15 +259,20 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
       feature_list_->at(feature);
   PermissionsPolicy::Allowlist default_allowlist;
 
-  if (default_policy == PermissionsPolicyFeatureDefault::EnableForAll) {
-    default_allowlist.AddAll();
-  } else if (default_policy == PermissionsPolicyFeatureDefault::EnableForSelf) {
-    absl::optional<blink::OriginWithPossibleWildcards>
-        origin_with_possible_wildcards =
-            blink::OriginWithPossibleWildcards::FromOrigin(origin_);
-    if (origin_with_possible_wildcards.has_value()) {
-      default_allowlist.Add(*origin_with_possible_wildcards);
-    }
+  switch (default_policy) {
+    case PermissionsPolicyFeatureDefault::EnableForAll:
+      default_allowlist.AddAll();
+      break;
+    case PermissionsPolicyFeatureDefault::EnableForSelf: {
+      absl::optional<blink::OriginWithPossibleWildcards>
+          origin_with_possible_wildcards =
+              blink::OriginWithPossibleWildcards::FromOrigin(origin_);
+      if (origin_with_possible_wildcards.has_value()) {
+        default_allowlist.Add(*origin_with_possible_wildcards);
+      }
+    } break;
+    case PermissionsPolicyFeatureDefault::EnableForNone:
+      break;
   }
 
   return default_allowlist;
@@ -446,16 +461,22 @@ bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
   const PermissionsPolicyFeatureDefault default_policy =
       feature_list_->at(feature);
 
-  // 9.8.4: If feature’s default allowlist is *, return "Enabled".
-  if (default_policy == PermissionsPolicyFeatureDefault::EnableForAll) {
-    return true;
+  switch (default_policy) {
+    case PermissionsPolicyFeatureDefault::EnableForAll:
+      // 9.8.4: If feature’s default allowlist is *, return "Enabled".
+      return true;
+    case PermissionsPolicyFeatureDefault::EnableForSelf:
+      // 9.8.5: If feature’s default allowlist is 'self', and origin is same
+      // origin with document’s origin, return "Enabled".
+      if (origin_.IsSameOriginWith(origin)) {
+        return true;
+      }
+      break;
+    case PermissionsPolicyFeatureDefault::EnableForNone:
+      break;
   }
-
-  // 9.8.5: If feature’s default allowlist is 'self', and origin is same origin
-  // with document’s origin, return "Enabled".
   // 9.8.6: Return "Disabled".
-  DCHECK_EQ(default_policy, PermissionsPolicyFeatureDefault::EnableForSelf);
-  return origin_.IsSameOriginWith(origin);
+  return false;
 }
 
 bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequestAssumingOptIn(
@@ -502,14 +523,22 @@ bool PermissionsPolicy::InheritedValueForFeature(
       return AllowlistFromDeclaration(decl).Contains(origin_);
     }
   }
-  // 9.7 6: If feature’s default allowlist is *, return "Enabled".
-  if (feature.second == PermissionsPolicyFeatureDefault::EnableForAll)
-    return true;
-
-  // 9.7 7: If feature’s default allowlist is 'self', and origin is same origin
-  // with container’s node document’s origin, return "Enabled".
+  switch (feature.second) {
+    case PermissionsPolicyFeatureDefault::EnableForAll:
+      // 9.7 6: If feature’s default allowlist is *, return "Enabled".
+      return true;
+    case PermissionsPolicyFeatureDefault::EnableForSelf:
+      // 9.7 7: If feature’s default allowlist is 'self', and origin is same
+      // origin with container’s node document’s origin, return "Enabled". 9.7
+      if (origin_.IsSameOriginWith(parent_policy->origin_)) {
+        return true;
+      }
+      break;
+    case PermissionsPolicyFeatureDefault::EnableForNone:
+      break;
+  }
   // 9.7 8: Otherwise return "Disabled".
-  return origin_.IsSameOriginWith(parent_policy->origin_);
+  return false;
 }
 
 const PermissionsPolicyFeatureList& PermissionsPolicy::GetFeatureList() const {
