@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -71,6 +72,7 @@ class WebAppTest : public content::RenderViewHostTestHarness {
   content::BrowserContext* GetBrowserContext() final;
 
  private:
+  base::TimeTicks start_time_ = base::TimeTicks::Now();
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_ =
       nullptr;
   network::TestURLLoaderFactory test_url_loader_factory_;

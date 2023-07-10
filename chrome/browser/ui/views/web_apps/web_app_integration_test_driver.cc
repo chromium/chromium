@@ -83,6 +83,7 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
+#include "chrome/browser/web_applications/test/debug_info_printer.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -166,7 +167,6 @@
 #include <ImageIO/ImageIO.h>
 
 #include "base/mac/mac_util.h"
-#include "base/process/launch.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/apps/app_shim/web_app_shim_manager_delegate_mac.h"
 #include "chrome/browser/chrome_browser_main.h"
@@ -904,33 +904,8 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
 
   // Print debug information if there was a failure.
   if (testing::Test::HasFailure()) {
-    for (auto* profile : GetAllProfiles()) {
-      base::RunLoop debug_info_loop;
-      WebAppInternalsHandler::BuildDebugInfo(
-          profile, base::BindLambdaForTesting([&](base::Value debug_info) {
-            LOG(INFO) << "chrome://web-app-internals for profile "
-                      << profile->GetDebugName() << ":";
-            LOG(INFO) << debug_info.DebugString();
-            debug_info_loop.Quit();
-          }));
-      debug_info_loop.Run();
-    }
-    // On Mac OS also include system log output, as that is the only place logs
-    // from app shims would end up. Do note that this log will include messages
-    // from all tests that were running at the time, not just this test.
-#if BUILDFLAG(IS_MAC)
     base::TimeDelta log_time = base::TimeTicks::Now() - start_time_;
-    std::vector<std::string> log_argv = {
-        "log",
-        "show",
-        "--process",
-        "app_mode_loader",
-        "--last",
-        base::StringPrintf("%" PRId64 "s", log_time.InSeconds() + 1)};
-    std::string log_output;
-    base::GetAppOutputAndError(log_argv, &log_output);
-    LOG(INFO) << "System logs:\n" << log_output;
-#endif
+    test::LogDebugInfoToConsole(GetAllProfiles(), log_time);
   }
 }
 

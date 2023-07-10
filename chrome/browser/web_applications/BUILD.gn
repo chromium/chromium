@@ -528,6 +528,8 @@ source_set("web_applications_test_support") {
   sources = [
     "test/app_registry_cache_waiter.cc",
     "test/app_registry_cache_waiter.h",
+    "test/debug_info_printer.cc",
+    "test/debug_info_printer.h",
     "test/external_app_registration_waiter.cc",
     "test/external_app_registration_waiter.h",
     "test/fake_data_retriever.cc",

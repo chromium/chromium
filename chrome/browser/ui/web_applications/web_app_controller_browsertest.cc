@@ -4,18 +4,26 @@
 
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 
+#include <string>
+#include <vector>
+
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/test/debug_info_printer.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -33,6 +41,7 @@
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -225,6 +234,15 @@ void WebAppControllerBrowserTest::SetUpInProcessBrowserTestFixture() {
 void WebAppControllerBrowserTest::TearDownInProcessBrowserTestFixture() {
   InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
   cert_verifier_.TearDownInProcessBrowserTestFixture();
+}
+
+void WebAppControllerBrowserTest::TearDownOnMainThread() {
+  if (testing::Test::HasFailure()) {
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    base::TimeDelta log_time = base::TimeTicks::Now() - start_time_;
+    test::LogDebugInfoToConsole(profile_manager->GetLoadedProfiles(), log_time);
+  }
+  InProcessBrowserTest::TearDownOnMainThread();
 }
 
 void WebAppControllerBrowserTest::SetUpCommandLine(
