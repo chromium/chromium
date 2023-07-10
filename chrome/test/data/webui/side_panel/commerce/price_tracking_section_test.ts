@@ -179,4 +179,38 @@ suite('PriceTrackingSectionTest', () => {
 
     await shoppingListApi.whenCalled('showBookmarkEditorForCurrentUrl');
   });
+
+  test(`Render error message`, async () => {
+    shoppingListApi.setResultFor(
+        'getPriceTrackingStatusForCurrentUrl',
+        Promise.resolve({tracked: false}));
+
+    document.body.appendChild(priceTrackingSection);
+    await shoppingListApi.whenCalled('getPriceTrackingStatusForCurrentUrl');
+    await flushTasks();
+
+    callbackRouterRemote.operationFailedForBookmark(bookmarkProductInfo, true);
+    await flushTasks();
+
+    assertEquals(
+        priceTrackingSection.$.toggleTitle!.textContent,
+        loadTimeData.getString('trackPriceTitle'));
+    assertEquals(
+        priceTrackingSection.$.toggleAnnotation!.textContent,
+        loadTimeData.getString('trackPriceError') + '.');
+    assertEquals(
+        priceTrackingSection.$.toggle!.getAttribute('aria-pressed'), 'false');
+
+    callbackRouterRemote.operationFailedForBookmark(bookmarkProductInfo, false);
+    await flushTasks();
+
+    assertEquals(
+        priceTrackingSection.$.toggleTitle!.textContent,
+        loadTimeData.getString('trackPriceTitle'));
+    assertEquals(
+        priceTrackingSection.$.toggleAnnotation!.textContent,
+        loadTimeData.getString('trackPriceError') + '.');
+    assertEquals(
+        priceTrackingSection.$.toggle!.getAttribute('aria-pressed'), 'true');
+  });
 });
