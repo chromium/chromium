@@ -558,10 +558,6 @@ const internal::SchemaData* GetChromeSchemaData();
 ''')
   f.write('// Key names for the policy settings.\n' 'namespace key {\n\n')
   for policy in policies:
-    # TODO(joaodasilva): Include only supported policies in
-    # configuration_policy_handler.cc and configuration_policy_handler_list.cc
-    # so that these names can be conditional on 'policy.is_supported'.
-    # http://crbug.com/223616
     f.write('extern const char k' + policy.name + '[];\n')
   f.write('\n}  // namespace key\n\n')
 
