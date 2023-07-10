@@ -134,8 +134,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)dealloc {
-  if (!_settingsAreDismissed)
-    _personalDataManager->RemoveObserver(_observer.get());
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(_settingsAreDismissed);
 }
 
 - (void)viewDidLoad {
