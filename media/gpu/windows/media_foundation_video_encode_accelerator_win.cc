@@ -1512,7 +1512,14 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D video processing", hr);
     sample_texture = scaled_d3d11_texture_;
   } else {
-    sample_texture = input_texture;
+    // Even though no scaling is needed we still need to copy the texture to
+    // avoid concurrent usage causing glitches (https://crbug.com/1462315). This
+    // is preferred over holding a keyed mutex for the duration of the encode
+    // operation since that can take a significant amount of time and mutex
+    // acquisitions (necessary even for read-only operations) are blocking.
+    hr = PerformD3DCopy(input_texture.Get());
+    RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D texture copy", hr);
+    sample_texture = copied_d3d11_texture_;
   }
 
   Microsoft::WRL::ComPtr<IMFMediaBuffer> input_buffer;
@@ -2017,6 +2024,78 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DScaling(
   }
 
   return hr;
+}
+
+HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DCopying(
+    ID3D11Texture2D* input_texture) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  D3D11_TEXTURE2D_DESC input_desc = {};
+  input_texture->GetDesc(&input_desc);
+  // Return early if `copied_d3d11_texture_` is already the correct size,
+  // avoiding the overhead of creating a new destination texture.
+  if (copied_d3d11_texture_) {
+    D3D11_TEXTURE2D_DESC copy_desc = {};
+    copied_d3d11_texture_->GetDesc(&copy_desc);
+    if (input_desc.Width == copy_desc.Width &&
+        input_desc.Height == copy_desc.Height) {
+      return S_OK;
+    }
+  }
+  Microsoft::WRL::ComPtr<ID3D11Device> texture_device;
+  input_texture->GetDevice(&texture_device);
+  D3D11_TEXTURE2D_DESC copy_desc = {
+      .Width = input_desc.Width,
+      .Height = input_desc.Height,
+      .MipLevels = 1,
+      .ArraySize = 1,
+      .Format = DXGI_FORMAT_NV12,
+      .SampleDesc = {1, 0},
+      .Usage = D3D11_USAGE_DEFAULT,
+      .BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
+      .CPUAccessFlags = 0,
+      .MiscFlags = 0};
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> copied_d3d11_texture;
+  HRESULT hr = texture_device->CreateTexture2D(&copy_desc, nullptr,
+                                               &copied_d3d11_texture);
+  RETURN_ON_HR_FAILURE(hr, "Failed to create texture", hr);
+  hr = SetDebugName(copied_d3d11_texture.Get(),
+                    "MFVideoEncodeAccelerator_CopiedTexture");
+  RETURN_ON_HR_FAILURE(hr, "Failed to set debug name", hr);
+  copied_d3d11_texture_ = std::move(copied_d3d11_texture);
+  return S_OK;
+}
+
+HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DCopy(
+    ID3D11Texture2D* input_texture) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  HRESULT hr = InitializeD3DCopying(input_texture);
+  RETURN_ON_HR_FAILURE(hr, "Couldn't initialize D3D copying", hr);
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d_device =
+      dxgi_device_manager_->GetDevice();
+  if (!d3d_device) {
+    LOG(ERROR) << "Failed to get device from MF DXGI device manager";
+    return E_HANDLE;
+  }
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
+  d3d_device->GetImmediateContext(&device_context);
+
+  {
+    // We need to hold a keyed mutex during the copy operation.
+    absl::optional<gpu::DXGIScopedReleaseKeyedMutex> release_keyed_mutex;
+    Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
+    hr = input_texture->QueryInterface(IID_PPV_ARGS(&keyed_mutex));
+    if (SUCCEEDED(hr)) {
+      constexpr int kMaxSyncTimeMs = 100;
+      hr = keyed_mutex->AcquireSync(0, kMaxSyncTimeMs);
+      RETURN_ON_HR_FAILURE(hr, "Failed to acquire keyed mutex", hr);
+      release_keyed_mutex.emplace(std::move(keyed_mutex), 0);
+    }
+
+    device_context->CopySubresourceRegion(copied_d3d11_texture_.Get(), 0, 0, 0,
+                                          0, input_texture, 0, nullptr);
+  }
+  return S_OK;
 }
 
 HRESULT MediaFoundationVideoEncodeAccelerator::GetParameters(DWORD* pdwFlags,

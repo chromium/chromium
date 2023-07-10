@@ -172,11 +172,17 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // process all inputs, produce all outputs and tell us when it's done.
   void DrainEncoder();
 
-  // Initialize video processing (for scaling)
+  // Initialize video processing (for scaling).
   HRESULT InitializeD3DVideoProcessing(ID3D11Texture2D* input_texture);
-
-  // Perform D3D11 scaling operation
+  // Scales `input_texture` to size `input_visible_size_`. On success, the
+  // result is stored in `scaled_d3d11_texture_`.
   HRESULT PerformD3DScaling(ID3D11Texture2D* input_texture);
+
+  // Initializes the video copying operation by making sure
+  // `copied_d3d11_texture_` exists and that its size matches `input_texture`.
+  HRESULT InitializeD3DCopying(ID3D11Texture2D* input_texture);
+  // Copies `input_texture` to `copied_d3d11_texture_`.
+  HRESULT PerformD3DCopy(ID3D11Texture2D* input_texture);
 
   // Used to post tasks from the IMFMediaEvent::Invoke() method.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -248,7 +254,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // of the next frame to be encoded.
   bool has_prepared_input_sample_ = false;
 
-  Microsoft::WRL::ComPtr<IMFSample> output_sample_;
+  // Variables used by video processing for scaling.
   Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor_;
   Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
       video_processor_enumerator_;
@@ -257,6 +263,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   D3D11_VIDEO_PROCESSOR_CONTENT_DESC vp_desc_ = {};
   Microsoft::WRL::ComPtr<ID3D11Texture2D> scaled_d3d11_texture_;
   Microsoft::WRL::ComPtr<ID3D11VideoProcessorOutputView> vp_output_view_;
+  // Destination texture used by the copy operation.
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> copied_d3d11_texture_;
 
   // To expose client callbacks from VideoEncodeAccelerator.
   raw_ptr<Client> client_ = nullptr;
