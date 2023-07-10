@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/media/media_tray.h"
+#include "ash/system/media/mock_media_notification_provider.h"
 #include "ash/system/media/quick_settings_media_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -16,7 +17,7 @@
 
 namespace ash {
 
-class QuickSettingsMediaViewControllerTest : public NoSessionAshTestBase {
+class QuickSettingsMediaViewControllerTest : public AshTestBase {
  public:
   QuickSettingsMediaViewControllerTest() = default;
   QuickSettingsMediaViewControllerTest(
@@ -28,7 +29,8 @@ class QuickSettingsMediaViewControllerTest : public NoSessionAshTestBase {
   void SetUp() override {
     feature_list_.InitWithFeatures(
         {features::kQsRevamp, media::kGlobalMediaControlsCrOSUpdatedUI}, {});
-    NoSessionAshTestBase::SetUp();
+    AshTestBase::SetUp();
+    provider_ = std::make_unique<MockMediaNotificationProvider>();
 
     MediaTray::SetPinnedToShelf(false);
     GetPrimaryUnifiedSystemTray()->ShowBubble();
@@ -54,6 +56,7 @@ class QuickSettingsMediaViewControllerTest : public NoSessionAshTestBase {
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<media_message_center::test::MockMediaNotificationItem> item_;
+  std::unique_ptr<MockMediaNotificationProvider> provider_;
 };
 
 TEST_F(QuickSettingsMediaViewControllerTest, ShowOrHideMediaItem) {

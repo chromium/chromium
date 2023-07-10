@@ -8,6 +8,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/media/media_notification_provider.h"
+#include "ash/system/media/mock_media_notification_provider.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
@@ -23,51 +24,6 @@ namespace ash {
 namespace {
 
 constexpr gfx::Size kMockTraySize = gfx::Size(48, 48);
-
-class MockMediaNotificationProvider : public MediaNotificationProvider {
- public:
-  MockMediaNotificationProvider()
-      : old_provider_(MediaNotificationProvider::Get()) {
-    MediaNotificationProvider::Set(this);
-
-    ON_CALL(*this, GetMediaNotificationListView(_, _, _))
-        .WillByDefault([](auto, auto, const auto&) {
-          return std::make_unique<views::View>();
-        });
-  }
-
-  ~MockMediaNotificationProvider() override {
-    MediaNotificationProvider::Set(old_provider_);
-  }
-
-  // MediaNotificationProvider implementations.
-  MOCK_METHOD((std::unique_ptr<views::View>),
-              GetMediaNotificationListView,
-              (int, bool, const std::string&));
-  MOCK_METHOD(void, OnBubbleClosing, ());
-  MOCK_METHOD(global_media_controls::MediaItemManager*,
-              GetMediaItemManager,
-              ());
-  void AddObserver(MediaNotificationProviderObserver* observer) override {}
-  void RemoveObserver(MediaNotificationProviderObserver* observer) override {}
-  bool HasActiveNotifications() override { return has_active_notifications_; }
-  bool HasFrozenNotifications() override { return has_frozen_notifications_; }
-  void SetColorTheme(
-      const media_message_center::NotificationTheme& color_theme) override {}
-
-  void SetHasActiveNotifications(bool has_active_notifications) {
-    has_active_notifications_ = has_active_notifications;
-  }
-
-  void SetHasFrozenNotifications(bool has_frozen_notifications) {
-    has_frozen_notifications_ = has_frozen_notifications;
-  }
-
- private:
-  bool has_active_notifications_ = false;
-  bool has_frozen_notifications_ = false;
-  const raw_ptr<MediaNotificationProvider, ExperimentalAsh> old_provider_;
-};
 
 // Mock tray button used to test media tray bubble's anchor update.
 class MockTrayBackgroundView : public ash::TrayBackgroundView {
@@ -97,9 +53,7 @@ class MediaTrayTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-
     provider_ = std::make_unique<MockMediaNotificationProvider>();
-
     media_tray_ = status_area_widget()->media_tray();
     ASSERT_TRUE(MediaTray::IsPinnedToShelf());
   }

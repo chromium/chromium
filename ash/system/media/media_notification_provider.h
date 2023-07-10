@@ -9,13 +9,18 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace global_media_controls {
 class MediaItemManager;
+class MediaItemUIDeviceSelector;
+class MediaItemUIFooter;
+enum class GlobalMediaControlsEntryPoint;
 }  // namespace global_media_controls
 
 namespace media_message_center {
+class MediaNotificationItem;
 struct NotificationTheme;
 }  // namespace media_message_center
 
@@ -77,6 +82,21 @@ class ASH_EXPORT MediaNotificationProvider {
       global_media_controls::MediaItemManager* media_item_manager) {}
   virtual void RemoveMediaItemManagerFromCastService(
       global_media_controls::MediaItemManager* media_item_manager) {}
+
+  // Use MediaNotificationProvider as a bridge to build a device selector view
+  // for the given media notification item with id.
+  virtual std::unique_ptr<global_media_controls::MediaItemUIDeviceSelector>
+  BuildDeviceSelectorView(
+      const std::string& id,
+      base::WeakPtr<media_message_center::MediaNotificationItem> item,
+      global_media_controls::GlobalMediaControlsEntryPoint entry_point) = 0;
+
+  // Use MediaNotificationProvider as a bridge to build a footer view for the
+  // given media notification item.
+  virtual std::unique_ptr<global_media_controls::MediaItemUIFooter>
+  BuildFooterView(
+      base::WeakPtr<media_message_center::MediaNotificationItem> item,
+      global_media_controls::GlobalMediaControlsEntryPoint entry_point) = 0;
 };
 
 }  // namespace ash

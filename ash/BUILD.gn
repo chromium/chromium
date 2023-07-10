@@ -4135,6 +4135,8 @@ static_library("test_support") {
     "system/diagnostics/log_test_helpers.h",
     "system/geolocation/test_geolocation_url_loader_factory.cc",
     "system/geolocation/test_geolocation_url_loader_factory.h",
+    "system/media/mock_media_notification_provider.cc",
+    "system/media/mock_media_notification_provider.h",
     "system/message_center/message_center_test_util.cc",
     "system/message_center/message_center_test_util.h",
     "system/message_center/message_popup_animation_waiter.cc",

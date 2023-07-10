@@ -83,7 +83,7 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
         widget_->SetContentsView(std::make_unique<MediaNotificationViewAshImpl>(
             container_.get(), item_->GetWeakPtr(), nullptr,
             std::move(device_selector), media_message_center::MediaColorTheme(),
-            MediaDisplayPage::kQuickSettingsMediaView));
+            MediaDisplayPage::kQuickSettingsMediaDetailedView));
     widget_->Show();
   }
 

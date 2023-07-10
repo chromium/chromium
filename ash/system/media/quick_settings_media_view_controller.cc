@@ -51,17 +51,17 @@ QuickSettingsMediaViewController::QuickSettingsMediaViewController(
   media_item_manager_->AddObserver(this);
   media_item_manager_->AddItemProducer(media_session_item_producer_.get());
 
-  Shell::Get()->media_notification_provider()->AddMediaItemManagerToCastService(
+  CHECK(MediaNotificationProvider::Get());
+  MediaNotificationProvider::Get()->AddMediaItemManagerToCastService(
       media_item_manager_.get());
 }
 
 QuickSettingsMediaViewController::~QuickSettingsMediaViewController() {
   media_item_manager_->SetDialogDelegate(nullptr);
   media_item_manager_->RemoveObserver(this);
-  if (Shell::Get()->media_notification_provider()) {
-    Shell::Get()
-        ->media_notification_provider()
-        ->RemoveMediaItemManagerFromCastService(media_item_manager_.get());
+  if (MediaNotificationProvider::Get()) {
+    MediaNotificationProvider::Get()->RemoveMediaItemManagerFromCastService(
+        media_item_manager_.get());
   }
 }
 
@@ -73,8 +73,16 @@ QuickSettingsMediaViewController::ShowMediaItem(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
   CHECK(media_view_);
+  CHECK(MediaNotificationProvider::Get());
+
   auto media_item_ui = std::make_unique<global_media_controls::MediaItemUIView>(
-      id, item, /*footer_view=*/nullptr, /*device_selector_view=*/nullptr,
+      id, item,
+      MediaNotificationProvider::Get()->BuildFooterView(
+          item,
+          global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray),
+      MediaNotificationProvider::Get()->BuildDeviceSelectorView(
+          id, item,
+          global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray),
       /*notification_theme=*/absl::nullopt, GetCrosMediaColorTheme(),
       global_media_controls::MediaDisplayPage::kQuickSettingsMediaView);
   auto* media_item_ui_ptr = media_item_ui.get();

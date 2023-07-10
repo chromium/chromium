@@ -120,7 +120,10 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
     std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view,
     media_message_center::MediaColorTheme theme,
     MediaDisplayPage media_display_page)
-    : container_(container), item_(std::move(item)), theme_(theme) {
+    : container_(container),
+      item_(std::move(item)),
+      theme_(theme),
+      media_display_page_(media_display_page) {
   DCHECK(container_);
   DCHECK(item_);
 
@@ -174,7 +177,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   // Add a chevron right icon to the title if the media is displaying on the
   // quick settings media view to indicate user can click on the view to go to
   // the detailed view page.
-  if (media_display_page == MediaDisplayPage::kQuickSettingsMediaView) {
+  if (media_display_page_ == MediaDisplayPage::kQuickSettingsMediaView) {
     chevron_icon_ = title_row_->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
             media_message_center::kChevronRightIcon,
@@ -231,8 +234,6 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
       media_message_center::kMediaNextTrackIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK);
 
-  // TODO(crbug.com/1442056): Show the button on quick settings media view and
-  // clicking it should redirect to detailed view.
   // Create the start casting button.
   if (device_selector_view) {
     start_casting_button_ = CreateMediaButton(
@@ -241,7 +242,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_START_CASTING);
     start_casting_button_->SetCallback(base::BindRepeating(
         &MediaNotificationViewAshImpl::StartCastingButtonPressed,
-        base::Unretained(this), start_casting_button_));
+        base::Unretained(this)));
   }
 
   // Create the picture-in-picture button.
@@ -273,8 +274,6 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
     separator->SetBackground(
         views::CreateThemedSolidBackground(theme_.separator_color_id));
     device_selector_view_separator_->SetFlexForView(separator, 1);
-    device_selector_view_separator_->SetVisible(
-        device_selector_view->IsDeviceSelectorExpanded());
 
     // Create the device selector view.
     device_selector_view_ = AddChildView(std::move(device_selector_view));
@@ -289,24 +288,8 @@ MediaNotificationViewAshImpl::~MediaNotificationViewAshImpl() {
   }
 }
 
-MediaButton* MediaNotificationViewAshImpl::CreateMediaButton(
-    views::View* parent,
-    int button_id,
-    const gfx::VectorIcon& vector_icon,
-    int tooltip_text_id) {
-  auto button = std::make_unique<MediaButton>(
-      views::Button::PressedCallback(), button_id, vector_icon, tooltip_text_id,
-      theme_.primary_foreground_color_id, theme_.secondary_foreground_color_id);
-  auto* button_ptr = parent->AddChildView(std::move(button));
-
-  if (button_id != kNotMediaActionButtonId) {
-    button_ptr->SetCallback(
-        base::BindRepeating(&MediaNotificationViewAshImpl::ButtonPressed,
-                            base::Unretained(this), button_ptr));
-    action_buttons_.push_back(button_ptr);
-  }
-  return button_ptr;
-}
+///////////////////////////////////////////////////////////////////////////////
+// MediaNotificationView implementations:
 
 void MediaNotificationViewAshImpl::UpdateWithMediaSessionInfo(
     const media_session::mojom::MediaSessionInfoPtr& session_info) {
@@ -389,6 +372,39 @@ void MediaNotificationViewAshImpl::UpdateWithMediaArtwork(
   SchedulePaint();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// views::View implementations:
+
+void MediaNotificationViewAshImpl::AddedToWidget() {
+  // Ink drop on the start casting button requires color provider to be ready,
+  // so we need to update the state after the widget is ready.
+  if (device_selector_view_) {
+    UpdateCastingState();
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// MediaNotificationViewAshImpl implementations:
+
+MediaButton* MediaNotificationViewAshImpl::CreateMediaButton(
+    views::View* parent,
+    int button_id,
+    const gfx::VectorIcon& vector_icon,
+    int tooltip_text_id) {
+  auto button = std::make_unique<MediaButton>(
+      views::Button::PressedCallback(), button_id, vector_icon, tooltip_text_id,
+      theme_.primary_foreground_color_id, theme_.secondary_foreground_color_id);
+  auto* button_ptr = parent->AddChildView(std::move(button));
+
+  if (button_id != kNotMediaActionButtonId) {
+    button_ptr->SetCallback(
+        base::BindRepeating(&MediaNotificationViewAshImpl::ButtonPressed,
+                            base::Unretained(this), button_ptr));
+    action_buttons_.push_back(button_ptr);
+  }
+  return button_ptr;
+}
+
 void MediaNotificationViewAshImpl::UpdateActionButtonsVisibility() {
   bool should_invalidate_layout = false;
 
@@ -421,20 +437,36 @@ void MediaNotificationViewAshImpl::SeekTo(double seek_progress) {
   item_->SeekTo(seek_progress * position_.duration());
 }
 
-void MediaNotificationViewAshImpl::StartCastingButtonPressed(
-    MediaButton* button) {
+void MediaNotificationViewAshImpl::StartCastingButtonPressed() {
+  CHECK(device_selector_view_);
+
+  // Clicking the button on the quick settings media view should redirect the
+  // user to the quick settings media detailed view and open the device selector
+  // view there instead.
+  // TODO(crbug.com/1442056): implement rather than just return.
+  if (media_display_page_ == MediaDisplayPage::kQuickSettingsMediaView) {
+    return;
+  }
+
+  // Clicking the button on the quick settings media detailed view will open the
+  // device selector view to show the device list.
+  device_selector_view_->ShowOrHideDeviceList();
+  UpdateCastingState();
+}
+
+void MediaNotificationViewAshImpl::UpdateCastingState() {
+  CHECK(start_casting_button_);
   CHECK(device_selector_view_);
   CHECK(device_selector_view_separator_);
 
-  device_selector_view_->ShowOrHideDeviceList();
   bool is_expanded = device_selector_view_->IsDeviceSelectorExpanded();
   if (is_expanded) {
     // Use the ink drop color as the button background if user clicks the button
     // to show devices.
-    views::InkDrop::Get(button)->GetInkDrop()->SnapToActivated();
+    views::InkDrop::Get(start_casting_button_)->GetInkDrop()->SnapToActivated();
   } else {
     // Hide the ink drop color if user clicks the button to hide devices.
-    views::InkDrop::Get(button)->GetInkDrop()->SnapToHidden();
+    views::InkDrop::Get(start_casting_button_)->GetInkDrop()->SnapToHidden();
   }
   device_selector_view_separator_->SetVisible(is_expanded);
 }
