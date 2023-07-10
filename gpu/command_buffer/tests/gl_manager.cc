@@ -522,6 +522,10 @@ void GLManager::SignalQuery(uint32_t query, base::OnceClosure callback) {
   NOTREACHED();
 }
 
+void GLManager::CancelAllQueries() {
+  NOTREACHED();
+}
+
 void GLManager::CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) {
   NOTREACHED();
 }

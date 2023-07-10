@@ -1524,6 +1524,11 @@ void GLES2DecoderPassthroughImpl::SetQueryCallback(unsigned int query_client_id,
   std::move(callback).Run();
 }
 
+void GLES2DecoderPassthroughImpl::CancelAllQueries() {
+  // clear all pending queries.
+  pending_queries_.clear();
+  query_id_map_.Clear();
+}
 gpu::gles2::GpuFenceManager* GLES2DecoderPassthroughImpl::GetGpuFenceManager() {
   return gpu_fence_manager_.get();
 }

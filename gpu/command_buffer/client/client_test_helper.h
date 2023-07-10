@@ -126,6 +126,7 @@ class MockClientGpuControl : public GpuControl {
   void SignalQuery(uint32_t query, base::OnceClosure callback) override {
     DoSignalQuery(query, &callback);
   }
+  MOCK_METHOD0(CancelAllQueries, void());
 
   MOCK_METHOD1(CreateStreamTexture, uint32_t(uint32_t));
   MOCK_METHOD1(SetLock, void(base::Lock*));

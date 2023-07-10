@@ -474,6 +474,7 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   void SetQueryCallback(unsigned int query_client_id,
                         base::OnceClosure callback) override;
+  void CancelAllQueries() override;
   gles2::GpuFenceManager* GetGpuFenceManager() override;
   bool HasPendingQueries() const override;
   void ProcessPendingQueries(bool did_finish) override;
@@ -1378,6 +1379,10 @@ void RasterDecoderImpl::SetQueryCallback(unsigned int query_client_id,
             << query_client_id << ". Running the callback immediately.";
     std::move(callback).Run();
   }
+}
+
+void RasterDecoderImpl::CancelAllQueries() {
+  query_manager_->RemoveAllQueries();
 }
 
 gles2::GpuFenceManager* RasterDecoderImpl::GetGpuFenceManager() {

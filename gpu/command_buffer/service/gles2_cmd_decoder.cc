@@ -628,7 +628,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
   QueryManager* GetQueryManager() override { return query_manager_.get(); }
   void SetQueryCallback(unsigned int query_client_id,
                         base::OnceClosure callback) override;
-
+  void CancelAllQueries() override;
   GpuFenceManager* GetGpuFenceManager() override {
     return gpu_fence_manager_.get();
   }
@@ -16263,6 +16263,10 @@ void GLES2DecoderImpl::SetQueryCallback(unsigned int query_client_id,
             << query_client_id << ". Running the callback immediately.";
     std::move(callback).Run();
   }
+}
+
+void GLES2DecoderImpl::CancelAllQueries() {
+  query_manager_->RemoveAllQueries();
 }
 
 bool GLES2DecoderImpl::HasPendingQueries() const {

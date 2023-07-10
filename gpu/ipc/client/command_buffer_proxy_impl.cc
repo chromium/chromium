@@ -65,6 +65,7 @@ CommandBufferProxyImpl::~CommandBufferProxyImpl() {
   for (auto& observer : deletion_observers_)
     observer.OnWillDeleteImpl();
   DisconnectChannel();
+  CancelAllQueries();
 }
 
 ContextResult CommandBufferProxyImpl::Initialize(
@@ -508,6 +509,11 @@ void CommandBufferProxyImpl::SignalQuery(uint32_t query,
   uint32_t signal_id = next_signal_id_++;
   command_buffer_->SignalQuery(query, signal_id);
   signal_tasks_.insert(std::make_pair(signal_id, std::move(callback)));
+}
+
+void CommandBufferProxyImpl::CancelAllQueries() {
+  // Clear all of the signal query callbacks.
+  signal_tasks_.clear();
 }
 
 void CommandBufferProxyImpl::CreateGpuFence(uint32_t gpu_fence_id,

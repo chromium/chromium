@@ -892,10 +892,21 @@ void InProcessCommandBuffer::SignalQuery(unsigned query_id,
                      std::move(callback)));
 }
 
+void InProcessCommandBuffer::CancelAllQueries() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
+  ScheduleGpuTask(
+      base::BindOnce(&InProcessCommandBuffer::CancelAllQueriesOnGpuThread,
+                     gpu_thread_weak_ptr_factory_.GetWeakPtr()));
+}
+
 void InProcessCommandBuffer::SignalQueryOnGpuThread(
     unsigned query_id,
     base::OnceClosure callback) {
   decoder_->SetQueryCallback(query_id, WrapClientCallback(std::move(callback)));
+}
+
+void InProcessCommandBuffer::CancelAllQueriesOnGpuThread() {
+  decoder_->CancelAllQueries();
 }
 
 void InProcessCommandBuffer::CreateGpuFence(uint32_t gpu_fence_id,

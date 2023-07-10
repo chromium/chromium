@@ -267,6 +267,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   void SetQueryCallback(unsigned int query_client_id,
                         base::OnceClosure callback) override;
 
+  void CancelAllQueries() override;
+
   // Gets the GpuFenceManager for this context.
   GpuFenceManager* GetGpuFenceManager() override;
 

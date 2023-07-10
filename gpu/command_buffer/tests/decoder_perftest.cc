@@ -262,6 +262,8 @@ class RecordReplayContext : public GpuControl {
     NOTREACHED();
   }
 
+  void CancelAllQueries() override { NOTREACHED(); }
+
   void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) override {
     NOTREACHED();
   }

@@ -65,6 +65,7 @@ class PPAPI_PROXY_EXPORT PpapiCommandBufferProxy : public gpu::CommandBuffer,
   void SetGpuControlClient(gpu::GpuControlClient*) override;
   const gpu::Capabilities& GetCapabilities() const override;
   void SignalQuery(uint32_t query, base::OnceClosure callback) override;
+  void CancelAllQueries() override;
   void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) override;
   void GetGpuFence(uint32_t gpu_fence_id,
                    base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>

@@ -1583,12 +1583,7 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
     argb_request_queue_.push(std::move(request));
     SignalQuery(query,
                 base::BindOnce(&RasterImplementation::OnAsyncARGBReadbackDone,
-                               // We know that at least one or both pointers
-                               // were dangling. Crash reports was not precise
-                               // enough to determine which was it was. Marking
-                               // the two so that the study can move forward.
-                               base::UnsafeDanglingUntriaged(this),
-                               base::UnsafeDanglingUntriaged(request_ptr)));
+                               base::Unretained(this), request_ptr));
   } else {
     WaitForCmd();
 
@@ -1633,6 +1628,7 @@ void RasterImplementation::OnAsyncARGBReadbackDone(
 }
 
 void RasterImplementation::CancelRequests() {
+  gpu_control_->CancelAllQueries();
   while (!argb_request_queue_.empty()) {
     if (argb_request_queue_.front()->query)
       DeleteQueriesEXT(1, &argb_request_queue_.front()->query);

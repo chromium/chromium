@@ -50,6 +50,8 @@ class GPU_EXPORT GpuControl {
   // Runs |callback| when a query created via glCreateQueryEXT() has cleared
   // passed the glEndQueryEXT() point.
   virtual void SignalQuery(uint32_t query, base::OnceClosure callback) = 0;
+  // Cancels all quieries that havent been run via signalQuery.
+  virtual void CancelAllQueries() = 0;
 
   virtual void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) = 0;
   virtual void GetGpuFence(

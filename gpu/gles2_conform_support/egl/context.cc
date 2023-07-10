@@ -176,6 +176,10 @@ void Context::SignalQuery(uint32_t query, base::OnceClosure callback) {
   NOTREACHED();
 }
 
+void Context::CancelAllQueries() {
+  NOTREACHED();
+}
+
 void Context::CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) {
   NOTREACHED();
 }

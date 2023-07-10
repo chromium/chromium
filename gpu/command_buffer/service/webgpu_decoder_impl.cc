@@ -151,6 +151,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                         base::OnceClosure callback) override {
     NOTREACHED();
   }
+  void CancelAllQueries() override { NOTREACHED(); }
   gles2::GpuFenceManager* GetGpuFenceManager() override {
     NOTREACHED();
     return nullptr;
