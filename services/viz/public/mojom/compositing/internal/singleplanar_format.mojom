@@ -26,11 +26,12 @@ enum SingleplanarFormat {
   RGBX_1010102,
   BGRX_1010102,
 
-  // Legacy formats for multiplanar images with external sampling.
+  // Legacy multiplanar formats (used before Multiplanar SharedImage was
+  // introduced).
   // TODO(crbug.com/1366495): Remove these once all clients are converted to
   // use MultiplanarSharedImage for this use case.
-  YVU_420,
-  YUV_420_BIPLANAR,
-  YUVA_420_TRIPLANAR,
-  P010,
+  YV12_LEGACY,
+  NV12_LEGACY,
+  NV12A_LEGACY,
+  P010_LEGACY,
 };

@@ -63,13 +63,13 @@ const char* SinglePlaneFormatToString(SharedImageFormat format) {
   } else if (format == SinglePlaneFormat::kBGRA_1010102) {
     return "BGRA_1010102";
   } else if (format == LegacyMultiPlaneFormat::kYV12) {
-    return "YVU_420";
+    return "YV12_LEGACY";
   } else if (format == LegacyMultiPlaneFormat::kNV12) {
-    return "YUV_420_BIPLANAR";
+    return "NV12_LEGACY";
   } else if (format == LegacyMultiPlaneFormat::kNV12A) {
-    return "YUVA_420_TRIPLANAR";
+    return "NV12A_LEGACY";
   } else if (format == LegacyMultiPlaneFormat::kP010) {
-    return "P010";
+    return "P010_LEGACY";
   }
   NOTREACHED_NORETURN();
 }
@@ -350,7 +350,7 @@ bool SharedImageFormat::HasAlpha() const {
       case mojom::SingleplanarFormat::BGRX_1010102:
       case mojom::SingleplanarFormat::ALPHA_8:
       case mojom::SingleplanarFormat::RGBA_F16:
-      case mojom::SingleplanarFormat::YUVA_420_TRIPLANAR:
+      case mojom::SingleplanarFormat::NV12A_LEGACY:
         return true;
       default:
         return false;
@@ -375,10 +375,10 @@ bool SharedImageFormat::IsLegacyMultiplanar() const {
     return false;
 
   switch (singleplanar_format()) {
-    case mojom::SingleplanarFormat::YVU_420:
-    case mojom::SingleplanarFormat::YUV_420_BIPLANAR:
-    case mojom::SingleplanarFormat::YUVA_420_TRIPLANAR:
-    case mojom::SingleplanarFormat::P010:
+    case mojom::SingleplanarFormat::YV12_LEGACY:
+    case mojom::SingleplanarFormat::NV12_LEGACY:
+    case mojom::SingleplanarFormat::NV12A_LEGACY:
+    case mojom::SingleplanarFormat::P010_LEGACY:
       return true;
     default:
       return false;
@@ -411,10 +411,10 @@ int SharedImageFormat::BitsPerPixel() const {
       return 8;
     case mojom::SingleplanarFormat::ETC1:
       return 4;
-    case mojom::SingleplanarFormat::P010:
-    case mojom::SingleplanarFormat::YUVA_420_TRIPLANAR:
-    case mojom::SingleplanarFormat::YVU_420:
-    case mojom::SingleplanarFormat::YUV_420_BIPLANAR:
+    case mojom::SingleplanarFormat::P010_LEGACY:
+    case mojom::SingleplanarFormat::NV12A_LEGACY:
+    case mojom::SingleplanarFormat::YV12_LEGACY:
+    case mojom::SingleplanarFormat::NV12_LEGACY:
       // Legacy multiplanar formats are not supported.
       CHECK(0);
   }

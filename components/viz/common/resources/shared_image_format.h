@@ -293,13 +293,13 @@ class SinglePlaneFormat {
 class LegacyMultiPlaneFormat {
  public:
   static constexpr SharedImageFormat kYV12 =
-      SharedImageFormat(mojom::SingleplanarFormat::YVU_420);
+      SharedImageFormat(mojom::SingleplanarFormat::YV12_LEGACY);
   static constexpr SharedImageFormat kNV12 =
-      SharedImageFormat(mojom::SingleplanarFormat::YUV_420_BIPLANAR);
+      SharedImageFormat(mojom::SingleplanarFormat::NV12_LEGACY);
   static constexpr SharedImageFormat kNV12A =
-      SharedImageFormat(mojom::SingleplanarFormat::YUVA_420_TRIPLANAR);
+      SharedImageFormat(mojom::SingleplanarFormat::NV12A_LEGACY);
   static constexpr SharedImageFormat kP010 =
-      SharedImageFormat(mojom::SingleplanarFormat::P010);
+      SharedImageFormat(mojom::SingleplanarFormat::P010_LEGACY);
 
   // All known legacy multiplanar formats.
   static constexpr SharedImageFormat kAll[4] = {kYV12, kNV12, kNV12A, kP010};
