@@ -3,15 +3,16 @@
 // found in the LICENSE file.
 package org.chromium.android_webview.devui;
 
+import android.Manifest.permission;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Menu;
@@ -32,6 +33,7 @@ import androidx.fragment.app.FragmentTransaction;
 import org.chromium.android_webview.devui.util.SafeIntentUtils;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
@@ -51,7 +53,7 @@ public class MainActivity extends FragmentActivity {
     final Map<Integer, Integer> mFragmentIdMap = new HashMap<>();
 
     // Store in a variable to allow for replacement during test
-    private boolean mIsAtLeastTBuild = BuildInfo.isAtLeastT();
+    private boolean mIsAtLeastTBuild = Build.VERSION.SDK_INT >= 33;
 
     // Keep in sync with DeveloperUiService.java
     public static final String FRAGMENT_ID_INTENT_EXTRA = "fragment-id";
@@ -94,8 +96,6 @@ public class MainActivity extends FragmentActivity {
         int COUNT = 4;
     }
 
-    // TODO: Replace with Manifest.permission.POST_NOTIFICATIONS once Android T is released
-    private static final String POST_NOTIFICATIONS = "android.permission.POST_NOTIFICATIONS";
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 0;
     @VisibleForTesting
     public static final String POST_NOTIFICATIONS_PERMISSION_REQUESTED_KEY =
@@ -118,8 +118,6 @@ public class MainActivity extends FragmentActivity {
         @FragmentNavigation
         int sample;
         switch (selectedFragmentId) {
-            default:
-                // Fall through.
             case FRAGMENT_ID_HOME:
                 sample = FragmentNavigation.HOME_FRAGMENT;
                 break;
@@ -131,6 +129,9 @@ public class MainActivity extends FragmentActivity {
                 break;
             case FRAGMENT_ID_COMPONENTS:
                 sample = FragmentNavigation.COMPONENTS_LIST_FRAGMENT;
+                break;
+            default:
+                sample = FragmentNavigation.HOME_FRAGMENT;
                 break;
         }
         RecordHistogram.recordEnumeratedHistogram(
@@ -188,9 +189,6 @@ public class MainActivity extends FragmentActivity {
     private void switchFragment(int chosenFragmentId, boolean onResume) {
         DevUiBaseFragment fragment = null;
         switch (chosenFragmentId) {
-            default:
-                chosenFragmentId = FRAGMENT_ID_HOME;
-                // Fall through.
             case FRAGMENT_ID_HOME:
                 fragment = new HomeFragment();
                 break;
@@ -216,6 +214,10 @@ public class MainActivity extends FragmentActivity {
                 break;
             case FRAGMENT_ID_COMPONENTS:
                 fragment = new ComponentsListFragment();
+                break;
+            default:
+                chosenFragmentId = FRAGMENT_ID_HOME;
+                fragment = new HomeFragment();
                 break;
         }
         assert fragment != null;
@@ -358,23 +360,25 @@ public class MainActivity extends FragmentActivity {
 
     @VisibleForTesting
     public boolean needToRequestPostNotificationPermission() {
-        if (mIsAtLeastTBuild) {
-            // Check if we already requested the permission. If we did, we don't need to request
-            // it again, even if no permission was given.
-            SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
-            boolean alreadyRequestedPermission =
-                    preferences.getBoolean(POST_NOTIFICATIONS_PERMISSION_REQUESTED_KEY, false);
-            return !alreadyRequestedPermission;
+        if (!mIsAtLeastTBuild) {
+            return false;
         }
-        return false;
+        // Check if we already requested the permission. If we did, we don't need to request
+        // it again, even if no permission was given.
+        return !getAlreadyRequestedNotificationPermissionPreference();
+    }
+
+    private boolean getAlreadyRequestedNotificationPermissionPreference() {
+        return getSharedPreferences().getBoolean(
+                POST_NOTIFICATIONS_PERMISSION_REQUESTED_KEY, false);
     }
 
     private void requestPostNotificationPermission() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(NOTIFICATION_PERMISSION_REQUEST_MESSAGE);
         builder.setPositiveButton("Ok", (dialogInterface, i) -> {
-            ActivityCompat.requestPermissions(
-                    this, new String[] {POST_NOTIFICATIONS}, NOTIFICATION_PERMISSION_REQUEST_CODE);
+            ActivityCompat.requestPermissions(this, new String[] {permission.POST_NOTIFICATIONS},
+                    NOTIFICATION_PERMISSION_REQUEST_CODE);
         });
         builder.setNegativeButton("Cancel", (dialogInterface, i) -> {});
         builder.create().show();
@@ -388,13 +392,30 @@ public class MainActivity extends FragmentActivity {
             // We don't actually care about the result, just that we got a result.
             // The service will still work.
             // Save the fact that we have received the permission callback.
-            SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
-            Editor editor = preferences.edit();
-            editor.putBoolean(POST_NOTIFICATIONS_PERMISSION_REQUESTED_KEY, true);
-            editor.apply();
+            registerPostNotificationRequested();
             // Reset the UI to enable input fields.
             switchFragment(FRAGMENT_ID_FLAGS, false);
         }
+    }
+
+    private void registerPostNotificationRequested() {
+        getSharedPreferences()
+                .edit()
+                .putBoolean(POST_NOTIFICATIONS_PERMISSION_REQUESTED_KEY, true)
+                .apply();
+    }
+
+    /**
+     * Get the SharedPreferences for this activity.
+     *
+     * Uses {@link ContextUtils#getApplicationContext()} to facilitate mocking out the preferences
+     * by tests, but otherwise accesses the same file as the {@link #getPreferences(int)} method
+     * when passing {@link Context#MODE_PRIVATE}.
+     * @return Private preferences for this activity
+     */
+    private static SharedPreferences getSharedPreferences() {
+        return ContextUtils.getApplicationContext().getSharedPreferences(
+                MainActivity.class.getCanonicalName(), Context.MODE_PRIVATE);
     }
 
     /**
@@ -407,5 +428,24 @@ public class MainActivity extends FragmentActivity {
         var oldValue = mIsAtLeastTBuild;
         mIsAtLeastTBuild = isAtLeastT;
         ResettersForTesting.register(() -> mIsAtLeastTBuild = oldValue);
+    }
+
+    /**
+     * Update the preferences for {@link MainActivity} to indicate that the app has already
+     * requested permission to show popups.
+     */
+    public static void markPopupPermissionRequestedInPrefsForTesting() {
+        getSharedPreferences()
+                .edit()
+                .putBoolean(POST_NOTIFICATIONS_PERMISSION_REQUESTED_KEY, true)
+                .apply();
+        ResettersForTesting.register(MainActivity::clearSharedPrefsForTesting);
+    }
+
+    /**
+     * Clear preferences for {@link MainActivity} for testing purposes.
+     */
+    public static void clearSharedPrefsForTesting() {
+        getSharedPreferences().edit().clear().apply();
     }
 }

@@ -23,12 +23,14 @@ import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.android_webview.test.services.MockMetricsBridgeService;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
+import org.chromium.base.test.util.Batch;
 
 /**
  * Test AwNonembeddedUmaRecorder.
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)
+@Batch(Batch.PER_CLASS)
 public class AwNonembeddedUmaRecorderTest {
     private static final String TEST_SERVICE_NAME = MockMetricsBridgeService.class.getName();
     private static final long TEST_TIME_RECORDED = 123456789;

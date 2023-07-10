@@ -390,6 +390,5 @@ source_set("webview_instrumentation_test_apk_filters") {
   data = [
     "//testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_12l.webview_instrumentation_test_apk.filter",
-    "//testing/buildbot/filters/android.emulator_13.webview_instrumentation_test_apk.filter",
   ]
 }
