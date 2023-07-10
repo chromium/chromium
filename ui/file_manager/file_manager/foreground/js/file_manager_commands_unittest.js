@@ -327,6 +327,9 @@ export async function testExtractAllCommand(done) {
       isReadOnly: () => false,
       getCurrentRootType: () => VolumeManagerCommon.RootType.DOWNLOADS,
     },
+    metadataModel: {
+      getCache: () => [],
+    },
     getCurrentDirectoryEntry: () => folderEntry,
     getSelection: () => currentSelection,
     volumeManager: volumeManager,

@@ -2614,8 +2614,17 @@ CommandHandler.COMMANDS_['zip-selection'] = new (class extends FilesCommand {
     // TODO(crbug/1226915) Make it work with MTP.
     const isOnEligibleLocation = fileManager.directoryModel.isOnNative();
 
+    // Hide if any encrypted files are selected, as we can't read them.
+    const hasEncryptedFile =
+        fileManager.metadataModel
+            .getCache(selection.entries, ['contentMimeType'])
+            .some(
+                (metadata, i) => FileType.isEncrypted(
+                    selection.entries[i], metadata.contentMimeType));
+
     event.canExecute = dirEntry && !fileManager.directoryModel.isReadOnly() &&
-        isOnEligibleLocation && selection && selection.totalCount > 0;
+        isOnEligibleLocation && selection && selection.totalCount > 0 &&
+        !hasEncryptedFile;
   }
 })();
 

@@ -1221,6 +1221,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("zipCreateFileDrive"),
         TestCase("zipCreateFileDriveOffice"),
         TestCase("zipCreateFileUsb"),
+        TestCase("zipDoesntCreateFileEncrypted"),
         TestCase("zipExtractA11y")
             .FeatureIds({"screenplay-af443ca0-6d9f-4cb3-af8f-0939c37833db"}),
         TestCase("zipExtractCheckContent"),

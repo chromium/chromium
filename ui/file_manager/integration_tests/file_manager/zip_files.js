@@ -279,6 +279,34 @@ testcase.zipCreateFileDriveOffice = async () => {
 };
 
 /**
+ * Tests that creating a ZIP file containing an encrypted file is disabled.
+ */
+testcase.zipDoesntCreateFileEncrypted = async () => {
+  // Open Files app on Drive containing a test CSE file.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
+
+  // Select the file.
+  await remoteCall.waitAndClickElement(
+      appId, `#file-list [file-name="${ENTRIES.testCSEFile.nameText}"]`);
+
+  // Right-click the selected file.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseRightClick', appId, ['.table-row[selected]']),
+      'fakeMouseRightClick failed');
+
+  // Check: the context menu should appear.
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Get the zip menu item.
+  const element =
+      await remoteCall.waitForElement(appId, '[command="#zip-selection"]');
+
+  chrome.test.assertEq('disabled', element.attributes.disabled);
+};
+
+/**
  * Tests creating a ZIP file on a removable USB volume.
  */
 testcase.zipCreateFileUsb = async () => {
