@@ -118,8 +118,7 @@ NetworkServiceClient::NetworkServiceClient()
 {
 
 #if BUILDFLAG(IS_MAC)
-  if (base::CurrentUIThread::IsSet())  // Not set in some unit tests.
-    net::CertDatabase::GetInstance()->StartListeningForKeychainEvents();
+  net::CertDatabase::StartListeningForKeychainEvents();
 #endif
 
   if (IsOutOfProcessNetworkService()) {
