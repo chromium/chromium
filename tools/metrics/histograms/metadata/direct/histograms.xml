@@ -110,36 +110,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DirectWrite.Fonts.Proxy.LastResortFontCount" units="fonts"
-    expires_after="2022-10-15">
-  <owner>drott@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>
-    The number of last resort fallback fonts found on the system as seen by the
-    browser.
-  </summary>
-</histogram>
-
-<histogram name="DirectWrite.Fonts.Proxy.LastResortFontFileCount" units="files"
-    expires_after="2022-10-15">
-  <owner>drott@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>
-    The number of font files found for a last resort fallback font.
-  </summary>
-</histogram>
-
-<histogram name="DirectWrite.Fonts.Proxy.LoaderType"
-    enum="DirectWriteFontLoaderType" expires_after="2022-12-18">
-  <owner>drott@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>
-    The codepath that was used to load a font family. This is logged in the
-    browser every time a renderer attempts to load a font family, once per font
-    file.
-  </summary>
-</histogram>
-
 <histogram name="DirectWrite.Fonts.Proxy.LoadFamilyResult"
     enum="DirectWriteLoadFamilyResult" expires_after="2022-10-15">
   <owner>drott@chromium.org</owner>
@@ -222,15 +192,6 @@ chromium-metrics-reviews@google.com.
     Size of the font unique name lookup table in kilobytes. Recorded at the
     initial build of this table, after which it is kept for the lifetime of the
     browser process.
-  </summary>
-</histogram>
-
-<histogram name="DirectWrite.Fonts.Proxy.MessageFilterError"
-    enum="DirectWriteMessageFilterError" expires_after="2022-10-15">
-  <owner>drott@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>
-    Errors, if any, encountered by the DirectWrite font proxy message filter.
   </summary>
 </histogram>
 

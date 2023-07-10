@@ -2783,8 +2783,6 @@ source_set("browser") {
       "renderer_host/dwrite_font_file_util_win.h",
       "renderer_host/dwrite_font_proxy_impl_win.cc",
       "renderer_host/dwrite_font_proxy_impl_win.h",
-      "renderer_host/dwrite_font_uma_logging_win.cc",
-      "renderer_host/dwrite_font_uma_logging_win.h",
       "renderer_host/legacy_render_widget_host_win.cc",
       "renderer_host/legacy_render_widget_host_win.h",
       "renderer_host/virtual_keyboard_controller_win.cc",
