@@ -26,7 +26,6 @@ bool StructTraits<blink::mojom::ViewTransitionElementDataView,
   }
 
   out->paint_order = data.paint_order();
-  out->is_root = data.is_root();
   out->container_writing_mode = data.container_writing_mode();
   return true;
 }

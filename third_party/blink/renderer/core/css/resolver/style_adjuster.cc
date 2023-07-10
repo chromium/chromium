@@ -1073,8 +1073,9 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     element->AdjustStyle(base::PassKey<StyleAdjuster>(), builder);
   }
 
-  if (element && ViewTransitionUtils::IsViewTransitionParticipantFromSupplement(
-                     *element)) {
+  if (element &&
+      ViewTransitionUtils::IsViewTransitionElementExcludingRootFromSupplement(
+          *element)) {
     builder.SetElementIsViewTransitionParticipant();
   }
 }

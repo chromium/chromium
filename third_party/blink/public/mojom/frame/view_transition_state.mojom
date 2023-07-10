@@ -16,7 +16,6 @@ struct ViewTransitionElement {
   gfx.mojom.RectF overflow_rect_in_layout_space;
   viz.mojom.ViewTransitionElementResourceId snapshot_id;
   int32 paint_order;
-  bool is_root;
   gfx.mojom.RectF? captured_rect_in_layout_space;
   uint8 container_writing_mode;
 };

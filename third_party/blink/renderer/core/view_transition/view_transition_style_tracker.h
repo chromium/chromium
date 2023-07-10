@@ -31,10 +31,18 @@ class PseudoElement;
 //    started.
 //
 // 2) Tracking changes in the state of transition elements that are mirrored in
-// the
-//    style for their corresponding pseudo element. For example, if a transition
-//    element's size or viewport space transform is updated. This data is used
-//    to generate a dynamic UA stylesheet for these pseudo elements.
+//    the style for their corresponding pseudo element. For example, if a
+//    transition element's size or viewport space transform is updated. This
+//    data is used to generate a dynamic UA stylesheet for these pseudo
+//    elements.
+//
+// Note: The root element is special because its responsibilities are hoisted up
+// to the LayoutView. For example, the root snapshot includes content from the
+// root element and top layer elements.
+// See
+// https://drafts.csswg.org/css-view-transitions-1/#capture-the-image-algorithm.
+// We avoid leaking this detail into this class by letting higher level code
+// deal with this mapping.
 //
 // A new instance of this class is created for every transition.
 class ViewTransitionStyleTracker
@@ -96,10 +104,6 @@ class ViewTransitionStyleTracker
   // is initiated.
   void Abort();
 
-  void UpdateRootIndexAndSnapshotId(
-      ViewTransitionElementId&,
-      viz::ViewTransitionElementResourceId&) const;
-
   void UpdateElementIndicesAndSnapshotId(
       Element*,
       ViewTransitionElementId&,
@@ -149,13 +153,12 @@ class ViewTransitionStyleTracker
 
   int CapturedTagCount() const { return captured_name_count_; }
 
+  // Returns true if `node` participates in this transition.
   bool IsTransitionElement(const Element& node) const;
-  bool NeedsCaptureClipNode(const Element& node) const;
 
-  // This function represents whether root itself is participating in the
-  // transition (i.e. it has a name in the current phase). Note that we create
-  // an EffectNode for the root whether or not it's transitioning.
-  bool IsRootTransitioning() const;
+  // Returns whether a clip node is required because `node`'s painting exceeds
+  // max texture size.
+  bool NeedsCaptureClipNode(const Element& node) const;
 
   std::vector<viz::ViewTransitionElementResourceId> TakeCaptureResourceIds() {
     return std::move(capture_resource_ids_);
@@ -165,6 +168,7 @@ class ViewTransitionStyleTracker
   // rules based on the current phase of the transition.
   StyleRequest::RulesToInclude StyleRulesToInclude() const;
 
+  // Return non-root transitioning elements.
   VectorOf<Element> GetTransitioningElements() const;
 
   // In physical pixels. Returns the size of the snapshot root rect. This is
@@ -256,11 +260,6 @@ class ViewTransitionStyleTracker
     WritingMode container_writing_mode = WritingMode::kHorizontalTb;
   };
 
-  struct RootData {
-    viz::ViewTransitionElementResourceId snapshot_id;
-    VectorOf<AtomicString> names;
-  };
-
   // In physical pixels. Returns the snapshot root rect, relative to the
   // fixed viewport origin. See README.md for a detailed description of the
   // snapshot root rect.
@@ -272,20 +271,9 @@ class ViewTransitionStyleTracker
 
   void AddConsoleError(String message, Vector<DOMNodeId> related_nodes = {});
   void AddTransitionElement(Element*, const AtomicString&);
-  bool FlattenAndVerifyElements(VectorOf<Element>&,
-                                VectorOf<AtomicString>&,
-                                absl::optional<RootData>&);
+  bool FlattenAndVerifyElements(VectorOf<Element>&, VectorOf<AtomicString>&);
 
   void AddTransitionElementsFromCSSRecursive(PaintLayer*);
-
-  int OldRootDataTagSize() const {
-    return old_root_data_ ? old_root_data_->names.size() : 0;
-  }
-  int NewRootDataTagSize() const {
-    return new_root_data_ ? new_root_data_->names.size() : 0;
-  }
-  absl::optional<RootData> GetCurrentRootData() const;
-  HashSet<AtomicString> AllRootTags() const;
 
   void InvalidateHitTestingCache();
 
@@ -293,14 +281,25 @@ class ViewTransitionStyleTracker
   // specified, then the result is mapped to that ancestor space.
   PhysicalRect ComputeVisualOverflowRect(
       LayoutBoxModelObject& box,
-      LayoutBoxModelObject* ancestor = nullptr);
+      const LayoutBoxModelObject* ancestor = nullptr) const;
   // Same as above, but uses paint layers, which is less correct but performs
   // better. This version is deprecated.
   PhysicalRect ComputeVisualOverflowRectWithPaintLayers(
-      LayoutBoxModelObject& box,
-      LayoutBoxModelObject* ancestor = nullptr);
+      const LayoutBoxModelObject& box,
+      const LayoutBoxModelObject* ancestor = nullptr) const;
 
   bool SnapshotRootDidChangeSize() const;
+
+  // This corresponds to the state computed for keeping pseudo-elements in sync
+  // with the state of live DOM elements described in
+  // https://drafts.csswg.org/css-view-transitions-1/#style-transition-pseudo-elements-algorithm.
+  void ComputeLiveElementGeometry(
+      int max_capture_size,
+      LayoutObject& layout_object,
+      ContainerProperties&,
+      PhysicalRect& visual_overflow_rect_in_layout_space,
+      WritingMode&,
+      absl::optional<gfx::RectF>& captured_rect_in_layout_space) const;
 
   Member<Document> document_;
 
@@ -333,11 +332,6 @@ class ViewTransitionStyleTracker
   // sync with the Document during RunPostPrePaintSteps().
   float device_pixel_ratio_ = 0.f;
 
-  // The data for the |documentElement| generate if it has a valid
-  // |view-transition-name| for the old and new DOM state.
-  absl::optional<RootData> old_root_data_;
-  absl::optional<RootData> new_root_data_;
-
   // The paint property node for the |documentElement|. This is generated if the
   // element has a valid |view-transition-name| and ensures correct generation
   // of its snapshot.
@@ -357,6 +351,11 @@ class ViewTransitionStyleTracker
   // so this uses the std::vector for that reason, instead of WTF::Vector.
   std::vector<viz::ViewTransitionElementResourceId> capture_resource_ids_
       ALLOW_DISCOURAGED_TYPE("cc API uses STL types");
+
+  // Caches whether the root element is currently participating in the
+  // transition. This is a purely performance optimization since this check is
+  // used in hot code-paths.
+  bool is_root_transitioning_ = false;
 };
 
 }  // namespace blink

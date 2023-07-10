@@ -133,7 +133,8 @@ class CORE_EXPORT ViewTransitionUtils {
   // Returns true if this element is a view transition participant. This is a
   // slow check that walks all of the view transition elements in the
   // ViewTransitionStyleTracker.
-  static bool IsViewTransitionParticipantFromSupplement(const Element& element);
+  static bool IsViewTransitionElementExcludingRootFromSupplement(
+      const Element& element);
 
   // Returns true if this object represents an element that is a view transition
   // participant. This is a slow check that walks all of the view transition

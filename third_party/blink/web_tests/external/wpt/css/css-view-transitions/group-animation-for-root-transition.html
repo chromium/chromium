@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<title>View transitions: group pseudo for the root transition has animation</title>
+<link rel="help" href="https://drafts.csswg.org/css-view-transitions-1/">
+<link rel="author" href="mailto:khushalsagar@chromium.org">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+promise_test(() => {
+  return new Promise(async (resolve, reject) => {
+    let transition = document.startViewTransition();
+    transition.ready.then(() => {
+      let foundGroupAnimation = false;
+      let foundOldAnimation = false;
+      let foundNewAnimation = false;
+
+      document.getAnimations().forEach((animation) => {
+        let pseudo = animation.effect.pseudoElement;
+        if (pseudo == "::view-transition-group(root)") {
+          assert_false(foundGroupAnimation);
+          foundGroupAnimation = true;
+        } else if (pseudo == "::view-transition-new(root)") {
+          assert_false(foundNewAnimation);
+          foundNewAnimation = true;
+        } else if (pseudo == "::view-transition-old(root)") {
+          assert_false(foundOldAnimation);
+          foundOldAnimation = true;
+        } else {
+          reject();
+        }
+      });
+
+      if (foundGroupAnimation && foundOldAnimation && foundNewAnimation)
+        resolve();
+      else
+        reject();
+    });
+  });
+}, "incorrect UA animations for root transition");
+</script>

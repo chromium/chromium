@@ -118,8 +118,12 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
   // be a transitioning element, but require an effect node.
   bool IsRepresentedViaPseudoElements(const LayoutObject& object) const;
 
-  // Returns true if this element is painted via pseudo elements.
-  bool IsRepresentedViaPseudoElements(const Element& element) const;
+  // Returns true if `node` participates in the transition excluding the
+  // document element. Since the root element's snapshot is hoisted up the
+  // LayoutView, this API should be used for checks which are needed to set up
+  // state for snapshotting an element. This state is set up on the LayoutView
+  // instead of the root element's LayoutView.
+  bool IsTransitionElementExcludingRoot(const Element& node) const;
 
   // Updates an effect node. This effect populates the view transition element
   // id and the shared element resource id. The return value is a result of
@@ -178,7 +182,8 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
   }
 
   bool IsRootTransitioning() const {
-    return style_tracker_ && style_tracker_->IsRootTransitioning();
+    return style_tracker_ && document_->documentElement() &&
+           style_tracker_->IsTransitionElement(*document_->documentElement());
   }
 
   // In physical pixels. See comments on equivalent methods in

@@ -314,12 +314,79 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : right
-                                        value : 0px
+                                        name : width
+                                        value : 800px
                                     }
                                     [1] : {
-                                        name : bottom
-                                        value : 0px
+                                        name : height
+                                        value : 600px
+                                    }
+                                    [2] : {
+                                        name : transform
+                                        value : matrix(1, 0, 0, 1, 0, 0)
+                                    }
+                                    [3] : {
+                                        name : writing-mode
+                                        value : horizontal-tb
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [3] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            ruleTypes : [
+                            ]
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 1
+                                            c : 1
+                                        }
+                                        text : html::view-transition-group(root)
+                                    }
+                                ]
+                                text : html::view-transition-group(root)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : animation-name
+                                        value : -ua-view-transition-group-anim-root
+                                    }
+                                    [1] : {
+                                        name : animation-timing-function
+                                        value : ease
+                                    }
+                                    [2] : {
+                                        name : animation-delay
+                                        value : 0s
+                                    }
+                                    [3] : {
+                                        name : animation-iteration-count
+                                        value : 1
+                                    }
+                                    [4] : {
+                                        name : animation-direction
+                                        value : normal
                                     }
                                 ]
                                 shorthandEntries : [
@@ -2115,12 +2182,79 @@ Dumping styles for : ::view-transition-group with id root{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : right
-                                value : 0px
+                                name : width
+                                value : 800px
                             }
                             [1] : {
-                                name : bottom
-                                value : 0px
+                                name : height
+                                value : 600px
+                            }
+                            [2] : {
+                                name : transform
+                                value : matrix(1, 0, 0, 1, 0, 0)
+                            }
+                            [3] : {
+                                name : writing-mode
+                                value : horizontal-tb
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [3] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    ruleTypes : [
+                    ]
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 1
+                                    c : 1
+                                }
+                                text : html::view-transition-group(root)
+                            }
+                        ]
+                        text : html::view-transition-group(root)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : animation-name
+                                value : -ua-view-transition-group-anim-root
+                            }
+                            [1] : {
+                                name : animation-timing-function
+                                value : ease
+                            }
+                            [2] : {
+                                name : animation-delay
+                                value : 0s
+                            }
+                            [3] : {
+                                name : animation-iteration-count
+                                value : 1
+                            }
+                            [4] : {
+                                name : animation-direction
+                                value : normal
                             }
                         ]
                         shorthandEntries : [
