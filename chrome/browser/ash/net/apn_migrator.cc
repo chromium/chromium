@@ -80,12 +80,10 @@ std::vector<ApnType> GetMigratedApnTypes(
 ApnMigrator::ApnMigrator(
     ManagedCellularPrefHandler* managed_cellular_pref_handler,
     ManagedNetworkConfigurationHandler* network_configuration_handler,
-    NetworkStateHandler* network_state_handler,
-    NetworkMetadataStore* network_metadata_store)
+    NetworkStateHandler* network_state_handler)
     : managed_cellular_pref_handler_(managed_cellular_pref_handler),
       network_configuration_handler_(network_configuration_handler),
-      network_state_handler_(network_state_handler),
-      network_metadata_store_(network_metadata_store) {
+      network_state_handler_(network_state_handler) {
   if (!NetworkHandler::IsInitialized()) {
     return;
   }
@@ -147,7 +145,7 @@ void ApnMigrator::NetworkListChanged() {
     // The network has already been migrated, either the last time the flag was
     // on, or this time. Send Shill the revamp APN list.
     if (const base::Value::List* custom_apn_list =
-            network_metadata_store_->GetCustomApnList(network->guid())) {
+            GetNetworkMetadataStore()->GetCustomApnList(network->guid())) {
       NET_LOG(EVENT) << "Network has already been migrated, setting with the "
                      << "populated custom APN list: " << network->iccid();
       SetShillCustomApnListForNetwork(*network, custom_apn_list);
@@ -227,7 +225,7 @@ void ApnMigrator::MigrateNetwork(const NetworkState& network) {
 
   // Get the pre-revamp APN list.
   const base::Value::List* custom_apn_list =
-      network_metadata_store_->GetPreRevampCustomApnList(network.guid());
+      GetNetworkMetadataStore()->GetPreRevampCustomApnList(network.guid());
 
   // If the pre-revamp APN list is empty, set the revamp list as empty and
   // finish the migration.
@@ -283,7 +281,7 @@ void ApnMigrator::OnGetManagedProperties(
 
   // Get the pre-revamp APN list.
   const base::Value::List* custom_apn_list =
-      network_metadata_store_->GetPreRevampCustomApnList(guid);
+      GetNetworkMetadataStore()->GetPreRevampCustomApnList(guid);
 
   // At this point, the pre-revamp APN list should not be empty. However, there
   // could be the case where the custom APN list was cleared during the
@@ -473,6 +471,14 @@ void ApnMigrator::OnGetManagedProperties(
                  << " as migrated";
   managed_cellular_pref_handler_->AddApnMigratedIccid(iccid);
   iccids_in_migration_.erase(iccid);
+}
+
+NetworkMetadataStore* ApnMigrator::GetNetworkMetadataStore() {
+  if (network_metadata_store_for_testing_) {
+    return network_metadata_store_for_testing_;
+  }
+
+  return NetworkHandler::Get()->network_metadata_store();
 }
 
 }  // namespace ash

@@ -118,7 +118,9 @@ class ApnMigratorTest : public testing::Test {
     apn_migrator_ = std::make_unique<ApnMigrator>(
         managed_cellular_pref_handler_.get(),
         managed_network_configuration_handler_.get(),
-        network_state_helper_.network_state_handler(),
+        network_state_helper_.network_state_handler());
+
+    apn_migrator_->set_network_metadata_store_for_testing(
         network_metadata_store_.get());
 
     network_state_helper_.manager_test()->AddTechnology(shill::kTypeCellular,

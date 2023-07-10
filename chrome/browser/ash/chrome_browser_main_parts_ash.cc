@@ -1430,8 +1430,7 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   apn_migrator_ = std::make_unique<ApnMigrator>(
       NetworkHandler::Get()->managed_cellular_pref_handler(),
       NetworkHandler::Get()->managed_network_configuration_handler(),
-      NetworkHandler::Get()->network_state_handler(),
-      NetworkHandler::Get()->network_metadata_store());
+      NetworkHandler::Get()->network_state_handler());
 
   ChromeBrowserMainPartsLinux::PostBrowserStart();
 }
