@@ -2184,6 +2184,20 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Sandboxing.NonRootProcPercentage" units="%"
+    expires_after="2024-01-31">
+  <owner>enlightened@chromium.org</owner>
+  <owner>chromeos-hardening@google.com</owner>
+  <summary>
+    Records the percentage of processes on the system that are not running as
+    the root user. A process is considered non-root, if its real UID listed in
+    the /proc/self/status file is anything other than 0.
+
+    Non-root process percentage for the system is sent once per boot and only
+    when a user is logged in.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Sandboxing.SecCompCoverage" units="%"
     expires_after="2024-01-31">
   <owner>enlightened@chromium.org</owner>
@@ -2195,6 +2209,24 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
     SecComp coverage for the system is sent once per boot and only when a user
     is logged in.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Sandboxing.UnprivProcPercentage" units="%"
+    expires_after="2024-01-31">
+  <owner>enlightened@chromium.org</owner>
+  <owner>chromeos-hardening@google.com</owner>
+  <summary>
+    Records the percentage of processes on the system that are not running as
+    the root user and do not have the CAP_SYS_ADMIN capability. A process is
+    considered non-root, if its real UID listed in the /proc/self/status file is
+    anything other than 0.
+
+    To determine if a process has CAP_SYS_ADMIN, we parse the CapEff: line in
+    /proc/self/status file and check whether the 21st bit is set.
+
+    Unprivileged process percentage for the system is sent once per boot and
+    only when a user is logged in.
   </summary>
 </histogram>
 
