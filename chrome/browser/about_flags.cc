@@ -6307,7 +6307,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPageImageServiceOptimizationGuideSalientImagesName,
      flag_descriptions::
          kPageImageServiceOptimizationGuideSalientImagesDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          page_image_service::kImageServiceOptimizationGuideSalientImages,
          kImageServiceOptimizationGuideSalientImagesVariations,
