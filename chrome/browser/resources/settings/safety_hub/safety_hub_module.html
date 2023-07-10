@@ -1,0 +1,65 @@
+<style include="cr-shared-style settings-shared">
+  #header-wrapper {
+    align-items: center;
+    display: flex;
+  }
+
+  #header-text-wrapper {
+    flex: 1;
+  }
+
+  #header {
+    /* Should be 15px when html font-size is 16px */
+    font-size: 0.9375rem;
+  }
+
+  #subheader {
+     /* Should be 13px when html font-size is 16px */
+    font-size: 0.8125rem;
+  }
+
+  .site-list {
+    margin-inline-start: 48px;
+  }
+
+  .site-list .list-item {
+    --cr-icon-button-margin-end: initial;
+  }
+
+  .display-name {
+    flex: 1;
+    max-width: 100%;
+  }
+
+  site-favicon {
+    padding-inline-end: 24px;
+  }
+
+  #bulk-action-button {
+    margin-inline-start: auto;
+  }
+</style>
+
+<div id="header-wrapper">
+  <div id="header-text-wrapper">
+    <div id="header">[[header]]</div>
+    <div id="subheader" class="cr-secondary-text">[[subheader]]</div>
+  </div>
+  <slot name="button-container"></slot>
+</div>
+<!-- TODO(crbug.com/1443466): Consider replacing the list with <slot>
+  depending on the finialized designs. -->
+<div class="site-list">
+  <template is="dom-repeat" items="[[sites]]">
+    <div class="list-item site-entry">
+      <site-favicon url="[[item.origin]]"></site-favicon>
+      <div class="display-name cr-padded-text">
+        <div class="site-representation">[[item.origin]]</div>
+        <div class="cr-secondary-text">[[item.detail]]</div>
+      </div>
+      <cr-icon-button iron-icon="[[buttonIcon]]"
+          on-click="onItemButtonClick_" actionable>
+      </cr-icon-button>
+    </div>
+  </template>
+</div>

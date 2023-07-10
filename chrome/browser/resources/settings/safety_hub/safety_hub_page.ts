@@ -9,6 +9,9 @@
  */
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+// TODO(crbug.com/1443466): Clean this dummy import after SafetyHubModuleElement
+// is used.
+import './safety_hub_module.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
