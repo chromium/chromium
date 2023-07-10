@@ -64,7 +64,7 @@ void AddHighContrastSysColors(ColorMixer& mixer) {
   mixer[kColorSysOnSurfacePrimary] = {kColorNativeWindowText};
   mixer[kColorSysOnSurfacePrimaryInactive] = {kColorNativeWindowText};
   mixer[kColorSysTonalContainer] = {kColorNativeBtnFace};
-  mixer[kColorSysOnTonalContainer] = {kColorNativeBtnFace};
+  mixer[kColorSysOnTonalContainer] = {kColorNativeBtnText};
   mixer[kColorSysTonalOutline] = {kColorNativeBtnText};
   mixer[kColorSysNeutralOutline] = {kColorNativeBtnText};
   mixer[kColorSysNeutralContainer] = {kColorNativeBtnFace};
