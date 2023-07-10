@@ -103,6 +103,11 @@ const char kUmaSelectDefaultSearchEngine[] =
   return self;
 }
 
+- (void)dealloc {
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(_settingsAreDismissed);
+}
+
 #pragma mark - Properties
 
 - (void)setUpdatingBackend:(BOOL)updatingBackend {
