@@ -4586,6 +4586,9 @@ domain Input
       # Time at which the event occurred.
       optional TimeSinceEpoch timestamp
 
+  # Cancels any active dragging in the page.
+  command cancelDragging
+
   # Emulates touch event from the mouse event parameters.
   experimental command emulateTouchFromMouseEvent
     parameters

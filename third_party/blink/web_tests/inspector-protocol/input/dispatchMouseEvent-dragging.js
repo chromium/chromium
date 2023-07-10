@@ -1,8 +1,8 @@
 self.testRunner.disableAutomaticDragDrop();
 
-(async function (testRunner) {
-  const { session, dp } = await testRunner.startHTML(
-    `
+(async function(testRunner) {
+  const {session, dp} = await testRunner.startHTML(
+      `
       <style>
         #drag {
           width: 100px;
@@ -16,8 +16,7 @@ self.testRunner.disableAutomaticDragDrop();
       <div id="drag" draggable="true">cdp_test</div>
       <div id="drop">drop here</div>
     `,
-    `Tests Input.dispatchMouseEvent method for dragging`
-  );
+      `Tests Input.dispatchMouseEvent method for dragging`);
 
   await session.evaluate(`
     document.getElementById('drag').addEventListener('dragstart', event => {
@@ -59,111 +58,134 @@ self.testRunner.disableAutomaticDragDrop();
   `);
 
   function dumpError(message) {
-    if (message.error) testRunner.log('Error: ' + message.error.message);
+    if (message.error)
+      testRunner.log('Error: ' + message.error.message);
   }
 
-  testRunner.log("Drag");
+  testRunner.log('Drag');
   {
-    dumpError(
-      await dp.Input.dispatchMouseEvent({
-        type: "mouseMoved",
-        button: "left",
-        buttons: 0,
-        x: 50,
-        y: 50,
-      })
-    );
-    dumpError(
-      await dp.Input.dispatchMouseEvent({
-        type: "mousePressed",
-        button: "left",
-        buttons: 0,
-        clickCount: 1,
-        x: 50,
-        y: 50,
-      })
-    );
-    dumpError(
-      await dp.Input.dispatchMouseEvent({
-        type: "mouseMoved",
-        button: "left",
-        buttons: 1,
-        x: 50,
-        y: 150,
-      })
-    );
+    dumpError(await dp.Input.dispatchMouseEvent({
+      type: 'mouseMoved',
+      button: 'left',
+      buttons: 0,
+      x: 50,
+      y: 50,
+    }));
+    dumpError(await dp.Input.dispatchMouseEvent({
+      type: 'mousePressed',
+      button: 'left',
+      buttons: 0,
+      clickCount: 1,
+      x: 50,
+      y: 50,
+    }));
+    dumpError(await dp.Input.dispatchMouseEvent({
+      type: 'mouseMoved',
+      button: 'left',
+      buttons: 1,
+      x: 50,
+      y: 150,
+    }));
   }
   testRunner.log(await session.evaluate(`window.logs.join('\\n')`));
   await session.evaluate(`window.logs=[]`);
 
   testRunner.log('Drop');
   {
-    dumpError(
-      await dp.Input.dispatchMouseEvent({
-        type: 'mouseReleased',
-        button: 'left',
-        buttons: 1,
-        clickCount: 1,
-        x: 50,
-        y: 150
-      })
-    );
+    dumpError(await dp.Input.dispatchMouseEvent({
+      type: 'mouseReleased',
+      button: 'left',
+      buttons: 1,
+      clickCount: 1,
+      x: 50,
+      y: 150,
+    }));
   }
   testRunner.log(await session.evaluate(`window.logs.join('\\n')`));
   await session.evaluate(`window.logs=[]`);
 
   testRunner.log('Drag and drop with movements between elements');
   {
-    dumpError(
-      await dp.Input.dispatchMouseEvent({
+    dumpError(await dp.Input.dispatchMouseEvent({
+      type: 'mouseMoved',
+      button: 'left',
+      buttons: 0,
+      x: 50,
+      y: 50,
+    }));
+    dumpError(await dp.Input.dispatchMouseEvent({
+      type: 'mousePressed',
+      button: 'left',
+      buttons: 0,
+      clickCount: 1,
+      x: 50,
+      y: 50,
+    }));
+    for (let i = 1; i < 5; ++i) {
+      dumpError(await dp.Input.dispatchMouseEvent({
         type: 'mouseMoved',
         button: 'left',
-        buttons: 0,
+        buttons: 1,
         x: 50,
-        y: 50
-      })
-    );
-    dumpError(
-      await dp.Input.dispatchMouseEvent({
-        type: 'mousePressed',
-        button: 'left',
-        buttons: 0,
-        clickCount: 1,
-        x: 50,
-        y: 50
-      })
-    );
-    for (let i = 1; i < 5; ++i) {
-      dumpError(
-        await dp.Input.dispatchMouseEvent({
-          type: 'mouseMoved',
-          button: 'left',
-          buttons: 1,
-          x: 50,
-          y: 50 + i * 25
-        })
-      );
+        y: 50 + i * 25,
+      }));
     }
-    dumpError(
-      await dp.Input.dispatchMouseEvent({
-        type: 'mouseReleased',
+    dumpError(await dp.Input.dispatchMouseEvent({
+      type: 'mouseReleased',
+      button: 'left',
+      buttons: 1,
+      clickCount: 1,
+      x: 50,
+      y: 150,
+    }));
+    for (let i = 1; i < 3; ++i) {
+      dumpError(await dp.Input.dispatchMouseEvent({
+        type: 'mouseMoved',
         button: 'left',
         buttons: 1,
-        clickCount: 1,
         x: 50,
-        y: 150
-      })
-    );
+        y: 50 + i,
+      }));
+    }
+  }
+  testRunner.log(await session.evaluate(`window.logs.join('\\n')`));
+  await session.evaluate(`window.logs=[]`);
+
+  testRunner.log('Drag and drop with cancellation');
+  {
+    dumpError(await dp.Input.dispatchMouseEvent({
+      type: 'mouseMoved',
+      button: 'left',
+      buttons: 0,
+      x: 50,
+      y: 50,
+    }));
+    dumpError(await dp.Input.dispatchMouseEvent({
+      type: 'mousePressed',
+      button: 'left',
+      buttons: 0,
+      clickCount: 1,
+      x: 50,
+      y: 50,
+    }));
+    for (let i = 1; i < 5; ++i) {
+      dumpError(await dp.Input.dispatchMouseEvent({
+        type: 'mouseMoved',
+        button: 'left',
+        buttons: 1,
+        x: 50,
+        y: 50 + i * 25,
+      }));
+    }
+    dumpError(await dp.Input.cancelDragging());
     for (let i = 1; i < 3; ++i) {
-      dumpError(
-        await dp.Input.dispatchMouseEvent({
-          type: 'mouseMoved',
-          button: 'left',
-          buttons: 1,
-          x: 50,
-          y: 50 + i
-        })
-      );
+      dumpError(await dp.Input.dispatchMouseEvent({
+        type: 'mouseMoved',
+        button: 'left',
+        buttons: 1,
+        x: 50,
+        y: 50 + i,
+      }));
     }
   }
   testRunner.log(await session.evaluate(`window.logs.join('\\n')`));
