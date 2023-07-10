@@ -637,17 +637,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Hibernate.Duration.HibernateResumeReady"
-    units="seconds" expires_after="2024-06-08">
-  <owner>mka@chromium.org</owner>
-  <owner>bgeffon@chromium.org</owner>
-  <owner>chromeos-hibernate@google.com</owner>
-  <summary>
-    The duration in seconds we waited for the hibernate Resume Signal Ready from
-    powerd on ChromeOS devices. Reported at resume from hibernate.
-  </summary>
-</histogram>
-
 <histogram name="Platform.Hibernate.Event" enum="CrosHibernateCycleEvent"
     expires_after="2024-06-08">
   <owner>mka@chromium.org</owner>
@@ -778,6 +767,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     ChromeOS memory available in MiB when hibernate is triggered. Reported at
     hibernate.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Hibernate.ResumeTime.HibernateResumeReady"
+    units="seconds" expires_after="2024-06-08">
+  <owner>mka@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-hibernate@google.com</owner>
+  <summary>
+    The duration in milliseconds we waited for the HibernateResumeReady signal
+    from powerd on ChromeOS devices. Reported at resume from hibernate.
   </summary>
 </histogram>
 
