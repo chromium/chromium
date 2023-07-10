@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.quick_delete;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -43,6 +44,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -81,6 +84,8 @@ public class QuickDeleteDialogDelegateUnitTest {
     private IdentityManager mIdentityManagerMock;
     @Mock
     private SyncService mSyncServiceMock;
+    @Mock
+    private SettingsLauncher mSettingsLauncherMock;
 
     private FakeModalDialogManager mModalDialogManager;
 
@@ -123,7 +128,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     public void testCancelQuickDelete() {
         setSignedInStatus(false);
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mProfileMock)
+                mTabModelSelectorMock, mProfileMock, mSettingsLauncherMock)
                 .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData());
 
         mModalDialogManager.clickNegativeButton();
@@ -136,7 +141,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     public void testConfirmQuickDelete() {
         setSignedInStatus(false);
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mProfileMock)
+                mTabModelSelectorMock, mProfileMock, mSettingsLauncherMock)
                 .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData());
 
         mModalDialogManager.clickPositiveButton();
@@ -149,7 +154,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     public void testSearchHistoryDisambiguationNotShown_WhenUserIsSignedOut() {
         setSignedInStatus(false);
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mProfileMock)
+                mTabModelSelectorMock, mProfileMock, mSettingsLauncherMock)
                 .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData());
 
         View dialogView =
@@ -166,7 +171,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     public void testSearchHistoryDisambiguation_SearchHistoryLink() {
         setSignedInStatus(true);
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mProfileMock)
+                mTabModelSelectorMock, mProfileMock, mSettingsLauncherMock)
                 .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData());
 
         View dialogView =
@@ -192,7 +197,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     public void testSearchHistoryDisambiguation_OtherActivityLink() {
         setSignedInStatus(true);
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mProfileMock)
+                mTabModelSelectorMock, mProfileMock, mSettingsLauncherMock)
                 .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData());
 
         View dialogView =
@@ -217,7 +222,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testTabsToBeClosed_ZeroTabs_RemovesTheTabsClosedText() {
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mProfileMock)
+                mTabModelSelectorMock, mProfileMock, mSettingsLauncherMock)
                 .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData());
 
         View dialogView =
@@ -233,7 +238,7 @@ public class QuickDeleteDialogDelegateUnitTest {
         final int tabsToBeClosed = 1;
 
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mProfileMock)
+                mTabModelSelectorMock, mProfileMock, mSettingsLauncherMock)
                 .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData(tabsToBeClosed));
 
         View dialogView =
@@ -253,7 +258,7 @@ public class QuickDeleteDialogDelegateUnitTest {
         final int tabsToBeClosed = 2;
 
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mProfileMock)
+                mTabModelSelectorMock, mProfileMock, mSettingsLauncherMock)
                 .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData(tabsToBeClosed));
 
         View dialogView =
@@ -271,7 +276,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testBrowsingHistory_ZeroDomains_RemovesTheBrowsingHistoryRow() {
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mProfileMock)
+                mTabModelSelectorMock, mProfileMock, mSettingsLauncherMock)
                 .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData());
 
         View dialogView =
@@ -286,7 +291,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testBrowsingHistory_OneDomain_OnlyDisplaysLastVisitedDomain() {
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mProfileMock)
+                mTabModelSelectorMock, mProfileMock, mSettingsLauncherMock)
                 .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData(
                         new QuickDeleteDialogDelegate.DomainVisitsData("example.com", 1)));
 
@@ -306,7 +311,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testBrowsingHistory_TwoDomains_UpdatesHistoryText_Singular() {
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mProfileMock)
+                mTabModelSelectorMock, mProfileMock, mSettingsLauncherMock)
                 .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData(
                         new QuickDeleteDialogDelegate.DomainVisitsData("example.com", 2)));
 
@@ -326,7 +331,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testBrowsingHistory_MultipleDomains_UpdatesHistoryText_Plural() {
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mProfileMock)
+                mTabModelSelectorMock, mProfileMock, mSettingsLauncherMock)
                 .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData(
                         new QuickDeleteDialogDelegate.DomainVisitsData("example.com", 5)));
 
@@ -347,7 +352,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     public void testBrowsingHistory_HistorySyncDisabled_HidesMoreOnSyncedDevicesText() {
         setHistorySyncStatus(false);
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mProfileMock)
+                mTabModelSelectorMock, mProfileMock, mSettingsLauncherMock)
                 .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData(
                         new QuickDeleteDialogDelegate.DomainVisitsData("example.com", 1)));
 
@@ -367,7 +372,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     public void testBrowsingHistory_HistorySyncEnabled_DisplaysMoreOnSyncedDevicesText() {
         setHistorySyncStatus(true);
         new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mProfileMock)
+                mTabModelSelectorMock, mProfileMock, mSettingsLauncherMock)
                 .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData(
                         new QuickDeleteDialogDelegate.DomainVisitsData("example.com", 1)));
 
@@ -386,7 +391,8 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testQuickDeleteDialog_TimePeriod_Binding() {
         QuickDeleteDialogDelegate dialog = new QuickDeleteDialogDelegate(mActivity,
-                mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock, mProfileMock);
+                mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock, mProfileMock,
+                mSettingsLauncherMock);
         TimePeriodUtils.TimePeriodSpinnerOption options[] = getTimePeriodSpinnerOptions(mActivity);
 
         assertEquals(6, options.length);
@@ -396,5 +402,26 @@ public class QuickDeleteDialogDelegateUnitTest {
         assertEquals(TimePeriod.LAST_WEEK, options[3].getTimePeriod());
         assertEquals(TimePeriod.FOUR_WEEKS, options[4].getTimePeriod());
         assertEquals(TimePeriod.ALL_TIME, options[5].getTimePeriod());
+    }
+
+    @Test
+    @SmallTest
+    public void testClickingOnMoreOptions_LaunchesClearBrowsingData() {
+        doNothing()
+                .when(mSettingsLauncherMock)
+                .launchSettingsActivity(
+                        eq(mActivity), eq(SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA));
+        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
+                mTabModelSelectorMock, mProfileMock, mSettingsLauncherMock)
+                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData());
+        View dialogView =
+                mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
+        ChipView moreOptionsView = dialogView.findViewById(R.id.quick_delete_more_options);
+        moreOptionsView.setVisibility(View.VISIBLE);
+        moreOptionsView.performClick();
+
+        verify(mSettingsLauncherMock)
+                .launchSettingsActivity(
+                        eq(mActivity), eq(SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA));
     }
 }

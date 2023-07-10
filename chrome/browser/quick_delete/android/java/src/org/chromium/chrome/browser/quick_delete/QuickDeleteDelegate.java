@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
@@ -48,5 +49,12 @@ abstract class QuickDeleteDelegate {
      *                         cleared.
      * @param timePeriod The {@link TimePeriod} of the browsing data to delete.
      */
-    void performQuickDelete(@NonNull Runnable onDeleteFinished, @TimePeriod int timePeriod){};
+    void performQuickDelete(@NonNull Runnable onDeleteFinished, @TimePeriod int timePeriod) {}
+
+    /**
+     * @return {@link SettingsLauncher} used to launch the Clear browsing data settings fragment.
+     */
+    SettingsLauncher getSettingsLauncher() {
+        return null;
+    }
 }

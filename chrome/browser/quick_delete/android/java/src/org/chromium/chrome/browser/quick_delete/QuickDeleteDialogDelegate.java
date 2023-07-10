@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.browsing_data.TimePeriodUtils.TimePeriodSpinn
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
@@ -103,6 +104,7 @@ class QuickDeleteDialogDelegate {
     private final @NonNull Callback<Integer> mOnDismissCallback;
     private final @NonNull TabModelSelector mTabModelSelector;
     private final @NonNull Profile mProfile;
+    private final @NonNull SettingsLauncher mSettingsLauncher;
     /**The {@link PropertyModel} of the underlying dialog where the quick dialog view would be
      * shown.*/
     private PropertyModel mModalDialogPropertyModel;
@@ -131,26 +133,30 @@ class QuickDeleteDialogDelegate {
             };
 
     /**
-     * @param context               The associated {@link Context}.
-     * @param modalDialogManager    A {@link ModalDialogManager} responsible for showing the quick
-     *                              delete modal dialog.
-     * @param onDismissCallback     A {@link Callback} that will be notified when the user
-     *                              confirms or
-     *                              cancels the deletion;
-     * @param tabModelSelector      {@link TabModelSelector} to use for opening the links in search
-     *                              history disambiguation notice.
-     * @param profile               The {@link Profile} for which to check if the user is signed in
-     *                              or syncing.
+     * @param context            The associated {@link Context}.
+     * @param modalDialogManager A {@link ModalDialogManager} responsible for showing the quick
+     *                           delete modal dialog.
+     * @param onDismissCallback  A {@link Callback} that will be notified when the user
+     *                           confirms or
+     *                           cancels the deletion;
+     * @param tabModelSelector   {@link TabModelSelector} to use for opening the links in search
+     *                           history disambiguation notice.
+     * @param profile            The {@link Profile} for which to check if the user is signed in
+     *                           or syncing.
+     * @param settingsLauncher @link SettingsLauncher} used to launch the Clear browsing data
+     *         settings fragment.
      */
     QuickDeleteDialogDelegate(@NonNull Context context,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull Callback<Integer> onDismissCallback,
-            @NonNull TabModelSelector tabModelSelector, @NonNull Profile profile) {
+            @NonNull TabModelSelector tabModelSelector, @NonNull Profile profile,
+            @NonNull SettingsLauncher settingsLauncher) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mOnDismissCallback = onDismissCallback;
         mTabModelSelector = tabModelSelector;
         mProfile = profile;
+        mSettingsLauncher = settingsLauncher;
 
         mCurrentTimePeriodOption = new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES,
                 mContext.getString(R.string.clear_browsing_data_tab_period_15_minutes));
@@ -324,6 +330,11 @@ class QuickDeleteDialogDelegate {
         // TODO(crbug.com/1412087): Update the UX of the button to reflect the proposal before
         //  updating the visibility to visible.
         moreOptionsView.setVisibility(View.GONE);
+        // TODO(crbug.com/1412087): Update this to pass arguments to hide the basic tab and only
+        // show the advanced tab.
+        moreOptionsView.setOnClickListener(view
+                -> mSettingsLauncher.launchSettingsActivity(
+                        mContext, SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA));
     }
 
     /**

@@ -45,14 +45,14 @@ public class QuickDeleteController implements QuickDeleteBridge.DomainVisitsCall
     /**
      * Constructor for the QuickDeleteController with a dialog and confirmation snackbar.
      *
-     * @param context The associated {@link Context}.
-     * @param delegate A {@link QuickDeleteDelegate} to perform the quick delete.
+     * @param context            The associated {@link Context}.
+     * @param delegate           A {@link QuickDeleteDelegate} to perform the quick delete.
      * @param modalDialogManager A {@link ModalDialogManager} to show the quick delete modal dialog.
-     * @param snackbarManager A {@link SnackbarManager} to show the quick delete snackbar.
-     * @param layoutManager {@link LayoutManager} to use for showing the regular overview mode.
-     * @param tabModelSelector {@link TabModelSelector} to use for opening the links in search
-     *         history disambiguation notice.
-     * @param animationView The {@link View} to use to show the quick delete animation.
+     * @param snackbarManager    A {@link SnackbarManager} to show the quick delete snackbar.
+     * @param layoutManager      {@link LayoutManager} to use for showing the regular overview mode.
+     * @param tabModelSelector   {@link TabModelSelector} to use for opening the links in search
+     *                           history disambiguation notice.
+     * @param animationView      The {@link View} to use to show the quick delete animation.
      */
     public QuickDeleteController(@NonNull Context context, @NonNull QuickDeleteDelegate delegate,
             @NonNull ModalDialogManager modalDialogManager,
@@ -65,8 +65,9 @@ public class QuickDeleteController implements QuickDeleteBridge.DomainVisitsCall
         mDeleteTabsFilter =
                 new QuickDeleteTabsFilter(tabModelSelector.getModel(/*incognito=*/false));
         Profile profile = tabModelSelector.getCurrentModel().getProfile();
-        mDialogDelegate = new QuickDeleteDialogDelegate(
-                context, modalDialogManager, this::onDialogDismissed, tabModelSelector, profile);
+        mDialogDelegate =
+                new QuickDeleteDialogDelegate(context, modalDialogManager, this::onDialogDismissed,
+                        tabModelSelector, profile, mDelegate.getSettingsLauncher());
 
         mAnimationView = animationView;
         mAnimationView.setBackgroundResource(R.drawable.quick_delete_animation);
