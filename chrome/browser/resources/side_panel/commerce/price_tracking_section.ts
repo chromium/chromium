@@ -7,7 +7,7 @@ import '../strings.m.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
-import {BookmarkProductInfo, ProductInfo} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
+import {BookmarkProductInfo, PriceInsightsInfo, PriceInsightsInfo_PriceBucket, ProductInfo} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -47,6 +47,7 @@ export class PriceTrackingSection extends PolymerElement {
   }
 
   productInfo: ProductInfo;
+  priceInsightsInfo: PriceInsightsInfo;
   private isProductTracked_: boolean;
   private listenerIds_: number[] = [];
   private toggleAnnotationText_: string;
@@ -103,6 +104,12 @@ export class PriceTrackingSection extends PolymerElement {
   private onPriceTrackingToggled_() {
     this.shoppingApi_.setPriceTrackingStatusForCurrentUrl(
         this.isProductTracked_);
+    chrome.metricsPrivate.recordEnumerationValue(
+        this.isProductTracked_ ?
+            'Commerce.PriceTracking.PriceInsightsSidePanel.Track' :
+            'Commerce.PriceTracking.PriceInsightsSidePanel.Untrack',
+        this.priceInsightsInfo.bucket,
+        PriceInsightsInfo_PriceBucket.MAX_VALUE + 1);
   }
 
   private onBookmarkPriceTracked(product: BookmarkProductInfo) {
@@ -121,6 +128,9 @@ export class PriceTrackingSection extends PolymerElement {
 
   private onFolderClicked_() {
     this.shoppingApi_.showBookmarkEditorForCurrentUrl();
+    chrome.metricsPrivate.recordUserAction(
+        'Commerce.PriceTracking.' +
+        'EditedBookmarkFolderFromPriceInsightsSidePanel');
   }
 
   private onBookmarkOperationFailed(
