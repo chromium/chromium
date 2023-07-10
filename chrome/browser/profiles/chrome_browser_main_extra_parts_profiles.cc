@@ -175,6 +175,7 @@
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
 #include "chrome/browser/ui/media_router/cast_notification_controller_lacros_factory.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
+#include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/tabs/pinned_tab_service_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -829,6 +830,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   password_manager::PasswordRequirementsServiceFactory::GetInstance();
   payments::CanMakePaymentQueryFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
+  PasswordStatusCheckServiceFactory::GetInstance();
   payments::PaymentRequestDisplayManagerFactory::GetInstance();
 #endif
   PasswordManagerSettingsServiceFactory::GetInstance();
