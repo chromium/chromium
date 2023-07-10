@@ -41,11 +41,6 @@
 #include "ui/display/display.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#include "ui/base/cocoa/permissions_utils.h"
-#endif
-
 using testing::_;
 using testing::Invoke;
 using testing::Mock;
@@ -550,11 +545,6 @@ TEST_F(MediaRouterViewsUITest, RouteCreationTimeoutIssueTitle) {
 
 #if BUILDFLAG(IS_MAC)
 TEST_F(MediaRouterViewsUITest, DesktopMirroringFailsWhenDisallowedOnMac) {
-  // Failure due to a lack of screen capture permissions only happens on macOS
-  // 10.15 or later. See crbug.com/1087236 for more info.
-  if (!base::mac::IsAtLeastOS10_15())
-    return;
-
   set_screen_capture_allowed_for_testing(false);
   MockControllerObserver observer(ui_.get());
   MediaSink sink{CreateCastSink(kSinkId, kSinkName)};

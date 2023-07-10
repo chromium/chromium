@@ -862,9 +862,9 @@ TEST_F(MediaRouteStarterTest, StartRoute_StartPresentationContextError) {
 }
 
 TEST_F(MediaRouteStarterTest, GetScreenCapturePermission) {
-  // Screen capturing can only be disallowed on MacOS above a certain version.
+// TODO(https://crbug.com/1266425): Fix screen-capture tests on macOS.
 #if BUILDFLAG(IS_MAC)
-  bool screen_capture_is_allowed = !base::mac::IsAtLeastOS10_15();
+  bool screen_capture_is_allowed = false;
 #else
   bool screen_capture_is_allowed = true;
 #endif  // BUILDFLAG(IS_MAC)
