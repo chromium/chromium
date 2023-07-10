@@ -1652,6 +1652,7 @@ test("content_browsertests") {
     ":web_ui_js_bridge_test_bindings_webui_js_bridge_impl",
     ":web_ui_test_mojo_bindings",
     ":web_ui_ts_test_mojo_bindings",
+    "//base/test:proto_test_support",
     "//base/test:test_support",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
@@ -1781,6 +1782,7 @@ test("content_browsertests") {
   if (is_ios) {
     bundle_deps = [
       ":content_test_bundle_data",
+      ":content_test_perfetto_bundle_data",
       "//media/test:media_bundle_data",
       "//testing/buildbot/filters:content_browsertests_filter_bundle_data",
     ]
@@ -1788,8 +1790,12 @@ test("content_browsertests") {
     data = [
       "data/",
       "//media/test/data/",
+      "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
     ]
-    data_deps += [ "//testing/buildbot/filters:content_browsertests_filters" ]
+    data_deps += [
+      "//testing/buildbot/filters:content_browsertests_filters",
+      "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
+    ]
   }
 
   if (enable_plugins) {
@@ -3307,6 +3313,12 @@ if (is_ios) {
     outputs = [ "{{bundle_resources_dir}}/content_shell.pak" ]
   }
 
+  bundle_data_from_filelist("content_test_bundle_data") {
+    testonly = true
+    filelist_name = "content_test_bundle_data.filelist"
+  }
+}
+if (is_apple) {
   bundle_data("content_test_perfetto_bundle_data") {
     testonly = true
     _relative_path = "third_party/perfetto/protos/perfetto/config/chrome"
@@ -3314,11 +3326,6 @@ if (is_ios) {
     sources = [ "$root_gen_dir/$_relative_path/scenario_config.descriptor" ]
     outputs =
         [ "{{bundle_resources_dir}}/gen/$_relative_path/{{source_file_part}}" ]
-  }
-
-  bundle_data_from_filelist("content_test_bundle_data") {
-    testonly = true
-    filelist_name = "content_test_bundle_data.filelist"
   }
 }
 

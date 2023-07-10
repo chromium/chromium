@@ -27,8 +27,8 @@ namespace tracing {
 namespace {
 
 bool BlockingWriteTraceToFile(const base::FilePath& output_file,
-                              std::unique_ptr<std::string> file_contents) {
-  if (base::WriteFile(output_file, *file_contents)) {
+                              std::string file_contents) {
+  if (base::WriteFile(output_file, file_contents)) {
     LOG(ERROR) << "Background trace written to "
                << output_file.LossyDisplayName();
     return true;
@@ -40,7 +40,7 @@ bool BlockingWriteTraceToFile(const base::FilePath& output_file,
 
 void WriteTraceToFile(
     const base::FilePath& output_file,
-    std::unique_ptr<std::string> file_contents,
+    std::string file_contents,
     content::BackgroundTracingManager::FinishedProcessingCallback
         done_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

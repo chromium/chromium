@@ -11,6 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "content/common/content_export.h"
+#include "third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h"
 
 namespace content {
 class BackgroundTracingConfig;
@@ -40,12 +41,15 @@ class BackgroundTracingManager {
   // changes.
   class CONTENT_EXPORT EnabledStateTestObserver {
    public:
-    // In case the scenario was aborted before or after tracing was enabled.
-    virtual void OnScenarioAborted() = 0;
-
-    // Called after tracing is enabled on all processes because the rule was
-    // triggered.
-    virtual void OnTracingEnabled() = 0;
+    // Called when |scenario_name| becomes active.
+    virtual void OnScenarioActive(const std::string& scenario_name) {}
+    // Called when |scenario_name| becomes idle again.
+    virtual void OnScenarioIdle(const std::string& scenario_name) {}
+    // Called when tracing is enabled on all processes because of an active
+    // scenario.
+    virtual void OnTraceStarted() {}
+    // Called when tracing stopped and |proto_content| was received.
+    virtual void OnTraceReceived(const std::string& proto_content) {}
 
    protected:
     ~EnabledStateTestObserver() = default;
@@ -72,8 +76,7 @@ class BackgroundTracingManager {
   //
   using FinishedProcessingCallback = base::OnceCallback<void(bool success)>;
   using ReceiveCallback =
-      base::RepeatingCallback<void(std::unique_ptr<std::string>,
-                                   FinishedProcessingCallback)>;
+      base::RepeatingCallback<void(std::string, FinishedProcessingCallback)>;
 
   // Set the triggering rules for when to start recording.
   //
@@ -97,6 +100,7 @@ class BackgroundTracingManager {
     NO_DATA_FILTERING,
     ANONYMIZE_DATA,
   };
+
   virtual bool SetActiveScenario(
       std::unique_ptr<BackgroundTracingConfig> config,
       DataFiltering data_filtering) = 0;
@@ -109,6 +113,20 @@ class BackgroundTracingManager {
   virtual bool SetActiveScenarioWithReceiveCallback(
       std::unique_ptr<BackgroundTracingConfig> config,
       ReceiveCallback receive_callback,
+      DataFiltering data_filtering) = 0;
+
+  // Initializes background tracing with a set of scenarios, each
+  // associated with specific tracing configs. Scenarios are enrolled by
+  // clients based on a set of start and stop rules that delimitate a
+  // meaningful tracing interval, usually covering a user journey or a
+  // guardian metric (e.g. FirstContentfulPaint). This can only be
+  // called once.
+  //
+  // This function uploads traces through UMA using SetTraceToUpload /
+  // GetLatestTraceToUpload. To specify a destination to upload to, use
+  // SetActiveScenarioWithReceiveCallback.
+  virtual bool InitializeScenarios(
+      const perfetto::protos::gen::ChromeFieldTracingConfig& config,
       DataFiltering data_filtering) = 0;
 
   virtual bool HasActiveScenario() = 0;

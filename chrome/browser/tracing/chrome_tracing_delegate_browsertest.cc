@@ -54,14 +54,14 @@ class TestBackgroundTracingHelper
     content::RemoveBackgroundTracingEnabledStateObserverForTesting(this);
   }
 
-  void OnTracingEnabled() override {}
+  void OnScenarioIdle(const std::string& scenario_name) override {
+    wait_for_scenario_idle_.Quit();
+  }
 
-  void OnScenarioAborted() override { wait_for_scenario_aborted_.Quit(); }
-
-  void WaitForScenarioAborted() { wait_for_scenario_aborted_.Run(); }
+  void WaitForScenarioIdle() { wait_for_scenario_idle_.Run(); }
 
  private:
-  base::RunLoop wait_for_scenario_aborted_;
+  base::RunLoop wait_for_scenario_idle_;
 };
 
 }  // namespace
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
 
   TestBackgroundTracingHelper background_tracing_helper;
   content::BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
-  background_tracing_helper.WaitForScenarioAborted();
+  background_tracing_helper.WaitForScenarioIdle();
 
   EXPECT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
 
   TestBackgroundTracingHelper background_tracing_helper;
   content::BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
-  background_tracing_helper.WaitForScenarioAborted();
+  background_tracing_helper.WaitForScenarioIdle();
 
   EXPECT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   {
     TestBackgroundTracingHelper background_tracing_helper;
     content::BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
-    background_tracing_helper.WaitForScenarioAborted();
+    background_tracing_helper.WaitForScenarioIdle();
   }
 
   EXPECT_FALSE(
@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
 
   TestBackgroundTracingHelper background_tracing_helper;
   TriggerPreemptiveScenario();
-  background_tracing_helper.WaitForScenarioAborted();
+  background_tracing_helper.WaitForScenarioIdle();
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
 
   TestBackgroundTracingHelper background_tracing_helper;
   TriggerPreemptiveScenario();
-  background_tracing_helper.WaitForScenarioAborted();
+  background_tracing_helper.WaitForScenarioIdle();
 }
 
 // If we need a PII-stripped trace, any OTR session that starts and ends during
@@ -462,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
 
   TestBackgroundTracingHelper background_tracing_helper;
   TriggerPreemptiveScenario();
-  background_tracing_helper.WaitForScenarioAborted();
+  background_tracing_helper.WaitForScenarioIdle();
 }
 
 namespace {

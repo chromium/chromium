@@ -21,6 +21,7 @@ include_rules = [
   "+services/tracing/public/mojom",
   "+services/video_capture/public/mojom",
   "+services/viz/public/mojom",
+  "+third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h",
 ]
 
 specific_include_rules = {
