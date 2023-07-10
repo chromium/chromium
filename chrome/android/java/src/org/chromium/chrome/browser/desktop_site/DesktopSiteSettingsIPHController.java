@@ -159,12 +159,10 @@ public class DesktopSiteSettingsIPHController {
         requestShowPerSiteIPH(featureName, textId, new Object[] {tab.getUrl().getHost()});
     }
 
-    @VisibleForTesting
     ActivityTabTabObserver getActiveTabObserverForTesting() {
         return mActivityTabTabObserver;
     }
 
-    @VisibleForTesting
     void setTopDesktopSitesForTesting(Set<String> topDesktopSitesForTesting) {
         mTopDesktopSites = topDesktopSitesForTesting;
     }
@@ -229,7 +227,7 @@ public class DesktopSiteSettingsIPHController {
 
     private void maybeCreateTabObserverForPerSiteIPH(Profile profile, double screenSizeInInches) {
         boolean showGenericIPH = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.REQUEST_DESKTOP_SITE_PER_SITE_IPH, PARAM_IPH_TYPE_GENERIC, false);
+                ChromeFeatureList.REQUEST_DESKTOP_SITE_PER_SITE_IPH, PARAM_IPH_TYPE_GENERIC, true);
         boolean showSpecificIPH = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.REQUEST_DESKTOP_SITE_PER_SITE_IPH, PARAM_IPH_TYPE_SPECIFIC,
                 false);
