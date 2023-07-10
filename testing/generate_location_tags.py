@@ -17,7 +17,7 @@ import subprocess
 import sys
 
 THIS_DIR = os.path.dirname(__file__)
-SRC_DIR = os.path.dirname(THIS_DIR)
+SRC_DIR = os.path.abspath(os.path.dirname(THIS_DIR))
 BUILD_DIR = os.path.join(SRC_DIR, 'build')
 sys.path.insert(0, BUILD_DIR)
 import find_depot_tools
