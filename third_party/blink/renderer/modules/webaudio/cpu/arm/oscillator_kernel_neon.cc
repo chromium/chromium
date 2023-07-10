@@ -187,8 +187,10 @@ double OscillatorHandler::ProcessARateVectorKernel(
       static_cast<float>(virt_index[0]), static_cast<float>(virt_index[1]),
       static_cast<float>(virt_index[2]), static_cast<float>(virt_index[3])};
 
-  // Convert virtual index to actual index into wave data.
-  const uint32x4_t v_read0 = vcvtq_u32_f32(v_virt_index);
+  // Convert virtual index to actual index into wave data, wrap the index
+  // around if needed.
+  const uint32x4_t v_read0 =
+      vandq_u32(vcvtq_u32_f32(v_virt_index), vdupq_n_u32(read_index_mask));
 
   // v_read1 = v_read0 + 1, but wrap the index around, if needed.
   const uint32x4_t v_read1 = vandq_u32(vaddq_u32(v_read0, vdupq_n_u32(1)),
