@@ -46,7 +46,7 @@ public final class ConnectivityChecker {
                             + "  sender: 'Feedback Connectivity Checker'"
                             + "  description:"
                             + "    'When sending user initiated feedback about Chrome to '"
-                            + "    'Google, this request checks the user\'s connectivity. It '"
+                            + "    'Google, this request checks the user\\'s connectivity. It '"
                             + "    'does this by attempting to connect to Google servers and '"
                             + "    'records whether the browser was able to directly connect '"
                             + "    'the servers or not. A redirected request is not considered '"
