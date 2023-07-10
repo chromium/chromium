@@ -266,7 +266,7 @@ public class AddressEditor
 
         // Phone number field is cached, so its value needs to be updated for every new profile
         // that's being edited.
-        mPhoneField.set(VALUE, mProfile.getPhoneNumber());
+        mPhoneField.set(VALUE, mProfile.getInfo(ServerFieldType.PHONE_HOME_WHOLE_NUMBER));
 
         mEditorModel = new PropertyModel.Builder(ALL_KEYS)
                                .with(EDITOR_TITLE, editTitle)
@@ -341,8 +341,8 @@ public class AddressEditor
     private void commitChanges(AutofillProfile profile) {
         // Country code and phone number are always required and are always collected from the
         // editor model.
-        profile.setCountryCode(mCountryField.get(VALUE));
-        profile.setPhoneNumber(mPhoneField.get(VALUE));
+        profile.setInfo(ServerFieldType.ADDRESS_HOME_COUNTRY, mCountryField.get(VALUE));
+        profile.setInfo(ServerFieldType.PHONE_HOME_WHOLE_NUMBER, mPhoneField.get(VALUE));
 
         // Autofill profile bridge normalizes the language code for the autofill profile.
         profile.setLanguageCode(mAutofillProfileBridge.getCurrentBestLanguageCode());
@@ -353,7 +353,7 @@ public class AddressEditor
                     ? mAdminAreaField
                     : mAddressFields.get(component.id);
             if (component.id != ServerFieldType.ADDRESS_HOME_COUNTRY) {
-                setProfileField(profile, component.id, fieldModel.get(VALUE));
+                profile.setInfo(component.id, fieldModel.get(VALUE));
             }
         }
 
@@ -373,57 +373,13 @@ public class AddressEditor
         profile.setIsLocal(true);
     }
 
-    /** Writes the given value into the specified autofill profile field. */
-    private static void setProfileField(
-            AutofillProfile profile, int field, @Nullable String value) {
-        assert profile != null;
-        switch (field) {
-            case ServerFieldType.ADDRESS_HOME_COUNTRY:
-                profile.setCountryCode(ensureNotNull(value));
-                return;
-            case ServerFieldType.ADDRESS_HOME_STATE:
-                profile.setRegion(ensureNotNull(value));
-                return;
-            case ServerFieldType.ADDRESS_HOME_CITY:
-                profile.setLocality(ensureNotNull(value));
-                return;
-            case ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY:
-                profile.setDependentLocality(ensureNotNull(value));
-                return;
-            case ServerFieldType.ADDRESS_HOME_SORTING_CODE:
-                profile.setSortingCode(ensureNotNull(value));
-                return;
-            case ServerFieldType.ADDRESS_HOME_ZIP:
-                profile.setPostalCode(ensureNotNull(value));
-                return;
-            case ServerFieldType.ADDRESS_HOME_STREET_ADDRESS:
-                profile.setStreetAddress(ensureNotNull(value));
-                return;
-            case ServerFieldType.COMPANY_NAME:
-                profile.setCompanyName(ensureNotNull(value));
-                return;
-            case ServerFieldType.NAME_FULL:
-                profile.setFullName(ensureNotNull(value));
-                return;
-            default:
-                assert false : "Unrecognized server field type: " + field;
-        }
-
-        assert false;
-    }
-
-    private static String ensureNotNull(@Nullable String value) {
-        return value == null ? "" : value;
-    }
-
     private void setAddressFieldValuesFromCache() {
         // Address fields are cached, so their values need to be updated for every new profile
         // that's being edited.
         for (Map.Entry<Integer, PropertyModel> entry : mAddressFields.entrySet()) {
-            entry.getValue().set(VALUE, AutofillAddress.getProfileField(mProfile, entry.getKey()));
+            entry.getValue().set(VALUE, mProfile.getInfo(entry.getKey()));
         }
-        mAdminAreaField.set(VALUE,
-                AutofillAddress.getProfileField(mProfile, ServerFieldType.ADDRESS_HOME_STATE));
+        mAdminAreaField.set(VALUE, mProfile.getInfo(ServerFieldType.ADDRESS_HOME_STATE));
     }
 
     @Override

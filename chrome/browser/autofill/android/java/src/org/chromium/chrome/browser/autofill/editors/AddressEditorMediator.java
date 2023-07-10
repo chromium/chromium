@@ -110,7 +110,7 @@ class AddressEditorMediator {
             mAddressFields.put(fieldType,
                     new PropertyModel.Builder(TEXT_ALL_KEYS)
                             .with(TEXT_FIELD_TYPE, fieldType)
-                            .with(VALUE, AutofillAddress.getProfileField(mProfileToEdit, fieldType))
+                            .with(VALUE, mProfileToEdit.getInfo(fieldType))
                             .build());
         }
         return mAddressFields.get(fieldType);
@@ -161,7 +161,8 @@ class AddressEditorMediator {
                                   mContext.getString(
                                           R.string.autofill_profile_editor_honorific_prefix))
                           .with(IS_REQUIRED, false)
-                          .with(VALUE, mProfileToEdit.getHonorificPrefix())
+                          .with(VALUE,
+                                  mProfileToEdit.getInfo(ServerFieldType.NAME_HONORIFIC_PREFIX))
                           .build()
                 : null;
 
@@ -172,7 +173,8 @@ class AddressEditorMediator {
                         .with(LABEL,
                                 mContext.getString(R.string.autofill_profile_editor_phone_number))
                         .with(TEXT_FORMATTER, mPhoneFormatter)
-                        .with(VALUE, mProfileToEdit.getPhoneNumber())
+                        .with(VALUE,
+                                mProfileToEdit.getInfo(ServerFieldType.PHONE_HOME_WHOLE_NUMBER))
                         .build();
 
         // Phone number is present for all countries.
@@ -182,7 +184,7 @@ class AddressEditorMediator {
                         .with(LABEL,
                                 mContext.getString(R.string.autofill_profile_editor_email_address))
                         .with(VALIDATOR, getEmailValidator())
-                        .with(VALUE, mProfileToEdit.getEmailAddress())
+                        .with(VALUE, mProfileToEdit.getInfo(ServerFieldType.EMAIL_ADDRESS))
                         .build();
 
         // TODO(crbug.com/1445020): Use localized string.
@@ -275,8 +277,7 @@ class AddressEditorMediator {
 
         if (!component.isRequired) return false;
 
-        boolean isContentEmpty =
-                TextUtils.isEmpty(AutofillAddress.getProfileField(mProfileToEdit, component.id));
+        boolean isContentEmpty = TextUtils.isEmpty(mProfileToEdit.getInfo(component.id));
         // Already empty fields in existing address profiles are made optional even if they
         // are required by account storage rules. This allows users to save address profiles
         // as is without making them more complete during the process.
@@ -382,11 +383,15 @@ class AddressEditorMediator {
         }
         // Country code and phone number are always required and are always collected from the
         // editor model.
-        profile.setCountryCode(country);
-        if (mPhoneField != null) profile.setPhoneNumber(mPhoneField.get(VALUE));
-        if (mEmailField != null) profile.setEmailAddress(mEmailField.get(VALUE));
+        profile.setInfo(ServerFieldType.ADDRESS_HOME_COUNTRY, country);
+        if (mPhoneField != null) {
+            profile.setInfo(ServerFieldType.PHONE_HOME_WHOLE_NUMBER, mPhoneField.get(VALUE));
+        }
+        if (mEmailField != null) {
+            profile.setInfo(ServerFieldType.EMAIL_ADDRESS, mEmailField.get(VALUE));
+        }
         if (mHonorificField != null) {
-            profile.setHonorificPrefix(mHonorificField.get(VALUE));
+            profile.setInfo(ServerFieldType.NAME_HONORIFIC_PREFIX, mHonorificField.get(VALUE));
         }
 
         // Autofill profile bridge normalizes the language code for the autofill profile.
@@ -396,7 +401,7 @@ class AddressEditorMediator {
         for (AutofillAddressUiComponent component : mVisibleEditorFields) {
             if (component.id != ServerFieldType.ADDRESS_HOME_COUNTRY) {
                 assert mAddressFields.containsKey(component.id);
-                setProfileField(profile, component.id, mAddressFields.get(component.id).get(VALUE));
+                profile.setInfo(component.id, mAddressFields.get(component.id).get(VALUE));
             }
         }
 
@@ -414,47 +419,6 @@ class AddressEditorMediator {
         }
 
         profile.setIsLocal(true);
-    }
-
-    /** Writes the given value into the specified autofill profile field. */
-    private static void setProfileField(
-            AutofillProfile profile, int field, @Nullable String value) {
-        assert profile != null;
-        switch (field) {
-            case ServerFieldType.ADDRESS_HOME_COUNTRY:
-                profile.setCountryCode(ensureNotNull(value));
-                return;
-            case ServerFieldType.ADDRESS_HOME_STATE:
-                profile.setRegion(ensureNotNull(value));
-                return;
-            case ServerFieldType.ADDRESS_HOME_CITY:
-                profile.setLocality(ensureNotNull(value));
-                return;
-            case ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY:
-                profile.setDependentLocality(ensureNotNull(value));
-                return;
-            case ServerFieldType.ADDRESS_HOME_SORTING_CODE:
-                profile.setSortingCode(ensureNotNull(value));
-                return;
-            case ServerFieldType.ADDRESS_HOME_ZIP:
-                profile.setPostalCode(ensureNotNull(value));
-                return;
-            case ServerFieldType.ADDRESS_HOME_STREET_ADDRESS:
-                profile.setStreetAddress(ensureNotNull(value));
-                return;
-            case ServerFieldType.COMPANY_NAME:
-                profile.setCompanyName(ensureNotNull(value));
-                return;
-            case ServerFieldType.NAME_FULL:
-                profile.setFullName(ensureNotNull(value));
-                return;
-            default:
-                assert false : "Unrecognized server field type: " + field;
-        }
-    }
-
-    private static String ensureNotNull(@Nullable String value) {
-        return value == null ? "" : value;
     }
 
     private boolean willBeSavedInAccount() {

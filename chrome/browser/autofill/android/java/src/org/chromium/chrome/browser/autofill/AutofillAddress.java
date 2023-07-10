@@ -255,7 +255,7 @@ public class AutofillAddress extends EditableOption {
                     || fieldId == ServerFieldType.ADDRESS_HOME_COUNTRY) {
                 continue;
             }
-            if (!TextUtils.isEmpty(getProfileField(profile, fieldId))) continue;
+            if (!TextUtils.isEmpty(profile.getInfo(fieldId))) continue;
             completionStatus |= CompletionStatus.INVALID_ADDRESS;
             break;
         }
@@ -263,42 +263,18 @@ public class AutofillAddress extends EditableOption {
         return completionStatus;
     }
 
-    /** @return The given autofill profile field. */
-    public static String getProfileField(AutofillProfile profile, @ServerFieldType int field) {
-        assert profile != null;
-        switch (field) {
-            case ServerFieldType.ADDRESS_HOME_COUNTRY:
-                return profile.getCountryCode();
-            case ServerFieldType.ADDRESS_HOME_STATE:
-                return profile.getRegion();
-            case ServerFieldType.ADDRESS_HOME_CITY:
-                return profile.getLocality();
-            case ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY:
-                return profile.getDependentLocality();
-            case ServerFieldType.ADDRESS_HOME_SORTING_CODE:
-                return profile.getSortingCode();
-            case ServerFieldType.ADDRESS_HOME_ZIP:
-                return profile.getPostalCode();
-            case ServerFieldType.ADDRESS_HOME_STREET_ADDRESS:
-                return profile.getStreetAddress();
-            case ServerFieldType.COMPANY_NAME:
-                return profile.getCompanyName();
-            case ServerFieldType.NAME_FULL:
-                return profile.getFullName();
-            default:
-                assert false : "Unrecognized server field type: " + field;
-                return null;
-        }
-    }
-
     /** @return The country code to use, e.g., when constructing an editor for this address. */
     public static String getCountryCode(@Nullable AutofillProfile profile) {
-        if (sRegionCodePattern == null) sRegionCodePattern = Pattern.compile(REGION_CODE_PATTERN);
-
-        return profile == null || TextUtils.isEmpty(profile.getCountryCode())
-                        || !sRegionCodePattern.matcher(profile.getCountryCode()).matches()
+        if (sRegionCodePattern == null) {
+            sRegionCodePattern = Pattern.compile(REGION_CODE_PATTERN);
+        }
+        if (profile == null) {
+            return Locale.getDefault().getCountry();
+        }
+        final String countryCode = profile.getInfo(ServerFieldType.ADDRESS_HOME_COUNTRY);
+        return TextUtils.isEmpty(countryCode) || !sRegionCodePattern.matcher(countryCode).matches()
                 ? Locale.getDefault().getCountry()
-                : profile.getCountryCode();
+                : countryCode;
     }
 
     /** @return The address for the merchant. */
