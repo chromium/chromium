@@ -13,6 +13,7 @@
   },
   "typography": {
     "font_families": {},
+    font_faces: {},
     "typefaces": {
       "display_0": {
         "font_family": "'Google Sans Medium', 'Google Sans', 'Roboto', sans-serif",

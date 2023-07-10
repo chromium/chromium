@@ -16,6 +16,7 @@
       font_family_google_sans: "'Google Sans', 'Noto Sans', sans-serif",
       font_family_roboto: "Roboto, 'Roboto', 'Noto Sans', sans-serif",
     },
+    font_faces: {},
     typefaces: {
       headline_1: {
         font_family: '$font_family_google_sans',
