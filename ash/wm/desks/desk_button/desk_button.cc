@@ -193,6 +193,10 @@ void DeskButton::SetActivation(bool is_activated) {
                     : cros_tokens::kCrosSysOnSurface));
 
   MaybeUpdateDeskSwitchButtonVisibility();
+
+  // `Background::SetNativeControlColor` does not immediately schedule a repaint
+  // on the button so we need to ensure the full button gets repainted.
+  SchedulePaint();
 }
 
 std::u16string DeskButton::GetTitleForView(const views::View* view) {
