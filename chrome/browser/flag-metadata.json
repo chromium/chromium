@@ -1048,6 +1048,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "cct-resizable-multi-window-mode",
+    "owners": ["katzz", "kgrosu"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "cct-resizable-side-sheet",
     "owners": ["kgrosu", "jinsukkim", "twellington"],
     "expiry_milestone": 121

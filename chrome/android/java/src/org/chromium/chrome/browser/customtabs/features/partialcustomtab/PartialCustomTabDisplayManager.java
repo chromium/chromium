@@ -24,6 +24,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -227,11 +228,11 @@ public class PartialCustomTabDisplayManager
     static @PartialCustomTabType int calculatePartialCustomTabType(Activity activity,
             int initialWidth, int initialHeight, Supplier<Integer> displayWidthDpSupplier,
             int breakPointDp) {
-        // TODO(crbug.com/1407227) Until we are able to handle multi-window case for both
-        // bottom-sheet and side-sheet we will display a full-size PCCT.
-        if (MultiWindowUtils.getInstance().isInMultiWindowMode(activity)) {
+        if (MultiWindowUtils.getInstance().isInMultiWindowMode(activity)
+                && !ChromeFeatureList.sCctResizableMultiWindowMode.isEnabled()) {
             return PartialCustomTabType.FULL_SIZE;
         }
+
         if (initialWidth == 0 && initialHeight == 0) {
             return PartialCustomTabType.FULL_SIZE;
         }

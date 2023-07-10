@@ -188,6 +188,7 @@ public abstract class ChromeFeatureList {
     public static final String CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE =
             "CCTResizableAllowResizeByUserGesture";
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";
+    public static final String CCT_RESIZABLE_MULTI_WINDOW_MODE = "CCTResizableMultiWindowMode";
     public static final String CCT_RESIZABLE_SIDE_SHEET = "CCTResizableSideSheet";
     public static final String CCT_RESIZABLE_SIDE_SHEET_DISCOVER_FEED_SETTINGS =
             "CCTResizableSideSheetDiscoverFeedSettings";
@@ -521,6 +522,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(CCT_RESIZABLE_90_MAXIMUM_HEIGHT, false);
     public static final CachedFlag sCctResizableForThirdParties =
             new CachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, true);
+    public static final CachedFlag sCctResizableMultiWindowMode =
+            new CachedFlag(CCT_RESIZABLE_MULTI_WINDOW_MODE, false);
     public static final CachedFlag sCctResizableSideSheet =
             new CachedFlag(CCT_RESIZABLE_SIDE_SHEET, false);
     public static final CachedFlag sCctResizableSideSheetDiscoverFeedSettings =
@@ -633,6 +636,7 @@ public abstract class ChromeFeatureList {
         sCctRemoveRemoteViewIds,
         sCctResizable90MaximumHeight,
         sCctResizableForThirdParties,
+        sCctResizableMultiWindowMode,
         sCctResizableSideSheet,
         sCctResizableSideSheetDiscoverFeedSettings,
         sCctResizableSideSheetForThirdParties,
