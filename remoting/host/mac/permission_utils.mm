@@ -160,7 +160,7 @@ void PromptUserToChangeTrustStateIfNeeded(
 }
 
 bool CanCaptureAudio() {
-  NSInteger auth_status =
+  AVAuthorizationStatus auth_status =
       [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
   return auth_status == AVAuthorizationStatusAuthorized;
 }
