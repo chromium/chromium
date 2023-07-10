@@ -30,6 +30,7 @@ class CSSContentVisibilityInterpolationType : public CSSInterpolationType {
   void ApplyStandardPropertyValue(const InterpolableValue&,
                                   const NonInterpolableValue*,
                                   StyleResolverState&) const final;
+  bool IsDiscrete() const final { return true; }
 
  private:
   InterpolationValue CreateContentVisibilityValue(EContentVisibility) const;

@@ -823,6 +823,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return base::ValuesEquivalent<TransformOperation>(a.Rotate(), b.Rotate());
     case CSSPropertyID::kScale:
       return base::ValuesEquivalent<TransformOperation>(a.Scale(), b.Scale());
+    case CSSPropertyID::kSize:
+      return a.GetPageSizeType() == b.GetPageSizeType() &&
+             a.PageSize() == b.PageSize();
     case CSSPropertyID::kTransformOrigin:
       return a.GetTransformOrigin() == b.GetTransformOrigin();
     case CSSPropertyID::kWebkitPerspectiveOriginX:
@@ -1253,6 +1256,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kTransitionDelay:
     case CSSPropertyID::kTransitionDuration:
     case CSSPropertyID::kTransitionProperty:
+    case CSSPropertyID::kTransitionAnimationType:
     case CSSPropertyID::kTransitionTimingFunction:
     case CSSPropertyID::kUnicodeBidi:
     case CSSPropertyID::kWebkitWritingMode:
@@ -1261,13 +1265,12 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       NOTREACHED() << property.GetCSSPropertyName().ToAtomicString().Ascii();
       return true;
 
-    // Invalid properties.
+    // TODO(crbug.com/1459374): Implement comparison for these properties. They
+    // are reachable via transitions now.
     case CSSPropertyID::kAdditiveSymbols:
-    case CSSPropertyID::kAll:
     case CSSPropertyID::kAscentOverride:
     case CSSPropertyID::kBasePalette:
     case CSSPropertyID::kDescentOverride:
-    case CSSPropertyID::kInvalid:
     case CSSPropertyID::kFallback:
     case CSSPropertyID::kFontDisplay:
     case CSSPropertyID::kInherits:
@@ -1278,7 +1281,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPad:
     case CSSPropertyID::kPrefix:
     case CSSPropertyID::kRange:
-    case CSSPropertyID::kSize:
     case CSSPropertyID::kSpeakAs:
     case CSSPropertyID::kSrc:
     case CSSPropertyID::kSuffix:
@@ -1286,6 +1288,11 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kSyntax:
     case CSSPropertyID::kSystem:
     case CSSPropertyID::kUnicodeRange:
+      return true;
+
+    // Invalid properties.
+    case CSSPropertyID::kAll:
+    case CSSPropertyID::kInvalid:
     case CSSPropertyID::kVariable:
       NOTREACHED() << property.GetCSSPropertyName().ToAtomicString().Ascii();
       return true;

@@ -394,6 +394,22 @@ AtomicString CSSToStyleMap::MapAnimationName(StyleResolverState& state,
   return CSSAnimationData::InitialName();
 }
 
+CSSTransitionData::CSSTransitionAnimationType CSSToStyleMap::MapAnimationMode(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  if (auto* ident_value = DynamicTo<CSSIdentifierValue>(value)) {
+    switch (ident_value->GetValueID()) {
+      case CSSValueID::kNormal:
+        return CSSTransitionData::CSSTransitionAnimationType::kNormal;
+      case CSSValueID::kDiscrete:
+        return CSSTransitionData::CSSTransitionAnimationType::kDiscrete;
+      default:
+        break;
+    }
+  }
+  return CSSTransitionData::InitialMode();
+}
+
 StyleTimeline CSSToStyleMap::MapAnimationTimeline(StyleResolverState& state,
                                                   const CSSValue& value) {
   DCHECK(value.IsScopedValue());

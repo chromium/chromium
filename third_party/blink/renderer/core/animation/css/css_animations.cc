@@ -2196,7 +2196,7 @@ bool CSSAnimations::CanCalculateTransitionUpdateForProperty(
 void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     TransitionUpdateState& state,
     const PropertyHandle& property,
-    size_t transition_index,
+    wtf_size_t transition_index,
     bool animate_all) {
   if (state.listed_properties) {
     state.listed_properties->insert(property);
@@ -2206,6 +2206,14 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     return;
 
   if (IsAnimationAffectingProperty(property.GetCSSProperty())) {
+    return;
+  }
+
+  if (RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled() &&
+      property.GetCSSProperty().PropertyID() == CSSPropertyID::kWhiteSpace) {
+    // When CSSWhiteSpaceShorthand is enabled white-space is a shorthand, so we
+    // shouldn't transition it. Otherwise, we will hit the DCHECK in
+    // WhiteSpace::CSSValueFromComputedStyleInternal.
     return;
   }
 
@@ -2293,19 +2301,27 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     if (!end) {
       continue;
     }
-    // Merge will only succeed if the two values are considered interpolable.
+    // If MaybeMergeSingles succeeds, then the two values have a defined
+    // interpolation behavior. However, some properties like display and
+    // content-visibility have an interpolation which behaves like a discrete
+    // interpolation, so we use IsDiscrete to determine whether it should
+    // transition by default.
     if (interpolation_type->MaybeMergeSingles(start.Clone(), end.Clone())) {
-      discrete_interpolation = false;
+      if (!interpolation_type->IsDiscrete()) {
+        discrete_interpolation = false;
+      }
       break;
     }
   }
 
+  auto mode = CSSTimingData::GetRepeated(state.transition_data->ModeList(),
+                                         transition_index);
+
   // If no smooth interpolation exists between the old and new values and
-  // discrete transitions are not enabled, don't start a transition.
-  // transition:all is not supposed to transition discrete properties.
+  // transition-animation-type didn't indicate that we should do a discrete
+  // transition, then don't start a transition.
   if (discrete_interpolation &&
-      (!RuntimeEnabledFeatures::CSSTransitionDiscreteEnabled() ||
-       animate_all)) {
+      mode != CSSTransitionData::CSSTransitionAnimationType::kDiscrete) {
     return;
   }
 
@@ -2412,7 +2428,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
 void CSSAnimations::CalculateTransitionUpdateForProperty(
     TransitionUpdateState& state,
     const CSSTransitionData::TransitionProperty& transition_property,
-    size_t transition_index,
+    wtf_size_t transition_index,
     WritingDirectionMode writing_direction) {
   switch (transition_property.property_type) {
     case CSSTransitionData::kTransitionUnknownProperty:
@@ -2431,7 +2447,7 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
 void CSSAnimations::CalculateTransitionUpdateForCustomProperty(
     TransitionUpdateState& state,
     const CSSTransitionData::TransitionProperty& transition_property,
-    size_t transition_index) {
+    wtf_size_t transition_index) {
   DCHECK_EQ(transition_property.property_type,
             CSSTransitionData::kTransitionUnknownProperty);
 
@@ -2452,7 +2468,7 @@ void CSSAnimations::CalculateTransitionUpdateForCustomProperty(
 void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
     TransitionUpdateState& state,
     const CSSTransitionData::TransitionProperty& transition_property,
-    size_t transition_index,
+    wtf_size_t transition_index,
     WritingDirectionMode writing_direction) {
   DCHECK_EQ(transition_property.property_type,
             CSSTransitionData::kTransitionKnownProperty);
@@ -3030,9 +3046,15 @@ const StylePropertyShorthand& CSSAnimations::PropertiesForTransitionAll() {
           id == CSSPropertyID::kWebkitTransformOriginY ||
           id == CSSPropertyID::kWebkitTransformOriginZ)
         continue;
+      // transition:all shouldn't expand to itself
+      if (id == CSSPropertyID::kAll) {
+        continue;
+      }
       const CSSProperty& property = CSSProperty::Get(id);
-      if (property.IsInterpolable())
-        properties.push_back(&property);
+      if (IsAnimationAffectingProperty(property) || property.IsShorthand()) {
+        continue;
+      }
+      properties.push_back(&property);
     }
     property_shorthand = StylePropertyShorthand(
         CSSPropertyID::kInvalid, properties.begin(), properties.size());
@@ -3044,13 +3066,19 @@ const StylePropertyShorthand& CSSAnimations::PropertiesForTransitionAll() {
 // animations.
 // https://w3.org/TR/web-animations-1/#animating-properties
 bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
+  // Internal properties are not animatable because they should not be exposed
+  // to the page/author in the first place.
+  if (property.IsInternal()) {
+    return true;
+  }
+
   switch (property.PropertyID()) {
-    case CSSPropertyID::kAnimation:
-    case CSSPropertyID::kAlternativeAnimationWithTimeline:
-    case CSSPropertyID::kAlternativeAnimationWithDelayStartEnd:
-    case CSSPropertyID::kAnimationDelay:
     case CSSPropertyID::kAlternativeAnimationDelay:
+    case CSSPropertyID::kAlternativeAnimationWithDelayStartEnd:
+    case CSSPropertyID::kAlternativeAnimationWithTimeline:
+    case CSSPropertyID::kAnimation:
     case CSSPropertyID::kAnimationComposition:
+    case CSSPropertyID::kAnimationDelay:
     case CSSPropertyID::kAnimationDelayEnd:
     case CSSPropertyID::kAnimationDelayStart:
     case CSSPropertyID::kAnimationDirection:
@@ -3059,6 +3087,7 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kAnimationIterationCount:
     case CSSPropertyID::kAnimationName:
     case CSSPropertyID::kAnimationPlayState:
+    case CSSPropertyID::kAnimationRange:
     case CSSPropertyID::kAnimationRangeEnd:
     case CSSPropertyID::kAnimationRangeStart:
     case CSSPropertyID::kAnimationTimeline:
@@ -3067,6 +3096,8 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kContainerName:
     case CSSPropertyID::kContainerType:
     case CSSPropertyID::kDirection:
+    case CSSPropertyID::kScrollTimelineAxis:
+    case CSSPropertyID::kScrollTimelineName:
     case CSSPropertyID::kTextCombineUpright:
     case CSSPropertyID::kTextOrientation:
     case CSSPropertyID::kTimelineScope:
@@ -3074,11 +3105,15 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kToggleRoot:
     case CSSPropertyID::kToggleTrigger:
     case CSSPropertyID::kTransition:
+    case CSSPropertyID::kTransitionAnimationType:
     case CSSPropertyID::kTransitionDelay:
     case CSSPropertyID::kTransitionDuration:
     case CSSPropertyID::kTransitionProperty:
     case CSSPropertyID::kTransitionTimingFunction:
     case CSSPropertyID::kUnicodeBidi:
+    case CSSPropertyID::kViewTimelineAxis:
+    case CSSPropertyID::kViewTimelineInset:
+    case CSSPropertyID::kViewTimelineName:
     case CSSPropertyID::kWebkitWritingMode:
     case CSSPropertyID::kWillChange:
     case CSSPropertyID::kWritingMode:

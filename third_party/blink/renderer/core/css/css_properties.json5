@@ -992,6 +992,19 @@
       is_animation_property: true,
     },
     {
+      name: "transition-animation-type",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
+      typedom_types: ["Keyword"],
+      separator: ",",
+      style_builder_template: "transition",
+      style_builder_template_args: {
+        attribute: "Mode",
+      },
+      valid_for_marker: true,
+      is_animation_property: true,
+      runtime_flag: "CSSTransitionDiscrete",
+    },
+    {
       name: "transition-timing-function",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "transition",

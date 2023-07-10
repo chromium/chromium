@@ -30,6 +30,7 @@ class CSSOverlayInterpolationType : public CSSInterpolationType {
   void ApplyStandardPropertyValue(const InterpolableValue&,
                                   const NonInterpolableValue*,
                                   StyleResolverState&) const final;
+  bool IsDiscrete() const override { return true; }
 
  private:
   InterpolationValue CreateOverlayValue(EOverlay) const;

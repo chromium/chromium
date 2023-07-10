@@ -8556,6 +8556,39 @@ const CSSValue* TransitionProperty::InitialValue() const {
   return CSSIdentifierValue::Create(CSSValueID::kAll);
 }
 
+namespace {
+CSSIdentifierValue* ConsumeIdentNoTemplate(CSSParserTokenRange& range,
+                                           const CSSParserContext&) {
+  return css_parsing_utils::ConsumeIdent(range);
+}
+}  // namespace
+
+const CSSValue* TransitionAnimationType::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  CSSValueList* list = css_parsing_utils::ConsumeCommaSeparatedList(
+      ConsumeIdentNoTemplate, range, context);
+  if (!list || !css_parsing_utils::IsValidTransitionAnimationTypeList(*list)) {
+    return nullptr;
+  }
+  return list;
+}
+
+const CSSValue* TransitionAnimationType::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return ComputedStyleUtils::ValueForTransitionAnimationType(
+      style.Transitions());
+}
+
+const CSSValue* TransitionAnimationType::InitialValue() const {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  list->Append(*CSSIdentifierValue::Create(CSSValueID::kNormal));
+  return list;
+}
+
 const CSSValue* TransitionTimingFunction::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,

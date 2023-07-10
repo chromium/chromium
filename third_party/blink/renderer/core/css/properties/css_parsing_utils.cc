@@ -7355,6 +7355,20 @@ bool IsValidPropertyList(const CSSValueList& value_list) {
   return true;
 }
 
+bool IsValidTransitionAnimationTypeList(const CSSValueList& value_list) {
+  for (auto& value : value_list) {
+    auto* ident_value = DynamicTo<CSSIdentifierValue>(value.Get());
+    if (!ident_value) {
+      return false;
+    }
+    if (ident_value->GetValueID() != CSSValueID::kNormal &&
+        ident_value->GetValueID() != CSSValueID::kDiscrete) {
+      return false;
+    }
+  }
+  return true;
+}
+
 CSSValue* ConsumeBorderColorSide(CSSParserTokenRange& range,
                                  const CSSParserContext& context,
                                  const CSSParserLocalContext& local_context) {

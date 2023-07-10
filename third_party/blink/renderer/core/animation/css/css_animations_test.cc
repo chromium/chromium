@@ -186,14 +186,9 @@ TEST_P(CSSAnimationsTest, IncompatibleRetargetedTransition) {
                   GetSaturateFilterAmount(element));
 
   // Now we start a contrast filter. Since it will try to combine with
-  // the in progress saturate filter, and be incompatible, there will be a
-  // discrete transition and it will apply halfway through the transition.
+  // the in progress saturate filter, and be incompatible, there should
+  // be no transition and should immediately apply on the next frame.
   element->setAttribute(html_names::kClassAttr, AtomicString("contrast"));
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FLOAT_EQ(1.0 * (1 - 0.003) + 0.2 * 0.003,
-                  GetSaturateFilterAmount(element));
-
-  AdvanceClockSeconds(0.5);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(0.2, GetContrastFilterAmount(element));
 }

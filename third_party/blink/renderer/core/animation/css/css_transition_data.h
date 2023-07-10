@@ -18,11 +18,13 @@ namespace blink {
 
 class CORE_EXPORT CSSTransitionData final : public CSSTimingData {
  public:
-  enum TransitionPropertyType {
+  enum TransitionAnimationType {
     kTransitionNone,
     kTransitionKnownProperty,
     kTransitionUnknownProperty,
   };
+
+  enum CSSTransitionAnimationType { kNormal, kDiscrete };
 
   // FIXME: We shouldn't allow 'none' to be used alongside other properties.
   struct TransitionProperty {
@@ -37,7 +39,7 @@ class CORE_EXPORT CSSTransitionData final : public CSSTimingData {
           unresolved_property(CSSPropertyID::kInvalid),
           property_string(string) {}
 
-    TransitionProperty(TransitionPropertyType type)
+    explicit TransitionProperty(TransitionAnimationType type)
         : property_type(type), unresolved_property(CSSPropertyID::kInvalid) {
       DCHECK_EQ(type, kTransitionNone);
     }
@@ -48,7 +50,7 @@ class CORE_EXPORT CSSTransitionData final : public CSSTimingData {
              property_string == other.property_string;
     }
 
-    TransitionPropertyType property_type;
+    TransitionAnimationType property_type;
     CSSPropertyID unresolved_property;
     AtomicString property_string;
   };
@@ -72,14 +74,24 @@ class CORE_EXPORT CSSTransitionData final : public CSSTimingData {
   }
   Vector<TransitionProperty>& PropertyList() { return property_list_; }
 
+  const Vector<CSSTransitionAnimationType>& ModeList() const {
+    return mode_list_;
+  }
+  Vector<CSSTransitionAnimationType>& ModeList() { return mode_list_; }
+
   static absl::optional<double> InitialDuration() { return 0; }
 
   static TransitionProperty InitialProperty() {
     return TransitionProperty(CSSPropertyID::kAll);
   }
 
+  static CSSTransitionAnimationType InitialMode() {
+    return CSSTransitionAnimationType::kNormal;
+  }
+
  private:
   Vector<TransitionProperty> property_list_;
+  Vector<CSSTransitionAnimationType> mode_list_;
 };
 
 }  // namespace blink

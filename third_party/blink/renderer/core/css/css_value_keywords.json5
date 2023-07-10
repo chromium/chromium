@@ -1685,5 +1685,8 @@
     // scroll()
     "root",
     "nearest",
+
+    // transition-animation-type
+    "discrete",
   ],
 }

@@ -2994,6 +2994,29 @@ CSSValue* ComputedStyleUtils::ValueForTransitionProperty(
   return list;
 }
 
+CSSValue* ComputedStyleUtils::ValueForTransitionAnimationType(
+    const CSSTransitionData* transition_data) {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  if (transition_data) {
+    for (const auto& mode : transition_data->ModeList()) {
+      CSSValueID value_id = CSSValueID::kInvalid;
+      switch (mode) {
+        case CSSTransitionData::CSSTransitionAnimationType::kNormal:
+          value_id = CSSValueID::kNormal;
+          break;
+        case CSSTransitionData::CSSTransitionAnimationType::kDiscrete:
+          value_id = CSSValueID::kDiscrete;
+          break;
+      }
+      CHECK_NE(value_id, CSSValueID::kInvalid);
+      list->Append(*CSSIdentifierValue::Create(value_id));
+    }
+  } else {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kNormal));
+  }
+  return list;
+}
+
 CSSValueID ValueForQuoteType(const QuoteType quote_type) {
   switch (quote_type) {
     case QuoteType::kNoOpen:

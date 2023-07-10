@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
-Found 196 tests; 123 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL CSS Transitions: property <border-image-source> from [initial] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/orange_color.png)] assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / orange_color.png ) " but got "none "
-FAIL CSS Transitions: property <border-image-source> from [initial] to [url(../support/orange_color.png)] at (0) should be [url(../support/orange_color.png)] assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / orange_color.png ) " but got "none "
-FAIL CSS Transitions: property <border-image-source> from [initial] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/orange_color.png)] assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / orange_color.png ) " but got "none "
+Found 196 tests; 132 PASS, 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS CSS Transitions: property <border-image-source> from [initial] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/orange_color.png)]
+PASS CSS Transitions: property <border-image-source> from [initial] to [url(../support/orange_color.png)] at (0) should be [url(../support/orange_color.png)]
+PASS CSS Transitions: property <border-image-source> from [initial] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/orange_color.png)]
 PASS CSS Transitions: property <border-image-source> from [initial] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
 PASS CSS Transitions: property <border-image-source> from [initial] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
 PASS CSS Transitions: property <border-image-source> from [initial] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
@@ -56,9 +56,9 @@ FAIL Web Animations: property <border-image-source> from [inherit] to [url(../su
 FAIL Web Animations: property <border-image-source> from [inherit] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)] assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / orange_color.png ) " but got "- webkit - cross - fade ( url ( http : / / web - platform.test : 8001 / ... / green.png ) , url ( http : / / web - platform.test : 8001 / ... / orange_color.png ) , 0.6 ) "
 PASS Web Animations: property <border-image-source> from [inherit] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
 PASS Web Animations: property <border-image-source> from [inherit] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
-FAIL CSS Transitions: property <border-image-source> from [unset] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/orange_color.png)] assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / orange_color.png ) " but got "none "
-FAIL CSS Transitions: property <border-image-source> from [unset] to [url(../support/orange_color.png)] at (0) should be [url(../support/orange_color.png)] assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / orange_color.png ) " but got "none "
-FAIL CSS Transitions: property <border-image-source> from [unset] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/orange_color.png)] assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / orange_color.png ) " but got "none "
+PASS CSS Transitions: property <border-image-source> from [unset] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/orange_color.png)]
+PASS CSS Transitions: property <border-image-source> from [unset] to [url(../support/orange_color.png)] at (0) should be [url(../support/orange_color.png)]
+PASS CSS Transitions: property <border-image-source> from [unset] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/orange_color.png)]
 PASS CSS Transitions: property <border-image-source> from [unset] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
 PASS CSS Transitions: property <border-image-source> from [unset] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
 PASS CSS Transitions: property <border-image-source> from [unset] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
@@ -84,9 +84,9 @@ PASS Web Animations: property <border-image-source> from [unset] to [url(../supp
 PASS Web Animations: property <border-image-source> from [unset] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
 PASS Web Animations: property <border-image-source> from [unset] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]
 PASS Web Animations: property <border-image-source> from [unset] to [url(../support/orange_color.png)] at (1.5) should be [url(../support/orange_color.png)]
-FAIL CSS Transitions: property <border-image-source> from [none] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/orange_color.png)] assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / orange_color.png ) " but got "none "
-FAIL CSS Transitions: property <border-image-source> from [none] to [url(../support/orange_color.png)] at (0) should be [url(../support/orange_color.png)] assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / orange_color.png ) " but got "none "
-FAIL CSS Transitions: property <border-image-source> from [none] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/orange_color.png)] assert_equals: expected "url ( http : / / web - platform.test : 8001 / ... / orange_color.png ) " but got "none "
+PASS CSS Transitions: property <border-image-source> from [none] to [url(../support/orange_color.png)] at (-0.3) should be [url(../support/orange_color.png)]
+PASS CSS Transitions: property <border-image-source> from [none] to [url(../support/orange_color.png)] at (0) should be [url(../support/orange_color.png)]
+PASS CSS Transitions: property <border-image-source> from [none] to [url(../support/orange_color.png)] at (0.3) should be [url(../support/orange_color.png)]
 PASS CSS Transitions: property <border-image-source> from [none] to [url(../support/orange_color.png)] at (0.5) should be [url(../support/orange_color.png)]
 PASS CSS Transitions: property <border-image-source> from [none] to [url(../support/orange_color.png)] at (0.6) should be [url(../support/orange_color.png)]
 PASS CSS Transitions: property <border-image-source> from [none] to [url(../support/orange_color.png)] at (1) should be [url(../support/orange_color.png)]

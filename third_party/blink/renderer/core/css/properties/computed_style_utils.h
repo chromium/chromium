@@ -234,6 +234,7 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* CreateTransitionPropertyValue(
       const CSSTransitionData::TransitionProperty&);
   static CSSValue* ValueForTransitionProperty(const CSSTransitionData*);
+  static CSSValue* ValueForTransitionAnimationType(const CSSTransitionData*);
   static CSSValue* ValueForContentData(const ComputedStyle&,
                                        bool allow_visited_style);
 

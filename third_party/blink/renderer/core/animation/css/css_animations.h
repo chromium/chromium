@@ -274,18 +274,18 @@ class CORE_EXPORT CSSAnimations final {
   static void CalculateTransitionUpdateForProperty(
       TransitionUpdateState&,
       const CSSTransitionData::TransitionProperty&,
-      size_t transition_index,
+      wtf_size_t transition_index,
       WritingDirectionMode);
 
   static void CalculateTransitionUpdateForCustomProperty(
       TransitionUpdateState&,
       const CSSTransitionData::TransitionProperty&,
-      size_t transition_index);
+      wtf_size_t transition_index);
 
   static void CalculateTransitionUpdateForStandardProperty(
       TransitionUpdateState&,
       const CSSTransitionData::TransitionProperty&,
-      size_t transition_index,
+      wtf_size_t transition_index,
       WritingDirectionMode);
 
   static bool CanCalculateTransitionUpdateForProperty(
@@ -295,7 +295,7 @@ class CORE_EXPORT CSSAnimations final {
   static void CalculateTransitionUpdateForPropertyHandle(
       TransitionUpdateState&,
       const PropertyHandle&,
-      size_t transition_index,
+      wtf_size_t transition_index,
       bool animate_all);
 
   static void CalculateAnimationActiveInterpolations(
