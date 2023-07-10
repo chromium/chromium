@@ -5497,9 +5497,9 @@ IN_PROC_BROWSER_TEST_F(GuestViewExtensionNameCollisionTest,
   EXPECT_EQ("PASSED", test_passed);
 }
 
-class LocalNetworkAccessWebViewTest : public WebViewTest {
+class PrivateNetworkAccessWebViewTest : public WebViewTest {
  public:
-  LocalNetworkAccessWebViewTest() {
+  PrivateNetworkAccessWebViewTest() {
     features_.InitAndEnableFeature(
         features::kBlockInsecurePrivateNetworkRequests);
   }
@@ -5508,14 +5508,14 @@ class LocalNetworkAccessWebViewTest : public WebViewTest {
   base::test::ScopedFeatureList features_;
 };
 
-// Verify that Local Network Access has the correct understanding of guests.
+// Verify that Private Network Access has the correct understanding of guests.
 // The local/private/public classification should not be affected by being
 // within a guest. See https://crbug.com/1167698 for details.
 //
 // Note: This test is put in this file for convenience of reusing the entire
 // app testing infrastructure. Other similar tests that do not require that
-// infrastructure live in LocalNetworkAccessBrowserTest.*
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebViewTest, ClassificationInGuest) {
+// infrastructure live in PrivateNetworkAccessBrowserTest.*
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWebViewTest, ClassificationInGuest) {
   LoadAppWithGuest("web_view/simple");
   content::RenderFrameHost* guest_frame_host = GetGuestRenderFrameHost();
   ASSERT_TRUE(guest_frame_host);
