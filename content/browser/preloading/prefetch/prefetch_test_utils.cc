@@ -9,7 +9,6 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "services/network/test/test_url_loader_factory.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -273,6 +272,73 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
   DCHECK(weak_second_streaming_loader->Servable(base::TimeDelta::Max()));
 
   return {weak_first_streaming_loader, weak_second_streaming_loader};
+}
+
+PrefetchTestURLLoaderClient::PrefetchTestURLLoaderClient() = default;
+PrefetchTestURLLoaderClient::~PrefetchTestURLLoaderClient() = default;
+
+mojo::PendingReceiver<network::mojom::URLLoader>
+PrefetchTestURLLoaderClient::BindURLloaderAndGetReceiver() {
+  return remote_.BindNewPipeAndPassReceiver();
+}
+
+mojo::PendingRemote<network::mojom::URLLoaderClient>
+PrefetchTestURLLoaderClient::BindURLLoaderClientAndGetRemote() {
+  return receiver_.BindNewPipeAndPassRemote();
+}
+
+void PrefetchTestURLLoaderClient::DisconnectMojoPipes() {
+  remote_.reset();
+  receiver_.reset();
+}
+
+void PrefetchTestURLLoaderClient::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  NOTREACHED();
+}
+
+void PrefetchTestURLLoaderClient::OnReceiveResponse(
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+  DCHECK(!cached_metadata);
+
+  // Drains |body| into |body_content_|
+  pipe_drainer_ =
+      std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
+}
+
+void PrefetchTestURLLoaderClient::OnReceiveRedirect(
+    const net::RedirectInfo& redirect_info,
+    network::mojom::URLResponseHeadPtr head) {
+  received_redirects_.emplace_back(redirect_info, std::move(head));
+}
+
+void PrefetchTestURLLoaderClient::OnUploadProgress(
+    int64_t current_position,
+    int64_t total_size,
+    OnUploadProgressCallback callback) {
+  NOTREACHED();
+}
+
+void PrefetchTestURLLoaderClient::OnTransferSizeUpdated(
+    int32_t transfer_size_diff) {
+  total_transfer_size_diff_ += transfer_size_diff;
+}
+
+void PrefetchTestURLLoaderClient::OnComplete(
+    const network::URLLoaderCompletionStatus& status) {
+  completion_status_ = status;
+}
+
+void PrefetchTestURLLoaderClient::OnDataAvailable(const void* data,
+                                                  size_t num_bytes) {
+  body_content_.append(std::string(static_cast<const char*>(data), num_bytes));
+  total_bytes_read_ += num_bytes;
+}
+
+void PrefetchTestURLLoaderClient::OnDataComplete() {
+  body_finished_ = true;
 }
 
 }  // namespace content

@@ -8,12 +8,8 @@
 #include "base/test/task_environment.h"
 #include "content/browser/preloading/prefetch/prefetch_test_utils.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/system/data_pipe.h"
-#include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/early_hints.mojom.h"
-#include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -164,106 +160,6 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory {
   std::unique_ptr<TestURLLoader> test_url_loader_;
 };
 
-class TestURLLoaderClient : public network::mojom::URLLoaderClient,
-                            public mojo::DataPipeDrainer::Client {
- public:
-  TestURLLoaderClient() = default;
-  ~TestURLLoaderClient() override = default;
-
-  TestURLLoaderClient(const TestURLLoaderClient&) = delete;
-  TestURLLoaderClient& operator=(const TestURLLoaderClient&) = delete;
-
-  mojo::PendingReceiver<network::mojom::URLLoader>
-  BindURLloaderAndGetReceiver() {
-    return remote_.BindNewPipeAndPassReceiver();
-  }
-
-  mojo::PendingRemote<network::mojom::URLLoaderClient>
-  BindURLLoaderClientAndGetRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  void DisconnectMojoPipes() {
-    remote_.reset();
-    receiver_.reset();
-  }
-
-  std::string body_content() { return body_content_; }
-  uint32_t total_bytes_read() { return total_bytes_read_; }
-  bool body_finished() { return body_finished_; }
-  int32_t total_transfer_size_diff() { return total_transfer_size_diff_; }
-
-  absl::optional<network::URLLoaderCompletionStatus> completion_status() {
-    return completion_status_;
-  }
-
-  const std::vector<
-      std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>&
-  received_redirects() {
-    return received_redirects_;
-  }
-
- private:
-  // network::mojom::URLLoaderClient
-  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
-    NOTREACHED();
-  }
-
-  void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr head,
-      mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
-    EXPECT_EQ(cached_metadata, absl::nullopt);
-
-    // Drains |body| into |body_content_|
-    pipe_drainer_ =
-        std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
-  }
-
-  void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
-                         network::mojom::URLResponseHeadPtr head) override {
-    received_redirects_.emplace_back(redirect_info, std::move(head));
-  }
-
-  void OnUploadProgress(int64_t current_position,
-                        int64_t total_size,
-                        OnUploadProgressCallback callback) override {
-    NOTREACHED();
-  }
-
-  void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
-    total_transfer_size_diff_ += transfer_size_diff;
-  }
-
-  void OnComplete(const network::URLLoaderCompletionStatus& status) override {
-    completion_status_ = status;
-  }
-
-  // mojo::DataPipeDrainer::Client
-  void OnDataAvailable(const void* data, size_t num_bytes) override {
-    body_content_.append(
-        std::string(static_cast<const char*>(data), num_bytes));
-    total_bytes_read_ += num_bytes;
-  }
-
-  void OnDataComplete() override { body_finished_ = true; }
-
-  mojo::Remote<network::mojom::URLLoader> remote_;
-  mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
-
-  std::unique_ptr<mojo::DataPipeDrainer> pipe_drainer_;
-
-  std::string body_content_;
-  uint32_t total_bytes_read_{0};
-  bool body_finished_{false};
-  int32_t total_transfer_size_diff_{0};
-
-  absl::optional<network::URLLoaderCompletionStatus> completion_status_;
-
-  std::vector<std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>
-      received_redirects_;
-};
-
 class PrefetchStreamingURLLoaderTest
     : public ::testing::Test,
       public ::testing::WithParamInterface<bool> {
@@ -367,8 +263,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
   streaming_loader->OnStartServing();
 
   // Set up URLLoaderClient to "serve" the prefetch.
-  std::unique_ptr<TestURLLoaderClient> serving_url_loader_client =
-      std::make_unique<TestURLLoaderClient>();
+  std::unique_ptr<PrefetchTestURLLoaderClient> serving_url_loader_client =
+      std::make_unique<PrefetchTestURLLoaderClient>();
 
   network::ResourceRequest serving_request;
   serving_request.url = kTestUrl;
@@ -480,8 +376,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
   streaming_loader->OnStartServing();
 
   // Set up URLLoaderClient to "serve" the prefetch.
-  std::unique_ptr<TestURLLoaderClient> serving_url_loader_client =
-      std::make_unique<TestURLLoaderClient>();
+  std::unique_ptr<PrefetchTestURLLoaderClient> serving_url_loader_client =
+      std::make_unique<PrefetchTestURLLoaderClient>();
 
   network::ResourceRequest serving_request;
   serving_request.url = kTestUrl;
@@ -865,8 +761,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
   streaming_loader->OnStartServing();
 
   // Set up URLLoaderClient to "serve" the prefetch.
-  std::unique_ptr<TestURLLoaderClient> serving_url_loader_client =
-      std::make_unique<TestURLLoaderClient>();
+  std::unique_ptr<PrefetchTestURLLoaderClient> serving_url_loader_client =
+      std::make_unique<PrefetchTestURLLoaderClient>();
 
   network::ResourceRequest serving_request;
   serving_request.url = kTestUrl;
@@ -1011,8 +907,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
           std::move(redirect_response_reader));
   streaming_loader->OnStartServing();
 
-  std::unique_ptr<TestURLLoaderClient> redirect_url_loader_client =
-      std::make_unique<TestURLLoaderClient>();
+  std::unique_ptr<PrefetchTestURLLoaderClient> redirect_url_loader_client =
+      std::make_unique<PrefetchTestURLLoaderClient>();
 
   network::ResourceRequest serving_request;
   serving_request.url = kTestUrl;
@@ -1053,8 +949,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   streaming_loader->OnStartServing();
 
   // Set up URLLoaderClient to "serve" the prefetch.
-  std::unique_ptr<TestURLLoaderClient> serving_url_loader_client =
-      std::make_unique<TestURLLoaderClient>();
+  std::unique_ptr<PrefetchTestURLLoaderClient> serving_url_loader_client =
+      std::make_unique<PrefetchTestURLLoaderClient>();
 
   std::move(final_response_handler)
       .Run(serving_request,
@@ -1218,8 +1114,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
       weak_response_reader->CreateRequestHandler(std::move(response_reader));
   streaming_loader->OnStartServing();
 
-  std::unique_ptr<TestURLLoaderClient> serving_url_loader_client =
-      std::make_unique<TestURLLoaderClient>();
+  std::unique_ptr<PrefetchTestURLLoaderClient> serving_url_loader_client =
+      std::make_unique<PrefetchTestURLLoaderClient>();
 
   network::ResourceRequest serving_request;
   serving_request.url = kTestUrl;
@@ -1509,8 +1405,8 @@ TEST_F(PrefetchStreamingURLLoaderTest, StopTimeoutTimerAfterBeingServed) {
       weak_response_reader->CreateRequestHandler(std::move(response_reader));
   streaming_loader->OnStartServing();
 
-  std::unique_ptr<TestURLLoaderClient> serving_url_loader_client =
-      std::make_unique<TestURLLoaderClient>();
+  std::unique_ptr<PrefetchTestURLLoaderClient> serving_url_loader_client =
+      std::make_unique<PrefetchTestURLLoaderClient>();
 
   network::ResourceRequest serving_request;
   serving_request.url = kTestUrl;
@@ -1697,8 +1593,8 @@ TEST_F(PrefetchStreamingURLLoaderTest, TransferSizeUpdated) {
   streaming_loader->OnStartServing();
 
   // Set up URLLoaderClient to "serve" the prefetch.
-  std::unique_ptr<TestURLLoaderClient> serving_url_loader_client =
-      std::make_unique<TestURLLoaderClient>();
+  std::unique_ptr<PrefetchTestURLLoaderClient> serving_url_loader_client =
+      std::make_unique<PrefetchTestURLLoaderClient>();
 
   network::ResourceRequest serving_request;
   serving_request.url = kTestUrl;
