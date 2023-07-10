@@ -2374,20 +2374,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DomDistiller.Time.ActivelyViewingReaderModePage" units="ms"
-    expires_after="2021-08-19">
-  <owner>katie@chromium.org</owner>
-  <owner>chrome-a11y-core@chromium.org</owner>
-  <summary>
-    Records the amount of active time a user spent on a Reader Mode page. Active
-    time is the time the Reader Mode page was visible, not the total time the
-    page was open: the timer is paused when the page is not visible. This is
-    recorded regardless of how a user enters the page: e.g. using the
-    forward/back buttons, entering the URL directly, or coming from a
-    distillable page all start the timer equally.
-  </summary>
-</histogram>
-
 <histogram name="DomDistiller.Time.ArticleProcessing" units="ms"
     expires_after="M77">
   <obsolete>

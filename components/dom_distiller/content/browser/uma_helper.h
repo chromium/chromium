@@ -38,14 +38,7 @@ class UMAHelper {
    public:
     DistillabilityDriverTimer() = default;
 
-    ~DistillabilityDriverTimer() {
-      // The timer has the same life as a DistillabilityDriver, which is
-      // destroyed when a WebContents is destroyed. Thus if we are being
-      // destroyed and on a distilled page, go ahead and log the total time to
-      // UMA. This may happen if the user closes the tab or window, for example.
-      if (IsTimingDistilledPage())
-        UMAHelper::LogTimeOnDistilledPage(GetElapsedTime());
-    }
+    ~DistillabilityDriverTimer() = default;
 
     // Starts if not already started.
     void Start(bool is_distilled_page);

@@ -74,8 +74,6 @@ const char* kExpectedDocumentTitle = "Test Page Title - Reader Mode";
 #endif  // BUILDFLAG(IS_ANDROID)
 const char* kDistillablePageHistogram =
     "DomDistiller.Time.ActivelyViewingArticleBeforeDistilling";
-const char* kDistilledPageHistogram =
-    "DomDistiller.Time.ActivelyViewingReaderModePage";
 
 std::unique_ptr<content::WebContents> NewContentsWithSameParamsAs(
     content::WebContents* source_web_contents) {
@@ -229,19 +227,14 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest, UMATimesAreLogged) {
 
   // No UMA logged for distillable or distilled yet.
   histogram_tester.ExpectTotalCount(kDistillablePageHistogram, 0);
-  histogram_tester.ExpectTotalCount(kDistilledPageHistogram, 0);
 
   DistillCurrentPageAndView(initial_web_contents);
 
   // UMA should now exist for the distillable page because we distilled it.
   histogram_tester.ExpectTotalCount(kDistillablePageHistogram, 1);
 
-  // Distilled page UMA isn't logged until we leave that page.
-  histogram_tester.ExpectTotalCount(kDistilledPageHistogram, 0);
-
   // Go back to the article, check UMA exists for distilled page now.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url()));
-  histogram_tester.ExpectTotalCount(kDistilledPageHistogram, 1);
   // However, there should not be a second distillable histogram.
   histogram_tester.ExpectTotalCount(kDistillablePageHistogram, 1);
 }

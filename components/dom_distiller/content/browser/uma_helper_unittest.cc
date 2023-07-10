@@ -6,17 +6,11 @@
 
 #include <string>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace dom_distiller {
-
-namespace {
-const std::string kDistilledPageHistogram =
-    "DomDistiller.Time.ActivelyViewingReaderModePage";
-}  // namespace
 
 class UMAHelperTest : public testing::Test {
  public:
@@ -85,31 +79,15 @@ TEST_F(UMAHelperTest, TestTimerBasics) {
 }
 
 TEST_F(UMAHelperTest, TestTimerForDistilledPage) {
-  UMAHelper::DistillabilityDriverTimer* timer =
-      new UMAHelper::DistillabilityDriverTimer();
-  base::HistogramTester histogram_tester;
+  UMAHelper::DistillabilityDriverTimer timer;
 
-  timer->Start(true);
-  ASSERT_TRUE(timer->HasStarted());
-  ASSERT_TRUE(timer->IsTimingDistilledPage());
+  timer.Start(true);
+  ASSERT_TRUE(timer.HasStarted());
+  ASSERT_TRUE(timer.IsTimingDistilledPage());
   FastForwardBy(100);
-  ASSERT_EQ(timer->GetElapsedTime().InMilliseconds(), 100);
-  timer->Start(true);
-  ASSERT_EQ(timer->GetElapsedTime().InMilliseconds(), 100);
-
-  // Destroy the timer. Since it was running and on a distilled page, expect
-  // logging to have happened.
-  delete timer;
-  histogram_tester.ExpectTimeBucketCount(kDistilledPageHistogram,
-                                         base::Milliseconds(100), 1);
-
-  // Nothing is logged if it wasn't destroyed while on a distilled page.
-  timer = new UMAHelper::DistillabilityDriverTimer();
-  timer->Start(false);
-  FastForwardBy(200);
-  delete timer;
-  histogram_tester.ExpectTimeBucketCount(kDistilledPageHistogram,
-                                         base::Milliseconds(200), 0);
+  ASSERT_EQ(timer.GetElapsedTime().InMilliseconds(), 100);
+  timer.Start(true);
+  ASSERT_EQ(timer.GetElapsedTime().InMilliseconds(), 100);
 }
 
 }  // namespace dom_distiller

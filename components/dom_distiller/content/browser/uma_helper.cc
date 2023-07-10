@@ -136,11 +136,7 @@ void UMAHelper::UpdateTimersOnNavigation(content::WebContents* web_contents,
   if (!driver->GetTimer().HasStarted())
     return;
 
-  // Stop timing distilled pages when a user navigates away. (Note that
-  // distillable pages are logged only when reader mode is triggered, so there
-  // is no need to log time on a distillable page at navigation.
-  if (driver->GetTimer().IsTimingDistilledPage())
-    LogTimeOnDistilledPage(driver->GetTimer().GetElapsedTime());
+  // Stop timing distilled pages when a user navigates away.
   driver->GetTimer().Reset();
 }
 
@@ -160,11 +156,6 @@ void UMAHelper::LogTimeOnDistillablePage(content::WebContents* web_contents) {
       "DomDistiller.Time.ActivelyViewingArticleBeforeDistilling",
       driver->GetTimer().GetElapsedTime());
   driver->GetTimer().Reset();
-}
-
-void UMAHelper::LogTimeOnDistilledPage(base::TimeDelta time) {
-  base::UmaHistogramLongTimes("DomDistiller.Time.ActivelyViewingReaderModePage",
-                              time);
 }
 
 }  // namespace dom_distiller
