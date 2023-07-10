@@ -55,6 +55,21 @@ const int kWaitForReleaseDelayMs = 500;
 
 constexpr char kBufferInUse[] = "BufferInUse";
 
+// Gets the color type of |format| for creating bitmap. If it returns
+// SkColorType::kUnknown_SkColorType, it means with this format, this buffer
+// contents should not be used to create bitmap.
+SkColorType GetColorTypeForBitmapCreation(gfx::BufferFormat format) {
+  switch (format) {
+    case gfx::BufferFormat::RGBA_8888:
+      return SkColorType::kRGBA_8888_SkColorType;
+    case gfx::BufferFormat::BGRA_8888:
+      return SkColorType::kBGRA_8888_SkColorType;
+    default:
+      // Don't create bitmap for other formats.
+      return SkColorType::kUnknown_SkColorType;
+  }
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -721,6 +736,36 @@ void Buffer::FenceSignalled(uint64_t commit_id) {
   DCHECK(iter != buffer_releases_.end());
   std::move(iter->second.buffer_release_callback).Run();
   buffer_releases_.erase(iter);
+}
+
+SkBitmap Buffer::CreateBitmap() {
+  SkBitmap bitmap;
+
+  if (!gpu_memory_buffer_) {
+    return bitmap;
+  }
+
+  SkColorType color_type = GetColorTypeForBitmapCreation(GetFormat());
+  if (color_type == SkColorType::kUnknown_SkColorType) {
+    return bitmap;
+  }
+
+  if (!gpu_memory_buffer_->Map()) {
+    return bitmap;
+  }
+
+  gfx::Size size = gpu_memory_buffer_->GetSize();
+  SkImageInfo image_info = SkImageInfo::Make(size.width(), size.height(),
+                                             color_type, kPremul_SkAlphaType);
+  SkPixmap pixmap = SkPixmap(image_info, gpu_memory_buffer_->memory(0),
+                             gpu_memory_buffer_->stride(0));
+  bitmap.allocPixels(image_info);
+  bitmap.writePixels(pixmap);
+  bitmap.setImmutable();
+
+  gpu_memory_buffer_->Unmap();
+
+  return bitmap;
 }
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)

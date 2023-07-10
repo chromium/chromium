@@ -180,7 +180,13 @@ class Pointer : public SurfaceTreeHost,
   void OnCursorCaptured(const gfx::Point& hotspot,
                         std::unique_ptr<viz::CopyOutputResult> result);
 
-  // Update |cursor_| to |cursor_bitmap_| transformed for the current display.
+  // Called when cursor bitmap has been obtained either from viz copy output
+  // results or directly from the buffer.
+  void OnCursorBitmapObtained(const gfx::Point& hotspot,
+                              const SkBitmap& cursor_bitmap,
+                              float cursor_scale);
+
+  // Update |cursor_| to |cursor_bitmap_| transformed with |cursor_scale_|.
   void UpdateCursor();
 
   // Called to check if cursor should be moved to the center of the window when
@@ -265,6 +271,9 @@ class Pointer : public SurfaceTreeHost,
 
   // Latest cursor snapshot.
   SkBitmap cursor_bitmap_;
+
+  // Latest cursor image scale;
+  float cursor_scale_ = 1.0f;
 
   // The current cursor.
   ui::Cursor cursor_;

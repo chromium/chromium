@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "components/exo/buffer.h"
 #include "components/exo/input_trace.h"
 #include "components/exo/pointer_constraint_delegate.h"
 #include "components/exo/pointer_delegate.h"
@@ -874,10 +875,24 @@ void Pointer::CaptureCursor(const gfx::Point& hotspot) {
   if (host_window()->bounds().IsEmpty())
     return;
 
+  // Cancel all pending captures.
+  cursor_capture_weak_ptr_factory_.InvalidateWeakPtrs();
+
+  // If bitmap can be directly created from the buffer,
+  // use the bitmap to create cursor.
+  // Otherwise, send RequestCopyOfOutput request to viz
+  // to capture cursor bitmap.
+  if (!root_surface()->HasAcquireFence()) {
+    SkBitmap bitmap = root_surface()->GetBuffer()->CreateBitmap();
+    if (!bitmap.empty()) {
+      OnCursorBitmapObtained(hotspot, bitmap, root_surface()->GetBufferScale());
+      return;
+    };
+  }
+
   // Submit compositor frame to be captured.
   SubmitCompositorFrame();
 
-  cursor_capture_weak_ptr_factory_.InvalidateWeakPtrs();
   std::unique_ptr<viz::CopyOutputRequest> request =
       std::make_unique<viz::CopyOutputRequest>(
           viz::CopyOutputRequest::ResultFormat::RGBA,
@@ -906,15 +921,24 @@ void Pointer::CaptureCursor(const gfx::Point& hotspot) {
 
 void Pointer::OnCursorCaptured(const gfx::Point& hotspot,
                                std::unique_ptr<viz::CopyOutputResult> result) {
-  if (!focus_surface_)
-    return;
-
   // Only successful captures should update the cursor.
   if (result->IsEmpty())
     return;
 
-  auto scoped_bitmap = result->ScopedAccessSkBitmap();
-  cursor_bitmap_ = scoped_bitmap.GetOutScopedBitmap();
+  OnCursorBitmapObtained(hotspot,
+                         result->ScopedAccessSkBitmap().GetOutScopedBitmap(),
+                         GetScaleFactor());
+}
+
+void Pointer::OnCursorBitmapObtained(const gfx::Point& hotspot,
+                                     const SkBitmap& cursor_bitmap,
+                                     float cursor_scale) {
+  if (!focus_surface_) {
+    return;
+  }
+
+  cursor_bitmap_ = cursor_bitmap;
+  cursor_scale_ = cursor_scale;
   DCHECK(cursor_bitmap_.readyToDraw());
   cursor_hotspot_ = hotspot;
   UpdateCursor();
@@ -935,9 +959,9 @@ void Pointer::UpdateCursor() {
     const display::Display& display = cursor_client->GetDisplay();
     const float resource_scale_factor = ui::GetScaleForResourceScaleFactor(
         ui::GetSupportedResourceScaleFactor(display.device_scale_factor()));
-    const float scale = resource_scale_factor / GetScaleFactor();
+    const float scale = resource_scale_factor / cursor_scale_;
     gfx::Point hotspot =
-        gfx::ScaleToFlooredPoint(cursor_hotspot_, GetScaleFactor());
+        gfx::ScaleToFlooredPoint(cursor_hotspot_, cursor_scale_);
     // Use panel_rotation() rather than "natural" rotation, as it actually
     // relates to the hardware you're about to draw the cursor bitmap on.
     wm::ScaleAndRotateCursorBitmapAndHotpoint(scale, display.panel_rotation(),

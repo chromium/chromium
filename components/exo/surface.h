@@ -286,6 +286,8 @@ class Surface final : public ui::PropertyHandler {
   void SetAcquireFence(std::unique_ptr<gfx::GpuFence> gpu_fence);
   // Returns whether the surface has an uncommitted acquire fence.
   bool HasPendingAcquireFence() const;
+  // Returns whether the surface has a committed acquire fence.
+  bool HasAcquireFence() const;
 
   // Request a callback when the buffer attached at the next commit is
   // no longer used by that commit.
@@ -480,6 +482,12 @@ class Surface final : public ui::PropertyHandler {
   OverlayPriority GetOverlayPriorityHint() {
     return state_.overlay_priority_hint;
   }
+
+  // Returns the buffer scale of the last committed buffer.
+  float GetBufferScale() const { return state_.basic_state.buffer_scale; }
+
+  // Returns the last committed buffer.
+  Buffer* GetBuffer() { return state_.buffer->buffer().get(); }
 
  private:
   struct State {

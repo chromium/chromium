@@ -16,6 +16,7 @@
 #include "components/exo/protected_native_pixmap_query_delegate.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "media/media_buildflags.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -87,6 +88,9 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
 
   // The default color to be used should transferable resource production fail.
   virtual SkColor4f GetColor() const;
+
+  // Creates a SkBitmap object from |gpu_memory_buffer_|.
+  SkBitmap CreateBitmap();
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   // Returns true if the underlying buffer is hardware protected. This should
