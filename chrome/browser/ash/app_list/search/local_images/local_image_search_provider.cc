@@ -20,6 +20,7 @@ namespace {
 
 constexpr char kFileSearchSchema[] = "file_search://";
 constexpr char kHistogramTag[] = "AnnotationStorage";
+constexpr size_t kMinQueryLength = 3u;
 
 base::FilePath ConstructPathToAnnotationDb(const Profile* const profile) {
   return profile->GetPath()
@@ -57,6 +58,11 @@ ash::AppListSearchResultType LocalImageSearchProvider::ResultType() const {
 
 void LocalImageSearchProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (query.size() < kMinQueryLength) {
+    // Ignore short queries, which too noisy to be meaningful.
+    return;
+  }
+
   query_start_time_ = base::TimeTicks::Now();
   last_query_ = query;
 
