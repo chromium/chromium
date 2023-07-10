@@ -22,6 +22,9 @@ using media_router::UIMediaSinkState;
 using testing::_;
 using testing::NiceMock;
 using testing::Return;
+namespace mojom {
+using global_media_controls::mojom::DeviceListClient;
+}  // namespace mojom
 
 namespace {
 
@@ -72,24 +75,29 @@ class CastDeviceListHostTest : public testing::Test {
     testing::Test::SetUp();
     auto dialog_controller = std::make_unique<MockCastDialogController>();
     dialog_controller_ = dialog_controller.get();
-    host_ = std::make_unique<CastDeviceListHost>(
-        std::move(dialog_controller),
-        client_receiver_.InitWithNewPipeAndPassRemote(),
-        base::BindRepeating(&CastDeviceListHostTest::OnMediaRemotingRequested,
-                            base::Unretained(this)),
-        base::BindRepeating(&CastDeviceListHostTest::HideMediaDialog,
-                            base::Unretained(this)));
+    host_ = CreateHost(std::move(dialog_controller), &client_receiver_);
   }
 
   MOCK_METHOD(void, OnMediaRemotingRequested, ());
   MOCK_METHOD(void, HideMediaDialog, ());
 
  protected:
+  std::unique_ptr<CastDeviceListHost> CreateHost(
+      std::unique_ptr<media_router::CastDialogController> dialog_controller,
+      mojo::PendingReceiver<mojom::DeviceListClient>* client_receiver) {
+    return std::make_unique<CastDeviceListHost>(
+        std::move(dialog_controller),
+        client_receiver->InitWithNewPipeAndPassRemote(),
+        base::BindRepeating(&CastDeviceListHostTest::OnMediaRemotingRequested,
+                            base::Unretained(this)),
+        base::BindRepeating(&CastDeviceListHostTest::HideMediaDialog,
+                            base::Unretained(this)));
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<CastDeviceListHost> host_;
   raw_ptr<MockCastDialogController> dialog_controller_ = nullptr;
-  mojo::PendingReceiver<global_media_controls::mojom::DeviceListClient>
-      client_receiver_;
+  mojo::PendingReceiver<mojom::DeviceListClient> client_receiver_;
 };
 
 TEST_F(CastDeviceListHostTest, StartPresentation) {
@@ -182,4 +190,12 @@ TEST_F(CastDeviceListHostTest, SelectingDeviceClearsIssue) {
   EXPECT_CALL(*dialog_controller_, StartCasting(_, _)).Times(0);
   EXPECT_CALL(*dialog_controller_, ClearIssue(issue.id()));
   host_->SelectDevice(sink.id);
+}
+
+TEST_F(CastDeviceListHostTest, GetId) {
+  mojo::PendingReceiver<mojom::DeviceListClient> client_receiver;
+  std::unique_ptr<CastDeviceListHost> host2 = CreateHost(
+      std::make_unique<MockCastDialogController>(), &client_receiver);
+  // IDs should be unique.
+  EXPECT_NE(host_->id(), host2->id());
 }
