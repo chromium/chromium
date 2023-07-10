@@ -142,6 +142,9 @@ interface ShoppingListHandler {
   // Show the bookmark editor dialog for the current URL. This will only be
   // called when the current page is bookmarked.
   ShowBookmarkEditorForCurrentUrl();
+
+  // Show feedback form.
+  ShowFeedback();
 };
 
 // WebUI-side handler for requests from the browser.

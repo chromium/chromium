@@ -114,6 +114,7 @@ enum FeedbackSource {
   kFeedbackSourceAutofillContextMenu,
   kFeedbackSourceUnknownLacrosSource,
   kFeedbackSourceWindowLayoutMenu,
+  kFeedbackSourcePriceInsights,
 
   // Must be last.
   kFeedbackSourceCount,

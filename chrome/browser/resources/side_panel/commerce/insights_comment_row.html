@@ -1,0 +1,21 @@
+<style>
+  #commentRow {
+    display: inline;
+    max-width: 100%;
+    color: var(--cr-secondary-text-color);
+    font-size: 11px;
+    line-height: 20px;
+  }
+
+  .link {
+    color: var(--cr-link-color);
+    margin-left: 4px;
+    cursor: pointer;
+  }
+</style>
+
+<div id="commentRow">
+  <span id="comment">$i18n{historyDescription}</span>
+  <a href="#" hidden="[[!shouldShowFeedback_]]"
+      on-click="showFeedback_" class="link">$i18n{feedback}</a>
+</div>

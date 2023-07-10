@@ -20,6 +20,7 @@
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/commerce/core/commerce_constants.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mojom/shopping_list.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
@@ -67,6 +68,9 @@ ShoppingInsightsSidePanelUI::ShoppingInsightsSidePanelUI(content::WebUI* web_ui)
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
   }
+
+  source->AddBoolean("shouldShowFeedback",
+                     commerce::kPriceInsightsShowFeedback.Get());
 
   webui::SetupWebUIDataSource(source,
                               base::make_span(kSidePanelCommerceResources,

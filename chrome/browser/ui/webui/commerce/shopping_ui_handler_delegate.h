@@ -38,6 +38,8 @@ class ShoppingUiHandlerDelegate : public ShoppingListHandler::Delegate {
 
   void ShowBookmarkEditorForCurrentUrl() override;
 
+  void ShowFeedback() override;
+
  private:
   // This delegate is owned by |insights_side_panel_ui_| so we expect
   // |insights_side_panel_ui_| to remain valid for the lifetime of |this|.

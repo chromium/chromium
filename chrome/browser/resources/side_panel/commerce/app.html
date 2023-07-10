@@ -40,11 +40,7 @@
   }
 
   .section-details {
-    color: var(--cr-secondary-text-color);
     margin-top: 8px;
-    font-size: 11px;
-    line-height: 20px;
-    max-width: 100%;
   }
 
   .panel-subtitle,
@@ -73,11 +69,9 @@
         price-insights-info="[[priceInsightsInfo]]"
         hidden="[[priceInsightsInfo.typicalLowPrice.length]]">
     </catalog-attributes-row>
-    <div hidden="[[priceInsightsInfo.history.length]]"
-        class="section-details" id="desc1">
-      $i18n{historyDescription}
-    </div>
-    <!-- TODO(b:283465961): Add feedback button -->
+    <insights-comment-row class="section-details"
+        hidden="[[priceInsightsInfo.history.length]]">
+    </insights-comment-row>
   </div>
   <template is="dom-if" if="[[priceInsightsInfo.history.length]]" restamp>
     <div class="divider"></div>
@@ -93,11 +87,8 @@
           locale="[[priceInsightsInfo.locale]]"
           currency="[[priceInsightsInfo.currencyCode]]">
       </shopping-insights-history-graph>
-      <div hidden="[[!priceInsightsInfo.history.length]]"
-          class="section-details" id="desc2">
-        $i18n{historyDescription}
-      </div>
-      <!-- TODO(b:283465961): Add feedback button -->
+      <insights-comment-row class="section-details">
+      </insights-comment-row>
     </div>
   </template>
   <template is="dom-if" if="[[isProductTrackable_]]" restamp>

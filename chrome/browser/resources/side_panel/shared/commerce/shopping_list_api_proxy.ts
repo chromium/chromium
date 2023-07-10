@@ -28,6 +28,7 @@ export interface ShoppingListApiProxy {
   openUrlInNewTab(url: Url): void;
   getParentBookmarkFolderNameForCurrentUrl(): Promise<{name: String16}>;
   showBookmarkEditorForCurrentUrl(): void;
+  showFeedback(): void;
   getCallbackRouter(): PageCallbackRouter;
 }
 
@@ -96,6 +97,10 @@ export class ShoppingListApiProxyImpl implements ShoppingListApiProxy {
 
   showBookmarkEditorForCurrentUrl() {
     this.handler.showBookmarkEditorForCurrentUrl();
+  }
+
+  showFeedback() {
+    this.handler.showFeedback();
   }
 
   getCallbackRouter() {

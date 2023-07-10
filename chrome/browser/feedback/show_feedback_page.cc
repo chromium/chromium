@@ -164,6 +164,7 @@ bool IsFromUserInteraction(FeedbackSource source) {
     case kFeedbackSourceMdSettingsAboutPage:
     case kFeedbackSourceOldSettingsAboutPage:
     case kFeedbackSourceOsSettingsSearch:
+    case kFeedbackSourcePriceInsights:
     case kFeedbackSourceQuickAnswers:
     case kFeedbackSourceQuickOffice:
     case kFeedbackSourceSettingsPerformancePage:

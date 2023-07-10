@@ -58,6 +58,8 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
     virtual void OpenUrlInNewTab(const GURL& url) = 0;
 
     virtual void ShowBookmarkEditorForCurrentUrl() = 0;
+
+    virtual void ShowFeedback() = 0;
   };
 
   ShoppingListHandler(
@@ -93,6 +95,7 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
   void GetParentBookmarkFolderNameForCurrentUrl(
       GetParentBookmarkFolderNameForCurrentUrlCallback callback) override;
   void ShowBookmarkEditorForCurrentUrl() override;
+  void ShowFeedback() override;
 
   // SubscriptionsObserver
   void OnSubscribe(const CommerceSubscription& subscription,

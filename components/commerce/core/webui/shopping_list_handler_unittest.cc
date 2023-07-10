@@ -58,6 +58,7 @@ class MockDelegate : public ShoppingListHandler::Delegate {
   MOCK_METHOD(absl::optional<GURL>, GetCurrentTabUrl, (), (override));
   MOCK_METHOD(void, ShowInsightsSidePanelUI, (), (override));
   MOCK_METHOD(void, OpenUrlInNewTab, (const GURL& url), (override));
+  MOCK_METHOD(void, ShowFeedback, (), (override));
   MOCK_METHOD(const bookmarks::BookmarkNode*,
               GetOrAddBookmarkForCurrentUrl,
               (),
@@ -485,6 +486,12 @@ TEST_F(ShoppingListHandlerTest, TestOpenUrlInNewTab) {
   EXPECT_CALL(*delegate_, OpenUrlInNewTab(url)).Times(1);
 
   handler_->OpenUrlInNewTab(url);
+}
+
+TEST_F(ShoppingListHandlerTest, TestShowFeedback) {
+  EXPECT_CALL(*delegate_, ShowFeedback).Times(1);
+
+  handler_->ShowFeedback();
 }
 
 TEST_F(ShoppingListHandlerTest, TestIsShoppingListEligible) {

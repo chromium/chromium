@@ -489,4 +489,10 @@ void ShoppingListHandler::OpenUrlInNewTab(const GURL& url) {
   }
 }
 
+void ShoppingListHandler::ShowFeedback() {
+  if (delegate_) {
+    delegate_->ShowFeedback();
+  }
+}
+
 }  // namespace commerce

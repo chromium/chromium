@@ -176,6 +176,9 @@ const char kPriceInsightsChipLabelExpandOnHighPriceParam[] =
 const base::FeatureParam<bool> kPriceInsightsChipLabelExpandOnHighPrice{
     &commerce::kPriceInsights, kPriceInsightsChipLabelExpandOnHighPriceParam,
     false};
+const char kPriceInsightsShowFeedbackParam[] = "price-insights-show-feedback";
+const base::FeatureParam<bool> kPriceInsightsShowFeedback{
+    &commerce::kPriceInsights, kPriceInsightsShowFeedbackParam, false};
 
 const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory{
     &kCommerceMerchantViewer, "delete_all_merchants_on_clear_history", false};
