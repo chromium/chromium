@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_navigation_controller.h"
 
+#import "base/check.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -16,6 +17,11 @@
 using l10n_util::GetNSString;
 
 @implementation AdvancedSettingsSigninNavigationController
+
+- (void)dealloc {
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!self.navigationDelegate);
+}
 
 #pragma mark - UINavigationController
 
