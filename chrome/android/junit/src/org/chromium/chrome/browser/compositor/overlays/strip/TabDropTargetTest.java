@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import android.app.Activity;
@@ -121,7 +122,7 @@ public class TabDropTargetTest {
         mTabDragSource.setMultiInstanceManager(mMultiInstanceManager);
         Mockito.doNothing()
                 .when(mMultiInstanceManager)
-                .moveTabToCurrentWindow(eq(mTabBeingDragged));
+                .moveTabToWindow(any(), eq(mTabBeingDragged));
 
         // Perform action of a simulated drop of ClipData payload on drop target view.
         ContentInfoCompat remainingPayload =
@@ -170,7 +171,7 @@ public class TabDropTargetTest {
         mTabDragSource.setMultiInstanceManager(mMultiInstanceManager);
         Mockito.doNothing()
                 .when(mMultiInstanceManager)
-                .moveTabToCurrentWindow(eq(mTabBeingDragged));
+                .moveTabToWindow(any(), eq(mTabBeingDragged));
 
         // Create ClipData for non-Chrome apps with invalid tab id.
         Tab tabForBadClipData = MockTab.createAndInitialize(555, false);

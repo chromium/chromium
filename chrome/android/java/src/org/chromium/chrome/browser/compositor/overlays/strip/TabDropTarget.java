@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.util.Pair;
 import android.view.View;
@@ -49,7 +50,6 @@ class TabDropTarget {
             Tab tabBeingDragged = tabDragSource.getTabBeingDragged();
             if (tabDragSource.getDragSourceTabsToolbarHashCode() != System.identityHashCode(view)
                     && (tabBeingDragged != null) && tabDragSource.getAcceptNextDrop()) {
-                ClipData.Item tabItem = payload.getClip().getItemAt(0);
                 Pair<ContentInfoCompat, ContentInfoCompat> split =
                         payload.partition(item -> item.getText() != null);
                 ContentInfoCompat uriContent = split.first;
@@ -66,8 +66,10 @@ class TabDropTarget {
                             Log.w(TAG, "DnD: Received an invalid tab drop.");
                             return payload;
                         }
-                        tabDragSource.getMultiInstanceManager().moveTabToCurrentWindow(
-                                tabBeingDragged);
+                        // TODO(b/290648035): Pass the Activity explicitly in place of casting the
+                        // context handle.
+                        tabDragSource.getMultiInstanceManager().moveTabToWindow(
+                                (Activity) view.getContext(), tabBeingDragged);
                         tabDragSource.clearTabBeingDragged();
                         tabDragSource.clearAcceptNextDrop();
                     }

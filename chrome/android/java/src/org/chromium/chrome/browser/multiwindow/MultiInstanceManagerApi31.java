@@ -22,6 +22,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -57,6 +58,8 @@ import java.util.Map;
 import java.util.Set;
 
 class MultiInstanceManagerApi31 extends MultiInstanceManager implements ActivityStateListener {
+    private static final String TAG = "MIMApi31";
+
     public static final int INVALID_INSTANCE_ID = MultiWindowUtils.INVALID_INSTANCE_ID;
     public static final int INVALID_TASK_ID = MultiWindowUtils.INVALID_TASK_ID;
 
@@ -727,26 +730,46 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     /**
      * Move the specified tab to the current instance of the ChromeTabbedActivity window.
+     * @param activity Activity of the Chrome Window in which the tab is to be moved.
      * @param tab Tab that is to be moved to the current instance.
      */
     @Override
-    public void moveTabToCurrentWindow(Tab tab) {
+    public void moveTabToWindow(Activity activity, Tab tab) {
         if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
 
         // Get the current instance and move tab there.
-        InstanceInfo info = getCurrentInstanceInfo();
-        moveTabAction(info, tab);
+        InstanceInfo info = getInstanceInfoFor(activity);
+        if (info != null) {
+            moveTabAction(info, tab);
+        } else {
+            Log.w(TAG, "DnD: InstanceInfo of Chrome Window not found.");
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    InstanceInfo getCurrentInstanceInfo() {
+    InstanceInfo getInstanceInfoFor(Activity activity) {
+        // Loop thru all instances to determine if the destination activity is present.
+        int destinationWindowTaskId = INVALID_TASK_ID;
+        for (int i = 0; i < mMaxInstances; ++i) {
+            if (!instanceEntryExists(i)) continue;
+            Activity activityById = getActivityById(i);
+            if (activityById != null) {
+                // The task for the activity must match the one found in our mapping.
+                assert getTaskFromMap(i) == activityById.getTaskId();
+                if (activityById == activity) {
+                    destinationWindowTaskId = activityById.getTaskId();
+                    break;
+                }
+            }
+        }
+        if (destinationWindowTaskId == INVALID_TASK_ID) return null;
+
         List<InstanceInfo> allInstances = getInstanceInfo();
         for (InstanceInfo instanceInfo : allInstances) {
-            if (instanceInfo.type == InstanceInfo.Type.CURRENT) {
+            if (instanceInfo.taskId == destinationWindowTaskId) {
                 return instanceInfo;
             }
         }
-        assert false;
         return null;
     }
 }
