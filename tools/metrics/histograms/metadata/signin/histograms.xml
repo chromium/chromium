@@ -936,6 +936,20 @@ should be kept to monitor/debug signin Multilogin issues-->
   <summary>Response status received from gaia Multilogin.</summary>
 </histogram>
 
+<histogram name="Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito"
+    enum="BooleanAllowed" expires_after="2024-01-14">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recorded when request intitator is checked after receiving
+    X-Chrome-Connected header with GAIA_SERVICE_TYPE_INCOGNITO. The recorded
+    bucket represents the result of the check (i.e. whether the received
+    initiator origin is allowed to trigger requests that end up sending
+    X-Chrome-Connected header).
+  </summary>
+</histogram>
+
 <histogram name="Signin.Reconciler.AllExternalCcResultCompleted"
     enum="BooleanSuccess" expires_after="never">
 <!-- expires-never: used to detect and debug signin issues -->

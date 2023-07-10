@@ -75,3 +75,9 @@ BASE_FEATURE(kDisallowManagedProfileSignout,
 #if BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
 BASE_FEATURE(kWaffle, "Waffle", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
+
+#if BUILDFLAG(ENABLE_MIRROR)
+BASE_FEATURE(kVerifyRequestInitiatorForMirrorHeaders,
+             "VerifyRequestInitiatorForMirrorHeaders",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_MIRROR)

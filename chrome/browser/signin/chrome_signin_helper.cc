@@ -25,6 +25,7 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/google/core/common/google_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -187,7 +188,8 @@ class ManageAccountsHeaderReceivedUserData
 // opens an incognito window/tab.
 void ProcessMirrorHeader(
     ManageAccountsParams manage_accounts_params,
-    const content::WebContents::Getter& web_contents_getter) {
+    const content::WebContents::Getter& web_contents_getter,
+    const absl::optional<url::Origin>& request_initiator) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   GAIAServiceType service_type = manage_accounts_params.service_type;
@@ -202,6 +204,26 @@ void ProcessMirrorHeader(
   DCHECK(AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile))
       << "Gaia should not send the X-Chrome-Manage-Accounts header "
       << "when Mirror is disabled.";
+
+  // Do not allow non-Google origins to open incognito windows.
+  // TODO(crbug.com/1449357): Expand this check to all Mirror headers,
+  //                          regardless of `service_type`.
+  if (service_type == GAIA_SERVICE_TYPE_INCOGNITO &&
+      base::FeatureList::IsEnabled(kVerifyRequestInitiatorForMirrorHeaders)) {
+    GURL initiator_url =
+        request_initiator ? request_initiator->GetURL() : GURL();
+    const bool is_request_initiated_by_google_domain =
+        google_util::IsGoogleAssociatedDomainUrl(initiator_url);
+    base::UmaHistogramBoolean(
+        "Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito",
+        is_request_initiated_by_google_domain);
+    if (!is_request_initiated_by_google_domain) {
+      VLOG(1) << "Mirror header with GAIA_SERVICE_TYPE_INCOGNITO from "
+              << "untrusted domain (" << initiator_url << "), ignoring";
+      return;
+    }
+  }
+
   AccountReconcilor* account_reconcilor =
       AccountReconcilorFactory::GetForProfile(profile);
   account_reconcilor->OnReceivedManageAccountsResponse(service_type);
@@ -468,7 +490,8 @@ void ProcessMirrorResponseHeaderIfExists(ResponseAdapter* response,
   // requests while processing a throttle event.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(ProcessMirrorHeader, params,
-                                response->GetWebContentsGetter()));
+                                response->GetWebContentsGetter(),
+                                response->GetRequestInitiator()));
 }
 #endif
 
