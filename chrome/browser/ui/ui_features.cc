@@ -93,6 +93,12 @@ BASE_FEATURE(kQuickCommands,
              "QuickCommands",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable responsive toolbar. Toolbar buttons overflow to a chevron button when
+// the browser width is resized smaller than normal.
+BASE_FEATURE(kResponsiveToolbar,
+             "ResponsiveToolbar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the side search feature for Google Search. Presents recent Google
 // search results in a browser side panel.
 BASE_FEATURE(kSideSearch, "SideSearch", base::FEATURE_ENABLED_BY_DEFAULT);

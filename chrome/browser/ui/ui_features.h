@@ -59,6 +59,8 @@ BASE_DECLARE_FEATURE(kPowerBookmarksSidePanel);
 
 BASE_DECLARE_FEATURE(kQuickCommands);
 
+BASE_DECLARE_FEATURE(kResponsiveToolbar);
+
 BASE_DECLARE_FEATURE(kScrollableTabStrip);
 extern const char kMinimumTabWidthFeatureParameterName[];
 
