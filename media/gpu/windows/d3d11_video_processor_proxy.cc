@@ -16,11 +16,11 @@ namespace {
 void AddDebugMessages(D3D11Status* error, ComD3D11Device device) {
   // MSDN says that this needs to be casted twice, then GetMessage should
   // be called with a malloc.
-  Microsoft::WRL::ComPtr<ID3D11Debug> debug_layer;
+  ComD3D11Debug debug_layer;
   if (!SUCCEEDED(device.As(&debug_layer)))
     return;
 
-  Microsoft::WRL::ComPtr<ID3D11InfoQueue> message_layer;
+  ComD3D11InfoQueue message_layer;
   if (!SUCCEEDED(debug_layer.As(&message_layer)))
     return;
 

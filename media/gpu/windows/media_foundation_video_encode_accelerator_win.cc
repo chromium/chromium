@@ -200,8 +200,8 @@ bool IsSvcSupported(IMFActivate* activate, VideoCodec codec) {
     return false;
   }
 
-  Microsoft::WRL::ComPtr<IMFTransform> encoder;
-  Microsoft::WRL::ComPtr<ICodecAPI> codec_api;
+  ComMFTransform encoder;
+  ComCodecAPI codec_api;
   HRESULT hr = activate->ActivateObject(IID_PPV_ARGS(&encoder));
   if (FAILED(hr)) {
     // Log to VLOG since errors are expected as part of GetSupportedProfiles().
@@ -984,7 +984,7 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
   RETURN_ON_FAILURE((encoder_.Get() != nullptr),
                     "No asynchronous hardware encoder instance created", false);
 
-  Microsoft::WRL::ComPtr<IMFAttributes> all_attributes;
+  ComMFAttributes all_attributes;
   hr = encoder_->GetAttributes(&all_attributes);
   if (SUCCEEDED(hr)) {
     // An asynchronous MFT must support dynamic format changes,
@@ -1366,7 +1366,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
   }
 
   const auto kTargetPixelFormat = PIXEL_FORMAT_NV12;
-  Microsoft::WRL::ComPtr<IMFMediaBuffer> input_buffer;
+  ComMFMediaBuffer input_buffer;
   hr = input_sample_->GetBufferByIndex(0, &input_buffer);
   if (FAILED(hr)) {
     // Allocate a new buffer.
@@ -1439,11 +1439,11 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
     LOG(ERROR) << "Failed to get device from MF DXGI device manager";
     return E_HANDLE;
   }
-  Microsoft::WRL::ComPtr<ID3D11Device1> device1;
+  ComD3D11Device1 device1;
   HRESULT hr = d3d_device.As(&device1);
 
   RETURN_ON_HR_FAILURE(hr, "Failed to query ID3D11Device1", hr);
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture;
+  ComD3D11Texture2D input_texture;
   hr = device1->OpenSharedResource1(buffer_handle.dxgi_handle.Get(),
                                     IID_PPV_ARGS(&input_texture));
   RETURN_ON_HR_FAILURE(hr, "Failed to open shared GMB D3D texture", hr);
@@ -1452,7 +1452,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
   D3D11_TEXTURE2D_DESC input_desc = {};
   input_texture->GetDesc(&input_desc);
 
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> sample_texture;
+  ComD3D11Texture2D sample_texture;
   if (input_desc.Width != static_cast<uint32_t>(input_visible_size_.width()) ||
       input_desc.Height !=
           static_cast<uint32_t>(input_visible_size_.height())) {
@@ -1464,7 +1464,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
   }
 
   const auto kTargetPixelFormat = PIXEL_FORMAT_NV12;
-  Microsoft::WRL::ComPtr<IMFMediaBuffer> input_buffer;
+  ComMFMediaBuffer input_buffer;
 
   // Allocate a new buffer.
   MFT_INPUT_STREAM_INFO input_stream_info;
@@ -1519,11 +1519,11 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     return E_HANDLE;
   }
 
-  Microsoft::WRL::ComPtr<ID3D11Device1> device1;
+  ComD3D11Device1 device1;
   HRESULT hr = d3d_device.As(&device1);
   RETURN_ON_HR_FAILURE(hr, "Failed to query ID3D11Device1", hr);
 
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture;
+  ComD3D11Texture2D input_texture;
   hr = device1->OpenSharedResource1(buffer_handle.dxgi_handle.Get(),
                                     IID_PPV_ARGS(&input_texture));
   RETURN_ON_HR_FAILURE(hr, "Failed to open shared GMB D3D texture", hr);
@@ -1532,7 +1532,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
   D3D11_TEXTURE2D_DESC input_desc = {};
   input_texture->GetDesc(&input_desc);
 
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> sample_texture;
+  ComD3D11Texture2D sample_texture;
   if (input_desc.Width != static_cast<uint32_t>(input_visible_size_.width()) ||
       input_desc.Height !=
           static_cast<uint32_t>(input_visible_size_.height())) {
@@ -1550,7 +1550,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     sample_texture = copied_d3d11_texture_;
   }
 
-  Microsoft::WRL::ComPtr<IMFMediaBuffer> input_buffer;
+  ComMFMediaBuffer input_buffer;
   hr = MFCreateDXGISurfaceBuffer(__uuidof(ID3D11Texture2D),
                                  sample_texture.Get(), 0, FALSE, &input_buffer);
   RETURN_ON_HR_FAILURE(hr, "Failed to create MF DXGI surface buffer", hr);
@@ -1600,7 +1600,7 @@ int MediaFoundationVideoEncodeAccelerator::AssignTemporalIdBySvcSpec(
 }
 
 bool MediaFoundationVideoEncodeAccelerator::AssignTemporalId(
-    Microsoft::WRL::ComPtr<IMFMediaBuffer> output_buffer,
+    ComMFMediaBuffer output_buffer,
     size_t size,
     int* temporal_id,
     bool keyframe) {
@@ -1678,7 +1678,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   HRESULT hr = encoder_->ProcessOutput(0, 1, &output_data_buffer, &status);
   if (hr == MF_E_TRANSFORM_STREAM_CHANGE) {
     hr = S_OK;
-    Microsoft::WRL::ComPtr<IMFMediaType> media_type;
+    ComMFMediaType media_type;
     for (DWORD type_index = 0; SUCCEEDED(hr); ++type_index) {
       hr = encoder_->GetOutputAvailableType(output_stream_id_, type_index,
                                             &media_type);
@@ -1693,7 +1693,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   RETURN_ON_HR_FAILURE(hr, "Couldn't get encoded data", );
   DVLOG(3) << "Got encoded data " << hr;
 
-  Microsoft::WRL::ComPtr<IMFMediaBuffer> output_buffer;
+  ComMFMediaBuffer output_buffer;
   hr = output_data_buffer.pSample->GetBufferByIndex(0, &output_buffer);
   RETURN_ON_HR_FAILURE(hr, "Couldn't get buffer by index", );
 
@@ -1912,26 +1912,25 @@ HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DVideoProcessing(
       .OutputHeight = static_cast<UINT>(input_visible_size_.height()),
       .Usage = D3D11_VIDEO_USAGE_PLAYBACK_NORMAL};
 
-  Microsoft::WRL::ComPtr<ID3D11Device> texture_device;
+  ComD3D11Device texture_device;
   input_texture->GetDevice(&texture_device);
-  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
+  ComD3D11VideoDevice video_device;
   HRESULT hr = texture_device.As(&video_device);
   RETURN_ON_HR_FAILURE(hr, "Failed to query for ID3D11VideoDevice", hr);
 
-  Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
-      video_processor_enumerator;
+  ComD3D11VideoProcessorEnumerator video_processor_enumerator;
   hr = video_device->CreateVideoProcessorEnumerator(
       &vp_desc, &video_processor_enumerator);
   RETURN_ON_HR_FAILURE(hr, "CreateVideoProcessorEnumerator failed", hr);
 
-  Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor;
+  ComD3D11VideoProcessor video_processor;
   hr = video_device->CreateVideoProcessor(video_processor_enumerator.Get(), 0,
                                           &video_processor);
   RETURN_ON_HR_FAILURE(hr, "CreateVideoProcessor failed", hr);
 
-  Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
+  ComD3D11DeviceContext device_context;
   texture_device->GetImmediateContext(&device_context);
-  Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context;
+  ComD3D11VideoContext video_context;
   hr = device_context.As(&video_context);
   RETURN_ON_HR_FAILURE(hr, "Failed to query for ID3D11VideoContext", hr);
 
@@ -1950,7 +1949,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DVideoProcessing(
       .BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
       .CPUAccessFlags = 0,
       .MiscFlags = 0};
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> scaled_d3d11_texture;
+  ComD3D11Texture2D scaled_d3d11_texture;
   hr = texture_device->CreateTexture2D(&scaled_desc, nullptr,
                                        &scaled_d3d11_texture);
   RETURN_ON_HR_FAILURE(hr, "Failed to create texture", hr);
@@ -1962,7 +1961,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DVideoProcessing(
   D3D11_VIDEO_PROCESSOR_OUTPUT_VIEW_DESC output_desc = {};
   output_desc.ViewDimension = D3D11_VPOV_DIMENSION_TEXTURE2D;
   output_desc.Texture2D.MipSlice = 0;
-  Microsoft::WRL::ComPtr<ID3D11VideoProcessorOutputView> vp_output_view;
+  ComD3D11VideoProcessorOutputView vp_output_view;
   hr = video_device->CreateVideoProcessorOutputView(
       scaled_d3d11_texture.Get(), video_processor_enumerator.Get(),
       &output_desc, &vp_output_view);
@@ -1999,7 +1998,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DScaling(
 
   {
     absl::optional<gpu::DXGIScopedReleaseKeyedMutex> release_keyed_mutex;
-    Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
+    ComDXGIKeyedMutex keyed_mutex;
     hr = input_texture->QueryInterface(IID_PPV_ARGS(&keyed_mutex));
     if (SUCCEEDED(hr)) {
       // The producer may still be using this texture for a short period of
@@ -2017,7 +2016,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DScaling(
     D3D11_VIDEO_PROCESSOR_INPUT_VIEW_DESC input_desc = {};
     input_desc.ViewDimension = D3D11_VPIV_DIMENSION_TEXTURE2D;
     input_desc.Texture2D.ArraySlice = 0;
-    Microsoft::WRL::ComPtr<ID3D11VideoProcessorInputView> input_view;
+    ComD3D11VideoProcessorInputView input_view;
     hr = video_device_->CreateVideoProcessorInputView(
         input_texture, video_processor_enumerator_.Get(), &input_desc,
         &input_view);
@@ -2069,7 +2068,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DCopying(
       return S_OK;
     }
   }
-  Microsoft::WRL::ComPtr<ID3D11Device> texture_device;
+  ComD3D11Device texture_device;
   input_texture->GetDevice(&texture_device);
   D3D11_TEXTURE2D_DESC copy_desc = {
       .Width = input_desc.Width,
@@ -2082,7 +2081,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DCopying(
       .BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
       .CPUAccessFlags = 0,
       .MiscFlags = 0};
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> copied_d3d11_texture;
+  ComD3D11Texture2D copied_d3d11_texture;
   HRESULT hr = texture_device->CreateTexture2D(&copy_desc, nullptr,
                                                &copied_d3d11_texture);
   RETURN_ON_HR_FAILURE(hr, "Failed to create texture", hr);
@@ -2099,19 +2098,18 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DCopy(
   HRESULT hr = InitializeD3DCopying(input_texture);
   RETURN_ON_HR_FAILURE(hr, "Couldn't initialize D3D copying", hr);
 
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d_device =
-      dxgi_device_manager_->GetDevice();
+  ComD3D11Device d3d_device = dxgi_device_manager_->GetDevice();
   if (!d3d_device) {
     LOG(ERROR) << "Failed to get device from MF DXGI device manager";
     return E_HANDLE;
   }
-  Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
+  ComD3D11DeviceContext device_context;
   d3d_device->GetImmediateContext(&device_context);
 
   {
     // We need to hold a keyed mutex during the copy operation.
     absl::optional<gpu::DXGIScopedReleaseKeyedMutex> release_keyed_mutex;
-    Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
+    ComDXGIKeyedMutex keyed_mutex;
     hr = input_texture->QueryInterface(IID_PPV_ARGS(&keyed_mutex));
     if (SUCCEEDED(hr)) {
       constexpr int kMaxSyncTimeMs = 100;
@@ -2135,7 +2133,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::GetParameters(DWORD* pdwFlags,
 
 HRESULT MediaFoundationVideoEncodeAccelerator::Invoke(
     IMFAsyncResult* pAsyncResult) {
-  Microsoft::WRL::ComPtr<IMFMediaEvent> media_event;
+  ComMFMediaEvent media_event;
   RETURN_IF_FAILED(event_generator_->EndGetEvent(pAsyncResult, &media_event));
 
   MediaEventType event_type = MEUnknown;
