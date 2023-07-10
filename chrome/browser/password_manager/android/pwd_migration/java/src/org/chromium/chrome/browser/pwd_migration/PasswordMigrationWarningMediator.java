@@ -74,7 +74,6 @@ class PasswordMigrationWarningMediator
     private PropertyModel mModel;
     private Profile mProfile;
     private MigrationWarningOptionsHandler mOptionsHandler;
-    private boolean mPasswordsAvailable;
 
     public interface MigrationWarningOptionsHandler {
         /**
@@ -92,7 +91,7 @@ class PasswordMigrationWarningMediator
          *
          * @param fragmentManager for the fragment that owns the export flow.
          */
-        void startExportFlow(FragmentManager fragmentManager, boolean passwordsAvailable);
+        void startExportFlow(FragmentManager fragmentManager);
 
         /**
          * Resumes the password export flow.
@@ -109,7 +108,6 @@ class PasswordMigrationWarningMediator
             Profile profile, MigrationWarningOptionsHandler optionsHandler) {
         mProfile = profile;
         mOptionsHandler = optionsHandler;
-        mPasswordsAvailable = false;
     }
 
     void initializeModel(PropertyModel model) {
@@ -170,7 +168,7 @@ class PasswordMigrationWarningMediator
                     PasswordMigrationWarningUserActions.SYNC,
                     PasswordMigrationWarningUserActions.COUNT);
         } else {
-            mOptionsHandler.startExportFlow(fragmentManager, mPasswordsAvailable);
+            mOptionsHandler.startExportFlow(fragmentManager);
 
             RecordHistogram.recordEnumeratedHistogram(PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
                     PasswordMigrationWarningUserActions.EXPORT,
@@ -216,7 +214,6 @@ class PasswordMigrationWarningMediator
 
     @Override
     public void passwordListAvailable(int count) {
-        mPasswordsAvailable = true;
         mOptionsHandler.passwordsAvailable();
     }
 

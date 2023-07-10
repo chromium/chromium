@@ -962,9 +962,9 @@ public class PasswordSettingsExportTest {
                 mTestHelper.startPasswordSettingsFromMainSettings(mSettingsActivityTestRule);
 
         PasswordSettings fragment = mSettingsActivityTestRule.getFragment();
-        ExportFlow exportFlow = fragment.getExportFlowForTesting();
-        exportFlow.startExporting(false);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ExportFlow exportFlow = fragment.getExportFlowForTesting();
+            exportFlow.startExporting();
             exportFlow.passwordsAvailable();
             exportFlow.passwordsAvailable();
         });

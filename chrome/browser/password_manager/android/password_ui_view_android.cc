@@ -312,6 +312,12 @@ jboolean JNI_PasswordUIView_HasAccountForLeakCheckRequest(JNIEnv* env) {
       identity_manager);
 }
 
+jboolean PasswordUIViewAndroid::IsWaitingForPasswordStore(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>&) {
+  return saved_passwords_presenter_.IsWaitingForPasswordStore();
+}
+
 // static
 static jlong JNI_PasswordUIView_Init(JNIEnv* env,
                                      const JavaParamRef<jobject>& obj) {

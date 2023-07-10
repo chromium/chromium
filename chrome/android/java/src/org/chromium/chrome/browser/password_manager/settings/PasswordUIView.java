@@ -143,6 +143,12 @@ public final class PasswordUIView implements PasswordManagerHandler {
         return PasswordUIViewJni.get().hasAccountForLeakCheckRequest();
     }
 
+    @Override
+    public boolean isWaitingForPasswordStore() {
+        return PasswordUIViewJni.get().isWaitingForPasswordStore(
+                mNativePasswordUIViewAndroid, PasswordUIView.this);
+    }
+
     /**
      * Destroy the native object.
      */
@@ -170,6 +176,7 @@ public final class PasswordUIView implements PasswordManagerHandler {
         String getAccountDashboardURL();
         String getTrustedVaultLearnMoreURL();
         boolean hasAccountForLeakCheckRequest();
+        boolean isWaitingForPasswordStore(long nativePasswordUIViewAndroid, PasswordUIView caller);
         void destroy(long nativePasswordUIViewAndroid, PasswordUIView caller);
         void handleSerializePasswords(long nativePasswordUIViewAndroid, PasswordUIView caller,
                 String targetPath, IntStringCallback successCallback,

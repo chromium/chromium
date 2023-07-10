@@ -264,7 +264,7 @@ public class ExportFlow implements ExportFlowInterface {
     }
 
     @Override
-    public void startExporting(boolean passwordsAvailable) {
+    public void startExporting() {
         assert mExportState == ExportState.INACTIVE;
         // Disable re-triggering exporting until the current exporting finishes.
         mExportState = ExportState.REQUESTED;
@@ -274,7 +274,9 @@ public class ExportFlow implements ExportFlowInterface {
         // fails the reauthentication, the serialized passwords will simply get ignored when
         // they arrive.
         mEntriesCount = null;
-        if (passwordsAvailable) {
+        if (!PasswordManagerHandlerProvider.getInstance()
+                        .getPasswordManagerHandler()
+                        .isWaitingForPasswordStore()) {
             serializePasswords();
         }
         if (!ReauthenticationManager.isScreenLockSetUp(

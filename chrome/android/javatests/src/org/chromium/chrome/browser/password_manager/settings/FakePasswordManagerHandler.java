@@ -129,6 +129,11 @@ final class FakePasswordManagerHandler implements PasswordManagerHandler {
         mShowWarningWasCalled = true;
     }
 
+    @Override
+    public boolean isWaitingForPasswordStore() {
+        return false;
+    }
+
     public int getSerializationInvocationCount() {
         return mSerializationInvocationCount;
     }
