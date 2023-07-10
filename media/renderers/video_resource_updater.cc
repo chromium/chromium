@@ -1116,7 +1116,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
     }
 
     // Some YUV resources have different sized planes. If we lack the proper
-    // ResourceFormat just convert to RGB. We could do something better like
+    // SharedImageFormat just convert to RGB. We could do something better like
     // unpacking to I420/I016, but texture_rg and r16 support should be pretty
     // universal and we expect these frames to be rare.
     if (input_frame_format == PIXEL_FORMAT_NV12) {

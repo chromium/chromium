@@ -493,15 +493,15 @@ void CreateTestYUVVideoDrawQuad_FromVideoFrame(
     bits_per_channel = 10;
   }
 
-  SharedImageFormat yuv_highbit_resource_format =
+  SharedImageFormat yuv_highbit_format =
       video_resource_updater->YuvSharedImageFormat(bits_per_channel);
 
   float offset = 0.0f;
   float multiplier = 1.0f;
 
-  if (yuv_highbit_resource_format == SinglePlaneFormat::kR_16) {
+  if (yuv_highbit_format == SinglePlaneFormat::kR_16) {
     multiplier = 65535.0f / ((1 << bits_per_channel) - 1);
-  } else if (yuv_highbit_resource_format == SinglePlaneFormat::kLUMINANCE_F16) {
+  } else if (yuv_highbit_format == SinglePlaneFormat::kLUMINANCE_F16) {
     std::unique_ptr<media::HalfFloatMaker> half_float_maker =
         media::HalfFloatMaker::NewHalfFloatMaker(bits_per_channel);
     offset = half_float_maker->Offset();
