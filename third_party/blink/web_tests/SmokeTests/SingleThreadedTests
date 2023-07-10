@@ -1990,7 +1990,7 @@ virtual/plz-dedicated-worker/http/tests/inspector-protocol/fetch/dedicated-worke
 virtual/plz-dedicated-worker/http/tests/inspector-protocol/issues/content-security-policy-issue-creation-inline-script.js
 virtual/plz-dedicated-worker/http/tests/inspector-protocol/network/get-response-body.js
 virtual/plz-dedicated-worker/http/tests/inspector-protocol/network/raw-headers-after-navigation.js
-virtual/plz-dedicated-worker/http/tests/inspector-protocol/runtime/serialization_options.js
+virtual/plz-dedicated-worker/http/tests/inspector-protocol/runtime/serialization-options.js
 virtual/plz-dedicated-worker/http/tests/inspector-protocol/storage/cache-storage-request-cache-names.js
 virtual/plz-dedicated-worker/http/tests/inspector-protocol/storage/indexed-db-storage-key-request-database-names.js
 virtual/plz-dedicated-worker/http/tests/inspector-protocol/target/auto-attach-wait-for-debugger-2-sessions-worker.js
