@@ -630,8 +630,8 @@ void LayoutMultiColumnSet::DetachFromFlowThread() {
 }
 
 bool LayoutMultiColumnSet::ComputeColumnRuleBounds(
-    const LayoutPoint& paint_offset,
-    Vector<LayoutRect>& column_rule_bounds) const {
+    const PhysicalOffset& paint_offset,
+    Vector<PhysicalRect>& column_rule_bounds) const {
   NOT_DESTROYED();
   // Reference: https://www.w3.org/TR/css3-multicol/#column-gaps-and-rules
   const ComputedStyle& block_style = MultiColumnBlockFlow()->StyleRef();
@@ -670,20 +670,20 @@ bool LayoutMultiColumnSet::ComputeColumnRuleBounds(
     if (i < col_count - 1) {
       LayoutUnit rule_left, rule_right, rule_top, rule_bottom;
       if (IsHorizontalWritingMode()) {
-        rule_left = paint_offset.X() + rule_logical_left - rule_thickness / 2 +
+        rule_left = paint_offset.left + rule_logical_left - rule_thickness / 2 +
                     rule_add;
         rule_right = rule_left + rule_thickness;
-        rule_top = paint_offset.Y() + BorderTop() + PaddingTop();
+        rule_top = paint_offset.top + BorderTop() + PaddingTop();
         rule_bottom = rule_top + ContentHeight();
       } else {
-        rule_left = paint_offset.X() + BorderLeft() + PaddingLeft();
+        rule_left = paint_offset.left + BorderLeft() + PaddingLeft();
         rule_right = rule_left + ContentWidth();
-        rule_top = paint_offset.Y() + rule_logical_left - rule_thickness / 2 +
+        rule_top = paint_offset.top + rule_logical_left - rule_thickness / 2 +
                    rule_add;
         rule_bottom = rule_top + rule_thickness;
       }
 
-      column_rule_bounds.push_back(LayoutRect(
+      column_rule_bounds.push_back(PhysicalRect(
           rule_left, rule_top, rule_right - rule_left, rule_bottom - rule_top));
     }
 
@@ -698,10 +698,9 @@ PhysicalRect LayoutMultiColumnSet::LocalVisualRectIgnoringVisibility() const {
       LayoutBlockFlow::LocalVisualRectIgnoringVisibility();
 
   // Now add in column rule bounds, if present.
-  Vector<LayoutRect> column_rule_bounds;
-  if (ComputeColumnRuleBounds(LayoutPoint(), column_rule_bounds)) {
-    block_flow_bounds.Unite(
-        PhysicalRectToBeNoop(UnionRect(column_rule_bounds)));
+  Vector<PhysicalRect> column_rule_bounds;
+  if (ComputeColumnRuleBounds(PhysicalOffset(), column_rule_bounds)) {
+    block_flow_bounds.Unite(UnionRect(column_rule_bounds));
   }
 
   return block_flow_bounds;

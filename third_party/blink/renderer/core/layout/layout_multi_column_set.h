@@ -222,11 +222,11 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   }
   LayoutPoint LocationInternal() const override;
 
-  // Sets |columnRuleBounds| to the bounds of each column rule rect's painted
+  // Sets |column_rule_bounds| to the bounds of each column rule rect's painted
   // extent, adjusted by paint offset, before pixel snapping. Returns true if
   // column rules should be painted at all.
-  bool ComputeColumnRuleBounds(const LayoutPoint& paint_offset,
-                               Vector<LayoutRect>& column_rule_bounds) const;
+  bool ComputeColumnRuleBounds(const PhysicalOffset& paint_offset,
+                               Vector<PhysicalRect>& column_rule_bounds) const;
 
   void FinishLayoutFromNG();
 
