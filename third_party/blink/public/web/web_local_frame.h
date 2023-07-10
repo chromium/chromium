@@ -908,7 +908,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void SetTargetToCurrentHistoryItem(const WebString& target) = 0;
   virtual void UpdateCurrentHistoryItem() = 0;
   virtual PageState CurrentHistoryItemToPageState() = 0;
-  virtual const WebHistoryItem& GetCurrentHistoryItem() const = 0;
+  virtual WebHistoryItem GetCurrentHistoryItem() const = 0;
   // Reset TextFinder state for the web test runner in between two tests.
   virtual void ClearActiveFindMatchForTesting() = 0;
 

@@ -357,7 +357,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SetTargetToCurrentHistoryItem(const WebString& target) override;
   void UpdateCurrentHistoryItem() override;
   PageState CurrentHistoryItemToPageState() override;
-  const WebHistoryItem& GetCurrentHistoryItem() const override;
+  WebHistoryItem GetCurrentHistoryItem() const override;
   void SetLocalStorageArea(
       CrossVariantMojoRemote<mojom::StorageAreaInterfaceBase>
           local_storage_area) override;
@@ -706,8 +706,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   // scrolled and focused editable node.
   bool has_scrolled_focused_editable_node_into_rect_ = false;
 
-  GC_PLUGIN_IGNORE("crbug.com/1458809")
-  WebHistoryItem current_history_item_;
+  Member<HistoryItem> current_history_item_;
 
   // All the registered observers.
   base::ObserverList<WebLocalFrameObserver, true> observers_;
