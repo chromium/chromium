@@ -698,7 +698,8 @@ interface ShimlessRmaService {
   // Returns the next state to display and an error code.
   SetDeviceInformation(
       string serial_number, int32 region_index, int32 sku_index,
-      int32 white_label_index, string dram_part_number)
+      int32 white_label_index, string dram_part_number, bool is_chassis_branded,
+      int32 hw_compliance_version)
           => (StateResult state_result);
 
   ///////////////////////////////////////

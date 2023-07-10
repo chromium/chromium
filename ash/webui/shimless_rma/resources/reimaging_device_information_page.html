@@ -253,15 +253,16 @@
             </div>
             <div class="input-holder">
               <select id="isChassisBranded" class="md-select"
+                  on-change="onIsChassisBrandedChange_"
                   aria-labelledby="isChassisBrandedLabel"
                   disabled="[[allButtonsDisabled]]">
-                <option value="default">
+                <option value="[[booleanOrDefaultOptions_.DEFAULT]]">
                   [[i18n('confirmDeviceInfoDeviceAnswerDefault')]]
                 </option>
-                <option value="no">
+                <option value="[[booleanOrDefaultOptions_.NO]]">
                   [[i18n('confirmDeviceInfoDeviceAnswerNo')]]
                 </option>
-                <option value="yes">
+                <option value="[[booleanOrDefaultOptions_.YES]]">
                   [[i18n('confirmDeviceInfoDeviceAnswerYes')]]
                 </option>
               </select>
@@ -284,15 +285,16 @@
             </div>
             <div class="input-holder">
               <select id="doesMeetRequirements" class="md-select"
+                  on-change="onDoesMeetRequirementsChange_"
                   aria-labelledby="doesMeetRequirementsLabel"
                   disabled="[[allButtonsDisabled]]">
-                <option value="default">
+                <option value="[[booleanOrDefaultOptions_.DEFAULT]]">
                   [[i18n('confirmDeviceInfoDeviceAnswerDefault')]]
                 </option>
-                <option value="no">
+                <option value="[[booleanOrDefaultOptions_.NO]]">
                   [[i18n('confirmDeviceInfoDeviceAnswerNo')]]
                 </option>
-                <option value="yes">
+                <option value="[[booleanOrDefaultOptions_.YES]]">
                   [[i18n('confirmDeviceInfoDeviceAnswerYes')]]
                 </option>
               </select>

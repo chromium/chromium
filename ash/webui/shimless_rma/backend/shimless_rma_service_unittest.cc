@@ -2573,6 +2573,8 @@ TEST_F(ShimlessRmaServiceTest, SetDeviceInformation) {
         EXPECT_EQ(state.update_device_info().sku_index(), 2L);
         EXPECT_EQ(state.update_device_info().whitelabel_index(), 3L);
         EXPECT_EQ(state.update_device_info().dram_part_number(), "123-456-789");
+        EXPECT_EQ(state.update_device_info().is_chassis_branded(), true);
+        EXPECT_EQ(state.update_device_info().hw_compliance_version(), 22u);
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(
@@ -2584,7 +2586,7 @@ TEST_F(ShimlessRmaServiceTest, SetDeviceInformation) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->SetDeviceInformation(
-      "serial number", 1, 2, 3, "123-456-789",
+      "serial number", 1, 2, 3, "123-456-789", true, 22u,
       base::BindLambdaForTesting([&](mojom::StateResultPtr state_result_ptr) {
         EXPECT_EQ(state_result_ptr->state, mojom::State::kChooseDestination);
         EXPECT_EQ(state_result_ptr->error, rmad::RmadErrorCode::RMAD_ERROR_OK);
@@ -2606,7 +2608,7 @@ TEST_F(ShimlessRmaServiceTest, SetDeviceInformationFromWrongStateFails) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->SetDeviceInformation(
-      "serial number", 1, 2, 3, "123-456-789",
+      "serial number", 1, 2, 3, "123-456-789", false, 0,
       base::BindLambdaForTesting([&](mojom::StateResultPtr state_result_ptr) {
         EXPECT_EQ(state_result_ptr->state, mojom::State::kChooseDestination);
         EXPECT_EQ(state_result_ptr->error,

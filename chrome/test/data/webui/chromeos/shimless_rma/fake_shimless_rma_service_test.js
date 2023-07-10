@@ -577,7 +577,8 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     ];
     service.setStates(states);
 
-    return service.setDeviceInformation('serial number', 1, 2, 3, '123-456-789')
+    return service
+        .setDeviceInformation('serial number', 1, 2, 3, '123-456-789', false, 1)
         .then(({stateResult: {state, error}}) => {
           assertEquals(state, State.kChooseDestination);
           assertEquals(error, RmadErrorCode.kOk);

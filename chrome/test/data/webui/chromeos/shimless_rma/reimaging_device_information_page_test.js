@@ -7,7 +7,7 @@ import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js
 import {fakeDeviceRegions, fakeDeviceSkus, fakeDeviceWhiteLabels} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {ReimagingDeviceInformationPage} from 'chrome://shimless-rma/reimaging_device_information_page.js';
+import {BooleanOrDefaultOptions, ReimagingDeviceInformationPage} from 'chrome://shimless-rma/reimaging_device_information_page.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {FeatureLevel} from 'chrome://shimless-rma/shimless_rma_types.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -30,6 +30,35 @@ function suppressedComponentOnSelectedChange_(component) {
   component.onSelectedRegionChange_('ignored');
   component.onSelectedWhiteLabelChange_('ignored');
   component.onSelectedSkuChange_('ignored');
+  component.onIsChassisBrandedChange_('ignored');
+  component.onDoesMeetRequirementsChange_('ignored');
+}
+
+/**
+ * This function is used to verify the results of calls to
+ * ShimlessRMAService.setDeviceInformation.
+ * @param {Object} fakeShimlessService the service that will
+ *     have a mocked "setDeviceInformation".
+ * @param {PromiseResolver} promiseResolver
+ * @param {Object} result Empty object to store call results into.
+ */
+function setSetDeviceInformationForMockService(
+    fakeShimlessService, promiseResolver, result) {
+  result.callCounter = 0;
+  fakeShimlessService.setDeviceInformation =
+      (resultSerialNumber, resultRegionIndex, resultSkuIndex,
+       resultWhiteLabelIndex, resultDramPartNumber, resultIsChassisBranded,
+       resultHwComplianceVersion) => {
+        result.callCounter++;
+        result.serialNumber = resultSerialNumber;
+        result.regionIndex = resultRegionIndex;
+        result.whiteLabelIndex = resultWhiteLabelIndex;
+        result.skuIndex = resultSkuIndex;
+        result.dramPartNumber = resultDramPartNumber;
+        result.isChassisBranded = resultIsChassisBranded;
+        result.hwComplianceVersion = resultHwComplianceVersion;
+        return promiseResolver.promise;
+      };
 }
 
 suite('reimagingDeviceInformationPageTest', function() {
@@ -137,23 +166,10 @@ suite('reimagingDeviceInformationPageTest', function() {
     // automatically.
     suppressedComponentOnSelectedChange_(component);
     await flushTasks();
-    let serialNumber;
-    let regionIndex;
-    let whiteLabelIndex;
-    let skuIndex;
-    let dramPartNumber;
-    let callCounter = 0;
-    service.setDeviceInformation =
-        (resultSerialNumber, resultRegionIndex, resultSkuIndex,
-         resultWhiteLabelIndex, resultDramPartNumber) => {
-          callCounter++;
-          serialNumber = resultSerialNumber;
-          regionIndex = resultRegionIndex;
-          whiteLabelIndex = resultWhiteLabelIndex;
-          skuIndex = resultSkuIndex;
-          dramPartNumber = resultDramPartNumber;
-          return resolver.promise;
-        };
+
+    const setDeviceInformationResults = {};
+    setSetDeviceInformationForMockService(
+        service, resolver, setDeviceInformationResults);
 
     const expectedResult = {foo: 'bar'};
     let savedResult;
@@ -162,12 +178,17 @@ suite('reimagingDeviceInformationPageTest', function() {
     resolver.resolve(expectedResult);
     await flushTasks();
 
-    assertEquals(1, callCounter);
-    assertEquals(expectedSerialNumber, serialNumber);
-    assertEquals(expectedRegionIndex, regionIndex);
-    assertEquals(expectedWhiteLabelIndex, whiteLabelIndex);
-    assertEquals(expectedSkuIndex, skuIndex);
-    assertEquals(expectedDramPartNumber, dramPartNumber);
+    assertEquals(1, setDeviceInformationResults.callCounter);
+    assertEquals(
+        expectedSerialNumber, setDeviceInformationResults.serialNumber);
+    assertEquals(expectedRegionIndex, setDeviceInformationResults.regionIndex);
+    assertEquals(
+        expectedWhiteLabelIndex, setDeviceInformationResults.whiteLabelIndex);
+    assertEquals(expectedSkuIndex, setDeviceInformationResults.skuIndex);
+    assertEquals(
+        expectedDramPartNumber, setDeviceInformationResults.dramPartNumber);
+    assertEquals(false, setDeviceInformationResults.isChassisBranded);
+    assertEquals(0, setDeviceInformationResults.hwComplianceVersion);
     assertDeepEquals(expectedResult, savedResult);
   });
 
@@ -367,6 +388,233 @@ suite('reimagingDeviceInformationPageTest', function() {
         assertFalse(disableNextButtonEventFired);
       });
 
+  test(
+      'ReimagingDeviceInformationPage_NextButtonState_IsChassisBranded',
+      async () => {
+        // Set the compliance check flag so that the additional questions show
+        // up.
+        loadTimeData.overrideValues({complianceCheckEnabled: true});
+
+        initializeReimagingDeviceInformationPage();
+
+        // Set the feature level so that the additional questions show up.
+        service.setGetOriginalFeatureLevelResult(
+            FeatureLevel.kRmadFeatureLevelUnknown);
+
+        await initializeComponent();
+
+        const hwComplianceVersionElement =
+            component.shadowRoot.querySelector('#doesMeetRequirements');
+        const isChassisBrandedElement =
+            component.shadowRoot.querySelector('#isChassisBranded');
+
+        // Set the values of the compliance question properties so that the
+        // next button is initially enabled.
+        hwComplianceVersionElement.value = BooleanOrDefaultOptions.NO;
+        isChassisBrandedElement.value = BooleanOrDefaultOptions.NO;
+        suppressedComponentOnSelectedChange_(component);
+
+        let disableNextButtonEventFired = false;
+        let isNextButtonDisabled = false;
+        component.addEventListener('disable-next-button', (e) => {
+          disableNextButtonEventFired = true;
+          isNextButtonDisabled = e.detail;
+        });
+
+        isChassisBrandedElement.value = BooleanOrDefaultOptions.YES;
+        suppressedComponentOnSelectedChange_(component);
+        await flushTasks();
+
+        assertTrue(disableNextButtonEventFired, 'Event should have fired.');
+        assertFalse(isNextButtonDisabled, 'Next button should be enabled.');
+
+        // Reset the value of the tracking variable.
+        disableNextButtonEventFired = false;
+
+        // Reset the index back to its default value, which should disable
+        // the next button.
+        isChassisBrandedElement.value = BooleanOrDefaultOptions.DEFAULT;
+        suppressedComponentOnSelectedChange_(component);
+        await flushTasks();
+
+        assertTrue(disableNextButtonEventFired, 'Event should have fired.');
+        assertTrue(isNextButtonDisabled, 'Next button should be disabled.');
+      });
+
+  test(
+      'ReimagingDeviceInformationPage_NextButtonState_HwComplianceVersion',
+      async () => {
+        // Set the compliance check flag so that the additional questions show
+        // up.
+        loadTimeData.overrideValues({complianceCheckEnabled: true});
+
+        initializeReimagingDeviceInformationPage();
+
+        // Set the feature level so that the additional questions show up.
+        service.setGetOriginalFeatureLevelResult(
+            FeatureLevel.kRmadFeatureLevelUnknown);
+
+        await initializeComponent();
+
+        const hwComplianceVersionElement =
+            component.shadowRoot.querySelector('#doesMeetRequirements');
+        const isChassisBrandedElement =
+            component.shadowRoot.querySelector('#isChassisBranded');
+
+        // Set the values of the compliance question properties so that the
+        // next button is initially enabled.
+        hwComplianceVersionElement.value = BooleanOrDefaultOptions.NO;
+        isChassisBrandedElement.value = BooleanOrDefaultOptions.NO;
+        suppressedComponentOnSelectedChange_(component);
+
+        let disableNextButtonEventFired = false;
+        let isNextButtonDisabled = false;
+        component.addEventListener('disable-next-button', (e) => {
+          disableNextButtonEventFired = true;
+          isNextButtonDisabled = e.detail;
+        });
+
+        // Manually update the property to trigger the observer.
+        hwComplianceVersionElement.value = BooleanOrDefaultOptions.YES;
+        suppressedComponentOnSelectedChange_(component);
+        await flushTasks();
+
+        assertTrue(disableNextButtonEventFired, 'Event should have fired.');
+        assertFalse(isNextButtonDisabled, 'Next button should be enabled.');
+
+        // Reset the value of the tracking variable.
+        disableNextButtonEventFired = false;
+
+        // Reset the index back to its default value, which should disable
+        // the next button.
+        hwComplianceVersionElement.value = BooleanOrDefaultOptions.DEFAULT;
+        suppressedComponentOnSelectedChange_(component);
+        await flushTasks();
+
+        assertTrue(disableNextButtonEventFired, 'Event should have fired.');
+        assertTrue(isNextButtonDisabled, 'Next button should be disabled.');
+      });
+
+  test(
+      'ReimagingDeviceInformationPage_NextButtonState_QuestionsNotShown',
+      async () => {
+        // Set the compliance check flag so that the additional questions show
+        // up if the feature level is unknown.
+        loadTimeData.overrideValues({complianceCheckEnabled: true});
+
+        initializeReimagingDeviceInformationPage();
+
+        // Set the feature level so that the additional questions *don't* show
+        // up.
+        service.setGetOriginalFeatureLevelResult(
+            FeatureLevel.kRmadFeatureLevel0);
+
+        await initializeComponent();
+
+        const hwComplianceVersionElement =
+            component.shadowRoot.querySelector('#doesMeetRequirements');
+        const isChassisBrandedElement =
+            component.shadowRoot.querySelector('#isChassisBranded');
+
+        // Set the values of the compliance question properties to their default
+        // values. If the feature level were unknown, this would disable the
+        // next button. In this case, we're setting these values so that
+        // changing them later triggers the observer.
+        hwComplianceVersionElement.value = BooleanOrDefaultOptions.DEFAULT;
+        isChassisBrandedElement.value = BooleanOrDefaultOptions.DEFAULT;
+        suppressedComponentOnSelectedChange_(component);
+
+        let disableNextButtonEventFired = false;
+        let isNextButtonDisabled = false;
+        component.addEventListener('disable-next-button', (e) => {
+          disableNextButtonEventFired = true;
+          isNextButtonDisabled = e.detail;
+        });
+
+        // Manually update the property to trigger the observer.
+        isChassisBrandedElement.value = BooleanOrDefaultOptions.NO;
+        suppressedComponentOnSelectedChange_(component);
+        await flushTasks();
+
+        // We expect that the state of the compliance properties do not affect
+        // the state of the button. Specifically, the next button should be
+        // enabled even though "hwComplianceVersionIndex_" is still 0.
+        assertTrue(disableNextButtonEventFired, 'Event should have fired.');
+        assertFalse(isNextButtonDisabled, 'Next button should be enabled.');
+
+        // Reset the value of the tracking variable.
+        disableNextButtonEventFired = false;
+
+        // Reset the index back to its default value,
+        isChassisBrandedElement.value = BooleanOrDefaultOptions.DEFAULT;
+        suppressedComponentOnSelectedChange_(component);
+        await flushTasks();
+
+        assertTrue(disableNextButtonEventFired, 'Event should have fired.');
+        assertFalse(isNextButtonDisabled, 'Next button should be enabled.');
+      });
+
+  test(
+      'ReimagingDeviceInformationPage_ResultsForComplianceCheckQuestions',
+      async () => {
+        // Set the compliance check flag so that the additional questions show
+        // up.
+        loadTimeData.overrideValues({complianceCheckEnabled: true});
+
+        initializeReimagingDeviceInformationPage();
+
+        // Set the feature level so that the additional questions show up.
+        service.setGetOriginalFeatureLevelResult(
+            FeatureLevel.kRmadFeatureLevelUnknown);
+
+        await initializeComponent();
+
+        const hwComplianceVersionElement =
+            component.shadowRoot.querySelector('#doesMeetRequirements');
+        const isChassisBrandedElement =
+            component.shadowRoot.querySelector('#isChassisBranded');
+
+        // Note that we purposefully don't test the default option for either
+        // field, since that disables the Next button entirely.
+        const scenarios = [
+          {
+            initialHwComplianceVersionValue: BooleanOrDefaultOptions.NO,
+            expectedHwComplianceVersion: 0,
+            initialIsChassisBrandedValue: BooleanOrDefaultOptions.NO,
+            expectedIsChassisBranded: false,
+          },
+          {
+            initialHwComplianceVersionValue: BooleanOrDefaultOptions.YES,
+            expectedHwComplianceVersion: 1,
+            initialIsChassisBrandedValue: BooleanOrDefaultOptions.YES,
+            expectedIsChassisBranded: true,
+          },
+        ];
+
+        for (const scenario of scenarios) {
+          hwComplianceVersionElement.value =
+              scenario.initialHwComplianceVersionValue;
+          isChassisBrandedElement.value = scenario.initialIsChassisBrandedValue;
+          suppressedComponentOnSelectedChange_(component);
+
+          const setDeviceInformationResults = {};
+          const resolver = new PromiseResolver();
+          setSetDeviceInformationForMockService(
+              service, resolver, setDeviceInformationResults);
+
+          component.onNextButtonClick();
+          resolver.resolve({});
+          await flushTasks();
+          assertEquals(
+              scenario.expectedHwComplianceVersion,
+              setDeviceInformationResults.hwComplianceVersion);
+          assertEquals(
+              scenario.expectedIsChassisBranded,
+              setDeviceInformationResults.isChassisBranded);
+        }
+      });
+
+
   test('ReimagingDeviceInformationPage_ComplianceCheckDisabled', async () => {
     loadTimeData.overrideValues({complianceCheckEnabled: false});
 
@@ -380,6 +628,19 @@ suite('reimagingDeviceInformationPageTest', function() {
         isVisible(component.shadowRoot.querySelector('#isChassisBranded')));
     assertFalse(
         isVisible(component.shadowRoot.querySelector('#doesMeetRequirements')));
+
+    // Next button should be enabled by default if the compliance check is
+    // disabled.
+    let isNextButtonDisabled = false;
+    component.addEventListener('disable-next-button', (e) => {
+      isNextButtonDisabled = e.detail;
+    });
+
+    // Trigger Next button update.
+    suppressedComponentOnSelectedChange_(component);
+    await flushTasks();
+
+    assertFalse(isNextButtonDisabled, 'Next button should be enabled.');
   });
 
   test(

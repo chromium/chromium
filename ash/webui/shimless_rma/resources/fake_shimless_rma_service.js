@@ -604,10 +604,13 @@ export class FakeShimlessRmaService {
    * @param {number} skuIndex
    * @param {number} whiteLabelIndex
    * @param {string} dramPartNumber
+   * @param {boolean} isChassisBranded
+   * @param {number} hwComplianceVersion
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   setDeviceInformation(
-      serialNumber, regionIndex, skuIndex, whiteLabelIndex, dramPartNumber) {
+      serialNumber, regionIndex, skuIndex, whiteLabelIndex, dramPartNumber,
+      isChassisBranded, hwComplianceVersion) {
     // TODO(gavindodd): Validate range of region and sku.
     return this.getNextStateForMethod_(
         'setDeviceInformation', State.kUpdateDeviceInformation);

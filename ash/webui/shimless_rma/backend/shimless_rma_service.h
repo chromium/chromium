@@ -99,6 +99,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
                             int32_t sku_index,
                             int32_t white_label_index,
                             const std::string& dram_part_number,
+                            bool is_chassis_branded,
+                            int32_t hw_compliance_version,
                             SetDeviceInformationCallback callback) override;
   void GetCalibrationComponentList(
       GetCalibrationComponentListCallback callback) override;

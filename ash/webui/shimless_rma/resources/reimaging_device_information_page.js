@@ -32,6 +32,16 @@ import {disableNextButton, enableNextButton, focusPageTitle, isComplianceCheckEn
 const ReimagingDeviceInformationPageBase =
     mixinBehaviors([I18nBehavior], CrContainerShadowMixin(PolymerElement));
 
+/**
+ * Supported options for IsChassisBranded and HwComplianceVersion questions.
+ * @enum {string}
+ */
+export const BooleanOrDefaultOptions = {
+  DEFAULT: 'default',
+  YES: 'yes',
+  NO: 'no',
+};
+
 /** @polymer */
 export class ReimagingDeviceInformationPage extends
     ReimagingDeviceInformationPageBase {
@@ -45,7 +55,8 @@ export class ReimagingDeviceInformationPage extends
 
   static get observers() {
     return [
-      'updateNextButtonDisabledState_(serialNumber_, skuIndex_, regionIndex_)',
+      'updateNextButtonDisabledState_(serialNumber_, skuIndex_, regionIndex_,' +
+          ' isChassisBranded_, hwComplianceVersion_)',
     ];
   }
 
@@ -176,6 +187,28 @@ export class ReimagingDeviceInformationPage extends
         type: Number,
         value: FeatureLevel.kRmadFeatureLevelUnsupported,
       },
+
+      /**
+       * Used to refer to the enum values in the HTML file.
+       * @protected {?BooleanOrDefaultOptions}
+       */
+      booleanOrDefaultOptions_: {
+        type: Object,
+        value: BooleanOrDefaultOptions,
+        readOnly: true,
+      },
+
+      /** @protected */
+      isChassisBranded_: {
+        type: String,
+        value: BooleanOrDefaultOptions.DEFAULT,
+      },
+
+      /** @protected */
+      hwComplianceVersion_: {
+        type: String,
+        value: BooleanOrDefaultOptions.DEFAULT,
+      },
     };
   }
 
@@ -203,6 +236,13 @@ export class ReimagingDeviceInformationPage extends
 
   /** @private */
   allInformationIsValid_() {
+    const complianceQuestionsHaveDefaultValues =
+        this.isChassisBranded_ === BooleanOrDefaultOptions.DEFAULT ||
+        this.hwComplianceVersion_ === BooleanOrDefaultOptions.DEFAULT;
+    if (this.areComplianceQuestionsShown_() &&
+        complianceQuestionsHaveDefaultValues) {
+      return false;
+    }
     return (this.serialNumber_ !== '') && (this.skuIndex_ >= 0) &&
         (this.regionIndex_ >= 0);
   }
@@ -384,14 +424,44 @@ export class ReimagingDeviceInformationPage extends
     this.dramPartNumber_ = this.originalDramPartNumber_;
   }
 
+  /** @protected */
+  onIsChassisBrandedChange_(event) {
+    this.isChassisBranded_ =
+        this.shadowRoot.querySelector('#isChassisBranded').value;
+  }
+
+  /** @protected */
+  onDoesMeetRequirementsChange_(event) {
+    this.hwComplianceVersion_ =
+        this.shadowRoot.querySelector('#doesMeetRequirements').value;
+  }
+
   /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
     if (!this.allInformationIsValid_()) {
       return Promise.reject(new Error('Some required information is not set'));
     } else {
+      let isChassisBranded = false;
+      let hwComplianceVersion = 0;
+
+      if (this.areComplianceQuestionsShown_()) {
+        // Convert isChassisBranded_ to boolean value for mojo.
+        isChassisBranded =
+            this.isChassisBranded_ === BooleanOrDefaultOptions.YES;
+
+        // Convert hwComplianceVersion_ to correct value for mojo.
+        const HARDWARE_COMPLIANT = 1;
+        const HARDWARE_NOT_COMPLIANT = 0;
+        hwComplianceVersion =
+            this.hwComplianceVersion_ === BooleanOrDefaultOptions.YES ?
+            HARDWARE_COMPLIANT :
+            HARDWARE_NOT_COMPLIANT;
+      }
+
       return this.shimlessRmaService_.setDeviceInformation(
           this.serialNumber_, this.regionIndex_, this.skuIndex_,
-          this.whiteLabelIndex_, this.dramPartNumber_);
+          this.whiteLabelIndex_, this.dramPartNumber_, isChassisBranded,
+          hwComplianceVersion);
     }
   }
 
@@ -405,6 +475,11 @@ export class ReimagingDeviceInformationPage extends
   isComplianceStatusKnown_() {
     return this.featureLevel_ !== FeatureLevel.kRmadFeatureLevelUnsupported &&
         this.featureLevel_ !== FeatureLevel.kRmadFeatureLevelUnknown;
+  }
+
+  /** @private */
+  areComplianceQuestionsShown_() {
+    return isComplianceCheckEnabled() && !this.isComplianceStatusKnown_();
   }
 
   /** @private */
