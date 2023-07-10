@@ -1912,18 +1912,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmMaxMemPagesCount" units="pages"
-    expires_after="2022-02-15">
-  <owner>ecmziegler@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>ahaas@chromium.org</owner>
-  <owner>wasm-v8@google.com</owner>
-  <summary>
-    Number of 64KiB pages a WebAssembly module declares as its maximum
-    requirement. Recorded on each instantiation of a WebAssembly module.
-  </summary>
-</histogram>
-
 <histogram name="V8.WasmMemoryAllocationResult" enum="WasmAllocationResult"
     expires_after="2024-08-01">
   <owner>ecmziegler@chromium.org</owner>
@@ -1949,18 +1937,6 @@ chromium-metrics-reviews@google.com.
 
     As we use a Linux-specific API for PKUs, this value is only recorded on
     64-bit Linux machines.
-  </summary>
-</histogram>
-
-<histogram name="V8.WasmMinMemPagesCount" units="pages"
-    expires_after="2022-02-15">
-  <owner>ecmziegler@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>ahaas@chromium.org</owner>
-  <owner>wasm-v8@google.com</owner>
-  <summary>
-    Number of 64KiB pages a WebAssembly module declares as its minimum
-    requirement. Recorded on each instantiation of a WebAssembly module.
   </summary>
 </histogram>
 

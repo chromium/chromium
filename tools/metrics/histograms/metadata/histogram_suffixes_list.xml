@@ -5455,8 +5455,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="V8.WasmFunctionsPerModule"/>
   <affected-histogram name="V8.WasmHugeFunctionSizeBytes"/>
   <affected-histogram name="V8.WasmInstantiateModuleMicroSeconds"/>
-  <affected-histogram name="V8.WasmMaxMemPagesCount"/>
-  <affected-histogram name="V8.WasmMinMemPagesCount"/>
   <affected-histogram name="V8.WasmModuleSizeBytes"/>
 </histogram_suffixes>
 
