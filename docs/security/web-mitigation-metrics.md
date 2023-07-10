@@ -192,20 +192,20 @@ platform.
 
 [sanitizer]: https://wicg.github.io/sanitizer-api/
 
-## Local Network Access
+## Private Network Access
 
-[Local Network Access][lna] helps to prevent the user agent from
+[Private Network Access][pna] helps to prevent the user agent from
 inadvertently enabling attacks on devices running on a user's local intranet,
 or services running on the user's machine directly.
 
-* Use of LNA in workers tracked via:
+* Use of PNA in workers tracked via:
   - `kPrivateNetworkAccessFetchesWorkerScript`
   - `kPrivateNetworkAccessWithWorker`
 
 * `kPrivateNetworkAccessNullIpAddress` is an experimental use counter for
   accesses to the 0.0.0.0 IP address (and the corresponding `[::]` IPv6 address).
-  These can be used to access localhost on MacOS and Linux and bypass Local
+  These can be used to access localhost on MacOS and Linux and bypass Private
   Network Access checks. We intent to block all such requests. See
   https://crbug.com/1300021 and https://github.com/whatwg/fetch/issues/1117.
 
-[lna]: https://wicg.github.io/local-network-access/
+[pna]: https://wicg.github.io/private-network-access/
