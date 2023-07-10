@@ -12,5 +12,8 @@ static_library("devtools_pipe") {
     "devtools_pipe.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//content/public/browser",
+  ]
 }

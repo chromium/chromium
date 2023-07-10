@@ -11,10 +11,8 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -29,7 +27,6 @@
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
 
 namespace {
 Status MakeFailedStatus(const std::string& desired_state,
@@ -61,7 +58,7 @@ bool ChromeImpl::HasCrashedWebView() {
 Status ChromeImpl::GetWebViewIdForFirstTab(std::string* web_view_id,
                                            bool w3c_compliant) {
   WebViewsInfo views_info;
-  Status status = GetWebViewsInfo(&views_info);
+  Status status = GetWebViewsInfo(nullptr, views_info);
   if (status.IsError())
     return status;
   status = UpdateWebViews(views_info, w3c_compliant);
@@ -80,7 +77,7 @@ Status ChromeImpl::GetWebViewIdForFirstTab(std::string* web_view_id,
 Status ChromeImpl::GetWebViewIds(std::list<std::string>* web_view_ids,
                                  bool w3c_compliant) {
   WebViewsInfo views_info;
-  Status status = GetWebViewsInfo(&views_info);
+  Status status = GetWebViewsInfo(nullptr, views_info);
   if (status.IsError())
     return status;
   status = UpdateWebViews(views_info, w3c_compliant);
@@ -470,14 +467,14 @@ Status ChromeImpl::SetWindowBounds(Window* window,
   return MakeFailedStatus(*desired_state, window->state);
 }
 
-Status ChromeImpl::GetWebViewsInfo(WebViewsInfo* views_info) {
-  DCHECK(views_info);
+Status ChromeImpl::GetWebViewsInfo(const Timeout* timeout,
+                                   WebViewsInfo& views_info) {
   Status status{kOk};
 
   base::Value::Dict params;
   base::Value::Dict result;
-  status = devtools_websocket_client_->SendCommandAndGetResult(
-      "Target.getTargets", params, &result);
+  status = devtools_websocket_client_->SendCommandAndGetResultWithTimeout(
+      "Target.getTargets", params, timeout, &result);
   if (status.IsError()) {
     return status;
   }
@@ -512,7 +509,7 @@ Status ChromeImpl::GetWebViewsInfo(WebViewsInfo* views_info) {
       return parse_status;
     temp_views_info.emplace_back(*id, std::string(), *url, type);
   }
-  *views_info = WebViewsInfo(temp_views_info);
+  views_info = WebViewsInfo(temp_views_info);
   return status;
 }
 
@@ -571,10 +568,10 @@ Status ChromeImpl::CloseTarget(const std::string& id) {
     return status;
 
   // Wait for the target window to be completely closed.
-  base::TimeTicks deadline = base::TimeTicks::Now() + base::Seconds(20);
-  while (base::TimeTicks::Now() < deadline) {
+  Timeout timeout(base::Seconds(20));
+  while (!timeout.IsExpired()) {
     WebViewsInfo views_info;
-    status = GetWebViewsInfo(&views_info);
+    status = GetWebViewsInfo(&timeout, views_info);
     if (status.code() == kChromeNotReachable)
       return Status(kOk);
     if (status.code() == kDisconnected)  // The closed target has gone

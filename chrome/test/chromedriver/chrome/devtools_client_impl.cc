@@ -294,8 +294,8 @@ Status DevToolsClientImpl::StartBidiServer(std::string bidi_mapper_script,
     base::Value::Dict params;
     params.Set("expression", std::move(bidi_mapper_script));
     base::Value::Dict result;
-    status =
-        SendCommandAndGetResult("Runtime.evaluate", std::move(params), &result);
+    status = SendCommandAndGetResultWithTimeout(
+        "Runtime.evaluate", std::move(params), &timeout, &result);
 
     if (result.contains("exceptionDetails")) {
       std::string description = "unknown";

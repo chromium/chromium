@@ -5,33 +5,91 @@
 #include <cmath>
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/files/file_util.h"
 #include "base/files/platform_file.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/json/json_reader.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
+#include "base/threading/thread.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
+#include "chrome/test/chromedriver/net/pipe_connection.h"
+#include "chrome/test/chromedriver/net/sync_websocket.h"
+#include "chrome/test/chromedriver/net/timeout.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#include "base/files/file_util.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
-#include "base/json/json_reader.h"
-#include "base/logging.h"
-#include "base/message_loop/message_pump_type.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/test/task_environment.h"
-#include "base/threading/platform_thread.h"
-#include "base/threading/thread.h"
-#include "base/time/time.h"
-#include "chrome/test/chromedriver/net/pipe_builder.h"
-#include "chrome/test/chromedriver/net/pipe_connection.h"
-#include "chrome/test/chromedriver/net/sync_websocket.h"
-#include "chrome/test/chromedriver/net/timeout.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
-
 namespace {
+
+#if BUILDFLAG(IS_POSIX)
+int ReadFromPipeNoBestEffort(base::PlatformFile file_in,
+                             char* buffer,
+                             int size) {
+  return HANDLE_EINTR(read(file_in, buffer, size));
+}
+#elif BUILDFLAG(IS_WIN)
+int ReadFromPipeNoBestEffort(base::PlatformFile file_in,
+                             char* buffer,
+                             int size) {
+  unsigned long received = 0;
+  if (!::ReadFile(file_in, buffer, size, &received, nullptr)) {
+    return (GetLastError() == ERROR_BROKEN_PIPE) ? 0 : -1;
+  }
+  return static_cast<int>(received);
+}
+#endif
+
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
+int ReadFromPipe(base::PlatformFile file_out, char* buffer, int size) {
+  int offset = 0;
+  int rv = 0;
+  for (; offset < size; offset += rv) {
+    rv = ReadFromPipeNoBestEffort(file_out, buffer + offset, size - offset);
+    if (rv < 0) {
+      return rv;
+    }
+  }
+  return offset;
+}
+#endif
+
+#if BUILDFLAG(IS_POSIX)
+int WriteToPipeNoBestEffort(base::PlatformFile file_out,
+                            const char* buffer,
+                            int size) {
+  return HANDLE_EINTR(write(file_out, buffer, size));
+}
+#elif BUILDFLAG(IS_WIN)
+int WriteToPipeNoBestEffort(base::PlatformFile file_out,
+                            const char* buffer,
+                            int size) {
+  unsigned long written = 0;
+  if (!::WriteFile(file_out, buffer, size, &written, nullptr)) {
+    return -1;
+  }
+  return static_cast<int>(written);
+}
+#endif
+
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
+int WriteToPipe(base::PlatformFile file_out, const char* buffer, int size) {
+  int offset = 0;
+  int rv = 0;
+  for (; offset < size; offset += rv) {
+    rv = WriteToPipeNoBestEffort(file_out, buffer + offset, size - offset);
+    if (rv < 0) {
+      return rv;
+    }
+  }
+  return offset;
+}
+#endif
 
 class PipeConnectionTest : public testing::Test {
  protected:
@@ -44,65 +102,72 @@ class PipeConnectionTest : public testing::Test {
 
   Timeout long_timeout() const { return Timeout(long_timeout_); }
 
+#if BUILDFLAG(IS_WIN)
   bool CreatePipeConnection(std::unique_ptr<PipeConnection>* connection,
-                            base::File* read_pipe,
-                            base::File* write_pipe) {
+                            base::ScopedPlatformFile* read_pipe,
+                            base::ScopedPlatformFile* write_pipe) {
     base::ScopedPlatformFile parent_to_child_read_file;
     base::ScopedPlatformFile parent_to_child_write_file;
     base::ScopedPlatformFile child_to_parent_read_file;
     base::ScopedPlatformFile child_to_parent_write_file;
-#if BUILDFLAG(IS_WIN)
     HANDLE parent_to_child_read_handle;
     HANDLE parent_to_child_write_handle;
     HANDLE child_to_parent_read_handle;
     HANDLE child_to_parent_write_handle;
     if (!CreatePipe(&parent_to_child_read_handle, &parent_to_child_write_handle,
                     nullptr, 0)) {
-      VLOG(0) << "unable to create child_to_parent pipe";
       return false;
     }
     parent_to_child_read_file.Set(parent_to_child_read_handle);
     parent_to_child_write_file.Set(parent_to_child_write_handle);
     if (!CreatePipe(&child_to_parent_read_handle, &child_to_parent_write_handle,
                     nullptr, 0)) {
-      VLOG(0) << "unable to create child_to_parent pipe";
       return false;
     }
     child_to_parent_read_file.Set(child_to_parent_read_handle);
     child_to_parent_write_file.Set(child_to_parent_write_handle);
-
-#else
+    *connection =
+        std::make_unique<PipeConnection>(std::move(child_to_parent_read_file),
+                                         std::move(parent_to_child_write_file));
+    *read_pipe = std::move(parent_to_child_read_file);
+    *write_pipe = std::move(child_to_parent_write_file);
+    return true;
+  }
+#elif BUILDFLAG(IS_POSIX)
+  bool CreatePipeConnection(std::unique_ptr<PipeConnection>* connection,
+                            base::ScopedPlatformFile* read_pipe,
+                            base::ScopedPlatformFile* write_pipe) {
+    base::ScopedPlatformFile parent_to_child_read_file;
+    base::ScopedPlatformFile parent_to_child_write_file;
+    base::ScopedPlatformFile child_to_parent_read_file;
+    base::ScopedPlatformFile child_to_parent_write_file;
     if (!base::CreatePipe(&parent_to_child_read_file,
                           &parent_to_child_write_file)) {
-      VLOG(0) << "unable to create parent_to_child pipe";
       return false;
     }
     if (!base::CreatePipe(&child_to_parent_read_file,
                           &child_to_parent_write_file)) {
-      VLOG(0) << "unable to create child_to_parent pipe";
       return false;
     }
     if (!base::SetCloseOnExec(child_to_parent_read_file.get()) ||
         !base::SetCloseOnExec(parent_to_child_write_file.get())) {
-      VLOG(0) << "unable to label the parent pipes as close on exec";
       return false;
     }
-#endif
-    *read_pipe = base::File(std::move(parent_to_child_read_file));
-    *write_pipe = base::File(std::move(child_to_parent_write_file));
     *connection =
         std::make_unique<PipeConnection>(std::move(child_to_parent_read_file),
                                          std::move(parent_to_child_write_file));
+    *read_pipe = std::move(parent_to_child_read_file);
+    *write_pipe = std::move(child_to_parent_write_file);
     return true;
   }
+#endif
 
   bool Start(PipeConnection* connection) {
     return connection->Connect(GURL(""));
   }
 
-  void SendResponse(base::File& pipe, const std::string& message) {
-    pipe.WriteAtCurrentPos(message.data(), message.size());
-    pipe.WriteAtCurrentPos("\0", 1);
+  void SendResponse(base::PlatformFile pipe, const std::string& message) {
+    WriteToPipe(pipe, message.c_str(), message.size() + 1);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -113,8 +178,8 @@ class PipeConnectionTest : public testing::Test {
 
 TEST_F(PipeConnectionTest, Ctor) {
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   EXPECT_FALSE(connection->IsConnected());
   EXPECT_FALSE(connection->HasNextMessage());
@@ -122,8 +187,8 @@ TEST_F(PipeConnectionTest, Ctor) {
 
 TEST_F(PipeConnectionTest, WriteToNotStarted) {
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   std::string message;
   EXPECT_FALSE(connection->IsConnected());
@@ -132,8 +197,8 @@ TEST_F(PipeConnectionTest, WriteToNotStarted) {
 
 TEST_F(PipeConnectionTest, ReadFromNotStarted) {
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   std::string message;
   EXPECT_FALSE(connection->IsConnected());
@@ -144,8 +209,8 @@ TEST_F(PipeConnectionTest, ReadFromNotStarted) {
 
 TEST_F(PipeConnectionTest, Start) {
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   EXPECT_TRUE(Start(connection.get()));
   EXPECT_TRUE(connection->IsConnected());
@@ -153,17 +218,17 @@ TEST_F(PipeConnectionTest, Start) {
 
 TEST_F(PipeConnectionTest, Send) {
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   EXPECT_TRUE(Start(connection.get()));
   const std::string expected_message = "Hello, World!";
   EXPECT_TRUE(connection->Send(expected_message));
 
   std::string actual_message(expected_message.size() + 1, ' ');
-  EXPECT_EQ(
-      static_cast<int>(actual_message.size()),
-      read_pipe.ReadAtCurrentPos(actual_message.data(), actual_message.size()));
+  EXPECT_EQ(static_cast<int>(actual_message.size()),
+            ReadFromPipe(read_pipe.get(), actual_message.data(),
+                         actual_message.size()));
   EXPECT_EQ(static_cast<char>(0), actual_message.back());
   actual_message.resize(expected_message.size());
   EXPECT_EQ(expected_message, actual_message);
@@ -172,8 +237,8 @@ TEST_F(PipeConnectionTest, Send) {
 TEST_F(PipeConnectionTest, Receive) {
   base::RunLoop run_loop;
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   EXPECT_TRUE(Start(connection.get()));
 
@@ -182,7 +247,7 @@ TEST_F(PipeConnectionTest, Receive) {
       FROM_HERE, run_loop.QuitClosure(), base::Seconds(10));
 
   const std::string expected_message = "Hello, World!";
-  SendResponse(write_pipe, expected_message);
+  SendResponse(write_pipe.get(), expected_message);
 
   run_loop.Run();
 
@@ -196,8 +261,8 @@ TEST_F(PipeConnectionTest, Receive) {
 TEST_F(PipeConnectionTest, NotificationArrives) {
   base::RunLoop run_loop;
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   bool notified = false;
 
@@ -210,7 +275,7 @@ TEST_F(PipeConnectionTest, NotificationArrives) {
 
   EXPECT_TRUE(Start(connection.get()));
 
-  SendResponse(write_pipe, "ABC");
+  SendResponse(write_pipe.get(), "ABC");
 
   std::string message;
   EXPECT_EQ(SyncWebSocket::StatusCode::kOk,
@@ -230,8 +295,8 @@ TEST_F(PipeConnectionTest, NotificationArrives) {
 TEST_F(PipeConnectionTest, DetermineRecipient) {
   base::RunLoop run_loop;
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   EXPECT_TRUE(Start(connection.get()));
 
@@ -243,8 +308,8 @@ TEST_F(PipeConnectionTest, DetermineRecipient) {
         "id": -1,
         "method": "Page.enable"
       })";
-  SendResponse(write_pipe, message_not_for_chromedriver);
-  SendResponse(write_pipe, message_for_chromedriver);
+  SendResponse(write_pipe.get(), message_not_for_chromedriver);
+  SendResponse(write_pipe.get(), message_for_chromedriver);
   std::string message;
   EXPECT_EQ(SyncWebSocket::StatusCode::kOk,
             connection->ReceiveNextMessage(&message, long_timeout()));
@@ -263,8 +328,8 @@ TEST_F(PipeConnectionTest, DetermineRecipient) {
 TEST_F(PipeConnectionTest, SendReceiveTimeout) {
   base::RunLoop run_loop;
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   EXPECT_TRUE(Start(connection.get()));
 
@@ -276,13 +341,12 @@ TEST_F(PipeConnectionTest, SendReceiveTimeout) {
 
 TEST_F(PipeConnectionTest, SendReceiveLarge) {
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   EXPECT_TRUE(Start(connection.get()));
   std::string wrote_message(10 << 20, 'a');
-  write_pipe.WriteAtCurrentPos(wrote_message.data(), wrote_message.size());
-  write_pipe.WriteAtCurrentPos("\0", 1);
+  SendResponse(write_pipe.get(), wrote_message);
   std::string message;
   EXPECT_EQ(SyncWebSocket::StatusCode::kOk,
             connection->ReceiveNextMessage(&message, long_timeout()));
@@ -292,14 +356,14 @@ TEST_F(PipeConnectionTest, SendReceiveLarge) {
 
 TEST_F(PipeConnectionTest, SendMany) {
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   EXPECT_TRUE(Start(connection.get()));
   EXPECT_TRUE(connection->Send("1"));
   EXPECT_TRUE(connection->Send("2"));
   std::string received_string(4, ' ');
-  read_pipe.ReadAtCurrentPos(received_string.data(), 4);
+  ReadFromPipe(read_pipe.get(), received_string.data(), 4);
   EXPECT_EQ('1', received_string[0]);
   EXPECT_EQ('\0', received_string[1]);
   EXPECT_EQ('2', received_string[2]);
@@ -308,17 +372,17 @@ TEST_F(PipeConnectionTest, SendMany) {
 
 TEST_F(PipeConnectionTest, ReceiveMany) {
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   EXPECT_TRUE(Start(connection.get()));
-  SendResponse(write_pipe, "1");
-  SendResponse(write_pipe, "2");
+  SendResponse(write_pipe.get(), "1");
+  SendResponse(write_pipe.get(), "2");
   std::string message;
   EXPECT_EQ(SyncWebSocket::StatusCode::kOk,
             connection->ReceiveNextMessage(&message, long_timeout()));
   EXPECT_EQ("1", message);
-  SendResponse(write_pipe, "3");
+  SendResponse(write_pipe.get(), "3");
   EXPECT_EQ(SyncWebSocket::StatusCode::kOk,
             connection->ReceiveNextMessage(&message, long_timeout()));
   EXPECT_EQ("2", message);
@@ -329,13 +393,13 @@ TEST_F(PipeConnectionTest, ReceiveMany) {
 
 TEST_F(PipeConnectionTest, CloseBeforeReceive) {
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   EXPECT_TRUE(Start(connection.get()));
   EXPECT_TRUE(connection->IsConnected());
   std::string message;
-  write_pipe.Close();
+  write_pipe = base::ScopedPlatformFile();
   EXPECT_EQ(SyncWebSocket::StatusCode::kDisconnected,
             connection->ReceiveNextMessage(&message, long_timeout()));
   EXPECT_FALSE(connection->IsConnected());
@@ -344,16 +408,16 @@ TEST_F(PipeConnectionTest, CloseBeforeReceive) {
 
 TEST_F(PipeConnectionTest, CloseOnReceive) {
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   EXPECT_TRUE(Start(connection.get()));
   EXPECT_TRUE(connection->IsConnected());
   std::string message;
   const std::string message_part = "part of...";
   // No trailing \0, thereofre the text must be discarded
-  write_pipe.WriteAtCurrentPos(message_part.data(), message_part.size());
-  write_pipe.Close();
+  WriteToPipe(write_pipe.get(), message_part.data(), message_part.size());
+  write_pipe = base::ScopedPlatformFile();
   EXPECT_EQ(SyncWebSocket::StatusCode::kDisconnected,
             connection->ReceiveNextMessage(&message, long_timeout()));
   EXPECT_FALSE(connection->IsConnected());
@@ -362,14 +426,14 @@ TEST_F(PipeConnectionTest, CloseOnReceive) {
 
 TEST_F(PipeConnectionTest, CloseAfterResponse) {
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   EXPECT_TRUE(Start(connection.get()));
   EXPECT_TRUE(connection->IsConnected());
   std::string message;
-  SendResponse(write_pipe, "Response");
-  write_pipe.Close();
+  SendResponse(write_pipe.get(), "Response");
+  write_pipe = base::ScopedPlatformFile();
   EXPECT_EQ(SyncWebSocket::StatusCode::kOk,
             connection->ReceiveNextMessage(&message, long_timeout()));
   EXPECT_EQ("Response", message);
@@ -380,12 +444,12 @@ TEST_F(PipeConnectionTest, CloseAfterResponse) {
 
 TEST_F(PipeConnectionTest, CloseRemoteReadOnSend) {
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   EXPECT_TRUE(Start(connection.get()));
   EXPECT_TRUE(connection->IsConnected());
-  read_pipe.Close();
+  read_pipe = base::ScopedPlatformFile();
   // The return value is true because the actual IO is delayed.
   connection->Send("ignore");
   // By this moment the connection loss must be discovered by the IO thread.
@@ -395,12 +459,12 @@ TEST_F(PipeConnectionTest, CloseRemoteReadOnSend) {
 
 TEST_F(PipeConnectionTest, CloseRemoteWriteOnSend) {
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   EXPECT_TRUE(Start(connection.get()));
   EXPECT_TRUE(connection->IsConnected());
-  write_pipe.Close();
+  write_pipe = base::ScopedPlatformFile();
   std::string message;
   // Wait until the IO thread discovers that the remote end is closed.
   EXPECT_EQ(SyncWebSocket::StatusCode::kDisconnected,
@@ -417,12 +481,12 @@ TEST_F(PipeConnectionTest, CloseRemoteWriteOnSend) {
 TEST_F(PipeConnectionTest, CloseRemoteWriteCausesShutdown) {
   base::RunLoop run_loop;
   std::unique_ptr<PipeConnection> connection;
-  base::File read_pipe;
-  base::File write_pipe;
+  base::ScopedPlatformFile read_pipe;
+  base::ScopedPlatformFile write_pipe;
   EXPECT_TRUE(CreatePipeConnection(&connection, &read_pipe, &write_pipe));
   EXPECT_TRUE(Start(connection.get()));
   EXPECT_TRUE(connection->IsConnected());
-  write_pipe.Close();
+  write_pipe = base::ScopedPlatformFile();
   std::string message;
   // Wait until the IO thread discovers that the remote end is closed.
   EXPECT_EQ(SyncWebSocket::StatusCode::kDisconnected,

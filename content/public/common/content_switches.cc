@@ -665,7 +665,8 @@ const char kReduceUserAgentPlatformOsCpu[] = "reduce-user-agent-platform-oscpu";
 // Register Pepper plugins (see pepper_plugin_list.cc for its format).
 const char kRegisterPepperPlugins[]         = "register-pepper-plugins";
 
-// Enables remote debug over stdio pipes [in=3, out=4].
+// Enables remote debug over stdio pipes [in=3, out=4] or over the remote pipes
+// specified in the 'remote-debugging-io-pipes' switch.
 // Optionally, specifies the format for the protocol messages, can be either
 // "JSON" (the default) or "CBOR".
 const char kRemoteDebuggingPipe[] = "remote-debugging-pipe";
@@ -1068,6 +1069,11 @@ const char kGpu2StartupDialog[] = "gpu2-startup-dialog";
 
 // Use high priority for the audio process.
 const char kAudioProcessHighPriority[] = "audio-process-high-priority";
+
+// Specifies pipe names for the incoming and outbound messages on the Windows
+// platform. This is a comma separated list of two pipe handles serialized as
+// unsigned integers, e.g. "--remote-debugging-io-pipes=3,4".
+const char kRemoteDebuggingIoPipes[] = "remote-debugging-io-pipes";
 #endif
 
 #if defined(ENABLE_IPC_FUZZER)

@@ -20,7 +20,6 @@
 #include "chrome/test/chromedriver/net/sync_websocket.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "net/base/io_buffer.h"
-#include "net/base/net_errors.h"
 
 namespace {
 
@@ -48,18 +47,32 @@ void DetermineRecipient(const std::string& message,
 
 class PipeReader {
  public:
-  PipeReader(base::WeakPtr<PipeConnectionWin> pipe_connection,
-             base::ScopedPlatformFile read_file)
-      : thread_(new base::Thread("PipeConnectionWinReadThread")),
-        read_buffer_(new net::GrowableIOBuffer()),
-        pipe_connection_(std::move(pipe_connection)),
+  explicit PipeReader(base::WeakPtr<PipeConnectionWin> pipe_connection)
+      : pipe_connection_(std::move(pipe_connection)),
         owning_sequence_(base::SequencedTaskRunner::GetCurrentDefault()),
-        read_file_(std::move(read_file)) {
+        read_buffer_(new net::GrowableIOBuffer()),
+        thread_(new base::Thread("PipeConnectionWinReadThread")) {
     DETACH_FROM_THREAD(io_thread_checker_);
     read_buffer_->SetCapacity(kMinReadBufferCapacity);
   }
 
   ~PipeReader() = default;
+
+  bool Start(base::ScopedPlatformFile read_file) {
+    DCHECK_CALLED_ON_VALID_THREAD(session_thread_checker_);
+    base::Thread::Options options;
+    options.message_pump_type = base::MessagePumpType::IO;
+    is_connected_ = true;
+    read_file_ = std::move(read_file);
+    if (!thread_->StartWithOptions(std::move(options))) {
+      is_connected_ = false;
+      return false;
+    }
+    thread_->task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&PipeReader::ReadLoopOnIOThread,
+                                  base::Unretained(this)));
+    return true;
+  }
 
   bool IsConnected() const {
     base::AutoLock lock(lock_);
@@ -96,21 +109,6 @@ class PipeReader {
     }
     DCHECK(!is_connected_);
     return SyncWebSocket::StatusCode::kDisconnected;
-  }
-
-  bool Start() {
-    DCHECK_CALLED_ON_VALID_THREAD(session_thread_checker_);
-    base::Thread::Options options;
-    options.message_pump_type = base::MessagePumpType::IO;
-    is_connected_ = true;
-    if (!thread_->StartWithOptions(std::move(options))) {
-      is_connected_ = false;
-      return false;
-    }
-    thread_->task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&PipeReader::ReadLoopOnIOThread,
-                                  base::Unretained(this)));
-    return true;
   }
 
   void ReadLoopOnIOThread() {
@@ -238,15 +236,11 @@ class PipeReader {
   }
 
   mutable base::Lock lock_;
-
   // Protected by |lock_|.
   bool is_connected_ = false;
-
-  std::unique_ptr<base::Thread> thread_;
   base::AtomicFlag shutting_down_;
   THREAD_CHECKER(session_thread_checker_);
   THREAD_CHECKER(io_thread_checker_);
-  scoped_refptr<net::GrowableIOBuffer> read_buffer_;
   base::WeakPtr<PipeConnectionWin> pipe_connection_;
   // Sequence where the instance was created.
   // The notifications about new data are emitted in this sequence.
@@ -260,13 +254,18 @@ class PipeReader {
   // Protected by |lock_|.
   // Notifies that the queue is not empty.
   base::RepeatingClosure notify_;
+  scoped_refptr<net::GrowableIOBuffer> read_buffer_;
+  // Thread is the last member, to be destroyed first.
+  // This ensures that there will be no races in the destructor.
+  std::unique_ptr<base::Thread> thread_;
 };
 
 class PipeWriter {
  public:
-  explicit PipeWriter(base::ScopedPlatformFile write_file)
-      : thread_(new base::Thread("PipeConnectionWinWriteThread")),
-        write_file_(std::move(write_file)) {
+  explicit PipeWriter(base::WeakPtr<PipeConnectionWin> pipe_connection)
+      : owning_sequence_(base::SequencedTaskRunner::GetCurrentDefault()),
+        pipe_connection_(std::move(pipe_connection)),
+        thread_(new base::Thread("PipeConnectionWinWriteThread")) {
     DETACH_FROM_THREAD(io_thread_checker_);
   }
 
@@ -288,14 +287,21 @@ class PipeWriter {
     }
     event->Signal();
     // The rest is done without blocking the session thread
-    WriteBytesOnIOThread(message.data(), message.size());
-    WriteBytesOnIOThread("\0", 1);
+    bool ok = WriteBytesOnIOThread(message.data(), message.size());
+    ok = ok && WriteBytesOnIOThread("\0", 1);
+
+    if (!ok) {
+      owning_sequence_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&PipeConnectionWin::Shutdown, pipe_connection_));
+    }
   }
 
-  bool Start() {
+  bool Start(base::ScopedPlatformFile write_file) {
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
     is_connected_ = true;
+    write_file_ = std::move(write_file);
     if (!thread_->StartWithOptions(std::move(options))) {
       is_connected_ = false;
       return false;
@@ -377,22 +383,26 @@ class PipeWriter {
 
  private:
   base::Lock lock_;
-
   // Protected by |lock_|.
   bool is_connected_ = false;
-
-  std::unique_ptr<base::Thread> thread_;
+  // Sequence where the instance was created.
+  // The notifications about new data are emitted in this sequence.
+  scoped_refptr<base::SequencedTaskRunner> owning_sequence_;
   base::AtomicFlag shutting_down_;
   THREAD_CHECKER(session_thread_checker_);
   THREAD_CHECKER(io_thread_checker_);
+  base::WeakPtr<PipeConnectionWin> pipe_connection_;
   base::ScopedPlatformFile write_file_;
+  // Thread is the last member, to be destroyed first.
+  // This ensures that there will be no races in the destructor.
+  std::unique_ptr<base::Thread> thread_;
 };
 
 PipeConnectionWin::PipeConnectionWin(base::ScopedPlatformFile read_file,
-                                     base::ScopedPlatformFile write_file) {
-  pipe_reader_ = std::make_unique<PipeReader>(weak_factory_.GetWeakPtr(),
-                                              std::move(read_file));
-  pipe_writer_ = std::make_unique<PipeWriter>(std::move(write_file));
+                                     base::ScopedPlatformFile write_file)
+    : read_file_(std::move(read_file)), write_file_(std::move(write_file)) {
+  pipe_reader_ = std::make_unique<PipeReader>(weak_factory_.GetWeakPtr());
+  pipe_writer_ = std::make_unique<PipeWriter>(weak_factory_.GetWeakPtr());
   pipe_reader_->SetNotificationCallback(base::BindRepeating(
       &PipeConnectionWin::SendNotification, weak_factory_.GetWeakPtr()));
 }
@@ -414,7 +424,9 @@ bool PipeConnectionWin::Connect(const GURL& url) {
   if (!pipe_reader_ || !pipe_writer_) {
     return false;
   }
-  if (!pipe_reader_->Start() || !pipe_writer_->Start()) {
+  bool reader_started = pipe_reader_->Start(std::move(read_file_));
+  bool writer_started = pipe_writer_->Start(std::move(write_file_));
+  if (!reader_started || !writer_started) {
     Shutdown();
     return false;
   }

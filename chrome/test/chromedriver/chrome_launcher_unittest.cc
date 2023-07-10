@@ -27,7 +27,7 @@ TEST(ProcessExtensions, NoExtension) {
   base::FilePath extension_dir;
   std::vector<std::string> bg_pages;
   Status status = internal::ProcessExtensions(extensions, extension_dir,
-                                              &switches, &bg_pages);
+                                              switches, bg_pages);
   ASSERT_TRUE(status.IsOk());
   ASSERT_FALSE(switches.HasSwitch("load-extension"));
   ASSERT_EQ(0u, bg_pages.size());
@@ -62,7 +62,7 @@ TEST(ProcessExtensions, GenerateIds) {
   ASSERT_TRUE(extension_dir.CreateUniqueTempDir());
 
   Status status = internal::ProcessExtensions(
-      extensions, extension_dir.GetPath(), &switches, &bg_pages);
+      extensions, extension_dir.GetPath(), switches, bg_pages);
 
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_EQ(3u, bg_pages.size());
@@ -85,7 +85,7 @@ TEST(ProcessExtensions, GenerateIdCrx3) {
   ASSERT_TRUE(extension_dir.CreateUniqueTempDir());
 
   Status status = internal::ProcessExtensions(
-      extensions, extension_dir.GetPath(), &switches, &bg_pages);
+      extensions, extension_dir.GetPath(), switches, bg_pages);
 
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_EQ(1u, bg_pages.size());
@@ -105,7 +105,7 @@ TEST(ProcessExtensions, SingleExtensionWithBgPage) {
   Switches switches;
   std::vector<std::string> bg_pages;
   Status status = internal::ProcessExtensions(
-      extensions, extension_dir.GetPath(), &switches, &bg_pages);
+      extensions, extension_dir.GetPath(), switches, bg_pages);
   ASSERT_TRUE(status.IsOk());
   ASSERT_TRUE(switches.HasSwitch("load-extension"));
   base::FilePath temp_ext_path(switches.GetSwitchValueNative("load-extension"));
@@ -150,7 +150,7 @@ TEST(ProcessExtensions, MultipleExtensionsNoBgPages) {
   Switches switches;
   std::vector<std::string> bg_pages;
   Status status = internal::ProcessExtensions(
-      extensions, extension_dir.GetPath(), &switches, &bg_pages);
+      extensions, extension_dir.GetPath(), switches, bg_pages);
   ASSERT_TRUE(status.IsOk());
   ASSERT_TRUE(switches.HasSwitch("load-extension"));
   base::CommandLine::StringType ext_paths =
@@ -174,7 +174,7 @@ TEST(ProcessExtensions, CommandLineExtensions) {
   switches.SetSwitch("load-extension", "/a");
   std::vector<std::string> bg_pages;
   Status status = internal::ProcessExtensions(
-      extensions, extension_dir.GetPath(), &switches, &bg_pages);
+      extensions, extension_dir.GetPath(), switches, bg_pages);
   ASSERT_EQ(kOk, status.code());
   base::FilePath::StringType load = switches.GetSwitchValueNative(
       "load-extension");
@@ -228,7 +228,7 @@ TEST(DesktopLauncher, ParseDevToolsActivePortFile_Success) {
   ASSERT_TRUE(base::WriteFile(temp_file, data));
   int port;
   ASSERT_TRUE(
-      internal::ParseDevToolsActivePortFile(temp_dir.GetPath(), &port).IsOk());
+      internal::ParseDevToolsActivePortFile(temp_dir.GetPath(), port).IsOk());
   ASSERT_EQ(port, 12345);
 }
 
@@ -241,7 +241,7 @@ TEST(DesktopLauncher, ParseDevToolsActivePortFile_NoNewline) {
   ASSERT_TRUE(base::WriteFile(temp_file, data));
   int port = 1111;
   ASSERT_FALSE(
-      internal::ParseDevToolsActivePortFile(temp_dir.GetPath(), &port).IsOk());
+      internal::ParseDevToolsActivePortFile(temp_dir.GetPath(), port).IsOk());
   ASSERT_EQ(port, 1111);
 }
 
@@ -254,7 +254,7 @@ TEST(DesktopLauncher, ParseDevToolsActivePortFile_NotNumber) {
   ASSERT_TRUE(base::WriteFile(temp_file, data));
   int port;
   ASSERT_FALSE(
-      internal::ParseDevToolsActivePortFile(temp_dir.GetPath(), &port).IsOk());
+      internal::ParseDevToolsActivePortFile(temp_dir.GetPath(), port).IsOk());
 }
 
 TEST(DesktopLauncher, ParseDevToolsActivePortFile_NoFile) {
@@ -264,7 +264,7 @@ TEST(DesktopLauncher, ParseDevToolsActivePortFile_NoFile) {
       temp_dir.GetPath().Append(FILE_PATH_LITERAL("DevToolsActivePort"));
   int port = 1111;
   ASSERT_FALSE(
-      internal::ParseDevToolsActivePortFile(temp_dir.GetPath(), &port).IsOk());
+      internal::ParseDevToolsActivePortFile(temp_dir.GetPath(), port).IsOk());
   ASSERT_EQ(port, 1111);
 }
 

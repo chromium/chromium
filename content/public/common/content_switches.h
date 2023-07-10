@@ -290,6 +290,8 @@ CONTENT_EXPORT extern const char kPpapiSubpixelRenderingSetting[];
 CONTENT_EXPORT extern const char kRaiseTimerFrequency[];
 CONTENT_EXPORT extern const char kGpu2StartupDialog[];
 CONTENT_EXPORT extern const char kAudioProcessHighPriority[];
+// Pipe names for the incoming and outbound messages.
+CONTENT_EXPORT extern const char kRemoteDebuggingIoPipes[];
 #endif
 
 #if defined(ENABLE_IPC_FUZZER)

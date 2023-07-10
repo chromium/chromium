@@ -56,11 +56,11 @@ class PipeConnectionPosix : public SyncWebSocket {
 
   base::ScopedPlatformFile read_file_;
   base::ScopedPlatformFile write_file_;
-  std::unique_ptr<PipeReader> pipe_reader_;
-  std::unique_ptr<PipeWriter> pipe_writer_;
   base::RepeatingClosure notify_;
   bool connection_requested_ = false;
   bool shutting_down_ = false;
+  std::unique_ptr<PipeReader> pipe_reader_;
+  std::unique_ptr<PipeWriter> pipe_writer_;
   base::WeakPtrFactory<PipeConnectionPosix> weak_factory_{this};
 };
 

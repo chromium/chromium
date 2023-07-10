@@ -246,6 +246,19 @@ class PipeWriter {
 
   virtual ~PipeWriter() = default;
 
+  bool Start(base::ScopedPlatformFile write_fd) {
+    base::Thread::Options options;
+    options.message_pump_type = base::MessagePumpType::IO;
+    is_connected_ = true;
+    writer_.Bind(std::move(write_fd));
+    writer_.DetachFromThread();
+    if (!thread_->StartWithOptions(std::move(options))) {
+      is_connected_ = false;
+      return false;
+    }
+    return true;
+  }
+
   bool IsConnected() {
     base::AutoLock lock(lock_);
     return is_connected_;
@@ -318,19 +331,6 @@ class PipeWriter {
       queued_ = std::string();
       WriteFromBuffer();
     }
-  }
-
-  bool Start(base::ScopedPlatformFile write_fd) {
-    base::Thread::Options options;
-    options.message_pump_type = base::MessagePumpType::IO;
-    is_connected_ = true;
-    writer_.Bind(std::move(write_fd));
-    writer_.DetachFromThread();
-    if (!thread_->StartWithOptions(std::move(options))) {
-      is_connected_ = false;
-      return false;
-    }
-    return true;
   }
 
   bool Write(std::string message) {
@@ -408,6 +408,8 @@ bool PipeConnectionPosix::Connect(const GURL& url) {
   connection_requested_ = true;
   bool reader_started = pipe_reader_->Start(std::move(read_file_));
   bool writer_started = pipe_writer_->Start(std::move(write_file_));
+  read_file_ = base::ScopedPlatformFile();
+  write_file_ = base::ScopedPlatformFile();
   if (!reader_started || !writer_started) {
     Shutdown();
     return false;

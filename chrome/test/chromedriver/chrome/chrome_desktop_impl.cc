@@ -126,9 +126,9 @@ Status ChromeDesktopImpl::WaitForPageToLoad(
   Timeout timeout(timeout_raw);
   std::string id;
   WebViewInfo::Type type = WebViewInfo::Type::kPage;
-  while (timeout.GetRemainingTime().is_positive()) {
+  while (!timeout.IsExpired()) {
     WebViewsInfo views_info;
-    Status status = GetWebViewsInfo(&views_info);
+    Status status = GetWebViewsInfo(&timeout, views_info);
     if (status.IsError())
       return status;
 

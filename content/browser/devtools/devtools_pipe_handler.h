@@ -17,7 +17,9 @@ class PipeWriterBase;
 
 class DevToolsPipeHandler : public DevToolsAgentHostClient {
  public:
-  explicit DevToolsPipeHandler(base::OnceClosure on_disconnect);
+  DevToolsPipeHandler(int read_fd,
+                      int write_fd,
+                      base::OnceClosure on_disconnect);
 
   DevToolsPipeHandler(const DevToolsPipeHandler&) = delete;
   DevToolsPipeHandler& operator=(const DevToolsPipeHandler&) = delete;

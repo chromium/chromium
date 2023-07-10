@@ -6,6 +6,7 @@
 #define CHROME_TEST_CHROMEDRIVER_NET_PIPE_BUILDER_H_
 
 #include <memory>
+#include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/scoped_file.h"
 #include "base/process/launch.h"
@@ -50,15 +51,15 @@ class PipeBuilder {
   // If called earlier the child process will not be able to use its endpoints.
   Status CloseChildEndpoints();
 
-  // Save the remote endpoints to the launch options.
-  // These options need to be passed to base::LaunchProcess function.
-  Status SetUpPipes(base::LaunchOptions* options);
+  // Save the remote endpoints to the launch options and command line.
+  // This information needs to be passed to base::LaunchProcess function.
+  Status SetUpPipes(base::LaunchOptions* options, base::CommandLine* command);
 
  private:
   std::string protocol_mode_;
   base::ScopedPlatformFile read_file_;
   base::ScopedPlatformFile write_file_;
-  base::File child_ends_[2];
+  base::ScopedPlatformFile child_ends_[2];
   std::unique_ptr<PipeConnection> connection_;
 };
 

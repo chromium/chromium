@@ -50,9 +50,12 @@ class PipeConnectionWin : public SyncWebSocket {
 
  private:
   friend class PipeReader;
+  friend class PipeWriter;
   void Shutdown();
   void SendNotification();
 
+  base::ScopedPlatformFile read_file_;
+  base::ScopedPlatformFile write_file_;
   base::RepeatingClosure notify_;
   bool connection_requested_ = false;
   bool shutting_down_ = false;

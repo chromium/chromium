@@ -57,6 +57,10 @@ class CONTENT_EXPORT DevToolsAgentHost
   static const char kTypeGuest[];
   static const char kTypeOther[];
   static const char kTypeAuctionWorklet[];
+  // File descriptor used by DevTools remote debugging pipe handler
+  // to read and write protocol messages.
+  static constexpr int kReadFD = 3;
+  static constexpr int kWriteFD = 4;
 
   // Latest DevTools protocol version supported.
   static std::string GetProtocolVersion();

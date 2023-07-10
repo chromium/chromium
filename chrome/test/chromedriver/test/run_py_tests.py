@@ -125,8 +125,6 @@ _OS_SPECIFIC_FILTER['win'] = [
     'SupportIPv4AndIPv6.testSupportIPv4AndIPv6',
     # Flaky on Win7 bots: crbug.com/1132559
     'ChromeDriverTest.testTakeElementScreenshotInIframe',
-    # Pipe are supported only on Posix platforms crbug.com/chromedriver/3480
-    'ChromeSwitchesCapabilityTest.testRemoteDebuggingPipe',
 ]
 _OS_SPECIFIC_FILTER['linux'] = [
 ]
@@ -4804,6 +4802,18 @@ class ChromeSwitchesCapabilityTest(ChromeDriverBaseTest):
     command_line = driver.FindElement('css selector',
                                       '#command_line').GetText()
     self.assertIn(pipe_flag, command_line)
+
+  def testUnspportedRemoteDebuggingPipe(self):
+    """Tests that passing --remote-debugging-pipe through capabilities works.
+    """
+    # CBOR mode is not yet supported
+    with self.assertRaisesRegex(chromedriver.ChromeDriverException,
+                                "only ASCIIZ protocol mode is supported"):
+      self.CreateDriver(chrome_switches=["remote-debugging-pipe=cbor"])
+    # Invalid mode value
+    with self.assertRaisesRegex(chromedriver.ChromeDriverException,
+                                "only ASCIIZ protocol mode is supported"):
+      self.CreateDriver(chrome_switches=["remote-debugging-pipe=xyz"])
 
 
 class ChromeDesiredCapabilityTest(ChromeDriverBaseTest):

@@ -17,6 +17,8 @@
 using PipeConnection = PipeConnectionWin;
 #elif BUILDFLAG(IS_POSIX)
 using PipeConnection = PipeConnectionPosix;
+#else
+class PipeConnection {};
 #endif
 
 #endif  // CHROME_TEST_CHROMEDRIVER_NET_PIPE_CONNECTION_H_

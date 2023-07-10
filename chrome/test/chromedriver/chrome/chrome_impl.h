@@ -16,6 +16,7 @@
 #include "chrome/test/chromedriver/chrome/chrome.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
 #include "chrome/test/chromedriver/chrome/mobile_device.h"
+#include "chrome/test/chromedriver/net/timeout.h"
 
 class DevToolsClient;
 class DevToolsClientImpl;
@@ -90,7 +91,7 @@ class ChromeImpl : public Chrome {
   Status SetWindowBounds(Window* window,
                          const std::string& target_id,
                          std::unique_ptr<base::Value::Dict> bounds);
-  Status GetWebViewsInfo(WebViewsInfo* views_info);
+  Status GetWebViewsInfo(const Timeout* timeout, WebViewsInfo& views_info);
 
   bool quit_ = false;
   absl::optional<MobileDevice> mobile_device_;
