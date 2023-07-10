@@ -203,7 +203,11 @@ using l10n_util::GetNSString;
 
 #pragma mark - AdvancedSettingsSigninNavigationControllerNavigationDelegate
 
-- (void)navigationDoneButtonWasTapped {
+- (void)navigationDoneButtonWasTapped:
+    (AdvancedSettingsSigninNavigationController*)controller {
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK_EQ(self.advancedSettingsSigninNavigationController,
+                        controller);
   [self dismissViewControllerAndFinishWithResult:SigninCoordinatorResultSuccess
                                         animated:YES
                                       completion:nil];

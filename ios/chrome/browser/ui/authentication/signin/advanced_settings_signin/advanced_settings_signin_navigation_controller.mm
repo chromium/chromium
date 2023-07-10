@@ -62,7 +62,7 @@ using l10n_util::GetNSString;
 // sync preferences chosen by the user, closes the completion
 // callback and closes the advanced sign-in settings.
 - (void)onNavigationDoneButton {
-  [self.navigationDelegate navigationDoneButtonWasTapped];
+  [self.navigationDelegate navigationDoneButtonWasTapped:self];
 }
 
 @end
