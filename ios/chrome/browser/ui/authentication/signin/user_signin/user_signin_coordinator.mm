@@ -236,6 +236,12 @@ using signin_metrics::PromoAction;
   DCHECK(!self.advancedSettingsSigninCoordinator);
   [super stop];
   [self.logger disconnect];
+  _logger = nil;
+}
+
+- (void)dealloc {
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!self.logger);
 }
 
 #pragma mark - UnifiedConsentCoordinatorDelegate
