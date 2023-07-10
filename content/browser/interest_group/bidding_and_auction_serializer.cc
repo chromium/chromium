@@ -10,7 +10,6 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/json/json_string_value_serializer.h"
 #include "components/cbor/diagnostic_writer.h"
-#include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -22,62 +21,12 @@ namespace content {
 
 namespace {
 
-// This function calculates the number of bytes needed by CBOR to encode the
-// positive integer `value`. Note that values below 24 can be stored inside the
-// tag field for a size of 0.
-size_t GetNumUintBytes(uint64_t value) {
-  if (value < 24) {
-    return 0;
-  } else if (value <= 0xFF) {
-    return 1;
-  } else if (value <= 0xFFFF) {
-    return 2;
-  } else if (value <= 0xFFFFFFFF) {
-    return 4;
-  }
-  return 8;
-}
+const size_t kFramingHeaderSize = 5;  // bytes
 
-size_t SerializedLength(const cbor::Value& value);
-size_t SerializedLength(const cbor::Value::MapValue& map) {
-  size_t elementsSize = 0;
-  for (const auto& kv : map) {
-    elementsSize += SerializedLength(kv.first);
-    elementsSize += SerializedLength(kv.second);
-  }
-  return 1 + GetNumUintBytes(map.size()) + elementsSize;
-}
-
-size_t SerializedLength(const cbor::Value& value) {
-  switch (value.type()) {
-    case cbor::Value::Type::UNSIGNED:
-      return 1 + GetNumUintBytes(value.GetUnsigned());
-    case cbor::Value::Type::BYTE_STRING: {
-      size_t len = value.GetBytestring().size();
-      return 1 + GetNumUintBytes(len) + len;
-    }
-    case cbor::Value::Type::STRING: {
-      size_t len = value.GetString().size();
-      return 1 + GetNumUintBytes(len) + len;
-    }
-    case cbor::Value::Type::ARRAY: {
-      size_t elementsSize = 0;
-      const cbor::Value::ArrayValue& array = value.GetArray();
-      for (const auto& sub_value : array) {
-        elementsSize += SerializedLength(sub_value);
-      }
-      return 1 + GetNumUintBytes(array.size()) + elementsSize;
-    }
-    case cbor::Value::Type::MAP: {
-      return SerializedLength(value.GetMap());
-    }
-    case cbor::Value::Type::SIMPLE_VALUE:
-      return 1;
-    default:
-      NOTREACHED();
-      return 0;
-  }
-}
+const uint8_t kRequestVersion = 0;
+const uint8_t kRequestVersionBitOffset = 5;
+const uint8_t kGzipCompression = 2;
+const uint8_t kCompressionBitOffset = 0;
 
 cbor::Value SerializeAds(const std::vector<blink::InterestGroup::Ad>& ads) {
   cbor::Value::ArrayValue result;
@@ -227,63 +176,26 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
   message_obj[cbor::Value("interestGroups")] =
       cbor::Value(std::move(groups_map));
 
-  size_t size_before_padding = SerializedLength(message_obj);
-  size_t desired_size = absl::bit_ceil(size_before_padding);
-
-  // CBOR doesn't support trailing data so we need to pad inside the CBOR
-  // object.
-  // We add some "dummy" keys (the numbers 0 and 1) with bytestrings containing
-  // '\0's to pad the message up to the correct size. Due to the way size is
-  // encoded in cbor we can't always generate a message with the right size by
-  // adding a single field, so sometimes we add two fields.
-  if (desired_size != size_before_padding) {
-    // The smallest amount of padding we can add is 2 bytes.
-    if (desired_size < size_before_padding + 2) {
-      desired_size *= 2;
-    }
-    // 1st guess (minimum overhead)
-    // Because the length of fields in CBOR are variable lengths it takes us a
-    // couple of tries to calculate the exact amount of padding we need. First
-    // we guess with the minimum amount of overhead for the length.
-    size_t size_to_pad = desired_size - size_before_padding - 2;
-    size_t overhead = /*key*/ 1 + /*value*/ 1 + GetNumUintBytes(size_to_pad);
-
-    // 2nd guess
-    // Then we guess assuming the overhead we calculated previously. This is the
-    // right number most of the time, but there is an edge case when the encoded
-    // size of the length of the field changes.
-    size_to_pad = desired_size - size_before_padding - overhead;
-    overhead = /*key*/ 1 + /*value*/ 1 + GetNumUintBytes(size_to_pad);
-
-    // 3rd_guess
-    // Now calculate the final size. This *should* match the size we estimated
-    // previously unless we're at one of the sizes that we can't pad with a
-    // single field.
-    size_t third_size_to_pad = desired_size - size_before_padding - overhead;
-
-    if (third_size_to_pad != size_to_pad) {
-      // There are some sizes we can't do because of the way CBOR encodes
-      // lengths. We get around this by adding an additional 2 byte field.
-      message_obj[cbor::Value(1)] = cbor::Value(0);
-
-      // Now we recalculate the padding size accounting for the additional two
-      // bytes of padding. Since we're avoiding the increase in the encoded size
-      // for the length of the padding by using an additional field, the encoded
-      // size for the length of the padding will be stable around our estimate
-      // so we can calculate the padding size in just two more iterations.
-      size_to_pad = desired_size - size_before_padding - overhead - 2;
-      overhead = /*key*/ 1 + /*value*/ 1 + GetNumUintBytes(size_to_pad);
-      size_to_pad = desired_size - size_before_padding - overhead - 2;
-    }
-
-    message_obj[cbor::Value(0)] =
-        cbor::Value(std::vector<uint8_t>(size_to_pad, '\0'));
-  }
-
   cbor::Value message(std::move(message_obj));
   absl::optional<std::vector<uint8_t>> maybe_msg = cbor::Writer::Write(message);
   DCHECK(maybe_msg);
-  data.request = std::move(*maybe_msg);
+
+  size_t size_before_padding = kFramingHeaderSize + maybe_msg->size();
+  size_t desired_size = absl::bit_ceil(size_before_padding);
+
+  std::vector<uint8_t> request(desired_size);
+  // first byte is version and compression
+  request[0] = (kRequestVersion << kRequestVersionBitOffset) |
+               (kGzipCompression << kCompressionBitOffset);
+  uint32_t request_size = maybe_msg->size();
+  request[1] = (request_size >> 24) & 0xff;
+  request[2] = (request_size >> 16) & 0xff;
+  request[3] = (request_size >> 8) & 0xff;
+  request[4] = (request_size >> 0) & 0xff;
+  DCHECK_GE(request.size(), kFramingHeaderSize + maybe_msg->size());
+  memcpy(&request[kFramingHeaderSize], maybe_msg->data(), maybe_msg->size());
+
+  data.request = std::move(request);
   return data;
 }
 

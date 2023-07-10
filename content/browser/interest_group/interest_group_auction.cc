@@ -2036,7 +2036,7 @@ void InterestGroupAuction::StartFromServerResponse(
           config_->seller,
           std::string(reinterpret_cast<char*>(hash.data()), hash.size()))) {
     // If it wasn't witnessed then we don't know that it came from the server.
-    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
+    OnBiddingAndScoringComplete(AuctionResult::kInvalidServerResponse);
     return;
   }
 
@@ -2045,13 +2045,13 @@ void InterestGroupAuction::StartFromServerResponse(
           config_->server_response->request_id);
   if (!request_context) {
     // The corresponding context for the requested blob couldn't be found.
-    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
+    OnBiddingAndScoringComplete(AuctionResult::kInvalidServerResponse);
     return;
   }
 
   // The auction must be for the same seller that requested the blob.
   if (request_context->seller != config_->seller) {
-    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
+    OnBiddingAndScoringComplete(AuctionResult::kInvalidServerResponse);
     return;
   }
 
@@ -2062,14 +2062,21 @@ void InterestGroupAuction::StartFromServerResponse(
           request_context->context);
   if (!maybe_response.ok()) {
     // We couldn't decrypt the response.
-    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
+    OnBiddingAndScoringComplete(AuctionResult::kInvalidServerResponse);
     return;
   }
   const std::string& plaintext_response = maybe_response->GetPlaintextData();
+  absl::optional<base::span<const uint8_t>> compressed_response =
+      ExtractCompressedBiddingAndAuctionResponse(
+          base::as_bytes(base::make_span(plaintext_response)));
+  if (!compressed_response) {
+    OnBiddingAndScoringComplete(AuctionResult::kInvalidServerResponse);
+    return;
+  }
   auto decoder = std::make_unique<data_decoder::DataDecoder>();
   data_decoder::DataDecoder* tmp_decoder = decoder.get();
   tmp_decoder->GzipUncompress(
-      base::as_bytes(base::make_span(plaintext_response)),
+      std::move(compressed_response).value(),
       base::BindOnce(&InterestGroupAuction::OnDecompressedServerResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(decoder),
                      request_context));

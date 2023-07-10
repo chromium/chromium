@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,6 +19,10 @@
 #include "url/origin.h"
 
 namespace content {
+
+absl::optional<base::span<const uint8_t>>
+ExtractCompressedBiddingAndAuctionResponse(
+    base::span<const uint8_t> decrypted_data);
 
 struct CONTENT_EXPORT BiddingAndAuctionResponse {
   BiddingAndAuctionResponse();

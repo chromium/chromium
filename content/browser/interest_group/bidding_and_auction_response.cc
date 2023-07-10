@@ -8,6 +8,32 @@
 
 namespace content {
 
+namespace {
+const size_t kFramingHeaderSize = 5;  // bytes
+const uint8_t kExpectedHeaderVersionInfo = 0x02;
+}  // namespace
+
+absl::optional<base::span<const uint8_t>>
+ExtractCompressedBiddingAndAuctionResponse(
+    base::span<const uint8_t> decrypted_data) {
+  if (decrypted_data.size() < kFramingHeaderSize) {
+    // Response is too short
+    return absl::nullopt;
+  }
+  if (decrypted_data[0] != kExpectedHeaderVersionInfo) {
+    // Bad version and compression information
+    return absl::nullopt;
+  }
+  size_t response_length =
+      ((decrypted_data[1] << 24) & 0xff) | ((decrypted_data[2] << 16) & 0xff) |
+      ((decrypted_data[3] << 8) & 0xff) | ((decrypted_data[4] << 0) & 0xff);
+  if (decrypted_data.size() < kFramingHeaderSize + response_length) {
+    // Incomplete Data.
+    return absl::nullopt;
+  }
+  return decrypted_data.subspan(kFramingHeaderSize, response_length);
+}
+
 BiddingAndAuctionResponse::BiddingAndAuctionResponse(
     BiddingAndAuctionResponse&&) = default;
 BiddingAndAuctionResponse& BiddingAndAuctionResponse::operator=(

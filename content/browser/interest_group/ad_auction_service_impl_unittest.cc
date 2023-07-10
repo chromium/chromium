@@ -7945,55 +7945,22 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlob) {
       }));
   run_loop.Run();
   std::string expected =
-      "pQBY7wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZ3ZlcnNpb24AaXB1Ymxpc2hlcm5odHRwczov"
-      "L2EudGVzdGxnZW5lcmF0aW9uSWR4JDAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAw"
-      "MDAwMG5pbnRlcmVzdEdyb3Vwc6FuaHR0cHM6Ly9hLnRlc3RYlx+"
+      "AgAAAQ6kZ3ZlcnNpb24AaXB1Ymxpc2hlcm5odHRwczovL2EudGVzdGxnZW5lcmF0aW9uSWR4"
+      "JDAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMG5pbnRlcmVzdEdyb3Vwc6Fu"
+      "aHR0cHM6Ly9hLnRlc3RYlx+"
       "LCAAAAAAAAABVjTsOwjAQBfldKCH8WlJSUtBie1fOQrKO1gnIQhTxWRDnxEQ0NK+"
       "Z0bzhbRT4CFm+LEyxWgOrBsEo8bWC0jWtY+TOD2az3bEWd/"
       "coR7Ksav+yggbZhEWlKbk9d5OqFbydiH2Ms3Ocj1m6OOIRTyWJQGx/"
-      "hQOGdH3FkH0nlz7F93+Gfjw/peXBi6IAAAA=";
+      "hQOGdH3FkH0nlz7F93+Gfjw/"
+      "peXBi6IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   EXPECT_EQ(1, absl::popcount(msg.size()));  // Should be a power of 2.
   EXPECT_EQ(expected, base::Base64Encode(msg));
   EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
                                test_origin, testing::ElementsAre("cars"))));
-}
-
-TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithAnomalousPadding) {
-  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
-  // To trigger the edge case we need to generate a message that needs 26 bytes
-  // of padding. This request was carefully designed to create a 230 byte
-  // request.
-  manager_->JoinInterestGroup(
-      blink::TestInterestGroupBuilder(test_origin, "cars")
-          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/"",
-                     /*size_group=*/absl::nullopt,
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
-          .Build(),
-      GURL("https://a.test/example.html"));
-  std::vector<uint8_t> msg;
-  base::RunLoop run_loop;
-  manager_->GetInterestGroupAdAuctionData(
-      /*top_level_origin=*/
-      url::Origin::Create(GURL("https://very.long.origin.test")),
-      base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
-      base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
-        msg = std::move(data.request);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  std::string expected =
-      "pgBWAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAZ3ZlcnNpb24AaXB1Ymxpc2hlcngdaHR0cHM6"
-      "Ly92ZXJ5Lmxvbmcub3JpZ2luLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAwMC0wMDAwLTAw"
-      "MDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8vYS50ZXN0WF8f"
-      "iwgAAAAAAAAAa1ycnJhS3JhiaGRskpKXmJuakpxYVJyXVJRfXpxaFJyZnpeYU7wkvSg1OTUv"
-      "uZIhIykzxTm/NK+EIaOgKLUsPDOvuCEzKz8zDyzICAAUFTd6TgAAAA==";
-  EXPECT_EQ(1, absl::popcount(msg.size()));  // Should be a power of 2.
-  EXPECT_EQ(expected, base::Base64Encode(msg));
 }
 
 TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithNoGroups) {
@@ -8128,18 +8095,18 @@ TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
   run_loop.Run();
 
   std::string expected =
-      "pQBYagAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      "AgAAAZOkZ3ZlcnNpb24AaXB1Ymxpc2hlcm5odHRwczovL2EudGVzdGxnZW5lcmF0aW9uSWR4"
+      "JDAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMG5pbnRlcmVzdEdyb3Vwc6Ju"
+      "aHR0cHM6Ly9hLnRlc3RYmR+"
+      "LCAAAAAAAAAB1zTsOwjAMBmAovVAfvFY4AgMrjmO1Qa1T2QHEBjlLD0oVBiQEi/"
+      "XLtv4vjghWI+08hCLN0jL0RGaK2oHd+37wTBz0mc4VG/"
+      "E3JTm4hqHTsRFCYrxnrXHT94XDrB2ErkfH+nBn7zgt52/IFmVVY71cJcUiyBeC6832H5H/"
+      "IGJcnGKeaj9Y9gJ1RE1p1wAAAG5odHRwczovL2IudGVzdFhyH4sIAAAAAAAAAGtckpyYUtyU"
+      "FlKUmJlnCKGMUvISc1PTSkDs4pzEFOf83IL8vNS8kuJGiALjvKSi/"
+      "PLi1KLgzPS8xJziJelFqcmpecmVjBlJmUDlpXklDBkFRall4UADGjKz8jPzwIKMAN+"
+      "hOshuAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      "AABndmVyc2lvbgBpcHVibGlzaGVybmh0dHBzOi8vYS50ZXN0bGdlbmVyYXRpb25JZHgkMDAw"
-      "MDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwbmludGVyZXN0R3JvdXBzom5odHRw"
-      "czovL2EudGVzdFiZH4sIAAAAAAAAAHXNOw7CMAwGYCi9UB+"
-      "8VjgCAyuOY7VBrVPZAcQGOUsPShUGJASL9cu2/"
-      "i+"
-      "OCFYj7TyEIs3SMvREZoragd37fvBMHPSZzhUb8TclObiGodOxEUJivGetcdP3hcOsHYSuR8f"
-      "6cGfvOC3nb8gWZVVjvVwlxSLIF4LrzfYfkf8gYlycYp5qP1j2AnVETWnXAAAAbmh0dHBzOi8"
-      "vYi50ZXN0WHIfiwgAAAAAAAAAa1ySnJhS3JQWUpSYmWcIoYxS8hJzU9NKQOzinMQU5/"
-      "zcgvy81LyS4kaIAuO8pKL88uLUouDM9LzEnOIl6UWpyal5yZWMGUmZQOWleSUMGQVFqWXhQA"
-      "MaMrPyM/PAgowA36E6yG4AAAA=";
+      "AAAA=";
   EXPECT_EQ(1, absl::popcount(msg.size()));  // Should be a power of 2.
   EXPECT_EQ(expected, base::Base64Encode(msg));
   EXPECT_THAT(
@@ -8219,28 +8186,26 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
   auto request =
       ohttp_gateway.DecryptObliviousHttpRequest(result.value().request);
   EXPECT_TRUE(request.ok()) << request.status();
-  auto got = request->GetPlaintextData();
+  auto plaintext_data = request->GetPlaintextData();
 
   // The message should be a power of 2 in length
-  EXPECT_EQ(1, absl::popcount(got.size()));
+  EXPECT_EQ(1, absl::popcount(plaintext_data.size()));
+
+  EXPECT_EQ(0x02, plaintext_data[0]);
+  size_t request_size = 0;
+  for (size_t idx = 0; idx < sizeof(uint32_t); idx++) {
+    request_size = (request_size << 8) | plaintext_data[idx + 1];
+  }
 
   // The generation ID is random, so match against everything before and
   // everything after.
   std::string got_str = cbor::DiagnosticWriter::Write(
-      cbor::Reader::Read(base::as_bytes(base::make_span(got))).value());
-  EXPECT_THAT(
-      got_str,
-      testing::StartsWith(
-          R"({0: h'000000000000000000000000000000000000000000000000000000000)"
-          R"(000000000000000000000000000000000000000000000000000000000000000)"
-          R"(000000000000000000000000000000000000000000000000000000000000000)"
-          R"(000000000000000000000000000000000000000000000000000000000000000)"
-          R"(000000000000000000000000000000000000000000000000000000000000000)"
-          R"(000000000000000000000000000000000000000000000000000000000000000)"
-          R"(000000000000000000000000000000000000000000000000000000000000000)"
-          R"(00000000000000000000000000000000000000000', )"
-          R"("version": 0, "publisher": "https://a.test", )"
-          R"("generationId": ")"));
+      cbor::Reader::Read(base::as_bytes(base::make_span(
+                             plaintext_data.substr(5, request_size))))
+          .value());
+  EXPECT_THAT(got_str, testing::StartsWith(
+                           R"({"version": 0, "publisher": "https://a.test", )"
+                           R"("generationId": ")"));
   EXPECT_THAT(
       got_str,
       testing::EndsWith(
@@ -8347,12 +8312,11 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
   */
   // Converted to base64 with `cat | sed 's/#.*//' | xxd -r -p | gzip | base64`
   ASSERT_TRUE(base::Base64Decode(
-      "H4sIAAAAAAAAA4WQTQrCMBCFPYYgutZNu/"
-      "cCIhSFSg+QJoMNTZM4mf649CgVvKelpdCUost5vO/"
-      "xMZ+"
-      "ciRi0AEziqMqIrDuGIQ8IHIVMBBkVqkilEFLfT2hK61ozttjQeq1sLXUM1iB1rQSVe2NaPgH"
-      "9TOHkbLbjihhWfKBZS02AjJM0/nQLXEmeN/uRhwl/XoCaDRkbQQXqBkr9ltrNpJxP/"
-      "Lc6zKyGgSWtRz/VdfqvXlgBgjN06MXXWgPO//0F95RNebMBAAA=",
+      "AgAAAMgfiwgAAAAAAAADhZBNCsIwEIU9hiC61k279wIiFIVKD5Amgw1NkziZ/"
+      "rj0KBW8p6Wl0JSiy3m87/"
+      "Exn5yJGLQATOKoyoisO4YhDwgchUwEGRWqSKUQUt9PaErrWjO22NB6rWwtdQzWIHWtBJV7Y1"
+      "o+Af1M4eRstuOKGFZ8oFlLTYCMkzT+dAtcSZ43+5GHCX9egJoNGRtBBeoGSv2W2s2knE/"
+      "8tzrMrIaBJa1HP9V1+q9eWAGCM3ToxddaA87//QX3lE15swEAAA==",
       &response));
 
   std::string encrypted_response =

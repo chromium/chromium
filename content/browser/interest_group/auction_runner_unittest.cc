@@ -7915,7 +7915,7 @@ TEST_F(AuctionRunnerTest, PromiseServerResponseResolveTwice) {
   const base::Uuid request_id = base::Uuid::ParseLowercase(kRequestId);
   server_response_request_id_ = request_id;
 
-  const char kResponse[] = "{}";
+  const char kResponse[] = {0x02, 0x00, 0x00, 0x00, 0x02, '{', '}'};
 
   // Same as the key in ad_auction_service_impl_unittest.cc.
   // Randomly generated using EVP_HPKE_KEY_generate.
@@ -7941,7 +7941,7 @@ TEST_F(AuctionRunnerTest, PromiseServerResponseResolveTwice) {
       std::move(request).ReleaseContext();
   std::string encrypted_response =
       quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
-          kResponse, client_context)
+          std::string(kResponse, sizeof(kResponse)), client_context)
           ->EncapsulateAndSerialize();
 
   std::string witnessed_hash = crypto::SHA256HashString(encrypted_response);
