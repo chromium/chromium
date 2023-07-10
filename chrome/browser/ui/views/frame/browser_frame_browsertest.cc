@@ -362,27 +362,24 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
             browser_frame->GetColorProvider()->GetColor(ui::kColorSysTertiary));
 }
 
-// Verifies incognito browsers will ignore the is_grayscale setting of the
-// ThemeService.
+// Verifies incognito browsers always force is_grayscale.
 IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
-                       IncognitoAlwaysIgnoresIsGrayscale) {
+                       IncognitoIsAlwaysGrayscale) {
   // Create an incognito browser.
   Browser* incognito_browser = CreateIncognitoBrowser(profile());
   views::Widget* incognito_browser_frame = GetBrowserFrame(incognito_browser);
 
-  // Set the is_grayscale pref to false. The ingognito browser should ignore the
-  // is_grayscale setting.
+  // Set the is_grayscale pref to false. The ingognito browser should force the
+  // is_grayscale setting to true.
   SetIsGrayscale(incognito_browser->profile(), false);
-  EXPECT_EQ(kTransparentColor,
-            incognito_browser_frame->GetColorProvider()->GetColor(
-                ui::kColorSysTertiary));
+  EXPECT_EQ(kGrayColor, incognito_browser_frame->GetColorProvider()->GetColor(
+                            ui::kColorSysTertiary));
 
-  // Set the is_grayscale pref to true. The ingognito browser should ignore the
-  // is_grayscale setting.
+  // Set the is_grayscale pref to true. The ingognito browser should continue to
+  // force the is_grayscale setting to true.
   SetIsGrayscale(incognito_browser->profile(), true);
-  EXPECT_EQ(kTransparentColor,
-            incognito_browser_frame->GetColorProvider()->GetColor(
-                ui::kColorSysTertiary));
+  EXPECT_EQ(kGrayColor, incognito_browser_frame->GetColorProvider()->GetColor(
+                            ui::kColorSysTertiary));
 }
 
 // Verifies the BrowserFrame's ColorProviderKey tracks the kBrowserColorVariant

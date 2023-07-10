@@ -492,8 +492,9 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
   key.app_controller = app_controller;
 
   // is_grayscale.
-  key.is_grayscale =
-      !IsIncognitoBrowser() && theme_service && theme_service->GetIsGrayscale();
+  // Incognito mode browser should be forced to grayscale.
+  key.is_grayscale = IsIncognitoBrowser() ||
+                     (theme_service && theme_service->GetIsGrayscale());
 
   return key;
 }
