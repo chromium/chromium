@@ -230,7 +230,7 @@ KeyframeEffect::KeyframeEffect(Element* target,
     // pseudo element originates from.
     target_element_ = DynamicTo<PseudoElement>(target)->OriginatingElement();
     DCHECK(!target_element_->IsPseudoElement());
-    target_pseudo_ = target->tagName();
+    target_pseudo_ = PseudoElement::PseudoElementNameForEvents(target);
   }
 
   CountAnimatedProperties();
