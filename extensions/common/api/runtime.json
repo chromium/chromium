@@ -280,7 +280,7 @@
       "lastError": {
         "type": "object",
         "optional": true,
-        "description": "This will be defined during an API method callback if there was an error",
+        "description": "Populated with an error message if calling an API function fails; otherwise undefined. This is only defined within the scope of that function's callback. If an error is produced, but <code>runtime.lastError</code> is not accessed within the callback, a message is logged to the console listing the API function that produced the error. API functions that return promises do not set this property.",
         "properties": {
           "message": {
             "optional": true,
