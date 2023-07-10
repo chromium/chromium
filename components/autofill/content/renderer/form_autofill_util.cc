@@ -1088,9 +1088,6 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
   }
 
   for (size_t i = 0; i < data.fields.size(); ++i) {
-    if (matching_fields.size() == control_elements.size())
-      break;  // All possible matches are already found.
-
     auto it = SearchInSortedVector(data.fields[i], control_elements);
     if (it == control_elements.end())
       continue;
