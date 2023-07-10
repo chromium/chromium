@@ -83,19 +83,6 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
       });
 }
 
-// Waits until Open in Downloads button is shown.
-[[nodiscard]] bool WaitForOpenInDownloadsButton() {
-  return base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForUIElementTimeout, ^{
-        NSError* error = nil;
-        [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                                IDS_IOS_OPEN_IN_DOWNLOADS))]
-            assertWithMatcher:grey_interactable()
-                        error:&error];
-        return (error == nil);
-      });
-}
-
 }  // namespace
 
 // Tests critical user journeys for Download Manager using old download code
@@ -284,8 +271,10 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       performAction:grey_tap()];
 
-  GREYAssert(WaitForOpenInDownloadsButton(),
-             @"Open in Downloads button did not show up");
+  [ChromeEarlGrey verifyActivitySheetVisible];
+  [ChromeEarlGrey
+      verifyTextVisibleInActivitySheetWithID:l10n_util::GetNSString(
+                                                 IDS_IOS_OPEN_IN_DOWNLOADS)];
 
   // Tests filename label.
   [[EarlGrey
