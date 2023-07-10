@@ -29,9 +29,22 @@ WaylandDisplayObserver::~WaylandDisplayObserver() = default;
 
 WaylandDisplayHandler::WaylandDisplayHandler(WaylandDisplayOutput* output,
                                              wl_resource* output_resource)
-    : output_(output), output_resource_(output_resource) {}
+    : output_(output), output_resource_(output_resource) {
+  // At construction time the client object is guaranteed to exist.
+  wl_client* client = wl_resource_get_client(output_resource_);
+  CHECK(client);
+  client_destroy_listener_.listener.notify =
+      &WaylandDisplayHandler::OnClientDestroyed;
+  wl_client_add_destroy_listener(client, &client_destroy_listener_.listener);
+}
 
 WaylandDisplayHandler::~WaylandDisplayHandler() {
+  // Remove the listener to cover the case where the client outlives the
+  // handler.
+  if (!client_destroy_listener_.notified) {
+    wl_list_remove(&client_destroy_listener_.listener.link);
+  }
+
   ash::Shell::Get()->RemoveShellObserver(this);
   for (auto& obs : observers_) {
     obs.OnOutputDestroyed();
@@ -89,8 +102,7 @@ void WaylandDisplayHandler::OnDisplayMetricsChanged(
 
   // If supported, the aura_output_manager must have been bound by clients
   // before the wl_output associated with this WaylandDisplayHandler is bound.
-  wl_client* client = wl_resource_get_client(output_resource_);
-  if (auto* output_manager = AuraOutputManager::Get(client)) {
+  if (auto* output_manager = GetAuraOutputManager()) {
     // This sends all relevant output metrics to clients. These events are sent
     // immediately after the client binds an output and again every time display
     // metrics have changed.
@@ -139,6 +151,14 @@ void WaylandDisplayHandler::UnsetXdgOutputResource() {
   xdg_output_resource_ = nullptr;
 }
 
+bool WaylandDisplayHandler::IsClientDestroyedForTesting() const {
+  return client_destroy_listener_.notified;
+}
+
+AuraOutputManager* WaylandDisplayHandler::GetAuraOutputManagerForTesting() {
+  return GetAuraOutputManager();
+}
+
 void WaylandDisplayHandler::XdgOutputSendLogicalPosition(
     const gfx::Point& position) {
   zxdg_output_v1_send_logical_position(xdg_output_resource_, position.x(),
@@ -152,6 +172,15 @@ void WaylandDisplayHandler::XdgOutputSendLogicalSize(const gfx::Size& size) {
 
 void WaylandDisplayHandler::XdgOutputSendDescription(const std::string& desc) {
   zxdg_output_v1_send_description(xdg_output_resource_, desc.c_str());
+}
+
+// static.
+void WaylandDisplayHandler::OnClientDestroyed(struct wl_listener* listener,
+                                              void* data) {
+  ClientDestroyListener* client_destroy_listener = wl_container_of(
+      listener, /*sample=*/client_destroy_listener, /*member=*/listener);
+  client_destroy_listener->notified = true;
+  wl_list_remove(&client_destroy_listener->listener.link);
 }
 
 bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
@@ -202,8 +231,7 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
 }
 
 void WaylandDisplayHandler::SendActiveDisplay() {
-  wl_client* client = wl_resource_get_client(output_resource_);
-  if (auto* output_manager = AuraOutputManager::Get(client)) {
+  if (auto* output_manager = GetAuraOutputManager()) {
     output_manager->SendOutputActivated(output_resource_);
   }
 }
@@ -211,6 +239,20 @@ void WaylandDisplayHandler::SendActiveDisplay() {
 void WaylandDisplayHandler::OnOutputDestroyed() {
   // destroying itself.
   RemoveObserver(this);
+}
+
+AuraOutputManager* WaylandDisplayHandler::GetAuraOutputManager() {
+  // If the client has begun destruction avoid attempting to access the client's
+  // AuraOutputManager instance as libwayland may have freed the object's memory
+  // but not yet updated the data structures used to find the object (see
+  // crbug.com/1433187).
+  if (client_destroy_listener_.notified) {
+    return nullptr;
+  }
+
+  wl_client* client = wl_resource_get_client(output_resource_);
+  CHECK(client);
+  return AuraOutputManager::Get(client);
 }
 
 size_t WaylandDisplayHandler::CountObserversForTesting() const {
