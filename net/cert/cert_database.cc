@@ -4,7 +4,6 @@
 
 #include "net/cert/cert_database.h"
 
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list_threadsafe.h"
 #include "build/build_config.h"
@@ -23,10 +22,8 @@ void RecordNotificationHistogram(CertDatabase::HistogramNotificationType type) {
 
 // static
 CertDatabase* CertDatabase::GetInstance() {
-  // Leaky so it can be initialized on worker threads, and because there is no
-  // useful cleanup to do.
-  return base::Singleton<CertDatabase,
-                         base::LeakySingletonTraits<CertDatabase>>::get();
+  static base::NoDestructor<CertDatabase> cert_database;
+  return cert_database.get();
 }
 
 void CertDatabase::AddObserver(Observer* observer) {
@@ -64,11 +61,5 @@ void CertDatabase::NotifyObserversClientCertStoreChanged() {
 CertDatabase::CertDatabase()
     : observer_list_(
           base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>()) {}
-
-CertDatabase::~CertDatabase() {
-#if BUILDFLAG(IS_MAC)
-  ReleaseNotifier();
-#endif
-}
 
 }  // namespace net
