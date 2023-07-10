@@ -27,7 +27,6 @@ blink_core_sources_bindings =
                     "core/v8/custom/v8_dev_tools_host_custom.cc",
                     "core/v8/custom/v8_html_all_collection_custom.cc",
                     "core/v8/custom/v8_html_plugin_element_custom.cc",
-                    "core/v8/custom/v8_promise_rejection_event_custom.cc",
                     "core/v8/custom/v8_window_custom.cc",
                     "core/v8/custom/v8_xml_http_request_custom.cc",
                     "core/v8/dictionary.cc",
