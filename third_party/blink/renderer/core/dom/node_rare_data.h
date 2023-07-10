@@ -25,6 +25,7 @@
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
@@ -44,6 +45,8 @@ class NodeListsNodeData;
 class NodeRareData;
 class Part;
 class ScrollTimeline;
+
+using PartsList = HeapLinkedHashSet<Member<Part>>;
 
 class NodeMutationObserverData final
     : public GarbageCollected<NodeMutationObserverData> {
@@ -228,8 +231,8 @@ class NodeRareData : public NodeData {
 
   void AddDOMPart(Part& part);
   void RemoveDOMPart(Part& part);
-  bool HasDOMParts() { return dom_parts_; }
-  HeapHashSet<Member<Part>> GetDOMParts();
+  bool HasDOMParts() const { return dom_parts_; }
+  PartsList GetDOMParts() const;
 
   void Trace(blink::Visitor*) const override;
 
@@ -255,7 +258,10 @@ class NodeRareData : public NodeData {
   // Keeps strong scroll timeline pointers linked to this node to ensure
   // the timelines are alive as long as the node is alive.
   Member<HeapHashSet<Member<ScrollTimeline>>> scroll_timelines_;
-  Member<HeapHashSet<Member<Part>>> dom_parts_;
+  // An ordered set of DOM Parts for this Node, in order of construction. This
+  // order is important, since `getParts()` returns a tree-ordered set of parts,
+  // with parts on the same `Node` returned in `Part` construction order.
+  Member<PartsList> dom_parts_;
 };
 
 template <typename T>

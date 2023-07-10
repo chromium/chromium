@@ -88,6 +88,7 @@ class CORE_EXPORT Text : public CharacterData {
       delete;  // This will catch anyone doing an unnecessary check.
 
   virtual Text* CloneWithData(Document&, const String&) const;
+  void ClonePartsFrom(const Text& node, NodeCloningData& data);
 };
 
 template <>

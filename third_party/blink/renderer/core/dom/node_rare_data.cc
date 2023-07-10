@@ -128,21 +128,22 @@ void NodeRareData::InvalidateAssociatedAnimationEffects() {
 
 void NodeRareData::AddDOMPart(Part& part) {
   if (!dom_parts_) {
-    dom_parts_ = MakeGarbageCollected<HeapHashSet<Member<Part>>>();
+    dom_parts_ = MakeGarbageCollected<PartsList>();
   }
   dom_parts_->insert(&part);
 }
 
 void NodeRareData::RemoveDOMPart(Part& part) {
-  CHECK(dom_parts_);
-  CHECK(dom_parts_->Contains(&part));
+  if (!dom_parts_ || !dom_parts_->Contains(&part)) {
+    return;
+  }
   dom_parts_->erase(&part);
   if (dom_parts_->empty()) {
     dom_parts_ = nullptr;
   }
 }
 
-HeapHashSet<Member<Part>> NodeRareData::GetDOMParts() {
+PartsList NodeRareData::GetDOMParts() const {
   CHECK(dom_parts_);
   return *dom_parts_;
 }

@@ -26,20 +26,21 @@ class CORE_EXPORT NodePart : public Part {
                           Node* node,
                           const NodePartInit* init,
                           ExceptionState& exception_state);
-  NodePart(PartRoot& root, Node* node, const NodePartInit* init);
+  NodePart(PartRoot& root, Node& node, const NodePartInit* init = nullptr);
   NodePart(const NodePart&) = delete;
   ~NodePart() override = default;
 
   void Trace(Visitor* visitor) const override;
   void disconnect() override;
-  bool IsValid() override;
+  bool IsValid() const override;
   Node* NodeToSortBy() const override;
+  void Clone(NodeCloningData&) const override;
 
   // NodePart API
   Node* node() const { return node_; }
 
  protected:
-  Document* GetDocument() const override;
+  Document& GetDocument() const override;
 
  private:
   Member<Node> node_;

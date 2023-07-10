@@ -4914,6 +4914,7 @@ Node* Document::Clone(Document& factory, NodeCloningData& data) const {
     return nullptr;
   Document* clone = CloneDocumentWithoutChildren();
   clone->CloneDataFromDocument(*this);
+  clone->ClonePartsFrom(*this, data);
   if (data.Has(CloneOption::kIncludeDescendants)) {
     clone->CloneChildNodesFrom(*this, data);
   }

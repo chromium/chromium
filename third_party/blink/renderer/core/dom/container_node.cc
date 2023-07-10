@@ -30,17 +30,21 @@
 #include "third_party/blink/renderer/core/dom/child_frame_disconnector.h"
 #include "third_party/blink/renderer/core/dom/child_list_mutation_scope.h"
 #include "third_party/blink/renderer/core/dom/class_collection.h"
+#include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/name_node_list.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_child_removal_tracker.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/dom/part.h"
+#include "third_party/blink/renderer/core/dom/part_root.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_recalc_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
@@ -65,6 +69,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -1086,6 +1091,28 @@ void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
 
 bool ContainerNode::ChildrenChangedAllChildrenRemovedNeedsList() const {
   return false;
+}
+
+void ContainerNode::ClonePartsFrom(const ContainerNode& node,
+                                   NodeCloningData& data) {
+  if (!data.Has(CloneOption::kPreserveDOMParts)) {
+    return;
+  }
+  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  if (auto* document = DynamicTo<Document>(const_cast<ContainerNode&>(node))) {
+    data.ConnectPartRootToClone(document->getPartRoot(),
+                                To<Document>(this)->getPartRoot());
+  } else if (auto* document_fragment = DynamicTo<DocumentFragment>(
+                 const_cast<ContainerNode&>(node))) {
+    data.ConnectPartRootToClone(document_fragment->getPartRoot(),
+                                To<DocumentFragment>(this)->getPartRoot());
+  }
+  if (node.HasDOMParts()) {
+    data.ConnectNodeToClone(node, *this);
+    for (Part* part : node.GetDOMParts()) {
+      data.QueueForCloning(*part);
+    }
+  }
 }
 
 void ContainerNode::CloneChildNodesFrom(const ContainerNode& node,

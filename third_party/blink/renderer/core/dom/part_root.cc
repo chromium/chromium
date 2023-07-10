@@ -113,7 +113,8 @@ HeapVector<Member<Part>> SortPartsInTreeOrder(
   }
 
   // Then traverse the tree under the LCA and add parts in the order they're
-  // found in the tree.
+  // found in the tree, and for the same Node, in the order they were
+  // constructed.
   for (auto& child : NodeTraversal::InclusiveDescendantsOf(*lca)) {
     auto it = unordered_nodes_to_parts.find(&child);
     if (it != unordered_nodes_to_parts.end()) {
@@ -152,18 +153,17 @@ HeapVector<Member<Part>> PartRoot::RebuildPartsList() {
   if (!root) {
     return HeapVector<Member<Part>>();
   }
-  Document* root_document = root->GetDocument();
-  CHECK(root_document);
+  Document& root_document = root->GetDocument();
   for (Part* part : parts_unordered_) {
-    if (part->GetDocument() != root_document || !part->IsValid()) {
+    if (!part->IsValid() || part->GetDocument() != root_document) {
       continue;
     }
     Node* node = part->NodeToSortBy();
-    if (!root->GetRootContainer().contains(node)) {
+    if (!root->GetRootContainer()->contains(node)) {
       continue;
     }
     CHECK_EQ(part->GetDocumentPartRoot(), root);
-    CHECK_EQ(&node->GetDocument(), root_document);
+    CHECK_EQ(node->GetDocument(), root_document);
     auto result = unordered_nodes_to_parts.insert(node, nullptr);
     if (result.is_new_entry) {
       result.stored_value->value =

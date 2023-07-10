@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_PART_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/part_root.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -15,6 +16,7 @@
 namespace blink {
 
 class Node;
+struct NodeCloningData;
 
 // Implementation of the Part class, which is part of the DOM Parts API.
 // This is the base class for all Part types, and it does not have a JS-public
@@ -27,8 +29,9 @@ class CORE_EXPORT Part : public PartRoot {
   ~Part() override = default;
 
   void Trace(Visitor* visitor) const override;
-  virtual bool IsValid() = 0;
+  virtual bool IsValid() const { return root_; }
   virtual Node* NodeToSortBy() const = 0;
+  virtual void Clone(NodeCloningData&) const = 0;
 
   // Part API
   PartRoot* root() const { return root_; }

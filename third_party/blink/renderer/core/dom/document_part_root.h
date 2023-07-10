@@ -24,12 +24,16 @@ class CORE_EXPORT DocumentPartRoot : public PartRoot {
   DocumentPartRoot(const DocumentPartRoot&) = delete;
   ~DocumentPartRoot() override = default;
 
-  ContainerNode& GetRootContainer() const { return *root_container_; }
-  Document* GetDocument() const override {
-    return &root_container_->GetDocument();
+  ContainerNode* GetRootContainer() const override { return root_container_; }
+  Document& GetDocument() const override {
+    return root_container_->GetDocument();
   }
   bool SupportsContainedParts() const override { return true; }
   void Trace(Visitor*) const override;
+
+  // DocumentPartRoot API
+  DocumentPartRoot& clone() const;
+  ContainerNode& root() const;
 
  protected:
   bool IsDocumentPartRoot() const override { return true; }

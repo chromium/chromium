@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -243,8 +244,23 @@ String Text::nodeName() const {
   return "#text";
 }
 
-Node* Text::Clone(Document& factory, NodeCloningData&) const {
-  return CloneWithData(factory, data());
+Node* Text::Clone(Document& factory, NodeCloningData& cloning_data) const {
+  Text* clone = CloneWithData(factory, data());
+  clone->ClonePartsFrom(*this, cloning_data);
+  return clone;
+}
+
+void Text::ClonePartsFrom(const Text& node, NodeCloningData& data) {
+  if (!data.Has(CloneOption::kPreserveDOMParts)) {
+    return;
+  }
+  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  if (node.HasDOMParts()) {
+    data.ConnectNodeToClone(node, *this);
+    for (Part* part : node.GetDOMParts()) {
+      data.QueueForCloning(*part);
+    }
+  }
 }
 
 static inline bool EndsWithWhitespace(const String& text) {

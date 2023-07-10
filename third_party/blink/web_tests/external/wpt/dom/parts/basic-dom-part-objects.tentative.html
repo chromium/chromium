@@ -8,7 +8,9 @@
   <div id=target style="display:none">
     Imperative test element
     <span id=a>A</span>
-    <span id=b>B</span>
+    <span id=b>B
+      <span id=sub>B-sub</span>
+    </span>
     <span id=c>C</span>
   </div>
 </template>
@@ -29,20 +31,17 @@ function addCleanup(t, part) {
 }
 
 [false,true].forEach(useTemplate => {
+  const doc = useTemplate ? template.content : document;
+  const target = doc.querySelector('#target');
+  assert_true(!!(doc && target && target.children.length >= 3));
+  const description = useTemplate ? "DocumentFragment" : "Document";
   test((t) => {
-    let doc;
-    if (useTemplate) {
-      doc = template.content;
-    } else {
-      doc = document;
-    }
-    const target = doc.querySelector('#target');
-    assert_true(!!(doc && target && target.children.length >= 3));
     const root = doc.getPartRoot();
     assert_true(root instanceof DocumentPartRoot);
     assert_true(root instanceof PartRoot);
     const parts = root.getParts();
     assert_equals(parts.length,0,'getParts() should start out empty');
+    assert_true(root.root instanceof (useTemplate ? DocumentFragment : Document));
 
     const nodePart = addCleanup(t,new NodePart(root,target));
     assert_true(nodePart instanceof NodePart);
@@ -86,7 +85,42 @@ function addCleanup(t, part) {
     assert_equals(childNodePart.previousSibling,null,'previousSibling should be null after disconnect');
     assert_equals(childNodePart.nextSibling,null,'nextSibling should be null after disconnect');
     assert_array_equals(root.getParts(),[nodePartBefore,nodePart]);
-  }, `Basic imperative DOM Parts object construction (${useTemplate ? "DocumentFragment" : "Document"})`);
+  }, `Basic imperative DOM Parts object construction (${description})`);
+
+  test((t) => {
+    const root = doc.getPartRoot();
+    const nodePart = addCleanup(t,new NodePart(root,target));
+    const childNodePart = addCleanup(t,new ChildNodePart(root,target.children[0], target.children[2]));
+    const nodePart3 = addCleanup(t,new NodePart(childNodePart,target.children[1].firstChild));
+    const nodePart2 = addCleanup(t,new NodePart(childNodePart,target.children[1].firstChild));
+    const childNodePart2 = addCleanup(t,new ChildNodePart(childNodePart,target.children[1].firstElementChild,target.children[1].firstElementChild));
+    assert_array_equals(root.getParts(),[nodePart,childNodePart]);
+    assert_array_equals(childNodePart.getParts(),[childNodePart2,nodePart3,nodePart2],'Parts on the same Node are returned in the order they were constructed');
+    assert_array_equals(childNodePart2.getParts(),[]);
+
+    const clonedPartRoot = root.clone();
+    const clonedContainer = clonedPartRoot.root;
+    assert_true(clonedPartRoot instanceof DocumentPartRoot);
+    assert_true(clonedContainer instanceof (useTemplate ? DocumentFragment : Document));
+    assert_not_equals(clonedPartRoot,root);
+    assert_not_equals(clonedContainer,doc);
+    assert_equals(doc.innerHTML,clonedContainer.innerHTML);
+    assert_equals(clonedPartRoot.getParts().length,root.getParts().length);
+    assert_array_equals(root.getParts(),[nodePart,childNodePart]);
+    assert_true(!clonedPartRoot.getParts().includes(nodePart),'Original parts should not be retained');
+    assert_true(!clonedPartRoot.getParts().includes(childNodePart));
+    const newNodePart = clonedPartRoot.getParts()[0];
+    const newChildNodePart = clonedPartRoot.getParts()[1];
+    assert_true(newChildNodePart instanceof ChildNodePart,'Cloned parts are out of order');
+    assert_true(newNodePart instanceof NodePart);
+    assert_not_equals(newNodePart.node,target,'Node references should not point to original nodes');
+    assert_equals(newNodePart.node.id,'target','New parts should point to cloned nodes');
+    assert_not_equals(newChildNodePart.previousSibling,a,'Node references should not point to original nodes');
+    assert_equals(newChildNodePart.previousSibling.id,'a');
+    assert_not_equals(newChildNodePart.nextSibling,c,'Node references should not point to original nodes');
+    assert_equals(newChildNodePart.nextSibling.id,'c');
+    assert_equals(newChildNodePart.getParts().length,childNodePart.getParts().length);
+  }, `Cloning (${description})`);
 });
 
 test((t) => {

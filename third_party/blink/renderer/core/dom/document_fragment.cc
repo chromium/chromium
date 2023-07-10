@@ -61,6 +61,7 @@ bool DocumentFragment::ChildTypeAllowed(NodeType type) const {
 
 Node* DocumentFragment::Clone(Document& factory, NodeCloningData& data) const {
   DocumentFragment* clone = Create(factory);
+  clone->ClonePartsFrom(*this, data);
   if (data.Has(CloneOption::kIncludeDescendants)) {
     clone->CloneChildNodesFrom(*this, data);
   }

@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
 #include "third_party/blink/renderer/core/dom/names_map.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"

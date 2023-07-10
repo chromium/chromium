@@ -634,6 +634,7 @@ bool Element::IsBaseElementFocusableStyle() const {
 Node* Element::Clone(Document& factory, NodeCloningData& data) const {
   if (!data.Has(CloneOption::kIncludeDescendants)) {
     CHECK(!data.Has(CloneOption::kIncludeShadowRoots));
+    CHECK(!data.Has(CloneOption::kPreserveDOMParts));
     return &CloneWithoutChildren(data, &factory);
   }
   Element* copy = &CloneWithChildren(data, &factory);
@@ -682,6 +683,7 @@ Element& Element::CloneWithChildren(NodeCloningData& data,
 
   clone.CloneAttributesFrom(*this);
   clone.CloneNonAttributePropertiesFrom(*this, data);
+  clone.ClonePartsFrom(*this, data);
   clone.CloneChildNodesFrom(*this, data);
   return clone;
 }

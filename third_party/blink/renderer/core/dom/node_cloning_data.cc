@@ -4,4 +4,56 @@
 
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 
-namespace blink {}  // namespace blink
+namespace blink {
+
+NodeCloningData::~NodeCloningData() {
+  if (!Has(CloneOption::kPreserveDOMParts)) {
+    return;
+  }
+  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  for (auto part : part_queue_) {
+    if (!part->IsValid()) {
+      // Only valid parts are cloned.
+      continue;
+    }
+    CHECK(part->root());
+    part->Clone(*this);
+  }
+}
+
+void NodeCloningData::ConnectNodeToClone(const Node& node, Node& clone) {
+  DCHECK(!cloned_node_map_.Contains(&node));
+  cloned_node_map_.Set(&node, clone);
+}
+
+Node* NodeCloningData::ClonedNodeFor(const Node& node) const {
+  auto it = cloned_node_map_.find(&node);
+  if (it == cloned_node_map_.end()) {
+    return nullptr;
+  }
+  return it->value;
+}
+
+void NodeCloningData::ConnectPartRootToClone(const PartRoot& part_root,
+                                             PartRoot& clone) {
+  CHECK(part_root.SupportsContainedParts());
+  CHECK(clone.SupportsContainedParts());
+  DCHECK(!cloned_part_root_map_.Contains(&part_root) ||
+         cloned_part_root_map_.at(&part_root) == &clone);
+  cloned_part_root_map_.Set(&part_root, clone);
+}
+
+PartRoot* NodeCloningData::ClonedPartRootFor(const PartRoot& part_root) const {
+  auto it = cloned_part_root_map_.find(&part_root);
+  if (it == cloned_part_root_map_.end()) {
+    return nullptr;
+  }
+  CHECK(it->value->SupportsContainedParts());
+  return it->value;
+}
+
+void NodeCloningData::QueueForCloning(const Part& to_clone) {
+  part_queue_.insert(&to_clone);
+}
+
+}  // namespace blink

@@ -4,6 +4,10 @@
 
 #include "third_party/blink/renderer/core/dom/node_part.h"
 
+#include "third_party/blink/renderer/core/dom/child_node_part.h"
+#include "third_party/blink/renderer/core/dom/node_cloning_data.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
+
 namespace blink {
 
 // static
@@ -17,15 +21,13 @@ NodePart* NodePart::Create(PartRoot* root,
         "The provided PartRoot does not support contained parts");
     return nullptr;
   }
-  return MakeGarbageCollected<NodePart>(*root, node, init);
+  return MakeGarbageCollected<NodePart>(*root, *node, init);
 }
 
 // TODO(crbug.com/1453291): Handle the init parameter.
-NodePart::NodePart(PartRoot& root, Node* node, const NodePartInit* init)
+NodePart::NodePart(PartRoot& root, Node& node, const NodePartInit* init)
     : Part(root), node_(node) {
-  if (node) {
-    node->AddDOMPart(*this);
-  }
+  node.AddDOMPart(*this);
 }
 
 void NodePart::disconnect() {
@@ -45,17 +47,27 @@ void NodePart::Trace(Visitor* visitor) const {
   Part::Trace(visitor);
 }
 
-bool NodePart::IsValid() {
-  // A NodePart is valid if there is a node reference.
-  return node_;
+bool NodePart::IsValid() const {
+  // A NodePart is valid if the base Part is valid (has a root), and if there
+  // is a node reference.
+  return Part::IsValid() && node_;
 }
 
 Node* NodePart::NodeToSortBy() const {
   return node_;
 }
 
-Document* NodePart::GetDocument() const {
-  return node_ ? &node_->GetDocument() : nullptr;
+void NodePart::Clone(NodeCloningData& data) const {
+  CHECK(IsValid());
+  PartRoot* new_part_root = data.ClonedPartRootFor(*root());
+  Node* new_node = data.ClonedNodeFor(*node_);
+  CHECK(new_part_root && new_node);
+  MakeGarbageCollected<NodePart>(*new_part_root, *new_node);
+}
+
+Document& NodePart::GetDocument() const {
+  CHECK(IsValid());
+  return node_->GetDocument();
 }
 
 }  // namespace blink

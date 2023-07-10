@@ -34,14 +34,16 @@ class CORE_EXPORT ChildNodePart : public Part {
   ChildNodePart(PartRoot& root,
                 Node& previous_sibling,
                 Node& next_sibling,
-                const NodePartInit* init);
+                const NodePartInit* init = nullptr);
   ChildNodePart(const ChildNodePart&) = delete;
   ~ChildNodePart() override = default;
 
   void Trace(Visitor* visitor) const override;
-  bool IsValid() override;
+  bool IsValid() const override;
   Node* NodeToSortBy() const override;
   bool SupportsContainedParts() const override { return true; }
+  ContainerNode* GetRootContainer() const override;
+  void Clone(NodeCloningData&) const override;
 
   // ChildNodePart API
   void disconnect() override;
@@ -55,7 +57,7 @@ class CORE_EXPORT ChildNodePart : public Part {
   void replaceChildren(const HeapVector<Member<V8UnionNodeOrString>>& nodes) {}
 
  protected:
-  Document* GetDocument() const override;
+  Document& GetDocument() const override;
 
  private:
   // Checks if this ChildNodePart is valid. This should only be called if the

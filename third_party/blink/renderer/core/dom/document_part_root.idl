@@ -7,5 +7,6 @@
 
 [RuntimeEnabled=DOMPartsAPI,Exposed=Window]
 interface DocumentPartRoot : PartRoot {
-
+  DocumentPartRoot clone();
+  readonly attribute Element root;
 };

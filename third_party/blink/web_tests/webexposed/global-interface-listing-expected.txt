@@ -2192,6 +2192,8 @@ interface DocumentFragment : Node
     method replaceChildren
 interface DocumentPartRoot : PartRoot
     attribute @@toStringTag
+    getter root
+    method clone
     method constructor
 interface DocumentPictureInPicture : EventTarget
     attribute @@toStringTag

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/dom/child_node_part.h"
 
+#include "third_party/blink/renderer/core/dom/node_cloning_data.h"
+
 namespace blink {
 
 // static
@@ -59,10 +61,14 @@ void ChildNodePart::Trace(Visitor* visitor) const {
 }
 
 // A ChildNodePart is valid if:
-//  1. previous_sibling_ and next_sibling_ are non-null.
-//  2. previous_sibling_ and next_sibling_ have the same (non-null) parent.
-//  3. previous_sibling_ does not come after next_sibling_ in the tree.
-bool ChildNodePart::IsValid() {
+//  1. The base |Part| is valid (it has a |root|).
+//  2. previous_sibling_ and next_sibling_ are non-null.
+//  3. previous_sibling_ and next_sibling_ have the same (non-null) parent.
+//  4. previous_sibling_ does not come after next_sibling_ in the tree.
+bool ChildNodePart::IsValid() const {
+  if (!Part::IsValid()) {
+    return false;
+  }
   if (!previous_sibling_ || !next_sibling_) {
     return false;
   }
@@ -87,8 +93,25 @@ Node* ChildNodePart::NodeToSortBy() const {
   return previous_sibling_->parentNode();
 }
 
-Document* ChildNodePart::GetDocument() const {
-  return &previous_sibling_->GetDocument();
+ContainerNode* ChildNodePart::GetRootContainer() const {
+  CHECK(IsValid());
+  return previous_sibling_->parentNode();
+}
+
+void ChildNodePart::Clone(NodeCloningData& data) const {
+  CHECK(IsValid());
+  PartRoot* new_part_root = data.ClonedPartRootFor(*root());
+  Node* new_previous = data.ClonedNodeFor(*previous_sibling_);
+  Node* new_next = data.ClonedNodeFor(*next_sibling_);
+  CHECK(new_part_root && new_previous && new_next);
+  data.ConnectPartRootToClone(
+      *this, *MakeGarbageCollected<ChildNodePart>(*new_part_root, *new_previous,
+                                                  *new_next));
+}
+
+Document& ChildNodePart::GetDocument() const {
+  CHECK(IsValid());
+  return previous_sibling_->GetDocument();
 }
 
 }  // namespace blink

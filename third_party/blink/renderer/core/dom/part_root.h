@@ -14,6 +14,7 @@
 
 namespace blink {
 
+class ContainerNode;
 class Document;
 class DocumentPartRoot;
 class Part;
@@ -24,6 +25,8 @@ class CORE_EXPORT PartRoot : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  PartRoot(const PartRoot&) = delete;
+  void operator=(const PartRoot&) = delete;
   ~PartRoot() override = default;
 
   void Trace(Visitor* visitor) const override;
@@ -37,6 +40,10 @@ class CORE_EXPORT PartRoot : public ScriptWrappable {
   // have contained parts.
   virtual bool SupportsContainedParts() const { return false; }
   void MarkPartsDirty() { cached_parts_list_dirty_ = true; }
+  virtual ContainerNode* GetRootContainer() const {
+    NOTREACHED() << "Must be overriden";
+    return nullptr;
+  }
 
   // PartRoot API
   HeapVector<Member<Part>> getParts();
@@ -47,7 +54,7 @@ class CORE_EXPORT PartRoot : public ScriptWrappable {
   PartRoot() = default;
   virtual bool IsPart() const { return false; }
   virtual bool IsDocumentPartRoot() const { return false; }
-  virtual Document* GetDocument() const = 0;
+  virtual Document& GetDocument() const = 0;
 
  private:
   DocumentPartRoot* GetDocumentPartRoot();
@@ -55,7 +62,7 @@ class CORE_EXPORT PartRoot : public ScriptWrappable {
 
   HeapVector<Member<Part>> parts_unordered_;
   HeapVector<Member<Part>> cached_ordered_parts_;
-  bool cached_parts_list_dirty_{false};
+  bool cached_parts_list_dirty_{true};
 };
 
 }  // namespace blink

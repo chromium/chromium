@@ -947,8 +947,10 @@ class CORE_EXPORT Node : public EventTargetWithInlineData {
 
   void AddDOMPart(Part& part) { EnsureRareData().AddDOMPart(part); }
   void RemoveDOMPart(Part& part) { EnsureRareData().RemoveDOMPart(part); }
-  bool HasDOMParts() { return HasRareData() && RareData()->HasDOMParts(); }
-  HeapHashSet<Member<Part>> GetDOMParts() { return RareData()->GetDOMParts(); }
+  bool HasDOMParts() const {
+    return HasRareData() && RareData()->HasDOMParts();
+  }
+  PartsList GetDOMParts() const { return RareData()->GetDOMParts(); }
   void InvalidateDOMParts();
 
   // For the imperative slot distribution API.
