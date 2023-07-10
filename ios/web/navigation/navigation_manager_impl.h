@@ -34,7 +34,6 @@ class NavigationStorage;
 class BrowserState;
 class NavigationItem;
 class NavigationManagerDelegate;
-class SessionStorageBuilder;
 
 // Name of UMA histogram to log the number of items Navigation Manager was
 // requested to restore. 100 is logged when the number of navigation items is
@@ -267,10 +266,6 @@ class NavigationManagerImpl final : public NavigationManager {
   // the `web_view_cache_` member field.
   FRIEND_TEST_ALL_PREFIXES(NavigationManagerTest,
                            TestGetVisibleWebViewOriginURLCache);
-
-  // The SessionStorageBuilder functions require access to private variables of
-  // NavigationManagerImpl.
-  friend SessionStorageBuilder;
 
   // Access shim for NavigationItems associated with the WKBackForwardList. It
   // is responsible for caching NavigationItems when the navigation manager
