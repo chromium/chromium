@@ -164,9 +164,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                        IconEffects icon_effects,
                        apps::LoadIconCallback callback);
 
-  // Remove all details of a promise app from the Promise App Service.
-  void RemovePromiseApp(const PackageId& package_id);
-
   // Registers `publisher` with the App Service as exclusively publishing
   // shortcut to app type `app_type`. `publisher` must have a lifetime equal to
   // or longer than this object.

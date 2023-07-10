@@ -121,6 +121,38 @@ void PromiseAppService::OnPromiseApp(PromiseAppPtr delta) {
                      weak_ptr_factory_.GetWeakPtr(), package_id));
 }
 
+void PromiseAppService::LoadIcon(const PackageId& package_id,
+                                 int32_t size_hint_in_dip,
+                                 apps::IconEffects icon_effects,
+                                 apps::LoadIconCallback callback) {
+  // We will always be able to synchronously get the icon from the cache because
+  // we already downloaded them all immediately after the promise app was
+  // registered, and verified that all the icons were valid before allowing the
+  // promise app to surface in the Launcher or Shelf.
+  gfx::ImageSkia icon =
+      promise_app_icon_cache_->GetIcon(package_id, size_hint_in_dip);
+
+  if (icon.isNull()) {
+    VLOG(1) << "No icon loaded for Package ID: " << package_id.ToString();
+    std::move(callback).Run(std::make_unique<apps::IconValue>());
+    return;
+  }
+
+  IconValuePtr icon_value = std::make_unique<IconValue>();
+  icon_value->icon_type = IconType::kStandard;
+  icon_value->is_placeholder_icon = false;
+  icon_value->is_maskable_icon = true;
+  icon_value->uncompressed = icon;
+
+  if (icon_effects == apps::IconEffects::kNone) {
+    std::move(callback).Run(std::move(icon_value));
+    return;
+  }
+  apps::ApplyIconEffects(
+      /*profile=*/nullptr, /*app_id=*/absl::nullopt, icon_effects,
+      size_hint_in_dip, std::move(icon_value), std::move(callback));
+}
+
 void PromiseAppService::RemovePromiseApp(const PackageId& package_id) {
   PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
   promise_app->status = PromiseStatus::kRemove;
@@ -239,37 +271,5 @@ void PromiseAppService::OnIconDownloaded(
   PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
   promise_app->should_show = true;
   promise_app_registry_cache_->OnPromiseApp(std::move(promise_app));
-}
-
-void PromiseAppService::LoadIcon(const PackageId& package_id,
-                                 int32_t size_hint_in_dip,
-                                 apps::IconEffects icon_effects,
-                                 apps::LoadIconCallback callback) {
-  // We will always be able to synchronously get the icon from the cache because
-  // we already downloaded them all immediately after the promise app was
-  // registered, and verified that all the icons were valid before allowing the
-  // promise app to surface in the Launcher or Shelf.
-  gfx::ImageSkia icon =
-      promise_app_icon_cache_->GetIcon(package_id, size_hint_in_dip);
-
-  if (icon.isNull()) {
-    VLOG(1) << "No icon loaded for Package ID: " << package_id.ToString();
-    std::move(callback).Run(std::make_unique<apps::IconValue>());
-    return;
-  }
-
-  IconValuePtr icon_value = std::make_unique<IconValue>();
-  icon_value->icon_type = IconType::kStandard;
-  icon_value->is_placeholder_icon = false;
-  icon_value->is_maskable_icon = true;
-  icon_value->uncompressed = icon;
-
-  if (icon_effects == apps::IconEffects::kNone) {
-    std::move(callback).Run(std::move(icon_value));
-    return;
-  }
-  apps::ApplyIconEffects(
-      /*profile=*/nullptr, /*app_id=*/absl::nullopt, icon_effects,
-      size_hint_in_dip, std::move(icon_value), std::move(callback));
 }
 }  // namespace apps

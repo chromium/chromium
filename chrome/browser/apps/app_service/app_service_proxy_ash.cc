@@ -412,10 +412,6 @@ void AppServiceProxyAsh::OnPromiseApp(PromiseAppPtr delta) {
   promise_app_service_->OnPromiseApp(std::move(delta));
 }
 
-void AppServiceProxyAsh::RemovePromiseApp(const PackageId& package_id) {
-  promise_app_service_->RemovePromiseApp(package_id);
-}
-
 void AppServiceProxyAsh::LoadPromiseIcon(const PackageId& package_id,
                                          int32_t size_hint_in_dip,
                                          IconEffects icon_effects,
