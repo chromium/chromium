@@ -466,6 +466,7 @@ class PasswordManagerTest : public testing::Test {
   }
 
   void TearDown() override {
+    mock_match_helper_ = nullptr;
     if (account_store_) {
       account_store_->ShutdownOnUIThread();
       account_store_ = nullptr;
@@ -653,7 +654,7 @@ class PasswordManagerTest : public testing::Test {
   FakeAffiliationService fake_affiliation_service_;
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<TestPasswordStore> account_store_;
-  raw_ptr<MockAffiliatedMatchHelper, DanglingUntriaged> mock_match_helper_;
+  raw_ptr<MockAffiliatedMatchHelper> mock_match_helper_ = nullptr;
   MockPasswordReuseManager reuse_manager_;
   testing::NiceMock<MockPasswordManagerClient> client_;
   MockPasswordManagerDriver driver_;
