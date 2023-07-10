@@ -23,7 +23,7 @@ BASE_DECLARE_FEATURE(kEnableManagedByParentUi);
 extern const base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl;
 BASE_DECLARE_FEATURE(kClearingCookiesKeepsSupervisedUsersSignedIn);
 
-// Enables inkoking the CreatePermissionRequest service through a proto fetcher.
+// Enables invoking the CreatePermissionRequest service through a proto fetcher.
 BASE_DECLARE_FEATURE(kEnableCreatePermissionRequestFetcher);
 
 // Returns whether banner can be displayed to the user after website filtering
