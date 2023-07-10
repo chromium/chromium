@@ -4193,44 +4193,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CopylessPaste.ExtractionFailedUs" units="microseconds"
-    expires_after="M77">
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    The time spent on scanning the document in the main frame to extract the
-    metadata. The metadata would be used to feed Icing for CopylessPaste feature
-    on Android. This only counts pages with failed or empty JSON extraction.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="CopylessPaste.ExtractionStatus" enum="ExtractionStatus"
-    expires_after="M77">
-  <owner>wychen@chromium.org</owner>
-  <summary>The error status of metadata extraction for AppIndexing.</summary>
-</histogram>
-
-<histogram name="CopylessPaste.ExtractionUs" units="microseconds"
-    expires_after="M85">
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    The time spent on scanning the document in the main frame to extract the
-    metadata. The metadata would be used to feed Icing for CopylessPaste feature
-    on Android. This only counts pages with successful JSON extraction.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="CrashExitCodes.Extension" enum="CrashExitCodes"
     expires_after="never">
 <!-- expires-never: Critical stability metrics. go/chrome-stability-metrics -->
