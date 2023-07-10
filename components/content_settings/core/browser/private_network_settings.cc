@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/content_settings/core/browser/local_network_settings.h"
+#include "components/content_settings/core/browser/private_network_settings.h"
 
 #include "base/logging.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -12,7 +12,7 @@
 
 namespace content_settings {
 
-// There are two inputs that go into the INSECURE_LOCAL_NETWORK content
+// There are two inputs that go into the INSECURE_PRIVATE_NETWORK content
 // setting for an origin:
 //
 //  - the blanket InsecurePrivateNetworkRequestsAllowed enterprise policy:
@@ -22,8 +22,9 @@ namespace content_settings {
 //    - if an origin is listed in this policy, then the content setting is
 //      always ALLOW for URLs of that origin
 //
-bool ShouldAllowInsecureLocalNetworkRequests(const HostContentSettingsMap* map,
-                                             const url::Origin& origin) {
+bool ShouldAllowInsecurePrivateNetworkRequests(
+    const HostContentSettingsMap* map,
+    const url::Origin& origin) {
   // Derive the base URL from the origin, since HostContentSettingsMap is keyed
   // by URL and not by origin. However, this setting is conceptually keyed by
   // origin, hence its public API uses url::Origin.
@@ -33,7 +34,7 @@ bool ShouldAllowInsecureLocalNetworkRequests(const HostContentSettingsMap* map,
   const GURL url = origin.GetURL();
 
   const ContentSetting setting = map->GetContentSetting(
-      url, url, ContentSettingsType::INSECURE_LOCAL_NETWORK);
+      url, url, ContentSettingsType::INSECURE_PRIVATE_NETWORK);
 
   switch (setting) {
     case CONTENT_SETTING_ALLOW:
@@ -42,7 +43,7 @@ bool ShouldAllowInsecureLocalNetworkRequests(const HostContentSettingsMap* map,
       return false;
     default:
       NOTREACHED()
-          << "Invalid content setting for insecure local network requests: "
+          << "Invalid content setting for insecure private network requests: "
           << setting;
       return false;
   }

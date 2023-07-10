@@ -141,7 +141,7 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
       ContentSettingsType::ADS,
       ContentSettingsType::DURABLE_STORAGE,
       ContentSettingsType::LEGACY_COOKIE_ACCESS,
-      ContentSettingsType::INSECURE_LOCAL_NETWORK,
+      ContentSettingsType::INSECURE_PRIVATE_NETWORK,
       ContentSettingsType::REQUEST_DESKTOP_SITE,
   };
 
@@ -212,10 +212,10 @@ TEST_F(ContentSettingsRegistryTest, GetInitialDefaultSetting) {
       registry()->Get(ContentSettingsType::POPUPS);
   EXPECT_EQ(CONTENT_SETTING_BLOCK, popups->GetInitialDefaultSetting());
 
-  const ContentSettingsInfo* insecure_local_network =
-      registry()->Get(ContentSettingsType::INSECURE_LOCAL_NETWORK);
+  const ContentSettingsInfo* insecure_private_network =
+      registry()->Get(ContentSettingsType::INSECURE_PRIVATE_NETWORK);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            insecure_local_network->GetInitialDefaultSetting());
+            insecure_private_network->GetInitialDefaultSetting());
 
   const ContentSettingsInfo* federated_identity =
       registry()->Get(ContentSettingsType::FEDERATED_IDENTITY_API);

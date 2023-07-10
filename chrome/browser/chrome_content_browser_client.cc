@@ -204,7 +204,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/browser/local_network_settings.h"
+#include "components/content_settings/core/browser/private_network_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
@@ -7407,8 +7407,8 @@ bool ChromeContentBrowserClient::ShouldAllowInsecureLocalNetworkRequests(
   // e.g. the System Profile.
   if (HostContentSettingsMap* service =
           HostContentSettingsMapFactory::GetForProfile(browser_context)) {
-    return content_settings::ShouldAllowInsecureLocalNetworkRequests(service,
-                                                                     origin);
+    return content_settings::ShouldAllowInsecurePrivateNetworkRequests(service,
+                                                                       origin);
   }
 
   return false;
