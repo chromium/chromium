@@ -1418,6 +1418,7 @@ void AppMenuModel::Build() {
                profile_submenu_model->profile_name(), profile_submenu_model);
     SetIcon(GetIndexOfCommandId(IDC_PROFILE_MENU_IN_APP_MENU).value(),
             profile_submenu_model->avatar_image_model());
+    AddSeparator(ui::SPACING_SEPARATOR);
   }
 #endif
 

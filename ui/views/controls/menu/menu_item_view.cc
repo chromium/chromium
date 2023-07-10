@@ -1040,11 +1040,14 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
                                    bool paint_as_selected) {
   if (menu_item_background_.has_value()) {
     MenuItemBackground background_info = menu_item_background_.value();
+    constexpr int kAdditionalBackgroundMargins = 4;
     gfx::Rect bounds = GetLocalBounds();
-    bounds.set_width(bounds.width() - background_info.horizontal_margin * 2);
-    bounds.set_x(bounds.x() + background_info.horizontal_margin);
-    bounds.set_height(bounds.height() - background_info.vertical_margin * 2);
-    bounds.set_y(bounds.y() + background_info.vertical_margin);
+    int horizontal_border_padding =
+        MenuConfig::instance().item_horizontal_border_padding;
+    bounds.set_width(bounds.width() - horizontal_border_padding * 2 -
+                     kAdditionalBackgroundMargins * 2);
+    bounds.set_x(bounds.x() + horizontal_border_padding +
+                 kAdditionalBackgroundMargins);
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);

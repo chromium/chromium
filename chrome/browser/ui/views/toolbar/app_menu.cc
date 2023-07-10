@@ -1333,7 +1333,6 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
     switch (model->GetCommandIdAt(i)) {
       case IDC_PROFILE_MENU_IN_APP_MENU: {
         if (features::IsChromeRefresh2023()) {
-          constexpr int background_horizontal_margin = 12;
           constexpr int background_corner_radii = 12;
           // Profile row margins are different from the menu config item
           // margins.
@@ -1341,7 +1340,6 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
               ChromeLayoutProvider::Get()->GetDistanceMetric(
                   DISTANCE_CONTENT_LIST_VERTICAL_MULTI));
           item->SetMenuItemBackground(MenuItemView::MenuItemBackground(
-              0, background_horizontal_margin,
               ui::kColorAppMenuProfileRowBackground, background_corner_radii));
           item->SetSelectedColorId(
               ui::kColorAppMenuProfileRowBackgroundHovered);

@@ -117,18 +117,9 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // The data structure which is used to paint a background on the menu item.
   struct MenuItemBackground {
-    MenuItemBackground(int vertical_margin,
-                       int horizontal_margin,
-                       ui::ColorId background_color_id,
-                       int corner_radius)
-        : vertical_margin(vertical_margin),
-          horizontal_margin(horizontal_margin),
-          background_color_id(background_color_id),
+    MenuItemBackground(ui::ColorId background_color_id, int corner_radius)
+        : background_color_id(background_color_id),
           corner_radius(corner_radius) {}
-    // Vertical margin between background and edge of MenuItemView.
-    int vertical_margin = 0;
-    // Horizontal margin between background and edge of MenuItemView.
-    int horizontal_margin = 0;
     ui::ColorId background_color_id;
     int corner_radius = 0;
   };
