@@ -31,6 +31,7 @@ include_rules = [
     "+base/metrics/histogram_samples.h",
     "+base/metrics/histogram.h",
     "+base/metrics/sparse_histogram.h",
+    "+base/metrics/statistics_recorder.h",
     "+base/no_destructor.h",
     "+base/numerics/checked_math.h",
     "+base/numerics/safe_conversions.h",

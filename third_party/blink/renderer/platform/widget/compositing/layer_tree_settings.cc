@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -184,6 +185,15 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
   }
   actual.priority_cutoff_when_visible =
       gpu::MemoryAllocation::CUTOFF_ALLOW_EVERYTHING;
+
+  static size_t previous_value = [](size_t bytes_limit) {
+    base::UmaHistogramMemoryKB("Blink.Compositor.MemoryLimitKb",
+                               static_cast<int>(bytes_limit / 1024));
+
+    return bytes_limit;
+  }(actual.bytes_limit_when_visible);
+  DCHECK_EQ(actual.bytes_limit_when_visible, previous_value);
+
 #else
   // Ignore what the system said and give all clients the same maximum
   // allocation on desktop platforms.

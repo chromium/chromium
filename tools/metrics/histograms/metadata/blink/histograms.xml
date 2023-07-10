@@ -713,6 +713,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Compositor.MemoryLimit" units="KB"
+    expires_after="2023-12-04">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-gpu-memory@google.com</owner>
+  <summary>
+    Amount of memory the compositor is allowed to use. Collected once per
+    process, on Android only.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Compression.CompressionStream.Format"
     enum="CompressionStreamsFormat" expires_after="2023-03-26">
   <owner>ricea@chromium.org</owner>
