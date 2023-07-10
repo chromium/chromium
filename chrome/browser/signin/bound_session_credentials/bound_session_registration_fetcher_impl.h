@@ -60,6 +60,7 @@ class BoundSessionRegistrationFetcherImpl
 
   BoundSessionRegistrationFetcherParam registration_params_;
   const raw_ptr<unexportable_keys::UnexportableKeyService> key_service_;
+  std::string wrapped_key_str_;
 
   // Non-null after a fetch has started.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

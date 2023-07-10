@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.h"
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
@@ -27,10 +28,12 @@ constexpr char kSessionIdentifier[] = "session_identifier";
 
 bound_session_credentials::RegistrationParams CreateRegistrationParams(
     const std::string& url,
-    const std::string& session_id) {
+    const std::string& session_id,
+    const std::string& wrapped_key) {
   bound_session_credentials::RegistrationParams params;
   params.set_site(url);
   params.set_session_id(session_id);
+  params.set_wrapped_key(wrapped_key);
   return params;
 }
 
@@ -101,7 +104,7 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
         return_value = CreateRegistrationParams(
             net::SchemefulSite(registration_params_.RegistrationEndpoint())
                 .Serialize(),
-            *session_id);
+            *session_id, wrapped_key_str_);
       }
     }
   }
@@ -134,6 +137,9 @@ void BoundSessionRegistrationFetcherImpl::OnKeyCreated(
     std::move(callback_).Run(absl::nullopt);
     return;
   }
+
+  std::vector<uint8_t> wrapped_key = *key_service_->GetWrappedKey(key_id);
+  wrapped_key_str_ = std::string(wrapped_key.begin(), wrapped_key.end());
 
   StartFetchingRegistration(std::move(pkey_base64), std::move(algo_string));
 }

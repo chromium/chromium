@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.h"
+#include "base/containers/span.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher.h"
+#include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
@@ -21,6 +23,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+using unexportable_keys::ServiceErrorOr;
+using unexportable_keys::UnexportableKeyId;
 constexpr char kResponseJsonBody[] = R"(
     {
         "session_identifier": "007",
@@ -51,8 +55,7 @@ bound_session_credentials::RegistrationParams CreateTestRegistrationParams() {
 
 MATCHER_P(ParamMatching, expected, "") {
   return arg->site() == expected.site() &&
-         arg->session_id() == expected.session_id() &&
-         arg->wrapped_key() == expected.wrapped_key();
+         arg->session_id() == expected.session_id();
 }
 
 }  // namespace
@@ -149,4 +152,16 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(future.Get<>(), ParamMatching(CreateTestRegistrationParams()));
   ASSERT_TRUE(made_download);
+
+  // Verify the wrapped key.
+  std::string wrapped_key = future.Get<>()->wrapped_key();
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>>
+      wrapped_key_to_key_id;
+  unexportable_key_service().FromWrappedSigningKeySlowlyAsync(
+      base::make_span(
+          std::vector<uint8_t>(wrapped_key.begin(), wrapped_key.end())),
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      wrapped_key_to_key_id.GetCallback());
+  EXPECT_TRUE(wrapped_key_to_key_id.IsReady());
+  EXPECT_TRUE(wrapped_key_to_key_id.Get().has_value());
 }
