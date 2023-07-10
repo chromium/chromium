@@ -28,70 +28,57 @@ class BookmarksBrowserTest : public WebUIMochaBrowserTest {
   }
 };
 
-typedef BookmarksBrowserTest BookmarksActionsTest;
-IN_PROC_BROWSER_TEST_F(BookmarksActionsTest, All) {
+using BookmarksTest = BookmarksBrowserTest;
+IN_PROC_BROWSER_TEST_F(BookmarksTest, Actions) {
   RunTest("bookmarks/actions_test.js", "mocha.run()");
 }
 
-typedef BookmarksBrowserTest BookmarksAppTest;
-IN_PROC_BROWSER_TEST_F(BookmarksAppTest, All) {
+IN_PROC_BROWSER_TEST_F(BookmarksTest, App) {
   RunTest("bookmarks/app_test.js", "mocha.run()");
 }
 
-typedef BookmarksBrowserTest BookmarksCommandManagerTest;
-
 // https://crbug.com/1010381: Flaky.
-IN_PROC_BROWSER_TEST_F(BookmarksCommandManagerTest, DISABLED_All) {
+IN_PROC_BROWSER_TEST_F(BookmarksTest, DISABLED_CommandManager) {
   RunTest("bookmarks/command_manager_test.js", "mocha.run()");
 }
 
-typedef BookmarksBrowserTest BookmarksEditDialogTest;
-IN_PROC_BROWSER_TEST_F(BookmarksEditDialogTest, All) {
+IN_PROC_BROWSER_TEST_F(BookmarksTest, EditDialog) {
   RunTest("bookmarks/edit_dialog_test.js", "mocha.run()");
 }
 
-typedef BookmarksBrowserTest BookmarksItemTest;
-IN_PROC_BROWSER_TEST_F(BookmarksItemTest, All) {
+IN_PROC_BROWSER_TEST_F(BookmarksTest, Item) {
   RunTest("bookmarks/item_test.js", "mocha.run()");
 }
 
-typedef BookmarksBrowserTest BookmarksListTest;
-IN_PROC_BROWSER_TEST_F(BookmarksListTest, All) {
+IN_PROC_BROWSER_TEST_F(BookmarksTest, List) {
   RunTest("bookmarks/list_test.js", "mocha.run()");
 }
 
-typedef BookmarksBrowserTest BookmarksReducersTest;
-IN_PROC_BROWSER_TEST_F(BookmarksReducersTest, All) {
+IN_PROC_BROWSER_TEST_F(BookmarksTest, Reducers) {
   RunTest("bookmarks/reducers_test.js", "mocha.run()");
 }
 
-typedef BookmarksBrowserTest BookmarksRouterTest;
-IN_PROC_BROWSER_TEST_F(BookmarksRouterTest, All) {
+IN_PROC_BROWSER_TEST_F(BookmarksTest, Router) {
   RunTest("bookmarks/router_test.js", "mocha.run()");
 }
 
-typedef BookmarksBrowserTest BookmarksFolderNodeTest;
-IN_PROC_BROWSER_TEST_F(BookmarksFolderNodeTest, All) {
+IN_PROC_BROWSER_TEST_F(BookmarksTest, FolderNode) {
   RunTest("bookmarks/folder_node_test.js", "mocha.run()");
 }
 
-typedef BookmarksBrowserTest BookmarksPolicyTest;
-IN_PROC_BROWSER_TEST_F(BookmarksPolicyTest, All) {
+IN_PROC_BROWSER_TEST_F(BookmarksTest, Policy) {
   RunTest("bookmarks/policy_test.js", "mocha.run()");
 }
 
-typedef BookmarksBrowserTest BookmarksStoreTest;
-IN_PROC_BROWSER_TEST_F(BookmarksStoreTest, All) {
+IN_PROC_BROWSER_TEST_F(BookmarksTest, Store) {
   RunTest("bookmarks/store_test.js", "mocha.run()");
 }
 
-typedef BookmarksBrowserTest BookmarksToolbarTest;
-IN_PROC_BROWSER_TEST_F(BookmarksToolbarTest, All) {
+IN_PROC_BROWSER_TEST_F(BookmarksTest, Toolbar) {
   RunTest("bookmarks/toolbar_test.js", "mocha.run()");
 }
 
-typedef BookmarksBrowserTest BookmarksUtilTest;
-IN_PROC_BROWSER_TEST_F(BookmarksUtilTest, All) {
+IN_PROC_BROWSER_TEST_F(BookmarksTest, Util) {
   RunTest("bookmarks/util_test.js", "mocha.run()");
 }
 
@@ -119,15 +106,7 @@ class BookmarksExtensionAPITest : public BookmarksBrowserTest {
                              base::Value(std::move(list)));
     ASSERT_EQ(2u, managed->managed_node()->children().size());
   }
-};
 
-IN_PROC_BROWSER_TEST_F(BookmarksExtensionAPITest, All) {
-  SetupExtensionAPITest();
-  RunTest("bookmarks/extension_api_test.js", "mocha.run()");
-}
-
-class BookmarksExtensionAPIEditDisabledTest : public BookmarksBrowserTest {
- protected:
   void SetupExtensionAPIEditDisabledTest() {
     Profile* profile = browser()->profile();
 
@@ -146,7 +125,12 @@ class BookmarksExtensionAPIEditDisabledTest : public BookmarksBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(BookmarksExtensionAPIEditDisabledTest, All) {
+IN_PROC_BROWSER_TEST_F(BookmarksExtensionAPITest, All) {
+  SetupExtensionAPITest();
+  RunTest("bookmarks/extension_api_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarksExtensionAPITest, EditDisabled) {
   SetupExtensionAPIEditDisabledTest();
   RunTest("bookmarks/extension_api_test_edit_disabled.js", "mocha.run()");
 }

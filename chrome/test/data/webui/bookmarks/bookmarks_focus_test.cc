@@ -11,28 +11,21 @@ class BookmarksFocusTest : public WebUIMochaFocusTest {
   BookmarksFocusTest() { set_test_loader_host(chrome::kChromeUIBookmarksHost); }
 };
 
-typedef BookmarksFocusTest BookmarksFolderNodeFocusTest;
-IN_PROC_BROWSER_TEST_F(BookmarksFolderNodeFocusTest, All) {
+IN_PROC_BROWSER_TEST_F(BookmarksFocusTest, FolderNode) {
   RunTest("bookmarks/folder_node_focus_test.js", "mocha.run()");
 }
 
-typedef BookmarksFocusTest BookmarksListFocusTest;
-
 // http://crbug.com/1000950 : Flaky.
-IN_PROC_BROWSER_TEST_F(BookmarksListFocusTest, DISABLED_All) {
+IN_PROC_BROWSER_TEST_F(BookmarksFocusTest, DISABLED_List) {
   RunTest("bookmarks/list_focus_test.js", "mocha.run()");
 }
 
-typedef BookmarksFocusTest BookmarksDialogFocusManagerTest;
-
 // http://crbug.com/1000950 : Flaky.
-IN_PROC_BROWSER_TEST_F(BookmarksDialogFocusManagerTest, DISABLED_All) {
+IN_PROC_BROWSER_TEST_F(BookmarksFocusTest, DISABLED_DialogFocusManager) {
   RunTest("bookmarks/dialog_focus_manager_test.js", "mocha.run()");
 }
 
-typedef BookmarksFocusTest BookmarksDNDManagerTest;
-
 // TODO(https://crbug.com/1409439): Test is flaky.
-IN_PROC_BROWSER_TEST_F(BookmarksDNDManagerTest, All) {
+IN_PROC_BROWSER_TEST_F(BookmarksFocusTest, DNDManager) {
   RunTest("bookmarks/dnd_manager_test.js", "mocha.run()");
 }
