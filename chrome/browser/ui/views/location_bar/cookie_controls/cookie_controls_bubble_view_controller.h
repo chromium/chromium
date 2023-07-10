@@ -18,7 +18,6 @@
 #include "url/gurl.h"
 
 class CookieControlsBubbleView;
-class CookieControlsContentView;
 
 class CookieControlsBubbleViewController
     : public content_settings::CookieControlsObserver,
@@ -52,16 +51,10 @@ class CookieControlsBubbleViewController
 
   void FetchFaviconFrom(content::WebContents* web_contents);
 
-  void ShowReloadingView();
-  void ShowContentView();
-
   // content::WebContentsObserver
   void DidStopLoading() override;
 
   raw_ptr<CookieControlsBubbleView> bubble_view_ = nullptr;
-  raw_ptr<CookieControlsContentView> content_view_ = nullptr;
-  raw_ptr<views::View> reloading_view_ = nullptr;
-  raw_ptr<views::ImageView> reloading_icon_ = nullptr;
 
   // Used for favicon loading tasks.
   base::CancelableTaskTracker cancelable_task_tracker_;

@@ -24,6 +24,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/vector_icons.h"
+#include "ui/views/view_class_properties.h"
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsIconView,
+                                      kCookieControlsIcon);
 
 CookieControlsIconView::CookieControlsIconView(
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
@@ -37,6 +41,7 @@ CookieControlsIconView::CookieControlsIconView(
   SetAccessibilityProperties(
       /*role*/ absl::nullopt,
       l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP));
+  SetProperty(views::kElementIdentifierKey, kCookieControlsIcon);
 
   if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
     bubble_coordinator_ =

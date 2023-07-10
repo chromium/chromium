@@ -20,6 +20,9 @@ namespace {
 
 constexpr int kProgressBarHeight = 3;
 
+// Unique identifier within the CookieControlsBubbleView hierarchy.
+constexpr int kFaviconID = 1;
+
 int getDaysToExpiration(base::Time expiration) {
   // TODO(crbug.com/1446230): Apply DST corrections.
   const base::Time midnight_today = base::Time::Now().LocalMidnight();
@@ -54,19 +57,18 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
   controller_observation_.Observe(controller);
   bubble_view_->UpdateSubtitle(GetSubjectUrlName(web_contents));
 
-  content_view_ =
-      bubble_view_->AddChildView(std::make_unique<CookieControlsContentView>());
-  reloading_view_ = bubble_view_->AddChildView(InitReloadingView(web_contents));
+  bubble_view_->InitContentView(std::make_unique<CookieControlsContentView>());
+  bubble_view_->InitReloadingView(InitReloadingView(web_contents));
 
   FetchFaviconFrom(web_contents);
   SetFeedbackButtonPressedCallback();
 
-  ShowReloadingView();
+  bubble_view_->ShowReloadingView();
 }
 
 void CookieControlsBubbleViewController::OnFaviconFetched(
     const favicon_base::FaviconImageResult& result) const {
-  reloading_icon_->SetImage(ui::ImageModel::FromImage(result.image));
+  bubble_view_->UpdateFaviconImage(result.image, kFaviconID);
 }
 
 CookieControlsBubbleViewController::~CookieControlsBubbleViewController() =
@@ -80,19 +82,19 @@ void CookieControlsBubbleViewController::OnStatusChanged(
     case CookieControlsStatus::kEnabled:
       bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
           IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE));
-      content_view_->UpdateContentLabels(
+      bubble_view_->content_view()->UpdateContentLabels(
           l10n_util::GetStringUTF16(
               IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
           l10n_util::GetStringUTF16(
               IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY));
-      content_view_->SetFeedbackSectionVisibility(false);
+      bubble_view_->content_view()->SetFeedbackSectionVisibility(false);
       break;
     case CookieControlsStatus::kDisabledForSite: {
       bool is_permanent_exception =
           getDaysToExpiration(expiration) == 0 || expiration == base::Time();
       bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
           IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE));
-      content_view_->UpdateContentLabels(
+      bubble_view_->content_view()->UpdateContentLabels(
           is_permanent_exception
               ? l10n_util::GetStringUTF16(
                     IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_TITLE)
@@ -103,7 +105,7 @@ void CookieControlsBubbleViewController::OnStatusChanged(
               is_permanent_exception
                   ? IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION
                   : IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY));
-      content_view_->SetFeedbackSectionVisibility(true);
+      bubble_view_->content_view()->SetFeedbackSectionVisibility(true);
     } break;
     case CookieControlsStatus::kDisabled:
     case CookieControlsStatus::kUninitialized:
@@ -128,9 +130,10 @@ void CookieControlsBubbleViewController::OnBreakageConfidenceLevelChanged(
 
 void CookieControlsBubbleViewController::SetFeedbackButtonPressedCallback() {
   feedback_button_callback_ =
-      content_view_->RegisterFeedbackButtonPressedCallback(base::BindRepeating(
-          &CookieControlsBubbleViewController::OnFeedbackButtonPressed,
-          base::Unretained(this)));
+      bubble_view_->content_view()->RegisterFeedbackButtonPressedCallback(
+          base::BindRepeating(
+              &CookieControlsBubbleViewController::OnFeedbackButtonPressed,
+              base::Unretained(this)));
 }
 
 void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {
@@ -139,16 +142,6 @@ void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {
 
 void CookieControlsBubbleViewController::DidStopLoading() {
   bubble_view_->GetWidget()->Close();
-}
-
-void CookieControlsBubbleViewController::ShowContentView() {
-  reloading_view_->SetVisible(false);
-  content_view_->SetVisible(true);
-}
-
-void CookieControlsBubbleViewController::ShowReloadingView() {
-  content_view_->SetVisible(false);
-  reloading_view_->SetVisible(true);
 }
 
 std::unique_ptr<views::View>
@@ -173,10 +166,12 @@ CookieControlsBubbleViewController::InitReloadingView(
       views::BoxLayout::Orientation::kHorizontal));
   reloading_content->SetProperty(views::kMarginsKey,
                                  gfx::Insets::VH(vertical_margin, side_margin));
-  auto reloading_icon = std::make_unique<NonAccessibleImageView>();
-  reloading_icon->SetProperty(views::kMarginsKey,
-                              gfx::Insets::TLBR(0, 0, 0, side_margin));
-  reloading_icon_ = reloading_content->AddChildView(std::move(reloading_icon));
+
+  auto favicon = std::make_unique<NonAccessibleImageView>();
+  favicon->SetProperty(views::kMarginsKey,
+                       gfx::Insets::TLBR(0, 0, 0, side_margin));
+  favicon->SetID(kFaviconID);
+  reloading_content->AddChildView(std::move(favicon));
 
   reloading_content->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16(IDS_COOKIE_CONTROLS_BUBBLE_RELOADING_LABEL,

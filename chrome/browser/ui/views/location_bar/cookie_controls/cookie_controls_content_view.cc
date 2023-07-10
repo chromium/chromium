@@ -37,6 +37,7 @@ std::unique_ptr<views::View> CreateSeparator() {
                          gfx::Insets::VH(separator_spacing, separator_padding));
   return separator;
 }
+
 }  // namespace
 
 CookieControlsContentView::CookieControlsContentView() {
@@ -120,9 +121,9 @@ CookieControlsContentView::~CookieControlsContentView() = default;
 base::CallbackListSubscription
 CookieControlsContentView::RegisterFeedbackButtonPressedCallback(
     base::RepeatingClosureList::CallbackType callback) {
-  return restart_callback_list_.Add(std::move(callback));
+  return feedback_button_callback_list_.Add(std::move(callback));
 }
 
 void CookieControlsContentView::NotifyFeedbackButtonPressedCallback() {
-  restart_callback_list_.Notify();
+  feedback_button_callback_list_.Notify();
 }

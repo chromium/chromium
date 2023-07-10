@@ -36,7 +36,7 @@ class CookieControlsContentView : public views::View {
   raw_ptr<views::Label> description_ = nullptr;
   raw_ptr<views::View> feedback_section_ = nullptr;
 
-  base::RepeatingClosureList restart_callback_list_;
+  base::RepeatingClosureList feedback_button_callback_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_CONTENT_VIEW_H_
