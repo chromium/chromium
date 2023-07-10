@@ -5663,7 +5663,7 @@ static_library("ui") {
       "//components/power_bookmarks/storage",
       "//components/reading_list/features:flags",
       "//components/segmentation_platform/embedder/default_model:default_model",
-      "//components/services/app_service/public/cpp:intents",
+      "//components/services/app_service",
       "//components/services/screen_ai/buildflags",
       "//components/soda",
       "//components/soda:constants",

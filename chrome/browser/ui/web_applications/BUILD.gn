@@ -20,7 +20,7 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications:web_applications_unit_tests",
-    "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service",
     "//content/test:test_support",
     "//storage/browser:test_support",
   ]
@@ -79,8 +79,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support_ui",
     "//components/embedder_support",
     "//components/page_load_metrics/browser:test_support",
-    "//components/services/app_service/public/cpp:preferred_apps",
-    "//components/services/app_service/public/cpp:protocol_handling",
+    "//components/services/app_service",
     "//components/site_engagement/content",
     "//components/webapps/browser",
   ]
@@ -146,8 +145,7 @@ source_set("app_service_browser_tests") {
     "//components/app_constants",
     "//components/embedder_support",
     "//components/page_load_metrics/browser:test_support",
-    "//components/services/app_service/public/cpp:intents",
-    "//components/services/app_service/public/cpp:protocol_handling",
+    "//components/services/app_service",
   ]
 
   if (is_chromeos_lacros) {

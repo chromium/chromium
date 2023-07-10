@@ -31,8 +31,7 @@ mojom("mojom") {
         "//components/services/app_service/public/cpp/app_types.h",
       ]
       traits_sources = [ "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_type_mojom_traits.cc" ]
-      traits_public_deps =
-          [ "//components/services/app_service/public/cpp:app_types" ]
+      traits_public_deps = [ "//components/services/app_service" ]
     },
   ]
 }

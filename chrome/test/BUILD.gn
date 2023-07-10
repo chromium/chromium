@@ -1604,7 +1604,7 @@ if (!is_android) {
 
       # TODO(b/287255120) : Also add this as a dependency on Android for building test code.
       "//components/segmentation_platform/public:test_support",
-      "//components/services/app_service/public/cpp:protocol_handling",
+      "//components/services/app_service",
       "//components/services/app_service/public/cpp:test_support",
       "//components/services/language_detection/public/cpp",
       "//components/services/language_detection/public/mojom",
@@ -2957,7 +2957,7 @@ if (!is_android) {
         "//chromeos/ui/base",
         "//chromeos/ui/frame:test_support",
         "//components/account_manager_core:test_support",
-        "//components/services/app_service/public/cpp:intents",
+        "//components/services/app_service",
         "//components/webapk:proto",
         "//ui/wm:wm",
       ]
@@ -5263,8 +5263,7 @@ if (is_chromeos_lacros) {
       "//components/metrics/structured:structured_events",
       "//components/onc:onc",
       "//components/proxy_config:proxy_config",
-      "//components/services/app_service/public/cpp:intents",
-      "//components/services/app_service/public/cpp:preferred_apps",
+      "//components/services/app_service",
       "//components/services/app_service/public/cpp:test_support",
       "//components/soda:constants",
       "//components/user_manager:user_manager",
@@ -9725,7 +9724,7 @@ if (!is_android) {
       "//components/prefs",
       "//components/search_engines",
       "//components/security_interstitials/content:security_interstitial_page",
-      "//components/services/app_service/public/cpp:app_types",
+      "//components/services/app_service",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//components/storage_monitor:test_support",

@@ -456,7 +456,7 @@ static_library("common") {
   public_deps = [
     ":common_constants",
     ":mojom",
-    "//components/services/app_service/public/cpp:app_file_handling",
+    "//components/services/app_service",
     "//content/public/common",
     "//ipc",
     "//skia",

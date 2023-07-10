@@ -312,8 +312,7 @@ source_set("constants") {
 
   deps = [
     "//base",
-    "//components/services/app_service/public/cpp:app_types",
-    "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service",
     "//ui/base:types",
     "//ui/display/types",
     "//ui/gfx/geometry",

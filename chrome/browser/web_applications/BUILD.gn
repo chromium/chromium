@@ -514,8 +514,7 @@ source_set("web_applications") {
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/browser/web_applications/proto",
     "//components/permissions:permissions",
-    "//components/services/app_service/public/cpp:app_share_target",
-    "//components/services/app_service/public/cpp:app_url_handling",
+    "//components/services/app_service",
   ]
 }
 
@@ -756,8 +755,7 @@ source_set("web_applications_unit_tests") {
     "//chrome/browser/web_applications/extensions:extensions",
     "//chrome/common",
     "//chrome/test:test_support",
-    "//components/services/app_service/public/cpp:app_url_handling",
-    "//components/services/app_service/public/cpp:protocol_handling",
+    "//components/services/app_service",
     "//components/web_package",
     "//components/web_package/test_support",
     "//components/webapps/browser",
@@ -801,7 +799,7 @@ source_set("web_applications_unit_tests") {
   }
 
   if (is_win || is_mac || is_linux) {
-    deps += [ "//components/services/app_service/public/cpp:app_url_handling" ]
+    deps += [ "//components/services/app_service" ]
   }
 }
 
@@ -881,8 +879,7 @@ source_set("web_applications_browser_tests") {
     "//chrome/test:test_support_ui",
     "//components/segmentation_platform/public:public",
     "//components/segmentation_platform/public:test_support",
-    "//components/services/app_service/public/cpp:app_update",
-    "//components/services/app_service/public/cpp:protocol_handling",
+    "//components/services/app_service",
     "//components/site_engagement/content",
     "//components/user_manager",
     "//components/web_package",
@@ -978,8 +975,7 @@ source_set("interactive_ui_tests") {
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/web_applications/app_service:test_support",
-      "//components/services/app_service/public/cpp:intents",
-      "//components/services/app_service/public/cpp:preferred_apps",
+      "//components/services/app_service",
       "//components/user_manager",
     ]
   }

@@ -8187,7 +8187,7 @@ static_library("test_support") {
     ]
     deps += [
       "//chrome/browser/apps/app_service",
-      "//components/services/app_service/public/cpp:preferred_apps",
+      "//components/services/app_service",
     ]
   }
 
