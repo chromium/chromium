@@ -4163,11 +4163,11 @@ EVENT_TYPE(CORS_PREFLIGHT_URL_REQUEST)
 EVENT_TYPE(CORS_PREFLIGHT_CACHED_RESULT)
 
 // ------------------------------------------------------------------------
-// Local Network Access
+// Private Network Access
 // ------------------------------------------------------------------------
 
-// This event is logged when a new connection is checked against Local Network
-// Access rules.
+// This event is logged when a new connection is checked against Private
+// Network Access rules.
 //
 // It contains the following parameters:
 //  {
@@ -4176,11 +4176,11 @@ EVENT_TYPE(CORS_PREFLIGHT_CACHED_RESULT)
 //    "result": <the result of the check>,
 //  }
 //
-// If the result is "blocked-by-policy-preflight-block", then the request is
+// If the result is "unexpected-private-network", then the request is
 // interrupted and a preflight request is retried, this time with PNA headers
 // attached. If this second connection fails the check again, the request is
 // failed.
-EVENT_TYPE(LOCAL_NETWORK_ACCESS_CHECK)
+EVENT_TYPE(PRIVATE_NETWORK_ACCESS_CHECK)
 
 // ------------------------------------------------------------------------
 // Initiator

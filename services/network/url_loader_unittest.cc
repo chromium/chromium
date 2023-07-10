@@ -2036,7 +2036,7 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckSuccess) {
   std::ignore = LoadRequest(request);
 
   std::vector<net::NetLogEntry> entries = net_log_observer.GetEntriesWithType(
-      net::NetLogEventType::LOCAL_NETWORK_ACCESS_CHECK);
+      net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK);
 
   ASSERT_THAT(entries, SizeIs(1));
 
@@ -2066,7 +2066,7 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckFailure) {
   std::ignore = LoadRequest(request);
 
   std::vector<net::NetLogEntry> entries = net_log_observer.GetEntriesWithType(
-      net::NetLogEventType::LOCAL_NETWORK_ACCESS_CHECK);
+      net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK);
 
   ASSERT_THAT(entries, SizeIs(1));
 
@@ -2097,7 +2097,7 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckSameOrigin) {
   EXPECT_EQ(net::OK, LoadRequest(request));
 
   std::vector<net::NetLogEntry> entries = net_log_observer.GetEntriesWithType(
-      net::NetLogEventType::LOCAL_NETWORK_ACCESS_CHECK);
+      net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK);
 
   ASSERT_THAT(entries, SizeIs(1));
 
