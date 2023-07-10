@@ -76,10 +76,6 @@ class MockLoginDisplayHost : public LoginDisplayHost {
   MOCK_METHOD(void, CompleteLogin, (const UserContext&), (override));
   MOCK_METHOD(void, OnGaiaScreenReady, (), (override));
   MOCK_METHOD(void, SetDisplayEmail, (const std::string&), (override));
-  MOCK_METHOD(void,
-              SetDisplayAndGivenName,
-              (const std::string&, const std::string&),
-              (override));
   MOCK_METHOD(void, LoadWallpaper, (const AccountId&), (override));
   MOCK_METHOD(void, LoadSigninWallpaper, (), (override));
   MOCK_METHOD(bool,

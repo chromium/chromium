@@ -611,13 +611,6 @@ void ExistingUserController::SetDisplayEmail(const std::string& email) {
   display_email_ = email;
 }
 
-void ExistingUserController::SetDisplayAndGivenName(
-    const std::string& display_name,
-    const std::string& given_name) {
-  display_name_ = base::UTF8ToUTF16(display_name);
-  given_name_ = base::UTF8ToUTF16(given_name);
-}
-
 bool ExistingUserController::IsUserAllowlisted(
     const AccountId& account_id,
     const absl::optional<user_manager::UserType>& user_type) {
@@ -852,12 +845,6 @@ void ExistingUserController::ContinueAuthSuccessAfterResumeAttempt(
   if (!display_email_.empty()) {
     user_manager::UserManager::Get()->SaveUserDisplayEmail(
         user_context.GetAccountId(), display_email_);
-  }
-  if (!display_name_.empty() || !given_name_.empty()) {
-    user_manager::UserManager::Get()->UpdateUserAccountData(
-        user_context.GetAccountId(),
-        user_manager::UserManager::UserAccountData(display_name_, given_name_,
-                                                   std::string() /* locale */));
   }
   ClearRecordedNames();
 
@@ -1659,8 +1646,6 @@ void ExistingUserController::OnOAuth2TokensFetched(
 
 void ExistingUserController::ClearRecordedNames() {
   display_email_.clear();
-  display_name_.clear();
-  given_name_.clear();
 }
 
 void ExistingUserController::ClearActiveDirectoryState() {

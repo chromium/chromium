@@ -408,15 +408,6 @@ void LoginDisplayHostCommon::SetDisplayEmail(const std::string& email) {
   }
 }
 
-void LoginDisplayHostCommon::SetDisplayAndGivenName(
-    const std::string& display_name,
-    const std::string& given_name) {
-  if (GetExistingUserController()) {
-    GetExistingUserController()->SetDisplayAndGivenName(display_name,
-                                                        given_name);
-  }
-}
-
 void LoginDisplayHostCommon::ShowAllowlistCheckFailedError() {
   StartWizard(GaiaView::kScreenId);
 

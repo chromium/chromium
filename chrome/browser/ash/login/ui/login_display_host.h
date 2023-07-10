@@ -179,12 +179,6 @@ class LoginDisplayHost {
   // user's displayed email value will be updated to `email`.
   virtual void SetDisplayEmail(const std::string& email) = 0;
 
-  // Sets the displayed name and given name for the next login attempt. If it
-  // succeeds, user's displayed name and give name values will be updated to
-  // `display_name` and `given_name`.
-  virtual void SetDisplayAndGivenName(const std::string& display_name,
-                                      const std::string& given_name) = 0;
-
   // Load wallpaper for given `account_id`.
   virtual void LoadWallpaper(const AccountId& account_id) = 0;
 
