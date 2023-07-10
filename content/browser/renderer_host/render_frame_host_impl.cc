@@ -8021,14 +8021,7 @@ void RenderFrameHostImpl::CreateNewWindow(
   // window.open() will return "window" and navigate it to whatever URL was
   // passed.
   if (!GetOrCreateWebPreferences().supports_multiple_windows) {
-    // See crbug.com/1083819, we should ignore if the URL is javascript: scheme,
-    // previously we already filtered out javascript: scheme and replace the
-    // URL with |kBlockedURL|, so we check against |kBlockedURL| here.
-    if (params->target_url == GURL(kBlockedURL)) {
-      std::move(callback).Run(mojom::CreateNewWindowStatus::kIgnore, nullptr);
-    } else {
-      std::move(callback).Run(mojom::CreateNewWindowStatus::kReuse, nullptr);
-    }
+    std::move(callback).Run(mojom::CreateNewWindowStatus::kReuse, nullptr);
     return;
   }
 
