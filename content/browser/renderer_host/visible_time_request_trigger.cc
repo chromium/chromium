@@ -52,7 +52,7 @@ void VisibleTimeRequestTrigger::UpdateRequest(
     bool show_reason_bfcache_restore) {
   auto new_request = blink::mojom::RecordContentToVisibleTimeRequest::New(
       start_time, destination_is_loaded, show_reason_tab_switching,
-      show_reason_bfcache_restore);
+      show_reason_bfcache_restore, /*show_reason_unfold=*/false);
   // If `last_request_` is null, this will return `new_request` unchanged.
   last_request_ =
       ConsumeAndMergeRequests(std::move(last_request_), std::move(new_request));

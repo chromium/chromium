@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/android/view_android.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -99,6 +100,7 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   void OnOverlayTransformUpdated(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
+  void SendUnfoldLatencyBeginTimestamp(JNIEnv* env, jlong begin_time);
 
   // Return whether the specified Android permission is granted.
   bool HasPermission(const std::string& permission);
@@ -154,6 +156,7 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   raw_ptr<WindowAndroidCompositor> compositor_;
 
   base::ObserverList<WindowAndroidObserver>::Unchecked observer_list_;
+  blink::ContentToVisibleTimeReporter content_to_visible_time_recorder_;
 
   float mouse_wheel_scroll_factor_;
   bool vsync_paused_ = false;

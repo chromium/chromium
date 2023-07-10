@@ -15,6 +15,7 @@ class UI_ANDROID_EXPORT WindowAndroidObserver {
   virtual void OnAttachCompositor() = 0;
   virtual void OnDetachCompositor() = 0;
   virtual void OnAnimate(base::TimeTicks frame_begin_time) {}
+  virtual void OnUnfoldStarted(base::TimeTicks unfold_begin_time) {}
 
   // Note that activity state callbacks will only be made if the WindowAndroid
   // has been explicitly subscribed to receive them. The observer instance

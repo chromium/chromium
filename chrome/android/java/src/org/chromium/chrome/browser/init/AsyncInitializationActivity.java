@@ -78,6 +78,10 @@ public abstract class AsyncInitializationActivity
 
     /** Time at which onCreate is called. This is realtime, counted in ms since device boot. */
     private long mOnCreateTimestampMs;
+    /** Time at which onPause is called. */
+    private long mOnPauseTimestampMs;
+    /** Time at which onPause is called before the activity is recreated due to unfolding. */
+    private long mOnPauseBeforeFoldRecreateTimestampMs;
 
     private ActivityWindowAndroid mWindowAndroid;
     private Bundle mSavedInstanceState;
@@ -491,6 +495,23 @@ public abstract class AsyncInitializationActivity
     }
 
     /**
+     * @return The timestamp for OnPause event before activity restarts due to unfolding in ms.
+     */
+    protected long getOnPauseBeforeFoldRecreateTimestampMs() {
+        try (TraceEvent e = TraceEvent.scoped("AsyncInit.getOnPauseBeforeFoldRecreateTimestampMs",
+                     Long.toString(mOnPauseBeforeFoldRecreateTimestampMs))) {
+            return mOnPauseBeforeFoldRecreateTimestampMs;
+        }
+    }
+
+    protected void setOnPauseBeforeFoldRecreateTimestampMs() {
+        try (TraceEvent e = TraceEvent.scoped("AsyncInit.setOnPauseBeforeFoldRecreateTimestampMs",
+                     Long.toString(mOnPauseTimestampMs))) {
+            mOnPauseBeforeFoldRecreateTimestampMs = mOnPauseTimestampMs;
+        }
+    }
+
+    /**
      * @return The saved bundle for the last recorded state.
      */
     public Bundle getSavedInstanceState() {
@@ -536,6 +557,7 @@ public abstract class AsyncInitializationActivity
     @CallSuper
     @Override
     public void onPause() {
+        mOnPauseTimestampMs = SystemClock.uptimeMillis();
         SimpleStartupForegroundSessionDetector.discardSession();
         mNativeInitializationController.onPause();
         super.onPause();

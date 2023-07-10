@@ -2697,6 +2697,17 @@ void RenderWidgetHostViewAndroid::OnAnimate(base::TimeTicks begin_frame_time) {
     SetNeedsAnimate();
 }
 
+void RenderWidgetHostViewAndroid::OnUnfoldStarted(
+    base::TimeTicks unfold_begin_time) {
+  TRACE_EVENT0("browser", "RenderWidgetHostViewAndroid::OnUnfoldStarted");
+  host()->RequestSuccessfulPresentationTimeForNextFrame(
+      blink::mojom::RecordContentToVisibleTimeRequest::New(
+          unfold_begin_time, /*destination_is_loaded=*/false,
+          /*show_reason_tab_switching=*/false,
+          /*show_reason_bfcache_restore=*/false,
+          /*show_reason_unfolding=*/true));
+}
+
 void RenderWidgetHostViewAndroid::OnActivityStopped() {
   TRACE_EVENT0("browser", "RenderWidgetHostViewAndroid::OnActivityStopped");
   DCHECK(observing_root_window_);

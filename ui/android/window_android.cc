@@ -235,6 +235,15 @@ void WindowAndroid::OnOverlayTransformUpdated(
     compositor_->OnUpdateOverlayTransform();
 }
 
+void WindowAndroid::SendUnfoldLatencyBeginTimestamp(JNIEnv* env,
+                                                    jlong begin_time) {
+  base::TimeTicks begin_timestamp =
+      base::TimeTicks::FromUptimeMillis(begin_time);
+  for (WindowAndroidObserver& observer : observer_list_) {
+    observer.OnUnfoldStarted(begin_timestamp);
+  }
+}
+
 void WindowAndroid::SetWideColorEnabled(bool enabled) {
   JNIEnv* env = AttachCurrentThread();
   Java_WindowAndroid_setWideColorEnabled(env, GetJavaObject(), enabled);

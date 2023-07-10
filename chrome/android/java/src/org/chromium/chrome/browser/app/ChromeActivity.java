@@ -266,6 +266,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public static final IntCachedFieldTrialParameter CONTENT_VIS_DELAY_MS =
             new IntCachedFieldTrialParameter(
                     ChromeFeatureList.FOLDABLE_JANK_FIX, "content_visibility_delay", 5);
+    public static final String UNFOLD_LATENCY_BEGIN_TIMESTAMP = "unfold_latency_begin_timestamp";
     private C mComponent;
 
     /** Used to access the {@link ShareDelegate} from {@link WindowAndroid}. */
@@ -1495,6 +1496,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if (mIsRecreatingForTabletModeChange) {
+            outState.putLong(
+                    UNFOLD_LATENCY_BEGIN_TIMESTAMP, getOnPauseBeforeFoldRecreateTimestampMs());
+        }
         mRootUiCoordinator.onSaveInstanceState(outState, mIsRecreatingForTabletModeChange);
     }
 
@@ -2813,6 +2818,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mIsTabReparentingPrepared = true;
             if (!isFinishing()) {
                 mIsRecreatingForTabletModeChange = true;
+                // Store the OnPause timestamp before recreation to capture unfold latency metric.
+                super.setOnPauseBeforeFoldRecreateTimestampMs();
                 recreate();
                 mHandler.removeCallbacks(mShowContentRunnable);
                 return true;

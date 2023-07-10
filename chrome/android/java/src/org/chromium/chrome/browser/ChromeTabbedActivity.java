@@ -1389,6 +1389,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     mAppLaunchDrawBlocker.onActiveTabAvailable(isTabNtp);
                 }
             }
+
+            if (getSavedInstanceState() != null) {
+                long unfoldLatencyBeginTime = getSavedInstanceState().getLong(
+                        ChromeActivity.UNFOLD_LATENCY_BEGIN_TIMESTAMP);
+                if (unfoldLatencyBeginTime != 0) {
+                    getWindowAndroid().setUnfoldLatencyBeginTime(unfoldLatencyBeginTime);
+                }
+            }
         } finally {
             TraceEvent.end("ChromeTabbedActivity.initializeState");
         }
