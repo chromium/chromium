@@ -162,7 +162,7 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
         Intent receiver = new Intent("SHARE_ACTION");
         PendingIntent pendingIntent =
                 PendingIntent.getBroadcast(mContext, 0, receiver, PendingIntent.FLAG_IMMUTABLE);
-        ContextUtils.registerProtectedBroadcastReceiver(
+        ContextUtils.registerNonExportedBroadcastReceiver(
                 mContext, mBroadcastReceiver, new IntentFilter("SHARE_ACTION"));
         createShareableImageAndSendIntent(shareIntent, drawable, actionId, pendingIntent);
         return true;
