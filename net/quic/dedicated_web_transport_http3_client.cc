@@ -188,8 +188,13 @@ class DedicatedWebTransportHttp3ClientSession
 
   quic::WebTransportHttp3VersionSet LocallySupportedWebTransportVersions()
       const override {
-    return quic::WebTransportHttp3VersionSet(
-        {quic::WebTransportHttp3Version::kDraft02});
+    quic::WebTransportHttp3VersionSet versions =
+        quic::WebTransportHttp3VersionSet(
+            {quic::WebTransportHttp3Version::kDraft02});
+    if (base::FeatureList::IsEnabled(features::kAlpsForHttp2)) {
+      versions.Set(quic::WebTransportHttp3Version::kDraft07);
+    }
+    return versions;
   }
 
   quic::HttpDatagramSupport LocalHttpDatagramSupport() override {

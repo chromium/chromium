@@ -407,6 +407,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAsyncCacheLock);
 // Enables Early Hints on HTTP/1.1.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableEarlyHintsOnHttp11);
 
+// Enables draft-07 version of WebTransport over HTTP/3.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebTransportDraft07);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
