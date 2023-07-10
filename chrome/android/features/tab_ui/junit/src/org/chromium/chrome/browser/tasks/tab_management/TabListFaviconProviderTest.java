@@ -90,7 +90,8 @@ public class TabListFaviconProviderTest {
         mUrl1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
         mUrl2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
 
-        mTabListFaviconProvider = new TabListFaviconProvider(mActivity, false);
+        mTabListFaviconProvider =
+                new TabListFaviconProvider(mActivity, false, R.dimen.default_favicon_corner_radius);
         mTabListFaviconProvider.initForTesting(mProfile, mMockFaviconHelper);
     }
 

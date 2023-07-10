@@ -71,7 +71,9 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
         mContainer.addView(singleTabView);
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 propertyModel, singleTabView, SingleTabViewBinder::bind);
-        mTabListFaviconProvider = new TabListFaviconProvider(activity, false);
+        mTabListFaviconProvider = new TabListFaviconProvider(activity, false,
+                isSurfacePolishEnabled ? R.dimen.favicon_corner_radius_polished
+                                       : R.dimen.default_favicon_corner_radius);
         if (!mIsTablet) {
             mMediator = new SingleTabSwitcherMediator(activity, propertyModel, tabModelSelector,
                     mTabListFaviconProvider, isSurfacePolishEnabled ? tabContentManager : null,
@@ -103,27 +105,23 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
             }
 
             @Override
-            @VisibleForTesting
             public void setBitmapCallbackForTesting(Callback<Bitmap> callback) {
                 assert false : "should not reach here";
             }
 
             @Override
-            @VisibleForTesting
             public int getBitmapFetchCountForTesting() {
                 assert false : "should not reach here";
                 return 0;
             }
 
             @Override
-            @VisibleForTesting
             public int getSoftCleanupDelayForTesting() {
                 assert false : "should not reach here";
                 return 0;
             }
 
             @Override
-            @VisibleForTesting
             public int getCleanupDelayForTesting() {
                 assert false : "should not reach here";
                 return 0;
@@ -136,7 +134,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
             }
 
             @Override
-            @VisibleForTesting
             public int getListModeForTesting() {
                 assert false : "should not reach here";
                 return 0;

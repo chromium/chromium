@@ -294,7 +294,8 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         mFaviconFrameCornerRadius =
                 resources.getDimension(R.dimen.tab_grid_thumbnail_favicon_frame_corner_radius);
 
-        mTabListFaviconProvider = new TabListFaviconProvider(context, false);
+        mTabListFaviconProvider =
+                new TabListFaviconProvider(context, false, R.dimen.default_favicon_corner_radius);
 
         // Initialize Paints to use.
         mEmptyThumbnailPaint = new Paint();

@@ -221,8 +221,8 @@ public class TabListCoordinator
         // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
         // incognito profile) instead of always using regular profile. It works correctly now, but
         // it is not safe.
-        TabListFaviconProvider tabListFaviconProvider =
-                new TabListFaviconProvider(mContext, mMode == TabListMode.STRIP);
+        TabListFaviconProvider tabListFaviconProvider = new TabListFaviconProvider(
+                mContext, mMode == TabListMode.STRIP, R.dimen.default_favicon_corner_radius);
 
         mMediator = new TabListMediator(context, mModel, mMode, tabModelSelector, thumbnailProvider,
                 titleProvider, tabListFaviconProvider, actionOnRelatedTabs,
