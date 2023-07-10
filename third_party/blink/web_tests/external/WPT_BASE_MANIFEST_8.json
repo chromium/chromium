@@ -106888,6 +106888,19 @@
         {}
        ]
       ],
+      "content-visibility-auto-nested-scroll.html": [
+       "abd63f3eae3447a7aa608afbd7735b5ce5b33952",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/content-visibility-auto-nested-scroll-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "content-visibility-auto-nested.html": [
        "9fc7c03b3a7c8e91dca0536658c86682f7213408",
        [
@@ -271859,6 +271872,19 @@
    "web-animations": {
     "animation-model": {
      "keyframe-effects": {
+      "effect-value-opacity-replaced-effect-in-shadow-root.html": [
+       "43e229856badb391109eb5fce2bcb29d52ba3461",
+       [
+        null,
+        [
+         [
+          "/web-animations/animation-model/keyframe-effects/effect-value-opacity-replaced-effect-in-shadow-root-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "effect-value-opacity-replaced-effect.html": [
        "bef3bd3e8d27fd721dd373e4f33cbae1f6b5b2c0",
        [
@@ -296699,6 +296725,10 @@
       ],
       "content-visibility-auto-nested-ref.html": [
        "bc00c86b8be8c7e27ec14c3b6b45522f184cb50b",
+       []
+      ],
+      "content-visibility-auto-nested-scroll-ref.html": [
+       "aad9b9b73efe854cb0324b55c461c51592cf7a00",
        []
       ],
       "content-visibility-canvas-ref.html": [
@@ -398121,6 +398151,10 @@
       ],
       "effect-value-iteration-composite-operation.html.ini": [
        "43a496adb565ad954979a2d5702cc03c7a0a6368",
+       []
+      ],
+      "effect-value-opacity-replaced-effect-in-shadow-root-ref.html": [
+       "792ca214cfb0c9b02609b484a95891bd1683bfe3",
        []
       ],
       "effect-value-opacity-replaced-effect-ref.html": [
@@ -610284,6 +610318,13 @@
      ],
      "progress-based-animation-timeline.html": [
       "bbc60e3fbddf6f298ca3c3e3fcbff628d3a9baa5",
+      [
+       null,
+       {}
+      ]
+     ],
+     "pseudo-on-scroller.html": [
+      "8dd49ce4d8a913a54caef1ff8145cbaa187af550",
       [
        null,
        {}
