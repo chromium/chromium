@@ -56,6 +56,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return [super initWithStyle:style];
 }
 
+- (void)dealloc {
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(_settingsAreDismissed);
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.title = l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
