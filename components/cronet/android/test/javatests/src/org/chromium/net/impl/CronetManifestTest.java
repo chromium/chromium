@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.net.ApplicationMetaDataInterceptor;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
@@ -40,15 +39,9 @@ public class CronetManifestTest {
     }
 
     private void setTelemetryOptIn(boolean value) {
-        mCronetTestFramework.interceptContext(
-                new ApplicationMetaDataInterceptor(applicationMetaData -> {
-                    applicationMetaData = applicationMetaData != null
-                            ? new Bundle(applicationMetaData)
-                            : new Bundle();
-                    applicationMetaData.putBoolean(
-                            CronetManifest.TELEMETRY_OPT_IN_META_DATA_STR, value);
-                    return applicationMetaData;
-                }));
+        Bundle metaData = new Bundle();
+        metaData.putBoolean(CronetManifest.ENABLE_TELEMETRY_META_DATA_KEY, value);
+        mCronetTestFramework.interceptContext(new CronetManifestInterceptor(metaData));
     }
 
     @Test
