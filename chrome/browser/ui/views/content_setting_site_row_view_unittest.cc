@@ -43,8 +43,9 @@ TEST_F(ContentSettingSiteRowViewTest, ClickToggle) {
       callback;
   EXPECT_CALL(callback, Run(site, false));
 
-  ContentSettingSiteRowView* view = widget()->SetContentsView(
-      std::make_unique<ContentSettingSiteRowView>(site, true, callback.Get()));
+  ContentSettingSiteRowView* view =
+      widget()->SetContentsView(std::make_unique<ContentSettingSiteRowView>(
+          /*favicon_service=*/nullptr, site, true, callback.Get()));
   EXPECT_TRUE(view->GetToggleForTesting()->GetIsOn());
   views::test::ButtonTestApi(view->GetToggleForTesting())
       .NotifyClick(click_event());

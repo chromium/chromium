@@ -7,6 +7,7 @@
 
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/callback_forward.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "net/base/schemeful_site.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -14,6 +15,15 @@
 
 namespace views {
 class ToggleButton;
+class ImageView;
+}  // namespace views
+
+namespace favicon {
+class FaviconService;
+}
+
+namespace favicon_base {
+struct FaviconRawBitmapResult;
 }
 
 // View with the name of a site and a toggle to change the permission of that
@@ -26,7 +36,8 @@ class ContentSettingSiteRowView : public views::View {
       base::RepeatingCallback<void(const net::SchemefulSite& site,
                                    bool allowed)>;
 
-  ContentSettingSiteRowView(const net::SchemefulSite& site,
+  ContentSettingSiteRowView(favicon::FaviconService* favicon_service,
+                            const net::SchemefulSite& site,
                             bool allowed,
                             ToggleCallback toggle_callback);
   ~ContentSettingSiteRowView() override;
@@ -38,10 +49,15 @@ class ContentSettingSiteRowView : public views::View {
 
  private:
   void OnToggleButtonPressed();
+  void OnFaviconLoaded(
+      const favicon_base::FaviconRawBitmapResult& favicon_result);
 
   net::SchemefulSite site_;
   ToggleCallback toggle_callback_;
   raw_ptr<views::ToggleButton> toggle_button_;
+  raw_ptr<views::ImageView> favicon_;
+
+  base::CancelableTaskTracker favicon_tracker_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CONTENT_SETTING_SITE_ROW_VIEW_H_

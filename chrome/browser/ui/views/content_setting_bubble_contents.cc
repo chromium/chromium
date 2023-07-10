@@ -12,7 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -554,9 +556,13 @@ void ContentSettingBubbleContents::Init() {
          LayoutRowType::INDENTED});
   }
 
+  auto* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  auto* favicon_service = FaviconServiceFactory::GetForProfile(
+      profile, ServiceAccessType::EXPLICIT_ACCESS);
   for (const auto& entry : bubble_content.site_list) {
     auto domain_row = std::make_unique<ContentSettingSiteRowView>(
-        entry.first, entry.second,
+        favicon_service, entry.first, entry.second,
         base::BindRepeating(
             &ContentSettingBubbleModel::OnSiteRowClicked,
             base::Unretained(content_setting_bubble_model_.get())));
