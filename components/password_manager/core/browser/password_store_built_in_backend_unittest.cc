@@ -27,6 +27,7 @@
 #include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/login_database.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_change.h"
@@ -778,16 +779,22 @@ TEST_F(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
   expected_results.push_back(
       std::make_unique<PasswordForm>(*all_credentials[0]));
   expected_results.back()->is_affiliation_based_match = true;
+  expected_results.back()->match_type = PasswordForm::MatchType::kAffiliated;
   expected_results.push_back(
       std::make_unique<PasswordForm>(*all_credentials[3]));
+  expected_results.back()->match_type = PasswordForm::MatchType::kExact;
   expected_results.push_back(
       std::make_unique<PasswordForm>(*all_credentials[4]));
   expected_results.back()->is_public_suffix_match = true;
+  expected_results.back()->match_type = PasswordForm::MatchType::kPSL;
   expected_results.push_back(
       std::make_unique<PasswordForm>(*all_credentials[5]));
   expected_results.back()->is_public_suffix_match = true;
   expected_results.back()->is_affiliation_based_match = true;
   expected_results.back()->is_grouped_match = true;
+  expected_results.back()->match_type = PasswordForm::MatchType::kAffiliated |
+                                        PasswordForm::MatchType::kPSL |
+                                        PasswordForm::MatchType::kGrouped;
 
   PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
                                       kTestWebRealm1, GURL(kTestWebOrigin1)};

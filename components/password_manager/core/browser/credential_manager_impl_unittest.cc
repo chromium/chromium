@@ -29,6 +29,7 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -927,6 +928,7 @@ TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialWithPSLCredential) {
   store_->AddLogin(subdomain_form_);
   subdomain_form_.is_public_suffix_match = true;
+  subdomain_form_.match_type = PasswordForm::MatchType::kPSL;
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr(
                             UnorderedElementsAre(Pointee(
                                 MatchesFormExceptStore(subdomain_form_))),
@@ -943,6 +945,9 @@ TEST_P(CredentialManagerImplTest,
   store_->AddLogin(form_);
   store_->AddLogin(origin_path_form_);
   store_->AddLogin(subdomain_form_);
+
+  form_.match_type = PasswordForm::MatchType::kExact;
+  origin_path_form_.match_type = PasswordForm::MatchType::kExact;
 
   EXPECT_CALL(*client_,
               PromptUserToChooseCredentialsPtr(
@@ -996,6 +1001,10 @@ TEST_P(CredentialManagerImplTest,
   federated.signon_realm =
       "federation://" + federated.url.host() + "/google.com";
   store_->AddLogin(federated);
+
+  form_.match_type = PasswordForm::MatchType::kExact;
+  origin_path_form_.match_type = PasswordForm::MatchType::kExact;
+  federated.match_type = PasswordForm::MatchType::kExact;
 
   EXPECT_CALL(*client_,
               PromptUserToChooseCredentialsPtr(
@@ -1205,6 +1214,8 @@ TEST_P(CredentialManagerImplTest, RequestCredentialWithoutFirstRun) {
 
   store_->AddLogin(form_);
 
+  form_.match_type = PasswordForm::MatchType::kExact;
+
   std::vector<GURL> federations;
   EXPECT_CALL(*client_, NotifyUserCouldBeAutoSignedInPtr(
                             Pointee(MatchesFormExceptStore(form_))))
@@ -1219,6 +1230,8 @@ TEST_P(CredentialManagerImplTest, RequestCredentialWithFirstRunAndSkip) {
 
   form_.skip_zero_click = true;
   store_->AddLogin(form_);
+
+  form_.match_type = PasswordForm::MatchType::kExact;
 
   std::vector<GURL> federations;
   EXPECT_CALL(*client_, NotifyUserCouldBeAutoSignedInPtr(
@@ -1740,6 +1753,9 @@ TEST_P(CredentialManagerImplTest,
 
   form_.username_value = u"username_value";
   store_->AddLogin(form_);
+
+  form_.match_type = PasswordForm::MatchType::kExact;
+  federated.match_type = PasswordForm::MatchType::kExact;
 
   EXPECT_CALL(
       *client_,
