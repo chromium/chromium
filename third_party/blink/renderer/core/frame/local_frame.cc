@@ -3549,11 +3549,6 @@ LocalFrame::GetNotRestoredReasons() {
   return not_restored_reasons_;
 }
 
-void LocalFrame::SetLCPPHint(
-    mojom::blink::LCPCriticalPathPredictorNavigationTimeHintPtr hint) {
-  // TODO(crbug.com/1419756): Pass the hint to `lcpp_`
-}
-
 void LocalFrame::AddScrollSnapshotClient(ScrollSnapshotClient& client) {
   scroll_snapshot_clients_.insert(&client);
 }

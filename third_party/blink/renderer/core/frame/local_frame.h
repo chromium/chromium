@@ -654,9 +654,6 @@ class CORE_EXPORT LocalFrame final
   const mojom::blink::BackForwardCacheNotRestoredReasonsPtr&
   GetNotRestoredReasons();
 
-  // Sets the LCPP Hint available at the navigation commit timing.
-  void SetLCPPHint(mojom::blink::LCPCriticalPathPredictorNavigationTimeHintPtr);
-
   const AtomicString& GetReducedAcceptLanguage() const {
     return reduced_accept_language_;
   }
