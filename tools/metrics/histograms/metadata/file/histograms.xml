@@ -851,7 +851,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.Errors.Drive" enum="OfficeDriveErrors"
-    expires_after="M114">
+    expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
