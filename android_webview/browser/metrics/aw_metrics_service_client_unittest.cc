@@ -64,16 +64,6 @@ class AwMetricsServiceClientTest : public testing::Test {
   AwMetricsServiceClientTest(AwMetricsServiceClientTest&&) = delete;
   AwMetricsServiceClientTest& operator=(AwMetricsServiceClientTest&&) = delete;
 
- public:
-  void SetUp() override {
-    // Since the server-side allowlist is now enabled by default,
-    // the simplest thing to do in order to preserve the same testing logic
-    // is to disable it.
-    base::test::ScopedFeatureList scoped_list;
-    scoped_list.InitAndDisableFeature(
-        android_webview::features::kWebViewAppsPackageNamesServerSideAllowlist);
-  }
-
  protected:
   AwMetricsServiceClientTest()
       : task_runner_(new base::TestSimpleTaskRunner),
