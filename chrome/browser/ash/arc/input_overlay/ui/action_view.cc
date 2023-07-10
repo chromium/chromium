@@ -188,6 +188,11 @@ void ActionView::OnDraggingCallback() {
 
 void ActionView::OnMouseDragEndCallback() {
   action_->PrepareToBindPosition(GetTouchCenterInWindow());
+  // "Restore to default" and "Cancel" functions are removed for Beta version,
+  // so the position change is applied immediately after change.
+  if (IsBeta()) {
+    action_->BindPending();
+  }
   RecordInputOverlayActionReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kMouseDragRepostion,
@@ -196,6 +201,11 @@ void ActionView::OnMouseDragEndCallback() {
 
 void ActionView::OnGestureDragEndCallback() {
   action_->PrepareToBindPosition(GetTouchCenterInWindow());
+  // "Restore to default" and "Cancel" functions are removed for Beta version,
+  // so the position change is applied immediately after change.
+  if (IsBeta()) {
+    action_->BindPending();
+  }
   RecordInputOverlayActionReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kTouchscreenDragRepostion,
@@ -208,6 +218,11 @@ void ActionView::OnKeyPressedCallback() {
 
 void ActionView::OnKeyReleasedCallback() {
   action_->PrepareToBindPosition(GetTouchCenterInWindow());
+  // "Restore to default" and "Cancel" functions are removed for Beta version,
+  // so the position change is applied immediately after change.
+  if (IsBeta()) {
+    action_->BindPending();
+  }
   RecordInputOverlayActionReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kKeyboardArrowKeyReposition,
