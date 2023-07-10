@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
@@ -139,17 +140,29 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   }
 
   if (ShouldShowNewTabButton(browser)) {
-    new_tab_button_ = AddChildView(std::make_unique<NewTabButton>(
-        tab_strip_, base::BindRepeating(&TabStrip::NewTabButtonPressed,
-                                        base::Unretained(tab_strip_))));
+    if (features::IsChromeRefresh2023()) {
+      new_tab_button_ = AddChildView(std::make_unique<TabStripControlButton>(
+          tab_strip_,
+          base::BindRepeating(&TabStrip::NewTabButtonPressed,
+                              base::Unretained(tab_strip_)),
+          kAddIcon));
+    } else {
+      std::unique_ptr<NewTabButton> new_tab_button =
+          std::make_unique<NewTabButton>(
+              tab_strip_, base::BindRepeating(&TabStrip::NewTabButtonPressed,
+                                              base::Unretained(tab_strip_)));
+      new_tab_button->SetImageVerticalAlignment(
+          views::ImageButton::ALIGN_BOTTOM);
+      new_tab_button->SetEventTargeter(
+          std::make_unique<views::ViewTargeter>(new_tab_button.get()));
+
+      new_tab_button_ = AddChildView(std::move(new_tab_button));
+    }
+
     new_tab_button_->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
     new_tab_button_->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_ACCNAME_NEWTAB));
-    new_tab_button_->SetImageVerticalAlignment(
-        views::ImageButton::ALIGN_BOTTOM);
-    new_tab_button_->SetEventTargeter(
-        std::make_unique<views::ViewTargeter>(new_tab_button_));
   }
 
   reserved_grab_handle_space_ =

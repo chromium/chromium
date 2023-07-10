@@ -32,6 +32,7 @@ class NewTabButton : public views::ImageButton,
   METADATA_HEADER(NewTabButton);
 
   static const gfx::Size kButtonSize;
+  static const int kIconSize;
 
   NewTabButton(TabStrip* tab_strip, PressedCallback callback);
   NewTabButton(const NewTabButton&) = delete;
@@ -41,7 +42,7 @@ class NewTabButton : public views::ImageButton,
   // Called when the tab strip transitions to/from single tab mode, the frame
   // state changes or the accent color changes.  Updates the glyph colors for
   // the best contrast on the background.
-  virtual void FrameColorsChanged();
+  void FrameColorsChanged();
 
   void AnimateToStateForTesting(views::InkDropState state);
 

@@ -13,6 +13,7 @@
 
 namespace views {
 class FlexLayout;
+class Button;
 }
 
 class NewTabButton;
@@ -40,7 +41,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   // of |this|.
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
-  NewTabButton* new_tab_button() { return new_tab_button_; }
+  views::Button* new_tab_button() { return new_tab_button_; }
 
   TabSearchButton* tab_search_button() { return tab_search_button_; }
 
@@ -90,7 +91,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   raw_ptr<TabStrip, DanglingAcrossTasks> tab_strip_ = nullptr;
   raw_ptr<TabStripScrollContainer, DanglingUntriaged>
       tab_strip_scroll_container_ = nullptr;
-  raw_ptr<NewTabButton, DanglingUntriaged> new_tab_button_ = nullptr;
+  raw_ptr<views::Button, DanglingUntriaged> new_tab_button_ = nullptr;
   raw_ptr<TabSearchButton, DanglingUntriaged> tab_search_button_ = nullptr;
 
   // On some platforms for Chrome Refresh, the TabSearchButton should be
