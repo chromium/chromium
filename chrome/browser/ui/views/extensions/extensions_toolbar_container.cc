@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -33,7 +32,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
 #include "components/feature_engagement/public/event_constants.h"
-#include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_features.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -215,18 +213,6 @@ ExtensionsToolbarContainer::~ExtensionsToolbarContainer() {
 }
 
 void ExtensionsToolbarContainer::UpdateAllIcons() {
-  // Display Extensions menu IPH. Toolbar view needs to be initialized, thus we
-  // show IPH once the extensions container is updating its icons.
-  // TODO(crbug.com/1357159): UpdateAllIcons() gets called multiple time when
-  // transitioning from one button state to the other. This causes to display
-  // the IPH when it's not needed. Have a better check of when we show this.
-  if (browser_->window() && GetVisible() &&
-      GetExtensionsButton()->state() ==
-          ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
-    browser_->window()->MaybeShowFeaturePromo(
-        feature_engagement::kIPHExtensionsMenuFeature);
-  }
-
   UpdateControlsVisibility();
 
   for (const auto& action : actions_)
@@ -1022,7 +1008,7 @@ void ExtensionsToolbarContainer::UpdateControlsVisibility() {
               web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   extensions_controls_->UpdateControls(is_restricted_url, actions_,
-                                       site_setting, web_contents);
+                                       site_setting, web_contents, browser_);
 }
 
 void ExtensionsToolbarContainer::UpdateToolbarActionHoverCard(

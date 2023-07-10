@@ -7,11 +7,14 @@
 #include <memory>
 
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/permissions_manager.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -36,7 +39,8 @@ void ExtensionsToolbarControls::UpdateControls(
     bool is_restricted_url,
     const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
     extensions::PermissionsManager::UserSiteSetting site_setting,
-    content::WebContents* current_web_contents) {
+    content::WebContents* current_web_contents,
+    Browser* browser) {
   UpdateExtensionsButton(actions, site_setting, current_web_contents,
                          is_restricted_url);
   UpdateRequestAccessButton(actions, site_setting, current_web_contents);
@@ -49,6 +53,23 @@ void ExtensionsToolbarControls::UpdateControls(
                           kColorExtensionsToolbarControlsBackground,
                           extensions_button_->GetPreferredSize().height())
                     : nullptr);
+
+  // Display IPH, with priority order.
+  if (browser->window()) {
+    if (request_access_button_->GetVisible()) {
+      const int extensions_size = request_access_button_->GetExtensionsCount();
+      browser->window()->MaybeShowFeaturePromo(
+          feature_engagement::kIPHExtensionsRequestAccessButtonFeature,
+          /*close_callback=*/base::DoNothing(), /*body_params=*/extensions_size,
+          /*title_params=*/extensions_size);
+    }
+
+    if (extensions_button_->state() ==
+        ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
+      browser->window()->MaybeShowFeaturePromo(
+          feature_engagement::kIPHExtensionsMenuFeature);
+    }
+  }
 
   // Resets the layout since layout animation does not handle host view
   // visibility changing. This should be called after any visibility changes.

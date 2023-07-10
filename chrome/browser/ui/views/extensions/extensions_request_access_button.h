@@ -46,6 +46,9 @@ class ExtensionsRequestAccessButton : public ToolbarButton {
   // Returns whether the button is showing a confirmation message for `origin`.
   bool IsShowingConfirmationFor(const url::Origin& origin) const;
 
+  // Returns the number of extensions included in the button.
+  size_t GetExtensionsCount() const;
+
   // ToolbarButton:
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   bool ShouldShowInkdropAfterIphInteraction() override;

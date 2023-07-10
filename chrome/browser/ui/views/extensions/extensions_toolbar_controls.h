@@ -15,6 +15,7 @@ namespace content {
 class WebContents;
 }
 
+class Browser;
 class ExtensionsToolbarButton;
 class ExtensionsRequestAccessButton;
 class ToolbarActionViewController;
@@ -45,7 +46,8 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
       bool is_restricted_url,
       const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
       extensions::PermissionsManager::UserSiteSetting site_setting,
-      content::WebContents* current_web_contents);
+      content::WebContents* current_web_contents,
+      Browser* browser);
 
   // Updates `request_access_button_` visibility given the user `site_setting`
   // and `actions` in `web_contents`.

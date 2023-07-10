@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
-#include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view_class_properties.h"
@@ -79,13 +78,6 @@ void ExtensionsRequestAccessButton::Update(
     return;
   }
 
-  // Show IPH when button is visible.
-  const int extensions_size = extension_ids.size();
-  browser_->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHExtensionsRequestAccessButtonFeature,
-      /*close_callback=*/base::DoNothing(), /*body_params=*/extensions_size,
-      /*title_params=*/extensions_size);
-
   // TODO(crbug.com/1239772): Set the label and background color without borders
   // separately to match the mocks. For now, using SetHighlight to display that
   // adds a border and highlight color in addition to the label.
@@ -123,6 +115,10 @@ bool ExtensionsRequestAccessButton::IsShowingConfirmation() const {
 
   CHECK(GetVisible());
   return confirmation_origin_.has_value();
+}
+
+size_t ExtensionsRequestAccessButton::GetExtensionsCount() const {
+  return extension_ids_.size();
 }
 
 bool ExtensionsRequestAccessButton::IsShowingConfirmationFor(
