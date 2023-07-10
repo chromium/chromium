@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
-import org.chromium.chrome.browser.vr.util.GvrTestRuleUtils;
+import org.chromium.chrome.browser.vr.util.VrCardboardTestRuleUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 
@@ -29,31 +29,31 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * End-to-end tests for WebXR where the choice of test device has a greater
- * impact than the usual Daydream-ready vs. non-Daydream-ready effect.
+ * End-to-end tests for WebXR to check that the device supports both immersive and non-immersive
+ * sessions.
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
-public class WebXrGvrDeviceTest {
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        "enable-features=LogJsConsoleMessages", "force-webxr-runtime=cardboard"})
+public class WebXrVrCardboardDeviceTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
-            GvrTestRuleUtils.generateDefaultTestRuleParameters();
+            VrCardboardTestRuleUtils.generateDefaultTestRuleParameters();
     @Rule
     public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
-    private WebXrGvrTestFramework mWebXrVrTestFramework;
+    private WebXrVrTestFramework mWebXrVrTestFramework;
 
-    public WebXrGvrDeviceTest(Callable<ChromeActivityTestRule> callable) throws Exception {
+    public WebXrVrCardboardDeviceTest(Callable<ChromeActivityTestRule> callable) throws Exception {
         mTestRule = callable.call();
-        mRuleChain = GvrTestRuleUtils.wrapRuleInActivityRestrictionRule(mTestRule);
+        mRuleChain = VrCardboardTestRuleUtils.wrapRuleInActivityRestrictionRule(mTestRule);
     }
 
     @Before
     public void setUp() {
-        mWebXrVrTestFramework = new WebXrGvrTestFramework(mTestRule);
+        mWebXrVrTestFramework = new WebXrVrTestFramework(mTestRule);
     }
 
     /**
@@ -61,7 +61,7 @@ public class WebXrGvrDeviceTest {
      */
     @Test
     @MediumTest
-    @CommandLineFlags.Add({"enable-features=WebXR"})
+    @CommandLineFlags.Add({"enable-features=WebXR,Cardboard"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testWebXrCapabilities() {
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(

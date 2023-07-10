@@ -12,21 +12,7 @@ Tests that the provided WebXR device has the expected capabilities
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      var expectations = {
-        "Daydream": {
-          "immersive": true,
-          "non-immersive": true,
-        }
-      };
-
-      function stepCheckCapabilities(device) {
-        if (!(device in expectations)) {
-          assert_unreached("Given device " + device + " not in expectations");
-          done();
-          return;
-        }
-
-        let expected = expectations[device];
+      function stepCheckCapabilities() {
         var supportsNonImmersive;
         var supportsImmersive;
         console.log('Checking inline session support');
@@ -39,9 +25,9 @@ Tests that the provided WebXR device has the expected capabilities
             console.log('Got immersive support: ' + supported);
             supportsImmersive = supported;
           }).then(() => {
-            assert_equals(supportsNonImmersive, expected["non-immersive"],
+            assert_true(supportsNonImmersive,
                 'Device supports non-immersive sessions');
-            assert_equals(supportsImmersive, expected["immersive"],
+            assert_true(supportsImmersive,
                 'Device supports immersive sessions');
             done();
           });
