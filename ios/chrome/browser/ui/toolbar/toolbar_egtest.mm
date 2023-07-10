@@ -367,7 +367,7 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"b" flags:0];
   WaitForOmniboxSuggestion(@"ab", 0, 0);
 
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"C" flags:0];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"C" flags:UIKeyModifierShift];
   WaitForOmniboxSuggestion(@"abC", 0, 0);
 
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"1" flags:0];
@@ -376,13 +376,13 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"2" flags:0];
   WaitForOmniboxSuggestion(@"abC12", 0, 0);
 
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"@" flags:0];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"@" flags:UIKeyModifierShift];
   WaitForOmniboxSuggestion(@"abC12@", 0, 0);
 
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"{" flags:0];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"{" flags:UIKeyModifierShift];
   WaitForOmniboxSuggestion(@"abC12@{", 0, 0);
 
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"#" flags:0];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"#" flags:UIKeyModifierShift];
   WaitForOmniboxSuggestion(@"abC12@{#", 0, 0);
 
   id<GREYMatcher> cancelButton =

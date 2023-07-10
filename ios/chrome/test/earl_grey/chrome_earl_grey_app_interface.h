@@ -623,7 +623,9 @@
 // The input is similar to UIKeyCommand parameters, and is designed for testing
 // keyboard shortcuts.
 // Accepts any strings and also UIKeyInput{Up|Down|Left|Right}Arrow and
-// UIKeyInputEscape constants as `input`.
+// UIKeyInputEscape constants as `input`. `flags` must be set to
+// UIKeyModifierShift for things like capital letters or characters like !@#$%
+// etc.
 + (void)simulatePhysicalKeyboardEvent:(NSString*)input
                                 flags:(UIKeyModifierFlags)flags;
 
