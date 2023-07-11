@@ -1965,7 +1965,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cast.Channel.LaunchSession.Flags" enum="CastChannelFlag"
     expires_after="2024-02-03">
   <owner>mfoltz@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Records any flags observed on the Cast channel used to launch a Cast
     session. A single channel may have multiple flags, and each flag is logged
@@ -2026,7 +2026,7 @@ chromium-metrics-reviews@google.com.
     refactoring.
   </obsolete>
   <owner>tguilbert@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Records the type of the remote playback device selected by the user. This
     will be recorded when the user has chosen the device from the media route
@@ -2041,7 +2041,7 @@ chromium-metrics-reviews@google.com.
     refactoring.
   </obsolete>
   <owner>tguilbert@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Record each interaction with the fullscreen remote playback controls in
     cases when the corresponding media element on the page was present.
@@ -2055,7 +2055,7 @@ chromium-metrics-reviews@google.com.
     refactoring.
   </obsolete>
   <owner>tguilbert@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Record each interaction with the fullscreen remote playback controls in
     cases when the corresponding media element on the page was not present.
@@ -2069,7 +2069,7 @@ chromium-metrics-reviews@google.com.
     refactoring.
   </obsolete>
   <owner>tguilbert@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Indicates whether the corresponding media element on the page was present
     when the fullscreen remote playback controls were shown.
@@ -2097,7 +2097,7 @@ chromium-metrics-reviews@google.com.
     collects the same data but at a different location.
   </obsolete>
   <owner>tguilbert@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Records the ratio of the time the media element was detached from the remote
     playback session to the total duration of the session (as from when the
@@ -2113,7 +2113,7 @@ chromium-metrics-reviews@google.com.
     refactoring.
   </obsolete>
   <owner>tguilbert@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Records the result of resolving the video URL for cast, including checking
     its CORS header.
@@ -6704,7 +6704,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Hardware.Display.SupportsHDR" enum="BooleanSupported"
     expires_after="2023-11-12">
   <owner>cassew@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Whether a given display device supports HDR (such that the CSS media query
     `dynamic-range: high` would resolve as true). Recorded upon browser startup
@@ -9117,7 +9117,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PictureInPictureWindow.ButtonPressed"
     enum="OverlayWindowControl" expires_after="M85">
   <owner>fbeaufort@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Records Picture-in-Picture window control buttons pressed by user (basically
     everything except user tap gestures).
@@ -9127,7 +9127,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PictureInPictureWindow.TapGesture" enum="OverlayWindowControl"
     expires_after="M85">
   <owner>fbeaufort@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Records Picture-in-Picture window control user tap gestures.
   </summary>

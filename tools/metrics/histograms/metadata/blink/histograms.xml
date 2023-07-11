@@ -3930,7 +3930,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: WebCodecs health metric. -->
 
   <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Whether a given JavaScript ImageDecoder instance completed operation
     successfully or not. Logged upon destruction of the instance.
@@ -3942,7 +3942,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: WebCodecs health metric. -->
 
   <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Image codec provided to JavaScript ImageDecoder constructor. Logged once per
     successful construction upon completion of construction.
@@ -3954,7 +3954,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: WebCodecs health metric. -->
 
   <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The codec type used with {AudioCodecApi}. Recorded for every successful
     configure() call.
@@ -3970,7 +3970,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: WebCodecs health metric. -->
 
   <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The final media::StatusCode for each {CodecApi} instance. The final status
     code is either StatusCode::kOk or the first fatal error encountered.
@@ -3989,7 +3989,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: WebCodecs health metric. -->
 
   <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The codec type used with {VideoCodecApi}. Recorded for every successful
     configure() call.

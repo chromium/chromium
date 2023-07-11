@@ -1143,7 +1143,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="GPU.Output.HDR" enum="Boolean" expires_after="2023-11-12">
   <owner>hubbe@chromium.org</owner>
   <owner>cassew@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Records if any connected monitor is HDR capable. Recorded when the gpu
     process starts. Only recorded on Windows as of M-61. If monitor enumeration
