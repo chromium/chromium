@@ -55,6 +55,11 @@ void DevToolsAgentCoverageObserver::DevToolsAgentHostCreated(
     content::DevToolsAgentHost* host) {
   CHECK(devtools_agents_.find(host) == devtools_agents_.end());
 
+  if (!should_inspect_callback_.is_null() &&
+      !should_inspect_callback_.Run(host)) {
+    return;
+  }
+
   uint32_t process_id = base::GetUniqueIdForProcess().GetUnsafeValue();
   devtools_agents_[host] =
       std::make_unique<coverage::DevToolsListener>(host, process_id);
@@ -67,14 +72,6 @@ void DevToolsAgentCoverageObserver::DevToolsAgentHostNavigated(
     content::DevToolsAgentHost* host) {
   if (devtools_agents_.find(host) == devtools_agents_.end())
     return;
-
-  // If a filter has been supplied to only stay attached to certain
-  // `DevToolsAgentHost`, detach from any that don't match the filter.
-  if (!should_inspect_callback_.is_null() &&
-      !should_inspect_callback_.Run(host)) {
-    devtools_agents_.find(host)->second->Detach(host);
-    return;
-  }
 
   devtools_agents_.find(host)->second->Navigated(host);
 }
