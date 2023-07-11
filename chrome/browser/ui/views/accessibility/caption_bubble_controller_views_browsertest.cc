@@ -1394,4 +1394,28 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   ASSERT_EQ(GetCaptionSettingsUrl(), new_web_contents->GetLastCommittedURL());
 }
 
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, LabelTextDirection) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+                                               true);
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kLiveTranslateTargetLanguageCode, "en");
+  browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
+                                              "fr");
+
+  OnPartialTranscription(
+      "Chipmunks are born blind and hairless, and they weigh only about 3 "
+      "grams.");
+  EXPECT_TRUE(IsWidgetVisible());
+  ASSERT_TRUE(GetLanguageLabel()->GetVisible());
+
+  EXPECT_EQ(gfx::HorizontalAlignment::ALIGN_LEFT,
+            GetLabel()->GetHorizontalAlignment());
+
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kLiveTranslateTargetLanguageCode, "he");
+  OnPartialTranscription("Sloths can sleep for up to 20 hours a day.");
+  EXPECT_EQ(gfx::HorizontalAlignment::ALIGN_RIGHT,
+            GetLabel()->GetHorizontalAlignment());
+}
+
 }  // namespace captions

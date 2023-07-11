@@ -12,6 +12,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -555,7 +556,7 @@ void CaptionBubble::Init() {
   auto label = std::make_unique<CaptionBubbleLabel>();
   label->SetMultiLine(true);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
-  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
   label->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
   label->SetTooltipText(std::u16string());
   // Render text truncates the end of text that is greater than 10000 chars.
@@ -718,7 +719,7 @@ void CaptionBubble::Init() {
         target_language_code_, application_locale_);
     language_label_ =
         left_header_container->AddChildView(std::move(language_label));
-    UpdateLanguageLabelText();
+    OnLanguageChanged();
 
     auto caption_settings_button = BuildImageButton(
         base::BindRepeating(&CaptionBubble::CaptionSettingsButtonPressed,
@@ -825,7 +826,7 @@ void CaptionBubble::OnWidgetActivationChanged(views::Widget* widget,
 }
 
 void CaptionBubble::OnLiveTranslateEnabledChanged() {
-  UpdateLanguageLabelText();
+  OnLanguageChanged();
   SetTextColor();
   Redraw();
 }
@@ -837,7 +838,7 @@ void CaptionBubble::OnLiveCaptionLanguageChanged() {
   source_language_text_ = speech::GetLanguageDisplayName(source_language_code_,
                                                          application_locale_);
 
-  UpdateLanguageLabelText();
+  OnLanguageChanged();
   SetTextColor();
   Redraw();
 }
@@ -848,7 +849,7 @@ void CaptionBubble::OnLiveTranslateTargetLanguageChanged() {
   target_language_text_ = speech::GetLanguageDisplayName(target_language_code_,
                                                          application_locale_);
 
-  UpdateLanguageLabelText();
+  OnLanguageChanged();
   SetTextColor();
   Redraw();
 }
@@ -973,7 +974,7 @@ void CaptionBubble::OnAutoDetectedLanguageChanged() {
           profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode)) !=
       l10n_util::GetLanguage(source_language_code_);
 
-  UpdateLanguageLabelText();
+  OnLanguageChanged();
   SetTextColor();
   Redraw();
 }
@@ -1313,6 +1314,21 @@ void CaptionBubble::UpdateLiveTranslateLabelStyle(
           label_style);
     }
   }
+}
+
+void CaptionBubble::OnLanguageChanged() {
+  UpdateLanguageLabelText();
+
+  // Update label text direction.
+  std::string display_language =
+      profile_prefs_->GetBoolean(prefs::kLiveTranslateEnabled)
+          ? target_language_code_
+          : source_language_code_;
+  label_->SetHorizontalAlignment(
+      base::i18n::GetTextDirectionForLocale(display_language.c_str()) ==
+              base::i18n::TextDirection::RIGHT_TO_LEFT
+          ? gfx::HorizontalAlignment::ALIGN_RIGHT
+          : gfx::HorizontalAlignment::ALIGN_LEFT);
 }
 
 void CaptionBubble::UpdateLanguageLabelText() {

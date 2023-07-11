@@ -206,6 +206,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void UpdateLiveTranslateLabelStyle(
       views::StyledLabel::RangeStyleInfo label_style,
       views::StyledLabel::RangeStyleInfo languages_style);
+  void OnLanguageChanged();
   void UpdateLanguageLabelText();
 
   // Places the bubble at the bottom center of the context widget for the active
