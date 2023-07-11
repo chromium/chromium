@@ -1,0 +1,100 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/reading_list/reading_list_model_factory.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
+#include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/reading_list/core/mock_reading_list_model_observer.h"
+#include "components/reading_list/core/reading_list_entry.h"
+#include "components/reading_list/core/reading_list_model.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/time.h"
+#include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/proto_value_conversions.h"
+#include "content/public/test/browser_test.h"
+
+using testing::Eq;
+
+namespace {
+
+void WaitForReadingListModelLoaded(ReadingListModel* reading_list_model) {
+  testing::NiceMock<MockReadingListModelObserver> observer_;
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, ReadingListModelLoaded).WillOnce([&run_loop] {
+    run_loop.Quit();
+  });
+  reading_list_model->AddObserver(&observer_);
+  run_loop.Run();
+  reading_list_model->RemoveObserver(&observer_);
+}
+
+std::unique_ptr<syncer::LoopbackServerEntity> CreateTestReadingListEntity(
+    const GURL& url,
+    const std::string& entry_title) {
+  sync_pb::EntitySpecifics specifics;
+  *specifics.mutable_reading_list() = *base::MakeRefCounted<ReadingListEntry>(
+                                           url, entry_title, base::Time::Now())
+                                           ->AsReadingListSpecifics()
+                                           .get();
+  return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+      "non_unique_name", url.spec(), specifics,
+      /*creation_time=*/syncer::TimeToProtoTime(base::Time::Now()),
+      /*last_modified_time=*/syncer::TimeToProtoTime(base::Time::Now()));
+}
+
+class SingleClientReadingListSyncTest : public SyncTest {
+ public:
+  SingleClientReadingListSyncTest() : SyncTest(SINGLE_CLIENT) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {syncer::kReadingListEnableDualReadingListModel,
+         syncer::kReadingListEnableSyncTransportModeUponSignIn},
+        /*disabled_features=*/{});
+  }
+
+  SingleClientReadingListSyncTest(const SingleClientReadingListSyncTest&) =
+      delete;
+  SingleClientReadingListSyncTest& operator=(
+      const SingleClientReadingListSyncTest&) = delete;
+
+  ~SingleClientReadingListSyncTest() override = default;
+
+  bool SetupClients() override {
+    if (!SyncTest::SetupClients()) {
+      return false;
+    }
+
+    WaitForReadingListModelLoaded(model());
+    return true;
+  }
+
+  raw_ptr<ReadingListModel> model() {
+    return ReadingListModelFactory::GetForBrowserContext(GetProfile(0));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
+                       ShouldDownloadAccountDataUponSignin) {
+  const GURL kUrl("http://url.com/");
+  fake_server_->InjectEntity(CreateTestReadingListEntity(kUrl, "entry_title"));
+
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  ASSERT_THAT(model()->size(), Eq(0ul));
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  EXPECT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+
+  EXPECT_EQ(1ul, model()->size());
+  EXPECT_FALSE(model()->NeedsExplicitUploadToSyncServer(kUrl));
+}
+
+}  // namespace
