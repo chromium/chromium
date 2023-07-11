@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -281,6 +282,99 @@ void ForceDawnTogglesForSkiaGraphite(
 #endif
 }
 #endif
+
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
+  // Note: These enum values should not change and should match those in
+  // //tools/metrics/histograms/enums.xml
+  enum class WebGPUSupport {
+    kNone = 0,
+    kCoreNone_CompatBlocklisted = 1,
+    kCoreNone_CompatSupported = 2,
+    kCoreBlocklisted_CompatNone = 3,
+    kCoreBlocklisted_CompatBlocklisted = 4,
+    kCoreBlocklisted_CompatSupported = 5,
+    kCoreSupported = 6,
+    kMaxValue = kCoreSupported,
+  };
+
+  bool has_core_blocklisted_adapter = false;
+  bool has_core_adapter = false;
+  bool has_compat_blocklisted_adapter = false;
+  bool has_compat_adapter = false;
+
+  WGPURequestAdapterOptions adapter_options = {};
+  // Search for the backend used for core WebGPU.
+#if BUILDFLAG(IS_WIN)
+  adapter_options.backendType = WGPUBackendType_D3D12;
+#elif BUILDFLAG(IS_MAC)
+  adapter_options.backendType = WGPUBackendType_Metal;
+#else
+  adapter_options.backendType = WGPUBackendType_Vulkan;
+#endif
+  // Check core adapters.
+  for (const dawn::native::Adapter& adapter :
+       instance->EnumerateAdapters(&adapter_options)) {
+    WGPUAdapterProperties properties = {};
+    adapter.GetProperties(&properties);
+
+    switch (properties.adapterType) {
+      case WGPUAdapterType_CPU:
+        // Skip CPU adapters.
+        break;
+      default:
+        if (gpu::IsWebGPUAdapterBlocklisted(properties)) {
+          has_core_blocklisted_adapter = true;
+        } else {
+          has_core_adapter = true;
+        }
+    }
+  }
+  // Check for compat adapters on GLES.
+  adapter_options.backendType = WGPUBackendType_OpenGLES;
+  adapter_options.compatibilityMode = true;
+  for (const dawn::native::Adapter& adapter :
+       instance->EnumerateAdapters(&adapter_options)) {
+    WGPUAdapterProperties properties = {};
+    adapter.GetProperties(&properties);
+
+    switch (properties.adapterType) {
+      case WGPUAdapterType_CPU:
+        // Skip CPU adapters.
+        break;
+      default:
+        if (gpu::IsWebGPUAdapterBlocklisted(properties)) {
+          has_compat_blocklisted_adapter = true;
+        } else {
+          has_compat_adapter = true;
+        }
+    }
+  }
+
+  WebGPUSupport tier;
+  if (has_core_adapter) {
+    tier = WebGPUSupport::kCoreSupported;
+  } else if (has_core_blocklisted_adapter) {
+    if (has_compat_adapter) {
+      tier = WebGPUSupport::kCoreBlocklisted_CompatSupported;
+    } else if (has_compat_blocklisted_adapter) {
+      tier = WebGPUSupport::kCoreBlocklisted_CompatBlocklisted;
+    } else {
+      tier = WebGPUSupport::kCoreBlocklisted_CompatNone;
+    }
+  } else {
+    if (has_compat_adapter) {
+      tier = WebGPUSupport::kCoreNone_CompatSupported;
+    } else if (has_compat_blocklisted_adapter) {
+      tier = WebGPUSupport::kCoreNone_CompatBlocklisted;
+    } else {
+      tier = WebGPUSupport::kNone;
+    }
+  }
+
+  UMA_HISTOGRAM_ENUMERATION("GPU.WebGPU.Support", tier);
+}
+#endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
 
 }  // namespace
 
@@ -647,6 +741,7 @@ bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
 }
 
 void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
+                     bool collect_metrics,
                      std::vector<std::string>* dawn_info_list) {
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
   DawnProcTable procs = dawn::native::GetProcs();
@@ -684,6 +779,10 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
 
   auto instance = std::make_unique<dawn::native::Instance>(
       reinterpret_cast<const WGPUInstanceDescriptor*>(&instance_desc));
+  if (collect_metrics) {
+    ReportWebGPUSupportMetrics(instance.get());
+  }
+
   // Enumerate adapters with default toggles
   std::vector<dawn::native::Adapter> adapters = instance->EnumerateAdapters();
 

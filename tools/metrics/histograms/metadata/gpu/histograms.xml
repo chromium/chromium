@@ -1629,6 +1629,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.WebGPU.Support" enum="WebGPUSupport"
+    expires_after="2023-12-01">
+  <owner>cwallez@google.com</owner>
+  <owner>enga@google.com</owner>
+  <owner>kainino@google.com</owner>
+  <summary>
+    WebGPU support level. Recorded on GPU info collection a couple minutes after
+    browser startup. Compatibility mode support means that WebGPU is supported
+    on a non-core backend like OpenGLES. Core backends can always support
+    compatibility mode so compat-on-core-adapter is not reported in this metric.
+    Supported means at least one adapter of that type was available. Blocklisted
+    means all adapters of that type were blocklisted. None means that no
+    adapters of that type were available. Software adapters are considered as
+    None in this metric.
+  </summary>
+</histogram>
+
 <histogram name="GPU.WebGraphicsContext3D_Init_CanLoseContext"
     enum="GPUWebGraphicsContext3D_Init_CanLoseContext" expires_after="M85">
   <owner>vmiura@chromium.org</owner>

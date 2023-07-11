@@ -1612,19 +1612,22 @@ void GpuServiceImpl::ClientGmbInterfaceImpl::DestroyAllGpuMemoryBuffers() {
   pending_buffers_.clear();
 }
 
-void GpuServiceImpl::GetDawnInfo(GetDawnInfoCallback callback) {
+void GpuServiceImpl::GetDawnInfo(bool collect_metrics,
+                                 GetDawnInfoCallback callback) {
   DCHECK(io_runner_->BelongsToCurrentThread());
 
   main_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&GpuServiceImpl::GetDawnInfoOnMain,
-                                base::Unretained(this), std::move(callback)));
+      FROM_HERE,
+      base::BindOnce(&GpuServiceImpl::GetDawnInfoOnMain, base::Unretained(this),
+                     collect_metrics, std::move(callback)));
 }
 
-void GpuServiceImpl::GetDawnInfoOnMain(GetDawnInfoCallback callback) {
+void GpuServiceImpl::GetDawnInfoOnMain(bool collect_metrics,
+                                       GetDawnInfoCallback callback) {
   DCHECK(main_runner_->BelongsToCurrentThread());
 
   std::vector<std::string> dawn_info_list;
-  gpu::CollectDawnInfo(gpu_preferences_, &dawn_info_list);
+  gpu::CollectDawnInfo(gpu_preferences_, collect_metrics, &dawn_info_list);
 
   io_runner_->PostTask(FROM_HERE,
                        base::BindOnce(std::move(callback), dawn_info_list));

@@ -112084,6 +112084,16 @@ This is true even if the type has been removed from the mojom file.
   <int value="2" label="Not styled, but used"/>
 </enum>
 
+<enum name="WebGPUSupport">
+  <int value="0" label="None"/>
+  <int value="1" label="Core None, Compat Blocklisted"/>
+  <int value="2" label="Core None, Compat Supported"/>
+  <int value="3" label="Core Blocklisted, Compat None"/>
+  <int value="4" label="Core Blocklisted, Compat Blocklisted"/>
+  <int value="5" label="Core Blocklisted, Compat Supported"/>
+  <int value="6" label="Core Supported"/>
+</enum>
+
 <enum name="WebHidChooserClosed">
   <int value="0" label="User cancelled"/>
   <int value="1" label="User cancelled, no devices available"/>

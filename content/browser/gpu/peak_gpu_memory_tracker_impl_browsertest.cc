@@ -148,7 +148,8 @@ class TestGpuService : public viz::mojom::GpuService {
   void WriteClangProfilingProfile(
       WriteClangProfilingProfileCallback callback) override {}
 #endif
-  void GetDawnInfo(GetDawnInfoCallback callback) override {}
+  void GetDawnInfo(bool collect_metrics,
+                   GetDawnInfoCallback callback) override {}
 
   void Crash() override {}
   void Hang() override {}

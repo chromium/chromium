@@ -1427,9 +1427,7 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
     GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, true /* force_create */);
   }
 
-#if BUILDFLAG(IS_WIN)
   GpuDataManagerImpl::GetInstance()->PostCreateThreads();
-#endif
 
   if (MediaKeysListenerManager::IsMediaKeysListenerManagerEnabled()) {
     media_keys_listener_manager_ =

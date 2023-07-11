@@ -259,7 +259,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void DidLoseContext(bool offscreen,
                       gpu::error::ContextLostReason reason,
                       const GURL& active_url) override;
-  void GetDawnInfo(GetDawnInfoCallback callback) override;
+  void GetDawnInfo(bool collect_metrics, GetDawnInfoCallback callback) override;
 
   void GetIsolationKey(int client_id,
                        const blink::WebGPUExecutionContextToken& token,
@@ -502,7 +502,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void UpdateOverlayAndDXGIInfo();
 #endif
 
-  void GetDawnInfoOnMain(GetDawnInfoCallback callback);
+  void GetDawnInfoOnMain(bool collect_metrics, GetDawnInfoCallback callback);
 
   void RemoveGmbClient(int client_id);
 

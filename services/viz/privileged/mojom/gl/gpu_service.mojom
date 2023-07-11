@@ -226,7 +226,7 @@ interface GpuService {
   WriteClangProfilingProfile() => ();
 
   // Requests Dawn Info for about:gpu.
-  GetDawnInfo() => (array<string> dawn_info_list);
+  GetDawnInfo(bool collect_metrics) => (array<string> dawn_info_list);
 
   Crash();
   Hang();

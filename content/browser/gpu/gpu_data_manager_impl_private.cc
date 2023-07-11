@@ -643,7 +643,7 @@ void GpuDataManagerImplPrivate::RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
     RequestGpuSupportedVulkanVersion(delayed);
 
   if (request & GpuDataManagerImpl::kGpuInfoRequestDawnInfo)
-    RequestDawnInfo();
+    RequestDawnInfo(delayed);
 
   if (request & GpuDataManagerImpl::kGpuInfoRequestVideo) {
     DCHECK(!delayed) << "|delayed| is not supported for Mojo Media requests";
@@ -807,25 +807,36 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedVulkanVersion(bool delayed) {
 #endif
 }
 
-void GpuDataManagerImplPrivate::RequestDawnInfo() {
-  if (gpu_info_dawn_toggles_requested_)
-    return;
-  gpu_info_dawn_toggles_requested_ = true;
+void GpuDataManagerImplPrivate::RequestDawnInfo(bool delayed) {
+  base::TimeDelta delta;
+  if (delayed) {
+    delta = base::Seconds(120);
+  }
 
-  base::OnceClosure task = base::BindOnce([]() {
-    GpuProcessHost* host = GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED,
-                                               false /* force_create */);
-    if (!host)
-      return;
+  // Only collect metrics on the first request to avoid skewing data if
+  // the request occurs multiple times.
+  bool collect_metrics = !gpu_info_dawn_info_requested_;
+  gpu_info_dawn_info_requested_ = true;
 
-    host->gpu_service()->GetDawnInfo(
-        base::BindOnce([](const std::vector<std::string>& dawn_info_list) {
-          GpuDataManagerImpl* manager = GpuDataManagerImpl::GetInstance();
-          manager->UpdateDawnInfo(dawn_info_list);
-        }));
-  });
+  base::OnceClosure task = base::BindOnce(
+      [](bool collect_metrics) {
+        GpuProcessHost* host = GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED,
+                                                   false /* force_create */);
+        if (!host) {
+          return;
+        }
 
-  GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));
+        host->gpu_service()->GetDawnInfo(
+            collect_metrics,
+            base::BindOnce([](const std::vector<std::string>& dawn_info_list) {
+              GpuDataManagerImpl* manager = GpuDataManagerImpl::GetInstance();
+              manager->UpdateDawnInfo(dawn_info_list);
+            }));
+      },
+      collect_metrics);
+
+  GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostDelayedTask(FROM_HERE, std::move(task), delta);
 }
 
 void GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities() {
@@ -1141,29 +1152,6 @@ bool GpuDataManagerImplPrivate::VulkanRequested() const {
   return gpu_info_vulkan_requested_;
 }
 
-void GpuDataManagerImplPrivate::PostCreateThreads() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kNoDelayForDX12VulkanInfoCollection)) {
-    // This is for the info collection test of the gpu integration tests.
-    RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
-        GpuDataManagerImpl::kGpuInfoRequestDx12Vulkan,
-        /*delayed=*/false);
-  } else {
-    // Launch the info collection GPU process to collect DX12 support
-    // information for UMA at the start of the browser.
-    // Not to affect Chrome startup, this is done in a delayed mode,  i.e., 120
-    // seconds after Chrome startup.
-    RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
-        GpuDataManagerImpl::kGpuInfoRequestDx12,
-        /*delayed=*/true);
-  }
-  // Observer for display change.
-  display_observer_.emplace(owner_);
-
-  // Initialization for HDR status update.
-  HDRProxy::Initialize();
-}
-
 void GpuDataManagerImplPrivate::TerminateInfoCollectionGpuProcess() {
   // Wait until DxDiag, DX12/Vulkan and DevicePerfInfo requests are all
   // complete.
@@ -1191,6 +1179,37 @@ void GpuDataManagerImplPrivate::TerminateInfoCollectionGpuProcess() {
     host->ForceShutdown();
 }
 #endif
+
+void GpuDataManagerImplPrivate::PostCreateThreads() {
+  // Launch the info collection GPU process to collect Dawn info.
+  // Not to affect Chrome startup, this is done in a delayed mode, i.e., 120
+  // seconds after Chrome startup.
+  RequestDawnInfo(/*delayed=*/true);
+
+#if BUILDFLAG(IS_WIN)
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kNoDelayForDX12VulkanInfoCollection)) {
+    // This is for the info collection test of the gpu integration tests.
+    RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
+        GpuDataManagerImpl::kGpuInfoRequestDx12Vulkan,
+        /*delayed=*/false);
+  } else {
+    // Launch the info collection GPU process to collect DX12 support
+    // information for UMA at the start of the browser.
+    // Not to affect Chrome startup, this is done in a delayed mode,  i.e., 120
+    // seconds after Chrome startup.
+    RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
+        GpuDataManagerImpl::kGpuInfoRequestDx12,
+        /*delayed=*/true);
+  }
+
+  // Observer for display change.
+  display_observer_.emplace(owner_);
+
+  // Initialization for HDR status update.
+  HDRProxy::Initialize();
+#endif  // BUILDFLAG(IS_WIN)
+}
 
 void GpuDataManagerImplPrivate::UpdateDawnInfo(
     const std::vector<std::string>& dawn_info_list) {

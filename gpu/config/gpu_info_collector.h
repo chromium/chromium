@@ -100,6 +100,7 @@ GPU_EXPORT bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
 
 // Collect Dawn Toggle name info for about:gpu
 GPU_EXPORT void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
+                                bool collect_metrics,
                                 std::vector<std::string>* dawn_info_list);
 
 }  // namespace gpu
