@@ -34,6 +34,7 @@ class COMPONENT_EXPORT(EVDEV) KeyboardImposterCheckerEvdev {
 
  private:
   std::vector<int> GetIdsOnSamePhys(const std::string& phys_path);
+  std::string StandardizedPhys(const std::string& phys_path);
 
   // Number of devices per phys path.
   std::multimap<std::string, int> devices_on_phys_path_;

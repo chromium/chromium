@@ -126,6 +126,7 @@ component("evdev") {
     ":event_device_info",
     "//base",
     "//build:chromeos_buildflags",
+    "//third_party/re2:re2",
     "//ui/display",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
