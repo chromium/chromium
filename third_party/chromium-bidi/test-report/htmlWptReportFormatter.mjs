@@ -129,9 +129,9 @@ export function generateHtml(map) {
     </style>
     <div class="top">
       <h1>WPT test results</h1>
-      <h2>
-        ${map.stat.pass} / ${map.stat.all}
-      </h2>
+      <h2>${map.stat.pass} / ${map.stat.all} (${
+    map.stat.all - map.stat.pass
+  } remaining)</h2>
       <div>
         ${Array.from(map.children.values())
           .map((t) => generateTestReport(t, map.path))
