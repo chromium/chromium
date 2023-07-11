@@ -209,6 +209,7 @@ test("v4l2_unittest") {
     "//build/config/linux/libdrm",
     "//media:test_support",
     "//testing/gtest",
+    "//ui/gfx/linux:gbm",
   ]
 }
 

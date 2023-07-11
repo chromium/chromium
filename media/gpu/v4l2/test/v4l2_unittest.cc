@@ -17,6 +17,7 @@
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
+#include "ui/gfx/linux/gbm_defines.h"
 
 #include <drm.h>
 #include <fcntl.h>
