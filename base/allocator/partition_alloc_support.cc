@@ -257,6 +257,11 @@ void StartThreadCachePeriodicPurge() {
 }
 
 void StartMemoryReclaimer(scoped_refptr<SequencedTaskRunner> task_runner) {
+  if (!base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocMemoryReclaimer)) {
+    return;
+  }
+
   // Can be called several times.
   static bool is_memory_reclaimer_running = false;
   if (is_memory_reclaimer_running) {
@@ -843,7 +848,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   bool split_main_partition = false;
   bool use_dedicated_aligned_partition = false;
   bool process_affected_by_brp_flag = false;
-  bool enable_memory_reclaimer = false;
   size_t ref_count_size = 0;
 
 #if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&  \
@@ -886,9 +890,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         // Do nothing. Equivalent to !IsEnabled(kPartitionAllocBackupRefPtr).
         break;
 
-      case base::features::BackupRefPtrMode::kEnabledWithMemoryReclaimer:
-        enable_memory_reclaimer = true;
-        ABSL_FALLTHROUGH_INTENDED;
       case base::features::BackupRefPtrMode::kEnabled:
         enable_brp = true;
         split_main_partition = true;
@@ -907,12 +908,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
 
       case base::features::BackupRefPtrMode::kDisabledButSplitPartitions2Way:
         split_main_partition = true;
-        break;
-
-      case base::features::BackupRefPtrMode::
-          kDisabledButSplitPartitions2WayWithMemoryReclaimer:
-        split_main_partition = true;
-        enable_memory_reclaimer = true;
         break;
 
       case base::features::BackupRefPtrMode::kDisabledButSplitPartitions3Way:
@@ -953,7 +948,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   return {
       enable_brp,
       enable_brp_for_ash,
-      enable_memory_reclaimer,
       split_main_partition,
       use_dedicated_aligned_partition,
       process_affected_by_brp_flag,
@@ -1145,8 +1139,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
   allocator_shim::ConfigurePartitions(
       allocator_shim::EnableBrp(brp_config.enable_brp),
-      allocator_shim::EnableBrpPartitionMemoryReclaimer(
-          brp_config.enable_brp_partition_memory_reclaimer),
       allocator_shim::EnableMemoryTagging(enable_memory_tagging),
       allocator_shim::SplitMainPartition(brp_config.split_main_partition ||
                                          enable_memory_tagging),

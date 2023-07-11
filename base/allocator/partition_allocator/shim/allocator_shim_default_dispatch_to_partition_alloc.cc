@@ -520,27 +520,22 @@ partition_alloc::PartitionRoot* PartitionAllocMalloc::AlignedAllocator() {
 namespace allocator_shim {
 
 void EnablePartitionAllocMemoryReclaimer() {
-  // Unlike other partitions, Allocator() and AlignedAllocator() do not register
-  // their PartitionRoots to the memory reclaimer, because doing so may allocate
-  // memory. Thus, the registration to the memory reclaimer has to be done
-  // some time later, when the main root is fully configured.
-  // TODO(bartekn): Aligned allocator can use the regular initialization path.
+  // Unlike other partitions, Allocator() does not register its PartitionRoot to
+  // the memory reclaimer, because doing so may allocate memory. Thus, the
+  // registration to the memory reclaimer has to be done some time later, when
+  // the main root is fully configured.
   ::partition_alloc::MemoryReclaimer::Instance()->RegisterPartition(
       Allocator());
-  auto* original_root = OriginalAllocator();
-  if (original_root) {
-    ::partition_alloc::MemoryReclaimer::Instance()->RegisterPartition(
-        original_root);
-  }
-  if (AlignedAllocator() != Allocator()) {
-    ::partition_alloc::MemoryReclaimer::Instance()->RegisterPartition(
-        AlignedAllocator());
-  }
+
+  // There is only one PartitionAlloc-Everywhere partition at the moment. Any
+  // additional partitions will be created in ConfigurePartitions() and
+  // registered for memory reclaimer there.
+  PA_DCHECK(OriginalAllocator() == nullptr);
+  PA_DCHECK(AlignedAllocator() == Allocator());
 }
 
 void ConfigurePartitions(
     EnableBrp enable_brp,
-    EnableBrpPartitionMemoryReclaimer enable_brp_memory_reclaimer,
     EnableMemoryTagging enable_memory_tagging,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
@@ -589,45 +584,43 @@ void ConfigurePartitions(
   // ConfigurePartitions() is invoked explicitly from Chromium code, so this
   // shouldn't bite us here. Mentioning just in case we move this code earlier.
   static partition_alloc::internal::base::NoDestructor<
-      partition_alloc::PartitionRoot>
-      new_main_partition(partition_alloc::PartitionOptions{
-          .aligned_alloc =
-              !use_dedicated_aligned_partition
-                  ? partition_alloc::PartitionOptions::AlignedAlloc::kAllowed
-                  : partition_alloc::PartitionOptions::AlignedAlloc::
-                        kDisallowed,
-          .thread_cache =
-              partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-          .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
-          .backup_ref_ptr =
-              enable_brp
-                  ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
-                  : partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-          .ref_count_size = ref_count_size,
-          .memory_tagging =
-              enable_memory_tagging
-                  ? partition_alloc::PartitionOptions::MemoryTagging::kEnabled
-                  : partition_alloc::PartitionOptions::MemoryTagging::
-                        kDisabled});
-  partition_alloc::PartitionRoot* new_root = new_main_partition.get();
+      partition_alloc::PartitionAllocator>
+      new_main_allocator{};
+  new_main_allocator->init(partition_alloc::PartitionOptions{
+      .aligned_alloc =
+          !use_dedicated_aligned_partition
+              ? partition_alloc::PartitionOptions::AlignedAlloc::kAllowed
+              : partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
+      .thread_cache = partition_alloc::PartitionOptions::ThreadCache::kDisabled,
+      .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
+      .backup_ref_ptr =
+          enable_brp
+              ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
+              : partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+      .ref_count_size = ref_count_size,
+      .memory_tagging =
+          enable_memory_tagging
+              ? partition_alloc::PartitionOptions::MemoryTagging::kEnabled
+              : partition_alloc::PartitionOptions::MemoryTagging::kDisabled});
+  partition_alloc::PartitionRoot* new_root = new_main_allocator->root();
 
   partition_alloc::PartitionRoot* new_aligned_root;
   if (use_dedicated_aligned_partition) {
     // TODO(bartekn): Use the original root instead of creating a new one. It'd
     // result in one less partition, but come at a cost of commingling types.
     static partition_alloc::internal::base::NoDestructor<
-        partition_alloc::PartitionRoot>
-        new_aligned_partition(partition_alloc::PartitionOptions{
-            .aligned_alloc =
-                partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
-            .thread_cache =
-                partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-            .quarantine =
-                partition_alloc::PartitionOptions::Quarantine::kAllowed,
-            .backup_ref_ptr =
-                partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-        });
-    new_aligned_root = new_aligned_partition.get();
+        partition_alloc::PartitionAllocator>
+        new_aligned_allocator{};
+    new_aligned_allocator->init(partition_alloc::PartitionOptions{
+        .aligned_alloc =
+            partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
+        .thread_cache =
+            partition_alloc::PartitionOptions::ThreadCache::kDisabled,
+        .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
+        .backup_ref_ptr =
+            partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+    });
+    new_aligned_root = new_aligned_allocator->root();
   } else {
     // The new main root can also support AlignedAlloc.
     new_aligned_root = new_root;
@@ -646,14 +639,6 @@ void ConfigurePartitions(
   // No need for g_original_aligned_root, because in cases where g_aligned_root
   // is replaced, it must've been g_original_root.
   PA_CHECK(current_aligned_root == g_original_root);
-
-  if (enable_brp_memory_reclaimer) {
-    partition_alloc::MemoryReclaimer::Instance()->RegisterPartition(new_root);
-    if (new_aligned_root != new_root) {
-      partition_alloc::MemoryReclaimer::Instance()->RegisterPartition(
-          new_aligned_root);
-    }
-  }
 
   // Purge memory, now that the traffic to the original partition is cut off.
   current_root->PurgeMemory(

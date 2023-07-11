@@ -185,8 +185,6 @@ PA_COMPONENT_EXPORT(PARTITION_ALLOC) void EnablePartitionAllocMemoryReclaimer();
 
 using EnableBrp =
     partition_alloc::internal::base::StrongAlias<class EnableBrpTag, bool>;
-using EnableBrpPartitionMemoryReclaimer = partition_alloc::internal::base::
-    StrongAlias<class EnableBrpPartitionMemoryReclaimerTag, bool>;
 using EnableMemoryTagging =
     partition_alloc::internal::base::StrongAlias<class EnableMemoryTaggingTag,
                                                  bool>;
@@ -203,7 +201,6 @@ enum class AlternateBucketDistribution : uint8_t { kDefault, kDenser };
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void ConfigurePartitions(
     EnableBrp enable_brp,
-    EnableBrpPartitionMemoryReclaimer enable_brp_memory_reclaimer,
     EnableMemoryTagging enable_memory_tagging,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,

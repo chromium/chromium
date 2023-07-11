@@ -32,7 +32,6 @@
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
-#include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
@@ -46,7 +45,6 @@
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace WTF {
@@ -90,12 +88,10 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
       base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
           BackupRefPtrEnabledProcesses::kBrowserAndRenderer;
 #endif  // BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
-  const bool enable_brp =
-      base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocBackupRefPtr) &&
-      (brp_mode == BackupRefPtrMode::kEnabled ||
-       brp_mode == BackupRefPtrMode::kEnabledWithMemoryReclaimer) &&
-      process_affected_by_brp_flag;
+  const bool enable_brp = base::FeatureList::IsEnabled(
+                              base::features::kPartitionAllocBackupRefPtr) &&
+                          (brp_mode == BackupRefPtrMode::kEnabled) &&
+                          process_affected_by_brp_flag;
 #else  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   const bool enable_brp = false;
 #endif
@@ -226,7 +222,7 @@ void Partitions::InitializeArrayBufferPartition() {
 }
 
 // static
-void Partitions::StartPeriodicReclaim(
+void Partitions::StartMemoryReclaimer(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   CHECK(IsMainThread());
   DCHECK(initialized_);
