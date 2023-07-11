@@ -140,6 +140,10 @@ BrowserNonClientFrameViewChromeOS::~BrowserNonClientFrameViewChromeOS() {
       browser_view()->immersive_mode_controller();
   if (immersive_controller)
     immersive_controller->RemoveObserver(this);
+
+  if (profile_indicator_icon_) {
+    RemoveChildViewT(std::exchange(profile_indicator_icon_, nullptr));
+  }
 }
 
 void BrowserNonClientFrameViewChromeOS::Init() {
@@ -945,8 +949,8 @@ void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
   if (GetShowProfileIndicatorIcon()) {
     bool needs_layout = !profile_indicator_icon_;
     if (!profile_indicator_icon_) {
-      profile_indicator_icon_ = new ProfileIndicatorIcon();
-      AddChildView(profile_indicator_icon_.get());
+      profile_indicator_icon_ =
+          AddChildView(std::make_unique<ProfileIndicatorIcon>());
     }
 
     gfx::Image image(
@@ -960,8 +964,7 @@ void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
       root_view->Layout();
     }
   } else if (profile_indicator_icon_) {
-    delete profile_indicator_icon_;
-    profile_indicator_icon_ = nullptr;
+    RemoveChildViewT(std::exchange(profile_indicator_icon_, nullptr));
     if (root_view)
       root_view->Layout();
   }
