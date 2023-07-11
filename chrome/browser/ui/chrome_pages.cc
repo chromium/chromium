@@ -167,6 +167,9 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
       url = GURL(kChromeHelpViaWebUIURL);
       break;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    case HELP_SOURCE_WEBUSB:
+      url = GURL(kChooserUsbOverviewURL);
+      break;
     default:
       NOTREACHED() << "Unhandled help source " << source;
   }

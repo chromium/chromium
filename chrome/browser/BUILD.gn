@@ -4387,6 +4387,12 @@ static_library("browser") {
       "upgrade_detector/upgrade_detector.cc",
       "upgrade_detector/upgrade_detector.h",
       "upgrade_detector/upgrade_observer.h",
+      "usb/usb_connection_tracker.cc",
+      "usb/usb_connection_tracker.h",
+      "usb/usb_connection_tracker_factory.cc",
+      "usb/usb_connection_tracker_factory.h",
+      "usb/usb_system_tray_icon.cc",
+      "usb/usb_system_tray_icon.h",
       "usb/web_usb_chooser_desktop.cc",
       "usb/web_usb_chooser_desktop.h",
       "usb/web_usb_detector.cc",
@@ -4532,6 +4538,8 @@ static_library("browser") {
         "device_notifications/device_status_icon_renderer.h",
         "hid/hid_status_icon.cc",
         "hid/hid_status_icon.h",
+        "usb/usb_status_icon.cc",
+        "usb/usb_status_icon.h",
       ]
     }
     if (!is_chromeos) {
@@ -5631,6 +5639,8 @@ static_library("browser") {
       "renderer_context_menu/quick_answers_menu_observer.h",
       "speech/tts_crosapi_util.cc",
       "speech/tts_crosapi_util.h",
+      "usb/usb_pinned_notification.cc",
+      "usb/usb_pinned_notification.h",
       "webshare/chromeos/sharesheet_client.cc",
       "webshare/chromeos/sharesheet_client.h",
     ]

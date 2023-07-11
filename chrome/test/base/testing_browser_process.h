@@ -155,6 +155,7 @@ class TestingBrowserProcess : public BrowserProcess {
 #if !BUILDFLAG(IS_ANDROID)
   SerialPolicyAllowedPorts* serial_policy_allowed_ports() override;
   HidSystemTrayIcon* hid_system_tray_icon() override;
+  UsbSystemTrayIcon* usb_system_tray_icon() override;
 #endif
   BuildState* GetBuildState() override;
 
@@ -181,6 +182,8 @@ class TestingBrowserProcess : public BrowserProcess {
 #if !BUILDFLAG(IS_ANDROID)
   void SetHidSystemTrayIcon(
       std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon);
+  void SetUsbSystemTrayIcon(
+      std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon);
 #endif
 
  private:
@@ -254,6 +257,7 @@ class TestingBrowserProcess : public BrowserProcess {
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<SerialPolicyAllowedPorts> serial_policy_allowed_ports_;
   std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon_;
+  std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon_;
   BuildState build_state_;
 #endif
 

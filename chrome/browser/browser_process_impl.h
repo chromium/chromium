@@ -217,6 +217,7 @@ class BrowserProcessImpl : public BrowserProcess,
 #if !BUILDFLAG(IS_ANDROID)
   SerialPolicyAllowedPorts* serial_policy_allowed_ports() override;
   HidSystemTrayIcon* hid_system_tray_icon() override;
+  UsbSystemTrayIcon* usb_system_tray_icon() override;
 #endif
 
   BuildState* GetBuildState() override;
@@ -444,6 +445,7 @@ class BrowserProcessImpl : public BrowserProcess,
 
   std::unique_ptr<SerialPolicyAllowedPorts> serial_policy_allowed_ports_;
   std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon_;
+  std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon_;
 
   BuildState build_state_;
 #endif

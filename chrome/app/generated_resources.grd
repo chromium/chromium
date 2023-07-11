@@ -13616,12 +13616,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <if expr="not is_android">
-      <!-- WebHID System Tray Icon -->
+      <!-- WebHID and WebUSBSystem Tray Icon -->
       <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_HID_SETTINGS" desc="Text for the WebHID system tray icon button that opens the HID settings page.">
         HID settings
       </message>
       <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_ABOUT_HID_DEVICE" desc="Text for the WebHID system tray icon button that opens the learn more page for the HID device.">
         About HID devices
+      </message>
+      <message name="IDS_WEBUSB_SYSTEM_TRAY_ICON_USB_SETTINGS" desc="Text for the WebUSB system tray icon button that opens the USB settings page.">
+        USB settings
+      </message>
+      <message name="IDS_WEBUSB_SYSTEM_TRAY_ICON_ABOUT_USB_DEVICE" desc="Text for the WebUSB system tray icon button that opens the learn more page for the USB device.">
+        About USB devices
       </message>
       <if expr="is_chromeos">
         <then>
@@ -13631,9 +13637,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
             =2 {Extensions accessing devices: <ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph>, <ph name="EXTENSION2">{2}<ex>Secure Shell</ex></ph>}
             other {Extensions accessing devices: <ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph>, <ph name="EXTENSION2">{2}<ex>Secure Shell</ex></ph> +{3} more}}
           </message>
+          <message name="IDS_WEBUSB_SYSTEM_TRAY_ICON_EXTENSION_LIST" desc="Text for the WebUSB pinned notification message.">
+            {NUM_EXTENSION, plural,
+            =1 {<ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph> is accessing USB devices}
+            =2 {Extensions accessing devices: <ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph>, <ph name="EXTENSION2">{2}<ex>Secure Shell</ex></ph>}
+            other {Extensions accessing devices: <ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph>, <ph name="EXTENSION2">{2}<ex>Secure Shell</ex></ph> +{3} more}}
+          </message>
         </then>
         <else>
-          <message name="IDS_DEVICE_CONNECTED_BY_EXTENSION" desc="Text for the WebHID system tray icon button that displays how many active connections for the extension and opens the extension's site setting page.">
+          <message name="IDS_DEVICE_CONNECTED_BY_EXTENSION" desc="Text for the WebHID or WebUSB system tray icon button that displays how many active connections for the extension and opens the extension's site setting page.">
             {NUM_CONNECTION, plural,
             =0 {Extension "<ph name="EXTENSION">{1}<ex>Google Translate</ex></ph>" was accessing devices}
             =1 {Extension "<ph name="EXTENSION">{1}<ex>Google Translate</ex></ph>" is accessing {0} device}

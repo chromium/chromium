@@ -24,8 +24,8 @@ class DeviceSystemTrayIconTestBase : public BrowserWithTestWindowTest {
 
   void TearDown() override;
 
-  // Check if the hid system tray icon is shown and all the action buttons work
-  // correctly with the given |profile_connection_counts|.
+  // Check if the device system tray icon is shown and all the action buttons
+  // work correctly with the given |profile_connection_counts|.
   virtual void CheckIcon(
       const std::vector<ProfileItem>& profile_connection_counts) = 0;
 

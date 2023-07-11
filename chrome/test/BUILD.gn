@@ -7455,7 +7455,10 @@ test("unit_tests") {
       "../browser/usb/usb_chooser_context_mock_device_observer.h",
       "../browser/usb/usb_chooser_context_unittest.cc",
       "../browser/usb/usb_chooser_controller_unittest.cc",
+      "../browser/usb/usb_connection_tracker_unittest.cc",
       "../browser/usb/usb_policy_allowed_devices_unittest.cc",
+      "../browser/usb/usb_test_utils.cc",
+      "../browser/usb/usb_test_utils.h",
       "../browser/usb/web_usb_detector_unittest.cc",
       "../browser/user_notes/user_notes_tab_helper_unittest.cc",
       "../browser/webauthn/authenticator_request_dialog_model_unittest.cc",
@@ -7717,6 +7720,7 @@ test("unit_tests") {
       "../browser/device_notifications/device_status_icon_unittest.cc",
       "../browser/device_notifications/device_status_icon_unittest.h",
       "../browser/hid/hid_status_icon_unittest.cc",
+      "../browser/usb/usb_status_icon_unittest.cc",
     ]
   }
 
@@ -7734,6 +7738,7 @@ test("unit_tests") {
       "../browser/policy/system_features_disable_list_policy_handler_unittest.cc",
       "../browser/speech/tts_crosapi_util_unittest.cc",
       "../browser/ui/webui/certificate_provisioning_ui_handler_unittest.cc",
+      "../browser/usb/usb_pinned_notification_unittest.cc",
       "chromeos/printing/fake_local_printer_chromeos.cc",
       "chromeos/printing/fake_local_printer_chromeos.h",
     ]

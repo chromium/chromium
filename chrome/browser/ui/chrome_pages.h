@@ -63,6 +63,9 @@ enum HelpSource {
   // WebUI (the OS "About" page).
   HELP_SOURCE_WEBUI_CHROME_OS,
 #endif
+
+  // WebUSB help center article.
+  HELP_SOURCE_WEBUSB,
 };
 
 // Sources of feedback requests.

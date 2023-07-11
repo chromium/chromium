@@ -1072,6 +1072,14 @@ Permissions you've already given to websites and apps may apply to this account.
             =1 {Chromium extensions are accessing HID devices}
             other {Chromium extensions are accessing # HID devices}}
         </message>
+
+        <!-- WebUSB system tray icon -->
+         <message name="IDS_WEBUSB_SYSTEM_TRAY_ICON_TITLE" desc="Title for the WebUSB system tray icon">
+            {NUM_DEVICES, plural,
+              =0 {1 USB device was being accessed by one or more Chromium extensions}
+              =1 {1 USB device is being accessed by one or more Chromium extensions}
+            other {# USB devices are being accessed by one or more Chromium extensions}}
+        </message>
       </if>
 
       <!-- ProcessSingleton -->

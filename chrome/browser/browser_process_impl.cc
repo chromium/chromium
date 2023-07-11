@@ -177,6 +177,7 @@
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/usb/usb_system_tray_icon.h"
 #include "components/gcm_driver/gcm_client_factory.h"
 #include "components/gcm_driver/gcm_desktop_utils.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -226,8 +227,10 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/telemetry/chromeos_telemetry_extensions_browser_api_provider.h"
 #include "chrome/browser/hid/hid_pinned_notification.h"
+#include "chrome/browser/usb/usb_pinned_notification.h"
 #elif !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/hid/hid_status_icon.h"
+#include "chrome/browser/usb/usb_status_icon.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -381,8 +384,10 @@ void BrowserProcessImpl::Init() {
 #if !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS)
   hid_system_tray_icon_ = std::make_unique<HidPinnedNotification>();
+  usb_system_tray_icon_ = std::make_unique<UsbPinnedNotification>();
 #else
   hid_system_tray_icon_ = std::make_unique<HidStatusIcon>();
+  usb_system_tray_icon_ = std::make_unique<UsbStatusIcon>();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
@@ -446,10 +451,11 @@ void BrowserProcessImpl::StartTearDown() {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-  // |hid_system_tray_icon_| must be destroyed before
-  // |system_notification_helper_| for ChromeOS and |status_tray_| for
+  // |hid_system_tray_icon_| and |usb_system_tray_icon_| must be destroyed
+  // before |system_notification_helper_| for ChromeOS and |status_tray_| for
   // non-ChromeOS.
   hid_system_tray_icon_.reset();
+  usb_system_tray_icon_.reset();
 #endif
 
   system_notification_helper_.reset();
@@ -998,6 +1004,11 @@ SerialPolicyAllowedPorts* BrowserProcessImpl::serial_policy_allowed_ports() {
 HidSystemTrayIcon* BrowserProcessImpl::hid_system_tray_icon() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return hid_system_tray_icon_.get();
+}
+
+UsbSystemTrayIcon* BrowserProcessImpl::usb_system_tray_icon() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return usb_system_tray_icon_.get();
 }
 #endif
 
