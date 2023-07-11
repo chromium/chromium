@@ -17,7 +17,6 @@
 #include "components/update_client/update_client.h"
 
 namespace base {
-class File;
 class FilePath;
 class Version;
 }  // namespace base
@@ -30,7 +29,7 @@ class PrivacySandboxAttestationsComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
   using AttestationsReadyRepeatingCallback =
-      base::RepeatingCallback<void(base::Version, base::File)>;
+      base::RepeatingCallback<void(base::Version, base::FilePath)>;
 
   // Once the attestations file is ready, `ComponentReady` will be invoked on
   // the UI thread, which in turn invokes `on_attestations_ready_`.
@@ -49,16 +48,22 @@ class PrivacySandboxAttestationsComponentInstallerPolicy
       DeleteExistingFilesIfFeatureDisabled);
   FRIEND_TEST_ALL_PREFIXES(
       PrivacySandboxAttestationsInstallerFeatureEnabledTest,
-      LoadAttestationsFileOnComponentReady);
+      VerifyInstallation);
   FRIEND_TEST_ALL_PREFIXES(
       PrivacySandboxAttestationsInstallerFeatureEnabledTest,
-      NonexistentFileOnComponentReady);
+      OnCustomInstall);
   FRIEND_TEST_ALL_PREFIXES(
       PrivacySandboxAttestationsInstallerFeatureEnabledTest,
-      LoadsNewerVersionOnComponentReady);
+      InvokeOnAttestationsReadyCallbackOnComponentReady);
   FRIEND_TEST_ALL_PREFIXES(
       PrivacySandboxAttestationsInstallerFeatureEnabledTest,
-      LoadNewAttestationsFileWhenUpdated);
+      DoNotInvokeOnAttestationsReadyCallbackIfInvalidVersion);
+  FRIEND_TEST_ALL_PREFIXES(
+      PrivacySandboxAttestationsInstallerFeatureEnabledTest,
+      DoNotInvokeOnAttestationsReadyCallbackIfEmptyPath);
+  FRIEND_TEST_ALL_PREFIXES(
+      PrivacySandboxAttestationsInstallerFeatureEnabledTest,
+      CallLoadNewAttestationsFile);
 
   // The following methods override `ComponentInstallerPolicy`.
   bool VerifyInstallation(const base::Value::Dict& manifest,

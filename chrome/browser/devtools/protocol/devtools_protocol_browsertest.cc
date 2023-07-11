@@ -990,12 +990,21 @@ IN_PROC_BROWSER_TEST_F(PrerenderDataSaverProtocolTest,
 
 class PrivacySandboxAttestationsOverrideTest : public DevToolsProtocolTest {
  public:
-  PrivacySandboxAttestationsOverrideTest()
-      : scoped_attestations_(
-            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {}
+  PrivacySandboxAttestationsOverrideTest() = default;
+
+  void SetUpOnMainThread() override {
+    // `PrivacySandboxAttestations` has a member of type
+    // `scoped_refptr<base::SequencedTaskRunner>`, its initialization must be
+    // done after a browser process is created.
+    DevToolsProtocolTest::SetUpOnMainThread();
+    scoped_attestations_ =
+        std::make_unique<privacy_sandbox::ScopedPrivacySandboxAttestations>(
+            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
+  }
 
  private:
-  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations_;
+  std::unique_ptr<privacy_sandbox::ScopedPrivacySandboxAttestations>
+      scoped_attestations_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsOverrideTest,

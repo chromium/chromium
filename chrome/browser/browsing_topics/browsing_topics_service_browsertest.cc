@@ -2349,9 +2349,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
 // Tests that the Topics API abides by the Privacy Sandbox Enrollment framework.
 class AttestationBrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTest {
  public:
-  AttestationBrowsingTopicsBrowserTest()
-      : scoped_attestations_(
-            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {
+  AttestationBrowsingTopicsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {blink::features::kBrowsingTopics, blink::features::kBrowsingTopicsXHR,
@@ -2361,11 +2359,22 @@ class AttestationBrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTest {
         /*disabled_features=*/{});
   }
 
+  void SetUpOnMainThread() override {
+    // `PrivacySandboxAttestations` has a member of type
+    // `scoped_refptr<base::SequencedTaskRunner>`, its initialization must be
+    // done after a browser process is created.
+    BrowsingTopicsBrowserTestBase::SetUpOnMainThread();
+    scoped_attestations_ =
+        std::make_unique<privacy_sandbox::ScopedPrivacySandboxAttestations>(
+            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
+  }
+
   ~AttestationBrowsingTopicsBrowserTest() override = default;
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations_;
+  std::unique_ptr<privacy_sandbox::ScopedPrivacySandboxAttestations>
+      scoped_attestations_;
 };
 
 // Site a.test is attested for Topics, so it should receive a valid response.

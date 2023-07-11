@@ -12,9 +12,17 @@
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/version.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace privacy_sandbox {
 
@@ -46,6 +54,12 @@ class PrivacySandboxAttestations {
   // `g_test_instance` back to the previous one. If tests are testing APIs that
   // rely on `GetInstance()`, they must use `ScopedPrivacySandboxAttestations`
   // to set up the test instance first.
+  // Note: `PrivacySandboxAttestations` requires that tests have a properly set
+  // up task environment. For unit-tests, ensure
+  // `content::BrowserTaskEnvironment` is initialized. This is required because
+  // the final move assignment of the attestations map is done using the UI
+  // thread. For browser tests, wait until the main thread is initialized before
+  // calling `CreateForTesting()`.
   static std::unique_ptr<PrivacySandboxAttestations> CreateForTesting();
 
   static void SetInstanceForTesting(PrivacySandboxAttestations* test_instance);
@@ -66,6 +80,12 @@ class PrivacySandboxAttestations {
       const net::SchemefulSite& site,
       PrivacySandboxAttestationsGatedAPI invoking_api) const;
 
+  // Invoke `LoadAttestationsInternal()` to parse the attestations file
+  // asynchronously on the SequencedTaskRunner `task_runner_` in the thread
+  // pool. This function should only be invoked with a valid version and
+  // `kEnforcePrivacySandboxAttestations` enabled.
+  void LoadAttestations(base::Version version, base::FilePath install_dir);
+
   // Override the site to be attested for all the Privacy Sandbox APIs, even if
   // it is not officially enrolled. This allows developers to test Privacy
   // Sandbox APIs. The overriding is done using the devtools procotol.
@@ -79,20 +99,62 @@ class PrivacySandboxAttestations {
   void SetAttestationsForTesting(
       absl::optional<PrivacySandboxAttestationsMap> attestations_map);
 
+  base::Version GetVersionForTesting() const;
+
+  // Set the callback to be invoked when attestations map is loaded. The typical
+  // usage is to set the callback to `base::RunLoop::QuitClosure()`. Tests then
+  // can use `base::RunLoop::Run()`, together with this callback, to make sure
+  // the parsing and loading are completed.
+  void SetLoadAttestationsDoneCallbackForTesting(base::OnceClosure callback);
+
  private:
-  // TODO(xiaochenzh): This class should also hold the version of the
-  // attestations.
   friend class base::NoDestructor<PrivacySandboxAttestations>;
+
+  enum Progress {
+    kNotStarted,
+    kStarted,
+    kFinished,
+  };
 
   // The constructor is private to enforce the singleton requirement of this
   // class.
   PrivacySandboxAttestations();
+
+  // Trigger the opening and parsing of the attestations file. When the parsing
+  // is done, store the result to `attestations_map_`. If there is an existing
+  // attestations map, only parse if the attestations file has a newer version.
+  // This function should only be invoked with a valid version and
+  // `kEnforcePrivacySandboxAttestations` enabled.
+  void LoadAttestationsInternal(base::Version version,
+                                base::FilePath install_dir);
+
+  // Store the parsed attestations map and its version.
+  void SetParsedAttestations(base::Version version,
+                             PrivacySandboxAttestationsMap attestations_map);
+
+  // Invoke the `attestations_loaded_callback_` registered by tests, if any.
+  void RunLoadAttestationsDoneCallbackForTesting();
+
+  // Task runner used to execute the file opening and parsing.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // This callback is invoked at the end of the loading of the attestations map.
+  base::OnceClosure load_attestations_done_callback_;
+
+  Progress attestations_parse_progress_ = kNotStarted;
+
+  // The attestations file from the component updater should always carry a
+  // valid version. If this is a `nullopt`, this implies the attestations list
+  // has not been loaded yet.
+  base::Version file_version_;
 
   // A data structure for storing and checking Privacy Sandbox attestations,
   // i.e. whether particular sites have opted in to using particular Privacy
   // Sandbox APIs. If this is a `nullopt`, this implies the attestations list
   // has not been loaded yet.
   absl::optional<PrivacySandboxAttestationsMap> attestations_map_;
+
+  // Overridden sites by DevTools are considered attested.
   std::vector<net::SchemefulSite> overridden_sites_;
 };
 
