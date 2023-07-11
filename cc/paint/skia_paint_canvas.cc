@@ -20,6 +20,7 @@
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrRecordingContext.h"
 
 namespace cc {
@@ -60,7 +61,10 @@ void* SkiaPaintCanvas::accessTopLayerPixels(SkImageInfo* info,
 }
 
 void SkiaPaintCanvas::flush() {
-  canvas_->flush();
+  if (GrDirectContext* direct_context =
+          GrAsDirectContext(canvas_->recordingContext())) {
+    direct_context->flushAndSubmit();
+  }
 }
 
 bool SkiaPaintCanvas::NeedsFlush() const {
@@ -410,7 +414,10 @@ void SkiaPaintCanvas::FlushAfterDrawIfNeeded() {
     num_of_ops_ = 0;
     TRACE_EVENT0("cc",
                  "SkiaPaintCanvas::FlushAfterDrawIfNeeded::FlushGrContext");
-    canvas_->flush();
+    if (GrDirectContext* direct_context =
+            GrAsDirectContext(canvas_->recordingContext())) {
+      direct_context->flushAndSubmit();
+    }
   }
 }
 

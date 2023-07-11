@@ -775,7 +775,6 @@ SkBitmap SkBitmapOperations::Rotate(const SkBitmap& source,
   canvas.translate(-SkFloatToScalar(source.width() * 0.5f),
                    -SkFloatToScalar(source.height() * 0.5f));
   canvas.drawImage(source.asImage(), 0, 0);
-  canvas.flush();
 
   return result;
 }

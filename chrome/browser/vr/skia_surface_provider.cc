@@ -8,6 +8,8 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/GrRecordingContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -42,7 +44,7 @@ SkiaSurfaceProvider::CreateTextureWithSkiaImpl(
       kTopLeft_GrSurfaceOrigin, nullptr);
 
   paint(surface->getCanvas());
-  surface->getCanvas()->flush();
+  gr_context->flush(surface);
 
   return std::make_unique<Texture>(std::move(surface));
 }

@@ -94,6 +94,8 @@ config("skia_config") {
       "SK_ENCODE_PNG",
       "SK_ENCODE_WEBP",
       "SK_HAS_WUFFS_LIBRARY",
+      "SK_DISABLE_LEGACY_CANVAS_FLUSH",
+      "SK_LEGACY_GPU_GETTERS_CONST",
     ]
     include_dirs += [ "//third_party/wuffs/src/release/c" ]
   } else {
