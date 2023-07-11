@@ -2162,13 +2162,30 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameBeforeCommit) {
       CompositorFrameReportingController::PipelineStage::kActivate));
 }
 
+// Glossary of acronyms used in the tests below.
+// AMF - Activate Main Frame
+// AbMF - AbortMainFrame
+// BF - Begin Impl Frame
+// BMF - Begin Main Frame
+// CMF - Commit Main Frame
+// PF - PresentFrame
+// SF - Submit Compositor Frame
+//
+// This test verifies a compositor scroll scenario where the reporter
+// termination is not in order, but we still expect the scroll jank tracker to
+// receive the presentation data in order since it gets notified when controller
+// receives DidPresentCompositorFrame.
+//
 // |          R1main           |
 // | R1impl | R2impl | R3impl  |
 //          | R2main   | (aborted on main)
 //                   | R3main         |
-//  BF1->BMF1->SF1->PF1->BF2->CMF1->BMF2->SF2->AMF1->AbMF2->
-//  BF3->BMF3->PF2->SF(3+1)->PF(3+1)
-TEST_F(CompositorFrameReportingControllerTest, ReportScrollJankMetric) {
+//
+// The order of events (using the glossary above) is:
+// BF1->BMF1->SF1->PF1->BF2->CMF1->BMF2->SF2->AMF1->AbMF2->
+// BF3->BMF3->PF2->SF(3+1)->PF(3+1)
+TEST_F(CompositorFrameReportingControllerTest,
+       ScrollJankMetricsPresentationOrderAbortedMain) {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace("input");
@@ -2272,6 +2289,116 @@ TEST_F(CompositorFrameReportingControllerTest, ReportScrollJankMetric) {
               ::testing::ElementsAre(std::vector<std::string>{"cnt"},
                                      std::vector<std::string>{"0"}));
 #endif
+}
+
+// This test verifies a main thread scroll scenario where a frame with
+// compositor only update gets dropped, and the events should end up in the long
+// running main reporter. So we expect the scroll jank dropped frame tracker
+// receives data only for the one presented frame corresponding to the long
+// running main thread update.
+//
+// |          R1main           |
+// | R1impl | R2impl | R3impl  |
+//
+// The order of events (using the glossary above) is:
+// BF1->BMF1->SF1->PF1->BF2->SF2->PF2(dropped)->AMF1->BF3->SF(3+1)->PF(3+1)
+TEST_F(CompositorFrameReportingControllerTest,
+       ScrollJankMetricsPresentationOrderDroppedPartialImpl) {
+  base::HistogramTester histogram_tester;
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("input");
+#endif
+
+  std::unique_ptr<EventMetrics> metrics_1 = CreateScrollUpdateEventMetrics(
+      ui::ScrollInputType::kWheel, /*is_inertial=*/false,
+      ScrollUpdateEventMetrics::ScrollUpdateType::kStarted);
+  metrics_1->set_requires_main_thread_update();
+
+  std::unique_ptr<EventMetrics> metrics_2 = CreateScrollUpdateEventMetrics(
+      ui::ScrollInputType::kWheel, /*is_inertial=*/false,
+      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued);
+  metrics_2->set_requires_main_thread_update();
+
+  SimulateBeginImplFrame();  // BF1
+  viz::BeginFrameId bf1_id = current_id_;
+  SimulateBeginMainFrame();  // BMF1
+  reporting_controller_.OnFinishImplFrame(current_id_);
+
+  // Submit a partial update including only main update from R1impl.
+  EventMetrics::List metrics_list_1;
+  metrics_list_1.push_back(std::move(metrics_1));
+  ++current_token_;
+  reporting_controller_.DidSubmitCompositorFrame(
+      *current_token_, AdvanceNowByMs(10), current_id_, {},
+      {{}, std::move(metrics_list_1)},
+      /*has_missing_content=*/false);  // SF1
+
+  // Present the partial update.
+  viz::FrameTimingDetails details_1 = {};
+  details_1.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  reporting_controller_.DidPresentCompositorFrame(*current_token_,
+                                                  details_1);  // PF1
+
+  SimulateBeginImplFrame();  // BF2
+  reporting_controller_.OnFinishImplFrame(current_id_);
+
+  // Submit a partial update including only main update from R2impl.
+  EventMetrics::List metrics_list_2;
+  metrics_list_2.push_back(std::move(metrics_2));
+  ++current_token_;
+  reporting_controller_.DidSubmitCompositorFrame(
+      *current_token_, AdvanceNowByMs(10), current_id_, {},
+      {{}, std::move(metrics_list_2)},
+      /*has_missing_content=*/false);  // SF2
+
+  // The frame containing R2impl update got dropped.
+  viz::FrameTimingDetails details_2 = {};
+  details_2.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  details_2.presentation_feedback.flags |= gfx::PresentationFeedback::kFailure;
+  reporting_controller_.DidPresentCompositorFrame(*current_token_,
+                                                  details_2);  // PF2
+
+  // Main thread commits and the tree is activated.
+  SimulateCommit(nullptr);
+  SimulateActivate();  // AMF1
+
+  SimulateBeginImplFrame();  // BF3
+  reporting_controller_.OnFinishImplFrame(current_id_);
+
+  // Submit the frame containing updates from R1main and R3impl.
+  ++current_token_;
+  reporting_controller_.DidSubmitCompositorFrame(
+      *current_token_, AdvanceNowByMs(10), current_id_, bf1_id, {},
+      /*has_missing_content=*/false);  // SF(3+1)
+
+  // Present frame containing update from R1main and R3impl.
+  viz::FrameTimingDetails details_3 = {};
+  details_3.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  reporting_controller_.DidPresentCompositorFrame(*current_token_,
+                                                  details_3);  // PF(3+1)
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  std::string query =
+      R"(
+      SELECT count(*) as cnt from slice
+      where name = 'OutOfOrderTerminatedFrame'
+      )";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  // R1main should ideally have gotten both the events i.e. from R1impl and
+  // R2impl, so we wouldn't expect anything to be out of order with just 1
+  // reporter having both inputs.
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"cnt"},
+                                     std::vector<std::string>{"0"}));
+#endif
+
+  histogram_tester.ExpectTotalCount("Event.ScrollJank.MissedVsyncs.PerFrame",
+                                    1);
 }
 
 }  // namespace

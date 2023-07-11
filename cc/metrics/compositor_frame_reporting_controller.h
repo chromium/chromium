@@ -232,9 +232,12 @@ class CC_EXPORT CompositorFrameReportingController {
 
   // When a frame with events metrics fails to be presented, its events metrics
   // will be added to this map. The first following presented frame will get
-  // these metrics and report them.
-  std::map<viz::BeginFrameId, EventMetrics::List>
-      events_metrics_from_dropped_frames_;
+  // these metrics and report them. The key of map is submission frame token.
+  // Frame token is chosen over BeginFrameId as key due to the fact that frames
+  // can drop while a long running main still eventually presents, in which
+  // cases its more appropriate to check against frame_token instead of
+  // BeginFrameId.
+  std::map<uint32_t, EventMetrics::List> events_metrics_from_dropped_frames_;
 
   // Tracking the swap times in a queue to measure delta of multiple swaps in
   // each vsync.

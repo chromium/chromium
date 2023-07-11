@@ -529,11 +529,11 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
     // invisible.
     if (waiting_for_did_present_after_visible_) {
       waiting_for_did_present_after_visible_ = false;
-      // The implicit assumption is that reporter->frame_id will never be
-      // equal to it->first
+      // The implicit assumption is that submitted_frame->frame_token will never
+      // be equal to it->first
       for (auto it = events_metrics_from_dropped_frames_.begin();
            it != events_metrics_from_dropped_frames_.end() &&
-           (it->first < reporter->frame_id());
+           submitted_frame->frame_token > it->first;
            it = events_metrics_from_dropped_frames_.erase(it)) {
       }
     }
@@ -547,9 +547,11 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
       // following frame being presented, all events metrics that should
       // potentially be included in this presented frame are already in
       // `events_metrics_from_dropped_frames_`.
+      // The implicit assumption is that submitted_frame->frame_token will never
+      // be equal to it->first
       for (auto it = events_metrics_from_dropped_frames_.begin();
            it != events_metrics_from_dropped_frames_.end() &&
-           !(reporter->frame_id() < it->first);
+           submitted_frame->frame_token > it->first;
            it = events_metrics_from_dropped_frames_.erase(it)) {
         reporter->AddEventsMetrics(std::move(it->second));
       }
@@ -583,7 +585,7 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
       auto reporter_events_metrics = reporter->TakeEventsMetrics();
       if (!reporter_events_metrics.empty()) {
         auto& frame_events_metrics =
-            events_metrics_from_dropped_frames_[reporter->frame_id()];
+            events_metrics_from_dropped_frames_[submitted_frame->frame_token];
         frame_events_metrics.insert(
             frame_events_metrics.end(),
             std::make_move_iterator(reporter_events_metrics.begin()),
