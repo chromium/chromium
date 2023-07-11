@@ -364,7 +364,7 @@ suite('HomeUrlInput', function() {
 });
 
 suite('HoverCardSettings', function() {
-  const HOVER_CARD_IMAGES_PREF = 'browser.hovercard_images_enabled';
+  const HOVER_CARD_IMAGES_PREF = 'browser.hovercard.image_previews_enabled';
 
   setup(function() {
     loadTimeData.overrideValues({
@@ -373,8 +373,10 @@ suite('HoverCardSettings', function() {
 
     createAppearancePage();
     appearancePage.set('prefs.browser', {
-      hovercard_images_enabled: {
-        value: false,
+      hovercard: {
+        image_previews_enabled: {
+          value: false,
+        },
       },
     });
   });

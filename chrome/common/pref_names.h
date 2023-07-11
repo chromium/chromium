@@ -3911,7 +3911,7 @@ inline constexpr char kHttpsUpgradesEnabled[] =
 
 // Whether the hovercard image previews is enabled
 inline constexpr char kHoverCardImagesEnabled[] =
-    "browser.hovercard_images_enabled";
+    "browser.hovercard.image_previews_enabled";
 
 }  // namespace prefs
 
