@@ -121,6 +121,33 @@ function addCleanup(t, part) {
     assert_equals(newChildNodePart.nextSibling.id,'c');
     assert_equals(newChildNodePart.getParts().length,childNodePart.getParts().length);
   }, `Cloning (${description})`);
+
+  ['Element','Text','Comment','CDATASection','ProcessingInstruction'].forEach(nodeType => {
+    test((t) => {
+      const root = doc.getPartRoot();
+      assert_equals(root.getParts().length,0);
+      let node;
+      switch (nodeType) {
+        case 'Element' : node = document.createElement('div'); break;
+        case 'Text' : node = document.createTextNode('hello'); break;
+        case 'Comment': node = document.createComment('comment'); break;
+        case 'CDATASection':
+          const tempdoc = (new DOMParser()).parseFromString("<xml></xml>", "application/xml");
+          node = tempdoc.createCDATASection("CDATA");
+          break;
+        case 'ProcessingInstruction': node = document.createProcessingInstruction('target','data'); break;
+      }
+      t.add_cleanup(() => node.remove());
+      doc.firstElementChild.append(node);
+      const nodePart = addCleanup(t,new NodePart(root,node));
+      assert_true(!!nodePart);
+      const clone = root.clone();
+      assert_equals(clone.getParts().length,1);
+      const clonedPart = clone.getParts()[0];
+      assert_true(clonedPart instanceof NodePart);
+      assert_true(clonedPart.node instanceof window[nodeType]);
+    }, `Cloning ${nodeType} (${description})`);
+  });
 });
 
 test((t) => {

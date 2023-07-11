@@ -117,7 +117,8 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
 
   EventQueueScope scope;
   String old_str = data();
-  Text* new_text = CloneWithData(GetDocument(), old_str.Substring(offset));
+  Text* new_text =
+      To<Text>(CloneWithData(GetDocument(), old_str.Substring(offset)));
   SetDataWithoutUpdate(old_str.Substring(0, offset));
 
   DidModifyData(old_str, CharacterData::kUpdateFromNonParser);
@@ -242,25 +243,6 @@ Text* Text::ReplaceWholeText(const String& new_text) {
 
 String Text::nodeName() const {
   return "#text";
-}
-
-Node* Text::Clone(Document& factory, NodeCloningData& cloning_data) const {
-  Text* clone = CloneWithData(factory, data());
-  clone->ClonePartsFrom(*this, cloning_data);
-  return clone;
-}
-
-void Text::ClonePartsFrom(const Text& node, NodeCloningData& data) {
-  if (!data.Has(CloneOption::kPreserveDOMParts)) {
-    return;
-  }
-  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  if (node.HasDOMParts()) {
-    data.ConnectNodeToClone(node, *this);
-    for (Part* part : node.GetDOMParts()) {
-      data.QueueForCloning(*part);
-    }
-  }
 }
 
 static inline bool EndsWithWhitespace(const String& text) {
@@ -502,7 +484,8 @@ void Text::UpdateTextLayoutObject(unsigned offset_of_replaced_data,
                                         length_of_replaced_data);
 }
 
-Text* Text::CloneWithData(Document& factory, const String& data) const {
+CharacterData* Text::CloneWithData(Document& factory,
+                                   const String& data) const {
   return Create(factory, data);
 }
 

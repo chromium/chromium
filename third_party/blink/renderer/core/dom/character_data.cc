@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_interest_group.h"
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
+#include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -250,6 +251,27 @@ void CharacterData::DidModifyData(const String& old_data, UpdateSource source) {
     DispatchSubtreeModifiedEvent();
   }
   probe::CharacterDataModified(this);
+}
+
+Node* CharacterData::Clone(Document& factory,
+                           NodeCloningData& cloning_data) const {
+  CharacterData* clone = CloneWithData(factory, data());
+  clone->ClonePartsFrom(*this, cloning_data);
+  return clone;
+}
+
+void CharacterData::ClonePartsFrom(const CharacterData& node,
+                                   NodeCloningData& data) {
+  if (!data.Has(CloneOption::kPreserveDOMParts)) {
+    return;
+  }
+  CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  if (node.HasDOMParts()) {
+    data.ConnectNodeToClone(node, *this);
+    for (Part* part : node.GetDOMParts()) {
+      data.QueueForCloning(*part);
+    }
+  }
 }
 
 }  // namespace blink
