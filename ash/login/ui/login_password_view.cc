@@ -650,7 +650,7 @@ bool LoginPasswordView::HandleKeyEvent(views::Textfield* sender,
     return arrow_navigation_delegate_->HandleKeyEvent(key_event);
   }
 
-  return true;
+  return false;
 }
 
 void LoginPasswordView::UpdateUiState() {

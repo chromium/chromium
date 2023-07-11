@@ -26,20 +26,20 @@ bool LoginArrowNavigationDelegate::HandleKeyEvent(
 
 bool LoginScreenArrowNavigationDelegate::HandleKeyLeft() {
   LockScreen::Get()->FocusPreviousUser();
-  return false;
+  return true;
 }
 
 bool LoginScreenArrowNavigationDelegate::HandleKeyRight() {
   LockScreen::Get()->FocusNextUser();
-  return false;
+  return true;
 }
 
 bool LoginScreenArrowNavigationDelegate::HandleKeyUp() {
-  return true;
+  return false;
 }
 
 bool LoginScreenArrowNavigationDelegate::HandleKeyDown() {
-  return true;
+  return false;
 }
 
 }  // namespace ash
