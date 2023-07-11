@@ -8,7 +8,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "maps",
+          "expected_color",
           "--show-stdout",
           "--browser=lacros-chrome",
           "--passthrough",
@@ -26,7 +26,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "maps_pixel_passthrough_test Ash ToT",
+        "name": "expected_color_pixel_passthrough_test Ash ToT",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -203,7 +203,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "maps",
+          "expected_color",
           "--show-stdout",
           "--browser=lacros-chrome",
           "--passthrough",
@@ -221,7 +221,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "maps_pixel_passthrough_test Ash ToT",
+        "name": "expected_color_pixel_passthrough_test Ash ToT",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",

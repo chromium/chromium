@@ -2533,6 +2533,99 @@
       },
     },
   },
+  'expected_color_pixel_passthrough_test': {
+    'modifications': {
+      'Android FYI Release (Pixel 4)': {
+        'args': [
+          # Pixel 4s are weird in that they can output in different color spaces
+          # simultaneously. The readback code for capturing a screenshot assumes
+          # only one color space, so disable wide color gamut for the test to
+          # work around the issue. See https://crbug.com/1166379 for more
+          # information.
+          '--extra-browser-args=--disable-wcg-for-test',
+        ],
+      },
+      'android_optional_gpu_tests_rel': {
+        'args': [
+          # See above.
+          '--extra-browser-args=--disable-wcg-for-test',
+        ],
+      },
+    },
+    'remove_from': [
+      # crbug.com/1458020 for Mac Retina ASAN removal
+      'Mac FYI Retina ASAN (AMD)',
+    ],
+    'replacements': {
+      # The V8 builders pass the V8 revision for ${got_revision}, so instead
+      # use ${got_cr_revision}, which is only set on the V8 bots.
+      'Linux V8 FYI Release (NVIDIA)': {
+        'args': {
+          '--git-revision': '${got_cr_revision}',
+        },
+      },
+      'Linux V8 FYI Release - pointer compression (NVIDIA)': {
+        'args': {
+          '--git-revision': '${got_cr_revision}',
+        },
+      },
+      'Mac V8 FYI Release (Intel)': {
+        'args': {
+          '--git-revision': '${got_cr_revision}',
+        },
+      },
+      'Win V8 FYI Release (NVIDIA)': {
+        'args': {
+          '--git-revision': '${got_cr_revision}',
+        },
+      },
+    },
+  },
+  'expected_color_pixel_validating_test': {
+    'modifications': {
+      'Android FYI Release (Pixel 4)': {
+        'args': [
+          # Pixel 4s are weird in that they can output in different color spaces
+          # simultaneously. The readback code for capturing a screenshot assumes
+          # only one color space, so disable wide color gamut for the test to
+          # work around the issue. See https://crbug.com/1166379 for more
+          # information.
+          '--extra-browser-args=--disable-wcg-for-test',
+        ],
+      },
+      'android_optional_gpu_tests_rel': {
+        'args': [
+          # See above.
+          '--extra-browser-args=--disable-wcg-for-test',
+        ],
+      },
+    },
+    # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
+    # exception once there is enough capacity to run these tests.
+    'remove_from': [
+      'Android FYI Release (Pixel 2)',
+    ],
+    'replacements': {
+      # The V8 builders pass the V8 revision for ${got_revision}, so instead
+      # use ${got_cr_revision}, which is only set on the V8 bots.
+      'Android V8 FYI Release (Nexus 5X)': {
+        'args': {
+          '--git-revision': '${got_cr_revision}',
+        },
+      },
+    },
+  },
+  'expected_color_pixel_validating_test KEVIN_PUBLIC_LKGM': {
+    'modifications': {
+      'ChromeOS FYI Release Skylab (kevin)': {
+        'args': [
+          # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
+          # automatically get the service account to authenticate with.
+          '--service-account=/creds/service_accounts/skylab-drone.json',
+        ],
+      },
+    },
+  },
   'extensions_browsertests': {
     'remove_from': [
       'CrWinAsan(dll)', # https://crbug.com/935598
@@ -3204,99 +3297,6 @@
       # this builder.
       'mac-rel-cft',
     ],
-  },
-  'maps_pixel_passthrough_test': {
-    'modifications': {
-      'Android FYI Release (Pixel 4)': {
-        'args': [
-          # Pixel 4s are weird in that they can output in different color spaces
-          # simultaneously. The readback code for capturing a screenshot assumes
-          # only one color space, so disable wide color gamut for the test to
-          # work around the issue. See https://crbug.com/1166379 for more
-          # information.
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
-      'android_optional_gpu_tests_rel': {
-        'args': [
-          # See above.
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
-    },
-    'remove_from': [
-      # crbug.com/1458020 for Mac Retina ASAN removal
-      'Mac FYI Retina ASAN (AMD)',
-    ],
-    'replacements': {
-      # The V8 builders pass the V8 revision for ${got_revision}, so instead
-      # use ${got_cr_revision}, which is only set on the V8 bots.
-      'Linux V8 FYI Release (NVIDIA)': {
-        'args': {
-          '--git-revision': '${got_cr_revision}',
-        },
-      },
-      'Linux V8 FYI Release - pointer compression (NVIDIA)': {
-        'args': {
-          '--git-revision': '${got_cr_revision}',
-        },
-      },
-      'Mac V8 FYI Release (Intel)': {
-        'args': {
-          '--git-revision': '${got_cr_revision}',
-        },
-      },
-      'Win V8 FYI Release (NVIDIA)': {
-        'args': {
-          '--git-revision': '${got_cr_revision}',
-        },
-      },
-    },
-  },
-  'maps_pixel_validating_test': {
-    'modifications': {
-      'Android FYI Release (Pixel 4)': {
-        'args': [
-          # Pixel 4s are weird in that they can output in different color spaces
-          # simultaneously. The readback code for capturing a screenshot assumes
-          # only one color space, so disable wide color gamut for the test to
-          # work around the issue. See https://crbug.com/1166379 for more
-          # information.
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
-      'android_optional_gpu_tests_rel': {
-        'args': [
-          # See above.
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
-    },
-    # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
-    # exception once there is enough capacity to run these tests.
-    'remove_from': [
-      'Android FYI Release (Pixel 2)',
-    ],
-    'replacements': {
-      # The V8 builders pass the V8 revision for ${got_revision}, so instead
-      # use ${got_cr_revision}, which is only set on the V8 bots.
-      'Android V8 FYI Release (Nexus 5X)': {
-        'args': {
-          '--git-revision': '${got_cr_revision}',
-        },
-      },
-    },
-  },
-  'maps_pixel_validating_test KEVIN_PUBLIC_LKGM': {
-    'modifications': {
-      'ChromeOS FYI Release Skylab (kevin)': {
-        'args': [
-          # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
-          # automatically get the service account to authenticate with.
-          '--service-account=/creds/service_accounts/skylab-drone.json',
-        ],
-      },
-    },
   },
   'media_foundation_browser_tests': {
     'remove_from': [

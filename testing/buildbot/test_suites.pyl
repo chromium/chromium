@@ -3231,6 +3231,35 @@
           'has_native_resultdb_integration',
         ],
       },
+      'expected_color_passthrough': {
+        'name': 'expected_color_pixel_passthrough_test',
+        'telemetry_test_name': 'expected_color',
+        'args': [
+          '--dont-restore-color-profile-after-test',
+          '--test-machine-name',
+          '${buildername}',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
+        ],
+        'android_args': [
+          # TODO(crbug.com/1093085): Remove this once we fix the tests.
+          '--extra-browser-args=--force-online-connection-state-for-indicator',
+          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
+        ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
+        'mixins': [
+          'skia_gold_test',
+          'has_native_resultdb_integration',
+        ],
+      },
       'gpu_process': {
         'name': 'gpu_process_launch_tests',
         'android_args': [
@@ -3265,35 +3294,6 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-      'maps_passthrough': {
-        'name': 'maps_pixel_passthrough_test',
-        'telemetry_test_name': 'maps',
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--test-machine-name',
-          '${buildername}',
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
-        ],
-        'android_args': [
-          # TODO(crbug.com/1093085): Remove this once we fix the tests.
-          '--extra-browser-args=--force-online-connection-state-for-indicator',
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
-        ],
-        'mixins': [
-          'skia_gold_test',
           'has_native_resultdb_integration',
         ],
       },
@@ -3356,9 +3356,9 @@
     },
 
     'gpu_pixel_passthrough_telemetry_tests': {
-      'maps_passthrough': {
-        'name': 'maps_pixel_passthrough_test',
-        'telemetry_test_name': 'maps',
+      'expected_color_passthrough': {
+        'name': 'expected_color_pixel_passthrough_test',
+        'telemetry_test_name': 'expected_color',
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
@@ -3440,6 +3440,35 @@
           'has_native_resultdb_integration',
         ],
       },
+      'expected_color_validating': {
+        'name': 'expected_color_pixel_validating_test',
+        'telemetry_test_name': 'expected_color',
+        'args': [
+          '--dont-restore-color-profile-after-test',
+          '--test-machine-name',
+          '${buildername}',
+          '--extra-browser-args=--use-cmd-decoder=validating',
+        ],
+        'android_args': [
+          # TODO(crbug.com/1093085): Remove this once we fix the tests.
+          '--extra-browser-args=--force-online-connection-state-for-indicator',
+          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
+        ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
+        'mixins': [
+          'skia_gold_test',
+          'has_native_resultdb_integration',
+        ],
+      },
       'gpu_process': {
         'name': 'gpu_process_launch_tests',
         'android_args': [
@@ -3474,35 +3503,6 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-      'maps_validating': {
-        'name': 'maps_pixel_validating_test',
-        'telemetry_test_name': 'maps',
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--test-machine-name',
-          '${buildername}',
-          '--extra-browser-args=--use-cmd-decoder=validating',
-        ],
-        'android_args': [
-          # TODO(crbug.com/1093085): Remove this once we fix the tests.
-          '--extra-browser-args=--force-online-connection-state-for-indicator',
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
-        ],
-        'mixins': [
-          'skia_gold_test',
           'has_native_resultdb_integration',
         ],
       },

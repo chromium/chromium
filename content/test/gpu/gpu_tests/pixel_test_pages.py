@@ -7,32 +7,23 @@
 
 from __future__ import print_function
 
-import datetime
-import os
-from typing import Dict, List, Optional
-
 from datetime import date
+import os
+from typing import Callable, Dict, List, Optional
 
 from enum import Enum
 
 from gpu_tests import common_browser_args as cba
+from gpu_tests import skia_gold_integration_test_base
 from gpu_tests import skia_gold_matching_algorithms as algo
 
 import gpu_path_util
 
+from telemetry.internal.browser import browser as browser_module
+
 CRASH_TYPE_BROWSER = 'browser'
 CRASH_TYPE_GPU = 'gpu-process'
 CRASH_TYPE_RENDERER = 'renderer'
-
-# These tests attempt to use test rects that are larger than the small screen
-# on some Fuchsia devices, so we need to use a less-desirable screenshot capture
-# method to get the entire page contents instead of just the visible portion.
-PROBLEMATIC_FUCHSIA_TESTS = [
-    'Maps_maps',
-    'Pixel_BackgroundImage',
-    'Pixel_PrecisionRoundedCorner',
-    'Pixel_SolidColorBackground',
-]
 
 # Meant to be used when we know a test is going to be noisy, and we want any
 # images it generates to be auto-triaged until we have enough data to calculate
@@ -53,7 +44,7 @@ GENERAL_MP4_ALGO = algo.SobelMatchingAlgorithm(max_different_pixels=56300,
 BrowserArgType = List[str]
 
 
-class PixelTestPage():
+class PixelTestPage(skia_gold_integration_test_base.SkiaGoldTestCase):
   """A wrapper class mimicking the functionality of the PixelTestsStorySet
   from the old-style GPU tests.
   """
@@ -63,24 +54,20 @@ class PixelTestPage():
       url: str,
       name: str,
       test_rect: List[int],
+      *args,
       browser_args: Optional[BrowserArgType] = None,
-      gpu_process_disabled: bool = False,
       optional_action: Optional[str] = None,
       restart_browser_after_test: bool = False,
       other_args: Optional[dict] = None,
-      grace_period_end: Optional[datetime.date] = None,
       expected_per_process_crashes: Optional[Dict[str, int]] = None,
-      matching_algorithm: Optional[algo.SkiaGoldMatchingAlgorithm] = None,
-      timeout: int = 300):
-    super().__init__()
+      timeout: int = 300,
+      should_capture_full_screenshot_func: Optional[Callable[
+          [browser_module.Browser], bool]] = None,
+      **kwargs):
+    super().__init__(name, *args, **kwargs)
     self.url = url
-    self.name = name
     self.test_rect = test_rect
     self.browser_args = browser_args
-    # Only a couple of tests run with the GPU process completely
-    # disabled. To prevent regressions, only allow the GPU information
-    # to be incomplete in these cases.
-    self.gpu_process_disabled = gpu_process_disabled
     # Some of the tests require custom actions to be run. These are
     # specified as a string which is the name of a method to call in
     # PixelIntegrationTest. For example if the action here is
@@ -96,38 +83,37 @@ class PixelTestPage():
     # arguments: pixel_format, zero_copy, no_overlay, video_is_rotated and
     # full_size.
     self.other_args = other_args
-    # This allows a newly added test to be exempted from failures for a
-    # (hopefully) short period after being added. This is so that any slightly
-    # different but valid images that get produced by the waterfall bots can
-    # be triaged without turning the bots red.
-    # This should be a datetime.date object.
-    self.grace_period_end = grace_period_end
     # This lets the test runner know that one or more crashes are expected as
     # part of the test. Should be a map of process type (str) to expected number
     # of crashes (int).
     self.expected_per_process_crashes = expected_per_process_crashes or {}
-    # This should be a child of
-    # skia_gold_matching_algorithms.SkiaGoldMatchingAlgorithm. This specifies
-    # which matching algorithm Skia Gold should use for the test.
-    self.matching_algorithm = (matching_algorithm
-                               or algo.ExactMatchingAlgorithm())
     # Test timeout
     self.timeout = timeout
+    # Most tests will use the standard capture code path which captures an image
+    # that is more representative of what is shown to a user, but some tests
+    # require capturing the entire web contents for some reason.
+    if should_capture_full_screenshot_func is None:
+      should_capture_full_screenshot_func = lambda _: False
+    self.ShouldCaptureFullScreenshot = should_capture_full_screenshot_func
 
   # Strings used for the return type since at this point PixelTestPage is
   # technically a forward reference. Python type hinting specifically supports
   # string literals for this case.
   def CopyWithNewBrowserArgsAndSuffix(self, browser_args: BrowserArgType,
                                       suffix: str) -> 'PixelTestPage':
-    return PixelTestPage(self.url, self.name + suffix, self.test_rect,
-                         browser_args)
+    return PixelTestPage(self.url,
+                         self.name + suffix,
+                         self.test_rect,
+                         browser_args=browser_args)
 
   def CopyWithNewBrowserArgsAndPrefix(self, browser_args: BrowserArgType,
                                       prefix: str) -> 'PixelTestPage':
     # Assuming the test name is 'Pixel'.
     split = self.name.split('_', 1)
-    return PixelTestPage(self.url, split[0] + '_' + prefix + split[1],
-                         self.test_rect, browser_args)
+    return PixelTestPage(self.url,
+                         split[0] + '_' + prefix + split[1],
+                         self.test_rect,
+                         browser_args=browser_args)
 
 
 def CopyPagesWithNewBrowserArgsAndSuffix(pages: List[PixelTestPage],
@@ -155,6 +141,10 @@ def GetMediaStreamTestBrowserArgs(media_stream_source_relpath: str
   ]
 
 
+def CaptureFullScreenshotOnFuchsia(browser: browser_module.Browser) -> bool:
+  return browser.platform.GetOSName() == 'fuchsia'
+
+
 class PixelTestPages():
   @staticmethod
   def DefaultPages(base_name: str) -> List[PixelTestPage]:
@@ -162,9 +152,13 @@ class PixelTestPages():
     experimental_hdr_args = [cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES]
 
     return [
-        PixelTestPage('pixel_background_image.html',
-                      base_name + '_BackgroundImage',
-                      test_rect=[20, 20, 370, 370]),
+        PixelTestPage(
+            'pixel_background_image.html',
+            base_name + '_BackgroundImage',
+            test_rect=[20, 20, 370, 370],
+            # Small Fuchsia screens result in an incomplete capture
+            # without this.
+            should_capture_full_screenshot_func=CaptureFullScreenshotOnFuchsia),
         PixelTestPage('pixel_reflected_div.html',
                       base_name + '_ReflectedDiv',
                       test_rect=[0, 0, 100, 300]),
@@ -215,9 +209,13 @@ class PixelTestPages():
         PixelTestPage('pixel_canvas2d_webgl.html',
                       base_name + '_2DCanvasWebGL',
                       test_rect=[0, 0, 300, 300]),
-        PixelTestPage('pixel_background.html',
-                      base_name + '_SolidColorBackground',
-                      test_rect=[500, 500, 600, 600]),
+        PixelTestPage(
+            'pixel_background.html',
+            base_name + '_SolidColorBackground',
+            test_rect=[500, 500, 600, 600],
+            # Small Fuchsia screens result in an incomplete capture
+            # without this.
+            should_capture_full_screenshot_func=CaptureFullScreenshotOnFuchsia),
         PixelTestPage(
             'pixel_video_mp4.html?width=240&height=135&use_timer=1',
             base_name + '_Video_MP4',
@@ -570,14 +568,18 @@ class PixelTestPages():
                       base_name + '_GpuRasterization_ConcavePaths',
                       test_rect=[0, 0, 100, 100],
                       browser_args=browser_args),
-        PixelTestPage('pixel_precision_rounded_corner.html',
-                      base_name + '_PrecisionRoundedCorner',
-                      test_rect=[0, 0, 400, 400],
-                      browser_args=browser_args,
-                      matching_algorithm=algo.SobelMatchingAlgorithm(
-                          max_different_pixels=10,
-                          pixel_delta_threshold=30,
-                          edge_threshold=100)),
+        PixelTestPage(
+            'pixel_precision_rounded_corner.html',
+            base_name + '_PrecisionRoundedCorner',
+            test_rect=[0, 0, 400, 400],
+            browser_args=browser_args,
+            matching_algorithm=algo.SobelMatchingAlgorithm(
+                max_different_pixels=10,
+                pixel_delta_threshold=30,
+                edge_threshold=100),
+            # Small Fuchsia screens result in an incomplete capture
+            # without this.
+            should_capture_full_screenshot_func=CaptureFullScreenshotOnFuchsia),
     ]
 
   # Pages that should be run with off-thread paint worklet flags.

@@ -22,7 +22,6 @@ import gpu_path_util
 
 from telemetry.internal.platform import gpu_info as telemetry_gpu_info
 
-JAVASCRIPT_DIR = os.path.join(gpu_path_util.GPU_DIR, 'gpu_tests', 'javascript')
 TEST_PAGE_RELPATH = os.path.join(webgl_test_util.extensions_relpath,
                                  'webgl_test_page.html')
 
@@ -137,13 +136,13 @@ class WebGLConformanceIntegrationTestBase(
     cls._webgl_version = int(options.webgl_conformance_version.split('.')[0])
     if not cls._conformance_harness_script:
       with open(
-          os.path.join(JAVASCRIPT_DIR,
+          os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
                        'webgl_conformance_harness_script.js')) as f:
         cls._conformance_harness_script = f.read()
     if not cls._extension_harness_additional_script:
       with open(
           os.path.join(
-              JAVASCRIPT_DIR,
+              gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
               'webgl_conformance_extension_harness_additional_script.js')) as f:
         cls._extension_harness_additional_script = f.read()
 

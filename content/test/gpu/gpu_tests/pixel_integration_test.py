@@ -19,39 +19,6 @@ import gpu_path_util
 
 from telemetry.util import image_util
 
-test_harness_script = r"""
-  var domAutomationController = {};
-
-  domAutomationController._proceed = false;
-
-  domAutomationController._readyForActions = false;
-  domAutomationController._succeeded = undefined;
-  domAutomationController._finished = false;
-  domAutomationController._originalLog = window.console.log;
-  domAutomationController._messages = '';
-
-  domAutomationController.log = function(msg) {
-    domAutomationController._messages += msg + "\n";
-    domAutomationController._originalLog.apply(window.console, [msg]);
-  }
-
-  domAutomationController.send = function(msg) {
-    domAutomationController._proceed = true;
-    let lmsg = msg.toLowerCase();
-    if (lmsg == "ready") {
-      domAutomationController._readyForActions = true;
-    } else {
-      domAutomationController._finished = true;
-      // Do not squelch any previous failures. Show any new ones.
-      if (domAutomationController._succeeded === undefined ||
-          domAutomationController._succeeded)
-        domAutomationController._succeeded = (lmsg == "success");
-    }
-  }
-
-  window.domAutomationController = domAutomationController;
-"""
-
 # We're not sure if this is actually a fixed value or not, but it's 10 pixels
 # wide on the only device we've had issues with so far (Pixel 4), so assume
 # 10 pixels until we find evidence supporting something else.
@@ -144,7 +111,9 @@ class PixelIntegrationTest(
     url = self.UrlOfStaticFilePath(test_path)
     # This property actually comes off the class, not 'self'.
     tab = self.tab
-    tab.Navigate(url, script_to_evaluate_on_commit=test_harness_script)
+    tab.Navigate(
+        url,
+        script_to_evaluate_on_commit=self._dom_automation_controller_script)
 
     try:
       tab.action_runner.WaitForJavaScriptCondition(
@@ -205,11 +174,8 @@ class PixelIntegrationTest(
     # Actually run the test and capture the screenshot.
     if not tab.EvaluateJavaScript('domAutomationController._succeeded'):
       self.fail('page indicated test failure')
-    # Special case some tests on Fuchsia that need to grab the entire contents
-    # in the screenshot instead of just the visible portion due to small screen
-    # sizes.
-    if (PixelIntegrationTest.browser.platform.GetOSName() == 'fuchsia'
-        and page.name in pixel_test_pages.PROBLEMATIC_FUCHSIA_TESTS):
+
+    if page.ShouldCaptureFullScreenshot(self.browser):
       # Screenshot on Fuchsia can take a long time. See crbug.com/1376684.
       screenshot = tab.FullScreenshot(15)
     else:
@@ -326,7 +292,7 @@ class PixelIntegrationTest(
         self.UrlOfStaticFilePath(
             posixpath.join(gpu_path_util.GPU_DATA_RELATIVE_PATH,
                            'functional_webgl_high_performance.html')),
-        script_to_evaluate_on_commit=test_harness_script)
+        script_to_evaluate_on_commit=self._dom_automation_controller_script)
     high_performance_tab.action_runner.WaitForJavaScriptCondition(
         'domAutomationController._finished', timeout=30)
     # Wait a few seconds for the GPU switched notification to propagate
