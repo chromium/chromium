@@ -1336,7 +1336,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
 # Build Perf builders use CQ reclient instance and high reclient jobs/cores and
 # SSD to represent CQ build performance.
 
-def build_perf_builder(**kwargs):
+def build_perf_builder(description_html, **kwargs):
     kwargs.setdefault("executable", "recipe:chrome_build/build_perf")
     kwargs.setdefault("reclient_instance", reclient.instance.DEFAULT_UNTRUSTED)
     kwargs.setdefault("reclient_jobs", reclient.jobs.HIGH_JOBS_FOR_CQ)
@@ -1352,6 +1352,7 @@ def build_perf_builder(**kwargs):
         siso_project = siso.project.DEFAULT_UNTRUSTED,
         siso_configs = ["remote_all", "rewrapper_to_reproxy"],
         notifies = ["chrome-build-perf"],
+        description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
         **kwargs
     )
 
