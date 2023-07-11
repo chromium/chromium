@@ -104,13 +104,6 @@ void PasswordGenerationControllerImpl::OnAutomaticGenerationAvailable(
           active_frame_driver_.get(), ui_data.form_data.unique_renderer_id,
           ui_data.generation_element_id, PasswordGenerationType::kAutomatic);
 
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillKeyboardAccessory)) {
-    active_frame_driver_->GetPasswordAutofillManager()
-        ->MaybeShowPasswordSuggestions(element_bounds_in_screen_space,
-                                       ui_data.text_direction);
-  }
-
   generation_element_data_ = std::make_unique<GenerationElementData>(ui_data);
 
   if (touch_to_fill_generation_state_ == TouchToFillState::kIsShowing) {

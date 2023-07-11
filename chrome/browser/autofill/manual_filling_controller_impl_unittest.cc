@@ -80,8 +80,7 @@ class ManualFillingControllerTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {autofill::features::kAutofillKeyboardAccessory,
-         autofill::features::kAutofillManualFallbackAndroid},
+        {autofill::features::kAutofillManualFallbackAndroid},
         /*disabled_features=*/{});
 
     ON_CALL(mock_pwd_controller_, RegisterFillingSourceObserver(_))

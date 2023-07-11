@@ -2256,18 +2256,7 @@ INSTANTIATE_TEST_SUITE_P(
                                        CreditCard::FULL_SERVER_CARD}));
 
 #if BUILDFLAG(IS_ANDROID)
-class CreditCardTestForKeyboardAccessory : public testing::Test {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillKeyboardAccessory);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(CreditCardTestForKeyboardAccessory, GetObfuscatedStringForCardDigits) {
+TEST(CreditCardTestForKeyboardAccessory, GetObfuscatedStringForCardDigits) {
   const std::u16string digits = u"1235";
   const std::u16string expected =
       std::u16string() + base::i18n::kLeftToRightEmbeddingMark +

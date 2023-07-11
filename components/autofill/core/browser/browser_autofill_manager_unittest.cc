@@ -1142,7 +1142,7 @@ class BrowserAutofillManagerTest : public testing::Test {
 
   virtual int ObfuscationLength() {
 #if BUILDFLAG(IS_ANDROID)
-    return IsKeyboardAccessoryEnabled() ? 2 : 4;
+    return 2;
 #elif BUILDFLAG(IS_IOS)
     return base::FeatureList::IsEnabled(
                features::kAutofillUseTwoDotsForLastFourDigits)
@@ -1153,8 +1153,7 @@ class BrowserAutofillManagerTest : public testing::Test {
 #endif
   }
 
-  // If keyboard accessory is enabled, always show only the `last_four` digits
-  // of a credit card number. Otherwise,  show "Nickname  ****7777".
+  // Always show only the `last_four` digits.
   std::string MakeCardLabel(const std::string& nickname,
                             const std::string& last_four) {
     return nickname + "  " +
@@ -1313,21 +1312,10 @@ std::string SuggestionMatchingTest::MakeMobileLabel(
 }
 
 // Credit card suggestion tests related with keyboard accessory.
-class CreditCardSuggestionTest : public BrowserAutofillManagerTest,
-                                 public testing::WithParamInterface<bool> {
+class CreditCardSuggestionTest : public BrowserAutofillManagerTest {
  protected:
-  CreditCardSuggestionTest() {
-#if BUILDFLAG(IS_ANDROID)
-    is_keyboard_accessory_enabled_ = GetParam();
-#endif
-  }
-
   void SetUp() override {
     BrowserAutofillManagerTest::SetUp();
-#if BUILDFLAG(IS_ANDROID)
-    feature_list_keyboard_accessory_.InitWithFeatureState(
-        features::kAutofillKeyboardAccessory, is_keyboard_accessory_enabled_);
-#endif
     feature_list_card_metadata_and_product_name_.InitWithFeatures(
         /* enabled_features */ {},
         /* disabled_features */ {features::kAutofillEnableVirtualCardMetadata,
@@ -1336,7 +1324,7 @@ class CreditCardSuggestionTest : public BrowserAutofillManagerTest,
 
   int ObfuscationLength() override {
 #if BUILDFLAG(IS_ANDROID)
-    return is_keyboard_accessory_enabled_ ? 2 : 4;
+    return 2;
 #elif BUILDFLAG(IS_IOS)
     return base::FeatureList::IsEnabled(
                features::kAutofillUseTwoDotsForLastFourDigits)
@@ -1348,10 +1336,6 @@ class CreditCardSuggestionTest : public BrowserAutofillManagerTest,
   }
 
  private:
-#if BUILDFLAG(IS_ANDROID)
-  bool is_keyboard_accessory_enabled_;
-#endif
-  base::test::ScopedFeatureList feature_list_keyboard_accessory_;
   base::test::ScopedFeatureList feature_list_card_metadata_and_product_name_;
 };
 
@@ -2134,7 +2118,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_MatchCharacter) {
 
 // Test that we return credit card profile suggestions when the selected form
 // field is the credit card number field.
-TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_CCNumber) {
+TEST_F(CreditCardSuggestionTest, GetCreditCardSuggestions_CCNumber) {
   // Set nickname with the corresponding guid of the Mastercard 8765.
   personal_data().SetNicknameForCardWithGUID(
       "00000000-0000-0000-0000-000000000005", kArbitraryNickname);
@@ -2171,7 +2155,7 @@ TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_CCNumber) {
 
 // Test that we return credit card profile suggestions when the selected form
 // field is not the credit card number field.
-TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_NonCCNumber) {
+TEST_F(CreditCardSuggestionTest, GetCreditCardSuggestions_NonCCNumber) {
   // Set nickname with the corresponding guid of the Mastercard 8765.
   personal_data().SetNicknameForCardWithGUID(
       "00000000-0000-0000-0000-000000000005", kArbitraryNickname);
@@ -2188,20 +2172,10 @@ TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_NonCCNumber) {
       test::ObfuscatedCardDigitsAsUTF8("8765", ObfuscationLength());
 
 #if BUILDFLAG(IS_ANDROID)
-  // For Android, when keyboard accessory is enabled, always show obfuscated
-  // last four. When keyboard accessory is not enabled (drop-down suggestion):
-  // 1) if nickname feature is enabled and nickname is available, show nickname
-  // + last four. 2) Otherwise, show network + last four.
-  // Visa card does not have a nickname.
-  const std::string visa_label =
-      IsKeyboardAccessoryEnabled()
-          ? obfuscated_last_four_digits1
-          : std::string("Visa  ") + obfuscated_last_four_digits1;
+  // For Android always show obfuscated last four.
+  const std::string visa_label = obfuscated_last_four_digits1;
   // Mastercard has a valid nickname.
-  const std::string master_card_label =
-      IsKeyboardAccessoryEnabled()
-          ? obfuscated_last_four_digits2
-          : kArbitraryNickname + "  " + obfuscated_last_four_digits2;
+  const std::string master_card_label = obfuscated_last_four_digits2;
 
 #elif BUILDFLAG(IS_IOS)
   const std::string visa_label = obfuscated_last_four_digits1;
@@ -3424,18 +3398,13 @@ TEST_F(BrowserAutofillManagerTest,
                    Suggestion("two", "", "", PopupItemId::kAutocompleteEntry));
 }
 
+// The method `suggestion_selection::GetPrefixMatchedSuggestions` prevents
+// that Android users see values that would override already filled fields
+// due to the narrow surface and a missing preview.
+#if !BUILDFLAG(IS_ANDROID)
 // Test that we do not return duplicate values drawn from multiple profiles when
 // filling an already filled field.
 TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
-  // TODO(crbug/1000039): Make this test non-Android or allow refilling.
-  // The method `suggestion_selection::GetPrefixMatchedSuggestions` prevents
-  // that Android users see values that would override already filled fields
-  // due to the narrow surface and a missing preview.
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndDisableFeature(features::kAutofillKeyboardAccessory);
-#endif
-
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -3469,6 +3438,7 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
                    Suggestion("Elvis", label, kAddressEntryIcon,
                               PopupItemId::kAddressEntry));
 }
+#endif
 
 TEST_P(SuggestionMatchingTest, GetProfileSuggestions_FancyPhone) {
   // Set up our form data.
@@ -8617,7 +8587,7 @@ TEST_F(BrowserAutofillManagerTest, NoSuggestionForNonPrefixTokenMatch) {
 
 // Verify that typing "dre" matches "Nancy Drew" when substring matching is
 // enabled.
-TEST_P(CreditCardSuggestionTest,
+TEST_F(CreditCardSuggestionTest,
        DisplayCreditCardSuggestionsWithMatchingTokens) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kAutofillTokenPrefixMatching);
@@ -8640,14 +8610,9 @@ TEST_P(CreditCardSuggestionTest,
   personal_data().AddCreditCard(credit_card);
 
 #if BUILDFLAG(IS_ANDROID)
-  // When keyboard accessory is enabled, always show "7777".
-  // When keyboard accessory is disabled, if nickname is valid, show "Nickname
-  // ****7777", otherwise, show "Visa  ****7777".
+  // Always show "7777".
   const std::string visa_label =
-      IsKeyboardAccessoryEnabled()
-          ? test::ObfuscatedCardDigitsAsUTF8("7777", ObfuscationLength())
-          : kArbitraryNickname + "  " +
-                test::ObfuscatedCardDigitsAsUTF8("7777", ObfuscationLength());
+      test::ObfuscatedCardDigitsAsUTF8("7777", ObfuscationLength());
 
 #elif BUILDFLAG(IS_IOS)
   const std::string visa_label =
@@ -11026,10 +10991,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(std::make_tuple(0, ""),
                                          std::make_tuple(1, "")));
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-
-// The parameter indicates whether the AutofillKeyboardAccessory feature is
-// enabled or disabled.
-INSTANTIATE_TEST_SUITE_P(All, CreditCardSuggestionTest, testing::Bool());
 
 struct ShareNicknameTestParam {
   std::string local_nickname;

@@ -288,9 +288,7 @@ bool CreditCardAccessoryController::AllowedForWebContents(
     }
   }
 
-  // For non-virtual cards show the credit card accessory sheet only
-  // when both keyboard accessory and manual fallback flags are enabled.
-  return features::IsAutofillManualFallbackEnabled();
+  return true;
 }
 
 // static

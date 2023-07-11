@@ -157,20 +157,12 @@ ManualFillingViewAndroid::~ManualFillingViewAndroid() {
 void ManualFillingViewAndroid::OnItemsAvailable(AccessorySheetData data) {
   TRACE_EVENT0("passwords", "ManualFillingViewAndroid::OnItemsAvailable");
   if (auto obj = GetOrCreateJavaObject()) {
-    if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillKeyboardAccessory)) {
-      background_task_runner_->PostTaskAndReplyWithResult(
-          FROM_HERE,
-          base::BindOnce(&ConvertAccessorySheetDataToJavaObject, obj,
-                         std::move(data)),
-          base::BindOnce(&Java_ManualFillingComponentBridge_onItemsAvailable,
-                         base::android::AttachCurrentThread(), obj));
-    } else {
-      // Preserve legacy behavior for validation and to guard threading changes.
-      Java_ManualFillingComponentBridge_onItemsAvailable(
-          base::android::AttachCurrentThread(), obj,
-          ConvertAccessorySheetDataToJavaObject(obj, std::move(data)));
-    }
+    background_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&ConvertAccessorySheetDataToJavaObject, obj,
+                       std::move(data)),
+        base::BindOnce(&Java_ManualFillingComponentBridge_onItemsAvailable,
+                       base::android::AttachCurrentThread(), obj));
   }
 }
 

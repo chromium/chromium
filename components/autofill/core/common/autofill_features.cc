@@ -635,13 +635,6 @@ const char kAutofillUseMobileLabelDisambiguationParameterShowAll[] = "show-all";
 const char kAutofillUseMobileLabelDisambiguationParameterShowOne[] = "show-one";
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_ANDROID)
-bool IsAutofillManualFallbackEnabled() {
-  return base::FeatureList::IsEnabled(kAutofillKeyboardAccessory) &&
-         base::FeatureList::IsEnabled(kAutofillManualFallbackAndroid);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace test {
 
 // Controls whether autofill activates on non-HTTP(S) pages. Useful for

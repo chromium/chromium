@@ -30,10 +30,6 @@ class AddressAccessoryController
 
   ~AddressAccessoryController() override = default;
 
-  // Returns true if the accessory controller may exist for |web_contents|.
-  // Otherwise it returns false.
-  static bool AllowedForWebContents(content::WebContents* web_contents);
-
   // Returns a reference to the unique AddressAccessoryController associated
   // with |web_contents|. A new instance is created if the first time this
   // function is called. Only valid to be called if

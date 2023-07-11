@@ -23,9 +23,6 @@
 
 namespace autofill {
 
-#if BUILDFLAG(IS_ANDROID)
-using features::kAutofillKeyboardAccessory;
-#endif
 using mojom::FocusedFieldType;
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
@@ -60,7 +57,7 @@ bool IsShowAutofillSignaturesEnabled() {
 
 bool IsKeyboardAccessoryEnabled() {
 #if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(kAutofillKeyboardAccessory);
+  return true;
 #else  // !BUILDFLAG(IS_ANDROID)
   return false;
 #endif

@@ -253,24 +253,15 @@ bool AutofillPopupViewAndroid::WasSuppressed() {
 // static
 base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(
     base::WeakPtr<AutofillPopupController> controller) {
-  if (IsKeyboardAccessoryEnabled()) {
-    auto adapter =
-        std::make_unique<AutofillKeyboardAccessoryAdapter>(controller);
-    auto accessory_view = std::make_unique<AutofillKeyboardAccessoryView>(
-        adapter->GetWeakPtrToAdapter());
-    if (!accessory_view->Initialize()) {
-      return nullptr;  // Don't create an adapter without initialized view.
-    }
-
-    adapter->SetAccessoryView(std::move(accessory_view));
-    return adapter.release()->GetWeakPtr();
+  auto adapter = std::make_unique<AutofillKeyboardAccessoryAdapter>(controller);
+  auto accessory_view = std::make_unique<AutofillKeyboardAccessoryView>(
+      adapter->GetWeakPtrToAdapter());
+  if (!accessory_view->Initialize()) {
+    return nullptr;  // Don't create an adapter without initialized view.
   }
 
-  auto popup_view = std::make_unique<AutofillPopupViewAndroid>(controller);
-  if (!popup_view->Init() || popup_view->WasSuppressed()) {
-    return nullptr;
-  }
-  return popup_view.release()->GetWeakPtr();
+  adapter->SetAccessoryView(std::move(accessory_view));
+  return adapter.release()->GetWeakPtr();
 }
 
 }  // namespace autofill

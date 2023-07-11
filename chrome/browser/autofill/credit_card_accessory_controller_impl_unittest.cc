@@ -187,28 +187,6 @@ class CreditCardAccessoryControllerTestSupportingPromoCodeOffers
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/911087): Remove this test when enabling the feature.
-TEST_F(CreditCardAccessoryControllerTest,
-       AllowedForWebContentsForNonVirtualCards) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kAutofillEnableManualFallbackForVirtualCards,
-       features::kAutofillShowUnmaskedCachedCardInManualFillingView},
-      /*disabled_features=*/{features::kAutofillFillMerchantPromoCodeFields,
-                             autofill::features::kAutofillKeyboardAccessory});
-  PersonalDataManager* personal_data_manager =
-      PersonalDataManagerFactory::GetForProfile(profile());
-  // Add a non-virtual card.
-  CreditCard card = test::GetMaskedServerCard();
-  personal_data_manager->AddServerCreditCardForTest(
-      std::make_unique<CreditCard>(card));
-
-  // Verify that the accessory sheet is not allowed.
-  ASSERT_FALSE(
-      CreditCardAccessoryController::AllowedForWebContents(web_contents()));
-}
-
 TEST_F(CreditCardAccessoryControllerTest,
        AllowedForWebContentsForVirtualCards) {
   PersonalDataManager* personal_data_manager =

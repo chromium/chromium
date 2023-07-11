@@ -112,8 +112,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
     // work and a home address would appear twice but a click would be a noop.
     // TODO(fhorschig): Consider refilling form instead (at least on Android).
 #if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory) &&
-        field_is_autofilled &&
+    if (field_is_autofilled &&
         profile->GetRawInfo(type.GetStorableType()) == raw_field_contents) {
       continue;
     }

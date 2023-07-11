@@ -75,10 +75,8 @@ std::map<std::string, AutofillOfferData*> GetCardLinkedOffers(
 
 int GetObfuscationLength() {
 #if BUILDFLAG(IS_ANDROID)
-  // On Android, the obfuscation length is 2 when the Android keyboard
-  // accessory is enabled (though this length applies to all Suggestions
-  // created for Android).
-  return IsKeyboardAccessoryEnabled() ? 2 : 4;
+  // On Android, the obfuscation length is 2.
+  return 2;
 #elif BUILDFLAG(IS_IOS)
   return base::FeatureList::IsEnabled(
              features::kAutofillUseTwoDotsForLastFourDigits)
