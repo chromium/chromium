@@ -107,7 +107,7 @@ class ExtensionFunctionDispatcher {
   void AddWorkerResponseTarget(ExtensionFunction* func);
 
   // Processes a Service Worker response from a renderer.
-  void ProcessServiceWorkerResponse(int request_id,
+  void ProcessServiceWorkerResponse(const base::Uuid& request_uuid,
                                     int64_t service_worker_version_id);
 
   base::WeakPtr<ExtensionFunctionDispatcher> AsWeakPtr() {

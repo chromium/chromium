@@ -64,7 +64,7 @@ class ServiceWorkerHost : public base::SupportsUserData::Data,
       int64_t service_worker_version_id,
       int worker_thread_id) override;
   void RequestWorker(mojom::RequestParamsPtr params) override;
-  void WorkerResponseAck(int request_id,
+  void WorkerResponseAck(const base::Uuid& request_uuid,
                          int64_t service_worker_version_id) override;
 
  private:

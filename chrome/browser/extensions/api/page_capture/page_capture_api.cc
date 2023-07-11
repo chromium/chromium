@@ -19,6 +19,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/mhtml_generation_params.h"
+#include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -121,15 +122,25 @@ bool PageCaptureSaveAsMHTMLFunction::OnMessageReceived(
   if (message.type() != ExtensionHostMsg_ResponseAck::ID)
     return false;
 
-  int message_request_id;
+  // TODO(https://crbug.com/1463777): Align this and the worker-based handling
+  // to avoid this bespoke message handling.
+
+  std::string uuid_str;
   base::PickleIterator iter(message);
-  if (!iter.ReadInt(&message_request_id)) {
+  if (!iter.ReadString(&uuid_str)) {
     NOTREACHED() << "malformed extension message";
     return true;
   }
 
-  if (message_request_id != request_id())
+  base::Uuid uuid = base::Uuid::ParseLowercase(uuid_str);
+  if (!uuid.is_valid()) {
+    NOTREACHED() << "malformed extension message";
+    return true;
+  }
+
+  if (uuid != request_uuid()) {
     return false;
+  }
 
   // The extension process has processed the response and has created a
   // reference to the blob, it is safe for us to go away.
@@ -238,7 +249,7 @@ void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int file_size) {
   base::Value::Dict response;
   response.Set("mhtmlFilePath", mhtml_path_.AsUTF8Unsafe());
   response.Set("mhtmlFileLength", file_size);
-  response.Set("requestId", request_id());
+  response.Set("requestId", request_uuid().AsLowercaseString());
 
   // Add a reference, extending the lifespan of this extension function until
   // the response has been received by the renderer. This function generates a

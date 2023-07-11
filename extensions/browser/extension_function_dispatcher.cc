@@ -731,12 +731,12 @@ void ExtensionFunctionDispatcher::AddWorkerResponseTarget(
 }
 
 void ExtensionFunctionDispatcher::ProcessServiceWorkerResponse(
-    int request_id,
+    const base::Uuid& request_uuid,
     int64_t service_worker_version_id) {
   for (auto it = worker_response_targets_.begin();
        it != worker_response_targets_.end(); ++it) {
     ExtensionFunction* func = *it;
-    if (func->request_id() == request_id &&
+    if (func->request_uuid() == request_uuid &&
         func->service_worker_version_id() == service_worker_version_id) {
       // Calling this may cause the instance to delete itself, so no
       // referencing it after this!
