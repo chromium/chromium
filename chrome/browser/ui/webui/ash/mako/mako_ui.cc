@@ -1,0 +1,39 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
+
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
+#include "chrome/browser/ui/webui/ash/mako/url_constants.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
+
+namespace ash {
+
+MakoUntrustedUIConfig::MakoUntrustedUIConfig()
+    : WebUIConfig(content::kChromeUIUntrustedScheme, ash::kChromeUIMakoHost) {}
+
+MakoUntrustedUIConfig::~MakoUntrustedUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+MakoUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                             const GURL& url) {
+  return std::make_unique<MakoUntrustedUI>(web_ui);
+}
+
+MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
+    : content::WebUIController(web_ui) {
+  CHECK(base::FeatureList::IsEnabled(features::kOrca));
+}
+MakoUntrustedUI::~MakoUntrustedUI() = default;
+
+void MakoUntrustedUI::Show() {
+  LOG(ERROR) << "Mako UI shown";
+}
+
+}  // namespace ash
