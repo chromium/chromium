@@ -278,6 +278,17 @@ FilesPolicyNotificationManager::FilesPolicyNotificationManager(
 
 FilesPolicyNotificationManager::~FilesPolicyNotificationManager() = default;
 
+void FilesPolicyNotificationManager::Shutdown() {
+  file_manager::VolumeManager* const volume_manager =
+      file_manager::VolumeManager::Get(Profile::FromBrowserContext(context_));
+  if (volume_manager) {
+    auto* io_task_controller = volume_manager->io_task_controller();
+    if (io_task_controller) {
+      io_task_controller->RemoveObserver(this);
+    }
+  }
+}
+
 void FilesPolicyNotificationManager::ShowDlpBlockedFiles(
     absl::optional<file_manager::io_task::IOTaskId> task_id,
     std::vector<base::FilePath> blocked_files,
@@ -285,9 +296,12 @@ void FilesPolicyNotificationManager::ShowDlpBlockedFiles(
   // If `task_id` has value, the corresponding IOTask should be updated
   // accordingly.
   if (task_id.has_value()) {
+    // Sometimes DLP checks are done before FilesPolicyNotificationManager is
+    // lazily created, so the task is not tracked and the blocked files won't
+    // be added. On the other hand, the IO task may be aborted/canceled
+    // already so the info saved may be not needed anymore.
     if (!HasIOTask(task_id.value())) {
-      // Task already completed and removed.
-      return;
+      AddIOTask(task_id.value(), action);
     }
     for (const auto& file : blocked_files) {
       io_tasks_.at(task_id.value())
@@ -913,17 +927,6 @@ void FilesPolicyNotificationManager::Cancel(
   io_task_controller->Cancel(task_id);
 }
 
-void FilesPolicyNotificationManager::Shutdown() {
-  file_manager::VolumeManager* const volume_manager =
-      file_manager::VolumeManager::Get(Profile::FromBrowserContext(context_));
-  if (volume_manager) {
-    auto* io_task_controller = volume_manager->io_task_controller();
-    if (io_task_controller) {
-      io_task_controller->RemoveObserver(this);
-    }
-  }
-}
-
 void FilesPolicyNotificationManager::ShowDlpBlockNotification(
     std::vector<base::FilePath> blocked_files,
     dlp::FileAction action) {
@@ -1052,7 +1055,9 @@ void FilesPolicyNotificationManager::PauseIOTask(
     return;
   }
   // Sometimes DLP checks are done before FilesPolicyNotificationManager is
-  // lazily created, so the task is not tracked and the pausing won't happen.
+  // lazily created, so the task is not tracked and the pausing won't happen. On
+  // the other hand, the IO task may be aborted/canceled already so the info
+  // saved may be not needed anymore.
   if (!HasIOTask(task_id)) {
     AddIOTask(task_id, action);
   }

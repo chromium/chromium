@@ -418,6 +418,85 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningResumed) {
   fpnm_->OnIOTaskResumed(task_id);
 }
 
+// Tests that blocking files from non-tracked IO task will add it to FPNM.
+TEST_F(FilesPolicyNotificationManagerTest, TaskBlockedNotTracked) {
+  fpnm_->Shutdown();
+  fpnm_.reset();
+
+  IOTaskStatusObserver observer;
+  io_task_controller_->AddObserver(&observer);
+
+  int task_id = 1;
+  auto dst_url =
+      CreateFileSystemURL(kTestStorageKey, temp_dir_.GetPath().value());
+
+  auto src_file_path = AddCopyOrMoveIOTask(task_id, /*is_copy=*/true);
+  ASSERT_FALSE(src_file_path.empty());
+
+  fpnm_ = std::make_unique<FilesPolicyNotificationManager>(profile_);
+  ASSERT_FALSE(fpnm_->HasIOTask(task_id));
+
+  fpnm_->ShowDlpBlockedFiles(task_id,
+                             std::vector<base::FilePath>{src_file_path},
+                             dlp::FileAction::kCopy);
+
+  EXPECT_TRUE(fpnm_->HasIOTask(task_id));
+  std::map<DlpConfidentialFile, Policy> expected_blocked_files{
+      {DlpConfidentialFile(src_file_path), Policy::kDlp}};
+  EXPECT_EQ(fpnm_->GetIOTaskBlockedFilesForTesting(task_id),
+            expected_blocked_files);
+}
+
+// Tests that warning files from non-tracked IO task will add it to FPNM.
+TEST_F(FilesPolicyNotificationManagerTest, TaskWarnedNotTracked) {
+  fpnm_->Shutdown();
+  fpnm_.reset();
+
+  IOTaskStatusObserver observer;
+  io_task_controller_->AddObserver(&observer);
+
+  file_manager::io_task::IOTaskId task_id = 1;
+  auto dst_url =
+      CreateFileSystemURL(kTestStorageKey, temp_dir_.GetPath().value());
+
+  // Task is queued.
+  EXPECT_CALL(
+      observer,
+      OnIOTaskStatus(
+          AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
+                Field(&file_manager::io_task::ProgressStatus::state,
+                      file_manager::io_task::State::kQueued))));
+
+  auto src_file_path = AddCopyOrMoveIOTask(task_id, /*is_copy=*/true);
+  ASSERT_FALSE(src_file_path.empty());
+
+  file_manager::io_task::PauseParams pause_params;
+  pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
+      Policy::kDlp, /*warning_files_count=*/1);
+
+  // Task is paused.
+  EXPECT_CALL(
+      observer,
+      OnIOTaskStatus(
+          AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
+                Field(&file_manager::io_task::ProgressStatus::state,
+                      file_manager::io_task::State::kPaused),
+                Field(&file_manager::io_task::ProgressStatus::pause_params,
+                      pause_params))))
+      .Times(::testing::AtLeast(1));
+
+  testing::StrictMock<base::MockCallback<OnDlpRestrictionCheckedCallback>>
+      mock_cb;
+  fpnm_ = std::make_unique<FilesPolicyNotificationManager>(profile_);
+  ASSERT_FALSE(fpnm_->HasIOTask(task_id));
+
+  fpnm_->ShowDlpWarning(
+      mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
+      DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+
+  EXPECT_TRUE(fpnm_->HasIOTask(task_id));
+}
+
 class FPNMPausedStatusNotification
     : public FilesPolicyNotificationManagerTest,
       public ::testing::WithParamInterface<

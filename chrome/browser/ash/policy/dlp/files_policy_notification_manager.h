@@ -59,6 +59,9 @@ class FilesPolicyNotificationManager
 
   ~FilesPolicyNotificationManager() override;
 
+  // KeyedService overrides:
+  void Shutdown() override;
+
   // Show DLP block UI. If `task_id` is set, the corresponding IOTask will be
   // updated with the blocked files. Otherwise a desktop notification will be
   // shown.
@@ -292,9 +295,6 @@ class FilesPolicyNotificationManager
 
   // Calls the IOTaskController to cancel the task with `task_id`.
   void Cancel(file_manager::io_task::IOTaskId task_id);
-
-  // KeyedService overrides:
-  void Shutdown() override;
 
   // Shows DLP block desktop notification.
   void ShowDlpBlockNotification(std::vector<base::FilePath> blocked_files,
