@@ -278,7 +278,7 @@ class TabStrip : public views::View,
       TabSlotView* source,
       const ui::LocatedEvent& event,
       const ui::ListSelectionModel& original_selection) override;
-  void ContinueDrag(views::View* view, const ui::LocatedEvent& event) override;
+  Liveness ContinueDrag(views::View* view, const ui::LocatedEvent& event) override;
   bool EndDrag(EndDragReason reason) override;
   Tab* GetTabAt(const gfx::Point& point) override;
   const Tab* GetAdjacentTab(const Tab* tab, int offset) override;
