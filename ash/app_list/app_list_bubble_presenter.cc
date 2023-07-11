@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_bubble_event_filter.h"
+#include "ash/app_list/app_list_constants.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_event_targeter.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
@@ -406,6 +407,12 @@ void AppListBubblePresenter::OnWindowActivated(ActivationReason reason,
     return;
 
   if (gained_active) {
+    // Do not hide the app list bubble if `gained_active` is allowed to take
+    // focus from the bubble.
+    if (gained_active->GetProperty(kAllowGainFocusFromAppListBubble)) {
+      return;
+    }
+
     if (auto* container = GetContainerForWindow(gained_active)) {
       const int container_id = container->GetId();
       // If the bubble or one of its children (e.g. an uninstall dialog) gained
@@ -425,12 +432,11 @@ void AppListBubblePresenter::OnWindowActivated(ActivationReason reason,
   if (reason == wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT)
     return;
 
-  aura::Window* app_list_container =
-      bubble_widget_->GetNativeWindow()->parent();
-
   // Otherwise, if the bubble or one of its children lost activation or if
   // something other than the bubble gains activation, the bubble should close.
-  if ((lost_active && app_list_container->Contains(lost_active)) ||
+  if (const aura::Window* const app_list_container =
+          bubble_widget_->GetNativeWindow()->parent();
+      (lost_active && app_list_container->Contains(lost_active)) ||
       (gained_active && !app_list_container->Contains(gained_active))) {
     Dismiss();
   }
