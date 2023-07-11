@@ -277,8 +277,8 @@ class CORE_EXPORT HTMLElement : public Element {
   void MaybeQueuePopoverHideEvent();
   static void HoveredElementChanged(Element* old_element, Element* new_element);
 
-  void SetPopoverOwnerSelectMenuElement(HTMLSelectMenuElement* element);
-  HTMLSelectMenuElement* popoverOwnerSelectMenuElement() const;
+  void SetOwnerSelectMenuElement(HTMLSelectMenuElement* element);
+  HTMLSelectMenuElement* ownerSelectMenuElement() const;
 
   bool DispatchFocusEvent(
       Element* old_focused_element,

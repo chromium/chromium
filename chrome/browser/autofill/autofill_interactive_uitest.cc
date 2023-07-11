@@ -175,23 +175,6 @@ content::RenderFrameHost* RenderFrameHostForName(
       base::BindRepeating(&content::FrameMatchesName, name));
 }
 
-void WaitForHistogram(const std::string& histogram_name) {
-  // Continue if histogram was already recorded.
-  if (base::StatisticsRecorder::FindHistogram(histogram_name)) {
-    return;
-  }
-
-  // Else, wait until the histogram is recorded.
-  base::RunLoop run_loop;
-  auto histogram_observer =
-      std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
-          histogram_name,
-          base::BindLambdaForTesting(
-              [&](const char* histogram_name, uint64_t name_hash,
-                  base::HistogramBase::Sample sample) { run_loop.Quit(); }));
-  run_loop.Run();
-}
-
 // Represents a JavaScript expression that evaluates to a HTMLElement.
 using ElementExpr = base::StrongAlias<struct ElementExprTag, std::string>;
 
@@ -978,11 +961,6 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   AutofillInteractiveTestBase& operator=(const AutofillInteractiveTestBase&) =
       delete;
 
-  bool IsPopupShown() {
-    return !!ChromeAutofillClient::FromWebContentsForTesting(GetWebContents())
-                 ->popup_controller_for_testing();
-  }
-
   std::vector<FieldValue> GetFormValues(
       const ElementExpr& form = GetElementById("shipping")) {
     return GetFieldValues(ElementExpr(*form + ".elements"), GetWebContents());
@@ -1222,6 +1200,14 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   // BrowserAutofillManagerTestDelegateImpl will trigger.
   void MakeSurePopupDoesntAppear() {
     EXPECT_EQ(42, content::EvalJs(GetWebContents(), "42"));
+  }
+
+  void SimulateKeyPress(const ui::DomKey& dom_key,
+                        ui::DomCode dom_code,
+                        bool shift) {
+    content::SimulateKeyPress(GetWebContents(), dom_key, dom_code,
+                              ui::DomCodeToUsLayoutKeyboardCode(dom_code),
+                              false, shift, false, false);
   }
 
   void FillElementWithValue(const std::string& element_id,
@@ -3024,47 +3010,16 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
   EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
-// Test that an 'onchange' event is not fired when a <selectmenu> preview
-// suggestion is shown or hidden.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
-                       NoEventFiredWhenExitingSelectMenuPreview) {
-  // It is hard to test that an event will not happen in the future, but we
-  // assume that applying similar operations on two elements in sequence results
-  // in a consistent order of events triggered by the operations. So the test
-  // strategy here is to first trigger a preview on `state` select, and then
-  // select an element on `other`.
-
-  CreateTestProfile();
-  GURL url = embedded_test_server()->GetURL(
-      "/autofill/form_selectmenu_preview_no_onchange.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // Show autofill preview.
-  ASSERT_TRUE(
-      AutofillFlow(GetElementById("firstname"), this, {.do_accept = false}));
-
-  // Hide autofill preview.
-  SendKeyToPopup(GetWebContents()->GetPrimaryMainFrame(), ui::DomKey::ESCAPE);
-  WaitForHistogram("Autofill.PopupHidingReason");
-  ASSERT_FALSE(IsPopupShown());
-
-  // Select element on `other` and wait for `onchange` event.
-  ValueWaiter onchange_waiter =
-      ListenForValueChange("other", absl::nullopt, GetWebContents());
-  ASSERT_TRUE(FocusField(GetElementById("other"), GetWebContents()));
-  EXPECT_EQ("First", GetFieldValueById("other"));
-  FillElementWithValue("other", "Second");
-  ASSERT_TRUE(std::move(onchange_waiter).Wait());
-
-  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "other_changed;"));
-  EXPECT_EQ(false, content::EvalJs(GetWebContents(), "state_changed;"));
-}
-
 // An extension of the test fixture for tests with site isolation.
 class AutofillInteractiveIsolationTest : public AutofillInteractiveTestBase {
  protected:
   AutofillInteractiveIsolationTest() = default;
   ~AutofillInteractiveIsolationTest() override = default;
+
+  bool IsPopupShown() {
+    return !!ChromeAutofillClient::FromWebContentsForTesting(GetWebContents())
+                 ->popup_controller_for_testing();
+  }
 
  private:
   void SetUpCommandLine(base::CommandLine* command_line) override {

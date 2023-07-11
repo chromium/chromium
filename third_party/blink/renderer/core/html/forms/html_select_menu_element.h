@@ -53,13 +53,6 @@ class CORE_EXPORT HTMLSelectMenuElement final
 
   void SetAutofillValue(const String& value, WebAutofillState autofill_state);
 
-  String SuggestedValue() const;
-
-  // Sets the suggested value and puts the element into
-  // WebAutofillState::kPreviewed state if the value exists, or
-  // WebAutofillState::kNotFilled otherwise.
-  void SetSuggestedValue(const String& value);
-
   // For ValidityState
   String validationMessage() const override;
   bool ValueMissing() const override;
@@ -85,7 +78,6 @@ class CORE_EXPORT HTMLSelectMenuElement final
   PartType AssignedPartType(Node* node) const;
 
   HTMLElement* ButtonPart() const { return button_part_; }
-  HTMLElement* ListBoxPart() const { return listbox_part_; }
 
   bool IsRichlyEditableForAccessibility() const override { return false; }
 
@@ -123,7 +115,6 @@ class CORE_EXPORT HTMLSelectMenuElement final
                          WebAutofillState = WebAutofillState::kNotFilled);
   void SelectNextOption();
   void SelectPreviousOption();
-  void SetSuggestedOption(HTMLOptionElement* option);
   void UpdateSelectedValuePartContents();
 
   void RecalcListItems() const;
@@ -231,8 +222,6 @@ class CORE_EXPORT HTMLSelectMenuElement final
   Member<HTMLSlotElement> selected_value_slot_;
   Member<HTMLOptionElement> selected_option_;
   Member<HTMLOptionElement> selected_option_when_listbox_opened_;
-  Member<HTMLOptionElement> suggested_option_;
-  Member<HTMLElement> suggested_option_popover_;
   bool queued_check_for_missing_parts_{false};
 
   bool should_recalc_list_items_{true};

@@ -271,9 +271,6 @@ void WebFormControlElement::SetSuggestedValue(const WebString& value) {
     textarea->SetSuggestedValue(value);
   } else if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_)) {
     select->SetSuggestedValue(value);
-  } else if (auto* selectmenu =
-                 ::blink::DynamicTo<HTMLSelectMenuElement>(*private_)) {
-    selectmenu->SetSuggestedValue(value);
   }
 }
 
@@ -284,9 +281,6 @@ WebString WebFormControlElement::SuggestedValue() const {
     return textarea->SuggestedValue();
   if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_))
     return select->SuggestedValue();
-  if (auto* selectmenu = ::blink::DynamicTo<HTMLSelectMenuElement>(*private_)) {
-    return selectmenu->SuggestedValue();
-  }
   return WebString();
 }
 

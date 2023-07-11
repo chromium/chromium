@@ -6,7 +6,6 @@
 
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -236,65 +235,6 @@ TEST_F(HTMLSelectMenuElementTest, OwnerSelectMenu_NotInSelectMenu) {
   )HTML");
   EXPECT_EQ(nullptr,
             HTMLSelectMenuElement::OwnerSelectMenu(GetElementById("other")));
-}
-
-// Test that HTMLSelectMenuElement::SetSuggestedValue() does not affect
-// HTMLSelectMenuElement::selectedOption().
-TEST_F(HTMLSelectMenuElementTest, SetSuggestedValue) {
-  SetHtmlInnerHTML(R"HTML(
-    <selectmenu id='selectmenu'>
-      <option id="first_option" selected>First</option>
-      <option id="second_option">Second</option>
-    </selectmenu>
-  )HTML");
-  HTMLSelectMenuElement* selectmenu =
-      To<HTMLSelectMenuElement>(GetElementById("selectmenu"));
-  HTMLOptionElement* first_option =
-      To<HTMLOptionElement>(GetElementById("first_option"));
-
-  ASSERT_EQ(first_option, selectmenu->selectedOption());
-  selectmenu->SetSuggestedValue("Second");
-  EXPECT_EQ("Second", selectmenu->SuggestedValue());
-  EXPECT_EQ(blink::WebAutofillState::kPreviewed,
-            selectmenu->GetAutofillState());
-  EXPECT_EQ(first_option, selectmenu->selectedOption());
-}
-
-// Test that HTMLSelectMenuElement::SetSuggestedOption() is a noop if the
-// passed-in value does not match any of the <option>s.
-TEST_F(HTMLSelectMenuElementTest, SetSuggestedValueNoMatchingOption) {
-  SetHtmlInnerHTML(R"HTML(
-    <selectmenu id='selectmenu'>
-      <option id="first_option">First</option>
-      <option id="second_option">Second</option>
-    </selectmenu>
-  )HTML");
-  HTMLSelectMenuElement* selectmenu =
-      To<HTMLSelectMenuElement>(GetElementById("selectmenu"));
-
-  selectmenu->SetSuggestedValue("nonexistent");
-  EXPECT_EQ(blink::WebAutofillState::kNotFilled,
-            selectmenu->GetAutofillState());
-}
-
-// Test that HTMLSelectMenuElement::setValue() clears the suggested option.
-TEST_F(HTMLSelectMenuElementTest, SuggestedValueClearedWhenValueSet) {
-  SetHtmlInnerHTML(R"HTML(
-    <selectmenu id='selectmenu'>
-      <option selected>First</option>
-      <option>Second</option>
-      <option>Third</option>
-    </selectmenu>
-  )HTML");
-  HTMLSelectMenuElement* selectmenu =
-      To<HTMLSelectMenuElement>(GetElementById("selectmenu"));
-
-  selectmenu->SetSuggestedValue("Second");
-  EXPECT_EQ(blink::WebAutofillState::kPreviewed,
-            selectmenu->GetAutofillState());
-  selectmenu->setValue("Third");
-  EXPECT_EQ(blink::WebAutofillState::kNotFilled,
-            selectmenu->GetAutofillState());
 }
 
 }  // namespace blink
