@@ -4,6 +4,8 @@
 
 #include "components/history/core/browser/sync/history_sync_bridge.h"
 
+#include <vector>
+
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -16,6 +18,7 @@
 #include "components/history/core/browser/sync/history_sync_metadata_database.h"
 #include "components/history/core/browser/sync/visit_id_remapper.h"
 #include "components/history/core/browser/url_row.h"
+#include "components/history/core/browser/visit_annotations_database.h"
 #include "components/sync/base/page_transition_conversion.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/entity_change.h"
@@ -271,6 +274,18 @@ absl::optional<VisitContentAnnotations> MakeContentAnnotations(
   annotations.page_language = specifics.page_language();
   annotations.password_state =
       PasswordStateFromProto(specifics.password_state());
+  annotations.has_url_keyed_image = specifics.has_url_keyed_image();
+  if (!specifics.related_searches().empty()) {
+    annotations.related_searches =
+        std::vector<std::string>(specifics.related_searches().begin(),
+                                 specifics.related_searches().end());
+  }
+  if (!specifics.categories().empty()) {
+    for (const auto& category : specifics.categories()) {
+      annotations.model_annotations.categories.emplace_back(category.id(),
+                                                            category.weight());
+    }
+  }
   return annotations;
 }
 
@@ -400,6 +415,18 @@ std::unique_ptr<syncer::EntityData> MakeEntityData(
   history->set_page_language(content_annotations.page_language);
   history->set_password_state(
       PasswordStateToProto(content_annotations.password_state));
+  history->set_has_url_keyed_image(content_annotations.has_url_keyed_image);
+  for (const auto& category :
+       content_annotations.model_annotations.categories) {
+    auto* category_to_sync = history->add_categories();
+    category_to_sync->set_id(category.id);
+    category_to_sync->set_weight(category.weight);
+  }
+  if (!content_annotations.related_searches.empty()) {
+    history->mutable_related_searches()->Add(
+        content_annotations.related_searches.begin(),
+        content_annotations.related_searches.end());
+  }
 
   if (!favicon_urls.empty()) {
     // If there are multiple favicon URLs (which should be rare), they're

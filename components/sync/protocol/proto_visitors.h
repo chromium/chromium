@@ -854,6 +854,11 @@ VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics::RedirectEntry& proto) {
   VISIT_ENUM(redirect_type);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics::Category& proto) {
+  VISIT(id);
+  VISIT(weight);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics& proto) {
   VISIT(visit_time_windows_epoch_micros);
   VISIT(originator_cache_guid);
@@ -877,6 +882,9 @@ VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics& proto) {
   VISIT_ENUM(password_state);
   VISIT(favicon_url);
   VISIT(referrer_url);
+  VISIT(has_url_keyed_image);
+  VISIT_REP(categories);
+  VISIT_REP(related_searches);
 }
 
 VISIT_PROTO_FIELDS(

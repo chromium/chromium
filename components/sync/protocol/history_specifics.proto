@@ -127,4 +127,22 @@ message HistorySpecifics {
   // The URL of the referrer (indicated by `originator_referring_visit_id`), if
   // any.
   optional string referrer_url = 18;
+
+  // Visit has an image derived from public version of the page. This can be
+  // used to provide more visual experience.
+  optional bool has_url_keyed_image = 23;
+
+  message Category {
+    // ID of the category, this typically is an MID.
+    optional string id = 1;
+    // Weight of the category, this is an integer value informing the confidence
+    // of a visit belonging to this category.
+    optional int32 weight = 2;
+  }
+
+  // Categories tagged for the visit.
+  repeated Category categories = 24;
+
+  // Related search URLs for a Google SRP visit, to provide next steps to user.
+  repeated string related_searches = 25;
 }

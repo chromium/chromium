@@ -14,8 +14,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/sync/history_sync_metadata_database.h"
 #include "components/history/core/browser/sync/test_history_backend_for_sync.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/sync/base/page_transition_conversion.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/metadata_batch.h"
@@ -45,7 +47,10 @@ sync_pb::HistorySpecifics CreateSpecifics(
     base::Time visit_time,
     const std::string& originator_cache_guid,
     const std::vector<GURL>& urls,
-    const std::vector<VisitID>& originator_visit_ids = {}) {
+    const std::vector<VisitID>& originator_visit_ids = {},
+    const bool has_url_keyed_image = false,
+    const std::vector<VisitContentModelAnnotations::Category>& categories = {},
+    const std::vector<std::string>& related_searches = {}) {
   DCHECK_EQ(originator_visit_ids.size(), urls.size());
   sync_pb::HistorySpecifics specifics;
   specifics.set_visit_time_windows_epoch_micros(
@@ -62,6 +67,14 @@ sync_pb::HistorySpecifics CreateSpecifics(
           sync_pb::SyncEnums_PageTransitionRedirectType_SERVER_REDIRECT);
     }
   }
+  specifics.set_has_url_keyed_image(has_url_keyed_image);
+  for (const auto& category : categories) {
+    auto* category_to_sync = specifics.add_categories();
+    category_to_sync->set_id(category.id);
+    category_to_sync->set_weight(category.weight);
+  }
+  specifics.mutable_related_searches()->Add(related_searches.begin(),
+                                            related_searches.end());
   return specifics;
 }
 
@@ -69,9 +82,13 @@ sync_pb::HistorySpecifics CreateSpecifics(
     base::Time visit_time,
     const std::string& originator_cache_guid,
     const GURL& url,
-    VisitID originator_visit_id = 0) {
+    VisitID originator_visit_id = 0,
+    const bool has_url_keyed_image = false,
+    const std::vector<VisitContentModelAnnotations::Category>& categories = {},
+    const std::vector<std::string>& related_searches = {}) {
   return CreateSpecifics(visit_time, originator_cache_guid, std::vector{url},
-                         std::vector{originator_visit_id});
+                         std::vector{originator_visit_id}, has_url_keyed_image,
+                         categories, related_searches);
 }
 
 syncer::EntityData SpecificsToEntityData(
@@ -446,11 +463,23 @@ TEST_F(HistorySyncBridgeTest, AppliesRemoteChanges) {
   const std::string remote_cache_guid("remote_cache_guid");
   const GURL local_url("https://local.com");
   const GURL remote_url("https://remote.com");
+  const bool has_url_keyed_image(true);
+  const std::string category_id_1 = "mid1";
+  const int category_weight_1 = 1;
+  const std::string category_id_2 = "mid2";
+  const int category_weight_2 = 2;
+  const std::vector<VisitContentModelAnnotations::Category> categories = {
+      {category_id_1, category_weight_1}, {category_id_2, category_weight_2}};
+  const std::string related_search_1 = "http://www.url2.com";
+  const std::string related_search_2 = "http://www.url3.com";
+  const std::vector<std::string> related_searches(
+      {related_search_1, related_search_2});
 
   AddVisitToBackendAndAdvanceClock(local_url, ui::PAGE_TRANSITION_LINK);
 
   sync_pb::HistorySpecifics remote_entity = CreateSpecifics(
-      base::Time::Now() - base::Minutes(1), remote_cache_guid, remote_url);
+      base::Time::Now() - base::Minutes(1), remote_cache_guid, remote_url, {},
+      has_url_keyed_image, categories, related_searches);
 
   ApplyInitialSyncChanges({remote_entity});
 
@@ -465,6 +494,38 @@ TEST_F(HistorySyncBridgeTest, AppliesRemoteChanges) {
   EXPECT_EQ(backend()->GetVisits()[1].url_id, backend()->GetURLs()[1].id());
   EXPECT_EQ(backend()->GetVisits()[1].originator_cache_guid, remote_cache_guid);
   EXPECT_TRUE(backend()->GetVisits()[1].is_known_to_sync);
+  // Check that the remote visit's annotation info got synced.
+  // NOTE: Annotation info is present on the last remote visit.
+  const std::vector<AnnotatedVisit> annotated_visits =
+      backend()->ToAnnotatedVisits(
+          backend()->GetVisits(),
+          /*compute_redirect_chain_start_properties=*/false);
+  EXPECT_TRUE(annotated_visits[1].content_annotations.has_url_keyed_image);
+  EXPECT_EQ(annotated_visits[1].content_annotations.related_searches.size(),
+            2u);
+  EXPECT_EQ(annotated_visits[1].content_annotations.related_searches[0],
+            related_search_1);
+  EXPECT_EQ(annotated_visits[1].content_annotations.related_searches[1],
+            related_search_2);
+  EXPECT_EQ(annotated_visits[1]
+                .content_annotations.model_annotations.categories.size(),
+            2u);
+  EXPECT_EQ(annotated_visits[1]
+                .content_annotations.model_annotations.categories[0]
+                .id,
+            category_id_1);
+  EXPECT_EQ(annotated_visits[1]
+                .content_annotations.model_annotations.categories[0]
+                .weight,
+            category_weight_1);
+  EXPECT_EQ(annotated_visits[1]
+                .content_annotations.model_annotations.categories[1]
+                .id,
+            category_id_2);
+  EXPECT_EQ(annotated_visits[1]
+                .content_annotations.model_annotations.categories[1]
+                .weight,
+            category_weight_2);
 }
 
 TEST_F(HistorySyncBridgeTest, MergesRemoteChanges) {
@@ -1088,6 +1149,23 @@ TEST_F(HistorySyncBridgeTest, UploadsLocalVisitWithRedirects) {
       ui::PAGE_TRANSITION_CHAIN_END);
   visit_row3.visit_id = backend()->AddVisit(visit_row3);
 
+  // Create content_annotations to associate with the last visit.
+  VisitContentAnnotations content_annotations;
+  content_annotations.has_url_keyed_image = true;
+  const std::string related_search_1 = "http://www.url2.com";
+  const std::string related_search_2 = "http://www.url3.com";
+  content_annotations.related_searches = {related_search_1, related_search_2};
+  const std::string category_id_1 = "mid1";
+  const int category_weight_1 = 1;
+  const std::string category_id_2 = "mid2";
+  const int category_weight_2 = 2;
+  content_annotations.model_annotations.categories.emplace_back(
+      category_id_1, category_weight_1);
+  content_annotations.model_annotations.categories.emplace_back(
+      category_id_2, category_weight_2);
+  backend()->AddOrReplaceContentAnnotation(visit_row3.visit_id,
+                                           content_annotations);
+
   // Notify the bridge about all of the visits.
   bridge()->OnURLVisited(
       /*history_backend=*/nullptr, url_row1, visit_row1);
@@ -1118,6 +1196,15 @@ TEST_F(HistorySyncBridgeTest, UploadsLocalVisitWithRedirects) {
       syncer::FromSyncPageTransition(
           history.page_transition().core_transition()),
       ui::PAGE_TRANSITION_LINK));
+  EXPECT_TRUE(history.has_url_keyed_image());
+  EXPECT_EQ(history.related_searches_size(), 2);
+  EXPECT_EQ(history.related_searches(0), related_search_1);
+  EXPECT_EQ(history.related_searches(1), related_search_2);
+  EXPECT_EQ(history.categories_size(), 2);
+  EXPECT_EQ(history.categories(0).id(), "mid1");
+  EXPECT_EQ(history.categories(0).weight(), 1);
+  EXPECT_EQ(history.categories(1).id(), "mid2");
+  EXPECT_EQ(history.categories(1).weight(), 2);
 }
 
 TEST_F(HistorySyncBridgeTest, SplitsRedirectChainWithDifferentTimestamps) {

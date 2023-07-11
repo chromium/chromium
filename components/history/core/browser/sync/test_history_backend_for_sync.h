@@ -28,6 +28,9 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
   bool UpdateURL(URLRow row);
   VisitID AddVisit(VisitRow row);
   bool UpdateVisit(VisitRow row);
+  void AddOrReplaceContentAnnotation(
+      VisitID visit_id,
+      const VisitContentAnnotations& content_annotation);
 
   void RemoveURLAndVisits(URLID url_id);
   void Clear();
