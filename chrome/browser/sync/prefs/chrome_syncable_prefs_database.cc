@@ -260,6 +260,7 @@ enum {
   kiOSPasswordPromoLastImpressionTimestamp = 100206,
   kiOSPasswordPromoImpressionsCounter = 100207,
   kiOSPasswordPromoOptOut = 100208,
+  kDynamicColorUseKMeans = 100209,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -471,6 +472,9 @@ const auto& SyncablePreferences() {
           false}},
         {ash::prefs::kDynamicColorSeedColor,
          {syncable_prefs_ids::kDynamicColorSeedColor, syncer::OS_PREFERENCES,
+          false}},
+        {ash::prefs::kDynamicColorUseKMeans,
+         {syncable_prefs_ids::kDynamicColorUseKMeans, syncer::OS_PREFERENCES,
           false}},
         {ash::prefs::kEnableAutoScreenLock,
          {syncable_prefs_ids::kEnableAutoScreenLock, syncer::OS_PREFERENCES,

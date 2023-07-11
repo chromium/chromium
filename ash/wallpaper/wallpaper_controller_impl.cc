@@ -780,6 +780,9 @@ void WallpaperControllerImpl::SetDecodedCustomWallpaper(
     return;
   }
 
+  for (auto& observer : observers_) {
+    observer.OnUserSetWallpaper(account_id);
+  }
   wallpaper_metrics_manager_->LogWallpaperResult(WallpaperType::kCustomized,
                                                  SetWallpaperResult::kSuccess);
 
@@ -1976,6 +1979,9 @@ void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
     LOG(ERROR) << "Failed to decode online wallpaper.";
     return;
   } else {
+    for (auto& observer : observers_) {
+      observer.OnUserSetWallpaper(params.account_id);
+    }
     wallpaper_metrics_manager_->LogWallpaperResult(
         WallpaperType::kOnline, SetWallpaperResult::kSuccess);
   }
@@ -2232,6 +2238,11 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDecoded(
                                       ? SetWallpaperResult::kDecodingError
                                       : SetWallpaperResult::kSuccess;
     wallpaper_metrics_manager_->LogWallpaperResult(info.type, wallpaper_result);
+    if (wallpaper_result == SetWallpaperResult::kSuccess) {
+      for (auto& observer : observers_) {
+        observer.OnUserSetWallpaper(account_id);
+      }
+    }
   }
   std::move(callback).Run(!image.isNull());
   OnWallpaperDecoded(account_id, path, info, /*show_wallpaper=*/true, image);
@@ -2262,6 +2273,9 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded(
   // propagation of `CurrentWallpaper` to the WebUI.
   wallpaper_metrics_manager_->LogWallpaperResult(
       WallpaperType::kOnceGooglePhotos, SetWallpaperResult::kSuccess);
+  for (auto& observer : observers_) {
+    observer.OnUserSetWallpaper(params.account_id);
+  }
   std::move(callback).Run(true);
 
   bool is_active_user = IsActiveUser(params.account_id);

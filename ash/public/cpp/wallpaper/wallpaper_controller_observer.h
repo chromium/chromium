@@ -49,6 +49,9 @@ class ASH_PUBLIC_EXPORT WallpaperControllerObserver {
   // shown right after boot splash screen or after a session restart.
   virtual void OnFirstWallpaperShown() {}
 
+  // Invoked after a user successfully sets a wallpaper.
+  virtual void OnUserSetWallpaper(const AccountId& account_id) {}
+
  protected:
   virtual ~WallpaperControllerObserver();
 };

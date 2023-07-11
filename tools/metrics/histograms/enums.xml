@@ -102343,12 +102343,15 @@ would be helpful to identify which type is being sent.
   <int value="100194"
       label="ProfileDefaultContentSettingValuesWindowPlacement"/>
   <int value="100195" label="WebauthnCablev2Pairings"/>
+  <int value="100196" label="DynamicColorColorScheme"/>
+  <int value="100197" label="DynamicColorSeedColor"/>
   <int value="100198" label="LongPressDiacritics"/>
   <int value="100200" label="AccessibilityColorCorrectionEnabled"/>
   <int value="100201" label="AccessibilityColorVisionCorrectionAmount"/>
   <int value="100202" label="AccessibilityColorVisionCorrectionType"/>
   <int value="100203" label="ShowDeskButtonInShelf"/>
   <int value="100204" label="ProjectorSWAUIPrefsMigrated"/>
+  <int value="100209" label="DynamicColorUseKMeans"/>
   <int value="200000" label="ArticlesForYouEnabled"/>
   <int value="200001" label="ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>

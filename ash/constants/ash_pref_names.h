@@ -815,6 +815,12 @@ inline constexpr char kDynamicColorColorScheme[] =
 // color palette. It is an ARGB 32-bit unsigned integer stored as a uint64.
 inline constexpr char kDynamicColorSeedColor[] = "ash.dynamic_color.seed_color";
 
+// A boolean pref that indicates whether to use the k means color calculation
+// for the seed color. This pref cannot be set by users -- it will be used to
+// slowly migrate existing users to new dynamic colors.
+inline constexpr char kDynamicColorUseKMeans[] =
+    "ash.dynamic_color.use_k_means";
+
 // An integer pref storing the type of automatic scheduling of turning on and
 // off the dark mode feature similar to `kNightLightScheduleType`, but
 // custom scheduling (2) is the same as sunset to sunrise scheduling (1)

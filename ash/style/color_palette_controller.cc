@@ -315,11 +315,17 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
       base::span<const ColorScheme> color_scheme_buttons,
       SampleColorSchemeCallback callback) const override {
     bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
-    absl::optional<SkColor> seed_color = CurrentWallpaperColor(dark);
-    if (!seed_color) {
+    absl::optional<SkColor> celebi_seed_color = GetCurrentCelebiColor();
+    if (!celebi_seed_color) {
       LOG(WARNING) << "Using default color due to missing wallpaper sample";
-      seed_color.emplace(kDefaultWallpaperColor);
+      celebi_seed_color.emplace(kDefaultWallpaperColor);
     }
+    auto* session = GetActiveUserSession();
+    DCHECK(session);
+    auto account_id = AccountFromSession(session);
+    bool use_k_means = GetUseKMeansPref(account_id);
+    absl::optional<SkColor> tonal_spot_color =
+        use_k_means ? GetCurrentKMeanColor() : celebi_seed_color;
     // Schemes need to be copied as the underlying memory for the span could go
     // out of scope.
     std::vector<const ColorScheme> schemes_copy(color_scheme_buttons.begin(),
@@ -331,9 +337,12 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
                        std::move(schemes_copy)));
 
     for (unsigned int i = 0; i < color_scheme_buttons.size(); i++) {
+      SkColor seed_color = color_scheme_buttons[i] == ColorScheme::kTonalSpot
+                               ? *tonal_spot_color
+                               : *celebi_seed_color;
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE,
-          base::BindOnce(&GenerateSampleColorScheme, dark, *seed_color,
+          base::BindOnce(&GenerateSampleColorScheme, dark, seed_color,
                          color_scheme_buttons[i]),
           base::BindOnce(std::move(barrier_callback)));
     }
@@ -347,6 +356,13 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
   // WallpaperControllerObserver overrides:
   void OnWallpaperColorsChanged() override {
     NotifyObservers(BestEffortSeed(GetActiveUserSession()));
+  }
+
+  // WallpaperControllerObserver overrides:
+  void OnUserSetWallpaper(const AccountId& account_id) override {
+    if (oobe_state_ == OobeDialogState::HIDDEN) {
+      UpdateUseKMeanColor(account_id, /* value= */ false);
+    }
   }
 
   void SelectLocalAccount(const AccountId& account_id) override {
@@ -366,6 +382,7 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     if (!chromeos::features::IsJellyEnabled()) {
       return;
     }
+    MaybeSetUseKMeansPref(prefs);
     NotifyObservers(BestEffortSeed(GetActiveUserSession()));
 
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -383,6 +400,34 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
         base::BindRepeating(
             &ColorPaletteControllerImpl::UpdateLocalSeedColorPref,
             base::Unretained(this)));
+  }
+
+  // Sets the UseKMeans pref to false if the user is new, and
+  // true if the user does not have a set pref. This will give users updating
+  // the device the k means color for tonal spot, while new users will only see
+  // celebi colors.
+  void MaybeSetUseKMeansPref(PrefService* prefs) {
+    DCHECK(prefs);
+    auto* session = GetActiveUserSession();
+    DCHECK(session);
+    if (session->user_info.is_ephemeral) {
+      return;
+    }
+
+    auto account_id = AccountFromSession(session);
+    if (Shell::Get()->session_controller()->IsUserFirstLogin()) {
+      // New users should use celebi color calculation.
+      UpdateUseKMeanColor(account_id, /* value= */ false);
+      return;
+    }
+    const PrefService::Preference* pref =
+        prefs->FindPreference(prefs::kDynamicColorUseKMeans);
+    if (pref->IsDefaultValue()) {
+      // Any user without a set pref is an existing user logging in for the
+      // first time after updating their device. They should use the kmeans
+      // color calculation.
+      UpdateUseKMeanColor(account_id, /* value= */ true);
+    }
   }
 
   SkColor GetUserWallpaperColorOrDefault(SkColor default_color) const override {
@@ -414,7 +459,7 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
       return wallpaper_controller_->GetKMeanColor();
     }
 
-    return calculated_colors->celebi_color;
+    return GetCurrentCelebiColor();
   }
 
   // Gets the user's current wallpaper color.
@@ -429,8 +474,54 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     if (!calculated_colors) {
       return {};
     }
+    auto* session = GetActiveUserSession();
+    if (session) {
+      auto account_id = AccountFromSession(session);
+      if (ShouldUseKMeans(account_id)) {
+        return GetCurrentKMeanColor();
+      }
+    }
+    return GetCurrentCelebiColor();
+  }
 
+  absl::optional<SkColor> GetCurrentCelebiColor() const {
+    const absl::optional<WallpaperCalculatedColors>& calculated_colors =
+        wallpaper_controller_->calculated_colors();
+    if (!calculated_colors) {
+      return {};
+    }
     return calculated_colors->celebi_color;
+  }
+
+  SkColor GetCurrentKMeanColor() const {
+    bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
+    const SkColor default_color = dark ? gfx::kGoogleGrey900 : SK_ColorWHITE;
+    SkColor k_mean_color = wallpaper_controller_->GetKMeanColor();
+    SkColor color =
+        k_mean_color == kInvalidWallpaperColor ? default_color : k_mean_color;
+    return ColorUtil::AdjustKMeansColor(color, dark);
+  }
+
+  bool ShouldUseKMeans(const AccountId& account_id) const {
+    return GetColorScheme(account_id) == ColorScheme::kTonalSpot &&
+           GetUseKMeansPref(account_id);
+  }
+
+  bool GetUseKMeansPref(const AccountId& account_id) const {
+    PrefService* pref_service = GetUserPrefService(account_id);
+    if (pref_service) {
+      return pref_service->GetBoolean(prefs::kDynamicColorUseKMeans);
+    }
+    DVLOG(1) << "No user pref service or local pref service available. "
+                "Returning UseKMeans pref as false.";
+    return false;
+  }
+
+  void UpdateUseKMeanColor(const AccountId& account_id, bool value) {
+    PrefService* pref_service = GetUserPrefService(account_id);
+    if (pref_service) {
+      pref_service->SetBoolean(prefs::kDynamicColorUseKMeans, value);
+    }
   }
 
   SkColor GetStaticSeedColor(const AccountId& account_id) const {
@@ -563,6 +654,9 @@ void ColorPaletteController::RegisterPrefs(PrefRegistrySimple* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterUint64Pref(
       prefs::kDynamicColorSeedColor, 0,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kDynamicColorUseKMeans, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
