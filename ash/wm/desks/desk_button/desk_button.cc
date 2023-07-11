@@ -142,6 +142,15 @@ DeskButton::DeskButton(DeskButtonWidget* desk_button_widget)
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
+
+  // Using color ID instead of the direct color guarantees that the label will
+  // automatically change color on a theme change (b/287129850).
+  desk_name_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+
+  // Labels automatically assume that they have an opaque background, and will
+  // try to contrast with this assumed background unless we tell it not to do
+  // that here.
+  desk_name_label_->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
                                         *desk_name_label_);
 
@@ -184,18 +193,15 @@ void DeskButton::SetActivation(bool is_activated) {
     }
   }
 
-  background()->SetNativeControlColor(GetColorProvider()->GetColor(
+  SetBackground(views::CreateThemedRoundedRectBackground(
       is_activated_ ? cros_tokens::kCrosSysSystemPrimaryContainer
-                    : cros_tokens::kCrosSysSystemOnBaseOpaque));
-  desk_name_label_->SetEnabledColor(GetColorProvider()->GetColor(
+                    : cros_tokens::kCrosSysSystemOnBaseOpaque,
+      kButtonCornerRadius));
+  desk_name_label_->SetEnabledColorId(
       is_activated_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                    : cros_tokens::kCrosSysOnSurface));
+                    : cros_tokens::kCrosSysOnSurface);
 
   MaybeUpdateDeskSwitchButtonVisibility();
-
-  // `Background::SetNativeControlColor` does not immediately schedule a repaint
-  // on the button so we need to ensure the full button gets repainted.
-  SchedulePaint();
 }
 
 std::u16string DeskButton::GetTitleForView(const views::View* view) {
