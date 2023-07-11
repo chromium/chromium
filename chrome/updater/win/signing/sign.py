@@ -18,12 +18,24 @@ python3 sign.py --in_file UpdaterSetup.exe --out_file ChromeOfflineSetup.exe
     --manifest_path path/to/OfflineManifest.gup
 ```
 
-To run locally:
+Or, for example, to package and sign an offline metainstaller with a local PFX
+file:
+```
+python3 sign.py --in_file UpdaterSetup.exe --out_file ChromeOfflineSetup.exe
+    --certificate_file_path path/to/TestCert.pfx
+    --certificate_password TestCertPassword
+    --appid {8A69D345-D564-463c-AFF1-A69D9E530F96}
+    --installer_path path/to/110.0.5478.0_chrome_installer.exe
+    --manifest_path path/to/OfflineManifest.gup
+```
+
+To run locally with a certificate in `My` store:
  1. Create a self-signed developer certificate if you haven't yet by executing
  `New-SelfSignedCertificate -DnsName id@domain.tld -Type CodeSigning
  -CertStoreLocation cert:\CurrentUser\My` in powershell.
  2. Run `autoninja -C .\out\yourBuildDir chrome/updater`.
- 3. cd to your build dir and execute this script.
+ 3. cd to your build dir and execute this script, specifying the above
+ certificate in the `--identity`.
 """
 
 import argparse
@@ -43,13 +55,16 @@ class SigningError(Exception):
 class Signer:
     """A container for a signing operation."""
 
-    def __init__(self, tmpdir, lzma_exe, signtool_exe, tagging_exe, identity):
+    def __init__(self, tmpdir, lzma_exe, signtool_exe, tagging_exe, identity,
+                 certificate_file_path, certificate_password):
         """Inits a signer with the necessary tools."""
         self._tmpdir = tmpdir
         self._lzma_exe = lzma_exe
         self._signtool_exe = signtool_exe
         self._tagging_exe = tagging_exe
         self._identity = identity
+        self._certificate_file_path = certificate_file_path
+        self._certificate_password = certificate_password
 
     def _add_tagging_cert(self, in_file):
         """Adds the tagging cert. Returns the path to the tagged file."""
@@ -68,9 +83,16 @@ class Signer:
         # Retries may be required: lore states the timestamp server is flaky.
         command = [
             self._signtool_exe, 'sign', '/v', '/tr',
-            'http://timestamp.digicert.com', '/td', 'SHA256', '/fd', 'SHA256',
-            '/s', 'my', '/n', self._identity, in_file
+            'http://timestamp.digicert.com', '/td', 'SHA256', '/fd', 'SHA256'
         ]
+        if self._certificate_file_path:
+            command += ['/f', self._certificate_file_path]
+            if self._certificate_password:
+                command += ['/p', self._certificate_password]
+        else:
+            command += ['/s', 'My', '/n', self._identity]
+
+        command += [in_file]
         subprocess.run(command, check=True)
 
     def _copy_offline_installer_files(self, root, appid, installer_path,
@@ -151,9 +173,20 @@ def main():
     parser.add_argument('--certificate_tag',
                         default='.\certificate_tag.exe',
                         help='The path to the certificate_tag executable.')
-    parser.add_argument('--identity',
-                        default='Google',
-                        help='The signing identity to use.')
+    parser.add_argument(
+        '--identity',
+        default='Google',
+        help=('The subject name of the signing certificate in the `My` store. '
+              'Can be a substring of the entire subject name.'))
+    parser.add_argument(
+        '--certificate_file_path',
+        required=False,
+        help=('Specifies the path to a PFX signing certificate. Takes '
+              'precedence over `--identity`.'))
+    parser.add_argument(
+        '--certificate_password',
+        required=False,
+        help='Specifies the password for `--certificate_file_path`.')
     parser.add_argument('--appid',
                         required=False,
                         help='The offline installer appid.')
@@ -166,15 +199,19 @@ def main():
     args = parser.parse_args()
     if args.appid and (args.installer_path is None
                        or args.manifest_path is None):
-        parser.error("--appid requires --installer_path and --manifest_path.")
+        parser.error(
+            '`--appid` requires `--installer_path` and `--manifest_path`.')
+    if args.certificate_password and args.certificate_file_path is None:
+        parser.error(
+            '`--certificate_password` requires `--certificate_file_path`.')
 
     with tempfile.TemporaryDirectory() as tmpdir:
         shutil.move(
             Signer(tmpdir, args.lzma_7z, args.signtool, args.certificate_tag,
-                   args.identity).sign_metainstaller(args.in_file, args.appid,
-                                                     args.installer_path,
-                                                     args.manifest_path),
-            args.out_file)
+                   args.identity, args.certificate_file_path,
+                   args.certificate_password).sign_metainstaller(
+                       args.in_file, args.appid, args.installer_path,
+                       args.manifest_path), args.out_file)
 
 
 if __name__ == '__main__':
