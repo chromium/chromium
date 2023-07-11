@@ -136,6 +136,11 @@ ToAuthenticatorMakeCredentialResponse(
           std::make_unique<OpaqueAttestationStatement>(
               base::WideToUTF8(credential_attestation.pwszFormatType),
               std::move(*cbor_attestation_statement))));
+  if (transport_used == FidoTransportProtocol::kInternal) {
+    // Windows platform credentials can't be used from other devices, so we can
+    // fill in the authenticator supported transports.
+    ret.transports = {*transport_used};
+  }
 
   if (credential_attestation.dwVersion >=
       WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_4) {
