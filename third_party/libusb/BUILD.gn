@@ -12,18 +12,6 @@ config("libusb_config") {
   include_dirs = [ "src/libusb" ]
 }
 
-config("libusb_linker_config") {
-  if (is_win) {
-    ldflags = [
-      "/DELAYLOAD:advapi32.dll",
-      "/DELAYLOAD:cfgmgr32.dll",
-      "/DELAYLOAD:ole32.dll",
-      "/DELAYLOAD:setupapi.dll",
-      "/DELAYLOAD:winusb.dll",
-    ]
-  }
-}
-
 config("libusb_warnings") {
   visibility = [ ":*" ]
   if (is_clang) {
@@ -84,7 +72,6 @@ static_library("libusb") {
   ]
 
   public_configs = [ ":libusb_config" ]
-  all_dependent_configs = [ ":libusb_linker_config" ]
 
   if (is_posix) {
     defines = [
