@@ -94,8 +94,15 @@ String DOMURL::CreatePublicURL(ExecutionContext* execution_context,
 }
 
 URLSearchParams* DOMURL::searchParams() {
-  if (!search_params_)
+  if (!search_params_) {
+    if (recordreplay::IsRecordingOrReplaying() && !recordreplay::AreAssertsDisabled()) {
+      std::string stack;
+      recordreplay::GetCurrentJSStack(&stack);
+      recordreplay::Assert("[RUN-2324-2325] DOMURL::searchParams %s stack=%s",
+                           Url().GetString().Utf8().c_str(), stack.c_str());
+    }
     search_params_ = URLSearchParams::Create(Url().Query(), this);
+  }
 
   return search_params_;
 }

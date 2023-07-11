@@ -97,13 +97,6 @@ URLSearchParams* URLSearchParams::Create(const Vector<Vector<String>>& init,
 
 URLSearchParams::URLSearchParams(const String& query_string, DOMURL* url_object)
     : url_object_(url_object) {
-  if (!recordreplay::AreAssertsDisabled()) {
-    std::string stack;
-    recordreplay::GetCurrentJSStack(&stack);
-    recordreplay::Assert("[RUN-1647-2313] URLSearchParams %s %s stack=%s",
-                         url_object ? url_object->Url().GetString().Utf8().c_str() : "",
-                         query_string.Utf8().c_str(), stack.c_str());
-  }
   if (!query_string.empty())
     SetInputWithoutUpdate(query_string);
 }
