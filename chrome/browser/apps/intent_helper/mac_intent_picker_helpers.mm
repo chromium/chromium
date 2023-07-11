@@ -74,15 +74,15 @@ absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
   if (!universal_links_enabled)
     return absl::nullopt;
 
-  if (@available(macOS 10.15, *)) {
-    NSURL* nsurl = net::NSURLWithGURL(url);
-    if (!nsurl)
-      return absl::nullopt;
+  NSURL* nsurl = net::NSURLWithGURL(url);
+  if (!nsurl) {
+    return absl::nullopt;
+  }
 
-    SFUniversalLink* link = [[SFUniversalLink alloc] initWithWebpageURL:nsurl];
+  SFUniversalLink* link = [[SFUniversalLink alloc] initWithWebpageURL:nsurl];
 
-    if (link)
-      return AppInfoForAppUrl(link.applicationURL);
+  if (link) {
+    return AppInfoForAppUrl(link.applicationURL);
   }
 
   return absl::nullopt;

@@ -18,9 +18,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/widget_delegate.h"
 
-// EyeDropperView is used on Aura platforms and on the Mac before 10.15.
-// Starting with macOS 10.15, EyeDropperViewMac is used as it relies on the new
-// NSColorSampler API.
+// EyeDropperView is used on Aura platforms.
 class EyeDropperView : public content::EyeDropper,
                        public views::WidgetDelegateView {
  public:
@@ -55,10 +53,6 @@ class EyeDropperView : public content::EyeDropper,
 #if defined(USE_AURA)
     class KeyboardHandler;
     std::unique_ptr<KeyboardHandler> keyboard_handler_;
-#endif
-#if BUILDFLAG(IS_MAC)
-    struct ObjCStorage;
-    std::unique_ptr<ObjCStorage> objc_storage_;
 #endif
   };
 

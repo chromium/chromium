@@ -6098,6 +6098,7 @@ static_library("browser") {
       "Accelerate.framework",
       "AudioUnit.framework",
       "AVFoundation.framework",
+      "AuthenticationServices.framework",
       "DiskArbitration.framework",
       "IOKit.framework",
       "ImageCaptureCore.framework",
@@ -6106,11 +6107,10 @@ static_library("browser") {
       "QuartzCore.framework",
       "SafariServices.framework",
       "SecurityInterface.framework",
+      "UserNotifications.framework",
     ]
     weak_frameworks = [
-      "AuthenticationServices.framework",  # macOS 10.15
       "UniformTypeIdentifiers.framework",  # macOS 11
-      "UserNotifications.framework",  # macOS 10.14
     ]
     public_deps += [ "//chrome/browser/mac:keystone_glue" ]
   }
