@@ -167,9 +167,17 @@ DeviceTrustNavigationThrottle::MayTriggerConsentDialog() {
     return PROCEED;
   }
 
-  consent_requester_->RequestConsent(
-      base::BindRepeating(&DeviceTrustNavigationThrottle::OnConsentPrefUpdated,
-                          weak_ptr_factory_.GetWeakPtr()));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<DeviceTrustNavigationThrottle> throttler) {
+            if (throttler) {
+              throttler->consent_requester_->RequestConsent(base::BindRepeating(
+                  &DeviceTrustNavigationThrottle::OnConsentPrefUpdated,
+                  throttler));
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
 
   return DEFER;
 }

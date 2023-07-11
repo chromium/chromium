@@ -487,6 +487,8 @@ TEST_F(DeviceTrustNavigationThrottleTest, BlockedByConsentDialog) {
       .Times(1)
       .WillOnce(Return());
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest().action());
+
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest,
