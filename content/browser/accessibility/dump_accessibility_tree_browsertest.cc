@@ -1937,8 +1937,8 @@ IN_PROC_BROWSER_TEST_P(
       "form-validation-message-removed-after-error-corrected.html"));
 }
 
-// TODO(https://crbug.com/1461931): This test is failing on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(https://crbug.com/1461931): Flaky on the following platforms.
+#if BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_AccessibilityFormValidationMessageAfterHideTimeout \
   DISABLED_AccessibilityFormValidationMessageAfterHideTimeout
 #else
