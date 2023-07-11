@@ -756,6 +756,11 @@ class FileManagerPrivateApiDlpTest : public FileManagerPrivateApiTest {
     ASSERT_TRUE(drive_path_.CreateUniqueTempDir());
   }
 
+  void TearDownOnMainThread() override {
+    files_controller_ = nullptr;
+    FileManagerPrivateApiTest::TearDownOnMainThread();
+  }
+
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
     auto dlp_rules_manager = std::make_unique<policy::MockDlpRulesManager>();

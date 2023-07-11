@@ -74,6 +74,9 @@ class DlpRulesManagerImpl : public DlpRulesManager,
   // chromeos::DlpClient::Observer overrides:
   void DlpDaemonRestarted() override;
 
+  // KeyedService overrides:
+  void Shutdown() override;
+
  protected:
   friend class DlpRulesManagerFactory;
 

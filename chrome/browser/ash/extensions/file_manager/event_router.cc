@@ -315,6 +315,28 @@ bool ShouldShowNotificationForVolume(
   return true;
 }
 
+std::set<GURL> GetEventListenerURLs(Profile* profile,
+                                    const std::string& event_name) {
+  const extensions::EventListenerMap::ListenerList& listeners =
+      extensions::EventRouter::Get(profile)
+          ->listeners()
+          .GetEventListenersByName(event_name);
+  std::set<GURL> urls;
+  for (const auto& listener : listeners) {
+    if (!listener->extension_id().empty()) {
+      urls.insert(extensions::Extension::GetBaseURLFromExtensionId(
+          listener->extension_id()));
+    } else {
+      urls.insert(listener->listener_url());
+    }
+  }
+  // In the Files app, there may not be a window open to listen to the event,
+  // so always add the File Manager URL so events can be sent to the
+  // SystemNotificationManager.
+  urls.insert(file_manager::util::GetFileManagerURL());
+  return urls;
+}
+
 // Sub-part of the event router for handling device events.
 class DeviceEventRouterImpl : public DeviceEventRouter {
  public:
@@ -371,24 +393,7 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
 
  private:
   std::set<GURL> GetEventListenerURLs(const std::string& event_name) override {
-    const extensions::EventListenerMap::ListenerList& listeners =
-        extensions::EventRouter::Get(profile_)
-            ->listeners()
-            .GetEventListenersByName(event_name);
-    std::set<GURL> urls;
-    for (const auto& listener : listeners) {
-      if (!listener->extension_id().empty()) {
-        urls.insert(extensions::Extension::GetBaseURLFromExtensionId(
-            listener->extension_id()));
-      } else {
-        urls.insert(listener->listener_url());
-      }
-    }
-    // In the Files app, there may not be a window open to listen to the event,
-    // so always add the File Manager URL so events can be sent to the
-    // SystemNotificationManager.
-    urls.insert(file_manager::util::GetFileManagerURL());
-    return urls;
+    return ::file_manager::GetEventListenerURLs(profile_, event_name);
   }
 
   GURL ConvertDrivePathToFileSystemUrl(const base::FilePath& file_path,
@@ -501,6 +506,50 @@ void RecordFileSystemProviderMountMetrics(const Volume& volume) {
                                 FileSystemProviderMountedType::UNKNOWN);
     }
   }
+}
+
+// Returns a map from the given `files` to their parent directory.
+std::map<base::FilePath, std::vector<base::FilePath>>
+MapFilePathsToParentDirectory(const std::vector<base::FilePath> files) {
+  std::map<base::FilePath, std::vector<base::FilePath>> dir_files_map;
+  for (const auto& file : files) {
+    dir_files_map[file.DirName()].push_back(file);
+  }
+  return dir_files_map;
+}
+
+// Creates a file watch event for the given `changed_files` in `directory`
+// belonging to a filesystem described by `info`.
+extensions::api::file_manager_private::FileWatchEvent CreateFileWatchEvent(
+    Profile* profile,
+    const GURL& listener_url,
+    const std::vector<base::FilePath>& changed_files,
+    const storage::FileSystemInfo& info,
+    const base::FilePath& directory,
+    extensions::api::file_manager_private::ChangeType change_type) {
+  extensions::api::file_manager_private::FileWatchEvent event;
+
+  event.event_type =
+      extensions::api::file_manager_private::FILE_WATCH_EVENT_TYPE_CHANGED;
+  event.entry.additional_properties.Set("fileSystemRoot", info.root_url.spec());
+  event.entry.additional_properties.Set("fileSystemName", info.name);
+  event.entry.additional_properties.Set("fileFullPath",
+                                        "/" + directory.value());
+  event.entry.additional_properties.Set("fileIsDirectory", true);
+
+  // Constructs the optional.
+  event.changed_files.emplace();
+
+  for (const base::FilePath& file : changed_files) {
+    auto& change = event.changed_files->emplace_back();
+    GURL url;
+    file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
+        profile, file, listener_url, &url);
+    change.url = url.spec();
+    change.changes.push_back(change_type);
+  }
+
+  return event;
 }
 
 }  // namespace
@@ -652,6 +701,11 @@ void EventRouter::Shutdown() {
     proxy->AppRegistryCache().RemoveObserver(recalculate_tasks_observer_.get());
   }
 
+  auto* dlp_client = chromeos::DlpClient::Get();
+  if (dlp_client) {
+    dlp_client->RemoveObserver(this);
+  }
+
   profile_ = nullptr;
 }
 
@@ -765,6 +819,11 @@ void EventRouter::ObserveEvents() {
         apps::AppServiceProxyFactory::GetForProfile(profile_);
     DCHECK(proxy);
     proxy->AppRegistryCache().AddObserver(recalculate_tasks_observer_.get());
+  }
+
+  auto* dlp_client = chromeos::DlpClient::Get();
+  if (dlp_client) {
+    dlp_client->AddObserver(this);
   }
 }
 
@@ -1413,6 +1472,67 @@ void EventRouter::OnConvertFileDefinitionListToEntryDefinitionList(
   BroadcastIOTask(std::move(event_status));
 }
 
+void EventRouter::OnFilesChanged(
+    const std::vector<base::FilePath>& changed_files,
+    extensions::api::file_manager_private::ChangeType change_type) {
+  std::map<base::FilePath, std::vector<base::FilePath>> files_to_directory_map =
+      MapFilePathsToParentDirectory(changed_files);
+  for (const auto& listener_url : GetEventListenerURLs(
+           profile_, file_manager_private::OnDirectoryChanged::kEventName)) {
+    BroadcastDirectoryChangeEvent(files_to_directory_map, listener_url,
+                                  change_type);
+  }
+}
+
+void EventRouter::BroadcastDirectoryChangeEvent(
+    const std::map<base::FilePath, std::vector<base::FilePath>>&
+        files_to_directory_map,
+    const GURL& listener_url,
+    extensions::api::file_manager_private::ChangeType change_type) {
+  auto* file_system_context =
+      util::GetFileSystemContextForSourceURL(profile_, listener_url);
+  if (file_system_context == nullptr) {
+    LOG(ERROR) << "Could not find file system context";
+    return;
+  }
+  for (const auto& [dir, files] : files_to_directory_map) {
+    GURL dir_url;
+    file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
+        profile_, dir, listener_url, &dir_url);
+
+    const storage::FileSystemURL dir_filesystem_url =
+        file_system_context->CrackURLInFirstPartyContext(dir_url);
+    if (dir_filesystem_url.path().empty()) {
+      LOG(ERROR) << "Invalid URL";
+      continue;
+    }
+
+    file_system_context->ResolveURL(
+        dir_filesystem_url,
+        base::BindOnce(
+            &EventRouter::BroadcastDirectoryChangeEventOnFilesystemInfoResolved,
+            weak_factory_.GetWeakPtr(), listener_url, std::move(files),
+            change_type));
+  }
+}
+
+void EventRouter::BroadcastDirectoryChangeEventOnFilesystemInfoResolved(
+    GURL listener_url,
+    std::vector<base::FilePath> changed_files,
+    extensions::api::file_manager_private::ChangeType change_type,
+    base::File::Error result,
+    const storage::FileSystemInfo& info,
+    const base::FilePath& dir_path,
+    storage::FileSystemContext::ResolvedEntryType) {
+  extensions::api::file_manager_private::FileWatchEvent event =
+      CreateFileWatchEvent(profile_, listener_url, changed_files, info,
+                           dir_path, change_type);
+  BroadcastEvent(profile_,
+                 extensions::events::FILE_MANAGER_PRIVATE_ON_DIRECTORY_CHANGED,
+                 file_manager_private::OnDirectoryChanged::kEventName,
+                 file_manager_private::OnDirectoryChanged::Create(event));
+}
+
 void EventRouter::BroadcastIOTask(
     const file_manager_private::ProgressStatus& event_status) {
   BroadcastEvent(
@@ -1454,6 +1574,12 @@ void EventRouter::OnMountableGuestsChanged() {
 drivefs::SyncState EventRouter::GetDriveSyncStateForPath(
     const base::FilePath& drive_path) {
   return drivefs_event_router_->GetDriveSyncStateForPath(drive_path);
+}
+
+void EventRouter::OnFilesAddedToDlpDaemon(
+    const std::vector<base::FilePath>& files) {
+  OnFilesChanged(files, extensions::api::file_manager_private::ChangeType::
+                            CHANGE_TYPE_ADD_OR_UPDATE);
 }
 
 }  // namespace file_manager

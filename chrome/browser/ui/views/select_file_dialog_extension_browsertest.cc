@@ -768,6 +768,11 @@ class SelectFileDialogExtensionPolicyTest
     return dlp_rules_manager;
   }
 
+  void TearDownOnMainThread() override {
+    mock_files_controller_ = nullptr;
+    BaseSelectFileDialogExtensionBrowserTest::TearDownOnMainThread();
+  }
+
   void SetupRulesManager() {
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(

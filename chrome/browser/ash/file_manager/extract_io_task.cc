@@ -205,6 +205,8 @@ void ExtractIOTask::ExtractArchive(
   if (!destination_result.has_value()) {
     ZipExtractCallback(base::FilePath(), false);
   } else {
+    progress_.outputs.emplace_back(destination_result.value(), absl::nullopt,
+                                   progress_.sources[index].url);
     const base::FilePath destination_directory =
         destination_result.value().path();
     base::ThreadPool::PostTaskAndReplyWithResult(

@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "extensions/browser/event_router_factory.h"
@@ -48,6 +49,7 @@ EventRouterFactory::EventRouterFactory()
   DependsOn(arc::ArcIntentHelperBridge::GetFactory());
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
   DependsOn(guest_os::GuestOsServiceFactory::GetInstance());
+  DependsOn(policy::DlpRulesManagerFactory::GetInstance());
 }
 
 EventRouterFactory::~EventRouterFactory() = default;

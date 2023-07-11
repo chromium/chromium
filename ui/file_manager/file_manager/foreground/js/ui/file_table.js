@@ -844,9 +844,9 @@ export class FileTable extends Table {
       if (isEncrypted) {
         label.appendChild(this.renderEncryptedIcon_());
       }
-      const isDlpRestricted = !!metadata.isDlpRestricted;
-      if (isDlpRestricted) {
-        label.appendChild(this.renderDlpManagedIcon_());
+      if (util.isDlpEnabled()) {
+        label.appendChild(
+            this.renderDlpManagedIcon_(!!metadata.isDlpRestricted));
       }
     }
     return label;
@@ -953,9 +953,8 @@ export class FileTable extends Table {
       if (isEncrypted) {
         div.appendChild(this.renderEncryptedIcon_());
       }
-      const isDlpRestricted = !!metadata.isDlpRestricted;
-      if (isDlpRestricted) {
-        div.appendChild(this.renderDlpManagedIcon_());
+      if (util.isDlpEnabled()) {
+        div.appendChild(this.renderDlpManagedIcon_(!!metadata.isDlpRestricted));
       }
     } else {
       div.className = 'date';
@@ -1049,6 +1048,7 @@ export class FileTable extends Table {
                   'syncCompletedTime',
                   'shortcut',
                   'canPin',
+                  'isDlpRestricted',
                 ])[0],
             util.isTeamDriveRoot(entry));
         listItem.toggleAttribute(
@@ -1166,10 +1166,11 @@ export class FileTable extends Table {
 
   /**
    * Renders the DLP managed icon in the detail table.
+   * @param {!boolean} isDlpRestricted Whether the icon should be shown.
    * @return {!HTMLDivElement} Created element.
    * @private
    */
-  renderDlpManagedIcon_() {
+  renderDlpManagedIcon_(isDlpRestricted) {
     const icon = /** @type {!HTMLDivElement} */
         (this.ownerDocument.createElement('div'));
     icon.className = 'dlp-managed-icon';
@@ -1180,6 +1181,8 @@ export class FileTable extends Table {
     icon.dataset['tooltipLinkText'] = str('DLP_MANAGED_ICON_TOOLTIP_LINK');
     icon.setAttribute('aria-label', str('DLP_MANAGED_ICON_TOOLTIP'));
     icon.toggleAttribute('show-card-tooltip');
+    icon.classList.toggle('is-dlp-restricted', isDlpRestricted);
+    icon.toggleAttribute('aria-hidden', isDlpRestricted);
     return icon;
   }
 

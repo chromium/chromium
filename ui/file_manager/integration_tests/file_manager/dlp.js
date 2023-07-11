@@ -81,7 +81,7 @@ testcase.dlpShowManagedIcon = async () => {
   // Open Files app.
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
-  const dlpManagedIcon = '#file-list .dlp-managed-icon';
+  const dlpManagedIcon = '#file-list .dlp-managed-icon.is-dlp-restricted';
 
   // Check: only three of the five files should have the 'dlp-managed-icon'
   // class, which means that the icon is displayed.
@@ -123,7 +123,7 @@ testcase.dlpContextMenuRestrictionDetails = async () => {
   // Wait for the DLP managed icon to be shown - this also means metadata has
   // been cached and can be used to show the context menu command.
   await remoteCall.waitForElementsCount(
-      appId, ['#file-list .dlp-managed-icon'], 1);
+      appId, ['#file-list .dlp-managed-icon.is-dlp-restricted'], 1);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -506,7 +506,7 @@ testcase.openDlpRestrictedFile = async () => {
     // been fetched, including the disabled status. Three are managed, but only
     // two disabled.
     await remoteCall.waitForElementsCount(
-        dialog, ['#file-list .dlp-managed-icon'], 3);
+        dialog, ['#file-list .dlp-managed-icon.is-dlp-restricted'], 3);
 
     await remoteCall.waitForElementsCount(
         dialog, ['#file-list .file[disabled]'], 2);
@@ -579,7 +579,7 @@ testcase.openFolderDlpRestricted = async () => {
 
     // Verify that the DLP managed icon for the image file is shown.
     await remoteCall.waitForElementsCount(
-        dialog, ['#file-list .dlp-managed-icon'], 1);
+        dialog, ['#file-list .dlp-managed-icon.is-dlp-restricted'], 1);
 
     // Verify that the image file is disabled.
     await remoteCall.waitForElementsCount(
@@ -698,9 +698,17 @@ testcase.zipExtractRestrictedArchiveCheckContent = async () => {
 
   // Wait for the DLP managed icon to be shown.
   await remoteCall.waitForElementsCount(
-      appId, ['#file-list .dlp-managed-icon'], 1);
+      appId, ['#file-list .dlp-managed-icon.is-dlp-restricted'], 1);
 
   const targetDirectoryName = entry.nameText.split('.')[0];
+
+  // Expect newly extracted files to be added to the DLP daemon.
+  await sendTestMessage({
+    name: 'expectFilesAdditionToDaemon',
+    fileNames:
+        [targetDirectoryName + '/image.png', targetDirectoryName + '/text.txt'],
+    sourceUrls: ['https://blocked.com', 'https://blocked.com'],
+  });
 
   // Make sure the test extension handles the new window creation properly.
   await sendTestMessage({

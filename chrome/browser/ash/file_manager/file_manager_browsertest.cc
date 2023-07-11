@@ -13,7 +13,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/config/coverage/buildflags.h"
@@ -59,7 +61,32 @@
 namespace file_manager {
 namespace {
 constexpr char kOwnerEmail[] = "owner@example.com";
+
+// Compares DLP AddFilesRequests ignoring the order of repeated fields.
+MATCHER_P(EqualsAddFilesRequestsProto, add_files, "") {
+  ::dlp::AddFilesRequest reference(add_files);
+  ::dlp::AddFilesRequest actual(arg);
+
+  auto CompareAddFileRequest = [](const ::dlp::AddFileRequest& add1,
+                                  const ::dlp::AddFileRequest& add2) {
+    return std::make_tuple(add1.file_path(), add1.source_url(),
+                           add1.referrer_url()) <
+           std::make_tuple(add2.file_path(), add2.source_url(),
+                           add2.referrer_url());
+  };
+
+  std::sort(reference.mutable_add_file_requests()->begin(),
+            reference.mutable_add_file_requests()->end(),
+            CompareAddFileRequest);
+  std::sort(actual.mutable_add_file_requests()->begin(),
+            actual.mutable_add_file_requests()->end(), CompareAddFileRequest);
+
+  std::string expected_serialized, actual_serialized;
+  reference.SerializeToString(&expected_serialized);
+  actual.SerializeToString(&actual_serialized);
+  return expected_serialized == actual_serialized;
 }
+}  // namespace
 
 // FilesAppBrowserTest parameters.
 struct TestCase {
@@ -521,6 +548,11 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
                             base::Unretained(this)));
   }
 
+  void TearDownOnMainThread() override {
+    files_controller_ = nullptr;
+    FilesAppBrowserTest::TearDownOnMainThread();
+  }
+
   bool HandleDlpCommands(const std::string& name,
                          const base::Value::Dict& value,
                          std::string* output) override {
@@ -640,7 +672,30 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
                            callback) {
             std::move(callback).Run(file_access::ScopedFileAccess::Allowed());
           });
-
+      return true;
+    }
+    if (name == "expectFilesAdditionToDaemon") {
+      base::FilePath download_path =
+          file_manager::util::GetDownloadsFolderForProfile(profile());
+      const base::Value::List* file_names = value.FindList("fileNames");
+      auto* source_urls = value.FindList("sourceUrls");
+      EXPECT_TRUE(file_names);
+      EXPECT_TRUE(source_urls);
+      EXPECT_EQ(file_names->size(), source_urls->size());
+      ::dlp::AddFilesRequest expected_request;
+      for (unsigned long i = 0; i < file_names->size(); i++) {
+        ::dlp::AddFileRequest* file_request =
+            expected_request.add_add_file_requests();
+        file_request->set_file_path(download_path.value() + "/" +
+                                    (*file_names)[i].GetString());
+        file_request->set_source_url((*source_urls)[i].GetString());
+      }
+      EXPECT_CALL(add_files_cb,
+                  Run(EqualsAddFilesRequestsProto(expected_request),
+                      base::test::IsNotNullCallback()));
+      chromeos::DlpClient::Get()->GetTestInterface()->SetIsAlive(true);
+      chromeos::DlpClient::Get()->GetTestInterface()->SetAddFilesMock(
+          add_files_cb.Get());
       return true;
     }
     return false;
@@ -653,6 +708,12 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
 
   std::unique_ptr<file_access::MockScopedFileAccessDelegate>
       scoped_file_access_delegate_;
+
+  // The callback needs to survive the setup method.
+  base::MockRepeatingCallback<void(
+      const ::dlp::AddFilesRequest request,
+      chromeos::DlpClient::AddFilesCallback callback)>
+      add_files_cb;
 
  private:
   std::unique_ptr<KeyedService> SetDlpRulesManager(

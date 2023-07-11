@@ -39,6 +39,7 @@ class Widget;
 namespace policy {
 
 class DlpFilesEventStorage;
+class DlpExtractIOTaskObserver;
 
 // DlpFilesControllerAsh is responsible for deciding whether file transfers are
 // allowed according to the files sources saved in the DLP daemon and the rules
@@ -284,6 +285,10 @@ class DlpFilesControllerAsh : public DlpFilesController {
   // Keeps track of events and detects duplicate ones using time based
   // approach.
   std::unique_ptr<DlpFilesEventStorage> event_storage_;
+
+  // Gets notified when an archive is extracted, and notifies the DLP daemon
+  // about newly extracted files.
+  std::unique_ptr<DlpExtractIOTaskObserver> extract_io_task_observer_;
 
   base::WeakPtrFactory<DlpFilesControllerAsh> weak_ptr_factory_{this};
 };

@@ -90,6 +90,11 @@ class DlpFilesControllerAshBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
   }
 
+  void TearDownOnMainThread() override {
+    files_controller_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
     auto dlp_rules_manager =

@@ -648,6 +648,10 @@ void DlpRulesManagerImpl::DlpDaemonRestarted() {
   OnPolicyUpdate();
 }
 
+void DlpRulesManagerImpl::Shutdown() {
+  files_controller_.reset();
+}
+
 void DlpRulesManagerImpl::OnPolicyUpdate() {
   components_rules_.clear();
   restrictions_map_.clear();

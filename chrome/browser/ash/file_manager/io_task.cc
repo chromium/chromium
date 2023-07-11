@@ -84,8 +84,10 @@ ResumeParams& ResumeParams::operator=(ResumeParams&& other) = default;
 ResumeParams::~ResumeParams() = default;
 
 EntryStatus::EntryStatus(storage::FileSystemURL file_url,
-                         absl::optional<base::File::Error> file_error)
-    : url(file_url), error(file_error) {}
+                         absl::optional<base::File::Error> file_error,
+                         absl::optional<storage::FileSystemURL> source_url)
+    : url(file_url), error(file_error), source_url(source_url) {}
+
 EntryStatus::~EntryStatus() = default;
 
 EntryStatus::EntryStatus(EntryStatus&& other) = default;

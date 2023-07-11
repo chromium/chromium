@@ -181,8 +181,10 @@ struct ResumeParams {
 
 // Represents the status of a particular entry in an I/O task.
 struct EntryStatus {
-  EntryStatus(storage::FileSystemURL file_url,
-              absl::optional<base::File::Error> file_error);
+  EntryStatus(
+      storage::FileSystemURL file_url,
+      absl::optional<base::File::Error> file_error,
+      absl::optional<storage::FileSystemURL> source_url = absl::nullopt);
   ~EntryStatus();
 
   EntryStatus(EntryStatus&& other);
@@ -193,6 +195,10 @@ struct EntryStatus {
 
   // May be empty if the entry has not been fully processed yet.
   absl::optional<base::File::Error> error;
+
+  // The source from which the entry identified by `url` is generated. May be
+  // empty if not relevant.
+  absl::optional<storage::FileSystemURL> source_url;
 
   // True if entry is a directory when its metadata is processed.
   bool is_directory = false;

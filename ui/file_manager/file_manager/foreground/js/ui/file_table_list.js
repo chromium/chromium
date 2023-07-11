@@ -372,6 +372,7 @@ filelist.decorateListItem = (li, entry, metadataModel, volumeManager) => {
     'contentMimeType',
     'shortcut',
     'canPin',
+    'isDlpRestricted',
   ])[0];
   filelist.updateListItemExternalProps(
       li, entry, externalProps, util.isTeamDriveRoot(entry));
@@ -533,6 +534,11 @@ filelist.updateListItemExternalProps =
           li.classList.toggle(
               'dim-encrypted',
               FileType.isEncrypted(entry, externalProps.contentMimeType));
+        }
+        const dlpIcon = li.querySelector('.dlp-managed-icon');
+        if (dlpIcon) {
+          dlpIcon.classList.toggle(
+              'is-dlp-restricted', externalProps.isDlpRestricted);
         }
       }
 

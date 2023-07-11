@@ -129,6 +129,11 @@ class SharesheetBubbleViewPolicyBrowserTest
                 (override));
   };
 
+  void TearDownOnMainThread() override {
+    mock_files_controller_.reset();
+    SharesheetBubbleViewBrowserTest::TearDownOnMainThread();
+  }
+
   void SetupRulesManager(bool is_dlp_blocked) {
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
         browser()->profile(),

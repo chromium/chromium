@@ -556,6 +556,11 @@ class OnIONotificationClickedTest
               nullptr);
   }
 
+  void TearDownOnMainThread() override {
+    files_controller_.reset();
+    OnNotificationClickedTest::TearDownOnMainThread();
+  }
+
  protected:
   base::ScopedTempDir temp_dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;

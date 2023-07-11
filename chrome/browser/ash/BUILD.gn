@@ -2320,6 +2320,8 @@ source_set("ash") {
     "policy/dlp/dialogs/files_policy_warn_dialog.h",
     "policy/dlp/dlp_content_manager_ash.cc",
     "policy/dlp/dlp_content_manager_ash.h",
+    "policy/dlp/dlp_extract_io_task_observer.cc",
+    "policy/dlp/dlp_extract_io_task_observer.h",
     "policy/dlp/dlp_files_controller_ash.cc",
     "policy/dlp/dlp_files_controller_ash.h",
     "policy/dlp/dlp_files_event_storage.cc",

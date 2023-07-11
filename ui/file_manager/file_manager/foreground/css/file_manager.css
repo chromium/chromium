@@ -1993,6 +1993,11 @@ li[renaming=''] .filename-label {
   margin-inline-end: 10px;
   margin-inline-start: auto;
   width: 24px;
+  visibility: hidden;
+}
+
+.dlp-managed-icon.is-dlp-restricted {
+  visibility: visible;
 }
 
 body.files-ng.check-select #list-container list:focus li[selected]
