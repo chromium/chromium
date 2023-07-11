@@ -6615,3 +6615,7 @@ crbug.com/1463743 external/wpt/scroll-animations/css/pseudo-on-scroller.html [ F
 external/wpt/resource-timing/tentative/document-initiated.html [ Failure Timeout ]
 external/wpt/resource-timing/tentative/script-initiated.html [ Failure Timeout ]
 external/wpt/resource-timing/tentative/stylesheet-initiated.html [ Failure Timeout ]
+
+# Gardener 2023-07-11
+crbug.com/1463964 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-about-blank.https.window.html [ Failure Pass ]
+
