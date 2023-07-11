@@ -829,7 +829,7 @@ TEST_F(KcerNssTest, ImportCertWithoutKeyThenFail) {
   kcer_->ImportCertFromBytes(Token::kUser, std::move(cert),
                              import_waiter.GetCallback());
   ASSERT_FALSE(import_waiter.Get().has_value());
-  EXPECT_EQ(import_waiter.Get().error(), Error::kFailedToImportCertificate);
+  EXPECT_EQ(import_waiter.Get().error(), Error::kKeyNotFound);
 
   // Double check that ListCerts doesn't find the cert.
   base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,

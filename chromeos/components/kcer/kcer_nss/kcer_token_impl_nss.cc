@@ -206,6 +206,10 @@ void ImportKeyOnWorkerThread(Token token,
                              crypto::ScopedPK11Slot slot,
                              Pkcs8PrivateKeyInfoDer pkcs8_private_key_info_der,
                              Kcer::ImportKeyCallback callback) {
+  // TODO(miersh): The import method uses
+  // PK11_ImportDERPrivateKeyInfoAndReturnKey inside, which doesn't seem to
+  // create a public key object for the imported key. This causes the ListKeys
+  // method to not see the key. This should be fixed in Kcer-without-NSS.
   crypto::ScopedSECKEYPrivateKey imported_private_key =
       crypto::ImportNSSKeyFromPrivateKeyInfo(slot.get(),
                                              pkcs8_private_key_info_der.value(),
@@ -254,9 +258,16 @@ void ImportCertOnWorkerThread(
     return std::move(callback).Run(
         /*did_modify=*/false, base::unexpected(Error::kInvalidCertificate));
   }
+  CERTCertificate* cert = certs[0].get();
 
-  if (int res = net::x509_util::ImportUserCert(certs[0].get());
-      res != net::OK) {
+  CK_OBJECT_HANDLE key;
+  crypto::ScopedPK11Slot key_slot(PK11_KeyForCertExists(cert, &key, nullptr));
+  if (key_slot != slot) {
+    return std::move(callback).Run(
+        /*did_modify=*/false, base::unexpected(Error::kKeyNotFound));
+  }
+
+  if (int res = net::x509_util::ImportUserCert(cert); res != net::OK) {
     LOG(ERROR) << "Failed to import certificate, error: " << res;
     return std::move(callback).Run(
         /*did_modify=*/false,
