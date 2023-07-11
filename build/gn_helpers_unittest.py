@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
 import pathlib
 import shutil
 import sys
@@ -317,13 +318,19 @@ class UnitTest(unittest.TestCase):
   def test_CreateBuildCommand(self):
     with tempfile.TemporaryDirectory() as temp_dir:
       suffix = '.bat' if sys.platform.startswith('win32') else ''
-      with self.assertRaisesRegex(Exception, 'Found neither'):
-        gn_helpers.CreateBuildCommand(temp_dir)
+      self.assertEqual(f'autoninja{suffix}',
+                       gn_helpers.CreateBuildCommand(temp_dir)[0])
 
       siso_deps = pathlib.Path(temp_dir) / '.siso_deps'
       siso_deps.touch()
       self.assertEqual(f'autosiso{suffix}',
                        gn_helpers.CreateBuildCommand(temp_dir)[0])
+
+      with mock.patch('shutil.which', lambda x: None):
+        cmd = gn_helpers.CreateBuildCommand(temp_dir)
+        self.assertIn('depot_tools', cmd[0])
+        self.assertIn(f'{os.sep}siso', cmd[0])
+        self.assertEqual(['ninja', '-C', temp_dir], cmd[1:])
 
       ninja_deps = pathlib.Path(temp_dir) / '.ninja_deps'
       ninja_deps.touch()
@@ -336,7 +343,10 @@ class UnitTest(unittest.TestCase):
                        gn_helpers.CreateBuildCommand(temp_dir)[0])
 
       with mock.patch('shutil.which', lambda x: None):
-        self.assertIn('depot_tools', gn_helpers.CreateBuildCommand(temp_dir)[0])
+        cmd = gn_helpers.CreateBuildCommand(temp_dir)
+        self.assertIn('depot_tools', cmd[0])
+        self.assertIn(f'{os.sep}ninja', cmd[0])
+        self.assertEqual(['-C', temp_dir], cmd[1:])
 
 
 if __name__ == '__main__':

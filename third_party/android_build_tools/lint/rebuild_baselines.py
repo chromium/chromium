@@ -8,14 +8,17 @@ import argparse
 import logging
 import pathlib
 import subprocess
+import sys
 from typing import List, Optional
 
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[3]
 _CLANK_PATH = _SRC_PATH / 'clank'
 _OUTPUT_DIR_ROOT = _SRC_PATH / 'out'
-_AUTONINJA_PATH = _SRC_PATH / 'third_party' / 'depot_tools' / 'autoninja'
 _NINJA_PATH = _SRC_PATH / 'third_party' / 'ninja' / 'ninja'
 _GN_PATH = _SRC_PATH / 'buildtools' / 'linux64' / 'gn'
+
+sys.path.insert(1, str(_SRC_PATH / 'build'))
+import gn_helpers
 
 
 def build_all_lint_targets(
@@ -61,9 +64,9 @@ def build_all_lint_targets(
         logging.info('Did not find any targets to build.')
     else:
         logging.info(f'Re-building lint targets: {target_names}')
-        subprocess.run([_AUTONINJA_PATH, '-C', out_dir] + target_names,
-                       check=True,
-                       capture_output=not verbose)
+        cmd = gn_helpers.CreateBuildCommand(str(out_dir)) + target_names
+        # Do not show output by default since all lint warnings are printed.
+        subprocess.run(cmd, check=True, capture_output=not verbose)
 
     return built_targets + target_names
 

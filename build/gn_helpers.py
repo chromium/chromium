@@ -550,11 +550,16 @@ def CreateBuildCommand(output_directory):
   suffix = '.bat' if sys.platform.startswith('win32') else ''
   # Prefer the version on PATH, but fallback to known version if PATH doesn't
   # have one (e.g. on bots).
-  prefix = ''
   if not shutil.which(f'autoninja{suffix}'):
     prefix = os.path.join(_CHROMIUM_ROOT, 'third_party', 'depot_tools', '')
-  ninja_cmd = [f'{prefix}autoninja{suffix}']
-  siso_cmd = [f'{prefix}autosiso{suffix}']
+    # Also - bots configure reclient manually, and so do not use the "auto"
+    # wrappers.
+    ninja_cmd = [f'{prefix}ninja{suffix}']
+    siso_cmd = [f'{prefix}siso{suffix}', 'ninja']
+  else:
+    ninja_cmd = [f'autoninja{suffix}']
+    siso_cmd = [f'autosiso{suffix}']
+
   if output_directory and os.path.relpath(output_directory) != '.':
     ninja_cmd += ['-C', output_directory]
     siso_cmd += ['-C', output_directory]
@@ -564,12 +569,6 @@ def CreateBuildCommand(output_directory):
     raise Exception('Found both .siso_deps and .ninja_deps in '
                     f'{output_directory}. Not sure which build tool to use. '
                     'Please delete one, or better, run "gn clean".')
-  if not (siso_deps or ninja_deps):
-    raise Exception('Found neither .siso_deps nor .ninja_deps in '
-                    f'{output_directory}. Not sure which build tool to use. '
-                    'Please choose a tool via either:\n'
-                    f'{shlex.join(ninja_cmd)} build.ninja\n'
-                    f'{shlex.join(siso_cmd)} build.ninja\n')
   if siso_deps:
     return siso_cmd
   return ninja_cmd
