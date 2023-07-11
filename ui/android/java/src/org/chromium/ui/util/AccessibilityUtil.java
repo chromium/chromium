@@ -29,6 +29,7 @@ public class AccessibilityUtil {
     /**
      * An observer to be notified of accessibility status changes.
      */
+    @Deprecated
     public interface Observer {
         /**
          * @param enabled Whether touch exploration or an accessibility service that can perform

@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter.DateViewHolder;
@@ -292,7 +291,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
 
             mHistoryClustersCoordinator = new HistoryClustersCoordinator(mProfile, activity,
                     TemplateUrlServiceFactory.getForProfile(mProfile), historyClustersDelegate,
-                    ChromeAccessibilityUtil.get(), mSnackbarManager);
+                    mSnackbarManager);
         }
 
         // 1. Create selectable components.
