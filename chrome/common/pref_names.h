@@ -2778,8 +2778,6 @@ inline constexpr char kPowerMetricsDailySample[] = "power.metrics.daily_sample";
 
 // Integer prefs used to back event counts reported by
 // ash::PowerMetricsReporter.
-inline constexpr char kPowerMetricsIdleScreenDimCount[] =
-    "power.metrics.idle_screen_dim_count";
 inline constexpr char kPowerMetricsIdleScreenOffCount[] =
     "power.metrics.idle_screen_off_count";
 inline constexpr char kPowerMetricsIdleSuspendCount[] =

@@ -50,13 +50,6 @@ class PowerMetricsReporterTest : public testing::Test {
         power_manager::ScreenIdleState());
   }
 
-  // Notifies |reporter_| that the screen is dimmed and on.
-  void SendDimmedScreenIdleState() {
-    power_manager::ScreenIdleState state;
-    state.set_dimmed(true);
-    chromeos::FakePowerManagerClient::Get()->SendScreenIdleStateChanged(state);
-  }
-
   // Notifies |reporter_| that the screen is dimmed and off.
   void SendDimmedAndOffScreenIdleState() {
     power_manager::ScreenIdleState state;
@@ -72,14 +65,11 @@ class PowerMetricsReporterTest : public testing::Test {
 
   // Instructs |reporter_| to report daily metrics due to the passage of a day
   // and verifies that it reports one sample with each of the passed values.
-  void TriggerDailyEventAndVerifyHistograms(int idle_dim_count,
-                                            int idle_off_count,
+  void TriggerDailyEventAndVerifyHistograms(int idle_off_count,
                                             int idle_suspend_count,
                                             int lid_closed_suspend_count) {
     base::HistogramTester histogram_tester;
     TriggerDailyEvent(metrics::DailyEvent::IntervalType::DAY_ELAPSED);
-    histogram_tester.ExpectUniqueSample(
-        PowerMetricsReporter::kIdleScreenDimCountName, idle_dim_count, 1);
     histogram_tester.ExpectUniqueSample(
         PowerMetricsReporter::kIdleScreenOffCountName, idle_off_count, 1);
     histogram_tester.ExpectUniqueSample(
@@ -97,59 +87,51 @@ class PowerMetricsReporterTest : public testing::Test {
 TEST_F(PowerMetricsReporterTest, CountAndReportEvents) {
   // Report two screen dims, one screen off event, and no suspends.
   SendNormalScreenIdleState();
-  SendDimmedScreenIdleState();
   SendDimmedAndOffScreenIdleState();
   SendNormalScreenIdleState();
-  SendDimmedScreenIdleState();
   SendNormalScreenIdleState();
-  TriggerDailyEventAndVerifyHistograms(2, 1, 0, 0);
+  TriggerDailyEventAndVerifyHistograms(1, 0, 0);
 
   // The next day, report three dims, two screen-offs, and one idle suspend.
-  SendDimmedScreenIdleState();
   SendDimmedAndOffScreenIdleState();
   chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_IDLE);
   chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
   SendNormalScreenIdleState();
-  SendDimmedScreenIdleState();
   SendDimmedAndOffScreenIdleState();
   SendNormalScreenIdleState();
-  SendDimmedScreenIdleState();
   SendNormalScreenIdleState();
-  TriggerDailyEventAndVerifyHistograms(3, 2, 1, 0);
+  TriggerDailyEventAndVerifyHistograms(2, 1, 0);
 
   // The next day, report a single lid-closed suspend.
   chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_LID_CLOSED);
   chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
-  TriggerDailyEventAndVerifyHistograms(0, 0, 0, 1);
+  TriggerDailyEventAndVerifyHistograms(0, 0, 1);
 
   // We should report zeros if a day passes without any events.
-  TriggerDailyEventAndVerifyHistograms(0, 0, 0, 0);
+  TriggerDailyEventAndVerifyHistograms(0, 0, 0);
 }
 
 TEST_F(PowerMetricsReporterTest, LoadInitialCountsFromPrefs) {
   // Create a new reporter and check that it loads its initial event counts from
   // prefs.
-  pref_service_.SetInteger(prefs::kPowerMetricsIdleScreenDimCount, 5);
   pref_service_.SetInteger(prefs::kPowerMetricsIdleScreenOffCount, 3);
   pref_service_.SetInteger(prefs::kPowerMetricsIdleSuspendCount, 2);
   ResetReporter();
-  TriggerDailyEventAndVerifyHistograms(5, 3, 2, 0);
+  TriggerDailyEventAndVerifyHistograms(3, 2, 0);
 
   // The previous report should've cleared the prefs, so a new reporter should
   // start out at zero.
   ResetReporter();
-  TriggerDailyEventAndVerifyHistograms(0, 0, 0, 0);
+  TriggerDailyEventAndVerifyHistograms(0, 0, 0);
 }
 
 TEST_F(PowerMetricsReporterTest, IgnoreUnchangedScreenIdleState) {
   // Only report transitions from undimmed to dimmed and from on to off.
   SendDimmedAndOffScreenIdleState();
   SendDimmedAndOffScreenIdleState();
-  SendDimmedScreenIdleState();
-  SendDimmedScreenIdleState();
-  TriggerDailyEventAndVerifyHistograms(1, 1, 0, 0);
+  TriggerDailyEventAndVerifyHistograms(1, 0, 0);
 }
 
 TEST_F(PowerMetricsReporterTest, IgnoreOtherSuspendReasons) {
@@ -157,7 +139,7 @@ TEST_F(PowerMetricsReporterTest, IgnoreOtherSuspendReasons) {
   chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
   chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
-  TriggerDailyEventAndVerifyHistograms(0, 0, 0, 0);
+  TriggerDailyEventAndVerifyHistograms(0, 0, 0);
 }
 
 TEST_F(PowerMetricsReporterTest, IgnoreDailyEventFirstRun) {
@@ -165,28 +147,25 @@ TEST_F(PowerMetricsReporterTest, IgnoreDailyEventFirstRun) {
   // shouldn't be sent in this case.
   base::HistogramTester tester;
   TriggerDailyEvent(metrics::DailyEvent::IntervalType::FIRST_RUN);
-  tester.ExpectTotalCount(PowerMetricsReporter::kIdleScreenDimCountName, 0);
   tester.ExpectTotalCount(PowerMetricsReporter::kIdleScreenOffCountName, 0);
   tester.ExpectTotalCount(PowerMetricsReporter::kIdleSuspendCountName, 0);
   tester.ExpectTotalCount(PowerMetricsReporter::kLidClosedSuspendCountName, 0);
 }
 
 TEST_F(PowerMetricsReporterTest, IgnoreDailyEventClockChanged) {
-  SendDimmedScreenIdleState();
   SendNormalScreenIdleState();
 
   // metrics::DailyEvent notifies observers if it sees that the system clock has
   // jumped back. Histograms shouldn't be sent in this case.
   base::HistogramTester tester;
   TriggerDailyEvent(metrics::DailyEvent::IntervalType::CLOCK_CHANGED);
-  tester.ExpectTotalCount(PowerMetricsReporter::kIdleScreenDimCountName, 0);
   tester.ExpectTotalCount(PowerMetricsReporter::kIdleScreenOffCountName, 0);
   tester.ExpectTotalCount(PowerMetricsReporter::kIdleSuspendCountName, 0);
   tester.ExpectTotalCount(PowerMetricsReporter::kLidClosedSuspendCountName, 0);
 
   // The existing stats should be cleared when the clock change notification is
   // received, so the next report should only contain zeros.
-  TriggerDailyEventAndVerifyHistograms(0, 0, 0, 0);
+  TriggerDailyEventAndVerifyHistograms(0, 0, 0);
 }
 
 }  // namespace ash

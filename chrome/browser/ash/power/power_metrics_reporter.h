@@ -26,7 +26,6 @@ class PowerMetricsReporter : public chromeos::PowerManagerClient::Observer {
  public:
   // Histogram names.
   static const char kDailyEventIntervalName[];
-  static const char kIdleScreenDimCountName[];
   static const char kIdleScreenOffCountName[];
   static const char kIdleSuspendCountName[];
   static const char kLidClosedSuspendCountName[];

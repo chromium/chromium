@@ -29,10 +29,6 @@ struct DailyCountInfo {
 // Registry of all daily counts.
 const DailyCountInfo kDailyCounts[] = {
     {
-        prefs::kPowerMetricsIdleScreenDimCount,
-        PowerMetricsReporter::kIdleScreenDimCountName,
-    },
-    {
         prefs::kPowerMetricsIdleScreenOffCount,
         PowerMetricsReporter::kIdleScreenOffCountName,
     },
@@ -71,8 +67,6 @@ class PowerMetricsReporter::DailyEventObserver
 
 const char PowerMetricsReporter::kDailyEventIntervalName[] =
     "Power.MetricsDailyEventInterval";
-const char PowerMetricsReporter::kIdleScreenDimCountName[] =
-    "Power.IdleScreenDimCountDaily";
 const char PowerMetricsReporter::kIdleScreenOffCountName[] =
     "Power.IdleScreenOffCountDaily";
 const char PowerMetricsReporter::kIdleSuspendCountName[] =
@@ -115,8 +109,6 @@ PowerMetricsReporter::~PowerMetricsReporter() {
 
 void PowerMetricsReporter::ScreenIdleStateChanged(
     const power_manager::ScreenIdleState& state) {
-  if (state.dimmed() && !old_screen_idle_state_.dimmed())
-    AddToCount(prefs::kPowerMetricsIdleScreenDimCount, 1);
   if (state.off() && !old_screen_idle_state_.off())
     AddToCount(prefs::kPowerMetricsIdleScreenOffCount, 1);
 
