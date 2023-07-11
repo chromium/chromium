@@ -106,15 +106,16 @@ void IOSurfaceContext::PoisonContextAndSharegroup() {
     return;
 
   auto* type_map = GetTypeMap();
-  for (TypeMap::iterator it = type_map->begin(); it != type_map->end(); ++it) {
-    it->second->poisoned_ = true;
+  for (auto& it : *type_map) {
+    it.second->poisoned_ = true;
   }
   type_map->clear();
 }
 
 IOSurfaceContext::IOSurfaceContext(
-    Type type, base::ScopedTypeRef<CGLContextObj> cgl_context)
-    : type_(type), cgl_context_(cgl_context), poisoned_(false) {
+    Type type,
+    base::ScopedTypeRef<CGLContextObj> cgl_context)
+    : type_(type), cgl_context_(cgl_context) {
   auto* type_map = GetTypeMap();
   DCHECK(type_map->find(type_) == type_map->end());
   type_map->insert(std::make_pair(type_, this));

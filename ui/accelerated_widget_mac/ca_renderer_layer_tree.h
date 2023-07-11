@@ -15,7 +15,6 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,6 +27,10 @@
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gfx/video_types.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class AVSampleBufferDisplayLayer;
 
@@ -140,7 +143,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     const raw_ptr<CARendererLayerTree> tree_;
 
     std::list<ClipAndSortingLayer> clip_and_sorting_layers_;
-    base::scoped_nsobject<CALayer> ca_layer_;
+    CALayer* __strong ca_layer_;
 
     // Weak pointer to the layer in the old CARendererLayerTree that will be
     // reused by this layer, and the weak factory used to make that pointer.
@@ -179,8 +182,8 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     gfx::RRectF rounded_corner_bounds_;
     unsigned sorting_context_id_ = 0;
     bool is_singleton_sorting_context_ = false;
-    base::scoped_nsobject<CALayer> clipping_ca_layer_;
-    base::scoped_nsobject<CALayer> rounded_corner_ca_layer_;
+    CALayer* __strong clipping_ca_layer_;
+    CALayer* __strong rounded_corner_ca_layer_;
 
     // The status when used as an old layer.
     bool ca_layer_used_ = false;
@@ -214,7 +217,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     std::list<ContentLayer> content_layers_;
 
     gfx::Transform transform_;
-    base::scoped_nsobject<CALayer> ca_layer_;
+    CALayer* __strong ca_layer_;
 
     // The ca layer status when used as an old layer.
     bool ca_layer_used_ = false;
@@ -287,15 +290,15 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     gfx::ProtectedVideoType protected_video_type_ =
         gfx::ProtectedVideoType::kClear;
 
-    base::scoped_nsobject<CALayer> ca_layer_;
+    CALayer* __strong ca_layer_;
 
     // If this layer's contents can be represented as an
     // AVSampleBufferDisplayLayer, then |ca_layer| will point to |av_layer|.
-    base::scoped_nsobject<AVSampleBufferDisplayLayer> av_layer_;
+    AVSampleBufferDisplayLayer* __strong av_layer_;
 
     // Layer used to colorize content when it updates, if borders are
     // enabled.
-    base::scoped_nsobject<CALayer> update_indicator_layer_;
+    CALayer* __strong update_indicator_layer_;
 
     // Indicate the content layer order in the whole layer tree.
     int layer_order_ = 0;
@@ -314,7 +317,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   bool has_committed_ = false;
   const bool allow_av_sample_buffer_display_layer_ = true;
   const bool allow_solid_color_layers_ = true;
-  id<MTLDevice> metal_device_ = nil;
+  id<MTLDevice> __strong metal_device_ = nil;
 
   // Used for uma.
   int changed_io_surfaces_during_commit_ = 0;

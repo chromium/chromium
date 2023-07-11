@@ -7,8 +7,7 @@
 
 #include <OpenGL/OpenGL.h>
 
-
-#include "base/mac/scoped_nsobject.h"
+#include "base/mac/scoped_typeref.h"
 #include "base/memory/ref_counted.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 #include "ui/gl/gpu_switching_observer.h"
@@ -56,7 +55,7 @@ class IOSurfaceContext
   Type type_;
   base::ScopedTypeRef<CGLContextObj> cgl_context_;
 
-  bool poisoned_;
+  bool poisoned_ = false;
 };
 
 }  // namespace ui

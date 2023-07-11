@@ -8,9 +8,12 @@
 #include <IOSurface/IOSurfaceRef.h>
 
 #include "base/mac/scoped_cftyperef.h"
-#import "base/mac/scoped_nsobject.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 #include "ui/accelerated_widget_mac/ca_layer_frame_sink.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class CALayer;
 @class CALayerHost;
@@ -41,7 +44,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT DisplayCALayerTree
                          float scale_factor);
 
   // The root layer of the tree specified at creation time.
-  base::scoped_nsobject<CALayer> root_layer_;
+  CALayer* __strong root_layer_;
 
   // A flipped layer, which acts as the parent of either |remote_layer_| or
   // |io_surface_layer|. This layer is flipped so that the we don't need to
@@ -56,13 +59,13 @@ class ACCELERATED_WIDGET_MAC_EXPORT DisplayCALayerTree
   // at the lower left of the drawing area. Thus, we don't need to flip the
   // coordinate system on iOS as it's already set the way we want it to be. But
   // this layer is still used for robustness.
-  base::scoped_nsobject<CALayer> maybe_flipped_layer_;
+  CALayer* __strong maybe_flipped_layer_;
 
   // A remote CALayer with content provided by the output surface.
-  base::scoped_nsobject<CALayerHost> remote_layer_;
+  CALayerHost* __strong remote_layer_;
 
   // A CALayer that has its content set to an IOSurface.
-  base::scoped_nsobject<CALayer> io_surface_layer_;
+  CALayer* __strong io_surface_layer_;
 };
 
 }  // namespace ui

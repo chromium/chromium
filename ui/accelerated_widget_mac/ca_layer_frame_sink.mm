@@ -13,6 +13,10 @@
 #include "ui/accelerated_widget_mac/ca_layer_frame_sink_provider.h"
 #endif
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace ui {
 
 // static
@@ -21,7 +25,7 @@ CALayerFrameSink* CALayerFrameSink::FromAcceleratedWidget(
 #if BUILDFLAG(IS_MAC)
   return AcceleratedWidgetMac::Get(widget);
 #else
-  id object = (__bridge id)widget;
+  id object = (__bridge id)(void*)widget;
   if ([object isKindOfClass:[CALayerFrameSinkProvider class]]) {
     return [(CALayerFrameSinkProvider*)object frameSink];
   }

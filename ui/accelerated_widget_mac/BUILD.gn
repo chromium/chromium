@@ -21,6 +21,9 @@ component("accelerated_widget_mac") {
     "ACCELERATED_WIDGET_MAC_IMPLEMENTATION",
     "GL_SILENCE_DEPRECATION",
   ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
   frameworks = [
     "AVFoundation.framework",
     "CoreGraphics.framework",
@@ -67,7 +70,10 @@ component("accelerated_widget_mac") {
 }
 
 test("accelerated_widget_mac_unittests") {
-  configs += [ "//build/config:precompiled_headers" ]
+  configs += [
+    "//build/config:precompiled_headers",
+    "//build/config/compiler:enable_arc",
+  ]
   sources = [ "ca_layer_tree_unittest_mac.mm" ]
   deps = [
     ":accelerated_widget_mac",

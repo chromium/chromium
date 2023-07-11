@@ -17,6 +17,10 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @interface CALayer (PrivateAPI)
 - (void)setContentsChanged;
 @end
@@ -31,20 +35,20 @@ const int kMaxCrashDumps = 10;
 }  // namespace
 
 DisplayCALayerTree::DisplayCALayerTree(CALayer* root_layer)
-    : root_layer_([root_layer retain]) {
+    : root_layer_(root_layer) {
   // Disable the fade-in animation as the layers are added.
   ScopedCAActionDisabler disabler;
 
   // Add a flipped transparent layer as a child, so that we don't need to
   // fiddle with the position of sub-layers -- they will always be at the
   // origin. Note that flipping is only applicable to macOS.
-  maybe_flipped_layer_.reset([[CALayer alloc] init]);
+  maybe_flipped_layer_ = [[CALayer alloc] init];
 #if BUILDFLAG(IS_MAC)
-  [maybe_flipped_layer_ setGeometryFlipped:YES];
-  [maybe_flipped_layer_
-      setAutoresizingMask:kCALayerWidthSizable | kCALayerHeightSizable];
+  maybe_flipped_layer_.geometryFlipped = YES;
+  maybe_flipped_layer_.autoresizingMask =
+      kCALayerWidthSizable | kCALayerHeightSizable;
 #endif
-  [maybe_flipped_layer_ setAnchorPoint:CGPointZero];
+  maybe_flipped_layer_.anchorPoint = CGPointZero;
   [root_layer_ addSublayer:maybe_flipped_layer_];
 
 #if BUILDFLAG(IS_IOS)
@@ -59,8 +63,8 @@ DisplayCALayerTree::~DisplayCALayerTree() {
   [maybe_flipped_layer_ removeFromSuperlayer];
   [remote_layer_ removeFromSuperlayer];
   [io_surface_layer_ removeFromSuperlayer];
-  remote_layer_.reset();
-  io_surface_layer_.reset();
+  remote_layer_ = nil;
+  io_surface_layer_ = nil;
 }
 
 void DisplayCALayerTree::UpdateCALayerTree(
@@ -72,11 +76,11 @@ void DisplayCALayerTree::UpdateCALayerTree(
 
   // iOS doesn't support autoresizing mask. Thus, adjust the bounds.
 #if BUILDFLAG(IS_IOS)
-  [maybe_flipped_layer_
-      setBounds:CGRectMake(0, 0, dip_size.width(), dip_size.height())];
+  maybe_flipped_layer_.bounds =
+      CGRectMake(0, 0, dip_size.width(), dip_size.height());
 
-  if ([maybe_flipped_layer_ contentsScale] != ca_layer_params.scale_factor) {
-    [maybe_flipped_layer_ setContentsScale:ca_layer_params.scale_factor];
+  if (maybe_flipped_layer_.contentsScale != ca_layer_params.scale_factor) {
+    maybe_flipped_layer_.contentsScale = ca_layer_params.scale_factor;
   }
 #endif
 
@@ -104,39 +108,39 @@ void DisplayCALayerTree::UpdateCALayerTree(
   }
 
   // Warn if the frame specified neither.
-  if (ca_layer_params.io_surface_mach_port && !ca_layer_params.ca_context_id)
+  if (ca_layer_params.io_surface_mach_port && !ca_layer_params.ca_context_id) {
     LOG(ERROR) << "Frame had neither valid CAContext nor valid IOSurface.";
+  }
 
   // If there was an error or if the frame specified nothing, then clear all
   // contents.
   if (io_surface_layer_ || remote_layer_) {
     ScopedCAActionDisabler disabler;
     [io_surface_layer_ removeFromSuperlayer];
-    io_surface_layer_.reset();
+    io_surface_layer_ = nil;
     [remote_layer_ removeFromSuperlayer];
-    remote_layer_.reset();
+    remote_layer_ = nil;
   }
 }
 
 void DisplayCALayerTree::GotCALayerFrame(uint32_t ca_context_id) {
   // Early-out if the remote layer has not changed.
-  if ([remote_layer_ contextId] == ca_context_id)
+  if (remote_layer_.contextId == ca_context_id) {
     return;
+  }
 
   TRACE_EVENT0("ui", "DisplayCALayerTree::GotCAContextFrame");
   ScopedCAActionDisabler disabler;
 
   // Create the new CALayerHost.
-  base::scoped_nsobject<CALayerHost> new_remote_layer(
-      [[CALayerHost alloc] init]);
+  CALayerHost* new_remote_layer = [[CALayerHost alloc] init];
   // Anchor point on iOS might be at (0.5,0.5) as it's a default value there.
   // Thus, explicitly set it to (0,0), which doesn't hurt macOS as it also
   // expects to have all the attached layers of the context at (0,0).
-  [new_remote_layer setAnchorPoint:CGPointZero];
-  [new_remote_layer setContextId:ca_context_id];
+  new_remote_layer.anchorPoint = CGPointZero;
+  new_remote_layer.contextId = ca_context_id;
 #if BUILDFLAG(IS_MAC)
-  [new_remote_layer
-      setAutoresizingMask:kCALayerMaxXMargin | kCALayerMaxYMargin];
+  new_remote_layer.autoresizingMask = kCALayerMaxXMargin | kCALayerMaxYMargin;
 #endif
 
   // Update the local CALayer tree.
@@ -147,7 +151,7 @@ void DisplayCALayerTree::GotCALayerFrame(uint32_t ca_context_id) {
   // Ensure that the IOSurface layer be removed.
   if (io_surface_layer_) {
     [io_surface_layer_ removeFromSuperlayer];
-    io_surface_layer_.reset();
+    io_surface_layer_ = nil;
   }
 }
 
@@ -161,27 +165,28 @@ void DisplayCALayerTree::GotIOSurfaceFrame(
 
   // Create (if needed) and update the IOSurface layer with new content.
   if (!io_surface_layer_) {
-    io_surface_layer_.reset([[CALayer alloc] init]);
-    [io_surface_layer_ setContentsGravity:kCAGravityTopLeft];
-    [io_surface_layer_ setAnchorPoint:CGPointZero];
+    io_surface_layer_ = [[CALayer alloc] init];
+    io_surface_layer_.contentsGravity = kCAGravityTopLeft;
+    io_surface_layer_.anchorPoint = CGPointZero;
     [maybe_flipped_layer_ addSublayer:io_surface_layer_];
   }
-  id new_contents = static_cast<id>(io_surface.get());
-  if (new_contents && new_contents == [io_surface_layer_ contents])
+  id new_contents = (__bridge id)io_surface.get();
+  if (new_contents && new_contents == io_surface_layer_.contents) {
     [io_surface_layer_ setContentsChanged];
-  else
-    [io_surface_layer_ setContents:new_contents];
+  } else {
+    io_surface_layer_.contents = new_contents;
+  }
 
-  [io_surface_layer_
-      setBounds:CGRectMake(0, 0, dip_size.width(), dip_size.height())];
-  if ([io_surface_layer_ contentsScale] != scale_factor) {
-    [io_surface_layer_ setContentsScale:scale_factor];
+  io_surface_layer_.bounds =
+      CGRectMake(0, 0, dip_size.width(), dip_size.height());
+  if (io_surface_layer_.contentsScale != scale_factor) {
+    io_surface_layer_.contentsScale = scale_factor;
   }
 
   // Ensure that the remote layer be removed.
   if (remote_layer_) {
     [remote_layer_ removeFromSuperlayer];
-    remote_layer_.reset();
+    remote_layer_ = nil;
   }
 }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import <AVFoundation/AVFoundation.h>
+
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
@@ -17,6 +18,10 @@
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @interface CALayer (Private)
 @property BOOL wantsExtendedDynamicRangeContent;
 @end
@@ -26,8 +31,8 @@ namespace gpu {
 namespace {
 
 struct CALayerProperties {
-  CALayerProperties() {}
-  ~CALayerProperties() {}
+  CALayerProperties() = default;
+  ~CALayerProperties() = default;
 
   bool is_clipped = true;
   gfx::Rect clip_rect;
@@ -92,9 +97,7 @@ void UpdateCALayerTree(std::unique_ptr<ui::CARendererLayerTree>& ca_layer_tree,
 
 class CALayerTreeTest : public testing::Test {
  protected:
-  void SetUp() override {
-    superlayer_.reset([[CALayer alloc] init]);
-  }
+  void SetUp() override { superlayer_ = [[CALayer alloc] init]; }
   // Traverse the tree. Validate that there exists only one content layer, and
   // return that layer.
   CALayer* GetOnlyContentLayer() {
@@ -109,7 +112,7 @@ class CALayerTreeTest : public testing::Test {
     EXPECT_EQ(1u, [[transform_layer sublayers] count]);
     return [transform_layer sublayers][0];
   }
-  base::scoped_nsobject<CALayer> superlayer_;
+  CALayer* __strong superlayer_;
 };
 
 // Test updating each layer's properties.
@@ -180,7 +183,7 @@ class CALayerTreePropertyUpdatesTest : public CALayerTreeTest {
                 [transform_layer sublayerTransform].m42);
 
       // Validate the content layer.
-      EXPECT_EQ(static_cast<id>(properties.io_surface.get()),
+      EXPECT_EQ((__bridge id)properties.io_surface.get(),
                 [content_layer contents]);
       EXPECT_EQ(properties.contents_rect,
                 gfx::RectF([content_layer contentsRect]));
@@ -420,7 +423,7 @@ class CALayerTreePropertyUpdatesTest : public CALayerTreeTest {
       EXPECT_EQ(content_layer, [transform_layer sublayers][0]);
 
       // Validate the content layer.
-      EXPECT_EQ(static_cast<id>(properties.io_surface.get()),
+      EXPECT_EQ((__bridge id)properties.io_surface.get(),
                 [content_layer contents]);
       EXPECT_EQ(kCALayerBottomEdge, [content_layer edgeAntialiasingMask]);
     }
@@ -474,7 +477,7 @@ class CALayerTreePropertyUpdatesTest : public CALayerTreeTest {
                 [transform_layer sublayerTransform].m42);
 
       // Validate the content layer.
-      EXPECT_EQ(static_cast<id>(properties.io_surface.get()),
+      EXPECT_EQ((__bridge id)properties.io_surface.get(),
                 [content_layer contents]);
       EXPECT_EQ(properties.contents_rect,
                 gfx::RectF([content_layer contentsRect]));
@@ -635,11 +638,11 @@ TEST_F(CALayerTreeTest, SplitSortingContextZero) {
   CALayer* content_layer_4 = [transform_layer_2_0 sublayers][1];
 
   // Validate that the layers come out in order.
-  EXPECT_EQ(static_cast<id>(io_surfaces[0].get()), [content_layer_0 contents]);
-  EXPECT_EQ(static_cast<id>(io_surfaces[1].get()), [content_layer_1 contents]);
-  EXPECT_EQ(static_cast<id>(io_surfaces[2].get()), [content_layer_2 contents]);
-  EXPECT_EQ(static_cast<id>(io_surfaces[3].get()), [content_layer_3 contents]);
-  EXPECT_EQ(static_cast<id>(io_surfaces[4].get()), [content_layer_4 contents]);
+  EXPECT_EQ((__bridge id)io_surfaces[0].get(), [content_layer_0 contents]);
+  EXPECT_EQ((__bridge id)io_surfaces[1].get(), [content_layer_1 contents]);
+  EXPECT_EQ((__bridge id)io_surfaces[2].get(), [content_layer_2 contents]);
+  EXPECT_EQ((__bridge id)io_surfaces[3].get(), [content_layer_3 contents]);
+  EXPECT_EQ((__bridge id)io_surfaces[4].get(), [content_layer_4 contents]);
 }
 
 // Verify that sorting contexts are allocated appropriately.
@@ -700,9 +703,9 @@ TEST_F(CALayerTreeTest, SortingContexts) {
   CALayer* content_layer_2 = [transform_layer_2 sublayers][0];
 
   // Validate that the layers come out in order.
-  EXPECT_EQ(static_cast<id>(io_surfaces[0].get()), [content_layer_0 contents]);
-  EXPECT_EQ(static_cast<id>(io_surfaces[1].get()), [content_layer_1 contents]);
-  EXPECT_EQ(static_cast<id>(io_surfaces[2].get()), [content_layer_2 contents]);
+  EXPECT_EQ((__bridge id)io_surfaces[0].get(), [content_layer_0 contents]);
+  EXPECT_EQ((__bridge id)io_surfaces[1].get(), [content_layer_1 contents]);
+  EXPECT_EQ((__bridge id)io_surfaces[2].get(), [content_layer_2 contents]);
 }
 
 // Verify that sorting contexts must all have the same clipping properties.
