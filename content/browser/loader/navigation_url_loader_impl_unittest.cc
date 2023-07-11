@@ -51,6 +51,7 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
+#include "services/network/shared_storage/shared_storage_request_helper.h"
 #include "services/network/test/url_loader_context_for_tests.h"
 #include "services/network/url_loader.h"
 #include "services/network/url_request_context_owner.h"
@@ -128,7 +129,10 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         /*accept_ch_frame_observer=*/mojo::NullRemote(),
         /*third_party_cookies_enabled=*/true, net::CookieSettingOverrides(),
         /*cache_transparency_settings=*/nullptr,
-        /*attribution_request_helper=*/nullptr);
+        /*attribution_request_helper=*/nullptr,
+        std::make_unique<network::SharedStorageRequestHelper>(
+            /*shared_storage_writable=*/false,
+            /*observer=*/nullptr));
   }
 
   bool MaybeCreateLoaderForResponse(

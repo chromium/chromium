@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -94,6 +95,7 @@
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/sec_header_helpers.h"
 #include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
+#include "services/network/shared_storage/shared_storage_request_helper.h"
 #include "services/network/throttling/scoped_throttling_token.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
 #include "services/network/url_loader_factory.h"
@@ -502,7 +504,8 @@ URLLoader::URLLoader(
     bool third_party_cookies_enabled,
     net::CookieSettingOverrides cookie_setting_overrides,
     const CacheTransparencySettings* cache_transparency_settings,
-    std::unique_ptr<AttributionRequestHelper> attribution_request_helper)
+    std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
+    std::unique_ptr<SharedStorageRequestHelper> shared_storage_request_helper)
     : url_request_context_(context.GetUrlRequestContext()),
       network_context_client_(context.GetNetworkContextClient()),
       delete_callback_(std::move(delete_callback)),
@@ -543,6 +546,7 @@ URLLoader::URLLoader(
       trust_token_helper_factory_(std::move(trust_token_helper_factory)),
       shared_dictionary_checker_(std::move(shared_dictionary_checker)),
       attribution_request_helper_(std::move(attribution_request_helper)),
+      shared_storage_request_helper_(std::move(shared_storage_request_helper)),
       origin_access_list_(context.GetOriginAccessList()),
       cookie_observer_remote_(std::move(cookie_observer)),
       cookie_observer_(PtrOrFallback(cookie_observer_remote_,
@@ -784,7 +788,7 @@ URLLoader::URLLoader(
     return;
   }
 
-  BeginTrustTokenOperationIfNecessaryAndThenScheduleStart(request);
+  ProcessOutboundTrustTokenInterceptor(request);
 }
 
 // This class is used to manage the queue of pending file upload operations
@@ -944,26 +948,33 @@ void URLLoader::SetUpUpload(const ResourceRequest& request,
                             base::Unretained(this)),
         url_request_.get());
   }
-  BeginTrustTokenOperationIfNecessaryAndThenScheduleStart(request);
+  ProcessOutboundTrustTokenInterceptor(request);
+}
+
+void URLLoader::ProcessOutboundSharedStorageInterceptor() {
+  DCHECK(shared_storage_request_helper_);
+  shared_storage_request_helper_->ProcessOutgoingRequest(*url_request_);
+  ScheduleStart();
 }
 
 // TODO(https://crbug.com/1410256): Parallelize Private State Tokens and
 // Attribution operations.
-void URLLoader::BeginAttributionIfNecessaryAndThenScheduleStart() {
+void URLLoader::ProcessOutboundAttributionInterceptor() {
   if (!attribution_request_helper_) {
-    ScheduleStart();
+    ProcessOutboundSharedStorageInterceptor();
     return;
   }
 
   attribution_request_helper_->Begin(
-      *url_request_, base::BindOnce(&URLLoader::ScheduleStart,
-                                    weak_ptr_factory_.GetWeakPtr()));
+      *url_request_,
+      base::BindOnce(&URLLoader::ProcessOutboundSharedStorageInterceptor,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void URLLoader::BeginTrustTokenOperationIfNecessaryAndThenScheduleStart(
+void URLLoader::ProcessOutboundTrustTokenInterceptor(
     const ResourceRequest& request) {
   if (!request.trust_token_params) {
-    BeginAttributionIfNecessaryAndThenScheduleStart();
+    ProcessOutboundAttributionInterceptor();
     return;
   }
 
@@ -1077,7 +1088,7 @@ void URLLoader::OnDoneBeginningTrustTokenOperation(
           header_pair.key, header_pair.value, /*overwrite=*/true);
     }
 
-    BeginAttributionIfNecessaryAndThenScheduleStart();
+    ProcessOutboundAttributionInterceptor();
   } else if (status == mojom::TrustTokenOperationStatus::kAlreadyExists ||
              status == mojom::TrustTokenOperationStatus::
                            kOperationSuccessfullyFulfilledLocally) {
@@ -1173,6 +1184,12 @@ void URLLoader::FollowRedirect(
   } else {
     private_network_access_checker_.ResetForRedirect(*deferred_redirect_url_);
   }
+
+  // Propagate removal of shared storage eligiblity to the helper if the
+  // "Shared-Storage-Writable" request header has been removed.
+  DCHECK(shared_storage_request_helper_);
+  shared_storage_request_helper_
+      ->RemoveEligibilityIfSharedStorageWritableRemoved(removed_headers);
 
   deferred_redirect_url_.reset();
   new_redirect_url_ = new_url;
@@ -1475,28 +1492,48 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   // Ensure that the redirect target is not treated as a pervasive payload.
   url_request_->set_expected_response_checksum(std::string());
 
-  RedirectAttributionIfNecessaryAndThenContinueOnReceiveRedirect(
-      redirect_info, std::move(response));
+  ProcessInboundAttributionInterceptorOnReceivedRedirect(redirect_info,
+                                                         std::move(response));
 }
 
-void URLLoader::RedirectAttributionIfNecessaryAndThenContinueOnReceiveRedirect(
+void URLLoader::ProcessInboundSharedStorageInterceptorOnReceivedRedirect(
+    const ::net::RedirectInfo& redirect_info,
+    mojom::URLResponseHeadPtr response) {
+  DCHECK(shared_storage_request_helper_);
+  uint64_t response_index = next_on_receive_redirect_response_index_++;
+  on_receive_redirect_responses_[response_index] = std::move(response);
+  if (!shared_storage_request_helper_->ProcessIncomingResponse(
+          *url_request_, base::BindOnce(&URLLoader::ContinueOnReceiveRedirect,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        redirect_info, response_index))) {
+    ContinueOnReceiveRedirect(redirect_info, response_index);
+  }
+}
+
+void URLLoader::ProcessInboundAttributionInterceptorOnReceivedRedirect(
     const net::RedirectInfo& redirect_info,
     mojom::URLResponseHeadPtr response) {
   if (!attribution_request_helper_) {
-    ContinueOnReceiveRedirect(redirect_info, std::move(response));
+    ProcessInboundSharedStorageInterceptorOnReceivedRedirect(
+        redirect_info, std::move(response));
     return;
   }
 
   attribution_request_helper_->OnReceiveRedirect(
       *url_request_, std::move(response), redirect_info,
-      base::BindOnce(&URLLoader::ContinueOnReceiveRedirect,
-                     weak_ptr_factory_.GetWeakPtr(), redirect_info));
+      base::BindOnce(
+          &URLLoader::ProcessInboundSharedStorageInterceptorOnReceivedRedirect,
+          weak_ptr_factory_.GetWeakPtr(), redirect_info));
 }
 
 void URLLoader::ContinueOnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
-    mojom::URLResponseHeadPtr response) {
+    uint64_t response_index) {
+  auto iter = on_receive_redirect_responses_.find(response_index);
+  DCHECK(iter != on_receive_redirect_responses_.end());
+  mojom::URLResponseHeadPtr response = std::move(iter->second);
   DCHECK(response);
+  on_receive_redirect_responses_.erase(iter);
   url_loader_client_.Get()->OnReceiveRedirect(redirect_info,
                                               std::move(response));
 }
@@ -1610,16 +1647,26 @@ void URLLoader::OnSSLCertificateError(net::URLRequest* request,
                      weak_ptr_factory_.GetWeakPtr(), ssl_info));
 }
 
-void URLLoader::
-    FinalizeAttributionIfNecessaryAndThenContinueOnResponseStarted() {
-  if (!attribution_request_helper_) {
+void URLLoader::ProcessInboundSharedStorageInterceptorOnResponseStarted() {
+  DCHECK(shared_storage_request_helper_);
+  if (!shared_storage_request_helper_->ProcessIncomingResponse(
+          *url_request_, base::BindOnce(&URLLoader::ContinueOnResponseStarted,
+                                        weak_ptr_factory_.GetWeakPtr()))) {
     ContinueOnResponseStarted();
+  }
+}
+
+void URLLoader::ProcessInboundAttributionInterceptorOnResponseStarted() {
+  if (!attribution_request_helper_) {
+    ProcessInboundSharedStorageInterceptorOnResponseStarted();
     return;
   }
 
   attribution_request_helper_->Finalize(
-      *response_, base::BindOnce(&URLLoader::ContinueOnResponseStarted,
-                                 weak_ptr_factory_.GetWeakPtr()));
+      *response_,
+      base::BindOnce(
+          &URLLoader::ProcessInboundSharedStorageInterceptorOnResponseStarted,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
@@ -1657,7 +1704,7 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
         url_request_.get(), request_destination_, transport_info_, response_);
   }
 
-  FinalizeAttributionIfNecessaryAndThenContinueOnResponseStarted();
+  ProcessInboundAttributionInterceptorOnResponseStarted();
 }
 
 void URLLoader::OnDoneFinalizingTrustTokenOperation(
@@ -1672,7 +1719,7 @@ void URLLoader::OnDoneFinalizingTrustTokenOperation(
     return;
   }
 
-  FinalizeAttributionIfNecessaryAndThenContinueOnResponseStarted();
+  ProcessInboundAttributionInterceptorOnResponseStarted();
 }
 
 void URLLoader::MaybeSendTrustTokenOperationResultToDevTools() {

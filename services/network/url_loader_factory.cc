@@ -32,6 +32,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
+#include "services/network/shared_storage/shared_storage_request_helper.h"
 #include "services/network/trust_tokens/trust_token_request_helper_factory.h"
 #include "services/network/url_loader.h"
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
@@ -380,6 +381,11 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
         context_->network_service()->trust_token_key_commitments());
   }
 
+  std::unique_ptr<SharedStorageRequestHelper> shared_storage_request_helper =
+      std::make_unique<SharedStorageRequestHelper>(
+          resource_request.shared_storage_writable,
+          GetURLLoaderNetworkServiceObserver());
+
   auto loader = std::make_unique<URLLoader>(
       *this,
       base::BindOnce(&cors::CorsURLLoaderFactory::DestroyURLLoader,
@@ -394,7 +400,8 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
       std::move(devtools_observer), std::move(accept_ch_frame_observer),
       third_party_cookies_enabled, params_->cookie_setting_overrides,
       context_->cache_transparency_settings(),
-      std::move(attribution_request_helper));
+      std::move(attribution_request_helper),
+      std::move(shared_storage_request_helper));
 
   if (context_->GetMemoryCache())
     loader->SetMemoryCache(context_->GetMemoryCache()->GetWeakPtr());
