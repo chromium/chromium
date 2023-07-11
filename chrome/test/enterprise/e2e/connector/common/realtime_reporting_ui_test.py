@@ -48,20 +48,12 @@ def main(argv):
     # There's no trigger to force this operation or synchronize on it, but quick
     # experiments have shown 3-4 minutes in most cases, so 5 should be plenty.
     time.sleep(60 * 5)
-    # Open chrome://safe-browsing
-    safe_browsing_url = 'chrome://safe-browsing'
-    driver.get(safe_browsing_url)
-    WebDriverWait(driver=driver, timeout=10)
-    # navigate to "reporting events" tab
-    driver.find_element_by_css_selector('#reporting').click()
 
     # Verify Policy status legend in chrome://policy page
     # Switch to the new window
     policy_url = 'chrome://policy'
     logging.info('Navigating to chrome://policy')
-    # use visit so it will open policy app in a different tab
-    visit(window, policy_url)
-    driver.switch_to.window(driver.window_handles[1])
+    driver.get(policy_url)
     WebDriverWait(driver=driver, timeout=10)
 
     driver.find_element_by_xpath('//*[@id="reload-policies"]').click()
@@ -79,12 +71,6 @@ def main(argv):
     logging.info('Navigating to %s' % UnsafeDownloadLink)
     visit(window, UnsafeDownloadLink)
 
-    # print events logged at safe-browsing app
-    driver.switch_to.window(driver.window_handles[0])
-    WebDriverWait(driver=driver, timeout=10)
-    msgs = json.loads(
-        driver.find_element_by_css_selector('#reporting-events > div').text)
-    result['ReportedEvent'] = msgs
     result['DeviceId'] = deviceId.strip()
 
     hg = poll_histogram(driver, [
