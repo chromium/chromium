@@ -68,6 +68,11 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('safetyCheckShowReviewPanel'),
       },
+
+      hasSafetyCheckTriggeringExtension_: {
+        type: Boolean,
+        computed: 'computeHasSafetyCheckTriggeringExtension_(extensions)',
+      },
     };
   }
 
@@ -81,6 +86,7 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   private shownAppsCount_: number;
   private shownExtensionsCount_: number;
   private showSafetyCheckReviewPanel_: boolean;
+  private hasSafetyCheckTriggeringExtension_: boolean;
 
   getDetailsButton(id: string): HTMLElement|null {
     const item =
@@ -108,6 +114,20 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
 
     return i => [i.name, i.id].some(
                s => s.toLowerCase().includes(formattedFilter));
+  }
+
+  private computeHasSafetyCheckTriggeringExtension_(): boolean {
+    if (!this.extensions) {
+      return false;
+    }
+    for (const extension of this.extensions) {
+      if (!!extension.safetyCheckText &&
+          !!extension.safetyCheckText.panelString &&
+          this.showSafetyCheckReviewPanel_) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private shouldShowEmptyItemsMessage_() {

@@ -91,6 +91,11 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
         value: false,
       },
 
+      safetyCheckShowing: {
+        type: Boolean,
+        value: false,
+      },
+
       // The underlying ExtensionInfo itself. Public for use in declarative
       // bindings.
       data: Object,
@@ -115,6 +120,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
 
   delegate: ItemDelegate;
   inDevMode: boolean;
+  safetyCheckShowing: boolean;
   data: chrome.developerPrivate.ExtensionInfo;
   private showingDetails_: boolean;
   private firstInspectView_: chrome.developerPrivate.ExtensionView;
@@ -159,6 +165,10 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   }
 
   private onRemoveClick_() {
+    if (this.safetyCheckShowing && !this.data.safetyCheckText) {
+      chrome.metricsPrivate.recordUserAction(
+          'SafetyCheck.NonTriggeringExtensionRemoved');
+    }
     this.delegate.deleteItem(this.data.id);
   }
 

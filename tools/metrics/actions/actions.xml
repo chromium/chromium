@@ -28667,13 +28667,72 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="SafetyCheck.DetailWarningShown">
+<action name="SafetyCheck.DetailWarningShown" not_user_triggered="true">
   <owner>psarouthakis@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User is shown a safety check warning after navigating to the details page of
     an extension. This warning is shown when the extension needs a safety
     review.
+  </description>
+</action>
+
+<action name="SafetyCheck.NonTriggeringExtensionRemoved">
+  <owner>psarouthakis@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    User has clicked removed on an extension card while being shown the Safety
+    Check Review Panel on the chrome://extensions page. The extension being
+    removed is NOT one of the extensions listed in the Review Panel.
+  </description>
+</action>
+
+<action name="SafetyCheck.ReviewCompletion" not_user_triggered="true">
+  <owner>psarouthakis@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    User has reviewed all triggering extensions on the Safety Check Review Panel
+    on the chrome://extensions page and has been shown the green check mark
+    completion state.
+  </description>
+</action>
+
+<action name="SafetyCheck.ReviewPanelKeepClicked">
+  <owner>psarouthakis@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    User selected 'Keep this extension' for a Safety Check Review Panel entry in
+    the chrome://extensions page to keep an extension that has triggered a
+    safety check warning.
+  </description>
+</action>
+
+<action name="SafetyCheck.ReviewPanelRemoveAllClicked">
+  <owner>psarouthakis@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    User clicked the Remove All button in the chrome://extensions Safety Check
+    Review Panel to remove all extensions that triggered safety check warnings.
+  </description>
+</action>
+
+<action name="SafetyCheck.ReviewPanelRemoveClicked">
+  <owner>psarouthakis@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    User clicked the trash button for a Safety Check Review Panel entry in the
+    chrome://extensions page to remove an extension that has triggered a safety
+    check warning.
+  </description>
+</action>
+
+<action name="SafetyCheck.ReviewPanelShown" not_user_triggered="true">
+  <owner>psarouthakis@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    User was shown the Safety Check Review Panel in the chrome://extensions
+    page. This means that there is at least one extension that triggered a
+    safety check warning and should be reviewed by the user.
   </description>
 </action>
 

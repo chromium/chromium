@@ -111,6 +111,7 @@
           filter="[[computedFilter_]]"
           rendered-item-count="{{shownExtensionsCount_::dom-change}}">
         <extensions-item id="[[item.id]]" data="[[item]]"
+            safety-check-showing="[[hasSafetyCheckTriggeringExtension_]]"
             delegate="[[delegate]]" in-dev-mode="[[inDevMode]]">
         </extensions-item>
       </template>

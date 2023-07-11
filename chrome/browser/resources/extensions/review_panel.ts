@@ -151,13 +151,25 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
   private computeShouldShowCompletionInfo_(): boolean {
     const updatedUnsafeExtensions =
         this.getUnsafeExtensions_(this.extensions) || [];
-    return this.hasChangeBeenMade_ && updatedUnsafeExtensions.length === 0;
+    if (this.hasChangeBeenMade_ && updatedUnsafeExtensions.length === 0) {
+      chrome.metricsPrivate.recordUserAction('SafetyCheck.ReviewCompletion');
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private computeShouldShowUnsafeExtensions_(): boolean {
     const updatedUnsafeExtensions =
         this.getUnsafeExtensions_(this.extensions) || [];
-    return !this.hasChangeBeenMade_ && updatedUnsafeExtensions.length !== 0;
+    if (!this.hasChangeBeenMade_ && updatedUnsafeExtensions.length !== 0) {
+      if (!this.shouldShowUnsafeExtensions_) {
+        chrome.metricsPrivate.recordUserAction('SafetyCheck.ReviewPanelShown');
+      }
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -173,6 +185,8 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
    * Acknowledges the extension safety check warning.
    */
   private onKeepExtensionClick_() {
+    chrome.metricsPrivate.recordUserAction(
+        'SafetyCheck.ReviewPanelKeepClicked');
     this.$.makeExceptionMenu.close();
     if (this.lastClickedExtensionId_) {
       this.delegate.setItemSafetyCheckWarningAcknowledged(
@@ -184,11 +198,15 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
 
   private onRemoveExtensionClick_(
       e: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>): void {
+    chrome.metricsPrivate.recordUserAction(
+        'SafetyCheck.ReviewPanelRemoveClicked');
     this.delegate.deleteItem(e.model.item.id);
     this.hasChangeBeenMade_ = true;
   }
 
   private onRemoveAllExtensions_(): void {
+    chrome.metricsPrivate.recordUserAction(
+        'SafetyCheck.ReviewPanelRemoveAllClicked');
     // TODO(crbug.com/1432194): Call the private API to remove all extensions.
     this.hasChangeBeenMade_ = true;
   }
