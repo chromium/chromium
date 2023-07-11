@@ -28,6 +28,10 @@
 #import <AppKit/AppKit.h>
 #endif
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 extern "C" {
 CFTypeID SecKeyGetTypeID();
 }  // extern "C"
@@ -50,7 +54,7 @@ bool UncachedAmIBundled() {
     return g_override_am_i_bundled_value;
 
   // Yes, this is cheap.
-  return [[base::apple::OuterBundle() bundlePath] hasSuffix:@".app"];
+  return [apple::OuterBundle().bundlePath hasSuffix:@".app"];
 #endif
 }
 
@@ -89,12 +93,12 @@ bool IsBackgroundOnlyProcess() {
   // This function really does want to examine NSBundle's idea of the main
   // bundle dictionary.  It needs to look at the actual running .app's
   // Info.plist to access its LSUIElement property.
-  NSDictionary* info_dictionary = [base::apple::MainBundle() infoDictionary];
+  NSDictionary* info_dictionary = [apple::MainBundle() infoDictionary];
   return [info_dictionary[@"LSUIElement"] boolValue] != NO;
 }
 
 FilePath PathForFrameworkBundleResource(const char* resource_name) {
-  NSBundle* bundle = base::apple::FrameworkBundle();
+  NSBundle* bundle = apple::FrameworkBundle();
   NSURL* resource_url = [bundle URLForResource:@(resource_name)
                                  withExtension:nil];
   return NSURLToFilePath(resource_url);
@@ -102,7 +106,7 @@ FilePath PathForFrameworkBundleResource(const char* resource_name) {
 
 OSType CreatorCodeForCFBundleRef(CFBundleRef bundle) {
   OSType creator = kUnknownType;
-  CFBundleGetPackageInfo(bundle, NULL, &creator);
+  CFBundleGetPackageInfo(bundle, /*packageType=*/nullptr, &creator);
   return creator;
 }
 
@@ -120,7 +124,7 @@ bool GetSearchPathDirectory(NSSearchPathDirectory directory,
   DCHECK(result);
   NSArray<NSString*>* dirs =
       NSSearchPathForDirectoriesInDomains(directory, domain_mask, YES);
-  if ([dirs count] < 1) {
+  if (dirs.count < 1) {
     return false;
   }
   *result = NSStringToFilePath(dirs[0]);
@@ -217,7 +221,7 @@ FilePath GetInnermostAppBundlePath(const FilePath& exec_name) {
     return FilePath();
   }
 
-  auto app = base::ranges::find_if(
+  auto app = ranges::find_if(
       Reversed(components), [](const std::string& component) -> bool {
         return component.size() > kExtLength && EndsWith(component, kExt);
       });
@@ -293,7 +297,7 @@ const char* BaseBundleID() {
 void SetBaseBundleID(const char* new_base_bundle_id) {
   if (new_base_bundle_id != base_bundle_id) {
     free((void*)base_bundle_id);
-    base_bundle_id = new_base_bundle_id ? strdup(new_base_bundle_id) : NULL;
+    base_bundle_id = new_base_bundle_id ? strdup(new_base_bundle_id) : nullptr;
   }
 }
 
@@ -349,13 +353,9 @@ std::string GetValueFromDictionaryErrorMessage(
     CFStringRef key, const std::string& expected_type, CFTypeRef value) {
   ScopedCFTypeRef<CFStringRef> actual_type_ref(
       CFCopyTypeIDDescription(CFGetTypeID(value)));
-  return "Expected value for key " +
-      base::SysCFStringRefToUTF8(key) +
-      " to be " +
-      expected_type +
-      " but it was " +
-      base::SysCFStringRefToUTF8(actual_type_ref) +
-      " instead";
+  return "Expected value for key " + SysCFStringRefToUTF8(key) + " to be " +
+         expected_type + " but it was " +
+         SysCFStringRefToUTF8(actual_type_ref) + " instead";
 }
 
 NSURL* FilePathToNSURL(const FilePath& path) {
@@ -371,42 +371,44 @@ NSString* FilePathToNSString(const FilePath& path) {
 }
 
 FilePath NSStringToFilePath(NSString* str) {
-  if (![str length])
+  if (!str.length) {
     return FilePath();
-  return FilePath([str fileSystemRepresentation]);
+  }
+  return FilePath(str.fileSystemRepresentation);
 }
 
 FilePath NSURLToFilePath(NSURL* url) {
-  if (![url isFileURL])
+  if (!url.fileURL) {
     return FilePath();
-  return NSStringToFilePath([url path]);
+  }
+  return NSStringToFilePath(url.path);
 }
 
-base::ScopedCFTypeRef<CFURLRef> FilePathToCFURL(const FilePath& path) {
+ScopedCFTypeRef<CFURLRef> FilePathToCFURL(const FilePath& path) {
   DCHECK(!path.empty());
 
   // The function's docs promise that it does not require an NSAutoreleasePool.
   // A straightforward way to accomplish this is to use *Create* functions,
-  // combined with base::ScopedCFTypeRef.
+  // combined with ScopedCFTypeRef.
   const std::string& path_string = path.value();
-  base::ScopedCFTypeRef<CFStringRef> path_cfstring(CFStringCreateWithBytes(
+  ScopedCFTypeRef<CFStringRef> path_cfstring(CFStringCreateWithBytes(
       kCFAllocatorDefault, reinterpret_cast<const UInt8*>(path_string.data()),
       checked_cast<CFIndex>(path_string.length()), kCFStringEncodingUTF8,
       /*isExternalRepresentation=*/FALSE));
   if (!path_cfstring)
-    return base::ScopedCFTypeRef<CFURLRef>();
+    return ScopedCFTypeRef<CFURLRef>();
 
-  return base::ScopedCFTypeRef<CFURLRef>(CFURLCreateWithFileSystemPath(
+  return ScopedCFTypeRef<CFURLRef>(CFURLCreateWithFileSystemPath(
       kCFAllocatorDefault, path_cfstring, kCFURLPOSIXPathStyle,
       /*isDirectory=*/FALSE));
 }
 
 bool CFRangeToNSRange(CFRange range, NSRange* range_out) {
   NSUInteger end;
-  if (base::IsValueInRangeForNumericType<NSUInteger>(range.location) &&
-      base::IsValueInRangeForNumericType<NSUInteger>(range.length) &&
-      base::CheckAdd(range.location, range.length).AssignIfValid(&end) &&
-      base::IsValueInRangeForNumericType<NSUInteger>(end)) {
+  if (IsValueInRangeForNumericType<NSUInteger>(range.location) &&
+      IsValueInRangeForNumericType<NSUInteger>(range.length) &&
+      CheckAdd(range.location, range.length).AssignIfValid(&end) &&
+      IsValueInRangeForNumericType<NSUInteger>(end)) {
     *range_out = NSMakeRange(static_cast<NSUInteger>(range.location),
                              static_cast<NSUInteger>(range.length));
     return true;
@@ -423,7 +425,7 @@ std::ostream& operator<<(std::ostream& o, const CFStringRef string) {
 std::ostream& operator<<(std::ostream& o, const CFErrorRef err) {
   base::ScopedCFTypeRef<CFStringRef> desc(CFErrorCopyDescription(err));
   base::ScopedCFTypeRef<CFDictionaryRef> user_info(CFErrorCopyUserInfo(err));
-  CFStringRef errorDesc = NULL;
+  CFStringRef errorDesc = nullptr;
   if (user_info.get()) {
     errorDesc = reinterpret_cast<CFStringRef>(
         CFDictionaryGetValue(user_info.get(), kCFErrorDescriptionKey));

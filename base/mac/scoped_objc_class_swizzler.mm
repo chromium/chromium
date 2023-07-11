@@ -8,19 +8,23 @@
 
 #include "base/check_op.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace base::mac {
 
 ScopedObjCClassSwizzler::ScopedObjCClassSwizzler(Class target,
                                                  Class source,
                                                  SEL selector)
-    : old_selector_impl_(NULL), new_selector_impl_(NULL) {
+    : old_selector_impl_(nullptr), new_selector_impl_(nullptr) {
   Init(target, source, selector, selector);
 }
 
 ScopedObjCClassSwizzler::ScopedObjCClassSwizzler(Class target,
                                                  SEL original,
                                                  SEL alternate)
-    : old_selector_impl_(NULL), new_selector_impl_(NULL) {
+    : old_selector_impl_(nullptr), new_selector_impl_(nullptr) {
   Init(target, target, original, alternate);
 }
 
@@ -59,7 +63,7 @@ void ScopedObjCClassSwizzler::Init(Class target,
   DCHECK(new_types);
   DCHECK_EQ(0, strcmp(old_types, new_types));
   if (!old_types || !new_types || strcmp(old_types, new_types)) {
-    old_selector_impl_ = new_selector_impl_ = NULL;
+    old_selector_impl_ = new_selector_impl_ = nullptr;
     return;
   }
 

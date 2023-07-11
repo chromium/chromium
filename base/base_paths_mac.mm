@@ -16,6 +16,10 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace base {
 
 bool PathProviderMac(int key, base::FilePath* result) {

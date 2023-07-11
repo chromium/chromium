@@ -12,6 +12,10 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace base {
 namespace {
 
@@ -72,8 +76,9 @@ BatteryLevelProviderMac::GetBatteryStateImpl() {
   }
 
   base::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
-  kern_return_t result = IORegistryEntryCreateCFProperties(
-      service.get(), dict.InitializeInto(), 0, 0);
+  kern_return_t result =
+      IORegistryEntryCreateCFProperties(service.get(), dict.InitializeInto(),
+                                        /*allocator=*/nullptr, /*options=*/0);
 
   if (result != KERN_SUCCESS) {
     // Failing to retrieve the dictionary is unexpected.

@@ -279,8 +279,7 @@ BASE_EXPORT FilePath NSURLToFilePath(NSURL* url);
 //
 // This function only uses manually-owned resources, so it does not depend on an
 // NSAutoreleasePool being set up on the current thread.
-BASE_EXPORT base::ScopedCFTypeRef<CFURLRef> FilePathToCFURL(
-    const FilePath& path);
+BASE_EXPORT ScopedCFTypeRef<CFURLRef> FilePathToCFURL(const FilePath& path);
 
 #if defined(__OBJC__)
 // Converts |range| to an NSRange, returning the new range in |range_out|.

@@ -205,62 +205,6 @@ buildflag_header("message_pump_buildflags") {
   flags = [ "ENABLE_MESSAGE_PUMP_EPOLL=$enable_message_pump_epoll" ]
 }
 
-if (is_apple) {
-  # TODO(https://crbug.com/1280317): Merge back into the `base` target once all
-  # .mm files are ARCed.
-  source_set("base_arc") {
-    sources = [
-      "apple/backup_util.h",
-      "apple/backup_util.mm",
-      "apple/bundle_locations.h",
-      "apple/bundle_locations.mm",
-      "apple/owned_objc.h",
-      "apple/owned_objc.mm",
-      "file_version_info_mac.h",
-      "file_version_info_mac.mm",
-      "files/file_util_mac.mm",
-      "message_loop/message_pump_mac.h",
-      "message_loop/message_pump_mac.mm",
-      "strings/sys_string_conversions_mac.mm",
-      "system/sys_info_apple.mm",
-      "threading/platform_thread_mac.mm",
-      "time/time_mac.mm",
-    ]
-    defines = [ "BASE_IMPLEMENTATION" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
-    deps = [
-      ":base_static",
-      ":debugging_buildflags",
-      ":logging_buildflags",
-      ":tracing_buildflags",
-      "//base/allocator/partition_allocator:buildflags",
-      "//base/numerics:base_numerics",
-      "//build:blink_buildflags",
-      "//third_party/abseil-cpp:absl",
-    ]
-    if (is_mac) {
-      sources += [
-        "enterprise_util_mac.mm",
-        "mac/authorization_util.h",
-        "mac/authorization_util.mm",
-        "mac/launch_application.h",
-        "mac/launch_application.mm",
-        "mac/mac_util.mm",
-        "system/sys_info_mac.mm",
-      ]
-      frameworks = [
-        "AppKit.framework",
-        "Foundation.framework",
-        "OpenDirectory.framework",
-        "Security.framework",
-      ]
-    }
-    if (is_ios) {
-      deps += [ "//base/ios" ]
-    }
-  }
-}
-
 # Base and everything it depends on should be a static library rather than
 # a source set. Base is more of a "library" in the classic sense in that many
 # small parts of it are used in many different contexts. This combined with a
@@ -1983,20 +1927,84 @@ component("base") {
     ]
   }
 
+  # Mac or iOS.
+  if (is_apple) {
+    sources += [
+      "apple/backup_util.h",
+      "apple/backup_util.mm",
+      "apple/bridging.h",
+      "apple/bundle_locations.h",
+      "apple/bundle_locations.mm",
+      "apple/owned_objc.h",
+      "apple/owned_objc.mm",
+      "file_version_info_mac.h",
+      "file_version_info_mac.mm",
+      "files/file_util_mac.mm",
+      "mac/call_with_eh_frame.cc",
+      "mac/call_with_eh_frame.h",
+      "mac/call_with_eh_frame_asm.S",
+      "mac/dispatch_source_mach.cc",
+      "mac/dispatch_source_mach.h",
+      "mac/foundation_util.h",
+      "mac/foundation_util.mm",
+      "mac/mac_logging.h",
+      "mac/mac_logging.mm",
+      "mac/mach_logging.cc",
+      "mac/mach_logging.h",
+      "mac/scoped_block.h",
+      "mac/scoped_mach_port.cc",
+      "mac/scoped_mach_port.h",
+      "mac/scoped_mach_vm.cc",
+      "mac/scoped_mach_vm.h",
+      "mac/scoped_nsautorelease_pool.cc",
+      "mac/scoped_nsautorelease_pool.h",
+      "mac/scoped_nsobject.h",
+      "mac/scoped_objc_class_swizzler.h",
+      "mac/scoped_objc_class_swizzler.mm",
+      "mac/scoped_typeref.h",
+      "memory/platform_shared_memory_mapper_mac.cc",
+      "memory/platform_shared_memory_region_mac.cc",
+      "message_loop/message_pump_mac.h",
+      "message_loop/message_pump_mac.mm",
+      "process/process_metrics_apple_internal.cc",
+      "process/process_metrics_apple_internal.h",
+      "profiler/module_cache_mac.cc",
+      "strings/sys_string_conversions_mac.mm",
+      "synchronization/waitable_event_mac.cc",
+      "system/sys_info_apple.mm",
+      "threading/platform_thread_mac.mm",
+      "time/time_mac.mm",
+    ]
+    frameworks += [
+      "CoreFoundation.framework",
+      "CoreGraphics.framework",
+      "CoreText.framework",
+      "Foundation.framework",
+      "Security.framework",
+    ]
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   # Desktop Mac.
   if (is_mac) {
     sources += [
       "enterprise_util.cc",
       "enterprise_util.h",
+      "enterprise_util_mac.mm",
       "files/file_path_watcher_fsevents.cc",
       "files/file_path_watcher_fsevents.h",
       "files/file_path_watcher_kqueue.cc",
       "files/file_path_watcher_kqueue.h",
       "files/file_path_watcher_mac.cc",
+      "mac/authorization_util.h",
+      "mac/authorization_util.mm",
       "mac/close_nocancel.cc",
+      "mac/launch_application.h",
+      "mac/launch_application.mm",
       "mac/launchd.cc",
       "mac/launchd.h",
       "mac/mac_util.h",
+      "mac/mac_util.mm",
       "mac/mach_port_rendezvous.cc",
       "mac/mach_port_rendezvous.h",
       "mac/os_crash_dumps.cc",
@@ -2041,6 +2049,7 @@ component("base") {
       "profiler/suspendable_thread_delegate_mac.cc",
       "profiler/suspendable_thread_delegate_mac.h",
       "synchronization/waitable_event_watcher_mac.cc",
+      "system/sys_info_mac.mm",
       "time/time_exploded_posix.cc",
     ]
 
@@ -2056,86 +2065,6 @@ component("base") {
       "IOKit.framework",
       "OpenDirectory.framework",
     ]
-  }
-
-  # Mac or iOS.
-  if (is_apple) {
-    sources += [
-      "apple/bridging.h",
-      "mac/call_with_eh_frame.cc",
-      "mac/call_with_eh_frame.h",
-      "mac/call_with_eh_frame_asm.S",
-      "mac/dispatch_source_mach.cc",
-      "mac/dispatch_source_mach.h",
-      "mac/foundation_util.h",
-      "mac/foundation_util.mm",
-      "mac/mac_logging.h",
-      "mac/mac_logging.mm",
-      "mac/mach_logging.cc",
-      "mac/mach_logging.h",
-      "mac/scoped_block.h",
-      "mac/scoped_mach_port.cc",
-      "mac/scoped_mach_port.h",
-      "mac/scoped_mach_vm.cc",
-      "mac/scoped_mach_vm.h",
-      "mac/scoped_nsautorelease_pool.cc",
-      "mac/scoped_nsautorelease_pool.h",
-      "mac/scoped_nsobject.h",
-      "mac/scoped_objc_class_swizzler.h",
-      "mac/scoped_objc_class_swizzler.mm",
-      "mac/scoped_typeref.h",
-      "memory/platform_shared_memory_mapper_mac.cc",
-      "memory/platform_shared_memory_region_mac.cc",
-      "process/process_metrics_apple_internal.cc",
-      "process/process_metrics_apple_internal.h",
-      "profiler/module_cache_mac.cc",
-      "synchronization/waitable_event_mac.cc",
-    ]
-    frameworks += [
-      "CoreFoundation.framework",
-      "CoreGraphics.framework",
-      "CoreText.framework",
-      "Foundation.framework",
-      "Security.framework",
-    ]
-    public_deps += [ ":base_arc" ]
-    allow_circular_includes_from = [ ":base_arc" ]
-  }
-
-  # Linux.
-  if (is_linux || is_chromeos) {
-    # TODO(brettw) this will need to be parameterized at some point.
-    linux_configs = []
-    if (use_glib) {
-      linux_configs += [ "//build/config/linux:glib" ]
-    }
-
-    configs += linux_configs
-    all_dependent_configs += linux_configs
-    sources += [ "system/sys_info_linux.cc" ]
-    if (!is_cronet_build) {
-      # These dependencies are not required on Android, and in the case
-      # of xdg_mime must be excluded due to licensing restrictions.
-      sources += [
-        "nix/mime_util_xdg.cc",
-        "nix/mime_util_xdg.h",
-        "nix/xdg_util.cc",
-        "nix/xdg_util.h",
-      ]
-      defines += [ "USE_SYMBOLIZE" ]
-      deps += [
-        "//base/third_party/symbolize",
-        "//base/third_party/xdg_mime",
-        "//base/third_party/xdg_user_dirs",
-      ]
-    }
-  } else {
-    if (!is_android) {
-      sources -= [
-        "linux_util.cc",
-        "linux_util.h",
-      ]
-    }
   }
 
   # iOS
@@ -2181,7 +2110,7 @@ component("base") {
     }
 
     public_deps += [ "//base/ios" ]
-    allow_circular_includes_from += [ "//base/ios" ]
+    allow_circular_includes_from = [ "//base/ios" ]
 
     if (is_cronet_build) {
       sources += [
@@ -2219,6 +2148,42 @@ component("base") {
     }
 
     frameworks += [ "UIKit.framework" ]
+  }
+
+  # Linux.
+  if (is_linux || is_chromeos) {
+    # TODO(brettw) this will need to be parameterized at some point.
+    linux_configs = []
+    if (use_glib) {
+      linux_configs += [ "//build/config/linux:glib" ]
+    }
+
+    configs += linux_configs
+    all_dependent_configs += linux_configs
+    sources += [ "system/sys_info_linux.cc" ]
+    if (!is_cronet_build) {
+      # These dependencies are not required on Android, and in the case
+      # of xdg_mime must be excluded due to licensing restrictions.
+      sources += [
+        "nix/mime_util_xdg.cc",
+        "nix/mime_util_xdg.h",
+        "nix/xdg_util.cc",
+        "nix/xdg_util.h",
+      ]
+      defines += [ "USE_SYMBOLIZE" ]
+      deps += [
+        "//base/third_party/symbolize",
+        "//base/third_party/xdg_mime",
+        "//base/third_party/xdg_user_dirs",
+      ]
+    }
+  } else {
+    if (!is_android) {
+      sources -= [
+        "linux_util.cc",
+        "linux_util.h",
+      ]
+    }
   }
 
   if (use_blink) {

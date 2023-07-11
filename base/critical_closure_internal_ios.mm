@@ -6,8 +6,11 @@
 
 #import <UIKit/UIKit.h>
 
-namespace base {
-namespace internal {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace base::internal {
 
 ImmediateCriticalClosure::ImmediateCriticalClosure(StringPiece task_name,
                                                    OnceClosure closure)
@@ -36,5 +39,4 @@ void PendingCriticalClosure::Run() {
   std::move(closure_).Run();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

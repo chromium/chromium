@@ -21,6 +21,10 @@
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace base {
 
 namespace {
@@ -46,8 +50,8 @@ std::string SysInfo::OperatingSystemName() {
   static std::string* system_name;
   dispatch_once(&get_system_name_once, ^{
     @autoreleasepool {
-      system_name = new std::string(
-          SysNSStringToUTF8([[UIDevice currentDevice] systemName]));
+      system_name =
+          new std::string(SysNSStringToUTF8(UIDevice.currentDevice.systemName));
     }
   });
   // Examples of returned value: 'iPhone OS' on iPad 5.1.1
@@ -62,7 +66,7 @@ std::string SysInfo::OperatingSystemVersion() {
   dispatch_once(&get_system_version_once, ^{
     @autoreleasepool {
       system_version = new std::string(
-          SysNSStringToUTF8([[UIDevice currentDevice] systemVersion]));
+          SysNSStringToUTF8(UIDevice.currentDevice.systemVersion));
     }
   });
   return *system_version;
@@ -73,7 +77,7 @@ void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* minor_version,
                                             int32_t* bugfix_version) {
   NSOperatingSystemVersion version =
-      [[NSProcessInfo processInfo] operatingSystemVersion];
+      NSProcessInfo.processInfo.operatingSystemVersion;
   *major_version = saturated_cast<int32_t>(version.majorVersion);
   *minor_version = saturated_cast<int32_t>(version.minorVersion);
   *bugfix_version = saturated_cast<int32_t>(version.patchVersion);
@@ -143,7 +147,7 @@ std::string SysInfo::HardwareModelName() {
   // match the expected format, so supply a fake string here.
   const char* model = getenv("SIMULATOR_MODEL_IDENTIFIER");
   if (model == nullptr) {
-    switch ([[UIDevice currentDevice] userInterfaceIdiom]) {
+    switch (UIDevice.currentDevice.userInterfaceIdiom) {
       case UIUserInterfaceIdiomPhone:
         model = "iPhone";
         break;

@@ -17,6 +17,10 @@
 #include <IOKit/ps/IOPowerSources.h>
 #include <IOKit/pwr_mgt/IOPMLib.h>
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace base {
 
 PowerThermalObserver::DeviceThermalState
