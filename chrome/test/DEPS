@@ -55,6 +55,8 @@ include_rules = [
   "+components/optimization_guide",
   "+components/optimization_guide/content",
   "+components/os_crypt/sync",
+  "+components/password_manager/content/common",
+  "+components/password_manager/core/common",
   "+components/permissions",
   "+components/policy",
   "+components/prefs",

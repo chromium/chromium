@@ -34,6 +34,7 @@ source_set("browser_tests") {
     "history/history_supervised_user_browsertest.cc",
     "history/history_ui_browsertest.cc",
     "js/js_browsertest.cc",
+    "password_manager/password_manager_browsertest.cc",
     "whats_new/whats_new_browsertest.cc",
   ]
 
@@ -53,6 +54,7 @@ source_set("browser_tests") {
     "//components/bookmarks/managed:managed",
     "//components/history/core/common:common",
     "//components/history_clusters/core:core",
+    "//components/password_manager/content/common:common",
   ]
 }
 
@@ -145,7 +147,6 @@ if (include_js_tests) {
       "media_internals/media_internals_ui_browsertest.js",
       "metrics_internals/metrics_internals_ui_browsertest.js",
       "net_internals/net_internals_browsertest.js",
-      "password_manager/password_manager_browsertest.js",
       "privacy_sandbox/privacy_sandbox_dialog_a11y_browsertest.js",
       "privacy_sandbox/privacy_sandbox_dialog_browsertest.js",
       "sandboxstatus_browsertest.js",
