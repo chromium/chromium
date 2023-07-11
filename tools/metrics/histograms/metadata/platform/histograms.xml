@@ -1341,6 +1341,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Missive.KeyDeliveryResult"
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2024-07-10">
+  <owner>jrhilke@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded when missive recieves a response to its request for an encryption
+    key from the server. Counts the success/failures of key requests.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Missive.MemoryUsage" units="0.1MiB"
     expires_after="2023-11-12">
   <owner>xuhong@chromium.org</owner>
