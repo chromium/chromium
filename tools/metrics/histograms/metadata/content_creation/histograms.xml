@@ -222,48 +222,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SharedHighlights.LinkGenerated.Iterations" units="iterations"
-    expires_after="2022-12-25">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    Indicates number of iterations it took to successfully generate text
-    fragment selector.
-  </summary>
-</histogram>
-
-<histogram name="SharedHighlights.LinkGenerated.ParamLength" units="characters"
-    expires_after="2022-12-18">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    Number of charaters in successfully generated text fragment selector. For
-    example, for #:=:text=sample%20text, it would be the
-    len(&quot;sample%20text&quot;) which is 13. Recorded only when selector
-    generation was successful.
-  </summary>
-</histogram>
-
-<histogram name="SharedHighlights.LinkGenerated.SelectionLength"
-    units="characters" expires_after="2022-08-24">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    Number of characters in the user selected text, that text fragment selector
-    is generated for. Recorded regardless of generation success.
-  </summary>
-</histogram>
-
-<histogram name="SharedHighlights.LinkGenerated.SelectorParameters"
-    enum="TextFragmentAnchorParameters" expires_after="2022-06-19">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    Indicates which parameters were specified in a text fragment selector.
-    Recorded only when selector generation was successful.
-  </summary>
-</histogram>
-
 <histogram name="SharedHighlights.LinkGenerated.StateAtRequest"
     enum="LinkGenerationState" expires_after="2023-02-19">
   <owner>jeffreycohen@chromium.org</owner>
