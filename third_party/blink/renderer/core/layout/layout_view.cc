@@ -381,8 +381,10 @@ void LayoutView::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
       DCHECK(!ancestor);
       // Note that MapLocalToRemoteMainFrame is correct here because
       // transform_state will be set to kUnapplyInverseTransformDirection.
-      if (mode & kApplyRemoteMainFrameTransform)
+      if ((mode & kApplyRemoteMainFrameTransform) &&
+          GetFrame()->IsLocalRoot()) {
         GetFrameView()->MapLocalToRemoteMainFrame(transform_state);
+      }
     }
   } else {
     DCHECK(this == ancestor || !ancestor);
