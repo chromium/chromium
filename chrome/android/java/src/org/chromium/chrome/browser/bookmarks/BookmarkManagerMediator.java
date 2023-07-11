@@ -7,14 +7,12 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,7 +41,6 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragListener;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DraggabilityProvider;
@@ -1145,20 +1142,10 @@ class BookmarkManagerMediator
                 folderDrawable = BookmarkUtils.getFolderIcon(mContext, type, displayPref);
             }
 
-            if (isSpecialFolder) {
-                model.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
-                        SemanticColorUtils.getColorPrimaryContainer(mContext));
-                model.set(ImprovedBookmarkRowProperties.START_ICON_TINT,
-                        ColorStateList.valueOf(
-                                SemanticColorUtils.getDefaultIconColorAccent1(mContext)));
-            } else {
-                model.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
-                        ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1));
-                model.set(ImprovedBookmarkRowProperties.START_ICON_TINT,
-                        AppCompatResources.getColorStateList(
-                                mContext, R.color.default_icon_color_secondary_tint_list));
-            }
-
+            model.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
+                    BookmarkUtils.getFolderIconBackgroundColor(mContext, type));
+            model.set(ImprovedBookmarkRowProperties.START_ICON_TINT,
+                    BookmarkUtils.getFolderIconTint(mContext, type));
             model.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, folderDrawable);
         } else {
             model.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,

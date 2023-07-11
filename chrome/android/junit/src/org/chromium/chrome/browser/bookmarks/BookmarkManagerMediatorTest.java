@@ -1099,7 +1099,7 @@ public class BookmarkManagerMediatorTest {
         assertEquals(specialBackgroundColor,
                 mModelList.get(1).model.get(
                         ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
-        assertEquals(specialBackgroundColor,
+        assertEquals(normalBackgroundColor,
                 mModelList.get(2).model.get(
                         ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
 
