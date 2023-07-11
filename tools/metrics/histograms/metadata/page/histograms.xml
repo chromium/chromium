@@ -253,9 +253,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="PageLoad.Bytes" units="KB"
-    expires_after="2023-01-05">
+    expires_after="2024-07-10">
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Only recorded if the page has at least one identified ad frame. Recorded in
     PageLoadMetrics when the page is destroyed. Bytes include all bytes used by
@@ -264,6 +265,9 @@ chromium-metrics-reviews@google.com.
     identified ad frame and all of its children (which may also be ads, but are
     counted as part of the ancestor ad frame). Includes resources that did not
     finish loading.
+
+    Warning: This metric expired around 01/2023 and was unexpired 07/2023. Data
+    may be missing.
   </summary>
 </histogram>
 
@@ -1408,7 +1412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="PageLoad.Cpu" units="units"
-    expires_after="2022-04-26">
+    expires_after="2024-07-10">
   <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -1420,6 +1424,9 @@ chromium-metrics-reviews@google.com.
     identified ad frame and all of its children (which may also be ads, but are
     counted as part of the ancestor ad frame). Includes resources that did not
     finish loading. Does not consider time while a page is backgrounded.
+
+    Warning: This metric expired around 04/2022 and was unexpired 07/2023. Data
+    may be missing.
   </summary>
 </histogram>
 
@@ -1995,7 +2002,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.FrameCounts.AdFrames.PerFrame.OriginStatus"
-    enum="CrossOriginAdStatus" expires_after="2022-04-26">
+    enum="CrossOriginAdStatus" expires_after="2024-07-10">
   <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -2007,6 +2014,9 @@ chromium-metrics-reviews@google.com.
     (which may also be ads, but are counted as part of the ancestor ad frame).
     Frames of zero bytes (e.g., never had a document or their document was
     doc.written and no sub-resources were loaded) are not counted.
+
+    Warning: This metric expired around 04/2022 and unexpired 07/2023. Data may
+    be missing.
   </summary>
 </histogram>
 
