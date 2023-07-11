@@ -51,6 +51,18 @@ export class TabDiscardExceptionCurrentSitesListElement extends
         computed: 'computeSubmitDisabled_(selectedSites_.length)',
         notify: true,
       },
+
+      updateIntervalMS_: {
+        type: Number,
+        value: 1000,
+      },
+
+      // whether the current sites list is visible according to its parent
+      visible: {
+        type: Boolean,
+        value: true,
+        observer: 'onVisibilityChanged_',
+      },
     };
   }
 
@@ -62,22 +74,74 @@ export class TabDiscardExceptionCurrentSitesListElement extends
   private currentSites_: string[];
   private selectedSites_: string[];
   private submitDisabled: boolean;
+  private updateIntervalMS_: number;
+  visible: boolean;
+
+  private onVisibilityChangedListener_: () => void;
+  private updateIntervalID_: number|undefined = undefined;
 
   override async connectedCallback() {
     super.connectedCallback();
 
-    const currentRules = await this.browserProxy_.getCurrentOpenSites();
-    const existingRules =
-        new Set(this.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value);
-    this.updateList(
-        'currentSites_', x => x,
-        currentRules.filter(rule => !existingRules.has(rule)));
-    if (this.currentSites_.length) {
-      this.updateScrollableContents();
-    }
+    await this.updateCurrentSites_();
     this.dispatchEvent(new CustomEvent('sites-populated', {
       detail: {length: this.currentSites_.length},
     }));
+
+    this.onVisibilityChanged_();
+    this.onVisibilityChangedListener_ = this.onVisibilityChanged_.bind(this);
+    document.addEventListener(
+        'visibilitychange', this.onVisibilityChangedListener_);
+  }
+
+  override disconnectedCallback() {
+    document.removeEventListener(
+        'visibilitychange', this.onVisibilityChangedListener_);
+    this.stopUpdatingCurrentSites_();
+  }
+
+  private onVisibilityChanged_() {
+    if (this.visible && document.visibilityState === 'visible') {
+      this.startUpdatingCurrentSites_();
+    } else {
+      this.stopUpdatingCurrentSites_();
+    }
+  }
+
+  private startUpdatingCurrentSites_() {
+    if (this.updateIntervalID_ === undefined) {
+      this.updateCurrentSites_().then(() => {
+        this.updateIntervalID_ = setInterval(
+            this.updateCurrentSites_.bind(this), this.updateIntervalMS_);
+      });
+    }
+  }
+
+  private stopUpdatingCurrentSites_() {
+    if (this.updateIntervalID_ !== undefined) {
+      clearInterval(this.updateIntervalID_);
+      this.updateIntervalID_ = undefined;
+    }
+  }
+
+  setUpdateIntervalForTesting(updateIntervalMS: number) {
+    this.updateIntervalMS_ = updateIntervalMS;
+  }
+
+  getIsUpdatingForTesting() {
+    return this.updateIntervalID_ !== undefined;
+  }
+
+  private async updateCurrentSites_() {
+    const currentSites = await this.browserProxy_.getCurrentOpenSites();
+    const existingSites =
+        new Set(this.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value);
+    this.updateList(
+        'currentSites_', x => x,
+        currentSites.filter(rule => !existingSites.has(rule)));
+    if (this.currentSites_.length) {
+      this.updateScrollableContents();
+    }
   }
 
   private computeSubmitDisabled_() {
@@ -86,10 +150,6 @@ export class TabDiscardExceptionCurrentSitesListElement extends
 
   private onToggleSelection_(e: {model: {index: number}}) {
     this.$.list.toggleSelectionForIndex(e.model.index);
-  }
-
-  private getAriaRowindex_(index: number): number {
-    return index + 1;
   }
 
   submit() {

@@ -60,6 +60,7 @@
     <iron-pages selected="[[selectedTab_]]">
       <tab-discard-exception-current-sites-list id="list" prefs="{{prefs}}"
           on-sites-populated="onSitesPopulated_"
+          visible="[[isAddCurrentSitesTabSelected_(selectedTab_)]]"
           submit-disabled="{{submitDisabledList_}}">
       </tab-discard-exception-current-sites-list>
       <div id="inputPage">
