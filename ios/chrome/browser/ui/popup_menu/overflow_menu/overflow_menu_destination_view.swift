@@ -88,8 +88,14 @@ struct OverflowMenuDestinationButton: ButtonStyle {
 
   /// View representing the background of the icon.
   func iconBackground(configuration: Configuration) -> some View {
-    RoundedRectangle(cornerRadius: Dimensions.cornerRadius)
-      .foregroundColor(backgroundColor(configuration: configuration))
+    ZStack {
+      RoundedRectangle(cornerRadius: Dimensions.cornerRadius)
+        .foregroundColor(backgroundColor(configuration: configuration))
+      if highlighted {
+        RoundedRectangle(cornerRadius: Dimensions.cornerRadius)
+          .stroke(Color.chromeBlue, lineWidth: 2)
+      }
+    }
   }
 
   /// Icon for the destination.
