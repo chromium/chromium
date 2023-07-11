@@ -222,13 +222,7 @@ enum SettingsEnforcementGroup {
 SettingsEnforcementGroup GetSettingsEnforcementGroup() {
 #if BUILDFLAG(IS_WIN)
   if (!g_disable_domain_check_for_testing) {
-    static bool first_call = true;
     static const bool is_domain_joined = base::IsEnterpriseDevice();
-    if (first_call) {
-      UMA_HISTOGRAM_BOOLEAN("Settings.TrackedPreferencesNoEnforcementOnDomain",
-                            is_domain_joined);
-      first_call = false;
-    }
     if (is_domain_joined)
       return GROUP_NO_ENFORCEMENT;
   }

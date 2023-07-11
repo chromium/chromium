@@ -179,16 +179,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.HashesDictionaryTrusted" enum="BooleanValid"
-    expires_after="M77">
-  <owner>csharp@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <summary>
-    Logged on profile load. Indicates whether the hashes dictionary for this
-    profile is trusted.
-  </summary>
-</histogram>
-
 <histogram name="Settings.Homepage.LocationType" enum="HomepageLocationType"
     expires_after="2023-11-12">
   <owner>bttk@chromium.org</owner>

@@ -6816,22 +6816,37 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Import.ImporterType.AutoImport" enum="ImporterType"
-    expires_after="2018-08-30">
+    expires_after="2024-08-30">
+  <owner>robliao@chromium.org</owner>
   <owner>gab@chromium.org</owner>
-  <summary>The importer used on first run Auto Import.</summary>
+  <summary>
+    The importer used on first run Auto Import.
+
+    Warning: This histogram was expired from 2018-09 to 2023-07; data may be
+    missing.
+  </summary>
 </histogram>
 
 <histogram name="Import.ImporterType.BookmarksAPI" enum="ImporterType"
-    expires_after="M77">
+    expires_after="2024-08-30">
+  <owner>robliao@chromium.org</owner>
   <owner>gab@chromium.org</owner>
-  <summary>The importer used on import from the bookmarks file API.</summary>
+  <summary>
+    The importer used on import from the bookmarks file API.
+
+    Warning: This histogram was expired from M77 to M117; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Import.ImporterType.ImportDataHandler" enum="ImporterType"
-    expires_after="2018-08-30">
+    expires_after="2024-08-30">
+  <owner>robliao@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
     The importer used on import from the chrome://settings/importData UI.
+
+    Warning: This histogram was expired from 2018-09 to 2023-07; data may be
+    missing.
   </summary>
 </histogram>
 
