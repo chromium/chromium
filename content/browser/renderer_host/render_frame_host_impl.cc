@@ -12053,6 +12053,15 @@ void RenderFrameHostImpl::SetVisibilityForChildViews(bool visible) {
     if (auto* view = frame_host->GetView())
       return visible ? view->Show() : view->Hide();
   });
+
+  if (base::FeatureList::IsEnabled(
+          network::features::kVisibilityAwareResourceScheduler) &&
+      IsOutermostMainFrame()) {
+    GetStoragePartition()
+        ->GetNetworkContext()
+        ->ResourceSchedulerClientVisibilityChanged(GetTopFrameToken().value(),
+                                                   visible);
+  }
 }
 
 mojom::Frame* RenderFrameHostImpl::GetMojomFrameInRenderer() {

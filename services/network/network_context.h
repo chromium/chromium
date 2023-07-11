@@ -524,6 +524,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void GetSharedDictionaryInfo(
       const net::SharedDictionaryIsolationKey& isolation_key,
       GetSharedDictionaryInfoCallback callback) override;
+  void ResourceSchedulerClientVisibilityChanged(
+      const base::UnguessableToken& client_token,
+      bool visible) override;
 
   // Destroys |request| when a proxy lookup completes.
   void OnProxyLookupComplete(ProxyLookupRequest* proxy_lookup_request);

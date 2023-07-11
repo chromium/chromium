@@ -1613,4 +1613,9 @@ interface NetworkContext {
 
   // Sets maximum size of the shared dictionary cache.
   SetSharedDictionaryCacheMaxSize(uint64 cache_max_size);
+
+  // Called when visibility of ResourceSchedulerClient has changed.
+  // `client_token` identifies which client has changed its visibility.
+  ResourceSchedulerClientVisibilityChanged(
+      mojo_base.mojom.UnguessableToken client_token, bool visible);
 };

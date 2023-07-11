@@ -777,7 +777,7 @@ void NetworkContext::CreateURLLoaderFactory(
     mojom::URLLoaderFactoryParamsPtr params) {
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client =
       base::MakeRefCounted<ResourceSchedulerClient>(
-          ResourceScheduler::ClientId::Create(),
+          ResourceScheduler::ClientId::Create(params->top_frame_id),
           IsBrowserInitiated(params->process_id == mojom::kBrowserProcessId),
           resource_scheduler_.get(),
           url_request_context_->network_quality_estimator());
@@ -2986,6 +2986,12 @@ void NetworkContext::GetSharedDictionaryInfo(
   }
   shared_dictionary_manager_->GetSharedDictionaryInfo(isolation_key,
                                                       std::move(callback));
+}
+
+void NetworkContext::ResourceSchedulerClientVisibilityChanged(
+    const base::UnguessableToken& client_token,
+    bool visible) {
+  resource_scheduler_->OnClientVisibilityChanged(client_token, visible);
 }
 
 }  // namespace network

@@ -332,6 +332,9 @@ class TestNetworkContext : public mojom::NetworkContext {
   void GetSharedDictionaryInfo(
       const net::SharedDictionaryIsolationKey& isolation_key,
       GetSharedDictionaryInfoCallback callback) override {}
+  void ResourceSchedulerClientVisibilityChanged(
+      const base::UnguessableToken& client_token,
+      bool visible) override {}
 };
 
 }  // namespace network

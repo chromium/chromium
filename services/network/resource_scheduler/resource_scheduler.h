@@ -23,11 +23,13 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/unguessable_token.h"
 #include "net/base/priority_queue.h"
 #include "net/base/request_priority.h"
 #include "net/nqe/effective_connection_type.h"
 #include "services/network/is_browser_initiated.h"
 #include "services/network/resource_scheduler/resource_scheduler_params_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -71,18 +73,32 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler final {
  public:
   class COMPONENT_EXPORT(NETWORK_SERVICE) ClientId final {
    public:
-    static ClientId Create();
+    // Creates a new client id. Optional `token` is used to identify the client
+    // associated to the created id.
+    static ClientId Create(
+        const absl::optional<base::UnguessableToken>& token = absl::nullopt);
+
+    ClientId(const ClientId& that) = default;
+    ClientId& operator=(const ClientId& that) = default;
 
     ~ClientId() = default;
 
     bool operator<(const ClientId& that) const { return id_ < that.id_; }
-    bool operator==(const ClientId& that) const { return id_ == that.id_; }
+    bool operator==(const ClientId& that) const {
+      return id_ == that.id_ && token_ == that.token_;
+    }
+
+    const base::UnguessableToken& token() const { return token_; }
 
     static ClientId CreateForTest(uint64_t id) { return ClientId(id); }
 
    private:
-    explicit ClientId(uint64_t id) : id_(id) {}
+    explicit ClientId(
+        uint64_t id,
+        const absl::optional<base::UnguessableToken>& token = absl::nullopt)
+        : id_(id), token_(token.value_or(base::UnguessableToken::Create())) {}
     uint64_t id_;
+    base::UnguessableToken token_;
   };
 
   class ScheduledResourceRequest {
@@ -125,6 +141,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler final {
 
   // Called when a renderer is destroyed.
   void OnClientDeleted(ClientId client_id);
+
+  // Called when a client has changed its visibility.
+  virtual void OnClientVisibilityChanged(
+      const base::UnguessableToken& client_token,
+      bool visible);
 
   // Client functions:
 

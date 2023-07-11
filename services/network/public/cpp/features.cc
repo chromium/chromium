@@ -366,4 +366,8 @@ BASE_FEATURE(kCompressionDictionaryTransport,
              "CompressionDictionaryTransport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kVisibilityAwareResourceScheduler,
+             "VisibilityAwareResourceScheduler",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features
