@@ -172,25 +172,23 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
   // also not available in some SDK versions.
   // https://crbug.com/1101041: Introduces the HDR copier.
   // https://crbug.com/1061723: Discussion of issues related to HLG.
-  if (__builtin_available(macos 10.15, *)) {
-    if (color_space == ColorSpace(ColorSpace::PrimaryID::BT2020,
-                                  ColorSpace::TransferID::PQ,
-                                  ColorSpace::MatrixID::BT2020_NCL,
-                                  ColorSpace::RangeID::LIMITED)) {
-      if (__builtin_available(macos 11.0, *)) {
-        color_space_name = kCGColorSpaceITUR_2100_PQ;
-      } else {
-        return true;
-      }
-    } else if (color_space == ColorSpace(ColorSpace::PrimaryID::BT2020,
-                                         ColorSpace::TransferID::HLG,
-                                         ColorSpace::MatrixID::BT2020_NCL,
-                                         ColorSpace::RangeID::LIMITED)) {
-      if (__builtin_available(macos 11.0, *)) {
-        color_space_name = kCGColorSpaceITUR_2100_HLG;
-      } else {
-        return true;
-      }
+  if (color_space == ColorSpace(ColorSpace::PrimaryID::BT2020,
+                                ColorSpace::TransferID::PQ,
+                                ColorSpace::MatrixID::BT2020_NCL,
+                                ColorSpace::RangeID::LIMITED)) {
+    if (__builtin_available(macos 11.0, *)) {
+      color_space_name = kCGColorSpaceITUR_2100_PQ;
+    } else {
+      return true;
+    }
+  } else if (color_space == ColorSpace(ColorSpace::PrimaryID::BT2020,
+                                       ColorSpace::TransferID::HLG,
+                                       ColorSpace::MatrixID::BT2020_NCL,
+                                       ColorSpace::RangeID::LIMITED)) {
+    if (__builtin_available(macos 11.0, *)) {
+      color_space_name = kCGColorSpaceITUR_2100_HLG;
+    } else {
+      return true;
     }
   }
   if (color_space_name) {

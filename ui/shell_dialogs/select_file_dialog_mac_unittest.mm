@@ -457,15 +457,11 @@ TEST_F(SelectFileDialogMacTest, MultipleDialogs) {
 
   // In 10.15, file picker dialogs are remote, and the restriction of apps not
   // being allowed to OK their own file requests has been extended from just
-  // sandboxed apps to all apps. If we can test OK-ing our own dialogs, sure,
-  // but if not, at least try to close them all.
+  // sandboxed apps to all apps. Since the dialogs can't be OKed, at least close
+  // them all.
   base::RunLoop run_loop2;
   SetDialogClosedCallback(run_loop2.QuitClosure());
-  if (base::mac::IsAtMostOS10_14()) {
-    [panel2 ok:nil];
-  } else {
-    [panel2 cancel:nil];
-  }
+  [panel2 cancel:nil];
   run_loop2.Run();
   EXPECT_EQ(0lu, GetActivePanelCount());
 

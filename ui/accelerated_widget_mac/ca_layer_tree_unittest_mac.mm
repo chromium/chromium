@@ -1090,8 +1090,7 @@ TEST_F(CALayerTreeTest, HDRTrigger) {
 
   // Validate that the root layer has is triggering HDR.
   CALayer* content_layer = GetOnlyContentLayer();
-  if (@available(macos 10.15, *))
-    EXPECT_TRUE([content_layer wantsExtendedDynamicRangeContent]);
+  EXPECT_TRUE([content_layer wantsExtendedDynamicRangeContent]);
 
   // Commit the SDR layer.
   properties.io_surface = sdr_image;
@@ -1106,8 +1105,7 @@ TEST_F(CALayerTreeTest, HDRTrigger) {
   // un-parented.
   EXPECT_EQ([content_layer superlayer], nil);
   content_layer = GetOnlyContentLayer();
-  if (@available(macos 10.15, *))
-    EXPECT_FALSE([content_layer wantsExtendedDynamicRangeContent]);
+  EXPECT_FALSE([content_layer wantsExtendedDynamicRangeContent]);
 
   // Commit the tricky SDR layer.
   properties.io_surface = tricky_sdr_image;
@@ -1120,8 +1118,7 @@ TEST_F(CALayerTreeTest, HDRTrigger) {
 
   // Validate that HDR is still off, and that the content layer hasn't changed.
   EXPECT_EQ(content_layer, GetOnlyContentLayer());
-  if (@available(macos 10.15, *))
-    EXPECT_FALSE([content_layer wantsExtendedDynamicRangeContent]);
+  EXPECT_FALSE([content_layer wantsExtendedDynamicRangeContent]);
 
   // Commit the HDR layer.
   properties.io_surface = hdr_image;
@@ -1136,8 +1133,7 @@ TEST_F(CALayerTreeTest, HDRTrigger) {
   // been un-parented.
   EXPECT_EQ([content_layer superlayer], nil);
   content_layer = GetOnlyContentLayer();
-  if (@available(macos 10.15, *))
-    EXPECT_TRUE([content_layer wantsExtendedDynamicRangeContent]);
+  EXPECT_TRUE([content_layer wantsExtendedDynamicRangeContent]);
 }
 
 }  // namespace gpu

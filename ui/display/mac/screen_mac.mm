@@ -7,8 +7,6 @@
 #import <AppKit/AppKit.h>
 #import <ApplicationServices/ApplicationServices.h>
 #include <Foundation/Foundation.h>
-#include <IOKit/IOKitLib.h>
-#include <IOKit/graphics/IOGraphicsLib.h>
 #include <QuartzCore/CVDisplayLink.h>
 #include <stdint.h>
 
@@ -22,7 +20,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_ioobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
@@ -80,107 +77,6 @@ const std::vector<Display> DisplaysFromDisplaysMac(
   return displays;
 }
 
-// Mac OS < 10.15 does not have a good way to get the name for a particular
-// display. This method queries IOService to try to find a display matching the
-// product and vendor ID of the passed in Core Graphics display, and returns a
-// CFDictionary created using IODisplayCreateInfoDictionary for that display.
-// If multiple identical screens are present this might return the info for the
-// wrong display.
-//
-// If no matching screen is found in IOService, this returns null.
-base::ScopedCFTypeRef<CFDictionaryRef> GetDisplayInfoFromIOService(
-    CGDirectDisplayID display_id) {
-  const uint32_t cg_vendor_number = CGDisplayVendorNumber(display_id);
-  const uint32_t cg_model_number = CGDisplayModelNumber(display_id);
-
-  // If display is unknown or not connected to a monitor, return an empty
-  // string.
-  if (cg_vendor_number == kDisplayVendorIDUnknown ||
-      cg_vendor_number == 0xFFFFFFFF) {
-    return base::ScopedCFTypeRef<CFDictionaryRef>();
-  }
-
-  // IODisplayConnect is only supported in Intel-powered Macs. On ARM based
-  // Macs this returns an empty list. Fortunately we only use this code when
-  // the OS is older than 10.15, and those OS versions don't support ARM anyway.
-  base::mac::ScopedIOObject<io_iterator_t> it;
-  if (IOServiceGetMatchingServices(kIOMasterPortDefault,
-                                   IOServiceMatching("IODisplayConnect"),
-                                   it.InitializeInto()) != 0) {
-    // This may happen if a desktop Mac is running headless.
-    return base::ScopedCFTypeRef<CFDictionaryRef>();
-  }
-
-  base::ScopedCFTypeRef<CFDictionaryRef> found_display;
-  while (auto service = base::mac::ScopedIOObject<io_service_t>(
-             IOIteratorNext(it.get()))) {
-    auto info =
-        base::ScopedCFTypeRef<CFDictionaryRef>(IODisplayCreateInfoDictionary(
-            service.get(), kIODisplayOnlyPreferredName));
-
-    CFNumberRef vendorIDRef = base::mac::GetValueFromDictionary<CFNumberRef>(
-        info.get(), CFSTR(kDisplayVendorID));
-    CFNumberRef productIDRef = base::mac::GetValueFromDictionary<CFNumberRef>(
-        info.get(), CFSTR(kDisplayProductID));
-    if (!vendorIDRef || !productIDRef)
-      continue;
-
-    long long vendorID, productID;
-    CFNumberGetValue(vendorIDRef, kCFNumberLongLongType, &vendorID);
-    CFNumberGetValue(productIDRef, kCFNumberLongLongType, &productID);
-    if (cg_vendor_number == vendorID && cg_model_number == productID)
-      return info;
-  }
-
-  return base::ScopedCFTypeRef<CFDictionaryRef>();
-}
-
-// Extract the (localized) name from a dictionary created by
-// IODisplayCreateInfoDictionary. If `info` is null, or if no names are found
-// in the dictionary, this returns an empty string.
-std::string DisplayNameFromDisplayInfo(
-    base::ScopedCFTypeRef<CFDictionaryRef> info) {
-  if (!info)
-    return std::string();
-
-  NSDictionary* names = base::apple::CFToNSPtrCast(
-      base::mac::GetValueFromDictionary<CFDictionaryRef>(
-          info.get(), CFSTR(kDisplayProductName)));
-  if (!names)
-    return std::string();
-
-  // The `names` dictionary maps locale strings to localized product names for
-  // the display. Find a key in the returned dictionary that best matches the
-  // current locale. Since this doesn't need to be perfect (display names are
-  // unlikely to be localize), we use the number of initial matching characters
-  // as an approximation for how well two locale strings match. This way
-  // countries and variants are ignored if they don't exist in one or the other,
-  // but taken into account if they are present in both. If no match is found,
-  // the first entry is used.
-  std::string configured_locale = base::i18n::GetConfiguredLocale();
-
-  NSString* name = nil;
-  int match_size = -1;
-  for (NSString* key in names) {
-    NSString* value = base::mac::ObjCCast<NSString>(names[key]);
-    if (!value) {
-      continue;
-    }
-    std::string locale =
-        base::i18n::GetCanonicalLocale(base::SysNSStringToUTF8(key));
-    int match = base::ranges::mismatch(locale, configured_locale).first -
-                locale.begin();
-    if (match > match_size) {
-      name = value;
-    }
-  }
-
-  if (!name) {
-    return std::string();
-  }
-  return base::SysNSStringToUTF8(name);
-}
-
 DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   TRACE_EVENT0("ui", "BuildDisplayForScreen");
   NSRect frame = screen.frame;
@@ -212,16 +108,14 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   // Examine the presence of HDR.
   bool enable_hdr = false;
   float hdr_max_lum_relative = 1.f;
-  if (@available(macOS 10.15, *)) {
-    const float max_potential_edr_value =
-        screen.maximumPotentialExtendedDynamicRangeColorComponentValue;
-    const float max_edr_value =
-        screen.maximumExtendedDynamicRangeColorComponentValue;
-    if (max_potential_edr_value > 1.f) {
-      enable_hdr = true;
-      hdr_max_lum_relative =
-          std::max(kMinHDRCapableMaxLuminanceRelative, max_edr_value);
-    }
+  const float max_potential_edr_value =
+      screen.maximumPotentialExtendedDynamicRangeColorComponentValue;
+  const float max_edr_value =
+      screen.maximumExtendedDynamicRangeColorComponentValue;
+  if (max_potential_edr_value > 1.f) {
+    enable_hdr = true;
+    hdr_max_lum_relative =
+        std::max(kMinHDRCapableMaxLuminanceRelative, max_edr_value);
   }
 
   // Compute DisplayColorSpaces.
@@ -296,12 +190,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   if (CGDisplayIsBuiltin(display_id))
     SetInternalDisplayIds({display_id});
 
-  if (@available(macOS 10.15, *)) {
-    display.set_label(base::SysNSStringToUTF8(screen.localizedName));
-  } else {
-    display.set_label(
-        DisplayNameFromDisplayInfo(GetDisplayInfoFromIOService(display_id)));
-  }
+  display.set_label(base::SysNSStringToUTF8(screen.localizedName));
 
   return DisplayMac{display, screen};
 }
