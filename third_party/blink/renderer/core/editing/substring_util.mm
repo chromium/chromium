@@ -123,12 +123,7 @@ NSAttributedString* AttributedSubstringFromRange(LocalFrame* frame,
 
     NSFont* font = nil;
     if (original_font) {
-      if (@available(macos 10.15, *)) {
-        font = [original_font fontWithSize:desired_size];
-      } else {
-        font = [NSFontManager.sharedFontManager convertFont:original_font
-                                                     toSize:desired_size];
-      }
+      font = [original_font fontWithSize:desired_size];
     }
 
     // If the platform font can't be loaded, or the size is incorrect comparing
