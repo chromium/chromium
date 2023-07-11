@@ -178,10 +178,7 @@ void UnifiedVolumeView::Update(bool by_user) {
         IDS_ASH_STATUS_TRAY_VOLUME, state_tooltip_text));
   } else {
     level = audio_handler->GetOutputVolumePercentForDevice(device_id_) / 100.f;
-    // Still needs to check if `level` is 0 because toggling the output mute by
-    // keyboard will not set it to be muted in `UnifiedVolumeSliderController`.
-    const bool is_muted =
-        audio_handler->IsOutputMutedForDevice(device_id_) || level == 0;
+    const bool is_muted = audio_handler->IsOutputMutedForDevice(device_id_);
 
     auto active_device_id = audio_handler->GetPrimaryActiveOutputNode();
 
@@ -273,6 +270,10 @@ void UnifiedVolumeView::OnLiveCaptionButtonPressed() {
 
 void UnifiedVolumeView::OnOutputNodeVolumeChanged(uint64_t node_id,
                                                   int volume) {
+  // For QsRevamp: we don't distinguish volume is 0 and muted state.
+  if (features::IsQsRevampEnabled() && volume == 0) {
+    CrasAudioHandler::Get()->SetOutputMute(true);
+  }
   Update(/*by_user=*/true);
 }
 
