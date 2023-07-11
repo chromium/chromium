@@ -303,7 +303,7 @@ void WebStateList::ActivateWebStateAt(int index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(ContainsIndex(index));
   auto lock = LockForMutation();
-  return ActivateWebStateAtImpl(index, ActiveWebStateChangeReason::Activated);
+  return ActivateWebStateAtImpl(index);
 }
 
 base::AutoReset<bool> WebStateList::LockForMutation() {
@@ -323,9 +323,11 @@ int WebStateList::InsertWebStateImpl(int index,
   DCHECK(web_state);
   const bool activating = IsInsertionFlagSet(insertion_flags, INSERT_ACTIVATE);
   const bool forced = IsInsertionFlagSet(insertion_flags, INSERT_FORCE_INDEX);
+  const bool inheriting =
+      IsInsertionFlagSet(insertion_flags, INSERT_INHERIT_OPENER);
   const bool pinned = IsInsertionFlagSet(insertion_flags, INSERT_PINNED);
 
-  if (IsInsertionFlagSet(insertion_flags, INSERT_INHERIT_OPENER)) {
+  if (inheriting) {
     for (const auto& wrapper : web_state_wrappers_) {
       wrapper->SetOpener(WebStateOpener());
     }
@@ -355,9 +357,25 @@ int WebStateList::InsertWebStateImpl(int index,
     ++active_index_;
   }
 
-  if (IsInsertionFlagSet(insertion_flags, INSERT_INHERIT_OPENER)) {
+  if (inheriting) {
     const auto& wrapper = web_state_wrappers_[index];
     wrapper->SetShouldResetOpenerOnActiveWebStateChange(true);
+  }
+
+  if (opener.opener) {
+    SetOpenerOfWebStateAt(index, opener);
+  }
+
+  WebStateWrapper* old_web_state_wrapper = GetActiveWebStateWrapper();
+  if (activating) {
+    if (old_web_state_wrapper &&
+        old_web_state_wrapper->ShouldResetOpenerOnActiveWebStateChange()) {
+      // Clear the opener when the active WebState changes.
+      old_web_state_wrapper->SetOpener(WebStateOpener());
+    }
+
+    active_index_ = index;
+    ForceActiveWebStateRealized();
   }
 
   const WebStateListChangeInsert insert_change(web_state_ptr);
@@ -368,17 +386,17 @@ int WebStateList::InsertWebStateImpl(int index,
     observer.WebStateListDidChange(this, insert_change, selection);
   }
 
-  if (opener.opener) {
-    SetOpenerOfWebStateAt(index, opener);
-  }
-
-  // TODO(crbug.com/1442546): Remove calling `ActivateWebStateAtImpl()` because
-  // the observers should handle the activation in `WebStateListDidChange()`
-  // with `kInsert` type. Also, `active_index_` should be updated before calling
-  // `WebStateListDidChange()` when calling `ActivateWebStateAtImpl()` is
-  // removed.
+  // TODO(crbug.com/1442546): Remove `WebStateActivatedAt()` after observers
+  // are updated to handle the activation and the insertion in
+  // `WebStateListDidChange()`.
   if (activating) {
-    ActivateWebStateAtImpl(index, ActiveWebStateChangeReason::Inserted);
+    for (auto& observer : observers_) {
+      observer.WebStateActivatedAt(
+          this,
+          old_web_state_wrapper ? old_web_state_wrapper->web_state() : nullptr,
+          GetActiveWebState(), active_index_,
+          ActiveWebStateChangeReason::Inserted);
+    }
   }
 
   return index;
@@ -462,14 +480,18 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
     observer.WebStateListDidChange(this, replace_change, selection);
   }
 
-  // TODO(crbug.com/1442546): Remove calling `NotifyIfActiveWebStateChanged()`
-  // because the observers should handle the activation in
-  // `WebStateListDidChange()` with `kReplace` type.
+  // The active WebState was replaced.
   if (index == active_index_) {
-    // When the active WebState is replaced, notify the observers as nearly
-    // all of them needs to treat a replacement as the selection changed.
-    NotifyIfActiveWebStateChanged(replaced_web_state.get(),
-                                  ActiveWebStateChangeReason::Replaced);
+    ForceActiveWebStateRealized();
+
+    // TODO(crbug.com/1442546): Remove `WebStateActivatedAt()` after observers
+    // are updated to handle the activation and the replacement in
+    // `WebStateListDidChange()`.
+    for (auto& observer : observers_) {
+      observer.WebStateActivatedAt(this, replaced_web_state.get(),
+                                   GetActiveWebState(), active_index_,
+                                   ActiveWebStateChangeReason::Replaced);
+    }
   }
 
   delegate_->WebStateDetached(replaced_web_state.get());
@@ -519,12 +541,18 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     observer.WebStateListDidChange(this, detach_change, selection);
   }
 
-  // TODO(crbug.com/1442546): Remove calling `NotifyIfActiveWebStateChanged()`
-  // because the observers should handle the activation in
-  // `WebStateListDidChange()` with `kDetach` type.
+  // The active WebState was detached.
   if (active_web_state_was_closed) {
-    NotifyIfActiveWebStateChanged(web_state,
-                                  ActiveWebStateChangeReason::Closed);
+    ForceActiveWebStateRealized();
+
+    // TODO(crbug.com/1442546): Remove `WebStateActivatedAt()` after observers
+    // are updated to handle the activation and the detachment in
+    // `WebStateListDidChange()`.
+    for (auto& observer : observers_) {
+      observer.WebStateActivatedAt(this, web_state, GetActiveWebState(),
+                                   active_index_,
+                                   ActiveWebStateChangeReason::Closed);
+    }
   }
 
   delegate_->WebStateDetached(web_state);
@@ -575,31 +603,48 @@ void WebStateList::CloseAllWebStatesAfterIndexImpl(int start_index,
         WebStateListRemovingIndexes(std::move(removing_indexes)));
   }
 
-  ActivateWebStateAtImpl(new_active_index, ActiveWebStateChangeReason::Closed);
+  // TODO(crbug.com/1442546): Update the active index and remove
+  // `ActivateWebStateAtImpl()` and trigger the activation event from
+  // `CloseWebStateAtImpl()`.
+  ActivateWebStateAtImpl(new_active_index);
 
   while (count() > start_index) {
     CloseWebStateAtImpl(count() - 1, close_flags);
   }
 }
 
-void WebStateList::ActivateWebStateAtImpl(int index,
-                                          ActiveWebStateChangeReason reason) {
+void WebStateList::ActivateWebStateAtImpl(int index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
   DCHECK(ContainsIndex(index) || index == kInvalidIndex);
+
+  // Do nothing when the target WebState is already activated.
+  if (active_index_ == index) {
+    return;
+  }
+
   WebStateWrapper* old_web_state_wrapper = GetActiveWebStateWrapper();
   if (old_web_state_wrapper) {
     if (old_web_state_wrapper->ShouldResetOpenerOnActiveWebStateChange()) {
+      // Clear the opener when the active WebState changes.
       old_web_state_wrapper->SetOpener(WebStateOpener());
     }
   }
 
   active_index_ = index;
-  // TODO(crbug.com/1442546): Call `WebStateListDidChange()` with
-  // `kSelectionOnly` type and remove calling `NotifyIfActiveWebStateChanged()`.
-  NotifyIfActiveWebStateChanged(
-      old_web_state_wrapper ? old_web_state_wrapper->web_state() : nullptr,
-      reason);
+  ForceActiveWebStateRealized();
+
+  // TODO(crbug.com/1442546): Replace `WebStateActivatedAt()` with
+  // `WebStateListDidChange()` with `kSelectionOnly` type after observers are
+  // updated to handle the activation and another operation (e.g. the insertion)
+  // in `WebStateListDidChange()`.
+  for (auto& observer : observers_) {
+    observer.WebStateActivatedAt(
+        this,
+        old_web_state_wrapper ? old_web_state_wrapper->web_state() : nullptr,
+        GetActiveWebState(), active_index_,
+        ActiveWebStateChangeReason::Activated);
+  }
 }
 
 void WebStateList::AddObserver(WebStateListObserver* observer) {
@@ -645,32 +690,6 @@ void WebStateList::ClearOpenersReferencing(int index) {
     if (web_state_wrapper->opener().opener == old_web_state) {
       web_state_wrapper->SetOpener(WebStateOpener());
     }
-  }
-}
-
-void WebStateList::NotifyIfActiveWebStateChanged(
-    web::WebState* old_web_state,
-    ActiveWebStateChangeReason reason) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  web::WebState* new_web_state = GetActiveWebState();
-  if (old_web_state == new_web_state) {
-    return;
-  }
-
-  if (new_web_state) {
-    // Do not trigger a CheckForOverRealization here, as it's expected
-    // that many WebStates may realize actions like side swipe or quickly
-    // multiple tabs.
-    web::IgnoreOverRealizationCheck();
-    new_web_state->ForceRealized();
-  }
-
-  // TODO(crbug.com/1442546): Remove `WebStateActivatedAt()` after observers are
-  // updated to handle the activation and another operation (e.g. the insertion)
-  // at the same time.
-  for (auto& observer : observers_) {
-    observer.WebStateActivatedAt(this, old_web_state, new_web_state,
-                                 active_index_, reason);
   }
 }
 
@@ -759,6 +778,17 @@ WebStateList::WebStateWrapper* WebStateList::GetWebStateWrapperAt(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(ContainsIndex(index));
   return web_state_wrappers_[index].get();
+}
+
+void WebStateList::ForceActiveWebStateRealized() const {
+  web::WebState* active_web_state = GetActiveWebState();
+  if (active_web_state) {
+    // Do not trigger a CheckForOverRealization here, as it's expected
+    // that many WebStates may realize actions like side swipe or quickly
+    // multiple tabs.
+    web::IgnoreOverRealizationCheck();
+    active_web_state->ForceRealized();
+  }
 }
 
 // static
