@@ -24,10 +24,25 @@
     const CSSHelper = await testRunner.loadScript('../resources/css-helper.js');
     const cssHelper = new CSSHelper(testRunner, dp);
 
-    for (const node of rootNode.pseudoElements) {
+    for (const node of getAllPseudos(rootNode)) {
       testRunner.log("Dumping animations for : " + node.localName + " with id " + node.pseudoIdentifier);
       await cssHelper.loadAndDumpCSSAnimationsForNode(node.nodeId);
     }
 
     testRunner.completeTest();
+
+    function getAllPseudos(rootNode) {
+      let pseudos = [];
+
+      if (rootNode.pseudoElements === undefined) {
+        return pseudos;
+      }
+
+      for (const node of rootNode.pseudoElements) {
+        pseudos = pseudos.concat(node);
+        pseudos = pseudos.concat(getAllPseudos(node));
+      }
+
+      return pseudos;
+    };
   });

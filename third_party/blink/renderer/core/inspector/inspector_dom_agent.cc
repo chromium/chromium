@@ -119,9 +119,7 @@ void ForEachSupportedPseudo(const Element* element, Functor& func) {
     if (PseudoElement* pseudo_element = element->GetPseudoElement(pseudo_id))
       func(pseudo_element);
   }
-  if (element == element->GetDocument().documentElement()) {
-    ViewTransitionUtils::ForEachTransitionPseudo(element->GetDocument(), func);
-  }
+  ViewTransitionUtils::ForEachDirectTransitionPseudo(element, func);
 }
 
 }  // namespace

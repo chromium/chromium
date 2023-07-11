@@ -1,0 +1,31 @@
+The test verifies functionality of querying DOM structure for view-transition pseudo elements
+PASS: Root has correct number of pseudo-elements
+PASS: Root has ::view-transition pseudo-element
+PASS: ::view-transition has 2 group pseudos
+PASS: ::view-transition has group for root
+PASS: ::view-transition-group for root is painted first
+PASS: ::view-transition-group has correct identifier
+PASS: ::view-transition-group has 1 pseudo
+PASS: ::view-transition-group's pseudo is an image-pair
+PASS: ::view-transition-image-pair has correct view-transition-name
+PASS: ::view-transition-image-pair has 2 pseudos
+PASS: ::view-transition-old is first child
+PASS: ::view-transition-old has correct view-transition-name
+PASS: ::view-transition-old has no children
+PASS: ::view-transition-new is second child
+PASS: ::view-transition-new has correct view-transition-name
+PASS: ::view-transition-new has no children
+PASS: ::view-transition has group for shared
+PASS: ::view-transition-group for shared is painted second
+PASS: ::view-transition-group has correct identifier
+PASS: ::view-transition-group has 1 pseudo
+PASS: ::view-transition-group's pseudo is an image-pair
+PASS: ::view-transition-image-pair has correct view-transition-name
+PASS: ::view-transition-image-pair has 2 pseudos
+PASS: ::view-transition-old is first child
+PASS: ::view-transition-old has correct view-transition-name
+PASS: ::view-transition-old has no children
+PASS: ::view-transition-new is second child
+PASS: ::view-transition-new has correct view-transition-name
+PASS: ::view-transition-new has no children
+
