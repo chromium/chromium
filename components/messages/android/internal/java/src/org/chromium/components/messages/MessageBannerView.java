@@ -193,7 +193,13 @@ public class MessageBannerView extends BoundedLinearLayout {
     }
 
     void setPrimaryButtonClickListener(OnClickListener listener) {
-        mPrimaryButton.setOnClickListener(listener);
+        mPrimaryButton.setOnClickListener((view) -> {
+            // Ignore click events if a progress bar is showing.
+            if (mPrimaryWidgetAppearance == PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET
+                    && !TextUtils.isEmpty(mPrimaryButtonText)) {
+                listener.onClick(view);
+            }
+        });
     }
 
     void setSecondaryIcon(Drawable icon) {
