@@ -9,11 +9,12 @@
 #endif
 
 void MediaAuthorizationWrapperTest::SetMockMediaPermissionStatus(
-    AuthStatus status) {
+    AVAuthorizationStatus status) {
   permission_status_ = status;
 }
 
-NSInteger MediaAuthorizationWrapperTest::AuthorizationStatusForMediaType(
+AVAuthorizationStatus
+MediaAuthorizationWrapperTest::AuthorizationStatusForMediaType(
     NSString* media_type) {
-  return static_cast<NSInteger>(permission_status_);
+  return permission_status_;
 }
