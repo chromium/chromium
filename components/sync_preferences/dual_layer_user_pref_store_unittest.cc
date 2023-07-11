@@ -439,6 +439,67 @@ TEST_F(DualLayerUserPrefStoreTest, RemovesFromBothStores) {
   EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetAccountPrefStore(), kPref3));
 }
 
+TEST_F(DualLayerUserPrefStoreTest,
+       RemovesValuesByPrefixSilentlyFromBothStores) {
+  // Three prefs: One is set only in the local store, one only in the account
+  // store, and one is set in both stores.
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref1, base::Value("local_value1"), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref2, base::Value("account_value2"), 0);
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref3, base::Value("local_value3"), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref3, base::Value("account_value3"), 0);
+
+  // Remove `kPref1` from the local store.
+  store()->RemoveValuesByPrefixSilently(kPref1);
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPref1));
+  // `kPref2` and `kPref3` are still there.
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref2, "account_value2"));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref3, "account_value3"));
+
+  // Remove `kPref2` from the account store.
+  store()->RemoveValuesByPrefixSilently(kPref2);
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPref2));
+  // `kPref3` is still there.
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref3, "account_value3"));
+
+  // Remove `kPref3` using a prefix `kPrefName`.
+  ASSERT_TRUE(base::StartsWith(kPref3, kPrefName));
+  store()->RemoveValuesByPrefixSilently(kPrefName);
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPref3));
+}
+
+TEST_F(DualLayerUserPrefStoreTest,
+       RemoveValuesByPrefixSilentlyRemovesMultiplePrefs) {
+  // Three prefs: Each set in both the stores.
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref1, base::Value("local_value1"), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref1, base::Value("account_value1"), 0);
+  // `kPrefName` is a prefix of `kPref1` and is used to remove `kPref1`.
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPrefName, base::Value("local_value2"), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPrefName, base::Value("account_value2"), 0);
+  // `kPriorityPrefName` does not have `kPref1` as prefix.
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPriorityPrefName, base::Value("local_value3"), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPriorityPrefName, base::Value("account_value3"), 0);
+
+  // Remove `kPref1` using prefix `kPrefName`.
+  ASSERT_TRUE(base::StartsWith(kPref1, kPrefName));
+  ASSERT_FALSE(base::StartsWith(kPriorityPrefName, kPrefName));
+
+  store()->RemoveValuesByPrefixSilently(kPrefName);
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPref1));
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPrefName));
+  // `kPriorityPrefName` is still there.
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPriorityPrefName, "account_value3"));
+}
+
 TEST_F(DualLayerUserPrefStoreTest, DoesNotReturnNonexistentPref) {
   store()->SetValueSilently(kPrefName, MakeDict({{"key", "value"}}), 0);
 
