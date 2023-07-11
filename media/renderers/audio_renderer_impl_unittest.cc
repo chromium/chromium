@@ -29,6 +29,7 @@
 #include "media/base/media_util.h"
 #include "media/base/mock_audio_renderer_sink.h"
 #include "media/base/mock_filters.h"
+#include "media/base/mock_media_log.h"
 #include "media/base/speech_recognition_client.h"
 #include "media/base/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -213,6 +214,17 @@ class AudioRendererImplTest : public ::testing::Test,
         base::BindRepeating(&AudioRendererImplTest::CreateAudioDecoderForTest,
                             base::Unretained(this)),
         &media_log_, 0, nullptr);
+    testing::Mock::VerifyAndClearExpectations(&demuxer_stream_);
+    ConfigureDemuxerStream(true);
+  }
+
+  void ConfigureWithMockMediaLog() {
+    sink_ = base::MakeRefCounted<FakeAudioRendererSink>(hardware_params_);
+    renderer_ = std::make_unique<AudioRendererImpl>(
+        main_thread_task_runner_, sink_.get(),
+        base::BindRepeating(&AudioRendererImplTest::CreateAudioDecoderForTest,
+                            base::Unretained(this)),
+        &mock_media_log_, 0, nullptr);
     testing::Mock::VerifyAndClearExpectations(&demuxer_stream_);
     ConfigureDemuxerStream(true);
   }
@@ -596,6 +608,7 @@ class AudioRendererImplTest : public ::testing::Test,
   base::test::TaskEnvironment task_environment_;
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   NullMediaLog media_log_;
+  MockMediaLog mock_media_log_;
   std::unique_ptr<AudioRendererImpl> renderer_;
   scoped_refptr<FakeAudioRendererSink> sink_;
   scoped_refptr<MockAudioRendererSink> mock_sink_;
@@ -1176,6 +1189,21 @@ TEST_F(AudioRendererImplTest, RenderingDelayedForSuspend) {
   EXPECT_NE(0, frames_read);
   for (int i = 0; i < bus->frames(); ++i)
     ASSERT_NE(0.0f, bus->channel(0)[i]);
+}
+
+TEST_F(AudioRendererImplTest, AbsurdRenderingDelayLog) {
+  ConfigureWithMockMediaLog();
+  Initialize();
+  Preroll(base::TimeDelta(), base::TimeDelta(), PIPELINE_OK);
+  StartTicking();
+
+  // Verify the first buffer is real data.
+  int frames_read = 0;
+  std::unique_ptr<AudioBus> bus = AudioBus::Create(hardware_params_);
+
+  EXPECT_MEDIA_LOG_ON(mock_media_log_,
+                      testing::HasSubstr("Large rendering delay"));
+  EXPECT_TRUE(sink_->Render(bus.get(), base::Seconds(5), &frames_read));
 }
 
 TEST_F(AudioRendererImplTest, RenderingDelayDoesNotOverflow) {

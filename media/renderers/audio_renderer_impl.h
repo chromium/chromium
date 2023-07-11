@@ -398,6 +398,9 @@ class MEDIA_EXPORT AudioRendererImpl
   TranscribeAudioCallback transcribe_audio_callback_;
 #endif
 
+  // Ensures we don't issue log spam when absurd delay values are encountered.
+  int num_absurd_delay_warnings_ = 0;
+
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<AudioRendererImpl> weak_factory_{this};
 };

@@ -371,6 +371,7 @@ void AudioRendererImpl::Initialize(DemuxerStream* stream,
   // If we are re-initializing playback (e.g. switching media tracks), stop the
   // sink first.
   if (state_ == kFlushed) {
+    num_absurd_delay_warnings_ = 0;
     sink_->Stop();
     if (null_sink_)
       null_sink_->Stop();
@@ -1189,8 +1190,16 @@ int AudioRendererImpl::Render(base::TimeDelta delay,
 
   // Since this information is coming from the OS or potentially a fake stream,
   // it may end up with spurious values.
-  if (delay.is_negative())
+  if (delay.is_negative()) {
     delay = base::TimeDelta();
+  }
+
+  if (delay > base::Seconds(1)) {
+    LIMITED_MEDIA_LOG(WARNING, media_log_, num_absurd_delay_warnings_, 1)
+        << "Large rendering delay (" << delay.InSecondsF()
+        << "s) detected; video may stall or be otherwise out of sync with "
+           "audio.";
+  }
 
   int frames_written = 0;
   {
