@@ -38,10 +38,9 @@ function addCleanup(t, part) {
   test((t) => {
     const root = doc.getPartRoot();
     assert_true(root instanceof DocumentPartRoot);
-    assert_true(root instanceof PartRoot);
     const parts = root.getParts();
     assert_equals(parts.length,0,'getParts() should start out empty');
-    assert_true(root.root instanceof (useTemplate ? DocumentFragment : Document));
+    assert_true(root.rootContainer instanceof (useTemplate ? DocumentFragment : Document));
 
     const nodePart = addCleanup(t,new NodePart(root,target));
     assert_true(nodePart instanceof NodePart);
@@ -51,7 +50,7 @@ function addCleanup(t, part) {
     assert_equals(root.getParts()[0],nodePart);
     assert_equals(parts.length,0,'Return value of getParts() is not live');
 
-    assert_throws_dom("NotSupportedError",() => new NodePart(nodePart,target.children[0]),'Constructing a Part with a NodePart as the PartRoot should throw');
+    assert_throws_js(TypeError,() => new NodePart(nodePart,target.children[0]),'Constructing a Part with a NodePart as the PartRoot should throw');
 
     const childNodePart = addCleanup(t,new ChildNodePart(root,target.children[0], target.children[2]));
     assert_true(childNodePart instanceof ChildNodePart);
@@ -98,8 +97,9 @@ function addCleanup(t, part) {
     assert_array_equals(childNodePart.getParts(),[childNodePart2,nodePart3,nodePart2],'Parts on the same Node are returned in the order they were constructed');
     assert_array_equals(childNodePart2.getParts(),[]);
 
+    // Test cloning of the entire DocumentPartRoot.
     const clonedPartRoot = root.clone();
-    const clonedContainer = clonedPartRoot.root;
+    const clonedContainer = clonedPartRoot.rootContainer;
     assert_true(clonedPartRoot instanceof DocumentPartRoot);
     assert_true(clonedContainer instanceof (useTemplate ? DocumentFragment : Document));
     assert_not_equals(clonedPartRoot,root);

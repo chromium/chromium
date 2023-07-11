@@ -22,11 +22,11 @@ namespace blink {
 // Implementation of the ChildNodePart class, which is part of the DOM Parts
 // API. A ChildNodePart stores a reference to a range of nodes within the
 // children of a single parent |Node| in the DOM tree.
-class CORE_EXPORT ChildNodePart : public Part {
+class CORE_EXPORT ChildNodePart : public Part, public PartRoot {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static ChildNodePart* Create(PartRoot* root,
+  static ChildNodePart* Create(PartRootUnion* root_union,
                                Node* previous_sibling,
                                Node* next_sibling,
                                const NodePartInit* init,
@@ -41,12 +41,14 @@ class CORE_EXPORT ChildNodePart : public Part {
   void Trace(Visitor* visitor) const override;
   bool IsValid() const override;
   Node* NodeToSortBy() const override;
-  bool SupportsContainedParts() const override { return true; }
-  ContainerNode* GetRootContainer() const override;
   void Clone(NodeCloningData&) const override;
+  Document& GetDocument() const override;
 
   // ChildNodePart API
   void disconnect() override;
+  PartRootUnion* clone() const;
+  ContainerNode* rootContainer() const override;
+
   Node* previousSibling() const { return previous_sibling_; }
   Node* nextSibling() const { return next_sibling_; }
   // TODO(crbug.com/1453291) Implement this method.
@@ -57,7 +59,11 @@ class CORE_EXPORT ChildNodePart : public Part {
   void replaceChildren(const HeapVector<Member<V8UnionNodeOrString>>& nodes) {}
 
  protected:
-  Document& GetDocument() const override;
+  const PartRoot* GetParentPartRoot() const override {
+    CHECK(root())
+        << "GetParentPartRoot() must return non-null from a ChildNodePart";
+    return root();
+  }
 
  private:
   // Checks if this ChildNodePart is valid. This should only be called if the

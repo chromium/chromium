@@ -36,8 +36,6 @@ Node* NodeCloningData::ClonedNodeFor(const Node& node) const {
 
 void NodeCloningData::ConnectPartRootToClone(const PartRoot& part_root,
                                              PartRoot& clone) {
-  CHECK(part_root.SupportsContainedParts());
-  CHECK(clone.SupportsContainedParts());
   DCHECK(!cloned_part_root_map_.Contains(&part_root) ||
          cloned_part_root_map_.at(&part_root) == &clone);
   cloned_part_root_map_.Set(&part_root, clone);
@@ -48,7 +46,6 @@ PartRoot* NodeCloningData::ClonedPartRootFor(const PartRoot& part_root) const {
   if (it == cloned_part_root_map_.end()) {
     return nullptr;
   }
-  CHECK(it->value->SupportsContainedParts());
   return it->value;
 }
 

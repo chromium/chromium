@@ -6,22 +6,18 @@
 
 #include "third_party/blink/renderer/core/dom/child_node_part.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
+#include "third_party/blink/renderer/core/dom/part_root.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 
 namespace blink {
 
 // static
-NodePart* NodePart::Create(PartRoot* root,
+NodePart* NodePart::Create(PartRootUnion* root_union,
                            Node* node,
                            const NodePartInit* init,
                            ExceptionState& exception_state) {
-  if (!root->SupportsContainedParts()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "The provided PartRoot does not support contained parts");
-    return nullptr;
-  }
-  return MakeGarbageCollected<NodePart>(*root, *node, init);
+  return MakeGarbageCollected<NodePart>(
+      *PartRoot::GetPartRootFromUnion(root_union), *node, init);
 }
 
 // TODO(crbug.com/1453291): Handle the init parameter.

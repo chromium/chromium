@@ -13,27 +13,25 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 void DocumentPartRoot::Trace(Visitor* visitor) const {
   visitor->Trace(root_container_);
+  ScriptWrappable::Trace(visitor);
   PartRoot::Trace(visitor);
 }
 
-DocumentPartRoot& DocumentPartRoot::clone() const {
+PartRootUnion* DocumentPartRoot::clone() const {
   NodeCloningData data{CloneOption::kIncludeDescendants,
                        CloneOption::kPreserveDOMParts};
-  Node* clone = GetRootContainer()->Clone(GetDocument(), data);
+  Node* clone = rootContainer()->Clone(rootContainer()->GetDocument(), data);
   if (clone->IsDocumentNode()) {
-    return To<Document>(clone)->getPartRoot();
+    return PartRoot::GetUnionFromPartRoot(&To<Document>(clone)->getPartRoot());
   }
-  CHECK(clone->IsDocumentFragment());
-  return To<DocumentFragment>(clone)->getPartRoot();
-}
-
-ContainerNode& DocumentPartRoot::root() const {
-  return *root_container_;
+  return PartRoot::GetUnionFromPartRoot(
+      &To<DocumentFragment>(clone)->getPartRoot());
 }
 
 }  // namespace blink

@@ -9,13 +9,14 @@
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/part_root.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
 
 // Implementation of the DocumentPartRoot class, which is part of the DOM Parts
 // API. A DocumentPartRoot holds the parts for a Document or DocumentFragment.
 // A Document always owns one DocumentPartRoot.
-class CORE_EXPORT DocumentPartRoot : public PartRoot {
+class CORE_EXPORT DocumentPartRoot : public ScriptWrappable, public PartRoot {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -24,19 +25,17 @@ class CORE_EXPORT DocumentPartRoot : public PartRoot {
   DocumentPartRoot(const DocumentPartRoot&) = delete;
   ~DocumentPartRoot() override = default;
 
-  ContainerNode* GetRootContainer() const override { return root_container_; }
   Document& GetDocument() const override {
     return root_container_->GetDocument();
   }
-  bool SupportsContainedParts() const override { return true; }
   void Trace(Visitor*) const override;
 
-  // DocumentPartRoot API
-  DocumentPartRoot& clone() const;
-  ContainerNode& root() const;
+  // PartRoot API
+  PartRootUnion* clone() const;
+  ContainerNode* rootContainer() const override { return root_container_; }
 
  protected:
-  bool IsDocumentPartRoot() const override { return true; }
+  const PartRoot* GetParentPartRoot() const override { return nullptr; }
 
  private:
   Member<ContainerNode> root_container_;

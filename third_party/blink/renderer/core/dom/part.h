@@ -19,10 +19,7 @@ class Node;
 struct NodeCloningData;
 
 // Implementation of the Part class, which is part of the DOM Parts API.
-// This is the base class for all Part types, and it does not have a JS-public
-// constructor. The Part class holds a reference to its root, which is never
-// nullptr.
-class CORE_EXPORT Part : public PartRoot {
+class CORE_EXPORT Part : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -32,16 +29,19 @@ class CORE_EXPORT Part : public PartRoot {
   virtual bool IsValid() const { return root_; }
   virtual Node* NodeToSortBy() const = 0;
   virtual void Clone(NodeCloningData&) const = 0;
+  PartRoot* root() const { return root_; }
+  virtual Document& GetDocument() const = 0;
 
   // Part API
-  PartRoot* root() const { return root_; }
+  PartRootUnion* rootForBindings() const {
+    return PartRoot::GetUnionFromPartRoot(root_);
+  }
   // TODO(1453291) Populate metadata_.
   Vector<String>& metadata() { return metadata_; }
   virtual void disconnect();
 
  protected:
   explicit Part(PartRoot& root);
-  bool IsPart() const override { return true; }
 
  private:
   Member<PartRoot> root_;

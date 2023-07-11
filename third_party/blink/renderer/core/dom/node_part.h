@@ -22,7 +22,7 @@ class CORE_EXPORT NodePart : public Part {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static NodePart* Create(PartRoot* root,
+  static NodePart* Create(PartRootUnion* root_union,
                           Node* node,
                           const NodePartInit* init,
                           ExceptionState& exception_state);
@@ -35,12 +35,10 @@ class CORE_EXPORT NodePart : public Part {
   bool IsValid() const override;
   Node* NodeToSortBy() const override;
   void Clone(NodeCloningData&) const override;
+  Document& GetDocument() const override;
 
   // NodePart API
   Node* node() const { return node_; }
-
- protected:
-  Document& GetDocument() const override;
 
  private:
   Member<Node> node_;

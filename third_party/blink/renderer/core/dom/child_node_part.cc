@@ -9,19 +9,14 @@
 namespace blink {
 
 // static
-ChildNodePart* ChildNodePart::Create(PartRoot* root,
+ChildNodePart* ChildNodePart::Create(PartRootUnion* root_union,
                                      Node* previous_sibling,
                                      Node* next_sibling,
                                      const NodePartInit* init,
                                      ExceptionState& exception_state) {
-  if (!root->SupportsContainedParts()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "The provided PartRoot does not support contained parts");
-    return nullptr;
-  }
-  return MakeGarbageCollected<ChildNodePart>(*root, *previous_sibling,
-                                             *next_sibling, init);
+  return MakeGarbageCollected<ChildNodePart>(*GetPartRootFromUnion(root_union),
+                                             *previous_sibling, *next_sibling,
+                                             init);
 }
 
 // TODO(crbug.com/1453291): Handle the init parameter.
@@ -54,9 +49,18 @@ void ChildNodePart::disconnect() {
   Part::disconnect();
 }
 
+PartRootUnion* ChildNodePart::clone() const {
+  // TODO(crbug.com/1453291) Implement ChildNodePart cloning.
+  // NodeCloningData data{CloneOption::kIncludeChildren,
+  //                      CloneOption::kPreserveDOMParts};
+  // Node* clone = rootContainer()->Clone(GetDocument(), data);
+  return nullptr;
+}
+
 void ChildNodePart::Trace(Visitor* visitor) const {
   visitor->Trace(previous_sibling_);
   visitor->Trace(next_sibling_);
+  PartRoot::Trace(visitor);
   Part::Trace(visitor);
 }
 
@@ -93,7 +97,7 @@ Node* ChildNodePart::NodeToSortBy() const {
   return previous_sibling_->parentNode();
 }
 
-ContainerNode* ChildNodePart::GetRootContainer() const {
+ContainerNode* ChildNodePart::rootContainer() const {
   CHECK(IsValid());
   return previous_sibling_->parentNode();
 }

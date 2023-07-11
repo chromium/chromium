@@ -1275,7 +1275,10 @@ interface ChildNodePart : Part
     getter children
     getter nextSibling
     getter previousSibling
+    getter rootContainer
+    method clone
     method constructor
+    method getParts
     method replaceChildren
 interface Clipboard : EventTarget
     attribute @@toStringTag
@@ -2191,11 +2194,12 @@ interface DocumentFragment : Node
     method querySelector
     method querySelectorAll
     method replaceChildren
-interface DocumentPartRoot : PartRoot
+interface DocumentPartRoot
     attribute @@toStringTag
-    getter root
+    getter rootContainer
     method clone
     method constructor
+    method getParts
 interface DocumentPictureInPicture : EventTarget
     attribute @@toStringTag
     getter onenter
@@ -6765,17 +6769,12 @@ interface PannerNode : AudioNode
     setter panningModel
     setter refDistance
     setter rolloffFactor
-interface Part : PartRoot
+interface Part
     attribute @@toStringTag
     getter metadata
     getter root
     method constructor
     method disconnect
-interface PartRoot
-    attribute @@toStringTag
-    method clone
-    method constructor
-    method getParts
 interface PasswordCredential : Credential
     attribute @@toStringTag
     getter iconURL

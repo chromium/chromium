@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/part_root.h"
 
+#include "third_party/blink/renderer/core/dom/child_node_part.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
@@ -15,7 +16,6 @@ namespace blink {
 void PartRoot::Trace(Visitor* visitor) const {
   visitor->Trace(parts_unordered_);
   visitor->Trace(cached_ordered_parts_);
-  ScriptWrappable::Trace(visitor);
 }
 
 void PartRoot::AddPart(Part& new_part) {
@@ -128,13 +128,13 @@ HeapVector<Member<Part>> SortPartsInTreeOrder(
 
 }  // namespace
 
-DocumentPartRoot* PartRoot::GetDocumentPartRoot() {
-  PartRoot* root = this;
-  while (!root->IsDocumentPartRoot()) {
-    CHECK(root->IsPart());
-    root = static_cast<Part*>(root)->root();
+const DocumentPartRoot* PartRoot::GetDocumentPartRoot() {
+  const PartRoot* root = this;
+  const PartRoot* next;
+  while ((next = root->GetParentPartRoot())) {
+    root = next;
   }
-  return static_cast<DocumentPartRoot*>(root);
+  return static_cast<const DocumentPartRoot*>(root);
 }
 
 // |getParts| must always return the contained parts list subject to these
@@ -149,7 +149,7 @@ DocumentPartRoot* PartRoot::GetDocumentPartRoot() {
 HeapVector<Member<Part>> PartRoot::RebuildPartsList() {
   CHECK(cached_parts_list_dirty_);
   NodesToParts unordered_nodes_to_parts;
-  DocumentPartRoot* root = GetDocumentPartRoot();
+  const DocumentPartRoot* root = GetDocumentPartRoot();
   if (!root) {
     return HeapVector<Member<Part>>();
   }
@@ -159,10 +159,10 @@ HeapVector<Member<Part>> PartRoot::RebuildPartsList() {
       continue;
     }
     Node* node = part->NodeToSortBy();
-    if (!root->GetRootContainer()->contains(node)) {
+    if (!root->rootContainer()->contains(node)) {
       continue;
     }
-    CHECK_EQ(part->GetDocumentPartRoot(), root);
+    DCHECK_EQ(part->root()->GetDocumentPartRoot(), root);
     CHECK_EQ(node->GetDocument(), root_document);
     auto result = unordered_nodes_to_parts.insert(node, nullptr);
     if (result.is_new_entry) {
@@ -180,6 +180,27 @@ HeapVector<Member<Part>> PartRoot::getParts() {
     cached_parts_list_dirty_ = false;
   }
   return cached_ordered_parts_;
+}
+
+// static
+PartRoot* PartRoot::GetPartRootFromUnion(PartRootUnion* root_union) {
+  if (root_union->IsChildNodePart()) {
+    return root_union->GetAsChildNodePart();
+  }
+  CHECK(root_union->IsDocumentPartRoot());
+  return root_union->GetAsDocumentPartRoot();
+}
+
+// static
+PartRootUnion* PartRoot::GetUnionFromPartRoot(PartRoot* root) {
+  if (!root) {
+    return nullptr;
+  }
+  if (root->IsDocumentPartRoot()) {
+    return MakeGarbageCollected<PartRootUnion>(
+        static_cast<DocumentPartRoot*>(root));
+  }
+  return MakeGarbageCollected<PartRootUnion>(static_cast<ChildNodePart*>(root));
 }
 
 }  // namespace blink

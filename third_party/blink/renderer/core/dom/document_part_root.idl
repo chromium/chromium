@@ -6,7 +6,5 @@
 // https://github.com/tbondwilkinson/dom-parts/blob/main/README.md
 
 [RuntimeEnabled=DOMPartsAPI,Exposed=Window]
-interface DocumentPartRoot : PartRoot {
-  DocumentPartRoot clone();
-  readonly attribute Element root;
+interface DocumentPartRoot {
 };
