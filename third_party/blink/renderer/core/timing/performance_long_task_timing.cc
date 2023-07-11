@@ -23,7 +23,7 @@ PerformanceLongTaskTiming::PerformanceLongTaskTiming(
     DOMWindow* source)
     : PerformanceEntry(duration, name, start_time, source) {
   auto* attribution_entry = MakeGarbageCollected<TaskAttributionTiming>(
-      AtomicString("unknown"), culprit_type, culprit_src, culprit_id,
+      performance_entry_names::kUnknown, culprit_type, culprit_src, culprit_id,
       culprit_name, source);
   attribution_.push_back(*attribution_entry);
 }

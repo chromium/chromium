@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_hidden_state.h"
+#include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
@@ -108,7 +109,7 @@ AtomicString GetFrameAttribute(HTMLFrameOwnerElement* frame_owner,
 AtomicString GetFrameOwnerType(HTMLFrameOwnerElement* frame_owner) {
   switch (frame_owner->OwnerType()) {
     case FrameOwnerElementType::kNone:
-      return AtomicString("window");
+      return performance_entry_names::kWindow;
     case FrameOwnerElementType::kIframe:
       return html_names::kIFrameTag.LocalName();
     case FrameOwnerElementType::kObject:
@@ -383,8 +384,8 @@ void WindowPerformance::ReportLongTask(base::TimeTicks start_time,
   if (!culprit_dom_window || !culprit_dom_window->GetFrame() ||
       !culprit_dom_window->GetFrame()->DeprecatedLocalOwner()) {
     AddLongTaskTiming(start_time, end_time, attribution.first,
-                      AtomicString("window"), g_empty_atom, g_empty_atom,
-                      g_empty_atom);
+                      performance_entry_names::kWindow, g_empty_atom,
+                      g_empty_atom, g_empty_atom);
   } else {
     HTMLFrameOwnerElement* frame_owner =
         culprit_dom_window->GetFrame()->DeprecatedLocalOwner();

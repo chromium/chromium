@@ -5,6 +5,7 @@
   },
 
   data: [
+    "back-forward-cache-restoration",
     "element",
     "event",
     "first-input",
@@ -20,7 +21,8 @@
     "script",
     "soft-navigation",
     "taskattribution",
+    "unknown",
     "visibility-state",
-    "back-forward-cache-restoration",
+    "window",
   ],
 }
