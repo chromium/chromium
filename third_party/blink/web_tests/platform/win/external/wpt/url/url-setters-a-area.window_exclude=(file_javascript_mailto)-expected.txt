@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 431 tests; 257 PASS, 174 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 443 tests; 267 PASS, 176 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 FAIL <a>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged. assert_equals: expected "a://example.net" but got "file:///A://example.net"
 FAIL <area>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged. assert_equals: expected "a://example.net" but got "file:///A://example.net"
@@ -377,6 +377,10 @@ FAIL <a>: Setting <data:/nospace>.pathname = 'space ' Non-special URLs with non-
 FAIL <area>: Setting <data:/nospace>.pathname = 'space ' Non-special URLs with non-opaque paths percent-encode U+0020 assert_equals: expected "data:/space%20" but got "data:/nospace"
 FAIL <a>: Setting <sc:/nospace>.pathname = 'space ' assert_equals: expected "sc:/space%20" but got "sc:/nospace"
 FAIL <area>: Setting <sc:/nospace>.pathname = 'space ' assert_equals: expected "sc:/space%20" but got "sc:/nospace"
+PASS <a>: Setting <http://example.net>.pathname = ' ' Trailing space should be encoded
+PASS <area>: Setting <http://example.net>.pathname = ' ' Trailing space should be encoded
+FAIL <a>: Setting <http://example.net>.pathname = '\0' Trailing C0 control should be encoded assert_equals: expected "http://example.net/%00" but got "http://example.net/"
+FAIL <area>: Setting <http://example.net>.pathname = '\0' Trailing C0 control should be encoded assert_equals: expected "http://example.net/%00" but got "http://example.net/"
 PASS <a>: Setting <https://example.net#nav>.search = 'lang=fr'
 PASS <area>: Setting <https://example.net#nav>.search = 'lang=fr'
 PASS <a>: Setting <https://example.net?lang=en-US#nav>.search = 'lang=fr'
@@ -407,6 +411,10 @@ PASS <a>: Setting <data:space  ?query#fragment>.search = '' Do not drop trailing
 PASS <area>: Setting <data:space  ?query#fragment>.search = '' Do not drop trailing spaces from non-trailing opaque paths
 PASS <a>: Setting <sc:space  ?query#fragment>.search = ''
 PASS <area>: Setting <sc:space  ?query#fragment>.search = ''
+PASS <a>: Setting <http://example.net>.search = ' ' Trailing space should be encoded
+PASS <area>: Setting <http://example.net>.search = ' ' Trailing space should be encoded
+PASS <a>: Setting <http://example.net>.search = '\0' Trailing C0 control should be encoded
+PASS <area>: Setting <http://example.net>.search = '\0' Trailing C0 control should be encoded
 PASS <a>: Setting <https://example.net>.hash = 'main'
 PASS <area>: Setting <https://example.net>.hash = 'main'
 PASS <a>: Setting <https://example.net#nav>.hash = 'main'
@@ -447,5 +455,9 @@ PASS <a>: Setting <data:space  ?query#fragment>.hash = '' Do not drop trailing s
 PASS <area>: Setting <data:space  ?query#fragment>.hash = '' Do not drop trailing spaces from non-trailing opaque paths
 PASS <a>: Setting <sc:space  ?query#fragment>.hash = ''
 PASS <area>: Setting <sc:space  ?query#fragment>.hash = ''
+PASS <a>: Setting <http://example.net>.hash = ' ' Trailing space should be encoded
+PASS <area>: Setting <http://example.net>.hash = ' ' Trailing space should be encoded
+PASS <a>: Setting <http://example.net>.hash = '\0' Trailing C0 control should be encoded
+PASS <area>: Setting <http://example.net>.hash = '\0' Trailing C0 control should be encoded
 Harness: the test ran to completion.
 
