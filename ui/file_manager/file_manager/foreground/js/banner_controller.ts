@@ -599,8 +599,10 @@ export class BannerController extends EventTarget {
     if (this.customBannerFilters_[banner.tagName]) {
       let shownFilter = false;
       for (const bannerFilter of this.customBannerFilters_[banner.tagName]!) {
-        if (bannerFilter.shouldShow() && banner.onFilteredContext) {
-          banner.onFilteredContext(bannerFilter.context());
+        if (bannerFilter.shouldShow()) {
+          if (banner.onFilteredContext) {
+            banner.onFilteredContext(bannerFilter.context());
+          }
           shownFilter = true;
           break;
         }
