@@ -5,6 +5,7 @@ Version: 0
 License: BSD
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 This contains the graphics buffer allocator library for Chrome OS.
