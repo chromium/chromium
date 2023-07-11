@@ -227,7 +227,7 @@ public class MultiInstanceManagerApi31UnitTest {
             MultiInstanceManagerApi31.writeUrl(instanceId, "https://id-" + instanceId + ".com");
             ShadowApplicationStatus.addRunningActivity(instanceId, activity);
             updateTasks(instanceId, activity);
-            addInstanceInfo(instanceId);
+            addInstanceInfo(instanceId, activity.getTaskId());
         }
 
         private void setAdjacentInstance(Activity activity) {
@@ -239,12 +239,12 @@ public class MultiInstanceManagerApi31UnitTest {
             ShadowApplicationStatus.deleteRunningActivity(instanceId);
         }
 
-        private void addInstanceInfo(int instanceId) {
+        private void addInstanceInfo(int instanceId, int taskId) {
             if (mTestBuildInstancesList) {
                 int numberOfInstances = mTestInstanceInfos.size();
                 int type = (numberOfInstances == 0) ? InstanceInfo.Type.CURRENT
                                                     : InstanceInfo.Type.ADJACENT;
-                mTestInstanceInfos.add(new InstanceInfo(numberOfInstances, instanceId, type,
+                mTestInstanceInfos.add(new InstanceInfo(numberOfInstances, taskId, type,
                         MultiInstanceManagerApi31.readUrl(instanceId), "", 0, 0, false));
             }
         }
@@ -909,23 +909,23 @@ public class MultiInstanceManagerApi31UnitTest {
         Mockito.doNothing().when(mMultiInstanceManager).moveTabAction(any(), eq(mTab1));
 
         // Action
-        mMultiInstanceManager.moveTabToCurrentWindow(mTab1);
+        mMultiInstanceManager.moveTabToWindow(mTabbedActivityTask63, mTab1);
 
         // Verify moveTabAction and getCurrentInstanceInfo are each called once.
         verify(mMultiInstanceManager, times(1)).moveTabAction(any(), eq(mTab1));
-        verify(mMultiInstanceManager, times(1)).getCurrentInstanceInfo();
+        verify(mMultiInstanceManager, times(1)).getInstanceInfoFor(any());
     }
 
     @Test
     @UiThreadTest
     @Features.DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    public void testTabMove_MoveTabToCurrentWindow_notCalled() {
+    public void testTabMove_MoveTabToWindow_notCalled() {
         MultiInstanceManagerApi31 multiInstanceManager = Mockito.spy(
                 createChromeInstance(INSTANCE_ID_1, TASK_ID_62, List.of(mTab1, mTab2, mTab3)));
         Mockito.doNothing().when(multiInstanceManager).moveTabAction(any(), eq(mTab2));
 
         // Action
-        multiInstanceManager.moveTabToCurrentWindow(mTab2);
+        multiInstanceManager.moveTabToWindow(mTabbedActivityTask62, mTab2);
 
         // Verify moveTabAction is not called.
         verify(multiInstanceManager, times(0)).moveTabAction(any(), eq(mTab2));
