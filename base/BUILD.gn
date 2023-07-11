@@ -624,6 +624,7 @@ mixed_component("base") {
     "record_replay.cc",
     "record_replay.h",
     "record_replay_ordered_atomic.h",
+    "record_replay_atomic_sequence_num.h",
     "run_loop.cc",
     "run_loop.h",
     "sampling_heap_profiler/lock_free_address_hash_set.cc",

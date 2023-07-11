@@ -39,10 +39,12 @@
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+#include "base/record_replay_atomic_sequence_num.h"
+
 namespace blink {
 
 namespace {
-static base::AtomicSequenceNumber index_seq;
+static ::recordreplay::AtomicSequenceNumber index_seq;
 }
 
 PerformanceEntry::PerformanceEntry(const AtomicString& name,
