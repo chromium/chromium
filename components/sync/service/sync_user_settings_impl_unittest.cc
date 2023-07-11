@@ -69,7 +69,8 @@ class SyncUserSettingsImplTest : public testing::Test {
 
   std::unique_ptr<SyncUserSettingsImpl> MakeSyncUserSettings(
       ModelTypeSet registered_types,
-      bool in_transport_mode = false) {
+      SyncPrefs::SyncAccountState sync_account_state =
+          SyncPrefs::SyncAccountState::kSyncing) {
     CoreAccountInfo account;
     account.email = "name@account.com";
     account.gaia = "name";
@@ -78,11 +79,8 @@ class SyncUserSettingsImplTest : public testing::Test {
     return std::make_unique<SyncUserSettingsImpl>(
         sync_service_crypto_.get(), sync_prefs_.get(),
         /*preference_provider=*/nullptr, registered_types,
-        base::BindLambdaForTesting([in_transport_mode] {
-          return in_transport_mode
-                     ? SyncPrefs::SyncAccountState::kSignedInNotSyncing
-                     : SyncPrefs::SyncAccountState::kSyncing;
-        }),
+        base::BindLambdaForTesting(
+            [sync_account_state] { return sync_account_state; }),
         base::BindLambdaForTesting([account] { return account; }));
   }
 
@@ -112,6 +110,27 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
   }
 }
 
+TEST_F(SyncUserSettingsImplTest, GetSelectedTypesWhileSignedOut) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kReplaceSyncPromosWithSignInPromos,
+                            kEnableBookmarksAccountStorage,
+                            kReadingListEnableDualReadingListModel,
+                            kReadingListEnableSyncTransportModeUponSignIn,
+                            password_manager::features::
+                                kEnablePasswordsAccountStorage,
+                            kSyncEnableContactInfoDataType,
+                            kSyncEnableContactInfoDataTypeInTransportMode,
+                            kEnablePreferencesAccountStorage},
+      /*disabled_features=*/{});
+
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes(),
+                           SyncPrefs::SyncAccountState::kNotSignedIn);
+
+  EXPECT_EQ(sync_user_settings->GetSelectedTypes(), UserSelectableTypeSet());
+}
+
 TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInTransportMode) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -127,7 +146,8 @@ TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInTransportMode) {
       /*disabled_features=*/{});
 
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
-      MakeSyncUserSettings(GetUserTypes(), /*in_transport_mode=*/true);
+      MakeSyncUserSettings(GetUserTypes(),
+                           SyncPrefs::SyncAccountState::kSignedInNotSyncing);
 
   UserSelectableTypeSet registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
@@ -158,7 +178,8 @@ TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInTransportMode) {
 
 TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInFullSyncMode) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
-      MakeSyncUserSettings(GetUserTypes(), /*in_transport_mode=*/false);
+      MakeSyncUserSettings(GetUserTypes(),
+                           SyncPrefs::SyncAccountState::kSyncing);
 
   const UserSelectableTypeSet registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
@@ -543,6 +564,21 @@ TEST_F(SyncUserSettingsImplTest, ShouldClearPassphrasePromptMuteUponUpgrade) {
   sync_user_settings->MarkPassphrasePromptMutedForCurrentProductVersion();
   EXPECT_TRUE(
       sync_user_settings->IsPassphrasePromptMutedForCurrentProductVersion());
+}
+
+TEST_F(SyncUserSettingsImplTest, IsPaymentsIntegrationEnabled) {
+  sync_prefs_->SetPaymentsIntegrationEnabled(true);
+
+  EXPECT_FALSE(MakeSyncUserSettings(GetUserTypes(),
+                                    SyncPrefs::SyncAccountState::kNotSignedIn)
+                   ->IsPaymentsIntegrationEnabled());
+  EXPECT_TRUE(
+      MakeSyncUserSettings(GetUserTypes(),
+                           SyncPrefs::SyncAccountState::kSignedInNotSyncing)
+          ->IsPaymentsIntegrationEnabled());
+  EXPECT_TRUE(MakeSyncUserSettings(GetUserTypes(),
+                                   SyncPrefs::SyncAccountState::kSyncing)
+                  ->IsPaymentsIntegrationEnabled());
 }
 
 }  // namespace

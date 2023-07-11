@@ -71,6 +71,9 @@ void OfferNotificationBubbleViewsTestBase::SetUpOnMainThread() {
       PersonalDataManagerFactory::GetForProfile(browser()->profile());
   coupon_service_ = CouponServiceFactory::GetForProfile(browser()->profile());
 
+  // Mimic the user is signed in so payments integration is considered enabled.
+  personal_data_->SetSyncingForTest(true);
+
   // Wait for Personal Data Manager to be fully loaded to prevent that
   // spurious notifications deceive the tests.
   WaitForPersonalDataManagerToBeLoaded(browser()->profile());

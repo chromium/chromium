@@ -334,6 +334,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   GetClient(0)->SignOutPrimaryAccount();
   WaitForNumberOfCards(0, pdm);
 
+  // Server profiles require waiting for a little longer. This is because
+  // WaitForNumberOfCards() completes synchronously upon signout, as
+  // IsAutofillWalletImportEnabled() becomes false instantly.
+  WaitForNumberOfServerProfiles(0, pdm);
+
   EXPECT_EQ(0uL, pdm->GetServerProfiles().size());
   EXPECT_EQ(0uL, pdm->GetCreditCards().size());
   EXPECT_EQ(nullptr, pdm->GetPaymentsCustomerData());

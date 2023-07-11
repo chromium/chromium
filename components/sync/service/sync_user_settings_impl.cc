@@ -163,7 +163,9 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
 }
 
 bool SyncUserSettingsImpl::IsPaymentsIntegrationEnabled() const {
-  return prefs_->IsPaymentsIntegrationEnabled();
+  return sync_account_state_for_prefs_callback_.Run() !=
+             SyncPrefs::SyncAccountState::kNotSignedIn &&
+         prefs_->IsPaymentsIntegrationEnabled();
 }
 
 void SyncUserSettingsImpl::SetPaymentsIntegrationEnabled(bool enabled) {

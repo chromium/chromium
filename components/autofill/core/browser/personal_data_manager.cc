@@ -1658,6 +1658,10 @@ bool PersonalDataManager::IsAutofillIBANEnabled() const {
 }
 
 bool PersonalDataManager::IsAutofillWalletImportEnabled() const {
+  if (is_syncing_for_test_) {
+    return true;
+  }
+
   if (!sync_service_) {
     // Without `sync_service_`, namely in off-the-record profiles, wallet import
     // is effectively disabled.
