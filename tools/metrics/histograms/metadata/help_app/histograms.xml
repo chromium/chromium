@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Discover.SearchConcept.ReadStatus"
-    enum="HelpAppSearchConceptReadStatus" expires_after="2023-08-08">
+    enum="HelpAppSearchConceptReadStatus" expires_after="2023-12-10">
   <owner>chenjih@google.com</owner>
   <owner>tby@chromium.org</owner>
   <owner>showoff-eng@google.com</owner>
@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Discover.SearchConcept.WriteStatus"
-    enum="HelpAppSearchConceptWriteStatus" expires_after="2023-08-08">
+    enum="HelpAppSearchConceptWriteStatus" expires_after="2023-12-10">
   <owner>chenjih@google.com</owner>
   <owner>tby@chromium.org</owner>
   <owner>showoff-eng@google.com</owner>
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Discover.SearchHandler.SearchAvailableTime" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2023-12-10">
   <owner>chenjih@google.com</owner>
   <owner>tby@chromium.org</owner>
   <owner>showoff-eng@google.com</owner>
