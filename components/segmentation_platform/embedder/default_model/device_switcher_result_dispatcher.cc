@@ -108,20 +108,22 @@ void DeviceSwitcherResultDispatcher::RefreshSegmentResult() {
 
 void DeviceSwitcherResultDispatcher::OnGotResult(
     const ClassificationResult& result) {
-  base::TimeDelta consent_verification_to_result_duration =
-      base::Time::Now() - sync_consent_timestamp_;
   SaveResultToPref(result);
   latest_result_ = result;
   RegisterFieldTrials();
 
-  if (has_sync_consent_at_startup_) {
-    base::UmaHistogramMediumTimes(
-        "SegmentationPlatform.DeviceSwicther.TimeFromStartupToResult",
-        consent_verification_to_result_duration);
-  } else {
-    base::UmaHistogramMediumTimes(
-        "SegmentationPlatform.DeviceSwicther.TimeFromConsentToResult",
-        consent_verification_to_result_duration);
+  if (!sync_consent_timestamp_.is_null()) {
+    base::TimeDelta consent_verification_to_result_duration =
+        base::Time::Now() - sync_consent_timestamp_;
+    if (has_sync_consent_at_startup_) {
+      base::UmaHistogramMediumTimes(
+          "SegmentationPlatform.DeviceSwicther.TimeFromStartupToResult",
+          consent_verification_to_result_duration);
+    } else {
+      base::UmaHistogramMediumTimes(
+          "SegmentationPlatform.DeviceSwicther.TimeFromConsentToResult",
+          consent_verification_to_result_duration);
+    }
   }
   if (!waiting_callback_.is_null()) {
     std::move(waiting_callback_).Run(result);
