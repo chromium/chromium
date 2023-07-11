@@ -64,7 +64,9 @@ THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
 THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
 RUST_TOOLCHAIN_OUT_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-toolchain')
-VERSION_STAMP_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
+# Path to the VERSION file stored in the archive.
+VERSION_SRC_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
+VERSION_STAMP_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'INSTALLED_VERSION')
 
 
 def GetRustClangRevision():
@@ -136,6 +138,9 @@ def main():
     try:
         url = f'{platform_prefix}rust-toolchain-{version}.tar.xz'
         DownloadAndUnpack(url, THIRD_PARTY_DIR)
+        # The archive contains a VERSION file. Copy it to INSTALLED_VERSION as
+        # the very last step in case the unpack fails after writing VERSION.
+        shutil.copyfile(VERSION_SRC_PATH, VERSION_STAMP_PATH)
     except urllib.error.HTTPError as e:
         print(f'error: Failed to download Rust package')
         return 1
