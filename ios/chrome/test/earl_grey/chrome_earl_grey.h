@@ -385,6 +385,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns a unique identifier for the next Tab.
 - (NSString*)nextTabID;
 
+// Perform a tap with a timeout, or a GREYAssert is induced. Occasionally EG
+// doesn't sync up properly to the animations of tab switcher, so it is
+// necessary to poll.
+- (void)waitForAndTapButton:(id<GREYMatcher>)button;
+
 // Shows the tab switcher by tapping the switcher button.  Works on both phone
 // and tablet.
 - (void)showTabSwitcher;

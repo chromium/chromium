@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/i18n/message_formatter.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/base/consent_level.h"
@@ -40,8 +41,10 @@ namespace {
 
 NSString* const kReadTitle = @"foobar";
 NSString* const kReadURL = @"http://readfoobar.com";
-NSString* kNewItemTitle = @"New Item";
-const char kNewItemURL[] = "/newItem";
+NSString* kPage1Title = @"Page 1 Title";
+const char kPage1URL[] = "/page1";
+NSString* kPage2Title = @"Page 2 Title";
+const char kPage2URL[] = "/page2";
 
 id<GREYMatcher> SignedInSnackbar(NSString* email) {
   NSString* snackbarMessage = l10n_util::GetNSStringF(
@@ -53,7 +56,18 @@ id<GREYMatcher> SignedInSnackbarUndoButton() {
   return grey_accessibilityID(kSigninSnackbarUndo);
 }
 
-id<GREYMatcher> AddedToAccountStorageSnackbarUndoButton() {
+id<GREYMatcher> AddedToAccountReadingListSnackbar(NSString* email) {
+  std::u16string pattern = l10n_util::GetStringUTF16(
+      IDS_IOS_READING_LIST_SNACKBAR_MESSAGE_FOR_ACCOUNT);
+  std::u16string utf16Text = base::i18n::MessageFormatter::FormatWithNamedArgs(
+      pattern, "count", 1, "email", base::SysNSStringToUTF16(email));
+  NSString* snackbarMessage = base::SysUTF16ToNSString(utf16Text);
+  return grey_allOf(
+      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier"),
+      grey_text(snackbarMessage), nil);
+}
+
+id<GREYMatcher> AddedToAccountReadingListSnackbarUndoButton() {
   return grey_accessibilityID(kReadingListAddedToAccountSnackbarUndoID);
 }
 
@@ -72,9 +86,15 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_code(net::HTTP_OK);
 
-  if (request.relative_url == kNewItemURL) {
+  if (request.relative_url == kPage1URL) {
     response->set_content("<html><head><title>" +
-                          base::SysNSStringToUTF8(kNewItemTitle) +
+                          base::SysNSStringToUTF8(kPage1Title) +
+                          "</title></head></html>");
+    return std::move(response);
+  }
+  if (request.relative_url == kPage2URL) {
+    response->set_content("<html><head><title>" +
+                          base::SysNSStringToUTF8(kPage2Title) +
                           "</title></head></html>");
     return std::move(response);
   }
@@ -342,19 +362,73 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // "Added to Reading List" snackbar is shown and there's no cloud icon on the
 // new item.
 - (void)testAddItemWhenSignedOut {
-  AddURLToReadingList(self.testServer->GetURL(kNewItemURL));
+  AddURLToReadingList(self.testServer->GetURL(kPage1URL));
   // Verify that the right snackbar appears and there's no undo button on it.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:AddedToLocalReadingListSnackbar()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   AddedToAccountStorageSnackbarUndoButton(),
-                                   grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(AddedToAccountReadingListSnackbarUndoButton(),
+                            grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_nil()];
   // Verify there's no cloud icon on the new item in the Reading List.
   OpenReadingList();
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(LocalItemIcon(kNewItemTitle),
+      selectElementWithMatcher:grey_allOf(LocalItemIcon(kPage1Title),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Add a page when signed-out and another after sign-in with full sync. Test
+// that both items do not have the cloud icon in the Reading List.
+- (void)testAddItemWithFullSync {
+  AddURLToReadingList(self.testServer->GetURL(kPage1URL));
+  // Sign-in with full sync.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  // Add Page 2 to the Reading List and verify that the snackbar containing the
+  // user's email and an undo button appears.
+  AddURLToReadingList(self.testServer->GetURL(kPage2URL));
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:AddedToAccountReadingListSnackbar(
+                                              fakeIdentity.userEmail)];
+  // Verify that the new items are shown, and there's no cloud icon on the them
+  // in the Reading List.
+  OpenReadingList();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(ReadingListItem(kPage1Title),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(ReadingListItem(kPage2Title),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(LocalItemIcon(kPage1Title),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(LocalItemIcon(kPage2Title),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+}
+
+// When signed-in with full sync, test that tapping on "Undo" from the "item
+// added" snackbar removes the item from the Reading List.
+- (void)testUndoAddItemWithFullSync {
+  // Sign-in with full sync.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  // Add Page 1 to the Reading List.
+  AddURLToReadingList(self.testServer->GetURL(kPage1URL));
+  // Tap on undo when the snackbar appears.
+  [ChromeEarlGrey
+      waitForAndTapButton:grey_allOf(
+                              AddedToAccountReadingListSnackbarUndoButton(),
+                              grey_sufficientlyVisible(), nil)];
+  // Verify that Page 1 is not in the Reading List.
+  OpenReadingList();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(ReadingListItem(kPage1Title),
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_nil()];
 }
