@@ -184,7 +184,6 @@ FileSystemManagerImpl::FileSystemManagerImpl(
     scoped_refptr<ChromeBlobStorageContext> blob_storage_context)
     : process_id_(process_id),
       context_(std::move(file_system_context)),
-      security_policy_(ChildProcessSecurityPolicyImpl::GetInstance()),
       blob_storage_context_(std::move(blob_storage_context)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(context_);
@@ -218,9 +217,10 @@ void FileSystemManagerImpl::Open(const url::Origin& origin,
 
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // security_policy_ is a singleton so refcounting is unnecessary
-      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin,
-                     base::Unretained(security_policy_), process_id_, origin),
+      base::BindOnce(
+          &ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin,
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, origin),
       base::BindOnce(&FileSystemManagerImpl::ContinueOpen,
                      weak_factory_.GetWeakPtr(), origin, file_system_type,
                      receivers_.GetBadMessageCallback(), std::move(callback),
@@ -263,9 +263,10 @@ void FileSystemManagerImpl::ResolveURL(const GURL& filesystem_url,
 
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // security_policy_ is a singleton so refcounting is unnecessary
-      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
-                     base::Unretained(security_policy_), process_id_, url),
+      base::BindOnce(
+          &ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, url),
       base::BindOnce(&FileSystemManagerImpl::ContinueResolveURL,
                      weak_factory_.GetWeakPtr(), url, std::move(callback)));
 }
@@ -304,10 +305,10 @@ void FileSystemManagerImpl::Move(const GURL& src_path,
   }
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // security_policy_ is a singleton so refcounting is unnecessary
-      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanMoveFileSystemFile,
-                     base::Unretained(security_policy_), process_id_, src_url,
-                     dest_url),
+      base::BindOnce(
+          &ChildProcessSecurityPolicyImpl::CanMoveFileSystemFile,
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, src_url, dest_url),
       base::BindOnce(&FileSystemManagerImpl::ContinueMove,
                      weak_factory_.GetWeakPtr(), src_url, dest_url,
                      std::move(callback)));
@@ -357,10 +358,10 @@ void FileSystemManagerImpl::Copy(const GURL& src_path,
 
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // security_policy_ is a singleton so refcounting is unnecessary
-      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanCopyFileSystemFile,
-                     base::Unretained(security_policy_), process_id_, src_url,
-                     dest_url),
+      base::BindOnce(
+          &ChildProcessSecurityPolicyImpl::CanCopyFileSystemFile,
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, src_url, dest_url),
       base::BindOnce(&FileSystemManagerImpl::ContinueCopy,
                      weak_factory_.GetWeakPtr(), src_url, dest_url,
                      std::move(callback)));
@@ -405,9 +406,10 @@ void FileSystemManagerImpl::Remove(const GURL& path,
 
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // security_policy_ is a singleton so refcounting is unnecessary
-      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanDeleteFileSystemFile,
-                     base::Unretained(security_policy_), process_id_, url),
+      base::BindOnce(
+          &ChildProcessSecurityPolicyImpl::CanDeleteFileSystemFile,
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, url),
       base::BindOnce(&FileSystemManagerImpl::ContinueRemove,
                      weak_factory_.GetWeakPtr(), url, recursive,
                      std::move(callback)));
@@ -448,9 +450,10 @@ void FileSystemManagerImpl::ReadMetadata(const GURL& path,
 
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // security_policy_ is a singleton so refcounting is unnecessary
-      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
-                     base::Unretained(security_policy_), process_id_, url),
+      base::BindOnce(
+          &ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, url),
       base::BindOnce(&FileSystemManagerImpl::ContinueReadMetadata,
                      weak_factory_.GetWeakPtr(), url, std::move(callback)));
 }
@@ -499,9 +502,10 @@ void FileSystemManagerImpl::Create(const GURL& path,
 
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // security_policy_ is a singleton so refcounting is unnecessary
-      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanCreateFileSystemFile,
-                     base::Unretained(security_policy_), process_id_, url),
+      base::BindOnce(
+          &ChildProcessSecurityPolicyImpl::CanCreateFileSystemFile,
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, url),
       base::BindOnce(&FileSystemManagerImpl::ContinueCreate,
                      weak_factory_.GetWeakPtr(), url, exclusive, is_directory,
                      recursive, std::move(callback)));
@@ -552,9 +556,10 @@ void FileSystemManagerImpl::Exists(const GURL& path,
 
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // security_policy_ is a singleton so refcounting is unnecessary
-      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
-                     base::Unretained(security_policy_), process_id_, url),
+      base::BindOnce(
+          &ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, url),
       base::BindOnce(&FileSystemManagerImpl::ContinueExists,
                      weak_factory_.GetWeakPtr(), url, is_directory,
                      std::move(callback)));
@@ -605,9 +610,10 @@ void FileSystemManagerImpl::ReadDirectory(
 
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // security_policy_ is a singleton so refcounting is unnecessary
-      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
-                     base::Unretained(security_policy_), process_id_, url),
+      base::BindOnce(
+          &ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, url),
       base::BindOnce(&FileSystemManagerImpl::ContinueReadDirectory,
                      weak_factory_.GetWeakPtr(), url, std::move(listener)));
 }
@@ -650,9 +656,10 @@ void FileSystemManagerImpl::ReadDirectorySync(
   }
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // security_policy_ is a singleton so refcounting is unnecessary
-      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
-                     base::Unretained(security_policy_), process_id_, url),
+      base::BindOnce(
+          &ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, url),
       base::BindOnce(&FileSystemManagerImpl::ContinueReadDirectorySync,
                      weak_factory_.GetWeakPtr(), url, std::move(callback)));
 }
@@ -703,9 +710,10 @@ void FileSystemManagerImpl::Write(
   }
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // security_policy_ is a singleton so refcounting is unnecessary
-      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanWriteFileSystemFile,
-                     base::Unretained(security_policy_), process_id_, url),
+      base::BindOnce(
+          &ChildProcessSecurityPolicyImpl::CanWriteFileSystemFile,
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, url),
       base::BindOnce(
           &FileSystemManagerImpl::ResolveBlobForWrite,
           weak_factory_.GetWeakPtr(), std::move(blob),
@@ -775,9 +783,10 @@ void FileSystemManagerImpl::WriteSync(
   }
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // security_policy_ is a singleton so refcounting is unnecessary
-      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanWriteFileSystemFile,
-                     base::Unretained(security_policy_), process_id_, url),
+      base::BindOnce(
+          &ChildProcessSecurityPolicyImpl::CanWriteFileSystemFile,
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, url),
       base::BindOnce(&FileSystemManagerImpl::ResolveBlobForWrite,
                      weak_factory_.GetWeakPtr(), std::move(blob),
                      base::BindOnce(&FileSystemManagerImpl::ContinueWriteSync,
@@ -827,9 +836,10 @@ void FileSystemManagerImpl::Truncate(
   }
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // security_policy_ is a singleton so refcounting is unnecessary
-      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanWriteFileSystemFile,
-                     base::Unretained(security_policy_), process_id_, url),
+      base::BindOnce(
+          &ChildProcessSecurityPolicyImpl::CanWriteFileSystemFile,
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, url),
       base::BindOnce(&FileSystemManagerImpl::ContinueTruncate,
                      weak_factory_.GetWeakPtr(), url, length,
                      std::move(op_receiver), std::move(callback)));
@@ -879,9 +889,10 @@ void FileSystemManagerImpl::TruncateSync(const GURL& file_path,
 
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // security_policy_ is a singleton so refcounting is unnecessary
-      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanWriteFileSystemFile,
-                     base::Unretained(security_policy_), process_id_, url),
+      base::BindOnce(
+          &ChildProcessSecurityPolicyImpl::CanWriteFileSystemFile,
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, url),
       base::BindOnce(&FileSystemManagerImpl::ContinueTruncateSync,
                      weak_factory_.GetWeakPtr(), url, length,
                      std::move(callback)));
@@ -931,9 +942,10 @@ void FileSystemManagerImpl::CreateSnapshotFile(
   }
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // security_policy_ is a singleton so refcounting is unnecessary
-      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
-                     base::Unretained(security_policy_), process_id_, url),
+      base::BindOnce(
+          &ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, url),
       base::BindOnce(&FileSystemManagerImpl::ContinueCreateSnapshotFile,
                      weak_factory_.GetWeakPtr(), url, std::move(callback)));
 }
@@ -997,10 +1009,10 @@ void FileSystemManagerImpl::RegisterBlob(
 
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // security_policy_ is a singleton so refcounting is unnecessary
-      base::BindOnce(&ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
-                     base::Unretained(security_policy_), process_id_,
-                     crack_url),
+      base::BindOnce(
+          &ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, crack_url),
       base::BindOnce(&FileSystemManagerImpl::ContinueRegisterBlob,
                      weak_factory_.GetWeakPtr(), content_type, url, length,
                      expected_modification_time, std::move(callback),
@@ -1221,8 +1233,10 @@ void FileSystemManagerImpl::DidCreateSnapshot(
             }
             return can_read_file;
           },
-          // security_policy_ is a singleton so refcounting is unnecessary.
-          base::Unretained(security_policy_), process_id_, platform_path),
+          // ChildProcessSecurityPolicyImpl::GetInstance() is a singleton so
+          // refcounting is unnecessary.
+          base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
+          process_id_, platform_path),
       base::BindOnce(&FileSystemManagerImpl::ContinueDidCreateSnapshot,
                      weak_factory_.GetWeakPtr(), std::move(callback), url,
                      result, info, platform_path));
