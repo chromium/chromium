@@ -105,8 +105,10 @@ CrosapiSystemLogSourceTest*
 -SelectToSpeakKeystrokeSelectionTest.contentEditableExternallySelected
 -SelectToSpeakMouseSelectionTest.SpeaksNodeWhenClicked
 -SelectToSpeakMouseSelectionTest.VoiceSwitching
-# TODO(b/268056158) Flaky
--SelectToSpeakTestWithVoiceSwitching.BreaksAtLanguageBounds
+# SelectToSpeakTest* are ash browser tests with no dependency on Lacros, do not
+# run these tests as browser_tests_require_lacros.
+# TODO(b/290096429): Run these tests on Lacros.
+-SelectToSpeakTest*
 # TODO(b/277821091) Flaky
 -ChromeVoxBackgroundTest.NavigationEscapesEdit
 -ChromeVoxBackgroundTest.NavigationIgnoresLabels
