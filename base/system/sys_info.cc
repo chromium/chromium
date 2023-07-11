@@ -125,6 +125,17 @@ bool SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled() {
 #endif
 }
 
+bool SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled(
+    const FeatureParam<bool>& param_for_exclusion) {
+#if BUILDFLAG(IS_ANDROID)
+  return base::SysInfo::IsLowEndDevice() ||
+         (IsPartialLowEndModeOnMidRangeDevicesEnabled() &&
+          !param_for_exclusion.Get());
+#else
+  return base::SysInfo::IsLowEndDevice();
+#endif
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 // The Android equivalent of this lives in `detectLowEndDevice()` at:
 // base/android/java/src/org/chromium/base/SysUtils.java
