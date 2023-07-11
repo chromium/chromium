@@ -905,19 +905,26 @@ bool Internals::isLoadingFromMemoryCache(const String& url) {
 
 ScriptPromise Internals::getInitialResourcePriority(ScriptState* script_state,
                                                     const String& url,
-                                                    Document* document) {
+                                                    Document* document,
+                                                    bool new_load_only) {
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   KURL resource_url = url_test_helpers::ToKURL(url.Utf8());
-  DCHECK(document);
 
   auto callback = WTF::BindOnce(&Internals::ResolveResourcePriority,
                                 WrapPersistent(this), WrapPersistent(resolver));
-  ResourceFetcher::AddPriorityObserverForTesting(resource_url,
-                                                 std::move(callback));
+  document->Fetcher()->AddPriorityObserverForTesting(
+      resource_url, std::move(callback), new_load_only);
 
   return promise;
+}
+
+ScriptPromise Internals::getInitialResourcePriorityOfNewLoad(
+    ScriptState* script_state,
+    const String& url,
+    Document* document) {
+  return getInitialResourcePriority(script_state, url, document, true);
 }
 
 bool Internals::doesWindowHaveUrlFragment(DOMWindow* window) {

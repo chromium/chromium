@@ -90,9 +90,9 @@
         var filePath = '/loading/resources/js-loaded.js?cross-origin2';
         var src = crossOrigin + filePath;
         if (window.internals) {
-            var originalPriority = internals.getInitialResourcePriority(src, document);
-            var interventionPriority = originalPriority.then(() =>
-                                  internals.getInitialResourcePriority(src, document));
+          var originalPriority = internals.getInitialResourcePriorityOfNewLoad(src, document);
+          var interventionPriority = originalPriority.then(() =>
+            internals.getInitialResourcePriorityOfNewLoad(src, document));
         }
 
         onload2 = t.unreached_func(

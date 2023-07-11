@@ -438,13 +438,24 @@ network::mojom::RequestDestination ResourceFetcher::DetermineRequestDestination(
   return network::mojom::RequestDestination::kEmpty;
 }
 
-// static
 void ResourceFetcher::AddPriorityObserverForTesting(
     const KURL& resource_url,
-    base::OnceCallback<void(int)> callback) {
-  PriorityObservers()->Set(
-      MemoryCache::RemoveFragmentIdentifierIfNeeded(resource_url),
-      std::move(callback));
+    base::OnceCallback<void(int)> callback,
+    bool new_load_only) {
+  KURL normalized_url =
+      MemoryCache::RemoveFragmentIdentifierIfNeeded(resource_url);
+
+  if (!new_load_only) {
+    auto it = cached_resources_map_.find(normalized_url.GetString());
+    if (it != cached_resources_map_.end()) {
+      Resource* resource = it->value;
+      std::move(callback).Run(
+          static_cast<int>(resource->GetResourceRequest().InitialPriority()));
+      return;
+    }
+  }
+
+  PriorityObservers()->Set(normalized_url.GetString(), std::move(callback));
 }
 
 // This method simply takes in information about a ResourceRequest, and returns

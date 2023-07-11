@@ -33,10 +33,14 @@ interface Internals {
     boolean isLoading(DOMString url);
     boolean isLoadingFromMemoryCache(DOMString url);
 
-    // Call this function with the URL of a resource that has not yet been
-    // fetched. It returns a promise that resolves with the initial priority
+    // Call this function with the URL of a resource.
+    // It returns a promise that resolves with the initial priority
     // of the request, once it has been made.
     [CallWith=ScriptState] Promise<unsigned long> getInitialResourcePriority(DOMString url, Document document);
+
+    // Similar to getInitialResourcePriority, but doesn't query the priority of
+    // an already loaded resource.
+    [CallWith=ScriptState] Promise<unsigned long> getInitialResourcePriorityOfNewLoad(DOMString url, Document document);
 
     DOMString getResourceHeader(DOMString url, DOMString header, Document document);
 

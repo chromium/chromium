@@ -179,8 +179,14 @@ class PLATFORM_EXPORT ResourceFetcher
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader();
 
   Resource* CachedResource(const KURL&) const;
-  static void AddPriorityObserverForTesting(const KURL&,
-                                            base::OnceCallback<void(int)>);
+
+  // Registers an callback to be called with the resource priority of the fetch
+  // made to the specified URL. When `new_load_only` is set to false,
+  // this will also search for Resources alive in Oilpan heap, and their
+  // fetched priority.
+  void AddPriorityObserverForTesting(const KURL&,
+                                     base::OnceCallback<void(int)>,
+                                     bool new_load_only = false);
 
   using DocumentResourceMap = HeapHashMap<String, WeakMember<Resource>>;
   // Note: This function is defined for devtools. Do not use this function in

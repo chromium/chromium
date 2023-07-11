@@ -113,7 +113,11 @@ class Internals final : public ScriptWrappable {
 
   ScriptPromise getInitialResourcePriority(ScriptState*,
                                            const String& url,
-                                           Document*);
+                                           Document*,
+                                           bool new_load_only = false);
+  ScriptPromise getInitialResourcePriorityOfNewLoad(ScriptState*,
+                                                    const String& url,
+                                                    Document*);
   String getResourceHeader(const String& url, const String& header, Document*);
 
   bool doesWindowHaveUrlFragment(DOMWindow*);
