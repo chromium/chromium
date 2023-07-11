@@ -4,6 +4,8 @@
 
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
+import {waitForElementUpdate} from '../common/js/unittest_util.js';
+
 import {XfBulkPinningDialog} from './xf_bulk_pinning_dialog.js';
 
 /**
@@ -16,18 +18,22 @@ export function setUp() {
 /**
  * Returns the <xf-bulk-pinning-dialog> element.
  */
-function getDialog(): XfBulkPinningDialog {
-  const dialog = document.querySelector('xf-bulk-pinning-dialog');
-  assertNotEquals(null, dialog, 'xf-bulk-pinning-dialog is null');
+async function getDialog(): Promise<XfBulkPinningDialog> {
+  const dialog =
+      document.querySelector<XfBulkPinningDialog>('xf-bulk-pinning-dialog');
+  assertNotEquals(null, dialog);
   assertEquals('XF-BULK-PINNING-DIALOG', dialog!.tagName);
-  return dialog! as XfBulkPinningDialog;
+  await waitForElementUpdate(dialog!);
+  return dialog!;
 }
 
 /**
  * Tests that the initial XfBulkPinningDialog exists.
  */
 export async function testInit(done: () => void) {
-  const dialog = getDialog();
-  assertNotEquals(dialog, null);
+  const dialog = await getDialog();
+  assertNotEquals(null, dialog);
+  dialog.show();
+  await waitForElementUpdate(dialog);
   done();
 }

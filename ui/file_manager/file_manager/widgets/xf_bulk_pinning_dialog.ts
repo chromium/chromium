@@ -149,7 +149,7 @@ export class XfBulkPinningDialog extends XfBase {
     try {
       await calculateBulkPinRequiredSpace();
     } catch (e) {
-      console.error('Cannot calculate bulk-pinning required space', e);
+      console.error('Cannot calculate required space for bulk-pinning:', e);
       this.state = DialogState.ERROR;
     }
   }
