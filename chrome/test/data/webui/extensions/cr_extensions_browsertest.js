@@ -55,33 +55,6 @@ const CrExtensionsBrowserTestWithInstalledExtension =
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Manager Tests
 
-var CrExtensionsManagerUnitTestWithActivityLogFlag =
-    class extends CrExtensionsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/manager_unit_test_with_activity_log_flag.js';
-  }
-
-  /** @override */
-  get suiteName() {
-    return extension_manager_unit_tests.suiteName;
-  }
-
-  /** @override */
-  get commandLineSwitches() {
-    return [{
-      switchName: 'enable-extension-activity-logging',
-    }];
-  }
-};
-
-TEST_F(
-    'CrExtensionsManagerUnitTestWithActivityLogFlag', 'UpdateFromActivityLog',
-    function() {
-      this.runMochaTest(
-          extension_manager_unit_tests.TestNames.UpdateFromActivityLog);
-    });
-
 var CrExtensionsManagerTestWithMultipleExtensionTypesInstalled =
     class extends CrExtensionsBrowserTest {
   /** @override */

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -338,6 +339,20 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsKioskModeManagerUnitTest, KioskMode) {
   RunTest("extensions/kiosk_mode_manager_unit_test.js", "mocha.run()");
 }
 #endif
+
+class CrExtensionsManagerUnitTestWithActivityLogFlag
+    : public ExtensionsBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kEnableExtensionActivityLogging);
+    WebUIMochaBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTestWithActivityLogFlag, All) {
+  RunTest("extensions/manager_unit_test_with_activity_log_flag.js",
+          "mocha.run()");
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Keyboard Shortcuts Tests
