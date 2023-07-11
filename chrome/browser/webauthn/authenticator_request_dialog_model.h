@@ -182,6 +182,7 @@ class AuthenticatorRequestDialogModel {
   // user to select between.
   struct Mechanism {
     // These types describe the type of Mechanism.
+    using Credential = base::StrongAlias<class CredentialTag, absl::monostate>;
     using Transport =
         base::StrongAlias<class TransportTag, AuthenticatorTransport>;
     using WindowsAPI = base::StrongAlias<class WindowsAPITag, absl::monostate>;
@@ -189,8 +190,12 @@ class AuthenticatorRequestDialogModel {
         base::StrongAlias<class iCloudKeychainTag, absl::monostate>;
     using Phone = base::StrongAlias<class PhoneTag, std::string>;
     using AddPhone = base::StrongAlias<class AddPhoneTag, absl::monostate>;
-    using Type =
-        absl::variant<Transport, WindowsAPI, Phone, AddPhone, ICloudKeychain>;
+    using Type = absl::variant<Credential,
+                               Transport,
+                               WindowsAPI,
+                               Phone,
+                               AddPhone,
+                               ICloudKeychain>;
 
     Mechanism(Type type,
               std::u16string name,
@@ -205,6 +210,7 @@ class AuthenticatorRequestDialogModel {
     const Type type;
     const std::u16string name;
     const std::u16string short_name;
+    std::u16string description;
     const raw_ref<const gfx::VectorIcon> icon;
     const base::RepeatingClosure callback;
   };
@@ -522,13 +528,13 @@ class AuthenticatorRequestDialogModel {
 
   // OnAccountSelected is called when one of the accounts from |SelectAccount|
   // has been picked. |index| is the index of the selected account in
-  // |responses()|.
+  // |creds()|.
   void OnAccountSelected(size_t index);
 
   // OnAccountPreselected is called when the user selects a discoverable
   // credential from a platform authenticator prior to providing user
   // authentication. `crededential_id` must match one of the credentials in
-  // `creds()`.
+  // `transport_availability_.recognized_credentials`.
   void OnAccountPreselected(const std::vector<uint8_t>& credential_id);
 
   // Like `OnAccountPreselected()`, but this takes an index into `creds()`
@@ -559,9 +565,6 @@ class AuthenticatorRequestDialogModel {
   TransportAvailabilityInfo& transport_availability_for_testing() {
     return transport_availability_;
   }
-
-  void ReplaceCredListForTesting(
-      std::vector<device::DiscoverableCredentialMetadata> creds);
 
   ObservableAuthenticatorList& saved_authenticators() {
     return ephemeral_state_.saved_authenticators_;

@@ -13,14 +13,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
-#include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
-#include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "components/cbor/values.h"
 #include "content/public/test/browser_test.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
-#include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -543,5 +541,102 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_create_passkey) {
 }
 
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_phone_confirmation) {
+  ShowAndVerifyUi();
+}
+
+// Run with:
+//
+//   --gtest_filter=BrowserUiTest.Invoke --test-launcher-interactive \
+//   --ui=GPMPasskeysAuthenticatorDialogTest.InvokeUi_${test_name}
+//
+// where test_name is the second arg to IN_PROC_BROWSER_TEST_F().
+class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
+ public:
+  // AuthenticatorDialogTest:
+  void ShowUi(const std::string& name) override {
+    model_ = std::make_unique<AuthenticatorRequestDialogModel>(
+        browser()
+            ->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetPrimaryMainFrame());
+    model_->set_relying_party_id("example.com");
+
+    device::FidoRequestHandlerBase::TransportAvailabilityInfo&
+        transport_availability = model_->transport_availability_for_testing();
+    transport_availability.available_transports = {
+        AuthenticatorTransport::kUsbHumanInterfaceDevice,
+        AuthenticatorTransport::kInternal,
+        AuthenticatorTransport::kHybrid,
+        AuthenticatorTransport::kAndroidAccessory,
+    };
+
+    device::DiscoverableCredentialMetadata local_cred1(
+        device::AuthenticatorType::kTouchID, "example.com", {1},
+        device::PublicKeyCredentialUserEntity({1}, "elisa.g.beckett@gmail.com",
+                                              "Elisa Beckett"));
+    device::DiscoverableCredentialMetadata local_cred2(
+        device::AuthenticatorType::kTouchID, "example.com", {2},
+        device::PublicKeyCredentialUserEntity({2}, "elisa.beckett@ink-42.com",
+                                              "Elisa Beckett"));
+    device::DiscoverableCredentialMetadata phone_cred1(
+        device::AuthenticatorType::kPhone, "example.com", {3},
+        device::PublicKeyCredentialUserEntity({1}, "elisa.g.beckett@gmail.com",
+                                              "Elisa Beckett"));
+    device::DiscoverableCredentialMetadata phone_cred2(
+        device::AuthenticatorType::kPhone, "example.com", {4},
+        device::PublicKeyCredentialUserEntity({2}, "elisa.beckett@ink-42.com",
+                                              "Elisa Beckett"));
+
+    // Configure a phone from sync.
+    AuthenticatorRequestDialogModel::PairedPhone phone(
+        AuthenticatorRequestDialogModel::PairedPhone::PairingSource::
+            kSyncDeviceInfo,
+        "Elisa's Pixel 6 Pro", 0,
+        std::array<uint8_t, device::kP256X962Length>{0}, {});
+    model_->set_cable_transport_info(
+        /*extension_is_v2=*/absl::nullopt,
+        /*paired_phones=*/{phone},
+        /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
+
+    if (name == "local_and_phone") {
+      transport_availability.recognized_credentials = {
+          std::move(local_cred1),
+          std::move(local_cred2),
+          std::move(phone_cred1),
+          std::move(phone_cred2),
+      };
+    } else if (name == "local_only") {
+      transport_availability.recognized_credentials = {
+          std::move(local_cred1),
+          std::move(local_cred2),
+      };
+    } else if (name == "phone_only") {
+      transport_availability.recognized_credentials = {
+          std::move(phone_cred1),
+          std::move(phone_cred2),
+      };
+    }
+    model_->StartFlow(std::move(transport_availability),
+                      /*is_conditional_mediation=*/false);
+  }
+
+ private:
+  std::unique_ptr<AuthenticatorRequestDialogModel> model_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnListSyncedPasskeys};
+};
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_local_and_phone) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_local_only) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_phone_only) {
   ShowAndVerifyUi();
 }

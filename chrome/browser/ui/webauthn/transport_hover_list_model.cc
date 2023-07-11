@@ -28,7 +28,7 @@ std::u16string TransportHoverListModel::GetItemText(int item_tag) const {
 }
 
 std::u16string TransportHoverListModel::GetDescriptionText(int item_tag) const {
-  return std::u16string();
+  return mechanisms_[item_tag].description;
 }
 
 ui::ImageModel TransportHoverListModel::GetItemIcon(int item_tag) const {
