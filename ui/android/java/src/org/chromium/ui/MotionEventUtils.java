@@ -4,6 +4,7 @@
 
 package org.chromium.ui;
 
+import android.os.Build;
 import android.view.MotionEvent;
 
 import androidx.annotation.Nullable;
@@ -24,10 +25,11 @@ public class MotionEventUtils {
      * This method exists as a utility pre API 34 (Android U) there was no public method to get
      * nanoseconds. So we call the hidden SDK method "getEventTimeNano" via reflection. If the
      * reflection fails, the time in milliseconds extended to nanoseconds will be returned.
-     *
-     * TODO(b/286064744): Add in Android U support once the SDK is publicly in the chrome builders.
      */
     public static long getEventTimeNanos(MotionEvent event) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            return event.getEventTimeNanos();
+        }
         long timeNs = 0;
         // We are calling a method that was set as maxSDK=P so need to ignore strictmode violations.
         try (StrictModeContext ignored = StrictModeContext.allowAllVmPolicies()) {
@@ -48,10 +50,11 @@ public class MotionEventUtils {
      * Returns the time in nanoseconds, but with precision to milliseconds, of the given
      * MotionEvent. There is no SDK method which returns the event time in nanoseconds, pre Android
      * API 34 (Android U) so we just extend milliseconds to nanoseconds in that case.
-     *
-     * TODO(b/286064744): Add in Android U support once the SDK is publicly in the chrome builders.
      */
     public static long getHistoricalEventTimeNanos(MotionEvent event, int pos) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            return event.getHistoricalEventTimeNanos(pos);
+        }
         return event.getHistoricalEventTime(pos) * 1_000_000;
     }
 
