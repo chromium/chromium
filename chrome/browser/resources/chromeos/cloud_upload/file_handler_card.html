@@ -27,12 +27,22 @@
     background-color: var(--cros-sys-primary_container);
   }
 
-  #card:hover {
+  #card > .hover-layer {
     background-color: var(--cros-ripple-color);
+    content: '';
+    display: none;
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 1;
   }
 
-  :host-context([theme='refresh23']) #card:hover:not([selected]) {
+  :host-context([theme='refresh23']) #card > .hover-layer {
     background-color: var(--cros-sys-hover_on_subtle);
+  }
+
+  #card:hover:not([selected]) > .hover-layer {
+    display: block;
   }
 
   :host(:focus-visible) #card {
@@ -50,13 +60,15 @@
 
   /* Apply border radius to both #card and paper-ripple */
   #container.round-top #card,
-  #container.round-top paper-ripple {
+  #container.round-top #card > paper-ripple,
+  #container.round-top #card > .hover-layer {
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
   }
 
   #container.round-bottom #card,
-  #container.round-bottom paper-ripple {
+  #container.round-bottom #card > paper-ripple,
+  #container.round-bottom #card > .hover-layer {
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
   }
@@ -180,8 +192,9 @@
 </style>
 
 <div id="container">
-  <paper-ripple></paper-ripple>
   <div id="card">
+    <paper-ripple></paper-ripple>
+    <div class="hover-layer"></div>
     <div id="icon"></div>
     <div id="content">
       <div id="title"></div>
