@@ -1486,8 +1486,8 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
 
     if (aria_rowindex && physical_rowindex &&
         aria_rowindex.value() - 1 != physical_rowindex.value()) {
-      AddAttributeToList(ax::mojom::IntAttribute::kAriaCellRowIndex, "rowindex",
-                         attributes);
+      std::string str_value = base::NumberToString(*aria_rowindex);
+      AddAttributeToList("rowindex", str_value, attributes);
     }
 
     if (!IsTableRow(GetRole()) && aria_colindex && physical_colindex &&

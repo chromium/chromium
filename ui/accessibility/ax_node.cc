@@ -1538,6 +1538,14 @@ absl::optional<int> AXNode::GetTableCellRowIndex() const {
   if (!table_info)
     return absl::nullopt;
 
+  // If it's a table row, use the first cell within.
+  if (IsTableRow()) {
+    if (const AXNode* first_cell = table_info->GetFirstCellInRow(this)) {
+      return first_cell->GetTableCellRowIndex();
+    }
+    return absl::nullopt;
+  }
+
   absl::optional<int> index = GetTableCellIndex();
   if (!index)
     return absl::nullopt;
@@ -1593,9 +1601,18 @@ absl::optional<int> AXNode::GetTableCellAriaRowIndex() const {
   if (!table_info)
     return absl::nullopt;
 
-  absl::optional<int> index = GetTableCellIndex();
-  if (!index)
+  // If it's a table row, use the first cell within.
+  if (IsTableRow()) {
+    if (const AXNode* first_cell = table_info->GetFirstCellInRow(this)) {
+      return first_cell->GetTableCellAriaRowIndex();
+    }
     return absl::nullopt;
+  }
+
+  absl::optional<int> index = GetTableCellIndex();
+  if (!index) {
+    return absl::nullopt;
+  }
 
   int aria_row_index =
       static_cast<int>(table_info->cell_data_vector[*index].aria_row_index);

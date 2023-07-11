@@ -3,9 +3,9 @@ android.webkit.WebView focusable focused scrollable name='Table example'
 ++++android.view.View
 ++++++android.view.View role_description='column header' collection_item table_header name='Pair' row_span=1 column_span=1
 ++++++android.view.View role_description='column header' collection_item table_header name='Single' row_span=1 column_index=1 column_span=1
-++++android.view.View
+++++android.view.View row_index=1
 ++++++android.view.View collection_item name='AB' row_index=1 row_span=1 column_span=1
 ++++++android.view.View collection_item name='B' row_index=1 row_span=1 column_index=1 column_span=1
-++++android.view.View
+++++android.view.View row_index=2
 ++++++android.view.View collection_item name='CD' row_index=2 row_span=1 column_span=1
 ++++++android.view.View collection_item name='D' row_index=2 row_span=1 column_index=1 column_span=1

@@ -1269,9 +1269,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaRow) {
   RunAriaTest(FILE_PATH_LITERAL("aria-row.html"));
 }
 
-// TODO(crbug.com/1191936) Disable the test due to its flakiness.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityAriaRowAttr) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaRowAttr) {
   RunAriaTest(FILE_PATH_LITERAL("aria-row-attr.html"));
 }
 

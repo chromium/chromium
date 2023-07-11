@@ -1,20 +1,20 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++ROLE_SYSTEM_TABLE colcount:5 rowcount:4
-++++ROLE_SYSTEM_ROW
+++++ROLE_SYSTEM_ROW rowindex:2
 ++++++ROLE_SYSTEM_COLUMNHEADER name='Month' rowindex:2 colindex:2
 ++++++++ROLE_SYSTEM_STATICTEXT name='Month'
 ++++++ROLE_SYSTEM_COLUMNHEADER name='Day' rowindex:2 colindex:3
 ++++++++ROLE_SYSTEM_STATICTEXT name='Day'
 ++++++ROLE_SYSTEM_COLUMNHEADER name='Weather' rowindex:2 colindex:5
 ++++++++ROLE_SYSTEM_STATICTEXT name='Weather'
-++++ROLE_SYSTEM_ROW
+++++ROLE_SYSTEM_ROW rowindex:3
 ++++++ROLE_SYSTEM_CELL name='January' FOCUSABLE rowindex:3 colindex:2
 ++++++++ROLE_SYSTEM_STATICTEXT name='January'
 ++++++ROLE_SYSTEM_CELL name='01' FOCUSABLE rowindex:3 colindex:3
 ++++++++ROLE_SYSTEM_STATICTEXT name='01'
 ++++++ROLE_SYSTEM_CELL name='Sunny' FOCUSABLE rowindex:3 colindex:5
 ++++++++ROLE_SYSTEM_STATICTEXT name='Sunny'
-++++ROLE_SYSTEM_ROW
+++++ROLE_SYSTEM_ROW rowindex:4
 ++++++ROLE_SYSTEM_CELL name='January' FOCUSABLE rowindex:4 colindex:2
 ++++++++ROLE_SYSTEM_STATICTEXT name='January'
 ++++++ROLE_SYSTEM_CELL name='02' FOCUSABLE rowindex:4 colindex:3

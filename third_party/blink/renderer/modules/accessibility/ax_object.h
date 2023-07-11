@@ -1513,8 +1513,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   mutable int focus_attribute_cache_modification_count_ = -1;
 
   mutable Member<AXObject> cached_live_region_root_;
-  mutable int cached_aria_column_index_;
-  mutable int cached_aria_row_index_;
   mutable gfx::RectF cached_local_bounding_box_rect_for_accessibility_;
 
   Member<AXObjectCacheImpl> ax_object_cache_;

@@ -3,7 +3,7 @@ android.webkit.WebView focusable scrollable
 ++++android.view.View
 ++++++android.view.View role_description='column header' collection_item table_header name='Browser' row_span=1 column_span=1
 ++++++android.view.View role_description='column header' collection_item table_header name='Rendering Engine' row_span=1 column_index=1 column_span=1
-++++android.view.View
+++++android.view.View row_index=1
 ++++++android.view.View collection_item focusable name='Chrome' row_index=1 row_span=1 column_span=1
 ++++++android.view.View collection_item focusable focused name='Blink' row_index=1 row_span=1 column_index=1 column_span=1
 ++android.widget.TextView name='Done'

@@ -599,10 +599,12 @@ class AX_EXPORT AXNode final {
   bool IsTableCellOrHeader() const;
   absl::optional<int> GetTableCellIndex() const;
   absl::optional<int> GetTableCellColIndex() const;
+  // The row index of a cell. If a row is passed in, use the first cell.
   absl::optional<int> GetTableCellRowIndex() const;
   absl::optional<int> GetTableCellColSpan() const;
   absl::optional<int> GetTableCellRowSpan() const;
   absl::optional<int> GetTableCellAriaColIndex() const;
+  // The ARIA row index of a cell. If a row is passed in, use the first cell.
   absl::optional<int> GetTableCellAriaRowIndex() const;
   std::vector<AXNodeID> GetTableCellColHeaderNodeIds() const;
   std::vector<AXNodeID> GetTableCellRowHeaderNodeIds() const;

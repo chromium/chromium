@@ -587,8 +587,6 @@ AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
       cached_is_descendant_of_disabled_node_(false),
       cached_can_set_focus_attribute_(false),
       cached_live_region_root_(nullptr),
-      cached_aria_column_index_(0),
-      cached_aria_row_index_(0),
       ax_object_cache_(&ax_object_cache) {
   ++number_of_live_ax_objects_;
 }
@@ -3108,8 +3106,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     cached_live_region_root_ = IsLiveRegionRoot() ? const_cast<AXObject*>(this)
                                                   : parent_->LiveRegionRoot();
   }
-  cached_aria_column_index_ = ComputeAriaColumnIndex();
-  cached_aria_row_index_ = ComputeAriaRowIndex();
 
   if (GetLayoutObject() && GetLayoutObject()->IsText()) {
     cached_local_bounding_box_rect_for_accessibility_ =
@@ -6165,16 +6161,6 @@ unsigned AXObject::RowSpan() const {
 }
 
 unsigned AXObject::AriaColumnIndex() const {
-  UpdateCachedAttributeValuesIfNeeded();
-  return cached_aria_column_index_;
-}
-
-unsigned AXObject::AriaRowIndex() const {
-  UpdateCachedAttributeValuesIfNeeded();
-  return cached_aria_row_index_;
-}
-
-unsigned AXObject::ComputeAriaColumnIndex() const {
   // Return the ARIA column index if it has been set. Otherwise return a default
   // value of 0.
   uint32_t col_index = 0;
@@ -6182,7 +6168,7 @@ unsigned AXObject::ComputeAriaColumnIndex() const {
   return col_index;
 }
 
-unsigned AXObject::ComputeAriaRowIndex() const {
+unsigned AXObject::AriaRowIndex() const {
   // Return the ARIA row index if it has been set. Otherwise return a default
   // value of 0.
   uint32_t row_index = 0;
