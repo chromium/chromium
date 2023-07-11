@@ -11,12 +11,17 @@
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "ash/system/unified/tasks_combobox_model.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -29,6 +34,8 @@ constexpr int kGlanceablesTaskViewHeight = 48;
 constexpr int kGlanceablesTaskFooterHeight = 24;
 constexpr int kGlanceablesFooterMargin = 12;
 constexpr int kGlanceableTaskVerticalMargin = 2;
+constexpr int kTasksIconRightPadding = 4;
+constexpr int kTasksIconViewSize = 32;
 
 }  // namespace
 
@@ -110,6 +117,19 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
 
   task_icon_view_ =
       tasks_header_view_->AddChildView(std::make_unique<views::ImageView>());
+  task_icon_view_->SetPreferredSize(
+      gfx::Size(kTasksIconViewSize, kTasksIconViewSize));
+  task_icon_view_->SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysBaseElevated, kTasksIconViewSize / 2));
+  if (chromeos::features::IsJellyEnabled()) {
+    task_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        kGlanceablesTasksIcon, cros_tokens::kCrosSysOnSurface));
+  } else {
+    task_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        kGlanceablesTasksIcon, kColorAshTextColorPrimary));
+  }
+  task_icon_view_->SetProperty(
+      views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, kTasksIconRightPadding));
 
   tasks_combobox_model_ = std::make_unique<TasksComboboxModel>(task_list);
   task_list_combo_box_view_ = tasks_header_view_->AddChildView(
