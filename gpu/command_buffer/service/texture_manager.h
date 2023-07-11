@@ -288,10 +288,6 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
       GLenum type,
       const SamplerState& sampler_state) const;
 
-  bool HasImages() const {
-    return has_images_;
-  }
-
   // Returns true of the given dimensions are inside the dimensions of the
   // level.
   bool ValidForTexture(
@@ -573,10 +569,6 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   // texture.
   void UpdateCanRenderCondition();
 
-  // Updates the images count in all the managers referencing this
-  // texture.
-  void UpdateHasImages();
-
   // Increment the framebuffer state change count in all the managers
   // referencing this texture.
   void IncAllFramebufferStateChangeCount();
@@ -667,9 +659,6 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   // Indicates that the storage for the texture is allocated using glTexStorage*
   // functions.
   bool immutable_storage_ = false;
-
-  // Whether or not this texture has images.
-  bool has_images_ = false;
 
   // Size in bytes this texture is assumed to take in memory.
   uint32_t estimated_size_ = 0;
@@ -1015,10 +1004,6 @@ class GPU_GLES2_EXPORT TextureManager
     return num_uncleared_mips_ > 0;
   }
 
-  bool HaveImages() const {
-    return num_images_ > 0;
-  }
-
   GLuint black_texture_id(GLenum target) const {
     switch (target) {
       case GL_SAMPLER_2D:
@@ -1290,7 +1275,6 @@ class GPU_GLES2_EXPORT TextureManager
 
   int num_unsafe_textures_;
   int num_uncleared_mips_;
-  int num_images_;
 
   // Counts the number of Textures allocated with 'this' as its manager.
   // Allows to check no Texture will outlive this.

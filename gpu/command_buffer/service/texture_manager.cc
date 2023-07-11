@@ -467,7 +467,6 @@ TextureManager::~TextureManager() {
 
   DCHECK_EQ(0, num_unsafe_textures_);
   DCHECK_EQ(0, num_uncleared_mips_);
-  DCHECK_EQ(0, num_images_);
 
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
@@ -1118,21 +1117,6 @@ void Texture::UpdateCanRenderCondition() {
   can_render_condition_ = GetCanRenderCondition();
 }
 
-// TODO(crbug.com/1324249): Eliminate this function and `has_images_`
-// altogether.
-void Texture::UpdateHasImages() {
-  if (face_infos_.empty())
-    return;
-
-  bool has_images = false;
-  if (has_images_ == has_images)
-    return;
-  has_images_ = has_images;
-  int delta = has_images ? +1 : -1;
-  for (RefSet::iterator it = refs_.begin(); it != refs_.end(); ++it)
-    (*it)->manager()->UpdateNumImages(delta);
-}
-
 void Texture::IncAllFramebufferStateChangeCount() {
   for (RefSet::iterator it = refs_.begin(); it != refs_.end(); ++it)
     (*it)->manager()->IncFramebufferStateChangeCount();
@@ -1302,7 +1286,6 @@ void Texture::SetLevelInfo(GLenum target,
   Update();
   UpdateCleared();
   UpdateCanRenderCondition();
-  UpdateHasImages();
   if (IsAttachedToFramebuffer()) {
     // TODO(gman): If textures tracked which framebuffers they were attached to
     // we could just mark those framebuffers as not complete.
@@ -2019,7 +2002,6 @@ TextureManager::TextureManager(MemoryTracker* memory_tracker,
       use_default_textures_(use_default_textures),
       num_unsafe_textures_(0),
       num_uncleared_mips_(0),
-      num_images_(0),
       texture_count_(0),
       have_context_(true),
       current_service_id_generation_(0),
@@ -2409,8 +2391,6 @@ void TextureManager::StartTracking(TextureRef* ref) {
   num_uncleared_mips_ += texture->num_uncleared_mips();
   if (!texture->SafeToRenderFrom())
     ++num_unsafe_textures_;
-  if (texture->HasImages())
-    ++num_images_;
 }
 
 void TextureManager::StopTracking(TextureRef* ref) {
@@ -2424,10 +2404,6 @@ void TextureManager::StopTracking(TextureRef* ref) {
   Texture* texture = ref->texture();
 
   --texture_count_;
-  if (texture->HasImages()) {
-    DCHECK_NE(0, num_images_);
-    --num_images_;
-  }
   if (!texture->SafeToRenderFrom()) {
     DCHECK_NE(0, num_unsafe_textures_);
     --num_unsafe_textures_;
@@ -2489,11 +2465,6 @@ void TextureManager::UpdateSafeToRenderFrom(int delta) {
 void TextureManager::UpdateUnclearedMips(int delta) {
   num_uncleared_mips_ += delta;
   DCHECK_GE(num_uncleared_mips_, 0);
-}
-
-void TextureManager::UpdateNumImages(int delta) {
-  num_images_ += delta;
-  DCHECK_GE(num_images_, 0);
 }
 
 void TextureManager::IncFramebufferStateChangeCount() {
@@ -3138,7 +3109,7 @@ void TextureManager::ValidateAndDoTexSubImage(
     }
   }
 
-  if (full_image && !texture->IsImmutable() && !texture->HasImages()) {
+  if (full_image && !texture->IsImmutable()) {
     TRACE_EVENT0("gpu", "FullImage");
     GLenum internal_format;
     GLenum tex_type;
