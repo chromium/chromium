@@ -5,14 +5,17 @@
 # compile targets) you need a review from a Trooper in //infra/OWNERS.
 file://infra/OWNERS
 
-jam@chromium.org
-sky@chromium.org
-
 # For V8 and DevTools related reviews.
-machenbach@chromium.org
+per-file chromium.devtools-frontend.json=machenbach@chromium.org
+per-file client.devtools-frontend.integration.json=machenbach@chromium.org
+per-file client.v8.branches.json=machenbach@chromium.org
+per-file client.v8.chromium.json=machenbach@chromium.org
+per-file client.v8.fyi.json=machenbach@chromium.org
+per-file tryserver.devtools-frontend.json=machenbach@chromium.org
+per-file tryserver.v8.json=machenbach@chromium.org
 
 # For Weblayer skew tests related reviews
-rmhasan@google.com
+per-file chromium.android.*=rmhasan@google.com
 per-file chromium.android.*=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
 
 # For Android related reviews
