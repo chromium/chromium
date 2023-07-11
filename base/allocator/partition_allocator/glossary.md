@@ -109,6 +109,9 @@ each term depends mainly upon previously defined ones.
     per-thread permissions. At the moment, this is implemented for pkeys on x64.
     It's primary user is [V8 CFI][v8-cfi].
 
+![The singular AddressPoolManager mediates access to the separate pools
+  for each PartitionRoot.](./dot/address-space.png)
+
 *** promo
 Pools are downgraded into a logical concept in 32-bit environments,
 tracking a non-contiguous set of allocations using a bitmap.
