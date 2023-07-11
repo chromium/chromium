@@ -1903,6 +1903,7 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   inputs[0].set_virtual_card_enrollment_type(
       CreditCard::VirtualCardEnrollmentType::ISSUER);
   inputs[0].set_product_description(u"Fake description");
+  inputs[0].set_cvc(u"000");
 
   inputs.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "b456"));
   inputs[1].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Rick Roman");
@@ -1920,6 +1921,7 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   inputs[1].set_virtual_card_enrollment_type(
       CreditCard::VirtualCardEnrollmentType::NETWORK);
   inputs[1].set_card_art_url(GURL("https://www.example.com"));
+  inputs[1].set_cvc(u"111");
 
   test::SetServerCreditCards(table_.get(), inputs);
 
@@ -1967,6 +1969,9 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   EXPECT_EQ(GURL("https://www.example.com"), outputs[1]->card_art_url());
 
   EXPECT_EQ(u"Fake description", outputs[0]->product_description());
+
+  EXPECT_EQ(inputs[0].cvc(), outputs[0]->cvc());
+  EXPECT_EQ(inputs[1].cvc(), outputs[1]->cvc());
 }
 
 TEST_F(AutofillTableTest, SetGetRemoveServerCardMetadata) {

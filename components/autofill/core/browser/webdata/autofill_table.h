@@ -725,7 +725,7 @@ class AutofillTable : public WebDatabaseTable,
   // Methods for getting cvc from server_stored_cvc. For testing purpose only
   // because CVC is populated to CreditCard via GetServerCreditCards.
   std::u16string GetServerCvcForTesting(int64_t instrument_id);
-  std::vector<std::u16string> GetAllServerCvcForTesting();
+  base::flat_map<int64_t, std::u16string> GetAllServerCvcForTesting();
 
   // Methods to add, update, remove and get the metadata for server cards and
   // addresses.
@@ -976,6 +976,9 @@ class AutofillTable : public WebDatabaseTable,
       const std::string& guid) const;
   bool GetAutofillProfilesFromLegacyTable(
       std::vector<std::unique_ptr<AutofillProfile>>* profiles) const;
+
+  // Get all server flat_map<instrument_id, cvc> from `server_stored_cvc` table.
+  base::flat_map<int64_t, std::u16string> GetAllServerCvcs() const;
 
   bool InitMainTable();
   bool InitCreditCardsTable();

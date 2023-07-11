@@ -1734,6 +1734,20 @@ bool AutofillTable::GetAutofillProfilesFromLegacyTable(
   return s.Succeeded();
 }
 
+base::flat_map<int64_t, std::u16string> AutofillTable::GetAllServerCvcs()
+    const {
+  std::vector<std::pair<int64_t, std::u16string>> cvcs;
+  sql::Statement s;
+  SelectBuilder(db_, s, kServerStoredCvcTable,
+                {kInstrumentId, kValueEncrypted});
+  while (s.Step()) {
+    int64_t instrument_id = s.ColumnInt64(0);
+    cvcs.emplace_back(instrument_id, UnencryptValueFromColumn(
+                                         s, 1, *autofill_table_encryptor_));
+  }
+  return cvcs;
+}
+
 bool AutofillTable::GetServerProfiles(
     std::vector<std::unique_ptr<AutofillProfile>>* profiles) const {
   profiles->clear();
@@ -2092,6 +2106,8 @@ bool AutofillTable::GetCreditCards(
 bool AutofillTable::GetServerCreditCards(
     std::vector<std::unique_ptr<CreditCard>>* credit_cards) const {
   credit_cards->clear();
+  base::flat_map<int64_t, std::u16string> instrument_to_cvc =
+      GetAllServerCvcs();
 
   sql::Statement s;
   SelectBuilder(
@@ -2156,6 +2172,7 @@ bool AutofillTable::GetServerCreditCards(
             s.ColumnInt(index++)));
     card->set_card_art_url(GURL(s.ColumnString(index++)));
     card->set_product_description(s.ColumnString16(index++));
+    card->set_cvc(instrument_to_cvc[card->instrument_id()]);
     credit_cards->push_back(std::move(card));
   }
   return s.Succeeded();
@@ -2210,6 +2227,10 @@ bool AutofillTable::MaskServerCreditCard(const std::string& id) {
 
 bool AutofillTable::AddServerCvc(int64_t instrument_id,
                                  const std::u16string& cvc) {
+  if (cvc.empty()) {
+    return false;
+  }
+
   sql::Statement s;
   InsertBuilder(db_, s, kServerStoredCvcTable,
                 {kInstrumentId, kValueEncrypted, kLastUpdatedTimestamp});
@@ -2251,16 +2272,9 @@ std::u16string AutofillTable::GetServerCvcForTesting(int64_t instrument_id) {
                   : u"";
 }
 
-std::vector<std::u16string> AutofillTable::GetAllServerCvcForTesting() {
-  std::vector<std::u16string> cvc_list;
-  sql::Statement s;
-  SelectBuilder(db_, s, kServerStoredCvcTable, {kValueEncrypted});
-  while (s.Step()) {
-    cvc_list.push_back(
-        UnencryptValueFromColumn(s, 0, *autofill_table_encryptor_));
-  }
-
-  return cvc_list;
+base::flat_map<int64_t, std::u16string>
+AutofillTable::GetAllServerCvcForTesting() {
+  return GetAllServerCvcs();
 }
 
 bool AutofillTable::AddServerCardMetadata(
