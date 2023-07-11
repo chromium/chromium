@@ -123,6 +123,6 @@ found in the LICENSE file.
           app:layout_constraintBottom_toBottomOf="parent"
           app:layout_constraintRight_toRightOf="parent"
           android:gravity="center"
-          android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+          android:textAppearance="@style/TextAppearance.FolderChildCount" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
