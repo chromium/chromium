@@ -147,6 +147,8 @@ public final class ProductionSupportedFlagList {
                             + " app package names."),
             Flag.baseFeature(AwFeatures.WEBVIEW_BROTLI_SUPPORT,
                     "Enables brotli compression support in WebView."),
+            Flag.baseFeature(NetFeatures.ZSTD_CONTENT_ENCODING,
+                    "Enables zstd content-encoding support in the browser."),
             Flag.baseFeature(AwFeatures.WEBVIEW_EXTRA_HEADERS_SAME_ORIGIN_ONLY,
                     "Only allow extra headers added via loadUrl() to be sent to the same origin "
                             + "as the original request."),

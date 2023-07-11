@@ -397,4 +397,8 @@ BASE_FEATURE(kEnableWebTransportDraft07,
              "EnableWebTransportDraft07",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kZstdContentEncoding,
+             "ZstdContentEncoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features

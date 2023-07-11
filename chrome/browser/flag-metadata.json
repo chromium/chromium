@@ -3850,6 +3850,11 @@
     "expiry_milestone": 118
   },
   {
+    "name": "enable-zstd-content-encoding",
+    "owners": ["nidhijaju", "net-dev" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "encrypted-client-hello",
     "owners": [ "davidben", "trusty-transport@chromium.org" ],
     "expiry_milestone": 122
