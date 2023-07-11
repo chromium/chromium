@@ -36,12 +36,13 @@ Element* ScrollTimelineAttachment::ComputeSourceNoLayout() const {
     return nullptr;
   }
 
-  LayoutBox* layout_box = reference_element_->GetLayoutBox();
-  if (!layout_box) {
+  LayoutObject* layout_object = reference_element_->GetLayoutObject();
+  if (!layout_object) {
     return nullptr;
   }
 
-  const LayoutBox* scroll_container = layout_box->ContainingScrollContainer();
+  const LayoutBox* scroll_container =
+      layout_object->ContainingScrollContainer();
   if (!scroll_container) {
     return reference_element_->GetDocument().ScrollingElementNoLayout();
   }
