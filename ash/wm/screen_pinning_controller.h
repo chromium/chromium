@@ -100,8 +100,6 @@ class ASH_EXPORT ScreenPinningController
 
   // Pinned window should be on top in the parent window.
   raw_ptr<aura::Window, ExperimentalAsh> pinned_window_ = nullptr;
-  // The container `pinned_container_window_observer_` observes.
-  raw_ptr<aura::Window, ExperimentalAsh> container_ = nullptr;
 
   // Owns the WindowDimmers. There is one WindowDimmer for the parent of
   // |pinned_window_| and one for each display other than the display
