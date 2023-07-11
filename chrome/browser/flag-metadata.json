@@ -693,6 +693,14 @@
     "expiry_milestone": 120
   },
   {
+    "name": "autofill-undo",
+    "owners": [
+      "jihadghanna",
+      "schwering"
+    ],
+    "expiry_milestone": 124
+  },
+  {
     "name": "autofill-upstream-allow-additional-email-domains",
     "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 124

@@ -61074,6 +61074,7 @@ from previous Chrome versions.
   <int value="-1408288176" label="enable-account-consistency"/>
   <int value="-1407904527"
       label="OmniboxRemoveSuggestionHeaderCapitalization:disabled"/>
+  <int value="-1406630685" label="AutofillUndo:disabled"/>
   <int value="-1405349891" label="PictureInPictureAPI:enabled"/>
   <int value="-1405048637" label="OfflinePagesResourceBasedSnapshot:enabled"/>
   <int value="-1404469375" label="RemoteCopyProgressNotification:enabled"/>
@@ -62633,6 +62634,7 @@ from previous Chrome versions.
   <int value="-609747087" label="CanvasOopRasterization:enabled"/>
   <int value="-609034895" label="QuickActionSearchWidgetAndroid:enabled"/>
   <int value="-608775184" label="PasswordsWeaknessCheck:enabled"/>
+  <int value="-608564490" label="AutofillUndo:enabled"/>
   <int value="-608065163" label="PermissionChipRequestTypeSensitive:disabled"/>
   <int value="-607970607" label="PostQuantumKyber:enabled"/>
   <int value="-607925721" label="WebViewVulkan:disabled"/>
