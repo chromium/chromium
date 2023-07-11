@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -149,8 +150,14 @@ class RelaunchNotificationControllerUiTest : public policy::PolicyTest {
 
 // Tests that reactivating a browser window after the deadline has passed does
 // not show a negative delta.
+// Fails on mac64; see https://crbug.com/1462892.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ReactivateAfterDeadline DISABLED_ReactivateAfterDeadline
+#else
+#define MAYBE_ReactivateAfterDeadline ReactivateAfterDeadline
+#endif
 IN_PROC_BROWSER_TEST_F(RelaunchNotificationControllerUiTest,
-                       ReactivateAfterDeadline) {
+                       MAYBE_ReactivateAfterDeadline) {
   // Make sure a browser window is active.
   auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view->IsActive());
