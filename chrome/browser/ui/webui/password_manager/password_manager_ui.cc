@@ -296,6 +296,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"save", IDS_SAVE},
     {"savePasswordsLabel", IDS_PASSWORD_MANAGER_UI_SAVE_PASSWORDS_TOGGLE_LABEL},
     {"share", IDS_PASSWORD_MANAGER_UI_SHARE},
+    {"shareDialogTitle", IDS_PASSWORD_MANAGER_UI_SHARE_DIALOG_TITLE},
     {"searchPrompt", IDS_PASSWORD_MANAGER_UI_SEARCH_PROMPT},
     {"selectFile", IDS_PASSWORD_MANAGER_UI_SELECT_FILE},
     {"settings", IDS_PASSWORD_MANAGER_UI_SETTINGS},

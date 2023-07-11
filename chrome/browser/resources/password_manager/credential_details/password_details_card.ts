@@ -68,6 +68,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   static get properties() {
     return {
       password: Object,
+      groupName: String,
       toastMessage_: String,
       usernameCopyInteraction_: {
         type: PasswordViewPageInteractions,
@@ -79,6 +80,11 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
       showEditPasswordDialog_: Boolean,
       showDeletePasswordDialog_: Boolean,
 
+      showShareFlow_: {
+        type: Boolean,
+        value: false,
+      },
+
       enableSendPasswords_: {
         type: Boolean,
         value() {
@@ -89,9 +95,11 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   }
 
   password: chrome.passwordsPrivate.PasswordUiEntry;
+  groupName: string;
   private toastMessage_: string;
   private showEditPasswordDialog_: boolean;
   private showDeletePasswordDialog_: boolean;
+  private showShareFlow_: boolean;
   private enableSendPasswords_: boolean;
 
   private isFederated_(): boolean {
@@ -171,6 +179,14 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   private onDeletePasswordDialogClosed_() {
     this.showDeletePasswordDialog_ = false;
     this.extendAuthValidity_();
+  }
+
+  private onShareButtonClick_() {
+    this.showShareFlow_ = true;
+  }
+
+  private onShareFlowDone_() {
+    this.showShareFlow_ = false;
   }
 
   private extendAuthValidity_() {

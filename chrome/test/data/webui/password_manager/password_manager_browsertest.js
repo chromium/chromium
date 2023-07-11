@@ -43,6 +43,8 @@ const PasswordManagerBrowserTest = class extends PolymerTest {
  ['PasswordsSection', 'passwords_section_test.js'],
  ['Routing', 'password_manager_routing_test.js'],
  ['Settings', 'settings_section_test.js'],
+ ['SharePasswordFlow', 'share_password_flow_test.js'],
+ ['SharePasswordHeader', 'share_password_flow_test.js'],
  ['SideBar', 'password_manager_side_bar_test.js'],
  ['SiteFavicon', 'site_favicon_test.js'],
 ].forEach(test => registerTest(...test));
