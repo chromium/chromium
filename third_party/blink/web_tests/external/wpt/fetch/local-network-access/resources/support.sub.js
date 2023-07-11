@@ -75,21 +75,21 @@ async function postMessageAndAwaitReply(target, message) {
 // Maps protocol (without the trailing colon) and address space to port.
 const SERVER_PORTS = {
   "http": {
-    "loopback": {{ports[http][0]}},
-    "local": {{ports[http-private][0]}},
+    "local": {{ports[http][0]}},
+    "private": {{ports[http-private][0]}},
     "public": {{ports[http-public][0]}},
   },
   "https": {
-    "loopback": {{ports[https][0]}},
-    "other-loopback": {{ports[https][1]}},
-    "local": {{ports[https-private][0]}},
+    "local": {{ports[https][0]}},
+    "other-local": {{ports[https][1]}},
+    "private": {{ports[https-private][0]}},
     "public": {{ports[https-public][0]}},
   },
   "ws": {
-    "loopback": {{ports[ws][0]}},
+    "local": {{ports[ws][0]}},
   },
   "wss": {
-    "loopback": {{ports[wss][0]}},
+    "local": {{ports[wss][0]}},
   },
 };
 
@@ -127,15 +127,15 @@ class Server {
     };
   }
 
-  static HTTP_LOCAL = Server.get("http", "loopback");
-  static HTTP_PRIVATE = Server.get("http", "local");
+  static HTTP_LOCAL = Server.get("http", "local");
+  static HTTP_PRIVATE = Server.get("http", "private");
   static HTTP_PUBLIC = Server.get("http", "public");
-  static HTTPS_LOCAL = Server.get("https", "loopback");
-  static OTHER_HTTPS_LOCAL = Server.get("https", "other-loopback");
-  static HTTPS_PRIVATE = Server.get("https", "local");
+  static HTTPS_LOCAL = Server.get("https", "local");
+  static OTHER_HTTPS_LOCAL = Server.get("https", "other-local");
+  static HTTPS_PRIVATE = Server.get("https", "private");
   static HTTPS_PUBLIC = Server.get("https", "public");
-  static WS_LOCAL = Server.get("ws", "loopback");
-  static WSS_LOCAL = Server.get("wss", "loopback");
+  static WS_LOCAL = Server.get("ws", "local");
+  static WSS_LOCAL = Server.get("wss", "local");
 };
 
 // Resolves a URL relative to the current location, returning an absolute URL.

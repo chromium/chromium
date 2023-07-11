@@ -1020,9 +1020,9 @@ bool Request::keepalive() const {
 String Request::targetAddressSpace() const {
   switch (request_->TargetAddressSpace()) {
     case network::mojom::IPAddressSpace::kLoopback:
-      return "loopback";
-    case network::mojom::IPAddressSpace::kLocal:
       return "local";
+    case network::mojom::IPAddressSpace::kLocal:
+      return "private";
     case network::mojom::IPAddressSpace::kPublic:
       return "public";
     case network::mojom::IPAddressSpace::kUnknown:
