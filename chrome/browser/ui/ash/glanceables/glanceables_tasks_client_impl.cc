@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/types/expected.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
@@ -175,6 +176,9 @@ void GlanceablesTasksClientImpl::FetchTaskListsPage(
 void GlanceablesTasksClientImpl::OnTaskListsPageFetched(
     GlanceablesTasksClient::GetTaskListsCallback callback,
     base::expected<std::unique_ptr<TaskLists>, ApiErrorCode> result) {
+  UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
+                       result.error_or(ApiErrorCode::HTTP_SUCCESS));
+
   if (!result.has_value()) {
     task_lists_->DeleteAll();
     std::move(callback).Run(task_lists_.get());
@@ -212,6 +216,9 @@ void GlanceablesTasksClientImpl::OnTasksPageFetched(
     std::vector<std::unique_ptr<Task>> accumulated_raw_tasks,
     GlanceablesTasksClient::GetTasksCallback callback,
     base::expected<std::unique_ptr<Tasks>, ApiErrorCode> result) {
+  UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Tasks.GetTasks.Status",
+                       result.error_or(ApiErrorCode::HTTP_SUCCESS));
+
   const auto iter = tasks_in_task_lists_.find(task_list_id);
 
   if (!result.has_value()) {
@@ -240,6 +247,9 @@ void GlanceablesTasksClientImpl::OnMarkedAsCompleted(
     const std::string& task_id,
     GlanceablesTasksClient::MarkAsCompletedCallback callback,
     ApiErrorCode status_code) {
+  UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Tasks.PatchTask.Status",
+                       status_code);
+
   if (status_code != ApiErrorCode::HTTP_SUCCESS) {
     std::move(callback).Run(/*success=*/false);
     return;

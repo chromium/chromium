@@ -3595,6 +3595,25 @@ chromium-metrics-reviews@google.com.
   <summary>Record the floating workspace template upload status.</summary>
 </histogram>
 
+<histogram name="Ash.Glanceables.Api.{Method}.Status" enum="ApiErrorCode"
+    expires_after="2024-01-01">
+  <owner>amitrokhin@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Recorded whenever glanceables UI fetches data from Google Classroom API or
+    Tasks API. The recorded enum value indicates the HTTP status code of the
+    fetch response.
+  </summary>
+  <token key="Method">
+    <variant name="Classroom.GetCourses"/>
+    <variant name="Classroom.GetCourseWork"/>
+    <variant name="Classroom.GetStudentSubmissions"/>
+    <variant name="Tasks.GetTaskLists"/>
+    <variant name="Tasks.GetTasks"/>
+    <variant name="Tasks.PatchTask"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Homescreen.AnimationSmoothness" units="%"
     expires_after="2024-01-10">
   <owner>sammiequon@chromium.org</owner>

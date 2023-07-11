@@ -19,6 +19,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
@@ -443,6 +444,9 @@ void GlanceablesClassroomClientImpl::OnCoursesPageFetched(
   CHECK(!student_id.empty() || !teacher_id.empty());
   CHECK(callback);
 
+  UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Classroom.GetCourses.Status",
+                       result.error_or(ApiErrorCode::HTTP_SUCCESS));
+
   if (!result.has_value()) {
     // TODO(b/282013130): handle failures of a single page fetch request more
     // gracefully (retry and/or reflect errors on UI).
@@ -518,6 +522,9 @@ void GlanceablesClassroomClientImpl::OnCourseWorkPageFetched(
   CHECK(!course_id.empty());
   CHECK(callback);
 
+  UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Classroom.GetCourseWork.Status",
+                       result.error_or(ApiErrorCode::HTTP_SUCCESS));
+
   const auto iter = course_work_.find(course_id);
 
   if (!result.has_value()) {
@@ -568,6 +575,10 @@ void GlanceablesClassroomClientImpl::OnStudentSubmissionsPageFetched(
     base::expected<std::unique_ptr<StudentSubmissions>, ApiErrorCode> result) {
   CHECK(!course_id.empty());
   CHECK(callback);
+
+  UMA_HISTOGRAM_SPARSE(
+      "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.Status",
+      result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   const auto iter = student_submissions_.find(course_id);
 

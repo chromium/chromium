@@ -15,10 +15,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time_override.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/time_util.h"
@@ -37,6 +39,7 @@ namespace {
 
 using ::base::subtle::ScopedTimeClockOverrides;
 using ::base::test::TestFuture;
+using ::google_apis::ApiErrorCode;
 using ::google_apis::util::FormatTimeAsString;
 using ::net::test_server::BasicHttpResponse;
 using ::net::test_server::HttpMethod;
@@ -120,6 +123,7 @@ class GlanceablesClassroomClientImplTest : public testing::Test {
   }
 
   GlanceablesClassroomClientImpl* client() { return client_.get(); }
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
   TestRequestHandler& request_handler() { return request_handler_; }
 
  private:
@@ -133,6 +137,7 @@ class GlanceablesClassroomClientImplTest : public testing::Test {
   std::unique_ptr<GaiaUrlsOverriderForTesting> gaia_urls_overrider_;
   testing::StrictMock<TestRequestHandler> request_handler_;
   std::unique_ptr<GlanceablesClassroomClientImpl> client_;
+  base::HistogramTester histogram_tester_;
 };
 
 // ----------------------------------------------------------------------------
@@ -169,10 +174,10 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourses) {
                           base::Unretained(client()))};
 
   for (auto fetch_method : fetch_courses_methods) {
+    base::HistogramTester histogram_tester;
     base::RunLoop run_loop;
     fetch_method.Run(base::BindLambdaForTesting(
-        [&run_loop](
-            const std::vector<std::unique_ptr<GlanceablesClassroomCourse>>&
+        [&](const std::vector<std::unique_ptr<GlanceablesClassroomCourse>>&
                 courses) {
           run_loop.Quit();
 
@@ -180,6 +185,11 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourses) {
 
           EXPECT_EQ(courses.at(0)->id, "course-id-1");
           EXPECT_EQ(courses.at(0)->name, "Active Course 1");
+
+          histogram_tester.ExpectUniqueSample(
+              "Ash.Glanceables.Api.Classroom.GetCourses.Status",
+              ApiErrorCode::HTTP_SUCCESS,
+              /*expected_bucket_count=*/1);
         }));
     run_loop.Run();
   }
@@ -198,14 +208,19 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCoursesOnHttpError) {
                           base::Unretained(client()))};
 
   for (auto fetch_method : fetch_courses_methods) {
+    base::HistogramTester histogram_tester;
     base::RunLoop run_loop;
     fetch_method.Run(base::BindLambdaForTesting(
-        [&run_loop](
-            const std::vector<std::unique_ptr<GlanceablesClassroomCourse>>&
+        [&](const std::vector<std::unique_ptr<GlanceablesClassroomCourse>>&
                 courses) {
           run_loop.Quit();
 
           ASSERT_TRUE(courses.empty());
+
+          histogram_tester.ExpectUniqueSample(
+              "Ash.Glanceables.Api.Classroom.GetCourses.Status",
+              ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
+              /*expected_bucket_count=*/1);
         }));
     run_loop.Run();
   }
@@ -320,8 +335,8 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourseWork) {
   client()->FetchCourseWork(
       /*course_id=*/"course-123",
       base::BindLambdaForTesting(
-          [&run_loop](const std::vector<std::unique_ptr<
-                          GlanceablesClassroomCourseWorkItem>>& course_work) {
+          [&](const std::vector<std::unique_ptr<
+                  GlanceablesClassroomCourseWorkItem>>& course_work) {
             run_loop.Quit();
 
             ASSERT_EQ(course_work.size(), 2u);
@@ -339,6 +354,11 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourseWork) {
                       "https://classroom.google.com/test-link-3");
             EXPECT_EQ(FormatTimeAsString(course_work.at(1)->due.value()),
                       "2023-04-25T15:09:25.250Z");
+
+            histogram_tester()->ExpectUniqueSample(
+                "Ash.Glanceables.Api.Classroom.GetCourseWork.Status",
+                ApiErrorCode::HTTP_SUCCESS,
+                /*expected_bucket_count=*/1);
           }));
   run_loop.Run();
 }
@@ -353,11 +373,16 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourseWorkOnHttpError) {
   client()->FetchCourseWork(
       /*course_id=*/"course-123",
       base::BindLambdaForTesting(
-          [&run_loop](const std::vector<std::unique_ptr<
-                          GlanceablesClassroomCourseWorkItem>>& course_work) {
+          [&](const std::vector<std::unique_ptr<
+                  GlanceablesClassroomCourseWorkItem>>& course_work) {
             run_loop.Quit();
 
             ASSERT_TRUE(course_work.empty());
+
+            histogram_tester()->ExpectUniqueSample(
+                "Ash.Glanceables.Api.Classroom.GetCourseWork.Status",
+                ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
+                /*expected_bucket_count=*/1);
           }));
   run_loop.Run();
 }
@@ -466,9 +491,9 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchStudentSubmissions) {
   client()->FetchStudentSubmissions(
       /*course_id=*/"course-123",
       base::BindLambdaForTesting(
-          [&run_loop](const std::vector<
-                      std::unique_ptr<GlanceablesClassroomStudentSubmission>>&
-                          student_submissions) {
+          [&](const std::vector<
+              std::unique_ptr<GlanceablesClassroomStudentSubmission>>&
+                  student_submissions) {
             run_loop.Quit();
 
             ASSERT_EQ(student_submissions.size(), 7u);
@@ -514,6 +539,11 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchStudentSubmissions) {
                       "course-work-1");
             EXPECT_EQ(student_submissions.at(6)->state,
                       GlanceablesClassroomStudentSubmission::State::kOther);
+
+            histogram_tester()->ExpectUniqueSample(
+                "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.Status",
+                ApiErrorCode::HTTP_SUCCESS,
+                /*expected_bucket_count=*/1);
           }));
   run_loop.Run();
 }
@@ -528,12 +558,17 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchStudentSubmissionsOnHttpError) {
   client()->FetchStudentSubmissions(
       /*course_id=*/"course-123",
       base::BindLambdaForTesting(
-          [&run_loop](const std::vector<
-                      std::unique_ptr<GlanceablesClassroomStudentSubmission>>&
-                          student_submissions) {
+          [&](const std::vector<
+              std::unique_ptr<GlanceablesClassroomStudentSubmission>>&
+                  student_submissions) {
             run_loop.Quit();
 
             ASSERT_TRUE(student_submissions.empty());
+
+            histogram_tester()->ExpectUniqueSample(
+                "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.Status",
+                ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
+                /*expected_bucket_count=*/1);
           }));
   run_loop.Run();
 }

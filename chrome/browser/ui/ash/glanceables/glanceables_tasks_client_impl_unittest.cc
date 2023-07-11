@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -163,6 +164,7 @@ class GlanceablesTasksClientImplTest : public testing::Test {
   }
 
   GlanceablesTasksClientImpl* client() { return client_.get(); }
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
   TestRequestHandler& request_handler() { return request_handler_; }
 
  private:
@@ -176,6 +178,7 @@ class GlanceablesTasksClientImplTest : public testing::Test {
   std::unique_ptr<GaiaUrlsOverriderForTesting> gaia_urls_overrider_;
   testing::StrictMock<TestRequestHandler> request_handler_;
   std::unique_ptr<GlanceablesTasksClientImpl> client_;
+  base::HistogramTester histogram_tester_;
 };
 
 // ----------------------------------------------------------------------------
@@ -202,6 +205,11 @@ TEST_F(GlanceablesTasksClientImplTest, GetTaskLists) {
   EXPECT_EQ(task_lists->GetItemAt(1)->title, "My Tasks 2");
   EXPECT_EQ(FormatTimeAsString(task_lists->GetItemAt(1)->updated),
             "2022-12-21T23:38:22.590Z");
+
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
+      ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTaskListsOnSubsequentCalls) {
@@ -233,6 +241,11 @@ TEST_F(GlanceablesTasksClientImplTest,
 
   const auto* const task_lists = future.Get();
   EXPECT_EQ(task_lists->item_count(), 0u);
+
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
+      ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTaskListsFetchesAllPages) {
@@ -306,6 +319,10 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasks) {
   EXPECT_FALSE(root_tasks->GetItemAt(1)->due);
   EXPECT_FALSE(root_tasks->GetItemAt(1)->has_subtasks);
   EXPECT_TRUE(root_tasks->GetItemAt(1)->has_email_link);
+
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Status", ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTasksOnSubsequentCalls) {
@@ -336,6 +353,11 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasksReturnsEmptyVectorOnHttpError) {
 
   const auto* const root_tasks = future.Get();
   EXPECT_EQ(root_tasks->item_count(), 0u);
+
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.GetTasks.Status",
+      ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTasksFetchesAllPages) {
@@ -460,6 +482,10 @@ TEST_F(GlanceablesTasksClientImplTest, MarkAsCompleted) {
   EXPECT_TRUE(mark_as_completed_future.Get());
   EXPECT_EQ(tasks->item_count(), 1u);
   EXPECT_EQ(tasks->GetItemAt(0)->id, "task-1");
+
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.PatchTask.Status", ApiErrorCode::HTTP_SUCCESS,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, MarkAsCompletedOnHttpError) {
@@ -500,6 +526,10 @@ TEST_F(GlanceablesTasksClientImplTest, MarkAsCompletedOnHttpError) {
 
   EXPECT_FALSE(mark_as_completed_future.Get());
   EXPECT_EQ(tasks->item_count(), 2u);
+
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.PatchTask.Status",
+      ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR, /*expected_bucket_count=*/1);
 }
 
 }  // namespace ash
