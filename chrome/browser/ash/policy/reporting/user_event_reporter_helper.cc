@@ -25,9 +25,9 @@ namespace reporting {
 
 UserEventReporterHelper::UserEventReporterHelper(Destination destination,
                                                  EventType event_type)
-    : report_queue_(
-          ReportQueueFactory::CreateSpeculativeReportQueue(event_type,
-                                                           destination)) {}
+    : report_queue_(ReportQueueFactory::CreateSpeculativeReportQueue(
+          ReportQueueConfiguration::Create(
+              {.event_type = event_type, .destination = destination}))) {}
 
 UserEventReporterHelper::UserEventReporterHelper(
     std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> report_queue)

@@ -137,12 +137,11 @@ ReportQueueConfiguration::Create(
 Status ReportQueueConfiguration::SetPolicyCheckCallback(
     PolicyCheckCallback policy_check_callback) {
   if (!policy_check_callback_.is_null()) {
-    return (
-        Status(error::ALREADY_EXISTS, "PolicyCheckCallback cannot be reset"));
+    return Status(error::ALREADY_EXISTS, "PolicyCheckCallback cannot be reset");
   }
   if (policy_check_callback.is_null()) {
-    return (Status(error::INVALID_ARGUMENT,
-                   "PolicyCheckCallback must not be null"));
+    return Status(error::INVALID_ARGUMENT,
+                  "PolicyCheckCallback must not be null");
   }
   policy_check_callback_ = std::move(policy_check_callback);
   return Status::StatusOK();

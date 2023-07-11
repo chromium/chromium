@@ -27,7 +27,9 @@ CreateReportQueue(EventType event_type,
                   Destination destination,
                   std::unique_ptr<RateLimiterInterface> rate_limiter) {
   return ReportQueueFactory::CreateSpeculativeReportQueue(
-      event_type, destination, std::move(rate_limiter));
+      ReportQueueConfiguration::Create(
+          {.event_type = event_type, .destination = destination})
+          .SetRateLimiter(std::move(rate_limiter)));
 }
 
 }  // namespace
