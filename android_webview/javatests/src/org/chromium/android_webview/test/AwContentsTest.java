@@ -51,7 +51,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -104,7 +103,6 @@ public class AwContentsTest {
     public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();
-    private volatile Integer mHistogramTotalCount = 0;
 
     @Test
     @SmallTest
@@ -1137,13 +1135,6 @@ public class AwContentsTest {
         }
     }
 
-    private int getHistogramSampleCount(String name) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mHistogramTotalCount = RecordHistogram.getHistogramTotalCountForTesting(name);
-        });
-        return mHistogramTotalCount;
-    }
-
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
@@ -1197,18 +1188,13 @@ public class AwContentsTest {
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         final AwContents awContents = testView.getAwContents();
 
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        AwContents.LOAD_URL_SCHEME_HISTOGRAM_NAME));
+        HistogramWatcher histogramExpectation = HistogramWatcher.newSingleRecordWatcher(
+                AwContents.LOAD_URL_SCHEME_HISTOGRAM_NAME, expectedSchemeEnum);
+
         // Note: we use async because not all loads emit onPageFinished. This relies on the UMA
         // metric being logged in the synchronous part of loadUrl().
         mActivityTestRule.loadUrlAsync(awContents, url);
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        AwContents.LOAD_URL_SCHEME_HISTOGRAM_NAME));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        AwContents.LOAD_URL_SCHEME_HISTOGRAM_NAME, expectedSchemeEnum));
+        histogramExpectation.assertExpected();
     }
 
     @Test

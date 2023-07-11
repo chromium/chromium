@@ -27,9 +27,9 @@ import org.chromium.android_webview.test.services.MockVariationsSeedServer;
 import org.chromium.android_webview.test.util.VariationsTestUtils;
 import org.chromium.android_webview.variations.VariationsSeedLoader;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.HistogramWatcher;
 
 import java.io.File;
 import java.io.IOException;
@@ -163,16 +163,6 @@ public class VariationsSeedLoaderTest {
     @After
     public void tearDown() throws IOException {
         VariationsTestUtils.deleteSeeds();
-    }
-
-    private void assertSingleRecordInHistogram(String histogramName, int expectedValue) {
-        Assert.assertEquals(1, RecordHistogram.getHistogramTotalCountForTesting(histogramName));
-        Assert.assertEquals(
-                1, RecordHistogram.getHistogramValueCountForTesting(histogramName, expectedValue));
-        // Check that the value didn't get recorded in the highest bucket. If expectedValue and
-        // expectedValue*2 are in the same bucket, we probably messed up the bucket configuration.
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramValueCountForTesting(histogramName, expectedValue * 2));
     }
 
     // Test the case that:
@@ -409,6 +399,18 @@ public class VariationsSeedLoaderTest {
             long nineMinutesMs = TimeUnit.MINUTES.toMillis(9);
             long twoWeeksMs = TimeUnit.DAYS.toMillis(14);
             long threeWeeksMs = TimeUnit.DAYS.toMillis(21);
+            HistogramWatcher histogramExpectationInterval =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecordTimes(
+                                    VariationsSeedLoader.DOWNLOAD_JOB_INTERVAL_HISTOGRAM_NAME,
+                                    (int) TimeUnit.MILLISECONDS.toMinutes(threeWeeksMs), 1)
+                            .build();
+            HistogramWatcher histogramExpectationQueueTime =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecordTimes(
+                                    VariationsSeedLoader.DOWNLOAD_JOB_QUEUE_TIME_HISTOGRAM_NAME,
+                                    (int) TimeUnit.MILLISECONDS.toMinutes(twoWeeksMs), 1)
+                            .build();
 
             VariationsServiceMetricsHelper metrics =
                     VariationsServiceMetricsHelper.fromBundle(new Bundle());
@@ -417,12 +419,8 @@ public class VariationsSeedLoaderTest {
             MockVariationsSeedServer.setMetricsBundle(metrics.toBundle());
 
             runTestLoaderBlocking();
-
-            assertSingleRecordInHistogram(VariationsSeedLoader.DOWNLOAD_JOB_INTERVAL_HISTOGRAM_NAME,
-                    (int) TimeUnit.MILLISECONDS.toMinutes(threeWeeksMs));
-            assertSingleRecordInHistogram(
-                    VariationsSeedLoader.DOWNLOAD_JOB_QUEUE_TIME_HISTOGRAM_NAME,
-                    (int) TimeUnit.MILLISECONDS.toMinutes(twoWeeksMs));
+            histogramExpectationInterval.assertExpected();
+            histogramExpectationQueueTime.assertExpected();
         } finally {
             MockVariationsSeedServer.setMetricsBundle(null);
         }

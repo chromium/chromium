@@ -18,8 +18,8 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.android_webview.test.util.VariationsTestUtils;
 import org.chromium.android_webview.variations.VariationsSeedLoader;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.variations.StudyOuterClass.Study;
 import org.chromium.components.variations.StudyOuterClass.Study.Experiment;
 import org.chromium.components.variations.StudyOuterClass.Study.Experiment.FeatureAssociation;
@@ -113,19 +113,15 @@ public class VariationsTest {
     public void testSeedFreshnessHistogramWritten() throws Exception {
         String seedFreshnessHistogramName = "Variations.SeedFreshness";
         try {
+            HistogramWatcher histogramExpectation =
+                    HistogramWatcher.newSingleRecordWatcher(seedFreshnessHistogramName, 0);
             createAndLoadSeedFile(FeatureAssociation.getDefaultInstance());
-
-            Assert.assertEquals("SeedFreshness should not be written to initially", 0,
-                    RecordHistogram.getHistogramTotalCountForTesting(seedFreshnessHistogramName));
 
             // The seed should be loaded during browser process startup.
             mActivityTestRule.startBrowserProcess();
 
-            Assert.assertEquals("SeedFreshness should have been written to once", 1,
-                    RecordHistogram.getHistogramTotalCountForTesting(seedFreshnessHistogramName));
-            Assert.assertEquals("The value written to SeedFreshness should be 0 (<1 minute)", 1,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            seedFreshnessHistogramName, 0));
+            histogramExpectation.assertExpected(
+                    "SeedFreshness should have been written to once, with value 0 (<1 minute)");
         } finally {
             VariationsTestUtils.deleteSeeds();
         }
