@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.BrowserThrottle.CheckerOnIOLifetime" units="ms"
-    expires_after="2023-10-08">
+    expires_after="2024-01-07">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -482,7 +482,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsInContainer.SecurityInterstitial"
-    enum="BooleanAvailable" expires_after="2023-09-22">
+    enum="BooleanAvailable" expires_after="2024-01-07">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1038,7 +1038,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.HitReport.IsSubresource"
-    enum="BooleanIsSubresource" expires_after="2023-09-22">
+    enum="BooleanIsSubresource" expires_after="2024-01-07">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

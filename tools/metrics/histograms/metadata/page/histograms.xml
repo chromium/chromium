@@ -785,7 +785,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.FromGoogleSearch.FromSidePanel.PaintTiming.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="2023-10-22">
+    units="ms" expires_after="2024-01-07">
   <owner>tluk@chromium.org</owner>
   <owner>chrome-cros@chromium.org</owner>
   <summary>
@@ -813,7 +813,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.FromGoogleSearch.FromSidePanel.PaintTiming.NavigationToLargestContentfulPaint2"
-    units="ms" expires_after="2023-10-22">
+    units="ms" expires_after="2024-01-07">
   <owner>tluk@chromium.org</owner>
   <owner>chrome-cros@chromium.org</owner>
   <summary>

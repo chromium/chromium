@@ -527,7 +527,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.Open" enum="AudioStreamOpenResult"
-    expires_after="2023-11-05">
+    expires_after="2024-01-07">
   <owner>gudiou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -4757,7 +4757,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.ScreenCaptureKit.FullscreenModuleMode"
-    enum="ScreenCaptureKitFullscreenModuleMode" expires_after="2023-10-10">
+    enum="ScreenCaptureKitFullscreenModuleMode" expires_after="2024-01-07">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>

@@ -413,7 +413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.RendererTermination.TotalTabCount" units="tabs"
-    expires_after="2023-09-17">
+    expires_after="2024-01-07">
   <owner>ajuma@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>

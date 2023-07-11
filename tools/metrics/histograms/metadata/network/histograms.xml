@@ -3129,7 +3129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.HiddenSSIDEverConnected"
-    enum="BooleanEverConnected" expires_after="2023-09-10">
+    enum="BooleanEverConnected" expires_after="2024-01-07">
   <owner>tnagel@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <owner>cros-privacy-core@google.com</owner>
@@ -4116,7 +4116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.TimeToGrantSharedDictionaryAccess" units="ms"
-    expires_after="2023-10-08">
+    expires_after="2024-01-07">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>

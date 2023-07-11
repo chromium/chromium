@@ -126,7 +126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.SitesChannel" enum="BooleanUsage"
-    expires_after="2023-08-27">
+    expires_after="2024-01-07">
   <owner>peter@chromium.org</owner>
   <summary>
     Recorded when the Sites channel (which we hope to deprecate) is used as a

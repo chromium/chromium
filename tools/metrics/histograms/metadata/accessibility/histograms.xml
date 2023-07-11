@@ -2332,7 +2332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DomDistiller.ReaderShownForPageLoad" enum="Boolean"
-    expires_after="2023-09-10">
+    expires_after="2024-01-07">
   <owner>mdjones@chromium.org</owner>
   <summary>
     Records if the panel became visible at any point after a page was navigated.

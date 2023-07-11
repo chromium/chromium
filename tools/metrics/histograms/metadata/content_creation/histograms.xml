@@ -338,7 +338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextFragmentAnchor.LinkOpenSource"
-    enum="TextFragmentLinkOpenSource" expires_after="2023-11-05">
+    enum="TextFragmentLinkOpenSource" expires_after="2024-01-07">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
