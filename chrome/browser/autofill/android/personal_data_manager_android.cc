@@ -41,6 +41,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/validation.h"
+#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -616,13 +617,14 @@ void PersonalDataManagerAndroid::SetProfileUseStatsForTesting(
     const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& jguid,
     jint count,
-    jint date) {
-  DCHECK(count >= 0 && date >= 0);
+    jint days_since_last_used) {
+  DCHECK(count >= 0 && days_since_last_used >= 0);
 
   AutofillProfile* profile = personal_data_manager_->GetProfileByGUID(
       ConvertJavaStringToUTF8(env, jguid));
   profile->set_use_count(static_cast<size_t>(count));
-  profile->set_use_date(base::Time::FromTimeT(date));
+  profile->set_use_date(AutofillClock::Now() -
+                        base::Days(days_since_last_used));
 
   personal_data_manager_->NotifyPersonalDataObserver();
 }
@@ -660,13 +662,13 @@ void PersonalDataManagerAndroid::SetCreditCardUseStatsForTesting(
     const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& jguid,
     jint count,
-    jint date) {
-  DCHECK(count >= 0 && date >= 0);
+    jint days_since_last_used) {
+  DCHECK(count >= 0 && days_since_last_used >= 0);
 
   CreditCard* card = personal_data_manager_->GetCreditCardByGUID(
       ConvertJavaStringToUTF8(env, jguid));
   card->set_use_count(static_cast<size_t>(count));
-  card->set_use_date(base::Time::FromTimeT(date));
+  card->set_use_date(AutofillClock::Now() - base::Days(days_since_last_used));
 
   personal_data_manager_->NotifyPersonalDataObserver();
 }
@@ -694,6 +696,13 @@ jlong PersonalDataManagerAndroid::GetCurrentDateForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& unused_obj) {
   return base::Time::Now().ToTimeT();
+}
+
+jlong PersonalDataManagerAndroid::GetDateNDaysAgoForTesting(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& unused_obj,
+    jint days) {
+  return (AutofillClock::Now() - base::Days(days)).ToTimeT();
 }
 
 void PersonalDataManagerAndroid::ClearServerDataForTesting(

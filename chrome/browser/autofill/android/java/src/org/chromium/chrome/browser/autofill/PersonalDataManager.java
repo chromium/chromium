@@ -737,10 +737,10 @@ public class PersonalDataManager {
     }
 
     @VisibleForTesting
-    protected void setProfileUseStatsForTesting(String guid, int count, long date) {
+    protected void setProfileUseStatsForTesting(String guid, int count, int daysSinceLastUsed) {
         ThreadUtils.assertOnUiThread();
-        PersonalDataManagerJni.get().setProfileUseStatsForTesting(
-                mPersonalDataManagerAndroid, PersonalDataManager.this, guid, count, date);
+        PersonalDataManagerJni.get().setProfileUseStatsForTesting(mPersonalDataManagerAndroid,
+                PersonalDataManager.this, guid, count, daysSinceLastUsed);
     }
 
     @VisibleForTesting
@@ -771,10 +771,10 @@ public class PersonalDataManager {
     }
 
     @VisibleForTesting
-    protected void setCreditCardUseStatsForTesting(String guid, int count, long date) {
+    protected void setCreditCardUseStatsForTesting(String guid, int count, int daysSinceLastUsed) {
         ThreadUtils.assertOnUiThread();
-        PersonalDataManagerJni.get().setCreditCardUseStatsForTesting(
-                mPersonalDataManagerAndroid, PersonalDataManager.this, guid, count, date);
+        PersonalDataManagerJni.get().setCreditCardUseStatsForTesting(mPersonalDataManagerAndroid,
+                PersonalDataManager.this, guid, count, daysSinceLastUsed);
     }
 
     @VisibleForTesting
@@ -796,6 +796,13 @@ public class PersonalDataManager {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().getCurrentDateForTesting(
                 mPersonalDataManagerAndroid, PersonalDataManager.this);
+    }
+
+    @VisibleForTesting
+    long getDateNDaysAgoForTesting(int days) {
+        ThreadUtils.assertOnUiThread();
+        return PersonalDataManagerJni.get().getDateNDaysAgoForTesting( // IN-TEST
+                mPersonalDataManagerAndroid, PersonalDataManager.this, days);
     }
 
     @VisibleForTesting
@@ -1130,6 +1137,8 @@ public class PersonalDataManager {
                 PersonalDataManager caller, String cardNumber);
         String setCreditCard(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, CreditCard card);
+        long getDateNDaysAgoForTesting(
+                long nativePersonalDataManagerAndroid, PersonalDataManager caller, int days);
         void updateServerCardBillingAddress(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, CreditCard card);
         String getBasicCardIssuerNetwork(long nativePersonalDataManagerAndroid,
@@ -1143,7 +1152,7 @@ public class PersonalDataManager {
         void recordAndLogProfileUse(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);
         void setProfileUseStatsForTesting(long nativePersonalDataManagerAndroid,
-                PersonalDataManager caller, String guid, int count, long date);
+                PersonalDataManager caller, String guid, int count, int daysSinceLastUsed);
         int getProfileUseCountForTesting(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);
         long getProfileUseDateForTesting(
@@ -1151,7 +1160,7 @@ public class PersonalDataManager {
         void recordAndLogCreditCardUse(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);
         void setCreditCardUseStatsForTesting(long nativePersonalDataManagerAndroid,
-                PersonalDataManager caller, String guid, int count, long date);
+                PersonalDataManager caller, String guid, int count, int daysSinceLastUsed);
         int getCreditCardUseCountForTesting(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);
         long getCreditCardUseDateForTesting(

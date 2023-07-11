@@ -156,6 +156,9 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
 
         // Set up the profile use stats.
         for (int i = 0; i < guids.size(); i++) {
+            // TODO(crbug.com/1463732): Update Disabled Test Callsites of
+            // SetProfileUseStatsForTesting and SetCreditCardUseStatsForTesting since the underlying
+            // logic has changed.
             helper.setProfileUseStatsForTesting(guids.get(i), mCountsToSet[i], mDatesToSet[i]);
         }
     }

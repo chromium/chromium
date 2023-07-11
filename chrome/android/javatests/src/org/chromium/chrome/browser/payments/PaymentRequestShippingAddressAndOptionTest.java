@@ -67,6 +67,8 @@ public class PaymentRequestShippingAddressAndOptionTest {
                                                            .build());
 
         // Set the fist profile to have a better frecency score that the second one.
+        // TODO(crbug.com/1463732): Update Disabled Test Callsites of SetProfileUseStatsForTesting
+        // and SetCreditCardUseStatsForTesting since the underlying logic has changed.
         helper.setProfileUseStatsForTesting(firstAddressId, 10, 10);
         helper.setProfileUseStatsForTesting(secondAddressId, 0, 0);
     }

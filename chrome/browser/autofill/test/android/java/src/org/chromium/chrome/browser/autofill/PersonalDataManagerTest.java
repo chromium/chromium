@@ -554,7 +554,6 @@ public class PersonalDataManagerTest {
     @SmallTest
     @Feature({"Autofill"})
     @Features.DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_ADDRESS_PROFILES)
-    // TODO(crbug.com/1454591): Add test for ranking profiles with new algorithm.
     public void testProfilesFrecency() throws TimeoutException {
         // Create 3 profiles.
         AutofillProfile profile1 = AutofillProfile.builder()
@@ -594,32 +593,31 @@ public class PersonalDataManagerTest {
         String guid2 = mHelper.setProfile(profile2);
         String guid3 = mHelper.setProfile(profile3);
 
-        // The first profile has a lower use count than the two other profiles. It also has an older
-        // use date that the second profile and the same use date as the third. It should be last.
-        mHelper.setProfileUseStatsForTesting(guid1, 3, 5000);
-        // The second profile has the same use count as the third but a more recent use date. It
-        // also has a bigger use count that the first profile. It should be first.
-        mHelper.setProfileUseStatsForTesting(guid2, 6, 5001);
-        // The third profile has the same use count as the second but an older use date. It also has
-        // a bigger use count that the first profile. It should be second.
-        mHelper.setProfileUseStatsForTesting(guid3, 6, 5000);
+        // The first profile has the lowest use count but has most recently been used, making it
+        // ranked first.
+        mHelper.setProfileUseStatsForTesting(guid1, 6, 1);
+        // The second profile has the median use count and use date, and with these values it is
+        // ranked third.
+        mHelper.setProfileUseStatsForTesting(guid2, 25, 10);
+        // The third profile has the highest use count and is the profile with the farthest last
+        // use date. Because of its very high use count, it is still ranked second.
+        mHelper.setProfileUseStatsForTesting(guid3, 100, 20);
 
         List<AutofillProfile> profiles =
                 mHelper.getProfilesToSuggest(false /* includeNameInLabel */);
         Assert.assertEquals(3, profiles.size());
         Assert.assertTrue(
-                "Profile2 should be ranked first", guid2.equals(profiles.get(0).getGUID()));
+                "Profile1 should be ranked first", guid1.equals(profiles.get(0).getGUID()));
         Assert.assertTrue(
                 "Profile3 should be ranked second", guid3.equals(profiles.get(1).getGUID()));
         Assert.assertTrue(
-                "Profile1 should be ranked third", guid1.equals(profiles.get(2).getGUID()));
+                "Profile2 should be ranked third", guid2.equals(profiles.get(2).getGUID()));
     }
 
     @Test
     @SmallTest
     @Feature({"Autofill"})
     @Features.DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_CREDIT_CARDS)
-    // TODO(crbug.com/1454591): Add test for ranking credit cards with new algorithm.
     public void testCreditCardsFrecency() throws TimeoutException {
         // Create 3 credit cards.
         CreditCard card1 = createLocalCreditCard("Visa", "1234123412341234", "5", "2020");
@@ -635,21 +633,92 @@ public class PersonalDataManagerTest {
         String guid2 = mHelper.setCreditCard(card2);
         String guid3 = mHelper.setCreditCard(card3);
 
-        // The first card has a lower use count than the two other cards. It also has an older
-        // use date that the second card and the same use date as the third. It should be last.
-        mHelper.setCreditCardUseStatsForTesting(guid1, 3, 5000);
-        // The second card has the same use count as the third but a more recent use date. It also
-        // has a bigger use count that the first card. It should be first.
-        mHelper.setCreditCardUseStatsForTesting(guid2, 6, 5001);
-        // The third card has the same use count as the second but an older use date. It also has a
-        // bigger use count that the first card. It should be second.
-        mHelper.setCreditCardUseStatsForTesting(guid3, 6, 5000);
+        // The first credit card has the lowest use count but has most recently been used, making it
+        // ranked first.
+        mHelper.setCreditCardUseStatsForTesting(guid1, 6, 1);
+        // The second credit card has the median use count and use date, and with these values it is
+        // ranked third.
+        mHelper.setCreditCardUseStatsForTesting(guid2, 25, 10);
+        // The third credit card has the highest use count and is the credit card with the farthest
+        // last use date. Because of its very high use count, it is still ranked second.
+        mHelper.setCreditCardUseStatsForTesting(guid3, 100, 20);
+
+        List<CreditCard> cards = mHelper.getCreditCardsToSuggest();
+        Assert.assertEquals(3, cards.size());
+        Assert.assertTrue("Card1 should be ranked first", guid1.equals(cards.get(0).getGUID()));
+        Assert.assertTrue("Card3 should be ranked second", guid3.equals(cards.get(1).getGUID()));
+        Assert.assertTrue("Card2 should be ranked third", guid2.equals(cards.get(2).getGUID()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_ADDRESS_PROFILES)
+    public void testProfileRanking() throws TimeoutException {
+        // Create 3 profiles.
+        AutofillProfile profile1 = AutofillProfile.builder().setFullName("John Major").build();
+        AutofillProfile profile2 = AutofillProfile.builder().setFullName("Josh Larkin").build();
+        AutofillProfile profile3 = AutofillProfile.builder().setFullName("Jasper Lundgren").build();
+
+        String guid1 = mHelper.setProfile(profile1);
+        String guid2 = mHelper.setProfile(profile2);
+        String guid3 = mHelper.setProfile(profile3);
+
+        // The first profile has the lowest use count but has most recently been used, making it
+        // ranked second.
+        mHelper.setProfileUseStatsForTesting(guid1, 6, 1);
+        // The second profile has the median use count and use date, and with these values it is
+        // ranked first.
+        mHelper.setProfileUseStatsForTesting(guid2, 25, 10);
+        // The third profile has the highest use count and is the profile with the farthest last
+        // use date. Because of its very far last use date, it's ranked third.
+        mHelper.setProfileUseStatsForTesting(guid3, 100, 20);
+
+        List<AutofillProfile> profiles =
+                mHelper.getProfilesToSuggest(false /* includeNameInLabel */);
+        Assert.assertEquals(3, profiles.size());
+        Assert.assertTrue(
+                "Profile2 should be ranked first", guid2.equals(profiles.get(0).getGUID()));
+        Assert.assertTrue(
+                "Profile1 should be ranked second", guid1.equals(profiles.get(1).getGUID()));
+        Assert.assertTrue(
+                "Profile3 should be ranked third", guid3.equals(profiles.get(2).getGUID()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_CREDIT_CARDS)
+    public void testCreditCardRanking() throws TimeoutException {
+        // Create 3 credit cards.
+        CreditCard card1 = createLocalCreditCard("Visa", "1234123412341234", "5", "2020");
+
+        CreditCard card2 =
+                createLocalCreditCard("American Express", "1234123412341234", "8", "2020");
+        card2.setOrigin("http://www.example.com");
+
+        CreditCard card3 = createLocalCreditCard("Mastercard", "1234123412341234", "11", "2020");
+        card3.setOrigin("http://www.example.com");
+
+        String guid1 = mHelper.setCreditCard(card1);
+        String guid2 = mHelper.setCreditCard(card2);
+        String guid3 = mHelper.setCreditCard(card3);
+
+        // The first credit card has the lowest use count but has most recently been used, making it
+        // ranked second.
+        mHelper.setCreditCardUseStatsForTesting(guid1, 6, 1);
+        // The second credit card has the median use count and use date, and with these values it is
+        // ranked first.
+        mHelper.setCreditCardUseStatsForTesting(guid2, 25, 10);
+        // The third credit card has the highest use count and is the profile with the farthest last
+        // use date. Because of its very far last use date, it's ranked third.
+        mHelper.setCreditCardUseStatsForTesting(guid3, 100, 20);
 
         List<CreditCard> cards = mHelper.getCreditCardsToSuggest();
         Assert.assertEquals(3, cards.size());
         Assert.assertTrue("Card2 should be ranked first", guid2.equals(cards.get(0).getGUID()));
-        Assert.assertTrue("Card3 should be ranked second", guid3.equals(cards.get(1).getGUID()));
-        Assert.assertTrue("Card1 should be ranked third", guid1.equals(cards.get(2).getGUID()));
+        Assert.assertTrue("Card1 should be ranked second", guid1.equals(cards.get(1).getGUID()));
+        Assert.assertTrue("Card3 should be ranked third", guid3.equals(cards.get(2).getGUID()));
     }
 
     @Test
@@ -690,7 +759,8 @@ public class PersonalDataManagerTest {
 
         // Make sure the specific use stats were set for the profile.
         Assert.assertEquals(1234, mHelper.getProfileUseCountForTesting(guid));
-        Assert.assertEquals(1234, mHelper.getProfileUseDateForTesting(guid));
+        Assert.assertEquals(
+                mHelper.getDateNDaysAgoForTesting(1234), mHelper.getProfileUseDateForTesting(guid));
     }
 
     @Test
@@ -711,7 +781,8 @@ public class PersonalDataManagerTest {
 
         // Make sure the specific use stats were set for the credit card.
         Assert.assertEquals(1234, mHelper.getCreditCardUseCountForTesting(guid));
-        Assert.assertEquals(1234, mHelper.getCreditCardUseDateForTesting(guid));
+        Assert.assertEquals(mHelper.getDateNDaysAgoForTesting(1234),
+                mHelper.getCreditCardUseDateForTesting(guid));
     }
 
     @Test
