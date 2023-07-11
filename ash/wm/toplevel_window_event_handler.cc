@@ -5,6 +5,7 @@
 #include "ash/wm/toplevel_window_event_handler.h"
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/multi_display/multi_display_metrics_controller.h"
@@ -207,6 +208,9 @@ void ToplevelWindowEventHandler::ScopedWindowResizer::OnWindowDestroying(
 ToplevelWindowEventHandler::ToplevelWindowEventHandler()
     : first_finger_hittest_(HTNOWHERE) {
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
+  if (features::IsPipDoubleTapToResizeEnabled()) {
+    pip_double_tap_ = std::make_unique<PipDoubleTapHandler>();
+  }
 }
 
 ToplevelWindowEventHandler::~ToplevelWindowEventHandler() {
@@ -258,7 +262,6 @@ void ToplevelWindowEventHandler::OnMouseEvent(ui::MouseEvent* event) {
 
   if (in_gesture_drag_)
     return;
-
   aura::Window* target = static_cast<aura::Window*>(event->target());
   switch (event->type()) {
     case ui::ET_MOUSE_PRESSED:
@@ -422,6 +425,12 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       event->StopPropagation();
       return;
     }
+    case ui::ET_GESTURE_TAP:
+      if (pip_double_tap_ && pip_double_tap_->ProcessDoubleTapEvent(*event)) {
+        event->StopPropagation();
+        return;
+      }
+      break;
     default:
       break;
   }
@@ -716,6 +725,11 @@ void ToplevelWindowEventHandler::HandleMousePressed(aura::Window* target,
   if (event->phase() != ui::EP_PRETARGET || !target->delegate())
     return;
 
+  // If window is a pip window, let PiPDoubleTapHandler handle the event.
+  if (pip_double_tap_ && pip_double_tap_->ProcessDoubleTapEvent(*event)) {
+    event->SetHandled();
+    return;
+  }
   // We also update the current window component here because for the
   // mouse-drag-release-press case, where the mouse is released and
   // pressed without mouse move event.
