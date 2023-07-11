@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service_factory.h"
+
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 
 namespace ash::quick_start {
 
@@ -41,12 +43,23 @@ QuickStartConnectivityServiceFactory::~QuickStartConnectivityServiceFactory() =
 
 KeyedService* QuickStartConnectivityServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
+  if (!ash::IsSigninBrowserContext(context)) {
+    return nullptr;
+  }
 
-  // The NearbyProcessManager* fetched here is bound to the lifetime of the
-  // profile and is guaranteed to outlive QuickStartConnectivityService.
-  return new QuickStartConnectivityService(
-      nearby::NearbyProcessManagerFactory::GetForProfile(profile));
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (profile->IsPrimaryOTRProfile()) {
+    // The "signin profile" is actually a pair of profiles: a "regular" profile
+    // and a "primary OTR" profile tied to the regular profile. The primary OTR
+    // profile is the one that is used in OOBE.
+    //
+    // Note: the NearbyProcessManager* fetched here is bound to the lifetime of
+    // the profile and is guaranteed to outlive QuickStartConnectivityService.
+    return new QuickStartConnectivityService(
+        nearby::NearbyProcessManagerFactory::GetForProfile(profile));
+  }
+
+  return nullptr;
 }
 
 bool QuickStartConnectivityServiceFactory::ServiceIsCreatedWithBrowserContext()
