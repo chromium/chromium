@@ -10197,21 +10197,6 @@
             ]
         }
     ],
-    "PasswordNotesWithBackup": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PasswordNotesWithBackup"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordsGrouping": [
         {
             "platforms": [
