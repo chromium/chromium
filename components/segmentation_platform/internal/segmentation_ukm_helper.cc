@@ -287,7 +287,7 @@ bool SegmentationUkmHelper::AddOutputsToUkm(
   return true;
 }
 
-bool SegmentationUkmHelper::CanUploadTensors(
+bool SegmentationUkmHelper::IsUploadRequested(
     const proto::SegmentInfo& segment_info) const {
   return segment_info.model_metadata().upload_tensors() ||
          allowed_segment_ids_.contains(segment_info.segment_id());

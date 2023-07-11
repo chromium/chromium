@@ -22,6 +22,7 @@
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/stats.h"
@@ -89,6 +90,7 @@ struct TrainingDataCollectorImpl::TrainingTimings {
 };
 
 TrainingDataCollectorImpl::TrainingDataCollectorImpl(
+    const PlatformOptions& platform_options,
     processing::FeatureListQueryProcessor* processor,
     HistogramSignalHandler* histogram_signal_handler,
     UserActionSignalHandler* user_action_signal_handler,
@@ -96,7 +98,8 @@ TrainingDataCollectorImpl::TrainingDataCollectorImpl(
     PrefService* profile_prefs,
     base::Clock* clock,
     CachedResultProvider* cached_result_provider)
-    : segment_info_database_(storage_service->segment_info_database()),
+    : platform_options_(platform_options),
+      segment_info_database_(storage_service->segment_info_database()),
       feature_list_query_processor_(processor),
       histogram_signal_handler_(histogram_signal_handler),
       user_action_signal_handler_(user_action_signal_handler),
@@ -139,8 +142,9 @@ void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
   for (const auto& segment : segment_list) {
     const proto::SegmentInfo& segment_info = segment.second;
 
-    // Skip the segment if it is not in allowed list.
-    if (!SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info)) {
+    // Skip the segment if training data is not needed.
+    if (!SegmentationUkmHelper::GetInstance()->IsUploadRequested(
+            segment_info)) {
       continue;
     }
 
@@ -308,6 +312,10 @@ bool TrainingDataCollectorImpl::CanReportTrainingData(
     VLOG(1) << "Upload skipped due to model version "
             << proto::SegmentId_Name(segment_info.segment_id());
     return false;
+  }
+
+  if (platform_options_.force_refresh_results) {
+    return true;
   }
 
   const proto::SegmentationModelMetadata& model_metadata =

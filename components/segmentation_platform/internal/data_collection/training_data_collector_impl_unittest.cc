@@ -171,8 +171,9 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
         &prefs_, storage_service_->config_holder()->configs());
 
     collector_ = std::make_unique<TrainingDataCollectorImpl>(
-        &feature_list_processor_, &histogram_signal_handler_,
-        &user_action_signal_handler_, storage_service_.get(), &prefs_, &clock_,
+        PlatformOptions::CreateDefault(), &feature_list_processor_,
+        &histogram_signal_handler_, &user_action_signal_handler_,
+        storage_service_.get(), &prefs_, &clock_,
         cached_result_provider_.get());
   }
 
@@ -193,8 +194,9 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
   void RefreshCollector() {
     collector_.reset();
     collector_ = std::make_unique<TrainingDataCollectorImpl>(
-        &feature_list_processor_, &histogram_signal_handler_,
-        &user_action_signal_handler_, storage_service_.get(), &prefs_, &clock_,
+        PlatformOptions::CreateDefault(), &feature_list_processor_,
+        &histogram_signal_handler_, &user_action_signal_handler_,
+        storage_service_.get(), &prefs_, &clock_,
         cached_result_provider_.get());
   }
 

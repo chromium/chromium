@@ -127,7 +127,7 @@ void ModelExecutorImpl::ExecuteModel(
   }
 
   state->upload_tensors =
-      SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info);
+      SegmentationUkmHelper::GetInstance()->IsUploadRequested(segment_info);
   feature_list_query_processor_->ProcessFeatureList(
       segment_info.model_metadata(), request->input_context, segment_id,
       clock_->Now(), base::Time(),

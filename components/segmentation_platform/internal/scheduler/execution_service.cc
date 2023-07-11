@@ -58,7 +58,7 @@ void ExecutionService::Initialize(
           std::make_unique<processing::FeatureAggregatorImpl>());
 
   training_data_collector_ = TrainingDataCollector::Create(
-      feature_list_query_processor_.get(),
+      platform_options, feature_list_query_processor_.get(),
       signal_handler->deprecated_histogram_signal_handler(),
       signal_handler->user_action_signal_handler(), storage_service,
       profile_prefs, clock, cached_result_provider);

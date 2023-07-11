@@ -62,8 +62,8 @@ class SegmentationUkmHelper {
       absl::optional<proto::PredictionResult> prediction_result,
       absl::optional<SelectedSegment> selected_segment);
 
-  // Returns whether a segment is allowed to upload training tensors.
-  bool CanUploadTensors(const proto::SegmentInfo& segment_info) const;
+  // Returns whether a segment needs to upload training tensors.
+  bool IsUploadRequested(const proto::SegmentInfo& segment_info) const;
 
   // Helper method to encode a float number into int64.
   static int64_t FloatToInt64(float f);

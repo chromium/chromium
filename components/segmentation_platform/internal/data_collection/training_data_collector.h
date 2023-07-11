@@ -42,6 +42,7 @@ class TrainingDataCollector {
   using SuccessCallback = SegmentationPlatformService::SuccessCallback;
   // Name and sample of the uma output metric to be collected as training data.
   static std::unique_ptr<TrainingDataCollector> Create(
+      const PlatformOptions& platform_options,
       processing::FeatureListQueryProcessor* processor,
       HistogramSignalHandler* histogram_signal_handler,
       UserActionSignalHandler* user_action_signal_handler,

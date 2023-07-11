@@ -18,6 +18,7 @@
 #include "components/segmentation_platform/internal/database/cached_result_provider.h"
 #include "components/segmentation_platform/internal/database/config_holder.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
@@ -37,7 +38,8 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
                                   public HistogramSignalHandler::Observer,
                                   public UserActionSignalHandler::Observer {
  public:
-  TrainingDataCollectorImpl(processing::FeatureListQueryProcessor* processor,
+  TrainingDataCollectorImpl(const PlatformOptions& platform_options,
+                            processing::FeatureListQueryProcessor* processor,
                             HistogramSignalHandler* histogram_signal_handler,
                             UserActionSignalHandler* user_action_signal_handler,
                             StorageService* storage_service,
@@ -142,6 +144,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
                         const proto::SegmentInfo& segment_info,
                         proto::TrainingData& training_data);
 
+  const PlatformOptions platform_options_;
   const raw_ptr<SegmentInfoDatabase, DanglingUntriaged> segment_info_database_;
   const raw_ptr<processing::FeatureListQueryProcessor>
       feature_list_query_processor_;
