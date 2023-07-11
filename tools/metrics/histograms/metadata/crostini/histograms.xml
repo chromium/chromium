@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.AvailableDiskError" units="MiB"
-    expires_after="2023-08-13">
+    expires_after="2024-01-06">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -152,20 +152,6 @@ chromium-metrics-reviews@google.com.
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>Time taken for successful backup.</summary>
-</histogram>
-
-<histogram name="Crostini.CleanSession.RestarterResult" enum="CrostiniResult"
-    expires_after="2022-05-01">
-  <obsolete>
-    Removed in M102 - no longer needed
-  </obsolete>
-  <owner>davidmunro@google.com</owner>
-  <owner>clumptini@google.com</owner>
-  <summary>
-    The result of a single run of CrostiniRestarter. This is the same as
-    Crostini.RestarterResult except only emitted in sessions that happen after a
-    clean start (e.g. after fresh login). Removed in Milestone 102.
-  </summary>
 </histogram>
 
 <histogram name="Crostini.ContainerOsVersion" enum="CrostiniContainerOsVersion"
@@ -293,20 +279,6 @@ chromium-metrics-reviews@google.com.
     Crostini window loses focus, including switching between Crostini windows
     and some actions like opening the launcher. See InputMethod.ID2 for details
     on the enum format.
-  </summary>
-</histogram>
-
-<histogram name="Crostini.InstallSource" enum="CrostiniInstallSource"
-    expires_after="2023-04-10">
-  <obsolete>
-    Removed in M105 - no longer needed
-  </obsolete>
-  <owner>sidereal@google.com</owner>
-  <owner>clumptini@google.com</owner>
-  <summary>
-    The source (component vs DLC) that was used to install termina. This is
-    recorded every time a CrostiniRestart succeeds at the termina install step
-    to measure the progress of the component-&gt;DLC migration.
   </summary>
 </histogram>
 
@@ -462,7 +434,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.Sshfs.Mount.Result.{Visibility}"
-    enum="CrostiniSshfsResult" expires_after="2023-08-14">
+    enum="CrostiniSshfsResult" expires_after="2024-08-14">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -491,7 +463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.Sshfs.Unmount.Result" enum="BooleanSuccess"
-    expires_after="2023-08-14">
+    expires_after="2024-08-14">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -501,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.Sshfs.Unmount.TimeTaken" units="ms"
-    expires_after="2023-08-14">
+    expires_after="2024-08-14">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -573,20 +545,6 @@ chromium-metrics-reviews@google.com.
     The time taken for the crostini installer to finish successfully. This is
     recorded any time the user successfully installs crostini. This includes
     cases where e.g. they previously tried installing and got an error.
-  </summary>
-</histogram>
-
-<histogram name="Crostini.UncleanSession.RestarterResult" enum="CrostiniResult"
-    expires_after="2023-01-06">
-  <obsolete>
-    Removed in M102 - no longer needed
-  </obsolete>
-  <owner>davidmunro@google.com</owner>
-  <owner>clumptini@google.com</owner>
-  <summary>
-    The result of a single run of CrostiniRestarter. This is the same as
-    Crostini.RestarterResult except only emitted in sessions that happen after
-    an unclean restart (e.g. after a Chrome crash). Removed in milestone 102.
   </summary>
 </histogram>
 
