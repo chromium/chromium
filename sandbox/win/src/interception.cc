@@ -16,13 +16,13 @@
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/scoped_native_library.h"
 #include "base/win/pe_image.h"
 #include "sandbox/win/src/interception_internal.h"
 #include "sandbox/win/src/interceptors.h"
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/sandbox.h"
-#include "sandbox/win/src/sandbox_rand.h"
 #include "sandbox/win/src/service_resolver.h"
 #include "sandbox/win/src/target_interceptions.h"
 #include "sandbox/win/src/target_process.h"
@@ -50,12 +50,8 @@ namespace internal {
 // Find a random offset within 64k and aligned to ceil(log2(size)).
 size_t GetGranularAlignedRandomOffset(size_t size) {
   CHECK_LE(size, kAllocGranularity);
-  unsigned int offset;
-
-  do {
-    GetRandom(&offset);
-    offset &= (kAllocGranularity - 1);
-  } while (offset > (kAllocGranularity - size));
+  unsigned int offset = static_cast<unsigned int>(
+      base::RandInt(0, static_cast<int>(kAllocGranularity - size)));
 
   // Find an alignment between 64 and the page size (4096).
   size_t align_size = kPageSize;
