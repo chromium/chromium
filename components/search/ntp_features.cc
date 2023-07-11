@@ -300,6 +300,10 @@ BASE_FEATURE(kNtpHistoryClustersModuleUseModelRanking,
              "NtpHistoryClustersModuleUseModelRanking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNtpHistoryClustersModuleTextOnly,
+             "NtpHistoryClustersModuleTextOnly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, ChromeCart module will show together with ChromeCart+History
 // cluster module when available.
 BASE_FEATURE(kNtpChromeCartHistoryClusterCoexist,

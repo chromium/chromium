@@ -240,6 +240,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                      base::FeatureList::IsEnabled(
                          ntp_features::kNtpHistoryClustersModuleLoad) &&
                          HasCredentials(profile));
+  source->AddBoolean("historyClustersTextOnlyEnabled",
+                     base::FeatureList::IsEnabled(
+                         ntp_features::kNtpHistoryClustersModuleTextOnly));
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"doneButton", IDS_DONE},

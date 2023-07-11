@@ -61542,6 +61542,7 @@ from previous Chrome versions.
   <int value="-1191258368" label="PageInfoPerformanceHints:disabled"/>
   <int value="-1191035428" label="LensOnQuickActionSearchWidget:enabled"/>
   <int value="-1190174011" label="enable-hdr"/>
+  <int value="-1190171773" label="NtpHistoryClustersModuleTextOnly:enabled"/>
   <int value="-1188042082" label="ZeroSuggestPrefetchingOnSRP:enabled"/>
   <int value="-1187546444" label="MuteNotificationSnoozeAction:enabled"/>
   <int value="-1187251500" label="OmniboxPedalsBatch2NonEnglish:disabled"/>
@@ -66857,6 +66858,7 @@ from previous Chrome versions.
   <int value="1584039096" label="highlight-all-webviews"/>
   <int value="1584111738" label="NtpChromeCartHistoryClusterCoexist:enabled"/>
   <int value="1584112058" label="TrustSafetySentimentSurveyV2:enabled"/>
+  <int value="1584310493" label="NtpHistoryClustersModuleTextOnly:disabled"/>
   <int value="1584425198" label="NtpModules:enabled"/>
   <int value="1584536816" label="LimitAltTabToActiveDesk:enabled"/>
   <int value="1585240105" label="QuickDeleteForAndroid:disabled"/>

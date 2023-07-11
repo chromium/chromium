@@ -6581,6 +6581,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          ntp_features::kNtpHistoryClustersModuleUseModelRanking)},
 
+    {"ntp-journeys-module-text-only",
+     flag_descriptions::kNtpHistoryClustersModuleTextOnlyName,
+     flag_descriptions::kNtpHistoryClustersModuleTextOnlyDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpHistoryClustersModuleTextOnly)},
+
     {"ntp-modules-header-icon", flag_descriptions::kNtpModulesHeaderIconName,
      flag_descriptions::kNtpModulesHeaderIconDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpModulesHeaderIcon)},

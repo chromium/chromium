@@ -4661,6 +4661,12 @@ const char kNtpHistoryClustersModuleUseModelRankingDescription[] =
     "Leverages a machine learning model to rank clusters for the Journeys "
     "module on the New Tab Page.";
 
+const char kNtpHistoryClustersModuleTextOnlyName[] =
+    "NTP Journeys Module Text Only";
+const char kNtpHistoryClustersModuleTextOnlyDescription[] =
+    "Shows only text (i.e. no images) for Journeys module visits on the New "
+    "Tab Page.";
+
 const char kNtpChromeCartInHistoryClustersModuleName[] =
     "NTP ChromeCart in Journeys Module";
 const char kNtpChromeCartInHistoryClustersModuleDescription[] =
