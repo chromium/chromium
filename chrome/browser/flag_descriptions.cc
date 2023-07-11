@@ -3750,10 +3750,6 @@ const char kCCTResizableMultiWindowModeDescription[] =
 const char kCCTResizableSideSheetName[] = "Side sheet Custom Tabs";
 const char kCCTResizableSideSheetDescription[] =
     "Enable side sheet Custom Tabs";
-const char kCCTResizableSideSheetDiscoverFeedSettingsName[] =
-    "Discover feed settings Partial Custom Tab";
-const char kCCTResizableSideSheetDiscoverFeedSettingsDescription[] =
-    "Enable discover feed settings Partial Custom Tabs";
 const char kCCTResizableSideSheetForThirdPartiesName[] =
     "Side sheet Custom Tabs (third party)";
 const char kCCTResizableSideSheetForThirdPartiesDescription[] =

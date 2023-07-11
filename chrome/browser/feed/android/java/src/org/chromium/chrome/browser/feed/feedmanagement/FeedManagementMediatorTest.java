@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.browser.feed.feedmanagement;
 
-import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -72,8 +69,7 @@ public class FeedManagementMediatorTest {
     }
 
     @Test
-    public void testHandleActivityClick_FlagDisabled() {
-        ChromeFeatureList.sCctResizableSideSheetDiscoverFeedSettings.setForTesting(false);
+    public void testHandleActivityClick() {
         // Act
         mFeedManagementMediator.handleActivityClick(null);
 
@@ -81,33 +77,12 @@ public class FeedManagementMediatorTest {
         Intent intent = mShadowActivity.peekNextStartedActivityForResult().intent;
         assertEquals(
                 intent.getData(), Uri.parse("https://myactivity.google.com/myactivity?product=50"));
-        assertEquals(
-                0, intent.getIntExtra(FeedManagementMediator.EXTRA_ACTIVITY_INITIAL_WIDTH_PX, 0));
-        assertEquals(0, intent.getIntExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 0));
         verify(mFeedServiceBridgeJniMock)
                 .reportOtherUserAction(TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_ACTIVITY);
     }
 
     @Test
-    public void testHandleActivityClick_FlagEnabled() {
-        ChromeFeatureList.sCctResizableSideSheetDiscoverFeedSettings.setForTesting(true);
-        // Act
-        mFeedManagementMediator.handleActivityClick(null);
-
-        // Assert
-        Intent intent = mShadowActivity.peekNextStartedActivityForResult().intent;
-        assertEquals(
-                intent.getData(), Uri.parse("https://myactivity.google.com/myactivity?product=50"));
-        assertNotEquals(
-                0, intent.getIntExtra(FeedManagementMediator.EXTRA_ACTIVITY_INITIAL_WIDTH_PX, 0));
-        assertNotEquals(0, intent.getIntExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 0));
-        verify(mFeedServiceBridgeJniMock)
-                .reportOtherUserAction(TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_ACTIVITY);
-    }
-
-    @Test
-    public void testHandleInterestsClick_FlagDisabled() {
-        ChromeFeatureList.sCctResizableSideSheetDiscoverFeedSettings.setForTesting(false);
+    public void testHandleInterestsClick() {
         // Act
         mFeedManagementMediator.handleInterestsClick(null);
 
@@ -115,35 +90,13 @@ public class FeedManagementMediatorTest {
         Intent intent = mShadowActivity.peekNextStartedActivityForResult().intent;
         assertEquals(intent.getData(),
                 Uri.parse("https://www.google.com/preferences/interests/yourinterests?sh=n"));
-        assertEquals(
-                0, intent.getIntExtra(FeedManagementMediator.EXTRA_ACTIVITY_INITIAL_WIDTH_PX, 0));
-        assertEquals(0, intent.getIntExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 0));
         verify(mFeedServiceBridgeJniMock)
                 .reportOtherUserAction(
                         TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
     }
 
     @Test
-    public void testHandleInterestsClick_FlagEnabled() {
-        ChromeFeatureList.sCctResizableSideSheetDiscoverFeedSettings.setForTesting(true);
-        // Act
-        mFeedManagementMediator.handleInterestsClick(null);
-
-        // Assert
-        Intent intent = mShadowActivity.peekNextStartedActivityForResult().intent;
-        assertEquals(intent.getData(),
-                Uri.parse("https://www.google.com/preferences/interests/yourinterests?sh=n"));
-        assertNotEquals(
-                0, intent.getIntExtra(FeedManagementMediator.EXTRA_ACTIVITY_INITIAL_WIDTH_PX, 0));
-        assertNotEquals(0, intent.getIntExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 0));
-        verify(mFeedServiceBridgeJniMock)
-                .reportOtherUserAction(
-                        TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
-    }
-
-    @Test
-    public void testHandleHiddenClick_FlagDisabled() {
-        ChromeFeatureList.sCctResizableSideSheetDiscoverFeedSettings.setForTesting(false);
+    public void testHandleHiddenClick() {
         // Act
         mFeedManagementMediator.handleHiddenClick(null);
 
@@ -151,27 +104,6 @@ public class FeedManagementMediatorTest {
         Intent intent = mShadowActivity.peekNextStartedActivityForResult().intent;
         assertEquals(intent.getData(),
                 Uri.parse("https://www.google.com/preferences/interests/hidden?sh=n"));
-        assertEquals(
-                0, intent.getIntExtra(FeedManagementMediator.EXTRA_ACTIVITY_INITIAL_WIDTH_PX, 0));
-        assertEquals(0, intent.getIntExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 0));
-        verify(mFeedServiceBridgeJniMock)
-                .reportOtherUserAction(
-                        TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
-    }
-
-    @Test
-    public void testHandleHiddenClick_FlagEnabled() {
-        ChromeFeatureList.sCctResizableSideSheetDiscoverFeedSettings.setForTesting(true);
-        // Act
-        mFeedManagementMediator.handleHiddenClick(null);
-
-        // Assert
-        Intent intent = mShadowActivity.peekNextStartedActivityForResult().intent;
-        assertEquals(intent.getData(),
-                Uri.parse("https://www.google.com/preferences/interests/hidden?sh=n"));
-        assertNotEquals(
-                0, intent.getIntExtra(FeedManagementMediator.EXTRA_ACTIVITY_INITIAL_WIDTH_PX, 0));
-        assertNotEquals(0, intent.getIntExtra(EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 0));
         verify(mFeedServiceBridgeJniMock)
                 .reportOtherUserAction(
                         TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_INTERESTS);

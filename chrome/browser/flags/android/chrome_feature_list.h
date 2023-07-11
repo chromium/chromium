@@ -59,7 +59,6 @@ BASE_DECLARE_FEATURE(kCCTResizable90MaximumHeight);
 BASE_DECLARE_FEATURE(kCCTResizableForThirdParties);
 BASE_DECLARE_FEATURE(kCCTResizableMultiWindowMode);
 BASE_DECLARE_FEATURE(kCCTResizableSideSheet);
-BASE_DECLARE_FEATURE(kCCTResizableSideSheetDiscoverFeedSettings);
 BASE_DECLARE_FEATURE(kCCTResizableSideSheetForThirdParties);
 BASE_DECLARE_FEATURE(kCCTResourcePrefetch);
 BASE_DECLARE_FEATURE(kCCTRetainingStateInMemory);

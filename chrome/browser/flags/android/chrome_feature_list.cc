@@ -201,7 +201,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableForThirdParties,
     &kCCTResizableMultiWindowMode,
     &kCCTResizableSideSheet,
-    &kCCTResizableSideSheetDiscoverFeedSettings,
     &kCCTResizableSideSheetForThirdParties,
     &kCCTRetainingStateInMemory,
     &kCCTResourcePrefetch,
@@ -596,10 +595,6 @@ BASE_FEATURE(kCCTResizableMultiWindowMode,
 
 BASE_FEATURE(kCCTResizableSideSheet,
              "CCTResizableSideSheet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTResizableSideSheetDiscoverFeedSettings,
-             "CCTResizableSideSheetDiscoverFeedSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTResizableSideSheetForThirdParties,

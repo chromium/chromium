@@ -190,8 +190,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";
     public static final String CCT_RESIZABLE_MULTI_WINDOW_MODE = "CCTResizableMultiWindowMode";
     public static final String CCT_RESIZABLE_SIDE_SHEET = "CCTResizableSideSheet";
-    public static final String CCT_RESIZABLE_SIDE_SHEET_DISCOVER_FEED_SETTINGS =
-            "CCTResizableSideSheetDiscoverFeedSettings";
     public static final String CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES =
             "CCTResizableSideSheetForThirdParties";
     public static final String CCT_RESOURCE_PREFETCH = "CCTResourcePrefetch";
@@ -526,8 +524,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(CCT_RESIZABLE_MULTI_WINDOW_MODE, false);
     public static final CachedFlag sCctResizableSideSheet =
             new CachedFlag(CCT_RESIZABLE_SIDE_SHEET, false);
-    public static final CachedFlag sCctResizableSideSheetDiscoverFeedSettings =
-            new CachedFlag(CCT_RESIZABLE_SIDE_SHEET_DISCOVER_FEED_SETTINGS, false);
     public static final CachedFlag sCctResizableSideSheetForThirdParties =
             new CachedFlag(CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES, false);
     public static final CachedFlag sCctRetainableStateInMemory =
@@ -638,7 +634,6 @@ public abstract class ChromeFeatureList {
         sCctResizableForThirdParties,
         sCctResizableMultiWindowMode,
         sCctResizableSideSheet,
-        sCctResizableSideSheetDiscoverFeedSettings,
         sCctResizableSideSheetForThirdParties,
         sCctRetainableStateInMemory,
         sCctToolbarCustomizations,
