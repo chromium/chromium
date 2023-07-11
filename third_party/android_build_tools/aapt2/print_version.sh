@@ -10,7 +10,7 @@ SUBDIR=$(cd $(dirname $0); pwd)
 SUBDIR="${SUBDIR#$DIR_SRC_ROOT/}"
 CIPD_PACKAGE=chromium/$SUBDIR
 
-exec $DIR_SRC_ROOT/build/android/print_cipd_version.py \
+exec $DIR_SRC_ROOT/build/3pp/print_cipd_version.py \
     --subdir "$SUBDIR" \
     --cipd-package "$CIPD_PACKAGE" \
     "$@"

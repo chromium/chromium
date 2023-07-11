@@ -3,56 +3,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import argparse
-import json
-import os
-import urllib.request
+import pathlib
+import sys
 
-_GITHUB_URL = 'https://api.github.com/repos/checkstyle/checkstyle'
-_RELEASES_URL = f'{_GITHUB_URL}/releases'
-
-
-def fetch_json(url):
-    return json.load(urllib.request.urlopen(url))
-
-
-def do_latest():
-    json_dict = fetch_json(f'{_RELEASES_URL}/latest')
-    print(json_dict['tag_name'])
-
-
-def get_download_url():
-    version = os.environ['_3PP_VERSION']
-    json_dict = fetch_json(f'{_RELEASES_URL}/tags/{version}')
-    # There is currently just one asset, but do a quick filter to guard against
-    # possible future assets.
-    urls = [x['browser_download_url'] for x in json_dict['assets']]
-    urls = [x for x in urls if '-all' in x and x.endswith('.jar')]
-    if len(urls) != 1:
-        raise Exception('len(urls) != 1: ' + '\n'.join(urls))
-
-    partial_manifest = {
-        'url': urls,
-        # Used only if recipe needs to extract.
-        'ext': '',
-        # Use constant filename to avoid updating pathswhen rolled.
-        'name': ['checkstyle-all.jar'],
-    }
-    print(json.dumps(partial_manifest))
-
-
-def main():
-    ap = argparse.ArgumentParser()
-    sub = ap.add_subparsers(required=True)
-
-    latest = sub.add_parser('latest')
-    latest.set_defaults(func=do_latest)
-
-    download = sub.add_parser('get_url')
-    download.set_defaults(func=get_download_url)
-
-    ap.parse_args().func()
+_SRC_ROOT = pathlib.Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(_SRC_ROOT / 'build' / '3pp'))
+import fetch_github_release
 
 
 if __name__ == '__main__':
-    main()
+    fetch_github_release.main(project='checkstyle/checkstyle',
+                              artifact_filename='checkstyle-all.jar',
+                              artifact_regex=r'-all.*\.jar$')
