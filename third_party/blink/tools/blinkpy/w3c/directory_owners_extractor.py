@@ -11,6 +11,7 @@ For example, it does not support directives other than email addresses.
 import collections
 import json
 import re
+from typing import NamedTuple, Optional
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.path_finder import PathFinder
@@ -27,7 +28,13 @@ from blinkpy.common.path_finder import PathFinder
 BASIC_EMAIL_REGEXP = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
 
 
-class DirectoryOwnersExtractor(object):
+class WPTDirMetadata(NamedTuple):
+    team_email: Optional[str]
+    component: Optional[str]
+    should_notify: bool
+
+
+class DirectoryOwnersExtractor:
     def __init__(self, host):
         self.filesystem = host.filesystem
         self.finder = PathFinder(self.filesystem)
@@ -121,78 +128,18 @@ class DirectoryOwnersExtractor(object):
                 addresses.append(line)
         return addresses
 
-    def extract_component(self, metadata_file):
-        """Extracts the component from an DIR_METADATA file.
-
-        Args:
-            metadata_file: An absolute path to an DIR_METADATA file.
-
-        Returns:
-            A string, or None if not found.
-        """
-        dir_metadata = self._read_dir_metadata(metadata_file)
-        if dir_metadata and dir_metadata.component:
-            return dir_metadata.component
-        return None
-
-    def is_wpt_notify_enabled(self, metadata_file):
-        """Checks if the DIR_METADATA file enables WPT-NOTIFY.
-
-        Args:
-            metadata_file: An absolute path to an DIR_METADATA file.
-
-        Returns:
-            A boolean.
-        """
-        dir_metadata = self._read_dir_metadata(metadata_file)
-        return dir_metadata and dir_metadata.should_notify
-
     @memoized
     def _read_text_file(self, path):
         return self.filesystem.read_text_file(path)
 
     @memoized
-    def _read_dir_metadata(self, path):
-        """Read the content from a path.
+    def read_dir_metadata(self, path: str) -> Optional[WPTDirMetadata]:
+        """Read the `DIR_METADATA` of a directory.
 
-        Args:
-            path: An absolute path.
-
-        Returns:
-            A WPTDirMetadata object, or None if not found.
-        """
-        print('_read_dir_metadata %s' % path)
-        dir_path = self.filesystem.dirname(path)
-
-        # dirmd starts with an absolute directory path, `dir_path`, traverses all
-        # parent directories and stops at `root_path` to find the first available DIR_METADATA
-        # file. `root_path` is the web_tests directory.
-        json_data = self.executive.run_command([
-            self.finder.path_from_depot_tools_base('dirmd'),
-            'read',
-            '-form', 'sparse',
-            dir_path,
-        ])
-        try:
-            data = json.loads(json_data)
-        except ValueError:
-            return None
-
-        # Paths in the dirmd output are relative to the repo root.
-        repo_root = self.finder.path_from_chromium_base()
-        relative_path = self.filesystem.relpath(dir_path, repo_root)
-        return WPTDirMetadata(data, relative_path)
-
-
-class WPTDirMetadata(object):
-    def __init__(self, data, path):
-        """Constructor for WPTDirMetadata.
-
-        Args:
-            data: The output of `dirmd` in _read_dir_metadata; e.g.
+        The output of `dirmd` in JSON format looks like:
             {
                 "dirs":{
-                    "tools/binary_size/libsupersize/testdata/mock_source_directory/base":{
+                    "tools/binary_size/libsupersize/testdata":{
                         "monorail":{
                             "project":"chromium",
                             "component":"Blink>Internal"
@@ -206,37 +153,36 @@ class WPTDirMetadata(object):
                 }
             }
 
-            path: The relative directory path of the DIR_METADATA to the web_tests directory;
-                see `relative_path` in _read_dir_metadata.
+        Arguments:
+            path: An absolute path to the directory, *not* the `DIR_METADATA`
+                file itself.
+
+        Returns:
+            A WPTDirMetadata object, or None if not found.
         """
-        self._data = data
-        self._path = path
-
-    def _get_content(self):
-        return self._data['dirs'][self._path]
-
-    def _is_empty(self):
-        return len(self._get_content()) == 0
-
-    @property
-    def team_email(self):
-        if self._is_empty():
-            return None
-        # Only returns a single email.
-        return self._get_content()['teamEmail']
-
-    @property
-    def component(self):
-        if self._is_empty():
-            return None
-        return self._get_content()['monorail']['component']
-
-    @property
-    def should_notify(self):
-        if self._is_empty():
+        # dirmd starts with an absolute directory path, `dir_path`, traverses
+        # all parent directories and stops at `root_path` to find the first
+        # available DIR_METADATA file. `root_path` is the web_tests directory.
+        json_data = self.executive.run_command([
+            self.finder.path_from_depot_tools_base('dirmd'),
+            'read',
+            '-form',
+            'sparse',
+            path,
+        ])
+        # Paths in the dirmd output are relative to the repo root.
+        repo_root = self.finder.path_from_chromium_base()
+        relative_path = self.filesystem.relpath(path, repo_root)
+        try:
+            data = json.loads(json_data)['dirs'][relative_path]
+        except (ValueError, KeyError):
             return None
 
-        notify = self._get_content().get('wpt', {}).get('notify')
         # The value of `notify` is one of ['TRINARY_UNSPECIFIED', 'YES', 'NO'].
-        # Assume that users opt out by default; return True only when notify is 'YES'.
-        return notify == 'YES'
+        # Assume that users opt out by default; return True only when notify is
+        # 'YES'.
+        #
+        # TODO(crbug.com/1454853): Consider opt-in by default.
+        return WPTDirMetadata(data.get('teamEmail'),
+                              data.get('monorail', {}).get('component'),
+                              data.get('wpt', {}).get('notify') == 'YES')

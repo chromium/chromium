@@ -196,16 +196,8 @@ class ImportNotifier(object):
             full_directory = self.host.filesystem.join(
                 self.finder.web_tests_dir(), directory)
             owners_file = self.host.filesystem.join(full_directory, 'OWNERS')
-            metadata_file = self.host.filesystem.join(full_directory,
-                                                      'DIR_METADATA')
-            is_wpt_notify_enabled = False
-            try:
-                is_wpt_notify_enabled = self.owners_extractor.is_wpt_notify_enabled(
-                    metadata_file)
-            except KeyError:
-                _log.info('KeyError when parsing %s' % metadata_file)
-
-            if not is_wpt_notify_enabled:
+            metadata = self.owners_extractor.read_dir_metadata(full_directory)
+            if not metadata or not metadata.should_notify:
                 _log.info("WPT-NOTIFY disabled in %s." % full_directory)
                 continue
 
@@ -213,9 +205,8 @@ class ImportNotifier(object):
             # owners may be empty but not None.
             cc = owners
 
-            component = self.owners_extractor.extract_component(metadata_file)
             # component could be None.
-            components = [component] if component else None
+            components = [metadata.component] if metadata.component else None
 
             prologue = ('WPT import {} introduced new failures in {}:\n\n'
                         'List of new failures:\n'.format(
