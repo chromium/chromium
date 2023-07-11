@@ -247,8 +247,7 @@ class CORE_EXPORT NGPhysicalFragment
   bool HasCollapsedBorders() const { return has_collapsed_borders_; }
 
   bool IsFormattingContextRoot() const {
-    return (IsBox() && BoxType() >= NGBoxType::kMinimumFormattingContextRoot) ||
-           IsLegacyLayoutRoot();
+    return IsBox() && BoxType() >= NGBoxType::kMinimumFormattingContextRoot;
   }
 
   // Returns true if we have a descendant within this formatting context, which

@@ -13,7 +13,9 @@ namespace blink {
 
 NGReplacedLayoutAlgorithm::NGReplacedLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {}
+    : NGLayoutAlgorithm(params) {
+  DCHECK(params.space.IsNewFormattingContext());
+}
 
 const NGLayoutResult* NGReplacedLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken() || BreakToken()->IsBreakBefore());
