@@ -68,14 +68,7 @@ class WebIDBCallbacksImpl final : public WebIDBCallbacks {
       const IDBDatabaseMetadata& metadata) override;
   void SuccessKey(std::unique_ptr<IDBKey>) override;
   void SuccessValue(mojom::blink::IDBReturnValuePtr) override;
-  void SuccessArray(Vector<mojom::blink::IDBReturnValuePtr>) override;
-  void SuccessArrayArray(
-      Vector<Vector<mojom::blink::IDBReturnValuePtr>>) override;
   void SuccessInteger(int64_t) override;
-  void ReceiveGetAllResults(
-      bool key_only,
-      mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink> receiver)
-      override;
 
   void Blocked(int64_t old_version) override;
   void UpgradeNeeded(

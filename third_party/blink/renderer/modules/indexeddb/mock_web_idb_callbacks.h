@@ -41,16 +41,6 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
   void SuccessValue(mojom::blink::IDBReturnValuePtr) override;
   MOCK_METHOD1(DoSuccessValue, void(const mojom::blink::IDBReturnValuePtr&));
 
-  void SuccessArray(Vector<mojom::blink::IDBReturnValuePtr>) override;
-  MOCK_METHOD1(DoSuccessArray,
-               void(const Vector<mojom::blink::IDBReturnValuePtr>&));
-
-  void SuccessArrayArray(
-      Vector<Vector<mojom::blink::IDBReturnValuePtr>>) override;
-
-  MOCK_METHOD1(DoSuccessArrayArray,
-               void(const Vector<Vector<mojom::blink::IDBReturnValuePtr>>&));
-
   MOCK_METHOD1(SuccessInteger, void(int64_t));
 
   MOCK_METHOD0(Success, void());

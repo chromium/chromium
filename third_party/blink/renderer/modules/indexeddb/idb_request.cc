@@ -395,41 +395,14 @@ void IDBRequest::HandleResponse(std::unique_ptr<IDBValue> value) {
                     WrapPersistent(transaction_.Get()))));
 }
 
-void IDBRequest::HandleResponse(Vector<std::unique_ptr<IDBValue>> values) {
-  DCHECK(transit_blob_handles_.empty());
-  DCHECK(transaction_);
-  bool is_wrapped = IDBValueUnwrapper::IsWrapped(values);
-  if (!transaction_->HasQueuedResults() && !is_wrapped)
-    return EnqueueResponse(std::move(values));
-  transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
-      this, std::move(values), is_wrapped,
-      WTF::BindOnce(&IDBTransaction::OnResultReady,
-                    WrapPersistent(transaction_.Get()))));
-}
-
-void IDBRequest::HandleResponse(
-    Vector<Vector<std::unique_ptr<IDBValue>>> all_values) {
-  DCHECK(transit_blob_handles_.empty());
-  DCHECK(transaction_);
-
-  bool is_wrapped = IDBValueUnwrapper::IsWrapped(all_values);
-  if (!transaction_->HasQueuedResults() && !is_wrapped)
-    return EnqueueResponse(std::move(all_values));
-  transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
-      this, std::move(all_values), is_wrapped,
-      WTF::BindOnce(&IDBTransaction::OnResultReady,
-                    WrapPersistent(transaction_.Get()))));
-}
-
-void IDBRequest::HandleResponse(
-    std::unique_ptr<IDBKey> key,
-    std::unique_ptr<IDBKey> primary_key,
-    absl::optional<std::unique_ptr<IDBValue>> optional_value) {
+void IDBRequest::HandleResponse(std::unique_ptr<IDBKey> key,
+                                std::unique_ptr<IDBKey> primary_key,
+                                std::unique_ptr<IDBValue> optional_value) {
   DCHECK(transit_blob_handles_.empty());
   DCHECK(transaction_);
 
   std::unique_ptr<IDBValue> value =
-      optional_value ? std::move(*optional_value)
+      optional_value ? std::move(optional_value)
                      : std::make_unique<IDBValue>(scoped_refptr<SharedBuffer>(),
                                                   Vector<WebBlobInfo>());
   value->SetIsolate(GetIsolate());
@@ -447,9 +420,19 @@ void IDBRequest::HandleResponse(
                     WrapPersistent(transaction_.Get()))));
 }
 
-void IDBRequest::HandleResponse(
+void IDBRequest::OnClear(bool success) {
+  if (success) {
+    probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
+                                "clear");
+    HandleResponse();
+  }
+}
+
+void IDBRequest::OnGetAll(
     bool key_only,
     mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink> receiver) {
+  probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
+                              "success");
   DCHECK(transit_blob_handles_.empty());
   DCHECK(transaction_);
   transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
@@ -458,12 +441,44 @@ void IDBRequest::HandleResponse(
                     WrapPersistent(transaction_.Get()))));
 }
 
-void IDBRequest::OnClear(bool success) {
-  if (success) {
-    probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
-                                "clear");
-    HandleResponse();
+void IDBRequest::OnBatchGetAll(
+    mojom::blink::IDBDatabaseBatchGetAllResultPtr result) {
+  if (result->is_error_result()) {
+    HandleResponse(MakeGarbageCollected<DOMException>(
+        static_cast<DOMExceptionCode>(result->get_error_result()->error_code),
+        std::move(result->get_error_result()->error_message)));
+    return;
   }
+
+  if (!result->is_values()) {
+    return;
+  }
+
+  probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
+                              "success");
+  Vector<Vector<std::unique_ptr<IDBValue>>> all_idb_values;
+  for (const auto& values : result->get_values()) {
+    Vector<std::unique_ptr<IDBValue>> idb_values;
+    idb_values.ReserveInitialCapacity(values.size());
+    for (const mojom::blink::IDBReturnValuePtr& value : values) {
+      std::unique_ptr<IDBValue> idb_value = IDBValue::ConvertReturnValue(value);
+      idb_value->SetIsolate(GetIsolate());
+      idb_values.push_back(std::move(idb_value));
+    }
+    all_idb_values.push_back(std::move(idb_values));
+  }
+
+  DCHECK(transit_blob_handles_.empty());
+  DCHECK(transaction_);
+
+  bool is_wrapped = IDBValueUnwrapper::IsWrapped(all_idb_values);
+  if (!transaction_->HasQueuedResults() && !is_wrapped) {
+    return EnqueueResponse(std::move(all_idb_values));
+  }
+  transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
+      this, std::move(all_idb_values), is_wrapped,
+      WTF::BindOnce(&IDBTransaction::OnResultReady,
+                    WrapPersistent(transaction_.Get()))));
 }
 
 void IDBRequest::OnDelete(bool success) {

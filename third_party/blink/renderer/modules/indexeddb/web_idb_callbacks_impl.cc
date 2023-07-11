@@ -153,48 +153,6 @@ void WebIDBCallbacksImpl::SuccessValue(
   request->HandleResponse(std::move(value));
 }
 
-void WebIDBCallbacksImpl::SuccessArray(
-    Vector<mojom::blink::IDBReturnValuePtr> values) {
-  if (!request_)
-    return;
-
-  probe::AsyncTask async_task(request_->GetExecutionContext(),
-                              &async_task_context_, "success");
-  Vector<std::unique_ptr<IDBValue>> idb_values;
-  idb_values.ReserveInitialCapacity(values.size());
-  for (const mojom::blink::IDBReturnValuePtr& value : values) {
-    std::unique_ptr<IDBValue> idb_value = IDBValue::ConvertReturnValue(value);
-    idb_value->SetIsolate(request_->GetIsolate());
-    idb_values.emplace_back(std::move(idb_value));
-  }
-  IDBRequest* request = request_.Get();
-  Detach();
-  request->HandleResponse(std::move(idb_values));
-}
-
-void WebIDBCallbacksImpl::SuccessArrayArray(
-    Vector<Vector<mojom::blink::IDBReturnValuePtr>> all_values) {
-  if (!request_)
-    return;
-
-  probe::AsyncTask async_task(request_->GetExecutionContext(),
-                              &async_task_context_, "success");
-  Vector<Vector<std::unique_ptr<IDBValue>>> all_idb_values;
-  for (const auto& values : all_values) {
-    Vector<std::unique_ptr<IDBValue>> idb_values;
-    idb_values.ReserveInitialCapacity(values.size());
-    for (const mojom::blink::IDBReturnValuePtr& value : values) {
-      std::unique_ptr<IDBValue> idb_value = IDBValue::ConvertReturnValue(value);
-      idb_value->SetIsolate(request_->GetIsolate());
-      idb_values.push_back(std::move(idb_value));
-    }
-    all_idb_values.push_back(std::move(idb_values));
-  }
-  IDBRequest* request = request_.Get();
-  Detach();
-  request->HandleResponse(std::move(all_idb_values));
-}
-
 void WebIDBCallbacksImpl::SuccessInteger(int64_t value) {
   if (!request_)
     return;
@@ -204,20 +162,6 @@ void WebIDBCallbacksImpl::SuccessInteger(int64_t value) {
   IDBRequest* request = request_.Get();
   Detach();
   request->HandleResponse(value);
-}
-
-void WebIDBCallbacksImpl::ReceiveGetAllResults(
-    bool key_only,
-    mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink> receiver) {
-  if (!request_)
-    return;
-
-  // This may turn into an error, but treat this like a success for now.
-  probe::AsyncTask async_task(request_->GetExecutionContext(),
-                              &async_task_context_, "success");
-  IDBRequest* request = request_.Get();
-  Detach();
-  request->HandleResponse(key_only, std::move(receiver));
 }
 
 void WebIDBCallbacksImpl::Blocked(int64_t old_version) {

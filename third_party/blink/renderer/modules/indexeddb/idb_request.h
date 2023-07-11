@@ -273,21 +273,19 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
                       std::unique_ptr<IDBValue>);
   virtual void HandleResponse(std::unique_ptr<IDBKey>,
                               std::unique_ptr<IDBKey> primary_key,
-                              absl::optional<std::unique_ptr<IDBValue>>);
+                              std::unique_ptr<IDBValue>);
   void HandleResponse(std::unique_ptr<IDBValue>);
-  void HandleResponse(Vector<std::unique_ptr<IDBValue>>);
-  void HandleResponse(Vector<Vector<std::unique_ptr<IDBValue>>>);
   void HandleResponse(int64_t);
-  void HandleResponse(
-      bool key_only,
-      mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
-          receiver);
 
   // Callbacks for various `IDBObjectStore` methods.
   void OnClear(bool success);
   void OnDelete(bool success);
   void OnCount(bool success, uint32_t count);
   void OnGet(mojom::blink::IDBDatabaseGetResultPtr result);
+  void OnGetAll(bool key_only,
+                mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
+                    receiver);
+  void OnBatchGetAll(mojom::blink::IDBDatabaseBatchGetAllResultPtr result);
   void OnOpenCursor(mojom::blink::IDBDatabaseOpenCursorResultPtr result);
   void OnAdvanceCursor(mojom::blink::IDBCursorResultPtr result);
 
