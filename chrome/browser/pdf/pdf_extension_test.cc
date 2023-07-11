@@ -304,8 +304,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfExtensionLoadedWhileOldPdfCloses) {
   // the middle of initialization. In https://crbug.com/1295431, the extension
   // process exited here and caused a crash when the second PDF resumed.
   EXPECT_EQ(2U, GetGuestViewManager()->GetCurrentGuestCount());
-  ASSERT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
-      0, TabCloseTypes::CLOSE_USER_GESTURE));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
   // `TestGuestViewManager` manages the guests by the order of creation.
   GetGuestViewManager()->WaitForFirstGuestDeleted();
   EXPECT_EQ(1U, GetGuestViewManager()->GetCurrentGuestCount());

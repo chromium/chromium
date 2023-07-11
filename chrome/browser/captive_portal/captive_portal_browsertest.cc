@@ -2037,8 +2037,9 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   EXPECT_EQ(1, login_tab_index);
   content::WebContentsDestroyedWatcher destroyed_watcher(
       tab_strip_model->GetActiveWebContents());
-  EXPECT_TRUE(
-      tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(), 0));
+  EXPECT_EQ(2, tab_strip_model->count());
+  tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(), 0);
+  EXPECT_EQ(1, tab_strip_model->count());
   destroyed_watcher.Wait();
   MultiNavigationObserver navigation_observer;
   content::ExecuteScriptAsync(rfh, kClickConnectButtonJS);

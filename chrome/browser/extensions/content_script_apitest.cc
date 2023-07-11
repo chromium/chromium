@@ -902,8 +902,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   // should never get a chance to run (and we shouldn't crash).
   dialog_wait.Run();
   EXPECT_FALSE(listener.was_satisfied());
-  EXPECT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
-      browser()->tab_strip_model()->active_index(), 0));
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      browser()->tab_strip_model()->active_index(), 0);
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_FALSE(listener.was_satisfied());
 }
 

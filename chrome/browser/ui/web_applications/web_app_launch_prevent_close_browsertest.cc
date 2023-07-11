@@ -39,64 +39,72 @@ class PreventCloseControllerBrowserTest : public WebAppControllerBrowserTest {
                                        .Set(kPreventClose, prevent_close)));
   }
 
+  void ClearPolicySettings() {
+    profile()->GetPrefs()->SetList(prefs::kWebAppSettings, base::Value::List());
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PreventCloseControllerBrowserTest,
                        NonClosablePWADoesNotLaunchAdditionalWindow) {
   // Arrange with non-closable PWA and start it a first time
-  auto expected_browser_count = chrome::GetBrowserCount(profile());
+  size_t expected_browser_count = chrome::GetBrowserCount(profile());
 
-  const GURL url = GURL(kTestApp);
+  const GURL url(kTestApp);
   ApplyPolicySettings(url, /*prevent_close=*/true);
   const AppId& app_id = InstallPWA(GURL(kTestApp));
 
   Browser* browser = LaunchWebAppBrowser(app_id);
-  expected_browser_count++;
+  ++expected_browser_count;
 
   ASSERT_TRUE(browser);
-  ASSERT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
+  EXPECT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
 
   // Act by launching PWA a second time
   Browser* second_browser = LaunchWebAppBrowser(app_id);
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  // On other platforms, the prevent close should not be enabled.
-  ASSERT_FALSE(WebAppProvider::GetForTest(profile())
-                   ->registrar_unsafe()
-                   .IsPreventCloseEnabled(app_id));
-  ASSERT_NE(browser, second_browser);
-  ASSERT_EQ(expected_browser_count + 1, chrome::GetBrowserCount(profile()));
-#else
+#if BUILDFLAG(IS_CHROMEOS)
   // Assert that the PWA only has one existing window
-  ASSERT_TRUE(WebAppProvider::GetForTest(profile())
+  EXPECT_TRUE(WebAppProvider::GetForTest(profile())
                   ->registrar_unsafe()
                   .IsPreventCloseEnabled(app_id));
-  ASSERT_EQ(browser, second_browser);
-  ASSERT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
+  EXPECT_EQ(browser, second_browser);
+  EXPECT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
+#else
+  // On other platforms, the prevent close should not be enabled.
+  EXPECT_FALSE(WebAppProvider::GetForTest(profile())
+                   ->registrar_unsafe()
+                   .IsPreventCloseEnabled(app_id));
+  EXPECT_NE(browser, second_browser);
+  EXPECT_EQ(expected_browser_count + 1, chrome::GetBrowserCount(profile()));
 #endif
+
+  ClearPolicySettings();
 }
 
 IN_PROC_BROWSER_TEST_F(PreventCloseControllerBrowserTest,
                        ClosablePWALaunchesAdditionalWindow) {
-  auto expected_browser_count = chrome::GetBrowserCount(profile());
+  size_t expected_browser_count = chrome::GetBrowserCount(profile());
 
-  const GURL url = GURL(kTestApp);
+  const GURL url(kTestApp);
   const AppId& app_id = InstallPWA(url);
   ApplyPolicySettings(url, /*prevent_close=*/false);
   Browser* browser = LaunchWebAppBrowser(app_id);
-  expected_browser_count++;
+  ++expected_browser_count;
 
   ASSERT_TRUE(browser);
-  ASSERT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
+  EXPECT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
 
   // Act by launching PWA a second time
   Browser* second_browser = LaunchWebAppBrowser(app_id);
   expected_browser_count++;
 
   // Assert that the PWA only has one existing window
-  ASSERT_NE(browser, second_browser);
-  ASSERT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
+  EXPECT_NE(browser, second_browser);
+  EXPECT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
+
+  ClearPolicySettings();
 }
 
 }  // namespace web_app

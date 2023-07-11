@@ -113,10 +113,11 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
               Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
                   testing::_));
   // Close controller tab.
-  EXPECT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
+  int previous_tab_count = browser()->tab_strip_model()->count();
+  browser()->tab_strip_model()->CloseWebContentsAt(
       tab_strip_model->GetIndexOfWebContents(controller_web_contents),
-      TabCloseTypes::CLOSE_USER_GESTURE));
-  EXPECT_EQ(1, tab_strip_model->count());
+      TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_EQ(previous_tab_count - 1, browser()->tab_strip_model()->count());
 }
 
 // This is testing that when the SaveAddressProfilePromptOptions has the
