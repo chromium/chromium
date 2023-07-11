@@ -300,6 +300,9 @@ void WidgetBase::Shutdown() {
                        [](std::unique_ptr<LayerTreeView> view,
                           scoped_refptr<WidgetInputHandlerManager> manager,
                           scoped_refptr<scheduler::WidgetScheduler> scheduler) {
+                         recordreplay::Assert(
+                             "[RUN-2224-2323] WidgetBase::Shutdown %d %d",
+                             manager->HasOneRef(), scheduler->HasOneRef());
                          view.reset();
                          manager.reset();
                          scheduler->Shutdown();
