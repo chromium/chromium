@@ -251,6 +251,12 @@ void RecordNetworkLoaderCompletionTime(const char* suffix,
       elapsed);
 }
 
+bool IsSharedDictionaryWriteAllowedMode(mojom::RequestMode mode) {
+  return mode == mojom::RequestMode::kCors ||
+         mode == mojom::RequestMode::kCorsWithForcedPreflight ||
+         mode == mojom::RequestMode::kSameOrigin;
+}
+
 constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
 
 }  // namespace
@@ -548,12 +554,10 @@ void CorsURLLoader::OnReceiveResponse(
   }
 
   if (request_.shared_dictionary_writer_enabled && shared_dictionary_storage_ &&
-      (IsCorsEnabledRequestMode(request_.mode))) {
-    // The compressed dictionary transport feature currently supports storing
-    // dictionaries only if the request was fetched using Cors enabled mode.
-    // Note: We may extend this support in future (For example, same-origin mode
-    // requests, responses containing a valid Access-Control-Allow-Origin header
-    // even if the request mode was not Cors.)
+      (IsSharedDictionaryWriteAllowedMode(request_.mode))) {
+    // The compressed dictionary transport feature supports storing
+    // dictionaries only if the request was fetched using cors enabled mode or
+    // same-origin mode.
     auto writer = shared_dictionary_storage_->MaybeCreateWriter(
         request_.url, response_head->response_time, *response_head->headers,
         base::BindOnce(

@@ -140,6 +140,8 @@ enum class BrowserType { kNormal, kOffTheRecord };
 enum class FetchType {
   kLinkRelDictionary,
   kFetchApi,
+  kFetchApiWithSameOriginMode,
+  kFetchApiWithNoCorsMode,
   kFetchApiFromDedicatedWorker,
   kFetchApiFromSharedWorker,
   kFetchApiFromServiceWorker,
@@ -162,6 +164,31 @@ std::string FetchDictionaryScript(const GURL& dictionary_url) {
           (async () => {
             try {
               await fetch($1);
+            } catch (e) {
+            }
+          })();
+        )",
+                   dictionary_url);
+}
+
+std::string FetchDictionaryWithSameOriginModeScript(
+    const GURL& dictionary_url) {
+  return JsReplace(R"(
+          (async () => {
+            try {
+              await fetch($1, {mode: 'same-origin'});
+            } catch (e) {
+            }
+          })();
+        )",
+                   dictionary_url);
+}
+
+std::string FetchDictionaryWithNoCorsModeScript(const GURL& dictionary_url) {
+  return JsReplace(R"(
+          (async () => {
+            try {
+              await fetch($1, {mode: 'no-cors'});
             } catch (e) {
             }
           })();
@@ -294,6 +321,12 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
         break;
       case FetchType::kFetchApi:
         script = FetchDictionaryScript(dictionary_url);
+        break;
+      case FetchType::kFetchApiWithSameOriginMode:
+        script = FetchDictionaryWithSameOriginModeScript(dictionary_url);
+        break;
+      case FetchType::kFetchApiWithNoCorsMode:
+        script = FetchDictionaryWithNoCorsModeScript(dictionary_url);
         break;
       case FetchType::kFetchApiFromDedicatedWorker:
         script = StartTestDedicatedWorkerScript(dictionary_url);
@@ -858,6 +891,23 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
       FetchType::kFetchApi,
       embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
       embedded_test_server()->GetURL("/shared_dictionary/test.dict"));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       FetchDictionaryWithSameOriginMode) {
+  RunWriteDictionaryTest(
+      FetchType::kFetchApiWithSameOriginMode,
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
+      embedded_test_server()->GetURL("/shared_dictionary/test.dict"));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       FetchDictionaryWithNoCorsMode) {
+  RunWriteDictionaryTest(
+      FetchType::kFetchApiWithNoCorsMode,
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
+      embedded_test_server()->GetURL("/shared_dictionary/test.dict"),
+      /*expect_success=*/false);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
