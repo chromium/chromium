@@ -1318,6 +1318,49 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PageLoad.Clients.Zstd.PaintTiming.NavigationToFirstContentfulPaint"
+    units="ms" expires_after="2024-01-23">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Measures the time in milliseconds from navigation timing's navigation start
+    to the time when the page first paints content, for page loads that can use
+    zstd. A contentful paint includes a paint of text, image, SVG, or canvas.
+    Only recorded for navigations that start in the foreground and stay in the
+    foreground until the first contentful paint.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.Zstd.PaintTiming.NavigationToLargestContentfulPaint"
+    units="ms" expires_after="2024-01-23">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Measures the time in milliseconds from navigation timing's navigation start
+    to the time when the page first paints the experimental largest content
+    (text or image) within viewport, for page loads that can use zstd. See
+    https://github.com/w3c/largest-contentful-paint for more details. Differs
+    from SubFrame.PaintTiming.NavigationToLargestContentfulPaint in that removed
+    content is still considered a valid candidate. Only recorded for navigations
+    that happen entirely in the foreground. The metric is emitted when the
+    navigation is completed or the app is backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.Zstd.ParseTiming.NavigationToParseStart"
+    units="ms" expires_after="2024-01-23">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    parser started, for page loads that can use zstd. Only recorded for
+    navigations that start in the foreground and stay in the foreground until
+    parse start. This metric is emitted when the parser starts for a navigation.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.Clients.{Origin}.FirstContentfulPaint" units="ms"
     expires_after="2023-10-01">
   <owner>ksakamoto@chromium.org</owner>

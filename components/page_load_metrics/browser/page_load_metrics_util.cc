@@ -324,6 +324,11 @@ bool IsGoogleSearchRedirectorUrl(const GURL& url) {
   return url.path_piece() == "/searchurl/r.html" && url.has_ref();
 }
 
+bool IsZstdUrl(const GURL& url) {
+  return url.DomainIs("facebook.com") || url.DomainIs("instagram.com") ||
+         url.DomainIs("whatsapp.com") || url.DomainIs("messenger.com");
+}
+
 bool QueryContainsComponent(const base::StringPiece query,
                             const base::StringPiece component) {
   return QueryContainsComponentHelper(query, component, false);
