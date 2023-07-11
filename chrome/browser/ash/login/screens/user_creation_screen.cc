@@ -24,6 +24,12 @@ constexpr char kUserActionSignIn[] = "signin";
 constexpr char kUserActionAddChild[] = "add-child";
 constexpr char kUserActionCancel[] = "cancel";
 
+// The following user actions are only possible when `OobeSoftwareUpdate` flag
+// is enabled.
+constexpr char kUserActionEnroll[] = "enroll";
+constexpr char kUserActionTriage[] = "triage";
+constexpr char kUserActionChildSetup[] = "child-setup";
+
 UserCreationScreen::UserCreationScreenExitTestDelegate* test_exit_delegate =
     nullptr;
 
@@ -131,6 +137,16 @@ void UserCreationScreen::OnUserAction(const base::Value::List& args) {
   } else if (action_id == kUserActionCancel) {
     context()->is_user_creation_enabled = false;
     RunExitCallback(Result::CANCEL);
+  } else if (action_id == kUserActionEnroll) {
+    RunExitCallback(Result::ENTERPRISE_ENROLL);
+  } else if (action_id == kUserActionTriage) {
+    if (context()->is_add_person_flow) {
+      RunExitCallback(Result::SIGNIN);
+    } else {
+      view_->SetTriageStep();
+    }
+  } else if (action_id == kUserActionChildSetup) {
+    view_->SetChildSetupStep();
   } else {
     BaseScreen::OnUserAction(args);
   }

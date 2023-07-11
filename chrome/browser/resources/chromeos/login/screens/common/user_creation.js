@@ -15,10 +15,11 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {Oobe} from '../../cr_ui.js';
@@ -27,6 +28,7 @@ import {Oobe} from '../../cr_ui.js';
 /**
  * @constructor
  * @extends {PolymerElement}
+ * @implements {OobeI18nBehaviorInterface}
  * @implements {LoginScreenBehaviorInterface}
  * @implements {MultiStepBehaviorInterface}
  */
@@ -39,6 +41,8 @@ const UserCreationScreenElementBase = mixinBehaviors(
  */
 const UserCreationUIState = {
   CREATE: 'create',
+  ENROLL_TRIAGE: 'enroll-triage',
+  CHILD_SETUP: 'child-setup',
 };
 
 /**
@@ -48,9 +52,43 @@ const UserCreationUIState = {
 const UserCreationUserType = {
   SELF: 'self',
   CHILD: 'child',
+  ENROLL: 'enroll',
 };
 
+/**
+ * Enroll triage method for setting up the device.
+ * @enum {string}
+ */
+const EnrollTriageMethod = {
+  ENROLL: 'enroll',
+  SIGNIN: 'signin',
+};
 
+/**
+ * Available user actions.
+ * @enum {string}
+ */
+const UserAction = {
+  SIGNIN: 'signin',
+  ADD_CHILD: 'add-child',
+  ENROLL: 'enroll',
+  TRIAGE: 'triage',
+  CHILD_SETUP: 'child-setup',
+  CANCEL: 'cancel',
+};
+
+/**
+ * Enroll triage method for setting up the device.
+ * @enum {string}
+ */
+const ChildSetupMethod = {
+  CHILD_ACCOUNT: 'child-account',
+  SCHOOL_ACCOUNT: 'school-account',
+};
+
+/**
+ * @polymer
+ */
 class UserCreation extends UserCreationScreenElementBase {
   static get is() {
     return 'user-creation-element';
@@ -66,6 +104,20 @@ class UserCreation extends UserCreationScreenElementBase {
        * The currently selected user type.
        */
       selectedUserType: {
+        type: String,
+      },
+
+      /**
+       * The currently selected sign in method.
+       */
+      selectedEnrollTriageMethod: {
+        type: String,
+      },
+
+      /**
+       * The currently selected child setup method.
+       */
+      selectedChildSetupMethod: {
         type: String,
       },
 
@@ -87,21 +139,43 @@ class UserCreation extends UserCreationScreenElementBase {
       subtitleKey_: {
         type: String,
       },
+
+      /**
+       * Whether software updaate feature is enabled.
+       */
+      isOobeSoftwareUpdateEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isOobeSoftwareUpdateEnabled');
+        },
+      },
+
     };
   }
 
   constructor() {
     super();
-    this.selectedUserType = UserCreationUserType.SELF;
-    this.selectedSignInMethod = '';
+    if (this.isOobeSoftwareUpdateEnabled_) {
+      this.selectedUserType = '';
+      this.titleKey_ = 'userCreationUpdatedTitle';
+      this.subtitleKey_ = 'userCreationUpdatedSubtitle';
+    } else {
+      this.titleKey_ = 'userCreationTitle';
+      this.subtitleKey_ = 'userCreationSubtitle';
+      this.selectedUserType = UserCreationUserType.SELF;
+    }
+    this.selectedEnrollTriageMethod = '';
+    this.selectedChildSetupMethod = '';
     this.isBackButtonVisible_ = true;
-    this.titleKey_ = 'userCreationTitle';
-    this.subtitleKey_ = 'userCreationSubtitle';
   }
 
   /** @override */
   get EXTERNAL_API() {
-    return ['setIsBackButtonVisible'];
+    return [
+      'setIsBackButtonVisible',
+      'setTriageStep',
+      'setChildSetupStep',
+    ];
   }
 
   /** @override */
@@ -114,12 +188,25 @@ class UserCreation extends UserCreationScreenElementBase {
   }
 
   onBeforeShow() {
-    this.selectedUserType = UserCreationUserType.SELF;
-    this.titleKey_ = this.isBackButtonVisible_ ? 'userCreationAddPersonTitle' :
-                                                 'userCreationTitle';
-    this.subtitleKey_ = this.isBackButtonVisible_ ?
-        'userCreationAddPersonSubtitle' :
-        'userCreationSubtitle';
+    if (this.isOobeSoftwareUpdateEnabled_) {
+      this.selectedUserType = '';
+      this.titleKey_ = this.isBackButtonVisible_ ?
+          'userCreationAddPersonUpdatedTitle' :
+          'userCreationUpdatedTitle';
+      this.subtitleKey_ = this.isBackButtonVisible_ ?
+          'userCreationAddPersonUpdatedSubtitle' :
+          'userCreationUpdatedSubtitle';
+    } else {
+      this.selectedUserType = UserCreationUserType.SELF;
+      this.titleKey_ = this.isBackButtonVisible_ ?
+          'userCreationAddPersonTitle' :
+          'userCreationTitle';
+      this.subtitleKey_ = this.isBackButtonVisible_ ?
+          'userCreationAddPersonSubtitle' :
+          'userCreationSubtitle';
+    }
+    this.selectedEnrollTriageMethod = '';
+    this.selectedChildSetupMethod = '';
   }
 
   /** @override */
@@ -143,17 +230,89 @@ class UserCreation extends UserCreationScreenElementBase {
   }
 
   onBackClicked_() {
-    this.userActed('cancel');
+    if (this.uiStep === UserCreationUIState.ENROLL_TRIAGE ||
+        this.uiStep === UserCreationUIState.CHILD_SETUP) {
+      this.setUIStep(UserCreationUIState.CREATE);
+    } else {
+      this.userActed(UserAction.CANCEL);
+    }
   }
 
   onNextClicked_() {
     if (this.uiStep === UserCreationUIState.CREATE) {
       if (this.selectedUserType === UserCreationUserType.SELF) {
-        this.userActed('signin');
+        this.userActed(UserAction.SIGNIN);
       } else if (this.selectedUserType === UserCreationUserType.CHILD) {
-        this.userActed('add-child');
+        if (this.isOobeSoftwareUpdateEnabled_) {
+          this.userActed(UserAction.CHILD_SETUP);
+        } else {
+          this.userActed(UserAction.ADD_CHILD);
+        }
+      } else if (this.selectedUserType === UserCreationUserType.ENROLL) {
+        this.userActed(UserAction.TRIAGE);
       }
     }
+  }
+
+  onLearnMoreClicked_() {
+    this.$.learnMoreDialog.showDialog();
+  }
+
+  focusLearnMoreLink_() {
+    this.$.learnMoreLink.focus();
+  }
+
+  setTriageStep() {
+    this.setUIStep(UserCreationUIState.ENROLL_TRIAGE);
+  }
+
+  setChildSetupStep() {
+    this.setUIStep(UserCreationUIState.CHILD_SETUP);
+  }
+
+  onTriageNextClicked_() {
+    if (this.selectedEnrollTriageMethod === EnrollTriageMethod.ENROLL) {
+      this.userActed(UserAction.ENROLL);
+    } else if (this.selectedEnrollTriageMethod === EnrollTriageMethod.SIGNIN) {
+      this.userActed(UserAction.SIGNIN);
+    }
+  }
+
+  onChildSetupNextClicked_() {
+    if (this.selectedChildSetupMethod === ChildSetupMethod.CHILD_ACCOUNT) {
+      this.userActed(UserAction.ADD_CHILD);
+    } else if (
+        this.selectedChildSetupMethod === ChildSetupMethod.SCHOOL_ACCOUNT) {
+      this.userActed(UserAction.SIGNIN);
+    }
+  }
+
+  getPersonalCardLabel_(locale) {
+    if (this.isOobeSoftwareUpdateEnabled_) {
+      return this.i18nDynamic(locale, 'userCreationPersonalButtonTitle');
+    }
+    return this.i18nDynamic(locale, 'createForSelfLabel');
+  }
+
+  getPersonalCardText_(locale) {
+    if (this.isOobeSoftwareUpdateEnabled_) {
+      return this.i18nDynamic(locale, 'userCreationPersonalButtonDescription');
+    }
+    return this.i18nDynamic(locale, 'createForSelfDescription');
+  }
+
+  getChildCardLabel_(locale) {
+    if (this.isOobeSoftwareUpdateEnabled_) {
+      return this.i18nDynamic(locale, 'userCreationChildButtonTitle');
+    }
+    return this.i18nDynamic(locale, 'createForChildLabel');
+  }
+
+  getChildCardText_(locale) {
+    if (this.isOobeSoftwareUpdateEnabled_) {
+      return this.i18nDynamic(locale, 'userCreationChildButtonDescription');
+    }
+    return this.i18nDynamic(locale, 'createForChildDescription');
   }
 }
 customElements.define(UserCreation.is, UserCreation);
