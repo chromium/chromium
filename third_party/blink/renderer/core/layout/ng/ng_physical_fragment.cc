@@ -68,11 +68,6 @@ String StringForBoxType(const NGPhysicalFragment& fragment) {
       result.Append("rendered-legend");
       break;
   }
-  if (fragment.IsLegacyLayoutRoot()) {
-    if (result.length())
-      result.Append(" ");
-    result.Append("legacy-layout-root");
-  }
   if (fragment.IsBlockFlow()) {
     if (result.length())
       result.Append(" ");
