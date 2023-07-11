@@ -2042,11 +2042,10 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckSuccess) {
 
   const base::Value::Dict& params = entries[0].params;
 
-  EXPECT_THAT(params.FindString("client_address_space"),
-              Pointee(Eq("loopback")));
+  EXPECT_THAT(params.FindString("client_address_space"), Pointee(Eq("local")));
 
   EXPECT_THAT(params.FindString("resource_address_space"),
-              Pointee(Eq("loopback")));
+              Pointee(Eq("local")));
 
   EXPECT_THAT(params.FindString("result"),
               Pointee(Eq("allowed-no-less-public")));
@@ -2075,7 +2074,7 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckFailure) {
   EXPECT_THAT(params.FindString("client_address_space"), Pointee(Eq("public")));
 
   EXPECT_THAT(params.FindString("resource_address_space"),
-              Pointee(Eq("loopback")));
+              Pointee(Eq("local")));
 
   EXPECT_THAT(params.FindString("result"),
               Pointee(Eq("blocked-by-policy-preflight-block")));
@@ -2106,7 +2105,7 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckSameOrigin) {
   EXPECT_THAT(params.FindString("client_address_space"), Pointee(Eq("public")));
 
   EXPECT_THAT(params.FindString("resource_address_space"),
-              Pointee(Eq("loopback")));
+              Pointee(Eq("local")));
 
   EXPECT_THAT(params.FindString("result"),
               Pointee(Eq("allowed-potentially-trustworthy-same-origin")));

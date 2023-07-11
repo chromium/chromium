@@ -270,9 +270,9 @@ void WebTestBrowserMainRunner::Initialize() {
   // These must be kept in sync with
   // //third_party/blink/web_tests/external/wpt/config.json.
   command_line.AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
-                                 "127.0.0.1:8082=local,"
+                                 "127.0.0.1:8082=private,"
                                  "127.0.0.1:8093=public,"
-                                 "127.0.0.1:8446=local,"
+                                 "127.0.0.1:8446=private,"
                                  "127.0.0.1:8447=public");
 
   // We want to know determanistically from command line flags if the Gpu

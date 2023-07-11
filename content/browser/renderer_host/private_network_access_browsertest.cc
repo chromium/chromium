@@ -38,7 +38,6 @@
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
@@ -392,12 +391,17 @@ class FakeAddressSpaceServer {
  private:
   static base::StringPiece IPAddressSpaceToSwitchValue(
       network::mojom::IPAddressSpace space) {
-    if (space == network::mojom::IPAddressSpace::kUnknown) {
-      ADD_FAILURE() << "Unhandled address space " << space;
-      return "";
+    switch (space) {
+      case network::mojom::IPAddressSpace::kLoopback:
+        return "local";
+      case network::mojom::IPAddressSpace::kLocal:
+        return "private";
+      case network::mojom::IPAddressSpace::kPublic:
+        return "public";
+      default:
+        ADD_FAILURE() << "Unhandled address space " << space;
+        return "";
     }
-
-    return network::IPAddressSpaceToStringPiece(space);
   }
 
   ConnectionCounter connection_counter_;

@@ -73,11 +73,11 @@ absl::optional<IPAddressSpace> ParseIPAddressSpace(base::StringPiece str) {
     return IPAddressSpace::kPublic;
   }
 
-  if (str == "local") {
+  if (str == "private") {
     return IPAddressSpace::kLocal;
   }
 
-  if (str == "loopback") {
+  if (str == "local") {
     return IPAddressSpace::kLoopback;
   }
 
@@ -283,9 +283,9 @@ base::StringPiece IPAddressSpaceToStringPiece(IPAddressSpace space) {
     case IPAddressSpace::kPublic:
       return "public";
     case IPAddressSpace::kLocal:
-      return "local";
+      return "private";
     case IPAddressSpace::kLoopback:
-      return "loopback";
+      return "local";
   }
 }
 
