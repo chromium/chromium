@@ -50,8 +50,8 @@ class PipeReader {
   explicit PipeReader(base::WeakPtr<PipeConnectionWin> pipe_connection)
       : pipe_connection_(std::move(pipe_connection)),
         owning_sequence_(base::SequencedTaskRunner::GetCurrentDefault()),
-        read_buffer_(new net::GrowableIOBuffer()),
-        thread_(new base::Thread("PipeConnectionWinReadThread")) {
+        read_buffer_(base::MakeRefCounted<net::GrowableIOBuffer>()),
+        thread_(std::make_unique<base::Thread>("PipeConnectionWinReadThread")) {
     DETACH_FROM_THREAD(io_thread_checker_);
     read_buffer_->SetCapacity(kMinReadBufferCapacity);
   }

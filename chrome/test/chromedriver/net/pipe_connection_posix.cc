@@ -9,6 +9,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
@@ -47,8 +48,9 @@ class PipeReader {
   explicit PipeReader(base::WeakPtr<PipeConnectionPosix> pipe_connection)
       : pipe_connection_(std::move(pipe_connection)),
         owning_sequence_(base::SequencedTaskRunner::GetCurrentDefault()),
-        read_buffer_(new net::GrowableIOBuffer()),
-        thread_(new base::Thread("PipeConnectionPosixReadThread")) {
+        read_buffer_(base::MakeRefCounted<net::GrowableIOBuffer>()),
+        thread_(
+            std::make_unique<base::Thread>("PipeConnectionPosixReadThread")) {
     DETACH_FROM_THREAD(io_thread_checker_);
     read_buffer_->SetCapacity(kMinReadBufferCapacity);
   }
