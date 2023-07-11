@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/synced_sessions/distant_tab.h"
 #import "ios/chrome/browser/tabs/tab_pickup/features.h"
 #import "ios/chrome/browser/tabs/tab_pickup/tab_pickup_infobar_delegate.h"
+#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -31,8 +32,6 @@
 #endif
 
 namespace {
-
-const CGFloat kFaviconPointSize = 24.0f;
 
 // Creates a distant session.
 synced_sessions::DistantSession& CreateDistantSession() {
@@ -101,11 +100,11 @@ TEST_F(TabPickupBannerOverlayMediatorTest, SetUpConsumer) {
   NSString* buttonText =
       l10n_util::GetNSString(IDS_IOS_TAB_PICKUP_BANNER_BUTTON);
   UIImage* defaultFavicon =
-      DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kFaviconPointSize);
+      CustomSymbolWithPointSize(kRecentTabsSymbol, kInfobarBannerIconSize);
 
   EXPECT_NSEQ(title, consumer_.titleText);
   EXPECT_NSEQ(subtitle, consumer_.subtitleText);
   EXPECT_NSEQ(subtitle, consumer_.subtitleText);
   EXPECT_NSEQ(buttonText, consumer_.buttonText);
-  EXPECT_NSEQ(defaultFavicon, consumer_.faviconImage);
+  EXPECT_NSEQ(defaultFavicon, consumer_.iconImage);
 }

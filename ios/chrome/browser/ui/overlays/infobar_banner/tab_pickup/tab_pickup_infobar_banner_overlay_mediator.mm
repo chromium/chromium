@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/tabs/tab_pickup/tab_pickup_infobar_delegate.h"
+#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
@@ -21,12 +22,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-const CGFloat kFaviconPointSize = 24.0f;
-
-}  // anonymous namespace.
 
 @interface TabPickupBannerOverlayMediator ()
 
@@ -83,9 +78,11 @@ const CGFloat kFaviconPointSize = 24.0f;
                                                             ->GetSyncedTime()]];
 
   UIImage* faviconImage = delegate->GetFaviconImage();
-  if (!faviconImage) {
-    faviconImage =
-        DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kFaviconPointSize);
+  if (faviconImage) {
+    [self.consumer setFaviconImage:faviconImage];
+  } else {
+    [self.consumer setIconImage:CustomSymbolWithPointSize(
+                                    kRecentTabsSymbol, kInfobarBannerIconSize)];
   }
 
   [self.consumer setTitleText:title];

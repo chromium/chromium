@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -50,17 +49,13 @@ const CGFloat kContainerStackSpacing = 10.0;
 const CGFloat kContainerStackVerticalPadding = 18.0;
 const CGFloat kContainerStackHorizontalPadding = 15.0;
 
-// Favicon constants.
-const CGFloat kFaviconSize = 24.0;
-const CGFloat kFaviconCornerRadius = 5.0;
-const CGFloat kFaviconContainerSize = 56.0;
-const CGFloat kFaviconContainerRadius = 12.0;
-const CGFloat kFaviconBackgroundAlphaComponent = 0.15;
-
 // Icon constants.
-const CGFloat kIconWidth = 28.0;
-const CGFloat kIconHeight = 28.0;
 const CGFloat kIconCornerRadius = 5.0;
+
+// Favicon constants.
+const CGFloat kFaviconShadowRadius = 3.0;
+const CGFloat kFaviconShadowOpacity = 0.2;
+const CGFloat kFaviconShadowYOffset = 1;
 
 // Gesture constants.
 const CGFloat kChangeInPositionForDismissal = -15.0;
@@ -421,40 +416,26 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   DCHECK(!self.iconImage);
 
   UIView* faviconContainerView = [[UIView alloc] init];
-  faviconContainerView.layer.masksToBounds = YES;
-  faviconContainerView.layer.cornerRadius = kFaviconContainerRadius;
-
-  GradientView* gradientView = [[GradientView alloc]
-      initWithStartColor:UIColor.clearColor
-                endColor:[UIColor.blackColor
-                             colorWithAlphaComponent:
-                                 kFaviconBackgroundAlphaComponent]
-              startPoint:CGPointMake(0.0f, 0.0f)
-                endPoint:CGPointMake(0.0f, 1.0f)];
-  gradientView.clipsToBounds = YES;
-  gradientView.translatesAutoresizingMaskIntoConstraints = NO;
-  [faviconContainerView addSubview:gradientView];
+  faviconContainerView.layer.shadowColor = [UIColor blackColor].CGColor;
+  faviconContainerView.layer.shadowOffset =
+      CGSizeMake(0, kFaviconShadowYOffset);
+  faviconContainerView.layer.shadowRadius = kFaviconShadowRadius;
+  faviconContainerView.layer.shadowOpacity = kFaviconShadowOpacity;
 
   UIImageView* faviconImageView =
       [[UIImageView alloc] initWithImage:self.faviconImage];
-  faviconImageView.contentMode = UIViewContentModeScaleToFill;
   faviconImageView.clipsToBounds = YES;
   faviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  faviconImageView.layer.cornerRadius = kFaviconCornerRadius;
+  faviconImageView.layer.cornerRadius = kIconCornerRadius;
   [faviconContainerView addSubview:faviconImageView];
 
   [NSLayoutConstraint activateConstraints:@[
     [faviconContainerView.widthAnchor
-        constraintEqualToConstant:kFaviconContainerSize],
+        constraintEqualToConstant:kInfobarBannerIconSize],
     [faviconContainerView.heightAnchor
-        constraintEqualToConstant:kFaviconContainerSize],
-
-    [faviconImageView.widthAnchor constraintEqualToConstant:kFaviconSize],
-    [faviconImageView.heightAnchor constraintEqualToConstant:kFaviconSize],
-
+        constraintEqualToConstant:kInfobarBannerIconSize],
   ]];
-  AddSameConstraints(faviconContainerView, gradientView);
-  AddSameCenterConstraints(faviconContainerView, faviconImageView);
+  AddSameConstraints(faviconContainerView, faviconImageView);
 
   return faviconContainerView;
 }
@@ -491,10 +472,13 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   iconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
 
   [NSLayoutConstraint activateConstraints:@[
-    [backgroundIconView.widthAnchor constraintEqualToConstant:kIconWidth],
-    [backgroundIconView.heightAnchor constraintEqualToConstant:kIconHeight],
+    [backgroundIconView.widthAnchor
+        constraintEqualToConstant:kInfobarBannerIconSize],
+    [backgroundIconView.heightAnchor
+        constraintEqualToConstant:kInfobarBannerIconSize],
 
-    [iconImageView.widthAnchor constraintEqualToConstant:kIconWidth],
+    [iconImageView.widthAnchor
+        constraintEqualToConstant:kInfobarBannerIconSize],
     [iconContainerView.widthAnchor
         constraintEqualToAnchor:backgroundIconView.widthAnchor],
   ]];

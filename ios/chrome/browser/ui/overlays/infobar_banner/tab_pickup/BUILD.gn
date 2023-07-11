@@ -19,6 +19,7 @@ source_set("tab_pickup") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/tabs/tab_pickup:infobar_delegate",
     "//ios/chrome/browser/ui/infobars/banners",
+    "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/ui/overlays:coordinators",
     "//ios/chrome/browser/ui/overlays/infobar_banner:mediators",
   ]
@@ -44,6 +45,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/synced_sessions",
     "//ios/chrome/browser/tabs/tab_pickup:features",
     "//ios/chrome/browser/tabs/tab_pickup:infobar_delegate",
+    "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/ui/infobars/banners/test",
     "//ios/web/public/test",
     "//testing/gtest",
