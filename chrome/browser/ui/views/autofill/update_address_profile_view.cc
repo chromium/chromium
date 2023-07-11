@@ -22,6 +22,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/table_layout_view.h"
 #include "ui/views/style/typography.h"
@@ -84,16 +85,27 @@ std::unique_ptr<views::View> CreateValuesView(
             gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
                                    views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
 
-    auto icon_view = std::make_unique<views::ImageView>();
-    icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-        GetVectorIconForType(diff_entry.type), icon_color, kIconSize));
-
-    value_row->AddChildView(std::move(icon_view));
     auto label_view =
         std::make_unique<views::Label>(value, views::style::CONTEXT_LABEL);
     label_view->SetMultiLine(true);
     label_view->SizeToFit(kValuesLabelWidth);
     label_view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+
+    auto icon_view = std::make_unique<views::ImageView>();
+    icon_view->SetImage(ui::ImageModel::FromVectorIcon(
+        GetVectorIconForType(diff_entry.type), icon_color, kIconSize));
+
+    // The container aligns the icon vertically in the middle of the first label
+    // line, the icon size is expected to be smaller than the label height.
+    auto icon_container =
+        views::Builder<views::BoxLayoutView>()
+            .SetPreferredSize(gfx::Size(kIconSize, label_view->GetLineHeight()))
+            .SetCrossAxisAlignment(
+                views::BoxLayout::CrossAxisAlignment::kCenter)
+            .Build();
+
+    icon_container->AddChildView(std::move(icon_view));
+    value_row->AddChildView(std::move(icon_container));
     value_row->AddChildView(std::move(label_view));
   }
   return view;
