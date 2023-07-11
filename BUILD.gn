@@ -862,9 +862,9 @@ group("all_rust") {
         "//mojo/public/rust:mojo_rust_unittests",
       ]
     }
-  }
-  if (enable_rust_gtest_interop) {
-    deps += [ "//testing/rust_gtest_interop:rust_gtest_interop_unittests" ]
+    if (enable_rust_gtest_interop) {
+      deps += [ "//testing/rust_gtest_interop:rust_gtest_interop_unittests" ]
+    }
   }
 }
 
