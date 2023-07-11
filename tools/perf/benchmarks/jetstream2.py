@@ -95,4 +95,4 @@ class JetStream2MinorMC(JetStream2):
     return 'jetstream2-minormc'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--js-flags=--minor-mc')
+    options.AppendExtraBrowserArgs('--js-flags=--minor-ms')
