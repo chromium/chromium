@@ -10,7 +10,9 @@ Version: 34
   Android SDK Sources 31
   Google Cloud Messaging for Android Library, rev 3
 Security Critical: no
+Shipped: yes
 License: Apache Version 2.0
+License File: LICENSE
 
 Description:
 The Android SDK provide API libraries and developer tools necessary to
