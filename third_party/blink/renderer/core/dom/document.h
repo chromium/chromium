@@ -141,7 +141,6 @@ class Comment;
 class ComputedAccessibleNode;
 class ComputedStyle;
 class ConsoleMessage;
-class ContextFeatures;
 class CookieJar;
 class DOMFeaturePolicy;
 class DOMImplementation;
@@ -1532,9 +1531,6 @@ class CORE_EXPORT Document : public ContainerNode,
   void AdjustRectForScrollAndAbsoluteZoom(gfx::RectF&,
                                           const LayoutObject&) const;
 
-  void SetContextFeatures(ContextFeatures&);
-  ContextFeatures& GetContextFeatures() const { return *context_features_; }
-
   ElementDataCache* GetElementDataCache() { return element_data_cache_.Get(); }
 
   void DidLoadAllScriptBlockingResources();
@@ -1983,6 +1979,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void ResetAgent(Agent& agent);
 
+  bool SupportsLegacyDOMMutations();
+
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
 
@@ -2281,7 +2279,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Member<ResourceFetcher> fetcher_;
   Member<DocumentParser> parser_;
-  Member<ContextFeatures> context_features_;
   Member<HttpRefreshScheduler> http_refresh_scheduler_;
 
   bool well_formed_;
@@ -2705,6 +2702,9 @@ class CORE_EXPORT Document : public ContainerNode,
   // This is incremented when a module script is evaluated.
   // http://crbug.com/1079044
   unsigned ignore_destructive_write_module_script_count_ = 0;
+
+  // If legacy DOM Mutation event listeners are supported by the embedder.
+  absl::optional<bool> legacy_dom_mutations_supported_;
 
   // If you want to add new data members to blink::Document, please reconsider
   // if the members really should be in blink::Document.  document.h is a very

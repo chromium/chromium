@@ -341,7 +341,6 @@ void XMLHttpRequest::InitResponseDocument() {
     return;
   }
 
-  auto* document = To<LocalDOMWindow>(GetExecutionContext())->document();
   DocumentInit init = DocumentInit::Create()
                           .WithExecutionContext(GetExecutionContext())
                           .WithAgent(*GetExecutionContext()->GetAgent())
@@ -353,7 +352,6 @@ void XMLHttpRequest::InitResponseDocument() {
     response_document_ = MakeGarbageCollected<XMLDocument>(init);
 
   // FIXME: Set Last-Modified.
-  response_document_->SetContextFeatures(document->GetContextFeatures());
   response_document_->SetMimeType(GetResponseMIMEType());
 }
 

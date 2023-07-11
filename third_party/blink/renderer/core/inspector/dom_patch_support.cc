@@ -33,7 +33,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
-#include "third_party/blink/renderer/core/dom/context_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
@@ -76,7 +75,6 @@ void DOMPatchSupport::PatchDocument(const String& markup) {
     new_document = MakeGarbageCollected<XMLDocument>(init);
 
   DCHECK(new_document);
-  new_document->SetContextFeatures(GetDocument().GetContextFeatures());
   if (!IsA<HTMLDocument>(GetDocument())) {
     DocumentParser* parser =
         MakeGarbageCollected<XMLDocumentParser>(*new_document, nullptr);

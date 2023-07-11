@@ -126,7 +126,6 @@
 #include "third_party/blink/renderer/core/dom/beforeunload_event_listener.h"
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
-#include "third_party/blink/renderer/core/dom/context_features.h"
 #include "third_party/blink/renderer/core/dom/css_toggle_inference.h"
 #include "third_party/blink/renderer/core/dom/document_data.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -704,13 +703,11 @@ UnloadEventTimingInfo::UnloadEventTimingInfo(
     : new_document_origin(std::move(new_document_origin)) {}
 
 Document* Document::Create(Document& document) {
-  Document* new_document = MakeGarbageCollected<Document>(
+  return MakeGarbageCollected<Document>(
       DocumentInit::Create()
           .WithExecutionContext(document.GetExecutionContext())
           .WithAgent(document.GetAgent())
           .WithURL(BlankURL()));
-  new_document->SetContextFeatures(document.GetContextFeatures());
-  return new_document;
 }
 
 Document* Document::CreateForTest(ExecutionContext& execution_context) {
@@ -735,7 +732,6 @@ Document::Document(const DocumentInit& initializer,
       dom_window_(initializer.GetWindow()),
       execution_context_(initializer.GetExecutionContext()),
       agent_(initializer.GetAgent()),
-      context_features_(ContextFeatures::DefaultSwitch()),
       http_refresh_scheduler_(MakeGarbageCollected<HttpRefreshScheduler>(this)),
       well_formed_(false),
       fallback_base_url_(initializer.FallbackBaseURL()),
@@ -848,7 +844,6 @@ Document::Document(const DocumentInit& initializer,
 
   if (GetFrame()) {
     DCHECK(GetFrame()->GetPage());
-    ProvideContextFeaturesToDocumentFrom(*this, *GetFrame()->GetPage());
     fetcher_ = FrameFetchContext::CreateFetcherForCommittedDocument(
         *GetFrame()->Loader().GetDocumentLoader(), *this);
     cookie_jar_ = MakeGarbageCollected<CookieJar>(this);
@@ -4960,7 +4955,6 @@ Document* Document::CloneDocumentWithoutChildren() const {
 void Document::CloneDataFromDocument(const Document& other) {
   SetCompatibilityMode(other.GetCompatibilityMode());
   SetEncodingData(other.encoding_data_);
-  SetContextFeatures(other.GetContextFeatures());
   SetMimeType(other.contentType());
 }
 
@@ -5805,10 +5799,9 @@ Event* Document::createEvent(ScriptState* script_state,
 
 void Document::AddMutationEventListenerTypeIfEnabled(
     ListenerType listener_type) {
-  // Mutation events can be disabled by the embedder via a ContextFeatures
-  // switch, or via the runtime enabled feature.
-  if (!ContextFeatures::MutationEventsEnabled(this) ||
-      !RuntimeEnabledFeatures::MutationEventsEnabled()) {
+  // Mutation events can be disabled by the embedder, or via the runtime enabled
+  // feature.
+  if (!SupportsLegacyDOMMutations()) {
     return;
   }
   AddListenerType(listener_type);
@@ -8296,10 +8289,6 @@ void Document::PerformScrollSnappingTasks() {
   snap_coordinator.ResnapAllContainersIfNeeded();
 }
 
-void Document::SetContextFeatures(ContextFeatures& features) {
-  context_features_ = &features;
-}
-
 void Document::UpdateHoverActiveState(bool is_active,
                                       bool update_active_chain,
                                       Element* inner_element) {
@@ -8897,7 +8886,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(dom_window_);
   visitor->Trace(fetcher_);
   visitor->Trace(parser_);
-  visitor->Trace(context_features_);
   visitor->Trace(http_refresh_scheduler_);
   visitor->Trace(document_timing_);
   visitor->Trace(media_query_matcher_);
@@ -9317,6 +9305,29 @@ Document::PendingJavascriptUrl::~PendingJavascriptUrl() = default;
 
 void Document::ResetAgent(Agent& agent) {
   agent_ = agent;
+}
+
+bool Document::SupportsLegacyDOMMutations() {
+  if (!RuntimeEnabledFeatures::MutationEventsEnabled()) {
+    return false;
+  }
+  if (!legacy_dom_mutations_supported_.has_value()) {
+    // We load the `LocalFrame` from the `ExecutionContext`'s so that documents
+    // that do not have a frame are given the same setting consistently across
+    // the `ExecutionContext`.
+    auto* execution_dom_window =
+        DynamicTo<LocalDOMWindow>(GetExecutionContext());
+    LocalFrame* frame =
+        execution_dom_window ? execution_dom_window->GetFrame() : nullptr;
+    if (frame && frame->GetContentSettingsClient()) {
+      legacy_dom_mutations_supported_ =
+          frame->GetContentSettingsClient()->AllowMutationEvents(
+              /*default_value=*/true);
+    } else {
+      legacy_dom_mutations_supported_ = true;
+    }
+  }
+  return legacy_dom_mutations_supported_.value();
 }
 
 Resource* Document::GetPendingLinkPreloadForTesting(const KURL& url) {

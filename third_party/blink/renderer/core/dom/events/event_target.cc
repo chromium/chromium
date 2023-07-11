@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_eventlisteneroptions.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/abort_signal_registry.h"
-#include "third_party/blink/renderer/core/dom/context_features.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
@@ -546,7 +545,7 @@ void EventTarget::AddedEventListener(
                                          listener_type)) {
     if (ExecutionContext* context = GetExecutionContext()) {
       if (RuntimeEnabledFeatures::MutationEventsEnabled() &&
-          (!document || ContextFeatures::MutationEventsEnabled(document))) {
+          (!document || document->SupportsLegacyDOMMutations())) {
         String message_text = String::Format(
             "Listener added for a synchronous '%s' DOM Mutation Event. "
             "This event type is deprecated "
