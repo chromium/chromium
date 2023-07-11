@@ -2060,9 +2060,9 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter',
         ],
         'swarming': {
-          # TODO(crbug.com/1462745): Temporarily increase the shard by 1 for the surging number of tests.
+          # TODO(crbug.com/1462745): Temporarily increase the shard by 3 for the surging number of tests.
           # Recover to default number of shards(20) after the bug is fixed.
-          'shards': 21,
+          'shards': 23,
         },
       },
       'android-pie-x86-rel': {
