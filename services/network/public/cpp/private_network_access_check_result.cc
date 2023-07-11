@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/local_network_access_check_result.h"
+#include "services/network/public/cpp/private_network_access_check_result.h"
 
 #include <ostream>
 
@@ -13,9 +13,9 @@ namespace network {
 
 using mojom::CorsError;
 
-using Result = LocalNetworkAccessCheckResult;
+using Result = PrivateNetworkAccessCheckResult;
 
-base::StringPiece LocalNetworkAccessCheckResultToStringPiece(Result result) {
+base::StringPiece PrivateNetworkAccessCheckResultToStringPiece(Result result) {
   switch (result) {
     case Result::kAllowedMissingClientSecurityState:
       return "allowed-missing-client-security-state";
@@ -30,7 +30,7 @@ base::StringPiece LocalNetworkAccessCheckResultToStringPiece(Result result) {
     case Result::kBlockedByLoadOption:
       return "blocked-by-load-option";
     case Result::kBlockedByPolicyBlock:
-      return "insecure-local-network";
+      return "insecure-private-network";
     case Result::kBlockedByTargetIpAddressSpace:
       return "blocked-by-target-ip-address-space";
     case Result::kBlockedByPolicyPreflightWarn:
@@ -47,11 +47,11 @@ base::StringPiece LocalNetworkAccessCheckResultToStringPiece(Result result) {
 }
 
 std::ostream& operator<<(std::ostream& out,
-                         LocalNetworkAccessCheckResult result) {
-  return out << LocalNetworkAccessCheckResultToStringPiece(result);
+                         PrivateNetworkAccessCheckResult result) {
+  return out << PrivateNetworkAccessCheckResultToStringPiece(result);
 }
 
-absl::optional<CorsError> LocalNetworkAccessCheckResultToCorsError(
+absl::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
     Result result) {
   switch (result) {
     case Result::kAllowedMissingClientSecurityState:

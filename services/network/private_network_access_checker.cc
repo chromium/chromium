@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/local_network_access_checker.h"
+#include "services/network/private_network_access_checker.h"
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,7 +20,7 @@
 namespace network {
 namespace {
 
-using Result = LocalNetworkAccessCheckResult;
+using Result = PrivateNetworkAccessCheckResult;
 using Policy = mojom::LocalNetworkRequestPolicy;
 
 mojom::ClientSecurityStatePtr GetRequestClientSecurityState(
@@ -53,7 +53,7 @@ const mojom::ClientSecurityState* ChooseClientSecurityState(
   return request_client_security_state;
 }
 
-absl::optional<net::IPAddress> ParseLocalIpFromUrl(const GURL& url) {
+absl::optional<net::IPAddress> ParsePrivateIpFromUrl(const GURL& url) {
   net::IPAddress address;
   if (!address.AssignFromIPLiteral(url.HostNoBracketsPiece())) {
     return absl::nullopt;
@@ -68,7 +68,7 @@ absl::optional<net::IPAddress> ParseLocalIpFromUrl(const GURL& url) {
 
 }  // namespace
 
-LocalNetworkAccessChecker::LocalNetworkAccessChecker(
+PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
     const ResourceRequest& request,
     const mojom::ClientSecurityState* factory_client_security_state,
     int32_t url_load_options)
@@ -93,24 +93,24 @@ LocalNetworkAccessChecker::LocalNetworkAccessChecker(
   }
 }
 
-LocalNetworkAccessChecker::~LocalNetworkAccessChecker() = default;
+PrivateNetworkAccessChecker::~PrivateNetworkAccessChecker() = default;
 
-Result LocalNetworkAccessChecker::Check(
+PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
     const net::TransportInfo& transport_info) {
-  // If the request URL host was a local IP, record whether we ended up
+  // If the request URL host was a private IP, record whether we ended up
   // connecting to that IP address, unless connecting through a proxy.
   // See https://crbug.com/1381471#c2.
-  if (request_url_local_ip_.has_value() &&
+  if (request_url_private_ip_.has_value() &&
       transport_info.type != net::TransportType::kProxied) {
     base::UmaHistogramBoolean(
         "Security.PrivateNetworkAccess.PrivateIpResolveMatch",
-        *request_url_local_ip_ == transport_info.endpoint.address());
+        *request_url_private_ip_ == transport_info.endpoint.address());
   }
 
   mojom::IPAddressSpace resource_address_space =
       TransportInfoToIPAddressSpace(transport_info);
 
-  // If we are connecting to a local IP endpoint over HTTP without a target IP
+  // If we are connecting to a private IP endpoint over HTTP without a target IP
   // address space, record whether we could have successfully inferred the
   // target IP address space from the request URL.
   if (resource_address_space == mojom::IPAddressSpace::kLocal &&
@@ -118,7 +118,7 @@ Result LocalNetworkAccessChecker::Check(
       target_address_space_ == mojom::IPAddressSpace::kUnknown) {
     base::UmaHistogramBoolean(
         "Security.PrivateNetworkAccess.PrivateIpInferrable",
-        request_url_local_ip_.has_value());
+        request_url_private_ip_.has_value());
   }
 
   auto result = CheckInternal(resource_address_space);
@@ -130,25 +130,25 @@ Result LocalNetworkAccessChecker::Check(
   return result;
 }
 
-void LocalNetworkAccessChecker::ResetForRedirect(const GURL& new_url) {
+void PrivateNetworkAccessChecker::ResetForRedirect(const GURL& new_url) {
   SetRequestUrl(new_url);
   ResetForRetry();
 }
 
-void LocalNetworkAccessChecker::ResetForRetry() {
+void PrivateNetworkAccessChecker::ResetForRetry() {
   // The target IP address space is no longer relevant, it only applied to the
   // URL before the first redirect/retry. Consider the following scenario:
   //
   // 1. `https://public.example` fetches `http://localhost/foo`
   // 2. `OnConnected()` notices that the remote endpoint's IP address space is
-  //    `kLoopback`, fails the request with
+  //    `kLocal`, fails the request with
   //    `CorsError::UnexpectedPrivateNetworkAccess`.
   // 3. A preflight request is sent with `target_ip_address_space_` set to
-  //    `kLoopback`, succeeds.
+  //    `kLocal`, succeeds.
   // 4. `http://localhost/foo` redirects the GET request to
   //    `https://public2.example/bar`.
   //
-  // The target IP address space `kLoopback` should not be applied to the new
+  // The target IP address space `kLocal` should not be applied to the new
   // connection obtained to `https://public2.example`.
   //
   // See also: https://crbug.com/1293891
@@ -158,7 +158,7 @@ void LocalNetworkAccessChecker::ResetForRetry() {
 }
 
 mojom::ClientSecurityStatePtr
-LocalNetworkAccessChecker::CloneClientSecurityState() const {
+PrivateNetworkAccessChecker::CloneClientSecurityState() const {
   if (!client_security_state_) {
     return nullptr;
   }
@@ -166,7 +166,7 @@ LocalNetworkAccessChecker::CloneClientSecurityState() const {
   return client_security_state_->Clone();
 }
 
-mojom::IPAddressSpace LocalNetworkAccessChecker::ClientAddressSpace() const {
+mojom::IPAddressSpace PrivateNetworkAccessChecker::ClientAddressSpace() const {
   if (!client_security_state_) {
     return mojom::IPAddressSpace::kUnknown;
   }
@@ -174,13 +174,13 @@ mojom::IPAddressSpace LocalNetworkAccessChecker::ClientAddressSpace() const {
   return client_security_state_->ip_address_space;
 }
 
-bool LocalNetworkAccessChecker::IsPolicyPreflightWarn() const {
+bool PrivateNetworkAccessChecker::IsPolicyPreflightWarn() const {
   return client_security_state_ &&
          client_security_state_->local_network_request_policy ==
              mojom::LocalNetworkRequestPolicy::kPreflightWarn;
 }
 
-Result LocalNetworkAccessChecker::CheckInternal(
+Result PrivateNetworkAccessChecker::CheckInternal(
     mojom::IPAddressSpace resource_address_space) {
   if (should_block_local_request_ &&
       IsLessPublicAddressSpace(resource_address_space,
@@ -267,9 +267,9 @@ Result LocalNetworkAccessChecker::CheckInternal(
   }
 }
 
-void LocalNetworkAccessChecker::SetRequestUrl(const GURL& url) {
+void PrivateNetworkAccessChecker::SetRequestUrl(const GURL& url) {
   is_request_url_scheme_http_ = url.scheme_piece() == url::kHttpScheme;
-  request_url_local_ip_ = ParseLocalIpFromUrl(url);
+  request_url_private_ip_ = ParsePrivateIpFromUrl(url);
 
   is_potentially_trustworthy_same_origin_ =
       IsUrlPotentiallyTrustworthy(url) && request_initiator_.has_value() &&

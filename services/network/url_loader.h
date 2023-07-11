@@ -33,13 +33,13 @@
 #include "net/url_request/url_request.h"
 #include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/keepalive_statistics_recorder.h"
-#include "services/network/local_network_access_checker.h"
 #include "services/network/network_service.h"
 #include "services/network/network_service_memory_cache.h"
+#include "services/network/private_network_access_checker.h"
 #include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
-#include "services/network/public/cpp/local_network_access_check_result.h"
+#include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
@@ -497,10 +497,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // net::URLRequest.
   bool ShouldForceIgnoreTopFramePartyForCookies() const;
 
-  // Applies Local Network Access checks to the current request.
+  // Applies Private Network Access checks to the current request.
   //
   // Helper for `OnConnected()`.
-  LocalNetworkAccessCheckResult LocalNetworkAccessCheck(
+  PrivateNetworkAccessCheckResult PrivateNetworkAccessCheck(
       const net::TransportInfo& transport_info);
 
   mojom::DevToolsObserver* GetDevToolsObserver() const;
@@ -638,7 +638,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // network::ResourceRequest::fetch_window_id for details.
   absl::optional<base::UnguessableToken> fetch_window_id_;
 
-  LocalNetworkAccessChecker local_network_access_checker_;
+  PrivateNetworkAccessChecker private_network_access_checker_;
 
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;
 

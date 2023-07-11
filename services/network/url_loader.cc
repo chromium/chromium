@@ -536,7 +536,7 @@ URLLoader::URLLoader(
       custom_proxy_pre_cache_headers_(request.custom_proxy_pre_cache_headers),
       custom_proxy_post_cache_headers_(request.custom_proxy_post_cache_headers),
       fetch_window_id_(request.fetch_window_id),
-      local_network_access_checker_(
+      private_network_access_checker_(
           request,
           factory_params_->client_security_state.get(),
           options_),
@@ -1169,9 +1169,9 @@ void URLLoader::FollowRedirect(
   // Reset the state of the PNA checker - redirects should be treated like new
   // requests by the same client.
   if (new_url.has_value()) {
-    local_network_access_checker_.ResetForRedirect(*new_url);
+    private_network_access_checker_.ResetForRedirect(*new_url);
   } else {
-    local_network_access_checker_.ResetForRedirect(*deferred_redirect_url_);
+    private_network_access_checker_.ResetForRedirect(*deferred_redirect_url_);
   }
 
   deferred_redirect_url_.reset();
@@ -1217,32 +1217,33 @@ void URLLoader::ResumeReadingBodyFromNet() {
   }
 }
 
-LocalNetworkAccessCheckResult URLLoader::LocalNetworkAccessCheck(
+PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
     const net::TransportInfo& transport_info) {
-  LocalNetworkAccessCheckResult result =
-      local_network_access_checker_.Check(transport_info);
+  PrivateNetworkAccessCheckResult result =
+      private_network_access_checker_.Check(transport_info);
 
   mojom::IPAddressSpace response_address_space =
-      *local_network_access_checker_.ResponseAddressSpace();
+      *private_network_access_checker_.ResponseAddressSpace();
 
   url_request_->net_log().AddEvent(
       net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK, [&] {
         base::Value::Dict dict;
         dict.Set("client_address_space",
                  IPAddressSpaceToStringPiece(
-                     local_network_access_checker_.ClientAddressSpace()));
+                     private_network_access_checker_.ClientAddressSpace()));
         dict.Set("resource_address_space",
                  IPAddressSpaceToStringPiece(response_address_space));
-        dict.Set("result", LocalNetworkAccessCheckResultToStringPiece(result));
+        dict.Set("result",
+                 PrivateNetworkAccessCheckResultToStringPiece(result));
         return dict;
       });
 
   bool is_warning = false;
   switch (result) {
-    case LocalNetworkAccessCheckResult::kAllowedByPolicyWarn:
+    case PrivateNetworkAccessCheckResult::kAllowedByPolicyWarn:
       is_warning = true;
       break;
-    case LocalNetworkAccessCheckResult::kBlockedByPolicyBlock:
+    case PrivateNetworkAccessCheckResult::kBlockedByPolicyBlock:
       is_warning = false;
       break;
     default:
@@ -1251,9 +1252,9 @@ LocalNetworkAccessCheckResult URLLoader::LocalNetworkAccessCheck(
   }
 
   // If `security_state` was nullptr, then `result` should not have mentioned
-  // the policy set in `security_state->local_network_request_policy`.
+  // the policy set in `security_state->private_network_request_policy`.
   const mojom::ClientSecurityState* security_state =
-      local_network_access_checker_.client_security_state();
+      private_network_access_checker_.client_security_state();
   DCHECK(security_state);
 
   if (devtools_observer_) {
@@ -1272,18 +1273,18 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
   transport_info_ = info;
 
   // Now that the request endpoint's address has been resolved, check if
-  // this request should be blocked per Local Network Access.
-  LocalNetworkAccessCheckResult result = LocalNetworkAccessCheck(info);
+  // this request should be blocked per Private Network Access.
+  PrivateNetworkAccessCheckResult result = PrivateNetworkAccessCheck(info);
   absl::optional<mojom::CorsError> cors_error =
-      LocalNetworkAccessCheckResultToCorsError(result);
+      PrivateNetworkAccessCheckResultToCorsError(result);
   if (cors_error.has_value()) {
-    if (result == LocalNetworkAccessCheckResult::kBlockedByPolicyBlock &&
+    if (result == PrivateNetworkAccessCheckResult::kBlockedByPolicyBlock &&
         (info.type == net::TransportType::kCached ||
          info.type == net::TransportType::kCachedFromProxy)) {
-      // If the cached entry was blocked by the local network access check
+      // If the cached entry was blocked by the private network access check
       // without a preflight, we'll start over and attempt to request from the
       // network, so resetting the checker.
-      local_network_access_checker_.ResetForRetry();
+      private_network_access_checker_.ResetForRetry();
       return net::
           ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY;
     }
@@ -1291,12 +1292,12 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
     // with it later, then fail the request with the same net error code as
     // other CORS errors.
     cors_error_status_ = CorsErrorStatus(
-        *cors_error, local_network_access_checker_.TargetAddressSpace(),
-        *local_network_access_checker_.ResponseAddressSpace());
-    if (result == LocalNetworkAccessCheckResult::
+        *cors_error, private_network_access_checker_.TargetAddressSpace(),
+        *private_network_access_checker_.ResponseAddressSpace());
+    if (result == PrivateNetworkAccessCheckResult::
                       kBlockedByInconsistentIpAddressSpace ||
         result ==
-            LocalNetworkAccessCheckResult::kBlockedByTargetIpAddressSpace) {
+            PrivateNetworkAccessCheckResult::kBlockedByTargetIpAddressSpace) {
       return net::ERR_INCONSISTENT_IP_ADDRESS_SPACE;
     }
     return net::ERR_FAILED;
@@ -1394,10 +1395,10 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
   response->request_include_credentials = url_request_->allow_credentials();
 
   response->response_address_space =
-      local_network_access_checker_.ResponseAddressSpace().value_or(
+      private_network_access_checker_.ResponseAddressSpace().value_or(
           mojom::IPAddressSpace::kUnknown);
   response->client_address_space =
-      local_network_access_checker_.ClientAddressSpace();
+      private_network_access_checker_.ClientAddressSpace();
 
   return response;
 }
@@ -2321,7 +2322,7 @@ void URLLoader::DispatchOnRawRequest(
   devtools_observer_->OnRawRequest(
       devtools_request_id().value(), url_request_->maybe_sent_cookies(),
       std::move(headers), load_timing_info.request_start,
-      local_network_access_checker_.CloneClientSecurityState(),
+      private_network_access_checker_.CloneClientSecurityState(),
       std::move(other_partition_info));
 }
 
@@ -2390,7 +2391,7 @@ bool URLLoader::DispatchOnRawResponse() {
   devtools_observer_->OnRawResponse(
       devtools_request_id().value(), url_request_->maybe_stored_cookies(),
       std::move(header_array), raw_response_headers,
-      local_network_access_checker_.ResponseAddressSpace().value_or(
+      private_network_access_checker_.ResponseAddressSpace().value_or(
           mojom::IPAddressSpace::kUnknown),
       response_headers->response_code(), url_request_->cookie_partition_key());
 
