@@ -11,7 +11,8 @@
 'use strict';
 
 private_aggregation_promise_test(async test => {
-  await runReportTest(test, {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
     generateBid: `privateAggregation.enableDebugMode();
         privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
   });
@@ -34,7 +35,8 @@ private_aggregation_promise_test(async test => {
 }, 'auction that calls Private Aggregation in generateBid');
 
 private_aggregation_promise_test(async test => {
-  await runReportTest(test, {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
     scoreAd: `privateAggregation.enableDebugMode();
         privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
   });
@@ -57,7 +59,8 @@ private_aggregation_promise_test(async test => {
 }, 'auction that calls Private Aggregation in scoreAd');
 
 private_aggregation_promise_test(async test => {
-  await runReportTest(test, {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
     reportWin: `privateAggregation.enableDebugMode();
         privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
   });
@@ -80,7 +83,8 @@ private_aggregation_promise_test(async test => {
 }, 'auction that calls Private Aggregation in reportWin');
 
 private_aggregation_promise_test(async test => {
-  await runReportTest(test, {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
     reportResult: `privateAggregation.enableDebugMode();
         privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
   });
@@ -103,7 +107,8 @@ private_aggregation_promise_test(async test => {
 }, 'auction that calls Private Aggregation in reportResult');
 
 private_aggregation_promise_test(async test => {
-  await runReportTest(test, {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
     reportResult: `privateAggregation.enableDebugMode();
         privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });
         privateAggregation.contributeToHistogram({ bucket: 3n, value: 4 });`
@@ -127,7 +132,8 @@ private_aggregation_promise_test(async test => {
 }, 'auction that calls Private Aggregation with multiple contributions');
 
 private_aggregation_promise_test(async test => {
-  await runReportTest(test, {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
     generateBid: `privateAggregation.enableDebugMode();
         privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`,
     reportWin: `privateAggregation.enableDebugMode();
@@ -152,7 +158,8 @@ private_aggregation_promise_test(async test => {
 }, 'auction that calls Private Aggregation batches across different functions');
 
 private_aggregation_promise_test(async test => {
-  await runReportTest(test, {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
     reportResult: `privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
   });
 
@@ -173,7 +180,8 @@ private_aggregation_promise_test(async test => {
 }, 'auction that calls Private Aggregation without debug mode');
 
 private_aggregation_promise_test(async test => {
-  await runReportTest(test, {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
     reportResult: `privateAggregation.enableDebugMode({ debugKey: 1234n });
         privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
   });
@@ -195,7 +203,8 @@ private_aggregation_promise_test(async test => {
 }, 'auction that calls Private Aggregation using a debug key');
 
 private_aggregation_promise_test(async test => {
-  await runReportTest(test, {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
     generateBid: `privateAggregation.enableDebugMode({ debugKey: 1234n });
         privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`,
     reportWin: `privateAggregation.enableDebugMode({ debugKey: 2345n });
@@ -215,7 +224,8 @@ private_aggregation_promise_test(async test => {
 }, 'auction that calls Private Aggregation does not batch different functions if debug keys differ');
 
 private_aggregation_promise_test(async test => {
-  await runReportTest(test, {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
     generateBid: `privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`,
     reportWin: `privateAggregation.enableDebugMode();
         privateAggregation.contributeToHistogram({ bucket: 3n, value: 4 });`
@@ -233,7 +243,8 @@ private_aggregation_promise_test(async test => {
 }, 'auction that calls Private Aggregation does not batch different functions if debug modes differ');
 
 private_aggregation_promise_test(async test => {
-  await runReportTest(test, {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
     generateBid: `privateAggregation.enableDebugMode();
         privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`,
     reportWin: `privateAggregation.enableDebugMode({ debugKey: 1234n });
@@ -253,12 +264,13 @@ private_aggregation_promise_test(async test => {
 }, 'auction that calls Private Aggregation does not batch different functions if debug key presence differs');
 
 private_aggregation_promise_test(async test => {
-  await runReportTest(test, {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
     reportWin: `privateAggregation.enableDebugMode();
         privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
   });
 
-  await runReportTest(test, {
+  await runReportTest(test, uuid, {
     reportWin: `privateAggregation.enableDebugMode();
         privateAggregation.contributeToHistogram({ bucket: 3n, value: 4 });`
   });
@@ -276,7 +288,8 @@ private_aggregation_promise_test(async test => {
 }, 'auctions that call Private Aggregation do not batch across different auctions');
 
 private_aggregation_promise_test(async test => {
-  await runReportTest(test, {
+  const uuid = generateUuid();
+  await runReportTest(test, uuid, {
     reportWin: `privateAggregation.enableDebugMode();
         privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });
         aNonExistentVariable;`
