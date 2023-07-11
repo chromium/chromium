@@ -3686,7 +3686,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'linux-jammy',
-          'isolate_profile_data'
         ],
         'test_suites': {
           'isolated_scripts': 'wpt_web_tests_content_shell_multiple_flags',

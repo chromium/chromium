@@ -42913,7 +42913,6 @@
     "isolated_scripts": [
       {
         "isolate_name": "content_shell_wpt",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--verbose"
@@ -42943,7 +42942,6 @@
           "highdpi"
         ],
         "isolate_name": "content_shell_wpt",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--verbose"
@@ -42974,7 +42972,6 @@
           "disable-site-isolation-trials"
         ],
         "isolate_name": "content_shell_wpt",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--verbose"

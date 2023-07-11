@@ -326,9 +326,7 @@ try_.builder(
     mirrors = [
         "ci/linux-wpt-content-shell-fyi-rel",
     ],
-    coverage_test_types = ["unit", "overall"],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-    use_clang_coverage = True,
 )
 
 try_.builder(
