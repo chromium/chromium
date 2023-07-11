@@ -432,12 +432,19 @@ class SharedDictionaryFeatureStateBrowserTest
  public:
   SharedDictionaryFeatureStateBrowserTest() {
     std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     switch (GetFeatureState()) {
       case FeatureState::kDisabled:
+        disabled_features.emplace_back(
+            network::features::kCompressionDictionaryTransportBackend);
+        disabled_features.emplace_back(
+            network::features::kCompressionDictionaryTransport);
         break;
       case FeatureState::kBackendOnly:
         enabled_features.emplace_back(
             network::features::kCompressionDictionaryTransportBackend);
+        disabled_features.emplace_back(
+            network::features::kCompressionDictionaryTransport);
         break;
       case FeatureState::kFullyEnabled:
         enabled_features.emplace_back(
@@ -446,8 +453,7 @@ class SharedDictionaryFeatureStateBrowserTest
             network::features::kCompressionDictionaryTransport);
         break;
     }
-    scoped_feature_list_.InitWithFeatures(enabled_features,
-                                          /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   SharedDictionaryFeatureStateBrowserTest(
       const SharedDictionaryFeatureStateBrowserTest&) = delete;
