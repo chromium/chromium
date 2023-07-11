@@ -75,6 +75,10 @@ const PerformanceScriptVector& PerformanceLongAnimationFrameTiming::scripts()
     return scripts_;
   }
 
+  if (!source()) {
+    return scripts_;
+  }
+
   CHECK(source()->ToLocalDOMWindow());
   const SecurityOrigin* security_origin =
       source()->ToLocalDOMWindow()->GetSecurityOrigin();
