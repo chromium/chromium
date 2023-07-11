@@ -1958,6 +1958,9 @@ deps = {
     'dep_type': 'cipd',
   },
 
+  'src/third_party/zstd/src':
+    Var('chromium_git') + '/external/github.com/facebook/zstd.git' + '@' + '25822342be59d831bad65426ae51f5cc22157b09',
+
   'src/tools/skia_goldctl/linux': {
       'packages': [
         {

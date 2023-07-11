@@ -144,6 +144,9 @@ class NET_EXPORT URLRequestContextBuilder {
   // Sets whether Brotli compression is enabled.  Disabled by default;
   void set_enable_brotli(bool enable_brotli) { enable_brotli_ = enable_brotli; }
 
+  // Sets whether Zstd compression is enabled. Disabled by default.
+  void set_enable_zstd(bool enable_zstd) { enable_zstd_ = enable_zstd; }
+
   // Sets the |check_cleartext_permitted| flag, which controls whether to check
   // system policy before allowing a cleartext http or ws request.
   void set_check_cleartext_permitted(bool value) {
@@ -401,6 +404,7 @@ class NET_EXPORT URLRequestContextBuilder {
   }
 
   bool enable_brotli_ = false;
+  bool enable_zstd_ = false;
   bool check_cleartext_permitted_ = false;
   bool require_network_anonymization_key_ = false;
   raw_ptr<NetworkQualityEstimator> network_quality_estimator_ = nullptr;

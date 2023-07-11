@@ -620,7 +620,8 @@ void URLRequestHttpJob::StartTransactionInternal() {
 void URLRequestHttpJob::AddExtraHeaders() {
   request_info_.extra_headers.SetAcceptEncodingIfMissing(
       request()->url(), request()->accepted_stream_types(),
-      request()->context()->enable_brotli());
+      request()->context()->enable_brotli(),
+      request()->context()->enable_zstd());
 
   if (http_user_agent_settings_) {
     // Only add default Accept-Language if the request didn't have it

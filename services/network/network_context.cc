@@ -2405,6 +2405,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   builder.set_http_user_agent_settings(std::move(user_agent_settings));
 
   builder.set_enable_brotli(params_->enable_brotli);
+  builder.set_enable_zstd(params_->enable_zstd);
 
   if (params_->proxy_resolver_factory) {
     builder.SetMojoProxyResolverFactory(

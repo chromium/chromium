@@ -1,0 +1,183 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "net/filter/zstd_source_stream.h"
+
+#include <utility>
+
+#include "base/files/file_util.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
+#include "base/run_loop.h"
+#include "net/base/io_buffer.h"
+#include "net/base/test_completion_callback.h"
+#include "net/filter/mock_source_stream.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "testing/platform_test.h"
+
+namespace net {
+
+namespace {
+
+const size_t kDefaultBufferSize = 4096;
+
+}  // namespace
+
+class ZstdSourceStreamTest : public PlatformTest {
+ protected:
+  void SetUp() override {
+    PlatformTest::SetUp();
+
+    // Get the path of data directory.
+    base::FilePath data_dir;
+    base::PathService::Get(base::DIR_SOURCE_ROOT, &data_dir);
+    data_dir = data_dir.AppendASCII("net");
+    data_dir = data_dir.AppendASCII("data");
+    data_dir = data_dir.AppendASCII("filter_unittests");
+
+    // Read data from the original file into buffer.
+    base::FilePath file_path;
+    file_path = data_dir.AppendASCII("google.txt");
+    ASSERT_TRUE(base::ReadFileToString(file_path, &source_data_));
+    ASSERT_GE(kDefaultBufferSize, source_data_.size());
+
+    // Read data from the encoded file into buffer.
+    base::FilePath encoded_file_path;
+    encoded_file_path = data_dir.AppendASCII("google.zst");
+    ASSERT_TRUE(base::ReadFileToString(encoded_file_path, &encoded_buffer_));
+    ASSERT_GE(kDefaultBufferSize, encoded_buffer_.size());
+
+    auto source = std::make_unique<MockSourceStream>();
+    source_ = source.get();
+    zstd_stream_ = CreateZstdSourceStream(std::move(source));
+
+    out_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  }
+
+  int ReadStream(net::CompletionOnceCallback callback) {
+    return zstd_stream_->Read(out_buffer(), out_buffer_size(),
+                              std::move(callback));
+  }
+
+  std::string ReadStreamUntilDone() {
+    std::string actual_output;
+    while (true) {
+      TestCompletionCallback callback;
+      int bytes_read = ReadStream(callback.callback());
+      if (bytes_read <= OK) {
+        break;
+      }
+      actual_output.append(out_data(), bytes_read);
+    }
+    return actual_output;
+  }
+
+  IOBuffer* out_buffer() { return out_buffer_.get(); }
+  char* out_data() { return out_buffer_->data(); }
+  size_t out_buffer_size() { return out_buffer_->size(); }
+
+  std::string source_data() { return source_data_; }
+  size_t source_data_len() { return source_data_.length(); }
+
+  char* encoded_buffer() { return &encoded_buffer_[0]; }
+  size_t encoded_buffer_len() { return encoded_buffer_.length(); }
+
+  MockSourceStream* source() { return source_; }
+  SourceStream* zstd_stream() { return zstd_stream_.get(); }
+
+ private:
+  std::unique_ptr<SourceStream> zstd_stream_;
+  raw_ptr<MockSourceStream> source_;
+  scoped_refptr<IOBufferWithSize> out_buffer_;
+
+  std::string source_data_;
+  std::string encoded_buffer_;
+};
+
+TEST_F(ZstdSourceStreamTest, EmptyStream) {
+  source()->AddReadResult(nullptr, 0, OK, MockSourceStream::SYNC);
+  TestCompletionCallback callback;
+  int result = ReadStream(callback.callback());
+  EXPECT_EQ(OK, result);
+  EXPECT_EQ("ZSTD", zstd_stream()->Description());
+}
+
+// Basic scenario: decoding zstd data with big enough buffer
+TEST_F(ZstdSourceStreamTest, DecodeZstdOneBlockSync) {
+  source()->AddReadResult(encoded_buffer(), encoded_buffer_len(), OK,
+                          MockSourceStream::SYNC);
+  TestCompletionCallback callback;
+  int bytes_read = ReadStream(callback.callback());
+  EXPECT_EQ(static_cast<int>(source_data_len()), bytes_read);
+  EXPECT_EQ(0, memcmp(out_data(), source_data().c_str(), source_data_len()));
+}
+
+TEST_F(ZstdSourceStreamTest, IgnoreExtraDataInOneRead) {
+  std::string response_with_extra_data(encoded_buffer(), encoded_buffer_len());
+  response_with_extra_data.append(100, 'x');
+  source()->AddReadResult(response_with_extra_data.data(),
+                          response_with_extra_data.length(), OK,
+                          MockSourceStream::SYNC);
+  // Add an EOF.
+  source()->AddReadResult(nullptr, 0, OK, MockSourceStream::SYNC);
+
+  std::string actual_output = ReadStreamUntilDone();
+
+  EXPECT_EQ(source_data_len(), actual_output.size());
+  EXPECT_EQ(source_data(), actual_output);
+}
+
+TEST_F(ZstdSourceStreamTest, IgnoreExtraDataInDifferentRead) {
+  std::string extra_data;
+  extra_data.append(100, 'x');
+  source()->AddReadResult(encoded_buffer(), encoded_buffer_len(), OK,
+                          MockSourceStream::SYNC);
+  source()->AddReadResult(extra_data.c_str(), extra_data.length(), OK,
+                          MockSourceStream::SYNC);
+  // Add an EOF.
+  source()->AddReadResult(extra_data.c_str(), 0, OK, MockSourceStream::SYNC);
+
+  std::string actual_output = ReadStreamUntilDone();
+
+  EXPECT_EQ(source_data_len(), actual_output.size());
+  EXPECT_EQ(source_data(), actual_output);
+}
+
+TEST_F(ZstdSourceStreamTest, DecodeZstdTwoBlockSync) {
+  source()->AddReadResult(encoded_buffer(), 10, OK, MockSourceStream::SYNC);
+  source()->AddReadResult(encoded_buffer() + 10, encoded_buffer_len() - 10, OK,
+                          MockSourceStream::SYNC);
+  TestCompletionCallback callback;
+  int bytes_read = ReadStream(callback.callback());
+  EXPECT_EQ(static_cast<int>(source_data_len()), bytes_read);
+  EXPECT_EQ(0, memcmp(out_data(), source_data().c_str(), source_data_len()));
+}
+
+TEST_F(ZstdSourceStreamTest, DecodeZstdOneBlockAsync) {
+  source()->AddReadResult(encoded_buffer(), encoded_buffer_len(), OK,
+                          MockSourceStream::ASYNC);
+  // Add an EOF.
+  source()->AddReadResult(nullptr, 0, OK, MockSourceStream::ASYNC);
+
+  scoped_refptr<IOBuffer> buffer =
+      base::MakeRefCounted<IOBufferWithSize>(source_data_len());
+
+  std::string actual_output;
+  int bytes_read = 0;
+  do {
+    TestCompletionCallback callback;
+    bytes_read = ReadStream(callback.callback());
+    if (bytes_read == ERR_IO_PENDING) {
+      source()->CompleteNextRead();
+      bytes_read = callback.WaitForResult();
+    }
+    EXPECT_GE(static_cast<int>(kDefaultBufferSize), bytes_read);
+    actual_output.append(out_data(), bytes_read);
+  } while (bytes_read > 0);
+  EXPECT_EQ(source_data_len(), actual_output.size());
+  EXPECT_EQ(source_data(), actual_output);
+}
+
+}  // namespace net

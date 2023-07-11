@@ -1716,6 +1716,12 @@ source_set("net_deps") {
   } else {
     public_deps += [ "//third_party/brotli:headers" ]
   }
+
+  if (!disable_zstd_filter) {
+    public_deps += [ "//third_party/zstd:decompress" ]
+  } else {
+    public_deps += [ "//third_party/zstd:headers" ]
+  }
 }
 
 # Public dependencies for the //net component and for any build targets (e.g.
@@ -3206,6 +3212,10 @@ test("net_unittests") {
     sources += [ "filter/brotli_source_stream_unittest.cc" ]
   }
 
+  if (!disable_zstd_filter) {
+    sources += [ "filter/zstd_source_stream_unittest.cc" ]
+  }
+
   if (is_android) {
     data_deps += [ "//net/tools/testserver:testserver_py" ]
     deps += [
@@ -3680,6 +3690,18 @@ if (!is_win) {
 if (!disable_brotli_filter) {
   fuzzer_test("net_brotli_source_stream_fuzzer") {
     sources = [ "filter/brotli_source_stream_fuzzer.cc" ]
+    deps = [
+      ":net_fuzzer_test_support",
+      ":test_support",
+      "//base",
+      "//net",
+    ]
+  }
+}
+
+if (!disable_zstd_filter) {
+  fuzzer_test("net_zstd_source_stream_fuzzer") {
+    sources = [ "filter/zstd_source_stream_fuzzer.cc" ]
     deps = [
       ":net_fuzzer_test_support",
       ":test_support",

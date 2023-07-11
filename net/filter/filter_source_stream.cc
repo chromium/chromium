@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -19,10 +20,11 @@ namespace net {
 
 namespace {
 
-const char kDeflate[] = "deflate";
-const char kGZip[] = "gzip";
-const char kXGZip[] = "x-gzip";
-const char kBrotli[] = "br";
+constexpr char kDeflate[] = "deflate";
+constexpr char kGZip[] = "gzip";
+constexpr char kXGZip[] = "x-gzip";
+constexpr char kBrotli[] = "br";
+constexpr char kZstd[] = "zstd";
 
 const size_t kBufferSize = 32 * 1024;
 
@@ -76,18 +78,21 @@ bool FilterSourceStream::MayHaveMoreBytes() const {
 
 FilterSourceStream::SourceType FilterSourceStream::ParseEncodingType(
     const std::string& encoding) {
-  if (encoding.empty()) {
-    return TYPE_NONE;
-  } else if (base::EqualsCaseInsensitiveASCII(encoding, kBrotli)) {
-    return TYPE_BROTLI;
-  } else if (base::EqualsCaseInsensitiveASCII(encoding, kDeflate)) {
-    return TYPE_DEFLATE;
-  } else if (base::EqualsCaseInsensitiveASCII(encoding, kGZip) ||
-             base::EqualsCaseInsensitiveASCII(encoding, kXGZip)) {
-    return TYPE_GZIP;
-  } else {
+  std::string lower_encoding = base::ToLowerASCII(encoding);
+  static constexpr auto kEncodingMap =
+      base::MakeFixedFlatMapSorted<base::StringPiece, SourceType>({
+          {"", TYPE_NONE},
+          {kBrotli, TYPE_BROTLI},
+          {kDeflate, TYPE_DEFLATE},
+          {kGZip, TYPE_GZIP},
+          {kXGZip, TYPE_GZIP},
+          {kZstd, TYPE_ZSTD},
+      });
+  auto* encoding_type = kEncodingMap.find(lower_encoding);
+  if (encoding_type == kEncodingMap.end()) {
     return TYPE_UNKNOWN;
   }
+  return encoding_type->second;
 }
 
 int FilterSourceStream::DoLoop(int result) {

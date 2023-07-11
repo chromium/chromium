@@ -219,6 +219,8 @@ class NET_EXPORT URLRequestContext final {
 
   bool enable_brotli() const { return enable_brotli_; }
 
+  bool enable_zstd() const { return enable_zstd_; }
+
   // Returns current value of the |check_cleartext_permitted| flag.
   bool check_cleartext_permitted() const { return check_cleartext_permitted_; }
 
@@ -288,6 +290,7 @@ class NET_EXPORT URLRequestContext final {
           network_error_logging_service);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
   void set_enable_brotli(bool enable_brotli) { enable_brotli_ = enable_brotli; }
+  void set_enable_zstd(bool enable_zstd) { enable_zstd_ = enable_zstd; }
   void set_check_cleartext_permitted(bool check_cleartext_permitted) {
     check_cleartext_permitted_ = check_cleartext_permitted;
   }
@@ -352,6 +355,8 @@ class NET_EXPORT URLRequestContext final {
 
   // Enables Brotli Content-Encoding support.
   bool enable_brotli_ = false;
+  // Enables Zstd Content-Encoding support.
+  bool enable_zstd_ = false;
   // Enables checking system policy before allowing a cleartext http or ws
   // request. Only used on Android.
   bool check_cleartext_permitted_ = false;

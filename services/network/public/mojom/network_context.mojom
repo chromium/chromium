@@ -324,6 +324,9 @@ struct NetworkContextParams {
   // Whether Brotli content-encoding should be enabled for HTTPS responses.
   bool enable_brotli = true;
 
+  // Whether Zstd content-encoding should be enabled for HTTPS responses.
+  bool enable_zstd = false;
+
   // QUIC user agent.
   string quic_user_agent_id;
 

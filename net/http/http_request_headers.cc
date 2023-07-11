@@ -243,7 +243,8 @@ void HttpRequestHeaders::SetAcceptEncodingIfMissing(
     const GURL& url,
     const absl::optional<base::flat_set<SourceStream::SourceType>>&
         accepted_stream_types,
-    bool enable_brotli) {
+    bool enable_brotli,
+    bool enable_zstd) {
   if (HasHeader(kAcceptEncoding))
     return;
 
@@ -267,13 +268,23 @@ void HttpRequestHeaders::SetAcceptEncodingIfMissing(
                          SourceStream::SourceType::TYPE_DEFLATE)) {
     advertised_encoding_names.push_back("deflate");
   }
+
+  const bool can_use_advanced_encodings =
+      (url.SchemeIsCryptographic() || IsLocalhost(url));
+
   // Advertise "br" encoding only if transferred data is opaque to proxy.
   if (enable_brotli &&
       SupportsStreamType(accepted_stream_types,
-                         SourceStream::SourceType::TYPE_BROTLI)) {
-    if (url.SchemeIsCryptographic() || IsLocalhost(url)) {
-      advertised_encoding_names.push_back("br");
-    }
+                         SourceStream::SourceType::TYPE_BROTLI) &&
+      can_use_advanced_encodings) {
+    advertised_encoding_names.push_back("br");
+  }
+  // Advertise "zstd" encoding only if transferred data is opaque to proxy.
+  if (enable_zstd &&
+      SupportsStreamType(accepted_stream_types,
+                         SourceStream::SourceType::TYPE_ZSTD) &&
+      can_use_advanced_encodings) {
+    advertised_encoding_names.push_back("zstd");
   }
   if (!advertised_encoding_names.empty()) {
     // Tell the server what compression formats are supported.

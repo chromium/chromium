@@ -723,6 +723,8 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 
   network_context_params->enable_brotli = true;
 
+  network_context_params->enable_zstd = false;
+
   network_context_params->user_agent = embedder_support::GetUserAgent();
 
   // Disable referrers by default. Any consumer that enables referrers should

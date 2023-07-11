@@ -200,7 +200,8 @@ class NET_EXPORT HttpRequestHeaders {
       const GURL& url,
       const absl::optional<base::flat_set<SourceStream::SourceType>>&
           accepted_stream_types,
-      bool enable_brotli);
+      bool enable_brotli,
+      bool enable_zstd);
 
  private:
   HeaderVector::iterator FindHeader(base::StringPiece key);

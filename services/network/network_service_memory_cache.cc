@@ -208,7 +208,8 @@ absl::optional<BlockedByRequestHeaderReason> CheckSpecialRequestHeaders(
 bool MatchVaryHeader(const ResourceRequest& resource_request,
                      const net::HttpVaryData& vary_data,
                      const net::HttpResponseHeaders& cached_response_headers,
-                     bool enable_brotli) {
+                     bool enable_brotli,
+                     bool enable_zstd) {
   if ((resource_request.load_flags & net::LOAD_SKIP_VARY_CHECK) ||
       !vary_data.is_valid()) {
     return true;
@@ -221,7 +222,7 @@ bool MatchVaryHeader(const ResourceRequest& resource_request,
   request_info.extra_headers = resource_request.headers;
   request_info.extra_headers.SetAcceptEncodingIfMissing(
       resource_request.url, resource_request.devtools_accepted_stream_types,
-      enable_brotli);
+      enable_brotli, enable_zstd);
   return vary_data.MatchesRequest(request_info, cached_response_headers);
 }
 
@@ -471,7 +472,8 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
 
   if (!MatchVaryHeader(
           resource_request, it->second->vary_data, *response->headers,
-          network_context_->url_request_context()->enable_brotli())) {
+          network_context_->url_request_context()->enable_brotli(),
+          network_context_->url_request_context()->enable_zstd())) {
     return absl::nullopt;
   }
 
