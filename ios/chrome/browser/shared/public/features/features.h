@@ -31,6 +31,9 @@ extern const base::FeatureParam<BlueDotPromoUserGroup>
 // features in tests works.
 BASE_DECLARE_FEATURE(kTestFeature);
 
+// Feature to add the Safety Check module to the Magic Stack.
+BASE_DECLARE_FEATURE(kSafetyCheckMagicStack);
+
 // Feature flag to enable Shared Highlighting (Link to Text).
 BASE_DECLARE_FEATURE(kSharedHighlightingIOS);
 
@@ -195,5 +198,8 @@ BASE_DECLARE_FEATURE(kThemeColorInToolbar);
 
 // Feature flag enabling tab grid refactoring.
 BASE_DECLARE_FEATURE(kTabGridRefactoring);
+
+// Whether the Safety Check module should be shown in the Magic Stack.
+bool IsSafetyCheckMagicStackEnabled();
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

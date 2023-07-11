@@ -18,10 +18,6 @@ BASE_FEATURE(kDiscoverFeedInNtp,
              "DiscoverFeedInNtp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSafetyCheckMagicStack,
-             "SafetyCheckMagicStack",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature disabled by default.
 BASE_FEATURE(kSingleNtp, "SingleNTP", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -49,10 +45,6 @@ bool IsDiscoverFeedEnabled() {
 
 bool IsMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kMagicStack);
-}
-
-bool IsSafetyCheckMagicStackEnabled() {
-  return base::FeatureList::IsEnabled(kSafetyCheckMagicStack);
 }
 
 bool ShouldPutMostVisitedSitesInMagicStack() {

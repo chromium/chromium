@@ -31,6 +31,10 @@ BASE_FEATURE(kIOSPaymentsBottomSheet,
 
 BASE_FEATURE(kTestFeature, "TestFeature", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafetyCheckMagicStack,
+             "SafetyCheckMagicStack",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSharedHighlightingIOS,
              "SharedHighlightingIOS",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -243,3 +247,7 @@ BASE_FEATURE(kThemeColorInToolbar,
 BASE_FEATURE(kTabGridRefactoring,
              "TabGridRefactoring",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSafetyCheckMagicStackEnabled() {
+  return base::FeatureList::IsEnabled(kSafetyCheckMagicStack);
+}

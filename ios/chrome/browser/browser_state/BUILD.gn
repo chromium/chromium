@@ -117,6 +117,7 @@ source_set("browser_state") {
     "//ios/chrome/browser/push_notification:push_notification_browser_state_service_factory",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/safe_browsing",
+    "//ios/chrome/browser/safety_check:factory",
     "//ios/chrome/browser/screen_time:buildflags",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/segmentation_platform",
