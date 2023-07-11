@@ -24,6 +24,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
@@ -118,8 +119,7 @@ DeskButton::DeskButton(DeskButtonWidget* desk_button_widget)
   prev_desk_button_->SetAccessibleName(u"Previous desk button");
   prev_desk_button_->SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysHoverOnSubtle,
-      views::Radii{.top_left = kButtonCornerRadius,
-                   .bottom_left = kButtonCornerRadius},
+      gfx::RoundedCornersF{kButtonCornerRadius, 0, 0, kButtonCornerRadius},
       /*for_border_thickness=*/0));
 
   next_desk_button_->SetImageModel(
@@ -128,8 +128,7 @@ DeskButton::DeskButton(DeskButtonWidget* desk_button_widget)
   next_desk_button_->SetAccessibleName(u"Next desk button");
   next_desk_button_->SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysHoverOnSubtle,
-      views::Radii{.top_right = kButtonCornerRadius,
-                   .bottom_right = kButtonCornerRadius},
+      gfx::RoundedCornersF{0, kButtonCornerRadius, kButtonCornerRadius, 0},
       /*for_border_thickness=*/0));
 
   CalculateDisplayNames(DesksController::Get()->active_desk());

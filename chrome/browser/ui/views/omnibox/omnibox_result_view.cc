@@ -49,6 +49,7 @@
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
@@ -310,10 +311,8 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
     return nullptr;
 
   if (OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled()) {
-    views::Radii radii = {
-        .top_right = static_cast<float>(view->height()),
-        .bottom_right = static_cast<float>(view->height()),
-    };
+    gfx::RoundedCornersF radii = {0, static_cast<float>(view->height()),
+                                  static_cast<float>(view->height()), 0};
     return views::CreateThemedRoundedRectBackground(
         GetOmniboxBackgroundColorId(part_state), radii, 0);
   }

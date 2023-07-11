@@ -112,18 +112,18 @@ constexpr SearchBoxView::PlaceholderTextType kGamingPlaceholders[4] = {
     SearchBoxView::PlaceholderTextType::kGames,
 };
 
-constexpr views::Radii kAssistantButtonBackgroundRadiiLTR = {
-    .top_left = 18.0f,
-    .top_right = 18.0f,
-    .bottom_right = 4.0f,
-    .bottom_left = 18.0f,
+constexpr gfx::RoundedCornersF kAssistantButtonBackgroundRadiiLTR = {
+    18,
+    18,
+    4,
+    18,
 };
 
-constexpr views::Radii kAssistantButtonBackgroundRadiiRTL = {
-    .top_left = 18.0f,
-    .top_right = 18.0f,
-    .bottom_right = 18.0f,
-    .bottom_left = 4.0f,
+constexpr gfx::RoundedCornersF kAssistantButtonBackgroundRadiiRTL = {
+    18,
+    18,
+    18,
+    4,
 };
 
 bool IsTrimmedQueryEmpty(const std::u16string& query) {
