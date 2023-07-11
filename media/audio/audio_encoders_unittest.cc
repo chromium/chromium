@@ -1027,6 +1027,45 @@ TEST_P(AACAudioEncoderTest, FullCycleEncodeDecode) {
   EXPECT_EQ(expected_outputs, decode_status_callback_count);
   EXPECT_EQ(expected_outputs, decoder_output_callback_count);
 }
+
+TEST_P(AACAudioEncoderTest, FullCycleEncodeDecode_BitrateMode) {
+  constexpr AudioEncoder::BitrateMode kTestAacBitrateMode[] = {
+      AudioEncoder::BitrateMode::kConstant,
+      AudioEncoder::BitrateMode::kVariable};
+
+  for (const AudioEncoder::BitrateMode& bitrate_mode : kTestAacBitrateMode) {
+    decoder_output_callback_count = 0;
+    options_.bitrate_mode = bitrate_mode;
+
+    // Override the work done in Setup().
+    SetUp();
+
+    InitializeDecoder();
+
+    auto encode_output_cb = [&](EncodedAudioBuffer output, MaybeDesc) {
+      auto decode_cb = [&](DecoderStatus status) {
+        EXPECT_EQ(status, DecoderStatus::Codes::kOk);
+      };
+      scoped_refptr<DecoderBuffer> decoder_buffer = DecoderBuffer::FromArray(
+          std::move(output.encoded_data), output.encoded_data_size);
+      decoder_->Decode(decoder_buffer, base::BindLambdaForTesting(decode_cb));
+    };
+
+    InitializeEncoder(base::BindLambdaForTesting(encode_output_cb));
+
+    ProduceAudioAndEncode();
+    ProduceAudioAndEncode();
+    ProduceAudioAndEncode();
+
+    FlushAndVerifyStatus();
+
+    int expected_outputs =
+        3 + std::ceil(GetExpectedPadding() /
+                      static_cast<double>(frames_per_buffer_));
+
+    EXPECT_EQ(expected_outputs, decoder_output_callback_count);
+  }
+}
 #endif  // BUILDFLAG(ENABLE_FFMPEG) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 INSTANTIATE_TEST_SUITE_P(AAC,

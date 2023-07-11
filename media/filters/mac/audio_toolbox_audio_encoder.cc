@@ -278,6 +278,22 @@ bool AudioToolboxAudioEncoder::CreateEncoder(
     }
   }
 
+  if (options.bitrate_mode) {
+    const bool use_vbr =
+        *options.bitrate_mode == AudioEncoder::BitrateMode::kVariable;
+
+    UInt32 bitrate_mode = use_vbr ? kAudioCodecBitRateControlMode_Variable
+                                  : kAudioCodecBitRateControlMode_Constant;
+
+    result = AudioConverterSetProperty(encoder_,
+                                       kAudioCodecPropertyBitRateControlMode,
+                                       sizeof(bitrate_mode), &bitrate_mode);
+    if (result != noErr) {
+      OSSTATUS_DLOG(ERROR, result) << "Failed to set encoder bitrate mode";
+      return false;
+    }
+  }
+
   // AudioConverter requires we provided a suitably sized output for the encoded
   // buffer, but won't tell us the size before we request it... so we need to
   // ask it what the maximum possible size is to allocate our output buffers.
