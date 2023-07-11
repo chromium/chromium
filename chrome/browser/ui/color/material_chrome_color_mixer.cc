@@ -157,6 +157,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorFlyingIndicatorForeground] = {kColorToolbarButtonIcon};
   mixer[kColorFrameCaptionActive] = {ui::kColorSysOnHeaderPrimary};
   mixer[kColorFrameCaptionInactive] = {ui::kColorSysOnHeaderPrimaryInactive};
+  mixer[kColorTabHoverCardSecondaryText] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorInfoBarBackground] = {ui::kColorSysBase};
   mixer[kColorInfoBarButtonIcon] = {kColorInfoBarForeground};
   mixer[kColorInfoBarButtonIconDisabled] = {ui::kColorSysStateDisabled};

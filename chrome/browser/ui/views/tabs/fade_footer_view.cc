@@ -13,8 +13,21 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/compositor/layer.h"
+#include "ui/views/border.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
+
+namespace {
+constexpr int kIconLabelSpacing = 8;
+constexpr int kFooterVerticalMargins = 8;
+constexpr int kFooterHorizontalMargins = 12;
+constexpr auto kFooterBorderThickness = gfx::Insets::TLBR(1, 0, 0, 0);
+constexpr auto kFooterMargins =
+    gfx::Insets::VH(kFooterVerticalMargins, kFooterHorizontalMargins);
+constexpr auto kFooterRefreshMargins = gfx::Insets::VH(12, 12);
+}  // namespace
 
 template <typename T>
 FooterRow<T>::FooterRow() {
@@ -38,6 +51,11 @@ FooterRow<T>::FooterRow() {
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded, true));
+
+  if (features::IsChromeRefresh2023()) {
+    footer_label_->SetEnabledColorId(kColorTabHoverCardSecondaryText);
+    footer_label_->SetTextStyle(views::style::STYLE_BODY_4);
+  }
 
   // Vertically align the icon to the top line of the label
   const int offset = (footer_label_->GetLineHeight() -
@@ -154,6 +172,33 @@ void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
 // FooterView
 // -----------------------------------------------------------------------
 
+FooterView::FooterView() {
+  const gfx::Insets footer_margins =
+      features::IsChromeRefresh2023() ? kFooterRefreshMargins : kFooterMargins;
+  flex_layout_ =
+      views::View::SetLayoutManager(std::make_unique<views::FlexLayout>());
+  flex_layout_->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetCollapseMargins(true)
+      .SetInteriorMargin(footer_margins)
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::VH(kFooterVerticalMargins, 0));
+  alert_row_ = AddChildView(
+      std::make_unique<AlertFadeView>(std::make_unique<FadeAlertFooterRow>(),
+                                      std::make_unique<FadeAlertFooterRow>()));
+
+  performance_row_ = AddChildView(std::make_unique<PerformanceFadeView>(
+      std::make_unique<FadePerformanceFooterRow>(),
+      std::make_unique<FadePerformanceFooterRow>()));
+
+  SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
+
+  if (!features::IsChromeRefresh2023()) {
+    SetBorder(views::CreateThemedSolidSidedBorder(
+        kFooterBorderThickness, ui::kColorBubbleFooterBorder));
+  }
+}
+
 void FooterView::SetAlertData(const AlertFooterRowData& data) {
   alert_row_->SetData(data);
   UpdateVisibility();
@@ -167,16 +212,6 @@ void FooterView::SetPerformanceData(const PerformanceRowData& data) {
 void FooterView::SetFade(double percent) {
   alert_row_->SetFade(percent);
   performance_row_->SetFade(percent);
-}
-
-void FooterView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  auto* const color_provider = GetColorProvider();
-  SetBackground(views::CreateSolidBackground(
-      color_provider->GetColor(ui::kColorBubbleFooterBackground)));
-  views::View::SetBorder(views::CreateSolidSidedBorder(
-      gfx::Insets::TLBR(1, 0, 0, 0),
-      color_provider->GetColor(ui::kColorBubbleFooterBorder)));
 }
 
 void FooterView::UpdateVisibility() {

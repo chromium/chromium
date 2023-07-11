@@ -36,6 +36,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -73,11 +74,14 @@ constexpr auto kTitleMargins =
     gfx::Insets::VH(kVerticalMargin, kHorizontalMargin);
 constexpr auto kAlertMargins =
     gfx::Insets::VH(kFootnoteVerticalMargin, kHorizontalMargin);
+constexpr auto kTextAreaRefreshMargins = gfx::Insets::VH(12, 12);
 
 std::unique_ptr<views::Label> CreateAlertView(const TabAlertState& state) {
+  const int text_style = features::IsChromeRefresh2023()
+                             ? views::style::STYLE_BODY_4
+                             : views::style::STYLE_PRIMARY;
   auto alert_state_label = std::make_unique<views::Label>(
-      std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_PRIMARY);
+      std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT, text_style);
   alert_state_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   alert_state_label->SetMultiLine(true);
   alert_state_label->SetVisible(true);
@@ -376,10 +380,19 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   // navigating through the tab strip.
   set_focus_traversable_from_anchor_view(false);
 
-  title_label_ = AddChildView(std::make_unique<FadeLabelView>(
-      CONTEXT_TAB_HOVER_CARD_TITLE, kHoverCardTitleMaxLines));
-  domain_label_ = AddChildView(std::make_unique<FadeLabelView>(
-      views::style::CONTEXT_DIALOG_BODY_TEXT, 1));
+  if (features::IsChromeRefresh2023()) {
+    title_label_ = AddChildView(std::make_unique<FadeLabelView>(
+        kHoverCardTitleMaxLines, CONTEXT_TAB_HOVER_CARD_TITLE,
+        views::style::STYLE_BODY_3_EMPHASIS));
+    domain_label_ = AddChildView(std::make_unique<FadeLabelView>(
+        1, views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
+    domain_label_->SetEnabledColorId(kColorTabHoverCardSecondaryText);
+  } else {
+    title_label_ = AddChildView(std::make_unique<FadeLabelView>(
+        kHoverCardTitleMaxLines, CONTEXT_TAB_HOVER_CARD_TITLE));
+    domain_label_ = AddChildView(std::make_unique<FadeLabelView>(
+        1, views::style::CONTEXT_DIALOG_BODY_TEXT));
+  }
 
   if (TabHoverCardController::AreHoverCardImagesEnabled()) {
     thumbnail_view_ = AddChildView(std::make_unique<ThumbnailView>(this));
@@ -404,14 +417,15 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   // element because it is no longer above another text element and needs a
   // bottom margin.
   const bool show_domain = tab->controller()->ShowDomainInHoverCards();
-  gfx::Insets title_margins = kTitleMargins;
+
+  gfx::Insets title_margins =
+      features::IsChromeRefresh2023() ? kTextAreaRefreshMargins : kTitleMargins;
   domain_label_->SetVisible(show_domain);
   if (show_domain) {
+    const gfx::Insets domain_margins = gfx::Insets::TLBR(
+        0, title_margins.left(), title_margins.bottom(), title_margins.right());
+    domain_label_->SetProperty(views::kMarginsKey, domain_margins);
     title_margins.set_bottom(0);
-    domain_label_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(0, kHorizontalMargin, kVerticalMargin,
-                          kHorizontalMargin));
   }
 
   title_label_->SetProperty(views::kMarginsKey, title_margins);
@@ -432,8 +446,9 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
 
   views::BubbleDialogDelegateView::CreateBubble(this);
   set_adjust_if_offscreen(true);
-
-  GetBubbleFrameView()->SetFootnoteMargins(kAlertMargins);
+  const gfx::Insets alert_margins =
+      features::IsChromeRefresh2023() ? kTextAreaRefreshMargins : kAlertMargins;
+  GetBubbleFrameView()->SetFootnoteMargins(alert_margins);
   GetBubbleFrameView()->SetPreferredArrowAdjustment(
       views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
   GetBubbleFrameView()->set_hit_test_transparent(true);

@@ -6,22 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_FADE_FOOTER_VIEW_H_
 
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/tabs/fade_view.h"
-#include "ui/color/color_id.h"
-#include "ui/compositor/layer.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
-
-namespace {
-constexpr int kIconLabelSpacing = 8;
-constexpr int kFooterVerticalMargins = 8;
-constexpr int kFooterHorizontalMargins = 12;
-constexpr auto kFooterMargins =
-    gfx::Insets::VH(kFooterVerticalMargins, kFooterHorizontalMargins);
-}  // namespace
 
 struct AlertFooterRowData {
   absl::optional<TabAlertState> alert_state;
@@ -91,22 +79,8 @@ class FooterView : public views::View {
                                        FadePerformanceFooterRow,
                                        PerformanceRowData>;
 
-  FooterView() {
-    flex_layout_ =
-        views::View::SetLayoutManager(std::make_unique<views::FlexLayout>());
-    flex_layout_->SetOrientation(views::LayoutOrientation::kVertical)
-        .SetCollapseMargins(true)
-        .SetInteriorMargin(kFooterMargins)
-        .SetDefault(views::kMarginsKey,
-                    gfx::Insets::VH(kFooterVerticalMargins, 0));
-    alert_row_ = AddChildView(std::make_unique<AlertFadeView>(
-        std::make_unique<FadeAlertFooterRow>(),
-        std::make_unique<FadeAlertFooterRow>()));
-
-    performance_row_ = AddChildView(std::make_unique<PerformanceFadeView>(
-        std::make_unique<FadePerformanceFooterRow>(),
-        std::make_unique<FadePerformanceFooterRow>()));
-  }
+  FooterView();
+  ~FooterView() override = default;
 
   void SetAlertData(const AlertFooterRowData& data);
   void SetPerformanceData(const PerformanceRowData& data);
@@ -117,9 +91,6 @@ class FooterView : public views::View {
   PerformanceFadeView* GetPerformanceRowForTesting() {
     return performance_row_;
   }
-
-  // views::View
-  void OnThemeChanged() override;
 
  private:
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;

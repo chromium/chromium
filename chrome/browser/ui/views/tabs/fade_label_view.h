@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/tabs/fade_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/style/typography.h"
 
 struct FadeLabelViewData {
   std::u16string text;
@@ -51,11 +52,15 @@ class FadeLabel : public FadeWrapper<views::Label, FadeLabelViewData> {
 // or the tab title changes.
 class FadeLabelView : public FadeView<FadeLabel, FadeLabel, FadeLabelViewData> {
  public:
-  FadeLabelView(int context, int num_lines);
+  FadeLabelView(int num_lines,
+                int context,
+                int text_style = views::style::STYLE_PRIMARY);
 
   ~FadeLabelView() override = default;
 
   std::u16string GetText();
+
+  void SetEnabledColorId(ui::ColorId color);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_FADE_LABEL_VIEW_H_

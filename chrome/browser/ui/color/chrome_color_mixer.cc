@@ -554,6 +554,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
                                                    : gfx::kGoogleGrey050};
   mixer[kColorTabHoverCardForeground] = {dark_mode ? gfx::kGoogleGrey700
                                                    : gfx::kGoogleGrey300};
+  mixer[kColorTabHoverCardSecondaryText] = {ui::kColorLabelForeground};
   mixer[kColorTabStrokeFrameActive] = {kColorToolbarTopSeparatorFrameActive};
   mixer[kColorTabStrokeFrameInactive] = {
       kColorToolbarTopSeparatorFrameInactive};
