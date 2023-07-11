@@ -116,7 +116,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   // TODO(crbug.com/1230619): Use this to implement support for WebGL sRGB
   // framebuffers.
   absl::optional<gfx::ColorSpace> color_space_when_sampled;
-  absl::optional<gfx::HDRMetadata> hdr_metadata;
+  gfx::HDRMetadata hdr_metadata;
 
   // A gpu resource may be possible to use directly in an overlay if this is
   // true.

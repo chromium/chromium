@@ -340,13 +340,10 @@ void DrawingBuffer::SetIsInHiddenPage(bool hidden) {
   gl_->Flush();
 }
 
-void DrawingBuffer::SetHDRConfiguration(
-    gfx::HDRMode hdr_mode,
-    absl::optional<gfx::HDRMetadata> hdr_metadata) {
-  hdr_mode_ = hdr_mode;
+void DrawingBuffer::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
   hdr_metadata_ = hdr_metadata;
   if (layer_)
-    layer_->SetHDRConfiguration(hdr_mode_, hdr_metadata_);
+    layer_->SetHdrMetadata(hdr_metadata_);
 }
 
 void DrawingBuffer::SetFilterQuality(
@@ -1178,7 +1175,7 @@ cc::Layer* DrawingBuffer::CcLayer() {
       layer_->SetPremultipliedAlpha(requested_alpha_type_ !=
                                     kUnpremul_SkAlphaType);
     }
-    layer_->SetHDRConfiguration(hdr_mode_, hdr_metadata_);
+    layer_->SetHdrMetadata(hdr_metadata_);
     layer_->SetNearestNeighbor(filter_quality_ ==
                                cc::PaintFlags::FilterQuality::kNone);
 

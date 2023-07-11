@@ -23,7 +23,7 @@ namespace metal {
 
 // Return true if we should use the HDRCopier for the specified content.
 bool METAL_UTIL_EXPORT ShouldUseHDRCopier(IOSurfaceRef buffer,
-                                          gfx::HDRMode hdr_mode,
+                                          const gfx::HDRMetadata& hdr_metadata,
                                           const gfx::ColorSpace& color_space);
 
 // Create a layer which may have its contents set an HDR IOSurface via

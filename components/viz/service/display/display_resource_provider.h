@@ -99,7 +99,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   // Returns the color space that samples of this resource in a shader will be
   // in.
   gfx::ColorSpace GetSamplerColorSpace(ResourceId id);
-  const absl::optional<gfx::HDRMetadata>& GetHDRMetadata(ResourceId id);
+  const gfx::HDRMetadata& GetHDRMetadata(ResourceId id);
 
   // Indicates if this resource may be used for a hardware overlay plane.
   bool IsOverlayCandidate(ResourceId id);

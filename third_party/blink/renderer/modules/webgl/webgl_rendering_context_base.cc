@@ -7376,11 +7376,10 @@ cc::Layer* WebGLRenderingContextBase::CcLayer() const {
   return isContextLost() ? nullptr : GetDrawingBuffer()->CcLayer();
 }
 
-void WebGLRenderingContextBase::SetHDRConfiguration(
-    gfx::HDRMode hdr_mode,
-    absl::optional<gfx::HDRMetadata> hdr_metadata) {
+void WebGLRenderingContextBase::SetHdrMetadata(
+    const gfx::HDRMetadata& hdr_metadata) {
   if (!isContextLost() && GetDrawingBuffer()) {
-    GetDrawingBuffer()->SetHDRConfiguration(hdr_mode, hdr_metadata);
+    GetDrawingBuffer()->SetHdrMetadata(hdr_metadata);
   }
 }
 

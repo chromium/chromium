@@ -68,26 +68,26 @@ V8PredefinedColorSpace PredefinedColorSpaceToV8(
 
 void ParseCanvasHighDynamicRangeOptions(
     const CanvasHighDynamicRangeOptions* options,
-    gfx::HDRMode& hdr_mode,
-    absl::optional<gfx::HDRMetadata>& hdr_metadata) {
-  hdr_mode = gfx::HDRMode::kDefault;
-  hdr_metadata = absl::nullopt;
+    gfx::HDRMetadata& hdr_metadata) {
+  hdr_metadata = gfx::HDRMetadata();
   if (!options) {
     return;
   }
   if (options->hasMode()) {
     switch (options->mode().AsEnum()) {
       case V8CanvasHighDynamicRangeMode::Enum::kDefault:
-        hdr_mode = gfx::HDRMode::kDefault;
         break;
       case V8CanvasHighDynamicRangeMode::Enum::kExtended:
-        hdr_mode = gfx::HDRMode::kExtended;
+        hdr_metadata.extended_range.emplace(
+            /*current_headroom=*/gfx::HdrMetadataExtendedRange::
+                kDefaultHdrHeadroom,
+            /*desired_headroom=*/gfx::HdrMetadataExtendedRange::
+                kDefaultHdrHeadroom);
         break;
     }
   }
   if (options->hasSmpteSt2086Metadata()) {
-    hdr_metadata = gfx::HDRMetadata();
-    auto& smpte_st_2086 = hdr_metadata->smpte_st_2086.emplace();
+    auto& smpte_st_2086 = hdr_metadata.smpte_st_2086.emplace();
     const auto* v8_metadata = options->smpteSt2086Metadata();
     smpte_st_2086.primaries = {
         v8_metadata->redPrimaryX(),   v8_metadata->redPrimaryY(),

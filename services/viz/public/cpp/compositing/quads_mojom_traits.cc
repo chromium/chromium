@@ -164,7 +164,6 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
   if (!data.ReadUvTopLeft(&quad->uv_top_left) ||
       !data.ReadUvBottomRight(&quad->uv_bottom_right) ||
       !data.ReadProtectedVideoType(&protected_video_type) ||
-      !data.ReadHdrMode(&quad->hdr_mode) ||
       !data.ReadHdrMetadata(&quad->hdr_metadata) ||
       !data.ReadOverlayPriorityHint(&overlay_priority_hint) ||
       !data.ReadRoundedDisplayMasksInfo(&quad->rounded_display_masks_info)) {

@@ -737,7 +737,7 @@ void VideoResourceUpdater::AppendQuads(
           frame_resource_offset_, frame_resource_multiplier_,
           frame_bits_per_channel_,
           ProtectedVideoTypeFromMetadata(frame->metadata()),
-          frame->hdr_metadata());
+          frame->hdr_metadata().value_or(gfx::HDRMetadata()));
 
       for (viz::ResourceId resource_id : yuv_video_quad->resources) {
         resource_provider_->ValidateResource(resource_id);
@@ -779,7 +779,8 @@ void VideoResourceUpdater::AppendQuads(
       }
 #endif
       texture_quad->is_video_frame = true;
-      texture_quad->hdr_metadata = frame->hdr_metadata();
+      texture_quad->hdr_metadata =
+          frame->hdr_metadata().value_or(gfx::HDRMetadata());
       for (viz::ResourceId resource_id : texture_quad->resources) {
         resource_provider_->ValidateResource(resource_id);
       }
@@ -1031,7 +1032,8 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
       transfer_resource.color_space = resource_color_space;
       transfer_resource.color_space_when_sampled =
           resource_color_space_when_sampled;
-      transfer_resource.hdr_metadata = video_frame->hdr_metadata();
+      transfer_resource.hdr_metadata =
+          video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
       if (video_frame->metadata().read_lock_fences_enabled) {
         transfer_resource.synchronization_type = viz::TransferableResource::
             SynchronizationType::kGpuCommandsCompleted;

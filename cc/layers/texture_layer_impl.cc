@@ -59,7 +59,7 @@ void TextureLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   texture_layer->SetBlendBackgroundColor(blend_background_color_);
   texture_layer->SetForceTextureToOpaque(force_texture_to_opaque_);
   texture_layer->SetNearestNeighbor(nearest_neighbor_);
-  texture_layer->SetHDRConfiguration(hdr_mode_, hdr_metadata_);
+  texture_layer->SetHdrMetadata(hdr_metadata_);
   if (own_resource_) {
     texture_layer->SetTransferableResource(transferable_resource_,
                                            std::move(release_callback_));
@@ -155,7 +155,6 @@ void TextureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
                nearest_neighbor_, /*secure_output=*/false,
                gfx::ProtectedVideoType::kClear);
   quad->set_resource_size_in_pixels(transferable_resource_.size);
-  quad->hdr_mode = hdr_mode_;
   quad->hdr_metadata = hdr_metadata_;
   ValidateQuadResources(quad);
 }
@@ -201,8 +200,9 @@ void TextureLayerImpl::ReleaseResources() {
 }
 
 gfx::ContentColorUsage TextureLayerImpl::GetContentColorUsage() const {
-  if (hdr_mode_ == gfx::HDRMode::kExtended)
+  if (hdr_metadata_.extended_range.has_value()) {
     return gfx::ContentColorUsage::kHDR;
+  }
   return transferable_resource_.color_space.GetContentColorUsage();
 }
 
@@ -234,10 +234,7 @@ void TextureLayerImpl::SetUVBottomRight(const gfx::PointF& bottom_right) {
   uv_bottom_right_ = bottom_right;
 }
 
-void TextureLayerImpl::SetHDRConfiguration(
-    gfx::HDRMode hdr_mode,
-    absl::optional<gfx::HDRMetadata> hdr_metadata) {
-  hdr_mode_ = hdr_mode;
+void TextureLayerImpl::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
   hdr_metadata_ = hdr_metadata;
 }
 

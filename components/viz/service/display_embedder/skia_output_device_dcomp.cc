@@ -209,7 +209,7 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
     params->clip_rect = dc_layer.clip_rect;
     params->protected_video_type = dc_layer.protected_video_type;
     params->color_space = dc_layer.color_space;
-    params->hdr_metadata = dc_layer.hdr_metadata.value_or(gfx::HDRMetadata());
+    params->hdr_metadata = dc_layer.hdr_metadata;
     params->possible_video_fullscreen_letterboxing =
         dc_layer.possible_video_fullscreen_letterboxing;
 

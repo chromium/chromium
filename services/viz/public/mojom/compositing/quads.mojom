@@ -97,8 +97,7 @@ struct TextureQuadState {
   bool is_stream_video;
   bool is_video_frame;
   ProtectedVideoState protected_video_type;
-  gfx.mojom.HDRMode hdr_mode;
-  gfx.mojom.HDRMetadata? hdr_metadata;
+  gfx.mojom.HDRMetadata hdr_metadata;
   gfx.mojom.Rect? damage_rect;
   OverlayPriority overlay_priority_hint;
   RoundedDisplayMasksInfo rounded_display_masks_info;
@@ -127,7 +126,7 @@ struct YUVVideoQuadState {
   uint32 bits_per_channel;
   gfx.mojom.ColorSpace video_color_space;
   ProtectedVideoState protected_video_type;
-  gfx.mojom.HDRMetadata? hdr_metadata;
+  gfx.mojom.HDRMetadata hdr_metadata;
   gfx.mojom.Rect? damage_rect;
 };
 

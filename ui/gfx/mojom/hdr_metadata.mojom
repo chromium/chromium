@@ -6,11 +6,6 @@ module gfx.mojom;
 
 import "skia/public/mojom/skcolorspace_primaries.mojom";
 
-enum HDRMode {
-  kDefault,
-  kExtended,
-};
-
 // Mojo equivalent of gfx::HdrMetadataCta861_3. No validation is done on any of
 // these values during serialization.
 struct HdrMetadataCta861_3 {

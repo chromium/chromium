@@ -188,8 +188,7 @@ gfx::ColorSpace DisplayResourceProvider::GetSamplerColorSpace(ResourceId id) {
       resource->transferable.color_space);
 }
 
-const absl::optional<gfx::HDRMetadata>& DisplayResourceProvider::GetHDRMetadata(
-    ResourceId id) {
+const gfx::HDRMetadata& DisplayResourceProvider::GetHDRMetadata(ResourceId id) {
   ChildResource* resource = GetResource(id);
   return resource->transferable.hdr_metadata;
 }

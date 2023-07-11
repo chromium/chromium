@@ -419,7 +419,7 @@ void UpdateHDRCopierLayer(
 }
 
 bool ShouldUseHDRCopier(IOSurfaceRef buffer,
-                        gfx::HDRMode hdr_mode,
+                        const gfx::HDRMetadata& hdr_metadata,
                         const gfx::ColorSpace& color_space) {
   // Only some transfer functions are supported.
   if (!GetTransferFunctionIndex(color_space)) {
@@ -436,15 +436,19 @@ bool ShouldUseHDRCopier(IOSurfaceRef buffer,
     return true;
   }
 
-  if (hdr_mode == gfx::HDRMode::kDefault) {
-    if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::SRGB_HDR) {
-      // Rasterized tiles and the primary plane specify a color space of
-      // SRGB_HDR with gfx::HDRMode::kDefault.
-      return !is_unorm;
-    }
-    return false;
+  if (hdr_metadata.extended_range.has_value()) {
+    return true;
   }
-  return true;
+
+  // Rasterized tiles and the primary plane specify a color space of SRGB_HDR
+  // with no extended range metadata.
+  // TODO(https://crbug.com/1446302): Use extended range metadata instead of
+  // the SDR_HDR color space to indicate this.
+  if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::SRGB_HDR) {
+    return !is_unorm;
+  }
+
+  return false;
 }
 
 }  // namespace metal

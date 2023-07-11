@@ -489,17 +489,15 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     return;
   }
 
-  gfx::HDRMode hdr_mode = gfx::HDRMode::kDefault;
-  absl::optional<gfx::HDRMetadata> hdr_metadata;
+  gfx::HDRMetadata hdr_metadata;
   if (descriptor->hasHdrOptions()) {
-    ParseCanvasHighDynamicRangeOptions(descriptor->hdrOptions(), hdr_mode,
-                                       hdr_metadata);
+    ParseCanvasHighDynamicRangeOptions(descriptor->hdrOptions(), hdr_metadata);
   }
 
   swap_buffers_ = base::AdoptRef(new WebGPUSwapBufferProvider(
       this, device_->GetDawnControlClient(), device_->GetHandle(),
       static_cast<WGPUTextureUsage>(swap_texture_descriptor_.usage),
-      swap_texture_descriptor_.format, color_space_, hdr_mode, hdr_metadata));
+      swap_texture_descriptor_.format, color_space_, hdr_metadata));
   swap_buffers_->SetFilterQuality(filter_quality_);
 
   // Note: SetContentsOpaque is only an optimization hint. It doesn't

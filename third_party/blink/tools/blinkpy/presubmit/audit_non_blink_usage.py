@@ -34,8 +34,8 @@ _CONFIG = [
             # TODO(dcheng): Should these be in a more specific config?
             'gfx::ColorSpace',
             'gfx::CubicBezier',
-            'gfx::HDRMode',
             'gfx::HDRMetadata',
+            'gfx::HdrMetadataExtendedRange',
             'gfx::ICCProfile',
             'gfx::RadToDeg',
 

@@ -582,8 +582,7 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
     layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
     layer_->SetNearestNeighbor(resource_host_->FilterQuality() ==
                                cc::PaintFlags::FilterQuality::kNone);
-    layer_->SetHDRConfiguration(resource_host_->GetHDRMode(),
-                                resource_host_->GetHDRMetadata());
+    layer_->SetHdrMetadata(resource_host_->GetHDRMetadata());
     layer_->SetFlipped(!resource_provider->IsOriginTopLeft());
   }
   // After the page becomes visible and successfully restored the canvas
@@ -640,11 +639,9 @@ void Canvas2DLayerBridge::SetFilterQuality(
                                cc::PaintFlags::FilterQuality::kNone);
 }
 
-void Canvas2DLayerBridge::SetHDRConfiguration(
-    gfx::HDRMode hdr_mode,
-    absl::optional<gfx::HDRMetadata> hdr_metadata) {
+void Canvas2DLayerBridge::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
   if (layer_)
-    layer_->SetHDRConfiguration(hdr_mode, hdr_metadata);
+    layer_->SetHdrMetadata(hdr_metadata);
 }
 
 void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
