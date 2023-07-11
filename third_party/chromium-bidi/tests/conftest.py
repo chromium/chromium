@@ -166,6 +166,44 @@ def get_cdp_session_id(websocket):
 
 
 @pytest.fixture
+def query_selector(websocket, context_id):
+    """Return an element matching the given selector"""
+    async def query_selector(selector: str) -> str:
+        result = await execute_command(
+            websocket, {
+                "method": "script.evaluate",
+                "params": {
+                    "expression": f"document.querySelector('{selector}')",
+                    "target": {
+                        "context": context_id
+                    },
+                    "resultOwnership": "root",
+                    "awaitPromise": False,
+                }
+            })
+        return result["result"]
+
+    return query_selector
+
+
+@pytest.fixture
+def activate_main_tab(websocket, context_id, get_cdp_session_id):
+    """Actives the main tab"""
+    async def activate_main_tab():
+        session_id = await get_cdp_session_id(context_id)
+        await execute_command(
+            websocket, {
+                "method": "cdp.sendCommand",
+                "params": {
+                    "method": "Page.bringToFront",
+                    "session": session_id
+                }
+            })
+
+    return activate_main_tab
+
+
+@pytest.fixture
 def html():
     """Return a factory for HTML data URL with the given content."""
     def html(content=""):

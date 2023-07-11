@@ -130,6 +130,9 @@ export class ActionDispatcher {
       new Promise((resolve) => setTimeout(resolve, this.#tickDuration)),
     ];
     for (const option of options) {
+      // In theory we have to wait for each action to happen, but CDP is serial,
+      // so as an optimization, we queue all CDP commands at once and await all
+      // of them.
       promises.push(this.#dispatchAction(option));
     }
     await Promise.all(promises);
@@ -235,22 +238,7 @@ export class ActionDispatcher {
             x,
             y,
             modifiers,
-            button: (() => {
-              switch (button) {
-                case 0:
-                  return 'left';
-                case 1:
-                  return 'middle';
-                case 2:
-                  return 'right';
-                case 3:
-                  return 'back';
-                case 4:
-                  return 'forward';
-                default:
-                  return 'none';
-              }
-            })(),
+            button: getCdpButton(button),
             buttons: source.buttons,
             clickCount: source.clickCount,
             pointerType,
@@ -312,22 +300,7 @@ export class ActionDispatcher {
             x,
             y,
             modifiers,
-            button: (() => {
-              switch (button) {
-                case 0:
-                  return 'left';
-                case 1:
-                  return 'middle';
-                case 2:
-                  return 'right';
-                case 3:
-                  return 'back';
-                case 4:
-                  return 'forward';
-                default:
-                  return 'none';
-              }
-            })(),
+            button: getCdpButton(button),
             buttons: source.buttons,
             clickCount: source.clickCount,
             pointerType,
@@ -417,6 +390,7 @@ export class ActionDispatcher {
                 y,
                 modifiers,
                 clickCount: 0,
+                button: getCdpButton(source.pressed.values().next().value ?? 5),
                 buttons: source.buttons,
                 pointerType,
                 tangentialPressure,
@@ -565,7 +539,7 @@ export class ActionDispatcher {
     } while (!last);
   }
 
-  #dispatchKeyDownAction(
+  async #dispatchKeyDownAction(
     source: KeySource,
     action: Readonly<Input.KeyDownAction>
   ) {
@@ -621,11 +595,11 @@ export class ActionDispatcher {
           command = source.shift ? 'Redo' : 'Undo';
           break;
         default:
+        // Intentionally empty.
       }
     }
-    return this.#context.cdpTarget.cdpClient.sendCommand(
-      'Input.dispatchKeyEvent',
-      {
+    const promises = [
+      this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchKeyEvent', {
         type: text ? 'keyDown' : 'rawKeyDown',
         windowsVirtualKeyCode: KeyToKeyCode[key],
         key,
@@ -638,8 +612,20 @@ export class ActionDispatcher {
         isKeypad: location === 3,
         modifiers,
         commands: command ? [command] : undefined,
+      }),
+    ];
+    // Drag cancelling happens on escape.
+    if (key === 'Escape') {
+      if (
+        !source.alt &&
+        ((this.#isMacOS && !source.ctrl && !source.meta) || !this.#isMacOS)
+      ) {
+        promises.push(
+          this.#context.cdpTarget.cdpClient.sendCommand('Input.cancelDragging')
+        );
       }
-    );
+    }
+    await Promise.all(promises);
     // --- Platform-specific code ends here ---
   }
 
@@ -787,3 +773,20 @@ const getKeyEventText = (code: string, source: KeySource) => {
   }
   return;
 };
+
+function getCdpButton(button: number) {
+  switch (button) {
+    case 0:
+      return 'left';
+    case 1:
+      return 'middle';
+    case 2:
+      return 'right';
+    case 3:
+      return 'back';
+    case 4:
+      return 'forward';
+    default:
+      return 'none';
+  }
+}
