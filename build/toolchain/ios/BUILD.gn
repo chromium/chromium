@@ -47,6 +47,7 @@ template("ios_app_ext_toolchain") {
       # projects such as WebRTC that only uses //build but not //base.
       if (build_with_chromium) {
         use_partition_alloc = false
+        ios_partition_alloc_enabled = false
       }
     }
   }
