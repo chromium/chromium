@@ -1,0 +1,104 @@
+<style include="cr-icons cr-shared-style">
+  :host {
+    background: var(--color-new-tab-page-module-background);
+    border-radius: var(--ntp-module-item-border-radius);
+    display: flex;
+    flex-direction: column;
+  }
+
+  :host([suggestion-chip-header-enabled_]) {
+    background: transparent;
+    border: none;
+  }
+
+  :host([suggestion-chip-header-enabled_]) ntp-module-header-v2 {
+    background: transparent;
+    border: none;
+  }
+
+  cr-action-menu {
+    --cr-menu-shadow: var(--ntp-menu-shadow);
+  }
+
+  cr-icon-button {
+    --cr-icon-button-icon-size: 20px;
+    --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
+    --cr-icon-button-hover-background-color:
+        var(--color-new-tab-page-control-background-hovered);
+    margin-inline-end: -4px;
+    margin-inline-start: 0;
+  }
+
+  #doneButton {
+    --cr-icon-image: url(chrome://resources/images/icon_checkmark.svg);
+  }
+
+  #label-container {
+    -webkit-line-clamp: 2;
+    align-items: flex-end;
+    color: var(--color-new-tab-page-primary-foreground);
+    display: flex;
+    font-size: 24px;
+    height: 48px;
+    line-height: 24px;
+    padding: 0 16px 8px;
+  }
+
+  :host([suggestion-chip-header-enabled_]) #label-container {
+    align-items: center;
+    background: var(--color-new-tab-page-module-background);
+    border-radius: var(--ntp-module-item-border-radius);
+    padding: 8px 16px;
+  }
+
+  #suggestion-chip {
+    display: flex;
+    font-size: var(--ntp-module-text-size);
+  }
+
+  #suggestion-chip-icon {
+    --cr-icon-ripple-size: 20px;
+    --cr-icon-image: url(chrome://resources/images/icon_history.svg);
+    background-color: var(--color-new-tab-page-primary-foreground);
+    margin: auto;
+  }
+
+  #suggestion-chip-label {
+    align-self: center;
+    margin-inline-start: 12px;
+  }
+</style>
+<ntp-module-header-v2
+    header-text="[[i18n('modulesJourneysResumeJourney', '')]]"
+    on-menu-button-click="onMenuButtonClick_">
+  <cr-icon-button id="doneButton" slot="title-actions">
+  </cr-icon-button>
+</ntp-module-header-v2>
+<div id="label-container">
+    <div id="label" hidden="[[suggestionChipHeaderEnabled_]]">
+      [[clusterLabel]]
+    </div>
+    <div id="suggestion-chip" hidden="[[!suggestionChipHeaderEnabled_]]">
+      <div id="suggestion-chip-icon" class="cr-icon"></div>
+      <span id="suggestion-chip-label">[[clusterLabel]]</span>
+    </div>
+</div>
+
+<cr-action-menu id="actionMenu">
+  <button id="openInfoDialogButton" class="dropdown-item"
+      on-click="onInfoButtonClick_" type="button">
+    [[i18n('moduleInfoButtonTitle')]]
+  </button>
+  <button id="dismissButton" class="dropdown-item"
+      on-click="onDismissButtonClick_">
+    [[dismissText]]
+  </button>
+  <button id="disableButton" class="dropdown-item"
+      on-click="onDisableButtonClick_">
+    [[disableText]]
+  </button>
+  <button id="customizeButton" class="dropdown-item"
+      on-click="onCustomizeButtonClick_">
+    $i18n{modulesCustomizeButtonText}
+  </button>
+</cr-action-menu>

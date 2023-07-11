@@ -36,6 +36,7 @@ modules_web_component_files =
       "modules/module_header.ts",
       "modules/modules.ts",
       "modules/module_wrapper.ts",
+      "modules/v2/module_header.ts",
       "modules/v2/modules.ts",
     ] + cart_web_component_files + drive_web_component_files +
     drive_v2_web_component_files + feed_web_component_files +

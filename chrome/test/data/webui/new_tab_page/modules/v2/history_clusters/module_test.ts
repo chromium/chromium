@@ -9,6 +9,7 @@ import {Cluster} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.j
 import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters.mojom-webui.js';
 import {HistoryClustersProxyImpl, historyClustersV2Descriptor, HistoryClustersV2ModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -93,10 +94,12 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
 
       // Assert.
       assertTrue(!!moduleElement);
-      const headerElement = $$(moduleElement, 'ntp-module-header-v2');
+      const headerElement = $$(moduleElement, 'history-clusters-header-v2');
       assertTrue(!!headerElement);
+      const label = $$(headerElement, '#label');
+      assertTrue(!!label);
 
-      assertModuleHeaderTitle(headerElement, `${sampleClusterLabel}`);
+      assertModuleHeaderTitle(label as HTMLElement, `${sampleClusterLabel}`);
     });
 
     test('Header info button click opens info dialog', async () => {
@@ -108,13 +111,37 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
 
       // Act.
       assertTrue(!!moduleElement);
-      const headerElement = $$(moduleElement, 'ntp-module-header-v2');
+      const headerElement = $$(moduleElement, 'history-clusters-header-v2');
       assertTrue(!!headerElement);
 
       headerElement!.dispatchEvent(new Event('info-button-click'));
 
       // Assert.
       assertTrue(!!$$(moduleElement, 'ntp-info-dialog'));
+    });
+
+    test('Header contains label that is not hidden', async () => {
+      // Arrange.
+      const sampleClusterLabel = '"Sample Journey"';
+      loadTimeData.overrideValues({
+        historyClustersSuggestionChipHeaderEnabled: true,
+      });
+      const moduleElements = await initializeModule(
+          [createSampleCluster(2, {label: sampleClusterLabel})]);
+      const moduleElement = moduleElements[0];
+
+      // Act.
+      assertTrue(!!moduleElement);
+      const headerElement = $$(moduleElement, 'history-clusters-header-v2');
+      assertTrue(!!headerElement);
+      const label = $$(headerElement, '#label');
+      assertTrue(!!label);
+      const suggestionChip = $$(headerElement, '#suggestion-chip');
+      assertTrue(!!suggestionChip);
+
+      // Assert.
+      assertEquals((label as HTMLElement).hidden, true);
+      assertEquals((suggestionChip as HTMLElement).hidden, false);
     });
   });
 });

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './module_header.js';
+import './header_tile.js';
 import './visit_tile.js';
 import './suggest_tile.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -97,13 +98,6 @@ export class HistoryClustersModuleElement extends I18nMixin
     assert(this.cluster.label.length >= 2);
     HistoryClustersProxyImpl.getInstance().handler.showJourneysSidePanel(
         this.cluster.label.substring(1, this.cluster.label.length - 1));
-  }
-
-  private onOpenAllInTabGroupClick_() {
-    const urls = [this.searchResultsPage_, ...this.cluster.visits].map(
-        visit => visit.normalizedUrl);
-    HistoryClustersProxyImpl.getInstance().handler.openUrlsInTabGroup(
-        urls, this.cluster.tabGroupName ?? null);
   }
 }
 
