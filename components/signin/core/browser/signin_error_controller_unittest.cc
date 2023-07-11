@@ -250,7 +250,7 @@ TEST(SigninErrorControllerTest,
 
   AccountInfo primary_account_info =
       identity_test_env.MakePrimaryAccountAvailable(
-          kPrimaryAccountEmail, signin::ConsentLevel::kSync);
+          kPrimaryAccountEmail, signin::ConsentLevel::kSignin);
   CoreAccountId secondary_account_id =
       identity_test_env.MakeAccountAvailable(kTestEmail).account_id;
   SigninErrorController error_controller(
@@ -298,7 +298,7 @@ TEST(SigninErrorControllerTest, PrimaryAccountErrorsAreSticky) {
 
   AccountInfo primary_account_info =
       identity_test_env.MakePrimaryAccountAvailable(
-          kPrimaryAccountEmail, signin::ConsentLevel::kSync);
+          kPrimaryAccountEmail, signin::ConsentLevel::kSignin);
   CoreAccountId secondary_account_id =
       identity_test_env.MakeAccountAvailable(kTestEmail).account_id;
   SigninErrorController error_controller(

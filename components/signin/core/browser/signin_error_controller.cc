@@ -152,7 +152,7 @@ void SigninErrorController::OnErrorStateOfRefreshTokenUpdatedForAccount(
 
 void SigninErrorController::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kNone) {
     return;
   }
