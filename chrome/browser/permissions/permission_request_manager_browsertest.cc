@@ -101,8 +101,9 @@ class TestQuietNotificationPermissionUiSelector
 class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
  public:
   PermissionRequestManagerBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        permissions::features::kBlockRepeatedNotificationPermissionPrompts);
+    scoped_feature_list_.InitWithFeatures(
+        {permissions::features::kBlockRepeatedNotificationPermissionPrompts},
+        {permissions::features::kBackForwardCacheUnblockPermissionRequest});
   }
 
   PermissionRequestManagerBrowserTest(
@@ -231,8 +232,7 @@ class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
 class PermissionRequestManagerWithBackForwardCacheBrowserTest
     : public PermissionRequestManagerBrowserTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PermissionRequestManagerBrowserTest::SetUpCommandLine(command_line);
+  PermissionRequestManagerWithBackForwardCacheBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
@@ -270,6 +270,19 @@ class PermissionRequestManagerWithPrerenderingTest
   }
 
   content::test::PrerenderTestHelper prerender_test_helper_;
+};
+
+class PermissionRequestManagerWithBackForwardCacheUnblockBrowserTest
+    : public PermissionRequestManagerWithBackForwardCacheBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PermissionRequestManagerBrowserTest::SetUpCommandLine(command_line);
+    feature_list_.InitAndEnableFeature(
+        permissions::features::kBackForwardCacheUnblockPermissionRequest);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Requests before the load event should be bundled into one bubble.
@@ -1273,6 +1286,74 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithFencedFrameTest,
       /* user_gesture = */ true, callback.Get());
   ASSERT_TRUE(console_observer.Wait());
   ASSERT_EQ(1u, console_observer.messages().size());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PermissionRequestManagerWithBackForwardCacheUnblockBrowserTest,
+    PendingRequestsDoNotDisableBackForwardCache) {
+  content::BackForwardCacheDisabledTester back_forward_cache_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(),
+      embedded_test_server()->GetURL(
+          "/permissions/requests-before-after-load.html"),
+      1);
+  bubble_factory()->WaitForPermissionBubble();
+  content::RenderFrameHostWrapper rfh_a(GetActiveMainFrame());
+  content::RenderFrameHost* main_frame = GetActiveMainFrame();
+  int main_frame_process_id = main_frame->GetProcess()->GetID();
+  int main_frame_routing_id = main_frame->GetRoutingID();
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("b.com", "/title1.html"), 1);
+  // A goes into bfcache.
+  EXPECT_FALSE(back_forward_cache_tester.IsDisabledForFrameWithReason(
+      main_frame_process_id, main_frame_routing_id,
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::kPermissionRequestManager)));
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  EXPECT_FALSE(bubble_factory()->is_visible());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PermissionRequestManagerWithBackForwardCacheUnblockBrowserTest,
+    PermissionRequestsCancelledInBackForwardCache) {
+  content::BackForwardCacheDisabledTester back_forward_cache_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("/title1.html"), 1);
+  // Create a geolocation permission request.
+  permissions::MockPermissionRequest request_1(
+      permissions::RequestType::kGeolocation);
+  GetPermissionRequestManager()->AddRequest(GetActiveMainFrame(), &request_1);
+  bubble_factory()->WaitForPermissionBubble();
+
+  content::RenderFrameHostWrapper rfh_a(GetActiveMainFrame());
+  content::RenderFrameHost* main_frame = GetActiveMainFrame();
+  int main_frame_process_id = main_frame->GetProcess()->GetID();
+  int main_frame_routing_id = main_frame->GetRoutingID();
+  // Request is not cancelled.
+  EXPECT_FALSE(request_1.cancelled());
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("b.com", "/title1.html"), 1);
+  // A goes into bfcache.
+  EXPECT_FALSE(back_forward_cache_tester.IsDisabledForFrameWithReason(
+      main_frame_process_id, main_frame_routing_id,
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::kPermissionRequestManager)));
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  // Request should be cancelled.
+  EXPECT_TRUE(request_1.cancelled());
+  EXPECT_FALSE(bubble_factory()->is_visible());
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  web_contents->GetController().GoBack();
+  EXPECT_TRUE(request_1.cancelled());
 }
 
 }  // anonymous namespace

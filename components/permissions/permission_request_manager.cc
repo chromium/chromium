@@ -449,17 +449,19 @@ void PermissionRequestManager::DidFinishNavigation(
             navigation_handle->GetRenderFrameHost());
   }
 
-  if (!pending_permission_requests_.IsEmpty() || IsRequestInProgress()) {
-    // |pending_permission_requests_| and |requests_| will be deleted below,
-    // which might be a problem for back-forward cache — the page might be
-    // restored later, but the requests won't be. Disable bfcache here if we
-    // have any requests here to prevent this from happening.
-    content::BackForwardCache::DisableForRenderFrameHost(
-        navigation_handle->GetPreviousRenderFrameHostId(),
-        back_forward_cache::DisabledReason(
-            back_forward_cache::DisabledReasonId::kPermissionRequestManager));
+  if (!base::FeatureList::IsEnabled(
+          features::kBackForwardCacheUnblockPermissionRequest)) {
+    if (!pending_permission_requests_.IsEmpty() || IsRequestInProgress()) {
+      // |pending_permission_requests_| and |requests_| will be deleted below,
+      // which might be a problem for back-forward cache — the page might be
+      // restored later, but the requests won't be. Disable bfcache here if we
+      // have any requests here to prevent this from happening.
+      content::BackForwardCache::DisableForRenderFrameHost(
+          navigation_handle->GetPreviousRenderFrameHostId(),
+          back_forward_cache::DisabledReason(
+              back_forward_cache::DisabledReasonId::kPermissionRequestManager));
+    }
   }
-
   CleanUpRequests();
 }
 

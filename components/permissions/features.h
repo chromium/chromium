@@ -14,6 +14,9 @@ namespace permissions {
 namespace features {
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kBackForwardCacheUnblockPermissionRequest);
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kBlockPromptsIfDismissedOften);
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
