@@ -29,6 +29,8 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcDiskQuotaBridge* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcDiskQuotaBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcDiskQuotaBridge(content::BrowserContext* context,
                      ArcBridgeService* bridge_service);

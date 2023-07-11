@@ -44,6 +44,12 @@ ArcDiskQuotaBridge* ArcDiskQuotaBridge::GetForBrowserContext(
   return ArcDiskQuotaBridgeFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcDiskQuotaBridge* ArcDiskQuotaBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcDiskQuotaBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
 ArcDiskQuotaBridge::ArcDiskQuotaBridge(content::BrowserContext* context,
                                        ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {
