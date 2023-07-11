@@ -15470,11 +15470,19 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_WAFFLE_PAGE_SUBTITLE" desc="The subtitle for the Waffle page."
         translateable="false">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+      </message>
+      <message name="IDS_WAFFLE_PAGE_SUBTITLE_INFO_LINK" desc="The info link in the subtitle of the Waffle page."
+        translateable="false">
+        labore
       </message>
       <message name="IDS_WAFFLE_BUTTON_TITLE" desc="The title of the button of the Waffle page."
         translateable="false">
         Button
+      </message>
+      <message name="IDS_WAFFLE_INFO_DIALOG_TITLE" desc="The title of the info dialog of the Waffle page."
+        translateable="false">
+        Lorem ipsum dolor sit amet
       </message>
     </if>
   </messages>

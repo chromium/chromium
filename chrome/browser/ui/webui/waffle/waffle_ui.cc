@@ -58,7 +58,10 @@ WaffleUI::WaffleUI(content::WebUI* web_ui)
 
   source->AddLocalizedString("title", IDS_WAFFLE_PAGE_TITLE);
   source->AddLocalizedString("subtitle", IDS_WAFFLE_PAGE_SUBTITLE);
+  source->AddLocalizedString("subtitleInfoLink",
+                             IDS_WAFFLE_PAGE_SUBTITLE_INFO_LINK);
   source->AddLocalizedString("buttonText", IDS_WAFFLE_BUTTON_TITLE);
+  source->AddLocalizedString("infoTitle", IDS_WAFFLE_INFO_DIALOG_TITLE);
 
   source->AddResourcePath("images/left_illustration.svg",
                           IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);

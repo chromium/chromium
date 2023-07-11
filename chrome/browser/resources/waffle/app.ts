@@ -5,16 +5,24 @@
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import './strings.m.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 import {WaffleChoice} from './browser_proxy';
 import {WaffleBrowserProxy} from './browser_proxy.js';
+
+export interface WaffleAppElement {
+  $: {
+    infoDialog: CrDialogElement,
+  };
+}
 
 export class WaffleAppElement extends PolymerElement {
   static get is() {
@@ -53,6 +61,10 @@ export class WaffleAppElement extends PolymerElement {
       WaffleBrowserProxy.getInstance().handler.displayDialog(
           document.body.offsetHeight);
     });
+  }
+
+  private onLinkClicked_() {
+    this.$.infoDialog.showModal();
   }
 }
 
