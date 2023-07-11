@@ -81,6 +81,7 @@ class FadeImageView : public views::ImageView,
     // Fade the old image out, then swap in the new image.
     CHECK_EQ(FadeAnimationState::kNoFadeAnimation, animation_state_);
     SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
     animation_state_ = FadeAnimationState::kFadeOut;
 
     ui::ScopedLayerAnimationSettings settings(layer()->GetAnimator());
