@@ -39,9 +39,7 @@ export function sendTestMessage(command) {
  *     has elapsed.
  */
 export function wait(time) {
-  return new Promise(function(resolve) {
-    setTimeout(resolve, time);
-  });
+  return new Promise(resolve => setTimeout(resolve, time));
 }
 
 /**
