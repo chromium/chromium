@@ -12,12 +12,14 @@ import '../icons.html.js';
 import '../settings_shared.css.js';
 import './input_device_settings_shared.css.js';
 
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {cast, castExists} from '../assert_extras.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
-import {Route, routes} from '../router.js';
+import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './graphics_tablet_subpage.html.js';
 import {GraphicsTablet} from './input_device_settings_types.js';
@@ -45,7 +47,7 @@ export class SettingsGraphicsTabletSubpageElement extends
     };
   }
 
-  private graphicsTablets: GraphicsTablet[];
+  public graphicsTablets: GraphicsTablet[];
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
@@ -54,9 +56,16 @@ export class SettingsGraphicsTabletSubpageElement extends
     }
   }
 
-  private onCustomizeTabletButtonsClick(): void {
-    // TODO(yyhyyh@): Implement the function to redirect to the customize
-    // graphics tablet subpage with the clicked graphicsTabletId.
+  private onCustomizeTabletButtonsClick(e: PointerEvent): void {
+    const customizeTabletButton = cast(e.target, CrLinkRowElement);
+    const closestTablet: HTMLDivElement|null =
+        castExists(customizeTabletButton.closest('.device'));
+    const url = new URLSearchParams(`graphicsTabletId=${
+        encodeURIComponent(closestTablet.getAttribute('data-evdev-id')!)}`);
+
+    Router.getInstance().navigateTo(
+        routes.CUSTOMIZE_TABLET_BUTTONS,
+        /* dynamicParams= */ url, /* removeSearch= */ true);
   }
 
   private onCustomizePenButtonsClick(): void {

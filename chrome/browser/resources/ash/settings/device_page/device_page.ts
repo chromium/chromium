@@ -199,6 +199,10 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
                 routes.CUSTOMIZE_MOUSE_BUTTONS.path,
                 '#customizeMouseButtonsRow');
           }
+          if (routes.CUSTOMIZE_TABLET_BUTTONS) {
+            map.set(
+                routes.CUSTOMIZE_TABLET_BUTTONS, '#customizeTabletButtonsRow');
+          }
           return map;
         },
       },

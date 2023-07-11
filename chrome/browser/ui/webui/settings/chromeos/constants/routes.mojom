@@ -89,6 +89,7 @@ enum Subpage {
   kPerDeviceKeyboardRemapKeys = 413,
   kGraphicsTablet = 414,
   kCustomizeMouseButtons = 415,
+  kCustomizeTabletButtons = 416,
 
   // Personalization section.
   // 500 was used for kChangePicture. Do not reuse.
@@ -233,6 +234,8 @@ const string kStorageSubpagePath = "storage";
 const string kExternalStorageSubpagePath = "storage/externalStoragePreferences";
 const string kPowerSubpagePath = "power";
 const string kGraphicsTabletSubpagePath = "graphics-tablet";
+const string kCustomizeTabletButtonsSubpagePath =
+    "graphics-tablet/customizeTabletButtons";
 
 // Personalization section.
 const string kPersonalizationSectionPath = "personalization";

@@ -153,6 +153,15 @@
       </settings-graphics-tablet-subpage>
     </os-settings-subpage>
   </template>
+  <template is="dom-if"
+      route-path="/graphics-tablet/customizeTabletButtons">
+    <os-settings-subpage id="customizeTabletButtonsRow"
+        page-title="$i18n{customizeTabletButtonsLabel}">
+      <settings-customize-tablet-buttons-subpage
+          graphics-tablets="[[graphicsTablets]]">
+      </settings-customize-tablet-buttons-subpage>
+    </os-settings-subpage>
+  </template>
   <template is="dom-if" route-path="/display">
     <os-settings-subpage page-title="$i18n{displayTitle}">
       <settings-display prefs="{{prefs}}"></settings-display>

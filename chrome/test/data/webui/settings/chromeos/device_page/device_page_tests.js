@@ -2068,6 +2068,14 @@ suite('SettingsDevicePage', function() {
 
   suite(assert(TestNames.GraphicsTablet), function() {
     let graphicsTabletPage;
+    let inputDeviceSettingsProvider;
+
+    suiteSetup(() => {
+      inputDeviceSettingsProvider = new FakeInputDeviceSettingsProvider();
+      inputDeviceSettingsProvider.setFakeGraphicsTablets(fakeGraphicsTablets);
+      setInputDeviceSettingsProviderForTesting(inputDeviceSettingsProvider);
+    });
+
     setup(async function() {
       setPeripheralCustomizationEnabled(true);
       await init();
@@ -2080,11 +2088,10 @@ suite('SettingsDevicePage', function() {
       assert(page);
       return Promise.resolve(page).then(function(page) {
         graphicsTabletPage = page;
-        graphicsTabletPage.set('graphicsTablets', fakeGraphicsTablets);
       });
     });
 
-    test('graphics tablet subpage visibility', function() {
+    test('graphics tablet subpage visibility', async () => {
       assertEquals(routes.GRAPHICS_TABLET, Router.getInstance().currentRoute);
       const items = graphicsTabletPage.shadowRoot.querySelectorAll('.device');
       // Verify that all graphics tablets are displayed and their ids are same
@@ -2110,6 +2117,20 @@ suite('SettingsDevicePage', function() {
       assert(customizePenButtons);
       assertTrue(isVisible(customizeTabletButtons));
       assertTrue(isVisible(customizePenButtons));
+
+      // Verify clicking the customize table buttons row will be redirecting
+      // to the customize table buttons subpage.
+      customizeTabletButtons.click();
+      await flushTasks();
+      assertEquals(
+          routes.CUSTOMIZE_TABLET_BUTTONS, Router.getInstance().currentRoute);
+
+      const urlSearchQuery =
+          Router.getInstance().getQueryParameters().get('graphicsTabletId');
+      assertTrue(!!urlSearchQuery);
+      const graphicsTabletId = Number(urlSearchQuery);
+      assertFalse(isNaN(graphicsTabletId));
+      assertEquals(fakeGraphicsTablets[0].id, graphicsTabletId);
     });
   });
 

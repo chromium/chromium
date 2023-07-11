@@ -49,6 +49,7 @@ namespace ash::settings {
 namespace mojom {
 using ::chromeos::settings::mojom::kAudioSubpagePath;
 using ::chromeos::settings::mojom::kCustomizeMouseButtonsSubpagePath;
+using ::chromeos::settings::mojom::kCustomizeTabletButtonsSubpagePath;
 using ::chromeos::settings::mojom::kDeviceSectionPath;
 using ::chromeos::settings::mojom::kDisplaySubpagePath;
 using ::chromeos::settings::mojom::kExternalStorageSubpagePath;
@@ -1349,6 +1350,15 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                      mojom::SearchResultIcon::kMouse,
                                      mojom::SearchResultDefaultRank::kMedium,
                                      mojom::kCustomizeMouseButtonsSubpagePath);
+
+    // TODO(yyhyyh@): Add icon for graphics tablet to replace the temporary
+    // stylus icon.
+    generator->RegisterNestedSubpage(
+        IDS_SETTINGS_GRAPHICS_TABLET_CUSTOMIZE_TABLET_BUTTONS_LABEL,
+        mojom::Subpage::kCustomizeTabletButtons,
+        mojom::Subpage::kGraphicsTablet, mojom::SearchResultIcon::kStylus,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::kCustomizeTabletButtonsSubpagePath);
   }
 
   // Keyboard.
