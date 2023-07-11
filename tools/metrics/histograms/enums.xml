@@ -59940,6 +59940,7 @@ from previous Chrome versions.
   <int value="-1987939098"
       label="AutofillEnablePasswordInfoBarAccountIndicationFooter:enabled"/>
   <int value="-1987283524" label="OmniboxExpandedStateShape:disabled"/>
+  <int value="-1986313133" label="InstantHotspotRebrand:enabled"/>
   <int value="-1985452239" label="SmartDim20190221:disabled"/>
   <int value="-1985239289" label="AutofillRichMetadataQueries:enabled"/>
   <int value="-1985025593" label="file-manager-enable-new-gallery"/>
@@ -61352,6 +61353,7 @@ from previous Chrome versions.
   <int value="-1270241570" label="TerminalDev:disabled"/>
   <int value="-1270082532" label="BluetoothRevamp:disabled"/>
   <int value="-1269962982" label="SyncUSSPasswords:disabled"/>
+  <int value="-1269625228" label="InstantHotspotRebrand:disabled"/>
   <int value="-1269093329" label="AndroidOmniboxPreviewsBadge:disabled"/>
   <int value="-1269084216" label="ash-md"/>
   <int value="-1268879861"

@@ -1924,6 +1924,11 @@ const char kInstallIsolatedWebAppFromUrlDescription[] =
     "Installs a new developer mode Isolated Web App whose contents are hosted "
     "at the provided HTTP(S) URL.";
 
+const char kInstantHotspotRebrandName[] = "Instant Hotspot Improvements";
+
+const char kInstantHotspotRebrandDescription[] =
+    "Enables Instant Hotspot rebrand/feature improvements.";
+
 const char kJavascriptHarmonyName[] = "Experimental JavaScript";
 const char kJavascriptHarmonyDescription[] =
     "Enable web pages to use experimental JavaScript features.";

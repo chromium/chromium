@@ -1079,6 +1079,9 @@ extern const char kInsecureDownloadWarningsDescription[];
 extern const char kInstallIsolatedWebAppFromUrl[];
 extern const char kInstallIsolatedWebAppFromUrlDescription[];
 
+extern const char kInstantHotspotRebrandName[];
+extern const char kInstantHotspotRebrandDescription[];
+
 extern const char kJavascriptHarmonyName[];
 extern const char kJavascriptHarmonyDescription[];
 

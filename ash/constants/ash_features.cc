@@ -1391,6 +1391,11 @@ BASE_FEATURE(kImprovedLoginErrorHandling,
              "ImprovedLoginErrorHandling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Instant Hotspot rebrand/feature improvements. crbug/290075504.
+BASE_FEATURE(kInstantHotspotRebrand,
+             "InstantHotspotRebrand",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables Instant Tethering on ChromeOS.
 BASE_FEATURE(kInstantTethering,
              "InstantTethering",

@@ -4747,6 +4747,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "instant-hotspot-rebrand",
+    "owners": [ "rudranshd", "joeantonetti", "chromeos-cross-device-eng@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "instant-tethering",
     "owners": [ "hansberry", "khorimoto", "chromeos-cross-device-eng@google.com" ],
     // Though Instant Tethering is now a launched feature, it is only marked enabled on select,
