@@ -410,6 +410,7 @@ source_set("v3_types") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
+  sources = [ "src/connections/v3/connections_device.cc" ]
   public = [
     "src/connections/v3/bandwidth_info.h",
     "src/connections/v3/connection_listening_options.h",
@@ -910,6 +911,7 @@ source_set("presence_types") {
     ":connections_credential_proto",
     ":connections_metadata_proto",
     ":interop_device",
+    ":offline_wire_formats_proto",
     ":platform_base",
     ":platform_base_connection_info",
     ":platform_public_logging",
