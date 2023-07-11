@@ -110,12 +110,12 @@ function showUrl(url: string) {
   activate(container);
 
   const anchor = dom.getFrom(container, 'a', HTMLAnchorElement);
-  Object.assign(anchor, {
-    textContent: url,
-    onclick: () => {
-      ChromeHelper.getInstance().openUrlInBrowser(url);
-    },
-  });
+  anchor.onclick = (ev) => {
+    ev.preventDefault();
+    ChromeHelper.getInstance().openUrlInBrowser(url);
+  };
+  anchor.href = url;
+  anchor.textContent = url;
   const hostname = new URL(url).hostname;
   const label =
       loadTimeData.getI18nMessage(I18nString.BARCODE_LINK_DETECTED, hostname);

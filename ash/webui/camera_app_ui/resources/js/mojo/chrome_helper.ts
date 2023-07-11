@@ -285,8 +285,8 @@ export class ChromeHelperFake extends ChromeHelper {
     alert('Feedback dialog.');
   }
 
-  override openUrlInBrowser(_url: string): void {
-    // TODO(pihsun): Mock this and open the URL in a new tab.
+  override openUrlInBrowser(url: string): void {
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   override async finish(_intentId: number): Promise<void> {
