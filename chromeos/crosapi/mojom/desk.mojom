@@ -173,10 +173,10 @@ interface Desk {
   LaunchEmptyDesk@0(string desk_name)
       => (LaunchEmptyDeskResult result);
 
-  // Remove a desk from ash, close all windows if `close_all` set to true,
+  // Remove a desk from ash, close all windows if `combine_desk` set to false,
   // otherwise combine the windows to the active desk to the left. Returns
   // `error` if the operation failed.
-  RemoveDesk@1(GUID desk_uuid, bool close_all) => (RemoveDeskResult result);
+  RemoveDesk@1(GUID desk_uuid, bool combine_desk) => (RemoveDeskResult result);
 
   // Gets the template associated with the templateUuid and returns its JSON
   // representation. Returns an error if either the template could not be

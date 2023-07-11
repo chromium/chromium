@@ -134,7 +134,7 @@ void WMDesksPrivateFeatureLacros::LaunchDesk(std::string desk_name,
 }
 
 void WMDesksPrivateFeatureLacros::RemoveDesk(const base::Uuid& desk_uuid,
-                                             bool close_all,
+                                             bool combine_desk,
                                              RemoveDeskCallback callback) {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::Desk>()) {
@@ -142,7 +142,7 @@ void WMDesksPrivateFeatureLacros::RemoveDesk(const base::Uuid& desk_uuid,
     return;
   }
   service->GetRemote<crosapi::mojom::Desk>()->RemoveDesk(
-      desk_uuid, close_all,
+      desk_uuid, combine_desk,
       base::BindOnce(
           [](RemoveDeskCallback callback,
              crosapi::mojom::RemoveDeskResultPtr result) {

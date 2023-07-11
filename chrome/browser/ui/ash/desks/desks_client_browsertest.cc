@@ -2473,7 +2473,8 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, LaunchTemplateAndCleanUpDesk) {
   // Creates a new window.
   CreateBrowser({});
   base::HistogramTester histogram_tester;
-  ASSERT_FALSE(DesksClient::Get()->RemoveDesk(desk_id, false));
+  ASSERT_FALSE(DesksClient::Get()->RemoveDesk(
+      desk_id, ash::DeskCloseType::kCloseAllWindows));
   waiter.Wait();
   // Record number of windows being closed per source.
   // NOTE: The template contains an existing browser with 1 tab created by
@@ -2537,7 +2538,8 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, RemoveWithInvalidDeskId) {
   EXPECT_EQ(1u, desks_controller->desks().size());
   // Construct an empty invalid desk_id.
   base::Uuid desk_id;
-  EXPECT_THAT(DesksClient::Get()->RemoveDesk(desk_id, false),
+  EXPECT_THAT(DesksClient::Get()->RemoveDesk(
+                  desk_id, ash::DeskCloseType::kCloseAllWindows),
               testing::Optional(DesksClient::DeskActionError::kInvalidIdError));
   EXPECT_EQ(1u, desks_controller->desks().size());
 }
@@ -2557,7 +2559,8 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, GetAllDesksAndRemove) {
   ASSERT_EQ(1u, desks.value().size());
   desk_id = desks.value().at(0)->uuid();
 
-  EXPECT_THAT(DesksClient::Get()->RemoveDesk(desk_id, false),
+  EXPECT_THAT(DesksClient::Get()->RemoveDesk(
+                  desk_id, ash::DeskCloseType::kCloseAllWindows),
               testing::Optional(
                   DesksClient::DeskActionError::kDesksCountCheckFailedError));
 }
@@ -2639,7 +2642,8 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, ThrottleImmediateDeskAction) {
   ASSERT_TRUE(result.has_value());
   new_desk_id = result.value();
 
-  EXPECT_THAT(DesksClient::Get()->RemoveDesk(new_desk_id, false),
+  EXPECT_THAT(DesksClient::Get()->RemoveDesk(
+                  new_desk_id, ash::DeskCloseType::kCloseAllWindows),
               testing::Optional(
                   DesksClient::DeskActionError::kDesksBeingModifiedError));
 

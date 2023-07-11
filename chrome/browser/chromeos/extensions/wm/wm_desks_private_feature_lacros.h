@@ -27,7 +27,7 @@ class WMDesksPrivateFeatureLacros : public WMDesksPrivateFeature {
   void LaunchDesk(std::string desk_name, LaunchDeskCallback callback) override;
 
   void RemoveDesk(const base::Uuid& desk_uuid,
-                  bool close_all,
+                  bool combine_desk,
                   RemoveDeskCallback callback) override;
 
   void SetAllDeskProperty(int window_id,

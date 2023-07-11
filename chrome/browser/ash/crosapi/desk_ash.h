@@ -36,7 +36,7 @@ class DeskAsh : public mojom::Desk {
   void LaunchEmptyDesk(const std::string& desk_name,
                        LaunchEmptyDeskCallback callback) override;
   void RemoveDesk(const base::Uuid& desk_uuid,
-                  bool close_all,
+                  bool combine_desk,
                   RemoveDeskCallback callback) override;
   void GetTemplateJson(const base::Uuid& uuid,
                        GetTemplateJsonCallback callback) override;
