@@ -82,6 +82,8 @@ class EligibilityModule {
   void ComputeFeaturesForOrOfThresholdingRules(
       const google::protobuf::RepeatedPtrField<OrOfThresholdingRules>& rules,
       const SingleImageGeometryFeatures& image);
+  void ComputeFeaturesForSortingClauses(
+      const SingleImageGeometryFeatures& image);
   // Eligibility evaluation methods.
   bool IsEligible(
       const google::protobuf::RepeatedPtrField<OrOfThresholdingRules>& rules,
@@ -117,6 +119,9 @@ class EligibilityModule {
       const std::string& image_id,
       const google::protobuf::RepeatedPtrField<OrOfThresholdingRules>& rules,
       base::flat_map<std::string, double>& output_map);
+  // Apply the sorting clauses of the spec before returning the results.
+  void SortImages(
+      std::vector<std::pair<std::string, double>>* images_with_feature_values);
 
   EligibilitySpec spec_;
   // Cache for features that are computed individually for each image.
