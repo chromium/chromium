@@ -61,10 +61,7 @@ async function sendEvent(
 
   await ready.wait();
 
-  // This value reflects the logging consent option in OS settings.
-  const canSendMetrics = !PRODUCTION ||
-      await ChromeHelper.getInstance().isMetricsAndCrashReportingEnabled();
-  if (canSendMetrics) {
+  if (await checkCanSendMetrics()) {
     await Promise.all([
       sendGaEvent(event, dimensions),
       sendGa4Event(event, dimensions),
@@ -107,9 +104,13 @@ async function sendGa4Event(
  *
  * @param enabled True if the metrics is enabled.
  */
-export async function setGaEnabled(enabled: boolean): Promise<void> {
+export async function setEnabled(enabled: boolean): Promise<void> {
   await ready.wait();
-  await (await getGaHelper()).setGaEnabled(GA_ID, enabled);
+  const gaHelper = await getGaHelper();
+  await Promise.all([
+    gaHelper.setGaEnabled(GA_ID, enabled),
+    gaHelper.setGa4Enabled(enabled),
+  ]);
 }
 
 /**
@@ -162,7 +163,13 @@ export async function initMetrics(): Promise<void> {
   }
 
   await Promise.all([initGa(), initGa4()]);
-  await gaHelper.registerGa4EndSessionEvent();
+  // TODO(b/286511762): Monitor consent option to enable/disable sending
+  // metrics. Since end_session event is sent when the window is unloaded, we
+  // don't have time to read the value from `checkCanSendMetrics()`. Currently,
+  // we check the consent option on register instead of send.
+  if (await checkCanSendMetrics()) {
+    await gaHelper.registerGa4EndSessionEvent();
+  }
   ready.signal();
 }
 
@@ -576,4 +583,10 @@ export function sendLowStorageEvent(action: LowStorageActionType): void {
 
 function boolToIntString(b: boolean) {
   return b ? '1' : '0';
+}
+
+// The returned value reflects the logging consent option in OS settings.
+async function checkCanSendMetrics(): Promise<boolean> {
+  return !PRODUCTION ||
+      await ChromeHelper.getInstance().isMetricsAndCrashReportingEnabled();
 }

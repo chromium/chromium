@@ -230,6 +230,7 @@ interface InitGa4Params {
 
 type Ga4Config = Required<InitGa4Params>;
 
+let ga4Enabled = true;
 let ga4Config: Ga4Config|null = null;
 /**
  * Initializes GA4 for sending metrics.
@@ -333,6 +334,9 @@ function sendGa4Event({
   eventParams,
   beacon = false,
 }: SendGa4EventParams): void {
+  if (!ga4Enabled) {
+    return;
+  }
   const {apiSecret, baseParams, clientId, measurementId, sessionId} =
       assertExists(ga4Config);
   const params: Ga4MeasurementProtocolEventParams = {
@@ -379,6 +383,15 @@ function setGaEnabled(id: string, enabled: boolean): void {
   window[`ga-disable-${id}`] = !enabled;
 }
 
+/**
+ * Sets if GA4 can send metrics.
+ *
+ * @param enabled True if the metrics is enabled.
+ */
+function setGa4Enabled(enabled: boolean): void {
+  ga4Enabled = enabled;
+}
+
 function getDevicePixelRatio() {
   return window.devicePixelRatio.toFixed(2);
 }
@@ -399,6 +412,7 @@ export interface GaHelper {
   sendGaEvent: typeof sendGaEvent;
   sendGa4Event: typeof sendGa4Event;
   setGaEnabled: typeof setGaEnabled;
+  setGa4Enabled: typeof setGa4Enabled;
 }
 export {
   initGa,
@@ -407,4 +421,5 @@ export {
   sendGaEvent,
   sendGa4Event,
   setGaEnabled,
+  setGa4Enabled,
 };
