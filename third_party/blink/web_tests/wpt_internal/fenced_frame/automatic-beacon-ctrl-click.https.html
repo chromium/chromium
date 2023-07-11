@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<title>Test ctrl+click for automatic beacons</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body>
+<script>
+promise_test(async(t) => {
+  const fencedframe = await attachFencedFrameContext(
+    {generator_api: 'fledge'});
+  const new_url = new URL("resources/dummy.html", location.href);
+  const beacon_data = "This is the beacon data!";
+
+  await fencedframe.execute((new_url, beacon_data) => {
+    let a = document.createElement('a');
+    a.textContent = "Click me!";
+    a.href = new_url;
+    a.target = "_blank";
+
+    // When the anchor link is clicked, the click handler will set the data
+    // before the navigation happens.
+    a.onclick = () => {
+      let beacon_event = {
+        eventType: "reserved.top_navigation",
+        eventData: beacon_data,
+        destination: ["buyer"],
+      }
+      window.fence.setReportEventDataForAutomaticBeacons(beacon_event);
+    };
+    document.body.appendChild(a);
+
+    assert_not_equals(eventSender, null);
+
+    var rect = a.getBoundingClientRect();
+    eventSender.mouseMoveTo(rect.x+rect.width/2, rect.y+rect.height/2);
+
+    const isMac = navigator.userAgent.search(/\bMac OS X\b/) != -1;
+    eventSender.mouseDown(0, [isMac ? 'metaKey' : 'ctrlKey']);
+    eventSender.mouseUp(0, [isMac ? 'metaKey' : 'ctrlKey']);
+  }, [new_url, beacon_data]);
+
+  const received_beacon_data = await nextAutomaticBeacon();
+  assert_equals(received_beacon_data, beacon_data);
+}, 'Trigger an automatic beacon from ctrl+clicking a link.');
+
+</script>
+</body>
