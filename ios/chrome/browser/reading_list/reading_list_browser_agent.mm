@@ -85,7 +85,6 @@ void ReadingListBrowserAgent::AddURLsToReadingList(
       [MDCSnackbarMessage messageWithText:snackbar_text];
   message.accessibilityLabel = snackbar_text;
   message.action = snackbar_action;
-  message.duration = 2.0;
 
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
   id<SnackbarCommands> snackbar_commands_handler =
