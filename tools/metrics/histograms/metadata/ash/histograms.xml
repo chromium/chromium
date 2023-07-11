@@ -3197,7 +3197,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveClient.SavePreservedFileSuccess"
-    enum="BooleanSuccess" expires_after="2023-11-05">
+    enum="BooleanSuccess" expires_after="2024-01-07">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3207,7 +3207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveClient.StateCount"
-    enum="DeviceActiveClientState" expires_after="2023-11-05">
+    enum="DeviceActiveClientState" expires_after="2024-01-07">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
