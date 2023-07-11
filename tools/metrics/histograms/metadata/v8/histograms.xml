@@ -1295,6 +1295,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.SandboxedCodePointersCount" units="count"
+    expires_after="2024-06-30">
+  <owner>saelo@chromium.org</owner>
+  <owner>ishell@chromium.org</owner>
+  <summary>
+    The number of in-use entries in a CodePointerTable.
+
+    When the V8 Sandbox is enabled, code pointers are stored in a
+    CodePointerTable instead of on the V8 heap to ensure that they cannot be
+    manipulated by an attacker. This histogram records the number of active
+    entries in the CodePointerTable during garbage collection.
+  </summary>
+</histogram>
+
 <histogram name="V8.SandboxedExternalPointersCount" units="count"
     expires_after="2023-12-24">
   <owner>saelo@chromium.org</owner>
