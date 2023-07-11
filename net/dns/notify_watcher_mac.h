@@ -38,6 +38,8 @@ class NotifyWatcherMac {
   // Called by |watcher_| when |notify_fd_| can be read without blocking.
   void OnFileCanReadWithoutBlocking();
 
+  CallbackType CancelInternal();
+
   int notify_fd_;
   int notify_token_;
   CallbackType callback_;
