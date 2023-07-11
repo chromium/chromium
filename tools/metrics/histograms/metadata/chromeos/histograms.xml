@@ -2729,9 +2729,9 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.AppCount2.{AppType}" units="apps"
-    expires_after="2023-08-19">
-  <owner>dominickn@chromium.org</owner>
-  <owner>melzhang@chromium.org</owner>
+    expires_after="2024-01-11">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
     Records number of {AppType} apps found for a given intent in the Sharesheet
     when the sharesheet is invoked. Has 100 exponential buckets. (The original
@@ -2747,8 +2747,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.CopyToClipboard.FormFactor"
-    enum="ChromeOSSharesheetFormFactor" expires_after="2023-08-19">
-  <owner>melzhang@chromium.org</owner>
+    enum="ChromeOSSharesheetFormFactor" expires_after="2024-01-11">
   <owner>vpao@google.com</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -2758,9 +2757,9 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.FileCount" units="files"
-    expires_after="2023-08-19">
-  <owner>dominickn@chromium.org</owner>
-  <owner>melzhang@chromium.org</owner>
+    expires_after="2024-01-11">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
     Records the number of files a user is trying to share from the Sharesheet
     when the sharesheet is invoked.
@@ -2768,16 +2767,16 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.FormFactor"
-    enum="ChromeOSSharesheetFormFactor" expires_after="2023-08-19">
-  <owner>dominickn@chromium.org</owner>
-  <owner>melzhang@chromium.org</owner>
+    enum="ChromeOSSharesheetFormFactor" expires_after="2024-01-11">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>Records the form factor when the Sharesheet is invoked.</summary>
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.IsDriveFolder" enum="Boolean"
-    expires_after="2023-08-19">
-  <owner>dominickn@chromium.org</owner>
-  <owner>melzhang@chromium.org</owner>
+    expires_after="2024-01-11">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
     If the value is true, the data being shared from the Sharesheet is a folder
     from Drive. Recorded when the sharesheet is invoked.
@@ -2785,9 +2784,9 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.IsImagePreviewPressed"
-    enum="BooleanSelected" expires_after="2023-08-19">
-  <owner>dominickn@chromium.org</owner>
-  <owner>melzhang@chromium.org</owner>
+    enum="BooleanSelected" expires_after="2024-01-11">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
     If the value is true, the image preview was pressed during the current
     invocation. Recorded when the sharesheet closes.
@@ -2796,8 +2795,8 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.Sharesheet.LaunchSource"
     enum="ChromeOSSharesheetLaunchSource" expires_after="2023-11-12">
-  <owner>dominickn@chromium.org</owner>
-  <owner>melzhang@chromium.org</owner>
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
     Records the source from which the Sharesheet is invoked.
 
@@ -2806,9 +2805,9 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.ShareActionCount"
-    enum="ChromeOSSharesheetAction" expires_after="2023-08-19">
-  <owner>dominickn@chromium.org</owner>
-  <owner>melzhang@chromium.org</owner>
+    enum="ChromeOSSharesheetAction" expires_after="2024-01-11">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
     Records each action found for a given intent when the Sharesheet is invoked.
 
@@ -2818,14 +2817,14 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.Sharesheet.UserAction"
     enum="ChromeOSSharesheetAction" expires_after="2023-11-12">
-  <owner>dominickn@chromium.org</owner>
-  <owner>melzhang@chromium.org</owner>
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>Records user action on sharesheet invocations.</summary>
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.{Location}.MimeType"
-    enum="ChromeOSSharesheetMimeType" expires_after="2023-08-19">
-  <owner>melzhang@chromium.org</owner>
+    enum="ChromeOSSharesheetMimeType" expires_after="2024-01-11">
+  <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
     Records the mime type of the content being copied at the {Location} point in
