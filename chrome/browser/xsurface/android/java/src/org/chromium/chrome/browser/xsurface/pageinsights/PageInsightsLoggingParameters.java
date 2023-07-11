@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.xsurface.pageinsights;
 
+import androidx.annotation.Nullable;
+
 /**
  * Parameters necessary for logging by {@link PageInsightsSurfaceRenderer}.
  *
@@ -13,11 +15,15 @@ public interface PageInsightsLoggingParameters {
     String KEY = "PageInsightsLoggingParameters";
 
     /** Returns the account name to be used when logging. */
-    String accountName();
+    default @Nullable String accountName() {
+        return null;
+    }
 
     /**
      * Returns serialised object representing server-impressed element to which visual elements on
      * the client should be parented for logging purposes.
      */
-    byte[] parentData();
+    default @Nullable byte[] parentData() {
+        return null;
+    }
 }
