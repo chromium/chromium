@@ -361,12 +361,13 @@ export class SearchV2ContentScanner extends ContentScanner {
    * Creates a single promise that, when fulfilled, returns a non-null array of
    * file entries. The array may be empty.
    * @param {!chrome.fileManagerPrivate.SearchMetadataParams} params
+   * @param {string} metricVariant The name of the UMA search metric variant.
    * @return {!Promise<!Array<!Entry>>}
    * @private
    */
-  makeFileSearchPromise_(params) {
+  makeFileSearchPromise_(params, metricVariant) {
     return new Promise((resolve, reject) => {
-      metrics.startInterval('Search.Local.Latency');
+      metrics.startInterval(`Search.${metricVariant}.Latency`);
       chrome.fileManagerPrivate.searchFiles(
           params,
           /**
@@ -380,7 +381,7 @@ export class SearchV2ContentScanner extends ContentScanner {
                   util.FileError.NOT_READABLE_ERR,
                   chrome.runtime.lastError.message));
             } else {
-              metrics.recordInterval('Search.Local.Latency');
+              metrics.recordInterval(`Search.${metricVariant}.Latency`);
               resolve(entries);
             }
           });
@@ -393,12 +394,12 @@ export class SearchV2ContentScanner extends ContentScanner {
    * @param {number} modifiedTimestamp
    * @param {chrome.fileManagerPrivate.FileCategory} category
    * @param {number} maxResults
-   * @param {string} metricName
+   * @param {string} metricVariant
    * @return {!Promise<!Array<!Entry>>}
    * @private
    */
   makeReadEntriesRecursivelyPromise_(
-      folder, modifiedTimestamp, category, maxResults, metricName) {
+      folder, modifiedTimestamp, category, maxResults, metricVariant) {
     // A promise that resolves to an entry if it is modified after cutoffDate or
     // null, otherwise. Used to filter entries by modified time. If we fail to
     // get metadata for an entry we return it without comparison, to be on the
@@ -413,7 +414,7 @@ export class SearchV2ContentScanner extends ContentScanner {
           });
     });
     return new Promise((resolve, reject) => {
-      metrics.startInterval(`Search.${metricName}.Latency`);
+      metrics.startInterval(`Search.${metricVariant}.Latency`);
       const collectedEntries = [];
       let workLeft = 1;
       util.readEntriesRecursively(
@@ -443,7 +444,7 @@ export class SearchV2ContentScanner extends ContentScanner {
                     collectedEntries.push(...modified.filter(e => e !== null));
                     workLeft -= modified.length;
                     if (workLeft <= 0) {
-                      metrics.recordInterval(`Search.${metricName}.Latency`);
+                      metrics.recordInterval(`Search.${metricVariant}.Latency`);
                       resolve(collectedEntries);
                     }
                   });
@@ -452,7 +453,7 @@ export class SearchV2ContentScanner extends ContentScanner {
           // All entries read callback.
           () => {
             if (--workLeft <= 0) {
-              metrics.recordInterval(`Search.${metricName}.Latency`);
+              metrics.recordInterval(`Search.${metricVariant}.Latency`);
               resolve(collectedEntries);
             }
           },
@@ -478,11 +479,13 @@ export class SearchV2ContentScanner extends ContentScanner {
    * @param {number} modifiedTimestamp
    * @param {chrome.fileManagerPrivate.FileCategory} category
    * @param {number} maxResults
+   * @param {string} metricVariant
    * @param {!Array<!DirectoryEntry>} folders
    * @return {!Array<!Promise<!Array<!Entry>>>}
    * @private
    */
-  makeFileSearchPromiseList_(modifiedTimestamp, category, maxResults, folders) {
+  makeFileSearchPromiseList_(
+      modifiedTimestamp, category, maxResults, metricVariant, folders) {
     /** @type {!chrome.fileManagerPrivate.SearchMetadataParams} */
     const baseParams = {
       query: this.query_,
@@ -496,7 +499,8 @@ export class SearchV2ContentScanner extends ContentScanner {
             /** @type {!chrome.fileManagerPrivate.SearchMetadataParams} */ ({
               ...baseParams,
               rootDir: searchDir,
-            })));
+            }),
+            metricVariant));
   }
 
   /**
@@ -517,7 +521,7 @@ export class SearchV2ContentScanner extends ContentScanner {
     }
     const myFilesEntry = this.getWrappedVolumeEntry_(myFilesVolume.displayRoot);
     return this.makeFileSearchPromiseList_(
-        modifiedTimestamp, category, maxResults,
+        modifiedTimestamp, category, maxResults, 'Local',
         this.getSearchRoots_(myFilesEntry));
   }
 
@@ -535,7 +539,7 @@ export class SearchV2ContentScanner extends ContentScanner {
     const rootFolderList = this.getRootFoldersByVolumeType_(
         VolumeManagerCommon.VolumeType.REMOVABLE);
     return this.makeFileSearchPromiseList_(
-        modifiedTimestamp, category, maxResults,
+        modifiedTimestamp, category, maxResults, 'Removable',
         this.getRootFoldersByVolumeType_(
             VolumeManagerCommon.VolumeType.REMOVABLE));
   }
@@ -642,9 +646,13 @@ export class SearchV2ContentScanner extends ContentScanner {
       return [this.makeReadEntriesRecursivelyPromise_(
           searchFolder, modifiedTimestamp, category, maxResults, 'Provided')];
     }
+    const metricVariant =
+        this.rootType_ === VolumeManagerCommon.RootType.REMOVABLE ?
+        'Removable' :
+        'Local';
     // My Files or a folder nested in it.
     return this.makeFileSearchPromiseList_(
-        modifiedTimestamp, category, maxResults,
+        modifiedTimestamp, category, maxResults, metricVariant,
         this.getSearchRoots_(searchFolder));
   }
 
