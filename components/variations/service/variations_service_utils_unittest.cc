@@ -4,6 +4,7 @@
 
 #include "components/variations/service/variations_service_utils.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -13,7 +14,7 @@ using VariationsServiceUtilsTest = ::testing::Test;
 
 // Verifies that the seed expiration status is correctly computed based on its
 // fetch time and the binary build time.
-TEST_F(VariationsServiceUtilsTest, HasSeedExpiredSinceTime) {
+TEST(VariationsServiceUtilsTest, HasSeedExpiredSinceTime) {
   base::Time now = base::Time::Now();
   struct {
     const base::Time fetch_time;
@@ -37,4 +38,34 @@ TEST_F(VariationsServiceUtilsTest, HasSeedExpiredSinceTime) {
   }
 }
 
+TEST(VariationsServiceUtilsTest,
+     EmitFutureSeedMetricsForSeedWithFutureFetchTime) {
+  base::Time now = base::Time::Now();
+  base::Time future_fetch_time = now + base::Hours(50);
+  base::HistogramTester histogram_tester;
+  HasSeedExpiredSinceTimeHelperForTesting(future_fetch_time,
+                                          /*build_time=*/now);
+
+  histogram_tester.ExpectUniqueSample("Variations.HasFutureSeed",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("Variations.SeedFreshness.Future",
+                                      /*sample=*/2,
+                                      /*expected_bucket_count=*/1);
+}
+
+TEST(VariationsServiceUtilsTest,
+     EmitFutureSeedMetricsForSeedWithPastFetchTime) {
+  base::Time now = base::Time::Now();
+  base::Time past_fetch_time = now - base::Days(5);
+  base::HistogramTester histogram_tester;
+  HasSeedExpiredSinceTimeHelperForTesting(past_fetch_time,
+                                          /*build_time=*/now);
+
+  histogram_tester.ExpectUniqueSample("Variations.HasFutureSeed",
+                                      /*sample=*/false,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount("Variations.SeedFreshness.Future",
+                                    /*expected_count=*/0);
+}
 }  // namespace variations

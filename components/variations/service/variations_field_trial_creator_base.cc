@@ -501,6 +501,8 @@ void VariationsFieldTrialCreatorBase::ApplyFieldTrialTestingConfig(
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 
 bool VariationsFieldTrialCreatorBase::HasSeedExpired(bool is_safe_seed) {
+  // TODO(crbug/1462588): Consider comparing the server-provided fetch time with
+  // the network time.
   const base::Time fetch_time = is_safe_seed
                                     ? GetSeedStore()->GetSafeSeedFetchTime()
                                     : GetSeedStore()->GetLastFetchTime();

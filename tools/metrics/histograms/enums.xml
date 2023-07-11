@@ -12726,6 +12726,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Full Screen Mode"/>
 </enum>
 
+<enum name="BooleanFutureSeed">
+  <int value="0" label="Seed fetched before Time::Now()"/>
+  <int value="1" label="Seed fetched after Time::Now()"/>
+</enum>
+
 <enum name="BooleanGAIAWebViewFlow">
   <int value="0" label="iframe-based flow"/>
   <int value="1" label="WebView-based flow"/>
