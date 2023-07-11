@@ -12,7 +12,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
-import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -111,12 +110,6 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         }
 
         mMostVisitedSites.recordPageImpression(tiles.size());
-
-        for (Tile tile : tiles) {
-            if (tile.isOfflineAvailable()) {
-                SuggestionsMetrics.recordTileOfflineAvailability(tile.getIndex());
-            }
-        }
     }
 
     @Override

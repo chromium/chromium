@@ -106,7 +106,6 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.List;
 
@@ -319,11 +318,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             super.openMostVisitedItem(windowDisposition, tile);
             for (MostVisitedTileClickObserver observer : mMostVisitedTileClickObservers) {
                 observer.onMostVisitedTileClicked(tile, mTab);
-            }
-            if (windowDisposition != WindowOpenDisposition.NEW_WINDOW) {
-                RecordHistogram.recordMediumTimesHistogram("NewTabPage.MostVisitedTime",
-                        (System.nanoTime() - mLastShownTimeNs)
-                                / TimeUtils.NANOSECONDS_PER_MILLISECOND);
             }
         }
     }

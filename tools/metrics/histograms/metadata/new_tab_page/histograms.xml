@@ -1340,15 +1340,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.MostVisitedTime" units="ms" expires_after="M77">
-  <owner>treib@chromium.org</owner>
-  <summary>
-    The time from the New Tab page being shown until the user to clicked on a
-    most visited tile. Only recorded if the user clicked on a tile, as opposed
-    to e.g. searching via the omnibox. Only measured on Android.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.NumberOfTiles" units="units"
     expires_after="2023-09-30">
   <owner>tiborg@chromium.org</owner>
@@ -1780,16 +1771,6 @@ chromium-metrics-reviews@google.com.
     Logs the elapsed time between the time when user enters the Google Lens and
     the time when user dismisses Lens and returns to Chrome. Only logged on
     Android.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.TileOfflineAvailable" enum="MostVisitedTileIndex"
-    expires_after="M77">
-  <owner>treib@chromium.org</owner>
-  <summary>
-    The number of times a tile was available offline, per tile index - compare
-    to the NewTabPage.SuggestionsImpression.* histograms. This is recorded when
-    the NTP finishes loading. Only measured on Android.
   </summary>
 </histogram>
 
