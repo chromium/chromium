@@ -19,6 +19,7 @@ import type {Protocol} from 'devtools-protocol';
 import {
   NoSuchHandleException,
   NoSuchNodeException,
+  UnknownErrorException,
   type Script,
 } from '../../../protocol/protocol.js';
 import type {IEventManager} from '../events/EventManager.js';
@@ -259,7 +260,7 @@ export class ScriptEvaluator {
     argumentValue: Script.LocalValue,
     realm: Realm
   ): Promise<Protocol.Runtime.CallArgument> {
-    if ('sharedId' in argumentValue && argumentValue.sharedId !== undefined) {
+    if ('sharedId' in argumentValue && argumentValue.sharedId) {
       const [navigableId, rawBackendNodeId] =
         argumentValue.sharedId.split(SHARED_ID_DIVIDER);
 
@@ -295,12 +296,16 @@ export class ScriptEvaluator {
             `SharedId "${argumentValue.sharedId}" was not found.`
           );
         }
-        throw e;
+        throw new UnknownErrorException(e.message, e.stack);
       }
-    }
-    if ('handle' in argumentValue) {
+    } else if ('handle' in argumentValue && argumentValue.handle) {
       return {objectId: argumentValue.handle};
+      // We tried to find a handle value but failed
+      // This allows us to have exhaustive switch on `argumentValue.type`
+    } else if ('handle' in argumentValue || 'sharedId' in argumentValue) {
+      throw new NoSuchHandleException('Handle was not found.');
     }
+
     switch (argumentValue.type) {
       // Primitive Protocol Value
       // https://w3c.github.io/webdriver-bidi/#data-types-protocolValue-primitiveProtocolValue
@@ -455,12 +460,12 @@ export class ScriptEvaluator {
       }
 
       // TODO(#375): Dispose of nested objects.
-
-      default:
-        throw new Error(
-          `Value ${JSON.stringify(argumentValue)} is not deserializable.`
-        );
     }
+
+    // Intentionally outside to handle unknown types
+    throw new Error(
+      `Value ${JSON.stringify(argumentValue)} is not deserializable.`
+    );
   }
 
   async #flattenKeyValuePairs(

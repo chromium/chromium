@@ -49,9 +49,8 @@ async function getElementCenter(
   context: BrowsingContextImpl,
   element: Script.SharedReference
 ) {
-  const result = await (
-    await context.getOrCreateSandbox(undefined)
-  ).callFunction(
+  const sandbox = await context.getOrCreateSandbox(undefined);
+  const result = await sandbox.callFunction(
     CALCULATE_IN_VIEW_CENTER_PT_DECL,
     {type: 'undefined'},
     [element],
