@@ -8,8 +8,10 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/browser_process.h"
@@ -19,7 +21,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,8 +47,9 @@ class NtpBackgroundServiceTest : public testing::Test,
 
   ~NtpBackgroundServiceTest() override {}
 
-  void SetUpResponseWithNetworkSuccess(const GURL& load_url,
-                                       const std::string& response = "") {
+  void SetUpResponseWithNetworkSuccess(
+      const GURL& load_url,
+      const std::string& response = std::string()) {
     test_url_loader_factory_.AddResponse(load_url.spec(), response);
   }
 
@@ -59,9 +61,8 @@ class NtpBackgroundServiceTest : public testing::Test,
   }
 
   void SetUpResponseWithNetworkError(const GURL& load_url) {
-    test_url_loader_factory_.AddResponse(
-        load_url, network::mojom::URLResponseHead::New(), std::string(),
-        network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND));
+    test_url_loader_factory_.AddResponse(load_url.spec(), std::string(),
+                                         net::HTTP_NOT_FOUND);
   }
 
   NtpBackgroundService* service() {
@@ -78,16 +79,14 @@ class NtpBackgroundServiceTest : public testing::Test,
 
   bool BackgroundImageErrorDetectionEnabled() const { return GetParam(); }
 
- private:
-  // Required to run tests from UI and threads.
-  content::BrowserTaskEnvironment task_environment_;
-
+ protected:
+  content::BrowserTaskEnvironment
+      task_environment_;  // Required to run tests from UI and threads.
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-
-  std::unique_ptr<NtpBackgroundService> service_;
-
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
+  std::unique_ptr<NtpBackgroundService> service_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, NtpBackgroundServiceTest, ::testing::Bool());
@@ -180,6 +179,10 @@ TEST_P(NtpBackgroundServiceTest, CollectionImagesNetworkError) {
   service()->FetchCollectionImageInfo("shapes");
   base::RunLoop().RunUntilIdle();
 
+  if (BackgroundImageErrorDetectionEnabled()) {
+    histogram_tester_.ExpectTotalCount(
+        "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 0);
+  }
   EXPECT_TRUE(service()->collection_images().empty());
   EXPECT_EQ(service()->collection_images_error_info().error_type,
             ErrorType::NET_ERROR);
@@ -194,6 +197,10 @@ TEST_P(NtpBackgroundServiceTest, BadCollectionImagesResponse) {
   service()->FetchCollectionImageInfo("shapes");
   base::RunLoop().RunUntilIdle();
 
+  if (BackgroundImageErrorDetectionEnabled()) {
+    histogram_tester_.ExpectTotalCount(
+        "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 0);
+  }
   EXPECT_TRUE(service()->collection_images().empty());
   EXPECT_EQ(service()->collection_images_error_info().error_type,
             ErrorType::SERVICE_ERROR);
@@ -214,6 +221,10 @@ TEST_P(NtpBackgroundServiceTest, ImageInCollectionHasNetworkError) {
   if (BackgroundImageErrorDetectionEnabled()) {
     SetUpResponseWithNetworkError(
         GURL(image.image_url() + GetThumbnailImageOptions()));
+    histogram_tester_.ExpectTotalCount(
+        "NewTabPage.BackgroundService.URLHeaders.RequestLatency", 0);
+    histogram_tester_.ExpectTotalCount(
+        "NewTabPage.BackgroundService.URLHeadersHttpResponseCode", 0);
   }
 
   ASSERT_TRUE(service()->collection_images().empty());
@@ -233,6 +244,15 @@ TEST_P(NtpBackgroundServiceTest, ImageInCollectionHasNetworkError) {
 
   if (BackgroundImageErrorDetectionEnabled()) {
     EXPECT_TRUE(service()->collection_images().empty());
+    histogram_tester_.ExpectTotalCount(
+        "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 1);
+    ASSERT_EQ(1,
+              histogram_tester_.GetBucketCount(
+                  "NewTabPage.BackgroundService.Images.Headers.ErrorDetected",
+                  NtpImageType::kCollectionImages));
+    ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                     "NewTabPage.BackgroundService.Images.Headers.StatusCode",
+                     net::HTTP_NOT_FOUND));
   } else {
     EXPECT_FALSE(service()->collection_images().empty());
     EXPECT_THAT(service()->collection_images().at(0), Eq(collection_image));
@@ -273,6 +293,10 @@ TEST_P(NtpBackgroundServiceTest, GoodCollectionImagesResponse) {
   collection_image.attribution.push_back(image.attribution(0).text());
   collection_image.attribution_action_url = GURL(image.action_url());
 
+  if (BackgroundImageErrorDetectionEnabled()) {
+    histogram_tester_.ExpectTotalCount(
+        "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 0);
+  }
   EXPECT_FALSE(service()->collection_images().empty());
   EXPECT_THAT(service()->collection_images().at(0), Eq(collection_image));
   EXPECT_EQ(service()->collection_images_error_info().error_type,
@@ -331,6 +355,10 @@ TEST_P(NtpBackgroundServiceTest, MultipleRequests) {
       GURL(image.image_url() + service()->GetImageOptionsForTesting());
   collection_image.attribution.push_back(image.attribution(0).text());
 
+  if (BackgroundImageErrorDetectionEnabled()) {
+    histogram_tester_.ExpectTotalCount(
+        "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 0);
+  }
   EXPECT_FALSE(service()->collection_info().empty());
   EXPECT_THAT(service()->collection_info().at(0), Eq(collection_info));
   EXPECT_FALSE(service()->collection_images().empty());
@@ -456,9 +484,12 @@ TEST_P(NtpBackgroundServiceTest, CheckValidAndInvalidBackdropUrls) {
   service()->FetchCollectionImageInfo("shapes");
   base::RunLoop().RunUntilIdle();
 
+  if (BackgroundImageErrorDetectionEnabled()) {
+    histogram_tester_.ExpectTotalCount(
+        "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 0);
+  }
   EXPECT_TRUE(service()->IsValidBackdropUrl(
       GURL(image.image_url() + service()->GetImageOptionsForTesting())));
-
   EXPECT_FALSE(service()->IsValidBackdropUrl(
       GURL("http://wallpapers.co/some_image=imageOptions")));
   EXPECT_FALSE(service()->IsValidBackdropUrl(
@@ -485,4 +516,56 @@ TEST_P(NtpBackgroundServiceTest, OverrideBaseUrl) {
   EXPECT_EQ(1u, test_url_loader_factory()->pending_requests()->size());
   EXPECT_EQ("https://foo.com/cast/chromecast/home/wallpaper/collections?rt=b",
             test_url_loader_factory()->pending_requests()->at(0).request.url);
+}
+
+TEST_P(NtpBackgroundServiceTest, VerifyURLMetricsWithNetworkSuccess) {
+  SetUpResponseWithNetworkSuccess(GURL(kTestImageUrl));
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.RequestLatency", 0);
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.StatusCode", 0);
+
+  base::OnceCallback<void(int)> image_url_headers_received_callback =
+      base::BindLambdaForTesting([&](int headers_response_code) {
+        EXPECT_EQ(headers_response_code, net::HTTP_OK);
+      });
+  service()->VerifyImageURL(GURL(kTestImageUrl),
+                            std::move(image_url_headers_received_callback));
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.RequestLatency", 1);
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.RequestLatency.Ok", 1);
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.StatusCode", 1);
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.BackgroundService.Images.Headers.StatusCode",
+                   net::HTTP_OK));
+}
+
+TEST_P(NtpBackgroundServiceTest, VerifyURLMetricsWithNetworkError) {
+  SetUpResponseWithNetworkError(GURL(kTestImageUrl));
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.RequestLatency", 0);
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.StatusCode", 0);
+
+  base::OnceCallback<void(int)> image_url_headers_received_callback =
+      base::BindLambdaForTesting([&](int headers_response_code) {
+        EXPECT_EQ(headers_response_code, net::HTTP_NOT_FOUND);
+      });
+  service()->VerifyImageURL(GURL(kTestImageUrl),
+                            std::move(image_url_headers_received_callback));
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.RequestLatency", 1);
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.RequestLatency.NotFound", 1);
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.StatusCode", 1);
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.BackgroundService.Images.Headers.StatusCode",
+                   net::HTTP_NOT_FOUND));
 }

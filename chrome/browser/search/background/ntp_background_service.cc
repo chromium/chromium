@@ -7,8 +7,10 @@
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/search/background/ntp_background.pb.h"
@@ -395,20 +397,43 @@ void NtpBackgroundService::VerifyImageURL(
       url_loader_factory_.get(),
       base::BindOnce(&NtpBackgroundService::OnImageURLHeadersFetchComplete,
                      base::Unretained(this), std::move(it),
-                     std::move(image_url_headers_received_callback)));
+                     std::move(image_url_headers_received_callback),
+                     base::TimeTicks::Now()));
 }
 
 void NtpBackgroundService::OnImageURLHeadersFetchComplete(
     ImageURLHeaderLoaderList::iterator it,
     base::OnceCallback<void(int)> image_url_headers_received_callback,
+    base::TimeTicks request_start,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   if (pending_image_url_header_loaders_.empty()) {
     return;
   }
-
   pending_image_url_header_loaders_.erase(it);
-  std::move(image_url_headers_received_callback)
-      .Run(headers ? headers->response_code() : 0);
+  int headers_response_code =
+      headers ? headers->response_code() : net::ERR_FAILED;
+
+  UMA_HISTOGRAM_SPARSE("NewTabPage.BackgroundService.Images.Headers.StatusCode",
+                       headers_response_code);
+  auto request_time = base::TimeTicks::Now() - request_start;
+  UMA_HISTOGRAM_TIMES(
+      "NewTabPage.BackgroundService.Images.Headers.RequestLatency",
+      request_time);
+  if (headers_response_code == net::HTTP_OK) {
+    UMA_HISTOGRAM_TIMES(
+        "NewTabPage.BackgroundService.Images.Headers.RequestLatency.Ok",
+        request_time);
+  } else if (headers_response_code == net::HTTP_NOT_FOUND) {
+    UMA_HISTOGRAM_TIMES(
+        "NewTabPage.BackgroundService.Images.Headers.RequestLatency.NotFound",
+        request_time);
+  } else {
+    UMA_HISTOGRAM_TIMES(
+        "NewTabPage.BackgroundService.Images.Headers.RequestLatency.Other",
+        request_time);
+  }
+
+  std::move(image_url_headers_received_callback).Run(headers_response_code);
 }
 
 void NtpBackgroundService::OnCollectionImageURLHeadersReceived(
@@ -422,6 +447,10 @@ void NtpBackgroundService::OnCollectionImageURLHeadersReceived(
         /*default_image_url=*/
         AddOptionsToImageURL(image.image_url(), default_image_options_),
         thumbnail_image_url));
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(
+        "NewTabPage.BackgroundService.Images.Headers.ErrorDetected",
+        NtpImageType::kCollectionImages);
   }
   std::move(collection_urls_verification_complete_closure).Run();
 }

@@ -10,6 +10,7 @@
 #include "base/path_service.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -31,7 +32,6 @@
 #include "content/public/test/test_utils.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -155,9 +155,8 @@ class NtpCustomBackgroundServiceTest : public testing::Test {
   }
 
   void SetUpResponseWithNetworkError(const GURL& load_url) {
-    test_url_loader_factory_.AddResponse(
-        load_url, network::mojom::URLResponseHead::New(), std::string(),
-        network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND));
+    test_url_loader_factory_.AddResponse(load_url.spec(), std::string(),
+                                         net::HTTP_NOT_FOUND);
   }
 
   void SetUpResponseWithNetworkSuccess(const GURL& load_url,
@@ -187,6 +186,7 @@ class NtpCustomBackgroundServiceTest : public testing::Test {
   raw_ptr<MockThemeService> mock_theme_service_;
   raw_ptr<MockNtpBackgroundService> mock_ntp_background_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<NtpCustomBackgroundService> custom_background_service_;
 };
 
@@ -844,6 +844,8 @@ TEST_F(NtpCustomBackgroundServiceTest,
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 0);
 }
 
 TEST_F(NtpCustomBackgroundServiceTest,
@@ -865,11 +867,18 @@ TEST_F(NtpCustomBackgroundServiceTest,
         std::move(callback).Run(
             /*headers_response_code=*/net::HTTP_NOT_FOUND);
       }));
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 0);
 
   custom_background_service_->VerifyCustomBackgroundImageURL();
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(custom_background_service_->IsCustomBackgroundSet());
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 1);
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.BackgroundService.Images.Headers.ErrorDetected",
+                   NtpImageType::kBackgroundImage));
 }
 
 TEST_F(NtpCustomBackgroundServiceTest,
@@ -878,18 +887,22 @@ TEST_F(NtpCustomBackgroundServiceTest,
 
   ASSERT_FALSE(custom_background_service_->IsCustomBackgroundSet());
   const std::string kValidId("art");
-  const GURL kImageUrl1("https://www.test.com/1/");
-  const GURL kImageUrl2("https://www.test.com/2/");
+  const std::string kImageUrl1("https://www.test.com/1/");
+  const std::string kImageUrl2("https://www.test.com/2/");
+  const std::string image_options(
+      mock_ntp_background_service().GetImageOptionsForTesting());
+  const GURL kImageUrl1WithOptions(kImageUrl1 + image_options);
+  const GURL kImageUrl2WithOptions(kImageUrl2 + image_options);
 
   // A valid id should update the pref/background.
   CollectionImage image;
   image.collection_id = kValidId;
-  image.image_url = kImageUrl1;
+  image.image_url = GURL(kImageUrl1);
   mock_ntp_background_service().SetNextCollectionImageForTesting(image);
   mock_ntp_background_service().AddValidBackdropCollectionForTesting(kValidId);
 
   ntp::background::Image response_image;
-  response_image.set_image_url(kImageUrl1.spec());
+  response_image.set_image_url(kImageUrl1);
   ntp::background::GetImagesInCollectionResponse response;
   *response.add_images() = response_image;
   std::string response_string;
@@ -907,19 +920,17 @@ TEST_F(NtpCustomBackgroundServiceTest,
 
   CollectionImage image2;
   image2.collection_id = kValidId;
-  image2.image_url = kImageUrl2;
+  image2.image_url = GURL(kImageUrl2);
   mock_ntp_background_service().SetNextCollectionImageForTesting(image2);
 
   auto custom_background = custom_background_service_->GetCustomBackground();
-  const std::string image_options =
-      mock_ntp_background_service().GetImageOptionsForTesting();
-  EXPECT_EQ(GURL(kImageUrl1.spec() + image_options),
-            custom_background->custom_background_url);
+
+  EXPECT_EQ(kImageUrl1WithOptions, custom_background->custom_background_url);
   EXPECT_EQ(kValidId, custom_background->collection_id);
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
 
   ntp::background::Image response_image_2;
-  response_image_2.set_image_url(kImageUrl2.spec());
+  response_image_2.set_image_url(kImageUrl2);
   ntp::background::GetImagesInCollectionResponse response_2;
   *response_2.add_images() = response_image_2;
   std::string response_string_2;
@@ -929,46 +940,51 @@ TEST_F(NtpCustomBackgroundServiceTest,
       response_string_2);
 
   // Should force a background refresh.
-  SetUpResponseWithNetworkError(kImageUrl1);
-  EXPECT_CALL(
-      mock_ntp_background_service(),
-      VerifyImageURL(GURL(kImageUrl1.spec() + image_options), testing::_))
+  SetUpResponseWithNetworkError(kImageUrl1WithOptions);
+  EXPECT_CALL(mock_ntp_background_service(),
+              VerifyImageURL(kImageUrl1WithOptions, testing::_))
       .Times(1)
       .WillOnce(testing::WithArg<1>([](auto callback) {
         std::move(callback).Run(
             /*headers_response_code=*/net::HTTP_NOT_FOUND);
       }));
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 0);
 
   custom_background_service_->VerifyCustomBackgroundImageURL();
   task_environment_.RunUntilIdle();
 
   custom_background = custom_background_service_->GetCustomBackground();
-  EXPECT_EQ(GURL(kImageUrl2.spec() + image_options),
-            custom_background->custom_background_url);
+  EXPECT_EQ(kImageUrl2WithOptions, custom_background->custom_background_url);
   EXPECT_EQ(kValidId, custom_background->collection_id);
   EXPECT_TRUE(custom_background->daily_refresh_enabled);
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 1);
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.BackgroundService.Images.Headers.ErrorDetected",
+                   NtpImageType::kBackgroundImage));
 
   // Background should be the same.
-  SetUpResponseWithNetworkSuccess(kImageUrl2);
-  EXPECT_CALL(
-      mock_ntp_background_service(),
-      VerifyImageURL(GURL(kImageUrl2.spec() + image_options), testing::_))
+  SetUpResponseWithNetworkSuccess(kImageUrl2WithOptions);
+  EXPECT_CALL(mock_ntp_background_service(),
+              VerifyImageURL(kImageUrl2WithOptions, testing::_))
       .Times(1)
       .WillOnce(testing::WithArg<1>([](auto callback) {
         std::move(callback).Run(
-            /*headers_response_code=*/net::OK);
+            /*headers_response_code=*/net::HTTP_OK);
       }));
 
   custom_background_service_->VerifyCustomBackgroundImageURL();
   task_environment_.RunUntilIdle();
 
   custom_background = custom_background_service_->GetCustomBackground();
-  EXPECT_EQ(GURL(kImageUrl2.spec() + image_options),
-            custom_background->custom_background_url);
+  EXPECT_EQ(kImageUrl2WithOptions, custom_background->custom_background_url);
   EXPECT_EQ(kValidId, custom_background->collection_id);
   EXPECT_TRUE(custom_background->daily_refresh_enabled);
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 1);
 }
 
 TEST_F(NtpCustomBackgroundServiceTest, LocalImageURLsDoNotGetVerified) {

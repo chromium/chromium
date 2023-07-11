@@ -76821,6 +76821,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Layout 3"/>
 </enum>
 
+<enum name="NTPImageType">
+  <int value="0" label="A user's selected NTP background image"/>
+  <int value="1"
+      label="Preview images for NTP collections shown on the 'Themes' page"/>
+  <int value="2" label="Images in a specific NTP collection"/>
+</enum>
+
 <enum name="NTPImpressionType">
   <int value="0" label="regular NTP impression"/>
   <int value="1" label="potential NTP impression - no open tab"/>

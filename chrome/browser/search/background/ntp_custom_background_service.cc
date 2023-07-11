@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
@@ -634,6 +635,10 @@ void NtpCustomBackgroundService::OnCustomBackgroundURLHeadersReceived(
     NotifyAboutBackgrounds();
     return;
   }
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "NewTabPage.BackgroundService.Images.Headers.ErrorDetected",
+      NtpImageType::kBackgroundImage);
 
   if (custom_background->daily_refresh_enabled) {
     ForceRefreshBackground();

@@ -80,7 +80,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NewTabPage.BackgroundImageSource"
     enum="NTPBackgroundImageSource" expires_after="2023-12-04">
   <owner>danpeng@google.com</owner>
-  <owner>pauladedeji@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Records the type of background image that is set. Only recorded once per
@@ -97,6 +97,46 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time it took until a request from the New Tab Page for Backdrop
     Collections was served.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.BackgroundService.Images.Headers.ErrorDetected"
+    enum="NTPImageType" expires_after="2023-12-10">
+  <owner>pauladedeji@google.com</owner>
+  <owner>danpeng@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records image's type when an error is detected via its URL headers.
+
+    Logged every time Chrome encounters an error when verifying background
+    images.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.BackgroundService.Images.Headers.RequestLatency"
+    units="ms" expires_after="2023-12-10">
+  <owner>danpeng@google.com</owner>
+  <owner>pauladedeji@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The time it takes to download an image's URL headers.
+
+    Logged every time Chrome encounters an error when verifying background
+    images.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.BackgroundService.Images.Headers.StatusCode"
+    units="HttpResponseCode" expires_after="2023-12-10">
+  <owner>danpeng@google.com</owner>
+  <owner>pauladedeji@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the HTTP response status code of New Tab Page image URL header
+    requests.
+
+    Logged every time Chrome encounters an error when verifying background
+    images.
   </summary>
 </histogram>
 
@@ -318,7 +358,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NewTabPage.ChromeWebStoreOpen" enum="NTPChromeWebStoreOpen"
     expires_after="2023-11-18">
   <owner>danpeng@google.com</owner>
-  <owner>pauladedeji@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Logs where a user opened the Chrome Web Store link from in Customize Chrome.
@@ -343,7 +383,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NewTabPage.Collections.IdOnLoad" enum="NTPCollectionId"
     expires_after="2023-11-12">
   <owner>danpeng@google.com</owner>
-  <owner>pauladedeji@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     The collection id of user's background image on the NTP. Only recorded once
@@ -470,7 +510,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.CustomizeChromeOpened"
     enum="NTPCustomizeChromeEntryPoint" expires_after="2023-12-04">
-  <owner>pauladedeji@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
   <owner>danpeng@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -1072,7 +1112,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NewTabPage.Modules.FreExplicitOptIn" units="count"
     expires_after="2023-12-10">
   <owner>danpeng@google.com</owner>
-  <owner>pauladedeji@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Logs how many time a user saw the FRE when they opt in. Only logged on the
@@ -1085,7 +1125,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NewTabPage.Modules.FreImplicitOptIn" enum="BooleanEnabled"
     expires_after="2023-12-10">
   <owner>danpeng@google.com</owner>
-  <owner>pauladedeji@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Logs when user is opted in to FRE without taking action. Only logged on the
@@ -1098,7 +1138,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NewTabPage.Modules.FreImpression" enum="BooleanEnabled"
     expires_after="2023-12-10">
   <owner>danpeng@google.com</owner>
-  <owner>pauladedeji@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Logs if Modular NTP Desktop v1 First Run Experience is set to be visible and
@@ -1111,7 +1151,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NewTabPage.Modules.FreLoaded" enum="BooleanEnabled"
     expires_after="2023-12-10">
   <owner>danpeng@google.com</owner>
-  <owner>pauladedeji@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Logs if Modular NTP Desktop v1 First Run Experience is set to be visible
@@ -1124,7 +1164,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NewTabPage.Modules.FreOptOut" units="count"
     expires_after="2023-12-24">
   <owner>danpeng@google.com</owner>
-  <owner>pauladedeji@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Logs how many time a user saw the FRE when they opt out. Only logged on the
@@ -1185,7 +1225,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NewTabPage.Modules.InfoButtonClicked" enum="NtpModules"
     expires_after="2023-11-12">
   <owner>danpeng@google.com</owner>
-  <owner>pauladedeji@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Records the module's id when a user clicks the info button in the module's
