@@ -3269,11 +3269,6 @@ const char kTranslateForceTriggerOnEnglishDescription[] =
     "Force the Translate Triggering on English pages experiment to be enabled "
     "with the selected language model active.";
 
-const char kTranslateIntentName[] = "Translate intent";
-const char kTranslateIntentDescription[] =
-    "Enables an intent that allows Assistant to initiate a translation of the "
-    "foreground tab.";
-
 const char kTreatInsecureOriginAsSecureName[] =
     "Insecure origins treated as secure";
 const char kTreatInsecureOriginAsSecureDescription[] =

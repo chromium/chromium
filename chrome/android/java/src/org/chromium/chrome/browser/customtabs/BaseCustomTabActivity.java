@@ -193,9 +193,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 ModuleFactoryOverrides.getOverrideFor(BaseCustomTabActivityModule.Factory.class);
 
         // mIntentHandler comes from the base class.
-        IntentIgnoringCriterion intentIgnoringCriterion = (intent)
-                -> mIntentHandler.shouldIgnoreIntent(
-                        intent, /*startedActivity=*/true, isCustomTab());
+        IntentIgnoringCriterion intentIgnoringCriterion =
+                (intent) -> mIntentHandler.shouldIgnoreIntent(intent, isCustomTab());
 
         BaseCustomTabActivityModule baseCustomTabsModule = overridenBaseCustomTabFactory != null
                 ? overridenBaseCustomTabFactory.create(mIntentDataProvider,

@@ -22,7 +22,6 @@
 #include "components/language/core/common/language_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_locale_settings.h"
-#include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_pref_names.h"
@@ -66,47 +65,6 @@ static void JNI_TranslateBridge_ManualTranslateWhenReady(
       ChromeTranslateClient::FromWebContents(web_contents);
   DCHECK(client);
   client->ManualTranslateWhenReady();
-}
-
-static void JNI_TranslateBridge_TranslateToLanguage(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
-    const base::android::JavaParamRef<jstring>& j_target_language_code) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
-  ChromeTranslateClient* client =
-      ChromeTranslateClient::FromWebContents(web_contents);
-  DCHECK(client);
-  const std::string target_language_code(
-      ConvertJavaStringToUTF8(env, j_target_language_code));
-  const std::string& source_language_code =
-      client->GetLanguageState().source_language();
-  if (source_language_code.empty()) {
-    // TODO(crbug.com/1181400): Add support for specifying a target language for
-    // ManualTranslateWhenReady().
-    return;
-  }
-
-  translate::TranslateManager* manager = client->GetTranslateManager();
-  DCHECK(manager);
-  if (!translate::TranslateDownloadManager::IsSupportedLanguage(
-          target_language_code)) {
-    // If the requested target language isn't supported, show the infobar but
-    // don't start translating. If the infobar is already visible, this will
-    // leave it in its current state.
-    manager->ShowTranslateUI(/*auto_translate=*/false,
-                             /*triggered_from_menu=*/false);
-  } else {
-    // We don't check for source_language_code support because TranslatePage
-    // handles that case already.
-    manager->TranslatePage(
-        source_language_code, target_language_code,
-        /*triggered_from_menu=*/false,
-        /*translation_type=*/
-        manager->GetActiveTranslateMetricsLogger()
-            ->GetNextManualTranslationType(
-                /*is_context_menu_initiated_translation=*/false));
-  }
 }
 
 static jboolean JNI_TranslateBridge_CanManuallyTranslate(

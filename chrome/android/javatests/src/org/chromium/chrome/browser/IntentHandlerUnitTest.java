@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
-import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
@@ -665,20 +664,7 @@ public class IntentHandlerUnitTest {
         Intent intent = WebappLauncherActivity.createIntentToLaunchForWebapp(
                 webappLauncherActivityIntent, launchData, 0);
 
-        assertFalse(mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true));
-    }
-
-    /**
-     * Test that IntentHandler#shouldIgnoreIntent() returns true for Translate intents that cause
-     * the Activity to start.
-     */
-    @Test
-    @SmallTest
-    @Feature({"Android-AppBase"})
-    public void testShouldIgnoreIntentTranslateStartsActivity() {
-        Intent intent = new Intent(TranslateIntentHandler.ACTION_TRANSLATE_TAB);
-        assertFalse(mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/false));
-        assertTrue(mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true));
+        assertFalse(mIntentHandler.shouldIgnoreIntent(intent));
     }
 
     /**
@@ -691,7 +677,7 @@ public class IntentHandlerUnitTest {
     public void testShouldIgnoreIncognitoIntent() {
         Intent intent = new Intent(GOOGLE_URL);
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
-        assertTrue(mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true));
+        assertTrue(mIntentHandler.shouldIgnoreIntent(intent));
     }
 
     /**
@@ -704,7 +690,7 @@ public class IntentHandlerUnitTest {
     public void testShouldIgnoreIncognitoIntent_trusted() {
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent = IntentHandler.createTrustedOpenNewTabIntent(context, true);
-        assertFalse(mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true));
+        assertFalse(mIntentHandler.shouldIgnoreIntent(intent));
     }
 
     /**
@@ -716,8 +702,7 @@ public class IntentHandlerUnitTest {
     public void testShouldIgnoreIncognitoIntent_customTab() {
         Intent intent = new Intent(GOOGLE_URL);
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
-        assertFalse(mIntentHandler.shouldIgnoreIntent(
-                intent, /*startedActivity=*/true, /*isCustomTab=*/true));
+        assertFalse(mIntentHandler.shouldIgnoreIntent(intent, /*isCustomTab=*/true));
     }
 
     @Test

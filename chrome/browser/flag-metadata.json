@@ -7607,15 +7607,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "translate-intent",
-    "owners": [
-      "jds@google.com",
-      "basiaz@google.com",
-      "chrome-voice@google.com"
-    ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "translate-message-ui",
     "owners": [
       "basiaz@google.com",

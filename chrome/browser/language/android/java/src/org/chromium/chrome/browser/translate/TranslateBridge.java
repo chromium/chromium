@@ -27,16 +27,6 @@ public class TranslateBridge {
     }
 
     /**
-     * Initates a translation on the given tab to the given target language. All metrics reported
-     * for this translation assume that this translation was initiated from the Translate UI. If the
-     * translation from the Context Menu or by some other means, then an extra signal needs to be
-     * passed through.
-     */
-    public static void translateTabToLanguage(Tab tab, String targetLanguageCode) {
-        TranslateBridgeJni.get().translateToLanguage(tab.getWebContents(), targetLanguageCode);
-    }
-
-    /**
      * Returns true iff the current tab can be manually translated.
      * Logging should only be performed when this method is called to show the translate menu item.
      */
@@ -247,7 +237,6 @@ public class TranslateBridge {
     @NativeMethods
     public interface Natives {
         void manualTranslateWhenReady(WebContents webContents);
-        void translateToLanguage(WebContents webContents, String targetLanguageCode);
         boolean canManuallyTranslate(WebContents webContents, boolean menuLogging);
         boolean shouldShowManualTranslateIPH(WebContents webContents);
         void setPredefinedTargetLanguage(

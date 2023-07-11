@@ -1266,7 +1266,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         super.onNewIntentWithNative(intent);
         getLaunchCauseMetrics().onReceivedIntent();
-        if (mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/false, isCustomTab())) {
+        if (mIntentHandler.shouldIgnoreIntent(intent, isCustomTab())) {
             return;
         }
 
@@ -1816,10 +1816,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             public long getIntentHandlingTimeMs() {
                 return 0;
             }
-
-            @Override
-            public void processTranslateTabIntent(
-                    @Nullable String targetLanguageCode, @Nullable String expectedUrl) {}
 
             @Override
             public void processUrlViewIntent(LoadUrlParams loadUrlParams,

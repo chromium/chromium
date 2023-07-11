@@ -12,7 +12,6 @@
   <permission android:name="$PACKAGE.permission.CHILD_SERVICE" android:protectionLevel="signature"/>
   <permission android:name="$PACKAGE.permission.DEBUG" android:label="Debug web pages" android:protectionLevel="signature"/>
   <permission android:name="$PACKAGE.permission.READ_WRITE_BOOKMARK_FOLDERS" android:protectionLevel="signatureOrSystem"/>
-  <permission android:name="$PACKAGE.permission.TRANSLATE" android:protectionLevel="signature"/>
   <queries>  # DIFF-ANCHOR: 9588fea7
     <package android:name="com.google.ar.core"/>
   </queries>  # DIFF-ANCHOR: 9588fea7

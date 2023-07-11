@@ -168,11 +168,6 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public void translateToLanguage(WebContents webContents, String targetLanguageCode) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public boolean canManuallyTranslate(WebContents webContents, boolean menuLogging) {
         throw new UnsupportedOperationException();
     }

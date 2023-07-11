@@ -1895,9 +1895,6 @@ extern const char kTranslateAssistContentDescription[];
 extern const char kTranslateForceTriggerOnEnglishName[];
 extern const char kTranslateForceTriggerOnEnglishDescription[];
 
-extern const char kTranslateIntentName[];
-extern const char kTranslateIntentDescription[];
-
 extern const char kTreatInsecureOriginAsSecureName[];
 extern const char kTreatInsecureOriginAsSecureDescription[];
 

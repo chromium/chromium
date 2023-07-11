@@ -127,8 +127,6 @@ by a child template that "extends" this file.
     <permission android:name="{{ manifest_package }}.permission.DEBUG"
                 android:label="Debug web pages"
                 android:protectionLevel="signature" />
-    <permission android:name="{{ manifest_package }}.permission.TRANSLATE"
-        android:protectionLevel="signature" />
 
     <uses-permission android:name="{{ manifest_package }}.permission.C2D_MESSAGE" />
     <uses-permission android:name="{{ manifest_package }}.permission.READ_WRITE_BOOKMARK_FOLDERS" />
@@ -351,17 +349,6 @@ by a child template that "extends" this file.
             </intent-filter>
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
-        </activity-alias>
-        <activity-alias android:name="com.google.android.apps.chrome.TranslateDispatcher"
-            android:targetActivity="org.chromium.chrome.browser.document.ChromeLauncherActivity"
-            android:exported="true"
-            {% if channel == 'stable' %}
-            android:permission="{{ manifest_package }}.permission.TRANSLATE"
-            {% endif %} >
-            <intent-filter>
-                <action android:name="org.chromium.chrome.browser.translate.TRANSLATE_TAB" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity-alias>
 
         <activity android:name="org.chromium.chrome.browser.media.MediaLauncherActivity"

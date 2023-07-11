@@ -187,7 +187,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
-import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
 import org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlockerFactory;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
@@ -1684,12 +1683,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             assert false;
         }
 
-        @Override
-        public void processTranslateTabIntent(
-                @Nullable String targetLanguageCode, @Nullable String expectedUrl) {
-            TranslateIntentHandler.translateTab(getActivityTab(), targetLanguageCode, expectedUrl);
-        }
-
         private boolean isFromChrome(Intent intent, String externalAppId) {
             // To determine if the processed intent is from Chrome, check for any of the following:
             // 1.) The authentication token that will be added to trusted intents.
@@ -1848,8 +1841,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private boolean shouldIgnoreIntent() {
         if (mShouldIgnoreIntent == null) {
             // We call this only once because mIntentHandler#shouldIgnoreIntent has side effects.
-            mShouldIgnoreIntent =
-                    mIntentHandler.shouldIgnoreIntent(getIntent(), /*startedActivity=*/true);
+            mShouldIgnoreIntent = mIntentHandler.shouldIgnoreIntent(getIntent());
         }
         return mShouldIgnoreIntent;
     }

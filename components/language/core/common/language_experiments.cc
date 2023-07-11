@@ -17,9 +17,6 @@ BASE_FEATURE(kDetailedLanguageSettings,
 BASE_FEATURE(kTranslateAssistContent,
              "TranslateAssistContent",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kTranslateIntent,
-             "TranslateIntent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContentLanguagesInLanguagePicker,
              "ContentLanguagesInLanguagePicker",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -1142,7 +1142,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tracing/settings/TracingCategoriesSettings.java",
   "java/src/org/chromium/chrome/browser/tracing/settings/TracingSettings.java",
   "java/src/org/chromium/chrome/browser/translate/TranslateAssistContent.java",
-  "java/src/org/chromium/chrome/browser/translate/TranslateIntentHandler.java",
   "java/src/org/chromium/chrome/browser/translate/TranslateUtils.java",
   "java/src/org/chromium/chrome/browser/ui/AppLaunchDrawBlocker.java",
   "java/src/org/chromium/chrome/browser/ui/BottomContainer.java",

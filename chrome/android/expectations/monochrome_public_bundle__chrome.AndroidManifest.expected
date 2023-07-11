@@ -672,16 +672,6 @@
       </intent-filter>  # DIFF-ANCHOR: dea53031
       <meta-data android:name="android.app.shortcuts" android:resource="@xml/launchershortcuts"/>
     </activity-alias>  # DIFF-ANCHOR: 5042984f
-    <activity-alias  # DIFF-ANCHOR: 03398466
-        android:name="com.google.android.apps.chrome.TranslateDispatcher"
-        android:exported="true"
-        android:permission="$PACKAGE.permission.TRANSLATE"
-        android:targetActivity="org.chromium.chrome.browser.document.ChromeLauncherActivity">
-      <intent-filter>  # DIFF-ANCHOR: 75e5f897
-        <action android:name="org.chromium.chrome.browser.translate.TRANSLATE_TAB"/>
-        <category android:name="android.intent.category.DEFAULT"/>
-      </intent-filter>  # DIFF-ANCHOR: 75e5f897
-    </activity-alias>  # DIFF-ANCHOR: 03398466
     <activity-alias  # DIFF-ANCHOR: dcfe2999
         android:name="com.google.android.apps.chrome.webapps.WebappActivity"
         android:label="@string/webapp_activity_title"
