@@ -769,6 +769,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.ContentEncodingType" enum="ContentEncodingType"
+    expires_after="2024-06-26">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    For each response stream, record the Content-Encoding type. If multiple
+    encoding types are specified, this histogram only records the last one.
+    Note: Compression Dictionary Transport headers (i.e. &quot;sbr&quot; for
+    Shared Brotli) will be recorded as &quot;Unknown&quot; in this histogram.
+  </summary>
+</histogram>
+
 <histogram name="Net.Cors.PreflightCheckError2" enum="CorsAccessCheckError"
     expires_after="2023-12-10">
   <owner>toyoshim@chromium.org</owner>
@@ -5703,6 +5715,38 @@ chromium-metrics-reviews@google.com.
   <summary>
     Negotiated HTTP Datagram version. Recorded when a WebTransport session
     becomes ready.
+  </summary>
+</histogram>
+
+<histogram name="Net.ZstdFilter.CompressionRatio" units="%"
+    expires_after="2024-06-26">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Compressed/Decompressed size ratio as a percentage when using zstd.
+  </summary>
+</histogram>
+
+<histogram name="Net.ZstdFilter.ErrorCode" enum="ZstdFilterErrorCode"
+    expires_after="2024-06-26">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Error code observed after failing to decode a Zstd-compressed response
+    stream from the network. Recorded once per layer of Zstd compression that
+    encountered a decoding error. See Net.ZstdFilter.Status to get the overall
+    error rate.
+  </summary>
+</histogram>
+
+<histogram name="Net.ZstdFilter.Status" enum="ZstdFilterDecodingStatus"
+    expires_after="2024-06-26">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The final state of the ZstdFilter. Recorded once per layer of Zstd
+    compression (usually once per zstd-compressed response), at the end of
+    decoding.
   </summary>
 </histogram>
 

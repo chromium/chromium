@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/metrics/histogram_macros.h"
 #include "net/base/io_buffer.h"
 #include "third_party/zstd/src/lib/zstd.h"
+#include "third_party/zstd/src/lib/zstd_errors.h"
 
 namespace net {
 
@@ -32,16 +34,34 @@ class ZstdSourceStream : public FilterSourceStream {
   ZstdSourceStream(const ZstdSourceStream&) = delete;
   ZstdSourceStream& operator=(const ZstdSourceStream&) = delete;
 
-  ~ZstdSourceStream() override = default;
+  ~ZstdSourceStream() override {
+    if (ZSTD_isError(decoding_result_)) {
+      ZSTD_ErrorCode error_code = ZSTD_getErrorCode(decoding_result_);
+      UMA_HISTOGRAM_ENUMERATION(
+          "Net.ZstdFilter.ErrorCode", static_cast<int>(error_code),
+          static_cast<int>(ZSTD_ErrorCode::ZSTD_error_maxCode));
+    }
+
+    UMA_HISTOGRAM_ENUMERATION("Net.ZstdFilter.Status", decoding_status_);
+
+    if (decoding_status_ == DecodingStatus::kDecodingDone) {
+      // CompressionRatio is undefined when there is no output produced.
+      if (produced_bytes_ != 0) {
+        UMA_HISTOGRAM_PERCENTAGE(
+            "Net.ZstdFilter.CompressionRatio",
+            static_cast<int>((consumed_bytes_ * 100) / produced_bytes_));
+      }
+    }
+  }
 
  private:
-  enum class DecodingStatus : int {
-    DECODING_IN_PROGRESS = 0,
-    DECODING_DONE,
-    DECODING_ERROR,
-
-    DECODING_STATUS_COUNT
-    // DECODING_STATUS_COUNT must always be the last element in this enum.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class DecodingStatus {
+    kDecodingInProgress = 0,
+    kDecodingDone = 1,
+    kDecodingError = 2,
+    kMaxValue = kDecodingError,
   };
 
   // SourceStream implementation
@@ -53,12 +73,12 @@ class ZstdSourceStream : public FilterSourceStream {
                                            size_t input_buffer_size,
                                            size_t* consumed_bytes,
                                            bool upstream_end_reached) override {
-    if (decoding_status_ == DecodingStatus::DECODING_DONE) {
+    if (decoding_status_ == DecodingStatus::kDecodingDone) {
       *consumed_bytes = input_buffer_size;
       return 0;
     }
 
-    if (decoding_status_ != DecodingStatus::DECODING_IN_PROGRESS) {
+    if (decoding_status_ != DecodingStatus::kDecodingInProgress) {
       return base::unexpected(ERR_CONTENT_DECODING_FAILED);
     }
 
@@ -68,31 +88,40 @@ class ZstdSourceStream : public FilterSourceStream {
 
     const size_t result = ZSTD_decompressStream(dctx_.get(), &output, &input);
 
+    decoding_result_ = result;
+
+    produced_bytes_ += output.pos;
+    consumed_bytes_ += input.pos;
+
+    *consumed_bytes = input.pos;
+
     if (result > 0u) {
       if (upstream_end_reached) {
-        decoding_status_ = DecodingStatus::DECODING_ERROR;
+        decoding_status_ = DecodingStatus::kDecodingError;
       }
       // There is some input remaining and caller should provide remaining input
       // on next call OR there is potentially unflushed data present in the
       // internal buffers.
-      *consumed_bytes = input.pos;
       return output.pos;
     } else if (result == 0u) {
       CHECK_LT(output.pos, output.size);
-      // Decoder finished and flushed all remaining buffers
-      decoding_status_ = DecodingStatus::DECODING_DONE;
-      *consumed_bytes = input.pos;
+      // Decoder finished and flushed all remaining buffers.
+      decoding_status_ = DecodingStatus::kDecodingDone;
       return output.pos;
     } else {
       DCHECK(ZSTD_isError(result));
-      decoding_status_ = DecodingStatus::DECODING_ERROR;
+      decoding_status_ = DecodingStatus::kDecodingError;
       return base::unexpected(ERR_CONTENT_DECODING_FAILED);
     }
   }
 
   std::unique_ptr<ZSTD_DCtx, FreeContextDeleter> dctx_;
 
-  DecodingStatus decoding_status_ = DecodingStatus::DECODING_IN_PROGRESS;
+  DecodingStatus decoding_status_ = DecodingStatus::kDecodingInProgress;
+
+  size_t decoding_result_ = 0;
+  size_t consumed_bytes_ = 0;
+  size_t produced_bytes_ = 0;
 };
 
 }  // namespace

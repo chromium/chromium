@@ -187,6 +187,17 @@ GURL UpgradeSchemeToCryptographic(const GURL& insecure_url) {
   return secure_url;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ContentEncodingType {
+  kUnknown = 0,
+  kBrotli = 1,
+  kGZip = 2,
+  kDeflate = 3,
+  kZstd = 4,
+  kMaxValue = kZstd,
+};
+
 }  // namespace
 
 namespace net {
@@ -1282,18 +1293,25 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
     }
   }
 
+  ContentEncodingType content_encoding_type = ContentEncodingType::kUnknown;
+
   for (const auto& type : base::Reversed(types)) {
     std::unique_ptr<FilterSourceStream> downstream;
     switch (type) {
       case SourceStream::TYPE_BROTLI:
         downstream = CreateBrotliSourceStream(std::move(upstream));
+        content_encoding_type = ContentEncodingType::kBrotli;
         break;
       case SourceStream::TYPE_GZIP:
       case SourceStream::TYPE_DEFLATE:
         downstream = GzipSourceStream::Create(std::move(upstream), type);
+        content_encoding_type = type == SourceStream::TYPE_GZIP
+                                    ? ContentEncodingType::kGZip
+                                    : ContentEncodingType::kDeflate;
         break;
       case SourceStream::TYPE_ZSTD:
         downstream = CreateZstdSourceStream(std::move(upstream));
+        content_encoding_type = ContentEncodingType::kZstd;
         break;
       case SourceStream::TYPE_NONE:
       case SourceStream::TYPE_UNKNOWN:
@@ -1304,6 +1322,10 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
       return nullptr;
     upstream = std::move(downstream);
   }
+
+  // Note: If multiple encoding types were specified, this only records the last
+  // encoding type.
+  UMA_HISTOGRAM_ENUMERATION("Net.ContentEncodingType", content_encoding_type);
 
   return upstream;
 }

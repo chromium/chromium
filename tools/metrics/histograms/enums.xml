@@ -18951,6 +18951,14 @@ Called by update_net_error_codes.py.-->
   <int value="74" label="SOFTBANK_ISO_2022_JP"/>
 </enum>
 
+<enum name="ContentEncodingType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Brotli"/>
+  <int value="2" label="GZip"/>
+  <int value="3" label="Deflate"/>
+  <int value="4" label="Zstd"/>
+</enum>
+
 <enum name="ContentIndexCategory">
   <summary>
     The type of a Content Index entry. Corresponds to
@@ -116450,6 +116458,141 @@ Called by update_scheduler_enums.py.-->
   <int value="0" label="Success"/>
   <int value="1" label="Cancelled"/>
   <int value="2" label="Error"/>
+</enum>
+
+<enum name="ZstdFilterDecodingStatus">
+  <int value="0" label="In progress"/>
+  <int value="1" label="Done"/>
+  <int value="2" label="Error"/>
+</enum>
+
+<enum name="ZstdFilterErrorCode">
+  <int value="0" label="No error detected"/>
+  <int value="1" label="Error (generic)"/>
+  <int value="2" label="Reserved (2)"/>
+  <int value="3" label="Reserved (3)"/>
+  <int value="4" label="Reserved (4)"/>
+  <int value="5" label="Reserved (5)"/>
+  <int value="6" label="Reserved (6)"/>
+  <int value="7" label="Reserved (7)"/>
+  <int value="8" label="Reserved (8)"/>
+  <int value="9" label="Reserved (9)"/>
+  <int value="10" label="Unknown frame descriptor"/>
+  <int value="11" label="Reserved (11)"/>
+  <int value="12" label="Version not supported"/>
+  <int value="13" label="Reserved (13)"/>
+  <int value="14" label="Unsupported frame parameter"/>
+  <int value="15" label="Reserved (15)"/>
+  <int value="16" label="Frame requires too much memory for decoding"/>
+  <int value="17" label="Reserved (17)"/>
+  <int value="18" label="Reserved (18)"/>
+  <int value="19" label="Reserved (19)"/>
+  <int value="20" label="Data corruption detected"/>
+  <int value="21" label="Reserved (21)"/>
+  <int value="22" label="Restored data doesn't match checksum"/>
+  <int value="23" label="Reserved (23)"/>
+  <int value="24"
+      label="Header of Literals' block doesn't respect format specification"/>
+  <int value="25" label="Reserved (25)"/>
+  <int value="26" label="Reserved (26)"/>
+  <int value="27" label="Reserved (27)"/>
+  <int value="28" label="Reserved (28)"/>
+  <int value="29" label="Reserved (29)"/>
+  <int value="30" label="Dictionary is corrupted"/>
+  <int value="31" label="Reserved (31)"/>
+  <int value="32" label="Dictionary mismatch"/>
+  <int value="33" label="Reserved (33)"/>
+  <int value="34" label="Cannot create Dictionary from provided samples"/>
+  <int value="35" label="Reserved (35)"/>
+  <int value="36" label="Reserved (36)"/>
+  <int value="37" label="Reserved (37)"/>
+  <int value="38" label="Reserved (38)"/>
+  <int value="39" label="Reserved (39)"/>
+  <int value="40" label="Unsupported parameter"/>
+  <int value="41" label="Unsupported combination of parameters"/>
+  <int value="42" label="Parameter is out of bound"/>
+  <int value="43" label="Reserved (43)"/>
+  <int value="44" label="TableLog requires too much memory : unsupported"/>
+  <int value="45" label="Reserved (45)"/>
+  <int value="46" label="Unsupported max Symbol Value : too large"/>
+  <int value="47" label="Reserved (47)"/>
+  <int value="48" label="Specified maxSymbolValue is too small"/>
+  <int value="49" label="Reserved (49)"/>
+  <int value="50" label="Pledged buffer stability condition is not respected"/>
+  <int value="51" label="Reserved (51)"/>
+  <int value="52" label="Reserved (52)"/>
+  <int value="53" label="Reserved (53)"/>
+  <int value="54" label="Reserved (54)"/>
+  <int value="55" label="Reserved (55)"/>
+  <int value="56" label="Reserved (56)"/>
+  <int value="57" label="Reserved (57)"/>
+  <int value="58" label="Reserved (58)"/>
+  <int value="59" label="Reserved (59)"/>
+  <int value="60" label="Operation not authorized at current processing stage"/>
+  <int value="61" label="Reserved (61)"/>
+  <int value="62" label="Context should be init first"/>
+  <int value="63" label="Reserved (63)"/>
+  <int value="64" label="Allocation error : not enough memory"/>
+  <int value="65" label="Reserved (65)"/>
+  <int value="66" label="WorkSpace buffer is not large enough"/>
+  <int value="67" label="Reserved (67)"/>
+  <int value="68" label="Reserved (68)"/>
+  <int value="69" label="Reserved (69)"/>
+  <int value="70" label="Destination buffer is too small"/>
+  <int value="71" label="Reserved (71)"/>
+  <int value="72" label="Src size is incorrect"/>
+  <int value="73" label="Reserved (73)"/>
+  <int value="74" label="Operation on NULL destination buffer"/>
+  <int value="75" label="Reserved (75)"/>
+  <int value="76" label="Reserved (76)"/>
+  <int value="77" label="Reserved (77)"/>
+  <int value="78" label="Reserved (78)"/>
+  <int value="79" label="Reserved (79)"/>
+  <int value="80"
+      label="Operation made no progress over multiple calls, due to output
+             buffer being full"/>
+  <int value="81" label="Reserved (81)"/>
+  <int value="82"
+      label="Operation made no progress over multiple calls, due to input
+             being empty"/>
+  <int value="83" label="Reserved (83)"/>
+  <int value="84" label="Reserved (84)"/>
+  <int value="85" label="Reserved (85)"/>
+  <int value="86" label="Reserved (86)"/>
+  <int value="87" label="Reserved (87)"/>
+  <int value="88" label="Reserved (88)"/>
+  <int value="89" label="Reserved (89)"/>
+  <int value="90" label="Reserved (90)"/>
+  <int value="91" label="Reserved (91)"/>
+  <int value="92" label="Reserved (92)"/>
+  <int value="93" label="Reserved (93)"/>
+  <int value="94" label="Reserved (94)"/>
+  <int value="95" label="Reserved (95)"/>
+  <int value="96" label="Reserved (96)"/>
+  <int value="97" label="Reserved (97)"/>
+  <int value="98" label="Reserved (98)"/>
+  <int value="99" label="Reserved (99)"/>
+  <int value="100" label="Frame index is too large"/>
+  <int value="101" label="Reserved (101)"/>
+  <int value="102" label="An I/O error occurred when reading/seeking"/>
+  <int value="103" label="Reserved (103)"/>
+  <int value="104" label="Destination buffer is wrong"/>
+  <int value="105" label="Source buffer is wrong"/>
+  <int value="106"
+      label="Block-level external sequence producer returned an error code"/>
+  <int value="107" label="External sequences are not valid"/>
+  <int value="108" label="Reserved (108)"/>
+  <int value="109" label="Reserved (109)"/>
+  <int value="110" label="Reserved (110)"/>
+  <int value="111" label="Reserved (111)"/>
+  <int value="112" label="Reserved (112)"/>
+  <int value="113" label="Reserved (113)"/>
+  <int value="114" label="Reserved (114)"/>
+  <int value="115" label="Reserved (115)"/>
+  <int value="116" label="Reserved (116)"/>
+  <int value="117" label="Reserved (117)"/>
+  <int value="118" label="Reserved (118)"/>
+  <int value="119" label="Reserved (119)"/>
 </enum>
 
 <enum name="ZygoteChildState">
