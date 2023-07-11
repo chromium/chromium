@@ -189,8 +189,7 @@ class FetcherImpl final : public ProtoFetcher<Response> {
                          status.http_status_or_net_error().value());
     }
 
-    DCHECK(
-        callback);  // https://chromium.googlesource.com/chromium/src/+/main/docs/callback.md#creating-a-callback-that-does-nothing
+    CHECK(callback) << "Use base::DoNothing() instead of empty callback.";
     std::move(callback).Run(status, std::move(response));
   }
 
@@ -209,9 +208,7 @@ class FetcherImpl final : public ProtoFetcher<Response> {
       Callback callback,
       base::expected<signin::AccessTokenInfo, GoogleServiceAuthError>
           access_token) {
-    DCHECK(
-        callback);  // https://chromium.googlesource.com/chromium/src/+/main/docs/callback.md#creating-a-callback-that-does-nothing
-
+    CHECK(callback) << "Use base::DoNothing() instead of empty callback.";
     Callback callback_with_metrics =
         BindOnce(&FetcherImpl::WrapCallbackWithMetrics, Unretained(this),
                  std::move(callback), TimeTicks::Now());
