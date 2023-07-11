@@ -150,13 +150,12 @@ bool IsAppShortcutForProfile(const base::FilePath& shortcut_file_name,
 // created. If |creation_reason| is SHORTCUT_CREATION_AUTOMATED and there is an
 // existing shortcut to this app for this profile, does nothing (succeeding).
 // Returns true on success, false on failure.
-// Must be called on the FILE thread.
+// Must be called on a task runner that allows blocking.
 bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
                             const ShortcutInfo& shortcut_info,
                             const std::vector<base::FilePath>& shortcut_paths,
                             ShortcutCreationReason creation_reason,
-                            const std::string& run_on_os_login_mode,
-                            std::vector<base::FilePath>* out_filenames) {
+                            const std::string& run_on_os_login_mode) {
   // Generates file name to use with persisted ico and shortcut file.
   base::FilePath icon_file = GetIconFilePath(web_app_path, shortcut_info.title);
   if (!CheckAndSaveIcon(icon_file, shortcut_info.favicon, false)) {
@@ -191,7 +190,7 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
       base::UTF8ToWide(app_name), shortcut_info.profile_path));
 
   bool success = true;
-  for (auto shortcut_path : shortcut_paths) {
+  for (const auto& shortcut_path : shortcut_paths) {
     base::FilePath shortcut_file =
         shortcut_path.Append(GetSanitizedFileName(shortcut_info.title))
             .AddExtension(installer::kLnkExt);
@@ -229,8 +228,6 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
                   shortcut_file, shortcut_properties,
                   base::win::ShortcutOperation::kCreateAlways) &&
               success;
-    if (out_filenames)
-      out_filenames->push_back(shortcut_file);
   }
 
   return success;
@@ -609,8 +606,7 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
 
   if (!CreateShortcutsInPaths(
           web_app_path, shortcut_info, shortcut_paths, creation_reason,
-          creation_locations.in_startup ? kRunOnOsLoginModeWindowed : "",
-          nullptr)) {
+          creation_locations.in_startup ? kRunOnOsLoginModeWindowed : "")) {
     return false;
   }
 
