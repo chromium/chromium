@@ -198,7 +198,7 @@ class SystemNotificationManager {
 
  private:
   // Handles clicks on the DriveFS bulk-pinning error notification.
-  void HandleBulkPinningNotificationClick(absl::optional<int> button_index);
+  void HandleBulkPinningNotificationClick();
 
   // Make notification for DriveFS bulk-pinning error.
   NotificationPtr MakeBulkPinningErrorNotification(const Event& event);
@@ -292,15 +292,8 @@ class SystemNotificationManager {
   using BulkPinStage = file_manager_private::BulkPinStage;
   BulkPinStage bulk_pin_stage_ = BulkPinStage::BULK_PIN_STAGE_NONE;
 
-  // Number of times the Google Drive settings page was opened from a system
-  // notification. Used in tests.
-  int drive_settings_open_count_ = 0;
-
   // base::WeakPtr{this} factory.
   base::WeakPtrFactory<SystemNotificationManager> weak_ptr_factory_{this};
-
-  FRIEND_TEST_ALL_PREFIXES(SystemNotificationManagerTest,
-                           BulkPinningNotification);
 };
 
 }  // namespace file_manager

@@ -474,16 +474,7 @@ void SystemNotificationManager::HandleDeviceEvent(
 
 static const char kBulkPinningNotificationId[] = "drive-bulk-pinning-error";
 
-void SystemNotificationManager::HandleBulkPinningNotificationClick(
-    absl::optional<int> button_index) {
-  if (button_index.has_value()) {
-    VLOG(1) << "Click on button #" << *button_index;
-    DCHECK_EQ(*button_index, 0);
-  } else {
-    VLOG(1) << "Click on notification body";
-  }
-
-  drive_settings_open_count_++;
+void SystemNotificationManager::HandleBulkPinningNotificationClick() {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       profile_, chromeos::settings::mojom::kGoogleDriveSubpagePath);
   GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
@@ -548,13 +539,9 @@ NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
   NotificationPtr notification = CreateSystemNotification(
       kBulkPinningNotificationId, GetStringUTF16(title_id),
       GetStringUTF16(message_id),
-      MakeRefCounted<HandleNotificationClickDelegate>(BindRepeating(
+      BindRepeating(
           &SystemNotificationManager::HandleBulkPinningNotificationClick,
-          weak_ptr_factory_.GetWeakPtr())));
-
-  // Add button to the notification.
-  notification->set_buttons(
-      {ButtonInfo(GetStringUTF16(IDS_FILE_BROWSER_SETTINGS_LABEL))});
+          weak_ptr_factory_.GetWeakPtr()));
 
   return notification;
 }

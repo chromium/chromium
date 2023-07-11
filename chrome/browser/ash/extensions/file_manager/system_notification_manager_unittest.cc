@@ -58,7 +58,7 @@ using fmp::FileTransferStatus;
 using fmp::MountCompletedEvent;
 using fmp::ToString;
 using message_center::NotificationDelegate;
-using testing::ElementsAre;
+using testing::IsEmpty;
 
 using enum extensions::events::HistogramValue;
 using enum fmp::BulkPinStage;
@@ -1298,7 +1298,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
     EXPECT_EQ(strings.title, u"Couldn’t finish setting up file sync");
     EXPECT_EQ(strings.message,
               u"There isn’t enough storage space to sync all of your files");
-    EXPECT_THAT(strings.buttons, ElementsAre(u"Settings"));
+    EXPECT_THAT(strings.buttons, IsEmpty());
   }
 
   // Click the notification body.
@@ -1309,8 +1309,6 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
       BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(0u, notification_count_);
-  EXPECT_EQ(1, notification_manager_->drive_settings_open_count_);
-  notification_manager_->drive_settings_open_count_ = 0;
 
   // Not enough space without going through syncing phase.
   progress.stage = BULK_PIN_STAGE_NOT_ENOUGH_SPACE;
@@ -1355,19 +1353,17 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
     EXPECT_EQ(strings.title, u"File sync turned off");
     EXPECT_EQ(strings.message,
               u"There isn’t enough storage space to continue syncing files");
-    EXPECT_THAT(strings.buttons, ElementsAre(u"Settings"));
+    EXPECT_THAT(strings.buttons, IsEmpty());
   }
 
-  // Click the notification button #0.
-  bridge_->ClickButton(notification_id, 0);
+  // Click the notification body.
+  bridge_->ClickNotification(notification_id);
 
   // The notification should have been closed.
   display_service_->GetDisplayed(
       BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(0u, notification_count_);
-  EXPECT_EQ(1, notification_manager_->drive_settings_open_count_);
-  notification_manager_->drive_settings_open_count_ = 0;
 
   // Back to syncing stage.
   progress.stage = BULK_PIN_STAGE_SYNCING;
@@ -1398,19 +1394,17 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
     const Strings strings = bridge_->GetStrings(notification_id);
     EXPECT_EQ(strings.title, u"File sync turned off");
     EXPECT_EQ(strings.message, u"Something went wrong.");
-    EXPECT_THAT(strings.buttons, ElementsAre(u"Settings"));
+    EXPECT_THAT(strings.buttons, IsEmpty());
   }
 
-  // Click the notification button #0.
-  bridge_->ClickButton(notification_id, 0);
+  // Click the notification body.
+  bridge_->ClickNotification(notification_id);
 
   // The notification should have been closed.
   display_service_->GetDisplayed(
       BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(0u, notification_count_);
-  EXPECT_EQ(1, notification_manager_->drive_settings_open_count_);
-  notification_manager_->drive_settings_open_count_ = 0;
 }
 
 // Tests all the various error notifications.
