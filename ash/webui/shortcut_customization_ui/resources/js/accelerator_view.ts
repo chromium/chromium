@@ -567,6 +567,19 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         new CustomEvent('edit-icon-clicked', {bubbles: true, composed: true}));
   }
 
+  private getAriaLabel(): string {
+    const keyOrIcon =
+        this.acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay;
+    return getModifiersForAcceleratorInfo(this.acceleratorInfo)
+        .join(' ')
+        .concat(` ${this.getAriaKeyDisplay(keyOrIcon)}`);
+  }
+
+  private getAriaKeyDisplay(keyOrIcon: string): string {
+    const iconName = keyToIconNameMap[keyOrIcon];
+    return iconName ? iconName : keyOrIcon;
+  }
+
   static get template(): HTMLTemplateElement {
     return getTemplate();
   }

@@ -476,4 +476,41 @@ suite('acceleratorViewTest', function() {
         'shortcut-customization-keys:display-brightness-up',
         keyIconElement2.icon);
   });
+
+  test('GetAriaLabels', async () => {
+    viewElement = initAcceleratorViewElement();
+    await flushTasks();
+
+    const acceleratorInfo = createStandardAcceleratorInfo(
+        Modifier.SHIFT | Modifier.ALT,
+        /*key=*/ 221,
+        /*keyDisplay=*/ 's');
+    viewElement.acceleratorInfo = acceleratorInfo;
+    viewElement.source = AcceleratorSource.kAsh;
+    viewElement.action = 1;
+    await flush();
+
+    const viewContainer =
+        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
+    assertEquals('alt shift s', viewContainer.ariaLabel);
+  });
+
+  test('GetAriaLabelsWithIcon', async () => {
+    viewElement = initAcceleratorViewElement();
+    await flushTasks();
+
+    const acceleratorInfo = createStandardAcceleratorInfo(
+        Modifier.SHIFT | Modifier.ALT,
+        /*key=*/ 220,
+        /*keyDisplay=*/ 'LaunchApplication1');
+    viewElement.acceleratorInfo = acceleratorInfo;
+    viewElement.source = AcceleratorSource.kAsh;
+    viewElement.action = 1;
+    await flush();
+
+    const viewContainer =
+        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
+    // The icon name is 'overview' in keyToIconNameMap.
+    assertEquals('alt shift overview', viewContainer.ariaLabel);
+  });
 });
