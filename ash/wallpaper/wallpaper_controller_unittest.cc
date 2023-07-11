@@ -808,6 +808,14 @@ class WallpaperControllerTest : public WallpaperControllerTestBase,
 
   bool IsJellyEnabled() { return GetParam(); }
 
+  // Populate meaningful test suffixes instead of /0, /1, etc.
+  struct PrintToStringParamName {
+    std::string operator()(
+        const testing::TestParamInfo<ParamType>& info) const {
+      return info.param ? "JellyOn" : "JellyOff";
+    }
+  };
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -816,7 +824,8 @@ INSTANTIATE_TEST_SUITE_P(
     // Empty to simplify gtest output
     ,
     WallpaperControllerTest,
-    testing::Bool());
+    testing::Bool(),
+    WallpaperControllerTest::PrintToStringParamName());
 
 TEST_P(WallpaperControllerTest, Client) {
   base::FilePath empty_path;
