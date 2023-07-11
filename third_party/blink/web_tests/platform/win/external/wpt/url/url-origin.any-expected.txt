@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 365 tests; 350 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 365 tests; 351 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Origin parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -121,7 +121,7 @@ PASS Origin parsing: <http://example.com/foo%2zbar> without base
 PASS Origin parsing: <http://example.com/foo%2Â©zbar> without base
 PASS Origin parsing: <http://example.com/foo%41%7a> without base
 PASS Origin parsing: <http://example.com/foo	%91> without base
-FAIL Origin parsing: <http://example.com/foo%00%51> without base Failed to construct 'URL': Invalid URL
+PASS Origin parsing: <http://example.com/foo%00%51> without base
 PASS Origin parsing: <http://example.com/(%28:%3A%29)> without base
 PASS Origin parsing: <http://example.com/%3A%3a%3C%3c> without base
 PASS Origin parsing: <http://example.com/foo	bar> without base

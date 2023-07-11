@@ -224,13 +224,23 @@ TEST_F(UrlRequestRewriteTypeConvertersTest, Validation) {
     EXPECT_FALSE(UpdateRulesFromRewrite(std::move(rewrite)));
   }
 
-  // Invalid ReplaceUrl url_ends_with.
-  EXPECT_FALSE(UpdateRulesFromRewrite(
-      CreateRewriteReplaceUrl("some%00thing", GURL("http://site.xyz").spec())));
+  // ReplaceURL with valid new_url.
+  EXPECT_TRUE(UpdateRulesFromRewrite(
+      CreateRewriteReplaceUrl("/something", "http://site.xyz")));
+  EXPECT_TRUE(UpdateRulesFromRewrite(
+      CreateRewriteReplaceUrl("some%00thing", "http://site.xyz")));
 
-  // Invalid ReplaceUrl new_url.
+  // ReplaceURL with valid new_url including "%00" in its path.
+  EXPECT_TRUE(UpdateRulesFromRewrite(
+      CreateRewriteReplaceUrl("/something", "http://site.xyz/%00")));
+  EXPECT_TRUE(UpdateRulesFromRewrite(
+      CreateRewriteReplaceUrl("some%00thing", "http://site.xyz/%00")));
+
+  // ReplaceURL with invalid new_url.
   EXPECT_FALSE(UpdateRulesFromRewrite(
       CreateRewriteReplaceUrl("/something", "http:site:xyz")));
+  EXPECT_FALSE(UpdateRulesFromRewrite(
+      CreateRewriteReplaceUrl("some%00thing", "http:site:xyz")));
 
   // Empty ReplaceUrl.
   {
