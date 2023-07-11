@@ -195,7 +195,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldNotShowForRegularPage) {
 // When kMemorySavingsReportingImprovements is disabled, the chip should not
 // expand.
 TEST_F(HighEfficiencyChipViewTest, ShouldNotExpandWhenFeatureIsDisabled) {
-  SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
+  SetChipExpandedCount(HighEfficiencyChipTabHelper::kChipAnimationCount);
   AddNewTab(kHighMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
@@ -211,7 +211,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldNotExpandWhenFeatureIsDisabled) {
 // visible.
 TEST_F(HighEfficiencyChipViewTest, ShouldHideLabelAfterMultipleDiscards) {
   // Open the tab the max number of times for the label to be visible
-  for (int i = 0; i < HighEfficiencyChipView::kChipAnimationCount; i++) {
+  for (int i = 0; i < HighEfficiencyChipTabHelper::kChipAnimationCount; i++) {
     SetTabDiscardState(0, true);
     EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
     SetTabDiscardState(0, false);
@@ -226,15 +226,18 @@ TEST_F(HighEfficiencyChipViewTest, ShouldCollapseChipAfterNavigatingTabs) {
   AddNewTab(kMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents_0 =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  content::WebContents* web_contents_1 =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
   EXPECT_EQ(2, tab_strip_model->GetTabCount());
 
   SetTabDiscardState(0, true);
   EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
 
   tab_strip_model->SelectNextTab();
-  web_contents->WasHidden();
+  web_contents_0->WasHidden();
+  web_contents_1->WasShown();
   PageActionIconView* view = GetPageActionIconView();
   EXPECT_FALSE(view->GetVisible());
 
@@ -242,11 +245,13 @@ TEST_F(HighEfficiencyChipViewTest, ShouldCollapseChipAfterNavigatingTabs) {
   EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
 
   tab_strip_model->SelectPreviousTab();
-  web_contents->WasShown();
+  web_contents_0->WasShown();
+  web_contents_1->WasHidden();
   EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
 
   tab_strip_model->SelectNextTab();
-  web_contents->WasHidden();
+  web_contents_0->WasHidden();
+  web_contents_1->WasShown();
   EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
 }
 
@@ -290,7 +295,7 @@ TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsTest,
 // expand.
 TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsTest,
        ShouldNotExpandForSavingsBelowThreshold) {
-  SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
+  SetChipExpandedCount(HighEfficiencyChipTabHelper::kChipAnimationCount);
 
   task_environment()->AdvanceClock(base::Hours(8));
   SetTabDiscardState(0, true);
@@ -304,7 +309,7 @@ TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsTest,
 // the expanded mode.
 TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsTest,
        ShouldNotExpandWhenChipHasExpandedRecently) {
-  SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
+  SetChipExpandedCount(HighEfficiencyChipTabHelper::kChipAnimationCount);
   SetChipExpandedTimeToNow();
   AddNewTab(kHighMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
@@ -321,7 +326,7 @@ TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsTest,
 // expanded mode.
 TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsTest,
        ShouldNotExpandWhenTabWasDiscardedRecently) {
-  SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
+  SetChipExpandedCount(HighEfficiencyChipTabHelper::kChipAnimationCount);
   AddNewTab(kHighMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
@@ -335,7 +340,7 @@ TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsTest,
 // When the celebratory expanded chip is shown, UMA metrics should be logged.
 TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsTest,
        ShouldLogMetricsForCelebratoryExpandedChip) {
-  SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
+  SetChipExpandedCount(HighEfficiencyChipTabHelper::kChipAnimationCount);
   AddNewTab(kHighMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 

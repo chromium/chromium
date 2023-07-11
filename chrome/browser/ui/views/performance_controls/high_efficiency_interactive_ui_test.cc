@@ -363,7 +363,7 @@ class HighEfficiencyChipInteractiveTest : public HighEfficiencyInteractiveTest {
       size_t non_discard_tab_index,
       const ui::ElementIdentifier& contents_id) {
     MultiStep result;
-    for (int i = 0; i < HighEfficiencyChipView::kChipAnimationCount; i++) {
+    for (int i = 0; i < HighEfficiencyChipTabHelper::kChipAnimationCount; i++) {
       MultiStep temp = std::move(result);
       result = Steps(std::move(temp),
                      SelectTab(kTabStripElementId, non_discard_tab_index),
