@@ -29,7 +29,7 @@ import org.chromium.net.impl.CronetLogger.CronetSource;
  *     ...
  *     <service android:name="android.net.http.MetaDataHolder"
  *              android:enabled="false" android:exported="false">
- *       <meta-data android:name="net.android.http.EnableTelemetry"
+ *       <meta-data android:name="android.net.http.EnableTelemetry"
  *                  android:value="true" />
  *     </service>
  *   </application>
