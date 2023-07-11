@@ -5574,6 +5574,9 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_SUBTEXT" desc="Sub-label for the camera access toggle in the Privacy controls (aka Privacy Hub) os-settings page.">
     Allow access for apps and websites with the camera permission
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_FALLBACK_CAMERA_TOGGLE_SUBTEXT" desc="Sub-label for the camera access toggle in the Privacy controls (aka Privacy Hub) os-settings page.">
+    Allow apps and webpages to use the camera(s) connected to this device. If you still have a problem with your camera, try restart the app or refresh the webpage.
+  </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_CAMERA_CONNECTED_TEXT" desc="Text to display in the Privacy Hub subpage when no camera is connected to the device.">
     No camera
   </message>

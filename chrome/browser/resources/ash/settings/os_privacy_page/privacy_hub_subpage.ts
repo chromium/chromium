@@ -66,6 +66,11 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         },
       },
 
+      useCameraToggleFallbackSubtext_: {
+        type: Boolean,
+        value: false,
+      },
+
       /**
        * The list of connected cameras.
        */
@@ -132,6 +137,7 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
 
   private browserProxy_: PrivacyHubBrowserProxy;
   private camerasConnected_: string[];
+  private useCameraToggleFallbackSubtext_: boolean;
   private isCameraListEmpty_: boolean;
   private isMicListEmpty_: boolean;
   private microphonesConnected_: string[];
@@ -158,6 +164,10 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         (enabled) => {
           this.setMicrophoneHardwareToggleState_(enabled);
         });
+
+    this.browserProxy_.getCameraLedFallbackState().then((enabled) => {
+      this.setCameraLedFallbackState_(enabled);
+    });
 
     this.updateMediaDeviceLists_();
     MediaDevicesProxy.getMediaDevices().addEventListener(
@@ -192,6 +202,13 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
     } else {
       this.microphoneHardwareToggleActive_ = false;
     }
+  }
+
+  /**
+   * @param enabled whether the fallback mechanism for camera LED is enabled
+   */
+  private setCameraLedFallbackState_(enabled: boolean): void {
+    this.useCameraToggleFallbackSubtext_ = enabled;
   }
 
   /**

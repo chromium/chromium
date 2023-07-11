@@ -11,6 +11,7 @@
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/ash/camera_presence_notifier.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::privacy_hub_util {
 
@@ -62,6 +63,36 @@ void TrackGeolocationRelinquished(const std::string& name) {
   if (controller) {
     controller->geolocation_controller().TrackGeolocationRelinquished(name);
   }
+}
+
+namespace {
+absl::optional<bool> camera_led_fallback_for_testing{};
+}
+
+// TODO(b/289510726): remove when all cameras fully support the software
+// switch.
+bool UsingCameraLEDFallback() {
+  if (!camera_led_fallback_for_testing.has_value()) {
+    PrivacyHubController* const controller = PrivacyHubController::Get();
+    CHECK(controller);
+    return controller->camera_controller().UsingCameraLEDFallback();
+  }
+
+  // Can happen in some testing environments
+  CHECK(camera_led_fallback_for_testing.has_value());
+  return camera_led_fallback_for_testing.value();
+}
+
+ScopedCameraLedFallbackForTesting::ScopedCameraLedFallbackForTesting(
+    bool value) {
+  CHECK(!camera_led_fallback_for_testing.has_value());
+  camera_led_fallback_for_testing = value;
+}
+
+ScopedCameraLedFallbackForTesting::~ScopedCameraLedFallbackForTesting() {
+  CHECK(camera_led_fallback_for_testing.has_value());
+  camera_led_fallback_for_testing.reset();
+  CHECK(!camera_led_fallback_for_testing.has_value());
 }
 
 }  // namespace ash::privacy_hub_util

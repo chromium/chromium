@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_hats_trigger.h"
+#include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "content/public/test/test_web_ui.h"
@@ -22,6 +23,7 @@ class TestPrivacyHubHandler : public PrivacyHubHandler {
  public:
   using content::WebUIMessageHandler::set_web_ui;
 
+  using PrivacyHubHandler::HandleInitialCameraLedFallbackState;
   using PrivacyHubHandler::HandleInitialMicrophoneSwitchState;
   using PrivacyHubHandler::HandlePrivacyPageClosed;
   using PrivacyHubHandler::HandlePrivacyPageOpened;
@@ -124,6 +126,22 @@ class PrivacyHubHandlerMicrophoneTest
   }
 };
 
+class PrivacyHubHandlerCameraLedFallbackTest
+    : public PrivacyHubHandlerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PrivacyHubHandlerCameraLedFallbackTest()
+      : scoped_camera_led_fallback_(GetParam()) {}
+
+  void ExpectValueMatchesBoolParam(const base::Value& value) const {
+    PrivacyHubHandlerTest::ExpectValueMatchesBoolParam(GetParam(), value);
+  }
+
+ private:
+  privacy_hub_util::ScopedCameraLedFallbackForTesting
+      scoped_camera_led_fallback_;
+};
+
 class PrivacyHubHandlerHatsTest : public PrivacyHubHandlerTest {
  public:
   PrivacyHubHandlerHatsTest() {
@@ -164,6 +182,23 @@ TEST_P(PrivacyHubHandlerMicrophoneTest, HandleInitialMicrophoneSwitchState) {
 
 INSTANTIATE_TEST_SUITE_P(HardwareSwitchStates,
                          PrivacyHubHandlerMicrophoneTest,
+                         testing::Values(true, false),
+                         testing::PrintToStringParamName());
+
+TEST_P(PrivacyHubHandlerCameraLedFallbackTest,
+       HandleInitialCameraLedCallbackState) {
+  base::Value::List args;
+  args.Append(this_test_name_);
+
+  privacy_hub_handler_.HandleInitialCameraLedFallbackState(args);
+
+  const base::Value data = GetLastWebUIResponse(this_test_name_);
+
+  ExpectValueMatchesBoolParam(data);
+}
+
+INSTANTIATE_TEST_SUITE_P(CameraLedFallback,
+                         PrivacyHubHandlerCameraLedFallbackTest,
                          testing::Values(true, false),
                          testing::PrintToStringParamName());
 

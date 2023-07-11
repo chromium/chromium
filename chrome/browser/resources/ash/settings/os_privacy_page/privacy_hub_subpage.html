@@ -10,6 +10,18 @@
 </style>
 
 <div id="camera">
+  <template is="dom-if" if="[[useCameraToggleFallbackSubtext_]]" restamp>
+  <settings-toggle-button
+      pref="{{prefs.ash.user.camera_allowed}}"
+      id="cameraToggle"
+      label="$i18n{cameraToggleTitle}"
+      sub-label="$i18n{cameraToggleFallbackSubtext}"
+      deep-link-focus-id$="[[Setting.kCameraOnOff]]"
+      disabled="[[isCameraListEmpty_]]"
+      on-change="onCameraToggleChanged_">
+  </settings-toggle-button>
+  </template>
+  <template is="dom-if" if="[[!useCameraToggleFallbackSubtext_]]" restamp>
   <settings-toggle-button
       pref="{{prefs.ash.user.camera_allowed}}"
       id="cameraToggle"
@@ -19,6 +31,7 @@
       disabled="[[isCameraListEmpty_]]"
       on-change="onCameraToggleChanged_">
   </settings-toggle-button>
+  </template>
 
   <div class="list-frame">
     <template is="dom-if" if="[[isCameraListEmpty_]]" restamp>

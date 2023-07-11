@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/privacy_hub_delegate.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -32,16 +33,22 @@ class PrivacyHubHandler : public content::WebUIMessageHandler,
 
   void NotifyJS(const std::string& event_name, const base::Value& value);
 
-  void HandleInitialMicrophoneSwitchState(const base::Value::List& args);
-
   void HandlePrivacyPageOpened(const base::Value::List& args);
 
   void HandlePrivacyPageClosed(const base::Value::List& args);
 
+  void HandleInitialMicrophoneSwitchState(const base::Value::List& args);
+
+  void HandleInitialCameraLedFallbackState(const base::Value::List& args);
+
  private:
+  // return the callback_id
+  const base::ValueView ValidateArgs(const base::Value::List& args);
+
   void TriggerHatsIfPageWasOpened();
 
   bool privacy_page_was_opened_ = false;
+  base::WeakPtrFactory<PrivacyHubHandler> weak_factory_{this};
 };
 
 }  // namespace ash::settings

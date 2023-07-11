@@ -28,6 +28,22 @@ void TrackGeolocationAttempted(const std::string& name);
 // Notifies the Privacy Hub controller.
 void TrackGeolocationRelinquished(const std::string& name);
 
+// Checks if we use the fallback solution for the camera LED
+// (go/privacy-hub:camera-led-fallback).
+// TODO(b/289510726): remove when all cameras fully support the software
+// switch.
+bool UsingCameraLEDFallback();
+
+// Used to override the value of the LED Fallback value in tests.
+// Should not be nested.
+// TODO(b/289510726): remove when all cameras fully support the software
+// switch.
+class ScopedCameraLedFallbackForTesting {
+ public:
+  explicit ScopedCameraLedFallbackForTesting(bool value);
+  ~ScopedCameraLedFallbackForTesting();
+};
+
 }  // namespace privacy_hub_util
 
 }  // namespace ash

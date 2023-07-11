@@ -18,6 +18,9 @@
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "ash/system/system_notification_controller.h"
 #include "base/check.h"
+#include "base/files/file_util.h"
+#include "base/task/thread_pool.h"
+#include "camera_privacy_switch_controller.h"
 #include "components/prefs/pref_service.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
@@ -58,6 +61,7 @@ void VCDPrivacyAdapter::SetCameraSWPrivacySwitch(
 CameraPrivacySwitchController::CameraPrivacySwitchController()
     : switch_api_(std::make_unique<VCDPrivacyAdapter>()) {
   Shell::Get()->session_controller()->AddObserver(this);
+  InitUsingCameraLEDFallback();
 }
 
 CameraPrivacySwitchController::~CameraPrivacySwitchController() {
@@ -196,4 +200,25 @@ void CameraPrivacySwitchController::ActiveApplicationsChanged(
   }
 }
 
+bool CameraPrivacySwitchController::UsingCameraLEDFallback() {
+  return using_camera_led_fallback_;
+}
+
+void CameraPrivacySwitchController::InitUsingCameraLEDFallback() {
+  // Check that the file created by the camera service exists.
+  const base::FilePath kPath(
+      "/run/camera/camera_ids_with_sw_privacy_switch_fallback");
+  if (!base::PathExists(kPath) || !base::PathIsReadable(kPath)) {
+    // The camera service should create the file always. However we keep this
+    // for backward compatibility when deployed with an older version of the OS
+    // and forward compatibility when the fallback is eventually dropped.
+    using_camera_led_fallback_ = false;
+    return;
+  }
+  int64_t file_size{};
+  const bool file_size_read_success = base::GetFileSize(kPath, &file_size);
+  CHECK(file_size_read_success);
+
+  using_camera_led_fallback_ = (file_size != 0ll);
+}
 }  // namespace ash

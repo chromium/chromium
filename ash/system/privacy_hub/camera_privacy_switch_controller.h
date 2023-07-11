@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
+#include "base/functional/callback.h"
 #include "base/supports_user_data.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
@@ -72,13 +73,25 @@ class ASH_EXPORT CameraPrivacySwitchController
   // active applications has stopped accessing the camera.
   void ActiveApplicationsChanged(bool application_added);
 
+  // Checks if we use the fallback solution for the camera LED.
+  // Returns the boolean value via callback.
+  // (go/privacy-hub:camera-led-fallback).
+  // TODO(b/289510726): remove when all cameras fully support the software
+  // switch.
+  bool UsingCameraLEDFallback();
+
  private:
+  // Used for first time initialization of the cached value.
+  // Can be called only once.
+  void InitUsingCameraLEDFallback();
+
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CameraPrivacySwitchAPI> switch_api_;
   int active_applications_using_camera_count_ = 0;
   bool is_camera_observer_added_ = false;
   int camera_count_ = -1;
   bool camera_used_while_deactivated_ = false;
+  bool using_camera_led_fallback_ = true;
 };
 
 }  // namespace ash

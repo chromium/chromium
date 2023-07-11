@@ -6,6 +6,7 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 export interface PrivacyHubBrowserProxy {
   getInitialMicrophoneHardwareToggleState(): Promise<boolean>;
+  getCameraLedFallbackState(): Promise<boolean>;
   sendLeftOsPrivacyPage(): void;
   sendOpenedOsPrivacyPage(): void;
 }
@@ -15,6 +16,10 @@ let instance: PrivacyHubBrowserProxy|null = null;
 export class PrivacyHubBrowserProxyImpl implements PrivacyHubBrowserProxy {
   getInitialMicrophoneHardwareToggleState(): Promise<boolean> {
     return sendWithPromise('getInitialMicrophoneHardwareToggleState');
+  }
+
+  getCameraLedFallbackState(): Promise<boolean> {
+    return sendWithPromise('getCameraLedFallbackState');
   }
 
   sendLeftOsPrivacyPage(): void {
