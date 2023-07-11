@@ -6,6 +6,7 @@
 
 #include "ash/wm/desks/desks_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -14,10 +15,6 @@ namespace ash {
 
 DeskBarView::DeskBarView(aura::Window* root)
     : DeskBarViewBase(root, DeskBarViewBase::Type::kDeskButton) {}
-
-const char* DeskBarView::GetClassName() const {
-  return "DeskBarView";
-}
 
 gfx::Size DeskBarView::CalculatePreferredSize() const {
   // For desk button bar, it comes with dynamic width. Thus, we calculate
@@ -39,5 +36,8 @@ gfx::Size DeskBarView::CalculatePreferredSize() const {
 
   return {width, GetPreferredBarHeight(root_, type_, state_)};
 }
+
+BEGIN_METADATA(DeskBarView, DeskBarViewBase)
+END_METADATA
 
 }  // namespace ash

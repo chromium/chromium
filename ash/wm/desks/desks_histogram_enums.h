@@ -69,6 +69,19 @@ constexpr char kCustomNameCreatedHistogramName[] =
 constexpr char kDeskButtonPressesHistogramName[] =
     "Ash.Desks.DeskButton.Presses";
 
+constexpr char kDeskBarCloseDeskHistogramName[] =
+    "Ash.Desks.DeskButton.BarAction.CloseDesk";
+constexpr char kDeskBarCombineDesksHistogramName[] =
+    "Ash.Desks.DeskButton.BarAction.CombineDesks";
+constexpr char kDeskBarNewDeskHistogramName[] =
+    "Ash.Desks.DeskButton.BarAction.NewDesk";
+constexpr char kDeskBarOpenLibraryHistogramName[] =
+    "Ash.Desks.DeskButton.BarAction.OpenLibrary";
+constexpr char kDeskBarRenameDeskHistogramName[] =
+    "Ash.Desks.DeskButton.BarAction.RenameDesk";
+constexpr char kDeskBarReorderDeskHistogramName[] =
+    "Ash.Desks.DeskButton.BarAction.ReorderDesk";
+
 }  // namespace ash
 
 #endif  // ASH_WM_DESKS_DESKS_HISTOGRAM_ENUMS_H_

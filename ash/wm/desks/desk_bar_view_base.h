@@ -19,6 +19,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/scroll_view.h"
@@ -34,6 +35,8 @@ class DeskBarHoverObserver;
 class ASH_EXPORT DeskBarViewBase : public views::View,
                                    public DesksController::Observer {
  public:
+  METADATA_HEADER(DeskBarViewBase);
+
   enum class Type {
     kOverview,
     kDeskButton,
@@ -150,7 +153,6 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   }
 
   // views::View:
-  const char* GetClassName() const override;
   void Layout() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;

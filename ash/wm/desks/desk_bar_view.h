@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
-#include "ui/views/view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -17,13 +17,13 @@ namespace ash {
 // on the shelf. Going forward, this will support overview desk bar as well.
 class ASH_EXPORT DeskBarView : public DeskBarViewBase {
  public:
+  METADATA_HEADER(DeskBarView);
   explicit DeskBarView(aura::Window* root);
 
   DeskBarView(const DeskBarView&) = delete;
   DeskBarView& operator=(const DeskBarView&) = delete;
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
 };
 

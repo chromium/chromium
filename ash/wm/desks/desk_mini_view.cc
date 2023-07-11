@@ -24,6 +24,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -351,6 +352,19 @@ void DeskMiniView::OnRemovingDesk(DeskCloseType close_type) {
   if (!controller->CanRemoveDesks())
     return;
 
+  if (owner_bar_->type() == DeskBarViewBase::Type::kDeskButton) {
+    switch (close_type) {
+      case DeskCloseType::kCloseAllWindowsAndWait:
+        base::UmaHistogramBoolean(kDeskBarCloseDeskHistogramName, true);
+        break;
+      case DeskCloseType::kCombineDesks:
+        base::UmaHistogramBoolean(kDeskBarCombineDesksHistogramName, true);
+        break;
+      default:
+        break;
+    }
+  }
+
   // We want to avoid the possibility of getting triggered multiple times. We
   // therefore hide the buttons and mark ourselves (including children) as no
   // longer processing events.
@@ -579,6 +593,10 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
         base::CollapseWhitespace(desk_name_view_->GetText(),
                                  /*trim_sequences_with_line_breaks=*/false),
         /*set_by_user=*/true);
+
+    if (owner_bar_->type() == DeskBarViewBase::Type::kDeskButton) {
+      base::UmaHistogramBoolean(kDeskBarRenameDeskHistogramName, true);
+    }
   }
 
   // When committing the name, do not allow an empty desk name. Revert back to
