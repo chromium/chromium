@@ -12,10 +12,17 @@
 
 // This file defines wrappers to allow C++ code to hold references to
 // Objective-C objects (either strong or weak) without being Objective-C++ code
-// themselves. These should not be used for pure Objective-C++ code, in which
-// the underlying Objective-C types should be used, nor should they be used for
-// the case where the pimpl idiom would work
-// (https://chromium.googlesource.com/chromium/src/+/main/docs/mac/mixing_cpp_and_objc.md).
+// themselves.
+//
+// WHEN NOT TO USE:
+// - Do not use these for pure Objective-C++ code. For that code, simply use
+//   Objective-C types as normal.
+// - Do not use as a member variable in an Objective-C++ class where the header
+//   is included from C++ files. Use the pimpl idiom instead:
+//   https://chromium.googlesource.com/chromium/src/+/main/docs/mac/mixing_cpp_and_objc.md
+//
+// Use these wrappers only in the situation where C++ code is passing
+// Objective-C framework objects around, instead of using double-declaration.
 
 #if __OBJC__
 
