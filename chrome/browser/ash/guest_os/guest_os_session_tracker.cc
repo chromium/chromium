@@ -224,7 +224,7 @@ void GuestOsSessionTracker::HandleNewGuest(const std::string& vm_name,
         << "Received ContainerStarted signal for an unexpected VM, ignoring.";
     return;
   }
-  GuestId id{VmType::UNKNOWN, vm_name, container_name};
+  GuestId id{ToVmType(iter->second.vm_type()), vm_name, container_name};
   GuestInfo info{id,           iter->second.cid(),
                  username,     base::FilePath(homedir),
                  ipv4_address, sftp_vsock_port};

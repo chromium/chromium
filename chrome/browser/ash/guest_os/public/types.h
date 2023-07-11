@@ -6,9 +6,18 @@
 #define CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_TYPES_H_
 
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
+
+namespace vm_tools::concierge {
+enum VmInfo_VmType : int;
+}
+
 namespace guest_os {
 
 using VmType = vm_tools::apps::VmType;
-}
+
+// Converts the concierge-specific type to the one we use in chrome (apps::).
+VmType ToVmType(vm_tools::concierge::VmInfo_VmType type);
+
+}  // namespace guest_os
 
 #endif  // CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_TYPES_H_

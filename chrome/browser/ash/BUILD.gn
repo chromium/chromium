@@ -1387,6 +1387,7 @@ source_set("ash") {
     "guest_os/public/guest_os_wayland_server.h",
     "guest_os/public/installer_delegate_factory.cc",
     "guest_os/public/installer_delegate_factory.h",
+    "guest_os/public/types.cc",
     "guest_os/public/types.h",
     "guest_os/virtual_machines/virtual_machines_util.cc",
     "guest_os/virtual_machines/virtual_machines_util.h",
