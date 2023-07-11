@@ -166,8 +166,14 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
                                const std::string& public_key,
                                Profile* profile) override;
 
-  void PrepareUserKey();
-  void PrepareMachineKey();
+  void PrepareEnterpriseUserFlow();
+  void PrepareEnterpriseMachineFlow();
+  void PrepareDeviceTrustConnectorFlow();
+
+  // Returns true if the user is managed.
+  // If this is a device-wide instance without a user-associated `profile_`,
+  // returns false.
+  bool IsUserManaged() const;
 
   // Returns true if the user is managed and is affiliated with the domain the
   // device is enrolled to.
@@ -184,15 +190,18 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   // Returns the AccountId associated with |profile_|. Will return
   // EmptyAccountId() if GetUser() returns nullptr.
   AccountId GetAccountId() const;
-  // Returns `GetAccountId()` if the flow type is `ENTERPRISE_USER`; otherwise,
-  // returns empty `AccountId` for `ENTERPRISE_MACHINE`.
+  // Returns `GetAccountId()` if the flow type uses a user key, returns empty
+  // `AccountId` if the flow type uses a device key.
   AccountId GetAccountIdForAttestationFlow() const;
-  // Returns the account id in string if the flow type is `ENTERPRISE_USER`;
-  // otherwise, returns empty string for `ENTERPRISE_MACHINE`.
+  // Returns the account id in string if the flow type uses a user key, returns
+  // an empty string if the flow type uses a device key.
   std::string GetUsernameForAttestationClient() const;
   // Returns whether or not the challenge response should include the
   // certificate of the signing key depending on the VA flow type.
   bool ShouldIncludeSigningKeyCertificate() const;
+  // Returns whether or not the challenge response should include the device
+  // management / enterprise obfuscated customer ID of the device.
+  bool ShouldIncludeCustomerId() const;
 
   // Actually prepares a key after all checks are passed and if `can_continue`
   // is true.

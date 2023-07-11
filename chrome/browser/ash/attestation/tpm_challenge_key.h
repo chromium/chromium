@@ -72,14 +72,18 @@ class TpmChallengeKey {
   // => 1) Key(key_name) + 2) Empty
   // D) ENTERPRISE_USER && register_key
   // => 1) Key(key_name) + 2) Key(key_name)
+  // E) DEVICE_TRUST_CONNECTOR && !register_key
+  // => 1) Key(key_name) + 2) Empty
   // In case B) |key_name| cannot be empty. In case C), D) some default name
   // will be used if |key_name| is empty.
+  // When using DEVICE_TRUST_CONNECTOR, `register_key` is not supported and
+  // `key_name` cannot be empty.
   // The response can also contain |signals| which consist of a set of
   // information about the device that is given to the IdP after the challenge
   // response has been verified. These signals can be used as input to an AuthN
   // decision. Signals are collected in a dictionary and are JSON stringified.
-  // The signals are optional since they can be null when no signals are set
-  // on the response, empty when no signals were collected (i.e empty signals
+  // The signals are optional since they can be null when no signals are set on
+  // the response, empty when no signals were collected (i.e empty signals
   // dictionary), or non empty. More information on signals collection can be
   // found in the |SignalsService|.
 

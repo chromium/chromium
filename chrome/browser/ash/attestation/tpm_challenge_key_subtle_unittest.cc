@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/platform_keys/key_permissions/mock_key_permissions_manager.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/user_private_token_kpm_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -55,7 +56,8 @@ constexpr char kNonDefaultKeyName[] = "key_name_123";
 constexpr char kFakeCertificate[] = "fake_cert";
 constexpr char kUnsupportedVAFlowTypeKey[] = "unsupported VA flow type";
 
-const char* GetDefaultKeyName(::attestation::VerifiedAccessFlow type) {
+std::string GetDefaultKeyName(::attestation::VerifiedAccessFlow type,
+                              const std::string& username = std::string()) {
   switch (type) {
     case ::attestation::ENTERPRISE_MACHINE:
       return kEnterpriseMachineKey;
@@ -173,7 +175,9 @@ enum class TestProfileChoice {
   kNoProfile,
   // Pass the sign-in Profile.
   kSigninProfile,
-  // Pass the Profile of an unaffiliated user.
+  // Pass the Profile of an unmanaged user.
+  kUnmanagedProfile,
+  // Pass the Profile of a managed, unaffiliated user.
   kUnaffiliatedProfile,
   // Pass the Profile of an affiliated user.
   kAffiliatedProfile
@@ -188,7 +192,7 @@ class TpmChallengeKeySubtleTestBase : public ::testing::Test {
   // ::testing::Test:
   void SetUp() override;
 
-  TestingProfile* CreateUserProfile(bool is_affiliated);
+  TestingProfile* CreateUserProfile(bool is_managed, bool is_affiliated);
   TestingProfile* GetProfile();
   ScopedCrosSettingsTestHelper* GetCrosSettingsHelper();
   StubInstallAttributes* GetInstallAttributes();
@@ -270,12 +274,17 @@ void TpmChallengeKeySubtleTestBase::SetUp() {
     case TestProfileChoice::kSigninProfile:
       testing_profile_ = signin_profile_;
       break;
+    case TestProfileChoice::kUnmanagedProfile:
+      testing_profile_ =
+          CreateUserProfile(/*is_managed=*/false, /*is_affiliated=*/false);
+      break;
     case TestProfileChoice::kUnaffiliatedProfile:
-      testing_profile_ = CreateUserProfile(/*is_affiliated=*/false);
+      testing_profile_ =
+          CreateUserProfile(/*is_managed=*/true, /*is_affiliated=*/false);
       break;
     case TestProfileChoice::kAffiliatedProfile:
-      testing_profile_ = CreateUserProfile(/*is_affiliated=*/true);
-      break;
+      testing_profile_ =
+          CreateUserProfile(/*is_managed=*/true, /*is_affiliated=*/true);
   }
 
   GetInstallAttributes()->SetCloudManaged("google.com", "device_id");
@@ -302,10 +311,14 @@ void TpmChallengeKeySubtleTestBase::SetUp() {
 }
 
 TestingProfile* TpmChallengeKeySubtleTestBase::CreateUserProfile(
+    bool is_managed,
     bool is_affiliated) {
   TestingProfile* testing_profile =
       testing_profile_manager_.CreateTestingProfile(kTestUserEmail);
   CHECK(testing_profile);
+
+  testing_profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(
+      is_managed);
 
   auto test_account =
       AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
@@ -415,7 +428,16 @@ class AffiliatedUserTpmChallengeKeySubtleTest
   ~AffiliatedUserTpmChallengeKeySubtleTest() override = default;
 };
 
-// Tests TpmChallengeKeySubtle with an unaffiliated user profile only.
+// Tests TpmChallengeKeySubtle with an unmanaged user profile only.
+class UnmanagedUserTpmChallengeKeySubtleTest
+    : public TpmChallengeKeySubtleTestBase {
+ public:
+  UnmanagedUserTpmChallengeKeySubtleTest()
+      : TpmChallengeKeySubtleTestBase(TestProfileChoice::kUnmanagedProfile) {}
+  ~UnmanagedUserTpmChallengeKeySubtleTest() override = default;
+};
+
+// Tests TpmChallengeKeySubtle with a managed, unaffiliated user profile only.
 class UnaffiliatedUserTpmChallengeKeySubtleTest
     : public TpmChallengeKeySubtleTestBase {
  public:
@@ -581,7 +603,7 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
        DeviceKeyNotRegisteredSuccess) {
   const ::attestation::VerifiedAccessFlow flow_type =
       ::attestation::ENTERPRISE_MACHINE;
-  const char* const key_name = GetDefaultKeyName(flow_type);
+  const std::string key_name = GetDefaultKeyName(flow_type);
 
   EXPECT_CALL(mock_attestation_flow_,
               GetCertificate(_, _, _, _, _, key_name, _, _));
@@ -691,7 +713,7 @@ TEST_F(TpmChallengeKeySubtleTestECC, UserKeyRegisteredSuccessDefaultNameECC) {
 TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyNotRegisteredSuccess) {
   const ::attestation::VerifiedAccessFlow flow_type =
       ::attestation::ENTERPRISE_USER;
-  const char* const key_name = GetDefaultKeyName(flow_type);
+  const std::string key_name = GetDefaultKeyName(flow_type);
 
   EXPECT_CALL(mock_attestation_flow_,
               GetCertificate(_, _, _, _, _, key_name, _, _));
@@ -913,7 +935,7 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, NoCertificateUploaderSuccess) {
 TEST_F(KioskTpmChallengeKeySubtleTest, IncludesCustomerId) {
   const ::attestation::VerifiedAccessFlow flow_type =
       ::attestation::ENTERPRISE_USER;
-  const char* const key_name = GetDefaultKeyName(flow_type);
+  const std::string key_name = GetDefaultKeyName(flow_type);
 
   EXPECT_CALL(mock_attestation_flow_,
               GetCertificate(_, _, _, _, _, key_name, _, _));
@@ -931,6 +953,48 @@ TEST_F(KioskTpmChallengeKeySubtleTest, IncludesCustomerId) {
       ->AllowlistSignEnterpriseChallengeKey(expected_request);
 
   RunTwoStepsAndExpect(flow_type, /*will_register_key=*/false, kEmptyKeyName,
+                       TpmChallengeKeyResult::MakeChallengeResponse(
+                           GetChallengeResponse(/*include_spkac=*/false)));
+}
+
+// TODO(b/277707201): remove once user email from login screen can be passed to
+// TpmChallengeKeySubtle.
+TEST_F(SigninProfileTpmChallengeKeySubtleTest,
+       DeviceTrustConnectorProfileRequired) {
+  RunOneStepAndExpect(
+      ::attestation::DEVICE_TRUST_CONNECTOR, /*will_register_key=*/false,
+      kNonDefaultKeyName,
+      TpmChallengeKeyResult::MakeError(
+          TpmChallengeKeyResultCode::kUserKeyNotAvailableError));
+}
+
+TEST_F(UnmanagedUserTpmChallengeKeySubtleTest,
+       DeviceTrustConnectorUserNotManaged) {
+  RunOneStepAndExpect(::attestation::DEVICE_TRUST_CONNECTOR,
+                      /*will_register_key=*/false, kNonDefaultKeyName,
+                      TpmChallengeKeyResult::MakeError(
+                          TpmChallengeKeyResultCode::kUserNotManagedError));
+}
+
+TEST_F(UnaffiliatedUserTpmChallengeKeySubtleTest, DeviceTrustConnectorSuccess) {
+  const ::attestation::VerifiedAccessFlow flow_type =
+      ::attestation::DEVICE_TRUST_CONNECTOR;
+  EXPECT_CALL(mock_attestation_flow_,
+              GetCertificate(_, _, _, _, _, kNonDefaultKeyName, _, _));
+
+  ::attestation::SignEnterpriseChallengeRequest expected_request;
+  expected_request.set_key_label(kNonDefaultKeyName);
+  expected_request.set_domain(kTestUserEmail);
+  expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
+  expected_request.set_include_customer_id(false);
+  expected_request.set_flow_type(::attestation::DEVICE_TRUST_CONNECTOR);
+  expected_request.set_include_certificate(true);
+  AttestationClient::Get()
+      ->GetTestInterface()
+      ->AllowlistSignEnterpriseChallengeKey(expected_request);
+
+  RunTwoStepsAndExpect(flow_type, /*will_register_key=*/false,
+                       kNonDefaultKeyName,
                        TpmChallengeKeyResult::MakeChallengeResponse(
                            GetChallengeResponse(/*include_spkac=*/false)));
 }
