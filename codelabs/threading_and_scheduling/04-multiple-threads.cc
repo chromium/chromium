@@ -58,10 +58,9 @@ class IOThreadDelegate : public base::Thread::Delegate {
   // This is similar to i.e.,
   // `content::BrowserIOThreadDelegate::BindToCurrentThread()`, and is the first
   // function to run on the new physical thread.
-  void BindToCurrentThread(base::TimerSlack timer_slack) override {
+  void BindToCurrentThread() override {
     owned_sequence_manager_->BindToMessagePump(
         base::MessagePump::Create(base::MessagePumpType::IO));
-    owned_sequence_manager_->SetTimerSlack(timer_slack);
     owned_sequence_manager_->SetDefaultTaskRunner(GetDefaultTaskRunner());
   }
   scoped_refptr<base::SingleThreadTaskRunner> GetDefaultTaskRunner() override {

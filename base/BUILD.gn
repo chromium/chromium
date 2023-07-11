@@ -470,7 +470,6 @@ component("base") {
     "message_loop/message_pump_for_io.h",
     "message_loop/message_pump_for_ui.h",
     "message_loop/message_pump_type.h",
-    "message_loop/timer_slack.h",
     "message_loop/work_id_provider.cc",
     "message_loop/work_id_provider.h",
     "metrics/bucket_ranges.cc",

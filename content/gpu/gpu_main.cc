@@ -480,9 +480,7 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
       base::BindOnce(GpuProcessPreSandboxHook), sandbox_options);
 
   if (watchdog_thread) {
-    base::Thread::Options thread_options;
-    thread_options.timer_slack = base::TIMER_SLACK_MAXIMUM;
-    watchdog_thread->StartWithOptions(std::move(thread_options));
+    watchdog_thread->Start();
   }
 
   return res;

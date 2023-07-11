@@ -49,12 +49,10 @@ BrowserIOThreadDelegate::GetDefaultTaskRunner() {
 
 BrowserIOThreadDelegate::~BrowserIOThreadDelegate() = default;
 
-void BrowserIOThreadDelegate::BindToCurrentThread(
-    base::TimerSlack timer_slack) {
+void BrowserIOThreadDelegate::BindToCurrentThread() {
   DCHECK(sequence_manager_);
   sequence_manager_->BindToMessagePump(
       base::MessagePump::Create(base::MessagePumpType::IO));
-  sequence_manager_->SetTimerSlack(timer_slack);
   sequence_manager_->SetDefaultTaskRunner(GetDefaultTaskRunner());
   sequence_manager_->EnableCrashKeys("io_scheduler_async_stack");
 }

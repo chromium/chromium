@@ -130,7 +130,6 @@ class BASE_EXPORT SequenceManagerImpl
   void ReclaimMemory() override;
   bool GetAndClearSystemIsQuiescentBit() override;
   void SetWorkBatchSize(int work_batch_size) override;
-  void SetTimerSlack(TimerSlack timer_slack) override;
   void EnableCrashKeys(const char* async_stack_crash_key) override;
   const MetricRecordingSettings& GetMetricRecordingSettings() const override;
   size_t GetPendingTaskCountForTesting() const override;

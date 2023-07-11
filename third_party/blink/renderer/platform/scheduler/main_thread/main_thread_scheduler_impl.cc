@@ -1025,12 +1025,6 @@ void MainThreadSchedulerImpl::SetRendererHidden(bool hidden) {
 void MainThreadSchedulerImpl::SetRendererBackgrounded(bool backgrounded) {
   helper_.CheckOnValidThread();
 
-  // Increasing timer slack helps the OS to coalesce timers efficiently.
-  base::TimerSlack timer_slack = base::TIMER_SLACK_NONE;
-  if (backgrounded)
-    timer_slack = base::TIMER_SLACK_MAXIMUM;
-  helper_.SetTimerSlack(timer_slack);
-
   if (helper_.IsShutdown() ||
       main_thread_only().renderer_backgrounded.get() == backgrounded)
     return;

@@ -62,7 +62,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void ScheduleWork() override;
   void SetNextDelayedDoWork(LazyNow* lazy_now,
                             absl::optional<WakeUp> wake_up) override;
-  void SetTimerSlack(TimerSlack timer_slack) override;
   bool RunsTasksInCurrentSequence() override;
   void SetDefaultTaskRunner(
       scoped_refptr<SingleThreadTaskRunner> task_runner) override;

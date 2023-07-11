@@ -78,12 +78,6 @@ void ThreadControllerImpl::SetSequencedTaskSource(
   sequence_ = sequence;
 }
 
-void ThreadControllerImpl::SetTimerSlack(TimerSlack timer_slack) {
-  if (!funneled_sequence_manager_)
-    return;
-  funneled_sequence_manager_->SetTimerSlack(timer_slack);
-}
-
 void ThreadControllerImpl::ScheduleWork() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                "ThreadControllerImpl::ScheduleWork::PostTask");

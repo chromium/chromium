@@ -27,9 +27,6 @@ MessagePump::MessagePump() = default;
 
 MessagePump::~MessagePump() = default;
 
-void MessagePump::SetTimerSlack(TimerSlack) {
-}
-
 // static
 void MessagePump::OverrideMessagePumpForUIFactory(MessagePumpFactory* factory) {
   DCHECK(!message_pump_for_ui_factory_);

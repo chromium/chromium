@@ -136,7 +136,6 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
 #else
       MessagePumpType::DEFAULT;
 #endif
-  service_thread_options.timer_slack = TIMER_SLACK_MAXIMUM;
   CHECK(service_thread_.StartWithOptions(std::move(service_thread_options)));
   if (g_synchronous_thread_start_for_testing)
     service_thread_.WaitUntilThreadStarted();

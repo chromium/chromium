@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) ThreadDelegate
   static scoped_refptr<base::SequencedTaskRunner> GetHighPriorityTaskRunner();
 
   scoped_refptr<base::SingleThreadTaskRunner> GetDefaultTaskRunner() override;
-  void BindToCurrentThread(base::TimerSlack timer_slack) override;
+  void BindToCurrentThread() override;
 
  private:
   std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;

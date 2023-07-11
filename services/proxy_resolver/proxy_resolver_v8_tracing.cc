@@ -1028,9 +1028,7 @@ class ProxyResolverV8TracingFactoryImpl::CreateJob
         callback_(std::move(callback)),
         num_outstanding_callbacks_(0) {
     // Start up the thread.
-    base::Thread::Options options;
-    options.timer_slack = base::TIMER_SLACK_MAXIMUM;
-    CHECK(thread_->StartWithOptions(std::move(options)));
+    CHECK(thread_->Start());
     job_params_ = std::make_unique<Job::Params>(thread_->task_runner(),
                                                 &num_outstanding_callbacks_);
     create_resolver_job_ = new Job(job_params_.get(), std::move(bindings));

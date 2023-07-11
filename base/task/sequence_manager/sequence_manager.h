@@ -15,7 +15,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/message_loop/timer_slack.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/task/sequenced_task_runner.h"
@@ -271,10 +270,6 @@ class BASE_EXPORT SequenceManager {
   // Increasing this number reduces the overhead of the tasks dispatching
   // logic at the cost of a potentially worse latency. 1 by default.
   virtual void SetWorkBatchSize(int work_batch_size) = 0;
-
-  // Requests desired timer precision from the OS.
-  // Has no effect on some platforms.
-  virtual void SetTimerSlack(TimerSlack timer_slack) = 0;
 
   // Enables crash keys that can be set in the scope of a task which help
   // to identify the culprit if upcoming work results in a crash.

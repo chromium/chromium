@@ -955,11 +955,6 @@ void SequenceManagerImpl::SetWorkBatchSize(int work_batch_size) {
   controller_->SetWorkBatchSize(work_batch_size);
 }
 
-void SequenceManagerImpl::SetTimerSlack(TimerSlack timer_slack) {
-  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  controller_->SetTimerSlack(timer_slack);
-}
-
 void SequenceManagerImpl::AddTaskObserver(TaskObserver* task_observer) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   main_thread_only().task_observers.AddObserver(task_observer);

@@ -564,10 +564,9 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
     return task_queue_->task_runner();
   }
 
-  void BindToCurrentThread(base::TimerSlack timer_slack) override {
+  void BindToCurrentThread() override {
     sequence_manager_->BindToMessagePump(
         base::MessagePump::Create(base::MessagePumpType::DEFAULT));
-    sequence_manager_->SetTimerSlack(timer_slack);
   }
 
  private:

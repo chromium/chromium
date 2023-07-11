@@ -147,9 +147,7 @@ std::unique_ptr<GpuWatchdogThread> GpuWatchdogThread::Create(
     const std::string& thread_name) {
   auto watchdog_thread = base::WrapUnique(new GpuWatchdogThread(
       timeout, init_factor, restart_factor, is_test_mode, thread_name));
-  base::Thread::Options options;
-  options.timer_slack = base::TIMER_SLACK_MAXIMUM;
-  watchdog_thread->StartWithOptions(std::move(options));
+  watchdog_thread->Start();
   if (start_backgrounded)
     watchdog_thread->OnBackgrounded();
   return watchdog_thread;
