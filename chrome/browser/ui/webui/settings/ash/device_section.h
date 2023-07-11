@@ -87,6 +87,8 @@ class DeviceSection : public OsSettingsSection,
   void AddDevicePointersStrings(content::WebUIDataSource* html_source);
   void AddDeviceGraphicsTabletStrings(
       content::WebUIDataSource* html_source) const;
+  void AddCustomizeButtonsPageStrings(
+      content::WebUIDataSource* html_source) const;
   void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) const;
 
   raw_ptr<PrefService, ExperimentalAsh> pref_service_;

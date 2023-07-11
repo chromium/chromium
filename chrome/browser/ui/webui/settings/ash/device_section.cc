@@ -48,6 +48,7 @@ namespace ash::settings {
 
 namespace mojom {
 using ::chromeos::settings::mojom::kAudioSubpagePath;
+using ::chromeos::settings::mojom::kCustomizeMouseButtonsSubpagePath;
 using ::chromeos::settings::mojom::kDeviceSectionPath;
 using ::chromeos::settings::mojom::kDisplaySubpagePath;
 using ::chromeos::settings::mojom::kExternalStorageSubpagePath;
@@ -1202,6 +1203,7 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   AddDevicePointersStrings(html_source);
   AddDeviceGraphicsTabletStrings(html_source);
+  AddCustomizeButtonsPageStrings(html_source);
   AddDeviceKeyboardStrings(html_source);
   AddDeviceStylusStrings(html_source);
   AddDeviceDisplayStrings(html_source);
@@ -1340,6 +1342,13 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                        mojom::SearchResultIcon::kStylus,
                                        mojom::SearchResultDefaultRank::kMedium,
                                        mojom::kGraphicsTabletSubpagePath);
+
+    generator->RegisterNestedSubpage(IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_TITLE,
+                                     mojom::Subpage::kCustomizeMouseButtons,
+                                     mojom::Subpage::kPerDeviceMouse,
+                                     mojom::SearchResultIcon::kMouse,
+                                     mojom::SearchResultDefaultRank::kMedium,
+                                     mojom::kCustomizeMouseButtonsSubpagePath);
   }
 
   // Keyboard.
@@ -1766,6 +1775,15 @@ void DeviceSection::AddDeviceGraphicsTabletStrings(
       {"tabletTitle", IDS_SETTINGS_GRAPHICS_TABLET_TITLE},
   };
   html_source->AddLocalizedStrings(kGraphicsTabletStrings);
+}
+
+void DeviceSection::AddCustomizeButtonsPageStrings(
+    content::WebUIDataSource* html_source) const {
+  static constexpr webui::LocalizedString kCustomizeButtonsPageStrings[] = {
+      {"customizeMouseButtonsTitle",
+       IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_TITLE},
+  };
+  html_source->AddLocalizedStrings(kCustomizeButtonsPageStrings);
 }
 
 void DeviceSection::AddDeviceDisplayStrings(

@@ -5,6 +5,7 @@
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {CrToggleElement, FakeInputDeviceSettingsProvider, fakeMice, Mouse, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsDropdownMenuElement, SettingsPerDeviceMouseSubsectionElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -246,5 +247,30 @@ suite('<settings-per-device-mouse-subsection>', function() {
     policyIndicator =
         swapRightDropdown.shadowRoot!.querySelector('cr-policy-pref-indicator');
     assertFalse(isVisible(policyIndicator));
+  });
+
+  /**
+   * Verify clicking the customize mouse buttons row will be redirecting to the
+   * customize mouse buttons subpage.
+   */
+  test('click customize mouse buttons redirect to new subpage', async () => {
+    await initializePerDeviceMouseSubsection();
+    const customizeButtonsRow =
+        subsection.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#customizeMouseButtons');
+    assertTrue(!!customizeButtonsRow);
+    customizeButtonsRow.click();
+
+    await flushTasks();
+    assertEquals(
+        routes.CUSTOMIZE_MOUSE_BUTTONS, Router.getInstance().currentRoute);
+
+    const urlSearchQuery =
+        Router.getInstance().getQueryParameters().get('mouseId');
+    assertTrue(!!urlSearchQuery);
+    const mouseId = Number(urlSearchQuery);
+    assertFalse(isNaN(mouseId));
+    const expectedMouseId = subsection.get('mouse.id');
+    assertEquals(expectedMouseId, mouseId);
   });
 });

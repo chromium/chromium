@@ -80,5 +80,12 @@
           deep-link-focus-id$="[[Setting.kMouseReverseScrolling]]">
       </cr-toggle>
     </div>
+    <template is="dom-if" if="[[isPeripheralCustomizationEnabled_]]">
+      <cr-link-row id="customizeMouseButtons"
+        class="hr bottom-divider" on-click="onCustomizeButtonsClick"
+        aria-describedby="mouseName"
+        label="$i18n{customizeMouseButtonsTitle}">
+      </cr-link-row>
+    </template>
   </div>
 </div>

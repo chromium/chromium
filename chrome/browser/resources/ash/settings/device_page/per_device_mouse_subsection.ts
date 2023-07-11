@@ -27,7 +27,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
-import {Route, routes} from '../router.js';
+import {Route, Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
 import {InputDeviceSettingsProviderInterface, Mouse, MousePolicies, MouseSettings} from './input_device_settings_types.js';
@@ -48,6 +48,14 @@ export class SettingsPerDeviceMouseSubsectionElement extends
 
   static get properties(): PolymerElementProperties {
     return {
+      isPeripheralCustomizationEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePeripheralCustomization');
+        },
+        readOnly: true,
+      },
+
       primaryRightPref: {
         type: Object,
         value() {
@@ -214,6 +222,7 @@ export class SettingsPerDeviceMouseSubsectionElement extends
   private scrollSensitivityPref: chrome.settingsPrivate.PrefObject;
   private reverseScrollValue: boolean;
   private isInitialized: boolean = false;
+  private isPeripheralCustomizationEnabled_: boolean;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
   private mouseIndex: number;
@@ -301,6 +310,15 @@ export class SettingsPerDeviceMouseSubsectionElement extends
     });
 
     return tempEl.innerHTML;
+  }
+
+  private onCustomizeButtonsClick(): void {
+    const url =
+        new URLSearchParams(`mouseId=${encodeURIComponent(this.mouse.id)}`);
+
+    Router.getInstance().navigateTo(
+        routes.CUSTOMIZE_MOUSE_BUTTONS,
+        /* dynamicParams= */ url, /* removeSearch= */ true);
   }
 }
 

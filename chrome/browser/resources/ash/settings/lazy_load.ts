@@ -20,6 +20,7 @@ import './os_languages_page/os_languages_section.js';
 import './os_printing_page/os_printing_page.js';
 import './os_reset_page/os_reset_page.js';
 /** Subpages */
+import './device_page/customize_mouse_buttons_subpage.js';
 import './internet_page/apn_subpage.js';
 import './internet_page/hotspot_subpage.js';
 import './internet_page/internet_detail_subpage.js';
@@ -130,6 +131,7 @@ export {TimeZoneAutoDetectMethod} from './date_time_page/date_time_types.js';
 export {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './date_time_page/timezone_browser_proxy.js';
 export {TimezoneSelectorElement} from './date_time_page/timezone_selector.js';
 export {TimezoneSubpageElement} from './date_time_page/timezone_subpage.js';
+export {SettingsCustomizeMouseButtonsSubpageElement} from './device_page/customize_mouse_buttons_subpage.js';
 export {CROSTINI_TYPE, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE} from './guest_os/guest_os_browser_proxy.js';
 export {SettingsGuestOsSharedPathsElement} from './guest_os/guest_os_shared_paths.js';
 export {SettingsGuestOsSharedUsbDevicesElement} from './guest_os/guest_os_shared_usb_devices.js';
