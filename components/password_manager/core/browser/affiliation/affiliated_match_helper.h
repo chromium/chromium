@@ -70,8 +70,6 @@ class AffiliatedMatchHelper {
   // purposes of affiliation-based matching.
   static bool IsValidWebCredential(const PasswordFormDigest& form);
 
-  AffiliationService* get_affiliation_service() { return affiliation_service_; }
-
  private:
   // Reads all autofillable credentials from the password store and starts
   // observing the store for future changes.
@@ -88,7 +86,7 @@ class AffiliatedMatchHelper {
       const AffiliatedFacets& results,
       bool success);
 
-  raw_ptr<AffiliationService, DanglingUntriaged> affiliation_service_;
+  const raw_ptr<AffiliationService> affiliation_service_;
 
   base::WeakPtrFactory<AffiliatedMatchHelper> weak_ptr_factory_{this};
 };

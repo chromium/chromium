@@ -154,6 +154,7 @@ class AffiliatedMatchHelperTest : public testing::Test {
   }
 
   void TearDown() override {
+    match_helper_.reset();
     mock_affiliation_service_.reset();
     // Clean up on the background thread.
     RunUntilIdle();
