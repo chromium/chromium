@@ -19,7 +19,7 @@ import java.util.ArrayList;
 /**
  * Fake implementation for the PasswordManagerHandler.
  */
-final class FakePasswordManagerHandler implements PasswordManagerHandler {
+public final class FakePasswordManagerHandler implements PasswordManagerHandler {
     // This class has exactly one observer, set on construction and expected to last at least as
     // long as this object (a good candidate is the owner of this object).
     private final PasswordListObserver mObserver;
@@ -44,14 +44,14 @@ final class FakePasswordManagerHandler implements PasswordManagerHandler {
 
     private int mSerializationInvocationCount;
 
-    void setSavedPasswords(ArrayList<SavedPasswordEntry> savedPasswords) {
+    public void setSavedPasswords(ArrayList<SavedPasswordEntry> savedPasswords) {
         mSavedPasswords = savedPasswords;
     }
 
     void setSavedPasswordExceptions(ArrayList<String> savedPasswordExceptions) {
         mSavedPasswordExeptions = savedPasswordExceptions;
     }
-    IntStringCallback getExportSuccessCallback() {
+    public IntStringCallback getExportSuccessCallback() {
         return mExportSuccessCallback;
     }
 
@@ -71,7 +71,7 @@ final class FakePasswordManagerHandler implements PasswordManagerHandler {
      * Constructor.
      * @param observer The only observer.
      */
-    FakePasswordManagerHandler(PasswordListObserver observer) {
+    public FakePasswordManagerHandler(PasswordListObserver observer) {
         mObserver = observer;
         mSerializationInvocationCount = 0;
     }

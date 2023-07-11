@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.pwd_migration;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -33,6 +35,7 @@ public class PasswordMigrationWarningCoordinator implements MigrationWarningOpti
     private final Class<? extends Fragment> mSyncSettingsFragment;
 
     private ExportFlowInterface mExportFlow;
+    private PasswordMigrationWarningView mView;
 
     public PasswordMigrationWarningCoordinator(Context context, Profile profile,
             BottomSheetController sheetController,
@@ -50,9 +53,9 @@ public class PasswordMigrationWarningCoordinator implements MigrationWarningOpti
                 mMediator::onDismissed, mMediator);
         mMediator.initializeModel(model);
         passwordListObserverCallback.onResult(mMediator);
-        setUpModelChangeProcessors(model,
-                new PasswordMigrationWarningView(
-                        context, sheetController, () -> { mExportFlow.onResume(); }));
+        mView = new PasswordMigrationWarningView(
+                context, sheetController, () -> { mExportFlow.onResume(); });
+        setUpModelChangeProcessors(model, mView);
     }
 
     public void showWarning() {
@@ -95,8 +98,19 @@ public class PasswordMigrationWarningCoordinator implements MigrationWarningOpti
             public int getViewId() {
                 return R.id.fragment_container_view;
             }
+
+            @Override
+            public void runCreateFileOnDiskIntent(Intent intent) {
+                mView.runCreateFileOnDiskIntent(intent);
+            }
+
         });
         mExportFlow.startExporting();
+    }
+
+    @Override
+    public void savePasswordsToDownloads(Uri passwordsFile) {
+        mExportFlow.savePasswordsToDownloads(passwordsFile);
     }
 
     @Override

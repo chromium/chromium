@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.pwd_migration;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
@@ -30,7 +32,7 @@ import org.chromium.components.version_info.VersionInfo;
  * This class is responsible for rendering the bottom sheet that shows the passwords
  * migration warning.
  */
-class PasswordMigrationWarningView implements BottomSheetContent {
+public class PasswordMigrationWarningView implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
     private Callback<Integer> mDismissHandler;
     private PasswordMigrationWarningOnClickHandler mOnClickHandler;
@@ -157,6 +159,13 @@ class PasswordMigrationWarningView implements BottomSheetContent {
                     .replace(R.id.fragment_container_view, optionsFragment)
                     .commit();
         }
+    }
+
+    void runCreateFileOnDiskIntent(Intent intent) {
+        Fragment fragment = mFragmentManager.findFragmentById(R.id.fragment_container_view);
+        assert fragment instanceof PasswordMigrationWarningOptionsFragment;
+
+        ((PasswordMigrationWarningOptionsFragment) fragment).runCreateFileOnDiskIntent(intent);
     }
 
     void setAccountDisplayName(String accountDisplayName) {

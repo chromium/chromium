@@ -15,6 +15,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
@@ -224,8 +225,8 @@ public class PasswordMigrationWarningViewTest {
 
         onView(withId(R.id.password_migration_next_button)).perform(click());
         verify(mOnClickHandler)
-                .onNext(MigrationOption.SYNC_PASSWORDS,
-                        mActivityTestRule.getActivity().getSupportFragmentManager());
+                .onNext(eq(MigrationOption.SYNC_PASSWORDS),
+                        eq(mActivityTestRule.getActivity().getSupportFragmentManager()));
     }
 
     @Test
@@ -252,8 +253,8 @@ public class PasswordMigrationWarningViewTest {
 
         onView(withId(R.id.password_migration_next_button)).perform(click());
         verify(mOnClickHandler)
-                .onNext(MigrationOption.EXPORT_AND_DELETE,
-                        mActivityTestRule.getActivity().getSupportFragmentManager());
+                .onNext(eq(MigrationOption.EXPORT_AND_DELETE),
+                        eq(mActivityTestRule.getActivity().getSupportFragmentManager()));
     }
 
     /**
