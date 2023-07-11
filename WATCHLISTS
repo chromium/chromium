@@ -117,13 +117,6 @@
     'android_webview_network_service': {
       'filepath': 'android_webview/browser/network_service/',
     },
-    'app_management': {
-      'filepath': 'chrome/browser/resources/ash/settings/os_apps_page'\
-                  '|chrome/browser/ui/webui/app_management',
-    },
-    'app_preload_service': {
-      'filepath': 'chrome/browser/apps/app_preload_service'
-    },
     'app_service': {
       'filepath': 'chrome/browser/apps/app_service/'\
                   '|chrome/browser/ash/app_list/app_service/'\
@@ -913,18 +906,10 @@
                   '|components/policy/'\
                   '|docs/website/site/administrators/',
     },
-    'cros_discovery': {
-      'filepath': 'chrome/browser/apps/app_discovery_service/'\
-                  '|chrome/browser/apps/app_provisioning_service/',
-    },
     'cros_reporting': {
       'filepath': 'chrome/browser/policy/messaging_layer/'\
                   '|chrome/browser/ash/policy/status_collector/'\
                   '|components/policy/proto/record',
-    },
-    'cros_sharesheet': {
-      'filepath': 'chrome/browser/ui/ash/sharesheet/'\
-                  '|chrome/browser/ash/sharesheet/',
     },
     'crosapi_mojom': {
       'filepath': 'chromeos/crosapi/mojom/crosapi.mojom',
@@ -1861,9 +1846,6 @@
                   '|chrome/test/data/webui/settings/chromeos/'\
                   '|ui/webui/resources/cr_elements/chromeos/',
     },
-    'share_service': {
-      'filepath': 'chrome/browser/sharesheet/',
-    },
     'share_sheet': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/share/'\
                   '|chrome/android/java/res/layout/share_sheet_'\
@@ -2309,8 +2291,6 @@
                        'webapks-watchlist@chromium.org'],
     'android_webview': ['android-webview-reviews@chromium.org'],
     'android_webview_network_service': [],
-    'app_management': ['jshikaram+watch-app_management@chromium.org'],
-    'app_preload_service': ['jshikaram+watch-app_preload_service@chromium.org'],
     'app_service': ['dominickn+watch-app_service@chromium.org',
                     'nancylingwang@chromium.org',
                     'tsergeant+watch@chromium.org'],
@@ -2659,9 +2639,7 @@
               'wiss+watch-creator@chromium.org',
               'wry+watch-creator@chromium.org',],
     'cros_commercial_policy': ['enterprise-policy-review@google.com'],
-    'cros_discovery': ['melzhang+watch+discovery@chromium.org'],
     'cros_reporting': ['cros-reporting-reviews@google.com'],
-    'cros_sharesheet': ['melzhang+watch+sharesheet@chromium.org'],
     'crosapi_mojom': ['elkurin+watch@chromium.org'],
     'crostini': ['crostini-ui@chromium.org'],
     'cups_printing': ['print-reviews+cups@chromium.org',
@@ -3011,7 +2989,6 @@
     'settings': ['michaelpg+watch-settings@chromium.org'],
     'settings_os_settings': ['croissant-eng+reviews@chromium.org',
                              'cros-settings+reviews@google.com'],
-    'share_service': ['melzhang+watch+share-service@chromium.org'],
     'share_sheet': ['chrome-sharing-eng+watch@google.com'],
     'sharing': ['knollr+watch-sharing@chromium.org',
                 'mvanouwerkerk+watch-sharing@chromium.org'],
