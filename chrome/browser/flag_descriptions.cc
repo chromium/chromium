@@ -6732,10 +6732,6 @@ const char kWakeOnWifiAllowedName[] = "Allow enabling wake on WiFi features";
 const char kWakeOnWifiAllowedDescription[] =
     "Allows wake on WiFi features in shill to be enabled.";
 
-const char kWebAppsCrosapiName[] = "Web Apps Crosapi";
-const char kWebAppsCrosapiDescription[] =
-    "Support web apps publishing from Lacros browser.";
-
 const char kWelcomeScreenName[] =
     "Productivity Experiment: Reorient with welcome screen";
 const char kWelcomeScreenDescription[] =

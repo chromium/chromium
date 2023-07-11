@@ -53,8 +53,11 @@ namespace webapps {
 namespace {
 
 std::vector<base::test::FeatureRef> GetDisabledFeatures() {
+// TODO(crbug.com/1462253): Also test with Lacros flags enabled.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return {features::kWebAppsCrosapi, ash::features::kLacrosPrimary};
+  return {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+          ash::features::kLacrosOnly,
+          ash::features::kLacrosProfileMigrationForceOff};
 #else
   return {};
 #endif

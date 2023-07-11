@@ -785,8 +785,8 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
   StandaloneBrowserPublisherTest() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        {features::kWebAppsCrosapi, ash::features::kLacrosSupport,
-         ash::features::kLacrosPrimary, ash::features::kLacrosOnly,
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly,
          ash::features::kLacrosProfileMigrationForceOff},
         {});
   }
@@ -811,6 +811,11 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
     fake_user_manager->LoginUser(account_id);
 
     PublisherTest::SetUp();
+
+    // This test class could be inherited and set different feature flag, we
+    // only expect Lacros is the primary browser when the Lacros flags are set.
+    ASSERT_EQ(base::FeatureList::IsEnabled(ash::features::kLacrosOnly),
+              crosapi::browser_util::IsLacrosEnabled());
   }
 
   void ExtensionAppsOnApps() {

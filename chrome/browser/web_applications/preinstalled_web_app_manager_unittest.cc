@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/extend.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
@@ -77,11 +78,15 @@ constexpr char kAppChildUrl[] = "https://www.google.com/child";
 
 class PreinstalledWebAppManagerTest : public testing::Test {
  public:
+  // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
   PreinstalledWebAppManagerTest() {
     std::vector<base::test::FeatureRef> disabled_features;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    disabled_features.push_back(features::kWebAppsCrosapi);
-    disabled_features.push_back(ash::features::kLacrosPrimary);
+    std::vector<base::test::FeatureRef> lacros_flags = {
+        ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+        ash::features::kLacrosOnly,
+        ash::features::kLacrosProfileMigrationForceOff};
+    base::Extend(disabled_features, lacros_flags);
 #endif
     scoped_feature_list_.InitWithFeatures({}, disabled_features);
   }

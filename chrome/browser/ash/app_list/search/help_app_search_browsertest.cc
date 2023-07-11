@@ -352,6 +352,7 @@ class HelpAppSwaSearchBrowserTest : public HelpAppSearchBrowserTestBase,
       SelectFirstBrowser();
     }
     HelpAppSearchBrowserTestBase::SetUpOnMainThread();
+    VerifyLacrosStatus();
   }
 };
 

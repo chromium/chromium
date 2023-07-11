@@ -4,6 +4,8 @@
 
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
 
+#include "base/containers/extend.h"
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #endif
@@ -30,9 +32,13 @@ WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
-  disabled_features.push_back(features::kWebAppsCrosapi);
-  disabled_features.push_back(ash::features::kLacrosPrimary);
+  // Disable Lacros, so that Web Apps get synced in the Ash browser.
+  // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
+  std::vector<base::test::FeatureRef> lacros_flags = {
+      ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+      ash::features::kLacrosOnly,
+      ash::features::kLacrosProfileMigrationForceOff};
+  base::Extend(disabled_features, lacros_flags);
 #endif
 
   scoped_feature_list_.InitWithFeatures({}, disabled_features);

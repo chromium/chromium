@@ -117,7 +117,10 @@ class SharesheetAshBrowserTest : public ash::SystemWebAppIntegrationTest {
  public:
   SharesheetAshBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, features::kWebAppsCrosapi}, {});
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly,
+         ash::features::kLacrosProfileMigrationForceOff},
+        {});
   }
   ~SharesheetAshBrowserTest() override = default;
 
@@ -135,6 +138,8 @@ class SharesheetAshBrowserTest : public ash::SystemWebAppIntegrationTest {
     // Sharesheet bubble.
     sharesheet::SharesheetService::SetSelectedAppForTesting(
         base::UTF8ToUTF16(base::StringPiece{web_app::kSampleSystemWebAppId}));
+
+    ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
   }
   void TearDownOnMainThread() override {
     sharesheet::SharesheetService::SetSelectedAppForTesting(std::u16string());

@@ -50,6 +50,7 @@ class WebAppGuestSessionBrowserTest : public WebAppControllerBrowserTest,
       SelectFirstBrowser();
     }
     WebAppControllerBrowserTest::SetUpOnMainThread();
+    VerifyLacrosStatus();
   }
 };
 

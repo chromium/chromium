@@ -256,6 +256,7 @@ class AppServiceSystemWebAppItemBrowserTest
       chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
       SelectFirstBrowser();
     }
+    VerifyLacrosStatus();
   }
 };
 

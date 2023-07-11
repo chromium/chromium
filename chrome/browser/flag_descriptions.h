@@ -3864,9 +3864,6 @@ extern const char kVirtualKeyboardRoundCornersDescription[];
 extern const char kWakeOnWifiAllowedName[];
 extern const char kWakeOnWifiAllowedDescription[];
 
-extern const char kWebAppsCrosapiName[];
-extern const char kWebAppsCrosapiDescription[];
-
 extern const char kWelcomeScreenName[];
 extern const char kWelcomeScreenDescription[];
 

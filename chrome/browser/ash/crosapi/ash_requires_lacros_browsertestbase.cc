@@ -17,7 +17,10 @@ namespace crosapi {
 
 AshRequiresLacrosBrowserTestBase::AshRequiresLacrosBrowserTestBase() {
   scoped_feature_list_.InitWithFeatures(
-      {ash::features::kLacrosSupport, features::kWebAppsCrosapi}, {});
+      {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+       ash::features::kLacrosOnly,
+       ash::features::kLacrosProfileMigrationForceOff},
+      {});
 }
 
 AshRequiresLacrosBrowserTestBase::~AshRequiresLacrosBrowserTestBase() = default;
@@ -44,6 +47,8 @@ void AshRequiresLacrosBrowserTestBase::SetUpOnMainThread() {
   test_controller_ash_->on_standalone_browser_test_controller_bound().Post(
       FROM_HERE, waiter.GetCallback());
   EXPECT_TRUE(waiter.Wait());
+
+  ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
 }
 
 mojom::StandaloneBrowserTestController*

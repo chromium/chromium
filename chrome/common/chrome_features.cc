@@ -1490,13 +1490,6 @@ BASE_FEATURE(kChromeKioskEnableLacros,
 BASE_FEATURE(kWebKioskEnableLacros,
              "WebKioskEnableLacros",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, the Ash browser only manages system web apps, and non-system
-// web apps are managed by the Lacros browser. When disabled, the Ash browser
-// manages all web apps.
-BASE_FEATURE(kWebAppsCrosapi,
-             "WebAppsCrosapi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)

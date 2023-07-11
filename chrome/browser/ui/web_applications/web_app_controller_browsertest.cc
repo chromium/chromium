@@ -66,8 +66,11 @@ WebAppControllerBrowserTest::WebAppControllerBrowserTest(
   os_hooks_suppress_.emplace();
   std::vector<base::test::FeatureRef> all_disabled_features = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    features::kWebAppsCrosapi,
-    ash::features::kLacrosPrimary
+    // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
+    ash::features::kLacrosSupport,
+    ash::features::kLacrosPrimary,
+    ash::features::kLacrosOnly,
+    ash::features::kLacrosProfileMigrationForceOff
 #endif
   };
   all_disabled_features.insert(all_disabled_features.end(),

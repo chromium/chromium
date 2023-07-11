@@ -25,6 +25,9 @@ class WithCrosapiParam : public testing::WithParamInterface<CrosapiParam> {
 
   static std::string ParamToString(testing::TestParamInfo<CrosapiParam> param);
 
+  // Verifies that the Lacros status is same as the param setting.
+  static void VerifyLacrosStatus();
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };

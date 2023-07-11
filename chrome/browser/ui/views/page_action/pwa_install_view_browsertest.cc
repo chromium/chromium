@@ -119,8 +119,11 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
          {feature_engagement::kIPHDesktopPwaInstallFeature, {}}},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         {
-            features::kWebAppsCrosapi,
+            // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
+            ash::features::kLacrosSupport,
             ash::features::kLacrosPrimary,
+            ash::features::kLacrosOnly,
+            ash::features::kLacrosProfileMigrationForceOff,
         }
 #else
         {}

@@ -144,9 +144,8 @@ bool HasAppSettingsPage(Profile* profile, const GURL& url);
 bool IsInScope(const GURL& url, const GURL& scope);
 
 #if BUILDFLAG(IS_CHROMEOS)
-// The kLacrosPrimary and kWebAppsCrosapi features are each independently
-// sufficient to enable the web apps Crosapi (used for Lacros web app
-// management).
+// Web apps crosapi (used for Lacros web app management) will be enabled if
+// Lacros is the primary browser.
 bool IsWebAppsCrosapiEnabled();
 #endif
 

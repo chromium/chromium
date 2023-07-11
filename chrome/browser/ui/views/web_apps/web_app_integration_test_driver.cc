@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -4375,8 +4376,12 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(features::kDesktopPWAsTabStrip);
   enabled_features.push_back(features::kDesktopPWAsTabStripSettings);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  disabled_features.push_back(features::kWebAppsCrosapi);
-  disabled_features.push_back(ash::features::kLacrosPrimary);
+  // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
+  std::vector<base::test::FeatureRef> lacros_flags = {
+      ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+      ash::features::kLacrosOnly,
+      ash::features::kLacrosProfileMigrationForceOff};
+  base::Extend(disabled_features, lacros_flags);
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1357905): Update test driver to work with new UI.

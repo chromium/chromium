@@ -67,6 +67,7 @@ class PreinstalledWebAppsBrowserTest : public WebAppControllerBrowserTest,
       SelectFirstBrowser();
     }
     WebAppControllerBrowserTest::SetUpOnMainThread();
+    VerifyLacrosStatus();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

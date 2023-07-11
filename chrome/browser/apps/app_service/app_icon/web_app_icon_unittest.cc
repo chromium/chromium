@@ -73,9 +73,12 @@ namespace apps {
 class WebAppIconFactoryTest : public testing::Test {
  public:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
   WebAppIconFactoryTest() {
     scoped_feature_list_.InitWithFeatures(
-        {}, {features::kWebAppsCrosapi, ash::features::kLacrosPrimary});
+        {}, {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+             ash::features::kLacrosOnly,
+             ash::features::kLacrosProfileMigrationForceOff});
   }
 #else
   WebAppIconFactoryTest() = default;

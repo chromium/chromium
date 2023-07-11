@@ -53,7 +53,12 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_names.h"
 
 using web_app::test::CrosapiParam;
 using web_app::test::WithCrosapiParam;
@@ -1410,11 +1415,31 @@ TEST_F(WebAppRegistrarTest, VerifyPlaceholderFinderBehavior) {
 
 class WebAppRegistrarAshTest : public WebAppTest, public WithCrosapiParam {
  public:
+  void SetUp() override {
+    // Set up user manager to so that Lacros mode can be enabled.
+    // TODO(crbug.com/1463865): Consider setting up a fake user in all Ash web
+    // app tests.
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    auto* fake_user_manager = user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(user_manager));
+    auto* user = fake_user_manager->AddUser(user_manager::StubAccountId());
+    fake_user_manager->UserLoggedIn(user_manager::StubAccountId(),
+                                    user->username_hash(),
+                                    /*browser_restart=*/false,
+                                    /*is_child=*/false);
+    // Need to run the WebAppTest::SetUp() after the fake user manager set up
+    // so that the scoped_user_manager can be destructed in the correct order.
+    WebAppTest::SetUp();
+
+    VerifyLacrosStatus();
+  }
   WebAppRegistrarAshTest() = default;
   ~WebAppRegistrarAshTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 TEST_P(WebAppRegistrarAshTest, SourceSupported) {

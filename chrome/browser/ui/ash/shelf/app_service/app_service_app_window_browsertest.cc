@@ -929,6 +929,7 @@ class AppServiceAppWindowSystemWebAppBrowserTest
       chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
       SelectFirstBrowser();
     }
+    VerifyLacrosStatus();
   }
 };
 

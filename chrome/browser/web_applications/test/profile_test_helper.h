@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/common/chrome_features.h"
@@ -97,6 +98,8 @@ class TestProfileTypeMixin
       chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
       T::SelectFirstBrowser();
     }
+    ASSERT_EQ(GetParam().crosapi_state == web_app::test::CrosapiParam::kEnabled,
+              crosapi::browser_util::IsLacrosEnabled());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

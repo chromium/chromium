@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
@@ -51,7 +52,12 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -320,8 +326,26 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
 
   void SetUp() override {
     BuildAndInitFeatureList();
-    ChromeRenderViewHostTestHarness::SetUp();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Set up user manager to so that Lacros mode can be enabled.
+    // Need to run the ChromeRenderViewHostTestHarness::SetUp() after the fake
+    // user manager set up so that the scoped_user_manager can be destructed in
+    // the correct order.
+    // TODO(crbug.com/1463865): Consider setting up a fake user in all Ash web
+    // app tests.
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    auto* fake_user_manager = user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(user_manager));
+    auto* user = fake_user_manager->AddUser(user_manager::StubAccountId());
+    fake_user_manager->UserLoggedIn(user_manager::StubAccountId(),
+                                    user->username_hash(),
+                                    /*browser_restart=*/false,
+                                    /*is_child=*/false);
+#endif
+
+    ChromeRenderViewHostTestHarness::SetUp();
     provider_ = FakeWebAppProvider::Get(profile());
 
     auto fake_externally_managed_app_manager =
@@ -383,6 +407,11 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
 #endif
 
     test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ASSERT_EQ(GetParam().lacros_params == TestLacrosParam::kLacrosEnabled,
+              crosapi::browser_util::IsLacrosEnabled());
+#endif
   }
 
   void TearDown() override {
@@ -417,11 +446,14 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
     enabled_features.push_back(
         features::kDesktopPWAsEnforceWebAppSettingsPolicy);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    std::vector<base::test::FeatureRef> lacros_flags = {
+        ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+        ash::features::kLacrosOnly,
+        ash::features::kLacrosProfileMigrationForceOff};
     if (GetParam().lacros_params == TestLacrosParam::kLacrosEnabled) {
-      enabled_features.push_back(features::kWebAppsCrosapi);
+      base::Extend(enabled_features, lacros_flags);
     } else if (GetParam().lacros_params == TestLacrosParam::kLacrosDisabled) {
-      disabled_features.push_back(features::kWebAppsCrosapi);
-      disabled_features.push_back(ash::features::kLacrosPrimary);
+      base::Extend(disabled_features, lacros_flags);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -528,6 +560,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ash::TestSystemWebAppManager> test_system_app_manager_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 #endif
   base::test::ScopedFeatureList scoped_feature_list_;
 };

@@ -7947,11 +7947,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "web-apps-crosapi",
-    "owners": [ "mxcai", "ericwilligers", "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "web-auth-flow-in-browser-tab",
     "owners": ["rsult", "alexilin", "chrome-signin-team"],
     "expiry_milestone": 115
