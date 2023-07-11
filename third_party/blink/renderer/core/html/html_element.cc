@@ -1442,7 +1442,6 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   CHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
 
-  CHECK(!GetPopoverData() || !GetPopoverData()->invoker());
   if (!IsPopoverReady(PopoverTriggerAction::kShow, exception_state,
                       /*include_event_handler_text=*/false, /*document=*/nullptr)) {
     CHECK(exception_state)
@@ -1451,6 +1450,8 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
            "shown.";
     return;
   }
+
+  CHECK(!GetPopoverData() || !GetPopoverData()->invoker());
 
   // Fire events by default, unless we're recursively showing this popover.
   PopoverData::ScopedStartShowingOrHiding scoped_was_showing_or_hiding(*this);
