@@ -137,6 +137,9 @@ chromium-metrics-reviews@google.com.
   <variant name="ThankCreatorEligible"
       summary="This optimization provides information for whether a page is
                eligible for the 'Thank Creator' feature."/>
+  <variant name="V8CompileHints"
+      summary="Information about which JavaScript functions should be eager
+               compiled."/>
   <variant name="VcnMerchantOptOutVisa"
       summary="This optimization provides information about whether a
                merchant is opted-out of Visa virtual cards for a URL."/>

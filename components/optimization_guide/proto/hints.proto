@@ -186,6 +186,8 @@ enum OptimizationType {
   // Provides price insights data including the typical price range and the
   // price history.
   PRICE_INSIGHTS = 30;
+  // Information about which JavaScript functions should be eager compiled.
+  V8_COMPILE_HINTS = 31;
 }
 
 // Presents semantics for how page load URLs should be matched.
