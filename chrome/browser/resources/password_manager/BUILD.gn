@@ -63,6 +63,7 @@ build_webui("build") {
     "sharing/share_password_flow.ts",
     "sharing/share_password_dialog_header.ts",
     "sharing/share_password_loading_dialog.ts",
+    "sharing/share_password_error_dialog.ts",
     "side_bar.ts",
     "site_favicon.ts",
     "toolbar.ts",
