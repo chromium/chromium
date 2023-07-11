@@ -44,7 +44,7 @@ import java.util.concurrent.TimeoutException;
  * preferences set to English.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(TranslateAssistContentTest.TRANSLATE_BATCH_NAME)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TranslateCompactInfoBarTest {
     @ClassRule

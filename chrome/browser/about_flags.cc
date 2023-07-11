@@ -4582,9 +4582,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableVulkanDescription,
      kOsWin | kOsLinux | kOsAndroid, FEATURE_VALUE_TYPE(features::kVulkan)},
 #if BUILDFLAG(IS_ANDROID)
-    {"translate-assist-content", flag_descriptions::kTranslateAssistContentName,
-     flag_descriptions::kTranslateAssistContentDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(language::kTranslateAssistContent)},
     {"translate-message-ui", flag_descriptions::kTranslateMessageUIName,
      flag_descriptions::kTranslateMessageUIDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(translate::kTranslateMessageUI)},

@@ -175,7 +175,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
-import org.chromium.chrome.browser.translate.TranslateAssistContent;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.ui.BottomContainer;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
@@ -1453,18 +1452,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public void onProvideAssistContent(AssistContent outContent) {
         Tab tab = getActivityTab();
-        boolean inOverviewMode = isInOverviewMode();
-
-        // Attempt to fetch translate data here so we can record UMA even if it won't be attached.
-        @Nullable
-        String structuredData = TranslateAssistContent.getTranslateDataForTab(tab, inOverviewMode);
-
         // No information is provided in incognito mode and overview mode.
-        if (tab != null && !tab.isIncognito() && !inOverviewMode) {
+        if (tab != null && !tab.isIncognito() && !isInOverviewMode()) {
             outContent.setWebUri(Uri.parse(tab.getUrl().getSpec()));
-            if (structuredData != null) {
-                outContent.setStructuredData(structuredData);
-            }
         }
     }
 

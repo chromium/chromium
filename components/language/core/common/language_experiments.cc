@@ -14,9 +14,6 @@ namespace language {
 BASE_FEATURE(kDetailedLanguageSettings,
              "DetailedLanguageSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kTranslateAssistContent,
-             "TranslateAssistContent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContentLanguagesInLanguagePicker,
              "ContentLanguagesInLanguagePicker",
              base::FEATURE_DISABLED_BY_DEFAULT);

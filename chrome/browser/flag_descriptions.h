@@ -1889,9 +1889,6 @@ extern const char kTouchSelectionStrategyDescription[];
 extern const char kTouchSelectionStrategyCharacter[];
 extern const char kTouchSelectionStrategyDirection[];
 
-extern const char kTranslateAssistContentName[];
-extern const char kTranslateAssistContentDescription[];
-
 extern const char kTranslateForceTriggerOnEnglishName[];
 extern const char kTranslateForceTriggerOnEnglishDescription[];
 

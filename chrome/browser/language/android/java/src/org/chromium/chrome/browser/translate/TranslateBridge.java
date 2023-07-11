@@ -63,42 +63,6 @@ public class TranslateBridge {
     }
 
     /**
-     * Get the page source language of the given Tab.
-     * @param tab The tab to get source language code for.
-     * @return String The source language code. Empty string if no language has been detected.
-     */
-    public static String getSourceLanguage(Tab tab) {
-        return getSourceLanguage(tab.getWebContents());
-    }
-
-    /**
-     * Get the page source language of the given contents.
-     * @param webContents The web contents to get source language code for.
-     * @return String The source language code. Empty string if no language has been detected.
-     */
-    public static String getSourceLanguage(WebContents webContents) {
-        return TranslateBridgeJni.get().getSourceLanguage(webContents);
-    }
-
-    /**
-     * Get the current page language of the given Tab.
-     * @param tab The tab to get current language code for.
-     * @return String The current language code. Empty string if no language has been detected.
-     */
-    public static String getCurrentLanguage(Tab tab) {
-        return getCurrentLanguage(tab.getWebContents());
-    }
-
-    /**
-     * Get the current page language of the given contents.
-     * @param webContents The web contents to get current language code for.
-     * @return String The current language code. Empty string if no language has been detected.
-     */
-    public static String getCurrentLanguage(WebContents webContents) {
-        return TranslateBridgeJni.get().getCurrentLanguage(webContents);
-    }
-
-    /**
      * @return The best target language based on what the Translate Service knows about the user.
      */
     public static String getTargetLanguage() {
@@ -241,8 +205,6 @@ public class TranslateBridge {
         boolean shouldShowManualTranslateIPH(WebContents webContents);
         void setPredefinedTargetLanguage(
                 WebContents webContents, String targetLanguage, boolean shouldAutoTranslate);
-        String getSourceLanguage(WebContents webContents);
-        String getCurrentLanguage(WebContents webContents);
         String getTargetLanguage();
         void setDefaultTargetLanguage(String targetLanguage);
         void resetAcceptLanguages(String defaultLocale);

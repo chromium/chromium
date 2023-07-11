@@ -63907,7 +63907,6 @@ from previous Chrome versions.
   <int value="32488630" label="EphemeralTab:enabled"/>
   <int value="32557641" label="HTTPAuthCommittedInterstitials:disabled"/>
   <int value="32701080" label="DropInputEventsBeforeFirstPaint:enabled"/>
-  <int value="33588676" label="TranslateAssistContent:enabled"/>
   <int value="33778663" label="OriginTrials:enabled"/>
   <int value="34399969" label="SplitPartiallyOccludedQuads:enabled"/>
   <int value="35716183" label="MagnifierNewFocusFollowing:disabled"/>
@@ -65402,6 +65401,7 @@ from previous Chrome versions.
   <int value="803282885" label="PreferHtmlOverPlugins:disabled"/>
   <int value="803877391" label="NotificationsRefresh:enabled"/>
   <int value="803982925" label="CellularForbidAttachApn:disabled"/>
+  <int value="804037091" label="(Obsolete) TranslateAssistContent:disabled"/>
   <int value="804119864"
       label="AutofillEnableRankingAddressFormulaProfiles:enabled"/>
   <int value="804551127" label="ArcKeyboardShortcutHelperIntegration:disabled"/>
@@ -65413,6 +65413,7 @@ from previous Chrome versions.
   <int value="806783713" label="DesktopPWAsTabStripLinkCapturing:enabled"/>
   <int value="807394992" label="ReadAloud:disabled"/>
   <int value="807447752" label="ChromeMemex:disabled"/>
+  <int value="807723668" label="(Obsolete) TranslateAssistContent:enabled"/>
   <int value="807734471" label="tab-management-experiment-type-disabled"/>
   <int value="808855873" label="RequestDesktopSiteGlobal:disabled"/>
   <int value="809404981" label="CrosBatterySaver:enabled"/>
@@ -66047,7 +66048,6 @@ from previous Chrome versions.
       label="AutofillCreditCardLastUsedDateDisplay:disabled"/>
   <int value="1153658720" label="ChromeOSZramWriteback:disabled"/>
   <int value="1153667038" label="CaptivePortalUI2022:enabled"/>
-  <int value="1154722867" label="TranslateAssistContent:disabled"/>
   <int value="1154790184" label="ScanAppMultiPageScan:enabled"/>
   <int value="1155905651" label="DrawVerticallyEdgeToEdge:disabled"/>
   <int value="1155923106" label="NTPOfflinePages:enabled"/>
@@ -106492,19 +106492,6 @@ Full version information for the fingerprint enum values:
   <int value="137420486" label="cloud_print_credential_update"/>
   <int value="137457845" label="web_history_counter"/>
   <int value="137724067" label="safety_check_update_connectivity"/>
-</enum>
-
-<enum name="TranslateAssistContentResult">
-  <int value="0" label="The feature was disabled"/>
-  <int value="1" label="The tab was null"/>
-  <int value="2" label="The tab was an incognito tab"/>
-  <int value="3" label="The activity was in overview mode"/>
-  <int value="4" label="canTranslateTab() was false"/>
-  <int value="5" label="The original page language was missing"/>
-  <int value="6" label="The current page language was missing"/>
-  <int value="7" label="There was a JSONException"/>
-  <int value="8" label="The page was translatable"/>
-  <int value="9" label="The page has already been translated"/>
 </enum>
 
 <enum name="TranslateCompactUIEvent">

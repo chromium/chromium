@@ -7,16 +7,12 @@ package org.chromium.chrome.test.util;
 import android.app.Instrumentation;
 import android.view.View;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 
-import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.infobar.TranslateCompactInfoBar;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarCompactLayout;
 import org.chromium.components.translate.TranslateMenu;
@@ -129,19 +125,6 @@ public class TranslateUtil {
                 return infoBar.isSourceTabSelectedForTesting()
                         && !infoBar.isTargetTabSelectedForTesting();
             }
-        });
-    }
-
-    /**
-     * Wait until the given tab is translatable. This is useful in cases where we can't wait on the
-     * infobar, such as when a page is in a accept-lang but is still translatable.
-     */
-    public static void waitUntilTranslatable(Tab tab) {
-        Assert.assertNotNull(tab);
-        CriteriaHelper.pollUiThread(() -> {
-            boolean canManuallyTranslate =
-                    TranslateBridge.canManuallyTranslate(tab, /*menuLogging=*/false);
-            Criteria.checkThat(canManuallyTranslate, Matchers.is(true));
         });
     }
 }

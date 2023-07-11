@@ -7601,15 +7601,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "translate-assist-content",
-    "owners": [
-      "jds@google.com",
-      "basiaz@google.com",
-      "chrome-voice@google.com"
-    ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "translate-force-trigger-on-english",
     "owners": [ "megjablon", "cuianthony", "chrome-language@google.com" ],
     // This flag is used to manually trigger a Finch controlled, India only

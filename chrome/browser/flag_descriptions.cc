@@ -3257,11 +3257,6 @@ const char kTouchSelectionStrategyDescription[] =
 const char kTouchSelectionStrategyCharacter[] = "Character";
 const char kTouchSelectionStrategyDirection[] = "Direction";
 
-const char kTranslateAssistContentName[] = "Translate AssistContent";
-const char kTranslateAssistContentDescription[] =
-    "Enables populating translate details for the current page in "
-    "AssistContent.";
-
 const char kTranslateForceTriggerOnEnglishName[] =
     "Select which language model to use to trigger translate on English "
     "content";
