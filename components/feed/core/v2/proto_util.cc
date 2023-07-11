@@ -146,9 +146,12 @@ feedwire::Request CreateFeedQueryRequest(
   for (auto capability : GetFeedConfig().experimental_capabilities)
     feed_request.add_client_capability(capability);
 
+#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(kFeedBottomSyncStringRemoval)) {
     feed_request.add_client_capability(Capability::SYNC_STRING_REMOVAL);
   }
+#endif
+
   if (base::FeatureList::IsEnabled(kInterestFeedV2Hearts)) {
     feed_request.add_client_capability(Capability::HEART);
   }

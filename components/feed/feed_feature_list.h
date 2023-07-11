@@ -64,9 +64,11 @@ BASE_DECLARE_FEATURE(kFeedImageMemoryCacheSizePercentage);
 // feeds quickly.
 BASE_DECLARE_FEATURE(kFeedBackToTop);
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // When enabled, causes the server to restrig the Sync Promo Banner for the
 // bottom of Feed to a Signin Promo.
 BASE_DECLARE_FEATURE(kFeedBottomSyncStringRemoval);
+#endif
 
 // When enabled, shows a sign in bottom sheet when p13n actions on boc are used
 // by signed out client.

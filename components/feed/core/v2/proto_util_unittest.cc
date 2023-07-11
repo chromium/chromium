@@ -5,6 +5,7 @@
 #include "components/feed/core/v2/proto_util.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/feed/core/proto/v2/wire/capability.pb.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_entry_point_source.pb.h"
@@ -109,6 +110,8 @@ TEST(ProtoUtilTest, HeartsEnabled) {
               Contains(feedwire::Capability::HEART));
 }
 
+// kFeedBottomSyncStringRemoval is mobile-only.
+#if BUILDFLAG(IS_ANDROID)
 TEST(ProtoUtilTest, SyncRestringEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kFeedBottomSyncStringRemoval}, {});
@@ -123,6 +126,7 @@ TEST(ProtoUtilTest, SyncRestringEnabled) {
   ASSERT_THAT(request.client_capability(),
               Contains(feedwire::Capability::SYNC_STRING_REMOVAL));
 }
+#endif
 
 TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
   // Try to disable _INFINITE_FEED.

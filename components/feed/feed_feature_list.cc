@@ -76,9 +76,11 @@ BASE_FEATURE(kFeedImageMemoryCacheSizePercentage,
 BASE_FEATURE(kFeedBackToTop,
              "FeedBackToTop",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 BASE_FEATURE(kFeedBottomSyncStringRemoval,
              "FeedBottomSyncStringRemoval",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 BASE_FEATURE(kFeedBoCSigninInterstitial,
              "FeedBoCSigninInterstitial",
              base::FEATURE_DISABLED_BY_DEFAULT);
