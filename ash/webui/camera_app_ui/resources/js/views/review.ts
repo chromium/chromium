@@ -5,7 +5,7 @@
 import {assertInstanceof} from '../assert.js';
 import * as dom from '../dom.js';
 import {I18nString} from '../i18n_string.js';
-import {pictureURL} from '../models/file_system.js';
+import {getObjectURL} from '../models/file_system.js';
 import {FileAccessEntry} from '../models/file_system_access_entry.js';
 import * as nav from '../nav.js';
 import {ViewName} from '../type.js';
@@ -126,7 +126,7 @@ export class Review extends View {
   async setReviewVideo(video: FileAccessEntry): Promise<void> {
     this.image.hidden = true;
     this.video.hidden = false;
-    const url = await pictureURL(video);
+    const url = await getObjectURL(video);
     this.video.src = url;
   }
 

@@ -318,7 +318,6 @@ export class App {
     try {
       await filesystem.initialize();
       const cameraDir = filesystem.getCameraDirectory();
-      assert(cameraDir !== null);
 
       // There are three possible cases:
       // 1. Regular instance

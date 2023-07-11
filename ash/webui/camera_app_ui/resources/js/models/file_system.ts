@@ -55,7 +55,8 @@ let cameraTempDir: DirectoryAccessEntry|null = null;
 /**
  * Gets camera directory used by CCA.
  */
-export function getCameraDirectory(): DirectoryAccessEntry|null {
+export function getCameraDirectory(): DirectoryAccessEntry {
+  assert(cameraDir !== null);
   return cameraDir;
 }
 
@@ -176,9 +177,9 @@ export async function getEntries(): Promise<FileAccessEntry[]> {
 }
 
 /**
- * Returns an URL for a picture given by the file |entry|.
+ * Returns an Object URL for a file `entry`.
  */
-export async function pictureURL(entry: FileAccessEntry): Promise<string> {
+export async function getObjectURL(entry: FileAccessEntry): Promise<string> {
   const file = await entry.file();
   return URL.createObjectURL(file);
 }

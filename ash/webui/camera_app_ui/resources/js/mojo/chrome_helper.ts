@@ -5,6 +5,7 @@
 import {assert, assertNotReached} from '../assert.js';
 import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
+import {getCameraDirectory, getObjectURL} from '../models/file_system.js';
 import {isLocalDev} from '../models/load_time_data.js';
 import {
   ErrorLevel,
@@ -277,8 +278,22 @@ export class ChromeHelperFake extends ChromeHelper {
     /* Do nothing. */
   }
 
-  override openFileInGallery(_name: string): void {
-    // TODO(pihsun): Mock this and open the file in a new tab.
+  override async openFileInGallery(name: string): Promise<void> {
+    const cameraDir = getCameraDirectory();
+    const file = await cameraDir.getFile(name);
+    if (file === null) {
+      return;
+    }
+    const objectURL = await getObjectURL(file);
+    const newTabWindow = window.open(objectURL, '_blank');
+    newTabWindow?.addEventListener('load', () => {
+      // The unload handler is fired immediately since the window.open
+      // triggered unload event on the initial empty page. See
+      // https://stackoverflow.com/q/7476660
+      newTabWindow?.addEventListener('unload', () => {
+        URL.revokeObjectURL(objectURL);
+      });
+    });
   }
 
   override openFeedbackDialog(_placeholder: string): void {
