@@ -115,50 +115,67 @@ TEST(SourceRegistrationTest, Parse) {
           base::unexpected(SourceRegistrationError::kExpiryValueInvalid),
       },
       {
+          "expiry_negative",
+          R"json({"expiry":"-172801","destination":"https://d.example"})json",
+          base::unexpected(SourceRegistrationError::kExpiryValueInvalid),
+      },
+      {
           "event_report_window_valid",
-          R"json({"expiry":"172801","event_report_window":"86401",
+          R"json({"event_report_window":"86401",
           "destination":"https://d.example"})json",
           SourceRegistrationWith(destination,
                                  [](SourceRegistration& r) {
-                                   r.expiry = base::Seconds(172801);
                                    r.event_report_window = base::Seconds(86401);
                                  }),
       },
       {
           "event_report_window_wrong_type",
-          R"json({"expiry":"172801","event_report_window":86401,
+          R"json({"event_report_window":86401,
           "destination":"https://d.example"})json",
           base::unexpected(
               SourceRegistrationError::kEventReportWindowValueInvalid),
       },
       {
           "event_report_window_invalid",
-          R"json({"expiry":"172801","event_report_window":"abc",
+          R"json({"event_report_window":"abc",
+          "destination":"https://d.example"})json",
+          base::unexpected(
+              SourceRegistrationError::kEventReportWindowValueInvalid),
+      },
+      {
+          "event_report_window_negative",
+          R"json({"event_report_window":"-86401",
           "destination":"https://d.example"})json",
           base::unexpected(
               SourceRegistrationError::kEventReportWindowValueInvalid),
       },
       {
           "aggregatable_report_window_valid",
-          R"json({"expiry":"172801","aggregatable_report_window":"86401",
+          R"json({"aggregatable_report_window":"86401",
           "destination":"https://d.example"})json",
           SourceRegistrationWith(destination,
                                  [](SourceRegistration& r) {
-                                   r.expiry = base::Seconds(172801);
                                    r.aggregatable_report_window =
                                        base::Seconds(86401);
                                  }),
       },
       {
           "aggregatable_report_window_wrong_type",
-          R"json({"expiry":"172801","aggregatable_report_window":86401,
+          R"json({"aggregatable_report_window":86401,
           "destination":"https://d.example"})json",
           base::unexpected(
               SourceRegistrationError::kAggregatableReportWindowValueInvalid),
       },
       {
           "aggregatable_report_window_invalid",
-          R"json({"expiry":"172801","aggregatable_report_window":"abc",
+          R"json({"aggregatable_report_window":"abc",
+          "destination":"https://d.example"})json",
+          base::unexpected(
+              SourceRegistrationError::kAggregatableReportWindowValueInvalid),
+      },
+      {
+          "aggregatable_report_window_negative",
+          R"json({"aggregatable_report_window":"-86401",
           "destination":"https://d.example"})json",
           base::unexpected(
               SourceRegistrationError::kAggregatableReportWindowValueInvalid),

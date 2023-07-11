@@ -44,8 +44,13 @@ constexpr char kSourceEventId[] = "source_event_id";
     const base::Value::Dict& registration,
     base::StringPiece key,
     absl::optional<base::TimeDelta>& out) {
-  absl::optional<int64_t> value;
-  if (ParseInt64(registration, key, value)) {
+  absl::optional<uint64_t> value;
+  // Note: The full range of uint64 seconds cannot be represented in the
+  // resulting `base::TimeDelta`, but this is fine because `base::Seconds()`
+  // properly clamps out-of-bound values and because the Attribution
+  // Reporting API itself clamps values to 30 days:
+  // https://wicg.github.io/attribution-reporting-api/#valid-source-expiry-range
+  if (ParseUint64(registration, key, value)) {
     out = value ? absl::make_optional(base::Seconds(*value)) : absl::nullopt;
     return true;
   } else {

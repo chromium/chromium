@@ -51,6 +51,8 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
 
   uint64_t source_event_id = 0;
   DestinationSet destination_set;
+  // These `base::TimeDelta`s should be non-negative, but this is only enforced
+  // by the `Parse()` methods.
   absl::optional<base::TimeDelta> expiry;
   absl::optional<base::TimeDelta> event_report_window;
   absl::optional<base::TimeDelta> aggregatable_report_window;
