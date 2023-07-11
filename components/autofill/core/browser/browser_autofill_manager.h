@@ -629,14 +629,15 @@ class BrowserAutofillManager : public AutofillManager,
   // TODO(crbug.com/1411352): Consider moving to form_types.h.
   [[nodiscard]] bool FormHasAddressField(const FormData& form);
 
-  // Returns Suggestions corresponding to both the |autofill_field| type and
-  // stored profiles whose values match the contents of |field|. |form| stores
-  // data about the form with which the user is interacting, e.g. the number and
-  // types of form fields.
+  // Returns suggestions for the `form`, if suggestions were triggered using
+  // the `trigger_source` on the `field`. The field's type is `field_type`.
+  // The `trigger_source` controls which fields are considered for filling and
+  // thus influences the suggestion labels.
   std::vector<Suggestion> GetProfileSuggestions(
       const FormStructure& form,
       const FormFieldData& field,
-      const AutofillField& autofill_field) const;
+      AutofillType field_type,
+      AutofillSuggestionTriggerSource trigger_source) const;
 
   // Returns a list of values from the stored credit cards that match |type| and
   // the value of |field| and returns the labels of the matching credit cards.

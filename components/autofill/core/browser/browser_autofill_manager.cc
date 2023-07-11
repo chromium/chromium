@@ -2737,11 +2737,11 @@ bool BrowserAutofillManager::FormHasAddressField(const FormData& form) {
 std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     const FormStructure& form,
     const FormFieldData& field,
-    const AutofillField& autofill_field) const {
+    AutofillType field_type,
+    AutofillSuggestionTriggerSource trigger_source) const {
   address_form_event_logger_->OnDidPollSuggestions(field, sync_state_);
-
   return suggestion_generator_->GetSuggestionsForProfiles(
-      form, field, autofill_field, app_locale_);
+      form, field, field_type, trigger_source, app_locale_);
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
@@ -3345,15 +3345,17 @@ void BrowserAutofillManager::GetAvailableSuggestions(
   context->is_autofill_available = true;
 
   if (context->is_filling_credit_card) {
+    // Credit cards suggestions don't depend the `trigger_source`.
     *suggestions =
         GetCreditCardSuggestions(field, context->focused_field->Type(),
                                  context->should_display_gpay_logo);
   } else {
-    // TODO(crbug.com/1446318): Pass the `trigger_source` on to
-    // `GetProfileSuggestions()` to take the right set of fields into
-    // consideration when generating suggestion labels.
-    *suggestions = GetProfileSuggestions(*context->form_structure, field,
-                                         *context->focused_field);
+    // Profile suggestions fill ac=unrecognized fields only when triggered
+    // through manual fallbacks. As such, suggestion labels differ depending on
+    // the `trigger_source`.
+    *suggestions =
+        GetProfileSuggestions(*context->form_structure, field,
+                              context->focused_field->Type(), trigger_source);
   }
 
   // Ablation experiment:

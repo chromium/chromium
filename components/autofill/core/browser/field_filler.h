@@ -59,14 +59,13 @@ class FieldFiller {
       mojom::RendererFormDataAction action,
       std::string* failure_to_fill = nullptr);
 
-  // Returns the phone number value for the given |field|. The returned value
-  // might be |number|, or |phone_home_city_and_number|, or could possibly be a
-  // meaningful subset |number|, if that's appropriate for the field.
+  // Returns the phone number value for the given `field_data`. The returned
+  // value might be `number`, or `city_and_number`, or could possibly be a
+  // meaningful subset `number`, if that's appropriate for the field.
   static std::u16string GetPhoneNumberValueForInput(
-      const AutofillField& field,
+      const FormFieldData& field_data,
       const std::u16string& number,
-      const std::u16string& phone_home_city_and_number,
-      const FormFieldData& field_data);
+      const std::u16string& city_and_number);
 
   // Returns the index of the shortest entry in the given select field of which
   // |value| is a substring. Returns -1 if no such entry exists.

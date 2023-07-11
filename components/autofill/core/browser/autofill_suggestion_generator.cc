@@ -109,32 +109,33 @@ AutofillSuggestionGenerator::~AutofillSuggestionGenerator() = default;
 std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
     const FormStructure& form,
     const FormFieldData& field,
-    const AutofillField& autofill_field,
+    AutofillType field_type,
+    AutofillSuggestionTriggerSource trigger_source,
     const std::string& app_locale) {
   std::vector<ServerFieldType> field_types;
   field_types.reserve(form.field_count());
   for (const std::unique_ptr<AutofillField>& form_field : form) {
-    if (!form_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+    if (!form_field->ShouldSuppressSuggestionsAndFillingByDefault() ||
+        trigger_source == AutofillSuggestionTriggerSource::
+                              kManualFallbackForAutocompleteUnrecognized) {
       field_types.push_back(form_field->Type().GetStorableType());
     }
   }
 
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      autofill_field.Type(), field.value, field.is_autofilled, field_types);
+      field_type, field.value, field.is_autofilled, field_types);
 
   // Adjust phone number to display in prefix/suffix case.
-  if (autofill_field.Type().group() == FieldTypeGroup::kPhoneHome) {
+  if (field_type.group() == FieldTypeGroup::kPhoneHome) {
     for (auto& suggestion : suggestions) {
       const AutofillProfile* profile = personal_data_->GetProfileByGUID(
           suggestion.GetPayload<Suggestion::BackendId>().value());
       if (profile) {
-        const std::u16string phone_home_city_and_number =
-            profile->GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale);
-        suggestion.main_text =
-            Suggestion::Text(FieldFiller::GetPhoneNumberValueForInput(
-                                 autofill_field, suggestion.main_text.value,
-                                 phone_home_city_and_number, field),
-                             Suggestion::Text::IsPrimary(true));
+        suggestion.main_text = Suggestion::Text(
+            FieldFiller::GetPhoneNumberValueForInput(
+                field, suggestion.main_text.value,
+                profile->GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale)),
+            Suggestion::Text::IsPrimary(true));
       }
     }
   }

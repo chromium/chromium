@@ -925,10 +925,9 @@ std::u16string GetValueForProfile(const AutofillProfile& profile,
       value = GetPhoneCountryCodeSelectControlForInput(value, field_data,
                                                        failure_to_fill);
     } else {
-      const std::u16string phone_home_city_and_number =
-          profile.GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale);
       value = FieldFiller::GetPhoneNumberValueForInput(
-          field, value, phone_home_city_and_number, *field_data);
+          *field_data, value,
+          profile.GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale));
     }
   } else if (type.GetStorableType() == ADDRESS_HOME_STREET_ADDRESS) {
     const std::string& profile_language_code = profile.language_code();
@@ -1064,10 +1063,9 @@ bool FieldFiller::FillFormField(
 // phone numbers with 10 or 11 digits.
 // static
 std::u16string FieldFiller::GetPhoneNumberValueForInput(
-    const AutofillField& field,
+    const FormFieldData& field_data,
     const std::u16string& number,
-    const std::u16string& phone_home_city_and_number,
-    const FormFieldData& field_data) {
+    const std::u16string& city_and_number) {
   // If no max length was specified, return the complete number.
   if (field_data.max_length == 0)
     return number;
@@ -1075,8 +1073,9 @@ std::u16string FieldFiller::GetPhoneNumberValueForInput(
   if (number.length() > field_data.max_length) {
     // Try after removing the country code, if |number| exceeds the maximum size
     // of the field.
-    if (phone_home_city_and_number.length() <= field_data.max_length)
-      return phone_home_city_and_number;
+    if (city_and_number.length() <= field_data.max_length) {
+      return city_and_number;
+    }
 
     // If |number| exceeds the maximum size of the field, cut the first part to
     // provide a valid number for the field. For example, the number 15142365264
