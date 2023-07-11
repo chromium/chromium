@@ -336,7 +336,7 @@ source_set("unit_tests") {
   deps = [
     ":mojom",
     "//base/test:test_support",
-    "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
     "//ui/gfx:test_support",

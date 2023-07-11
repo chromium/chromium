@@ -96,9 +96,11 @@ source_set("test_support") {
   ]
 }
 
-# Prefer to depend on the component's public target
-# "//components/services/app_service" instead of individual implementation
-# targets from below.
+# The following targets are used for internal code organization, and are not
+# exposed publicly. Clients should depend on "//components/services/app_service"
+# instead of individual targets. New targets added below should also be added to
+# public_deps on "//components/services/app_service" to make them available to
+# clients.
 
 source_set("app_file_handling") {
   sources = [
@@ -114,6 +116,8 @@ source_set("app_file_handling") {
     "//base",
     "//url",
   ]
+
+  visibility = [ "//components/services/app_service/*" ]
 }
 
 source_set("app_icon_info") {
@@ -126,6 +130,8 @@ source_set("app_icon_info") {
     "//base",
     "//url",
   ]
+
+  visibility = [ "//components/services/app_service/*" ]
 }
 
 source_set("app_share_target") {
@@ -138,12 +144,15 @@ source_set("app_share_target") {
     "//base",
     "//url",
   ]
+
+  visibility = [ "//components/services/app_service/*" ]
 }
 
 source_set("macros") {
   sources = [ "macros.h" ]
 
-  # Only exposed to App Service code.
+  # Not exported through //components/services/app_service, and only exposed to
+  # App Service code.
   visibility = [
     "//chrome/browser/apps/app_service/*",
     "//components/services/app_service/*",
@@ -177,6 +186,8 @@ component("app_update") {
     ":macros",
     "//ui/gfx",
   ]
+
+  visibility = [ "//components/services/app_service/*" ]
 }
 
 source_set("app_url_handling") {
@@ -186,6 +197,8 @@ source_set("app_url_handling") {
   ]
 
   deps = [ "//url" ]
+
+  visibility = [ "//components/services/app_service/*" ]
 }
 
 source_set("icon_loader") {
@@ -202,6 +215,8 @@ source_set("icon_loader") {
     ":app_types",
     "//ui/gfx:gfx",
   ]
+
+  visibility = [ "//components/services/app_service/*" ]
 }
 
 source_set("intents") {
@@ -220,6 +235,8 @@ source_set("intents") {
     "//third_party/blink/public/common",
     "//url",
   ]
+
+  visibility = [ "//components/services/app_service/*" ]
 }
 
 source_set("protocol_handling") {
@@ -229,6 +246,8 @@ source_set("protocol_handling") {
   ]
 
   deps = [ "//url" ]
+
+  visibility = [ "//components/services/app_service/*" ]
 }
 
 source_set("preferred_apps") {
@@ -249,6 +268,8 @@ source_set("preferred_apps") {
     "//base",
     "//url",
   ]
+
+  visibility = [ "//components/services/app_service/*" ]
 }
 
 source_set("types") {
@@ -261,10 +282,14 @@ source_set("types") {
     ":app_types",
     "//third_party/abseil-cpp:absl",
   ]
+
+  visibility = [ "//components/services/app_service/*" ]
 }
 
 source_set("crosapi_utils") {
   sources = [ "crosapi_utils.h" ]
+
+  visibility = [ "//components/services/app_service/*" ]
 }
 
 source_set("unit_tests") {
