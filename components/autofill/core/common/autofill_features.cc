@@ -126,6 +126,20 @@ const base::FeatureParam<bool> kAutofillImportFromAutocompleteUnrecognized{
     &kAutofillPredictionsForAutocompleteUnrecognized,
     "import_from_autocomplete_unrecognized", false};
 
+// When enabled, an entry is added to the context menu of ac=unrecognized fields
+// which allows triggering Autofill suggestions. Selecting such a suggestion
+// fills all address fields in the field's section, independently of the
+// autocomplete attribute.
+// TODO(crbug.com/1446318): Remove when launched.
+BASE_FEATURE(kAutofillFallbackForAutocompleteUnrecognized,
+             "AutofillFallbackForAutocompleteUnrecognized",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// If true, the context menu entry is shown for all address fields.
+const base::FeatureParam<bool>
+    kAutofillFallForAutocompleteUnrecognizedOnAllAddressField{
+        &kAutofillFallbackForAutocompleteUnrecognized,
+        "show_on_all_address_fields", false};
+
 // Kill switch for Autofill filling.
 BASE_FEATURE(kAutofillDisableFilling,
              "AutofillDisableFilling",

@@ -92277,6 +92277,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="129" label="IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK"/>
   <int value="130" label="IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB"/>
   <int value="131" label="IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS"/>
+  <int value="132" label="IDC_CONTENT_CONTEXT_COPYVIDEOFRAME"/>
+  <int value="133" label="IDC_CONTENT_CONTEXT_SAVEPLUGINAS"/>
+  <int value="134"
+      label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED"/>
 </enum>
 
 <enum name="ReopenTabPromoStepAtDismissal">

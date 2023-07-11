@@ -21,6 +21,7 @@ class Browser;
 namespace autofill {
 
 class AutofillProfile;
+class AutofillField;
 class CreditCard;
 class PersonalDataManager;
 
@@ -200,6 +201,10 @@ class AutofillContextMenuManager {
           item_details_added_to_context_menu,
       SubMenuType sub_menu_type);
 
+  // If an address field was clicked, depending on its autocomplete attribute,
+  // adds an option to the context menu to trigger Autofill suggestions.
+  void MaybeAddFallbackForAutocompleteUnrecognizedToMenu();
+
   // Returns true if the command ids left are sufficient for showing the whole
   // profile in the context menu.
   bool HaveEnoughIdsForProfile(
@@ -210,6 +215,11 @@ class AutofillContextMenuManager {
 
   // Triggers the feedback flow for Autofill command.
   void ExecuteAutofillFeedbackCommand(content::RenderFrameHost* rfh);
+
+  // Triggers Autofill suggestions on the field that the context menu was
+  // opened on.
+  void ExecuteFallbackForAutocompleteUnrecognizedCommand(
+      content::RenderFrameHost* rfh);
 
   // Triggers the corresponding menu manager command.
   void ExecuteMenuManagerCommand(CommandId command_id,
@@ -232,6 +242,10 @@ class AutofillContextMenuManager {
   // Returns the next available command id for adding an item to the context
   // menu for Autofill.
   absl::optional<CommandId> GetNextAvailableAutofillCommandId();
+
+  // Gets the `AutofillField` described by the `params_` from the context menu's
+  // render frame host.
+  AutofillField* GetAutofillField() const;
 
   const raw_ptr<PersonalDataManager> personal_data_manager_;
   const raw_ptr<ui::SimpleMenuModel> menu_model_;

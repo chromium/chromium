@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -17,6 +18,7 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -58,6 +60,11 @@ class MockAutofillDriver : public ContentAutofillDriver {
               (const FormGlobalId& form_global_id,
                const FieldGlobalId& field_global_id),
               (override));
+  MOCK_METHOD(void,
+              RendererShouldTriggerSuggestions,
+              (const FieldGlobalId& field_id,
+               AutofillSuggestionTriggerSource trigger_source),
+              (override));
 };
 
 }  // namespace
@@ -67,7 +74,9 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
   AutofillContextMenuManagerTest() {
     feature_.InitWithFeatures(
         {features::kAutofillShowManualFallbackInContextMenu,
-         features::kAutofillFeedback},
+         features::kAutofillFeedback,
+         features::kAutofillPredictionsForAutocompleteUnrecognized,
+         features::kAutofillFallbackForAutocompleteUnrecognized},
         {});
   }
 
@@ -119,6 +128,29 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
 
   AutofillContextMenuManager* autofill_context_menu_manager() const {
     return autofill_context_menu_manager_.get();
+  }
+
+  // Sets the `form` and the `form.fields`'s `host_frame`. Since this test
+  // fixture has its own render frame host, which is used by the
+  // `autofill_context_menu_manager()`, this is necessary to identify the forms
+  // correctly by their global ids.
+  void SetHostFramesOfFormAndFields(FormData& form) {
+    LocalFrameToken frame_token =
+        LocalFrameToken(main_rfh()->GetFrameToken().value());
+    form.host_frame = frame_token;
+    for (FormFieldData& field : form.fields) {
+      field.host_frame = frame_token;
+    }
+  }
+
+  // Adds the `form` to the `driver()`'s manager.
+  void AddSeenForm(const FormData& form) {
+    AutofillManager& manager = *driver()->autofill_manager();
+    TestAutofillManagerWaiter waiter(manager,
+                                     {AutofillManagerEvent::kFormsSeen});
+    manager.OnFormsSeen(/*updated_forms=*/{form},
+                        /*removed_forms=*/{});
+    ASSERT_TRUE(waiter.Wait());
   }
 
  private:
@@ -283,6 +315,60 @@ TEST_F(AutofillContextMenuManagerTest, RecordContextMenuIsShownOnField) {
   EXPECT_CALL(*driver(),
               OnContextMenuShownInField(form_global_id, field_global_id));
   autofill_context_menu_manager()->AppendItems();
+}
+
+// Tests that when triggering the context menu on an ac=unrecognized field, the
+// fallback entry is part of the menu.
+TEST_F(AutofillContextMenuManagerTest,
+       AutocompleteUnrecognizedFallback_ContextMenuEntry) {
+  // Create a form with one ac=unrecognized field.
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  form.fields[0].parsed_autocomplete =
+      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
+  SetHostFramesOfFormAndFields(form);
+  AddSeenForm(form);
+
+  // Simulate triggering the context menu on the ac=unrecognized field.
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.unique_renderer_id,
+                              form.fields[0].unique_renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  // Expect to find the fallback entry at the end (after the manual fallback and
+  // feedback entries).
+  ASSERT_GE(menu_model()->GetItemCount(), 2u);
+  const size_t fallback_index = menu_model()->GetItemCount() - 2;
+  EXPECT_EQ(
+      menu_model()->GetLabelAt(fallback_index),
+      l10n_util::GetStringUTF16(
+          IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED));
+  EXPECT_EQ(menu_model()->GetTypeAt(fallback_index + 1),
+            ui::MenuModel::ItemType::TYPE_SEPARATOR);
+}
+
+// Tests that when the fallback entry for ac=unrecognized fields is selected,
+// suggestions are triggered with suggestion trigger source
+// `kManualFallbackForAutocompleteUnrecognized`.
+TEST_F(AutofillContextMenuManagerTest,
+       AutocompleteUnrecognizedFallback_TriggerSuggestions) {
+  // Simulate that the context menu was opened on the `field_renderer_id`.
+  const FieldRendererId field_renderer_id = test::MakeFieldRendererId();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(test::MakeFormRendererId(), field_renderer_id));
+
+  // Expect that when the entry is selected, suggestions are triggered from that
+  // field.
+  EXPECT_CALL(
+      *driver(),
+      RendererShouldTriggerSuggestions(
+          FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
+                        field_renderer_id},
+          AutofillSuggestionTriggerSource::
+              kManualFallbackForAutocompleteUnrecognized));
+  autofill_context_menu_manager()->ExecuteCommand(
+      AutofillContextMenuManager::CommandId(
+          IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED));
 }
 
 }  // namespace autofill

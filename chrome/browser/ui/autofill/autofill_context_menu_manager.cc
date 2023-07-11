@@ -9,6 +9,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/overloaded.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -22,6 +23,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -41,6 +43,8 @@ static constexpr int kAutofillContextCustomLast =
     IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_LAST;
 static constexpr int kAutofillContextFeedback =
     IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK;
+static constexpr int kAutofillFallbackForAutocompleteUnrecognized =
+    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED;
 
 constexpr char kFeedbackPlaceholder[] =
     "What steps did you just take?\n"
@@ -96,11 +100,11 @@ AutofillContextMenuManager::ConvertToAutofillCustomCommandId(int offset) {
 // static
 bool AutofillContextMenuManager::IsAutofillCustomCommandId(
     CommandId command_id) {
-  if (command_id.value() == kAutofillContextFeedback) {
-    return true;
-  }
-  return command_id.value() >= kAutofillContextCustomFirst &&
-         command_id.value() <= kAutofillContextCustomLast;
+  const int id = command_id.value();
+  return id == kAutofillContextFeedback ||
+         id == kAutofillFallbackForAutocompleteUnrecognized ||
+         (command_id.value() >= kAutofillContextCustomFirst &&
+          command_id.value() <= kAutofillContextCustomLast);
 }
 
 AutofillContextMenuManager::AutofillContextMenuManager(
@@ -212,6 +216,12 @@ void AutofillContextMenuManager::AppendItems() {
 
     menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
   }
+
+  if (params_.field_renderer_id &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillFallbackForAutocompleteUnrecognized)) {
+    MaybeAddFallbackForAutocompleteUnrecognizedToMenu();
+  }
 }
 
 bool AutofillContextMenuManager::IsCommandIdChecked(
@@ -241,6 +251,11 @@ void AutofillContextMenuManager::ExecuteCommand(CommandId command_id) {
     return;
   }
 
+  if (command_id.value() == kAutofillFallbackForAutocompleteUnrecognized) {
+    ExecuteFallbackForAutocompleteUnrecognizedCommand(rfh);
+    return;
+  }
+
   ExecuteMenuManagerCommand(command_id, rfh);
 }
 
@@ -262,6 +277,21 @@ void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
       /*autofill_metadata=*/
       data_logs::FetchAutofillFeedbackData(
           manager, LoadTriggerFormAndFieldLogs(manager, rfh, params_)));
+}
+
+void AutofillContextMenuManager::
+    ExecuteFallbackForAutocompleteUnrecognizedCommand(
+        content::RenderFrameHost* rfh) {
+  auto* driver = ContentAutofillDriver::GetForRenderFrameHost(rfh);
+  if (!driver) {
+    return;
+  }
+  CHECK(params_.field_renderer_id);
+  FieldGlobalId field = {LocalFrameToken(rfh->GetFrameToken().value()),
+                         FieldRendererId(*params_.field_renderer_id)};
+  driver->browser_events().RendererShouldTriggerSuggestions(
+      field, AutofillSuggestionTriggerSource::
+                 kManualFallbackForAutocompleteUnrecognized);
 }
 
 void AutofillContextMenuManager::ExecuteMenuManagerCommand(
@@ -523,6 +553,37 @@ void AutofillContextMenuManager::AddProfileDataToMenu(
   }
 }
 
+void AutofillContextMenuManager::
+    MaybeAddFallbackForAutocompleteUnrecognizedToMenu() {
+  // Only show the context menu entry for address fields, which can be filled
+  // with at least one of the user's profiles.
+  AutofillField* field = GetAutofillField();
+  if (!field || FieldTypeGroupToFormType(field->Type().group()) !=
+                    FormType::kAddressForm) {
+    return;
+  }
+  CHECK(personal_data_manager_);
+  if (base::ranges::none_of(
+          personal_data_manager_->GetProfiles(), [&](AutofillProfile* profile) {
+            return profile->HasInfo(field->Type().GetStorableType());
+          })) {
+    return;
+  }
+
+  // Depending on the Finch parameter, only show the context menu entry for
+  // ac=unrecognized fields.
+  if (!field->ShouldSuppressSuggestionsAndFillingByDefault() &&
+      !features::kAutofillFallForAutocompleteUnrecognizedOnAllAddressField
+           .Get()) {
+    return;
+  }
+
+  menu_model_->AddItemWithStringId(
+      kAutofillFallbackForAutocompleteUnrecognized,
+      IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED);
+  menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+}
+
 bool AutofillContextMenuManager::HaveEnoughIdsForProfile(
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
@@ -601,6 +662,24 @@ std::u16string AutofillContextMenuManager::GetProfileDescription(
   return profile.ConstructInferredLabel(
       kDetailsFields, std::size(kDetailsFields),
       /*num_fields_to_include=*/2, personal_data_manager_->app_locale());
+}
+
+AutofillField* AutofillContextMenuManager::GetAutofillField() const {
+  content::RenderFrameHost* rfh = delegate_->GetRenderFrameHost();
+  CHECK(rfh);
+  AutofillManager* manager =
+      ContentAutofillDriver::GetForRenderFrameHost(rfh)->autofill_manager();
+  if (!manager) {
+    return nullptr;
+  }
+  LocalFrameToken frame_token(rfh->GetFrameToken().value());
+  // Formless forms don't have a renderer ID.
+  FormStructure* form = manager->FindCachedFormById(
+      {frame_token, FormRendererId(params_.form_renderer_id.value_or(0))});
+  CHECK(params_.field_renderer_id);
+  return form ? form->GetFieldById(
+                    {frame_token, FieldRendererId(*params_.field_renderer_id)})
+              : nullptr;
 }
 
 }  // namespace autofill
