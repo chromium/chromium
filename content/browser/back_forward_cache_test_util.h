@@ -11,10 +11,19 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 namespace content {
+
+namespace {
+constexpr auto* kBlockingPagePath =
+    "/back_forward_cache/page_with_blocking_feature.html";
+constexpr auto* kBlockingReasonString = "WebXR";
+constexpr auto kBlockingReasonEnum =
+    blink::scheduler::WebSchedulerTrackedFeature::kWebXR;
+}  // namespace
 
 // `BackForwardCacheMetricsTestMatcher` provides common matchers and
 // expectations to help make test assertions on BackForwardCache-related

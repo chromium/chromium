@@ -2799,11 +2799,14 @@ void RenderFrameImpl::CommitNavigationWithParams(
   if (commit_params->is_view_source)
     frame_->EnableViewSourceMode(true);
 
-  if (commit_params->not_restored_reasons) {
+  if (frame_->IsOutermostMainFrame()) {
     // Save the Back/Forward Cache NotRestoredReasons struct to WebLocalFrame to
     // report for PerformanceNavigationTiming API.
     frame_->SetNotRestoredReasons(
         std::move(commit_params->not_restored_reasons));
+  } else {
+    // NotRestoredReasons are only set for the outermost main frame.
+    CHECK(!commit_params->not_restored_reasons);
   }
 
   if (commit_params->lcpp_hint) {
