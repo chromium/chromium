@@ -795,12 +795,15 @@ enum class ToolbarKind {
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDispatcherForBrowserState(browserState);
   }
-  _bubblePresenter =
-      [[BubblePresenter alloc] initWithTracker:engagementTracker
-                        hostContentSettingsMap:settingsMap
-                                  webStateList:self.browser->GetWebStateList()
-                deviceSwitcherResultDispatcher:deviceSwitcherResultDispatcher
-                               loadingNotifier:_urlLoadingNotifierBrowserAgent];
+  _bubblePresenter = [[BubblePresenter alloc]
+      initWithDeviceSwitcherResultDispatcher:deviceSwitcherResultDispatcher
+                      hostContentSettingsMap:settingsMap
+                             loadingNotifier:_urlLoadingNotifierBrowserAgent
+                                  sceneState:SceneStateBrowserAgent::
+                                                 FromBrowser(self.browser)
+                                                     ->GetSceneState()
+                                     tracker:engagementTracker
+                                webStateList:self.browser->GetWebStateList()];
   _bubblePresenter.layoutGuideCenter = _layoutGuideCenter;
   _bubblePresenter.delegate = self;
   [_dispatcher startDispatchingToTarget:_bubblePresenter

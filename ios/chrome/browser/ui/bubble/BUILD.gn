@@ -30,6 +30,8 @@ source_set("bubble") {
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/iph_for_new_chrome_user",
     "//ios/chrome/browser/segmentation_platform",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/url:constants",

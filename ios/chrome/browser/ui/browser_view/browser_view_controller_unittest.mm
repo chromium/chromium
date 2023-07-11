@@ -240,11 +240,14 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get());
 
     bubble_presenter_ = [[BubblePresenter alloc]
-                       initWithTracker:(feature_engagement::Tracker*)tracker
-                hostContentSettingsMap:(HostContentSettingsMap*)settings_map
-                          webStateList:browser_->GetWebStateList()
-        deviceSwitcherResultDispatcher:nullptr
-                       loadingNotifier:urlLoadingNotifier_];
+        initWithDeviceSwitcherResultDispatcher:nullptr
+                        hostContentSettingsMap:(HostContentSettingsMap*)
+                                                   settings_map
+                               loadingNotifier:urlLoadingNotifier_
+                                    sceneState:scene_state_
+                                       tracker:(feature_engagement::Tracker*)
+                                                   tracker
+                                  webStateList:browser_->GetWebStateList()];
     [dispatcher startDispatchingToTarget:bubble_presenter_
                              forProtocol:@protocol(HelpCommands)];
 
