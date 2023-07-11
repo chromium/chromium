@@ -63,17 +63,6 @@ using l10n_util::GetNSStringF;
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
   BOOL animated;
-  switch (action) {
-    case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
-      // Not supported by Trusted Vault UI, replaced by dismiss without
-      // animation.
-    case SigninCoordinatorInterrupt::DismissWithoutAnimation:
-      animated = NO;
-      break;
-    case SigninCoordinatorInterrupt::DismissWithAnimation:
-      animated = YES;
-      break;
-  }
   __weak __typeof(self) weakSelf = self;
   void (^cancelCompletion)(void) = ^() {
     // The reauthentication callback is dropped when the dialog is canceled.
@@ -87,9 +76,34 @@ using l10n_util::GetNSStringF;
       completion();
     }
   };
-  TrustedVaultClientBackendFactory::GetForBrowserState(
-      self.browser->GetBrowserState())
-      ->CancelDialog(animated, cancelCompletion);
+  switch (action) {
+    case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
+      // TrustedVaultClientBackend doesn't support no dismiss. Therefore there
+      // is nothing to do. It will be just deallocated when the service will
+      // be shutdown.
+      if (self.errorAlertCoordinator) {
+        [self.errorAlertCoordinator stop];
+        self.errorAlertCoordinator = nil;
+      }
+      cancelCompletion();
+      return;
+    case SigninCoordinatorInterrupt::DismissWithoutAnimation:
+      animated = NO;
+      break;
+    case SigninCoordinatorInterrupt::DismissWithAnimation:
+      animated = YES;
+      break;
+  }
+  if (self.errorAlertCoordinator) {
+    CHECK(!self.errorAlertCoordinator.noInteractionAction);
+    self.errorAlertCoordinator.noInteractionAction = cancelCompletion;
+    [self.errorAlertCoordinator stop];
+    self.errorAlertCoordinator = nil;
+  } else {
+    TrustedVaultClientBackendFactory::GetForBrowserState(
+        self.browser->GetBrowserState())
+        ->CancelDialog(animated, cancelCompletion);
+  }
 }
 
 #pragma mark - ChromeCoordinator
