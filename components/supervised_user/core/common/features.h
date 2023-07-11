@@ -32,6 +32,7 @@ bool CanDisplayFirstTimeInterstitialBanner();
 
 BASE_DECLARE_FEATURE(kLocalExtensionApprovalsV2);
 
+// Enables invoking the ClassifyUrl service through a proto fetcher.
 BASE_DECLARE_FEATURE(kEnableProtoApiForClassifyUrl);
 
 BASE_DECLARE_FEATURE(kUpdateSupervisedUserFactoryCreation);

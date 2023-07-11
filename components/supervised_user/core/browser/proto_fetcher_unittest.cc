@@ -9,6 +9,7 @@
 #include <tuple>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -66,6 +67,12 @@ class Receiver {
     result_ = std::move(response);
   }
 
+  void ReceiveDeferred(std::unique_ptr<DeferredProtoFetcher<Response>> fetcher,
+                       ProtoFetcherStatus fetch_status,
+                       std::unique_ptr<Response> response) {
+    Receive(fetch_status, std::move(response));
+  }
+
  private:
   base::expected<std::unique_ptr<Response>, ProtoFetcherStatus> result_;
 };
@@ -93,12 +100,16 @@ class ProtoFetcherTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   IdentityTestEnvironment identity_test_env_;
 
-  // Both methods are required because respective config and fetchers are not
-  // generic on purpose. The network connection is mocked and requests are only
-  // validate server side, so it doesn't make sense to send anything but default
-  // Proto.
+  // Both GetConfig and CreateFetcher methods are required because respective
+  // config and fetchers are not generic on purpose. The network connection is
+  // mocked and requests are only validate server side, so it doesn't make sense
+  // to send anything but default Proto.
   FetcherConfig GetConfig() const;
-  std::unique_ptr<ProtoFetcher<Response>> GetFetcher(
+
+  // Creates the fetcher. The returned unique_ptr will either hold a started
+  // fetcher (::ProtoFetcher), or will be empty for a started deferred fetcher
+  // (::DeferredProtoFetcher).
+  std::unique_ptr<ProtoFetcher<Response>> CreateFetcher(
       Receiver<Response>& receiver,
       const Request& request = Request());
 };
@@ -114,7 +125,7 @@ FetcherConfig ProtoFetcherTest<ClassifyUrl>::GetConfig() const {
 
 template <>
 std::unique_ptr<ProtoFetcher<ListFamilyMembersResponse>>
-ProtoFetcherTest<ListFamilyMembers>::GetFetcher(
+ProtoFetcherTest<ListFamilyMembers>::CreateFetcher(
     Receiver<ListFamilyMembersResponse>& receiver,
     const Request& request) {
   return FetchListFamilyMembers(
@@ -127,15 +138,21 @@ ProtoFetcherTest<ListFamilyMembers>::GetFetcher(
 
 template <>
 std::unique_ptr<ProtoFetcher<ClassifyUrlResponse>>
-ProtoFetcherTest<ClassifyUrl>::GetFetcher(
+ProtoFetcherTest<ClassifyUrl>::CreateFetcher(
     Receiver<ClassifyUrlResponse>& receiver,
     const Request& request) {
-  return ClassifyURL(
-      *identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(), request,
-      BindOnce(&Receiver<ClassifyUrlResponse>::Receive,
-               base::Unretained(&receiver)),
-      test_fetcher_config_);  // Unretained(.) must outlive the fetcher.
+  std::unique_ptr<DeferredProtoFetcher<ClassifyUrlResponse>> fetcher =
+      ClassifyURL(
+          *identity_test_env_.identity_manager(),
+          test_url_loader_factory_.GetSafeWeakWrapper(), request,
+          test_fetcher_config_);  // Unretained(.) must outlive the fetcher.
+
+  auto* fetcher_ptr = fetcher.get();
+  fetcher_ptr->Start(BindOnce(&Receiver<ClassifyUrlResponse>::ReceiveDeferred,
+                              base::Unretained(&receiver), std::move(fetcher)));
+
+  // Empty unique_ptr for DeferredProtoFetcher.
+  return std::unique_ptr<ProtoFetcher<ClassifyUrlResponse>>();
 }
 
 TYPED_TEST_SUITE_P(ProtoFetcherTest);
@@ -147,7 +164,7 @@ TYPED_TEST_P(ProtoFetcherTest, ConfiguresEndpoint) {
   AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
       "bob@gmail.com", ConsentLevel::kSignin);
 
-  auto fetcher = this->GetFetcher(receiver);
+  auto fetcher = this->CreateFetcher(receiver);
 
   this->identity_test_env_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken("access_token",
@@ -175,7 +192,7 @@ TYPED_TEST_P(ProtoFetcherTest, AddsPayload) {
   AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
       "bob@gmail.com", ConsentLevel::kSignin);
 
-  auto fetcher = this->GetFetcher(receiver);
+  auto fetcher = this->CreateFetcher(receiver);
 
   this->identity_test_env_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken("access_token",
@@ -198,7 +215,7 @@ TYPED_TEST_P(ProtoFetcherTest, AcceptsRequests) {
   AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
       "bob@gmail.com", ConsentLevel::kSignin);
 
-  auto fetcher = this->GetFetcher(receiver);
+  auto fetcher = this->CreateFetcher(receiver);
   this->identity_test_env_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken("access_token",
                                                                Time::Max());
@@ -219,7 +236,7 @@ TYPED_TEST_P(ProtoFetcherTest, NoAccessToken) {
   AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
       "bob@gmail.com", ConsentLevel::kSignin);
 
-  auto fetcher = this->GetFetcher(receiver);
+  auto fetcher = this->CreateFetcher(receiver);
   this->identity_test_env_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
           GoogleServiceAuthError(
@@ -239,7 +256,7 @@ TYPED_TEST_P(ProtoFetcherTest, HandlesMalformedResponse) {
   AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
       "bob@gmail.com", ConsentLevel::kSignin);
 
-  auto fetcher = this->GetFetcher(receiver);
+  auto fetcher = this->CreateFetcher(receiver);
   this->identity_test_env_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken("access_token",
                                                                Time::Max());
@@ -265,7 +282,7 @@ TYPED_TEST_P(ProtoFetcherTest, CreatesToken) {
   AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
       "bob@gmail.com", ConsentLevel::kSignin);
 
-  auto fetcher = this->GetFetcher(receiver);
+  auto fetcher = this->CreateFetcher(receiver);
   this->identity_test_env_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken("token",
                                                                Time::Max());
@@ -282,6 +299,33 @@ TYPED_TEST_P(ProtoFetcherTest, CreatesToken) {
   EXPECT_EQ(authorization_header, "Bearer token");
 }
 
+TYPED_TEST_P(ProtoFetcherTest, HandlesNetworkError) {
+  using Response = typename std::tuple_element<1, TypeParam>::type;
+  Receiver<Response> receiver;
+
+  AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
+      "bob@gmail.com", ConsentLevel::kSignin);
+
+  auto fetcher = this->CreateFetcher(receiver);
+  this->identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken("access_token",
+                                                               Time::Max());
+
+  TestURLLoaderFactory::PendingRequest* pending_request =
+      this->test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_NE(nullptr, pending_request);
+
+  this->test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url,
+      network::URLLoaderCompletionStatus(net::ERR_UNEXPECTED),
+      network::CreateURLResponseHead(net::HTTP_OK), /*content=*/"");
+  EXPECT_FALSE(receiver.GetResult().has_value());
+  EXPECT_EQ(receiver.GetResult().error().state(),
+            ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR);
+  EXPECT_EQ(receiver.GetResult().error().http_status_or_net_error(),
+            ProtoFetcherStatus::HttpStatusOrNetErrorType(net::ERR_UNEXPECTED));
+}
+
 TYPED_TEST_P(ProtoFetcherTest, HandlesServerError) {
   using Response = typename std::tuple_element<1, TypeParam>::type;
   Receiver<Response> receiver;
@@ -289,7 +333,7 @@ TYPED_TEST_P(ProtoFetcherTest, HandlesServerError) {
   AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
       "bob@gmail.com", ConsentLevel::kSignin);
 
-  auto fetcher = this->GetFetcher(receiver);
+  auto fetcher = this->CreateFetcher(receiver);
   this->identity_test_env_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken("access_token",
                                                                Time::Max());
@@ -318,7 +362,7 @@ TYPED_TEST_P(ProtoFetcherTest, RecordsMetrics) {
   AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
       "bob@gmail.com", ConsentLevel::kSignin);
 
-  auto fetcher = this->GetFetcher(receiver);
+  auto fetcher = this->CreateFetcher(receiver);
   this->identity_test_env_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken("access_token",
                                                                Time::Max());
@@ -356,11 +400,100 @@ REGISTER_TYPED_TEST_SUITE_P(ProtoFetcherTest,
                             NoAccessToken,
                             HandlesMalformedResponse,
                             CreatesToken,
+                            HandlesNetworkError,
                             HandlesServerError,
                             RecordsMetrics);
 
 using Fetchers = ::testing::Types<ClassifyUrl, ListFamilyMembers>;
 INSTANTIATE_TYPED_TEST_SUITE_P(AllFetchers, ProtoFetcherTest, Fetchers);
+
+class FetchManagerTest : public testing::Test {
+ public:
+  MOCK_METHOD2(Done,
+               void(ProtoFetcherStatus, std::unique_ptr<ClassifyUrlResponse>));
+
+ protected:
+  void SetUp() override {
+    // Fetch process is two-phase (access token and then rpc). The test flow
+    // will be controlled by releasing pending requests.
+    identity_test_env_.MakePrimaryAccountAvailable("bob@gmail.com",
+                                                   ConsentLevel::kSignin);
+    identity_test_env_.SetAutomaticIssueOfAccessTokens(/*grant=*/true);
+  }
+
+  // Flips order of arguments so that the sole unbound argument will be the
+  // request.
+  static std::unique_ptr<DeferredProtoFetcher<ClassifyUrlResponse>> ClassifyURL(
+      signin::IdentityManager* identity_manager,
+      network::TestURLLoaderFactory& url_loader_factory,
+      const FetcherConfig& config,
+      const ClassifyUrlRequest& request) {
+    return supervised_user::ClassifyURL(*identity_manager,
+                                        url_loader_factory.GetSafeWeakWrapper(),
+                                        request, config);
+  }
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  base::test::TaskEnvironment task_environment_;
+  IdentityTestEnvironment identity_test_env_;
+
+  base::RepeatingCallback<std::unique_ptr<
+      DeferredProtoFetcher<ClassifyUrlResponse>>(const ClassifyUrlRequest&)>
+      factory_{base::BindRepeating(&FetchManagerTest::ClassifyURL,
+                                   identity_test_env_.identity_manager(),
+                                   std::ref(test_url_loader_factory_),
+                                   kClassifyUrlConfig)};
+  ClassifyUrlRequest request_;
+  ClassifyUrlResponse response_;
+};
+
+TEST_F(FetchManagerTest, HandlesMultipleRequests) {
+  EXPECT_CALL(*this, Done(::testing::_, ::testing::_)).Times(2);
+
+  RepeatableFetchManager<ClassifyUrlRequest, ClassifyUrlResponse> under_test(
+      factory_);
+
+  under_test.Fetch(request_, base::BindOnce(&FetchManagerTest::Done,
+                                            base::Unretained(this)));
+  under_test.Fetch(request_, base::BindOnce(&FetchManagerTest::Done,
+                                            base::Unretained(this)));
+
+  // task_environment_.RunUntilIdle() would be called from simulations.
+  ASSERT_EQ(this->test_url_loader_factory_.NumPending(), 2L);
+  this->test_url_loader_factory_.SimulateResponseForPendingRequest(
+      this->test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
+      response_.SerializeAsString());
+  this->test_url_loader_factory_.SimulateResponseForPendingRequest(
+      this->test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
+      response_.SerializeAsString());
+}
+
+TEST_F(FetchManagerTest, CancelsRequestsUponDestruction) {
+  EXPECT_CALL(*this, Done(::testing::_, ::testing::_)).Times(0);
+
+  {
+    RepeatableFetchManager<ClassifyUrlRequest, ClassifyUrlResponse> under_test(
+        factory_);
+    under_test.Fetch(request_, base::BindOnce(&FetchManagerTest::Done,
+                                              base::Unretained(this)));
+    under_test.Fetch(request_, base::BindOnce(&FetchManagerTest::Done,
+                                              base::Unretained(this)));
+
+    // Callbacks are pending on blocked network traffic.
+    EXPECT_EQ(this->test_url_loader_factory_.NumPending(), 2L);
+
+    // Now under_test will go out of scope.
+  }
+
+  // Unblocking network traffic won't help executing callbacks, since their
+  // parent manager |under_test| is now gone.
+  this->test_url_loader_factory_.SimulateResponseForPendingRequest(
+      this->test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
+      response_.SerializeAsString());
+  this->test_url_loader_factory_.SimulateResponseForPendingRequest(
+      this->test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
+      response_.SerializeAsString());
+}
 
 bool Callback(CreatePermissionRequestResponse response) {
   return true;

@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_PROTO_FETCHER_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_PROTO_FETCHER_H_
 
+#include <memory>
 #include <string>
 
+#include "base/containers/id_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -141,6 +144,47 @@ class DeferredProtoFetcher : public ProtoFetcher<Response> {
   virtual void Start(typename ProtoFetcher<Response>::Callback callback) = 0;
 };
 
+// Component for managing multiple fetches at once.
+//
+// After each fetch, the reference kept in internal map is cleared. This will
+// also happen when this manager is destroyed. In the latter case, callbacks
+// won't be executed (the pending requests will be canceled).
+template <typename Request, typename Response>
+class RepeatableFetchManager {
+ private:
+  // Deferred fetcher is required because it should be started after it is
+  // stored internally.
+  using Fetcher = DeferredProtoFetcher<Response>;
+
+ public:
+  // Provides fresh instances of a deferred fetcher for each fetch.
+  using FetcherFactory =
+      base::RepeatingCallback<std::unique_ptr<Fetcher>(const Request&)>;
+
+  RepeatableFetchManager() = delete;
+  explicit RepeatableFetchManager(FetcherFactory factory);
+  RepeatableFetchManager(const RepeatableFetchManager&) = delete;
+  RepeatableFetchManager& operator=(const RepeatableFetchManager&) = delete;
+  ~RepeatableFetchManager() = default;
+
+  // Starts the fetch. Underlying fetcher is stored internally, and will be
+  // cleaned up after finish or when this manager is destroyed.
+  void Fetch(const Request& request, Fetcher::Callback callback);
+
+ private:
+  using KeyType = base::IDMap<std::unique_ptr<Fetcher>>::KeyType;
+
+  // Remove fetcher under key from requests_in_flight_.
+  void Remove(KeyType key);
+
+  std::unique_ptr<Fetcher> MakeFetcher(const Request& request) const;
+
+  base::IDMap<std::unique_ptr<Fetcher>, KeyType> requests_in_flight_;
+  base::RepeatingCallback<std::unique_ptr<Fetcher>(const Request&)> factory_;
+  base::WeakPtrFactory<RepeatableFetchManager<Request, Response>> weak_factory_{
+      this};
+};
+
 // Creates a disposable instance of an access token consumer that will fetch
 // list of family members.
 std::unique_ptr<ProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>>
@@ -153,12 +197,11 @@ FetchListFamilyMembers(
 
 // Creates a disposable instance of an access token consumer that will classify
 // the URL for supervised user.
-std::unique_ptr<ProtoFetcher<kids_chrome_management::ClassifyUrlResponse>>
+std::unique_ptr<
+    DeferredProtoFetcher<kids_chrome_management::ClassifyUrlResponse>>
 ClassifyURL(signin::IdentityManager& identity_manager,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
             const kids_chrome_management::ClassifyUrlRequest& request,
-            ProtoFetcher<kids_chrome_management::ClassifyUrlResponse>::Callback
-                callback,
             const FetcherConfig& config = kClassifyUrlConfig);
 
 // Creates a disposable instance of an access token consumer that will create

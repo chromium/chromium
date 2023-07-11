@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -27,7 +28,6 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -222,7 +222,6 @@ class FetcherImpl final : public ProtoFetcher<Response> {
 
     simple_url_loader_ = InitializeSimpleUrlLoader(
         access_token.value(), config_, GetRequestPayload());
-
     simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory.get(),
         BindOnce(
@@ -305,7 +304,7 @@ class DeferredFetcherImpl final : public DeferredProtoFetcher<Response> {
 };
 
 using ClassifyUrlFetcher =
-    ProtoFetcher<kids_chrome_management::ClassifyUrlResponse>;
+    DeferredProtoFetcher<kids_chrome_management::ClassifyUrlResponse>;
 using ListFamilyMembersFetcher =
     ProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>;
 using PermissionRequestFetcher = DeferredProtoFetcher<
@@ -430,17 +429,48 @@ const GoogleServiceAuthError& ProtoFetcherStatus::google_service_auth_error()
   return google_service_auth_error_;
 }
 
+template <typename Request, typename Response>
+RepeatableFetchManager<Request, Response>::RepeatableFetchManager(
+    FetcherFactory factory)
+    : factory_(factory) {}
+
+template <typename Request, typename Response>
+void RepeatableFetchManager<Request, Response>::Fetch(
+    const Request& request,
+    Fetcher::Callback callback) {
+  CHECK(callback) << "Use base::DoNothing() instead of empty callback.";
+  KeyType key = requests_in_flight_.Add(MakeFetcher(request));
+  requests_in_flight_.Lookup(key)->Start(
+      std::move(callback).Then(base::BindOnce(
+          &RepeatableFetchManager::Remove, weak_factory_.GetWeakPtr(), key)));
+}
+
+template <typename Request, typename Response>
+void RepeatableFetchManager<Request, Response>::Remove(KeyType key) {
+  requests_in_flight_.Remove(key);
+}
+
+template <typename Request, typename Response>
+std::unique_ptr<DeferredProtoFetcher<Response>>
+RepeatableFetchManager<Request, Response>::MakeFetcher(
+    const Request& request) const {
+  return factory_.Run(request);
+}
+
+// Required, because users of RepeatableFetchManager are externally linked.
+template class RepeatableFetchManager<
+    kids_chrome_management::ClassifyUrlRequest,
+    kids_chrome_management::ClassifyUrlResponse>;
+
 // Fetcher factories.
 std::unique_ptr<ClassifyUrlFetcher> ClassifyURL(
     IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const kids_chrome_management::ClassifyUrlRequest& request,
-    ClassifyUrlFetcher::Callback callback,
     const FetcherConfig& config) {
   return std::make_unique<
-      FetcherImpl<kids_chrome_management::ClassifyUrlResponse>>(
-      identity_manager, url_loader_factory, request, config,
-      std::move(callback));
+      DeferredFetcherImpl<kids_chrome_management::ClassifyUrlResponse>>(
+      identity_manager, url_loader_factory, request, config);
 }
 
 std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
