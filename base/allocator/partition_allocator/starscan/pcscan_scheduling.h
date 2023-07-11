@@ -33,11 +33,19 @@ struct QuarantineData final {
   std::atomic<size_t> epoch{0u};
 };
 
+// No virtual destructor to allow constant initialization of PCScan as
+// static global which directly embeds LimitBackend as default backend.
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnon-virtual-dtor"
+#endif
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScanSchedulingBackend {
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
+
  public:
   inline constexpr explicit PCScanSchedulingBackend(PCScanScheduler&);
-  // No virtual destructor to allow constant initialization of PCScan as
-  // static global which directly embeds LimitBackend as default backend.
 
   PCScanSchedulingBackend(const PCScanSchedulingBackend&) = delete;
   PCScanSchedulingBackend& operator=(const PCScanSchedulingBackend&) = delete;
