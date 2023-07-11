@@ -147,7 +147,7 @@ bool IntersectionObservation::CanUseCachedRectsForTesting() const {
   if (cached_rects_) {
     cached_rects_copy = *cached_rects_;
   }
-  IntersectionGeometry geometry(observer_->root(), *target_, {}, {}, {}, 0,
+  IntersectionGeometry geometry(observer_->root(), *target_, {}, {0}, {}, 0,
                                 cached_rects_ ? &cached_rects_copy : nullptr);
   return geometry.CanUseCachedRectsForTesting();
 }

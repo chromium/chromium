@@ -120,8 +120,7 @@ bool IntersectionObserverController::ComputeIntersections(
 
 gfx::Vector2dF IntersectionObserverController::MinScrollDeltaToUpdate() const {
   DCHECK(RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
-  gfx::Vector2dF result(std::numeric_limits<float>::max(),
-                        std::numeric_limits<float>::max());
+  gfx::Vector2dF result = IntersectionGeometry::kInfiniteScrollDelta;
   for (const auto& observer : tracked_explicit_root_observers_) {
     result.SetToMin(observer->MinScrollDeltaToUpdate());
   }

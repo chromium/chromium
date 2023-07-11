@@ -506,8 +506,7 @@ int64_t IntersectionObserver::ComputeIntersections(
 }
 
 gfx::Vector2dF IntersectionObserver::MinScrollDeltaToUpdate() const {
-  gfx::Vector2dF result(std::numeric_limits<float>::max(),
-                        std::numeric_limits<float>::max());
+  gfx::Vector2dF result = IntersectionGeometry::kInfiniteScrollDelta;
   for (const auto& observation : observations_) {
     result.SetToMin(observation->MinScrollDeltaToUpdate());
   }
