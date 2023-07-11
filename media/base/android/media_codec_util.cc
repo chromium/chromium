@@ -20,6 +20,7 @@
 #include "media/base/android/media_jni_headers/CodecProfileLevelList_jni.h"
 #include "media/base/android/media_jni_headers/MediaCodecUtil_jni.h"
 #include "media/base/video_codecs.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
 using base::android::AttachCurrentThread;
@@ -282,6 +283,78 @@ bool MediaCodecUtil::IsPassthroughAudioFormat(AudioCodec codec) {
     default:
       return false;
   }
+}
+
+// static
+absl::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
+    base::StringPiece name,
+    absl::optional<int> host_sdk_int) {
+  // Below we build a map of codec names to coded size alignments. We do this on
+  // a best effort basis to avoid glitches during a coded size change.
+  //
+  // A codec name may have multiple entries, if so they must be in descending
+  // order by SDK version since the array is scanned from front to back.
+  //
+  // When testing codec names, we don't require an exact match, just that the
+  // name we're looking up starts with `name_prefix` since many codecs have
+  // multiple variants with various suffixes appended.
+  //
+  // New alignments can be added by inspecting logcat or
+  // chrome://media-internals after running the test page at
+  // https://crbug.com/1456427#c69.
+  struct CodecAlignment {
+    const char* name_regex;
+    gfx::Size alignment;
+    int sdk_int = base::android::SDK_VERSION_NOUGAT;
+  };
+  using base::android::SDK_VERSION_Q;
+  using base::android::SDK_VERSION_Sv2;
+  constexpr CodecAlignment kCodecAlignmentMap[] = {
+      // Codec2 software decoders.
+      {"c2.android.avc", gfx::Size(128, 2), SDK_VERSION_Sv2},
+      {"c2.android.avc", gfx::Size(64, 2)},
+      {"c2.android.hevc", gfx::Size(128, 2), SDK_VERSION_Sv2},
+      {"c2.android.hevc", gfx::Size(64, 2)},
+      {"c2.android.(vp8|vp9|av1)", gfx::Size(16, 2)},
+
+      // Codec1 software decoders.
+      {"omx.google.(h264|hevc|vp8|vp9)", gfx::Size(2, 2)},
+
+      // Google AV1 hardware decoder.
+      {"c2.google.av1", gfx::Size(64, 8)},
+
+      // Qualcomm
+      {"c2.qti.(avc|vp8)", gfx::Size(16, 16)},
+      {"c2.qti.(hevc|vp9)", gfx::Size(8, 8)},
+      {"omx.qcom.video.decoder.avc", gfx::Size(16, 16), SDK_VERSION_Q},
+      {"omx.qcom.video.decoder.avc", gfx::Size(1, 1)},
+      {"omx.qcom.video.decoder.hevc", gfx::Size(8, 8), SDK_VERSION_Q},
+      {"omx.qcom.video.decoder.hevc", gfx::Size(1, 1)},
+      {"omx.qcom.video.decoder.vp8", gfx::Size(16, 16)},
+      {"omx.qcom.video.decoder.vp9", gfx::Size(8, 8)},
+
+      // Samsung
+      {"(omx|c2).exynos.h264", gfx::Size(16, 16)},
+      {"(omx|c2).exynos.hevc", gfx::Size(8, 8)},
+      {"(omx|c2).exynos.(vp8|vp9)", gfx::Size(1, 1)},
+
+      // Unisoc
+      {"omx.sprd.(h264|vpx)", gfx::Size(16, 16)},
+      {"omx.sprd.(hevc|vp9)", gfx::Size(64, 64)},
+  };
+
+  const auto lower_name = base::ToLowerASCII(name);
+
+  const auto sdk_int =
+      host_sdk_int.value_or(base::android::BuildInfo::GetInstance()->sdk_int());
+  for (const auto& entry : kCodecAlignmentMap) {
+    if (sdk_int >= entry.sdk_int &&
+        RE2::PartialMatch(lower_name, entry.name_regex)) {
+      return entry.alignment;
+    }
+  }
+
+  return absl::nullopt;
 }
 
 // static

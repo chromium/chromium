@@ -99,7 +99,8 @@ class VideoFrameFactoryImplTest : public testing::Test {
 
   void RequestVideoFrame() {
     auto output_buffer = CodecOutputBuffer::CreateForTesting(
-        0, video_frame_params_.coded_size, video_frame_params_.color_space);
+        0, video_frame_params_.coded_size, video_frame_params_.color_space,
+        absl::nullopt);
     ASSERT_TRUE(VideoFrame::IsValidConfig(
         PIXEL_FORMAT_ARGB, VideoFrame::STORAGE_OPAQUE,
         video_frame_params_.coded_size, video_frame_params_.visible_rect,
@@ -204,8 +205,8 @@ TEST_F(VideoFrameFactoryImplTest, CreateVideoFrameFailsIfUnsupportedFormat) {
   gfx::Size coded_size(limits::kMaxDimension + 1, limits::kMaxDimension + 1);
   gfx::Rect visible_rect(coded_size);
   gfx::Size natural_size(0, 0);
-  auto output_buffer =
-      CodecOutputBuffer::CreateForTesting(0, coded_size, gfx::ColorSpace());
+  auto output_buffer = CodecOutputBuffer::CreateForTesting(
+      0, coded_size, gfx::ColorSpace(), absl::nullopt);
   ASSERT_FALSE(VideoFrame::IsValidConfig(PIXEL_FORMAT_ARGB,
                                          VideoFrame::STORAGE_OPAQUE, coded_size,
                                          visible_rect, natural_size));

@@ -31,4 +31,27 @@ TEST_F(MediaCodecUtilTest, TestCbcsAvailableIfNewerVersion) {
       MediaCodecUtil::PlatformSupportsCbcsEncryption(SDK_VERSION_NOUGAT_MR1));
 }
 
+TEST_F(MediaCodecUtilTest, GuessCodedSizeAlignment) {
+  EXPECT_EQ(absl::nullopt,
+            MediaCodecUtil::LookupCodedSizeAlignment("c2.fake.h264.decoder"));
+
+  // Software AVC and HEVC decoders have a weird width-only alignment. This also
+  // serves to test versioning of the alignment list.
+  const gfx::Size kWeirdSoftwareAlignmentSv2(128, 2);
+  EXPECT_EQ(kWeirdSoftwareAlignmentSv2,
+            MediaCodecUtil::LookupCodedSizeAlignment(
+                "c2.android.avc.decoder", base::android::SDK_VERSION_Sv2));
+  EXPECT_EQ(kWeirdSoftwareAlignmentSv2,
+            MediaCodecUtil::LookupCodedSizeAlignment(
+                "c2.android.hevc.decoder", base::android::SDK_VERSION_Sv2));
+
+  const gfx::Size kWeirdSoftwareAlignmentNougat(64, 2);
+  EXPECT_EQ(kWeirdSoftwareAlignmentNougat,
+            MediaCodecUtil::LookupCodedSizeAlignment(
+                "c2.android.avc.decoder", base::android::SDK_VERSION_NOUGAT));
+  EXPECT_EQ(kWeirdSoftwareAlignmentNougat,
+            MediaCodecUtil::LookupCodedSizeAlignment(
+                "c2.android.hevc.decoder", base::android::SDK_VERSION_NOUGAT));
+}
+
 }  // namespace media

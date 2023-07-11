@@ -46,6 +46,12 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
   // The size of the image.
   gfx::Size size() const { return size_; }
 
+  // Returns true if a coded size guess based on `size_` is available.
+  bool CanGuessCodedSize() const;
+
+  // Attempts to guess the coded size. `CanGuessCodedSize` must be true.
+  gfx::Size GuessCodedSize() const;
+
   // Sets a callback that will be called when we're released to the surface.
   // Will not be called if we're dropped.
   void set_render_cb(base::OnceClosure render_cb) {
@@ -70,12 +76,14 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
   CodecOutputBuffer(scoped_refptr<CodecWrapperImpl> codec,
                     int64_t id,
                     const gfx::Size& size,
-                    const gfx::ColorSpace& color_space);
+                    const gfx::ColorSpace& color_space,
+                    absl::optional<gfx::Size> coded_size_alignment);
 
   // For testing, since CodecWrapperImpl isn't available.  Uses nullptr.
   CodecOutputBuffer(int64_t id,
                     const gfx::Size& size,
-                    const gfx::ColorSpace& color_space);
+                    const gfx::ColorSpace& color_space,
+                    absl::optional<gfx::Size> coded_size_alignment);
 
   scoped_refptr<CodecWrapperImpl> codec_;
   int64_t id_;
@@ -83,6 +91,9 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
   gfx::Size size_;
   base::OnceClosure render_cb_;
   gfx::ColorSpace color_space_;
+
+  // The alignment to use for width, height when guessing coded size.
+  const absl::optional<gfx::Size> coded_size_alignment_;
 };
 
 // This wraps a MediaCodecBridge and provides higher level features and tracks
@@ -105,11 +116,19 @@ class MEDIA_GPU_EXPORT CodecWrapper {
   // on |release_task_runner|, posting if needed.  This does not change where
   // we release them with rendering; that has to be done inline.  This helps
   // us avoid a common case of hanging up the GPU main thread.
+  //
+  // `coded_size_alignment` describes how to translate a CodecOutputBuffer's
+  // visible size into its coded size. It's used to improve coded size guesses
+  // when rendering the output buffer early isn't allowed. During guessing, the
+  // output's visible size will be aligned-up by the values specified. E.g., a
+  // size of 1,1 applies no alignment while a size of 64,1 would round up the
+  // visible width to the nearest multiple of 64.
   using OutputReleasedCB = base::RepeatingCallback<void(bool)>;
   CodecWrapper(CodecSurfacePair codec_surface_pair,
                OutputReleasedCB output_buffer_release_cb,
                scoped_refptr<base::SequencedTaskRunner> release_task_runner,
-               const gfx::Size& initial_expected_size);
+               const gfx::Size& initial_expected_size,
+               absl::optional<gfx::Size> coded_size_alignment);
 
   CodecWrapper(const CodecWrapper&) = delete;
   CodecWrapper& operator=(const CodecWrapper&) = delete;

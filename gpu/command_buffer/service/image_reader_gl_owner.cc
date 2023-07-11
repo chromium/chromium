@@ -355,7 +355,6 @@ ImageReaderGLOwner::GetAHardwareBuffer() {
 }
 
 gfx::Rect ImageReaderGLOwner::GetCropRectLocked() {
-  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   lock_.AssertAcquired();
   if (!current_image_ref_)
     return gfx::Rect();
@@ -509,7 +508,6 @@ bool ImageReaderGLOwner::GetCodedSizeAndVisibleRect(
     gfx::Size rotated_visible_size,
     gfx::Size* coded_size,
     gfx::Rect* visible_rect) {
-  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   base::AutoLock auto_lock(lock_);
   DCHECK(visible_rect);
   DCHECK(coded_size);

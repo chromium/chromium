@@ -357,6 +357,9 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   // it fails to get a codec.  This is to work around b/191966399.
   bool should_retry_codec_allocation_ = false;
 
+  // True if the created codec is software backed.
+  bool is_software_codec_ = false;
+
   base::WeakPtrFactory<MediaCodecVideoDecoder> weak_factory_{this};
   base::WeakPtrFactory<MediaCodecVideoDecoder> codec_allocator_weak_factory_{
       this};

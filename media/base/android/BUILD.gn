@@ -70,6 +70,7 @@ if (is_android) {
       "//media/cdm",
       "//media/formats",
       "//net",
+      "//third_party/re2",
       "//third_party/widevine/cdm:headers",
       "//ui/gl",
       "//url",

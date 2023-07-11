@@ -1023,7 +1023,12 @@ BASE_FEATURE(kAllowNonSecureOverlays,
              "AllowNonSecureOverlays",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable a gesture to make the media controls expaned into the display cutout.
+// Allow FrameInfoHelper to guess coded size information for MediaCodec frames.
+BASE_FEATURE(kMediaCodecCodedSizeGuessing,
+             "MediaCodecCodedSizeGuessing",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enable a gesture to make the media controls expanded into the display cutout.
 // TODO(beccahughes): Remove this.
 BASE_FEATURE(kMediaControlsExpandGesture,
              "MediaControlsExpandGesture",

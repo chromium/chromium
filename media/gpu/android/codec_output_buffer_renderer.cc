@@ -24,7 +24,9 @@ CodecOutputBufferRenderer::CodecOutputBufferRenderer(
       codec_buffer_wait_coordinator_(std::move(codec_buffer_wait_coordinator)) {
 }
 
-CodecOutputBufferRenderer::~CodecOutputBufferRenderer() = default;
+CodecOutputBufferRenderer::~CodecOutputBufferRenderer() {
+  Invalidate();
+}
 
 bool CodecOutputBufferRenderer::RenderToTextureOwnerBackBuffer() {
   AssertAcquiredDrDcLock();
@@ -48,7 +50,7 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerBackBuffer() {
     return false;
   }
   if (!output_buffer_->ReleaseToSurface()) {
-    phase_ = Phase::kInvalidated;
+    Invalidate();
     return false;
   }
   phase_ = Phase::kInBackBuffer;
@@ -89,7 +91,7 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
     if (!RenderToTextureOwnerBackBuffer()) {
       // RenderTotextureOwnerBackBuffer can fail now only if ReleaseToSurface
       // failed.
-      DCHECK(phase_ == Phase::kInvalidated);
+      DCHECK_EQ(phase_, Phase::kInvalidated);
       return false;
     }
   }
@@ -107,6 +109,18 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
   }
 
   EnsureBoundIfNeeded(bindings_mode, service_id);
+
+  if (frame_info_callback_) {
+    gfx::Size coded_size;
+    gfx::Rect visible_rect;
+    if (texture_owner() && texture_owner()->GetCodedSizeAndVisibleRect(
+                               size(), &coded_size, &visible_rect)) {
+      std::move(frame_info_callback_).Run(coded_size, visible_rect);
+    } else {
+      std::move(frame_info_callback_).Run(absl::nullopt, absl::nullopt);
+    }
+  }
+
   return true;
 }
 
@@ -131,7 +145,7 @@ bool CodecOutputBufferRenderer::RenderToOverlay() {
     return false;
 
   if (!output_buffer_->ReleaseToSurface()) {
-    phase_ = Phase::kInvalidated;
+    Invalidate();
     return false;
   }
   phase_ = Phase::kInFrontBuffer;
@@ -148,6 +162,13 @@ bool CodecOutputBufferRenderer::RenderToFrontBuffer() {
              ? RenderToTextureOwnerFrontBuffer(BindingsMode::kDontBindImage,
                                                0 /* service_id */)
              : RenderToOverlay();
+}
+
+void CodecOutputBufferRenderer::Invalidate() {
+  phase_ = Phase::kInvalidated;
+  if (frame_info_callback_) {
+    std::move(frame_info_callback_).Run(absl::nullopt, absl::nullopt);
+  }
 }
 
 }  // namespace media
