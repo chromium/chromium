@@ -2059,7 +2059,6 @@ static_library("browser") {
     "//chrome/common/notifications",
     "//chrome/installer/util:with_no_strings",
     "//chrome/services/speech/buildflags",
-    "//chromeos/components/kiosk",
     "//components/assist_ranker",
     "//components/autofill/content/browser",
     "//components/autofill/core/browser",
@@ -5647,6 +5646,7 @@ static_library("browser") {
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
       "//chromeos/components/certificate_provider:certificate_provider",
       "//chromeos/components/disks:prefs",
+      "//chromeos/components/kiosk",
       "//chromeos/components/onc:onc",
       "//chromeos/components/quick_answers:quick_answers",
       "//chromeos/components/quick_answers/public/cpp:cpp",
@@ -7504,10 +7504,7 @@ static_library("browser") {
       "sessions/tab_loader_delegate.cc",
       "sessions/tab_loader_delegate.h",
     ]
-    deps += [
-      "//chromeos/components/kiosk",
-      "//components/tab_groups",
-    ]
+    deps += [ "//components/tab_groups" ]
   }
 
   if (enable_spellcheck) {

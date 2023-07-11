@@ -5648,7 +5648,6 @@ static_library("ui") {
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/promos:utils",
       "//chrome/browser/ui/views",
-      "//chromeos/components/kiosk",
       "//components/commerce/core:public",
       "//components/commerce/core:shopping_service",
       "//components/constrained_window",
@@ -5735,7 +5734,10 @@ static_library("ui") {
         "sharing_hub/sharing_hub_bubble_controller_chromeos_impl.h",
         "views/status_icons/status_tray_chromeos.cc",
       ]
-      deps += [ "//components/arc/common:arc_intent_helper_constants" ]
+      deps += [
+        "//chromeos/components/kiosk",
+        "//components/arc/common:arc_intent_helper_constants",
+      ]
     }
     if (is_fuchsia) {
       sources += [

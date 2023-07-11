@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_switches.h"
-#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/command_storage_manager.h"
@@ -60,6 +59,10 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/web_contents.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/kiosk/kiosk_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -166,10 +169,12 @@ bool SessionService::IsRelevantWindowType(
 }
 
 bool SessionService::ShouldRestore(Browser* browser) {
+#if BUILDFLAG(IS_CHROMEOS)
   // Do not restore browser window in the kiosk session.
   if (chromeos::IsKioskSession()) {
     return false;
   }
+#endif
 
   // ChromeOS and OSX have different ideas of application lifetime than
   // the other platforms.

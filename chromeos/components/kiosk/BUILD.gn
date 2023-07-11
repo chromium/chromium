@@ -4,15 +4,18 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
+assert(is_chromeos)
+
 static_library("kiosk") {
   sources = [
     "kiosk_utils.cc",
     "kiosk_utils.h",
   ]
-  deps = [ "//build:chromeos_buildflags" ]
-  if (is_chromeos) {
-    deps += [ "//chromeos/crosapi/mojom" ]
-  }
+  deps = [
+    "//build:chromeos_buildflags",
+    "//chromeos/crosapi/mojom",
+  ]
+
   if (is_chromeos_ash) {
     deps += [ "//chromeos/ash/components/login/login_state:login_state" ]
   }
@@ -27,10 +30,10 @@ static_library("test_support") {
     "kiosk_test_utils.cc",
     "kiosk_test_utils.h",
   ]
-  deps = [ "//build:chromeos_buildflags" ]
-  if (is_chromeos) {
-    deps += [ "//chromeos/crosapi/mojom" ]
-  }
+  deps = [
+    "//build:chromeos_buildflags",
+    "//chromeos/crosapi/mojom",
+  ]
   if (is_chromeos_ash) {
     deps += [ "//chromeos/ash/components/login/login_state:login_state" ]
   }
