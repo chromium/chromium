@@ -84,6 +84,19 @@ ReportQueueConfiguration::Builder ReportQueueConfiguration::Builder::SetDMToken(
   return std::move(*this);
 }
 
+ReportQueueConfiguration::Builder
+ReportQueueConfiguration::Builder::SetSourceInfo(
+    absl::optional<SourceInfo> source_info) {
+  if (final_value_.ok()) {
+    auto status =
+        final_value_.ValueOrDie()->SetSourceInfo(std::move(source_info));
+    if (!status.ok()) {
+      final_value_ = status;
+    }
+  }
+  return std::move(*this);
+}
+
 StatusOr<std::unique_ptr<ReportQueueConfiguration>>
 ReportQueueConfiguration::Builder::Build() {
   auto result = std::move(final_value_);
@@ -190,6 +203,29 @@ Status ReportQueueConfiguration::SetReservedSpace(int64_t reserved_space) {
                   "Must reserve non-zero amount of space");
   }
   reserved_space_ = reserved_space;
+  return Status::StatusOK();
+}
+
+Status ReportQueueConfiguration::SetSourceInfo(
+    absl::optional<SourceInfo> source_info) {
+  if (source_info_.has_value()) {
+    return Status(error::ALREADY_EXISTS, "SourceInfo cannot be reset");
+  }
+  if (!source_info.has_value()) {
+    // No source info specified. Also the default.
+    source_info_ = absl::nullopt;
+    return Status::StatusOK();
+  }
+
+  // Validate if the specified source info has a source set and a valid one if
+  // there is a version associated with it.
+  const auto& source_info_value = source_info.value();
+  if (!source_info_value.has_source() ||
+      (source_info_value.source() == SourceInfo::SOURCE_UNSPECIFIED &&
+       source_info_value.has_source_version())) {
+    return Status(error::INVALID_ARGUMENT, "Must specify valid source");
+  }
+  source_info_ = std::move(source_info);
   return Status::StatusOK();
 }
 }  // namespace reporting

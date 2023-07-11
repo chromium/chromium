@@ -22,6 +22,7 @@ using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::Return;
+using ::testing::StrEq;
 using ::testing::WithArgs;
 
 namespace reporting {
@@ -247,6 +248,69 @@ TEST_F(ReportQueueConfigurationTest,
 
   const auto config = std::move(config_result.ValueOrDie());
   EXPECT_THAT(config->reserved_space(), Eq(kReservedSpace));
+}
+
+TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithSource) {
+  SourceInfo source_info;
+  source_info.set_source(SourceInfo::ASH);
+  auto config_result =
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kUser, .destination = kValidDestination})
+          .SetPolicyCheckCallback(kValidCallback)
+          .SetSourceInfo(source_info)
+          .Build();
+  ASSERT_OK(config_result) << config_result.status();
+
+  const auto config = std::move(config_result.ValueOrDie());
+  ASSERT_TRUE(config->source_info().has_value());
+  EXPECT_THAT(config->source_info().value().source(), Eq(source_info.source()));
+}
+
+TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithUnsetSource) {
+  SourceInfo source_info;
+  auto config_result =
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kUser, .destination = kValidDestination})
+          .SetPolicyCheckCallback(kValidCallback)
+          .SetSourceInfo(std::move(source_info))
+          .Build();
+  EXPECT_FALSE(config_result.ok());
+}
+
+TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithSourceVersion) {
+  SourceInfo source_info;
+  source_info.set_source(SourceInfo::ASH);
+  source_info.set_source_version("1.0.0");
+  auto config_result =
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kUser, .destination = kValidDestination})
+          .SetPolicyCheckCallback(kValidCallback)
+          .SetSourceInfo(source_info)
+          .Build();
+  ASSERT_OK(config_result) << config_result.status();
+
+  const auto config = std::move(config_result.ValueOrDie());
+  ASSERT_TRUE(config->source_info().has_value());
+  const auto config_source_info = config->source_info().value();
+  EXPECT_THAT(config_source_info.source(), Eq(source_info.source()));
+  EXPECT_THAT(config_source_info.source_version(),
+              StrEq(source_info.source_version()));
+}
+
+TEST_F(ReportQueueConfigurationTest,
+       ValidateConfigurationWithSourceVersionAndInvalidSource) {
+  SourceInfo source_info;
+  source_info.set_source(SourceInfo::SOURCE_UNSPECIFIED);
+  source_info.set_source_version("1.0.0");
+  auto config_result =
+      ReportQueueConfiguration::Create({
+                                           .event_type = EventType::kUser,
+                                           .destination = kValidDestination,
+                                       })
+          .SetPolicyCheckCallback(kValidCallback)
+          .SetSourceInfo(std::move(source_info))
+          .Build();
+  EXPECT_FALSE(config_result.ok());
 }
 }  // namespace
 }  // namespace reporting
