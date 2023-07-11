@@ -135,4 +135,19 @@ TEST_F(NetworkServiceProxyAllowListTest, Matches_RequestNotInAllowList) {
                                  GURL("http://example.com")));
 }
 
+TEST_F(NetworkServiceProxyAllowListTest, Matches_SubResource) {
+  NetworkServiceProxyAllowList allowList;
+
+  MaskedDomainList mdl;
+  auto* resourceOwner = mdl.add_resource_owners();
+  resourceOwner->set_owner_name("foo");
+  resourceOwner->add_owned_resources()->set_domain("example.com");
+  resourceOwner->add_owned_properties("example2.com");
+
+  allowList.UseMaskedDomainList(mdl);
+
+  EXPECT_TRUE(allowList.Matches(GURL("http://sub.example.com"),
+                                GURL("http://example3.com")));
+}
+
 }  // namespace network
