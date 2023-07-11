@@ -157,13 +157,6 @@ void WaitForViewFocus(Browser* browser, views::View* view, bool focused);
 #endif
 
 #if BUILDFLAG(IS_MAC)
-// Send press and release events for |key_code| with selected modifiers and wait
-// until the last event arrives to our NSApp. Events will be sent as CGEvents
-// through HID event tap. |key_code| must be a virtual key code (reference can
-// be found in HIToolbox/Events.h from macOS SDK). |modifier_flags| must be a
-// bitmask from ui::EventFlags.
-void SendGlobalKeyEventsAndWait(int key_code, int modifier_flags);
-
 // Clear pressed modifier keys and report true if any key modifiers were down.
 bool ClearKeyEventModifiers();
 #endif

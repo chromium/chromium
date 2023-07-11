@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#import "base/mac/scoped_nsobject.h"
 #include "base/mac/scoped_objc_class_swizzler.h"
 #include "base/run_loop.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -27,142 +26,6 @@
 // (Apparently) forces the application to activate itself.
 - (void)_handleActivatedEvent:(id)arg1;
 @end
-
-namespace {
-
-// A helper singleton for sending key events as Quartz events to the window
-// server and waiting for them to arrive back to our NSApp.
-class SendGlobalKeyEventsHelper {
- public:
-  SendGlobalKeyEventsHelper();
-  SendGlobalKeyEventsHelper(const SendGlobalKeyEventsHelper&) = delete;
-  SendGlobalKeyEventsHelper& operator=(const SendGlobalKeyEventsHelper&) =
-      delete;
-  ~SendGlobalKeyEventsHelper();
-
-  // Callback for MockCrApplication.
-  void ObserveSendEvent(NSEvent* event);
-
-  void OriginalSendEvent(id receiver, SEL selector, NSEvent* event) {
-    scoped_swizzler_->InvokeOriginal<void, NSEvent*>(receiver, selector, event);
-  }
-
-  void SendGlobalKeyEventsAndWait(int key_code, int modifier_flags);
-
- private:
-  void SendGlobalKeyEvent(int key_code,
-                          CGEventFlags current_flags,
-                          bool key_down);
-
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> scoped_swizzler_;
-  base::ScopedCFTypeRef<CGEventSourceRef> event_source_;
-  CGEventTapLocation event_tap_location_;
-  base::RunLoop run_loop_;
-  // First key code pressed in the event sequence. This is also the last key
-  // code to be released and so it will be waited for.
-  absl::optional<int> first_key_down_code_;
-};
-
-SendGlobalKeyEventsHelper* g_global_key_events_helper = nullptr;
-
-}  // namespace
-
-@interface MockCrApplication : NSObject
-@end
-
-@implementation MockCrApplication
-
-- (void)sendEvent:(NSEvent*)event {
-  DCHECK(g_global_key_events_helper);
-  g_global_key_events_helper->ObserveSendEvent(event);
-  g_global_key_events_helper->OriginalSendEvent(self, _cmd, event);
-}
-
-@end
-
-namespace {
-
-SendGlobalKeyEventsHelper::SendGlobalKeyEventsHelper()
-    : event_source_(CGEventSourceCreate(kCGEventSourceStateHIDSystemState)),
-      event_tap_location_(kCGHIDEventTap) {
-  DCHECK_EQ(nullptr, g_global_key_events_helper);
-  g_global_key_events_helper = this;
-
-  scoped_swizzler_ = std::make_unique<base::mac::ScopedObjCClassSwizzler>(
-      [BrowserCrApplication class], [MockCrApplication class],
-      @selector(sendEvent:));
-}
-
-SendGlobalKeyEventsHelper::~SendGlobalKeyEventsHelper() {
-  DCHECK_EQ(this, g_global_key_events_helper);
-  g_global_key_events_helper = nullptr;
-}
-
-void SendGlobalKeyEventsHelper::ObserveSendEvent(NSEvent* event) {
-  DCHECK(first_key_down_code_);
-  if (ui::IsKeyUpEvent(event) && [event keyCode] == *first_key_down_code_)
-    run_loop_.Quit();
-}
-
-void SendGlobalKeyEventsHelper::SendGlobalKeyEventsAndWait(int key_code,
-                                                           int modifier_flags) {
-  CGEventFlags current_flags = 0;
-  if ((modifier_flags & ui::EF_CONTROL_DOWN) != 0) {
-    current_flags |= kCGEventFlagMaskControl;
-    SendGlobalKeyEvent(kVK_Control, current_flags, true);
-  }
-  if ((modifier_flags & ui::EF_SHIFT_DOWN) != 0) {
-    current_flags |= kCGEventFlagMaskShift;
-    SendGlobalKeyEvent(kVK_Shift, current_flags, true);
-  }
-  if ((modifier_flags & ui::EF_ALT_DOWN) != 0) {
-    current_flags |= kCGEventFlagMaskAlternate;
-    SendGlobalKeyEvent(kVK_Option, current_flags, true);
-  }
-  if ((modifier_flags & ui::EF_COMMAND_DOWN) != 0) {
-    current_flags |= kCGEventFlagMaskCommand;
-    SendGlobalKeyEvent(kVK_Command, current_flags, true);
-  }
-  SendGlobalKeyEvent(key_code, current_flags, true);
-  SendGlobalKeyEvent(key_code, current_flags, false);
-  if ((modifier_flags & ui::EF_COMMAND_DOWN) != 0) {
-    current_flags &= ~kCGEventFlagMaskCommand;
-    SendGlobalKeyEvent(kVK_Command, current_flags, false);
-  }
-  if ((modifier_flags & ui::EF_ALT_DOWN) != 0) {
-    current_flags &= ~kCGEventFlagMaskAlternate;
-    SendGlobalKeyEvent(kVK_Option, current_flags, false);
-  }
-  if ((modifier_flags & ui::EF_SHIFT_DOWN) != 0) {
-    current_flags &= ~kCGEventFlagMaskShift;
-    SendGlobalKeyEvent(kVK_Shift, current_flags, false);
-  }
-  if ((modifier_flags & ui::EF_CONTROL_DOWN) != 0) {
-    current_flags &= ~kCGEventFlagMaskControl;
-    SendGlobalKeyEvent(kVK_Control, current_flags, false);
-  }
-
-  run_loop_.Run();
-}
-
-void SendGlobalKeyEventsHelper::SendGlobalKeyEvent(int key_code,
-                                                   CGEventFlags current_flags,
-                                                   bool key_down) {
-  base::ScopedCFTypeRef<CGEventRef> key_event(
-      CGEventCreateKeyboardEvent(event_source_, key_code, key_down));
-  CGEventSetFlags(key_event, current_flags);
-
-  // Starting in 10.14, CGEventPost() pops up a modal that asks the user to
-  // confirm whether the app should be allowed to use accessibility APIs, which
-  // hangs tests on the bots. https://crbug.com/904403
-  DCHECK(base::mac::IsOS10_13());
-
-  CGEventPost(event_tap_location_, key_event);
-  if (key_down && !first_key_down_code_)
-    first_key_down_code_ = key_code;
-}
-
-}  // namespace
 
 namespace ui_test_utils {
 
@@ -201,11 +64,6 @@ bool ShowAndFocusNativeWindow(gfx::NativeWindow native_window) {
   [file_menu.delegate menuNeedsUpdate:file_menu];
 
   return !async_waiter || notification_observed;
-}
-
-void SendGlobalKeyEventsAndWait(int key_code, int modifier_flags) {
-  SendGlobalKeyEventsHelper().SendGlobalKeyEventsAndWait(key_code,
-                                                         modifier_flags);
 }
 
 bool ClearKeyEventModifiers() {
