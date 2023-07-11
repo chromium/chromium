@@ -786,7 +786,6 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
     function->set_source_url(*rfh_url);
   }
 
-  function->set_request_id(params.request_id);
   function->set_has_callback(params.has_callback);
   function->set_user_gesture(params.user_gesture);
   function->set_extension(extension);

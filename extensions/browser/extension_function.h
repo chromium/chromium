@@ -302,9 +302,6 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     return extension_->id();
   }
 
-  void set_request_id(int request_id) { request_id_ = request_id; }
-  int request_id() { return request_id_; }
-
   void set_request_uuid(base::Uuid uuid) { request_uuid_ = std::move(uuid); }
   const base::Uuid& request_uuid() const { return request_uuid_; }
 
@@ -594,11 +591,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // The callback to run once the function has done execution.
   ResponseCallback response_callback_;
 
-  // Id of this request, used to map the response back to the caller.
-  int request_id_ = -1;
-
   // UUID for this request.
-  // TODO(crbug.com/1444561): Replace `request_id_` with this.
   base::Uuid request_uuid_;
 
   // The name of this function.
