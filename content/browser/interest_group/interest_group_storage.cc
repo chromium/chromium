@@ -2550,9 +2550,11 @@ bool InterestGroupStorage::InitializeSchema() {
   if (!db_)
     return false;
 
-  sql::MetaTable::RazeIfIncompatible(
-      db_.get(), /*lowest_supported_version=*/kDeprecatedVersionNumber + 1,
-      kCurrentVersionNumber);
+  if (!sql::MetaTable::RazeIfIncompatible(
+          db_.get(), /*lowest_supported_version=*/kDeprecatedVersionNumber + 1,
+          kCurrentVersionNumber)) {
+    return false;
+  }
 
   sql::MetaTable meta_table;
   bool has_metatable = meta_table.DoesTableExist(db_.get());
