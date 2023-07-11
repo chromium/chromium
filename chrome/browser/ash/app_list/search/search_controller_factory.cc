@@ -27,7 +27,7 @@
 #include "chrome/browser/ash/app_list/search/help_app_provider.h"
 #include "chrome/browser/ash/app_list/search/help_app_zero_state_provider.h"
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_provider.h"
-#include "chrome/browser/ash/app_list/search/local_images/local_image_search_provider.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_provider.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_lacros_provider.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_provider.h"
 #include "chrome/browser/ash/app_list/search/os_settings_provider.h"

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/local_images/local_image_search_test_util.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_test_util.h"
 
-#include "chrome/browser/ash/app_list/search/local_images/annotation_storage.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
 
 namespace app_list {
 

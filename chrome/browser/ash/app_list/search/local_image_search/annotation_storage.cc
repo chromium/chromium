@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/local_images/annotation_storage.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
 
 #include <algorithm>
 #include <iterator>
@@ -15,8 +15,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/app_list/search/local_images/image_annotation_worker.h"
-#include "chrome/browser/ash/app_list/search/local_images/sql_database.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/sql_database.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "sql/database.h"

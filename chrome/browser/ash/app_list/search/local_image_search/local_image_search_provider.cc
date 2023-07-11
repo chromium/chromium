@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/local_images/local_image_search_provider.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_provider.h"
 
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
-#include "chrome/browser/ash/app_list/search/local_images/annotation_storage.h"
-#include "chrome/browser/ash/app_list/search/local_images/image_annotation_worker.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"

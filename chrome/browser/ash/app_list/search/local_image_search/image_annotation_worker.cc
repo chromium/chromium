@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/local_images/image_annotation_worker.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
 
 #include <algorithm>
 #include <memory>
@@ -20,8 +20,8 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/app_list/search/local_images/annotation_storage.h"
-#include "chrome/browser/ash/app_list/search/local_images/search_utils.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"

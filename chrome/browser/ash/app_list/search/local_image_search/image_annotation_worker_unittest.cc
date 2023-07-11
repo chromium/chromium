@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/local_images/image_annotation_worker.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
 
 #include <memory>
 
@@ -10,9 +10,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/app_list/search/local_images/annotation_storage.h"
-#include "chrome/browser/ash/app_list/search/local_images/local_image_search_provider.h"
-#include "chrome/browser/ash/app_list/search/local_images/local_image_search_test_util.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_provider.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_test_util.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "testing/gmock/include/gmock/gmock.h"
