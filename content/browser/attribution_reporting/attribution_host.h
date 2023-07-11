@@ -86,7 +86,7 @@ class CONTENT_EXPORT AttributionHost
   // blink::mojom::AttributionHost:
   void RegisterDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost>,
-      attribution_reporting::mojom::RegistrationType) override;
+      attribution_reporting::mojom::RegistrationEligibility) override;
   void RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token) override;

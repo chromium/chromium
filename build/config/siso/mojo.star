@@ -41,7 +41,7 @@ def __step_rules():
                 "./gen/components/attribution_reporting/eligibility_error.mojom.js": {
                     "outputs": [
                         "./gen/mojom-webui/components/attribution_reporting/eligibility_error.mojom-webui.js",
-                        "./gen/mojom-webui/components/attribution_reporting/registration_type.mojom-webui.js",
+                        "./gen/mojom-webui/components/attribution_reporting/registration_eligibility.mojom-webui.js",
                         "./gen/mojom-webui/components/attribution_reporting/source_registration_error.mojom-webui.js",
                         "./gen/mojom-webui/components/attribution_reporting/trigger_registration_error.mojom-webui.js",
                     ],

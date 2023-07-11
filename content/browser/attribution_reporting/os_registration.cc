@@ -36,11 +36,10 @@ OsRegistration::OsRegistration(OsRegistration&&) = default;
 
 OsRegistration& OsRegistration::operator=(OsRegistration&&) = default;
 
-attribution_reporting::mojom::OsRegistrationType OsRegistration::GetType()
-    const {
+attribution_reporting::mojom::RegistrationType OsRegistration::GetType() const {
   return input_event.has_value()
-             ? attribution_reporting::mojom::OsRegistrationType::kSource
-             : attribution_reporting::mojom::OsRegistrationType::kTrigger;
+             ? attribution_reporting::mojom::RegistrationType::kSource
+             : attribution_reporting::mojom::RegistrationType::kTrigger;
 }
 
 }  // namespace content

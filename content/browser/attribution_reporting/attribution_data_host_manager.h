@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/memory/weak_ptr.h"
-#include "components/attribution_reporting/registration_type.mojom-forward.h"
+#include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
@@ -49,7 +49,7 @@ class AttributionDataHostManager
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       attribution_reporting::SuitableOrigin context_origin,
       bool is_within_fenced_frame,
-      attribution_reporting::mojom::RegistrationType,
+      attribution_reporting::mojom::RegistrationEligibility,
       GlobalRenderFrameHostId render_frame_id,
       int64_t last_navigation_id) = 0;
 

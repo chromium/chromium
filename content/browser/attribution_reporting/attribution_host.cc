@@ -17,7 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "components/attribution_reporting/registration_type.mojom.h"
+#include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
@@ -320,7 +320,8 @@ AttributionHost::TopFrameOriginForSecureContext() {
 
 void AttributionHost::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-    attribution_reporting::mojom::RegistrationType registration_type) {
+    attribution_reporting::mojom::RegistrationEligibility
+        registration_eligibility) {
   absl::optional<SuitableOrigin> top_frame_origin =
       TopFrameOriginForSecureContext();
   if (!top_frame_origin) {
@@ -341,7 +342,7 @@ void AttributionHost::RegisterDataHost(
 
   attribution_manager->GetDataHostManager()->RegisterDataHost(
       std::move(data_host), std::move(*top_frame_origin),
-      render_frame_host->IsNestedWithinFencedFrame(), registration_type,
+      render_frame_host->IsNestedWithinFencedFrame(), registration_eligibility,
       root_frame_host->GetGlobalId(), render_frame_host->navigation_id());
 }
 

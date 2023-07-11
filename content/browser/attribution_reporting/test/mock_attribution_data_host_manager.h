@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "components/attribution_reporting/registration_type.mojom-forward.h"
+#include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
@@ -37,7 +37,7 @@ class MockAttributionDataHostManager : public AttributionDataHostManager {
       (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
        attribution_reporting::SuitableOrigin context_origin,
        bool is_within_fenced_frame,
-       attribution_reporting::mojom::RegistrationType,
+       attribution_reporting::mojom::RegistrationEligibility,
        GlobalRenderFrameHostId,
        int64_t last_navigation_id),
       (override));

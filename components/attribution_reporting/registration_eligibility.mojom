@@ -5,7 +5,7 @@
 module attribution_reporting.mojom;
 
 // Indicates which registrations an AttributionDataHost permits.
-enum RegistrationType {
+enum RegistrationEligibility {
   kSourceOrTrigger,
   kSource,
   kTrigger,

@@ -7,7 +7,7 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 mojom("mojom") {
   sources = [
-    "registration_type.mojom",
+    "registration_eligibility.mojom",
     "source_registration_error.mojom",
     "source_registration_time_config.mojom",
     "trigger_registration_error.mojom",

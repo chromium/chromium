@@ -11,7 +11,7 @@ import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 import {AttributionSupport, TriggerVerification} from './attribution.mojom-webui.js';
 import {Factory, HandlerInterface, HandlerRemote, ObserverInterface, ObserverReceiver, ReportID, SourceStatus, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISource_Attributability, WebUISourceRegistration, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
-import {OsRegistrationResult, OsRegistrationType} from './attribution_reporting.mojom-webui.js';
+import {OsRegistrationResult, RegistrationType} from './attribution_reporting.mojom-webui.js';
 import {SourceRegistrationError} from './source_registration_error.mojom-webui.js';
 import {SourceType} from './source_type.mojom-webui.js';
 import {StoreSourceResult} from './store_source_result.mojom-webui.js';
@@ -726,10 +726,10 @@ class OsRegistration {
     this.debugReporting = mojo.debugReporting;
 
     switch (mojo.type) {
-      case OsRegistrationType.kSource:
+      case RegistrationType.kSource:
         this.registrationType = 'OS Source';
         break;
-      case OsRegistrationType.kTrigger:
+      case RegistrationType.kTrigger:
         this.registrationType = 'OS Trigger';
         break;
       default:

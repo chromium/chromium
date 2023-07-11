@@ -27,7 +27,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/os_registration.h"
-#include "components/attribution_reporting/registration_type.mojom.h"
+#include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -68,7 +68,7 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::SuitableOrigin;
-using ::attribution_reporting::mojom::RegistrationType;
+using ::attribution_reporting::mojom::RegistrationEligibility;
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::SourceType;
 
@@ -157,17 +157,17 @@ class RegistrationNavigationContext {
 class AttributionDataHostManagerImpl::RegistrationContext {
  public:
   RegistrationContext(SuitableOrigin context_origin,
-                      RegistrationType registration_type,
+                      RegistrationEligibility registration_eligibility,
                       bool is_within_fenced_frame,
                       GlobalRenderFrameHostId render_frame_id,
                       absl::optional<RegistrationNavigationContext> navigation)
       : context_origin_(std::move(context_origin)),
-        registration_type_(registration_type),
+        registration_eligibility_(registration_eligibility),
         is_within_fenced_frame_(is_within_fenced_frame),
         render_frame_id_(render_frame_id),
         navigation_(std::move(navigation)) {
     CHECK(!navigation_.has_value() ||
-          registration_type_ == RegistrationType::kSource);
+          registration_eligibility_ == RegistrationEligibility::kSource);
   }
 
   ~RegistrationContext() = default;
@@ -180,7 +180,9 @@ class AttributionDataHostManagerImpl::RegistrationContext {
 
   const SuitableOrigin& context_origin() const { return context_origin_; }
 
-  RegistrationType registration_type() const { return registration_type_; }
+  RegistrationEligibility registration_eligibility() const {
+    return registration_eligibility_;
+  }
 
   bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
 
@@ -196,7 +198,7 @@ class AttributionDataHostManagerImpl::RegistrationContext {
   SuitableOrigin context_origin_;
 
   // Logically const.
-  RegistrationType registration_type_;
+  RegistrationEligibility registration_eligibility_;
 
   // Whether the attribution is registered within a fenced frame tree.
   // Logically const.
@@ -381,16 +383,16 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     SuitableOrigin context_origin,
     bool is_within_fenced_frame,
-    RegistrationType registration_type,
+    RegistrationEligibility registration_eligibility,
     GlobalRenderFrameHostId render_frame_id,
     int64_t last_navigation_id) {
   RegistrationContext receiver_context(
-      std::move(context_origin), registration_type, is_within_fenced_frame,
-      render_frame_id, /*navigation=*/absl::nullopt);
+      std::move(context_origin), registration_eligibility,
+      is_within_fenced_frame, render_frame_id, /*navigation=*/absl::nullopt);
 
-  switch (registration_type) {
-    case RegistrationType::kTrigger:
-    case RegistrationType::kSourceOrTrigger:
+  switch (registration_eligibility) {
+    case RegistrationEligibility::kTrigger:
+    case RegistrationEligibility::kSourceOrTrigger:
       // We only defer trigger registrations as handling them before a source
       // can lead to a non-match that could otherwise be one.
       if (auto receivers_it = deferred_receivers_.find(last_navigation_id);
@@ -409,7 +411,7 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
         return;
       }
       break;
-    case RegistrationType::kSource:
+    case RegistrationEligibility::kSource:
       break;
   }
 
@@ -508,7 +510,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
   auto [_, registration_inserted] = registrations_.emplace(
       SourceRegistrationsId(attribution_src_token),
       RegistrationContext(
-          /*context_origin=*/source_origin, RegistrationType::kSource,
+          /*context_origin=*/source_origin, RegistrationEligibility::kSource,
           is_within_fenced_frame, render_frame_id,
           RegistrationNavigationContext(navigation_id, input_event)));
   DCHECK(registration_inserted);
@@ -530,7 +532,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
     receivers_.Add(
         this, std::move(it->second),
         RegistrationContext(
-            /*context_origin=*/source_origin, RegistrationType::kSource,
+            /*context_origin=*/source_origin, RegistrationEligibility::kSource,
             is_within_fenced_frame, render_frame_id,
             RegistrationNavigationContext(navigation_id,
                                           std::move(input_event))));
@@ -590,7 +592,7 @@ const AttributionDataHostManagerImpl::RegistrationContext*
 AttributionDataHostManagerImpl::GetReceiverRegistrationContextForSource() {
   const RegistrationContext& context = receivers_.current_context();
 
-  if (context.registration_type() == RegistrationType::kTrigger) {
+  if (context.registration_eligibility() == RegistrationEligibility::kTrigger) {
     mojo::ReportBadMessage("AttributionDataHost: Not eligible for source.");
     return nullptr;
   }
@@ -602,7 +604,7 @@ const AttributionDataHostManagerImpl::RegistrationContext*
 AttributionDataHostManagerImpl::GetReceiverRegistrationContextForTrigger() {
   const RegistrationContext& context = receivers_.current_context();
 
-  if (context.registration_type() == RegistrationType::kSource) {
+  if (context.registration_eligibility() == RegistrationEligibility::kSource) {
     mojo::ReportBadMessage("AttributionDataHost: Not eligible for trigger.");
     return nullptr;
   }
@@ -725,8 +727,9 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconStarted(
   auto [it, inserted] = registrations_.emplace(
       SourceRegistrationsId(beacon_id),
       RegistrationContext(/*context_origin=*/std::move(source_origin),
-                          RegistrationType::kSource, is_within_fenced_frame,
-                          render_frame_id, std::move(navigation)));
+                          RegistrationEligibility::kSource,
+                          is_within_fenced_frame, render_frame_id,
+                          std::move(navigation)));
   CHECK(inserted);
 }
 

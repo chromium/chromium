@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "components/attribution_reporting/registration_type.mojom-blink-forward.h"
+#include "components/attribution_reporting/registration_eligibility.mojom-blink-forward.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -136,7 +136,7 @@ class CORE_EXPORT AttributionSrcLoader
   struct AttributionHeaders;
 
   void RegisterAttributionHeaders(
-      attribution_reporting::mojom::blink::RegistrationType,
+      attribution_reporting::mojom::blink::RegistrationEligibility,
       attribution_reporting::SuitableOrigin reporting_origin,
       const AttributionHeaders&,
       const Vector<network::TriggerVerification>&);

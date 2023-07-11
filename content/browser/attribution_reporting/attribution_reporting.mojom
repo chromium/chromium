@@ -15,7 +15,7 @@ enum ReportType {
   kNullAggregatable = 2,
 };
 
-enum OsRegistrationType {
+enum RegistrationType {
   kSource = 0,
   kTrigger = 1,
 };

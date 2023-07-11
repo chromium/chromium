@@ -97,7 +97,7 @@ using ScopedUseInMemoryStorageForTesting =
     ::content::AttributionManagerImpl::ScopedUseInMemoryStorageForTesting;
 
 using ::attribution_reporting::mojom::OsRegistrationResult;
-using ::attribution_reporting::mojom::OsRegistrationType;
+using ::attribution_reporting::mojom::RegistrationType;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -1314,13 +1314,13 @@ void AttributionManagerImpl::HandleOsRegistration(
   const url::Origin* source_origin;
   const url::Origin* destination_origin;
   switch (registration.GetType()) {
-    case OsRegistrationType::kSource:
+    case RegistrationType::kSource:
       operation =
           ContentBrowserClient::AttributionReportingOperation::kOsSource;
       source_origin = &registration.top_level_origin;
       destination_origin = nullptr;
       break;
-    case OsRegistrationType::kTrigger:
+    case RegistrationType::kTrigger:
       operation =
           ContentBrowserClient::AttributionReportingOperation::kOsTrigger;
       source_origin = nullptr;
@@ -1398,11 +1398,11 @@ void AttributionManagerImpl::NotifyOsRegistration(
     observer.OnOsRegistration(now, registration, is_debug_key_allowed, result);
   }
   switch (registration.GetType()) {
-    case attribution_reporting::mojom::OsRegistrationType::kSource:
+    case attribution_reporting::mojom::RegistrationType::kSource:
       base::UmaHistogramEnumeration("Conversions.OsRegistrationResult.Source",
                                     result);
       break;
-    case attribution_reporting::mojom::OsRegistrationType::kTrigger:
+    case attribution_reporting::mojom::RegistrationType::kTrigger:
       base::UmaHistogramEnumeration("Conversions.OsRegistrationResult.Trigger",
                                     result);
       break;
@@ -1446,13 +1446,13 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
   const url::Origin* source_origin;
   const url::Origin* destination_origin;
   switch (registration.GetType()) {
-    case OsRegistrationType::kSource:
+    case RegistrationType::kSource:
       operation = ContentBrowserClient::AttributionReportingOperation::
           kOsSourceVerboseDebugReport;
       source_origin = &registration.top_level_origin;
       destination_origin = nullptr;
       break;
-    case OsRegistrationType::kTrigger:
+    case RegistrationType::kTrigger:
       operation = ContentBrowserClient::AttributionReportingOperation::
           kOsTriggerVerboseDebugReport;
       source_origin = nullptr;

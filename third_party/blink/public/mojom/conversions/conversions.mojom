@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-import "components/attribution_reporting/registration_type.mojom";
+import "components/attribution_reporting/registration_eligibility.mojom";
 import "third_party/blink/public/mojom/conversions/attribution_data_host.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "services/network/public/mojom/attribution.mojom";
@@ -28,7 +28,7 @@ interface AttributionHost {
   // element. Information will be passed at a later point when the renderer
   // is done fetching the config.
   RegisterDataHost(pending_receiver<AttributionDataHost> data_host,
-                   attribution_reporting.mojom.RegistrationType registration_type);
+                   attribution_reporting.mojom.RegistrationEligibility registration_eligibility);
 
   // Registers a new data host which can register a source associated with a
   // navigation. Called when attributionsrc is registered on a navigation API.

@@ -37,7 +37,7 @@ struct CONTENT_EXPORT OsRegistration {
   OsRegistration(OsRegistration&&);
   OsRegistration& operator=(OsRegistration&&);
 
-  attribution_reporting::mojom::OsRegistrationType GetType() const;
+  attribution_reporting::mojom::RegistrationType GetType() const;
 };
 
 }  // namespace content

@@ -520,10 +520,10 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
 
   DebugDataType data_type;
   switch (registration.GetType()) {
-    case attribution_reporting::mojom::OsRegistrationType::kSource:
+    case attribution_reporting::mojom::RegistrationType::kSource:
       data_type = DebugDataType::kOsSourceDelegated;
       break;
-    case attribution_reporting::mojom::OsRegistrationType::kTrigger:
+    case attribution_reporting::mojom::RegistrationType::kTrigger:
       data_type = DebugDataType::kOsTriggerDelegated;
       break;
   }

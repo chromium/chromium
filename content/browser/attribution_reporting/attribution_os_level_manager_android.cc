@@ -111,7 +111,7 @@ void AttributionOsLevelManagerAndroid::Register(OsRegistration registration,
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  attribution_reporting::mojom::OsRegistrationType type = registration.GetType();
+  attribution_reporting::mojom::RegistrationType type = registration.GetType();
   auto registration_url =
       url::GURLAndroid::FromNativeGURL(env, registration.registration_url);
   auto top_level_origin = url::GURLAndroid::FromNativeGURL(
@@ -123,7 +123,7 @@ void AttributionOsLevelManagerAndroid::Register(OsRegistration registration,
       request_id, base::BindOnce(std::move(callback), std::move(registration)));
 
   switch (type) {
-    case attribution_reporting::mojom::OsRegistrationType::kSource:
+    case attribution_reporting::mojom::RegistrationType::kSource:
       DCHECK(input_event.has_value());
       if (AttributionOsLevelManager::ShouldUseOsWebSource()) {
         Java_AttributionOsLevelManager_registerWebAttributionSource(
@@ -134,7 +134,7 @@ void AttributionOsLevelManagerAndroid::Register(OsRegistration registration,
             env, jobj_, request_id, registration_url, input_event->input_event);
       }
       break;
-    case attribution_reporting::mojom::OsRegistrationType::kTrigger:
+    case attribution_reporting::mojom::RegistrationType::kTrigger:
       Java_AttributionOsLevelManager_registerWebAttributionTrigger(
           env, jobj_, request_id, registration_url, top_level_origin,
           is_debug_key_allowed);
