@@ -661,10 +661,10 @@ void KURL::SetPort(const String& input, bool* value_overflow_out) {
   bool to_uint_ok;
   unsigned port_value = parsed_port.ToUInt(&to_uint_ok);
   if (port_value > UINT16_MAX || !to_uint_ok) {
+    if (value_overflow_out) {
+      *value_overflow_out = true;
+    }
     if (base::FeatureList::IsEnabled(features::kURLSetPortCheckOverflow)) {
-      if (value_overflow_out) {
-        *value_overflow_out = true;
-      }
       return;
     }
   }
