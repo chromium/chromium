@@ -25,14 +25,8 @@ gfx::ImageSkia HidSystemTrayIcon::GetIcon() {
 std::u16string HidSystemTrayIcon::GetTitleLabel(size_t num_origins,
                                                 size_t num_connections) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (num_origins == 1) {
-    return l10n_util::GetPluralStringFUTF16(
-        IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE_SINGLE_EXTENSION,
-        static_cast<int>(num_connections));
-  }
-  return l10n_util::GetPluralStringFUTF16(
-      IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE_MULTIPLE_EXTENSIONS,
-      static_cast<int>(num_connections));
+  return l10n_util::GetPluralStringFUTF16(IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE,
+                                          static_cast<int>(num_connections));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   NOTREACHED_NORETURN();
 }
