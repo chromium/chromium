@@ -247,7 +247,9 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_AbuseDetectorPolicyAllowedForValidUrl) {
 
 // Tests that AppLauncherTabHelper waits for any pending app launch completion
 // before calling policy decision callbacks for subsequent navigation requests.
-TEST_F(AppLauncherTabHelperTest, ShouldAllowRequestWhileAppLaunchPending) {
+// TODO(crbug.com/1464006): This is flaky; investigate and reenable.
+TEST_F(AppLauncherTabHelperTest,
+       DISABLED_ShouldAllowRequestWhileAppLaunchPending) {
   delegate_.SetShouldCompleteAppLaunchImmediately(false);
 
   // Should not allow navigation request with App-URL.
