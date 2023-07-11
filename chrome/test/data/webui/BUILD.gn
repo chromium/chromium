@@ -35,6 +35,7 @@ source_set("browser_tests") {
     "history/history_ui_browsertest.cc",
     "js/js_browsertest.cc",
     "password_manager/password_manager_browsertest.cc",
+    "side_panel/side_panel_browsertest.cc",
     "whats_new/whats_new_browsertest.cc",
   ]
 
@@ -52,9 +53,12 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//components/bookmarks/browser:browser",
     "//components/bookmarks/managed:managed",
+    "//components/commerce/core:feature_list",
     "//components/history/core/common:common",
     "//components/history_clusters/core:core",
     "//components/password_manager/content/common:common",
+    "//components/power_bookmarks/core:features",
+    "//components/user_notes:features",
   ]
 }
 
@@ -68,6 +72,7 @@ source_set("interactive_ui_tests") {
     "cr_components/cr_components_interactive_test.cc",
     "cr_elements/cr_elements_focus_test.cc",
     "history/history_focus_test.cc",
+    "side_panel/side_panel_focus_test.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -114,7 +119,6 @@ if (include_js_tests) {
     sources = [
       "new_tab_page/new_tab_page_interactive_test.js",
       "side_panel/customize_chrome/side_panel_customize_chrome_interactive_ui_test.js",
-      "side_panel/side_panel_interactive_ui_tests.js",
     ]
 
     gen_include_files = [
@@ -290,7 +294,6 @@ if (include_js_tests) {
       "metrics_reporter/metrics_reporter_browsertest.js",
       "new_tab_page/new_tab_page_browsertest.js",
       "side_panel/customize_chrome/side_panel_customize_chrome_browsertest.js",
-      "side_panel/side_panel_browsertest.js",
       "tab_search/tab_search_browsertest.js",
       "usb_internals/usb_internals_browsertest.js",
     ]
