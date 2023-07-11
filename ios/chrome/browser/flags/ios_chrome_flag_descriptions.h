@@ -17,6 +17,11 @@ namespace flag_descriptions {
 extern const char kAppStoreRatingName[];
 extern const char kAppStoreRatingDescription[];
 
+// Title and description for the flag to enable the App Store Rating promo's
+// loosened trigger requirements.
+extern const char kAppStoreRatingLoosenedTriggersName[];
+extern const char kAppStoreRatingLoosenedTriggersDescription[];
+
 // Title and description for the flag to enable save of profiles in Google
 // Account.
 extern const char kAutofillAccountProfilesStorageName[];
