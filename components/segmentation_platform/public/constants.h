@@ -131,10 +131,6 @@ std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id);
 // Returns Subsegment key for the given `segmentation_key`.
 std::string GetSubsegmentKey(const std::string& segmentation_key);
 
-// Returns PredictorType for the given `segmentation_key`
-proto::Predictor::PredictorTypeCase GetClassifierType(
-    const std::string& segmentation_key);
-
 // TODO(shaktisahu): Move these to a nicer location.
 
 // Labels for adaptive toolbar model.

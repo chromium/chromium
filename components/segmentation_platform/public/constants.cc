@@ -67,40 +67,6 @@ std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id) {
   return SegmentIdToHistogramVariantInternal(segment_id);
 }
 
-proto::Predictor::PredictorTypeCase GetClassifierType(
-    const std::string& segmentation_key) {
-  // Please keep in sync with SegmentationKey variant in
-  // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
-  // Should also update the field trials allowlist in
-  // go/segmentation-field-trials-map.
-  if (segmentation_key == kAdaptiveToolbarSegmentationKey ||
-      segmentation_key == kContextualPageActionsKey) {
-    return proto::Predictor::kMultiClassClassifier;
-  } else if (segmentation_key == kChromeStartAndroidSegmentationKey ||
-             segmentation_key == kChromeStartAndroidV2SegmentationKey ||
-             segmentation_key == kChromeLowUserEngagementSegmentationKey ||
-             segmentation_key == kCrossDeviceUserKey ||
-             segmentation_key == kDeviceSwitcherKey ||
-             segmentation_key == kFrequentFeatureUserKey ||
-             segmentation_key == kIntentionalUserKey ||
-             segmentation_key == kResumeHeavyUserKey ||
-             segmentation_key == kShoppingUserSegmentationKey ||
-             segmentation_key == kQueryTilesSegmentationKey) {
-    return proto::Predictor::kBinaryClassifier;
-  } else if (segmentation_key == kFeedUserSegmentationKey ||
-             segmentation_key == kPowerUserKey ||
-             segmentation_key == kSearchUserKey ||
-             segmentation_key == kDeviceTierKey ||
-             segmentation_key == kTabletProductivityUserKey) {
-    return proto::Predictor::kBinnedClassifier;
-  }
-  // This case is reached when UNKNOWN segment is valid, in case of boolean
-  // segment results.
-  // TODO(crbug.com/1346389): UNKNOWN must be handled separately and add a
-  // NOTREACHED() here after fixing tests.
-  return proto::Predictor::kRegressor;
-}
-
 std::string GetSubsegmentKey(const std::string& segmentation_key) {
   return segmentation_key + kSubsegmentDiscreteMappingSuffix;
 }

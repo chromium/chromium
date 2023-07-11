@@ -38,7 +38,8 @@ void PrefsMigrator::MigrateOldPrefsToNewPrefs() {
 }
 
 bool PrefsMigrator::IsPrefMigrationRequired(Config* config) {
-  return (GetClassifierType(config->segmentation_key) ==
+  return (pref_migration_utils::GetClassifierTypeForMigration(
+              config->segmentation_key) ==
           proto::Predictor::kBinaryClassifier) ||
          (config->segmentation_key == kAdaptiveToolbarSegmentationKey);
 }
