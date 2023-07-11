@@ -2163,8 +2163,8 @@ gfx::SizeF ComputedStyleUtils::UsedBoxSize(const LayoutObject& layout_object) {
   }
   const auto& box = To<LayoutBox>(layout_object);
   return gfx::SizeF(box.StyleRef().BoxSizing() == EBoxSizing::kBorderBox
-                        ? box.BorderBoxRect().Size()
-                        : box.ComputedCSSContentBoxRect().Size());
+                        ? box.PhysicalBorderBoxRect().size
+                        : box.ComputedCSSContentBoxRect().size);
 }
 
 CSSValue* ComputedStyleUtils::RenderTextDecorationFlagsToCSSValue(

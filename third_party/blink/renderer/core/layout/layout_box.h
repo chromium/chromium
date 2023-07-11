@@ -433,12 +433,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   PhysicalRect PhysicalBackgroundRect(BackgroundRectType) const;
 
   // This returns the content area of the box (excluding padding and border).
-  // The only difference with contentBoxRect is that computedCSSContentBoxRect
+  // The only difference with contentBoxRect is that ComputedCSSContentBoxRect
   // does include the intrinsic padding in the content box as this is what some
   // callers expect (like getComputedStyle).
-  LayoutRect ComputedCSSContentBoxRect() const {
+  PhysicalRect ComputedCSSContentBoxRect() const {
     NOT_DESTROYED();
-    return LayoutRect(
+    return PhysicalRect(
         BorderLeft() + ComputedCSSPaddingLeft(),
         BorderTop() + ComputedCSSPaddingTop(),
         ClientWidth() - ComputedCSSPaddingLeft() - ComputedCSSPaddingRight(),
