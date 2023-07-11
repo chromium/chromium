@@ -86,7 +86,7 @@ MessageView::MessageView(const Notification& notification)
     const auto& shadow = gfx::ShadowDetails::Get(2, 0);
     gfx::Insets ninebox_insets = gfx::ShadowValue::GetBlurRegion(shadow.values);
     SetBorder(views::CreateBorderPainter(
-        views::Painter::CreateImagePainter(shadow.ninebox_image,
+        views::Painter::CreateImagePainter(shadow.nine_patch_image,
                                            ninebox_insets),
         -gfx::ShadowValue::GetMargin(shadow.values)));
   }

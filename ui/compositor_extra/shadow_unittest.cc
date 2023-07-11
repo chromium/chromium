@@ -136,7 +136,7 @@ TEST_F(ShadowTest, AdjustRoundedCornerRadius) {
   shadow_bounds.Inset(InsetsForElevation(kElevationSmall));
   EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
   EXPECT_EQ(NineboxImageSizeForElevationAndCornerRadius(6, 0),
-            shadow.details_for_testing()->ninebox_image.size());
+            shadow.details_for_testing()->nine_patch_image.size());
 }
 
 // Test that the uniquely owned shadow image is evicted from the cache when new

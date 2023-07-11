@@ -862,6 +862,7 @@ test("gfx_unittests") {
       "selection_bound_unittest.cc",
       "selection_model_unittest.cc",
       "sequential_id_generator_unittest.cc",
+      "shadow_util_unittest.cc",
       "shadow_value_unittest.cc",
       "skbitmap_operations_unittest.cc",
       "skia_util_unittest.cc",

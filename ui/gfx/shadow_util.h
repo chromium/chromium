@@ -25,7 +25,8 @@ enum class ShadowStyle {
 // A struct that describes a vector of shadows and their depiction as an image
 // suitable for ninebox tiling.
 struct GFX_EXPORT ShadowDetails {
-  ShadowDetails();
+  ShadowDetails(const gfx::ShadowValues& values,
+                const gfx::ImageSkia& nine_patch_image);
   ShadowDetails(const ShadowDetails& other);
   ~ShadowDetails();
 
@@ -35,13 +36,15 @@ struct GFX_EXPORT ShadowDetails {
       int elevation,
       int radius,
       ShadowStyle style = ShadowStyle::kMaterialDesign);
+  // Returns a cached ShadowDetails for given corner radius and shadow values.
+  static const ShadowDetails& Get(int radius, const gfx::ShadowValues& values);
 
   static size_t GetDetailsCacheSizeForTest();
 
   // Description of the shadows.
-  gfx::ShadowValues values;
+  const gfx::ShadowValues values;
   // Cached ninebox image based on |values|.
-  gfx::ImageSkia ninebox_image;
+  const gfx::ImageSkia nine_patch_image;
 };
 
 }  // namespace gfx

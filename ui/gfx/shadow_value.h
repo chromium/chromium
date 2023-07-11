@@ -40,6 +40,11 @@ class GFX_EXPORT ShadowValue {
            color_ == other.color_;
   }
 
+  constexpr bool operator<(const ShadowValue& other) const {
+    return std::make_tuple(x(), y(), blur_, color_) <
+           std::make_tuple(other.x(), other.y(), other.blur_, other.color_);
+  }
+
   ShadowValue Scale(float scale) const;
 
   std::string ToString() const;
