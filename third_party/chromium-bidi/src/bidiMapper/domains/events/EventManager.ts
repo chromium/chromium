@@ -334,13 +334,15 @@ export class EventManager implements IEventManager {
 }
 
 const EVENT_NAMES = new Set([
+  // keep-sorted start
   ...Object.values(ChromiumBidi.BrowsingContext.EventNames),
   ...Object.values(ChromiumBidi.Log.EventNames),
   ...Object.values(ChromiumBidi.Network.EventNames),
   ...Object.values(ChromiumBidi.Script.EventNames),
+  // keep-sorted end
 ]);
 
-const checkEventName = (name: string) => {
+function checkEventName(name: string) {
   if (
     !EVENT_NAMES.has(name as never) &&
     !name.startsWith('cdp.') &&
@@ -348,4 +350,4 @@ const checkEventName = (name: string) => {
   ) {
     throw new InvalidArgumentException(`Unknown event: ${name}`);
   }
-};
+}
