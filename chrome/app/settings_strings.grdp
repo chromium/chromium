@@ -113,10 +113,10 @@
     Downloading text recognition files
   </message>
   <message name="IDS_SETTINGS_PDF_OCR_TITLE" desc="Description for screen reader pdf ocr feature.">
-    Convert images to text
+    Convert PDF images to text
   </message>
   <message name="IDS_SETTINGS_PDF_OCR_SUBTITLE" desc="Subtitle for screen reader pdf ocr feature.">
-    Scan PDF images to convert text for screen reader when necessary
+    Scan PDF images to convert content to text for the screen reader, when available. Only supported on Chrome browser.
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE" desc="Name of the setting to enable Live Caption feature.">
     Live Caption
