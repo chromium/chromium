@@ -469,7 +469,7 @@ public class TabSwitcherLayout extends Layout {
                         : getWidth(),
                 ZOOMING_DURATION, Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
-        int mTabListTopOffset = mGridTabListDelegate.getTabListTopOffset();
+        mTabListTopOffset = mGridTabListDelegate.getTabListTopOffset();
         CompositorAnimator backgroundAlpha =
                 CompositorAnimator.ofFloat(handler, 0f, 1f, BACKGROUND_FADING_DURATION_MS,
                         animator -> mBackgroundAlpha = animator.getAnimatedValue());
@@ -535,7 +535,7 @@ public class TabSwitcherLayout extends Layout {
                 sourceLayoutTab.getUnclampedOriginalContentHeight(), ZOOMING_DURATION,
                 Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
-        int mTabListTopOffset = mGridTabListDelegate.getTabListTopOffset();
+        mTabListTopOffset = mGridTabListDelegate.getTabListTopOffset();
         CompositorAnimator backgroundAlpha =
                 CompositorAnimator.ofFloat(handler, 1f, 0f, BACKGROUND_FADING_DURATION_MS,
                         animator -> mBackgroundAlpha = animator.getAnimatedValue());
