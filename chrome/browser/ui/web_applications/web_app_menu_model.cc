@@ -136,6 +136,12 @@ void WebAppMenuModel::Build() {
 
   if (IsCommandIdEnabled(kExtensionsMenuCommandId))
     AddItemWithStringId(kExtensionsMenuCommandId, IDS_SHOW_EXTENSIONS);
+
+  if (browser()->app_controller() &&
+      browser()->app_controller()->has_tab_strip()) {
+    AddSeparator(ui::NORMAL_SEPARATOR);
+    AddItemWithStringId(IDC_NEW_TAB, IDS_NEW_TAB);
+  }
   AddItemWithStringId(IDC_COPY_URL, IDS_COPY_URL);
 
   // Isolated Web Apps shouldn't be opened in Chrome.
@@ -190,6 +196,7 @@ void WebAppMenuModel::Build() {
     SetCommandIcon(this, kExtensionsMenuCommandId,
                    vector_icons::kExtensionChromeRefreshIcon);
     SetCommandIcon(this, kUninstallAppCommandId, kTrashCanRefreshIcon);
+    SetCommandIcon(this, IDC_NEW_TAB, kNewTabRefreshIcon);
     SetCommandIcon(this, IDC_COPY_URL, kLinkChromeRefreshIcon);
     SetCommandIcon(this, IDC_OPEN_IN_CHROME, kBrowserLogoIcon);
     SetCommandIcon(this, IDC_ZOOM_MENU, kZoomInIcon);

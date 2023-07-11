@@ -559,6 +559,29 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, OpenInChrome) {
       app_browser->command_controller()->IsCommandEnabled(IDC_OPEN_IN_CHROME));
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, WebAppMenuModelTabbedApp) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
+
+  WebAppMenuModel model(nullptr, app_browser);
+  model.Init();
+  // Check menu contains 'New Tab'.
+  EXPECT_TRUE(model.GetIndexOfCommandId(IDC_NEW_TAB).has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, WebAppMenuModelNonTabbedApp) {
+  GURL start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
+
+  WebAppMenuModel model(nullptr, app_browser);
+  model.Init();
+  // Check menu does not contain 'New Tab'.
+  EXPECT_FALSE(model.GetIndexOfCommandId(IDC_NEW_TAB).has_value());
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
                        OnlyNavigateHomeTabIfDifferentUrl) {
   GURL start_url =
