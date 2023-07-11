@@ -5376,6 +5376,15 @@ Here are some things you can try to get started.
       <message name="IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES" desc="Message for a notification shown to the users when an app tries to use the microphone or camera while both are disabled.">
         This allows access for <ph name="APP1_NAME">$1<ex>Camera</ex></ph>, <ph name="APP2_NAME">$2<ex>Google Meet</ex></ph>, and all apps and websites with the camera and microphone permissions
       </message>
+      <message name="IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_DISCLAIMER" desc="Message for a notification shown to the users when an app tries to use the microphone or camera while both are disabled.">
+        This allows access for all apps and websites with the camera and microphone permissions. You may need to refresh the web page or restart the app.
+      </message>
+      <message name="IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME_WITH_DISCLAIMER" desc="Message for a notification shown to the users when an app tries to use the microphone or camera while both are disabled.">
+        This allows access for <ph name="APP_NAME">$1<ex>Camera</ex></ph> and all apps and websites with the camera and microphone permissions. You may need to refresh the web page or restart the app.
+      </message>
+      <message name="IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES_WITH_DISCLAIMER" desc="Message for a notification shown to the users when an app tries to use the microphone or camera while both are disabled.">
+        This allows access for <ph name="APP1_NAME">$1<ex>Camera</ex></ph>, <ph name="APP2_NAME">$2<ex>Google Meet</ex></ph>, and all apps and websites with the camera and microphone permissions. You may need to refresh the web page or restart the app.
+      </message>
       <message name="IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON" desc="Label for an action button that enables microphone and camera.">
         Turn on access
       </message>
@@ -5395,6 +5404,15 @@ Here are some things you can try to get started.
       </message>
       <message name="IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES" desc="Message for a notification shown to the users when an app tries to use the camera while the camera is off.">
         This allows camera access for <ph name="APP1_NAME">$1<ex>Zoom</ex></ph>, <ph name="APP2_NAME">$2<ex>Snapchat</ex></ph>, and all apps and websites with the camera permission
+      </message>
+      <message name="IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_DISCLAIMER" desc="Message for a notification shown to the users when an app tries to use the camera while the camera is off.">
+        This allows camera access for all apps and websites with the camera permission. You may need to refresh the web page or restart the app.
+      </message>
+      <message name="IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME_WITH_DISCLAIMER" desc="Message for a notification shown to the users when an app tries to use the camera while the camera is off.">
+        This allows camera access for <ph name="APP_NAME">$1<ex>Zoom</ex></ph> and all apps and websites with the camera permission. You may need to refresh the web page or restart the app.
+      </message>
+      <message name="IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES_WITH_DISCLAIMER" desc="Message for a notification shown to the users when an app tries to use the camera while the camera is off.">
+        This allows camera access for <ph name="APP1_NAME">$1<ex>Zoom</ex></ph>, <ph name="APP2_NAME">$2<ex>Snapchat</ex></ph>, and all apps and websites with the camera permission. You may need to refresh the web page or restart the app.
       </message>
       <message name="IDS_PRIVACY_HUB_TURN_ON_CAMERA_ACTION_BUTTON" desc="Label for an action button that enables the camera.">
         Turn on camera access

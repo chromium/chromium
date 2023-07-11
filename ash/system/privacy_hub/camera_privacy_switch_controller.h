@@ -80,6 +80,14 @@ class ASH_EXPORT CameraPrivacySwitchController
   // switch.
   bool UsingCameraLEDFallback();
 
+  // This checks whether the LED fallback mechanism is used directly (using the
+  // filesystem). Is used during initialization and can be used externally in
+  // case that the controller object does not exist. (E.g. to initialize the
+  // PrivacyHubNotificationController, which exists even if privacy hub is
+  // disabled). Should be used only in that case to avoid repeated blocking
+  // calls to the filesystem.
+  static bool CheckCameraLEDFallbackDirectly();
+
  private:
   // Used for first time initialization of the cached value.
   // Can be called only once.

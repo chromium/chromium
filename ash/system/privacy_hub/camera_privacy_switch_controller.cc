@@ -205,6 +205,11 @@ bool CameraPrivacySwitchController::UsingCameraLEDFallback() {
 }
 
 void CameraPrivacySwitchController::InitUsingCameraLEDFallback() {
+  using_camera_led_fallback_ = CheckCameraLEDFallbackDirectly();
+}
+
+// static
+bool CameraPrivacySwitchController::CheckCameraLEDFallbackDirectly() {
   // Check that the file created by the camera service exists.
   const base::FilePath kPath(
       "/run/camera/camera_ids_with_sw_privacy_switch_fallback");
@@ -212,13 +217,13 @@ void CameraPrivacySwitchController::InitUsingCameraLEDFallback() {
     // The camera service should create the file always. However we keep this
     // for backward compatibility when deployed with an older version of the OS
     // and forward compatibility when the fallback is eventually dropped.
-    using_camera_led_fallback_ = false;
-    return;
+    return false;
   }
   int64_t file_size{};
   const bool file_size_read_success = base::GetFileSize(kPath, &file_size);
   CHECK(file_size_read_success);
 
-  using_camera_led_fallback_ = (file_size != 0ll);
+  return (file_size != 0ll);
 }
+
 }  // namespace ash

@@ -16,6 +16,7 @@
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
 #include "ash/system/system_notification_controller.h"
@@ -87,32 +88,61 @@ class GeolocationThrottler : public PrivacyHubNotification::Throttler {
 }  // namespace
 
 PrivacyHubNotificationController::PrivacyHubNotificationController() {
+  // If privacy hub is on and the camera fallback mechanism is active, we need
+  // to use a different set of messages.
+  // TODO(b/289510726): remove when all cameras fully support the software
+  // switch.
+  // Note: if the privacy hub is not enabled, this object may still exist as it
+  // is used by privacy indicators as well.
+  bool use_camera_led_fallback =
+      features::IsCrosPrivacyHubEnabled() &&
+      CameraPrivacySwitchController::CheckCameraLEDFallbackDirectly();
+
+  std::vector<int> camera_messages;
+  std::vector<int> combined_messages;
+
+  if (use_camera_led_fallback) {
+    camera_messages = {
+        IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_DISCLAIMER,
+        IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME_WITH_DISCLAIMER,
+        IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES_WITH_DISCLAIMER};
+    combined_messages = {
+        IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_DISCLAIMER,
+        IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME_WITH_DISCLAIMER,
+        IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES_WITH_DISCLAIMER};
+  } else {
+    camera_messages = {
+        IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE,
+        IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+        IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES};
+    combined_messages = {
+        IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE,
+        IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+        IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES};
+  }
+
+  std::vector<int> microphone_messages = {
+      IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE,
+      IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+      IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES};
+
   auto camera_notification_descriptor = PrivacyHubNotificationDescriptor(
       SensorSet{Sensor::kCamera}, IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_TITLE,
       std::vector<int>{IDS_PRIVACY_HUB_TURN_ON_CAMERA_ACTION_BUTTON},
-      std::vector<int>{
-          IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE,
-          IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
-          IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES});
+      camera_messages);
 
   auto microphone_notification_descriptor = PrivacyHubNotificationDescriptor(
       SensorSet{Sensor::kMicrophone},
       IDS_MICROPHONE_MUTED_BY_SW_SWITCH_NOTIFICATION_TITLE,
       std::vector<int>{IDS_MICROPHONE_MUTED_NOTIFICATION_ACTION_BUTTON},
-      std::vector<int>{
-          IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE,
-          IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
-          IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES});
+      microphone_messages);
 
   auto combined_notification_descriptor = PrivacyHubNotificationDescriptor(
       SensorSet{Sensor::kCamera, Sensor::kMicrophone},
       IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_TITLE,
       std::vector<int>{
           IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON},
-      std::vector<int>{
-          IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE,
-          IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
-          IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES});
+      combined_messages);
 
   combined_notification_descriptor.delegate()->SetSecondButtonCallback(
       base::BindRepeating(
