@@ -75,6 +75,23 @@
       Cancel
     </message>
 
+    <!-- Email consent dialog for price tracking -->
+    <message name="IDS_PRICE_TRACKING_EMAIL_CONSENT_BODY" desc="The main body text that is shown in the price drop email consent dialog offering to send an email notification when the product price drops on any site.">
+      Get emails sent to <ph name="EMAIL">$1<ex>example@example.com</ex></ph> when the price drops on any site.
+    </message>
+    <message name="IDS_PRICE_TRACKING_EMAIL_CONSENT_TITLE" desc="The title of the dialog that shows after a user has tracked a product asking for consent to send price drop email notifications.">
+      Want emails when the price drops?
+    </message>
+    <message name="IDS_PRICE_TRACKING_EMAIL_CONSENT_LEARN_MORE_LINK_TEXT" desc="The text that will link to a help article that explains price tracking shown in the price drop email consent dialog.">
+      Learn more about price tracking
+    </message>
+    <message name="IDS_PRICE_TRACKING_NOT_NOW" desc="The text that shows on the price drop email consent dialog to reject notifications.">
+      No thanks
+    </message>
+    <message name="IDS_PRICE_TRACKING_YES_IM_IN" desc="The text that shows on the price drop email consent dialog to allow notifications.">
+      Yes, I'm in
+    </message>
+
     <message name="IDS_OMNIBOX_TRACKING_PRICE" desc="Text shown for a button in the omnibox when the user is on a product page and the product's price is currently being tracked. User can click this button to open a dialog and view the tracking details or untrack this product from the dialog.">
       Tracking price
     </message>

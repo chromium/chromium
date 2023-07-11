@@ -6484,6 +6484,61 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Commerce.PriceTracking.EmailConsentDialog.Accepted">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when a user confirms they would like to receive email notifications
+    when a price drops. The user preference is changed to true in this case.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.EmailConsentDialog.Closed">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when a user dismisses the post price tracking dialog without taking
+    an explicit action. The email settings remain unchanged in this case.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.EmailConsentDialog.EmailLinkClicked">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when a user clicks the linked email address in the price tracking
+    email consent dialog.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.EmailConsentDialog.HelpLinkClicked">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when a user clicks the help article link in the price tracking email
+    consent dialog.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.EmailConsentDialog.Rejected">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when a user rejects the offer to receive email notifications when a
+    price drops. The user preference is changed to false in this case.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.EmailConsentDialog.Shown"
+    not_user_triggered="true">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the post price tracking email consent dialog is shown to a
+    user.
+  </description>
+</action>
+
 <action name="Commerce.PriceTracking.FirstRunBubbleDismissed">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

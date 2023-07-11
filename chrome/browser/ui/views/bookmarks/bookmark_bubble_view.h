@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
+#include "ui/base/interaction/element_identifier.h"
 
 class GURL;
 class Browser;
@@ -30,6 +31,8 @@ class BubbleDialogDelegate;
 class Button;
 class View;
 }
+
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkBubbleOkButtonId);
 
 // BookmarkBubbleView provides a dialog for unstarring and editing the bookmark
 // it is created with. The dialog is created using the static ShowBubble method.
