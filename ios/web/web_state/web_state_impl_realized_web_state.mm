@@ -29,7 +29,6 @@
 #import "ios/web/public/session/proto/navigation.pb.h"
 #import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/session/proto/storage.pb.h"
-#import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/ui/java_script_dialog_presenter.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state_delegate.h"
@@ -53,19 +52,6 @@
 #endif
 
 namespace web {
-namespace {
-
-// Returns the session data blob from the cache for `weak_web_state`.
-NSData* FetchSessionDataBlob(base::WeakPtr<WebState> weak_web_state) {
-  web::WebState* web_state = weak_web_state.get();
-  if (!web_state) {
-    return nil;
-  }
-
-  return GetWebClient()->FetchSessionFromCache(web_state);
-}
-
-}  // namespace
 
 class WebStateImpl::RealizedWebState::PendingSession {
  public:
@@ -146,7 +132,8 @@ void WebStateImpl::RealizedWebState::InitWithProto(
     std::u16string page_title,
     GURL page_visible_url,
     FaviconStatus favicon_status,
-    proto::WebStateStorage storage) {
+    proto::WebStateStorage storage,
+    NativeSessionFetcher session_fetcher) {
   last_active_time_ = last_active_time;
   user_agent_type_ = UserAgentTypeFromProto(storage.user_agent());
   created_with_opener_ = storage.has_opener();
@@ -169,8 +156,7 @@ void WebStateImpl::RealizedWebState::InitWithProto(
   web_controller_ = [[CRWWebController alloc] initWithWebState:owner_];
 
   // Restore the navigation history from the storage.
-  navigation_manager_->SetNativeSessionFetcher(
-      base::BindOnce(&FetchSessionDataBlob, owner_->GetWeakPtr()));
+  navigation_manager_->SetNativeSessionFetcher(std::move(session_fetcher));
   navigation_manager_->RestoreFromProto(
       restored_session_->storage().navigation());
 

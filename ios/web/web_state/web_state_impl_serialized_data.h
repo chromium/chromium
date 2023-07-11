@@ -33,7 +33,8 @@ class WebStateImpl::SerializedData {
                  NSString* stable_identifier,
                  SessionID unique_identifier,
                  proto::WebStateMetadataStorage metadata,
-                 WebStateStorageLoader storage_loader);
+                 WebStateStorageLoader storage_loader,
+                 NativeSessionFetcher session_fetcher);
 
   SerializedData(const SerializedData&) = delete;
   SerializedData& operator=(const SerializedData) = delete;
@@ -54,6 +55,9 @@ class WebStateImpl::SerializedData {
 
   // Returns the callback used to load the complete data from disk.
   WebStateStorageLoader TakeStorageLoader();
+
+  // Returns the callback used to fetch the native session data blob.
+  NativeSessionFetcher TakeNativeSessionFetcher();
 
   // WebState:
   base::Time GetLastActiveTime() const;
@@ -99,8 +103,9 @@ class WebStateImpl::SerializedData {
   // Favicon status.
   FaviconStatus favicon_status_;
 
-  // Callback used to load the full data about this WebState.
+  // Callbacks used to load the full data about this WebState.
   WebStateStorageLoader storage_loader_;
+  NativeSessionFetcher session_fetcher_;
 
   // Serialized representation of the session; only available when the
   // session serialization optimisation feature is disabled.

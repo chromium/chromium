@@ -18,6 +18,7 @@
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
+#import "ios/web/public/web_client.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 #import "ios/web/web_state/global_web_state_event_tracker.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
@@ -57,6 +58,16 @@ void CheckForOverRealization() {
     g_last_creation_time = now;
     g_last_realized_count = 0;
   }
+}
+
+// Returns the session data blob from the cache for `weak_web_state`.
+NSData* FetchSessionDataBlob(base::WeakPtr<WebState> weak_web_state) {
+  web::WebState* web_state = weak_web_state.get();
+  if (!web_state) {
+    return nil;
+  }
+
+  return GetWebClient()->FetchSessionFromCache(web_state);
 }
 
 // Key used to store an empty base::SupportsUserData::Data to all WebStateImpl
@@ -107,7 +118,8 @@ WebStateImpl::WebStateImpl(const CreateParams& params,
       session_storage.uniqueIdentifier, std::move(metadata),
       base::BindOnce(^(proto::WebStateStorage& inner_storage) {
         [session_storage serializeToProto:inner_storage];
-      }));
+      }),
+      base::BindOnce(&FetchSessionDataBlob, GetWeakPtr()));
   saved_->SetSessionStorage(session_storage);
 
   SendGlobalCreationEvent();
@@ -120,12 +132,21 @@ WebStateImpl::WebStateImpl(CloneFrom, const RealizedWebState& pimpl) {
   proto::WebStateStorage storage;
   pimpl.SerializeToProto(storage);
 
+  // Extract the native session state if possible. Do not bind a callback
+  // that invokes `WebState::SessionStateData()` on a weak pointer to the
+  // cloned WebState since it will be called immediately anyway.
+  NSData* session_data = pimpl.SessionStateData();
+  NativeSessionFetcher session_fetcher = base::BindOnce(^() {
+    return session_data;
+  });
+
   pimpl_ = std::make_unique<RealizedWebState>(this, pimpl.GetCreationTime(),
                                               [[NSUUID UUID] UUIDString],
                                               SessionID::NewUnique());
   pimpl_->InitWithProto(pimpl.GetBrowserState(), base::Time::Now(),
                         pimpl.GetTitle(), pimpl.GetVisibleURL(),
-                        pimpl.GetFaviconStatus(), std::move(storage));
+                        pimpl.GetFaviconStatus(), std::move(storage),
+                        std::move(session_fetcher));
 
   SendGlobalCreationEvent();
 }
@@ -409,29 +430,27 @@ WebState* WebStateImpl::ForceRealized() {
                                                 saved_->GetStableIdentifier(),
                                                 saved_->GetUniqueIdentifier());
 
-    // Copy the information from SerializedData that is needed to initialize
-    // the RealizedWebState before deleting the object.
-    BrowserState* browser_state = saved_->GetBrowserState();
-    base::Time last_active_time = saved_->GetLastActiveTime();
-    FaviconStatus favicon_status = saved_->GetFaviconStatus();
-    std::u16string page_title = saved_->GetTitle();
-    GURL visible_url = saved_->GetVisibleURL();
+    // Take the SerializedData out of `saved_`. This ensures that `saved_` is
+    // null while still keeping access to the object (to extract metadata and
+    // pass it to initialize the RealizedWebState).
+    std::unique_ptr<SerializedData> saved = std::move(saved_);
 
     // Load the storage from disk.
     proto::WebStateStorage storage;
-    saved_->TakeStorageLoader().Run(storage);
-
-    // Delete the SerializedData without calling TearDown() as the WebState
-    // itself is not destroyed. The TearDown() method will be called on the
-    // RealizedWebState in WebStateImpl destructor.
-    saved_.reset();
+    saved->TakeStorageLoader().Run(storage);
 
     // Perform the initialisation of the RealizedWebState. No outside
     // code should be able to observe the WebStateImpl with both `saved_`
     // and `pimpl_` set.
-    pimpl_->InitWithProto(browser_state, last_active_time,
-                          std::move(page_title), std::move(visible_url),
-                          std::move(favicon_status), std::move(storage));
+    pimpl_->InitWithProto(saved->GetBrowserState(), saved->GetLastActiveTime(),
+                          saved->GetTitle(), saved->GetVisibleURL(),
+                          saved->GetFaviconStatus(), std::move(storage),
+                          saved->TakeNativeSessionFetcher());
+
+    // Delete the SerializedData without calling TearDown() as the WebState
+    // itself is not destroyed. The TearDown() method will be called on the
+    // RealizedWebState in WebStateImpl destructor.
+    saved.reset();
 
     // Notify all observers that the WebState has become realized.
     for (auto& observer : observers_)

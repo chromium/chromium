@@ -66,13 +66,17 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   // from `storage`. The `last_active_time`, `page_title` and `visible_url`
   // comes from the metadata loaded when the WebState was created in the
   // unrealized state, and `favicon_status` may have been changed before
-  // the realisation.
+  // the realisation. The `session_fetcher` will be used by the navigation
+  // manager to restore the native session (can be unset if the operation,
+  // is not supported, e.g. in iOS WebView, or the callback may return nil
+  // if the operation fails).
   void InitWithProto(BrowserState* browser_state,
                      base::Time last_active_time,
                      std::u16string page_title,
                      GURL page_visible_url,
                      FaviconStatus favicon_status,
-                     proto::WebStateStorage storage);
+                     proto::WebStateStorage storage,
+                     NativeSessionFetcher session_fetcher);
 
   // Serializes the object to `storage`.
   void SerializeToProto(proto::WebStateStorage& storage) const;

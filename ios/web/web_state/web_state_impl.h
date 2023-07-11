@@ -67,6 +67,9 @@ class WebStateImpl final : public WebState {
   using WebStateStorageLoader =
       base::OnceCallback<void(proto::WebStateStorage&)>;
 
+  // Callback used to fetch the native session for the WebState.
+  using NativeSessionFetcher = base::OnceCallback<NSData*()>;
+
   // Empty structure used to mark the constructor used to implement Clone.
   struct CloneFrom {};
 

@@ -27,7 +27,8 @@ WebStateImpl::SerializedData::SerializedData(
     NSString* stable_identifier,
     SessionID unique_identifier,
     proto::WebStateMetadataStorage metadata,
-    WebStateStorageLoader storage_loader)
+    WebStateStorageLoader storage_loader,
+    NativeSessionFetcher session_fetcher)
     : owner_(owner),
       browser_state_(browser_state),
       stable_identifier_(stable_identifier),
@@ -37,7 +38,8 @@ WebStateImpl::SerializedData::SerializedData(
       page_title_(base::UTF8ToUTF16(metadata.active_page().page_title())),
       page_visible_url_(metadata.active_page().page_url()),
       navigation_item_count_(metadata.navigation_item_count()),
-      storage_loader_(std::move(storage_loader)) {
+      storage_loader_(std::move(storage_loader)),
+      session_fetcher_(std::move(session_fetcher)) {
   DCHECK(owner_);
   DCHECK(browser_state_);
 }
@@ -69,6 +71,11 @@ void WebStateImpl::SerializedData::SetSessionStorage(
 WebStateImpl::WebStateStorageLoader
 WebStateImpl::SerializedData::TakeStorageLoader() {
   return std::move(storage_loader_);
+}
+
+WebStateImpl::NativeSessionFetcher
+WebStateImpl::SerializedData::TakeNativeSessionFetcher() {
+  return std::move(session_fetcher_);
 }
 
 base::Time WebStateImpl::SerializedData::GetLastActiveTime() const {
