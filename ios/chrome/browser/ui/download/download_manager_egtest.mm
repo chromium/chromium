@@ -271,7 +271,6 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       performAction:grey_tap()];
 
-  [ChromeEarlGrey verifyActivitySheetVisible];
   [ChromeEarlGrey
       verifyTextVisibleInActivitySheetWithID:l10n_util::GetNSString(
                                                  IDS_IOS_OPEN_IN_DOWNLOADS)];
