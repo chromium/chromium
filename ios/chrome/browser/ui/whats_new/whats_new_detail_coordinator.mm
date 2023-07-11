@@ -157,7 +157,6 @@
 
 - (void)confirmationAlertPrimaryAction {
   [self.actionHandler didTapActionButton:self.item.type];
-  [self dismiss];
 }
 
 - (void)confirmationAlertSecondaryAction {

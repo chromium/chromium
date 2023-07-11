@@ -65,10 +65,13 @@
 
   switch (type) {
     case WhatsNewType::kUseChromeByDefault:
-    case WhatsNewType::kIncognitoTabsFromOtherApps:
-    case WhatsNewType::kIncognitoLock:
       // Handles actions that open iOS Settings.
       [self openSettingsURLString];
+      break;
+    case WhatsNewType::kIncognitoTabsFromOtherApps:
+    case WhatsNewType::kIncognitoLock:
+      [self.handler
+          showPrivacySettingsFromViewController:self.baseViewController];
       break;
     case WhatsNewType::kAddPasswordManually:
       // Handles actions that open Chrome Settings.

@@ -71,7 +71,6 @@
 
 - (void)confirmationAlertPrimaryAction {
   [self.actionHandler didTapActionButton:self.item.type];
-  [self.delegate dismissWhatsNewInstructionsCoordinator:self];
 }
 
 - (void)confirmationAlertSecondaryAction {
