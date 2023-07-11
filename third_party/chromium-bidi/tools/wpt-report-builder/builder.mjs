@@ -17,7 +17,7 @@
 
 import fs from 'fs';
 
-import {generateReport} from './htmlWptReportFormatter.mjs';
+import {generateReport} from './formatter.mjs';
 
 function readReport(filePath) {
   const rawReport = fs.readFileSync(filePath);

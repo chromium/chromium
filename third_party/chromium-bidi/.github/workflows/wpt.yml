@@ -174,7 +174,7 @@ jobs:
       - name: Generate HTML test report
         if: success() || failure()
         run: >
-          node test-report/htmlWptReport.mjs
+          node tools/wpt-report-builder/builder.mjs
           out/wptreport.json
           out/wptreport.html
       - name: Upload expectations

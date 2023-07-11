@@ -22,7 +22,7 @@ import {
   flattenSingleTest,
   flattenTests,
   groupTests,
-} from './htmlWptReportFormatter.mjs';
+} from './formatter.mjs';
 
 describe('HTML WPT reporter', () => {
   it('should escapeHtml', () => {
