@@ -202,7 +202,7 @@ class CONTENT_EXPORT SiteInstanceGroup
   // List of SiteInstanceImpls that belong in this group. When any SiteInstance
   // in the set goes away, it must also be removed from `site_instances_` to
   // prevent UaF.
-  base::flat_set<SiteInstanceImpl*> site_instances_;
+  base::flat_set<raw_ptr<SiteInstanceImpl>> site_instances_;
 
   base::ObserverList<Observer, true>::Unchecked observers_;
 
