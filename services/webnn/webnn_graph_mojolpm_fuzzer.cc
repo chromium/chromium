@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -50,7 +51,7 @@ class WebnnGraphLPMFuzzer {
       : testcase_(testcase) {}
 
   void NextAction() {
-    const auto& action = testcase_.actions(action_index_);
+    const auto& action = testcase_->actions(action_index_);
     const auto& create_graph = action.create_graph();
     auto graph_info_ptr = webnn::mojom::GraphInfo::New();
     mojolpm::FromProto(create_graph.graph_info(), graph_info_ptr);
@@ -59,10 +60,11 @@ class WebnnGraphLPMFuzzer {
     ++action_index_;
   }
 
-  bool IsFinished() { return action_index_ >= testcase_.actions_size(); }
+  bool IsFinished() { return action_index_ >= testcase_->actions_size(); }
 
  private:
-  const services::fuzzing::webnn_graph::proto::Testcase& testcase_;
+  const raw_ref<const services::fuzzing::webnn_graph::proto::Testcase>
+      testcase_;
   int action_index_ = 0;
 };
 
