@@ -675,6 +675,11 @@ void TrainingDataCollectorImpl::OnGetStoredTrainingData(
   base::Time observation_time =
       ComputeObservationTiming(segment_info, prediction_time);
 
+  VLOG(1) << "Generating training data for segment "
+          << proto::SegmentId_Name(segment_info.segment_id())
+          << ". Prediction time: " << prediction_time
+          << " Observation time: " << observation_time;
+
   // Generate training data output.
   feature_list_query_processor_->ProcessFeatureList(
       segment_info.model_metadata(), /*input_context=*/nullptr,

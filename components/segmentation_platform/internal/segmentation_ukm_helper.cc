@@ -308,9 +308,19 @@ bool SegmentationUkmHelper::AllowedToUploadData(
   // If the local state is never set, return false.
   if (most_recent_allowed.is_null() ||
       most_recent_allowed == base::Time::Max()) {
+    VLOG(1) << "UKM consent not granted";
     return false;
   }
-  return most_recent_allowed + signal_storage_length < clock->Now();
+
+  if (most_recent_allowed + signal_storage_length < clock->Now()) {
+    return true;
+  } else {
+    VLOG(1) << "UKM consent granted on: " << most_recent_allowed
+            << ". Waiting for the model's storage period ("
+            << most_recent_allowed + signal_storage_length
+            << ") to avoid uploading data collected pre-consent";
+    return false;
+  }
 }
 
 }  // namespace segmentation_platform
