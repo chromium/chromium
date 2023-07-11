@@ -110,11 +110,12 @@
 - (NSString*)lastSyncTimeStringFromTime:(base::Time)time {
   NSString* timeString;
   base::TimeDelta lastUsedDelta = base::Time::Now() - time;
+  base::TimeDelta oneMinuteDelta = base::Minutes(1);
 
-  if (lastUsedDelta.InMicroseconds() < base::Time::kMicrosecondsPerMinute) {
-    timeString = l10n_util::GetNSString(IDS_IOS_OPEN_TABS_RECENTLY_SYNCED);
-    // This will return something similar to "Seconds ago".
-    return [NSString stringWithFormat:@"%@", timeString];
+  // If the tab was synchronized within the last minute, set the time delta to 1
+  // minute.
+  if (lastUsedDelta < oneMinuteDelta) {
+    lastUsedDelta = oneMinuteDelta;
   }
 
   NSDate* date = [NSDate dateWithTimeIntervalSince1970:time.ToTimeT()];
