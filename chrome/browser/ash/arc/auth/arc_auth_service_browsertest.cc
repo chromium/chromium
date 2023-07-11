@@ -299,8 +299,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)));
     ExpandPropertyFilesForTesting(ArcSessionManager::Get());
-
-    ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
   }
 
   void TearDownOnMainThread() override {
@@ -330,7 +328,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     identity_test_environment_adaptor_.reset();
     profile_.reset();
     user_manager_enabler_.reset();
-    ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(false);
   }
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
@@ -428,6 +425,9 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     WaitForInstanceReady(arc_bridge_service_->auth());
     // Waiting for users and profiles to be setup.
     base::RunLoop().RunUntilIdle();
+
+    EXPECT_TRUE(user_manager::UserManager::Get()->IsPrimaryUser(
+        ash::ProfileHelper::Get()->GetUserByProfile(profile())));
   }
 
   bool SetIsAccountAvailableInArc(std::string gaia, bool is_available) {
