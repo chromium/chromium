@@ -95,6 +95,11 @@ IndexedDBKey CreateKey(FuzzedDataProvider* fuzzed_data) {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider fuzzed_data(data, size);
   auto key = CreateKey(&fuzzed_data);
+  // We try to catch invalid keys upstream of `EncodeIDBKey`. Should one slip
+  // through, `EncodeIDBKey` will CHECK.
+  if (!key.IsValid()) {
+    return 0;
+  }
   std::string result;
   content::EncodeIDBKey(key, &result);
 

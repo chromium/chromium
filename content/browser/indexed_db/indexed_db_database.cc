@@ -1174,7 +1174,9 @@ Status IndexedDBDatabase::PutOperation(
     key = std::move(params->key);
   }
 
-  DCHECK(key->IsValid());
+  if (!key->IsValid()) {
+    return leveldb::Status::InvalidArgument("Invalid key");
+  }
 
   IndexedDBBackingStore::RecordIdentifier record_identifier;
   if (params->put_mode == blink::mojom::IDBPutMode::AddOnly) {

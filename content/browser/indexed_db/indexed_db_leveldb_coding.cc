@@ -238,7 +238,7 @@ void EncodeDouble(double value, std::string* into) {
 
 void EncodeIDBKey(const IndexedDBKey& value, std::string* into) {
   size_t previous_size = into->size();
-  DCHECK(value.IsValid());
+  CHECK(value.IsValid());
   switch (value.type()) {
     case blink::mojom::IDBKeyType::Array: {
       EncodeByte(kIndexedDBKeyArrayTypeByte, into);
@@ -281,7 +281,7 @@ void EncodeIDBKey(const IndexedDBKey& value, std::string* into) {
 
 void EncodeSortableIDBKey(const IndexedDBKey& value, std::string* into) {
   size_t previous_size = into->size();
-  DCHECK(value.IsValid());
+  CHECK(value.IsValid());
   switch (value.type()) {
     case blink::mojom::IDBKeyType::Array: {
       EncodeByte(kOrderedArrayTypeByte, into);
@@ -536,7 +536,6 @@ bool DecodeIDBKeyRecursive(StringPiece* slice,
     }
   }
 
-  NOTREACHED();
   return false;
 }
 

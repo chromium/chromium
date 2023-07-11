@@ -361,6 +361,11 @@ void DatabaseImpl::SetIndexKeys(
   if (!transaction)
     return;
 
+  if (!primary_key.IsValid()) {
+    mojo::ReportBadMessage("SetIndexKeys used with invalid key.");
+    return;
+  }
+
   if (transaction->mode() != blink::mojom::IDBTransactionMode::VersionChange) {
     mojo::ReportBadMessage(
         "SetIndexKeys must be called from a version change transaction.");
