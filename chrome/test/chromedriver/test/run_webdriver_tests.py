@@ -251,8 +251,10 @@ class WebDriverTestRunner:
         raise RuntimeError('ChromeDriver is not running')
       set_up_config(self._path_finder, self._chromedriver_server)
 
-  def run_test(self, path, skipped_tests=[]):
+  def pytest_runtest_setup(self, item):
     self._ensure_server_running()
+
+  def run_test(self, path, skipped_tests=[]):
     abs_path = os.path.abspath(path)
     external_path = self._path_finder.strip_web_tests_path(abs_path)
     subtests = SubtestResultRecorder(external_path, self._port)
@@ -262,7 +264,7 @@ class WebDriverTestRunner:
     pytest_args = [path] + skip_test_flag + \
         ['--rootdir=' + self._path_finder.web_tests_dir()]
 
-    pytest.main(pytest_args, plugins=[subtests])
+    pytest.main(pytest_args, plugins=[subtests, self])
     return subtests.result
 
 
