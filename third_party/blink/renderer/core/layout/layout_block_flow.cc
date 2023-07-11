@@ -372,19 +372,17 @@ void LayoutBlockFlow::ChildBecameFloatingOrOutOfFlow(LayoutBox* child) {
   MakeChildrenInlineIfPossible();
 
   // Reparent the child to an adjacent anonymous block if one is available.
-  LayoutObject* prev = child->PreviousSibling();
-  auto* new_container = DynamicTo<LayoutBlockFlow>(prev);
-  if (prev && prev->IsAnonymousBlock() && new_container) {
-    MoveChildTo(new_container, child, nullptr, false);
+  auto* prev = DynamicTo<LayoutBlockFlow>(child->PreviousSibling());
+  if (prev && prev->IsAnonymousBlock()) {
+    MoveChildTo(prev, child, nullptr, false);
     // The anonymous block we've moved to may now be adjacent to former siblings
     // of ours that it can contain also.
-    new_container->ReparentSubsequentFloatingOrOutOfFlowSiblings();
+    prev->ReparentSubsequentFloatingOrOutOfFlowSiblings();
     return;
   }
-  LayoutObject* next = child->NextSibling();
-  new_container = DynamicTo<LayoutBlockFlow>(next);
-  if (next && next->IsAnonymousBlock() && next->IsLayoutBlockFlow()) {
-    MoveChildTo(new_container, child, new_container->FirstChild(), false);
+  auto* next = DynamicTo<LayoutBlockFlow>(child->NextSibling());
+  if (next && next->IsAnonymousBlock()) {
+    MoveChildTo(next, child, next->FirstChild(), false);
   }
 }
 
