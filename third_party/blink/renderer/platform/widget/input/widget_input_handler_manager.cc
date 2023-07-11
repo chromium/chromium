@@ -471,8 +471,8 @@ void WidgetInputHandlerManager::LogInputTimingUMA() {
   bool should_emit_uma;
   {
     base::AutoLock lock(uma_data_lock_);
-    should_emit_uma = !uma_data_.have_emitted_uma_;
-    uma_data_.have_emitted_uma_ = true;
+    should_emit_uma = !uma_data_.have_emitted_uma;
+    uma_data_.have_emitted_uma = true;
   }
 
   if (!should_emit_uma)
@@ -492,7 +492,7 @@ void WidgetInputHandlerManager::LogInputTimingUMA() {
     }
   }
 
-  UMA_HISTOGRAM_ENUMERATION("PaintHolding.InputTiming3", lifecycle_state);
+  UMA_HISTOGRAM_ENUMERATION("PaintHolding.InputTiming4", lifecycle_state);
 }
 
 void WidgetInputHandlerManager::RecordMetricsForDroppedEventsBeforePaint(
@@ -500,17 +500,23 @@ void WidgetInputHandlerManager::RecordMetricsForDroppedEventsBeforePaint(
   // Initialize to 0 timestamp and log 0 if there was no suppressed event or
   // the most recent suppressed event was before the first_paint_time
   auto diff = base::TimeDelta();
+  int suppressed_interactions_count = 0;
   int suppressed_events_count = 0;
   {
     base::AutoLock lock(uma_data_lock_);
-    if (uma_data_.most_recent_suppressed_event_time_ > first_paint_time)
-      diff = uma_data_.most_recent_suppressed_event_time_ - first_paint_time;
+    if (uma_data_.most_recent_suppressed_event_time > first_paint_time) {
+      diff = uma_data_.most_recent_suppressed_event_time - first_paint_time;
+    }
 
-    suppressed_events_count = uma_data_.suppressed_events_count_;
+    suppressed_interactions_count = uma_data_.suppressed_interactions_count;
+    suppressed_events_count = uma_data_.suppressed_events_count;
   }
 
   UMA_HISTOGRAM_TIMES("PageLoad.Internal.SuppressedEventsTimingBeforePaint",
                       diff);
+  UMA_HISTOGRAM_COUNTS(
+      "PageLoad.Internal.SuppressedInteractionsCountBeforePaint",
+      suppressed_interactions_count);
   UMA_HISTOGRAM_COUNTS("PageLoad.Internal.SuppressedEventsCountBeforePaint",
                        suppressed_events_count);
 }
@@ -541,10 +547,12 @@ void WidgetInputHandlerManager::
 void WidgetInputHandlerManager::DispatchEvent(
     std::unique_ptr<WebCoalescedInputEvent> event,
     mojom::blink::WidgetInputHandler::DispatchEventCallback callback) {
-  bool event_is_move =
-      event->Event().GetType() == WebInputEvent::Type::kMouseMove ||
-      event->Event().GetType() == WebInputEvent::Type::kPointerMove;
-  if (!event_is_move) {
+  WebInputEvent::Type event_type = event->Event().GetType();
+  bool event_is_mouse_or_pointer_move =
+      event_type == WebInputEvent::Type::kMouseMove ||
+      event_type == WebInputEvent::Type::kPointerMove;
+  if (!event_is_mouse_or_pointer_move &&
+      event_type != WebInputEvent::Type::kTouchMove) {
     LogInputTimingUMA();
 
     // We only count it if the only reason we are suppressing is because we
@@ -552,8 +560,22 @@ void WidgetInputHandlerManager::DispatchEvent(
     if (suppressing_input_events_state_ ==
         static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted)) {
       base::AutoLock lock(uma_data_lock_);
-      uma_data_.most_recent_suppressed_event_time_ = base::TimeTicks::Now();
-      uma_data_.suppressed_events_count_ += 1;
+      uma_data_.most_recent_suppressed_event_time = base::TimeTicks::Now();
+      uma_data_.suppressed_events_count += 1;
+
+      // Each of the events in the condition below represents a single
+      // interaction by the user even though some of these events can fire
+      // multiple JS events.  For example, further downstream from here Blink
+      // `EventHandler` fires a JS "pointerdown" event (and under certain
+      // conditions even a "mousedown" event) for single a kTouchStart event
+      // here.
+      if (event_type == WebInputEvent::Type::kMouseDown ||
+          event_type == WebInputEvent::Type::kRawKeyDown ||
+          event_type == WebInputEvent::Type::kKeyDown ||
+          event_type == WebInputEvent::Type::kTouchStart ||
+          event_type == WebInputEvent::Type::kPointerDown) {
+        uma_data_.suppressed_interactions_count += 1;
+      }
     }
   }
 
@@ -574,7 +596,8 @@ void WidgetInputHandlerManager::DispatchEvent(
         ~static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted);
   }
 
-  if (suppress_input && !allow_pre_commit_input_ && !event_is_move) {
+  if (suppress_input && !allow_pre_commit_input_ &&
+      !event_is_mouse_or_pointer_move) {
     if (callback) {
       std::move(callback).Run(mojom::blink::InputEventResultSource::kMainThread,
                               ui::LatencyInfo(),
@@ -635,7 +658,7 @@ void WidgetInputHandlerManager::DispatchEvent(
           blocking_touch_dispatched_to_renderer_timestamp);
       has_seen_first_gesture_scroll_update_after_begin_ = false;
     }
-  } else if (WebInputEvent::IsPinchGestureEventType(event->Event().GetType())) {
+  } else if (WebInputEvent::IsPinchGestureEventType(event_type)) {
     const auto& gesture_event =
         static_cast<const WebGestureEvent&>(event->Event());
     metrics = cc::PinchEventMetrics::Create(
@@ -751,9 +774,10 @@ void WidgetInputHandlerManager::DidNavigate() {
       static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted);
 
   base::AutoLock lock(uma_data_lock_);
-  uma_data_.have_emitted_uma_ = false;
-  uma_data_.most_recent_suppressed_event_time_ = base::TimeTicks();
-  uma_data_.suppressed_events_count_ = 0;
+  uma_data_.have_emitted_uma = false;
+  uma_data_.most_recent_suppressed_event_time = base::TimeTicks();
+  uma_data_.suppressed_interactions_count = 0;
+  uma_data_.suppressed_events_count = 0;
 }
 
 void WidgetInputHandlerManager::OnDeferMainFrameUpdatesChanged(bool status) {

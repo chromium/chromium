@@ -329,24 +329,28 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   bool uses_input_handler_ = false;
 
   struct UmaData {
+    // Saves the number of user-interactions that would be dropped by the
+    // DropInputEventsBeforeFirstPaint feature (i.e. before receiving the first
+    // presentation of content).
+    int suppressed_interactions_count = 0;
+
     // Saves the number of events that would be dropped by the
     // DropInputEventsBeforeFirstPaint feature (i.e. before receiving the first
-    // presentation of content). This is important because it shows how many
-    // times user tried to interact with page but the event was dropped.
-    int suppressed_events_count_ = 0;
+    // presentation of content).
+    int suppressed_events_count = 0;
 
     // Saves most recent input event time that would be dropped by the
     // DropInputEventsBeforeFirstPaint feature (i.e. before receiving the first
     // presentation of content). If this is after the first paint timestamp,
     // we log the difference to track the worst dropped event experienced.
-    base::TimeTicks most_recent_suppressed_event_time_;
+    base::TimeTicks most_recent_suppressed_event_time;
 
     // Control of UMA. We emit one UMA metric per navigation telling us
     // whether any non-move input arrived before we starting updating the page
     // or displaying content to the user. It must be atomic because navigation
     // can occur on the renderer thread (resetting this) coincident with the UMA
     // being sent on the compositor thread.
-    bool have_emitted_uma_{false};
+    bool have_emitted_uma{false};
   };
 
   base::Lock uma_data_lock_;
