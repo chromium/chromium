@@ -32,13 +32,13 @@ import {getTemplate} from './manage_users_subpage.html.js';
 const SettingsManageUsersSubpageElementBase =
     DeepLinkingMixin(RouteObserverMixin(PolymerElement));
 
-interface SettingsManageUsersSubpageElement {
+export interface SettingsManageUsersSubpageElement {
   $: {
     addUserDialog: SettingsUsersAddUserDialogElement,
   };
 }
 
-class SettingsManageUsersSubpageElement extends
+export class SettingsManageUsersSubpageElement extends
     SettingsManageUsersSubpageElementBase {
   static get is() {
     return 'settings-manage-users-subpage' as const;

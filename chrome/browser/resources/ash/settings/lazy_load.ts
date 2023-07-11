@@ -203,6 +203,7 @@ export {SettingsLockScreenElement} from './os_people_page/lock_screen_subpage.js
 export {OsSettingsPersonalizationOptionsElement} from './os_people_page/os_personalization_options.js';
 export {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from './os_people_page/os_sync_browser_proxy.js';
 export {FingerprintSetupStep, SettingsSetupFingerprintDialogElement} from './os_people_page/setup_fingerprint_dialog.js';
+export {SettingsUserListElement} from './os_people_page/user_list.js';
 export {AddPrintServerDialogElement} from './os_printing_page/cups_add_print_server_dialog.js';
 export {AddPrinterManuallyDialogElement} from './os_printing_page/cups_add_printer_manually_dialog.js';
 export {AddPrinterManufacturerModelDialogElement} from './os_printing_page/cups_add_printer_manufacturer_model_dialog.js';
@@ -219,6 +220,7 @@ export {PRINTER_STATUS_QUERY_SHORT_DELAY_RANGE_MS, SettingsCupsSavedPrintersElem
 export {SettingsCupsAddPrinterDialogElement} from './os_printing_page/cups_settings_add_printer_dialog.js';
 export {OsSettingsPrintingPageElement} from './os_printing_page/os_printing_page.js';
 export {computePrinterState, getStatusReasonFromPrinterStatus, PrinterState, PrinterStatusReason, PrinterStatusSeverity} from './os_printing_page/printer_status.js';
+export {SettingsManageUsersSubpageElement} from './os_privacy_page/manage_users_subpage.js';
 export {MediaDevicesProxy} from './os_privacy_page/media_devices_proxy.js';
 export {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './os_privacy_page/privacy_hub_browser_proxy.js';
 export {SettingsPrivacyHubSubpage} from './os_privacy_page/privacy_hub_subpage.js';

@@ -40,7 +40,7 @@ const SettingsUserListElementBase =
     RouteObserverMixin(I18nMixin(CrScrollableMixin(PolymerElement)));
 
 
-class SettingsUserListElement extends SettingsUserListElementBase {
+export class SettingsUserListElement extends SettingsUserListElementBase {
   static get is() {
     return 'settings-user-list' as const;
   }
