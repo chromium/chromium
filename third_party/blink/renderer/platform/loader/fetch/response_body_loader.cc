@@ -143,7 +143,13 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
       return PublicState::kErrored;
     return bytes_consumer_->GetPublicState();
   }
-  Error GetError() const override { return bytes_consumer_->GetError(); }
+  Error GetError() const override {
+    if (bytes_consumer_->GetPublicState() == PublicState::kErrored) {
+      return bytes_consumer_->GetError();
+    }
+    DCHECK(loader_->IsAborted());
+    return Error{"Response body loading was aborted"};
+  }
   String DebugName() const override {
     StringBuilder builder;
     builder.Append("DelegatingBytesConsumer(");
