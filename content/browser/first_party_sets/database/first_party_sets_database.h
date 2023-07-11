@@ -51,9 +51,9 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
     // `LazyInit()` failed and a more specific error wasn't diagnosed.
     kError = 2,
     // `LazyInit()` failed due to a compatible version number being too high.
-    kTooNew = 3,
+    // kTooNew = 3, // No longer used
     // `LazyInit()` failed due to a version number being too low.
-    kTooOld = 4,
+    // kTooOld = 4,  // No longer used
     // `LazyInit()` was successful but data is considered corrupted.
     kCorrupted = 5,
 
