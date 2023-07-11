@@ -697,6 +697,7 @@ experimental domain Audits
       InvalidRegisterOsTriggerHeader
       WebAndOsHeaders
       NoWebOrOsSupport
+      NavigationRegistrationWithoutTransientUserActivation
 
   # Details for issues around "Attribution Reporting API" usage.
   # Explainer: https://github.com/WICG/attribution-reporting-api

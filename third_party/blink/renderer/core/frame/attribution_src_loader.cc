@@ -318,7 +318,18 @@ void AttributionSrcLoader::Register(const AtomicString& attribution_src,
 absl::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
     const KURL& navigation_url,
     Vector<KURL> attribution_src_urls,
-    HTMLAnchorElement* element) {
+    HTMLAnchorElement* element,
+    bool has_transient_user_activation) {
+  if (!has_transient_user_activation) {
+    LogAuditIssue(local_frame_->DomWindow(),
+                  AttributionReportingIssueType::
+                      kNavigationRegistrationWithoutTransientUserActivation,
+                  element,
+                  /*request_id=*/absl::nullopt,
+                  /*invalid_parameter=*/String());
+    return absl::nullopt;
+  }
+
   // TODO(apaseltiner): Add tests to ensure that this method can't be used to
   // register triggers.
 
@@ -344,23 +355,26 @@ absl::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
 absl::optional<Impression> AttributionSrcLoader::RegisterNavigation(
     const KURL& navigation_url,
     const AtomicString& attribution_src,
-    HTMLAnchorElement* element) {
+    HTMLAnchorElement* element,
+    bool has_transient_user_activation) {
   CHECK(!attribution_src.IsNull());
   CHECK(element);
 
   return RegisterNavigationInternal(
-      navigation_url, ParseAttributionSrc(attribution_src, element), element);
+      navigation_url, ParseAttributionSrc(attribution_src, element), element,
+      has_transient_user_activation);
 }
 
 absl::optional<Impression> AttributionSrcLoader::RegisterNavigation(
     const KURL& navigation_url,
-    const WebVector<WebString>& attribution_srcs) {
+    const WebVector<WebString>& attribution_srcs,
+    bool has_transient_user_activation) {
   return RegisterNavigationInternal(
       navigation_url,
       ParseAttributionSrcUrls(*this, *local_frame_->GetDocument(),
                               attribution_srcs,
                               /*element=*/nullptr),
-      /*element=*/nullptr);
+      /*element=*/nullptr, has_transient_user_activation);
 }
 
 bool AttributionSrcLoader::CreateAndSendRequests(

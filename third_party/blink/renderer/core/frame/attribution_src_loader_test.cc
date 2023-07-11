@@ -519,7 +519,8 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
 
   std::ignore = attribution_src_loader_->RegisterNavigation(
       /*navigation_url=*/KURL(), /*attribution_src=*/AtomicString(kUrl),
-      /*element=*/MakeGarbageCollected<HTMLAnchorElement>(GetDocument()));
+      /*element=*/MakeGarbageCollected<HTMLAnchorElement>(GetDocument()),
+      /*has_transient_user_activation=*/true);
 
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -664,7 +665,8 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
 
   std::ignore = attribution_src_loader_->RegisterNavigation(
       /*navigation_url=*/KURL(), /*attribution_src=*/AtomicString(kUrl),
-      /*element=*/MakeGarbageCollected<HTMLAnchorElement>(GetDocument()));
+      /*element=*/MakeGarbageCollected<HTMLAnchorElement>(GetDocument()),
+      /*has_transient_user_activation=*/true);
 
   url_test_helpers::ServeAsynchronousRequests();
 

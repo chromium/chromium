@@ -1,0 +1,11 @@
+Test that clicking an attributionsrc anchor without transient user activation triggers an issue.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            violatingNodeId : <number>
+            violationType : NavigationRegistrationWithoutTransientUserActivation
+        }
+    }
+}
+

@@ -1,0 +1,10 @@
+Test that using window.open with attributionsrc without transient user activation triggers an issue.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            violationType : NavigationRegistrationWithoutTransientUserActivation
+        }
+    }
+}
+

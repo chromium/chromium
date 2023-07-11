@@ -230,6 +230,10 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kNoWebOrOsSupport:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           NoWebOrOsSupport;
+    case AttributionReportingIssueType::
+        kNavigationRegistrationWithoutTransientUserActivation:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          NavigationRegistrationWithoutTransientUserActivation;
   }
 }
 

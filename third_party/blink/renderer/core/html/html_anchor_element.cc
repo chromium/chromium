@@ -472,7 +472,7 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
 
   if (const AtomicString& attribution_src =
           FastGetAttribute(html_names::kAttributionsrcAttr);
-      request.HasUserGesture() && !attribution_src.IsNull()) {
+      !attribution_src.IsNull()) {
     // An impression must be attached prior to the
     // `FindOrCreateFrameForNavigation()` call, as that call may result in
     // performing a navigation if the call results in creating a new window with
@@ -486,7 +486,7 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
     frame_request.SetImpression(
         frame->GetAttributionSrcLoader()->RegisterNavigation(
             /*navigation_url=*/completed_url, attribution_src,
-            /*element=*/this));
+            /*element=*/this, request.HasUserGesture()));
   }
 
   Frame* target_frame =

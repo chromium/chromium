@@ -61,6 +61,7 @@ enum class AttributionReportingIssueType {
   kInvalidRegisterOsTriggerHeader,
   kWebAndOsHeaders,
   kNoWebOrOsSupport,
+  kNavigationRegistrationWithoutTransientUserActivation,
 };
 
 enum class SharedArrayBufferIssueType {
