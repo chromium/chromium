@@ -703,30 +703,6 @@ void PasswordManager::CreatePendingLoginManagers(
 
   // Record whether or not this top-level URL has at least one password field.
   client_->AnnotateNavigationEntry(!forms_data.empty());
-
-  // Only report SSL error status for cases where there are potentially forms to
-  // fill or save from.
-  if (!forms_data.empty()) {
-    metrics_util::CertificateError cert_error =
-        metrics_util::CertificateError::NONE;
-    const net::CertStatus cert_status = client_->GetMainFrameCertStatus();
-    // The order of the if statements matters -- if the status involves multiple
-    // errors, Chrome should report the one highest up in the list below.
-    if (cert_status & net::CERT_STATUS_AUTHORITY_INVALID)
-      cert_error = metrics_util::CertificateError::AUTHORITY_INVALID;
-    else if (cert_status & net::CERT_STATUS_COMMON_NAME_INVALID)
-      cert_error = metrics_util::CertificateError::COMMON_NAME_INVALID;
-    else if (cert_status & net::CERT_STATUS_WEAK_SIGNATURE_ALGORITHM)
-      cert_error = metrics_util::CertificateError::WEAK_SIGNATURE_ALGORITHM;
-    else if (cert_status & net::CERT_STATUS_DATE_INVALID)
-      cert_error = metrics_util::CertificateError::DATE_INVALID;
-    else if (net::IsCertStatusError(cert_status))
-      cert_error = metrics_util::CertificateError::OTHER;
-
-    UMA_HISTOGRAM_ENUMERATION(
-        "PasswordManager.CertificateErrorsWhileSeeingForms", cert_error,
-        metrics_util::CertificateError::COUNT);
-  }
 }
 
 void PasswordManager::CreateFormManagers(

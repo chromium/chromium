@@ -1214,21 +1214,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.CertificateErrorsWhileSeeingForms"
-    enum="PasswordCertificateError" expires_after="2023-08-20">
-  <owner>battre@chromium.org</owner>
-  <owner>kazinova@google.com</owner>
-  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
-  <summary>
-    When the password manager sees new forms on the page, it records in this
-    histogram whether there were any SSL certificate errors. The presence of SSL
-    errors likely means that the password manger will stop working, so the
-    reporting is done at the last point when password manager is still
-    guaranteed to be active. Some particular errors are distinguished, with the
-    rest being reported in a catch-all bucket.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.CompromisedCredentials3.{Issue}"
     units="credentials" expires_after="M118">
   <owner>vasilii@chromium.org</owner>
