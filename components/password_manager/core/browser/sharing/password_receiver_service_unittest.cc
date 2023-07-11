@@ -30,6 +30,25 @@ IncomingSharingInvitation CreateIncomingSharingInvitation() {
   return invitation;
 }
 
+PasswordForm CreatePasswordForm() {
+  PasswordForm form;
+  form.url = GURL(kUrl);
+  form.signon_realm = form.url.spec();
+  form.username_value = kUsername;
+  form.password_value = kPassword;
+  return form;
+}
+
+IncomingSharingInvitation PasswordFormToIncomingSharingInvitation(
+    const PasswordForm& form) {
+  IncomingSharingInvitation invitation;
+  invitation.url = form.url;
+  invitation.username_element = form.username_element;
+  invitation.username_value = form.username_value;
+  invitation.password_element = form.password_element;
+  return invitation;
+}
+
 }  // namespace
 
 class PasswordReceiverServiceTest : public testing::Test {
@@ -79,24 +98,31 @@ TEST_F(PasswordReceiverServiceTest,
   PasswordForm stored_password =
       IncomingSharingInvitationToPasswordForm(invitation);
   stored_password.in_store = PasswordForm::Store::kProfileStore;
+  ASSERT_EQ(stored_password.type, PasswordForm::Type::kReceivedViaSharing);
   EXPECT_THAT(password_store().stored_passwords().at(invitation.url.spec()),
               testing::ElementsAre(stored_password));
 }
 
 TEST_F(PasswordReceiverServiceTest,
        ShouldIgnoreIncomingInvitationWhenPasswordAlreadyExists) {
-  IncomingSharingInvitation invitation = CreateIncomingSharingInvitation();
-  PasswordForm stored_password =
-      IncomingSharingInvitationToPasswordForm(invitation);
-  stored_password.in_store = PasswordForm::Store::kProfileStore;
-  AddLoginAndWait(stored_password);
+  PasswordForm existing_password = CreatePasswordForm();
+  // Mark the password as generated to guarantee that this remains as is and
+  // isn't overwritten by a password of type ReceivedViaSharing.
+  existing_password.type = PasswordForm::Type::kGenerated;
+  existing_password.in_store = PasswordForm::Store::kProfileStore;
+  AddLoginAndWait(existing_password);
 
+  // Simulate an incoming invitation for the same stored passwords.
+  IncomingSharingInvitation invitation =
+      PasswordFormToIncomingSharingInvitation(existing_password);
   password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
 
   RunUntilIdle();
 
+  // The store should contain the `existing_password` and the
+  // incoming invitation is ignored.
   EXPECT_THAT(password_store().stored_passwords().at(invitation.url.spec()),
-              testing::ElementsAre(stored_password));
+              testing::ElementsAre(existing_password));
 }
 
 TEST_F(PasswordReceiverServiceTest,

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/sharing/sharing_invitations.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
 
@@ -60,6 +61,7 @@ PasswordForm IncomingSharingInvitationToPasswordForm(
   form.scheme = invitation.scheme;
   form.display_name = invitation.display_name;
   form.date_created = base::Time::Now();
+  form.type = PasswordForm::Type::kReceivedViaSharing;
   // TODO(crbug.com/1448235): add the shared password metadata too.
   // TODO(crbug.com/1448235): set the correct password type.
   return form;
