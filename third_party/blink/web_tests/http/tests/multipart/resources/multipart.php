@@ -12,7 +12,8 @@
     }
 
     $i = 1;
-    while ($img = $_GET['img' . $i]) {
+    while (isset($_GET['img' . $i])) {
+        $img = $_GET['img' . $i];
         $images[$i] = file_get_contents($img);
         $i++;
     }

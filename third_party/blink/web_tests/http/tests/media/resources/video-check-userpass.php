@@ -1,6 +1,6 @@
 <?php
 
-    $auth = $_SERVER["HTTP_AUTHORIZATION"];
+    $auth = $_SERVER["HTTP_AUTHORIZATION"] ?? null;
     $url = $_SERVER["REQUEST_URI"];
 
     if (isset($auth) || stripos($url, "user:pass") !== false)

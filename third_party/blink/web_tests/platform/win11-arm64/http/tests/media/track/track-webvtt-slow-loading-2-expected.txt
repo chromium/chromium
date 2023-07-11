@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Slow loading WebVTT file interrupted in the middle of a timestamp line. assert_equals: expected 2 but got 0
-Harness: the test ran to completion.
-

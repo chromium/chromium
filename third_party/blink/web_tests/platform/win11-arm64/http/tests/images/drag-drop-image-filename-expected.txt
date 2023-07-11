@@ -1,2 +1,0 @@
-CONSOLE MESSAGE: FAIL: test image failed to load.
-
