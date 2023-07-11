@@ -492,14 +492,17 @@ if (!is_android && !is_ios && !is_chromeos) {
   static_library("enclave_device") {
     testonly = true
     sources = [
+      "enclave/authenticator_json_conversions.cc",
+      "enclave/authenticator_json_conversions.h",
+      "enclave/enclave_authenticator.cc",
+      "enclave/enclave_authenticator.h",
       "enclave/enclave_http_client.cc",
       "enclave/enclave_http_client.h",
-      "enclave/fido_enclave_device.cc",
-      "enclave/fido_enclave_device.h",
     ]
     deps = [
       ":fido",
       "//base",
+      "//components/cbor",
       "//components/device_event_log",
       "//net",
     ]
@@ -508,11 +511,15 @@ if (!is_android && !is_ios && !is_chromeos) {
   static_library("enclave_service") {
     testonly = true
     sources = [
+      "enclave/authenticator_json_conversions.cc",
+      "enclave/authenticator_json_conversions.h",
       "enclave/test/enclave_http_server.cc",
       "enclave/test/enclave_http_server.h",
     ]
     deps = [
       ":fido",
+      "//base",
+      "//components/cbor",
       "//mojo/public/cpp/bindings",
       "//net",
       "//net:test_support",

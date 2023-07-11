@@ -12,8 +12,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/v2_constants.h"
-#include "device/fido/enclave/fido_enclave_device.h"
+#include "device/fido/ctap_get_assertion_request.h"
+#include "device/fido/enclave/enclave_authenticator.h"
+#include "device/fido/fido_constants.h"
 
 namespace device {
 namespace {
@@ -28,10 +31,10 @@ const uint8_t kPeerPublicKey[] = {
     86,  252, 239, 210, 98,  147, 46,  198, 87,  75,  254, 37,  114,
     179, 110, 145, 23,  34,  208, 25,  171, 184, 129, 14,  84,  80};
 
-// This is an executable test harness that wraps FidoEnclaveDevice and can
+// This is an executable test harness that wraps EnclaveAuthenticator and can
 // initiate transactions.
-// TODO(kenrb): Delete class and file this when FidoEnclaveDevice is properly
-// integrated as a FIDO device and has proper unit tests.
+// TODO(kenrb): Delete class and file this when EnclaveAuthenticator is properly
+// integrated as a FIDO authenticator and has proper unit tests.
 class EnclaveTestClient {
  public:
   EnclaveTestClient() = default;
@@ -39,29 +42,37 @@ class EnclaveTestClient {
   int StartTransaction();
 
  private:
-  void Terminate(absl::optional<std::vector<uint8_t>> result);
+  void Terminate(CtapDeviceResponseCode result,
+                 std::vector<AuthenticatorGetAssertionResponse> response);
 
-  std::unique_ptr<FidoEnclaveDevice> device_;
+  std::unique_ptr<EnclaveAuthenticator> device_;
 
   base::RunLoop run_loop_;
 };
 
 int EnclaveTestClient::StartTransaction() {
-  device_ = std::make_unique<FidoEnclaveDevice>(kLocalUrl, kPeerPublicKey);
+  device_ = std::make_unique<EnclaveAuthenticator>(kLocalUrl, kPeerPublicKey);
   std::vector<uint8_t> msg = {'a', 'b', 'c', 'd'};
-  device_->DeviceTransact(msg, base::BindOnce(&EnclaveTestClient::Terminate,
-                                              base::Unretained(this)));
+  // Set RP ID only, for test purposes.
+  CtapGetAssertionRequest request("https://passkey.example", "");
+  device_->GetAssertion(
+      request, CtapGetAssertionOptions(),
+      base::BindOnce(&EnclaveTestClient::Terminate, base::Unretained(this)));
 
   run_loop_.Run();
   return 0;
 }
 
-void EnclaveTestClient::Terminate(absl::optional<std::vector<uint8_t>> result) {
-  if (result) {
-    std::cout << "Result from transaction: "
-              << base::HexEncode(result->data(), result->size()) << "\n";
+void EnclaveTestClient::Terminate(
+    CtapDeviceResponseCode result,
+    std::vector<AuthenticatorGetAssertionResponse> responses) {
+  if (result == CtapDeviceResponseCode::kSuccess) {
+    CHECK(responses.size() == 1u);
+
+    std::cout << "Returned credential for user: "
+              << *responses[0].user_entity->name << "\n";
   } else {
-    std::cout << "No result received";
+    std::cout << "Request completed with error: " << static_cast<int>(result);
   }
 
   run_loop_.Quit();
