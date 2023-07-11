@@ -8,7 +8,7 @@
 <translation id="1004218526896219317">साइट ऐक्सेस</translation>
 <translation id="1005274289863221750">अपना माइक्रोफ़ोन और कैमरा उपयोग करें</translation>
 <translation id="1005333234656240382">ADB डीबग करने की सुविधा चालू करें?</translation>
-<translation id="1006873397406093306">यह एक्सटेंशन साइटों पर आपका डेटा पढ़ सकता है और बदल सकता है. आप यह नियंत्रित कर सकते हैं कि एक्सटेंशन किन साइटों को ऐक्सेस करे.</translation>
+<translation id="1006873397406093306">यह एक्सटेंशन साइटों पर आपका डेटा पढ़ सकता है और बदल सकता है. यह नियंत्रित किया जा सकता है कि एक्सटेंशन किन साइटों को ऐक्सेस करे.</translation>
 <translation id="1007057452468855774">Google Play Store चालू करें</translation>
 <translation id="1008186147501209563">बुकमार्क निर्यात करें</translation>
 <translation id="1008557486741366299">अभी नहीं</translation>
@@ -435,7 +435,7 @@
 <translation id="1375321115329958930">सेव किए गए पासवर्ड</translation>
 <translation id="1375557162880614858">क्या आपको ChromeOS Flex के बिल्ट-इन स्क्रीन रीडर ChromeVox को चालू करना है?</translation>
 <translation id="1375938286942050085">सेट अप पूरा हो गया है! अब अपने डिवाइस को गेमिंग के लिए तैयार करें</translation>
-<translation id="137651782282853227">सहेजे गए पते यहां दिखाई देंगे</translation>
+<translation id="137651782282853227">सेव किए गए पते यहां दिखाई देंगे</translation>
 <translation id="1376771218494401509">&amp;विंडो को कोई नाम दें...</translation>
 <translation id="1377600615067678409">अभी के लिए छोड़ें</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> इस सेटिंग को नियंत्रित कर रहा है</translation>
@@ -846,7 +846,7 @@
 <translation id="1697150536837697295">कला</translation>
 <translation id="1697686431566694143">फ़ाइल में बदलाव करें</translation>
 <translation id="1698796500103229697">पैसे चुकाने के तरीके</translation>
-<translation id="1700079447639026019">वे साइटें जो कभी कुकी का इस्तेमाल नहीं कर सकती हैं</translation>
+<translation id="1700079447639026019">वे साइटें जो कुकी का इस्तेमाल कभी नहीं कर सकतीं</translation>
 <translation id="1700201317341192482">अपना वर्चुअल कार्ड हटाएं</translation>
 <translation id="1703331064825191675">अपने पासवर्ड की फ़िक्र छोड़ दें</translation>
 <translation id="1703666494654169921">साइटों को वर्चुअल रियलिटी वाले डिवाइसों या डेटा इस्तेमाल करने की अनुमति न दें</translation>
@@ -887,7 +887,7 @@
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />ऐप्लिकेशन हटाने के लिए, सेटिंग &gt; Google Play Store &gt; Android प्राथमिकताएं प्रबंधित करें &gt; ऐप्लिकेशन या ऐप्लिकेशन एडमिन पर जाएं. फिर उस ऐप्लिकेशन पर टैप करें जिसे आप अनइंस्टॉल करना चाहते हैं (ऐप्लिकेशन ढूंढने के लिए आपको दाएं या बाएं स्वाइप करना पड़ सकता है). फिर अनइंस्टॉल करें या बंद करें पर टैप करें.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">स्क्रोल करके आखिरी टैब की ओर जाएं</translation>
 <translation id="1731911755844941020">अनुरोध भेजा जा रहा है...</translation>
-<translation id="1733383495376208985">सिंक किए गए डेटा को <ph name="BEGIN_LINK" />अपने खुद के सिंक लंबे पासवर्ड<ph name="END_LINK" /> से सुरक्षित करें. इसमें Google Pay से भुगतान करने के तरीके और पते शामिल नहीं हैं.</translation>
+<translation id="1733383495376208985">सिंक किए गए डेटा को <ph name="BEGIN_LINK" />खुद के सिंक लंबे पासवर्ड<ph name="END_LINK" /> से सुरक्षित करें. इसमें Google Pay से भुगतान करने के तरीके और पते शामिल नहीं हैं.</translation>
 <translation id="1734212868489994726">हल्का नीला</translation>
 <translation id="1734230530703461088">समयसीमा के अंदर एक्सटेंशन लोड नहीं किए जा सके. कृपया अपने एडमिन से संपर्क करें.</translation>
 <translation id="1734824808160898225">हो सकता है कि <ph name="PRODUCT_NAME" /> खुद को अपडेट नहीं रख पाए</translation>
@@ -1333,7 +1333,7 @@
 <translation id="2097616539631531348">टैब का इस्तेमाल न होने पर, मेमोरी सेवर ने दूसरे कामों के लिए मेमोरी खाली की.</translation>
 <translation id="2098805196501063469">बचे हुए पासवर्ड जांचें</translation>
 <translation id="2099686503067610784">सर्वर प्रमाणपत्र "<ph name="CERTIFICATE_NAME" />" मिटाएं?</translation>
-<translation id="2100273922101894616">अपने आप साइन इन करने की सुविधा</translation>
+<translation id="2100273922101894616">अपने-आप साइन इन करने की सुविधा</translation>
 <translation id="2100986609271491802">फ़िलहाल, यह डिवाइस Chromebook पर Steam के साथ काम नहीं करता</translation>
 <translation id="2101225219012730419">वर्शन:</translation>
 <translation id="2102396546234652240">साइटों को आपका माइक्रोफ़ोन इस्तेमाल करने की अनुमति न दें</translation>
@@ -5193,7 +5193,7 @@
 <translation id="5499453227627332024">आपके Linux कंटेनर का नया वर्शन उपलब्ध है. आप सेटिंग ऐप्लिकेशन में जाकर, इसे बाद में भी अपग्रेड कर सकते हैं.</translation>
 <translation id="5499476581866658341">अब आपके पास अपने फ़ोन में मौजूद हाल की फ़ोटो और मीडिया देखने का विकल्प है</translation>
 <translation id="549957179819296104">नया आइकॉन</translation>
-<translation id="5500168250243071806">जब आप साइन इन होंगे, तब हो सकता है कि <ph name="BEGIN_LINK_SEARCH" />खोज इतिहास<ph name="END_LINK_SEARCH" /> और <ph name="BEGIN_LINK_GOOGLE" />अन्य तरह की गतिविधियां<ph name="END_LINK_GOOGLE" /> आपके Google खाते में सेव हो जाएं. आप किसी भी समय उन्हें मिटा सकते हैं.</translation>
+<translation id="5500168250243071806">हो सकता है कि आपके साइन इन होने पर, <ph name="BEGIN_LINK_SEARCH" />खोज इतिहास<ph name="END_LINK_SEARCH" /> और <ph name="BEGIN_LINK_GOOGLE" />अन्य तरह की गतिविधियां<ph name="END_LINK_GOOGLE" /> आपके Google खाते में सेव हो जाएं. उन्हें किसी भी समय मिटाया जा सकता है.</translation>
 <translation id="5500709606820808700">आज सुरक्षा जांच हुई है</translation>
 <translation id="5501322521654567960">बाईं ओर अलाइन साइड पैनल</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}one{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}other{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}}</translation>
@@ -6145,7 +6145,7 @@
 <translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करें</translation>
 <translation id="6354918092619878358">SECG अंडाकार वक्र secp256r1 (अर्थात ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">डिवाइस चालू रखें</translation>
-<translation id="63566973648609420">आपके सुरक्षित किए गए डेटा को सिर्फ़ वही व्यक्ति पढ़ सकता है जिसके पास आपका लंबा पासवर्ड है. लंबा पासवर्ड Google को नहीं भेजा जाता है. Google इसे सेव भी नहीं करता है. अगर आप अपना लंबा पासवर्ड भूल जाते हैं या यह सेटिंग बदलना चाहते हैं, तो आपको <ph name="BEGIN_LINK" />सिंक रीसेट करना होगा<ph name="END_LINK" />.</translation>
+<translation id="63566973648609420">आपके सुरक्षित किए गए डेटा को सिर्फ़ वही व्यक्ति पढ़ सकता है जिसके पास आपका लंबा पासवर्ड है. लंबा पासवर्ड Google को नहीं भेजा जाता है. Google इसे सेव भी नहीं करता है. अपना लंबा पासवर्ड भूल जाने पर या इस सेटिंग को बदलने के लिए, आपको <ph name="BEGIN_LINK" />सिंक रीसेट करना होगा<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">कुछ सहायता लिंक <ph name="APP_NAME" /> या  <ph name="APP_NAME_2" /> में अब भी खुलेंगे.</translation>
 <translation id="6357794994761110294">किसी भी एक्सटेंशन को, <ph name="SITE_NAME" /> पढ़ने और उसे बदलने की अनुमति नहीं है</translation>
 <translation id="6358884629796491903">ड्रैगन</translation>
@@ -7618,7 +7618,7 @@
 <translation id="7652954539215530680">एक पिन बनाएं</translation>
 <translation id="7654941827281939388">यह खाता पहले से ही इस कंप्‍यूटर पर उपयोग किया जा रहा है.</translation>
 <translation id="7655411746932645568">साइटें, सीरियल पोर्ट से कनेक्ट करने के लिए पूछ सकती हैं</translation>
-<translation id="7657218410916651670">जब आप साइन इन रहते हैं, तब हो सकता है कि <ph name="BEGIN_LINK_GOOGLE" />अन्य तरह की गतिविधियां<ph name="END_LINK_GOOGLE" /> आपके Google खाते में सेव हो जाएं. आप किसी भी समय उन्हें मिटा सकते हैं.</translation>
+<translation id="7657218410916651670">हो सकता है कि आपके साइन इन होने पर, <ph name="BEGIN_LINK_GOOGLE" />अन्य तरह की गतिविधियां<ph name="END_LINK_GOOGLE" /> आपके Google खाते में सेव हो जाएं. उन्हें किसी भी समय मिटाया जा सकता है.</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7659154729610375585">क्या आपको फिर भी गुप्त मोड से बाहर निकलना है?</translation>
 <translation id="7659297516559011665">सिर्फ़ इस डिवाइस में सेव किए गए पासवर्ड</translation>
