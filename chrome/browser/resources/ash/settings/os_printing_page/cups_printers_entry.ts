@@ -213,6 +213,13 @@ export class SettingsCupsPrintersEntryElement extends
     return this.showNearbyPrinterIcon_() || this.showPrinterStatusIcon_();
   }
 
+  // True if a printer or managed icon needs to be shown.
+  // TODO(b/278621575): Remove this function once Printer Settings Revamp flag
+  // is enabled because every entry will show either a printer or managed icon.
+  private showAnyIcon_(): boolean {
+    return this.showPrinterIcon_() || this.printerEntry.printerInfo.isManaged;
+  }
+
   private getPrinterIcon_(): string {
     const printerStatusIcon = this.isJellyEnabled_ ?
         `os-settings:printer-status-illo` :
