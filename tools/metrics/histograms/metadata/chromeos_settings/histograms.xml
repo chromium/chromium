@@ -107,6 +107,17 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Device.ChargingSoundsButtonEnabled"
+    enum="BooleanEnabled" expires_after="2024-07-31">
+  <owner>hongyulong@chromium.org</owner>
+  <owner>bicioglu@google.com</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Records when a user toggles the Charging sounds setting in the Audio subpage
+    of the Device section.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Device.KeyboardAutoRepeatEnabled"
     enum="BooleanEnabled" expires_after="2023-12-31">
   <owner>ckincaid@chromium.org</owner>
@@ -139,6 +150,17 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records when a user changes the kKeyboardFunctionKeys setting on the Device
     page.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Device.LowBatterySoundButtonEnabled"
+    enum="BooleanEnabled" expires_after="2024-07-31">
+  <owner>hongyulong@chromium.org</owner>
+  <owner>bicioglu@google.com</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Records when a user toggles the Low battery sound setting in the Audio
+    subpage of the Device section.
   </summary>
 </histogram>
 

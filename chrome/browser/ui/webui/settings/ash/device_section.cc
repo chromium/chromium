@@ -1258,6 +1258,18 @@ bool DeviceSection::LogMetric(mojom::Setting setting,
                                 value.GetBool());
       return true;
 
+    case mojom::Setting::kLowBatterySound:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Device.LowBatterySoundButtonEnabled",
+          value.GetBool());
+      return true;
+
+    case mojom::Setting::kChargingSounds:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Device.ChargingSoundsButtonEnabled",
+          value.GetBool());
+      return true;
+
     default:
       return false;
   }

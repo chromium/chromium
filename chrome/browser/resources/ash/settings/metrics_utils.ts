@@ -23,6 +23,15 @@ interface SettingAndType {
 
 // Sorted and grouped by page alphabetically.
 const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
+  // device_page/audio.ts
+  'ash.low_battery_sound.enabled': {
+    setting: Setting.kLowBatterySound,
+    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+  },
+  'ash.charging_sounds.enabled': {
+    setting: Setting.kChargingSounds,
+    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+  },
   // device_page/keyboard.ts
   'settings.language.send_function_keys': {
     setting: Setting.kKeyboardFunctionKeys,
