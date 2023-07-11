@@ -4119,7 +4119,8 @@ class WaylandSubsurfaceTest : public WaylandWindowTest {
         });
     wayland_subsurface->ConfigureAndShowSurface(
         subsurface_bounds, gfx::RectF(0, 0, 640, 480) /*parent_bounds_px*/,
-        absl::nullopt /*clip_rect_px*/, 1.f /*buffer_scale*/, nullptr, nullptr);
+        absl::nullopt /*clip_rect_px*/, gfx::OVERLAY_TRANSFORM_NONE,
+        1.f /*buffer_scale*/, nullptr, nullptr);
     connection_->Flush();
 
     PostToServerAndWait(
@@ -4205,9 +4206,9 @@ TEST_P(WaylandSubsurfaceTest, OneWaylandSubsurfaceNonInteger) {
 TEST_P(WaylandSubsurfaceTest, NoDuplicateSubsurfaceRequests) {
   auto subsurfaces = RequestWaylandSubsurface(3);
   for (auto* subsurface : subsurfaces) {
-    subsurface->ConfigureAndShowSurface(gfx::RectF(1.f, 2.f, 10.f, 20.f),
-                                        gfx::RectF(0.f, 0.f, 800.f, 600.f),
-                                        absl::nullopt, 1.f, nullptr, nullptr);
+    subsurface->ConfigureAndShowSurface(
+        gfx::RectF(1.f, 2.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
+        absl::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, nullptr, nullptr);
   }
   connection_->Flush();
 
@@ -4236,13 +4237,13 @@ TEST_P(WaylandSubsurfaceTest, NoDuplicateSubsurfaceRequests) {
   // Stack subsurfaces[0] to be from bottom to top, and change its position.
   subsurfaces[0]->ConfigureAndShowSurface(
       gfx::RectF(0.f, 0.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-      absl::nullopt, 1.f, subsurfaces[2], nullptr);
+      absl::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, subsurfaces[2], nullptr);
   subsurfaces[1]->ConfigureAndShowSurface(
       gfx::RectF(1.f, 2.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-      absl::nullopt, 1.f, nullptr, subsurfaces[2]);
+      absl::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, nullptr, subsurfaces[2]);
   subsurfaces[2]->ConfigureAndShowSurface(
       gfx::RectF(1.f, 2.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-      absl::nullopt, 1.f, nullptr, subsurfaces[0]);
+      absl::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, nullptr, subsurfaces[0]);
   connection_->Flush();
 
   VerifyAndClearExpectations();

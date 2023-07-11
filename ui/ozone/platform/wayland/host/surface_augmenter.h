@@ -36,6 +36,7 @@ class SurfaceAugmenter : public wl::GlobalObjectRegistrar<SurfaceAugmenter> {
 
   bool SupportsSubpixelAccuratePosition() const;
   bool SupportsClipRect() const;
+  bool SupportsTransform() const;
 
   uint32_t GetSurfaceAugmentorVersion() const;
 

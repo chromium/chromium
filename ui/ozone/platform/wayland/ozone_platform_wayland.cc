@@ -386,6 +386,8 @@ class OzonePlatformWayland : public OzonePlatform,
       properties.supports_native_pixmaps =
           surface_factory_->SupportsNativePixmaps();
       properties.supports_clip_rect = buffer_manager_->supports_clip_rect();
+      properties.supports_affine_transform =
+          buffer_manager_->supports_affine_transform();
     }
     return properties;
   }

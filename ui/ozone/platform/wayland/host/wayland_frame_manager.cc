@@ -258,7 +258,8 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
     } else {
       subsurface->ConfigureAndShowSurface(
           config.bounds_rect, root_config.bounds_rect, config.clip_rect,
-          root_config.surface_scale_factor, nullptr, reference_above);
+          config.transform, root_config.surface_scale_factor, nullptr,
+          reference_above);
       ApplySurfaceConfigure(frame.get(), surface, config, true);
       // A fatal error happened. Must stop the playback and terminate the gpu
       // process as it might have been compromised.
@@ -344,7 +345,9 @@ void WaylandFrameManager::ApplySurfaceConfigure(
       &WaylandFrameManager::FeedbackDiscarded};
 
   surface->set_buffer_transform(
-      absl::get<gfx::OverlayTransform>(config.transform));
+      absl::holds_alternative<gfx::OverlayTransform>(config.transform)
+          ? absl::get<gfx::OverlayTransform>(config.transform)
+          : gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE);
   surface->set_surface_buffer_scale(config.surface_scale_factor);
   surface->set_buffer_crop(config.crop_rect);
   surface->set_viewport_destination(config.bounds_rect.size());

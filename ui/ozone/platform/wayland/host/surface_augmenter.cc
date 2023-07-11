@@ -61,6 +61,11 @@ bool SurfaceAugmenter::SupportsClipRect() const {
          AUGMENTED_SUB_SURFACE_SET_CLIP_RECT_SINCE_VERSION;
 }
 
+bool SurfaceAugmenter::SupportsTransform() const {
+  return GetSurfaceAugmentorVersion() >=
+         AUGMENTED_SUB_SURFACE_SET_TRANSFORM_SINCE_VERSION;
+}
+
 uint32_t SurfaceAugmenter::GetSurfaceAugmentorVersion() const {
   return surface_augmenter_get_version(augmenter_.get());
 }

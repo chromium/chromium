@@ -102,6 +102,9 @@ void WaylandBufferManagerGpu::Initialize(
       AUGMENTED_SURFACE_SET_BACKGROUND_COLOR_SINCE_VERSION;
   supports_clip_rect_ = supported_surface_augmentor_version >=
                         AUGMENTED_SUB_SURFACE_SET_CLIP_RECT_SINCE_VERSION;
+  supports_affine_transform_ =
+      supported_surface_augmentor_version >=
+      AUGMENTED_SUB_SURFACE_SET_TRANSFORM_SINCE_VERSION;
 
   supports_single_pixel_buffer_ = supports_single_pixel_buffer;
   BindHostInterface(std::move(remote_host));

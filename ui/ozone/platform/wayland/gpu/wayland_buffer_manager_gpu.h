@@ -171,6 +171,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
     return supports_surface_background_color_;
   }
   bool supports_clip_rect() const { return supports_clip_rect_; }
+  bool supports_affine_transform() const { return supports_affine_transform_; }
 
   // Adds a WaylandBufferManagerGpu binding.
   void AddBindingWaylandBufferManagerGpu(
@@ -293,6 +294,10 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   bool supports_dmabuf_ = true;
 
   bool supports_clip_rect_ = false;
+
+  // Determines whether Wayland server supports delegating non axis-aligned 2d
+  // transforms.
+  bool supports_affine_transform_ = false;
 
   mojo::ReceiverSet<ozone::mojom::WaylandBufferManagerGpu> receiver_set_;
 
