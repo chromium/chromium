@@ -132,16 +132,17 @@ void CryptohomeCoreImpl::EndAuthSession(Client* client) {
   DCHECK(!clients_being_removed_.contains(client));
   clients_.erase(client);
   clients_being_removed_.insert(client);
+  if (!clients_.empty()) {
+    // Wait for all clients to issue EndAuthSession.
+    return;
+  }
+
   CHECK_NE(current_stage_, Stage::kIdle);
   if (current_stage_ == Stage::kAuthSessionRequested) {
     performer_->InvalidateCurrentAttempts();
   }
   current_stage_ = Stage::kIdle;
   auth_session_started_ = false;
-  if (!clients_.empty()) {
-    // Wait for all clients to issue EndAuthSession.
-    return;
-  }
   if (context_) {
     performer_->InvalidateAuthSession(
         std::move(context_),
