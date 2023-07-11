@@ -51,6 +51,16 @@ void FakeAccessibilityService::BindAssistiveTechnologyController(
   EnableAssistiveTechnology(enabled_features);
 }
 
+void FakeAccessibilityService::ConnectDevToolsAgent(
+    mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+    ax::mojom::AssistiveTechnologyType type) {
+  auto it = connect_devtools_counts.find(type);
+  if (it == connect_devtools_counts.end()) {
+    connect_devtools_counts[type] = 0;
+  }
+  connect_devtools_counts[type]++;
+}
+
 void FakeAccessibilityService::DispatchTreeDestroyedEvent(
     const ui::AXTreeID& tree_id) {
   tree_destroyed_events_.emplace_back(tree_id);
@@ -96,6 +106,15 @@ void FakeAccessibilityService::WaitForATChanged() {
   base::RunLoop runner;
   change_ATs_closure_ = runner.QuitClosure();
   runner.Run();
+}
+
+int FakeAccessibilityService::GetDevtoolsConnectionCount(
+    ax::mojom::AssistiveTechnologyType type) const {
+  auto it = connect_devtools_counts.find(type);
+  if (it == connect_devtools_counts.end()) {
+    return 0;
+  }
+  return it->second;
 }
 
 bool FakeAccessibilityService::IsBound() const {

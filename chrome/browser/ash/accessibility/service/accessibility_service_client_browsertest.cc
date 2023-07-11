@@ -19,7 +19,6 @@
 #include "content/public/browser/tts_utterance.h"
 #include "content/public/test/browser_test.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
-#include "services/accessibility/public/mojom/tts.mojom-shared.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -425,6 +424,29 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
   ToggleAutomationEnabled(client.get(), false);
   // Disabling multiple times has no bad effect.
   // fake_service_->AutomationClientEnable(false);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       DevToolsAgentHostCreated) {
+  // Enable an assistive technology. The service will not be started until
+  // some AT needs it.
+  auto client = TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  client->SetChromeVoxEnabled(true);
+  // A single agent host should have been created for chromevox.
+  auto count = fake_service_->GetDevtoolsConnectionCount(
+      AssistiveTechnologyType::kChromeVox);
+  EXPECT_EQ(count, 1);
+  // Disable and re-enable
+  client->SetChromeVoxEnabled(false);
+  client->SetChromeVoxEnabled(true);
+  count = fake_service_->GetDevtoolsConnectionCount(
+      AssistiveTechnologyType::kChromeVox);
+  EXPECT_EQ(count, 2);
+  // Different AT
+  client->SetSelectToSpeakEnabled(true);
+  count = fake_service_->GetDevtoolsConnectionCount(
+      AssistiveTechnologyType::kSelectToSpeak);
+  EXPECT_EQ(count, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsGetVoices) {

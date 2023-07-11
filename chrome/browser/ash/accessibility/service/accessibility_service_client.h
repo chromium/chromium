@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -65,6 +65,14 @@ class AccessibilityServiceClient
 
   void LaunchAccessibilityServiceAndBind();
 
+  void CreateDevToolsAgentHost(ax::mojom::AssistiveTechnologyType type);
+
+  // Function is used to create a callback that is passed into a
+  // AccessibilityServiceDevToolsDelegate. It should not be called directly.
+  void ConnectDevToolsAgent(
+      ::mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+      ax::mojom::AssistiveTechnologyType type);
+
   std::unique_ptr<AutomationClientImpl> automation_client_;
   std::unique_ptr<TtsClientImpl> tts_client_;
 
@@ -80,6 +88,11 @@ class AccessibilityServiceClient
   // This class receives mojom requests from the service via the interface
   // AccessibilityServiceClient.
   mojo::Receiver<ax::mojom::AccessibilityServiceClient> service_client_{this};
+
+  // Container mapping AT type and devtools host.
+  std::map<ax::mojom::AssistiveTechnologyType,
+           scoped_refptr<content::DevToolsAgentHost>>
+      devtools_agent_hosts_;
 };
 
 }  // namespace ash

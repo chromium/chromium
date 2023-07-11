@@ -38,7 +38,6 @@ MojomDevToolsAgentHost::MojomDevToolsAgentHost(
 }
 
 MojomDevToolsAgentHost::~MojomDevToolsAgentHost() {
-  auto retain_this = ForceDetachAllSessionsImpl();
   associated_agent_remote_.reset();
   delegate_.reset();
   base::Erase(host_ids(), GetId());

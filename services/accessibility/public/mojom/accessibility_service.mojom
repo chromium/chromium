@@ -9,6 +9,8 @@ import "services/accessibility/public/mojom/automation.mojom";
 
 [EnableIf=supports_os_accessibility_service]
 import "services/accessibility/public/mojom/tts.mojom";
+[EnableIf=supports_os_accessibility_service]
+import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
 
 // All the features which are implemented by the accessibility service.
 [EnableIf=supports_os_accessibility_service]
@@ -52,6 +54,14 @@ interface AccessibilityService {
   BindAssistiveTechnologyController(
     pending_receiver<AssistiveTechnologyController> at_controller,
     array<AssistiveTechnologyType> enabled_features);
+
+  // Establishes a debugger connection to the specific AT. The remote is held by
+  // in the browser process by a MojomDevToolsAgentHost. This function is called
+  // when the agent host is created.
+  [EnableIf=supports_os_accessibility_service]
+  ConnectDevToolsAgent(
+    pending_associated_receiver<blink.mojom.DevToolsAgent> agent,
+    AssistiveTechnologyType type);
 };
 
 // Implemented by the main OS process, e.g. Chrome OS Ash on Chrome OS. Allows

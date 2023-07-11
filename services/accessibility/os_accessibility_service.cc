@@ -33,4 +33,10 @@ void OSAccessibilityService::BindAssistiveTechnologyController(
   at_controller_->EnableAssistiveTechnology(enabled_features);
 }
 
+void OSAccessibilityService::ConnectDevToolsAgent(
+    ::mojo::PendingAssociatedReceiver<::blink::mojom::DevToolsAgent> agent,
+    mojom::AssistiveTechnologyType type) {
+  // TODO(francisjp): b/266767410 implement.
+}
+
 }  // namespace ax

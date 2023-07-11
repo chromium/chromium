@@ -30,6 +30,10 @@ class AccessibilityServiceRouter : public KeyedService {
           at_controller_receiver,
       const std::vector<mojom::AssistiveTechnologyType>& enabled_features);
 
+  virtual void ConnectDevToolsAgent(
+      ::mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+      mojom::AssistiveTechnologyType type);
+
  private:
   void LaunchIfNotRunning();
 

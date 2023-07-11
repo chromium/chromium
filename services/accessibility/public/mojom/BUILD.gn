@@ -24,7 +24,11 @@ mojom("mojom") {
     "//sandbox/policy/mojom",
   ]
   if (supports_os_accessibility_service) {
-    public_deps += [ ":os_service_mojom" ]
+    public_deps += [
+      ":os_service_mojom",
+      "//third_party/blink/public/mojom:mojom_platform",
+      "//ui/accessibility/mojom",
+    ]
   }
 }
 

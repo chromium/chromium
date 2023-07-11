@@ -100,7 +100,7 @@ mojom("mojom") {
     "//content/public/common:interfaces",
     "//extensions/common/api:mojom",
     "//mojo/public/mojom/base",
-    "//services/accessibility/public/mojom",
+    "//services/accessibility/public/mojom:automation",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]

@@ -44,7 +44,11 @@ class FakeAccessibilityService
       const std::vector<ax::mojom::AssistiveTechnologyType>& enabled_features)
       override;
 
-  // ax::mojom::Automation:
+  void ConnectDevToolsAgent(
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+      ax::mojom::AssistiveTechnologyType type) override;
+
+  // TODO(crbug.com/1355633): Override from ax::mojom::Automation:
   void DispatchTreeDestroyedEvent(const ui::AXTreeID& tree_id) override;
   void DispatchActionResult(const ui::AXActionData& data, bool result) override;
   void DispatchAccessibilityEvents(
@@ -76,6 +80,8 @@ class FakeAccessibilityService
   const std::set<ax::mojom::AssistiveTechnologyType>& GetEnabledATs() const {
     return enabled_ATs_;
   }
+
+  int GetDevtoolsConnectionCount(ax::mojom::AssistiveTechnologyType type) const;
 
   // Allows tests to bind APIs multiple times, mimicking multiple
   // V8 instances in the service.
@@ -138,6 +144,8 @@ class FakeAccessibilityService
   std::vector<std::tuple<ui::AXActionData, bool>> action_results_;
   std::vector<ui::AXTreeID> accessibility_events_;
   std::vector<ui::AXTreeID> location_changes_;
+
+  std::map<ax::mojom::AssistiveTechnologyType, int> connect_devtools_counts;
 
   mojo::AssociatedReceiverSet<ax::mojom::Automation> automation_receivers_;
   mojo::RemoteSet<ax::mojom::AutomationClient> automation_client_remotes_;

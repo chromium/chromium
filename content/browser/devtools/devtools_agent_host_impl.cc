@@ -132,6 +132,8 @@ const char DevToolsAgentHost::kTypeBrowser[] = "browser";
 const char DevToolsAgentHost::kTypeGuest[] = "webview";
 const char DevToolsAgentHost::kTypeOther[] = "other";
 const char DevToolsAgentHost::kTypeAuctionWorklet[] = "auction_worklet";
+const char DevToolsAgentHost::kTypeAssistiveTechnology[] =
+    "assistive_technology";
 int DevToolsAgentHostImpl::s_force_creation_count_ = 0;
 
 // static
