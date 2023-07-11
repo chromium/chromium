@@ -4264,13 +4264,15 @@ TEST_F(BluetoothBlueZTest, Shutdown) {
       {kGapUuid, kGattUuid, kPnpUuid, kHeadsetUuid});
   EXPECT_TRUE(SetPoweredBlocking(true));
   adapter_->SetDiscoverable(true, GetCallback(), GetErrorCallback());
-  adapter_->StartDiscoverySession(
-      /*client_name=*/std::string(),
-      base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
-                     base::Unretained(this)),
-      GetErrorCallback());
-  base::RunLoop().Run();
-  ASSERT_EQ(2, callback_count_);
+
+  auto observer = std::make_unique<TestBluetoothAdapterObserver>(adapter_);
+  base::test::RepeatingTestFuture<void> discoverying_changed;
+  observer->RegisterDiscoveringChangedWatcher(
+      discoverying_changed.GetCallback());
+
+  discovery_sessions_.push_back(StartDiscoverySessionBlocking());
+
+  ASSERT_EQ(1, callback_count_);
   ASSERT_EQ(0, error_callback_count_);
   callback_count_ = 0;
 
@@ -4279,6 +4281,7 @@ TEST_F(BluetoothBlueZTest, Shutdown) {
       &pairing_delegate, BluetoothAdapter::PAIRING_DELEGATE_PRIORITY_HIGH);
 
   // Validate running adapter state.
+  discoverying_changed.Take();
   EXPECT_NE("", adapter_->GetAddress());
   EXPECT_NE("", adapter_->GetName());
   EXPECT_EQ(4U, adapter_->GetUUIDs().size());
@@ -4299,11 +4302,10 @@ TEST_F(BluetoothBlueZTest, Shutdown) {
 
   // Validate post shutdown state by calling all BluetoothAdapterBlueZ
   // members, in declaration order:
-
   // DeleteOnCorrectThread omitted as we don't want to delete in this test.
-  {
-    TestBluetoothAdapterObserver observer(adapter_);  // Calls AddObserver
-  }  // ~TestBluetoothAdapterObserver calls RemoveObserver.
+  // ~TestBluetoothAdapterObserver calls RemoveObserver.
+  observer.reset();
+
   EXPECT_EQ("", adapter_->GetAddress());
   EXPECT_EQ("", adapter_->GetName());
   EXPECT_EQ(0U, adapter_->GetUUIDs().size());
@@ -4401,13 +4403,14 @@ TEST_F(BluetoothBlueZTest, Shutdown) {
   EXPECT_EQ(0, callback_count_) << "OnPropertyChangeCompleted error";
   EXPECT_EQ(1, error_callback_count_--) << "OnPropertyChangeCompleted error";
 
-  adapter_bluez->StartDiscoverySession(
-      /*client_name=*/std::string(),
-      base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
-                     base::Unretained(this)),
-      GetErrorCallback());
-  EXPECT_EQ(0, callback_count_) << "AddDiscoverySession error";
-  EXPECT_EQ(1, error_callback_count_--) << "AddDiscoverySession error";
+  base::test::TestFuture<void> error_future;
+  StrictMock<base::MockCallback<BluetoothAdapter::DiscoverySessionCallback>>
+      success_callback;
+  adapter_bluez->StartDiscoverySession(/*client_name=*/std::string(),
+                                       success_callback.Get(),
+                                       error_future.GetCallback());
+  EXPECT_TRUE(error_future.Wait());
+  error_future.Clear();
 
   // OnStartDiscovery tested in Shutdown_OnStartDiscovery
   // OnStartDiscoveryError tested in Shutdown_OnStartDiscoveryError
@@ -4443,13 +4446,10 @@ TEST_F(BluetoothBlueZTest, Shutdown) {
 
   // From BluetoothAdapater:
 
-  adapter_->StartDiscoverySession(
-      /*client_name=*/std::string(),
-      base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
-                     base::Unretained(this)),
-      GetErrorCallback());
-  EXPECT_EQ(0, callback_count_) << "StartDiscoverySession error";
-  EXPECT_EQ(1, error_callback_count_--) << "StartDiscoverySession error";
+  adapter_bluez->StartDiscoverySession(/*client_name=*/std::string(),
+                                       success_callback.Get(),
+                                       error_future.GetCallback());
+  EXPECT_TRUE(error_future.Wait());
 
   EXPECT_EQ(0U, adapter_->GetDevices().size());
   EXPECT_EQ(nullptr,
