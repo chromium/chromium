@@ -229,11 +229,7 @@ notarize() {
   if [[ -n "${NOTARIZATION_TOOL-}" ]]; then
     "${NOTARIZATION_TOOL}" --file "${dmg}"
   else
-    "${input_dir}/notarize_thing.py" \
-        --notary-user "${user}" \
-        --notary-password @env:NOTARIZATION_PASSWORD \
-        --bundle-id "${HOST_BUNDLE_NAME}" \
-        "${dmg}"
+    err_exit "A \$NOTARIZATION_TOOL must be specified."
   fi
 }
 
@@ -256,8 +252,10 @@ usage() {
   echo "  If <keychain> is specified, it must contain all the signing ids." >&2
   echo "  If not specified, then the default keychains will be used." >&2
   echo "  If <notarization_user> is specified, the final DMG will be" >&2
-  echo "  notarized by Apple and stapled, using the given user and the" >&2
-  echo "  password from \$NOTARIZATION_PASSWORD variable." >&2
+  echo "  notarized by Apple and stapled, using a command from"
+  echo "  \$NOTARIZATION_TOOL. This tool must accept a --file argument" >&2
+  echo "  and handle the notarization and stapling process. The user" >&2
+  echo "  argument is legacy and is not used." >&2
 }
 
 main() {
