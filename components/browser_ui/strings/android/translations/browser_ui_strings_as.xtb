@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">আপোনাৰ অন্তিম টেবটোৰ আধাৰত পৰামৰ্শিত সন্ধানসমূহ</translation>
 <translation id="2241634353105152135">মাত্ৰ এবাৰ</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> আঁতৰাওক</translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{১ টা ছাইট অৱৰোধ কৰা হৈছে}one{# টা ছাইট অৱৰোধ কৰা হৈছে}other{# টা ছাইট অৱৰোধ কৰা হৈছে}}</translation>
 <translation id="228293613124499805">আপুনি ছাইটটোৰ সৈতে শ্বেয়াৰ কৰা আপোনাৰ অগ্ৰাধিকাৰ অথবা তথ্য ছেভ কৰি প্ৰায়েই আপোনাৰ অভিজ্ঞতা উন্নত কৰিবলৈ আপুনি চোৱা বেছিভাগ ছাইটে সম্ভৱতঃ আপোনাৰ ডিভাইচত ডেটা ছেভ কৰে। আমি এই ছেটিংটো অন কৰি ৰাখিবলৈ চুপাৰিছ কৰোঁ।</translation>
 <translation id="2289270750774289114">কোনো ছাইটে নিকটৱৰ্তী ডিভাইচ ব্লুটুথ ডিভাইচসমূহ পাব বিচাৰিলে সোধক (আমি চুপাৰিছ কৰোঁ)</translation>
 <translation id="2315043854645842844">অপাৰেটিং ছিষ্টেমটোৱে ক্লায়েণ্টৰ ফালৰ প্ৰমাণপত্ৰ বাছনি কৰা সুবিধাটো সমৰ্থন নকৰে।</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">প্ৰমাণপত্ৰ বাছনি কৰিব পৰা নগ'ল।</translation>
 <translation id="8077120325605624147">আপুনি চোৱা যিকোনো ছাইটে আপোনাক যিকোনো বিজ্ঞাপন দেখুৱাব পাৰে</translation>
 <translation id="8087000398470557479">এই সমল Googleএ যোগান ধৰা <ph name="DOMAIN_NAME" />ৰ।</translation>
+<translation id="8088603949666785339"><ph name="BANNER_TITLE" />টোত অধিক বিকল্প</translation>
 <translation id="8116925261070264013">মিউট আছে</translation>
 <translation id="813082847718468539">ছাইটৰ তথ্য চাওক</translation>
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />ত <ph name="APP_NAME" />ৰ বাবে অনুমতি অন কৰক।</translation>
 <translation id="8725066075913043281">আকৌ চেষ্টা কৰক</translation>
 <translation id="8730621377337864115">হ’ল</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{১ টা ছাইটক অনুমতি দিয়া হৈছে}one{# টা ছাইটক অনুমতি দিয়া হৈছে}other{# টা ছাইটক অনুমতি দিয়া হৈছে}}</translation>
 <translation id="8737217482364735741">এইটোৱে <ph name="ORIGIN" />এ ষ্ট’ৰ কৰা সকলো ডেটা আৰু কুকি মচিব।</translation>
 <translation id="8751914237388039244">কোনো প্ৰতিচ্ছবি বাছনি কৰক</translation>
 <translation id="8801436777607969138">কোনো নির্দিষ্ট ছাইটৰ বাবে JavaScript অৱৰোধ কৰক।</translation>

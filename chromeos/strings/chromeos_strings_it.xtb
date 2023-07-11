@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> thread, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Sono disponibili nuove funzionalità: utilizza il tasto Freccia su per saperne di più.</translation>
 <translation id="1059913517121127803">Impossibile avviare la scansione</translation>
+<translation id="1062823486781306604"><ph name="INDEX" /> di <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall rilevato</translation>
 <translation id="1075811647922107217">Dimensioni pagina</translation>
@@ -185,6 +186,7 @@
 <translation id="2307344026739914387">Utilizza coppia di chiavi corrente</translation>
 <translation id="2320295602967756579">Abilita il tema chiaro</translation>
 <translation id="2323506179655536734">SALTATO</translation>
+<translation id="2324354238778375592">Mobile</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Attiva il Bluetooth per trovare dispositivi nelle vicinanze</translation>
 <translation id="2346474577291266260">Eccellente (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +335,7 @@
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Caricamento in corso...</translation>
 <translation id="3708186454126126312">Connessi in precedenza</translation>
+<translation id="3715651196924935218">Esci da stato mobile</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioni)</translation>
 <translation id="3748026146096797577">Non connesso</translation>
 <translation id="3749289110408117711">Nome file</translation>
@@ -389,6 +392,7 @@
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4155551848414053977">Assicurati che lo scanner sia acceso e disponibile tramite la tua rete o una connessione diretta</translation>
+<translation id="4159238217853743776">Parziale</translation>
 <translation id="4159784952369912983">Viola</translation>
 <translation id="4170180284036919717">Scatta una foto</translation>
 <translation id="4170700058716978431">OPERAZIONE NON RIUSCITA</translation>
@@ -498,6 +502,7 @@
 <translation id="4930320165497208503">Per configurare o aggiornare una connessione, vai alle <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4950314376641394653">Il firmware di <ph name="DEVICE_NAME" /> è stato aggiornato alla versione <ph name="VERSION" /></translation>
+<translation id="4969079779290789265">Suddividi</translation>
 <translation id="4972592110715526173">cambio modalità</translation>
 <translation id="498186245079027698">Controlla lo scanner e riprova. Assicurati di avere spazio locale sufficiente per salvare i file sottoposti a scansione.</translation>
 <translation id="4985509611418653372">Esegui</translation>
@@ -517,6 +522,7 @@
 <translation id="5088172560898466307">Nome host del server</translation>
 <translation id="5089810972385038852">Stato</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">Schermo intero</translation>
 <translation id="5142961317498132443">Autenticazione</translation>
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5160857336552977725">Accedi al tuo dispositivo <ph name="DEVICE_TYPE" /></translation>
@@ -529,11 +535,13 @@
 <translation id="5222676887888702881">Esci</translation>
 <translation id="522307662484862935">Non includere l'indirizzo email</translation>
 <translation id="5227902338748591677">Programmazione tema scuro</translation>
+<translation id="5229344016299762883">Esci da schermo intero</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Attiva la modalità Colore chiaro</translation>
 <translation id="5264277876637023664">Esegui test CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN disattivato.</translation>
 <translation id="5275828089655680674">Riesegui le routine</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">colore della retroilluminazione</translation>
@@ -598,6 +606,7 @@
 <translation id="5832805196449965646">Aggiungi persona</translation>
 <translation id="583281660410589416">Sconosciuto</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
+<translation id="584953448295717128">APN rilevato automaticamente.</translation>
 <translation id="5849570051105887917">Codice del provider principale</translation>
 <translation id="5859603669299126575">Album di Galleria d'arte</translation>
 <translation id="5860033963881614850">Off</translation>
@@ -706,6 +715,7 @@
 <translation id="6566314079205407217">Scansione di più pagine</translation>
 <translation id="6574762126505704998">Riempi</translation>
 <translation id="6575134580692778371">Non configurata</translation>
+<translation id="6576005492601044801">a sinistra</translation>
 <translation id="6579509898032828423">Utilizza questa foto</translation>
 <translation id="6596816719288285829">Indirizzo IP</translation>
 <translation id="6599673642868607614">Grazie per il tuo feedback. Il tuo feedback ci aiuta a migliorare l'esperienza con Chromebook e verrà esaminato dal nostro team. A causa dell'elevato numero di segnalazioni non potremo risponderti.</translation>
@@ -810,6 +820,7 @@
 <translation id="7497215489070763236">Certificato CA del server</translation>
 <translation id="7501957181231305652">oppure</translation>
 <translation id="7502658306369382406">Indirizzo IPv6</translation>
+<translation id="7513770521371759388">in basso</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Contenuti della guida non disponibili</translation>
 <translation id="7535791657097741517">Attiva il tema chiaro</translation>
@@ -874,6 +885,7 @@
 <translation id="80398733265834479">Attiva la modalità Colore automatico</translation>
 <translation id="8041089156583427627">Invia feedback</translation>
 <translation id="8045012663542226664">Disattivazione dell'audio del microfono</translation>
+<translation id="8067126283828232460">APN connesso.</translation>
 <translation id="8075838845814659848">Carica rimanente</translation>
 <translation id="8076492880354921740">Schede</translation>
 <translation id="8082366717211101304">Impossibile risolvere la richiesta DNS da app Android</translation>
@@ -946,6 +958,7 @@
 <translation id="8655295600908251630">Canale</translation>
 <translation id="8655828773034788261">Condividi URL:</translation>
 <translation id="8660881923941176839">libbre</translation>
+<translation id="8670574982334489519">a destra</translation>
 <translation id="8675354002693747642">Chiave precondivisa</translation>
 <translation id="8677859815076891398">Nessun album. Crea un album in<ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilizza i tasti Freccia destra o Freccia sinistra per gestire la funzionalità.</translation>
@@ -991,6 +1004,7 @@
 <translation id="8936793075252196307">Indirizzo IP client</translation>
 <translation id="8944651180182756621">Colore Avvio app</translation>
 <translation id="894617464444543719">Il dispositivo è un telefono.</translation>
+<translation id="8950424402482976779">in alto</translation>
 <translation id="8968751544471797276">Velocità di ricarica</translation>
 <translation id="8970109610781093811">Esegui di nuovo</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -1018,6 +1032,7 @@
 <translation id="9111102763498581341">Sblocca</translation>
 <translation id="9122602430962285795">Per riconnetterti, vai alle Impostazioni</translation>
 <translation id="9126720536733509015">Salva più pagine in un unico PDF</translation>
+<translation id="9133104754938025929">Per risparmiare batteria, il salvaschermo funziona soltanto durante la ricarica.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Maiusc sinistro</translation>
 <translation id="9143347780818904997">per <ph name="MINUTES" /> minuti</translation>

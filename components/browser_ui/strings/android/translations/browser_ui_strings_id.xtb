@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">Penelusuran yang disarankan berdasarkan tab terakhir Anda</translation>
 <translation id="2241634353105152135">Sekali ini saja</translation>
 <translation id="2253414712144136228">Hapus <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 situs diblokir}other{# situs diblokir}}</translation>
 <translation id="228293613124499805">Sebagian besar situs yang Anda buka mungkin menyimpan data ke perangkat, sering kali untuk meningkatkan pengalaman Anda dengan menyimpan preferensi atau informasi yang Anda bagikan ke situs. Sebaiknya tetap aktifkan setelan ini.</translation>
 <translation id="2289270750774289114">Tanyakan saat situs ingin menemukan perangkat Bluetooth di sekitar (direkomendasikan)</translation>
 <translation id="2315043854645842844">Pilihan sertifikat sisi klien tidak didukung oleh sistem operasi.</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">Tidak dapat memilih sertifikat.</translation>
 <translation id="8077120325605624147">Setiap situs yang Anda buka dapat menampilkan iklan apa pun kepada Anda</translation>
 <translation id="8087000398470557479">Konten ini dari <ph name="DOMAIN_NAME" />, dikirimkan oleh Google.</translation>
+<translation id="8088603949666785339">Opsi lainnya di <ph name="BANNER_TITLE" /></translation>
 <translation id="8116925261070264013">Dinonaktifkan</translation>
 <translation id="813082847718468539">Lihat informasi situs</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129">Aktifkan izin untuk <ph name="APP_NAME" /> di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Coba lagi</translation>
 <translation id="8730621377337864115">Selesai</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 situs diizinkan}other{# situs diizinkan}}</translation>
 <translation id="8737217482364735741">Tindakan ini akan menghapus semua data dan cookie yang disimpan oleh <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Pilih gambar</translation>
 <translation id="8801436777607969138">Blokir JavaScript untuk situs tertentu.</translation>

@@ -185,6 +185,7 @@
 <translation id="1770726142253415363">Переміщено в рядок <ph name="ROW_NUMBER" />, стовпець <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Прокрутити праворуч</translation>
 <translation id="1774796056689732716">Календар, <ph name="CURRENT_MONTH_YEAR" />, зараз вибрано <ph name="DATE" />.</translation>
+<translation id="1775598828170459419">Показано <ph name="NUM_SHOWN_ITEMS" /> з <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="1787955149152357925">Вимкнено</translation>
 <translation id="181103072419391116">Рівень сигналу – <ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
 <translation id="1815245884418711390">Увімкнути/вимкнути точку доступу. Точку доступу вимкнено.</translation>

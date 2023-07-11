@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">마지막 탭을 바탕으로 한 추천 검색어</translation>
 <translation id="2241634353105152135">한 번만</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> 삭제</translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{차단된 사이트 1개}other{차단된 사이트 #개}}</translation>
 <translation id="228293613124499805">내가 방문하는 대부분의 사이트에서는 기기에 데이터를 저장하며, 사이트에 공유한 환경설정이나 정보를 저장하여 사용자 환경을 개선하는 경우가 많습니다. 이 설정을 유지하는 것이 좋습니다.</translation>
 <translation id="2289270750774289114">사이트가 주변 블루투스 기기를 조회하려고 할 때 확인(권장)</translation>
 <translation id="2315043854645842844">클라이언트측 인증서 선택이 운영체제에서 지원되지 않습니다.</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">인증서를 선택할 수 없습니다.</translation>
 <translation id="8077120325605624147">어떤 사이트에서나 광고를 게재할 수 있습니다.</translation>
 <translation id="8087000398470557479">이 콘텐츠의 출처는 Google에서 제공하는 <ph name="DOMAIN_NAME" />입니다.</translation>
+<translation id="8088603949666785339"><ph name="BANNER_TITLE" /> 옵션 더보기</translation>
 <translation id="8116925261070264013">음소거됨</translation>
 <translation id="813082847718468539">사이트 정보 보기</translation>
 <translation id="8131740175452115882">확인</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 <ph name="APP_NAME" /> 관련 권한을 설정합니다.</translation>
 <translation id="8725066075913043281">다시 시도하세요</translation>
 <translation id="8730621377337864115">완료</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{허용된 사이트 1개}other{허용된 사이트 #개}}</translation>
 <translation id="8737217482364735741"><ph name="ORIGIN" />에서 저장한 모든 데이터와 쿠키가 삭제됩니다.</translation>
 <translation id="8751914237388039244">이미지 선택</translation>
 <translation id="8801436777607969138">특정 사이트의 자바스크립트를 차단합니다.</translation>

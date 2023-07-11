@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">Ricerche suggerite in base all'ultima scheda</translation>
 <translation id="2241634353105152135">Solo una volta</translation>
 <translation id="2253414712144136228">Rimuovi <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sito bloccato}other{# siti bloccati}}</translation>
 <translation id="228293613124499805">La maggior parte dei siti che visiti probabilmente salva dati sul dispositivo, spesso per migliorare la tua esperienza salvando le tue preferenze o le informazioni che condividi con i siti stessi. Ti consigliamo di mantenere questa impostazione attiva.</translation>
 <translation id="2289270750774289114">Chiedi conferma quando un sito vuole rilevare i dispositivi Bluetooth nelle vicinanze (opzione consigliata)</translation>
 <translation id="2315043854645842844">La selezione del certificato lato client non è supportata dal sistema operativo.</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">Impossibile selezionare il certificato.</translation>
 <translation id="8077120325605624147">Qualsiasi sito visitato può mostrarti qualsiasi annuncio</translation>
 <translation id="8087000398470557479">Questi contenuti derivano da <ph name="DOMAIN_NAME" /> e sono offerti da Google.</translation>
+<translation id="8088603949666785339">Altre opzioni in <ph name="BANNER_TITLE" /></translation>
 <translation id="8116925261070264013">Con audio disattivato</translation>
 <translation id="813082847718468539">Visualizza informazioni sul sito</translation>
 <translation id="8131740175452115882">Conferma</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129">Attiva l'autorizzazione per l'app <ph name="APP_NAME" /> nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Riprova</translation>
 <translation id="8730621377337864115">Fine</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 sito autorizzato}other{# siti autorizzati}}</translation>
 <translation id="8737217482364735741">Verranno cancellati tutti i dati e i cookie memorizzati da <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Seleziona un'immagine</translation>
 <translation id="8801436777607969138">Blocca JavaScript per un sito specifico.</translation>

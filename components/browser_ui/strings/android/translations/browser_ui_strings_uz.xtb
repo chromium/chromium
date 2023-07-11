@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">Oxirgi varaq asosida tavsiya etiladigan qidiruvlar</translation>
 <translation id="2241634353105152135">Bir marta</translation>
 <translation id="2253414712144136228">Olib tashlash: <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 ta sayt bloklangan}other{# ta sayt bloklangan}}</translation>
 <translation id="228293613124499805">Siz ochgan saytlarning aksariyati sozlamalaringiz yoki ularga ulashgan axborotlar kabilarni qurilmangizda saqlashi mumkin. Koʻpincha bu qulayligingiz uchun amalga oshiriladi. Bu sozlamani oʻchirmaslikni tavsiya qilamiz.</translation>
 <translation id="2289270750774289114">Sayt atrofdagi Bluetooth qurilmalarni tekshirmoqchi boʻlsa, xabar berilsin (tavsiya etiladi)</translation>
 <translation id="2315043854645842844">Tanlangan mijoz sertifikati eskirgan va operatsion tizim tomonidan qo‘llab-quvvatlanmaydi.</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">Sertifikatni tanlab bo‘lmadi.</translation>
 <translation id="8077120325605624147">Siz ochgan har qanday sayt istalgan reklamani koʻrsatishi mumkin</translation>
 <translation id="8087000398470557479"><ph name="DOMAIN_NAME" /> sayti kontenti, Google tomonidan taqdim etildi.</translation>
+<translation id="8088603949666785339"><ph name="BANNER_TITLE" />: boshqa amallar</translation>
 <translation id="8116925261070264013">Ovozsiz</translation>
 <translation id="813082847718468539">Sayt haqidagi ma’lumotlar</translation>
 <translation id="8131740175452115882">Tasdiqlash</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali <ph name="APP_NAME" /> uchun ruxsatnomani yoqing.</translation>
 <translation id="8725066075913043281">Qayta urinib ko‘ring</translation>
 <translation id="8730621377337864115">Tayyor</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 ta saytga ruxsat berilgan}other{# ta saytga ruxsat berilgan}}</translation>
 <translation id="8737217482364735741">Bunda <ph name="ORIGIN" /> saytidan saqlangan barcha maʼlumotlar va cookie fayllar tozalab tashlanadi.</translation>
 <translation id="8751914237388039244">Rasmni tanlang</translation>
 <translation id="8801436777607969138">Muayyan saytda JavaScript kodini bloklash.</translation>

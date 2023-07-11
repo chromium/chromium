@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">Viime välilehteen perustuvat hakuehdotukset</translation>
 <translation id="2241634353105152135">Vain kerran</translation>
 <translation id="2253414712144136228">Poista <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sivusto estetty}other{# sivustoa estetty}}</translation>
 <translation id="228293613124499805">Useimmat avaamasi sivustot tallentavat todennäköisesti dataa laitteellesi. Tarkoituksena on yleensä parantaa kokemustasi tallentamalla sivustolle jakamiasi asetuksia tai tietoja. Suosittelemme pitämään asetuksen päällä.</translation>
 <translation id="2289270750774289114">Kysy aina, kun sivusto pyytää lupaa löytää lähellä olevat Bluetooth-laitteet (suositus)</translation>
 <translation id="2315043854645842844">Käyttöjärjestelmä ei tue palvelimen varmennevalintaa.</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">Varmenteen valinta epäonnistui</translation>
 <translation id="8077120325605624147">Kaikki avamaasi sivustot voivat näyttää mitä tahansa mainoksia</translation>
 <translation id="8087000398470557479">Google on toimittanut tämän sisällön osoitteesta <ph name="DOMAIN_NAME" />.</translation>
+<translation id="8088603949666785339">Lisää vaihtoehtoja: <ph name="BANNER_TITLE" /></translation>
 <translation id="8116925261070264013">Mykistetty</translation>
 <translation id="813082847718468539">Näytä sivuston tiedot</translation>
 <translation id="8131740175452115882">Vahvista</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129">Laita lupa (<ph name="APP_NAME" />) päälle <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Yritä uudelleen</translation>
 <translation id="8730621377337864115">Valmis</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 sivusto sallittu}other{# sivustoa sallittu}}</translation>
 <translation id="8737217482364735741">Tämä tyhjentää kaiken datan ja evästeet, jotka <ph name="ORIGIN" /> on tallentanut.</translation>
 <translation id="8751914237388039244">Valitse kuva</translation>
 <translation id="8801436777607969138">Estä JavaScript tietyllä sivustolla.</translation>

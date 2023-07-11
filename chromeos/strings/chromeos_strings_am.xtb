@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">የአሁኑን የቁልፍ ጥምር ይጠቀሙ</translation>
 <translation id="2320295602967756579">ነጣ ያለ ገጽታን አንቃ</translation>
 <translation id="2323506179655536734">ተዘሏል</translation>
+<translation id="2324354238778375592">ተንሳፋፊ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">በአቅራቢያ ያሉ መሣሪያዎችን ለማግኘት ብሉቱዝን ያብሩ</translation>
 <translation id="2346474577291266260">እጅግ በጣም ጥሩ (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263">የ<ph name="TEST_NAME" /> ሙከራ</translation>
 <translation id="370665806235115550">በመጫን ላይ…</translation>
 <translation id="3708186454126126312">ከዚህ ቀደም የተገናኘ</translation>
+<translation id="3715651196924935218">ከተንሳፋፊ ውጣ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ግምገማዎች)</translation>
 <translation id="3748026146096797577">አልተገናኘም</translation>
 <translation id="3749289110408117711">የፋይል ስም</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Google ፎቶዎች</translation>
 <translation id="4150201353443180367">ማሳያ</translation>
 <translation id="4155551848414053977">ቃኚው መብራቱን እና በእርስዎ አውታረ መረብ ወይም በቀጥታ ግንኙነት በኩል የሚገኝ መሆኑን ያረጋግጡ</translation>
+<translation id="4159238217853743776">ከፊል</translation>
 <translation id="4159784952369912983">ሐምራዊ</translation>
 <translation id="4170180284036919717">ፎቶ አንሳ</translation>
 <translation id="4170700058716978431">አልተሳካም</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">ግንኙነትን ለማቀናበር ወይም ለማዘመን ወደ <ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" /> ይሂዱ።</translation>
 <translation id="4932733599132424254">ቀን</translation>
 <translation id="4950314376641394653">ፊርምዌር <ph name="DEVICE_NAME" /> ወደ ስሪት <ph name="VERSION" /> ተዘምኗል</translation>
+<translation id="4969079779290789265">ክፈል</translation>
 <translation id="4972592110715526173">ሁነታን የሚለውጥ</translation>
 <translation id="498186245079027698">መቃኛውን ይፈትሹ እና እንደገና ይሞክሩ። የተቃኙ ፋይሎችን ለማስቀመጥ በቂ አከባቢያዊ ቦታ መኖሩን ያረጋግጡ።</translation>
 <translation id="4985509611418653372">አሂድ</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">የአገልጋይ አስተናጋጅ ስም</translation>
 <translation id="5089810972385038852">ግዛት</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">ሙሉ</translation>
 <translation id="5142961317498132443">ማረጋገጥ</translation>
 <translation id="5154917547274118687">ማህደረ ትውስታ</translation>
 <translation id="5160857336552977725">ወደ የእርስዎ <ph name="DEVICE_TYPE" /> ይግቡ</translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">ዘግተህ ውጣ</translation>
 <translation id="522307662484862935">የኢሜይል አድራሻን አያካትቱ</translation>
 <translation id="5227902338748591677">የጠቆር ያለ ገጽታ መርሐግብር</translation>
+<translation id="5229344016299762883">ከሙሉ ማያ ገጽ ውጣ</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
 <translation id="5252456968953390977">ውሂብን በማዛወር ላይ</translation>
 <translation id="5257811368506016604">የብርሃን ቀለም ሁነታን አንቃ</translation>
@@ -706,6 +712,7 @@
 <translation id="6566314079205407217">ባለብዙ ገፅ ቅኝት</translation>
 <translation id="6574762126505704998">ሙሌት</translation>
 <translation id="6575134580692778371">አልተዋቀረም</translation>
+<translation id="6576005492601044801">የግራ</translation>
 <translation id="6579509898032828423">ይህን ፎቶ ተጠቀም</translation>
 <translation id="6596816719288285829">IP አድራሻ</translation>
 <translation id="6599673642868607614">ስለግብረመልስዎ እናመሰግናለን። የእርስዎ ግብረመልስ የChromebook ተሞክሮን እንድናሻሽል ያግዘናል እና በቡድናችን የሚገመገም ይሆናል። ብዙ ቁጥር ባላቸው ሪፖርቶች ምክንያት መልስ መላክ አንችልም።</translation>
@@ -810,6 +817,7 @@
 <translation id="7497215489070763236">የአገልጋይ CA እውቅና ማረጋገጫ</translation>
 <translation id="7501957181231305652">ወይም</translation>
 <translation id="7502658306369382406">የIPv6 አድራሻ</translation>
+<translation id="7513770521371759388">ዝቅተኛ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">የእገዛ ይዘት አይገኝም</translation>
 <translation id="7535791657097741517">ነጣ ያለ ገጽታን አብራ</translation>
@@ -946,6 +954,7 @@
 <translation id="8655295600908251630">ሰርጥ</translation>
 <translation id="8655828773034788261">ዩአርኤል ያጋሩ፦</translation>
 <translation id="8660881923941176839">ፓውንድ</translation>
+<translation id="8670574982334489519">ቀኝ</translation>
 <translation id="8675354002693747642">ቅድሚያ የተጋራ ቁልፍ</translation>
 <translation id="8677859815076891398">ምንም አልበሞች የሉም። በ<ph name="LINK_BEGIN" />Google ፎቶዎች<ph name="LINK_END" /> ውስጥ አልበም ይፈጠሩ።</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ይህንን ባህሪ ለማስተዳደር የግራ ወይም የቀኝ ቀስት ቁልፎችን ይጠቀሙ።</translation>
@@ -991,6 +1000,7 @@
 <translation id="8936793075252196307">የደንበኛ አይፒ አድራሻ</translation>
 <translation id="8944651180182756621">የማስጀመሪያ ቀለም</translation>
 <translation id="894617464444543719">መሣሪያ ስልክ ነው።</translation>
+<translation id="8950424402482976779">ከፍተኛ</translation>
 <translation id="8968751544471797276">ኃይል መሙላት መጠን</translation>
 <translation id="8970109610781093811">እንደገና ያሂዱ</translation>
 <translation id="8983038754672563810">ኤችኤስፒኤ</translation>

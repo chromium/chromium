@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">మీ చివరి ట్యాబ్ ఆధారంగా సూచించబడిన సెర్చ్‌లు</translation>
 <translation id="2241634353105152135">ఒకసారి మాత్రమే</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />‌ను తీసివేయండి</translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 సైట్ బ్లాక్ చేసింది}other{# సైట్‌లు బ్లాక్ చేశాయి}}</translation>
 <translation id="228293613124499805">మీరు సందర్శించిన చాలా సైట్‌లు మీ పరికరంలో డేటాను సేవ్ చేవవచ్చు, మీ అనుభవాన్ని మెరుగుపరచడం కోసం తరచుగా మీ ప్రాధాన్యతలు లేదా సైట్‌తో మీరు షేర్ చేసిన సమాచారం సేవ్ చేయబడతాయి. ఈ సెట్టింగ్‌ను ఆన్‌లో ఉంచాల్సిందిగా సిఫార్సు చేస్తున్నాము.</translation>
 <translation id="2289270750774289114">ఏదైనా ఒక సైట్ సమీపంలోని బ్లూటూత్ పరికరాలను కనుగొనాలనుకున్నప్పుడు అనుమతి అడుగుతుంది (సిఫార్సు చేయడమైనది)</translation>
 <translation id="2315043854645842844">క్లయింట్ తరపు స‌ర్టిఫికెట్‌ ఎంపికకు ఆపరేటింగ్ సిస్టమ్ మద్దతు లేదు.</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">ప్రమాణపత్రం ఎంపిక చేయడం సాధ్యపడలేదు.</translation>
 <translation id="8077120325605624147">మీరు చూసే ఏ సైట్ అయినా మీకు ఏ యాడ్‌ను అయినా చూపవచ్చు</translation>
 <translation id="8087000398470557479">ఈ కంటెంట్ Google ద్వారా డెలివర్ చేయబడిన <ph name="DOMAIN_NAME" />లోనిది.</translation>
+<translation id="8088603949666785339"><ph name="BANNER_TITLE" />లో మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="8116925261070264013">మ్యూట్ చేసినవి</translation>
 <translation id="813082847718468539">సైట్ సమాచారాన్ని చూడండి</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో <ph name="APP_NAME" /> కోసం అనుమతిని ఆన్ చేయండి.</translation>
 <translation id="8725066075913043281">మళ్ళీ ప్రయత్నించండి</translation>
 <translation id="8730621377337864115">పూర్తయింది</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 సైట్ అనుమతించింది}other{# సైట్‌లు అనుమతించాయి}}</translation>
 <translation id="8737217482364735741">ఇది <ph name="ORIGIN" /> ద్వారా స్టోర్ చేయబడిన మొత్తం డేటా మరియు కుక్కీలను తొలగిస్తుంది.</translation>
 <translation id="8751914237388039244">చిత్రాన్ని ఎంచుకోండి</translation>
 <translation id="8801436777607969138">నిర్దిష్ట సైట్‌లో JavaScriptను బ్లాక్ చేస్తుంది.</translation>

@@ -420,6 +420,7 @@
 <translation id="4432921877815220091"><ph name="NETWORK_COUNT" /> നെറ്റ്‌വർക്കുകളിൽ <ph name="NETWORK_INDEX" />-ാമത്തേത്, <ph name="NETWORK_NAME" />, ഉപകരണം സജ്ജീകരിച്ചതിന് ശേഷം സജീവമാക്കുക, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="4442424173763614572">DNS തിരയൽ പരാജയപ്പെട്ടു</translation>
+<translation id="4445896958353114391">ഫയലുകൾ സമന്വയിപ്പിക്കുന്നു</translation>
 <translation id="4462159676511157176">ഇഷ്‌ടാനുസൃത നാമ സെർവറുകൾ</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്, കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="4470564870223067757">ഹാംഗുൽ 2 സെറ്റ് മോഡ്</translation>
@@ -517,6 +518,7 @@
 <translation id="5102922915594634436">സമന്വയിപ്പിച്ച ഫോൾഡറുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="5109254780565519649">ഒരു പിശക് സംഭവിച്ചു. ചില ഇനങ്ങൾ പുനഃസ്ഥാപിച്ചിരിക്കാനിടയില്ല.</translation>
 <translation id="5110329002213341433">ഇംഗ്ലീഷ് (കാനഡ)</translation>
+<translation id="5119780910075847424">സമന്വയിപ്പിക്കൽ താൽക്കാലികമായി നിർത്തി</translation>
 <translation id="5123433949759960244">ബാസ്ക്കറ്റ്ബോൾ</translation>
 <translation id="5129662217315786329">പോളിഷ്</translation>
 <translation id="5144820558584035333">ഹംഗുൽ 3 സെറ്റ് (390)</translation>
@@ -800,6 +802,7 @@
 <translation id="7256405249507348194">തിരിച്ചറിയാനാകാത്ത പിശക്: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ലഭ്യമായ സേവനങ്ങൾ</translation>
 <translation id="7291818353625820805">കീകൾ ആവർത്തിക്കണോ? കീബോർഡ് ക്രമീകരണത്തിൽ പോയി ആക്‌സന്റ് അടയാളങ്ങൾ ഓഫാക്കുക</translation>
+<translation id="729236380049459563">ഫയൽ സമന്വയിപ്പിക്കൽ ഓണാണ്</translation>
 <translation id="7292816689782057017">അഡ്‌മിൻ നയം കാരണം, ചില ലൊക്കേഷനുകളിൽ സംരക്ഷിക്കുന്നത് നിയന്ത്രിച്ചിരിക്കുന്നു.</translation>
 <translation id="7294063083760278948">തെലുങ്ക് ലിപ്യന്തരണം</translation>
 <translation id="7295662345261934369">മറ്റുള്ളവരുമായി പങ്കിടുക</translation>
@@ -912,6 +915,7 @@
 <translation id="8087576439476816834">ഡൗൺലോഡ് ചെയ്യുക, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ഞാനുമായി പങ്കിട്ടവ</translation>
 <translation id="8116072619078571545">ഐസ് വെള്ളം</translation>
+<translation id="8124093710070495550">സമന്വയിപ്പിക്കുന്നതിൽ പ്രശ്‌നമുണ്ട്</translation>
 <translation id="8128733386027980860">Dvorak കീബോർഡ് ഉള്ള ഇംഗ്ലീഷ് (യുകെ)</translation>
 <translation id="8137331602592933310">നിങ്ങളുമായി "<ph name="FILENAME" />" എന്നത് പങ്കിട്ടിരിക്കുന്നു. ഇത് നിങ്ങളുടേതല്ലാത്തതിനാൽ നിങ്ങൾക്ക് അത് ഇല്ലാതാക്കാനാകില്ല.</translation>
 <translation id="8138705869659070104">ഉപകരണം സജ്ജീകരിച്ച് സജീവമാക്കൂ</translation>

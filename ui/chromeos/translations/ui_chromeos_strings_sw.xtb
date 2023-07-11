@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Hifadhi ya Google haipatikani kwa sasa kupakia kutafungua upya kiotomatiki baada Hifadhi ya Google imerudi.</translation>
 <translation id="1307931752636661898">Imeshindwa kuona faili za Linux</translation>
 <translation id="1313405956111467313">Usanidi wa proksi kiotomatiki</translation>
+<translation id="134645005685694099">Kifaa chako hakina nafasi ya kuhifadhi ya kutosha kukuwezesha kuendelea kutumia usawazishwaji wa faili. Faili mpya hazitasawazishwa tena kiotomatiki.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Faili au saraka haitumiki.</translation>
 <translation id="1363028406613469049">Wimbo</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">Seva Mbadala ya HTTP</translation>
 <translation id="2467267713099745100">Mtandao wa <ph name="NETWORK_TYPE" />, umezimwa</translation>
 <translation id="2468402215065996499">Tamagochi</translation>
+<translation id="2468470447085858632">Fikia faili zako za Hifadhi ya Google ukiwa nje ya mtandao ukitumia usawazishwaji wa faili</translation>
 <translation id="2470939964922472929">Umeweka PIN isiyo sahihi mara nyingi mno. Ili uweke PIN mpya, weka Nambari Binafsi ya Kufungua (PUK) yenye tarakimu nane uliyopewa na mtoa huduma wako.</translation>
 <translation id="2500392669976258912">Fonetiki ya Kigujarati</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -603,6 +605,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> imehamishiwa kwenye tupio</translation>
 <translation id="5724172041621205163">Kitai kwenye kibodi ya Pattachote</translation>
 <translation id="57383366388012121">Mwezi uliopita</translation>
+<translation id="575175778971367197">Haiwezi kusawazisha faili hii sasa hivi</translation>
 <translation id="5756666464756035725">QWERTY ya Kihungaria</translation>
 <translation id="5760252553414789727">Umechagua vipengee <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Kijerumani (Uswizi)</translation>
@@ -705,6 +708,7 @@
 <translation id="6558280019477628686">Hitilafu imetokea. Huenda baadhi ya vipengee havijafutwa.</translation>
 <translation id="656398493051028875">Inafuta "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Kiungo cha Hifadhi ya Google</translation>
+<translation id="6588648400954570689">Mipangilio ya usawazishaji wa faili</translation>
 <translation id="6594855146910089723">Umeshiriki folda hii na Linux na Parallels Desktop</translation>
 <translation id="6607272825297743757">Maelezo ya faili</translation>
 <translation id="6609332149380188670">Umeshiriki folda <ph name="NUMBER_OF_ITEMS" /> na Parallels Desktop</translation>
@@ -829,6 +833,7 @@
 <translation id="7547811415869834682">Kiholanzi</translation>
 <translation id="7551643184018910560">Bandika kwenye rafu</translation>
 <translation id="7553492409867692754">Ruhusu programu za Linux zifikie faili katika folda ya <ph name="FOLDER_NAME" /></translation>
+<translation id="7555339735447658365">Uko nje ya mtandao kwa sasa. Usawazishaji wa faili utaendelea utakapounganishwa kwenye intaneti</translation>
 <translation id="7589661784326793847">Subiri kidogo</translation>
 <translation id="7592775719802218421">Inafanya <ph name="FILE_NAME" /> ipatikane nje ya mtandao</translation>
 <translation id="7600126690270271294">Kiserbia</translation>
@@ -871,6 +876,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009">TB <ph name="NUMBER_OF_TB" /></translation>
 <translation id="7831491651892296503">Hitilafu imetokea wakati wa kuweka mipangilio ya mtandao</translation>
+<translation id="7832093238954689746">Usawazishwaji wa faili umekamilika. Faili za Hifadhi yangu zinapatikana nje ya mtandao.</translation>
 <translation id="7839804798877833423">Kupata faili hizi kutatumia takribani  <ph name="FILE_SIZE" /> za data ya simu ya mkononi.</translation>
 <translation id="7846076177841592234">Ghairi uchaguzi</translation>
 <translation id="7853966320808728790">BÉPO ya Kifaransa</translation>
@@ -919,6 +925,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Muundo wa kifaa</translation>
 <translation id="8223479393428528563">Ili kuhifadhi faili hizi kwa matumizi ya nje ya mtandao, rudi mtandaoni, bofya faili kulia, na uchague chaguo la <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Angalia hifadhi</translation>
 <translation id="8249296373107784235">Ghairi</translation>
 <translation id="8250690786522693009">Kilatini</translation>
 <translation id="8250920743982581267">Hati</translation>

@@ -255,7 +255,7 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2595587704210555261">{COUNT,plural, =1{Otvorene kartice koje ne koristite jedan ili više dana se premještaju u Neaktivne kartice da se možete lako fokusirati na kartice koje najviše koristite. Ovo možete promijeniti bilo kada u postavkama.}one{Otvorene kartice koje ne koristite {COUNT} ili više dana se premještaju u Neaktivne kartice da se možete lako fokusirati na kartice koje najviše koristite. Ovo možete promijeniti bilo kada u postavkama.}few{Otvorene kartice koje ne koristite {COUNT} ili više dana se premještaju u Neaktivne kartice da se možete lako fokusirati na kartice koje najviše koristite. Ovo možete promijeniti bilo kada u postavkama.}other{Otvorene kartice koje ne koristite {COUNT} ili više dana se premještaju u Neaktivne kartice da se možete lako fokusirati na kartice koje najviše koristite. Ovo možete promijeniti bilo kada u postavkama.}}</translation>
 <translation id="2600682495497606169">Obriši kolačiće web lokacije</translation>
 <translation id="2609008503159898744">Zatvoriti sve kartice?</translation>
-<translation id="2617210333344098964">Premještanje adrese na račun</translation>
+<translation id="2617210333344098964">Premjestite adresu na račun</translation>
 <translation id="2625189173221582860">Lozinka je kopirana</translation>
 <translation id="2626236249646841566">Provjerite vezu i ponovo se pokušajte prijaviti.</translation>
 <translation id="2637313651144986786">Pretraživanje kartica...</translation>
@@ -465,7 +465,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3851938967634752633">Lozinke za <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i još <ph name="NUMBER_OF_ACCOUNTS" /> račun/a će se izbrisati. Vaši računi se neće izbrisati.</translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3861486700625780712">Prestani pratiti</translation>
-<translation id="3861908220442487587">Ta je adresa spremljena samo na ovom uređaju. Da biste je upotrebljavali na drugim uređajima, premjestite je na svoj Google račun, <ph name="USER_EMAIL" /></translation>
+<translation id="3861908220442487587">Adresa je sačuvana samo na ovom uređaju. Da je koristite na drugim uređajima, premjestite je na Google račun <ph name="USER_EMAIL" />.</translation>
 <translation id="3863769054730344136">Pošaljite na svoje uređaje</translation>
 <translation id="387280738075653372">Preuzmite Chrome ovdje.</translation>
 <translation id="3875783148670536197">Pokaži mi kako</translation>

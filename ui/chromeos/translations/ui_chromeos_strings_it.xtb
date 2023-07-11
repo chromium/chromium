@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Drive non è al momento disponibile. Il caricamento riprenderà automaticamente una volta che Google Drive sarà tornato operativo.</translation>
 <translation id="1307931752636661898">Impossibile visualizzare i file di Linux</translation>
 <translation id="1313405956111467313">Configurazione automatica del proxy</translation>
+<translation id="134645005685694099">Lo spazio di archiviazione sul dispositivo non è sufficiente per mantenere attiva la sincronizzazione dei file. I nuovi file non verranno più sincronizzati automaticamente.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Il file o la directory non è utilizzabile.</translation>
 <translation id="1363028406613469049">Traccia</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Impostazioni dispositivo</translation>
 <translation id="2084809735218147718">Gesto di ringraziamento</translation>
 <translation id="2088690981887365033">Rete VPN</translation>
+<translation id="209653272837065803">Spazio di archiviazione non sufficiente per continuare a sincronizzare i file</translation>
 <translation id="2111134541987263231">Attiva l'opzione <ph name="BEGIN_BOLD" />Consenti modalità di navigazione in incognito<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementi verranno eliminati e non potrai ripristinarli.</translation>
 <translation id="2122305276694332719">La connessione automatica a una rete nascosta consente ad altre persone di rilevare il tuo dispositivo e alcune impostazioni di rete, pertanto è sconsigliata.</translation>
@@ -146,9 +148,11 @@
 <translation id="2198315389084035571">Cinese semplificato</translation>
 <translation id="22085916256174561">Coreano</translation>
 <translation id="2208919847696382164">Installa con Linux</translation>
+<translation id="2215692307449050019">Batteria in esaurimento. La sincronizzazione dei file riprenderà quando il dispositivo sarà collegato all'alimentazione.</translation>
 <translation id="2225536596944493418">Vuoi eliminare <ph name="NUMBER_OF_ITEMS" /> elementi?</translation>
 <translation id="2230062665678605299">Impossibile creare la cartella "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Persona con caffè</translation>
+<translation id="2247561763838186830">Account disconnesso</translation>
 <translation id="2251368349685848079">Ripristina dal cestino</translation>
 <translation id="2278133026967558505">Accesso ai file da parte di tutti i siti web e gli URL</translation>
 <translation id="2282155092769082568">URL di configurazione automatica:</translation>
@@ -163,6 +167,7 @@
 <translation id="2325650632570794183">Questo tipo di file non è supportato. Visita il Chrome Web Store per trovare un'applicazione in grado di aprire questo tipo di file.</translation>
 <translation id="2326539130272988168">Bulgaro</translation>
 <translation id="2337715497728194187">Condividi con Bruschetta</translation>
+<translation id="233822363739146957">Spazio di archiviazione non sufficiente per sincronizzare tutti i file</translation>
 <translation id="23721837607121582">Scarica il profilo per dispositivi mobili, rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Passa alla visualizzazione elenco</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> cartelle condivise con Linux</translation>
@@ -180,6 +185,7 @@
 <translation id="2464089476039395325">Proxy HTTP</translation>
 <translation id="2467267713099745100">Rete <ph name="NETWORK_TYPE" />, disattivata</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470447085858632">Accedi ai tuoi file di Google Drive offline grazie alla sincronizzazione dei file</translation>
 <translation id="2470939964922472929">Hai inserito troppe volte un PIN non corretto. Per configurarne uno nuovo, inserisci il PUK (codice personale di sblocco) di 8 cifre fornito dal tuo operatore.</translation>
 <translation id="2500392669976258912">Gujarati fonetica</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -215,6 +221,7 @@
 <translation id="2782104745158847185">Errore durante l'installazione dell'applicazione Linux</translation>
 <translation id="2802583107108007218">Scopri di più su queste limitazioni</translation>
 <translation id="2803375539583399270">Inserisci PIN</translation>
+<translation id="2819519502129272135">Sincronizzazione dei file non attiva</translation>
 <translation id="2820957248982571256">Scansione…</translation>
 <translation id="2830077785865012357">Cinese Zhuyin</translation>
 <translation id="2843806747483486897">Cambia predefinita...</translation>
@@ -439,6 +446,7 @@
 <translation id="4599600860674643278">Il filtro è stato reimpostato.</translation>
 <translation id="4603392156942865207">Copia di <ph name="FILE_NAME" /> in <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artista</translation>
+<translation id="4635373743001040938">Lo spazio di archiviazione era in esaurimento. La sincronizzazione dei file è stata disattivata.</translation>
 <translation id="4642769377300286600">Installazione del profilo per dispositivi mobili in corso, rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Ceco con tastiera Qwerty</translation>
 <translation id="4656777537938206294">Rendi i file disponibili offline</translation>
@@ -492,6 +500,7 @@
 <translation id="4961158930123534723">1 cartella condivisa con Parallels Desktop</translation>
 <translation id="496656650103537022">File <ph name="FILE_NAME" /> ripristinato</translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Impossibile completare la configurazione della sincronizzazione dei file</translation>
 <translation id="4973523518332075481">Il nome deve contenere un massimo di <ph name="MAX_LENGTH" /> caratteri</translation>
 <translation id="4973970068702235170">Compressione non riuscita. Errore imprevisto: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Giapponese</translation>
@@ -602,6 +611,7 @@
 <translation id="5720028165859493293">File <ph name="FILE_NAME" /> spostato nel cestino</translation>
 <translation id="5724172041621205163">Thai con tastiera Pattachote</translation>
 <translation id="57383366388012121">Mese scorso</translation>
+<translation id="575175778971367197">Al momento non è possibile sincronizzare questo file</translation>
 <translation id="5756666464756035725">Ungherese QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> elementi selezionati</translation>
 <translation id="5763377084591234761">Tedesco (Svizzera)</translation>
@@ -704,6 +714,7 @@
 <translation id="6558280019477628686">Si è verificato un errore. Alcuni elementi potrebbero non essere stati eliminati.</translation>
 <translation id="656398493051028875">Eliminazione di "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Link Google Drive</translation>
+<translation id="6588648400954570689">Impostazioni di sincronizzazione dei file</translation>
 <translation id="6594855146910089723">Questa cartella è condivisa con Linux e Parallels Desktop</translation>
 <translation id="6607272825297743757">Info sul file</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> cartelle condivise con Parallels Desktop</translation>
@@ -802,6 +813,7 @@
 <translation id="7309413087278791451">Tedesco (Belgio)</translation>
 <translation id="7339898014177206373">Nuova finestra</translation>
 <translation id="7343393116438664539">Vietnamita Telex</translation>
+<translation id="7347346221088620549">File criptato</translation>
 <translation id="7357762654218998920">Questo tipo di file non è supportato. <ph name="BEGIN_LINK_HELP" />Scopri di più<ph name="END_LINK_HELP" /> sull'apertura di file in ChromeOS.</translation>
 <translation id="7359359531237882347">Copia di <ph name="NUMBER_OF_ITEMS" /> elementi...</translation>
 <translation id="7375951387215729722">Elenco di file ordinato per <ph name="COLUMN_NAME" /> in ordine decrescente.</translation>
@@ -828,6 +840,7 @@
 <translation id="7547811415869834682">Olandese</translation>
 <translation id="7551643184018910560">Blocca sulla barra delle app</translation>
 <translation id="7553492409867692754">Concedi alle app Linux l'autorizzazione per accedere ai file nella cartella <ph name="FOLDER_NAME" /></translation>
+<translation id="7555339735447658365">Al momento sei offline. La sincronizzazione dei file riprenderà quando ti connetterai a internet</translation>
 <translation id="7589661784326793847">Aspetta solo un secondo</translation>
 <translation id="7592775719802218421">Preparazione per la visualizzazione offline del file <ph name="FILE_NAME" />…</translation>
 <translation id="7600126690270271294">Serbo</translation>
@@ -870,6 +883,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Errore durante la configurazione della rete</translation>
+<translation id="7832093238954689746">Sincronizzazione dei file completata. I file della sezione Il mio Drive sono disponibili offline.</translation>
 <translation id="7839804798877833423">Per il recupero di questi file verranno utilizzati circa <ph name="FILE_SIZE" /> di dati mobili.</translation>
 <translation id="7846076177841592234">Annulla selezione</translation>
 <translation id="7853966320808728790">BÉPO francese</translation>
@@ -918,6 +932,7 @@
 <translation id="8179976553408161302">Invio</translation>
 <translation id="8193175696669055101">Modello dispositivo</translation>
 <translation id="8223479393428528563">Per salvare i file da utilizzare offline, torna online, fai clic con il pulsante destro del mouse sui file e seleziona l'opzione <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Visualizza spazio di archiviazione</translation>
 <translation id="8249296373107784235">Interrompi</translation>
 <translation id="8250690786522693009">Latino</translation>
 <translation id="8250920743982581267">Documenti</translation>
@@ -985,6 +1000,7 @@
 <translation id="8609695766746872526">Islandese</translation>
 <translation id="863903787380594467">PIN errato. Hai ancora <ph name="RETRIES" /> tentativi a disposizione.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Porta</translation>
+<translation id="8656407365183407932">È stato necessario rimuovere i file offline</translation>
 <translation id="8656768832129462377">Non verificare</translation>
 <translation id="8688591111840995413">Password non valida</translation>
 <translation id="8698464937041809063">Disegno Google</translation>
@@ -1020,6 +1036,7 @@
 <translation id="8997962250644902079">Cinese (tradizionale) Pinyin</translation>
 <translation id="8998871447376656508">Spazio libero su Google Drive non sufficiente per completare il caricamento.</translation>
 <translation id="9003940392834790328">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, gestita dall'amministratore, dettagli</translation>
+<translation id="9007990314804111233">Accedi al tuo account Microsoft</translation>
 <translation id="9017798300203431059">Fonetica russa</translation>
 <translation id="9034924485347205037">File Linux</translation>
 <translation id="9035012421917565900">Non è possibile spostare di nuovo gli elementi in "<ph name="DESTINATION_NAME" />", quindi non potrai annullare questa azione.</translation>

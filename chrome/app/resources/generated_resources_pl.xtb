@@ -813,6 +813,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1647408325348388858">Otwierać i edytować plik <ph name="FILE_NAME" /> w tej aplikacji internetowej?</translation>
 <translation id="1648528859488547844">Do określania lokalizacji używaj Wi-Fi i sieci komórkowych</translation>
 <translation id="164936512206786300">Rozparowywanie urządzenia Bluetooth</translation>
+<translation id="1650801028905250434">Pliki z Mojego dysku są automatycznie synchronizowane z Chromebookiem, więc masz do nich dostęp bez połączenia z internetem. W każdej chwili możesz to zmienić, klikając Ustawienia &gt; Pliki.</translation>
 <translation id="1651008383952180276">Musisz dwukrotnie wpisać to samo hasło</translation>
 <translation id="1651609627703324721">Ta karta prezentuje treści VR na goglach</translation>
 <translation id="1652326691684645429">Włącz Udostępnianie w pobliżu</translation>
@@ -4204,6 +4205,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4515872537870654449">Skontaktuj się z serwisem firmy Dell. Jeśli wentylator nie działa, stacja dokująca się wyłączy.</translation>
 <translation id="4518840066030486079">Styl trybu klawisza Shift</translation>
 <translation id="4519331665958994620">Strony mogą prosić o dostęp do kamery</translation>
+<translation id="4519605771716872386">Synchronizacja plików jest włączona</translation>
 <translation id="4519935350946509010">Błąd połączenia.</translation>
 <translation id="4520385623207007473">Pliki cookie w użyciu</translation>
 <translation id="452039078290142656">nieznane urządzenia od <ph name="VENDOR_NAME" /></translation>
@@ -7239,6 +7241,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7124712201233930202">Brak zgodności z zasadami organizacji</translation>
 <translation id="7125029162161377569">W ramach wersji próbnych Piaskownicy prywatności witryny mogą zapewniać taką samą wygodę przeglądania, jednak przy wykorzystaniu mniejszej ilości informacji o użytkowniku. To oznacza dla Ciebie więcej prywatności i mniej śledzenia na stronach internetowych. Dodamy nowe wersje próbne, gdy tylko będą gotowe do przetestowania.</translation>
 <translation id="7125148293026877011">Usuń Crostini</translation>
+<translation id="7125932261198019860">Upewnij się, że drukarka jest połączona z tą samą siecią Wi-Fi co Chromebook lub użyj kabla USB. <ph name="LINK_BEGIN" />Więcej informacji o zgodności<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Historia pobierania</translation>
 <translation id="7128151990937044829">Jeśli powiadomienia są blokowane, pokaż wskaźnik na pasku adresu</translation>
 <translation id="7131040479572660648">Odczyt Twoich danych na stronie <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i <ph name="WEBSITE_3" /></translation>
@@ -7432,6 +7435,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7307129035224081534">Wstrzymano</translation>
 <translation id="7308643132139167865">Języki wyświetlania stron internetowych</translation>
 <translation id="7310598146671372464">Logowanie nie udało się. Serwer nie obsługuje wybranych typów szyfrowania Kerberos. Skontaktuj się z administratorem.</translation>
+<translation id="7311005168897771689">Korzystaj z plików na Dysku Google także offline</translation>
 <translation id="7311244614769792472">Brak wyników</translation>
 <translation id="7312210124139670355">Administrator resetuje Twoją kartę eSIM. Może to potrwać kilka minut.</translation>
 <translation id="7317831949569936035">Rejestracja w szkole</translation>

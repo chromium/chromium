@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоків: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Доступна нова функція. Щоб дізнатися більше, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="1059913517121127803">Не вдається почати сканування</translation>
+<translation id="1062823486781306604"><ph name="NAME" /> (<ph name="INDEX" /> з <ph name="COUNT" />).</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">виявлено брандмауер</translation>
 <translation id="1075811647922107217">Розмір сторінки</translation>
@@ -185,6 +186,7 @@
 <translation id="2307344026739914387">Використовувати поточну пару ключів</translation>
 <translation id="2320295602967756579">Увімкнути світлу тему</translation>
 <translation id="2323506179655536734">ПРОПУЩЕНО</translation>
+<translation id="2324354238778375592">Плаваюче вікно</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Щоб знайти пристрої поблизу, увімкніть Bluetooth</translation>
 <translation id="2346474577291266260">Чудовий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +335,7 @@
 <translation id="3689839747745352263">Перевірка "<ph name="TEST_NAME" />"</translation>
 <translation id="370665806235115550">Завантаження...</translation>
 <translation id="3708186454126126312">Підключені раніше</translation>
+<translation id="3715651196924935218">Закрити плаваюче вікно</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (відгуків: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Не з’єднано</translation>
 <translation id="3749289110408117711">Ім’я файлу</translation>
@@ -389,6 +392,7 @@
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4150201353443180367">Екран</translation>
 <translation id="4155551848414053977">Переконайтеся, що сканер увімкнений і доступний у мережі або через пряме з'єднання</translation>
+<translation id="4159238217853743776">Частково</translation>
 <translation id="4159784952369912983">Пурпуровий</translation>
 <translation id="4170180284036919717">Як зробити фотографію</translation>
 <translation id="4170700058716978431">НЕ ПРОЙДЕНО</translation>
@@ -498,6 +502,7 @@
 <translation id="4930320165497208503">Щоб налаштувати або оновити з’єднання, перейдіть у <ph name="BEGIN_LINK" />Налаштування<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" />: мікропрограму пристрою оновлено до версії <ph name="VERSION" /></translation>
+<translation id="4969079779290789265">Розділити</translation>
 <translation id="4972592110715526173">змінити режим</translation>
 <translation id="498186245079027698">Перевірте сканер і повторіть спробу. Переконайтеся, що на пристрої достатньо вільного місця для зберігання відсканованих файлів.</translation>
 <translation id="4985509611418653372">Виконати</translation>
@@ -517,6 +522,7 @@
 <translation id="5088172560898466307">Ім’я хосту сервера</translation>
 <translation id="5089810972385038852">Штат/провінція</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">На весь екран</translation>
 <translation id="5142961317498132443">Автентифікація</translation>
 <translation id="5154917547274118687">Пам’ять</translation>
 <translation id="5160857336552977725">Увійдіть в обліковий запис на пристрої <ph name="DEVICE_TYPE" /></translation>
@@ -529,11 +535,13 @@
 <translation id="5222676887888702881">Вийти</translation>
 <translation id="522307662484862935">Не вказувати електронну адресу</translation>
 <translation id="5227902338748591677">Розклад для темної теми</translation>
+<translation id="5229344016299762883">Вийти з повноекранного режиму</translation>
 <translation id="5234764350956374838">Закрити</translation>
 <translation id="5252456968953390977">Роумінг</translation>
 <translation id="5257811368506016604">Увімкнути режим світлих кольорів</translation>
 <translation id="5264277876637023664">Виконати перевірку ЦП</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN вимкнено.</translation>
 <translation id="5275828089655680674">Повторити програми</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">колір підсвічування</translation>
@@ -598,6 +606,7 @@
 <translation id="5832805196449965646">Додати користувача</translation>
 <translation id="583281660410589416">Невідомий</translation>
 <translation id="5843706793424741864">Градуси Фаренгейта</translation>
+<translation id="584953448295717128">APN визначається автоматично.</translation>
 <translation id="5849570051105887917">Код локального постачальника</translation>
 <translation id="5859603669299126575">Альбом із мистецької галереї</translation>
 <translation id="5860033963881614850">Вимк.</translation>
@@ -706,6 +715,7 @@
 <translation id="6566314079205407217">Сканування кількох сторінок</translation>
 <translation id="6574762126505704998">Заповнення</translation>
 <translation id="6575134580692778371">Не налаштовано</translation>
+<translation id="6576005492601044801">ліворуч</translation>
 <translation id="6579509898032828423">Використати цю фотографію</translation>
 <translation id="6596816719288285829">ІР-адреса</translation>
 <translation id="6599673642868607614">Дякуємо за відгук. Наша команда перегляне його. Ваш відгук допоможе нам покращити роботу Chromebook. Зверніть увагу: через велику кількість повідомлень ми не відповідаємо на них.</translation>
@@ -810,6 +820,7 @@
 <translation id="7497215489070763236">Сертифікат ЦС для сервера</translation>
 <translation id="7501957181231305652">або</translation>
 <translation id="7502658306369382406">Адреса IPv6</translation>
+<translation id="7513770521371759388">низ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Довідковий контент недоступний</translation>
 <translation id="7535791657097741517">Увімкнути світлу тему</translation>
@@ -874,6 +885,7 @@
 <translation id="80398733265834479">Увімкнути режим автоматичного вибору кольору</translation>
 <translation id="8041089156583427627">Надіслати відгук</translation>
 <translation id="8045012663542226664">Вимкнення звуку мікрофона</translation>
+<translation id="8067126283828232460">APN підключено.</translation>
 <translation id="8075838845814659848">Рівень заряду</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8082366717211101304">Не вдається перетворити DNS із додатків для Android</translation>
@@ -946,6 +958,7 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655828773034788261">Надіслати URL-адресу:</translation>
 <translation id="8660881923941176839">фунт.</translation>
+<translation id="8670574982334489519">праворуч</translation>
 <translation id="8675354002693747642">Спільний ключ</translation>
 <translation id="8677859815076891398">Немає альбомів. Створіть їх у <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Щоб керувати цією функцією, натискайте стрілки ліворуч або праворуч.</translation>
@@ -991,6 +1004,7 @@
 <translation id="8936793075252196307">IP-адреса клієнта</translation>
 <translation id="8944651180182756621">Колір панелі запуску</translation>
 <translation id="894617464444543719">Це телефон.</translation>
+<translation id="8950424402482976779">верх</translation>
 <translation id="8968751544471797276">Швидкість заряджання</translation>
 <translation id="8970109610781093811">Запустити знову</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -1018,6 +1032,7 @@
 <translation id="9111102763498581341">Розблокувати</translation>
 <translation id="9122602430962285795">Щоб знову підключитися, перейдіть у налаштування</translation>
 <translation id="9126720536733509015">Зберігати кілька сторінок в один файл PDF</translation>
+<translation id="9133104754938025929">Заставка працює лише під час заряджання, щоб заощаджувати заряд акумулятора.</translation>
 <translation id="9137526406337347448">Служби Google</translation>
 <translation id="9138630967333032450">Ліва клавіша Shift</translation>
 <translation id="9143347780818904997">протягом <ph name="MINUTES" /> хв</translation>

@@ -434,6 +434,7 @@ Esta política sustituye a la obsoleta de <ph name="DEFAULT_WINDOW_PLACEMENT_SET
           Si el valor de una lista de bloqueados es un asterisco (*), se bloquearán todas las extensiones excepto las que estén incluidas explícitamente en la lista de permitidos.
 
           Si no se asigna ningún valor a esta política, el usuario podrá instalar cualquier extensión en <ph name="PRODUCT_NAME" />.</translation>
+<translation id="1392703142209771447">Expresión regular con la que debe coincidir el ID de impresora.</translation>
 <translation id="1393485621820363363">Impresoras de dispositivos de empresa habilitadas</translation>
 <translation id="1395505489889158859">Habilitar el envío de nombres de usuario y de archivo a impresoras nativas</translation>
 <translation id="1395988776118675626">Habilitar la función Recordar contraseña con Kerberos</translation>
@@ -1780,6 +1781,13 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
           El valor de esta política debe especificarse en milisegundos. Los valores deben ser inferiores o iguales al retraso de inactividad.</translation>
 <translation id="2548572254685798999">Recoger información sobre Navegación segura</translation>
+<translation id="2549472870177108435">Si se define esta política, se establecerán las reglas de selección de impresora predeterminada de <ph name="PRODUCT_NAME" /> y se anularán las reglas predeterminadas. La impresora se seleccionará la primera vez que los usuarios intenten imprimir, cuando <ph name="PRODUCT_NAME" /> busque una impresora que tenga los atributos especificados. Si no se encuentra una coincidencia exacta, se puede configurar <ph name="PRODUCT_NAME" /> para que seleccione cualquier impresora que coincida, según el orden en el que se detecten.
+
+Si no se define esta política o se le asignan atributos para los que no hay coincidencias, la impresora de PDF integrada será la predeterminada. Si no hay impresora de PDF, <ph name="PRODUCT_NAME" /> no seleccionará ninguna como predeterminada.
+
+Actualmente, todas las impresoras están clasificadas como <ph name="PRINTER_TYPE_LOCAL" />. Las impresoras conectadas a <ph name="CLOUD_PRINT_NAME" /> se consideran <ph name="PRINTER_TYPE_CLOUD" />, pero <ph name="CLOUD_PRINT_NAME" /> ya no se admite.
+
+Nota: Si se omite un campo, todos los valores coincidirán con ese campo concreto. Por ejemplo, si no se especifica idPattern, la vista previa de impresión aceptará todos los IDs de impresoras. Los patrones de expresión regular deben seguir la sintaxis de expresiones regulares de JavaScript y las coincidencias distinguen entre mayúsculas y minúsculas.</translation>
 <translation id="2550593661567988768">Solo impresión por una cara</translation>
 <translation id="2552318891854145040">Si se establece esta política, se definirá una lista de marcadores en la que cada uno es un diccionario con las claves "<ph name="NAME" />" y "<ph name="URL_LABEL" />". Estas claves contienen el nombre y la URL de destino del marcador. Los administradores podrán configurar una subcarpeta definiendo un marcador sin una clave "<ph name="URL_LABEL" />", pero con una clave "<ph name="CHILDREN" />" adicional. Esta clave también contiene una lista de marcadores, algunos de los cuales también pueden ser carpetas. Chrome modifica las URL incompletas como si se enviasen mediante la barra de direcciones. Por ejemplo, "<ph name="GOOGLE_COM" />" se convierte en "<ph name="HTTPS_GOOGLE_COM" />".
 

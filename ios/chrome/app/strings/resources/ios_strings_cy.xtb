@@ -255,6 +255,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2595587704210555261">{COUNT,plural, =1{Mae tabiau sydd ar agor a heb eu defnyddio am un diwrnod neu fwy yn cael eu symud i Tabiau Anweithredol fel y gallwch ganolbwyntio'n hawdd ar y tabiau rydych yn eu defnyddio fwyaf. Gallwch newid hyn unrhyw bryd yn y gosodiadau.}zero{Mae tabiau sydd ar agor a heb eu defnyddio am {COUNT} diwrnod neu fwy yn cael eu symud i Tabiau Anweithredol fel y gallwch ganolbwyntio'n hawdd ar y tabiau rydych yn eu defnyddio fwyaf. Gallwch newid hyn unrhyw bryd yn y gosodiadau.}two{Mae tabiau sydd ar agor a heb eu defnyddio am {COUNT} ddiwrnod neu fwy yn cael eu symud i Tabiau Anweithredol fel y gallwch ganolbwyntio'n hawdd ar y tabiau rydych yn eu defnyddio fwyaf. Gallwch newid hyn unrhyw bryd yn y gosodiadau.}few{Mae tabiau sydd ar agor a heb eu defnyddio am {COUNT} diwrnod neu fwy yn cael eu symud i Tabiau Anweithredol fel y gallwch ganolbwyntio'n hawdd ar y tabiau rydych yn eu defnyddio fwyaf. Gallwch newid hyn unrhyw bryd yn y gosodiadau.}many{Mae tabiau sydd ar agor a heb eu defnyddio am {COUNT} diwrnod neu fwy yn cael eu symud i Tabiau Anweithredol fel y gallwch ganolbwyntio'n hawdd ar y tabiau rydych yn eu defnyddio fwyaf. Gallwch newid hyn unrhyw bryd yn y gosodiadau.}other{Mae tabiau sydd ar agor a heb eu defnyddio am {COUNT} diwrnod neu fwy yn cael eu symud i Tabiau Anweithredol fel y gallwch ganolbwyntio'n hawdd ar y tabiau rydych yn eu defnyddio fwyaf. Gallwch newid hyn unrhyw bryd yn y gosodiadau.}}</translation>
 <translation id="2600682495497606169">Clirio Cwcis y Wefan</translation>
 <translation id="2609008503159898744">Cau Pob Tab?</translation>
+<translation id="2617210333344098964">Symud Cyfeiriad i Gyfrif</translation>
 <translation id="2625189173221582860">Copïwyd cyfrinair</translation>
 <translation id="2626236249646841566">Gwiriwch eich cysylltiad a rhowch gynnig arall ar fewngofnodi.</translation>
 <translation id="2637313651144986786">Chwilio Tabiau...</translation>
@@ -464,6 +465,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3851938967634752633">Bydd y cyfrineiriau ar gyfer <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, a <ph name="NUMBER_OF_ACCOUNTS" /> arall yn cael eu dileu. Ni fydd eich cyfrifon yn cael eu dileu.</translation>
 <translation id="3858860766373142691">Enw</translation>
 <translation id="3861486700625780712">Peidio â dilyn</translation>
+<translation id="3861908220442487587">Dim ond ar y ddyfais hon y caiff y cyfeiriad hwn ei gadw. Er mwyn ei ddefnyddio ar eich dyfeisiau eraill, symudwch ef i'ch Cyfrif Google, <ph name="USER_EMAIL" /></translation>
 <translation id="3863769054730344136">Anfon at Eich Dyfeisiau</translation>
 <translation id="387280738075653372">Lawrlwythwch Chrome yma.</translation>
 <translation id="3875783148670536197">Dangoswch i Fi Sut</translation>

@@ -434,6 +434,7 @@ Cette règle remplace la règle <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLIC
           Si vous saisissez la valeur "*" dans la liste de blocage, toutes les extensions sont bloquées, sauf si elles sont spécifiquement répertoriées dans la liste d'autorisation.
 
           Si cette règle n'est pas configurée, les utilisateurs peuvent installer n'importe quelle extension dans <ph name="PRODUCT_NAME" />.</translation>
+<translation id="1392703142209771447">Expression régulière correspondant à l'ID de l'imprimante.</translation>
 <translation id="1393485621820363363">Imprimantes d'appareils d'entreprise activées</translation>
 <translation id="1395505489889158859">Autorisez l'envoi du nom d'utilisateur et du nom de fichier aux imprimantes en natif</translation>
 <translation id="1395988776118675626">Activer la fonctionnalité "Mémoriser le mot de passe" pour Kerberos</translation>
@@ -1781,6 +1782,13 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
           La valeur de la règle doit être indiquée en millisecondes. Elle doit également être inférieure ou égale au délai d'inactivité.</translation>
 <translation id="2548572254685798999">Enregistrer les informations de navigation sécurisée</translation>
+<translation id="2549472870177108435">Cette règle permet de définir les règles de sélection de l'imprimante par défaut dans <ph name="PRODUCT_NAME" />, ignorant ainsi les règles par défaut. La sélection de l'imprimante est effectuée la première fois que l'utilisateur lance une impression, lorsque <ph name="PRODUCT_NAME" /> cherche une imprimante correspondant aux attributs spécifiés. Si la correspondance n'est pas parfaite, <ph name="PRODUCT_NAME" /> peut être configuré de manière à sélectionner toute imprimante correspondante, selon l'ordre dans lequel les imprimantes sont découvertes.
+
+Si cette règle n'est pas configurée ou qu'elle est définie sur des attributs pour lesquels il n'existe aucune correspondance, l'imprimante PDF intégrée est sélectionnée par défaut. En l'absence d'imprimante PDF, la valeur par défaut de <ph name="PRODUCT_NAME" /> est "Aucun".
+
+Actuellement, toutes les imprimantes sont considérées comme étant de type <ph name="PRINTER_TYPE_LOCAL" />. Les imprimantes connectées à <ph name="CLOUD_PRINT_NAME" /> sont considérées comme étant de type <ph name="PRINTER_TYPE_CLOUD" />, mais <ph name="CLOUD_PRINT_NAME" /> n'est plus compatible.
+
+Remarque : Si vous ne renseignez pas un champ, toutes les valeurs seront prises en compte pour ce champ. Par exemple, si vous ne spécifiez pas idPattern, l'aperçu avant impression acceptera tous les ID d'imprimante. Les structures d'expressions régulières doivent suivre la syntaxe JavaScript RegExp, et les correspondances sont sensibles à la casse.</translation>
 <translation id="2550593661567988768">Impression recto seulement</translation>
 <translation id="2552318891854145040">Permet d'établir une liste des favoris où chacun d'eux est un dictionnaire comprenant les clés "<ph name="NAME" />" et "<ph name="URL_LABEL" />". Ces clés contiennent le nom et la cible du favori. Les administrateurs peuvent configurer un sous-dossier en définissant un favori sans clé "<ph name="URL_LABEL" />", mais avec une clé "<ph name="CHILDREN" />" supplémentaire. Cette clé contient également une liste de favoris, dont certains peuvent être aussi des dossiers. Chrome modifie les URL incomplètes comme si elles avaient été soumises via la barre d'adresse. Par exemple, "<ph name="GOOGLE_COM" />" devient "<ph name="HTTPS_GOOGLE_COM" />".
 

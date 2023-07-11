@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">Përdor çiftin aktual të çelësave</translation>
 <translation id="2320295602967756579">Aktivizo temën e ndriçuar</translation>
 <translation id="2323506179655536734">KAPËRCYER</translation>
+<translation id="2324354238778375592">Pluskuese</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktivizo "Bluetooth-in" për të zbuluar pajisjet në afërsi</translation>
 <translation id="2346474577291266260">I shkëlqyer (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263">Testi <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Po ngarkon...</translation>
 <translation id="3708186454126126312">Të lidhura më parë</translation>
+<translation id="3715651196924935218">Dil nga pluskimi</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> komente)</translation>
 <translation id="3748026146096797577">Nuk është i lidhur</translation>
 <translation id="3749289110408117711">Emri i skedarit</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Fotografitë e Google</translation>
 <translation id="4150201353443180367">Ekrani</translation>
 <translation id="4155551848414053977">Sigurohu që skaneri të jetë i ndezur dhe i disponueshëm përmes rrjetit tënd ose një lidhjeje të drejtpërdrejtë</translation>
+<translation id="4159238217853743776">E pjesshme</translation>
 <translation id="4159784952369912983">Vjollcë</translation>
 <translation id="4170180284036919717">Bëj një fotografi</translation>
 <translation id="4170700058716978431">DËSHTOI</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">Për të konfiguruar ose përditësuar një lidhje, shko te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4950314376641394653">Firmueri <ph name="DEVICE_NAME" /> është përditësuar në versionin <ph name="VERSION" /></translation>
+<translation id="4969079779290789265">I ndarë</translation>
 <translation id="4972592110715526173">ndryshimi i modalitetit</translation>
 <translation id="498186245079027698">Kontrollo skanerin dhe provo përsëri. Sigurohu që të jetë hapësirë lokale të mjaftueshme për të ruajtur skedarët e skanuar.</translation>
 <translation id="4985509611418653372">Ekzekuto</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">Emri i strehuesit të serverit</translation>
 <translation id="5089810972385038852">Shteti</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">I plotë</translation>
 <translation id="5142961317498132443">Vërtetimi</translation>
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5160857336552977725">Identifikohu në <ph name="DEVICE_TYPE" /></translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">Dil</translation>
 <translation id="522307662484862935">Mos e përfshi adresën e email-it</translation>
 <translation id="5227902338748591677">Planifikimi i temës së errët</translation>
+<translation id="5229344016299762883">Dil nga ekrani i plotë</translation>
 <translation id="5234764350956374838">Hiq</translation>
 <translation id="5252456968953390977">Në roaming</translation>
 <translation id="5257811368506016604">Aktivizo modalitetin e ngjyrave të çelura</translation>
@@ -706,6 +712,7 @@
 <translation id="6566314079205407217">Skanimi me shumë faqe</translation>
 <translation id="6574762126505704998">Mbush</translation>
 <translation id="6575134580692778371">I pakonfiguruar</translation>
+<translation id="6576005492601044801">ana e majtë</translation>
 <translation id="6579509898032828423">Përdor këtë fotografi</translation>
 <translation id="6596816719288285829">Adresa e IP-së</translation>
 <translation id="6599673642868607614">Faleminderit për komentet e tua. Komentet e tua na ndihmojnë të përmirësojmë përvojën me Chromebook dhe do të rishikohen nga ekipi ynë. Për shkak të numrit të lartë të raportimeve, nuk do të mund të dërgojmë një përgjigje.</translation>
@@ -810,6 +817,7 @@
 <translation id="7497215489070763236">Certifikata CA e serverit</translation>
 <translation id="7501957181231305652">ose</translation>
 <translation id="7502658306369382406">Adresa IPv6</translation>
+<translation id="7513770521371759388">në fund</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Përmbajtja e ndihmës nuk ofrohet</translation>
 <translation id="7535791657097741517">Aktivizo temën e ndriçuar</translation>
@@ -946,6 +954,7 @@
 <translation id="8655295600908251630">Kanali</translation>
 <translation id="8655828773034788261">Ndaj URL-në:</translation>
 <translation id="8660881923941176839">paundë</translation>
+<translation id="8670574982334489519">ana e djathtë</translation>
 <translation id="8675354002693747642">Çelës i ndarë paraprakisht</translation>
 <translation id="8677859815076891398">Nuk ka albume. Krijo një album te <ph name="LINK_BEGIN" />Fotografitë e Google<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Përdor tastet "Shigjeta majtas" ose "Shigjeta djathtas" për ta menaxhuar këtë veçori.</translation>
@@ -991,6 +1000,7 @@
 <translation id="8936793075252196307">Adresa IP e klientit</translation>
 <translation id="8944651180182756621">Ngjyra e nisësit</translation>
 <translation id="894617464444543719">Pajisja është një telefon.</translation>
+<translation id="8950424402482976779">në krye</translation>
 <translation id="8968751544471797276">Shpejtësia e karikimit</translation>
 <translation id="8970109610781093811">Ekzekuto përsëri</translation>
 <translation id="8983038754672563810">HSPA</translation>

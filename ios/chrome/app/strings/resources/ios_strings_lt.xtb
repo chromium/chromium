@@ -525,6 +525,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4272631900155121838">Jei norite nuskaityti QR kodą, nustatymuose įgalinkite fotoaparatą</translation>
 <translation id="4277990410970811858">Saugus naršymas</translation>
 <translation id="4281844954008187215">Paslaugų teikimo sąlygos</translation>
+<translation id="4286718549648564014">Adresas perkeltas į paskyrą <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Ieškoti</translation>
 <translation id="4302248187517737842">Nėra naudotojo vardo ••••••••</translation>
 <translation id="4304713468139749426">Slaptažodžių tvarkytuvė</translation>
@@ -1184,6 +1185,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8264966119170358612">Kai kurie jūsų išsaugoti slaptažodžiai buvo atskleisti dėl ne „Google“ duomenų saugos pažeidimo. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Buvote atjungti nuo paskyros <ph name="USER_NAME" /> nustatant „iPad“ iš naujo. Jei norite vėl prisijungti, toliau palieskite „Tęsti“.</translation>
 <translation id="8271720166617117963">Sutikti ir prisijungti</translation>
+<translation id="8273982424131314219">Informaciją užpildysite adresu <ph name="URL" /></translation>
 <translation id="8278938988428169257">Įveskite žodį ar frazę</translation>
 <translation id="8281781826761538115">Numatytoji – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Praleisti</translation>
@@ -1231,6 +1233,7 @@ Duomenys užšifruoti naudojant slaptafrazę <ph name="TIME" />. Įveskite ją, 
 <translation id="8556590991644167667">{count,plural, =1{Atsisakėte {count} perspėjimo}one{Atsisakėte {count} perspėjimo}few{Atsisakėte {count} perspėjimų}many{Atsisakėte {count} perspėjimo}other{Atsisakėte {count} perspėjimų}}</translation>
 <translation id="8557690929085431655">Galite pasirinkti iš kitų programų gaunamų URL atidarymą inkognito režimu.</translation>
 <translation id="8558480467877843976">Dabar galite naudoti „Chrome“ bet kada naršydami ar paliesdami nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
+<translation id="8580411965900177618">Ne, ačiū</translation>
 <translation id="8588404856427128947">Išjungta</translation>
 <translation id="8591976964826315682">Blokuoti trečiųjų šalių slapukus inkognito režimu</translation>
 <translation id="8605219856220328675">Uždaryti skirtuką.</translation>
@@ -1268,6 +1271,7 @@ Duomenys užšifruoti naudojant slaptafrazę <ph name="TIME" />. Įveskite ją, 
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Numatytasis svetainės rodinys</translation>
 <translation id="8820817407110198400">Žymės</translation>
+<translation id="8825562130641217944">Gaukite žymes, slaptažodžius ir kt.</translation>
 <translation id="882557203579758546">Rasti puslapyje…</translation>
 <translation id="8840513115188359703">Nebūsite atjungti nuo „Google“ paskyros.</translation>
 <translation id="8843129975935593190">Jūsų organizacija riboja, ką galite sinchronizuoti.</translation>

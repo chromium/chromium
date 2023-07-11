@@ -815,6 +815,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1647408325348388858">Buka dan edit <ph name="FILE_NAME" /> dalam apl web ini?</translation>
 <translation id="1648528859488547844">Gunakan Wi-Fi atau rangkaian mudah alih untuk menentukan lokasi</translation>
 <translation id="164936512206786300">Nyahgandingkan peranti Bluetooth</translation>
+<translation id="1650801028905250434">Fail anda dalam Drive Saya akan disegerakkan dengan Chromebook anda secara automatik supaya anda boleh mengakses fail tersebut tanpa sambungan Internet. Anda boleh menukar tetapan ini pada bila-bila masa dalam Tetapan &gt; Fail.</translation>
 <translation id="1651008383952180276">Anda mesti memasukkan ungkapan laluan yang sama dua kali</translation>
 <translation id="1651609627703324721">Tab ini menayangkan kandungan VR pada set kepala</translation>
 <translation id="1652326691684645429">Dayakan Kongsi Berdekatan</translation>
@@ -4242,6 +4243,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4515872537870654449">Hubungi Dell untuk penyelenggaraan. Dok akan dimatikan jika kipas tidak berfungsi.</translation>
 <translation id="4518840066030486079">Gaya Mod Kekunci Shift</translation>
 <translation id="4519331665958994620">Laman boleh meminta untuk menggunakan kamera anda</translation>
+<translation id="4519605771716872386">Penyegerakan fail dihidupkan</translation>
 <translation id="4519935350946509010">Ralat sambungan.</translation>
 <translation id="4520385623207007473">Kuki yang digunakan</translation>
 <translation id="452039078290142656">peranti yang tidak diketahui daripada <ph name="VENDOR_NAME" /></translation>
@@ -7285,6 +7287,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7124712201233930202">Dasar organisasi anda tidak dipenuhi</translation>
 <translation id="7125029162161377569">Dengan percubaan Kotak Pasir Privasi, laman boleh menyampaikan pengalaman penyemakan imbas yang sama menggunakan kurang maklumat anda. Itu bermakna lebih privasi untuk anda dan kurang penjejakan rentas laman. Kami akan menambah percubaan baharu apabila percubaan baharu sedia untuk diuji kelak.</translation>
 <translation id="7125148293026877011">Padamkan Crostini</translation>
+<translation id="7125932261198019860">Pastikan pencetak anda disambungkan kepada rangkaian Wi-Fi yang sama dengan Chromebook anda atau gunakan kabel USB. <ph name="LINK_BEGIN" />Ketahui lebih lanjut tentang keserasian<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Sejarah muat turun</translation>
 <translation id="7128151990937044829">Paparkan penunjuk dalam bar alamat apabila pemberitahuan disekat</translation>
 <translation id="7131040479572660648">Baca data anda di <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> dan <ph name="WEBSITE_3" /></translation>
@@ -7478,6 +7481,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7307129035224081534">Dijeda</translation>
 <translation id="7308643132139167865">Bahasa laman web</translation>
 <translation id="7310598146671372464">Gagal log masuk. Pelayan tidak menyokong jenis penyulitan Kerberos yang dinyatakan. Sila hubungi pentadbir anda.</translation>
+<translation id="7311005168897771689">Akses fail Google Drive anda dengan mudah apabila anda berstatus luar talian</translation>
 <translation id="7311244614769792472">Tiada hasil ditemukan</translation>
 <translation id="7312210124139670355">Pentadbir sedang menetapkan semula eSIM anda. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="7317831949569936035">Pendaftaran sekolah</translation>

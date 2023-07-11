@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Այս պահին Google Drive-ը մատչելի չէ: Վերբեռնումը ավտոմատ կվերագործարկվի, երբ Google Drive-ը մատչելի լինի:</translation>
 <translation id="1307931752636661898">Չհաջողվեց ցուցադրել Լինուքսի ֆայլերը</translation>
 <translation id="1313405956111467313">Պրոքսի-սերվերի ինքնակազմաձևում</translation>
+<translation id="134645005685694099">Ձեր սարքում բավականաչափ տարածք չկա, որպեսզի հնարավոր լինի ֆայլերի համաժամացումը միացված թողնել։ Նոր ֆայլերն այլևս ավտոմատ չեն համաժամացվի։</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Ֆայլը կամ գրացուցակը վնասված են:</translation>
 <translation id="1363028406613469049">Կատարում</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP պրոքսի սերվեր</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> ցանց, անջատված է</translation>
 <translation id="2468402215065996499">Տամագոչի</translation>
+<translation id="2468470447085858632">Օգտագործեք ձեր Google Drive-ի ֆայլերը անցանց ռեժիմում՝ ֆայլերի համաժամացման շնորհիվ</translation>
 <translation id="2470939964922472929">Սխալ PIN կոդի մուտքագրման չափազանց շատ փորձեր են կատարվել։ Նոր PIN կոդ սահմանելու համար մուտքագրեք 8-անիշ անձնական ապակողպման բանալին (PUK), որը տրամադրվել է ձեր օպերատորի կողմից։</translation>
 <translation id="2500392669976258912">գուջարատերեն (հնչյունային)</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -602,6 +604,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> ֆայլը տեղափոխվեց աղբարկղ</translation>
 <translation id="5724172041621205163">թայերեն (Pattachote ստեղնաշար)</translation>
 <translation id="57383366388012121">Անցած ամիս</translation>
+<translation id="575175778971367197">Ներկայումս հնարավոր չէ համաժամացնել այս ֆայլը</translation>
 <translation id="5756666464756035725">Հունգարական QWERTY</translation>
 <translation id="5760252553414789727">Ընտրված է <ph name="SELECTED_FILES_COUNT" /> տարր</translation>
 <translation id="5763377084591234761">գերմաներեն (Շվեյցարիա)</translation>
@@ -704,6 +707,7 @@
 <translation id="6558280019477628686">Սխալ առաջացավ: Հնարավոր է՝ որոշ տարրեր չեն ջնջվել:</translation>
 <translation id="656398493051028875">«<ph name="FILENAME" />»-ը ջնջվում է…</translation>
 <translation id="6581162200855843583">Google Drive-ի հղում</translation>
+<translation id="6588648400954570689">Ֆայլերի համաժամացման կարգավորումներ</translation>
 <translation id="6594855146910089723">Այս պանակը հասանելի է Լինուքսին և Parallels Desktop-ին</translation>
 <translation id="6607272825297743757">Ֆայլի տվյալներ</translation>
 <translation id="6609332149380188670">Parallels Desktop-ին հասանելի է դարձել <ph name="NUMBER_OF_ITEMS" /> պանակ</translation>
@@ -828,6 +832,7 @@
 <translation id="7547811415869834682">Հոլանդական</translation>
 <translation id="7551643184018910560">Ամրացնել դարակում</translation>
 <translation id="7553492409867692754">Հասանելի դարձրեք «<ph name="FOLDER_NAME" />» պանակի ֆայլերը Լինուքսին</translation>
+<translation id="7555339735447658365">Այս պահին դուք օֆլայն եք։ Ֆայլերի համաժամացումը կվերսկսվի, երբ միանաք ինտերնետին։</translation>
 <translation id="7589661784326793847">Մեկ վայրկյան</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> ֆայլը ներբեռնվում է</translation>
 <translation id="7600126690270271294">սերբերեն</translation>
@@ -870,6 +875,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ՏԲ</translation>
 <translation id="7831491651892296503">Չհաջողվեց կազմաձևել ցանցը</translation>
+<translation id="7832093238954689746">Ֆայլերի համաժամացումն ավարտված է։ Իմ դրայվի ֆայլերը հասանելի են անցանց։</translation>
 <translation id="7839804798877833423">Այս ֆայլերը քաշելու համար կպահանջվի մոտ <ph name="FILE_SIZE" /> բջջային տվյալների հոսք:</translation>
 <translation id="7846076177841592234">Չեղարկել ընտրվածքը</translation>
 <translation id="7853966320808728790">Ֆրանսիական BÉPO</translation>
@@ -918,6 +924,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Սարքի մոդելը</translation>
 <translation id="8223479393428528563">Այս ֆայլերը անցանց ռեժիմում օգտագործելու համար, նորից կապակցվեք համացանցին, ֆայլերի վրա աջ սեղմումով ընտրեք <ph name="OFFLINE_CHECKBOX_NAME" /> ընտրանքը:</translation>
+<translation id="8241139360630443550">Դիտել հիշողությունը</translation>
 <translation id="8249296373107784235">Ընդհատել</translation>
 <translation id="8250690786522693009">լատիներեն</translation>
 <translation id="8250920743982581267">Փաստաթղթեր</translation>

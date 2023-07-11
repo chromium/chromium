@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Drive ప్రస్తుతం అందుబాటులో లేదు. Google Drive అందుబాటులోకి వచ్చిన తర్వాత అప్‌లోడ్ ఆటోమేటిక్‌గా మళ్లీ ప్రారంభమవుతుంది.</translation>
 <translation id="1307931752636661898">Linux ఫైళ్లను చూడటం సాధ్యపడలేదు</translation>
 <translation id="1313405956111467313">ఆటోమేటిక్‌ ప్రాక్సీ కాన్ఫిగరేషన్</translation>
+<translation id="134645005685694099">ఫైల్ సింక్‌ను ఆన్‌లో ఉంచడానికి మీ పరికరంలో తగినంత స్టోరేజ్ స్పేస్ లేదు. కొత్త ఫైల్స్ ఇకపై ఆటోమేటిక్‌గా సింక్ చేయబడవు.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ఈ ఫైల్ లేదా డైరెక్టరీ ఉపయోగించబడదు.</translation>
 <translation id="1363028406613469049">ట్రాక్ చేయండి</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP ప్రాక్సీ</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> నెట్‌వర్క్, ఆఫ్‌లో ఉంది</translation>
 <translation id="2468402215065996499">టమగోచి</translation>
+<translation id="2468470447085858632">ఫైల్ సింక్‌తో మీ Google Drive ఫైల్స్‌ను ఆఫ్‌లైన్‌లో యాక్సెస్ చేయండి</translation>
 <translation id="2470939964922472929">చాలా ఎక్కువ సార్లు తప్పు PIN ఎంటర్ చేయబడింది. కొత్త PINను సెటప్ చేయడానికి, మీ క్యారియర్ ద్వారా అందించబడే 8-అంకెల PIN అన్‌బ్లాక్ చేసే కీ(PUK)ని ఎంటర్ చేయండి.</translation>
 <translation id="2500392669976258912">గుజరాతీ ఫొనెటిక్</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -603,6 +605,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> ట్రాష్‌కు తరలించబడింది</translation>
 <translation id="5724172041621205163">పట్టచోటె కీబోర్డ్‌తో థాయ్</translation>
 <translation id="57383366388012121">గత నెల</translation>
+<translation id="575175778971367197">ప్రస్తుతం ఈ ఫైల్‌ను సింక్ చేయడం సాధ్యపడదు</translation>
 <translation id="5756666464756035725">హంగేరియన్ QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> ఐటెమ్‌లు ఎంచుకోబడ్డాయి</translation>
 <translation id="5763377084591234761">జర్మన్ (స్విట్జర్లాండ్)</translation>
@@ -705,6 +708,7 @@
 <translation id="6558280019477628686">ఎర్రర్ ఏర్పడింది. కొన్ని అంశాలు తొలగించబడి ఉండకపోవచ్చు.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />"ని తొలగిస్తోంది...</translation>
 <translation id="6581162200855843583">Google Drive లింక్</translation>
+<translation id="6588648400954570689">ఫైల్ సింక్ సెట్టింగ్‌లు</translation>
 <translation id="6594855146910089723">ఈ ఫోల్డర్ Linux ఇంకా Parallels Desktopతో షేర్ చేయబడింది</translation>
 <translation id="6607272825297743757">ఫైల్ సమాచారం</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> ఫోల్డర్‌లు Parallels Desktopతో చేర్చబడ్డాయి</translation>
@@ -829,6 +833,7 @@
 <translation id="7547811415869834682">డచ్</translation>
 <translation id="7551643184018910560">అరకు పిన్ చేయండి</translation>
 <translation id="7553492409867692754"><ph name="FOLDER_NAME" />ఫోల్డర్‌లోని ఫైళ్లను యాక్సెస్ చేయడానికి Linux యాప్‌లకు అనుమతి ఇవ్వండి</translation>
+<translation id="7555339735447658365">మీరు ప్రస్తుతం ఆఫ్‌లైన్‌లో ఉన్నారు. మీరు ఇంటర్నెట్‌కు కనెక్ట్ చేసినప్పుడు ఫైల్‌ను సింక్ చేయడం కొనసాగించబడుతుంది</translation>
 <translation id="7589661784326793847">ఒక క్షణం వేచి ఉండండి</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" />ను ఆఫ్‌లైన్‌లో అందుబాటులో ఉంచుతోంది</translation>
 <translation id="7600126690270271294">సెర్బియన్</translation>
@@ -871,6 +876,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">నెట్‌వర్క్‌ను కాన్ఫిగర్ చేయడంలో ఎర్రర్</translation>
+<translation id="7832093238954689746">ఫైల్ సింక్ పూర్తయింది. నా డ్రైవ్ ఫైల్స్ ఆఫ్‌లైన్‌లో అందుబాటులో ఉన్నాయి.</translation>
 <translation id="7839804798877833423">ఈ ఫైళ్లను పొందడానికి మొబైల్ డేటాలో సుమారుగా <ph name="FILE_SIZE" /> ఉపయోగించబడుతుంది.</translation>
 <translation id="7846076177841592234">ఎంపికను రద్దు చేయండి</translation>
 <translation id="7853966320808728790">ఫ్రెంచ్ BÉPO</translation>
@@ -919,6 +925,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">పరికరం మోడల్</translation>
 <translation id="8223479393428528563">ఈ ఫైళ్లను ఆఫ్‌లైన్‌లో ఉపయోగించేందుకు వాటిని సేవ్ చేయడానికి, తిరిగి ఆన్‌లైన్‌లోకి వచ్చి, ఫైళ్లపై కుడి-క్లిక్ చేసి, ఆపై <ph name="OFFLINE_CHECKBOX_NAME" /> ఎంపికను ఎంచుకోండి.</translation>
+<translation id="8241139360630443550">స్టోరేజ్‌ను చూడండి</translation>
 <translation id="8249296373107784235">రద్దుచేయి</translation>
 <translation id="8250690786522693009">లాటిన్</translation>
 <translation id="8250920743982581267">డాక్యుమెంట్లు</translation>

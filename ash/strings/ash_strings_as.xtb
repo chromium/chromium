@@ -185,6 +185,7 @@
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />তম শাৰী, <ph name="COLUMN_NUMBER" />তম স্তম্ভলৈ নিয়া হৈছে।</translation>
 <translation id="1771761307086386028">সোঁফাললৈ স্ক্ৰ’ল কৰক</translation>
 <translation id="1774796056689732716">কেলেণ্ডাৰ, <ph name="CURRENT_MONTH_YEAR" />, বৰ্তমান <ph name="DATE" /> বাছনি কৰা হৈছে।</translation>
+<translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" /> টাৰ ভিতৰত <ph name="NUM_SHOWN_ITEMS" /> টা দেখুৱাই থকা হৈছে</translation>
 <translation id="1787955149152357925">অফ আছে</translation>
 <translation id="181103072419391116">ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="1815245884418711390">হ’টস্প’ট ট’গল কৰক। হটস্পট অফ হৈ আছে।</translation>

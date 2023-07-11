@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Drive አሁን አይገኝም። Google Drive ተመልሶ እንደመጣ መስቀል በራስ-ሰር ዳግም ይጀመራል።</translation>
 <translation id="1307931752636661898">የLinux ፋይሎችን መመልከት አልተቻለም</translation>
 <translation id="1313405956111467313">ራስ-ሰር የተኪ ውቅር</translation>
+<translation id="134645005685694099">የእርስዎ መሣሪያ የፋይል ማስመርን አብርቶ ለማቆየት በቂ የማከማቻ ቦታ የለውም። አዲስ ፋይሎች ከአሁን ወዲህ በራስ ሰር አይሰምሩም።</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />፦ <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ፋይሉ ወይም አቃፊው ሊሰራበት የሚችል አይደለም።</translation>
 <translation id="1363028406613469049">ትራክ</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">የኤችቲቲፒ ተኪ</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> አውታረ መረብ፣ ጠፍቷል</translation>
 <translation id="2468402215065996499">ታማጎቺ</translation>
+<translation id="2468470447085858632">በፋይል ማስመር የእርስዎን የGoogle Drive ፋይሎች ከመስመር ውጭ ይድረሱ</translation>
 <translation id="2470939964922472929">የተሳሳተ ፒን ከልክ በላይ ብዙ ጊዜ ገብቷል። አዲስ ፒን ለማቀናበር በአገልግሎት አቅራቢዎ የቀረበውን ባለ8 አሃዝ የግል እገዳ ማንሻ ቁልፍ (PUK) ያስገቡ።</translation>
 <translation id="2500392669976258912">የጉጃራቲ ፎነቲክ</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -603,6 +605,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> ወደ መጣያ ተወስዷል</translation>
 <translation id="5724172041621205163">ታይላንድኛ በፓቶቾት ቁልፍ ሰሌዳ</translation>
 <translation id="57383366388012121">ባለፈው ወር</translation>
+<translation id="575175778971367197">ይህን ፋይል አሁን ማስመር አልተቻለም</translation>
 <translation id="5756666464756035725">የሃንጋሪኛ QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> ንጥሎች ተመርጠዋል</translation>
 <translation id="5763377084591234761">ጀርመንኛ (ስዊዘርላንድ)</translation>
@@ -705,6 +708,7 @@
 <translation id="6558280019477628686">አንድ ስህተት ተከስቷል። አንዳንድ ንጥሎች አልተሰረዙ ሊሆኑ ይችላሉ።</translation>
 <translation id="656398493051028875">«<ph name="FILENAME" />»ን በመሰረዝ ላይ...</translation>
 <translation id="6581162200855843583">Google Drive አገናኝ</translation>
+<translation id="6588648400954570689">የፋይል ማስመር ቅንብሮች</translation>
 <translation id="6594855146910089723">ይህ አቃፊ ለLinux እና ለParallels ዴስክቶፕ ተጋርቷል</translation>
 <translation id="6607272825297743757">የፋይል መረጃ</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> አቃፊዎች ለParallels ዴስክቶፕ ተጋርተዋል</translation>
@@ -829,6 +833,7 @@
 <translation id="7547811415869834682">ደች</translation>
 <translation id="7551643184018910560">መደርደሪያ ላይ ሰካ</translation>
 <translation id="7553492409867692754">የLinux መተግበሪያዎች በ<ph name="FOLDER_NAME" /> አቃፊ ውስጥ ያሉ ፋይሎችን እንዲደርስ ይፍቀዱ</translation>
+<translation id="7555339735447658365">በአሁኑ ጊዜ ከመስመር ውጭ ነዎት። የፋይል ማስመር ከበይነመረብ ጋር በሚገናኙበት ጊዜ ከቆመበት ይቀጥላል</translation>
 <translation id="7589661784326793847">አንድ ሰከንድ ብቻ ይጠብቁ</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" />ን ከመስመር ውጭ እንዲገኝ በማድረግ ላይ</translation>
 <translation id="7600126690270271294">ሰርቢኛ</translation>
@@ -871,6 +876,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ቴባ</translation>
 <translation id="7831491651892296503">አውታረ መረብን ማዋቀር ላይ ስህተት</translation>
+<translation id="7832093238954689746">የፋይል ማስመር ተጠናቅቋል። የእኔ Drive ፋይሎች ከመስመር ውጭ አይገኙም።</translation>
 <translation id="7839804798877833423">እነዚህን ፋይሎች ማምጣት <ph name="FILE_SIZE" /> ገደማ የተንቀሳቃሽ ስልክ ውሂብ ይጠቀማል።</translation>
 <translation id="7846076177841592234">ምርጫ ሰርዝ</translation>
 <translation id="7853966320808728790">የፈረንሳይኛ BÉPO</translation>
@@ -919,6 +925,7 @@
 <translation id="8179976553408161302">አስገባ</translation>
 <translation id="8193175696669055101">የመሳሪያ ሞዴል</translation>
 <translation id="8223479393428528563">እነዚህን ፋይሎች ከመስመር ውጭ ለመጠቀም ለማስቀመጥ ተመልሰው መስመር ላይ ይሂዱ፣ ፋይሎቹን በቀኝ ጠቅ ያድርጉ፣ እና የ<ph name="OFFLINE_CHECKBOX_NAME" /> አማራጩን ይምረጡ።</translation>
+<translation id="8241139360630443550">ማከማቻ ይመልከቱ</translation>
 <translation id="8249296373107784235">አጨንግፍ</translation>
 <translation id="8250690786522693009">ላቲን</translation>
 <translation id="8250920743982581267">ሰነዶች</translation>

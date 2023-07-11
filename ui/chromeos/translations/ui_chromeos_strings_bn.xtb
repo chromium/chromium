@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">এই মুহূর্তে Google ড্রাইভ উপলব্ধ নেই৷ একবার Google ড্রাইভ উপলব্ধ হলেই আপলোড করার কাজটি স্বয়ংক্রিয়ভাবে পুনরায় চালু হবে৷</translation>
 <translation id="1307931752636661898">Linux ফাইল দেখা যায়নি</translation>
 <translation id="1313405956111467313">স্বয়ংক্রিয় প্রক্সি কনফিগারেশন</translation>
+<translation id="134645005685694099">ফাইল সিঙ্ক করার প্রসেস চালু রাখার জন্য আপনার ডিভাইসে পর্যাপ্ত স্টোরেজের জায়গা নেই। নতুন ফাইল আর অটোমেটিক সিঙ্ক করা হবে না।</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" /> : <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ফাইল বা ডিরেক্টরি ব্যবহারযোগ্য নয়৷</translation>
 <translation id="1363028406613469049">ট্র্যাক</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP প্রক্সী</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> নেটওয়ার্ক, বন্ধ আছে</translation>
 <translation id="2468402215065996499">তামাগচি</translation>
+<translation id="2468470447085858632">ফাইল সিঙ্ক করার প্রসেসের মাধ্যমে আপনার Google Drive-এর ফাইল অফলাইনে অ্যাক্সেস করুন</translation>
 <translation id="2470939964922472929">একটি ভুল পিন অনেকবার লেখা হয়েছে। নতুন একটি পিন সেট করতে আপনার পরিষেবা প্রদানকারীর থেকে পাওয়া ৮-সংখ্যার 'পার্সোনাল আনব্লকিং কী' (PUK) লিখুন।</translation>
 <translation id="2500392669976258912">গুজরাতি ফোনেটিক</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -602,6 +604,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> ট্র্যাশে সরানো হয়েছে</translation>
 <translation id="5724172041621205163">থাই ভাষায় পাট্টাচোটে কীবোর্ড</translation>
 <translation id="57383366388012121">গত এক মাসের</translation>
+<translation id="575175778971367197">এই মুহূর্তে এই ফাইল সিঙ্ক করা যাচ্ছে না</translation>
 <translation id="5756666464756035725">হাঙ্গেরিয়ান কোয়ের্টি</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" />টি আইটেম বেছে নেওয়া হয়েছে</translation>
 <translation id="5763377084591234761">জার্মান (সুইজারল্যান্ড)</translation>
@@ -704,6 +707,7 @@
 <translation id="6558280019477628686">একটি ত্রুটি হয়েছে৷ কিছু আইটেম হয়ত মোছা যায়নি।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" মোছা হচ্ছে...</translation>
 <translation id="6581162200855843583">Google ড্রাইভ লিঙ্ক</translation>
+<translation id="6588648400954570689">ফাইল সিঙ্ক করা সম্পর্কিত সেটিংস</translation>
 <translation id="6594855146910089723">এই ফোল্ডার Linux ও Parallels Desktop-এর সাথে শেয়ার করা হয়েছে</translation>
 <translation id="6607272825297743757">ফাইলের তথ্য</translation>
 <translation id="6609332149380188670">Parallels Desktop-এর সাথে <ph name="NUMBER_OF_ITEMS" /> ফোল্ডার শেয়ার করা হয়েছে</translation>
@@ -828,6 +832,7 @@
 <translation id="7547811415869834682">ডাচ</translation>
 <translation id="7551643184018910560">শেল্ফে পিন করুন</translation>
 <translation id="7553492409867692754">Linux অ্যাপকে <ph name="FOLDER_NAME" /> ফোল্ডারের ফাইল অ্যাক্সেস করার অনুমতি দিন</translation>
+<translation id="7555339735447658365">আপনি বর্তমানে অফলাইন আছেন। আপনি ইন্টারনেটের সাথে কানেক্ট করলে, ফাইল সিঙ্ক করার প্রসেস আবার চালু হবে</translation>
 <translation id="7589661784326793847">এক সেকেন্ড অপেক্ষা করুন</translation>
 <translation id="7592775719802218421">অফলাইনে দেখার জন্য <ph name="FILE_NAME" /> ডাউনলোড করা হচ্ছে</translation>
 <translation id="7600126690270271294">সার্বিয়ান</translation>
@@ -870,6 +875,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> টিবি</translation>
 <translation id="7831491651892296503">নেটওয়ার্ক কনফিগার করার সময় ত্রুটি</translation>
+<translation id="7832093238954689746">ফাইল সিঙ্ক করার প্রসেস সম্পূর্ণ হয়েছে। 'আমার ড্রাইভ'-এর ফাইল এখন অফলাইনে উপলভ্য।</translation>
 <translation id="7839804798877833423">এই ফাইলগুলি আনতে আনুমানিক মোবাইল ডেটা <ph name="FILE_SIZE" /> ব্যবহার হবে</translation>
 <translation id="7846076177841592234">নির্বাচন বাতিল করুন</translation>
 <translation id="7853966320808728790">ফরাসি BÉPO</translation>
@@ -918,6 +924,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">ডিভাইস মডেল</translation>
 <translation id="8223479393428528563">অফলাইনে ব্যবহারের জন্য এই ফাইলগুলি সেভ করতে অনলাইনে ফিরে আসুন, ফাইলগুলিতে ডান-ক্লিক করুন এবং <ph name="OFFLINE_CHECKBOX_NAME" /> বিকল্পটি নির্বাচন করুন৷</translation>
+<translation id="8241139360630443550">স্টোরেজ দেখুন</translation>
 <translation id="8249296373107784235">বাতিল</translation>
 <translation id="8250690786522693009">ল্যাটিন</translation>
 <translation id="8250920743982581267">দস্তাবেজগুলি</translation>

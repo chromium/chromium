@@ -133,6 +133,7 @@
 <translation id="2084108471225856927">Ρυθμίσεις συσκευής</translation>
 <translation id="2084809735218147718">Άτομο που λέει ευχαριστώ στη νοηματική γλώσσα</translation>
 <translation id="2088690981887365033">Δίκτυο VPN</translation>
+<translation id="209653272837065803">Ο αποθηκευτικός χώρος δεν επαρκεί για να συνεχιστεί ο συγχρονισμός αρχείων</translation>
 <translation id="2111134541987263231">Ενεργοποιήστε την επιλογή <ph name="BEGIN_BOLD" />Να επιτρέπεται στην ανώνυμη περιήγηση<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> στοιχεία θα διαγραφούν και δεν θα είστε σε θέση να τα επαναφέρετε.</translation>
 <translation id="2122305276694332719">Η αυτόματη σύνδεση σε ένα κρυφό δίκτυο επιτρέπει σε άλλα άτομα να βλέπουν τη συσκευή σας και ορισμένες ρυθμίσεις δικτύου σας και δεν συνιστάται.</translation>
@@ -149,9 +150,11 @@
 <translation id="2198315389084035571">Απλοποιημένα Κινεζικά</translation>
 <translation id="22085916256174561">Κορεατικά</translation>
 <translation id="2208919847696382164">Εγκατάσταση με Linux</translation>
+<translation id="2215692307449050019">Χαμηλή στάθμη μπαταρίας. Ο συγχρονισμός αρχείων θα συνεχιστεί όταν η συσκευή συνδεθεί στην παροχή ρεύματος.</translation>
 <translation id="2225536596944493418">Είστε βέβαιοι ότι θέλετε να διαγράψετε <ph name="NUMBER_OF_ITEMS" /> στοιχεία;</translation>
 <translation id="2230062665678605299">Δεν είναι δυνατή η δημιουργία του φακέλου "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Άτομο με καφέ</translation>
+<translation id="2247561763838186830">Αποσυνδεθήκατε</translation>
 <translation id="2251368349685848079">Επαναφορά από τον κάδο</translation>
 <translation id="2278133026967558505">Πρόσβαση στο αρχείο από όλους τους ιστοτόπους και τα URL</translation>
 <translation id="2282155092769082568">Αυτόματη διαμόρφωση URL</translation>
@@ -166,6 +169,7 @@
 <translation id="2325650632570794183">Αυτός ο τύπος αρχείου δεν υποστηρίζεται. Επισκεφτείτε το Chrome Web Store για να εντοπίσετε μια εφαρμογή που να μπορεί να ανοίξει αυτόν τον τύπο αρχείου.</translation>
 <translation id="2326539130272988168">Βουλγαρικά</translation>
 <translation id="2337715497728194187">Κοινοποίηση στο Bruschetta</translation>
+<translation id="233822363739146957">Ο αποθηκευτικός χώρος δεν επαρκεί για τον συγχρονισμό όλων των αρχείων σας</translation>
 <translation id="23721837607121582">Λήψη προφίλ κινητού, Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Εναλλαγή σε προβολή λίστας</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> φάκελοι κοινόχρηστοι με Linux</translation>
@@ -219,6 +223,7 @@
 <translation id="2782104745158847185">Παρουσιάστηκε σφάλμα κατά την εγκατάσταση της εφαρμογής Linux</translation>
 <translation id="2802583107108007218">Μάθετε περισσότερα σχετικά με αυτούς τους περιορισμούς</translation>
 <translation id="2803375539583399270">Εισαγωγή PIN</translation>
+<translation id="2819519502129272135">Ο συγχρονισμός αρχείων έχει απενεργοποιηθεί</translation>
 <translation id="2820957248982571256">Σάρωση…</translation>
 <translation id="2830077785865012357">Κινεζικά Zhuyin</translation>
 <translation id="2843806747483486897">Αλλαγή προεπιλογής...</translation>
@@ -449,6 +454,7 @@
 <translation id="4599600860674643278">Έγινε επαναφορά του φίλτρου.</translation>
 <translation id="4603392156942865207">Αντιγραφή αρχείου <ph name="FILE_NAME" /> στον φάκελο <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Καλλιτέχνης</translation>
+<translation id="4635373743001040938">Ο αποθηκευτικός χώρος ήταν εξαιρετικά περιορισμένος. Ο συγχρονισμός αρχείων απενεργοποιήθηκε.</translation>
 <translation id="4642769377300286600">Εγκατάσταση προφίλ κινητού, Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Τσεχικά με πληκτρολόγιο QWERTY</translation>
 <translation id="4656777537938206294">Κάντε τα αρχεία διαθέσιμα εκτός σύνδεσης</translation>
@@ -504,6 +510,7 @@
 <translation id="4961158930123534723">Μοιραστήκατε έναν φάκελο με το Parallels Desktop.</translation>
 <translation id="496656650103537022">Έγινε επαναφορά του αρχείου <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Λεύκωμα</translation>
+<translation id="4972330214479971536">Δεν ήταν δυνατή η ολοκλήρωση της ρύθμισης συγχρονισμού αρχείων</translation>
 <translation id="4973523518332075481">Χρησιμοποιήστε ένα όνομα το οποίο αποτελείται από <ph name="MAX_LENGTH" /> χαρακτήρες ή λιγότερους</translation>
 <translation id="4973970068702235170">Αποτυχία συμπίεσης, μη αναμενόμενο σφάλμα: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Ιαπωνικά</translation>
@@ -821,6 +828,7 @@
 <translation id="7309413087278791451">Γερμανικά (Βέλγιο)</translation>
 <translation id="7339898014177206373">Νέο παράθυρο</translation>
 <translation id="7343393116438664539">Βιετναμικά Telex</translation>
+<translation id="7347346221088620549">Κρυπτογραφημένο αρχείο</translation>
 <translation id="7357762654218998920">Δεν υποστηρίζεται αυτός ο τύπος αρχείου. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /> σχετικά με το άνοιγμα αρχείων στο Chrome OS.</translation>
 <translation id="7359359531237882347">Αντιγραφή <ph name="NUMBER_OF_ITEMS" /> στοιχείων…</translation>
 <translation id="7375951387215729722">Η λίστα αρχείων ταξινομήθηκε κατά <ph name="COLUMN_NAME" /> σε φθίνουσα σειρά.</translation>
@@ -1013,6 +1021,7 @@
 <translation id="8609695766746872526">Ισλανδικά</translation>
 <translation id="863903787380594467">Εσφαλμένο PIN. Απομένουν <ph name="RETRIES" /> προσπάθειες.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Θύρα</translation>
+<translation id="8656407365183407932">Τα αρχεία εκτός σύνδεσης έπρεπε να καταργηθούν</translation>
 <translation id="8656768832129462377">Να μην ελέγχεται</translation>
 <translation id="8688591111840995413">Μη αποδεκτός κωδικός πρόσβασης</translation>
 <translation id="8698464937041809063">Σχέδιο Google</translation>
@@ -1051,6 +1060,7 @@
 <translation id="8997962250644902079">Κινεζικά (Παραδοσιακά) Pinyin</translation>
 <translation id="8998871447376656508">Ο ελεύθερος χώρος στο Google Drive δεν επαρκεί για την ολοκλήρωση της μεταφόρτωσης.</translation>
 <translation id="9003940392834790328">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Διαχειριζόμενο από τον διαχειριστή, Λεπτομέρειες</translation>
+<translation id="9007990314804111233">Συνδεθείτε στον λογαριασμό σας Microsoft</translation>
 <translation id="9017798300203431059">Φωνητικό Ρωσικά</translation>
 <translation id="9034924485347205037">Αρχεία Linux</translation>
 <translation id="9035012421917565900">Τα στοιχεία δεν είναι δυνατό να επιστρέψουν στο "<ph name="DESTINATION_NAME" />", επομένως δεν θα μπορείτε να αναιρέσετε αυτήν την ενέργεια.</translation>

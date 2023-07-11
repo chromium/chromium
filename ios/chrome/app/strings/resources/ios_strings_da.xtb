@@ -255,6 +255,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2595587704210555261">{COUNT,plural, =1{Åbne faner, der ikke har været i brug i mindst én dag, flyttes til Inaktive faner, så du nemt kan fokusere på de faner, du bruger mest. Du kan til enhver tid ændre dette i indstillingerne.}one{Åbne faner, der ikke har været i brug i mindst {COUNT} dag, flyttes til Inaktive faner, så du nemt kan fokusere på de faner, du bruger mest. Du kan til enhver tid ændre dette i indstillingerne.}other{Åbne faner, der ikke har været i brug i mindst {COUNT} dage, flyttes til Inaktive faner, så du nemt kan fokusere på de faner, du bruger mest. Du kan til enhver tid ændre dette i indstillingerne.}}</translation>
 <translation id="2600682495497606169">Ryd cookies fra websitet</translation>
 <translation id="2609008503159898744">Vil du lukke alle faner?</translation>
+<translation id="2617210333344098964">Flyt adressen til kontoen</translation>
 <translation id="2625189173221582860">Adgangskoden er kopieret</translation>
 <translation id="2626236249646841566">Tjek din forbindelse, og prøv at logge ind igen.</translation>
 <translation id="2637313651144986786">Søg i faner...</translation>
@@ -464,6 +465,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3851938967634752633">Adgangskoderne til <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="NUMBER_OF_ACCOUNTS" /> andre slettes. Dine konti slettes ikke.</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3861486700625780712">Følg ikke</translation>
+<translation id="3861908220442487587">Denne adresse gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du flytte den til din Google-konto, <ph name="USER_EMAIL" /></translation>
 <translation id="3863769054730344136">Send to Your Devices [Send til dine enheder]</translation>
 <translation id="387280738075653372">Download Chrome her.</translation>
 <translation id="3875783148670536197">Vis mig hvordan</translation>

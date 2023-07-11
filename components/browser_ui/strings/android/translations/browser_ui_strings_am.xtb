@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">በእርስዎ የመጨረሻ ትር ላይ በመመስረት የተጠቆሙ ፍለጋዎች</translation>
 <translation id="2241634353105152135">አንድ ጊዜ ብቻ</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />ን አስወግድ</translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 ጣቢያ አግዷል}one{# ጣቢያ አግዷል}other{# ጣቢያዎች አግደዋል}}</translation>
 <translation id="228293613124499805">እርስዎ የሚጎበኟቸው አብዛኞቹ ጣቢያዎች ምርጫዎችዎን ወይም እርስዎ ያጋሩትን መረጃ በጣቢያው ውስጥ በማስቀመጥ ብዙ ጊዜ የእርስዎን ተሞክሮ ለማሻሻል በመሣሪያዎ ላይ ውሂብን ሊያስቀምጡ ይችላሉ። ይህ ቅንብር እንደበራ እንዲቆይ እንመክራለን።</translation>
 <translation id="2289270750774289114">አንድ ጣቢያ በአቅራቢያ ያሉ ብሉቱዝ መሣሪያዎችን ፈልጎ ለማግኘት ሲፈልግ ጠይቅ (የሚመከር)</translation>
 <translation id="2315043854645842844">የደንበኛ ወገን ዕውቅና ማረጋገጫ ምርጫ በስርዓተ-ክወናው አይደገፍም።</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">የዕውቅና ማረጋገጫን መምረጥ አልተቻለም።</translation>
 <translation id="8077120325605624147">የሚጎበኙት ማንኛውም ጣቢያ ማንኛውንም ማስታወቂያ ሊያሳይዎ ይችላል</translation>
 <translation id="8087000398470557479">ይህ ይዘት ከ<ph name="DOMAIN_NAME" /> የመጣ ነው፣ የተላከው በGoogle ነው።</translation>
+<translation id="8088603949666785339"><ph name="BANNER_TITLE" /> ውስጥ ተጨማሪ አማራጮች</translation>
 <translation id="8116925261070264013">ድምፀ ከል ተደርጓል</translation>
 <translation id="813082847718468539">የጣቢያ መረጃን ይመልከቱ</translation>
 <translation id="8131740175452115882">አረጋግጥ</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129">ለ <ph name="APP_NAME" /> በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ፈቃድን ያብሩ።</translation>
 <translation id="8725066075913043281">እንደገና ይሞክሩ</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 ጣቢያ ፈቅዷል}one{# ጣቢያ ፈቅዷል}other{# ጣቢያዎች ፈቅደዋል}}</translation>
 <translation id="8737217482364735741">ይህ በ<ph name="ORIGIN" /> የተከማቹ ሁሉንም ውሂብ እና ኩኪዎች ያጠፋል።</translation>
 <translation id="8751914237388039244">ምስል ይምረጡ</translation>
 <translation id="8801436777607969138">ጃቫስክሪፕትን ለአንድ የተወሰነ ጣቢያ አግድ።</translation>

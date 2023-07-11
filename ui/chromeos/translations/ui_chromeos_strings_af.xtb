@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Drive is nie nou beskikbaar nie. Oplaai sal outomaties herbegin wanneer Google Drive terug is.</translation>
 <translation id="1307931752636661898">Kan nie Linux-lêers bekyk nie</translation>
 <translation id="1313405956111467313">Outomatiese instaanbedieneropstelling</translation>
+<translation id="134645005685694099">Jou toestel het nie genoeg bergingspasie om lêersinkronisering aangeskakel te hou nie. Nuwe lêers sal nie meer outomaties gesinkroniseer word nie.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Die lêer of gids is nie bruikbaar nie.</translation>
 <translation id="1363028406613469049">Snit</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP-instaanbediener</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" />-netwerk; af</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470447085858632">Kry vanlyn toeagng tot jou Google Drive-lêers met lêersinkronisering</translation>
 <translation id="2470939964922472929">'n Verkeerde PIN is te veel kere ingevoer. Voer die persoonlike deblokkeringsleutel (PUK) van 8 syfers wat deur jou selfoonmaatskappy verskaf is in om 'n nuwe PIN op te stel.</translation>
 <translation id="2500392669976258912">Goedjarati-foneties</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -602,6 +604,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> na die asblik geskuif</translation>
 <translation id="5724172041621205163">Thai met Pattachote-sleutelbord</translation>
 <translation id="57383366388012121">Verlede maand</translation>
+<translation id="575175778971367197">Kan nie hierdie lêer op die oomblik sinkroniseer nie</translation>
 <translation id="5756666464756035725">Hongaarse QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> items is gekies</translation>
 <translation id="5763377084591234761">Duits (Switserland)</translation>
@@ -704,6 +707,7 @@
 <translation id="6558280019477628686">'n Fout het voorgekom. Sommige items is dalk nie uitgevee nie.</translation>
 <translation id="656398493051028875">Vee tans "<ph name="FILENAME" />" uit …</translation>
 <translation id="6581162200855843583">Google Drive-skakel</translation>
+<translation id="6588648400954570689">Lêersinkroniseringinstellings</translation>
 <translation id="6594855146910089723">Hierdie vouer is met Linux en Parallels Desktop gedeel</translation>
 <translation id="6607272825297743757">Lêerinligting</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> vouers is met Parallels Desktop gedeel</translation>
@@ -828,6 +832,7 @@
 <translation id="7547811415869834682">Nederlands</translation>
 <translation id="7551643184018910560">Speld aan rak vas</translation>
 <translation id="7553492409867692754">Gee Linux-programme toegang tot lêers in die <ph name="FOLDER_NAME" />-vouer</translation>
+<translation id="7555339735447658365">Jy is tans vanlyn. Lêersinkronisering sal hervat word wanneer jy aan die internet gekoppel is</translation>
 <translation id="7589661784326793847">Wag net 'n oomblik</translation>
 <translation id="7592775719802218421">Maak tans <ph name="FILE_NAME" /> vanlyn beskikbaar</translation>
 <translation id="7600126690270271294">Serwies</translation>
@@ -870,6 +875,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Kon nie netwerk opstel nie</translation>
+<translation id="7832093238954689746">Lêersinkronisering is voltooi. My Drive-lêers is vanlyn beskikbaar.</translation>
 <translation id="7839804798877833423">Dit sal ongeveer <ph name="FILE_SIZE" /> mobiele data gebruik om hierdie lêers te gaan haal.</translation>
 <translation id="7846076177841592234">Kanselleer keuse</translation>
 <translation id="7853966320808728790">Franse BÉPO</translation>
@@ -918,6 +924,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Toestelmodel</translation>
 <translation id="8223479393428528563">Om hierdie lêers te stoor om vanlyn te gebruik, gaan weer aanlyn, regsklik die lêers, en kies die <ph name="OFFLINE_CHECKBOX_NAME" />-opsie.</translation>
+<translation id="8241139360630443550">Bekyk berging</translation>
 <translation id="8249296373107784235">Staak</translation>
 <translation id="8250690786522693009">Latyns</translation>
 <translation id="8250920743982581267">Dokumente</translation>

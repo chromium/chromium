@@ -434,6 +434,7 @@ Questo sostituisce il criterio <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY
           Il valore "*" di una lista bloccata significa che tutte le estensioni sono bloccate, a meno che vengano elencate esplicitamente nella lista consentita.
 
           Se questo criterio non viene configurato, l'utente può installare qualsiasi estensione in <ph name="PRODUCT_NAME" />.</translation>
+<translation id="1392703142209771447">Espressione regolare per trovare corrispondenze con l'ID stampante.</translation>
 <translation id="1393485621820363363">Stampanti aziendali associate ai dispositivi attive</translation>
 <translation id="1395505489889158859">Viene attivato l'invio di nome utente e nome file alle stampanti native</translation>
 <translation id="1395988776118675626">Attiva la funzionalità "Memorizza la password" per Kerberos</translation>
@@ -1775,6 +1776,13 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di inattività.</translation>
 <translation id="2548572254685798999">Segnala dati di Navigazione sicura</translation>
+<translation id="2549472870177108435">La configurazione del criterio consente di impostare le regole per la selezione della stampante predefinita in <ph name="PRODUCT_NAME" />, che sostituiscono le regole predefinite. La selezione della stampante viene effettuata la prima volta che gli utenti provano a stampare, quando <ph name="PRODUCT_NAME" /> cerca una stampante corrispondente agli attributi specificati. In caso di corrispondenza non ottimale, è possibile impostare <ph name="PRODUCT_NAME" /> affinché venga selezionata qualsiasi stampante corrispondente, a seconda dell'ordine di rilevamento delle stampanti.
+
+Se il criterio non viene configurato o se vengono impostati attributi per cui non esistono corrispondenze, viene selezionata come predefinita la stampante PDF integrata. Se non ci sono stampanti PDF disponibili, <ph name="PRODUCT_NAME" /> non seleziona alcuna stampante predefinita.
+
+Al momento, tutte le stampanti sono classificate come <ph name="PRINTER_TYPE_LOCAL" />. Le stampanti connesse a <ph name="CLOUD_PRINT_NAME" /> vengono considerate <ph name="PRINTER_TYPE_CLOUD" />, ma <ph name="CLOUD_PRINT_NAME" /> non è più supportato.
+
+Nota: l'omissione di un campo implica la corrispondenza di tutti i valori per il campo specifico. Ad esempio, se non specifichi idPattern, Anteprima di stampa accetta tutti gli ID stampante. I pattern di espressioni regolari devono seguire la sintassi JavaScript RegExp e le corrispondenze sono sensibili alle maiuscole.</translation>
 <translation id="2550593661567988768">Solo stampa su un lato</translation>
 <translation id="2552318891854145040">La configurazione del criterio consente di impostare un elenco di preferiti dove ognuno di questi è un dizionario con le chiavi "<ph name="NAME" />" e "<ph name="URL_LABEL" />" indicanti il nome e la destinazione del preferito. Gli amministratori possono configurare una sottocartella definendo un preferito senza una chiave "<ph name="URL_LABEL" />", ma con una chiave "<ph name="CHILDREN" />" aggiuntiva. Tale chiave contiene anche un elenco di preferiti, alcuni dei quali possono essere anche cartelle. Chrome corregge gli URL incompleti come se fossero stati inviati tramite la barra degli indirizzi. Ad esempio, "<ph name="GOOGLE_COM" />" diventa "<ph name="HTTPS_GOOGLE_COM" />".
 
@@ -9189,6 +9197,16 @@ Se il criterio non viene configurato, per impostazione predefinita <ph name="PRO
 <translation id="9220314833408124365">Viene usato un criterio relativo al referrer predefinito no-referrer-when-downgrade</translation>
 <translation id="9221827710437832530">Consenti l'accesso alla geolocalizzazione nella schermata di accesso.</translation>
 <translation id="922540222991413931">Configura fonti di installazione di estensioni, applicazioni e script utente</translation>
+<translation id="922656089385303086">Questo criterio è deprecato e verrà rimosso nella versione 130. Utilizza il criterio <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />.
+
+Se il criterio viene attivato, la raccolta di dati anonimizzati con chiave URL, che invia a Google gli URL delle pagine visitate dagli utenti per migliorare le ricerche e la navigazione, è sempre attiva.
+
+Se viene disattivato, la raccolta di dati anonimizzati con chiave URL non viene attivata.
+
+Se questo criterio non viene configurato, l'utente potrà modificare manualmente questa impostazione.
+
+Nel kiosk <ph name="PRODUCT_OS_NAME" />, questo criterio non offre l'opzione per consentire all'utente di decidere. Se questo criterio non viene configurato per il kiosk <ph name="PRODUCT_OS_NAME" />, la raccolta di dati anonimizzati con chiave URL è sempre attiva.
+Se viene configurato per il kiosk <ph name="PRODUCT_OS_NAME" />, questo criterio consente la raccolta di metriche con chiave URL per le app kiosk.</translation>
 <translation id="924557436754151212">Importa password salvate dal browser predefinito alla prima esecuzione</translation>
 <translation id="926104720905645793">Questo criterio consente di controllare il reporting su cloud di <ph name="PRODUCT_NAME" />, che consente di caricare informazioni sul funzionamento del browser nella <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 

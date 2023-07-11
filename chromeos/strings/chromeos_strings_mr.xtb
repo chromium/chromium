@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">सध्याचे कीपेअर वापरा</translation>
 <translation id="2320295602967756579">फिकट थीम सुरू करा</translation>
 <translation id="2323506179655536734">वगळली</translation>
+<translation id="2324354238778375592">फ्लोट करा</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">जवळपासचे डिव्हाइस शोधण्यासाठी ब्लूटूथ सुरू करा</translation>
 <translation id="2346474577291266260">उत्कृष्ट (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> चाचणी</translation>
 <translation id="370665806235115550">लोड करीत आहे...</translation>
 <translation id="3708186454126126312">यापूर्वी कनेक्ट केलेली</translation>
+<translation id="3715651196924935218">फ्लोटमधून बाहेर पडा</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> परीक्षणे)</translation>
 <translation id="3748026146096797577">कनेक्टेड नाही</translation>
 <translation id="3749289110408117711">फाइल नाव</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">डिस्प्ले करा</translation>
 <translation id="4155551848414053977">तुमच्या नेटवर्क किंवा थेट कनेक्शनद्वारे स्कॅनर सुरू आणि उपलब्ध असल्याची खात्री करा</translation>
+<translation id="4159238217853743776">आंशिक</translation>
 <translation id="4159784952369912983">जांभळा</translation>
 <translation id="4170180284036919717">फोटो काढा</translation>
 <translation id="4170700058716978431">करता आली नाही</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">कनेक्शन सेट किंवा अपडेट करण्यासाठी, <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> वर जा.</translation>
 <translation id="4932733599132424254">तारीख</translation>
 <translation id="4950314376641394653">फर्मवेअर <ph name="DEVICE_NAME" /> हे <ph name="VERSION" /> आवृत्तीवर अपडेट केले गेले आहे</translation>
+<translation id="4969079779290789265">स्प्लिट करा</translation>
 <translation id="4972592110715526173">मोड बदला</translation>
 <translation id="498186245079027698">स्कॅनर तपासा आणि पुन्हा प्रयत्न करा. स्कॅन केलेल्या फाइल सेव्ह करण्यासाठी पुरेशी स्थानिक जागा उपलब्ध असल्याची खात्री करा.</translation>
 <translation id="4985509611418653372">रन</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">सर्व्हर होस्टनाव</translation>
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">फुलस्क्रीन करा</translation>
 <translation id="5142961317498132443">ऑथेंटिकेशन</translation>
 <translation id="5154917547274118687">मेमरी</translation>
 <translation id="5160857336552977725">आपल्या <ph name="DEVICE_TYPE" /> वर साइन इन करा</translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">साइन आउट करा</translation>
 <translation id="522307662484862935">ईमेल अ‍ॅड्रेस समाविष्ट करू नका</translation>
 <translation id="5227902338748591677">गडद थीमचे शेड्युल</translation>
+<translation id="5229344016299762883">फुलस्क्रीनमधून बाहेर पडा</translation>
 <translation id="5234764350956374838">डिसमिस करा</translation>
 <translation id="5252456968953390977">रोमिंग</translation>
 <translation id="5257811368506016604">फिकट रंगाचा मोड सुरू करा</translation>
@@ -706,6 +712,7 @@
 <translation id="6566314079205407217">मल्टी-पेज स्कॅन</translation>
 <translation id="6574762126505704998">भरा</translation>
 <translation id="6575134580692778371">कॉंफिगर केले नाही</translation>
+<translation id="6576005492601044801">डावीकडे</translation>
 <translation id="6579509898032828423">हा फोटो वापरा</translation>
 <translation id="6596816719288285829">IP पत्ता</translation>
 <translation id="6599673642868607614">तुमच्या फीडबॅकबद्दल धन्यवाद. तुमचा फीडबॅक आम्हाला Chromebook अनुभवामध्ये सुधारणा करण्यात मदत करू शकतो आणि त्याचे आमच्या टीमकडून पुनरावलोकन केले जाईल. मोठ्या प्रमाणात तक्रारी मिळाल्यामुळे, आम्हाला उत्तर पाठवता येणार नाही.</translation>
@@ -810,6 +817,7 @@
 <translation id="7497215489070763236">सर्व्हर CA सर्टिफिकेट</translation>
 <translation id="7501957181231305652">किंवा</translation>
 <translation id="7502658306369382406">IPv6 पत्ता</translation>
+<translation id="7513770521371759388">तळाशी</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">मदत आशय उपलब्ध नाही</translation>
 <translation id="7535791657097741517">फिकट थीम सुरू करा</translation>
@@ -946,6 +954,7 @@
 <translation id="8655295600908251630">खाडी</translation>
 <translation id="8655828773034788261">URL शेअर करा:</translation>
 <translation id="8660881923941176839">पाउंड</translation>
+<translation id="8670574982334489519">उजवीकडे</translation>
 <translation id="8675354002693747642">आधी शेअर केलेली की</translation>
 <translation id="8677859815076891398">कोणतेही अल्बम नाहीत. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मध्ये एखादा अल्बम तयार करा.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> हे वैशिष्ट्य व्यवस्थापित करण्यासाठी लेफ्ट किंवा राइट अ‍ॅरो की वापरा.</translation>
@@ -991,6 +1000,7 @@
 <translation id="8936793075252196307">क्लायंटचा आयपी अ‍ॅड्रेस</translation>
 <translation id="8944651180182756621">लाँचरचा रंग</translation>
 <translation id="894617464444543719">डिव्हाइस हे फोन आहे.</translation>
+<translation id="8950424402482976779">सर्वात वरती</translation>
 <translation id="8968751544471797276">चार्ज करण्याचा रेट</translation>
 <translation id="8970109610781093811">पुन्हा चालवा</translation>
 <translation id="8983038754672563810">HSPA</translation>

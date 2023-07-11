@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (grupių: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Pasiekiama nauja funkcija, spustelėkite rodyklės aukštyn klavišą, kad sužinotumėte daugiau.</translation>
 <translation id="1059913517121127803">Nepavyko pradėti nuskaitymo</translation>
+<translation id="1062823486781306604"><ph name="INDEX" /> iš <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Aptikta užkarda</translation>
 <translation id="1075811647922107217">Puslapio dydis</translation>
@@ -540,6 +541,7 @@
 <translation id="5257811368506016604">Įgalinti šviesių spalvų režimą</translation>
 <translation id="5264277876637023664">Vykdyti centrinio procesoriaus bandymą</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, „<ph name="PRINTER_NAME" />“, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN išjungtas.</translation>
 <translation id="5275828089655680674">Iš naujo vykdyti veiksmų sekas</translation>
 <translation id="5286252187236914003">L2TP / „IPsec“</translation>
 <translation id="5286263799730375393">apšvietimo spalva</translation>
@@ -604,6 +606,7 @@
 <translation id="5832805196449965646">Pridėti asmenį</translation>
 <translation id="583281660410589416">Nežinoma</translation>
 <translation id="5843706793424741864">Farenheito laipsniai</translation>
+<translation id="584953448295717128">APN aptinkamas automatiškai.</translation>
 <translation id="5849570051105887917">Namų paslaugos teikėjo kodas</translation>
 <translation id="5859603669299126575">Meno galerijos albumas</translation>
 <translation id="5860033963881614850">Išjungta</translation>
@@ -882,6 +885,7 @@
 <translation id="80398733265834479">Įgalinti automatinių spalvų režimą</translation>
 <translation id="8041089156583427627">Siųsti atsiliepimą</translation>
 <translation id="8045012663542226664">Mikrofono nutildymas</translation>
+<translation id="8067126283828232460">APN įjungtas.</translation>
 <translation id="8075838845814659848">Likusio įkrovimo rodiklis</translation>
 <translation id="8076492880354921740">Skirtukai</translation>
 <translation id="8082366717211101304">Nepavyko pateikti DNS iš „Android“ programų</translation>
@@ -1028,6 +1032,7 @@
 <translation id="9111102763498581341">Atrakinti</translation>
 <translation id="9122602430962285795">Norėdami prisijungti iš naujo, eikite į Nustatymus</translation>
 <translation id="9126720536733509015">Išsaugokite kelis puslapius viename PDF</translation>
+<translation id="9133104754938025929">Kad būtų tausojama akumuliatoriaus energija, ekrano užsklanda veikia tik įkraunant.</translation>
 <translation id="9137526406337347448">„Google“ paslaugos</translation>
 <translation id="9138630967333032450">Kairysis antrojo lygio klavišas</translation>
 <translation id="9143347780818904997"><ph name="MINUTES" /> min.</translation>

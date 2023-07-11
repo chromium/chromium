@@ -255,6 +255,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2595587704210555261">{COUNT,plural, =1{Skedat e hapura që nuk përdoren për një ditë ose më shumë zhvendosen te "Skedat joaktive" që të mund të përqendrohesh me lehtësi te skedat që përdor më shumë. Këtë mund ta ndryshosh në çdo kohë te cilësimet.}other{Skedat e hapura që nuk përdoren për {COUNT} ditë ose më shumë zhvendosen te "Skedat joaktive" që të mund të përqendrohesh me lehtësi te skedat që përdor më shumë. Këtë mund ta ndryshosh në çdo kohë te cilësimet.}}</translation>
 <translation id="2600682495497606169">Pastro kukit e sajtit</translation>
 <translation id="2609008503159898744">Të mbyllen të gjitha skedat?</translation>
+<translation id="2617210333344098964">Zhvendos adresën te llogaria</translation>
 <translation id="2625189173221582860">Fjalëkalimi u kopjua</translation>
 <translation id="2626236249646841566">Kontrollo lidhjen dhe provo të identifikohesh sërish.</translation>
 <translation id="2637313651144986786">Kërko skedat...</translation>
@@ -464,6 +465,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3851938967634752633">Fjalëkalimet për <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> dhe <ph name="NUMBER_OF_ACCOUNTS" /> të tjera do të fshihen. Llogaritë e tua nuk do të fshihen.</translation>
 <translation id="3858860766373142691">Emri</translation>
 <translation id="3861486700625780712">Mos e ndiq</translation>
+<translation id="3861908220442487587">Kjo adresë ruhet vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, zhvendose atë në "Llogarinë tënde të Google", <ph name="USER_EMAIL" /></translation>
 <translation id="3863769054730344136">Dërgo te pajisjet e tua</translation>
 <translation id="387280738075653372">Shkarko Chrome këtu.</translation>
 <translation id="3875783148670536197">Më trego mënyrën</translation>

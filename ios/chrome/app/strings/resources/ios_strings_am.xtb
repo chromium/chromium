@@ -255,6 +255,7 @@
 <translation id="2595587704210555261">{COUNT,plural, =1{ለአንድ ቀን ወይም ከዚያ በላይ ጥቅም ላይ ያልዋሉ ክፍት ትሮች እርስዎ በቀላሉ በጣም የሚጠቀሟቸው ትሮች ላይ እንዲያተኩሩ ወደ ገቢር ያልሆኑ ትሮች ይንቀሳቀሳሉ። ይህን በማንኛውም ጊዜ በቅንብሮች ውስጥ መለወጥ ይችላሉ።}one{ለ{COUNT} ቀን ወይም ከዚያ በላይ ጥቅም ላይ ያልዋሉ ክፍት ትሮች እርስዎ በቀላሉ በጣም የሚጠቀሟቸው ትሮች ላይ እንዲያተኩሩ ወደ ገቢር ያልሆኑ ትሮች ይንቀሳቀሳሉ። ይህን በማንኛውም ጊዜ በቅንብሮች ውስጥ መለወጥ ይችላሉ።}other{ለ{COUNT} ቀናት ወይም ከዚያ በላይ ጥቅም ላይ ያልዋሉ ክፍት ትሮች እርስዎ በቀላሉ በጣም የሚጠቀሟቸው ትሮች ላይ እንዲያተኩሩ ወደ ገቢር ያልሆኑ ትሮች ይንቀሳቀሳሉ። ይህን በማንኛውም ጊዜ በቅንብሮች ውስጥ መለወጥ ይችላሉ።}}</translation>
 <translation id="2600682495497606169">የጣቢያ ኩኪዎችን ያጽዱ</translation>
 <translation id="2609008503159898744">ሁሉም ትሮች ይዘጉ?</translation>
+<translation id="2617210333344098964">አድራሻን ወደ መለያ አንቀሳቅስ</translation>
 <translation id="2625189173221582860">የይለፍ ቃል ተቀድቷል።</translation>
 <translation id="2626236249646841566">ግንኙነትዎን ይፈትሹ እና እንደገና ለመግባት ይሞክሩ።</translation>
 <translation id="2637313651144986786">ትሮችን ይፈልጉ...</translation>
@@ -464,6 +465,7 @@
 <translation id="3851938967634752633">የ<ph name="WEBSITE" />፣ <ph name="SECOND_WEBSITE" /> እና የ<ph name="NUMBER_OF_ACCOUNTS" /> ሌሎች የይለፍ ቃላት ይሰረዛሉ። መለያዎችዎ አይሰረዙም።</translation>
 <translation id="3858860766373142691">ስም</translation>
 <translation id="3861486700625780712">አትከተል</translation>
+<translation id="3861908220442487587">ይህ አድራሻ የሚቀመጠው እዚህ መሣሪያ ላይ ብቻ ነው። በእርስዎ ሌሎች መሣሪያዎች ላይ ለመጠቀም ወደ እርስዎ የGoogle መለያ <ph name="USER_EMAIL" /> ያንቀሳቅሱት</translation>
 <translation id="3863769054730344136">ወደ መሣሪያዎችዎ ይላኩ</translation>
 <translation id="387280738075653372">Chromeን እዚህ ያውርዱ።</translation>
 <translation id="3875783148670536197">እንዴት እንደሆነ አሳየኝ</translation>

@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> tråder, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">En ny funksjon er tilgjengelig. Bruk oppoverpilen for å finne ut mer.</translation>
 <translation id="1059913517121127803">Kunne ikke starte skanningen</translation>
+<translation id="1062823486781306604"><ph name="INDEX" /> av <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Oppdaget en brannmur</translation>
 <translation id="1075811647922107217">Sidestørrelse</translation>
@@ -540,6 +541,7 @@
 <translation id="5257811368506016604">Slå på modus for lyse farger</translation>
 <translation id="5264277876637023664">Kjør prosessortest</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN er deaktivert.</translation>
 <translation id="5275828089655680674">Kjør rutinene på nytt</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">farge på bakgrunnsbelysning</translation>
@@ -604,6 +606,7 @@
 <translation id="5832805196449965646">Legg til person</translation>
 <translation id="583281660410589416">Ukjent</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
+<translation id="584953448295717128">APN registreres automatisk.</translation>
 <translation id="5849570051105887917">Kode for leverandøren for hjemmeenheten</translation>
 <translation id="5859603669299126575">Kunstgallerialbum</translation>
 <translation id="5860033963881614850">Av</translation>
@@ -882,6 +885,7 @@
 <translation id="80398733265834479">Slå på automatisk fargemodus</translation>
 <translation id="8041089156583427627">Send tilbakemelding</translation>
 <translation id="8045012663542226664">Kutt mikrofonlyden</translation>
+<translation id="8067126283828232460">APN er tilkoblet.</translation>
 <translation id="8075838845814659848">Gjenværende batteri</translation>
 <translation id="8076492880354921740">Faner</translation>
 <translation id="8082366717211101304">Kan ikke foreta DNS-oppslag fra Android-apper</translation>
@@ -1028,6 +1032,7 @@
 <translation id="9111102763498581341">Lås opp</translation>
 <translation id="9122602430962285795">For å koble til på nytt, gå til Innstillinger</translation>
 <translation id="9126720536733509015">Lagre flere sider som én PDF-fil</translation>
+<translation id="9133104754938025929">For å spare batteriet fungerer skjermspareren bare under lading.</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>
 <translation id="9138630967333032450">Venstre Shift</translation>
 <translation id="9143347780818904997">i <ph name="MINUTES" /> minutter</translation>

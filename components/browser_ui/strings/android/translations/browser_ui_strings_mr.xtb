@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">तुमच्या मागील टॅबनुसार सुचवलेले शोध</translation>
 <translation id="2241634353105152135">फक्त एकदाच</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> काढून टाका</translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{१ साइट ब्लॉक केली आहे}other{# साइट ब्लॉक केल्या आहेत}}</translation>
 <translation id="228293613124499805">तुम्ही भेट देता त्या बहुतांश साइट या तुमच्या डिव्हाइसवर डेटा सेव्ह करत असण्याची शक्यता आहे. बरेचदा तुमची प्राधान्ये किंवा तुम्ही साइटसोबत शेअर करता ती माहिती सेव्ह करून, तुमच्या अनुभवामध्ये सुधारणा करण्यासाठी हे केले जाते. हे सेटिंग सुरू ठेवण्याची आम्ही शिफारस करतो.</translation>
 <translation id="2289270750774289114">साइटला केव्हा जवळपासचे ब्लूटूथ डिव्हाइस शोधायचे आहे हे विचारा (शिफारस केलेले)</translation>
 <translation id="2315043854645842844">क्लायंट साइड प्रमाणपत्र निवडीला ऑपरेटिंग सिस्टमचा सपोर्ट नाही.</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">सर्टिफिकेट निवडण्यास अक्षम.</translation>
 <translation id="8077120325605624147">तुम्ही भेट देता ती कोणतीही साइट तुम्हाला कोणतीही जाहिरात दाखवू शकते</translation>
 <translation id="8087000398470557479">Google ने वितरित केलेली ही आशय, <ph name="DOMAIN_NAME" /> मधील आहे.</translation>
+<translation id="8088603949666785339"><ph name="BANNER_TITLE" /> मध्ये आणखी पर्याय</translation>
 <translation id="8116925261070264013">म्यूट केले</translation>
 <translation id="813082847718468539">साइटची माहिती पहा</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्ये <ph name="APP_NAME" /> साठी परवानगी सुरू करा.</translation>
 <translation id="8725066075913043281">पुन्हा प्रयत्न करा</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{१ साइटला अनुमती दिली आहे}other{# साइटना अनुमती दिली आहे}}</translation>
 <translation id="8737217482364735741">हे <ph name="ORIGIN" /> ने स्टोअर केलेला सर्व डेटा आणि कुकी साफ करेल.</translation>
 <translation id="8751914237388039244">इमेज निवडा</translation>
 <translation id="8801436777607969138">विशिष्ट साइटसाठी JavaScript ब्लॉक करा.</translation>

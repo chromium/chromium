@@ -185,6 +185,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1770726142253415363">Dipindahkan ke baris <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Scroll ke kanan</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> saat ini dipilih.</translation>
+<translation id="1775598828170459419">Menampilkan <ph name="NUM_SHOWN_ITEMS" /> dari <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="1787955149152357925">Nonaktif</translation>
 <translation id="181103072419391116">Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Dikelola oleh Administrator Anda</translation>
 <translation id="1815245884418711390">Aktifkan/nonaktifkan Hotspot. Hotspot dinonaktifkan.</translation>

@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Диск не е достапен во моментов. Поставувањето автоматски ќе се рестартира штом ќе се активира Google Диск.</translation>
 <translation id="1307931752636661898">Не може да се прикажат датотеките на Linux</translation>
 <translation id="1313405956111467313">Автоматска конфигурација на прокси</translation>
+<translation id="134645005685694099">Вашиот уред нема доволно простор за складирање за да остане вклучена синхронизацијата на датотеките. Новите датотеки веќе нема да се синхронизираат автоматски.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Датотеката или директориумот не може да се користат.</translation>
 <translation id="1363028406613469049">Песна</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">HTTP прокси</translation>
 <translation id="2467267713099745100">Мрежа со <ph name="NETWORK_TYPE" />, исклучена</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
+<translation id="2468470447085858632">Пристап со вашите датотеки на Google Drive офлајн со синхронизација на датотеки</translation>
 <translation id="2470939964922472929">Внесовте погрешен PIN премногу пати. За да поставите нов PIN, внесете го 8-цифрениот личен клуч за одблокирање (PUK) обезбеден од операторот.</translation>
 <translation id="2500392669976258912">фонетски гуџарати</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -602,6 +604,7 @@
 <translation id="5720028165859493293">Датотеката <ph name="FILE_NAME" /> е преместена во корпата</translation>
 <translation id="5724172041621205163">тајландски со тастатура Pattachote</translation>
 <translation id="57383366388012121">Изминатиот месец</translation>
+<translation id="575175778971367197">Датотекава не може да се синхронизира во моментов</translation>
 <translation id="5756666464756035725">Унгарска QWERTY</translation>
 <translation id="5760252553414789727">Избрани се <ph name="SELECTED_FILES_COUNT" /> ставки</translation>
 <translation id="5763377084591234761">германски (Швајцарија)</translation>
@@ -704,6 +707,7 @@
 <translation id="6558280019477628686">Грешка. Некои ставки може да не се избришани.</translation>
 <translation id="656398493051028875">Се брише „<ph name="FILENAME" />“...</translation>
 <translation id="6581162200855843583">Врска на Google Диск</translation>
+<translation id="6588648400954570689">Поставки за синхронизација на датотеки</translation>
 <translation id="6594855146910089723">Папкава е споделена со Linux и Parallels Desktop</translation>
 <translation id="6607272825297743757">Информации за датотека</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> папки се споделени со Parallels Desktop</translation>
@@ -828,6 +832,7 @@
 <translation id="7547811415869834682">Холандски</translation>
 <translation id="7551643184018910560">Прикачи на полицата</translation>
 <translation id="7553492409867692754">Дајте им дозвола на апликациите на Linux да пристапуваат до датотеки во папката „<ph name="FOLDER_NAME" />“</translation>
+<translation id="7555339735447658365">Во моментов сте офлајн. Синхронизацијата на датотеките ќе продолжи кога ќе се поврзете на интернет</translation>
 <translation id="7589661784326793847">Почекајте малку</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> се прави достапна офлајн</translation>
 <translation id="7600126690270271294">српски</translation>
@@ -870,6 +875,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Грешка при конфигурирање на мрежата</translation>
+<translation id="7832093238954689746">Синхронизацијата на датотеките е завршена. Датотеките во „Мој Drive“ се достапни офлајн.</translation>
 <translation id="7839804798877833423">Земањето на овие датотеки ќе користи приближно <ph name="FILE_SIZE" /> од мобилните податоци.</translation>
 <translation id="7846076177841592234">Откажи избор</translation>
 <translation id="7853966320808728790">Француска BÉPO</translation>
@@ -918,6 +924,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Модел на уред</translation>
 <translation id="8223479393428528563">За да ги зачувате овие датотеки за локална употреба, вклучете се повторно, десен клик на датотеките и изберете ја опцијата <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Прегледајте го просторот</translation>
 <translation id="8249296373107784235">Прекини</translation>
 <translation id="8250690786522693009">латиница</translation>
 <translation id="8250920743982581267">Документи</translation>

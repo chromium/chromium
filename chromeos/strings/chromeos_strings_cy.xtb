@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">Defnyddio'r pâr o allweddi presennol</translation>
 <translation id="2320295602967756579">Galluogi'r themau olau</translation>
 <translation id="2323506179655536734">WEDI HEPGOR</translation>
+<translation id="2324354238778375592">Arnofio</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Trowch Bluetooth ymlaen i ddarganfod dyfeisiau gerllaw</translation>
 <translation id="2346474577291266260">Ardderchog (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263">Prawf <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Wrthi'n llwytho...</translation>
 <translation id="3708186454126126312">Wedi cysylltu'n flaenorol</translation>
+<translation id="3715651196924935218">Gadael y cyflwr arnofio</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> adolygiad)</translation>
 <translation id="3748026146096797577">Heb Gysylltu</translation>
 <translation id="3749289110408117711">Enw'r ffeil</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">Sgrîn</translation>
 <translation id="4155551848414053977">Gwnewch yn siŵr bod y sganiwr wedi'i droi ymlaen a'i fod ar gael drwy'ch rhwydwaith neu gysylltiad uniongyrchol</translation>
+<translation id="4159238217853743776">Rhannol</translation>
 <translation id="4159784952369912983">Porffor</translation>
 <translation id="4170180284036919717">Tynnu llun</translation>
 <translation id="4170700058716978431">METHWYD</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">I osod neu ddiweddaru cysylltiad, ewch i'r <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Dyddiad</translation>
 <translation id="4950314376641394653">Mae caledwedd <ph name="DEVICE_NAME" /> wedi'i diweddaru i fersiwn <ph name="VERSION" /></translation>
+<translation id="4969079779290789265">Hollti</translation>
 <translation id="4972592110715526173">newid modd</translation>
 <translation id="498186245079027698">Gwiriwch y sganiwr a rhowch gynnig arall arni. Gwnewch yn siŵr bod digon o le lleol i gadw ffeiliau sydd wedi'u sganio.</translation>
 <translation id="4985509611418653372">Rhedeg</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">Enw gwesteiwr y gweinydd</translation>
 <translation id="5089810972385038852">Talaith</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">Llawn</translation>
 <translation id="5142961317498132443">Dilysu</translation>
 <translation id="5154917547274118687">Cof</translation>
 <translation id="5160857336552977725">Mewngofnodi i'ch <ph name="DEVICE_TYPE" /></translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">Allgofnodi</translation>
 <translation id="522307662484862935">Peidio â chynnwys cyfeiriad e-bost</translation>
 <translation id="5227902338748591677">Amserlen thema dywyll</translation>
+<translation id="5229344016299762883">Gadael llawn</translation>
 <translation id="5234764350956374838">Diystyru</translation>
 <translation id="5252456968953390977">Trawsrwydweithio</translation>
 <translation id="5257811368506016604">Galluogi'r modd lliw golau</translation>
@@ -706,6 +712,7 @@
 <translation id="6566314079205407217">Sganio mwy nag un tudalen</translation>
 <translation id="6574762126505704998">Llenwi</translation>
 <translation id="6575134580692778371">Heb ei ffurfweddu</translation>
+<translation id="6576005492601044801">chwith</translation>
 <translation id="6579509898032828423">Defnyddio'r llun hwn</translation>
 <translation id="6596816719288285829">Cyfeiriad IP</translation>
 <translation id="6599673642868607614">Diolch am eich adborth. Mae eich adborth yn ein helpu i wella profiad Chromebook a bydd yn cael ei adolygu gan ein tîm. Oherwydd y nifer fawr o adroddiadau, ni fyddwn yn gallu anfon ateb.</translation>
@@ -810,6 +817,7 @@
 <translation id="7497215489070763236">Tystysgrif CA y gweinydd</translation>
 <translation id="7501957181231305652">neu</translation>
 <translation id="7502658306369382406">Cyfeiriad IPv6</translation>
+<translation id="7513770521371759388">gwaelod</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Nid yw cynnwys help ar gael</translation>
 <translation id="7535791657097741517">Troi'r thema olau ymlaen</translation>
@@ -946,6 +954,7 @@
 <translation id="8655295600908251630">Sianel</translation>
 <translation id="8655828773034788261">Rhannu URL:</translation>
 <translation id="8660881923941176839">pwysau</translation>
+<translation id="8670574982334489519">dde</translation>
 <translation id="8675354002693747642">Allwedd a rannwyd ymlaen llaw</translation>
 <translation id="8677859815076891398">Dim albymau. Creu albwm yn <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Defnyddiwch y bysellau saeth Chwith neu Dde i reoli'r nodwedd hon.</translation>
@@ -991,6 +1000,7 @@
 <translation id="8936793075252196307">Cyfeiriad IP cleient</translation>
 <translation id="8944651180182756621">Lliw lansiwr</translation>
 <translation id="894617464444543719">Mae'r ddyfais yn ffôn.</translation>
+<translation id="8950424402482976779">brig</translation>
 <translation id="8968751544471797276">Cyfradd gwefru</translation>
 <translation id="8970109610781093811">Rhedeg eto</translation>
 <translation id="8983038754672563810">HSPA</translation>

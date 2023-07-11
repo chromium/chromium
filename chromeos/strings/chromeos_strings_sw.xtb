@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">Tumia jozi ya funguo ya sasa</translation>
 <translation id="2320295602967756579">Washa mandhari meupe</translation>
 <translation id="2323506179655536734">LIMERUKWA</translation>
+<translation id="2324354238778375592">Inayoelea</translation>
 <translation id="2326139988748364651">Dpi <ph name="RESOLUTION_VALUE" /></translation>
 <translation id="2338501278241028356">Washa Bluetooth ili ugundue vifaa vilivyo karibu</translation>
 <translation id="2346474577291266260">Thabiti zaidi (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263">Jaribio la <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Inapakia...</translation>
 <translation id="3708186454126126312">Vilivyounganishwa awali</translation>
+<translation id="3715651196924935218">Funga hali ya kuelea</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (Maoni <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Haujaunganishwa</translation>
 <translation id="3749289110408117711">Jina la faili</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Picha kwenye Google</translation>
 <translation id="4150201353443180367">Onyesho</translation>
 <translation id="4155551848414053977">Hakikisha kichanganuzi kimewashwa na kinapatikana kupitia mtandao wako au muunganisho wa moja kwa moja</translation>
+<translation id="4159238217853743776">Kiasi</translation>
 <translation id="4159784952369912983">Zambarau</translation>
 <translation id="4170180284036919717">Piga picha</translation>
 <translation id="4170700058716978431">HALIJAFAULU</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">Ili uweke au usasishe muunganisho, nenda kwenye <ph name="BEGIN_LINK" />Mipangilio<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Tarehe</translation>
 <translation id="4950314376641394653">Programu dhibiti ya <ph name="DEVICE_NAME" /> imesasishwa na sasa inatumia toleo la <ph name="VERSION" /></translation>
+<translation id="4969079779290789265">Iliyogawanywa</translation>
 <translation id="4972592110715526173">hali ya mabadiliko</translation>
 <translation id="498186245079027698">Kagua kichanganuzi kisha ujaribu tena. Hakikisha kuna nafasi ya kutosha kwenye kompyuta yako ya kuhifadhi faili zilizochanganuliwa.</translation>
 <translation id="4985509611418653372">Tekeleza</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">Jina la seva pangishi</translation>
 <translation id="5089810972385038852">Jimbo</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">Skrini nzima</translation>
 <translation id="5142961317498132443">Uthibitishaji</translation>
 <translation id="5154917547274118687">Kumbukumbu</translation>
 <translation id="5160857336552977725">Ingia katika kifaa chako cha <ph name="DEVICE_TYPE" /></translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">Ondoka</translation>
 <translation id="522307662484862935">Usiweke anwani ya barua pepe</translation>
 <translation id="5227902338748591677">Ratiba ya mandhari meusi</translation>
+<translation id="5229344016299762883">Funga hali ya skrini nzima</translation>
 <translation id="5234764350956374838">Ondoa</translation>
 <translation id="5252456968953390977">Uzururaji</translation>
 <translation id="5257811368506016604">Washa hali ya rangi angavu</translation>
@@ -706,6 +712,7 @@
 <translation id="6566314079205407217">Uchanganuzi wa kurasa nyingi</translation>
 <translation id="6574762126505704998">Jaza</translation>
 <translation id="6575134580692778371">Haijasanidiwa</translation>
+<translation id="6576005492601044801">kushoto</translation>
 <translation id="6579509898032828423">Tumia picha hii</translation>
 <translation id="6596816719288285829">Anwani ya IP</translation>
 <translation id="6599673642868607614">Asante kwa maoni yako. Maoni yako hutusaidia kuboresha hali ya Chromebook na yatakaguliwa na timu yetu. Kutokana na idadi kubwa ya ripoti, hatutaweza kukujibu.</translation>
@@ -810,6 +817,7 @@
 <translation id="7497215489070763236">Cheti cha CA cha Seva</translation>
 <translation id="7501957181231305652">au</translation>
 <translation id="7502658306369382406">Anwani ya IPv6</translation>
+<translation id="7513770521371759388">chini</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Maudhui ya usaidizi hayapatikani</translation>
 <translation id="7535791657097741517">Washa mandhari meupe</translation>
@@ -946,6 +954,7 @@
 <translation id="8655295600908251630">Kituo</translation>
 <translation id="8655828773034788261">Shiriki URL:</translation>
 <translation id="8660881923941176839">wakia</translation>
+<translation id="8670574982334489519">kulia</translation>
 <translation id="8675354002693747642">Kitufe kilichoshirikiwa awali</translation>
 <translation id="8677859815076891398">Hakuna albamu. Anzisha albamu mpya katika <ph name="LINK_BEGIN" />Picha kwenye Google<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tumia vitufe vya vishale vya Kushoto au Kulia kudhibiti kipengele hiki.</translation>
@@ -991,6 +1000,7 @@
 <translation id="8936793075252196307">Anwani ya IP ya programu teja</translation>
 <translation id="8944651180182756621">Rangi ya kifungua programu</translation>
 <translation id="894617464444543719">Kifaa hiki ni simu.</translation>
+<translation id="8950424402482976779">juu</translation>
 <translation id="8968751544471797276">Kasi ya kuchaji</translation>
 <translation id="8970109610781093811">Endesha tena</translation>
 <translation id="8983038754672563810">HSPA</translation>

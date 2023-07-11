@@ -255,6 +255,7 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="2595587704210555261">{COUNT,plural, =1{Atvērtās cilnes, ko neizmantojat vismaz vienu dienu, tiek pārvietotas uz režģi Neaktīvās cilnes, lai jūs varētu ērti koncentrēties uz visbiežāk izmantotajām cilnēm. Iestatījumos varat jebkurā laikā mainīt šo iespēju.}zero{Atvērtās cilnes, ko neizmantojat vismaz {COUNT} dienas, tiek pārvietotas uz režģi Neaktīvās cilnes, lai jūs varētu ērti koncentrēties uz visbiežāk izmantotajām cilnēm. Iestatījumos varat jebkurā laikā mainīt šo iespēju.}one{Atvērtās cilnes, ko neizmantojat vismaz {COUNT} dienu, tiek pārvietotas uz režģi Neaktīvās cilnes, lai jūs varētu ērti koncentrēties uz visbiežāk izmantotajām cilnēm. Iestatījumos varat jebkurā laikā mainīt šo iespēju.}other{Atvērtās cilnes, ko neizmantojat vismaz {COUNT} dienas, tiek pārvietotas uz režģi Neaktīvās cilnes, lai jūs varētu ērti koncentrēties uz visbiežāk izmantotajām cilnēm. Iestatījumos varat jebkurā laikā mainīt šo iespēju.}}</translation>
 <translation id="2600682495497606169">Vietņu sīkfailu dzēšana</translation>
 <translation id="2609008503159898744">Vai aizvērt visas cilnes?</translation>
+<translation id="2617210333344098964">Pārvietot adresi uz kontu</translation>
 <translation id="2625189173221582860">Parole ir nokopēta.</translation>
 <translation id="2626236249646841566">Pārbaudiet savienojumu un mēģiniet pierakstīties vēlreiz.</translation>
 <translation id="2637313651144986786">Meklēt cilnēs…</translation>
@@ -464,6 +465,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3851938967634752633">Tiks dzēstas paroles vietnēm <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> un citām vietnēm (vēl <ph name="NUMBER_OF_ACCOUNTS" />). Jūsu konti netiks dzēsti.</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
 <translation id="3861486700625780712">Nesekot</translation>
+<translation id="3861908220442487587">Šī adrese ir saglabāta tikai šajā ierīcē. Lai to izmantotu citās savās ierīcēs, pārvietojiet to uz Google kontu <ph name="USER_EMAIL" />.</translation>
 <translation id="3863769054730344136">Sūtīt uz jūsu ierīcēm</translation>
 <translation id="387280738075653372">Lejupielādējiet lietotni Chrome šeit.</translation>
 <translation id="3875783148670536197">Parādīt, kā</translation>

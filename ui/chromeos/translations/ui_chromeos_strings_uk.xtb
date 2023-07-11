@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Диск Google зараз недоступний. Завантаження автоматично відновиться після повторного під’єднання до Google Диска.</translation>
 <translation id="1307931752636661898">Не вдається переглянути файли Linux</translation>
 <translation id="1313405956111467313">Автоматична конфігурація проксі-сервера</translation>
+<translation id="134645005685694099">На вашому пристрої недостатньо пам’яті для синхронізації файлів. Нові файли більше не синхронізуватимуться автоматично.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Файл або каталог не можна використовувати.</translation>
 <translation id="1363028406613469049">Композиція</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Налаштування пристрою</translation>
 <translation id="2084809735218147718">Пісня подяки</translation>
 <translation id="2088690981887365033">Мережа VPN</translation>
+<translation id="209653272837065803">Недостатньо пам’яті, щоб продовжити синхронізацію файлів</translation>
 <translation id="2111134541987263231">Увімкніть параметр <ph name="BEGIN_BOLD" />Дозволити в анонімному режимі<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Файли (<ph name="NUMBER_OF_ITEMS" />) буде видалено, і ви не зможете відновити їх.</translation>
 <translation id="2122305276694332719">Автоматичне підключення до прихованої мережі дозволяє іншим користувачам бачити ваш пристрій і певні мережеві налаштування. Не рекомендується.</translation>
@@ -146,9 +148,11 @@
 <translation id="2198315389084035571">китайська (спрощена)</translation>
 <translation id="22085916256174561">Корейська</translation>
 <translation id="2208919847696382164">Установити для Linux</translation>
+<translation id="2215692307449050019">Низький рівень заряду акумулятора. Синхронізація файлів відновиться, коли ви підключите пристрій до живлення.</translation>
 <translation id="2225536596944493418">Видалити елементи (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не вдається створити папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Людина з кавою</translation>
+<translation id="2247561763838186830">Ви вийшли з облікового запису</translation>
 <translation id="2251368349685848079">Відновити з кошика</translation>
 <translation id="2278133026967558505">Доступ до файлу для всіх веб-сайтів і URL-адрес</translation>
 <translation id="2282155092769082568">URL-адреса автоконфігурації:</translation>
@@ -163,6 +167,7 @@
 <translation id="2325650632570794183">Цей тип файлу не підтримується. Відвідайте Веб-магазин Chrome, щоб знайти програму, яка може відкрити файл цього типу.</translation>
 <translation id="2326539130272988168">Болгарська</translation>
 <translation id="2337715497728194187">Поділитися з Bruschetta</translation>
+<translation id="233822363739146957">Недостатньо пам’яті, щоб синхронізувати всі файли</translation>
 <translation id="23721837607121582">Завантажити мобільний профіль, мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />"</translation>
 <translation id="2377319039870049694">Список</translation>
 <translation id="2377590462528165447">Linux має доступ до стількох папок: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -180,6 +185,7 @@
 <translation id="2464089476039395325">Проксі-сервер HTTP</translation>
 <translation id="2467267713099745100">Мережа <ph name="NETWORK_TYPE" />: вимкнено</translation>
 <translation id="2468402215065996499">Тамагочі</translation>
+<translation id="2468470447085858632">Працюйте з файлами на Google Диску в режимі офлайн завдяки синхронізації файлів</translation>
 <translation id="2470939964922472929">Ви ввели неправильний PIN-код забагато разів. Щоб налаштувати новий PIN-код, введіть восьмизначний PUK-код, який надав оператор.</translation>
 <translation id="2500392669976258912">Гуджараті, фонетична розкладка</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -215,6 +221,7 @@
 <translation id="2782104745158847185">Не вдалося встановити додаток Linux</translation>
 <translation id="2802583107108007218">Докладніше про ці обмеження</translation>
 <translation id="2803375539583399270">Введіть PIN-код</translation>
+<translation id="2819519502129272135">Синхронізацію файлів вимкнено</translation>
 <translation id="2820957248982571256">Сканування…</translation>
 <translation id="2830077785865012357">Китайська, чжуїнь</translation>
 <translation id="2843806747483486897">Змінити дію за умовчанням...</translation>
@@ -439,6 +446,7 @@
 <translation id="4599600860674643278">Фільтр скинуто.</translation>
 <translation id="4603392156942865207">Копіювання файлу <ph name="FILE_NAME" /> у папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="4631887759990505102">Виконавець</translation>
+<translation id="4635373743001040938">Синхронізацію файлів вимкнено, оскільки обсяг пам’яті майже вичерпано.</translation>
 <translation id="4642769377300286600">Встановлення мобільного профілю; мережа <ph name="NETWORK_INDEX" />, усього мереж: <ph name="NETWORK_COUNT" />; назва: <ph name="NETWORK_NAME" />; оператор: <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Чеська, розкладка Qwerty</translation>
 <translation id="4656777537938206294">Можливість роботи з файлами без підключення до Інтернету</translation>
@@ -492,6 +500,7 @@
 <translation id="4961158930123534723">Додатку Parallels Desktop надано доступ до 1 папки</translation>
 <translation id="496656650103537022">Файл "<ph name="FILE_NAME" />" відновлено</translation>
 <translation id="4969785127455456148">Альбом</translation>
+<translation id="4972330214479971536">Не вдалося налаштувати синхронізацію файлів</translation>
 <translation id="4973523518332075481">Задовга назва. Максимальна кількість символів: <ph name="MAX_LENGTH" />.</translation>
 <translation id="4973970068702235170">Не вдалося заархівувати, неочікувана помилка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Японська</translation>
@@ -603,6 +612,7 @@
 <translation id="5720028165859493293">Файл "<ph name="FILE_NAME" />" переміщено в кошик</translation>
 <translation id="5724172041621205163">Тайська, розкладка Pattachote</translation>
 <translation id="57383366388012121">Останній місяць</translation>
+<translation id="575175778971367197">Зараз неможливо синхронізувати цей файл</translation>
 <translation id="5756666464756035725">Угорська клавіатура QWERTY</translation>
 <translation id="5760252553414789727">Вибрано об’єктів: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Німецька (Швейцарія)</translation>
@@ -705,6 +715,7 @@
 <translation id="6558280019477628686">Сталася помилка. Можливо, не всі елементи було видалено.</translation>
 <translation id="656398493051028875">Видалення файлу "<ph name="FILENAME" />"…</translation>
 <translation id="6581162200855843583">Посилання Google Диска</translation>
+<translation id="6588648400954570689">Налаштування синхронізації файлів</translation>
 <translation id="6594855146910089723">Linux і Parallels Desktop мають доступ до цієї папки</translation>
 <translation id="6607272825297743757">Інформація про файл</translation>
 <translation id="6609332149380188670">Додатку Parallels Desktop надано доступ до папок (<ph name="NUMBER_OF_ITEMS" />)</translation>
@@ -803,6 +814,7 @@
 <translation id="7309413087278791451">Німецька (Бельгія)</translation>
 <translation id="7339898014177206373">Нове вікно</translation>
 <translation id="7343393116438664539">В'єтнамська, телекс</translation>
+<translation id="7347346221088620549">Зашифрований файл</translation>
 <translation id="7357762654218998920">Цей тип файлу не підтримується. <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /> про те, як відкривати файли в ОС Chrome.</translation>
 <translation id="7359359531237882347">Копіювання елементів (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="7375951387215729722">Список файлів відсортовано в порядку спадання за таким критерієм: <ph name="COLUMN_NAME" />.</translation>
@@ -829,6 +841,7 @@
 <translation id="7547811415869834682">Нідерландська</translation>
 <translation id="7551643184018910560">Закріпити на панелі запуску</translation>
 <translation id="7553492409867692754">Надати додаткам Linux доступ до файлів у папці "<ph name="FOLDER_NAME" />"</translation>
+<translation id="7555339735447658365">Зараз ви не в мережі. Синхронізація файлів відновиться, коли пристрій підключиться до Інтернету.</translation>
 <translation id="7589661784326793847">Зачекайте</translation>
 <translation id="7592775719802218421">Файл "<ph name="FILE_NAME" />" завантажується на пристрій</translation>
 <translation id="7600126690270271294">Сербська</translation>
@@ -871,6 +884,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Помилка налаштування мережі</translation>
+<translation id="7832093238954689746">Синхронізацію файлів завершено. Файли з папки "Мій диск" доступні в режимі офлайн.</translation>
 <translation id="7839804798877833423">Для отримання цих файлів буде використано приблизно <ph name="FILE_SIZE" /> мобільного передавання даних.</translation>
 <translation id="7846076177841592234">Скасувати вибір</translation>
 <translation id="7853966320808728790">Французька клавіатура BÉPO</translation>
@@ -919,6 +933,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Модель пристрою</translation>
 <translation id="8223479393428528563">Щоб зберегти ці файли для використання в режимі офлайн, під’єднайте пристрій до Інтернету, натисніть файли правою кнопкою миші та виберіть опцію <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Відкрити сховище</translation>
 <translation id="8249296373107784235">Скасувати</translation>
 <translation id="8250690786522693009">Латиниця</translation>
 <translation id="8250920743982581267">Документи</translation>
@@ -986,6 +1001,7 @@
 <translation id="8609695766746872526">Ісландська</translation>
 <translation id="863903787380594467">Неправильний PIN-код. Залишилося спроб: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Порт</translation>
+<translation id="8656407365183407932">Файли, доступні офлайн, було вилучено</translation>
 <translation id="8656768832129462377">Не перевіряти</translation>
 <translation id="8688591111840995413">Неправильний пароль</translation>
 <translation id="8698464937041809063">Малюнок Google</translation>
@@ -1021,6 +1037,7 @@
 <translation id="8997962250644902079">Китайська (традиційна), піньїнь</translation>
 <translation id="8998871447376656508">Не вдалося завершити завантаження. На Google Диску недостатньо вільного місця.</translation>
 <translation id="9003940392834790328">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Мережею керує адміністратор. Докладніше</translation>
+<translation id="9007990314804111233">Увійдіть в обліковий запис Microsoft</translation>
 <translation id="9017798300203431059">Російська (фонетична)</translation>
 <translation id="9034924485347205037">Файли Linux</translation>
 <translation id="9035012421917565900">Елементи не можна перенести назад у розташування "<ph name="DESTINATION_NAME" />", тож ви не зможете відмінити цю дію.</translation>

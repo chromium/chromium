@@ -525,6 +525,7 @@
 <translation id="4272631900155121838">QR кодду скандоо үчүн жөндөөлөрдөн камераны иштетиңиз</translation>
 <translation id="4277990410970811858">Коопсуз серептөө</translation>
 <translation id="4281844954008187215">Тейлөө шарттары</translation>
+<translation id="4286718549648564014">Дарек <ph name="USER_EMAIL" /> аккаунтуңузга жылдырылды</translation>
 <translation id="4293080268407233932">Издөө</translation>
 <translation id="4302248187517737842">Колдонуучунун аты жок ••••••••</translation>
 <translation id="4304713468139749426">Сырсөздөрдү башкаргыч</translation>
@@ -1184,6 +1185,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8264966119170358612">Айрым сырсөздөрүңүздү Google'дан тышкары жерде кимдир бирөө билип алды. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">iPad'ды баштапкы абалга келтирүүдө <ph name="USER_NAME" /> аккаунтунан чыктыңыз. Кайрадан кирүү үчүн төмөндөгү "Улантуу" баскычын басыңыз.</translation>
 <translation id="8271720166617117963">Кабыл алуу жана кирүү</translation>
+<translation id="8273982424131314219">Маалыматты <ph name="URL" /> сайтында толтурасыз</translation>
 <translation id="8278938988428169257">Сөз же сөз айкашын киргизиңиз</translation>
 <translation id="8281781826761538115">Демейки - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Өткөрүп жиберүү</translation>
@@ -1231,6 +1233,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8556590991644167667">{count,plural, =1{{count} эскертүүнү жаптыңыз}other{{count} эскертүүнү жаптыңыз}}</translation>
 <translation id="8557690929085431655">Башка колдонмолордун URL даректерин Жашыруун режимде ачууну тандай аласыз.</translation>
 <translation id="8558480467877843976">Эми Chrome'до каалаган убакта сайттарды карап, билдирүүлөрдөгү шилтемелерди, документтерди жана башка колдонмолорду ача аласыз.</translation>
+<translation id="8580411965900177618">Жок, рахмат</translation>
 <translation id="8588404856427128947">Өчүк</translation>
 <translation id="8591976964826315682">Жашыруун режимде үчүнчү тараптын cookie файлдарын бөгөттөө</translation>
 <translation id="8605219856220328675">Өтмөктү жабуу.</translation>
@@ -1268,6 +1271,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Сайттын демейки көрүнүшү</translation>
 <translation id="8820817407110198400">Кыстармалар</translation>
+<translation id="8825562130641217944">Кыстармаларды, сырсөздөрдү жана башкаларды алыңыз</translation>
 <translation id="882557203579758546">Барактан табуу…</translation>
 <translation id="8840513115188359703">Google Каттоо эсебиңизден чыгарылбайсыз.</translation>
 <translation id="8843129975935593190">Шайкештире алган нерселер уюмуңуз тарабынан чектелген.</translation>

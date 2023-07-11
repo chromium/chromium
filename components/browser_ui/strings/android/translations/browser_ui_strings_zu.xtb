@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">Usesho oluphakanyisiwe ngokususelwe kuthebhu yakho yokugcina</translation>
 <translation id="2241634353105152135">Kanye nje</translation>
 <translation id="2253414712144136228">Susa i-<ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Isayithi eli-1 livinjiwe}one{Amasayithi angu-# avinjiwe}other{Amasayithi angu-# avinjiwe}}</translation>
 <translation id="228293613124499805">Amasayithi amaningi owavakashelayo agcina idatha kudivayisi yakho, ngokuvamile ukuze uthuthukise ulwazi lwakho ngokulondoloza okuncamelayo noma ulwazi owabelana ngalo nesayithi. Sincoma ukuthi ugcine leli sethingi livuliwe.</translation>
 <translation id="2289270750774289114">Buza uma isayithi lifuna ukuthola amadivayisi aseduze e-Bluetooth (kunconyiwe)</translation>
 <translation id="2315043854645842844">Ukukhethwa kwesitifiketi sohlangothi lweklayenti akusekelwe yisistimu yokusebenza.</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">Ayikwazi ukukhetha isitifiketi.</translation>
 <translation id="8077120325605624147">Noma iyiphi isayithi oyivakashelayo ingakubonisa noma yisiphi isikhangiso</translation>
 <translation id="8087000398470557479">Lokhu okuqukethwe kubuya ku-<ph name="DOMAIN_NAME" />, kulethwa i-Google.</translation>
+<translation id="8088603949666785339">Okukhethwa kukho okuningi ku-<ph name="BANNER_TITLE" /></translation>
 <translation id="8116925261070264013">Kuthulisiwe</translation>
 <translation id="813082847718468539">Buka ulwazi lwesayithi</translation>
 <translation id="8131740175452115882">Qinisekisa</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129">Vula imvume ye-<ph name="APP_NAME" /> <ph name="BEGIN_LINK" />Kumasethingi e-Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Zama futhi</translation>
 <translation id="8730621377337864115">Kwenziwe</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Isayithi eli-1 livunyelwe}one{Amasayithi angu-# avunyelwe}other{Amasayithi angu-# avunyelwe}}</translation>
 <translation id="8737217482364735741">Lokhu kuzosula yonke idatha namakhukhi alondolozwe i-<ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Khetha isithombe</translation>
 <translation id="8801436777607969138">Vimbela i-JavaScript kusayithi elithile.</translation>

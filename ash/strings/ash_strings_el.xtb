@@ -185,6 +185,7 @@
 <translation id="1770726142253415363">Μετακινήθηκε στη σειρά <ph name="ROW_NUMBER" />, στήλη <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Κύλιση δεξιά</translation>
 <translation id="1774796056689732716">Ημερολόγιο, <ph name="CURRENT_MONTH_YEAR" />, αυτήν τη στιγμή είναι επιλεγμένη η ημερομηνία <ph name="DATE" />.</translation>
+<translation id="1775598828170459419">Εμφάνιση <ph name="NUM_SHOWN_ITEMS" /> από <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="1787955149152357925">Ανενεργό</translation>
 <translation id="181103072419391116">Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Διαχειριζόμενο από τον διαχειριστή σας</translation>
 <translation id="1815245884418711390">Εναλλαγή σημείου πρόσβασης Wi-Fi. Το σημείο πρόσβασης Wi-Fi είναι ανενεργό.</translation>

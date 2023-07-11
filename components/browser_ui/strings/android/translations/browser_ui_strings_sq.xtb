@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">Kërkimet e sugjeruara bazuar në skedën tënde të fundit</translation>
 <translation id="2241634353105152135">Vetëm një herë</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> - Hiq</translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sajti i bllokuar}other{# sajte të bllokuara}}</translation>
 <translation id="228293613124499805">Shumica e sajteve që viziton ka mundësi që të ruajnë të dhëna në pajisjen tënde, shpesh për të përmirësuar përvojën tënde duke ruajtur preferencat e tua ose informacionet që ti ndan me sajtin. Ne rekomandojmë që ta mbash të aktivizuar këtë cilësim.</translation>
 <translation id="2289270750774289114">Pyet kur një sajt dëshiron të zbulojë pajisjet Bluetooth në afërsi (rekomandohet)</translation>
 <translation id="2315043854645842844">Përzgjedhja e certifikatës nga ana e klientit nuk mbështetet nga sistemi operativ.</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">Nuk mund të zgjidhet certifikata.</translation>
 <translation id="8077120325605624147">Çdo sajt që viziton ti mund të të shfaqë çdo reklamë</translation>
 <translation id="8087000398470557479">Kjo përmbajtje është nga <ph name="DOMAIN_NAME" />, dërguar nga Google.</translation>
+<translation id="8088603949666785339">Më shumë opsione te "<ph name="BANNER_TITLE" />"</translation>
 <translation id="8116925261070264013">Zëri i çaktivizuar</translation>
 <translation id="813082847718468539">Shiko informacionin rreth faqes</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129">Aktivizo lejen për <ph name="APP_NAME" /> në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Provo sërish</translation>
 <translation id="8730621377337864115">U krye</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Lejohet 1 sajt}other{Lejohen # sajte}}</translation>
 <translation id="8737217482364735741">Kjo do të pastrojë të gjitha të dhënat dhe kukit e ruajtura nga <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Zgjidh një imazh</translation>
 <translation id="8801436777607969138">Blloko JavaScript për një sajt specifik.</translation>

@@ -525,6 +525,7 @@
 <translation id="4272631900155121838">Για να σαρώσετε έναν κώδικα QR, ενεργοποιήστε την κάμερα από τις ρυθμίσεις</translation>
 <translation id="4277990410970811858">Ασφαλής περιήγηση</translation>
 <translation id="4281844954008187215">Όροι Παροχής Υπηρεσιών</translation>
+<translation id="4286718549648564014">Η διεύθυνση μετακινήθηκε στον λογαριασμό σας <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Αναζήτηση</translation>
 <translation id="4302248187517737842">Χωρίς όνομα χρήστη ••••••••</translation>
 <translation id="4304713468139749426">Διαχειριστής κωδικών πρόσβασης</translation>
@@ -1185,6 +1186,7 @@
 <translation id="8264966119170358612">Ορισμένοι από τους αποθηκευμένους κωδικούς πρόσβασής σας εκτέθηκαν σε μια παραβίαση δεδομένων που έγινε εκτός Google. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Αποσυνδεθήκατε από τον λογαριασμό σας <ph name="USER_NAME" /> στο πλαίσιο της επαναφοράς του iPad. Για να συνδεθείτε ξανά, πατήστε Συνέχεια παρακάτω.</translation>
 <translation id="8271720166617117963">Αποδοχή και σύνδεση</translation>
+<translation id="8273982424131314219">Θα συμπληρώσετε πληροφορίες στο <ph name="URL" /></translation>
 <translation id="8278938988428169257">Εισαγάγετε μια λέξη ή φράση</translation>
 <translation id="8281781826761538115">Προεπιλογή - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Παράβλεψη</translation>
@@ -1232,6 +1234,7 @@
 <translation id="8556590991644167667">{count,plural, =1{Παραβλέψατε {count} προειδοποίηση}other{Παραβλέψατε {count} προειδοποιήσεις}}</translation>
 <translation id="8557690929085431655">Μπορείτε να επιλέξετε να ανοίγετε τα εισερχόμενα URL από άλλες εφαρμογές σε Κατάσταση ανώνυμης περιήγησης.</translation>
 <translation id="8558480467877843976">Μπορείτε πλέον να χρησιμοποιείτε το Chrome κάθε φορά που περιηγείστε ή πατάτε συνδέσμους σε μηνύματα, έγγραφα και άλλες εφαρμογές.</translation>
+<translation id="8580411965900177618">Όχι, ευχαριστώ</translation>
 <translation id="8588404856427128947">Ανενεργό</translation>
 <translation id="8591976964826315682">Αποκλεισμός cookie τρίτου μέρους στην ανώνυμη περιήγηση</translation>
 <translation id="8605219856220328675">Κλείσιμο καρτέλας.</translation>
@@ -1269,6 +1272,7 @@
 <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Προεπιλεγμένη προβολή ιστοτόπου</translation>
 <translation id="8820817407110198400">Σελιδοδείκτες</translation>
+<translation id="8825562130641217944">Λάβετε τους σελιδοδείκτες, τους κωδικούς πρόσβασής σας και πολλά άλλα.</translation>
 <translation id="882557203579758546">Εύρεση στη σελίδα…</translation>
 <translation id="8840513115188359703">Δεν θα αποσυνδεθείτε από το Λογαριασμό σας Google.</translation>
 <translation id="8843129975935593190">Ο οργανισμός σας περιορίζει τι μπορείτε να συγχρονίσετε.</translation>

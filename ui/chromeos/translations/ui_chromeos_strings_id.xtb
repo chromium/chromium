@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Saat ini Google Drive tidak tersedia. Upload akan dimulai ulang secara otomatis setelah Google Drive aktif kembali.</translation>
 <translation id="1307931752636661898">Tidak dapat melihat file Linux</translation>
 <translation id="1313405956111467313">Konfigurasi proxy otomatis</translation>
+<translation id="134645005685694099">Perangkat Anda tidak memiliki ruang penyimpanan yang cukup untuk mengaktifkan sinkronisasi file. File baru tidak lagi disinkronkan secara otomatis.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">File atau direktori tidak dapat digunakan.</translation>
 <translation id="1363028406613469049">Lacak</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Setelan perangkat</translation>
 <translation id="2084809735218147718">Menandatangani terima kasih</translation>
 <translation id="2088690981887365033">Jaringan VPN</translation>
+<translation id="209653272837065803">Ruang penyimpanan tidak cukup untuk melanjutkan sinkronisasi file</translation>
 <translation id="2111134541987263231">Aktifkan <ph name="BEGIN_BOLD" />Izinkan dalam mode Samaran<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> item akan dihapus dan Anda tidak akan dapat memulihkannya.</translation>
 <translation id="2122305276694332719">Menghubungkan ke jaringan tersembunyi secara otomatis akan memungkinkan orang lain melihat perangkat Anda dan beberapa setelan jaringan, sehingga tindakan ini tidak direkomendasikan.</translation>
@@ -146,9 +148,11 @@
 <translation id="2198315389084035571">China Aksara Sederhana</translation>
 <translation id="22085916256174561">Korea</translation>
 <translation id="2208919847696382164">Instal dengan Linux</translation>
+<translation id="2215692307449050019">Daya baterai lemah. Sinkronisasi file akan dilanjutkan saat Anda terhubung ke sumber listrik.</translation>
 <translation id="2225536596944493418">Yakin ingin menghapus <ph name="NUMBER_OF_ITEMS" /> item?</translation>
 <translation id="2230062665678605299">Tidak dapat membuat folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Orang dengan kopi</translation>
+<translation id="2247561763838186830">Anda telah logout</translation>
 <translation id="2251368349685848079">Pulihkan dari sampah</translation>
 <translation id="2278133026967558505">Akses file oleh semua situs dan URL</translation>
 <translation id="2282155092769082568">URL konfigurasi otomatis:</translation>
@@ -163,6 +167,7 @@
 <translation id="2325650632570794183">Jenis file ini tidak didukung. Kunjungi Chrome Webstore untuk menemukan aplikasi yang dapat membuka jenis file ini.</translation>
 <translation id="2326539130272988168">Bulgaria</translation>
 <translation id="2337715497728194187">Bagikan ke Bruschetta</translation>
+<translation id="233822363739146957">Ruang penyimpanan tidak cukup untuk menyinkronkan semua file Anda</translation>
 <translation id="23721837607121582">Download profil seluler, Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Beralih ke tampilan daftar</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folder dibagikan dengan Linux</translation>
@@ -180,6 +185,7 @@
 <translation id="2464089476039395325">Proxy HTTP</translation>
 <translation id="2467267713099745100">Jaringan <ph name="NETWORK_TYPE" />, nonaktif</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470447085858632">Akses file Google Drive Anda secara offline dengan sinkronisasi file</translation>
 <translation id="2470939964922472929">Terlalu sering memasukkan PIN yang salah. Coba siapkan PIN baru, masukkan Kunci Pembuka Blokir Pribadi (PUK) 8 digit yang diberikan oleh operator Anda.</translation>
 <translation id="2500392669976258912">Fonetik Gujarati</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -215,6 +221,7 @@
 <translation id="2782104745158847185">Error saat menginstal aplikasi Linux</translation>
 <translation id="2802583107108007218">Pelajari pembatasan ini lebih lanjut</translation>
 <translation id="2803375539583399270">Masukkan PIN</translation>
+<translation id="2819519502129272135">Sinkronisasi file dinonaktifkan</translation>
 <translation id="2820957248982571256">Memindai...</translation>
 <translation id="2830077785865012357">Zhuyin China</translation>
 <translation id="2843806747483486897">Ubah default...</translation>
@@ -439,6 +446,7 @@
 <translation id="4599600860674643278">Filter direset.</translation>
 <translation id="4603392156942865207">Menyalin <ph name="FILE_NAME" /> ke <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artis</translation>
+<translation id="4635373743001040938">Ruang penyimpanan hampir habis. Sinkronisasi file telah dinonaktifkan.</translation>
 <translation id="4642769377300286600">Menginstal profil seluler, Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Ceko dengan keyboard Qwerty</translation>
 <translation id="4656777537938206294">Buat file tersedia offline</translation>
@@ -492,6 +500,7 @@
 <translation id="4961158930123534723">1 folder dibagikan ke Parallels Desktop</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> dipulihkan</translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Tidak dapat menyelesaikan penyiapan sinkronisasi file</translation>
 <translation id="4973523518332075481">Gunakan nama yang terdiri dari <ph name="MAX_LENGTH" /> karakter atau kurang</translation>
 <translation id="4973970068702235170">Gagal membuat file zip, error: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Jepang</translation>
@@ -603,6 +612,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> dipindahkan ke sampah</translation>
 <translation id="5724172041621205163">Thai dengan keyboard Pattachote</translation>
 <translation id="57383366388012121">Bulan lalu</translation>
+<translation id="575175778971367197">Tidak dapat menyinkronkan file ini sekarang</translation>
 <translation id="5756666464756035725">QWERTY Magyar</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> item dipilih</translation>
 <translation id="5763377084591234761">Jerman (Swiss)</translation>
@@ -705,6 +715,7 @@
 <translation id="6558280019477628686">Terjadi error. Beberapa item mungkin belum dihapus.</translation>
 <translation id="656398493051028875">Menghapus "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Tautan Google Drive</translation>
+<translation id="6588648400954570689">Setelan sinkronisasi file</translation>
 <translation id="6594855146910089723">Folder ini dibagikan ke Linux dan Parallels Desktop</translation>
 <translation id="6607272825297743757">Info file</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> folder dibagikan ke Parallels Desktop</translation>
@@ -803,6 +814,7 @@
 <translation id="7309413087278791451">Jerman (Belgia)</translation>
 <translation id="7339898014177206373">Jendela baru</translation>
 <translation id="7343393116438664539">Telex Vietnam</translation>
+<translation id="7347346221088620549">File terenkripsi</translation>
 <translation id="7357762654218998920">Jenis file ini tidak didukung. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di ChromeOS.</translation>
 <translation id="7359359531237882347">Menyalin <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="7375951387215729722">Daftar file diurutkan berdasarkan <ph name="COLUMN_NAME" /> dari bawah ke atas.</translation>
@@ -829,6 +841,7 @@
 <translation id="7547811415869834682">Belanda</translation>
 <translation id="7551643184018910560">Sematkan ke rak</translation>
 <translation id="7553492409867692754">Beri aplikasi Linux izin untuk mengakses file di folder <ph name="FOLDER_NAME" /></translation>
+<translation id="7555339735447658365">Anda sedang offline. Sinkronisasi file akan dilanjutkan saat Anda terhubung ke internet</translation>
 <translation id="7589661784326793847">Tunggu sebentar</translation>
 <translation id="7592775719802218421">Membuat <ph name="FILE_NAME" /> tersedia secara offline</translation>
 <translation id="7600126690270271294">Serbia</translation>
@@ -871,6 +884,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Terjadi error saat mengonfigurasi jaringan</translation>
+<translation id="7832093238954689746">Sinkronisasi file selesai. File Drive Saya tersedia secara offline.</translation>
 <translation id="7839804798877833423">Mengambil file ini akan menggunakan sekitar <ph name="FILE_SIZE" /> data seluler.</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>
 <translation id="7853966320808728790">BÉPO Prancis</translation>
@@ -919,6 +933,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model perangkat</translation>
 <translation id="8223479393428528563">Untuk menyimpan file ini agar dapat digunakan saat offline, sambungkan ke internet, klik kanan pada file, dan pilih opsi <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Lihat penyimpanan</translation>
 <translation id="8249296373107784235">Batalkan</translation>
 <translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Dokumen</translation>
@@ -986,6 +1001,7 @@
 <translation id="8609695766746872526">Islandia</translation>
 <translation id="863903787380594467">PIN salah. Tersisa <ph name="RETRIES" /> upaya lagi.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>
+<translation id="8656407365183407932">File offline Anda harus dihapus</translation>
 <translation id="8656768832129462377">Jangan periksa</translation>
 <translation id="8688591111840995413">Sandi salah</translation>
 <translation id="8698464937041809063">Gambar Google</translation>
@@ -1021,6 +1037,7 @@
 <translation id="8997962250644902079">Pinyin (Aksara Tradisional) China</translation>
 <translation id="8998871447376656508">Ruang penyimpanan di Google Drive tidak cukup untuk menyelesaikan upload.</translation>
 <translation id="9003940392834790328">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Dikelola oleh Administrator Anda, Detail</translation>
+<translation id="9007990314804111233">Login ke akun Microsoft Anda</translation>
 <translation id="9017798300203431059">Fonetik Rusia</translation>
 <translation id="9034924485347205037">File Linux</translation>
 <translation id="9035012421917565900">Item tidak dapat dipindahkan kembali ke '<ph name="DESTINATION_NAME" />', jadi tindakan ini tidak dapat diurungkan.</translation>

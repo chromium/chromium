@@ -255,6 +255,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2595587704210555261">{COUNT,plural, =1{Avoimet välilehdet, joita ei ole käytetty vähintään päivään, siirretään ei-aktiivisille välilehdille, jotta voit keskittyä useimmin käyttämiisi välilehtiin. Voit muuttaa valintasi milloin tahansa asetuksista.}other{Avoimet välilehdet, joita ei ole käytetty vähintään {COUNT} päivään, siirretään ei-aktiivisille välilehdille, jotta voit keskittyä useimmin käyttämiisi välilehtiin. Voit muuttaa valintasi milloin tahansa asetuksista.}}</translation>
 <translation id="2600682495497606169">Poista sivuston evästeet</translation>
 <translation id="2609008503159898744">Suljetaanko kaikki välilehdet?</translation>
+<translation id="2617210333344098964">Siirrä osoite tilille</translation>
 <translation id="2625189173221582860">Salasana kopioitu</translation>
 <translation id="2626236249646841566">Tarkista yhteys ja yritä kirjautumista uudelleen.</translation>
 <translation id="2637313651144986786">Hae välilehtiä…</translation>
@@ -464,6 +465,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3851938967634752633">Näiden salasanat poistetaan: <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ja <ph name="NUMBER_OF_ACCOUNTS" /> muuta. Tilejäsi ei poisteta.</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3861486700625780712">Lopeta seuraaminen</translation>
+<translation id="3861908220442487587">Osoite tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteilla, siirrä se Google-tilillesi (<ph name="USER_EMAIL" />)</translation>
 <translation id="3863769054730344136">Laitteille lähettäminen</translation>
 <translation id="387280738075653372">Lataa Chrome täältä.</translation>
 <translation id="3875783148670536197">Näytä miten</translation>

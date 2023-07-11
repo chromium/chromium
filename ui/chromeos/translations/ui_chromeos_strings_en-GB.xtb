@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Device settings</translation>
 <translation id="2084809735218147718">Signing thank you</translation>
 <translation id="2088690981887365033">VPN network</translation>
+<translation id="209653272837065803">There isn’t enough storage space to continue syncing files</translation>
 <translation id="2111134541987263231">Turn on <ph name="BEGIN_BOLD" />Allow in Incognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> items will be deleted and you won't be able to restore them.</translation>
 <translation id="2122305276694332719">Automatically connecting to a hidden network allows others to see your device and some network settings, and is not recommended.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Simplified Chinese</translation>
 <translation id="22085916256174561">Korean</translation>
 <translation id="2208919847696382164">Install with Linux</translation>
+<translation id="2215692307449050019">Battery is low. File sync will resume when you are connected to power.</translation>
 <translation id="2225536596944493418">Are you sure that you want to delete <ph name="NUMBER_OF_ITEMS" /> items?</translation>
 <translation id="2230062665678605299">Unable to create folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Person with coffee</translation>
+<translation id="2247561763838186830">You've been logged out</translation>
 <translation id="2251368349685848079">Restore from bin</translation>
 <translation id="2278133026967558505">File access by all websites and URLs</translation>
 <translation id="2282155092769082568">Auto-configuration URL:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">This file type is not supported. Please visit the Chrome Web Store to find an app that can open this type of file.</translation>
 <translation id="2326539130272988168">Bulgarian</translation>
 <translation id="2337715497728194187">Share with Bruschetta</translation>
+<translation id="233822363739146957">There isn’t enough storage space to sync all of your files</translation>
 <translation id="23721837607121582">Download mobile profile, network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Switch to list view</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folders shared with Linux</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Error installing Linux application</translation>
 <translation id="2802583107108007218">Learn more about these restrictions</translation>
 <translation id="2803375539583399270">Enter PIN</translation>
+<translation id="2819519502129272135">File sync turned off</translation>
 <translation id="2820957248982571256">Scanning...</translation>
 <translation id="2830077785865012357">Chinese Zhuyin</translation>
 <translation id="2843806747483486897">Change default...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Filter has been reset.</translation>
 <translation id="4603392156942865207">Copying <ph name="FILE_NAME" /> to <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artist</translation>
+<translation id="4635373743001040938">Storage space was extremely low. File sync has been turned off.</translation>
 <translation id="4642769377300286600">Installing mobile profile, network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Czech with QWERTY keyboard</translation>
 <translation id="4656777537938206294">Make files available offline</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">1 folder shared with Parallels Desktop</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> restored</translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Couldn’t finish setting up file sync</translation>
 <translation id="4973523518332075481">Use a name that's <ph name="MAX_LENGTH" /> characters or less</translation>
 <translation id="4973970068702235170">Zipping failed, unexpected error: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japanese</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">German (Belgium)</translation>
 <translation id="7339898014177206373">New window</translation>
 <translation id="7343393116438664539">Vietnamese Telex</translation>
+<translation id="7347346221088620549">Encrypted file</translation>
 <translation id="7357762654218998920">This file type is not supported. <ph name="BEGIN_LINK_HELP" />Learn more<ph name="END_LINK_HELP" /> about opening files on Chrome OS.</translation>
 <translation id="7359359531237882347">Copying <ph name="NUMBER_OF_ITEMS" /> items…</translation>
 <translation id="7375951387215729722">File list sorted by <ph name="COLUMN_NAME" /> in descending order.</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">Icelandic</translation>
 <translation id="863903787380594467">Incorrect PIN. You have <ph name="RETRIES" /> remaining attempts.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
+<translation id="8656407365183407932">Your offline files had to be removed</translation>
 <translation id="8656768832129462377">Do not check</translation>
 <translation id="8688591111840995413">Bad password</translation>
 <translation id="8698464937041809063">Google drawing</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">Chinese (Traditional) Pinyin</translation>
 <translation id="8998871447376656508">There is not enough free space in your Google Drive to complete the upload.</translation>
 <translation id="9003940392834790328">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, details</translation>
+<translation id="9007990314804111233">Sign in to your Microsoft account</translation>
 <translation id="9017798300203431059">Russian phonetic</translation>
 <translation id="9034924485347205037">Linux files</translation>
 <translation id="9035012421917565900">The items cannot be moved back into '<ph name="DESTINATION_NAME" />', so you won't be able to undo this action.</translation>

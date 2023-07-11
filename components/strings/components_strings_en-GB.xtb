@@ -3726,6 +3726,7 @@ Additional details:
 <translation id="899688752321268742"><ph name="URL" /> wants to know when you're actively using this device</translation>
 <translation id="8996941253935762404">The site ahead contains harmful programs</translation>
 <translation id="8997023839087525404">The server presented a certificate that was not publicly disclosed using the Certificate Transparency policy. This is a requirement for some certificates, to ensure that they are trustworthy and protect against attackers.</translation>
+<translation id="9000145382638074673">Your devices</translation>
 <translation id="900097728357967923">Live sporting events</translation>
 <translation id="9001074447101275817">The proxy <ph name="DOMAIN" /> requires a username and password.</translation>
 <translation id="9001963517402879850">Jump!</translation>

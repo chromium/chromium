@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (កម្រងសារ <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">មានមុខងារថ្មី សូមប្រើគ្រាប់ចុចព្រួញឡើងលើ ដើម្បីស្វែងយល់បន្ថែម។</translation>
 <translation id="1059913517121127803">មិនអាច​ចាប់ផ្ដើម​ស្កេនបានទេ</translation>
+<translation id="1062823486781306604"><ph name="INDEX" /> នៃ <ph name="COUNT" />, <ph name="NAME" />។</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">បានរកឃើញ​ជញ្ជាំងភ្លើង</translation>
 <translation id="1075811647922107217">ទំហំ​ទំព័រ</translation>
@@ -540,6 +541,7 @@
 <translation id="5257811368506016604">បើកមុខងារពណ៌ភ្លឺ</translation>
 <translation id="5264277876637023664">ដំណើរការតេស្ត CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN ត្រូវបានបិទ។</translation>
 <translation id="5275828089655680674">ដំណើរការ​ទម្លាប់ឡើងវិញ</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">ពណ៌ពន្លឺចាំងពីក្រោយ</translation>
@@ -604,6 +606,7 @@
 <translation id="5832805196449965646">បន្ថែមបុគ្គល</translation>
 <translation id="583281660410589416">មិនស្គាល់</translation>
 <translation id="5843706793424741864">ហ្វារិនហៃ</translation>
+<translation id="584953448295717128">APN ត្រូវបាន​រកឃើញ​ដោយស្វ័យប្រវត្តិ។</translation>
 <translation id="5849570051105887917">លេខកូដអ្នកផ្តល់សេវាកម្មនៅផ្ទះ</translation>
 <translation id="5859603669299126575">អាល់ប៊ុមវិចិត្រសាល</translation>
 <translation id="5860033963881614850">បិទ</translation>
@@ -882,6 +885,7 @@
 <translation id="80398733265834479">បើកមុខងារពណ៌ស្វ័យប្រវត្តិ</translation>
 <translation id="8041089156583427627">ផ្ញើមតិ</translation>
 <translation id="8045012663542226664">ប៊ូតុងបិទ/បើកសំឡេងមីក្រូហ្វូន</translation>
+<translation id="8067126283828232460">APN ត្រូវបាន​ភ្ជាប់។</translation>
 <translation id="8075838845814659848">ការសាកថ្ម​ដែលនៅសល់</translation>
 <translation id="8076492880354921740">ផ្ទាំង</translation>
 <translation id="8082366717211101304">មិនអាចដោះស្រាយ DNS ពីកម្មវិធី Android បានទេ</translation>
@@ -1028,6 +1032,7 @@
 <translation id="9111102763498581341">ដោះសោរ</translation>
 <translation id="9122602430962285795">ដើម្បីភ្ជាប់ឡើងវិញ សូមចូលទៅកាន់ការកំណត់</translation>
 <translation id="9126720536733509015">រក្សាទុក​ទំព័រច្រើន​ទៅជា PDF មួយ</translation>
+<translation id="9133104754938025929">ដើម្បី​សន្សំសំចៃ​ថ្ម ធាតុរក្សាអេក្រង់​ដំណើរការ​តែនៅពេល​សាកថ្ម​ប៉ុណ្ណោះ។</translation>
 <translation id="9137526406337347448">សេវាកម្ម Google</translation>
 <translation id="9138630967333032450">shift ឆ្វេង</translation>
 <translation id="9143347780818904997">រយៈពេល <ph name="MINUTES" /> នាទី</translation>

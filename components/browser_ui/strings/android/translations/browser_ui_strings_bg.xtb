@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">Предложения за търсене въз основа на последния ви раздел</translation>
 <translation id="2241634353105152135">Само веднъж</translation>
 <translation id="2253414712144136228">Премахване на <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Блокиран е 1 сайт}other{Блокирани са # сайта}}</translation>
 <translation id="228293613124499805">Повечето посещавани от вас сайтове вероятно запазват данни на устройството ви, често с цел подобряване на практическата ви работа, като съхраняват предпочитанията ви или информацията, която споделяте със сайта. Препоръчваме ви да оставите тази настройка включена.</translation>
 <translation id="2289270750774289114">Извеждане на запитване, когато сайт иска да открива устройства с Bluetooth в близост (препоръчително)</translation>
 <translation id="2315043854645842844">Избраният сертификат от страната на клиента не се поддържа от операционната система.</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">Сертификатът не може да бъде избран.</translation>
 <translation id="8077120325605624147">Всички посещавани от вас сайтове могат да ви показват всякакви реклами</translation>
 <translation id="8087000398470557479">Това съдържание се показва от Google, а източникът му е <ph name="DOMAIN_NAME" />.</translation>
+<translation id="8088603949666785339">Още опции във: <ph name="BANNER_TITLE" /></translation>
 <translation id="8116925261070264013">Заглушени</translation>
 <translation id="813082847718468539">Преглед на информацията за сайта</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129">Включете разрешението за <ph name="APP_NAME" /> от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
 <translation id="8730621377337864115">Готово</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Разрешен е 1 сайт}other{Разрешени са # сайта}}</translation>
 <translation id="8737217482364735741">Всички данни и „бисквитки“, съхранявани от <ph name="ORIGIN" />, ще бъдат изчистени.</translation>
 <translation id="8751914237388039244">Избор на изображение</translation>
 <translation id="8801436777607969138">Блокиране на JavaScript за конкретен сайт.</translation>

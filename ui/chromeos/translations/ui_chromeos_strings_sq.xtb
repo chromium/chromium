@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">"Disku i Google" nuk ofrohet tani. Ngarkimi do të rifillojë automatikisht pasi të kthehet "Disku i Google".</translation>
 <translation id="1307931752636661898">Nuk mund të shihen skedarët e Linux</translation>
 <translation id="1313405956111467313">Konfigurimi automatik i përfaqësuesit</translation>
+<translation id="134645005685694099">Pajisja jote nuk ka hapësirë ruajtëse të mjaftueshme për ta mbajtur të aktivizuar sinkronizimin e skedarëve. Skedarët e rinj nuk do të sinkronizohen më automatikisht.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Skedari ose direktoria nuk është i përdorshëm.</translation>
 <translation id="1363028406613469049">Pjesa muzikore</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">Përfaqësuesi i HTTP-së</translation>
 <translation id="2467267713099745100">Rrjeti <ph name="NETWORK_TYPE" />, joaktiv</translation>
 <translation id="2468402215065996499">Tamagoçi</translation>
+<translation id="2468470447085858632">Qasu te skedarët e tu të "Diskut të Google" jashtë linje me sinkronizimin e skedarëve</translation>
 <translation id="2470939964922472929">Është futur shumë herë një kod PIN i gabuar. Për të konfiguruar një kod të ri PIN, fut "Çelësin personal të zhbllokimit" (PUK) me 8 shifra të dhënë nga operatori celular.</translation>
 <translation id="2500392669976258912">Guxharatisht fonetike</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -602,6 +604,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> u zhvendos te koshi</translation>
 <translation id="5724172041621205163">Tajlandisht me tastierë Pattachote</translation>
 <translation id="57383366388012121">Muajin e fundit</translation>
+<translation id="575175778971367197">Ky skedar nuk mund të sinkronizohet për momentin</translation>
 <translation id="5756666464756035725">Tastiera QWERTY në hungarisht</translation>
 <translation id="5760252553414789727">U zgjodhën <ph name="SELECTED_FILES_COUNT" /> artikuj</translation>
 <translation id="5763377084591234761">Gjermanisht (Zvicër)</translation>
@@ -704,6 +707,7 @@
 <translation id="6558280019477628686">Ndodhi një gabim. Disa artikuj mund të mos jenë fshirë.</translation>
 <translation id="656398493051028875">Po fshin "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Lidhja e "Diskut të Google"</translation>
+<translation id="6588648400954570689">Cilësimet e sinkronizimit të skedarëve</translation>
 <translation id="6594855146910089723">Kjo dosje është ndarë me Linux dhe Parallels Desktop</translation>
 <translation id="6607272825297743757">Informacioni i skedarit</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> dosje të ndara me Parallels Desktop</translation>
@@ -828,6 +832,7 @@
 <translation id="7547811415869834682">Hollandisht</translation>
 <translation id="7551643184018910560">Gozhdo në raft</translation>
 <translation id="7553492409867692754">Jepu leje aplikacioneve të Linux që të qasen në skedarët në dosjen <ph name="FOLDER_NAME" /></translation>
+<translation id="7555339735447658365">Aktualisht je jashtë linje. Sinkronizimi i skedarëve do të vazhdojë kur të jesh lidhur me internetin.</translation>
 <translation id="7589661784326793847">Prit vetëm një sekondë</translation>
 <translation id="7592775719802218421">Po bën <ph name="FILE_NAME" /> të disponueshëm jashtë linje</translation>
 <translation id="7600126690270271294">Serbisht</translation>
@@ -870,6 +875,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Gabim gjatë konfigurimit të rrjetit</translation>
+<translation id="7832093238954689746">Sinkronizimi i skedarëve përfundoi. Skedarët te "Disku im" janë të disponueshëm jashtë linje.</translation>
 <translation id="7839804798877833423">Marrja e këtyre skedarëve do të përdorë afro <ph name="FILE_SIZE" /> të dhëna celulare.</translation>
 <translation id="7846076177841592234">Anulo zgjedhjen</translation>
 <translation id="7853966320808728790">Franceze BÉPO</translation>
@@ -918,6 +924,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Modeli i pajisjes</translation>
 <translation id="8223479393428528563">Për të ruajtur këta skedarë për përdorim jashtë linje, kthehu në linjë, kliko me të djathtën te skedarët dhe zgjidh opsionin <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Shiko hapësirën ruajtëse</translation>
 <translation id="8249296373107784235">Ndërprite</translation>
 <translation id="8250690786522693009">Alfabet latin</translation>
 <translation id="8250920743982581267">Dokumentet</translation>

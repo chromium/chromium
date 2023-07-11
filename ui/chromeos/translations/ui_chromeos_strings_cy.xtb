@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Nid yw Google Drive ar gael ar hyn o bryd. Bydd uwchlwytho yn ailgychwyn yn awtomatig unwaith y bydd Google Drive yn ôl.</translation>
 <translation id="1307931752636661898">Methu â gweld ffeiliau Linux</translation>
 <translation id="1313405956111467313">Ffurfweddu dirprwy weinydd yn awtomatig</translation>
+<translation id="134645005685694099">Nid oes gan eich dyfais ddigon o le storio i gadw cysoni ffeiliau ymlaen. Ni fydd ffeiliau newydd yn cysoni'n awtomatig mwyach.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Nid oes modd defnyddio'r ffeil na'r cyfeiriadur.</translation>
 <translation id="1363028406613469049">Olrhain</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">Dirprwy Weinydd HTTP</translation>
 <translation id="2467267713099745100">Rhwydwaith <ph name="NETWORK_TYPE" />, wedi'i ddiffodd</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470447085858632">Cyrchwch eich ffeiliau Google Drive all-lein gyda chysoni ffeiliau</translation>
 <translation id="2470939964922472929">Rhoddwyd y PIN anghywir gormod o weithiau. I osod PIN newydd, rhowch yr Allwedd Ddadrwystro Bersonol 8 digid (PUK) a ddarperir gan eich cludwr.</translation>
 <translation id="2500392669976258912">Seinegol Gwjarati</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -602,6 +604,7 @@
 <translation id="5720028165859493293">Symudwyd <ph name="FILE_NAME" /> i'r bin sbwriel</translation>
 <translation id="5724172041621205163">Thai gyda bysellfwrdd Pattachote</translation>
 <translation id="57383366388012121">Y mis diwethaf</translation>
+<translation id="575175778971367197">Nid oes modd cysoni'r ffeil hon ar hyn o bryd</translation>
 <translation id="5756666464756035725">QWERTY Hwngareg</translation>
 <translation id="5760252553414789727">Mae <ph name="SELECTED_FILES_COUNT" /> eitem wedi'u dewis</translation>
 <translation id="5763377084591234761">Almaeneg (Y Swistir)</translation>
@@ -704,6 +707,7 @@
 <translation id="6558280019477628686">Bu gwall. Mae'n bosib na fydd rhai eitemau wedi'u dileu.</translation>
 <translation id="656398493051028875">Wrthi'n dileu "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Dolen Google Drive</translation>
+<translation id="6588648400954570689">Gosodiadau cysoni ffeiliau</translation>
 <translation id="6594855146910089723">Mae'r ffolder hwn yn cael ei rhannu gyda Linux a Parallels Desktop</translation>
 <translation id="6607272825297743757">Gwybodaeth am y ffeil</translation>
 <translation id="6609332149380188670">Mae <ph name="NUMBER_OF_ITEMS" /> ffolder wedi'u rhannu â Parallels Desktop</translation>
@@ -828,6 +832,7 @@
 <translation id="7547811415869834682">Iseldireg</translation>
 <translation id="7551643184018910560">Pinio i'r silff</translation>
 <translation id="7553492409867692754">Rhoi caniatâd i apiau Linux gael mynediad at ffeiliau yn y ffolder <ph name="FOLDER_NAME" /></translation>
+<translation id="7555339735447658365">Rydych chi all-lein ar hyn o bryd. Bydd cysoni ffeiliau yn ailddechrau pan fyddwch wedi'ch cysylltu â'r rhyngrwyd</translation>
 <translation id="7589661784326793847">Arhoswch eiliad</translation>
 <translation id="7592775719802218421">Yn gwneud <ph name="FILE_NAME" /> ar gael all-lein</translation>
 <translation id="7600126690270271294">Serbeg</translation>
@@ -870,6 +875,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Bu gwall wrth ffurfweddu'r rhwydwaith</translation>
+<translation id="7832093238954689746">Mae cysoni ffeiliau wedi'i gwblhau. Mae ffeiliau My Drive ar gael all-lein.</translation>
 <translation id="7839804798877833423">Bydd nôl y ffeiliau hyn yn defnyddio tua <ph name="FILE_SIZE" /> o ddata symudol.</translation>
 <translation id="7846076177841592234">Canslo dewis</translation>
 <translation id="7853966320808728790">BÉPO Ffrengig</translation>
@@ -918,6 +924,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model y ddyfais</translation>
 <translation id="8223479393428528563">I gadw'r ffeiliau hyn i'w defnyddio all-lein, ewch yn ôl ar-lein, de-gliciwch y ffeiliau, a dewiswch yr opsiwn <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Gweld y storfa</translation>
 <translation id="8249296373107784235">Terfynu</translation>
 <translation id="8250690786522693009">Lladin</translation>
 <translation id="8250920743982581267">Dogfennau</translation>

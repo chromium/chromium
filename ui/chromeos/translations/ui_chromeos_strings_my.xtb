@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">စက်ပစ္စည်းဆက်တင်များ</translation>
 <translation id="2084809735218147718">ကျေးဇူးတင်ကြောင်း လက်မှတ်ထိုးနေသူ</translation>
 <translation id="2088690981887365033">VPN ကွန်ရက်</translation>
+<translation id="209653272837065803">ဖိုင်များ ဆက်၍စင့်ခ်လုပ်ရန်အတွက် သိုလှောင်ခန်းနေရာ လုံလောက်မှုမရှိပါ</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ရုပ်ဖျက်မုဒ်တွင် ခွင့်ပြုရန်<ph name="END_BOLD" /> ဖွင့်ပါ</translation>
 <translation id="2114191879048183086">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ဖိုင်ကို ဖျက်လိုက်မည်ဖြစ်ပြီး ၎င်းတို့ကို ပြန်ယူ၍မရပါ။</translation>
 <translation id="2122305276694332719">ဝှက်ထားသည့် ကွန်ရက်သို့ အလိုအလျောက် ချိတ်ဆက်ခြင်းဖြင့် အခြားသူများသည် သင့်စက်ပစ္စည်းနှင့် အချို့သော ကွန်ရက်ဆက်တင်များကို မြင်ရနိုင်သောကြောင့် အကြံမပြုပါ။</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">ရိုးရှင်း တရုတ်</translation>
 <translation id="22085916256174561">ကိုရီးယား</translation>
 <translation id="2208919847696382164">Linux ဖြင့် ထည့်သွင်းရန်</translation>
+<translation id="2215692307449050019">ဘက်ထရီ အားနည်းနေသည်။ ပါဝါချိတ်ပြီးနောက် ဖိုင်စင့်ခ်လုပ်ခြင်းကို ဆက်လုပ်ပါမည်။</translation>
 <translation id="2225536596944493418">အကြောင်းအရာ <ph name="NUMBER_OF_ITEMS" />ခုကို ဖျက်လိုသည်မှာ သေချာသလား။</translation>
 <translation id="2230062665678605299">ဖိုလ်ဒါ  "<ph name="FOLDER_NAME" />"ကို ဖန်တီး မရခဲ့ပါ။ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">ကော်ဖီသောက်နေသူ</translation>
+<translation id="2247561763838186830">သင်အကောင့်မှ ထွက်ထားသည်</translation>
 <translation id="2251368349685848079">အမှိုက်ပုံးမှ ပြန်ယူရန်</translation>
 <translation id="2278133026967558505">ဝဘ်ဆိုက်နှင့် URL အားလုံးက ဖိုင်သုံးနိုင်သည်</translation>
 <translation id="2282155092769082568">အလိုအလျောက် စီစဉ်သတ်မှတ်ခြင်း URL −</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">ဤဖိုင်အမျိုးစားအား မထောက်ပံ့ပါ။ Chrome ဝက်ဘ်စတိုးသို့ဝင်ရောက်ကာ ဤဖိုင်အမျိုးစားကို ဖွင့်နိုင်သည့် အက်ပ် ကိုရှာပါ။</translation>
 <translation id="2326539130272988168">ဘူလ်ဂေးရီးယား</translation>
 <translation id="2337715497728194187">Bruschetta အား မျှဝေရန်</translation>
+<translation id="233822363739146957">သင့်ဖိုင်အားလုံးစင့်ခ်လုပ်ရန် သိုလှောင်ခန်းနေရာ လုံလောက်မှုမရှိပါ</translation>
 <translation id="23721837607121582">မိုဘိုင်းပရိုဖိုင် ဒေါင်းလုဒ်လုပ်ရန်၊ ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">စာရင်းမြင်ကွင်းသို့ ပြောင်းရန်</translation>
 <translation id="2377590462528165447">Linux နှင့် ဖိုင်တွဲ <ph name="NUMBER_OF_ITEMS" /> ခု မျှဝေထားသည်</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Linux အပလီကေးရှင်းကို ထည့်ရာတွင် အမှားအယွင်းရှိနေသည်</translation>
 <translation id="2802583107108007218">ဤကန့်သတ်ချက်များအကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="2803375539583399270">ပင်နံပါတ် ထည့်ပါ</translation>
+<translation id="2819519502129272135">ဖိုင်စင့်ခ်လုပ်ခြင်း ပိတ်ထားသည်</translation>
 <translation id="2820957248982571256">ရှာဖွေနေသည်...</translation>
 <translation id="2830077785865012357">တရုတ် ကျူရင်</translation>
 <translation id="2843806747483486897">ပုံသေကို ပြောင်းရန်...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">ဖီလ်တာ ပြင်ဆင်သတ်မှတ်ပြီးပြီ။</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> ကို <ph name="FOLDER_NAME" /> သို့ မိတ္တူကူးနေသည်</translation>
 <translation id="4631887759990505102">အနုပညာရှင်</translation>
+<translation id="4635373743001040938">သိုလှောင်ခန်းနေရာ အလွန်နည်းနေသည်။ ဖိုင်စင့်ခ်လုပ်ခြင်းကို ပိတ်ထားသည်။</translation>
 <translation id="4642769377300286600">မိုဘိုင်းပရိုဖိုင် ထည့်သွင်းနေသည်၊ ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Qwerty ကီးဘုတ်ဖြင့် ချက်</translation>
 <translation id="4656777537938206294">ဖိုင်များကို အော့ဖ်လိုင်းသုံးနိုင်ရန် ပြုလုပ်ခြင်း</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">ဖိုင်တွဲ 1 ခုကို Parallels Desktop အား မျှဝေထားသည်</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> ပြန်ယူပြီးပြီ</translation>
 <translation id="4969785127455456148">အယ်လ်ဘမ်</translation>
+<translation id="4972330214479971536">ဖိုင်စင့်ခ်လုပ်ခြင်း စနစ်ထည့်သွင်းမှုကို အပြီးသတ်၍မရပါ</translation>
 <translation id="4973523518332075481">စကားလုံး <ph name="MAX_LENGTH" /> လုံးနှင့် အောက်ရှိသည့် အမည်ကို အသုံးပြုပါ</translation>
 <translation id="4973970068702235170">ဇစ်လုပ်၍ မရပါ၊ မမျှော်လင့်သည့် အမှား- <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">ဂျပန်</translation>
@@ -806,6 +813,7 @@
 <translation id="7309413087278791451">ဂျာမန် (ဘယ်လ်ဂျီယမ်)</translation>
 <translation id="7339898014177206373">ဝင်ဒိုး အသစ်</translation>
 <translation id="7343393116438664539">ဗီယက်နမ် Telex</translation>
+<translation id="7347346221088620549">အသွင်ဝှက်ထားသောဖိုင်</translation>
 <translation id="7357762654218998920">ဤဖိုင်အမျိုးအစားကို မပံ့ပိုးပါ။ Chrome OS တွင် ဖိုင်များဖွင့်ခြင်းအကြောင်း <ph name="BEGIN_LINK_HELP" />ပိုမိုလေ့လာရန်<ph name="END_LINK_HELP" />။</translation>
 <translation id="7359359531237882347">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု မိတ္တူကူးနေသည်…</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> အရ ကြီးစဉ်ငယ်လိုက် စီထားသော ဖိုင်စာရင်း။</translation>
@@ -992,6 +1000,7 @@
 <translation id="8609695766746872526">အိုက်စ်လန်</translation>
 <translation id="863903787380594467">ပင်နံပါတ် မမှန်ပါ။ သင့်တွင် ကြိုးစားခွင့် <ph name="RETRIES" /> ကြိမ် ကျန်သည်။</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ပို့တ်</translation>
+<translation id="8656407365183407932">သင့်အော့ဖ်လိုင်းဖိုင်များကို ဖယ်ရှားလိုက်ရသည်</translation>
 <translation id="8656768832129462377">မစစ်ဆေးပါနှင့်</translation>
 <translation id="8688591111840995413">စကားဝှက် မကောင်းပါ</translation>
 <translation id="8698464937041809063">Google ရေးဆွဲခြင်း</translation>
@@ -1027,6 +1036,7 @@
 <translation id="8997962250644902079">တရုတ် (ရိုးရာ) ပင်ယင်</translation>
 <translation id="8998871447376656508">အပ်လုဒ်ပြီးစီးနိုင်ရန် သင်၏ Google Drive တွင် နေရာ မလုံလောက်ပါ။</translation>
 <translation id="9003940392834790328">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ အသေးစိတ်များ</translation>
+<translation id="9007990314804111233">သင့် Microsoft အကောင့်တွင် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="9017798300203431059">ရုရှားအသံထွက်</translation>
 <translation id="9034924485347205037">Linux ဖိုင်များ</translation>
 <translation id="9035012421917565900">၎င်းတို့ကို '<ph name="DESTINATION_NAME" />' သို့ ပြန်ရွှေ့၍မရသည့်အတွက် ဤလုပ်ဆောင်ချက်ကို တစ်ဆင့်နောက်ပြန်၍ ရမည်မဟုတ်ပါ။</translation>

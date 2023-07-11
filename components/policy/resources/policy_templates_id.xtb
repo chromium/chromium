@@ -435,6 +435,7 @@ Tindakan ini akan menggantikan kebijakan <ph name="DEFAULT_WINDOW_PLACEMENT_SETT
           Nilai '*' untuk daftar yang tidak diizinkan berarti semua ekstensi diblokir kecuali tercantum secara eksplisit dalam daftar yang diizinkan.
 
           Jika kebijakan ini tidak disetel, pengguna dapat menginstal ekstensi apa pun di <ph name="PRODUCT_NAME" />.</translation>
+<translation id="1392703142209771447">Ekspresi reguler untuk mencocokkan ID printer.</translation>
 <translation id="1393485621820363363">Mengaktifkan printer perangkat perusahaan</translation>
 <translation id="1395505489889158859">Aktifkan pengiriman nama pengguna dan nama file ke printer native</translation>
 <translation id="1395988776118675626">Mengaktifkan fitur 'Ingat sandi' untuk Kerberos</translation>
@@ -1804,6 +1805,13 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci ke kurang dari atau sama dengan penundaan waktu tidak ada aktivitas.</translation>
 <translation id="2548572254685798999">Laporkan informasi Safe Browsing</translation>
+<translation id="2549472870177108435">Jika kebijakan disetel, aturan pemilihan printer default di <ph name="PRODUCT_NAME" /> akan disetel juga dengan mengabaikan aturan default. Pemilihan printer dilakukan pada saat pengguna mencoba mencetak untuk pertama kalinya, saat <ph name="PRODUCT_NAME" /> mencari printer yang cocok dengan atribut yang ditentukan. Jika kecocokan kurang dari sempurna, <ph name="PRODUCT_NAME" /> dapat disetel untuk memilih printer yang cocok, bergantung pada urutan printer ditemukan.
+
+Jika kebijakan tidak disetel atau disetel ke atribut yang tidak memiliki kecocokan, artinya printer PDF bawaan menjadi default-nya. Jika tidak ada printer PDF, <ph name="PRODUCT_NAME" /> disetel default ke tidak ada.
+
+Saat ini, semua printer diklasifikasikan sebagai <ph name="PRINTER_TYPE_LOCAL" />. Printer yang terhubung ke <ph name="CLOUD_PRINT_NAME" /> dianggap sebagai <ph name="PRINTER_TYPE_CLOUD" />, tetapi <ph name="CLOUD_PRINT_NAME" /> tidak lagi didukung.
+
+Catatan: Jika nilai suatu kolom tidak ditetapkan, semua nilai akan cocok untuk kolom tersebut. Misalnya, jika idPattern tidak ditetapkan, Pratinjau Cetak akan menerima semua ID printer. Pola ekspresi reguler harus mengikuti sintaksis RegExp JavaScript, dan pencocokan bersifat peka huruf besar/kecil.</translation>
 <translation id="2550593661567988768">Khusus pencetakan simpleks</translation>
 <translation id="2552318891854145040">Menyetel kebijakan akan menyiapkan daftar bookmark yang setiap bookmarknya merupakan kamus dengan kunci "<ph name="NAME" />" dan "<ph name="URL_LABEL" />". Kunci ini memiliki nama dan target bookmark. Admin dapat menyiapkan subfolder dengan menentukan bookmark tanpa kunci "<ph name="URL_LABEL" />", tetapi dengan kunci "<ph name="CHILDREN" />" tambahan. Kunci ini juga memiliki daftar bookmark, yang beberapa di antaranya juga merupakan folder. Chrome akan mengubah URL tidak lengkap seolah-olah URL tersebut dikirimkan melalui kolom URL. Misalnya, "<ph name="GOOGLE_COM" />" menjadi "<ph name="HTTPS_GOOGLE_COM" />".
 

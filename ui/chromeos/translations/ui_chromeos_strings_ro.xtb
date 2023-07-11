@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Setările dispozitivului</translation>
 <translation id="2084809735218147718">Gesticulează „Mulțumesc” în limbajul semnelor</translation>
 <translation id="2088690981887365033">Rețea VPN</translation>
+<translation id="209653272837065803">Nu ai suficient spațiu de stocare pentru a continua sincronizarea fișierelor</translation>
 <translation id="2111134541987263231">activează <ph name="BEGIN_BOLD" />Permite în modul incognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> articole vor fi șterse și nu vei putea să le restabilești.</translation>
 <translation id="2122305276694332719">Conectarea automată la o rețea ascunsă permite altora să îți vadă dispozitivul și unele setări pentru rețea, așadar nu este recomandată.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Chineză simplificată</translation>
 <translation id="22085916256174561">Coreeană</translation>
 <translation id="2208919847696382164">Instalează cu Linux</translation>
+<translation id="2215692307449050019">Bateria este aproape descărcată. Sincronizarea fișierelor va fi reluată când te conectezi la o sursă de alimentare.</translation>
 <translation id="2225536596944493418">Sigur dorești să ștergi <ph name="NUMBER_OF_ITEMS" /> elemente?</translation>
 <translation id="2230062665678605299">Nu s-a putut crea dosarul „<ph name="FOLDER_NAME" />”. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Persoană cu o ceașcă de cafea</translation>
+<translation id="2247561763838186830">Te-ai deconectat</translation>
 <translation id="2251368349685848079">Restabilește din coșul de gunoi</translation>
 <translation id="2278133026967558505">Acces la fișiere pentru toate site-urile și adresele URL</translation>
 <translation id="2282155092769082568">Adresa URL de autoconfigurare:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Acest tip de fișier nu este acceptat. Vă rugăm să accesați Magazinul web Chrome pentru a găsi o aplicație care poate deschide acest tip de fișier.</translation>
 <translation id="2326539130272988168">Bulgară</translation>
 <translation id="2337715497728194187">Permite accesul pentru Bruschetta</translation>
+<translation id="233822363739146957">Nu ai suficient spațiu de stocare pentru a sincroniza toate fișierele</translation>
 <translation id="23721837607121582">Descarcă profilul mobil, Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Comută la afișarea listă</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dosare cu acces permis pentru Linux</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Eroare la instalarea aplicației Linux</translation>
 <translation id="2802583107108007218">Află mai multe despre aceste restricții</translation>
 <translation id="2803375539583399270">Introdu codul PIN</translation>
+<translation id="2819519502129272135">Sincronizarea fișierelor este dezactivată</translation>
 <translation id="2820957248982571256">Se scanează...</translation>
 <translation id="2830077785865012357">Chineză Zhuyin</translation>
 <translation id="2843806747483486897">Schimbați valoarea prestabilită...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Filtrul a fost resetat.</translation>
 <translation id="4603392156942865207">Se copiază <ph name="FILE_NAME" /> în <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artist</translation>
+<translation id="4635373743001040938">Spațiul de stocare era aproape epuizat. Sincronizarea fișierelor a fost dezactivată.</translation>
 <translation id="4642769377300286600">Se instalează profilul mobil, rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Cehă cu tastatură QWERTY</translation>
 <translation id="4656777537938206294">Fă fișierele disponibile offline</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">Un dosar cu acces permis pentru Parallels Desktop</translation>
 <translation id="496656650103537022">S-a restabilit <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Nu s-a putut finaliza configurarea sincronizării fișierelor</translation>
 <translation id="4973523518332075481">Folosește un nume de maximum <ph name="MAX_LENGTH" /> caractere</translation>
 <translation id="4973970068702235170">Arhivarea nu a reușit, eroare neașteptată: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japoneză</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">Germană (Belgia)</translation>
 <translation id="7339898014177206373">Fereastră nouă</translation>
 <translation id="7343393116438664539">Telex pentru vietnameză</translation>
+<translation id="7347346221088620549">Fișier criptat</translation>
 <translation id="7357762654218998920">Acest tip de fișier nu este acceptat. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /> despre deschiderea fișierelor în sistemul de operare Chrome.</translation>
 <translation id="7359359531237882347">Se copiază <ph name="NUMBER_OF_ITEMS" /> elemente.</translation>
 <translation id="7375951387215729722">Lista de fișiere este sortată după coloana <ph name="COLUMN_NAME" /> în ordine descrescătoare.</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">Islandeză</translation>
 <translation id="863903787380594467">Codul PIN este incorect. Mai ai <ph name="RETRIES" /> încercări.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
+<translation id="8656407365183407932">Fișierele offline trebuiau eliminate</translation>
 <translation id="8656768832129462377">Nu verifica</translation>
 <translation id="8688591111840995413">Parolă greșită</translation>
 <translation id="8698464937041809063">Desen Google</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">Chineză (tradițională) Pinyin</translation>
 <translation id="8998871447376656508">Nu există spațiu liber suficient în Google Drive pentru a finaliza încărcarea.</translation>
 <translation id="9003940392834790328">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, gestionată de administratorul tău, detalii</translation>
+<translation id="9007990314804111233">Conectează-te la contul Microsoft</translation>
 <translation id="9017798300203431059">Rusă fonetică</translation>
 <translation id="9034924485347205037">Fișiere Linux</translation>
 <translation id="9035012421917565900">Articolele nu pot fi mutate înapoi în „<ph name="DESTINATION_NAME" />”, prin urmare, nu vei putea să anulezi această acțiune.</translation>

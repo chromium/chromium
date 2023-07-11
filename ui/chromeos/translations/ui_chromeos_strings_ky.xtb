@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Түзмөктү тууралоо</translation>
 <translation id="2084809735218147718">"Рахмат" деп жазып жаткан адам</translation>
 <translation id="2088690981887365033">VPN тармагы</translation>
+<translation id="209653272837065803">Файлдарды шайкештире берүү үчүн сактагычта орун жетишсиз</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Жашыруун режимде уруксат берүүнү<ph name="END_BOLD" /> күйгүзүңүз</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> нерсе өчүрүлөт жана аларды калыбына келтире албайсыз.</translation>
 <translation id="2122305276694332719">Жашырылган тармакка автоматтык түрдө туташуу түзмөгүңүздү жана тармактын айрым параметрлерин башкаларга көрсөтүп турат, андыктан аны колдонуу сунушталбайт.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Жөнөкөйлөштүрүлгөн кытайча</translation>
 <translation id="22085916256174561">Корейче</translation>
 <translation id="2208919847696382164">Linux менен орнотуу</translation>
+<translation id="2215692307449050019">Батареянын кубаты аз. Файлды шайкештирүү түзмөк электр кубатына туташтырылганда улантылат.</translation>
 <translation id="2225536596944493418">Чын эле <ph name="NUMBER_OF_ITEMS" /> нерсени жок кылгыңыз келеби?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" папкасын түзүү мүмкүн болбой жатат. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Кофе кармаган адам</translation>
+<translation id="2247561763838186830">Аккаунтуңуздан чыктыңыз</translation>
 <translation id="2251368349685848079">Таштандылар кутусунан калыбына келтирүү</translation>
 <translation id="2278133026967558505">Файлга бардык вебсайттардан жана URL даректеринен кирүү мүмкүнчүлүгү</translation>
 <translation id="2282155092769082568">Автоконфигурация URL'и:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Мындай файл түрү колдоого алынбайт. Бул файлдын түрүн ача алган колдонмону табуу үчүн Chrome Желе дүкөнүнө кириңиз.</translation>
 <translation id="2326539130272988168">Болгарча</translation>
 <translation id="2337715497728194187">Bruschetta аркылуу бөлүшүү</translation>
+<translation id="233822363739146957">Бардык файлдарды шайкештирүү үчүн сактагычта орун жетишсиз</translation>
 <translation id="23721837607121582">Мобилдик профилди жүктөп алуу, <ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Тизме көрүнүшүнө өтүү</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> папка Linux аркылуу бөлүшүлдү</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Linux колдонмосун орнотууда ката кетти</translation>
 <translation id="2802583107108007218">Бул чектөөлөр жөнүндө кеңири маалымат алыңыз</translation>
 <translation id="2803375539583399270">PIN кодду киргизиңиз</translation>
+<translation id="2819519502129272135">Файлды шайкештирүү өчүрүлдү</translation>
 <translation id="2820957248982571256">Скандалууда…</translation>
 <translation id="2830077785865012357">Кытайча (чжуинь)</translation>
 <translation id="2843806747483486897">Демейкини өзгөртүү…</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Чыпка өзгөртүлдү.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> папкасына көчүрүлүүдө</translation>
 <translation id="4631887759990505102">Аткаруучу</translation>
+<translation id="4635373743001040938">Сактагычта өтө аз орун бар болчу. Файлды шайкештирүү өчүрүлдү.</translation>
 <translation id="4642769377300286600">Мобилдик профиль орнотулууда, <ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Чехче жана Qwerty баскычтобу</translation>
 <translation id="4656777537938206294">Файлдарды оффлайнда колдонуңуз</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">1 папка Parallels Desktop менен бөлүшүлдү</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> калыбына келтирилди</translation>
 <translation id="4969785127455456148">Альбом</translation>
+<translation id="4972330214479971536">Файлды шайкештирүү туураланып бүткөн жок</translation>
 <translation id="4973523518332075481">Аталышы <ph name="MAX_LENGTH" /> же андан аз символдон турушу керек</translation>
 <translation id="4973970068702235170">Кысылбай калды, күтүүсүз ката кетти: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Жапончо</translation>
@@ -806,6 +813,7 @@
 <translation id="7309413087278791451">Немисче (Бельгия)</translation>
 <translation id="7339898014177206373">Жаңы терезе</translation>
 <translation id="7343393116438664539">Вьетнамча (Telex)</translation>
+<translation id="7347346221088620549">Шифрленген файл</translation>
 <translation id="7357762654218998920">Бул файл түрү колдоого алынбайт. Файлдарды ChromeOS'то ачуу жөнүндө <ph name="BEGIN_LINK_HELP" />кеңири маалымат<ph name="END_LINK_HELP" /> алыңыз.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> файл көчүрүлүүдө…</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> тилкесиндеги файлдардын тизмеси кичирейген ыраатта иреттелди.</translation>
@@ -992,6 +1000,7 @@
 <translation id="8609695766746872526">Исландча</translation>
 <translation id="863903787380594467">PIN код туура эмес. Сизде <ph name="RETRIES" /> аракет калды.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Оюкча</translation>
+<translation id="8656407365183407932">Офлайн файлдарды өчүрүүгө туура келди</translation>
 <translation id="8656768832129462377">Текшерилбесин</translation>
 <translation id="8688591111840995413">Начар сырсөз</translation>
 <translation id="8698464937041809063">Google чийүү</translation>
@@ -1027,6 +1036,7 @@
 <translation id="8997962250644902079">Кытайча пиньинь (салттуу)</translation>
 <translation id="8998871447376656508">Жүктөп берүүнү аягына чыгаруу үчүн Google Drive'да бош орун жетишпейт.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз башкарат, Чоо-жайы</translation>
+<translation id="9007990314804111233">Microsoft аккаунтуңузга кириңиз</translation>
 <translation id="9017798300203431059">Орус фонетикасы</translation>
 <translation id="9034924485347205037">Linux файлдары</translation>
 <translation id="9035012421917565900">Бул файлдарды кайра "<ph name="DESTINATION_NAME" />" дискине жылдырууга мүмкүн болбой калат, андыктан бул аракетти кайтара албай каласыз.</translation>

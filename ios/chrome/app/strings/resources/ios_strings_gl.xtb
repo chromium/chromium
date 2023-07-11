@@ -255,6 +255,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2595587704210555261">{COUNT,plural, =1{As pestanas abertas que leven un día ou máis sen uso móvense a Pestanas inactivas para que te poidas centrar nas que máis utilizas. Podes cambiar esta opción en calquera momento en Configuración.}other{As pestanas abertas que leven {COUNT} días ou máis sen uso móvense a Pestanas inactivas para que te poidas centrar nas que máis utilizas. Podes cambiar esta opción en calquera momento en Configuración.}}</translation>
 <translation id="2600682495497606169">Borrar cookies dos sitios</translation>
 <translation id="2609008503159898744">Queres pechar todas as pestanas?</translation>
+<translation id="2617210333344098964">Mover enderezo á conta</translation>
 <translation id="2625189173221582860">Copiouse o contrasinal</translation>
 <translation id="2626236249646841566">Comproba a túa conexión e tenta iniciar sesión de novo.</translation>
 <translation id="2637313651144986786">Busca nas pestanas…</translation>
@@ -464,6 +465,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3851938967634752633">Eliminaranse os contrasinais de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e <ph name="NUMBER_OF_ACCOUNTS" /> sitios web máis. Non se eliminarán as túas contas.</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861486700625780712">Deixar de seguir</translation>
+<translation id="3861908220442487587">Este enderezo só está gardado neste dispositivo. Para usalo noutros, móveo á túa Conta de Google, <ph name="USER_EMAIL" /></translation>
 <translation id="3863769054730344136">Enviar aos teus dispositivos</translation>
 <translation id="387280738075653372">Descarga Chrome aquí.</translation>
 <translation id="3875783148670536197">Ver como facelo</translation>

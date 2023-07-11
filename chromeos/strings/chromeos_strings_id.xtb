@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> thread, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Fitur baru tersedia, gunakan tombol Panah atas untuk mempelajari lebih lanjut.</translation>
 <translation id="1059913517121127803">Tidak dapat memulai pemindaian</translation>
+<translation id="1062823486781306604"><ph name="INDEX" /> dari <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall terdeteksi</translation>
 <translation id="1075811647922107217">Ukuran halaman</translation>
@@ -185,6 +186,7 @@
 <translation id="2307344026739914387">Gunakan pasangan kunci saat ini</translation>
 <translation id="2320295602967756579">Aktifkan tema terang</translation>
 <translation id="2323506179655536734">DILEWATI</translation>
+<translation id="2324354238778375592">Mengambang</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktifkan Bluetooth untuk menemukan perangkat di sekitar</translation>
 <translation id="2346474577291266260">Sangat baik (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +335,7 @@
 <translation id="3689839747745352263">Uji <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Memuat...</translation>
 <translation id="3708186454126126312">Terhubung sebelumnya</translation>
+<translation id="3715651196924935218">Keluar dari status mengambang</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
 <translation id="3748026146096797577">Tidak Terhubung</translation>
 <translation id="3749289110408117711">Nama file</translation>
@@ -389,6 +392,7 @@
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Tampilan</translation>
 <translation id="4155551848414053977">Pastikan pemindai dinyalakan dan tersedia melalui jaringan Anda atau koneksi langsung</translation>
+<translation id="4159238217853743776">Sebagian</translation>
 <translation id="4159784952369912983">Ungu</translation>
 <translation id="4170180284036919717">Ambil foto</translation>
 <translation id="4170700058716978431">GAGAL</translation>
@@ -498,6 +502,7 @@
 <translation id="4930320165497208503">Untuk menyiapkan atau memperbarui koneksi, buka <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Tanggal</translation>
 <translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" /> telah diupdate ke versi <ph name="VERSION" /></translation>
+<translation id="4969079779290789265">Pisah</translation>
 <translation id="4972592110715526173">pengubahan mode</translation>
 <translation id="498186245079027698">Periksa pemindai, lalu coba lagi. Pastikan terdapat cukup ruang penyimpanan lokal untuk menyimpan file hasil pemindaian.</translation>
 <translation id="4985509611418653372">Jalankan</translation>
@@ -517,6 +522,7 @@
 <translation id="5088172560898466307">Hostname server</translation>
 <translation id="5089810972385038852">Negara Bagian</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">Penuh</translation>
 <translation id="5142961317498132443">Autentikasi</translation>
 <translation id="5154917547274118687">Memori</translation>
 <translation id="5160857336552977725">Login ke <ph name="DEVICE_TYPE" /> Anda</translation>
@@ -529,11 +535,13 @@
 <translation id="5222676887888702881">Logout</translation>
 <translation id="522307662484862935">Jangan sertakan alamat email</translation>
 <translation id="5227902338748591677">Jadwal tema gelap</translation>
+<translation id="5229344016299762883">Keluar dari layar penuh</translation>
 <translation id="5234764350956374838">Tutup</translation>
 <translation id="5252456968953390977">Jelajah</translation>
 <translation id="5257811368506016604">Aktifkan mode warna terang</translation>
 <translation id="5264277876637023664">Jalankan pengujian CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN dinonaktifkan.</translation>
 <translation id="5275828089655680674">Jalankan Kembali Rutinitas</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">warna lampu latar</translation>
@@ -598,6 +606,7 @@
 <translation id="5832805196449965646">Tambahkan Pengguna</translation>
 <translation id="583281660410589416">Tidak dikenal</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
+<translation id="584953448295717128">APN terdeteksi secara otomatis.</translation>
 <translation id="5849570051105887917">Kode penyedia rumah</translation>
 <translation id="5859603669299126575">Album galeri seni</translation>
 <translation id="5860033963881614850">Nonaktif</translation>
@@ -706,6 +715,7 @@
 <translation id="6566314079205407217">Pemindaian multi-halaman</translation>
 <translation id="6574762126505704998">Isi</translation>
 <translation id="6575134580692778371">Tidak dikonfigurasi</translation>
+<translation id="6576005492601044801">kiri</translation>
 <translation id="6579509898032828423">Gunakan foto ini</translation>
 <translation id="6596816719288285829">Alamat IP</translation>
 <translation id="6599673642868607614">Terima kasih atas masukan Anda. Masukan Anda membantu kami meningkatkan pengalaman Chromebook dan akan ditinjau oleh tim kami. Karena banyaknya jumlah laporan, kami tidak dapat mengirim balasan.</translation>
@@ -810,6 +820,7 @@
 <translation id="7497215489070763236">Sertifikat CA server</translation>
 <translation id="7501957181231305652">atau</translation>
 <translation id="7502658306369382406">Alamat IPv6</translation>
+<translation id="7513770521371759388">bawah</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Konten bantuan tidak tersedia</translation>
 <translation id="7535791657097741517">Aktifkan tema terang</translation>
@@ -874,6 +885,7 @@
 <translation id="80398733265834479">Aktifkan mode warna otomatis</translation>
 <translation id="8041089156583427627">Kirim Masukan</translation>
 <translation id="8045012663542226664">Bisukan mikrofon</translation>
+<translation id="8067126283828232460">APN terhubung.</translation>
 <translation id="8075838845814659848">Sisa daya baterai</translation>
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8082366717211101304">Tidak dapat me-resolve DNS dari aplikasi Android</translation>
@@ -946,6 +958,7 @@
 <translation id="8655295600908251630">Saluran</translation>
 <translation id="8655828773034788261">Bagikan URL:</translation>
 <translation id="8660881923941176839">pound</translation>
+<translation id="8670574982334489519">kanan</translation>
 <translation id="8675354002693747642">Pre-shared key</translation>
 <translation id="8677859815076891398">Tidak ada album. Buat album di <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gunakan tombol Panah kiri atau kanan untuk mengelola fitur ini.</translation>
@@ -991,6 +1004,7 @@
 <translation id="8936793075252196307">Alamat IP klien</translation>
 <translation id="8944651180182756621">Warna peluncur</translation>
 <translation id="894617464444543719">Perangkat adalah ponsel.</translation>
+<translation id="8950424402482976779">atas</translation>
 <translation id="8968751544471797276">Kecepatan pengisian daya</translation>
 <translation id="8970109610781093811">Jalankan lagi</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -1018,6 +1032,7 @@
 <translation id="9111102763498581341">Buka kunci</translation>
 <translation id="9122602430962285795">Untuk menghubungkan kembali, buka Setelan</translation>
 <translation id="9126720536733509015">Simpan beberapa halaman ke satu PDF</translation>
+<translation id="9133104754938025929">Untuk menghemat baterai, screensaver hanya ditampilkan saat mengisi daya.</translation>
 <translation id="9137526406337347448">Layanan Google</translation>
 <translation id="9138630967333032450">Shift kiri</translation>
 <translation id="9143347780818904997">selama <ph name="MINUTES" /> menit</translation>

@@ -185,6 +185,7 @@
 <translation id="2307344026739914387">বর্তমান কী পেয়ার ব্যবহার করুন</translation>
 <translation id="2320295602967756579">হালকা থিম চালু করুন</translation>
 <translation id="2323506179655536734">এড়ানো হয়েছে</translation>
+<translation id="2324354238778375592">ফ্লোট</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">আশেপাশের ডিভাইস খুঁজে পেতে ব্লুটুথ চালু করুন</translation>
 <translation id="2346474577291266260">গড় (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +334,7 @@
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> টেস্ট</translation>
 <translation id="370665806235115550">লোড হচ্ছে...</translation>
 <translation id="3708186454126126312">আগে কানেক্ট করা ছিল</translation>
+<translation id="3715651196924935218">ফ্লোট স্ট্যাটাস থেকে বেরিয়ে আসুন</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" />টি রিভিউ)</translation>
 <translation id="3748026146096797577">সংযুক্ত নয়</translation>
 <translation id="3749289110408117711">ফাইলের নাম</translation>
@@ -389,6 +391,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">প্রদর্শন</translation>
 <translation id="4155551848414053977">আপনার স্ক্যানার চালু এবং নেটওয়ার্ক বা সরাসরি কানেকশনের মাধ্যমে উপলভ্য রয়েছে তা দেখে নিন</translation>
+<translation id="4159238217853743776">আংশিক</translation>
 <translation id="4159784952369912983">বেগুনি</translation>
 <translation id="4170180284036919717">ফটো তুলুন</translation>
 <translation id="4170700058716978431">ব্যর্থ হয়েছে</translation>
@@ -498,6 +501,7 @@
 <translation id="4930320165497208503">কানেকশন আপডেট করতে বা সেট আপ করতে<ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> বিকল্পে যান।</translation>
 <translation id="4932733599132424254">তারিখ</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> ফার্মওয়্যার <ph name="VERSION" /> ভার্সনে আপডেট করা হয়েছে</translation>
+<translation id="4969079779290789265">স্প্লিট করুন</translation>
 <translation id="4972592110715526173">মোড পাল্টান</translation>
 <translation id="498186245079027698">স্ক্যানার চেক করে আবার চেষ্টা করুন। স্ক্যান করা ফাইল সেভ করার জন্য পর্যাপ্ত লোকাল স্পেস আছে কিনা দেখে নিন।</translation>
 <translation id="4985509611418653372">চালান</translation>
@@ -517,6 +521,7 @@
 <translation id="5088172560898466307">সার্ভার হোস্টনাম</translation>
 <translation id="5089810972385038852">রাজ্য</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">ফুলস্ক্রিন স্ট্যাটাস</translation>
 <translation id="5142961317498132443">প্রমাণীকরণ</translation>
 <translation id="5154917547274118687">স্মৃতি</translation>
 <translation id="5160857336552977725">আপনার <ph name="DEVICE_TYPE" />-এ সাইন-ইন করুন</translation>
@@ -529,6 +534,7 @@
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
 <translation id="522307662484862935">ইমেল আইডি যোগ করবেন না</translation>
 <translation id="5227902338748591677">ডার্ক থিমের শিডিউল</translation>
+<translation id="5229344016299762883">ফুল স্ক্রিন স্ট্যাটাস থেকে বেরিয়ে আসুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
 <translation id="5252456968953390977">রোমিং</translation>
 <translation id="5257811368506016604">'লাইট কালার' মোড চালু করুন</translation>
@@ -706,6 +712,7 @@
 <translation id="6566314079205407217">মাল্টি-পেজ স্ক্যানিং</translation>
 <translation id="6574762126505704998">পূরণ করুন</translation>
 <translation id="6575134580692778371">কনফিগার হয়নি</translation>
+<translation id="6576005492601044801">বাঁদিকে</translation>
 <translation id="6579509898032828423">এই ফটো ব্যবহার করুন</translation>
 <translation id="6596816719288285829">আইপি অ্যাড্রেস</translation>
 <translation id="6599673642868607614">আপনার প্রতিক্রিয়া আমাদের জানানোর জন্য ধন্যবাদ। আপনার প্রতিক্রিয়া আমাদের Chromebook অভিজ্ঞতা উন্নত করতে সাহায্য করে এবং আমাদের টিম দ্বারা পর্যালোচনা করা হবে। অনেক বেশি সংখ্যক রিপোর্টের কারণে, আমরা উত্তর দিতে পারব না।</translation>
@@ -810,6 +817,7 @@
 <translation id="7497215489070763236">সার্ভার CA সার্টিফিকেট</translation>
 <translation id="7501957181231305652">অথবা</translation>
 <translation id="7502658306369382406">IPv6 ঠিকানা</translation>
+<translation id="7513770521371759388">নিচে</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">সহায়তা কন্টেন্ট উপলভ্য নেই</translation>
 <translation id="7535791657097741517">হালকা থিম চালু করুন</translation>
@@ -946,6 +954,7 @@
 <translation id="8655295600908251630">চ্যানেল</translation>
 <translation id="8655828773034788261">URL শেয়ার করুন:</translation>
 <translation id="8660881923941176839">পাউন্ড</translation>
+<translation id="8670574982334489519">ডানদিকে</translation>
 <translation id="8675354002693747642">আগে-থাকতে শেয়ার করা কী</translation>
 <translation id="8677859815076891398">কোনও অ্যালবাম নেই। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-এ একটি অ্যালবাম তৈরি করুন।</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> এই ফিচার ম্যানেজ করতে, 'বাঁদিক' বা 'ডানদিকের তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
@@ -991,6 +1000,7 @@
 <translation id="8936793075252196307">ক্লায়েন্ট IP অ্যাড্রেস</translation>
 <translation id="8944651180182756621">লঞ্চারের রঙ</translation>
 <translation id="894617464444543719">ডিভাইস একটি ফোন।</translation>
+<translation id="8950424402482976779">উপরে</translation>
 <translation id="8968751544471797276">চর্জিং রেট</translation>
 <translation id="8970109610781093811">আবার চালান</translation>
 <translation id="8983038754672563810">HSPA</translation>

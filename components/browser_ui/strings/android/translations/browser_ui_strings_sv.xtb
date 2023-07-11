@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">Föreslagna sökningar utifrån din senaste flik</translation>
 <translation id="2241634353105152135">Bara en gång</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Ta bort</translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 webbplats blockeras}other{# webbplatser blockeras}}</translation>
 <translation id="228293613124499805">De flesta webbplatser du besöker sparar troligen data på enheten, oftast för att förbättra upplevelsen genom att spara dina inställningar eller information som du delar med webbplatsen. Vi rekommenderar att du låter den här inställningen vara aktiverad.</translation>
 <translation id="2289270750774289114">Fråga när en webbplats försöker söka efter Bluetooth-enheter i närheten (rekommenderas)</translation>
 <translation id="2315043854645842844">Val av certifikat på klienten stöds inte av operativsystemet.</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">Det går inte att välja certifikat.</translation>
 <translation id="8077120325605624147">Alla webbplatser du besöker kan visa alla annonser för dig</translation>
 <translation id="8087000398470557479">Innehållet kommer från <ph name="DOMAIN_NAME" /> via Google.</translation>
+<translation id="8088603949666785339">Fler alternativ i <ph name="BANNER_TITLE" /></translation>
 <translation id="8116925261070264013">Ljudet avstängt</translation>
 <translation id="813082847718468539">Visa information om webbplatsen</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129">Aktivera behörigheten för <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Försök igen</translation>
 <translation id="8730621377337864115">Klart</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 webbplats tillåts}other{# webbplatser tillåts}}</translation>
 <translation id="8737217482364735741">All data och alla cookies som har sparats av <ph name="ORIGIN" /> rensas.</translation>
 <translation id="8751914237388039244">Välj en bild</translation>
 <translation id="8801436777607969138">Blockera JavaScript på en enskild webbplats.</translation>

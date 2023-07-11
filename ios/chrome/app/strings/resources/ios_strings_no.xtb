@@ -525,6 +525,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4272631900155121838">For å skanne QR-koder, slå på kameraet i innstillingene</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4281844954008187215">Vilkår for bruk</translation>
+<translation id="4286718549648564014">Adressen er flyttet til kontoen din: <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Søk</translation>
 <translation id="4302248187517737842">Brukernavn mangler ••••••••</translation>
 <translation id="4304713468139749426">Passordlagring</translation>
@@ -1184,6 +1185,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8264966119170358612">Noen av de lagrede passordene dine ble avdekket i et databrudd utenfor Google. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Du ble logget av kontoen din, <ph name="USER_NAME" />, som en del av tilbakestillingen av iPad. For å logge på igjen, trykk på «Fortsett» nedenfor.</translation>
 <translation id="8271720166617117963">Godta og logg på</translation>
+<translation id="8273982424131314219">Du fyller ut informasjon på <ph name="URL" /></translation>
 <translation id="8278938988428169257">Skriv inn et ord eller uttrykk</translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Hopp over</translation>
@@ -1231,6 +1233,7 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="8556590991644167667">{count,plural, =1{Du avviste {count} advarsel}other{Du avviste {count} advarsler}}</translation>
 <translation id="8557690929085431655">Du kan velge å åpne innkommende nettadresser fra andre apper i inkognitomodus.</translation>
 <translation id="8558480467877843976">Nå kan du bruke Chrome når du blar gjennom eller trykker på linker i meldinger, dokumenter og andre apper.</translation>
+<translation id="8580411965900177618">Nei takk</translation>
 <translation id="8588404856427128947">Av</translation>
 <translation id="8591976964826315682">Blokkér informasjonskapsler fra tredjepart i inkognitomodus</translation>
 <translation id="8605219856220328675">Lukk fanen.</translation>
@@ -1268,6 +1271,7 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Standard nettstedsvisning</translation>
 <translation id="8820817407110198400">Bokmerker</translation>
+<translation id="8825562130641217944">Få bokmerkene dine, passordene dine med mer.</translation>
 <translation id="882557203579758546">Finn på siden…</translation>
 <translation id="8840513115188359703">Du blir ikke logget av Google-kontoen din.</translation>
 <translation id="8843129975935593190">Organisasjonen din begrenser hva du kan synkronisere.</translation>

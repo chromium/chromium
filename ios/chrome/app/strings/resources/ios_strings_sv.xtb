@@ -255,6 +255,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2595587704210555261">{COUNT,plural, =1{Öppna flikar som inte har använts på minst en dag flyttas till Inaktiva flikar så att du enkelt hittar de flikar du använder mest. Du kan när som helst ändra detta i inställningarna.}other{Öppna flikar som inte har använts på minst {COUNT} dagar flyttas till Inaktiva flikar så att du enkelt hittar de flikar du använder mest. Du kan när som helst ändra detta i inställningarna.}}</translation>
 <translation id="2600682495497606169">Rensa cookies från webbplatsen</translation>
 <translation id="2609008503159898744">Vill du stänga alla flikar?</translation>
+<translation id="2617210333344098964">Flytta adressen till kontot</translation>
 <translation id="2625189173221582860">Lösenordet har kopierats</translation>
 <translation id="2626236249646841566">Kontrollera anslutningen och försök logga in igen.</translation>
 <translation id="2637313651144986786">Sök bland flikar …</translation>
@@ -464,6 +465,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3851938967634752633">Lösenorden för <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> och <ph name="NUMBER_OF_ACCOUNTS" /> till raderas. Dina konton raderas inte.</translation>
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3861486700625780712">Sluta följa</translation>
+<translation id="3861908220442487587">Adressen sparas endast på den här enheten. Om du vill använda den på dina andra enheter flyttar du den till Google-kontot <ph name="USER_EMAIL" /></translation>
 <translation id="3863769054730344136">Skicka till dina enheter</translation>
 <translation id="387280738075653372">Ladda ned Chrome här.</translation>
 <translation id="3875783148670536197">Visa hur man gör</translation>

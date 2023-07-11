@@ -185,6 +185,7 @@
 <translation id="1770726142253415363">បានផ្លាស់ទីទៅជួរដេកទី <ph name="ROW_NUMBER" />, ជួរឈរទី <ph name="COLUMN_NUMBER" />។</translation>
 <translation id="1771761307086386028">រំកិល​ទៅស្តាំ</translation>
 <translation id="1774796056689732716">ប្រតិទិន, <ph name="CURRENT_MONTH_YEAR" />, បច្ចុប្បន្នបានជ្រើសរើសថ្ងៃទី <ph name="DATE" />។</translation>
+<translation id="1775598828170459419">កំពុង​បង្ហាញ <ph name="NUM_SHOWN_ITEMS" /> នៃ <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="1787955149152357925">បិទ</translation>
 <translation id="181103072419391116">កម្លាំង​រលកសញ្ញា <ph name="SIGNAL_STRENGTH" />, គ្រប់គ្រងដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
 <translation id="1815245884418711390">បិទ/បើក​ហតស្ប៉ត។ ហតស្ប៉ត​ត្រូវបានបិទ។</translation>

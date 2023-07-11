@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">ការកំណត់ឧបករណ៍</translation>
 <translation id="2084809735218147718">កំពុងបង្ហាញ​កាយវិការ​អរគុណ</translation>
 <translation id="2088690981887365033">បណ្ដាញ VPN</translation>
+<translation id="209653272837065803">មិនមាន​ទំហំផ្ទុក​គ្រប់គ្រាន់ ដើម្បី​បន្តធ្វើ​សមកាលកម្ម​ឯកសារទេ</translation>
 <translation id="2111134541987263231">បើក <ph name="BEGIN_BOLD" />អនុញ្ញាតនៅក្នុងមុខងារឯកជន<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">ធាតុ <ph name="NUMBER_OF_ITEMS" /> នឹង​ត្រូ​វបាន​លុប ហើយ​អ្នកនឹង​មិន​អាច​ស្ដារ​ធាតុ​ទាំងនេះ​បាន​ទេ។</translation>
 <translation id="2122305276694332719">ការតភ្ជាប់ទៅបណ្ដាញដែលបានលាក់ដោយស្វ័យប្រវត្តិ​​អាចឱ្យអ្នកដទៃ​អាចមើលឃើញការកំណត់បណ្ដាញមួយចំនួន​ និងឧបករណ៍​របស់អ្នក ដូច្នេះយើង​សូមណែនាំមិន​ឱ្យធ្វើការតភ្ជាប់​ទេ។</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">ភាសាចិនសាមញ្ញ</translation>
 <translation id="22085916256174561">ភាសាកូរ៉េ</translation>
 <translation id="2208919847696382164">ដំឡើង​តាមរយៈ Linux</translation>
+<translation id="2215692307449050019">ថ្មសល់តិច។ ការធ្វើ​សមកាលកម្ម​ឯកសារ​នឹងបន្ត នៅពេល​អ្នកភ្ជាប់ទៅ​ថាមពល។</translation>
 <translation id="2225536596944493418">តើអ្នកប្រាកដថា​ចង់លុបធាតុ <ph name="NUMBER_OF_ITEMS" /> ដែរទេ?</translation>
 <translation id="2230062665678605299">មិនអាចបង្កើតថតឯកសារ "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">មនុស្ស​កាន់កែវកាហ្វេ</translation>
+<translation id="2247561763838186830">អ្នកត្រូវបាននាំ​ចេញពីគណនី</translation>
 <translation id="2251368349685848079">ស្ដារពី​ធុងសំរាម</translation>
 <translation id="2278133026967558505">ការ​ចូលប្រើ​ឯកសារដោយ​គេហទំព័រ និង URL ទាំងអស់</translation>
 <translation id="2282155092769082568">ការកំណត់រចនាសម្ព័ន្ធ URL ដោយស្វ័យប្រវត្តិ៖</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">ប្រភេទឯកសារនេះមិនត្រូវបានគាំទ្រទេ។ សូមទៅកាន់ Chrome Web Store ដើម្បិស្វែងរកកម្មវិធីដែលអាចបើកប្រភេទឯកសារនេះបាន។</translation>
 <translation id="2326539130272988168">ភាសា​ប៊ុលហ្ការី</translation>
 <translation id="2337715497728194187">ចែករំលែក​ជា​មួយ Bruschetta</translation>
+<translation id="233822363739146957">មិនមាន​ទំហំផ្ទុក​គ្រប់គ្រាន់ ដើម្បី​ធ្វើសម​កាលកម្ម​ឯកសារ​ទាំងអស់​របស់អ្នកទេ</translation>
 <translation id="23721837607121582">ទាញយក​កម្រងព័ត៌មាន​ឧបករណ៍​ចល័ត បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ប្ដូរ​ទៅ​ទិដ្ឋភាពជាបញ្ជី</translation>
 <translation id="2377590462528165447">ថត <ph name="NUMBER_OF_ITEMS" /> ដែលបាន​ចែករំលែកជាមួយ Linux</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">មានបញ្ហាក្នុង​ការដំឡើង​កម្មវិធី Linux</translation>
 <translation id="2802583107108007218">ស្វែងយល់បន្ថែម​អំពី​ការរឹតបន្តឹងទាំងនេះ</translation>
 <translation id="2803375539583399270">បញ្ចូលកូដ PIN</translation>
+<translation id="2819519502129272135">បានបិទ​ការធ្វើសម​កាលកម្ម​ឯកសារ</translation>
 <translation id="2820957248982571256">កំពុងស្កេន...</translation>
 <translation id="2830077785865012357">ភាសាចិនជូយីន</translation>
 <translation id="2843806747483486897">ប្តូរលំនាំដើម...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">តម្រងត្រូវបានកំណត់ឡើងវិញ។</translation>
 <translation id="4603392156942865207">កំពុងចម្លង <ph name="FILE_NAME" /> ទៅ <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">សិល្បករ</translation>
+<translation id="4635373743001040938">ទំហំផ្ទុក​នៅសល់​តិចខ្លាំងណាស់។ ការធ្វើសម​កាលកម្ម​ឯកសារ​ត្រូវបានបិទ។</translation>
 <translation id="4642769377300286600">កំពុងដំឡើង​កម្រងព័ត៌មាន​ឧបករណ៍ចល័ត បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">ភាសាឆែក​ដែលប្រើ​ក្ដារចុច Qwerty</translation>
 <translation id="4656777537938206294">កំណត់ឱ្យ​អាចប្រើ​ឯកសារបាន​ពេលគ្មាន​អ៊ីនធឺណិត</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">បានចែករំលែក​ថត 1 ជាមួយ Parallels Desktop</translation>
 <translation id="496656650103537022">បាន​ស្ដារ​ <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">អាល់ប៊ុម</translation>
+<translation id="4972330214479971536">មិនអាច​បញ្ចប់​ការរៀបចំ​ការធ្វើសមកាលកម្ម​ឯកសារ​បានទេ</translation>
 <translation id="4973523518332075481">ប្រើឈ្មោះដែលមានអក្សរ <ph name="MAX_LENGTH" /> តួ ឬតិចជាងនេះ</translation>
 <translation id="4973970068702235170">មិនអាច​បង្រួមបានទេ បញ្ហាមិនបានរំពឹងទុក៖ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">ភាសា​ជប៉ុន</translation>
@@ -806,6 +813,7 @@
 <translation id="7309413087278791451">ភាសា​អាល្លឺម៉ង់ (បែលហ្ស៊ិក)</translation>
 <translation id="7339898014177206373">ផ្ទាំងថ្មី</translation>
 <translation id="7343393116438664539">ភាសាវៀតណាម​ថេឡិច</translation>
+<translation id="7347346221088620549">ឯកសារ​ដែលបាន​អ៊ីនគ្រីប</translation>
 <translation id="7357762654218998920">ប្រភេទឯកសារនេះ​មិនអាចប្រើបានទេ។ <ph name="BEGIN_LINK_HELP" />ស្វែងយល់បន្ថែម<ph name="END_LINK_HELP" />អំពី​ការបើកឯកសារ​នៅលើ ChromeOS។</translation>
 <translation id="7359359531237882347">កំពុង​ចម្លងធាតុ <ph name="NUMBER_OF_ITEMS" /> ...</translation>
 <translation id="7375951387215729722">បញ្ជី​ឯកសារ​ដែលតម្រៀប​តាមលំដាប់​ចុះនៃ <ph name="COLUMN_NAME" /> ។</translation>
@@ -992,6 +1000,7 @@
 <translation id="8609695766746872526">ភាសា​អ៊ីស្លង់</translation>
 <translation id="863903787380594467">កូដ PIN មិនត្រឹមត្រូវទេ។ អ្នកអាចព្យាយាមបាន <ph name="RETRIES" /> ដងទៀត។</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - រន្ធ</translation>
+<translation id="8656407365183407932">ចាំបាច់ត្រូវលុប​ឯកសារ​គ្មានអ៊ីនធឺណិត​របស់អ្នក</translation>
 <translation id="8656768832129462377">កុំពិនិត្យ</translation>
 <translation id="8688591111840995413">ពាក្យសម្ងាត់មិនល្អ</translation>
 <translation id="8698464937041809063">គំនូរ Google</translation>
@@ -1027,6 +1036,7 @@
 <translation id="8997962250644902079">ភាសាចិន (អក្សរពេញ) ភីងអ៊ីង</translation>
 <translation id="8998871447376656508">មិនមានទំហំផ្ទុកទំនេរគ្រប់គ្រាន់នៅក្នុង Google ថាសរបស់អ្នក ដើម្បីបញ្ចប់ការបង្ហោះទេ។</translation>
 <translation id="9003940392834790328">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, គ្រប់គ្រងដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក, ព័ត៌មាន​លម្អិត</translation>
+<translation id="9007990314804111233">ចូល​គណនី Microsoft របស់អ្នក</translation>
 <translation id="9017798300203431059">ស្រះជាភាសារុស្សី</translation>
 <translation id="9034924485347205037">ឯកសារ Linux</translation>
 <translation id="9035012421917565900">ធាតុ​ទាំងនេះ​មិនអាច​ផ្លាស់ទី​ទៅក្នុង '<ph name="DESTINATION_NAME" />' បានទេ ដូច្នេះ​អ្នកនឹង​មិនអាច​ត្រឡប់​សកម្មភាព​នេះវិញ​បានទេ។</translation>

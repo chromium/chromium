@@ -525,6 +525,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4272631900155121838">To scan a QR code, enable the camera from settings</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
+<translation id="4286718549648564014">Address moved to your account <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Search</translation>
 <translation id="4302248187517737842">No username ••••••••</translation>
 <translation id="4304713468139749426">Password Manager</translation>
@@ -1184,6 +1185,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8264966119170358612">Some of your saved passwords were exposed in a non-Google data breach. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">You were signed out of your account, <ph name="USER_NAME" />, as part of your iPad reset. To sign back in, tap 'Continue' below.</translation>
 <translation id="8271720166617117963">Accept and sign in</translation>
+<translation id="8273982424131314219">You'll fill info into <ph name="URL" /></translation>
 <translation id="8278938988428169257">Enter a word or phrase</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Skip</translation>
@@ -1231,6 +1233,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="8556590991644167667">{count,plural, =1{You dismissed {count} warning}other{You dismissed {count} warnings}}</translation>
 <translation id="8557690929085431655">You can choose to open incoming URLs from other apps in Incognito mode.</translation>
 <translation id="8558480467877843976">You can now use Chrome any time that you browse or tap links in messages, documents and other apps.</translation>
+<translation id="8580411965900177618">No, thanks</translation>
 <translation id="8588404856427128947">Off</translation>
 <translation id="8591976964826315682">Block third-party cookies in Incognito</translation>
 <translation id="8605219856220328675">Close tab.</translation>
@@ -1268,6 +1271,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Default site view</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="8825562130641217944">Get your bookmarks, passwords and more.</translation>
 <translation id="882557203579758546">Find in page…</translation>
 <translation id="8840513115188359703">You won't be signed out of your Google Account.</translation>
 <translation id="8843129975935593190">Your organisation limits what you can sync.</translation>

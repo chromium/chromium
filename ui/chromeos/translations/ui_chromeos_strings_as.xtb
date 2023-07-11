@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">এই মুহূৰ্তত Google Drive উপলব্ধ নহয় Google Drive উপলব্ধ হোৱাৰ লগে লগে আপল‘ড পুনৰ আৰম্ভ হ‘ব।</translation>
 <translation id="1307931752636661898">Linux ফাইলসমূহ চাব পৰা নগ’ল</translation>
 <translation id="1313405956111467313">স্বয়ংক্রিয় প্ৰক্সিৰ কনফিগাৰেশ্বন</translation>
+<translation id="134645005685694099">আপোনাৰ ফাইল ছিংক অন কৰি ৰাখিবলৈ আপোনাৰ ডিভাইচটোত পৰ্যাপ্ত পৰিমাণৰ ষ্ট’ৰেজৰ ঠাই নাই। নতুন ফাইলসমূহ আৰু স্বয়ংক্ৰিয়ভাৱে ছিংক কৰা নহ’ব।</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ফাইলটো বা ডাইৰেক্ট’ৰীটো ব্যৱহাৰযোগ্য নহয়।</translation>
 <translation id="1363028406613469049">ট্ৰেক</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">ডিভাইচৰ ছেটিংসমূহ</translation>
 <translation id="2084809735218147718">ধন্যবাদৰ গীত গাই থকা ব্যক্তিৰ ছবি</translation>
 <translation id="2088690981887365033">VPN নেটৱৰ্ক</translation>
+<translation id="209653272837065803">ফাইল ছিংক কৰাটো অব্যাহত ৰাখিবলৈ পৰ্যাপ্ত ষ্ট’ৰেজৰ স্থান নাই</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ইনক’গনিট’ ম’ডত অনুমতি দিয়ক<ph name="END_BOLD" /> সুবিধাটো অন কৰক</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু মচা হ’ব আৰু আপুনি সেইবোৰ পুনঃস্থাপন কৰিব নোৱাৰিব।</translation>
 <translation id="2122305276694332719">লুকাই থকা কোনো নেটৱৰ্কত স্বয়ংক্ৰিয়ভাৱে সংযুক্ত কৰাটোৱে অন্য লোকক আপোনাৰ ডিভাইচ আৰু নেটৱৰ্কৰ কিছুমান ছেটিং চাবলৈ দিয়ে আৰু সেয়েহে সেয়া চুপাৰিছ কৰা নহয়।</translation>
@@ -146,9 +148,11 @@
 <translation id="2198315389084035571">সৰলীকৰণ কৰা চীনা</translation>
 <translation id="22085916256174561">কোৰিয়ান</translation>
 <translation id="2208919847696382164">Linuxৰ জৰিয়তে ইনষ্টল কৰক</translation>
+<translation id="2215692307449050019">বেটাৰী কম আছে। আপুনি পাৱাৰৰ সৈতে সংযুক্ত হ’লে ছিংক পুনৰ আৰম্ভ হ’ব।</translation>
 <translation id="2225536596944493418">আপুনি <ph name="NUMBER_OF_ITEMS" />টা বস্তু মচি পেলাবলৈ নিশ্চিতনে?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ফল্ডাৰ সৃষ্টি কৰিব পৰা নগ’ল। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">কফিৰ সৈতে ব্যক্তিৰ ছবি</translation>
+<translation id="2247561763838186830">আপোনাক লগ আউট কৰোৱা হৈছে</translation>
 <translation id="2251368349685848079">ট্ৰেশ্বৰ পৰা পুনঃস্থাপন কৰক</translation>
 <translation id="2278133026967558505">আটাইবোৰ ৱেবছাইট আৰু URLএ ফাইলটো এক্সেছ কৰিব পাৰে</translation>
 <translation id="2282155092769082568">স্বয়ংক্ৰিয় কনফিগাৰেশ্বন URL:</translation>
@@ -163,6 +167,7 @@
 <translation id="2325650632570794183">এইধৰণৰ ফাইল সমৰ্থিত নহয়। অনুগ্ৰহ কৰি Chrome Web Storeত গৈ এইধৰণৰ ফাইল খুলিব পৰা কোনো এপ্ বিচাৰক।</translation>
 <translation id="2326539130272988168">বুলগেৰিয়ান</translation>
 <translation id="2337715497728194187">Bruschettaৰ সৈতে শ্বেয়াৰ কৰক</translation>
+<translation id="233822363739146957">আপোনাৰ আটাইবোৰ ফাইল ছিংক কৰিবলৈ পৰ্যাপ্ত ষ্ট’ৰেজৰ স্থান নাই</translation>
 <translation id="23721837607121582">ম’বাইলৰ প্ৰ’ফাইল ডাউনল’ড কৰক, <ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰৰটো, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">সূচী চোৱা ম’ডলৈ সলনি কৰক</translation>
 <translation id="2377590462528165447">Linuxৰ সৈতে <ph name="NUMBER_OF_ITEMS" />টা ফ’ল্ডাৰ শ্বেয়াৰ কৰা হ’ল</translation>
@@ -180,6 +185,7 @@
 <translation id="2464089476039395325">HTTP প্ৰক্সি</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> নেটৱৰ্ক, অফ কৰা আছে</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470447085858632">ফাইল ছিংকৰ সৈতে অফলাইন হৈ থকাৰ সময়তো আপোনাৰ Google Driveৰ ফাইলসমূহ এক্সেছ কৰক</translation>
 <translation id="2470939964922472929">বহুবাৰ এটা ভুল পিন দিয়া হৈছে। এটা নতুন পিন ছেট কৰিবলৈ, আপোনাৰ বাহকে প্ৰদান কৰা ৮ টা অংকৰ অৱৰোধৰ পৰা আঁতৰোৱাৰ ব্যক্তিগত কীটো (PUK) দিয়ক।</translation>
 <translation id="2500392669976258912">গুজৰাটী ফ’নেটিক</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -215,6 +221,7 @@
 <translation id="2782104745158847185">Linux এপ্লিকেশ্বন ইনষ্টল কৰোঁতে কিবা আসোঁৱাহ হ’ল</translation>
 <translation id="2802583107108007218">এই সীমাবদ্ধতাসমূহৰ বিষয়ে অধিক জানক</translation>
 <translation id="2803375539583399270">পিন দিয়ক</translation>
+<translation id="2819519502129272135">ফাইল ছিংক কৰা সুবিধাটো অফ কৰা হৈছে</translation>
 <translation id="2820957248982571256">স্কেন কৰি থকা হৈছে...</translation>
 <translation id="2830077785865012357">চীনা জুয়িন</translation>
 <translation id="2843806747483486897">ডিফ’ল্ট কার্য সলনি কৰক...</translation>
@@ -439,6 +446,7 @@
 <translation id="4599600860674643278">ফিল্টাৰ ৰিছেট কৰা হৈছে।</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> ফাইলটো <ph name="FOLDER_NAME" />লৈ প্ৰতিলিপি কৰি থকা হৈছে</translation>
 <translation id="4631887759990505102">শিল্পী</translation>
+<translation id="4635373743001040938">ষ্ট’ৰেজৰ স্থান তেনেই কম আছে। ফাইল ছিংক কৰাৰ সুবিধাটো অফ কৰা হৈছে।</translation>
 <translation id="4642769377300286600">ম’বাইলৰ প্ৰ’ফাইল ইনষ্টল কৰি থকা হৈছে, <ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Qwerty কীব’ৰ্ডৰ সৈতে চেক</translation>
 <translation id="4656777537938206294">ফাইলসমূহ অনলাইনত উপলব্ধ কৰক</translation>
@@ -492,6 +500,7 @@
 <translation id="4961158930123534723">Parallels Desktopৰ জৰিয়তে ১ টা ফ’ল্ডাৰ শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> পুনঃস্থাপন কৰা হৈছে</translation>
 <translation id="4969785127455456148">এলবাম</translation>
+<translation id="4972330214479971536">ফাইল ছিংক কৰাৰ ছেট আপ সম্পূৰ্ণ কৰিব পৰা নগ’ল</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" />টা বা তাতকৈ কম বৰ্ণ থকা এটা নাম ব্যৱহাৰ কৰক</translation>
 <translation id="4973970068702235170">জিপ কৰিব পৰা নগ'ল, অপ্ৰত্যাশিত আসোঁৱাহ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">জাপানীজ</translation>
@@ -602,6 +611,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" />ক ট্ৰেশ্বলৈ নিয়া হ'ল</translation>
 <translation id="5724172041621205163">Pattachote কীব’ৰ্ডৰ সৈতে থাই</translation>
 <translation id="57383366388012121">যোৱা মাহত</translation>
+<translation id="575175778971367197">এই ফাইলটো এতিয়া ছিংক কৰিব নোৱাৰি</translation>
 <translation id="5756666464756035725">হাংগেৰীয় QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> টা বস্তু বাছনি কৰা হৈছে</translation>
 <translation id="5763377084591234761">জাৰ্মান (ছুইজাৰলেণ্ড)</translation>
@@ -704,6 +714,7 @@
 <translation id="6558280019477628686">কোনো আসোঁৱাহ হৈছে। কিছুমান বস্তু মচা নহ’ব পাৰে।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" মচি থকা হৈছে...</translation>
 <translation id="6581162200855843583">Google Driveৰ লিংক</translation>
+<translation id="6588648400954570689">ফাইল ছিংক সম্পৰ্কীয় ছেটিং</translation>
 <translation id="6594855146910089723">এই ফ’ল্ডাৰটো Linux আৰু Parallels Desktopৰ সৈতে শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="6607272825297743757">ফাইলৰ তথ্য</translation>
 <translation id="6609332149380188670">Parallels Desktopৰ জৰিয়তে <ph name="NUMBER_OF_ITEMS" /> টা ফ’ল্ডাৰ শ্বেয়াৰ কৰা হৈছে</translation>
@@ -802,6 +813,7 @@
 <translation id="7309413087278791451">জাৰ্মান (বেলজিয়াম)</translation>
 <translation id="7339898014177206373">নতুন ৱিণ্ড'</translation>
 <translation id="7343393116438664539">ভিয়েটনামিজ টেলেক্স</translation>
+<translation id="7347346221088620549">এনক্ৰিপ্ট কৰা ফাইল</translation>
 <translation id="7357762654218998920">এইধৰণৰ ফাইল সমৰ্থিত নহয়। ChromeOSত ফাইল খোলাৰ বিষয়ে <ph name="BEGIN_LINK_HELP" />অধিক জানক<ph name="END_LINK_HELP" />।</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" />টা বস্তু প্ৰতিলিপি কৰি থকা হৈছে...</translation>
 <translation id="7375951387215729722">ফাইলৰ সূচী <ph name="COLUMN_NAME" /> অনুসৰি অধোগামীভাৱে সজোৱা হৈছে।</translation>
@@ -828,6 +840,7 @@
 <translation id="7547811415869834682">ডাচ্চ</translation>
 <translation id="7551643184018910560">শ্বেল্‌ফত পিন কৰক</translation>
 <translation id="7553492409867692754">Linuxৰ এপ্‌সমূহক <ph name="FOLDER_NAME" /> ফ’ল্ডাৰটোত থকা ফাইল এক্সেছ কৰিবলৈ অনুমতি দিয়ক</translation>
+<translation id="7555339735447658365">আপুনি বৰ্তমান অফলাইন হৈ আছে। আপুনি ইণ্টাৰনেটৰ সৈতে সংযুক্ত হ’লে ফাইল ছিংক কৰা পুনৰ আৰম্ভ হ’ব</translation>
 <translation id="7589661784326793847">কেইছেকেণ্ডমান অপেক্ষা কৰক</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> অফলাইনত উপলব্ধ কৰি থকা হৈছে</translation>
 <translation id="7600126690270271294">ছার্বিয়ান</translation>
@@ -870,6 +883,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> টিবি</translation>
 <translation id="7831491651892296503">নেটৱৰ্ক কনফিগাৰ কৰাত আসোঁৱাহ</translation>
+<translation id="7832093238954689746">ফাইল ছিংক কৰা সম্পূৰ্ণ হৈছে। মোৰ ড্ৰাইভৰ ফাইলসমূহ অফলাইনত উপলব্ধ হয়।</translation>
 <translation id="7839804798877833423">এই ফাইলবোৰ বিচাৰি আনিবলৈ ম’বাইল ডেটাৰ প্ৰায় <ph name="FILE_SIZE" /> খৰচ হ’ব৷</translation>
 <translation id="7846076177841592234">বাছনি বাতিল কৰক</translation>
 <translation id="7853966320808728790">ফৰাছী বেপ’</translation>
@@ -918,6 +932,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">ডিভাইচৰ মডেল</translation>
 <translation id="8223479393428528563">এই ফাইলবোৰ অফলাইন অৱস্থাত ব্যৱহাৰ কৰাৰ বাবে ছেভ কৰিবলৈ অনলাইন হওক আৰু তাৰপিছত ফাইলত সোঁফালে ক্লিক কৰি <ph name="OFFLINE_CHECKBOX_NAME" /> বিকল্পটো বাছনি কৰক।</translation>
+<translation id="8241139360630443550">ষ্ট’ৰেজ চাওক</translation>
 <translation id="8249296373107784235">নিষ্ফল কৰক</translation>
 <translation id="8250690786522693009">লেটিন</translation>
 <translation id="8250920743982581267">নথিপত্রসমূহ</translation>
@@ -985,6 +1000,7 @@
 <translation id="8609695766746872526">আইচলেণ্ডীয়</translation>
 <translation id="863903787380594467">ভুল পিন। আপোনাৰ <ph name="RETRIES" /> টা প্ৰয়াস বাকী আছে।</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - প’ৰ্ট</translation>
+<translation id="8656407365183407932">আপোনাৰ অফলাইন ফাইলসমূহ আঁতৰাবলগীয়া হ’ল</translation>
 <translation id="8656768832129462377">পৰীক্ষা নকৰিব</translation>
 <translation id="8688591111840995413">দুৰ্বল পাছৱৰ্ড</translation>
 <translation id="8698464937041809063">Google অংকন</translation>
@@ -1020,6 +1036,7 @@
 <translation id="8997962250644902079">চীনা (পৰম্পৰাগত) পিনয়িন</translation>
 <translation id="8998871447376656508">আপল'ডটো সম্পূৰ্ণ কৰিবলৈ আপোনাৰ Google Driveত পৰ্যাপ্ত পৰিমাণৰ খালী ঠাই নাই।</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে, সবিশেষ</translation>
+<translation id="9007990314804111233">আপোনাৰ Microsoft একাউণ্টত ছাইন ইন কৰক</translation>
 <translation id="9017798300203431059">ৰাছিয়ান ফ'নেটিক</translation>
 <translation id="9034924485347205037">Linux ফাইল</translation>
 <translation id="9035012421917565900">বস্তুবোৰ ‘<ph name="DESTINATION_NAME" />’লৈ পুনৰ লৈ যাব নোৱাৰি, সেয়েহে আপুনি এই কাৰ্যটো আনডু কৰিব নোৱাৰিব।</translation>
