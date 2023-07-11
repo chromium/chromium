@@ -38,8 +38,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
     virtual ~Delegate() {}
     virtual bool CanReadFile(const base::FilePath& file) = 0;
     virtual bool CanAccessDataForOrigin(const url::Origin& origin) = 0;
-    virtual file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
-    GetAccessCallback() = 0;
   };
 
   BlobRegistryImpl(base::WeakPtr<BlobStorageContext> context,

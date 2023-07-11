@@ -32,11 +32,6 @@ class BindingDelegate : public storage::BlobRegistryImpl::Delegate {
   bool CanAccessDataForOrigin(const url::Origin& origin) override {
     return security_policy_handle_.CanAccessDataForOrigin(origin);
   }
-  file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
-  GetAccessCallback() override {
-    // TODO (b/262203074) create actual callback
-    return base::NullCallback();
-  }
 
  private:
   ChildProcessSecurityPolicyImpl::Handle security_policy_handle_;
@@ -71,8 +66,7 @@ scoped_refptr<BlobRegistryWrapper> BlobRegistryWrapper::Create(
   return result;
 }
 
-BlobRegistryWrapper::BlobRegistryWrapper() {
-}
+BlobRegistryWrapper::BlobRegistryWrapper() = default;
 
 void BlobRegistryWrapper::Bind(
     int process_id,
@@ -85,7 +79,7 @@ void BlobRegistryWrapper::Bind(
               process_id)));
 }
 
-BlobRegistryWrapper::~BlobRegistryWrapper() {}
+BlobRegistryWrapper::~BlobRegistryWrapper() = default;
 
 void BlobRegistryWrapper::InitializeOnIOThreadDeprecated(
     scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
