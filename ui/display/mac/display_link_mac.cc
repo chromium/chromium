@@ -173,6 +173,17 @@ double DisplayLinkMac::GetRefreshRate() {
   return refresh_rate;
 }
 
+base::TimeTicks DisplayLinkMac::GetCurrentTime() {
+  CVTimeStamp out_time;
+  CVReturn ret = CVDisplayLinkGetCurrentTime(display_link_, &out_time);
+
+  if (ret == kCVReturnSuccess) {
+    return base::TimeTicks::FromMachAbsoluteTime(out_time.hostTime);
+  } else {
+    return base::TimeTicks();
+  }
+}
+
 DisplayLinkMac::DisplayLinkMac(
     CGDirectDisplayID display_id,
     base::ScopedTypeRef<CVDisplayLinkRef> display_link)

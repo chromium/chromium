@@ -85,6 +85,10 @@ class DISPLAY_EXPORT DisplayLinkMac
   // Get the panel/monitor refresh rate
   double GetRefreshRate();
 
+  // Retrieves the current (“now”) time of a given display link. Returns
+  // base::TimeTicks() if the current time is not available.
+  base::TimeTicks GetCurrentTime();
+
  private:
   friend class base::RefCountedThreadSafe<DisplayLinkMac>;
   friend class VSyncCallbackMac;

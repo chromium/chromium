@@ -41,7 +41,7 @@ void ExternalBeginFrameSourceMac::CreateDelayBasedTimeSourceIfNeeded() {
         base::SingleThreadTaskRunner::GetCurrentDefault().get());
     time_source_->SetClient(this);
     time_source_->SetTimebaseAndInterval(base::TimeTicks::Now(),
-                                         BeginFrameArgs::DefaultInterval());
+                                         preferred_interval_);
   }
 }
 
@@ -152,6 +152,16 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
     return;
   }
 
+  if (skip_next_vsync_) {
+    TRACE_EVENT_INSTANT0(
+        "viz",
+        "ExternalBeginFrameSourceMac::OnDisplayLinkCallback - skip_vsync",
+        TRACE_EVENT_SCOPE_THREAD);
+    skip_next_vsync_ = false;
+    return;
+  }
+
+  // Calculate the parameters.
   base::TimeTicks frame_time;
   base::TimeDelta interval;
 
@@ -166,6 +176,12 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
     interval = params.display_times_valid ? params.display_interval
                                           : nominal_refresh_period_;
   }
+  nominal_refresh_period_ = interval;
+
+  if (run_at_half_refresh_rate_) {
+    skip_next_vsync_ = true;
+    interval *= 2;
+  }
 
   OnBeginFrame(begin_frame_args_generator_.GenerateBeginFrameArgs(
       source_id(), frame_time, frame_time + interval, interval));
@@ -173,10 +189,44 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
   last_frame_time_ = frame_time;
   if (last_interval_ != interval) {
     last_interval_ = interval;
-    nominal_refresh_period_ = interval;
     DCHECK(update_vsync_params_callback_);
     update_vsync_params_callback_.Run(frame_time, interval);
   }
+}
+
+BeginFrameArgs ExternalBeginFrameSourceMac::GetMissedBeginFrameArgs(
+    BeginFrameObserver* obs) {
+  auto frame_time = last_begin_frame_args_.frame_time;
+  auto interval = last_begin_frame_args_.interval;
+
+  // Create BeginFrameArgs for now so that we don't have to wait until vsync.
+  if (display_link_mac_) {
+    base::TimeTicks now = display_link_mac_->GetCurrentTime();
+    if (last_begin_frame_args_.IsValid()) {
+      frame_time = now.SnappedToNextTick(frame_time, interval) - interval;
+    } else {
+      frame_time = now;
+      interval = run_at_half_refresh_rate_ ? nominal_refresh_period_ * 2
+                                           : nominal_refresh_period_;
+    }
+  } else {
+    base::TimeTicks now = base::TimeTicks::Now();
+    if (last_begin_frame_args_.IsValid()) {
+      frame_time = now.SnappedToNextTick(frame_time, interval) - interval;
+    } else {
+      frame_time = now;
+      interval = preferred_interval_;
+    }
+  }
+
+  // Don't create new args unless we've actually moved past the previous frame.
+  if (!last_begin_frame_args_.IsValid() ||
+      frame_time > last_begin_frame_args_.frame_time) {
+    last_begin_frame_args_ = begin_frame_args_generator_.GenerateBeginFrameArgs(
+        source_id(), frame_time, frame_time + interval, interval);
+  }
+
+  return ExternalBeginFrameSource::GetMissedBeginFrameArgs(obs);
 }
 
 // Timer callbacks when DisplayLink is not available.
@@ -205,12 +255,25 @@ void ExternalBeginFrameSourceMac::OnTimerTick() {
 
 void ExternalBeginFrameSourceMac::SetPreferredInterval(
     base::TimeDelta interval) {
+  preferred_interval_ = interval;
+
   if (!display_link_mac_) {
     time_source_->SetTimebaseAndInterval(last_frame_time_, interval);
+    return;
   }
 
-  // TODO: Implement run_at_half_refresh_rate_ for display_link_mac_.
-  preferred_interval_ = interval;
+  auto interval_for_half_refresh_rate = nominal_refresh_period_ * 2;
+  constexpr auto kMaxDelta = base::Milliseconds(0.5);
+  bool run_at_half_refresh_rate =
+      interval > (interval_for_half_refresh_rate - kMaxDelta);
+  if (run_at_half_refresh_rate_ == run_at_half_refresh_rate) {
+    return;
+  }
+
+  TRACE_EVENT1("gpu", "ExternalBeginFrameSourceMac::SetPreferredInterval",
+               "run_at_half_refresh_rate", run_at_half_refresh_rate);
+  run_at_half_refresh_rate_ = run_at_half_refresh_rate;
+  skip_next_vsync_ = false;
 }
 
 base::TimeDelta ExternalBeginFrameSourceMac::GetMaximumRefreshFrameInterval() {

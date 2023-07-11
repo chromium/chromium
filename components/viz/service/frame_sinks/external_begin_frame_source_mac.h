@@ -43,6 +43,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   void OnTimerTick() override;
 
   // ExternalBeginFrameSource implementation.
+  BeginFrameArgs GetMissedBeginFrameArgs(BeginFrameObserver* obs) override;
   void SetPreferredInterval(base::TimeDelta interval) override;
   base::TimeDelta GetMaximumRefreshFrameInterval() override;
 
@@ -64,6 +65,9 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
 
   bool needs_begin_frames_ = false;
 
+  bool run_at_half_refresh_rate_ = false;
+  bool skip_next_vsync_ = false;
+
   // CVDisplayLink and related structures to set timer parameters.
   int64_t display_id_ = display::kInvalidDisplayId;
   scoped_refptr<ui::DisplayLinkMac> display_link_mac_;
@@ -74,7 +78,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   // The default interval is 60Hz.
   base::TimeDelta nominal_refresh_period_ = BeginFrameArgs::DefaultInterval();
 
-  base::TimeDelta preferred_interval_;
+  base::TimeDelta preferred_interval_ = BeginFrameArgs::DefaultInterval();
 
   // Timer used to drive callbacks.
   // TODO(https://crbug.com/1404797): Only use this when it is not possible or
