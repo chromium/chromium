@@ -653,17 +653,18 @@ void HTMLCanvasElement::PostFinalizeFrame(
   if (LowLatencyEnabled() && !dirty_rect_.IsEmpty() &&
       GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)) {
     const base::TimeTicks start_time = base::TimeTicks::Now();
-    scoped_refptr<CanvasResource> canvas_resource =
-        ResourceProvider()->ProduceCanvasResource(reason);
-    const gfx::RectF src_rect((gfx::SizeF(Size())));
-    dirty_rect_.Intersect(src_rect);
-    const gfx::Rect int_dirty = gfx::ToEnclosingRect(dirty_rect_);
-    const SkIRect damage_rect = SkIRect::MakeXYWH(
-        int_dirty.x(), int_dirty.y(), int_dirty.width(), int_dirty.height());
-    const bool needs_vertical_flip = !canvas_resource->IsOriginTopLeft();
-    frame_dispatcher_->DispatchFrame(std::move(canvas_resource), start_time,
-                                     damage_rect, needs_vertical_flip,
-                                     IsOpaque());
+    if (scoped_refptr<CanvasResource> canvas_resource =
+            ResourceProvider()->ProduceCanvasResource(reason)) {
+      const gfx::RectF src_rect((gfx::SizeF(Size())));
+      dirty_rect_.Intersect(src_rect);
+      const gfx::Rect int_dirty = gfx::ToEnclosingRect(dirty_rect_);
+      const SkIRect damage_rect = SkIRect::MakeXYWH(
+          int_dirty.x(), int_dirty.y(), int_dirty.width(), int_dirty.height());
+      const bool needs_vertical_flip = !canvas_resource->IsOriginTopLeft();
+      frame_dispatcher_->DispatchFrame(std::move(canvas_resource), start_time,
+                                       damage_rect, needs_vertical_flip,
+                                       IsOpaque());
+    }
     dirty_rect_ = gfx::RectF();
   }
 
