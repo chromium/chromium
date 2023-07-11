@@ -10552,6 +10552,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacySandboxEnrollmentOverridesDescription, kOsAll,
      ORIGIN_LIST_VALUE_TYPE(privacy_sandbox::kPrivacySandboxEnrollmentOverrides,
                             "")},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-smart-card-web-api", flag_descriptions::kSmartCardWebApiName,
      flag_descriptions::kSmartCardWebApiDescription, kOsDesktop,
@@ -10562,6 +10563,15 @@ const FeatureEntry kFeatureEntries[] = {
     {"ml-mobile-pwa-prompt", flag_descriptions::kMobilePWAInstallPromptMlName,
      flag_descriptions::kMobilePWAInstallPromptMlDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(webapps::features::kInstallPromptSegmentation)},
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+    {"autofill-enable-payments-android-bottom-sheet",
+     flag_descriptions::kAutofillEnablePaymentsAndroidBottomSheetName,
+     flag_descriptions::kAutofillEnablePaymentsAndroidBottomSheetDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnablePaymentsAndroidBottomSheet)},
 #endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

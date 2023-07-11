@@ -560,6 +560,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "autofill-enable-payments-android-bottom-sheet",
+    "owners": [ "slobodan", "rouslan", "chrome-payments-team@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "autofill-enable-payments-mandatory-reauth",
     "owners": [ "vinnypersky@google.com", "sujiezhu@google.com" ],
     "expiry_milestone": 125

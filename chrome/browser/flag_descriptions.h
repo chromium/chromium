@@ -268,6 +268,9 @@ extern const char kAutofillEnableOfferNotificationForPromoCodesDescription[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryName[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 
+extern const char kAutofillEnablePaymentsAndroidBottomSheetName[];
+extern const char kAutofillEnablePaymentsAndroidBottomSheetDescription[];
+
 extern const char kAutofillEnablePaymentsMandatoryReauthName[];
 extern const char kAutofillEnablePaymentsMandatoryReauthDescription[];
 

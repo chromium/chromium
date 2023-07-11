@@ -110,6 +110,7 @@
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view_impl.h"
 #include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
 #include "chrome/browser/ui/android/autofill/autofill_logger_android.h"
+#include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/infobars/autofill_credit_card_filling_infobar.h"
@@ -742,6 +743,15 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(options.show_prompt);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnablePaymentsAndroidBottomSheet)) {
+    if (!autofill_save_card_bottom_sheet_bridge_) {
+      autofill_save_card_bottom_sheet_bridge_ =
+          std::make_unique<AutofillSaveCardBottomSheetBridge>(web_contents());
+    }
+    autofill_save_card_bottom_sheet_bridge_->RequestShowContent();
+    return;
+  }
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
@@ -1232,6 +1242,15 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   }
 #endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void ChromeAutofillClient::SetAutofillSaveCardBottomSheetBridgeForTesting(
+    std::unique_ptr<AutofillSaveCardBottomSheetBridge>
+        autofill_save_card_bottom_sheet_bridge) {
+  autofill_save_card_bottom_sheet_bridge_ =
+      std::move(autofill_save_card_bottom_sheet_bridge);
+}
+#endif
 
 Profile* ChromeAutofillClient::GetProfile() const {
   if (!web_contents())

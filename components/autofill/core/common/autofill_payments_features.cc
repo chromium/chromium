@@ -117,6 +117,14 @@ BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,
              "AutofillEnableOffersInClankKeyboardAccessory",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, the bottom sheet for save card and VCN enrollment will be
+// displayed instead of the info bar on Android.
+BASE_FEATURE(kAutofillEnablePaymentsAndroidBottomSheet,
+             "AutofillEnablePaymentsAndroidBottomSheet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // When enabled, in use-cases where we would not have triggered any user-visible
 // authentication to autofill payment methods, we will trigger a device
 // authentication.

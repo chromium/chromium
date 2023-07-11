@@ -28,6 +28,11 @@ BASE_DECLARE_FEATURE(kAutofillEnableNewCardArtAndNetworkImages);
 BASE_DECLARE_FEATURE(kAutofillEnableNewSaveCardBubbleUi);
 BASE_DECLARE_FEATURE(kAutofillEnableOfferNotificationForPromoCodes);
 BASE_DECLARE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kAutofillEnablePaymentsAndroidBottomSheet);
+#endif
+
 BASE_DECLARE_FEATURE(kAutofillEnablePaymentsMandatoryReauth);
 BASE_DECLARE_FEATURE(kAutofillEnableRemadeDownstreamMetrics);
 BASE_DECLARE_FEATURE(kAutofillEnableStickyManualFallbackForCards);
