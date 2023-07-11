@@ -597,10 +597,24 @@ export namespace Network {
   };
 }
 export namespace Network {
+  export type BytesValue = Network.StringValue | Network.Base64Value;
+}
+export namespace Network {
+  export type StringValue = {
+    type: 'string';
+    value: string;
+  };
+}
+export namespace Network {
+  export type Base64Value = {
+    type: 'base64';
+    value: string;
+  };
+}
+export namespace Network {
   export type Cookie = {
     name: string;
-    value?: string;
-    binaryValue?: [number];
+    value: Network.BytesValue;
     domain: string;
     path: string;
     expires?: JsUint;
@@ -630,8 +644,7 @@ export namespace Network {
 export namespace Network {
   export type Header = {
     name: string;
-    value?: string;
-    binaryValue?: [number];
+    value: Network.BytesValue;
   };
 }
 export namespace Network {

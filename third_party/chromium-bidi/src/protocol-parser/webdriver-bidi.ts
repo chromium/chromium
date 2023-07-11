@@ -23,6 +23,7 @@
 // @ts-nocheck Some types may be circular.
 
 import z from 'zod';
+
 export const CommandSchema = z.lazy(() =>
   z
     .object({
@@ -732,11 +733,31 @@ export namespace Network {
   );
 }
 export namespace Network {
+  export const BytesValueSchema = z.lazy(() =>
+    z.union([Network.StringValueSchema, Network.Base64ValueSchema])
+  );
+}
+export namespace Network {
+  export const StringValueSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('string'),
+      value: z.string(),
+    })
+  );
+}
+export namespace Network {
+  export const Base64ValueSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('base64'),
+      value: z.string(),
+    })
+  );
+}
+export namespace Network {
   export const CookieSchema = z.lazy(() =>
     z.object({
       name: z.string(),
-      value: z.string().optional(),
-      binaryValue: z.tuple([z.number().int().nonnegative()]).optional(),
+      value: Network.BytesValueSchema,
       domain: z.string(),
       path: z.string(),
       expires: JsUintSchema.optional(),
@@ -770,8 +791,7 @@ export namespace Network {
   export const HeaderSchema = z.lazy(() =>
     z.object({
       name: z.string(),
-      value: z.string().optional(),
-      binaryValue: z.tuple([z.number().int().nonnegative()]).optional(),
+      value: Network.BytesValueSchema,
     })
   );
 }
