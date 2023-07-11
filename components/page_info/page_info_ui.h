@@ -104,12 +104,6 @@ class PageInfoUI {
     CookieControlsEnforcement enforcement;
 
     absl::optional<CookiesFpsInfo> fps_info;
-
-    // The expiration of the active third-party cookie exception.
-    base::Time expiration;
-
-    // The confidence level of site breakage related to third-party cookies.
-    CookieControlsBreakageConfidenceLevel confidence;
   };
 
   // |ChosenObjectInfo| contains information about a single |chooser_object| of

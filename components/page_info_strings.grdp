@@ -806,9 +806,7 @@
     Third-party cookies
   </message>
   <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE" translateable="false" desc="">
-    {COUNT, plural,
-              =1 {1 day until Chrome starts blocking cookies again}
-              other {# days until Chrome starts blocking cookies again}}
+    17 days until Chrome starts blocking cookies again
   </message>
   <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_DESCRIPTION_TODAY" translateable="false" desc="">
     You allowed this site to use third-party cookies. This means that most site features should work, but you have less protection.

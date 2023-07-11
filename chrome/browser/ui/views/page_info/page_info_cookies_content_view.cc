@@ -15,23 +15,11 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace views {
 class StyledLabel;
 }  // namespace views
-
-namespace {
-
-int GetDaysToExpiration(base::Time expiration) {
-  // TODO(crbug.com/1446230): Apply DST corrections.
-  const base::Time midnight_today = base::Time::Now().LocalMidnight();
-  const base::Time midnight_expiration = expiration.LocalMidnight();
-  return (midnight_expiration - midnight_today).InDays();
-}
-
-}  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoCookiesContentView,
                                       kCookieDialogButton);
@@ -234,18 +222,18 @@ void PageInfoCookiesContentView::SetBlockingThirdPartyCookiesInfo(
 
 void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
     const CookiesNewInfo& cookie_info) {
-  const bool show_cookies_block_control =
-      cookie_info.confidence !=
-      CookieControlsBreakageConfidenceLevel::kUninitialized;
-  const bool are_third_party_cookies_blocked =
-      cookie_info.status == CookieControlsStatus::kEnabled;
+  // TODO(crbug.com/1446230): Use |cookie_info| to determine the state.
+  bool show_cookies_block_control = true;
+  bool are_third_party_cookies_blocked = true;
 
   third_party_cookies_container_->SetVisible(show_cookies_block_control);
   if (!show_cookies_block_control) {
     return;
   }
 
-  bool is_permanent_exception = cookie_info.expiration.is_null();
+  // TODO(crbug.com/1446230): Check the expiration and use separate strings for
+  // permanent and temporary exceptions.
+  bool is_permanent_exception = false;
   bool will_create_permanent_exception =
       content_settings::features::kUserBypassUIExceptionExpiration.Get()
           .is_zero();
@@ -260,16 +248,15 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
             ? IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_PERMANENT
             : IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY);
   } else {
-    title = is_permanent_exception
-                ? l10n_util::GetStringUTF16(
-                      IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE)
-                : l10n_util::GetPluralStringFUTF16(
-                      IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE,
-                      GetDaysToExpiration(cookie_info.expiration));
+    // TODO(crbug.com/1446230): Include the number of days until expiration in
+    // the string.
+    title = l10n_util::GetStringUTF16(
+        is_permanent_exception ? IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE
+                               : IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE);
     description = l10n_util::GetStringUTF16(
         is_permanent_exception
-            ? IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_DESCRIPTION
-            : IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_DESCRIPTION_TODAY);
+            ? IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_DESCRIPTION_TODAY
+            : IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_DESCRIPTION);
   }
   third_party_cookies_title_->SetText(title);
   third_party_cookies_description_->SetText(description);
@@ -443,14 +430,16 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
       provider->GetInsetsMetric(views::INSETS_DIALOG).left();
 
   third_party_cookies_container_ =
-      AddChildView(std::make_unique<views::BoxLayoutView>());
-  third_party_cookies_container_->SetOrientation(
-      views::BoxLayout::Orientation::kVertical);
+      AddChildView(std::make_unique<views::View>());
+  third_party_cookies_container_->SetLayoutManager(
+      std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
   third_party_cookies_container_->SetVisible(false);
 
   auto* label_wrapper = third_party_cookies_container_->AddChildView(
-      std::make_unique<views::BoxLayoutView>());
-  label_wrapper->SetOrientation(views::BoxLayout::Orientation::kVertical);
+      std::make_unique<views::View>());
+  label_wrapper->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
   label_wrapper->SetProperty(views::kMarginsKey,
                              gfx::Insets::VH(vertical_margin, side_margin));
   third_party_cookies_title_ =
@@ -476,13 +465,4 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
 
   third_party_cookies_container_->AddChildView(
       PageInfoViewFactory::CreateSeparator());
-
-  // Set the preferred width of the container to the title width. It prevents
-  // the container expanding to try to fit the description (which should be
-  // wrapped).
-  const int title_width =
-      third_party_cookies_title_->GetPreferredSize().width();
-  third_party_cookies_container_->SetPreferredSize(gfx::Size(
-      title_width,
-      third_party_cookies_container_->GetHeightForWidth(title_width)));
 }

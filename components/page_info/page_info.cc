@@ -272,7 +272,6 @@ PageInfo::PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
   if (web_contents) {
     controller_ = delegate_->CreateCookieControlsController();
     observation_.Observe(controller_.get());
-    old_observation_.Observe(controller_.get());
 
     // TODO(crbug.com/1430440): SetCookiesInfo is called twice, once from here
     // and once from InitializeUiState. This should be cleaned up.
@@ -335,30 +334,6 @@ void PageInfo::OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) {
 }
 
 void PageInfo::OnStatefulBounceCountChanged(int bounce_count) {}
-
-void PageInfo::OnStatusChanged(CookieControlsStatus status,
-                               CookieControlsEnforcement enforcement,
-                               base::Time expiration) {
-  if (status != status_ || enforcement != enforcement_ ||
-      expiration != cookie_exception_expiration_) {
-    status_ = status;
-    enforcement_ = enforcement;
-    cookie_exception_expiration_ = expiration;
-    PresentSiteData(base::DoNothing());
-  }
-}
-
-void PageInfo::OnSitesCountChanged(int allowed_sites, int blocked_sites) {
-  // TODO(crbug.com/1446230): Implement OnSitesCountChanged.
-}
-
-void PageInfo::OnBreakageConfidenceLevelChanged(
-    CookieControlsBreakageConfidenceLevel level) {
-  if (cookie_controls_confidence_ != level) {
-    cookie_controls_confidence_ = level;
-    PresentSiteData(base::DoNothing());
-  }
-}
 
 void PageInfo::OnThirdPartyToggleClicked(bool block_third_party_cookies) {
   DCHECK(status_ != CookieControlsStatus::kDisabled);
@@ -1405,8 +1380,6 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
 
   cookies_info.status = status_;
   cookies_info.enforcement = enforcement_;
-  cookies_info.expiration = cookie_exception_expiration_;
-  cookies_info.confidence = cookie_controls_confidence_;
   ui_->SetCookieInfo(cookies_info);
 
   std::move(done).Run();
