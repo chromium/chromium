@@ -100,6 +100,9 @@ void ApplyGM3OmniboxBackgroundColor(ui::ColorMixer& mixer,
     mixer[kColorLocationBarBackgroundHovered] =
         ui::GetResultingPaintColor(ui::kColorSysStateHoverBrightBlendProtection,
                                    kColorLocationBarBackground);
+
+    // Update colors to account for "mismatched input/URL" in the omnibox.
+    mixer[kColorLocationBarBorderOnMismatch] = {ui::kColorSysNeutralOutline};
   }
 }
 
@@ -268,12 +271,15 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorLocationBarBackgroundHovered] = {
       kColorToolbarBackgroundSubtleEmphasisHovered};
 
-  // Override Omnibox background color tokens per GM3 spec when appropriate.
-  ApplyGM3OmniboxBackgroundColor(mixer, key);
-
   mixer[kColorLocationBarBorder] = {SkColorSetA(SK_ColorBLACK, 0x4D)};
   mixer[kColorLocationBarBorderOpaque] =
       ui::GetResultingPaintColor(kColorLocationBarBorder, kColorToolbar);
+
+  mixer[kColorLocationBarBorderOnMismatch] = {kColorLocationBarBorder};
+
+  // Override Omnibox background color tokens per GM3 spec when appropriate.
+  ApplyGM3OmniboxBackgroundColor(mixer, key);
+
   mixer[kColorMediaRouterIconActive] =
       PickGoogleColor(ui::kColorAccent, kColorToolbar,
                       color_utils::kMinimumVisibleContrastRatio);

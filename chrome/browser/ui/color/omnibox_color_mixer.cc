@@ -132,10 +132,8 @@ void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
   mixer[kColorOmniboxResultsBackground] = {ui::kColorSysBase};
 
   // Update suggestion hover fill colors.
-  mixer[kColorOmniboxResultsBackgroundHovered] = ui::SelectBasedOnDarkInput(
-      kColorOmniboxResultsBackground,
-      SkColorSetA(static_cast<SkColor>(0x4F4F4F), SK_AlphaOPAQUE),
-      ui::kColorSysInverseOnSurface);
+  mixer[kColorOmniboxResultsBackgroundHovered] = ui::GetResultingPaintColor(
+      ui::kColorSysStateHoverOnSubtle, kColorOmniboxResultsBackground);
   mixer[kColorOmniboxResultsBackgroundSelected] = {
       kColorOmniboxResultsBackgroundHovered};
 

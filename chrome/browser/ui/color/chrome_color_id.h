@@ -144,6 +144,7 @@
   E_CPONLY(kColorLocationBarBackground) \
   E_CPONLY(kColorLocationBarBackgroundHovered) \
   E_CPONLY(kColorLocationBarBorder) \
+  E_CPONLY(kColorLocationBarBorderOnMismatch) \
   E_CPONLY(kColorLocationBarBorderOpaque) \
   E_CPONLY(kColorLocationBarClearAllButtonIcon) \
   E_CPONLY(kColorLocationBarClearAllButtonIconDisabled) \

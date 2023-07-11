@@ -381,6 +381,11 @@ extern const base::FeatureParam<int> kFontSizeNonTouchUI;
 // Returns true if `kExpandedLayout` is enabled.
 bool IsCr23LayoutEnabled();
 
+// Omnibox CR23 - steady state background color.
+// Returns true if the feature to enable CR23 omnibox steady state background
+// color is enabled.
+bool IsChromeRefreshSteadyStateBackgroundColorEnabled();
+
 // ---------------------------------------------------------
 // Clipboard URL suggestions:
 

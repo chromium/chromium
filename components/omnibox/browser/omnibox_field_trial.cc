@@ -740,6 +740,13 @@ bool OmniboxFieldTrial::IsCr23LayoutEnabled() {
   return enabled;
 }
 
+bool OmniboxFieldTrial::IsChromeRefreshSteadyStateBackgroundColorEnabled() {
+  return features::GetChromeRefresh2023Level() ==
+             features::ChromeRefresh2023Level::kLevel2 ||
+         base::FeatureList::IsEnabled(
+             omnibox::kOmniboxSteadyStateBackgroundColor);
+}
+
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
     "OmniboxBundledExperimentV1";
 const char OmniboxFieldTrial::kDisableProvidersRule[] = "DisableProviders";

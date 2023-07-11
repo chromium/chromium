@@ -1060,33 +1060,54 @@ gfx::Rect LocationBarView::GetLocalBoundsWithoutEndcaps() const {
 }
 
 void LocationBarView::RefreshBackground() {
-  // Match the background color to the popup if the Omnibox is visibly focused.
-  SkColor background_color, border_color;
+  const double opacity = hover_animation_.GetCurrentValue();
+  const bool is_caret_visible = omnibox_view_->model()->is_caret_visible();
+  const bool input_in_progress =
+      omnibox_view_->model()->user_input_in_progress();
+  const bool high_contrast = GetNativeTheme()->UserHasContrastPreference();
+
   const auto* const color_provider = GetColorProvider();
-  if (omnibox_view_->model()->is_caret_visible()) {
-    background_color = border_color =
-        color_provider->GetColor(kColorOmniboxResultsBackground);
-  } else {
-    const SkColor normal =
-        color_provider->GetColor(kColorLocationBarBackground);
-    const SkColor hovered =
-        color_provider->GetColor(kColorLocationBarBackgroundHovered);
-    const double opacity = hover_animation_.GetCurrentValue();
+  SkColor normal = color_provider->GetColor(kColorLocationBarBackground);
+  SkColor hovered =
+      color_provider->GetColor(kColorLocationBarBackgroundHovered);
+
+  SkColor background_color =
+      gfx::Tween::ColorValueBetween(opacity, normal, hovered);
+  if (is_caret_visible) {
+    // Match the background color to the popup if the Omnibox is visibly
+    // focused.
+    background_color = color_provider->GetColor(kColorOmniboxResultsBackground);
+  } else if (OmniboxFieldTrial::
+                 IsChromeRefreshSteadyStateBackgroundColorEnabled() &&
+             input_in_progress && !high_contrast) {
+    // Under CR23 guidelines, if the Omnibox is unfocused, but still contains
+    // in-progress user input, the background color matches the popup (unless
+    // high-contrast mode is enabled).
+    normal = color_provider->GetColor(kColorOmniboxResultsBackground);
+    hovered = color_provider->GetColor(kColorOmniboxResultsBackgroundHovered);
     background_color = gfx::Tween::ColorValueBetween(opacity, normal, hovered);
-    border_color = color_provider->GetColor(kColorLocationBarBorder);
+  }
+
+  SkColor border_color = SK_ColorTRANSPARENT;
+  if (high_contrast) {
+    // High contrast schemes get a border stroke even on a rounded omnibox.
+    border_color =
+        is_caret_visible
+            ? color_provider->GetColor(kColorOmniboxResultsBackground)
+            : color_provider->GetColor(kColorLocationBarBorder);
+  } else if (OmniboxFieldTrial::
+                 IsChromeRefreshSteadyStateBackgroundColorEnabled() &&
+             !is_caret_visible && input_in_progress) {
+    // Under CR23 guidelines, if the (regular contrast) Omnibox is unfocused,
+    // but still contains in-progress user input, a unique border color will be
+    // applied.
+    border_color = color_provider->GetColor(kColorLocationBarBorderOnMismatch);
   }
 
   if (is_popup_mode_) {
     SetBackground(views::CreateSolidBackground(background_color));
   } else {
-    SkColor stroke_color = SK_ColorTRANSPARENT;
-
-    if (GetNativeTheme()->UserHasContrastPreference()) {
-      // High contrast schemes get a border stroke even on a rounded omnibox.
-      stroke_color = border_color;
-    }
-
-    SetBackground(CreateRoundRectBackground(background_color, stroke_color));
+    SetBackground(CreateRoundRectBackground(background_color, border_color));
   }
 
   // Keep the views::Textfield in sync. It needs an opaque background to
@@ -1347,6 +1368,8 @@ void LocationBarView::OnChildViewRemoved(View* observed_view, View* child) {
 }
 
 void LocationBarView::OnChanged() {
+  // Ensure that background colors get updated on tab-switch.
+  RefreshBackground();
   location_icon_view_->Update(/*suppress_animations=*/false);
   clear_all_button_->SetVisible(
       omnibox_view_ && omnibox_view_->model()->user_input_in_progress() &&
