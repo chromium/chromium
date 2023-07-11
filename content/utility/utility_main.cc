@@ -374,8 +374,7 @@ int UtilityMain(MainFunctionParams parameters) {
 
   if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type) &&
       sandbox_type != sandbox::mojom::Sandbox::kCdm &&
-      sandbox_type != sandbox::mojom::Sandbox::kMediaFoundationCdm &&
-      sandbox_type != sandbox::mojom::Sandbox::kWindowsSystemProxyResolver) {
+      sandbox_type != sandbox::mojom::Sandbox::kMediaFoundationCdm) {
     if (!g_utility_target_services)
       return false;
 
