@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -162,16 +161,6 @@ class TailoredSecurityService : public KeyedService {
   GetURLLoaderFactory() = 0;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(
-      TailoredSecurityServiceTest,
-      RetryEnabledTimestampUpdateCallbackSetsOutcomeToUnknown);
-  FRIEND_TEST_ALL_PREFIXES(TailoredSecurityServiceTest,
-                           RetryEnabledTimestampUpdateCallbackRecordsStartTime);
-  FRIEND_TEST_ALL_PREFIXES(
-      TailoredSecurityServiceTest,
-      RetryDisabledTimestampUpdateCallbackDoesNotRecordStartTime);
-  FRIEND_TEST_ALL_PREFIXES(TailoredSecurityServiceTest,
-                           RetryDisabledOutcomeRemainsUnset);
   friend class TailoredSecurityTabHelperTest;
 
   // Stores pointer to IdentityManager instance. It must outlive the
