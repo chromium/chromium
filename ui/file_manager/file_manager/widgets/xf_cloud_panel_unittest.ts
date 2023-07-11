@@ -19,10 +19,10 @@ export function setUp() {
  * Returns the <xf-cloud-panel> element.
  */
 function getCloudPanelElement(): XfCloudPanel {
-  const element = document.querySelector<XfCloudPanel>('xf-cloud-panel');
-  assertNotEquals(null, element);
+  const element = document.querySelector('xf-cloud-panel');
+  assertNotEquals(null, element, 'xf-cloud-panel is null');
   assertEquals('XF-CLOUD-PANEL', element!.tagName);
-  return element!;
+  return element! as XfCloudPanel;
 }
 
 /**
@@ -115,7 +115,7 @@ async function getElement<T extends HTMLElement>(
     element = root.querySelector(selector);
     return element !== null;
   });
-  assertNotEquals(null, element);
+  assertNotEquals(element, null);
   return element!;
 }
 
@@ -130,7 +130,7 @@ async function getProgressBar(): Promise<HTMLProgressElement> {
         element.shadowRoot!.querySelector<HTMLProgressElement>('progress');
     return progressElement !== null;
   });
-  return progressElement!;
+  return progressElement! as HTMLProgressElement;
 }
 
 /**
