@@ -322,11 +322,6 @@ class SyncServiceImpl : public SyncService,
   // not tied to sync-the-feature).
   ModelTypeSet GetModelTypesForTransportOnlyMode() const;
 
-  // If in transport-only mode, returns only preferred data types which are
-  // allowed in transport-only mode. Otherwise, returns all preferred data
-  // types.
-  ModelTypeSet GetDataTypesToConfigure() const;
-
   void UpdateDataTypesForInvalidations();
 
   // Shuts down and destroys the engine. |reason| dictates if sync metadata

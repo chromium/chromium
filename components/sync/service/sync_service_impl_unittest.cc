@@ -28,11 +28,9 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
-#include "components/sync/base/stop_source.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
-#include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync/service/sync_token_status.h"
@@ -42,7 +40,6 @@
 #include "components/sync/test/mock_trusted_vault_client.h"
 #include "components/sync/test/sync_client_mock.h"
 #include "components/sync/test/sync_service_impl_bundle.h"
-#include "components/version_info/version_info_values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1627,7 +1624,12 @@ TEST_F(
   base::test::ScopedFeatureList feature_list(kEnableBookmarksAccountStorage);
 
   component_factory()->AllowFakeEngineInitCompletion(false);
-  InitializeService();
+  InitializeService(
+      /*registered_types_and_transport_mode_support=*/
+      {
+          {BOOKMARKS, true},
+          {DEVICE_INFO, true},
+      });
   base::RunLoop().RunUntilIdle();
 
 #if BUILDFLAG(IS_IOS)

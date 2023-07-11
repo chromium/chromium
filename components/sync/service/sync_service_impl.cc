@@ -342,7 +342,7 @@ void SyncServiceImpl::Initialize() {
     // Call Stop() on controllers for non-preferred types to clear metadata.
     // This allows clearing metadata for types disabled in previous run early-on
     // during initialization.
-    ModelTypeSet preferred_types = GetDataTypesToConfigure();
+    ModelTypeSet preferred_types = GetPreferredDataTypes();
     for (auto& [type, controller] : data_type_controllers_) {
       if (!preferred_types.Has(type)) {
         controller->Stop(CLEAR_METADATA, base::DoNothing());
@@ -1287,10 +1287,6 @@ bool SyncServiceImpl::IsSyncFeatureDisabledViaDashboard() const {
 
 bool SyncServiceImpl::CanConfigureDataTypes(
     bool bypass_setup_in_progress_check) const {
-  // TODO(crbug.com/856179): Arguably, IsSetupInProgress() shouldn't prevent
-  // configuring data types in transport mode, but at least for now, it's
-  // easier to keep it like this. Changing this will likely require changes to
-  // the setup UI flow.
   return data_type_manager_ &&
          (bypass_setup_in_progress_check || !IsSetupInProgress());
 }
@@ -1406,9 +1402,18 @@ bool SyncServiceImpl::HasObserver(const SyncServiceObserver* observer) const {
 
 ModelTypeSet SyncServiceImpl::GetPreferredDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1134090): If in transport mode, filter out types that aren't
-  // supported - basically, merge GetDataTypesToConfigure() into this.
-  return user_settings_->GetPreferredDataTypes();
+  ModelTypeSet types = user_settings_->GetPreferredDataTypes();
+  // SyncUserSettings already filters out UserSelectableTypes that aren't
+  // supported in transport mode. However, there are two reasons why the
+  // ModelTypes still need to be filtered here:
+  // 1) For some UserSelectableTypes, some of their ModelTypes are supported
+  //    while others aren't.
+  // 2) Some ModelTypes implement additional preconditions in
+  //    ShouldRunInTransportOnlyMode() (e.g. related to passphrase type).
+  if (UseTransportOnlyMode()) {
+    types = Intersection(types, GetModelTypesForTransportOnlyMode());
+  }
+  return types;
 }
 
 ModelTypeSet SyncServiceImpl::GetActiveDataTypes() const {
@@ -1490,7 +1495,7 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
   if (use_transport_only_mode) {
     configure_context.sync_mode = SyncMode::kTransportOnly;
   }
-  data_type_manager_->Configure(GetDataTypesToConfigure(), configure_context);
+  data_type_manager_->Configure(GetPreferredDataTypes(), configure_context);
 
   // Record in UMA whether we're configuring the full Sync feature or only the
   // transport.
@@ -1506,6 +1511,7 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
 
   // Only if it's the full Sync feature, also record the user's choice of data
   // types.
+  // TODO(crbug.com/1431212): Record the selected types in transport mode too.
   if (!use_transport_only_mode) {
     bool sync_everything = sync_prefs_.HasKeepEverythingSynced();
     base::UmaHistogramBoolean("Sync.SyncEverything2", sync_everything);
@@ -1579,15 +1585,6 @@ ModelTypeSet SyncServiceImpl::GetModelTypesForTransportOnlyMode() const {
   return allowed_types;
 }
 
-ModelTypeSet SyncServiceImpl::GetDataTypesToConfigure() const {
-  ModelTypeSet types = GetPreferredDataTypes();
-  // In transport-only mode, only a subset of data types is supported.
-  if (UseTransportOnlyMode()) {
-    types = Intersection(types, GetModelTypesForTransportOnlyMode());
-  }
-  return types;
-}
-
 void SyncServiceImpl::UpdateDataTypesForInvalidations() {
   // Wait for configuring data types. This is needed to consider proxy types
   // which become known during configuration.
@@ -1599,7 +1596,7 @@ void SyncServiceImpl::UpdateDataTypesForInvalidations() {
   // No need to register invalidations for non-protocol or commit-only types.
   // TODO(crbug.com/1260836): consider DataTypeManager::GetActiveDataTypes() to
   // unsubscribe from failed data types.
-  ModelTypeSet types = Intersection(GetDataTypesToConfigure(), ProtocolTypes());
+  ModelTypeSet types = Intersection(GetPreferredDataTypes(), ProtocolTypes());
   types.RemoveAll(CommitOnlyTypes());
   if (!sessions_invalidations_enabled_) {
     types.Remove(SESSIONS);
@@ -1968,7 +1965,7 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
 
   // TODO(crbug.com/1425026): check whether this works when local sync is
   // enabled.
-  if (!GetDisableReasons().Empty() || !GetDataTypesToConfigure().Has(type)) {
+  if (!GetDisableReasons().Empty() || !GetPreferredDataTypes().Has(type)) {
     DVLOG(1)
         << "Sync or " << ModelTypeToDebugString(type)
         << " is disabled hence updates won't be downloaded from the server";
