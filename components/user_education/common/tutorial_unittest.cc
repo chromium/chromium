@@ -19,7 +19,6 @@
 #include "components/user_education/common/tutorial_registry.h"
 #include "components/user_education/common/tutorial_service.h"
 #include "components/user_education/test/test_help_bubble.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -37,6 +36,7 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier2);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier3);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier4);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
 
 const char kTestElementName1[] = "ELEMENT_NAME_1";
@@ -907,8 +907,8 @@ class ConditionalTutorialTest : public ui::test::InteractiveTestT<TutorialTest>,
   }
 
  protected:
-  using IfStep = TutorialDescription::If;
   using BubbleStep = TutorialDescription::BubbleStep;
+  using IfStep = TutorialDescription::If;
 
   // Gets whether the `n`th branch should be active.
   bool GetBranchValue(int n) const { return 0 != (GetParam() & (1 << n)); }
@@ -1102,6 +1102,37 @@ TEST_P(ConditionalTutorialTest1, OptionalStep) {
                              .SetTransitionOnlyOnEvent(true)),
                VerifyHelpBubble({{1, IDS_OK}}, std::make_pair(2, 2)))),
       Do([&]() { el3.Show(); }),
+      WaitForShow(test::TestHelpBubble::kElementId)
+          .SetTransitionOnlyOnEvent(true),
+      VerifyHelpBubble({{-1, IDS_CLEAR}}, absl::nullopt), CloseHelpBubble());
+}
+
+TEST_P(ConditionalTutorialTest1, WaitForAnyOf) {
+  ui::test::TestElement el2(kTestIdentifier2, kTestContext1);
+  ui::test::TestElement el3(kTestIdentifier3, kTestContext1);
+  ui::test::TestElement el4(kTestIdentifier4, kTestContext1);
+
+  RunTestSequenceInContext(
+      first_anchor_.context(),
+      StartTutorial(
+          BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_DONE),
+          TutorialDescription::WaitForAnyOf(kTestIdentifier2)
+              .Or(kTestIdentifier3),
+          IfStep(kTestIdentifier2)
+              .Then(BubbleStep(kTestIdentifier2).SetBubbleBodyText(IDS_OK))
+              .Else(BubbleStep(kTestIdentifier3).SetBubbleBodyText(IDS_CANCEL)),
+          BubbleStep(kTestIdentifier4).SetBubbleBodyText(IDS_CLEAR)),
+      VerifyHelpBubble({{-1, IDS_DONE}}, std::make_pair(1, 2)),
+      If([this]() { return GetBranchValue(0); },
+         Steps(Do([&]() { el2.Show(); }),
+               std::move(WaitForShow(test::TestHelpBubble::kElementId)
+                             .SetTransitionOnlyOnEvent(true)),
+               VerifyHelpBubble({{-1, IDS_OK}}, std::make_pair(2, 2))),
+         Steps(Do([&]() { el3.Show(); }),
+               std::move(WaitForShow(test::TestHelpBubble::kElementId)
+                             .SetTransitionOnlyOnEvent(true)),
+               VerifyHelpBubble({{-1, IDS_CANCEL}}, std::make_pair(2, 2)))),
+      Do([&]() { el4.Show(); }),
       WaitForShow(test::TestHelpBubble::kElementId)
           .SetTransitionOnlyOnEvent(true),
       VerifyHelpBubble({{-1, IDS_CLEAR}}, absl::nullopt), CloseHelpBubble());

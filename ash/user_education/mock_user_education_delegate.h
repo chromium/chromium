@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/user_education/user_education_delegate.h"
 #include "components/account_id/account_id.h"
+#include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

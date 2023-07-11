@@ -4,9 +4,11 @@
 
 #include "components/user_education/common/tutorial_description.h"
 
+#include "components/user_education/common/help_bubble.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
 namespace user_education {
@@ -62,6 +64,34 @@ TutorialDescription::BubbleStep::AddDefaultNextButton() {
         ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
             current_anchor, kHelpBubbleNextButtonClickedEvent);
       }));
+}
+
+TutorialDescription::WaitForAnyOf::WaitForAnyOf(ElementSpecifier first,
+                                                bool wait_for_event)
+    : HiddenStep(ui::ElementIdentifier(),
+                 ui::InteractionSequence::StepType::kSubsequence) {
+  subsequence_mode_ = ui::InteractionSequence::SubsequenceMode::kAtLeastOne;
+  Or(first, wait_for_event);
+}
+
+TutorialDescription::WaitForAnyOf& TutorialDescription::WaitForAnyOf::Or(
+    ElementSpecifier element,
+    bool wait_for_event) {
+  branches_.emplace_back(
+      AlwaysRun(), Steps(wait_for_event ? HiddenStep::WaitForShowEvent(element)
+                                        : HiddenStep::WaitForShown(element)));
+  return *this;
+}
+
+// static
+TutorialDescription::ConditionalCallback TutorialDescription::AlwaysRun() {
+  return base::BindRepeating([](const ui::TrackedElement*) { return true; });
+}
+
+// static
+TutorialDescription::ConditionalCallback TutorialDescription::RunIfPresent() {
+  return base::BindRepeating(
+      [](const ui::TrackedElement* el) { return el != nullptr; });
 }
 
 }  // namespace user_education

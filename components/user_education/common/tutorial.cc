@@ -34,9 +34,12 @@ int CountProgress(const std::vector<TutorialDescription::Step>& steps) {
       ++result;
     } else if (step.step_type() ==
                ui::InteractionSequence::StepType::kSubsequence) {
-      CHECK(step.if_condition());
-      result += std::max(CountProgress(step.then_branch()),
-                         CountProgress(step.else_branch()));
+      CHECK(!step.branches().empty());
+      int to_add = 0;
+      for (const auto& branch : step.branches()) {
+        to_add = std::max(to_add, CountProgress(branch.second));
+      }
+      result += to_add;
     }
   }
   return result;
@@ -284,32 +287,25 @@ Tutorial::Builder::BuildFromDescriptionStep(
     bool can_be_restarted,
     TutorialService* tutorial_service) {
   if (step.step_type() == ui::InteractionSequence::StepType::kSubsequence) {
-    CHECK(step.if_condition());
-    CHECK(!step.then_branch().empty());
+    CHECK(!step.branches().empty());
+    CHECK(!step.branches()[0].second.empty());
     ui::InteractionSequence::StepBuilder builder;
-    const bool has_else = !step.else_branch().empty();
-    builder.SetSubsequenceMode(
-        has_else ? ui::InteractionSequence::SubsequenceMode::kExactlyOne
-                 : ui::InteractionSequence::SubsequenceMode::kAtMostOne);
+    builder.SetSubsequenceMode(step.subsequence_mode());
     CommonStepBuilderSetup(builder, step);
-    int then_progress = current_progress;
-    int else_progress = current_progress;
-    AddStepBuilderSubsequence(
-        builder,
-        base::BindOnce(
-            [](TutorialDescription::ConditionalCallback callback,
-               const ui::InteractionSequence*,
-               const ui::TrackedElement* el) { return callback.Run(el); },
-            step.if_condition()),
-        step.then_branch(), max_progress, then_progress, is_terminal,
-        can_be_restarted, tutorial_service);
-    if (has_else) {
-      AddStepBuilderSubsequence(builder, ui::InteractionSequence::AlwaysRun(),
-                                step.else_branch(), max_progress, else_progress,
-                                is_terminal, can_be_restarted,
-                                tutorial_service);
+    const int prev_progress = current_progress;
+    for (auto& branch : step.branches()) {
+      int branch_progress = prev_progress;
+      AddStepBuilderSubsequence(
+          builder,
+          base::BindOnce(
+              [](TutorialDescription::ConditionalCallback callback,
+                 const ui::InteractionSequence*,
+                 const ui::TrackedElement* el) { return callback.Run(el); },
+              std::move(branch.first)),
+          std::move(branch.second), max_progress, branch_progress, is_terminal,
+          can_be_restarted, tutorial_service);
+      current_progress = std::max(current_progress, branch_progress);
     }
-    current_progress = std::max(then_progress, else_progress);
     return builder.Build();
   } else {
     absl::optional<std::pair<int, int>> progress;

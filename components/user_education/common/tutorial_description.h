@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -137,8 +137,11 @@ struct TutorialDescription {
 
   using ContextMode = ui::InteractionSequence::ContextMode;
   using ElementSpecifier = absl::variant<ui::ElementIdentifier, std::string>;
+
+  // Callback used to determine if the "then" branch of a conditional should be
+  // followed. Note that `element` may be null if no matching element exists.
   using ConditionalCallback =
-      base::RepeatingCallback<bool(const ui::TrackedElement*)>;
+      base::RepeatingCallback<bool(const ui::TrackedElement* element)>;
 
   class Step {
    public:
@@ -200,9 +203,10 @@ struct TutorialDescription {
     const HelpBubbleParams::ExtendedProperties& extended_properties() const {
       return extended_properties_;
     }
-    const ConditionalCallback& if_condition() const { return if_condition_; }
-    const std::vector<Step>& then_branch() const { return then_branch_; }
-    const std::vector<Step>& else_branch() const { return else_branch_; }
+    ui::InteractionSequence::SubsequenceMode subsequence_mode() const {
+      return subsequence_mode_;
+    }
+    const auto& branches() const { return branches_; }
 
    protected:
     Step(ElementSpecifier element,
@@ -276,9 +280,9 @@ struct TutorialDescription {
     HelpBubbleParams::ExtendedProperties extended_properties_;
 
     // Used for if-then-else conditionals.
-    ConditionalCallback if_condition_;
-    std::vector<Step> then_branch_;
-    std::vector<Step> else_branch_;
+    ui::InteractionSequence::SubsequenceMode subsequence_mode_ =
+        ui::InteractionSequence::SubsequenceMode::kAtMostOne;
+    std::vector<std::pair<ConditionalCallback, std::vector<Step>>> branches_;
 
    private:
     friend class Tutorial;
@@ -369,7 +373,10 @@ struct TutorialDescription {
                         ui::InteractionSequence::StepType::kActivated);
     }
 
-   private:
+    template <typename... Args>
+    static HiddenStep WaitForOneOf(Args&&... args) {}
+
+   protected:
     explicit HiddenStep(ElementSpecifier element_specifier,
                         ui::InteractionSequence::StepType step_type)
         : Step(element_specifier, step_type) {}
@@ -423,34 +430,96 @@ struct TutorialDescription {
   }
 
   // Creates a conditional step. Syntax is:
-  //   If(element, condition).Then(steps...)[.Else(steps...)]
+  // ```
+  //   If(element[, condition])
+  //       .Then(steps...)
+  //       [.Else(steps...)]
+  // ```
+  //
+  // The `element` is retrieved from the current context (it will be null if it
+  // is not present). The `Then()` or branch is conditionally executed based on:
+  //  * The result of calling `condition`, if specified (please note that the
+  //    parameter may be null!)
+  //  * Whether `element` exists, if `condition` is not specified.
+  //
+  // If `Else()` is specified, it will be executed if the `Then()` branch is
+  // not. At most one branch can execute, and if it fails, the tutorial fails.
+  //
+  // Because the step does not wait for `element` to become present if it is
+  // not yet visible, you may want to insert a `HiddenStep` before your
+  // conditional to ensure the correct state:
+  // ```
+  //   HiddenStep::WaitForShown(kElementId),
+  //   If(kElementId, should_do_optional_steps)
+  //       .Then(<optional-steps>),
+  // ```
+  //
+  // If you want to wait for one of several elements to be visible (e.g. when
+  // the browser might show different variations of a WebUI page based on
+  // viewport size), use `WaitForAnyOf()`:
+  // ```
+  //   // Wait for either version of the surface to appear:
+  //   WaitForAnyOf(kPageVariation1ElementId)
+  //       .Or(kPageVariation2ElementId),
+  //
+  //   // Show different Tutorial steps based on which variation appeared:
+  //   If(kPageVariation1ElementId)
+  //       .Then(<then-steps>)
+  //       .Else(<else-steps>),
+  // ```
+  //
+  // Without the WaitForAnyOf, it is possible that neither element would have
+  // yet become visible, resulting in the condition failing and the Else()
+  // branch always running.
   class If : public Step {
    public:
-    If(ElementSpecifier element, ConditionalCallback if_condition)
+    // Executes the `Then()` part of this conditional step if `element`
+    // satisfies `if_condition`. If `if_condition` is not specified, the
+    // default is to execute the `Then()` portion if `element` is visible.
+    explicit If(ElementSpecifier element,
+                ConditionalCallback if_condition = RunIfPresent())
         : Step(element, ui::InteractionSequence::StepType::kSubsequence) {
-      if_condition_ = std::move(if_condition);
+      branches_.emplace_back(std::move(if_condition), std::vector<Step>());
     }
 
+    // These tutorial `then_steps` are executed if `if_condition` returns true.
+    // Otherwise they are ignored (and the `Else()` steps will be executed if
+    // present).
     template <typename... Args>
-    If& Then(Args... args) {
-      then_branch_ = Steps(std::move(args)...);
+    If& Then(Args... then_steps) {
+      CHECK_EQ(1U, branches_.size());
+      CHECK(branches_[0].second.empty());
+      branches_[0].second = Steps(std::move(then_steps)...);
       return *this;
     }
 
+    // The tutorial `else_steps` are executed if `if_condition` returns false.
+    // This is optional; if not specified and the condition returns false,
+    // nothing happens.
     template <typename... Args>
-    If& Else(Args... args) {
-      else_branch_ = Steps(std::move(args)...);
+    If& Else(Args... else_steps) {
+      CHECK_EQ(1U, branches_.size());
+      branches_.emplace_back(AlwaysRun(), Steps(std::move(else_steps)...));
+      subsequence_mode_ = ui::InteractionSequence::SubsequenceMode::kExactlyOne;
       return *this;
     }
 
-    // Prevent const versions from being hidden by the methods below.
-    using Step::else_branch;
-    using Step::then_branch;
+    // Provides mutable access to the branches in case steps need to be added
+    // individually.
+    using Step::branches;
+    auto& branches() { return branches_; }
+  };
 
-    // These provide mutable access to the branches in case steps need to be
-    // added individually.
-    std::vector<Step>& then_branch() { return then_branch_; }
-    std::vector<Step>& else_branch() { return else_branch_; }
+  // Constructs a hidden step that waits for at least one of `first` and any
+  // additional elements added through `Or()`.
+  //
+  // This is usually used before an `If()` to ensure that one of several
+  // different elements is present. See documentation for `If()` for more
+  // information.
+  class WaitForAnyOf : public HiddenStep {
+   public:
+    explicit WaitForAnyOf(ElementSpecifier first, bool wait_for_event = false);
+    WaitForAnyOf& Or(ElementSpecifier element, bool wait_for_event = false);
   };
 
   // the list of TutorialDescription steps
@@ -475,6 +544,9 @@ struct TutorialDescription {
       dest.emplace_back(step);
     }
   }
+
+  static ConditionalCallback AlwaysRun();
+  static ConditionalCallback RunIfPresent();
 };
 
 }  // namespace user_education
