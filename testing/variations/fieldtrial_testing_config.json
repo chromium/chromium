@@ -8857,6 +8857,27 @@
             ]
         }
     ],
+    "NonStandardDeclarativeShadowDOM": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "DeclarativeShadowRoot"
+                    ]
+                }
+            ]
+        }
+    ],
     "NormalPriorityImageDecoding": [
         {
             "platforms": [
