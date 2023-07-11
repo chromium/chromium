@@ -26,6 +26,11 @@ MakoUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
   return std::make_unique<MakoUntrustedUI>(web_ui);
 }
 
+bool MakoUntrustedUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return base::FeatureList::IsEnabled(features::kOrca);
+}
+
 MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   CHECK(base::FeatureList::IsEnabled(features::kOrca));
