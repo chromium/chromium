@@ -889,6 +889,8 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
   bool has_transient_user_activation =
       LocalFrame::HasTransientUserActivation(local_frame);
   bool has_delegated_activation = DomWindow()->IsPaymentRequestTokenActive();
+  bool has_activation =
+      has_transient_user_activation || has_delegated_activation;
 
   if (!has_transient_user_activation) {
     UseCounter::Count(GetExecutionContext(),
@@ -902,17 +904,14 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
 
   bool activationless_payment_request =
       ActivationlessShowEnabled(GetExecutionContext(), method_names_) &&
-      !has_transient_user_activation && !has_delegated_activation &&
-      !DomWindow()->HadActivationlessPaymentRequest();
+      !has_activation;
 
   if (activationless_payment_request) {
-    DomWindow()->SetHadActivationlessPaymentRequest();
     RecordActivationlessShow(GetExecutionContext(), method_names_);
   }
 
-  bool payment_request_allowed = has_transient_user_activation ||
-                                 has_delegated_activation ||
-                                 activationless_payment_request;
+  bool payment_request_allowed =
+      has_activation || activationless_payment_request;
   DomWindow()->ConsumePaymentRequestToken();
 
   if (payment_request_allowed) {
@@ -934,7 +933,8 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
   UseCounter::Count(GetExecutionContext(), WebFeature::kPaymentRequestShow);
 
   is_waiting_for_show_promise_to_resolve_ = !details_promise.IsEmpty();
-  payment_provider_->Show(is_waiting_for_show_promise_to_resolve_);
+  payment_provider_->Show(is_waiting_for_show_promise_to_resolve_,
+                          has_activation);
   if (is_waiting_for_show_promise_to_resolve_) {
     // If the website does not calculate the final shopping cart contents within
     // 10 seconds, abort payment.

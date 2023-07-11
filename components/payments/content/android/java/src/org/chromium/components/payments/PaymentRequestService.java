@@ -1222,8 +1222,10 @@ public class PaymentRequestService
     /**
      * The component part of the {@link PaymentRequest#show} implementation. Check {@link
      * PaymentRequest#show} for the parameters' specification.
+     * TOOD(crbug.com/1454204): Enforce one activationless show per navigation based on
+     * hadUserActivation.
      */
-    /* package */ void show(boolean waitForUpdatedDetails) {
+    /* package */ void show(boolean waitForUpdatedDetails, boolean hadUserActivation) {
         if (mBrowserPaymentRequest == null) return;
         assert mSpec != null;
         assert !mSpec.isDestroyed() : "mSpec is destroyed only after close().";

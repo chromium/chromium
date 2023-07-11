@@ -41,6 +41,7 @@ const char kWebAuthnOperationTimedOutOrNotAllowed[] = "The operation either time
 const char kSpcUserOptedOut[] = "User opted out of the process.";
 const char kInvalidPaymentDetails[] = "Invalid payment details.";
 const char kInvalidPaymentOptions[] = "Invalid payment options.";
+const char kCannotShowWithoutUserActivation[] = "PaymentRequest.show() calls after the first (per page load) require either transient user activation or delegated payment request capability.";
 // clang-format on
 }  // namespace errors
 }  // namespace payments

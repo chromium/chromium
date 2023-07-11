@@ -268,7 +268,8 @@ void PaymentRequest::Init(
   }
 }
 
-void PaymentRequest::Show(bool wait_for_updated_details) {
+void PaymentRequest::Show(bool wait_for_updated_details,
+                          bool had_user_activation) {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotShowWithoutInit);
     ResetAndDeleteThis();
@@ -299,6 +300,24 @@ void PaymentRequest::Show(bool wait_for_updated_details) {
                      errors::kAnotherUiShowing);
     ResetAndDeleteThis();
     return;
+  }
+
+  if (!had_user_activation) {
+    PaymentRequestWebContentsManager* manager =
+        PaymentRequestWebContentsManager::GetOrCreateForWebContents(
+            *web_contents());
+    if (manager->HadActivationlessShow()) {
+      log_.Error(errors::kCannotShowWithoutUserActivation);
+      DCHECK(!has_recorded_completion_);
+      has_recorded_completion_ = true;
+      journey_logger_.SetNotShown(JourneyLogger::NOT_SHOWN_REASON_OTHER);
+      client_->OnError(mojom::PaymentErrorReason::NOT_ALLOWED_ERROR,
+                       errors::kCannotShowWithoutUserActivation);
+      ResetAndDeleteThis();
+      return;
+    }
+
+    manager->RecordActivationlessShow();
   }
 
   if (!delegate_->IsBrowserWindowActive()) {

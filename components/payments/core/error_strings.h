@@ -115,6 +115,10 @@ extern const char kInvalidPaymentDetails[];
 // Used when the renderer does not provide valid options, such as a null struct.
 extern const char kInvalidPaymentOptions[];
 
+// Used when rejecting show() because there was no user activation when one was
+// determined to be required, i.e. after there has already been one such call.
+extern const char kCannotShowWithoutUserActivation[];
+
 }  // namespace errors
 }  // namespace payments
 

@@ -4,6 +4,8 @@
 
 #include "components/payments/content/payment_request_web_contents_manager.h"
 
+#include "content/public/browser/navigation_handle.h"
+
 namespace payments {
 
 // static
@@ -17,9 +19,33 @@ PaymentRequestWebContentsManager::GetOrCreateForWebContents(
 
 PaymentRequestWebContentsManager::PaymentRequestWebContentsManager(
     content::WebContents* web_contents)
-    : WebContentsUserData(*web_contents) {}
+    : WebContentsObserver(web_contents), WebContentsUserData(*web_contents) {}
 
 PaymentRequestWebContentsManager::~PaymentRequestWebContentsManager() = default;
+
+void PaymentRequestWebContentsManager::RecordActivationlessShow() {
+  had_activationless_show_ = true;
+}
+
+void PaymentRequestWebContentsManager::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  // Reset the activationless show tracker at the next user-initiated
+  // navigation, which is defined as either a renderer-initiated navigation with
+  // a user gesture, or a browser-initiated navigation.
+  //
+  // TODO(crbug.com/952347): This check has to be done at DidStartNavigation
+  // time, the HasUserGesture state is lost by the time the navigation
+  // commits.
+  if (!navigation_handle->IsRendererInitiated() ||
+      navigation_handle->HasUserGesture()) {
+    had_activationless_show_ = false;
+  }
+}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PaymentRequestWebContentsManager);
 

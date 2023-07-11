@@ -2493,14 +2493,6 @@ void LocalDOMWindow::SetHasStorageAccess() {
   has_storage_access_ = true;
 }
 
-bool LocalDOMWindow::HadActivationlessPaymentRequest() const {
-  return had_activationless_payment_request_;
-}
-
-void LocalDOMWindow::SetHadActivationlessPaymentRequest() {
-  had_activationless_payment_request_ = true;
-}
-
 void LocalDOMWindow::maximize() {
   if (!GetFrame() || !GetFrame()->IsOutermostMainFrame() ||
       GetFrame()->GetPage()->IsPrerendering()) {

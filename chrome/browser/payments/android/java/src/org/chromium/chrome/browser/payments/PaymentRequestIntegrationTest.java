@@ -76,6 +76,7 @@ public class PaymentRequestIntegrationTest {
     private PaymentAppFactoryInterface mFactory;
     private PaymentApp mPaymentApp;
     private boolean mWaitForUpdatedDetails;
+    private boolean mIsUserGestureShow;
 
     @Before
     public void setUp() {
@@ -159,7 +160,7 @@ public class PaymentRequestIntegrationTest {
     }
 
     private void show(PaymentRequest request) {
-        request.show(mWaitForUpdatedDetails);
+        request.show(mWaitForUpdatedDetails, mIsUserGestureShow);
     }
 
     private void assertInvokePaymentAppCalled() {

@@ -711,18 +711,6 @@ TEST(PaymentRequestTest, SPCActivationlessShowEnabled) {
     EXPECT_TRUE(scope.GetDocument().IsUseCounted(
         WebFeature::kPaymentRequestShowWithoutGestureOrToken));
   }
-
-  // After the first activationless SPC call is allowed, a second should fail.
-  {
-    PaymentRequest* request = PaymentRequest::Create(
-        ExecutionContext::From(scope.GetScriptState()),
-        BuildSecurePaymentConfirmationMethodDataForTest(scope),
-        BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
-
-    request->show(scope.GetScriptState(), scope.GetExceptionState());
-    EXPECT_EQ(scope.GetExceptionState().Code(),
-              ToExceptionCode(DOMExceptionCode::kSecurityError));
-  }
 }
 
 TEST(PaymentRequestTest, SPCActivationlessShowDisabled) {

@@ -532,9 +532,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // given window, it cannot be taken away.
   void SetHasStorageAccess();
 
-  bool HadActivationlessPaymentRequest() const;
-  void SetHadActivationlessPaymentRequest();
-
   void maximize();
   void minimize();
   void restore();
