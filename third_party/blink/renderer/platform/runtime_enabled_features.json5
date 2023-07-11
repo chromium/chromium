@@ -2074,6 +2074,11 @@
       "name": "IntersectionOptimization",
     },
     {
+      name: "JavaScriptCompileHintsMagicRuntime",
+      status: "experimental",
+      origin_trial_feature_name: "JavaScriptCompileHintsMagic",
+    },
+    {
       name: "KeyboardAccessibleTooltip",
       status: "experimental",
       base_feature: "none",
