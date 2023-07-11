@@ -359,8 +359,8 @@ TEST_F(MLGraphBuilderTest, ConcatTest) {
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The value of axis should be in the interval [0, N-1] where N is "
-              "the rank of input tensors.");
+              "The axis must be in the range [0, N-1] where N is the rank of "
+              "input tensor.");
   }
   {
     // Test throwing exception when the inputs have other axes with different
@@ -3025,6 +3025,116 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   }
 }
 
+MLOperand* BuildReduce(V8TestingScope& scope,
+                       MLGraphBuilder* builder,
+                       ReduceKind kind,
+                       const MLOperand* input,
+                       const MLReduceOptions* options) {
+  MLOperand* output = nullptr;
+  switch (kind) {
+    case ReduceKind::kMean:
+      output = builder->reduceMean(input, options, scope.GetExceptionState());
+      break;
+    case ReduceKind::kSum:
+      output = builder->reduceSum(input, options, scope.GetExceptionState());
+      break;
+  }
+  return output;
+}
+
+void CheckReduceOutput(const MLOperand* input,
+                       const MLOperand* output,
+                       ReduceKind kind) {
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Type(), input->Type());
+  auto* reduce = output->Operator();
+  EXPECT_NE(reduce, nullptr);
+  switch (kind) {
+    case ReduceKind::kMean:
+      EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceMean);
+      break;
+    case ReduceKind::kSum:
+      EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceSum);
+      break;
+  }
+  EXPECT_EQ(reduce->IsConnected(), true);
+  EXPECT_NE(reduce->Options(), nullptr);
+}
+
+TEST_F(MLGraphBuilderTest, ReduceTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  const auto ReduceKinds = {ReduceKind::kMean, ReduceKind::kSum};
+  for (const auto reduce_kind : ReduceKinds) {
+    {
+      // Test reduce with default options.
+      auto* input = BuildInput(builder, "input", {1, 3, 4, 4},
+                               V8MLOperandType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLReduceOptions::Create();
+      EXPECT_FALSE(options->hasAxes());
+      EXPECT_TRUE(options->hasKeepDimensions());
+      EXPECT_EQ(options->keepDimensions(), false);
+      auto* output = BuildReduce(scope, builder, reduce_kind, input, options);
+      CheckReduceOutput(input, output, reduce_kind);
+      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1}));
+    }
+    {
+      // Test reduce with keepDimensions = true.
+      auto* input = BuildInput(builder, "input", {1, 3, 4, 4},
+                               V8MLOperandType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLReduceOptions::Create();
+      options->setKeepDimensions(true);
+      auto* output = BuildReduce(scope, builder, reduce_kind, input, options);
+      CheckReduceOutput(input, output, reduce_kind);
+      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 1, 1, 1}));
+    }
+    {
+      // Test reduce with axes = {0, 1} and keep_dimensions = false.
+      auto* input = BuildInput(builder, "input", {1, 3, 5, 5},
+                               V8MLOperandType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLReduceOptions::Create();
+      options->setAxes({0, 1});
+      auto* output = BuildReduce(scope, builder, reduce_kind, input, options);
+      CheckReduceOutput(input, output, reduce_kind);
+      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({5, 5}));
+    }
+    {
+      // Test throwing exception when a value in axes is out of range of [0,
+      // N-1].
+      auto* input = BuildInput(builder, "input", {1, 2, 5, 5},
+                               V8MLOperandType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLReduceOptions::Create();
+      options->setAxes({4});
+      auto* output = BuildReduce(scope, builder, reduce_kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "The values in axes must be within the range from 0 "
+                "to (3).");
+    }
+    {
+      // Test throwing exception when the two values are same in axes sequence.
+      auto* input = BuildInput(builder, "input", {1, 2, 5, 5},
+                               V8MLOperandType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLReduceOptions::Create();
+      options->setAxes({0, 1, 1});
+      auto* output = BuildReduce(scope, builder, reduce_kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "Two or more values are same in the axes sequence.");
+    }
+  }
+}
+
 TEST_F(MLGraphBuilderTest, ReshapeTest) {
   V8TestingScope scope;
   MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
@@ -3443,7 +3553,7 @@ TEST_F(MLGraphBuilderTest, TransposeTest) {
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "Two or more values are same in the permutation sequence.");
+              "Two or more values are same in the axes sequence.");
   }
   {
     // Test throwing error when one value in permutation is greater than
@@ -3458,9 +3568,8 @@ TEST_F(MLGraphBuilderTest, TransposeTest) {
     EXPECT_EQ(output, nullptr);
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
-    EXPECT_EQ(
-        scope.GetExceptionState().Message(),
-        "The values in permutation must be within the range from 0 to (3).");
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The values in axes must be within the range from 0 to (3).");
   }
 }
 

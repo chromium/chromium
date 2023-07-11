@@ -1186,6 +1186,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method neg
 [Worker]     method pad
 [Worker]     method prelu
+[Worker]     method reduceMean
+[Worker]     method reduceSum
 [Worker]     method relu
 [Worker]     method resample2d
 [Worker]     method reshape

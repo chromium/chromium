@@ -32,6 +32,7 @@ class MLGraph;
 class MLLeakyReluOptions;
 class MLPadOptions;
 class MLPool2dOptions;
+class MLReduceOptions;
 class MLResample2dOptions;
 class MLSplitOptions;
 class MLTransposeOptions;
@@ -201,6 +202,14 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* prelu(const MLOperand* input,
                    const MLOperand* slope,
                    ExceptionState& exception_state);
+
+  // Reduction operations
+  MLOperand* reduceMean(const MLOperand* input,
+                        const MLReduceOptions* options,
+                        ExceptionState& exception_state);
+  MLOperand* reduceSum(const MLOperand* input,
+                       const MLReduceOptions* options,
+                       ExceptionState& exception_state);
 
   MLOperand* relu(const MLOperand* input, ExceptionState& exception_state);
   MLActivation* relu(ExceptionState& exception_state);

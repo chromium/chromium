@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 408 tests; 290 PASS, 118 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 408 tests; 296 PASS, 112 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -234,10 +234,10 @@ FAIL MLGraphBuilder interface: operation reduceL2(MLOperand, optional MLReduceOp
 FAIL MLGraphBuilder interface: operation reduceLogSum(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceLogSum" missing
 FAIL MLGraphBuilder interface: operation reduceLogSumExp(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceLogSumExp" missing
 FAIL MLGraphBuilder interface: operation reduceMax(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceMax" missing
-FAIL MLGraphBuilder interface: operation reduceMean(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceMean" missing
+PASS MLGraphBuilder interface: operation reduceMean(MLOperand, optional MLReduceOptions)
 FAIL MLGraphBuilder interface: operation reduceMin(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceMin" missing
 FAIL MLGraphBuilder interface: operation reduceProduct(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceProduct" missing
-FAIL MLGraphBuilder interface: operation reduceSum(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceSum" missing
+PASS MLGraphBuilder interface: operation reduceSum(MLOperand, optional MLReduceOptions)
 FAIL MLGraphBuilder interface: operation reduceSumSquare(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceSumSquare" missing
 PASS MLGraphBuilder interface: operation relu(MLOperand)
 PASS MLGraphBuilder interface: operation relu()
@@ -365,14 +365,14 @@ FAIL MLGraphBuilder interface: builder must inherit property "reduceLogSumExp(ML
 FAIL MLGraphBuilder interface: calling reduceLogSumExp(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_inherits: property "reduceLogSumExp" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "reduceMax(MLOperand, optional MLReduceOptions)" with the proper type assert_inherits: property "reduceMax" not found in prototype chain
 FAIL MLGraphBuilder interface: calling reduceMax(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_inherits: property "reduceMax" not found in prototype chain
-FAIL MLGraphBuilder interface: builder must inherit property "reduceMean(MLOperand, optional MLReduceOptions)" with the proper type assert_inherits: property "reduceMean" not found in prototype chain
-FAIL MLGraphBuilder interface: calling reduceMean(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_inherits: property "reduceMean" not found in prototype chain
+PASS MLGraphBuilder interface: builder must inherit property "reduceMean(MLOperand, optional MLReduceOptions)" with the proper type
+PASS MLGraphBuilder interface: calling reduceMean(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
 FAIL MLGraphBuilder interface: builder must inherit property "reduceMin(MLOperand, optional MLReduceOptions)" with the proper type assert_inherits: property "reduceMin" not found in prototype chain
 FAIL MLGraphBuilder interface: calling reduceMin(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_inherits: property "reduceMin" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "reduceProduct(MLOperand, optional MLReduceOptions)" with the proper type assert_inherits: property "reduceProduct" not found in prototype chain
 FAIL MLGraphBuilder interface: calling reduceProduct(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_inherits: property "reduceProduct" not found in prototype chain
-FAIL MLGraphBuilder interface: builder must inherit property "reduceSum(MLOperand, optional MLReduceOptions)" with the proper type assert_inherits: property "reduceSum" not found in prototype chain
-FAIL MLGraphBuilder interface: calling reduceSum(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_inherits: property "reduceSum" not found in prototype chain
+PASS MLGraphBuilder interface: builder must inherit property "reduceSum(MLOperand, optional MLReduceOptions)" with the proper type
+PASS MLGraphBuilder interface: calling reduceSum(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError
 FAIL MLGraphBuilder interface: builder must inherit property "reduceSumSquare(MLOperand, optional MLReduceOptions)" with the proper type assert_inherits: property "reduceSumSquare" not found in prototype chain
 FAIL MLGraphBuilder interface: calling reduceSumSquare(MLOperand, optional MLReduceOptions) on builder with too few arguments must throw TypeError assert_inherits: property "reduceSumSquare" not found in prototype chain
 PASS MLGraphBuilder interface: builder must inherit property "relu(MLOperand)" with the proper type

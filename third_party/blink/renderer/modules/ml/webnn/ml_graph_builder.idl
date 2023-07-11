@@ -89,6 +89,11 @@ dictionary MLEluOptions {
   float alpha = 1;
 };
 
+dictionary MLReduceOptions {
+  sequence<[EnforceRange] unsigned long> axes;
+  boolean keepDimensions = false;
+};
+
 enum MLInterpolationMode {"nearest-neighbor", "linear" };
 
 dictionary MLResample2dOptions {
@@ -157,6 +162,9 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand maxPool2d(MLOperand input, optional MLPool2dOptions options = {});
 
   [RaisesException] MLOperand prelu(MLOperand x, MLOperand slope);
+
+  [RaisesException] MLOperand reduceSum(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceMean(MLOperand input, optional MLReduceOptions options = {});
 
   [RaisesException] MLOperand relu(MLOperand input);
   [RaisesException] MLActivation relu();

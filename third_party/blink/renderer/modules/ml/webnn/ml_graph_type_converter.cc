@@ -212,6 +212,8 @@ OperatorPtr ConvertToMojoOperator(const OperandToIdMap& operand_to_id_map,
     case MLOperator::OperatorKind::kAveragePool2d:
     case MLOperator::OperatorKind::kMaxPool2d:
     case MLOperator::OperatorKind::kHardSwish:
+    case MLOperator::OperatorKind::kReduceMean:
+    case MLOperator::OperatorKind::kReduceSum:
     case MLOperator::OperatorKind::kResample2d:
     case MLOperator::OperatorKind::kSigmoid:
     case MLOperator::OperatorKind::kConcat:

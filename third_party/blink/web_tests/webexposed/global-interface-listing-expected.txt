@@ -5575,6 +5575,8 @@ interface MLGraphBuilder
     method neg
     method pad
     method prelu
+    method reduceMean
+    method reduceSum
     method relu
     method resample2d
     method reshape

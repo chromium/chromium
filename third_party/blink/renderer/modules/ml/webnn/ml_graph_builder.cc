@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
@@ -122,6 +123,41 @@ bool ValidateClampOptions(const MLClampOptions* options,
   return true;
 }
 
+bool ValidateAxis(uint32_t axis,
+                  uint32_t input_rank,
+                  ExceptionState& exception_state) {
+  if (axis >= input_rank) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The axis must be in the range [0, N-1] "
+                                      "where N is the rank of input tensor.");
+    return false;
+  }
+  return true;
+}
+
+bool ValidateAxes(const Vector<uint32_t>& axes,
+                  uint32_t input_rank,
+                  ExceptionState& exception_state) {
+  if (base::ranges::any_of(axes, [input_rank](uint32_t axis) {
+        return base::MakeStrictNum(axis) >= input_rank;
+      })) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        String::Format("The values in axes must be within the range from 0 "
+                       "to (%u).",
+                       input_rank - 1));
+    return false;
+  }
+
+  if (axes.size() != std::set<uint32_t>(axes.begin(), axes.end()).size()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "Two or more values are same in the axes sequence.");
+    return false;
+  }
+  return true;
+}
+
 absl::optional<Vector<uint32_t>> BroadcastShapes(
     const Vector<uint32_t>& dims_lhs,
     const Vector<uint32_t>& dims_rhs,
@@ -190,6 +226,59 @@ MLOperand* BuildElementWiseUnary(MLGraphBuilder* builder,
     return nullptr;
   }
   unary->Connect({input}, {output.value()});
+  return output.value();
+}
+
+MLOperand* BuildReduce(MLGraphBuilder* builder,
+                       MLOperator::OperatorKind kind,
+                       const MLOperand* input,
+                       const MLReduceOptions* options,
+                       ExceptionState& exception_state) {
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-reduce,
+  // When axes is not specified, it’s set to [0, ..., N-1], where N is
+  // the rank of the input tensor.
+  const auto input_rank = input->Dimensions().size();
+  Vector<uint32_t> default_axes(input_rank);
+  for (wtf_size_t i = 0; i < input_rank; i++) {
+    default_axes[i] = i;
+  }
+  const auto axes = options->getAxesOr(std::move(default_axes));
+  if (!ValidateAxes(axes, input_rank, exception_state)) {
+    return nullptr;
+  }
+
+  Vector<uint32_t> output_shape;
+  if (options->keepDimensions()) {
+    output_shape = input->Dimensions();
+    for (auto axis : axes) {
+      output_shape[axis] = 1;
+    }
+  } else {
+    for (wtf_size_t i = 0; i < input_rank; i++) {
+      if (!axes.Contains(i)) {
+        output_shape.push_back(input->Dimensions()[i]);
+      }
+    }
+  }
+
+  // Currently, WebNN doesn't support using empty dimensions to represent a
+  // scalar. An issue has been filed to track it -
+  // https://github.com/webmachinelearning/webnn/issues/390. As a workaround, we
+  // set output_shape to {1} to represent a scalar output.
+  if (output_shape.size() == 0) {
+    output_shape.push_back(1);
+  }
+
+  auto* reduce = MakeGarbageCollected<MLOperator>(builder, kind, options);
+  auto output = MLOperand::ValidateAndCreateOutput(builder, input->Type(),
+                                                   output_shape, reduce);
+  if (!output.has_value()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      output.error());
+    return nullptr;
+  }
+  reduce->Connect({input}, {output.value()});
   return output.value();
 }
 
@@ -794,11 +883,7 @@ MLOperand* MLGraphBuilder::concat(const HeapVector<Member<MLOperand>>& inputs,
   // [0, N-1] where N is the rank of input tensors. We just check the first
   // input rank here because we will check all inputs have same rank in the
   // following loop.
-  if (axis >= first_input_rank) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "The value of axis should be in the interval [0, N-1] where N is the "
-        "rank of input tensors.");
+  if (!ValidateAxis(axis, first_input_rank, exception_state)) {
     return nullptr;
   }
   const auto output_type = inputs[0]->Type();
@@ -1287,6 +1372,17 @@ BUILD_ELEMENTWISE_UNARY_OP(abs, kAbs)
 BUILD_ELEMENTWISE_UNARY_OP(ceil, kCeil)
 BUILD_ELEMENTWISE_UNARY_OP(floor, kFloor)
 BUILD_ELEMENTWISE_UNARY_OP(neg, kNeg)
+
+#define BUILD_REDUCE_OP(op, op_kind)                                   \
+  MLOperand* MLGraphBuilder::op(const MLOperand* input,                \
+                                const MLReduceOptions* options,        \
+                                ExceptionState& exception_state) {     \
+    return BuildReduce(this, MLOperator::OperatorKind::op_kind, input, \
+                       options, exception_state);                      \
+  }
+
+BUILD_REDUCE_OP(reduceSum, kReduceSum)
+BUILD_REDUCE_OP(reduceMean, kReduceMean)
 
 MLOperand* MLGraphBuilder::elu(const MLOperand* input,
                                const MLEluOptions* options,
@@ -1940,15 +2036,10 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
   // According to WebNN spec:
   // https://www.w3.org/TR/webnn/#dom-mlsplitoptions-axis, the axis must be in
   // the range [0, N-1] where N is the rank of input tensor.
-  //
-  // TODO(crbug.com/1273291): Consider adding helpers for ValidateAxis and
-  // ValidateAxes functions to optimize the code.
-  if (axis > input_rank - 1) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The axis must be in the range [0, N-1] "
-                                      "where N is the rank of input tensor.");
+  if (!ValidateAxis(axis, input_rank, exception_state)) {
     return {};
   }
+
   if (splits == 0) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       "The splits must be greater than 0.");
@@ -1998,13 +2089,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
   // According to WebNN spec:
   // https://www.w3.org/TR/webnn/#dom-mlsplitoptions-axis, the axis must be in
   // the range [0, N-1] where N is the rank of input tensor.
-  //
-  // TODO(crbug.com/1273291): Consider adding helpers for ValidateAxis and
-  // ValidateAxes functions to optimize the code.
-  if (axis > input_rank - 1) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The axis must be in the range [0, N-1] "
-                                      "where N is the rank of input tensor.");
+  if (!ValidateAxis(axis, input_rank, exception_state)) {
     return {};
   }
   auto checked_splits_sum = base::MakeCheckedNum<uint32_t>(0);
@@ -2103,23 +2188,7 @@ MLOperand* MLGraphBuilder::transpose(const MLOperand* input,
     return nullptr;
   }
 
-  if (base::ranges::any_of(permutation, [input_rank](uint32_t axis) {
-        return base::MakeStrictNum(axis) >= input_rank;
-      })) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        String::Format(
-            "The values in permutation must be within the range from 0 "
-            "to (%u).",
-            input_rank - 1));
-    return nullptr;
-  }
-
-  if (permutation.size() !=
-      std::set<uint32_t>(permutation.begin(), permutation.end()).size()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "Two or more values are same in the permutation sequence.");
+  if (!ValidateAxes(permutation, input_rank, exception_state)) {
     return nullptr;
   }
 
