@@ -193,6 +193,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         value: false,
       },
 
+      pdfAttachmentsEnabled_: {
+        type: Boolean,
+        value: false,
+      },
+
       // <if expr="enable_screen_ai_service">
       pdfOcrEnabled_: {
         type: Boolean,
@@ -258,6 +263,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private navigator_: PdfNavigator|null = null;
   private pageNo_: number;
   private pdfAnnotationsEnabled_: boolean;
+  private pdfAttachmentsEnabled_: boolean;
   // <if expr="enable_screen_ai_service">
   private pdfOcrEnabled_: boolean;
   // </if>
@@ -674,6 +680,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     this.pdfAnnotationsEnabled_ =
         loadTimeData.getBoolean('pdfAnnotationsEnabled');
+    this.pdfAttachmentsEnabled_ =
+        loadTimeData.getBoolean('pdfAttachmentsEnabled');
     // <if expr="enable_screen_ai_service">
     this.pdfOcrEnabled_ = loadTimeData.getBoolean('pdfOcrEnabled');
     // </if>
