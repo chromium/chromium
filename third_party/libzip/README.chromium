@@ -6,6 +6,7 @@ Date: 2021/01/05
 License: Custom
 License File: LICENSE
 Security Critical: Yes
+Shipped: yes
 CPEPrefix: cpe:/a:nih:libzip:1.7.3
 
 Description:
