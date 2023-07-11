@@ -4825,21 +4825,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DnsProbe.ProbeDuration2" units="ms" expires_after="2021-12-12">
-  <owner>ericorth@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Time ticks between starting and finishing a DNS diagnostics probe.
-  </summary>
-</histogram>
-
-<histogram name="DnsProbe.ProbeResult" enum="DnsProbe.ProbeStatus"
-    expires_after="2021-10-10">
-  <owner>ericorth@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>Result of DNS diagnostics probes sent by the probe service.</summary>
-</histogram>
-
 <histogram name="Document.BeforeUnloadDialog" enum="BeforeUnloadDialogResult"
     expires_after="2023-12-04">
   <owner>panicker@chromium.org</owner>

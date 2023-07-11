@@ -28976,17 +28976,6 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="3" label="NXDOMAIN"/>
 </enum>
 
-<enum name="DnsProbe.ProbeStatus">
-  <int value="0" label="POSSIBLE"/>
-  <int value="1" label="NOT_RUN"/>
-  <int value="2" label="STARTED"/>
-  <int value="3" label="FINISHED_INCONCLUSIVE"/>
-  <int value="4" label="FINISHED_NO_INTERNET"/>
-  <int value="5" label="FINISHED_BAD_CONFIG"/>
-  <int value="6" label="FINISHED_NXDOMAIN"/>
-  <int value="7" label="FINISHED_BAD_SECURE_CONFIG"/>
-</enum>
-
 <enum name="DnsProbe.SystemIsLocalhost">
   <int value="0" label="Not just 127.0.0.1">
     127.0.0.1 was not the only nameserver in the system DNS config.
