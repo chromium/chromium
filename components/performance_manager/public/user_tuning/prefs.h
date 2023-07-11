@@ -17,7 +17,8 @@ class PrefRegistrySyncable;
 namespace performance_manager::user_tuning::prefs {
 
 // DEPRECATED: being replaced by kHighEfficiencyModeState
-extern const char kHighEfficiencyModeEnabled[];
+inline constexpr char kHighEfficiencyModeEnabled[] =
+    "performance_tuning.high_efficiency_mode.enabled";
 
 enum class HighEfficiencyModeState {
   kDisabled = 0,
@@ -25,11 +26,13 @@ enum class HighEfficiencyModeState {
   kEnabledOnTimer = 2,
 };
 
-extern const char kHighEfficiencyModeState[];
+inline constexpr char kHighEfficiencyModeState[] =
+    "performance_tuning.high_efficiency_mode.state";
 
-extern const char kHighEfficiencyModeTimeBeforeDiscardInMinutes[];
+inline constexpr char kHighEfficiencyModeTimeBeforeDiscardInMinutes[] =
+    "performance_tuning.high_efficiency_mode.time_before_discard_in_minutes";
 
-extern const int kDefaultHighEfficiencyModeTimeBeforeDiscardInMinutes;
+constexpr int kDefaultHighEfficiencyModeTimeBeforeDiscardInMinutes = 120;
 
 enum class BatterySaverModeState {
   kDisabled = 0,
@@ -38,19 +41,23 @@ enum class BatterySaverModeState {
   kEnabled = 3,
 };
 
-extern const char kBatterySaverModeState[];
+inline constexpr char kBatterySaverModeState[] =
+    "performance_tuning.battery_saver_mode.state";
 
 // Stores the timestamp of the last battery usage while unplugged.
-extern const char kLastBatteryUseTimestamp[];
+inline constexpr char kLastBatteryUseTimestamp[] =
+    "performance_tuning.last_battery_use.timestamp";
 
 // The pref storing the list of URL patterns that prevent a tab from being
 // discarded.
-extern const char kTabDiscardingExceptions[];
+inline constexpr char kTabDiscardingExceptions[] =
+    "performance_tuning.tab_discarding.exceptions";
 
 // The pref storing the enterprise-managed list of URL patterns that prevent a
 // tab from being discarded. This list is merged with
 // `kTabDiscardingExceptions`.
-extern const char kManagedTabDiscardingExceptions[];
+inline constexpr char kManagedTabDiscardingExceptions[] =
+    "performance_tuning.tab_discarding.exceptions_managed";
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

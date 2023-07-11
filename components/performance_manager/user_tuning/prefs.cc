@@ -11,29 +11,6 @@
 
 namespace performance_manager::user_tuning::prefs {
 
-const char kHighEfficiencyModeEnabled[] =
-    "performance_tuning.high_efficiency_mode.enabled";
-
-const char kHighEfficiencyModeState[] =
-    "performance_tuning.high_efficiency_mode.state";
-
-const char kHighEfficiencyModeTimeBeforeDiscardInMinutes[] =
-    "performance_tuning.high_efficiency_mode.time_before_discard_in_minutes";
-
-const int kDefaultHighEfficiencyModeTimeBeforeDiscardInMinutes = 120;
-
-const char kBatterySaverModeState[] =
-    "performance_tuning.battery_saver_mode.state";
-
-const char kLastBatteryUseTimestamp[] =
-    "performance_tuning.last_battery_use.timestamp";
-
-const char kTabDiscardingExceptions[] =
-    "performance_tuning.tab_discarding.exceptions";
-
-const char kManagedTabDiscardingExceptions[] =
-    "performance_tuning.tab_discarding.exceptions_managed";
-
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kHighEfficiencyModeEnabled, false);
   registry->RegisterIntegerPref(
