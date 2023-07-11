@@ -719,7 +719,8 @@ absl::optional<String> AcceptedEncodingFromProtocol(
   absl::optional<String> result;
   if (ContentEncodingEnum::Gzip == encoding ||
       ContentEncodingEnum::Br == encoding ||
-      ContentEncodingEnum::Deflate == encoding) {
+      ContentEncodingEnum::Deflate == encoding ||
+      ContentEncodingEnum::Zstd == encoding) {
     result = encoding;
   }
   return result;
@@ -733,6 +734,9 @@ SourceTypeEnum SourceTypeFromString(const String& type) {
     return SourceTypeEnum::TYPE_DEFLATE;
   if (type == ContentEncodingEnum::Br)
     return SourceTypeEnum::TYPE_BROTLI;
+  if (type == ContentEncodingEnum::Zstd) {
+    return SourceTypeEnum::TYPE_ZSTD;
+  }
   NOTREACHED();
   return SourceTypeEnum::TYPE_UNKNOWN;
 }

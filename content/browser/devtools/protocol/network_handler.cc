@@ -967,6 +967,9 @@ absl::optional<SourceTypeEnum> SourceTypeFromProtocol(
     return SourceTypeEnum::TYPE_BROTLI;
   if (ContentEncodingEnum::Deflate == encoding)
     return SourceTypeEnum::TYPE_DEFLATE;
+  if (ContentEncodingEnum::Zstd == encoding) {
+    return SourceTypeEnum::TYPE_ZSTD;
+  }
   return absl::nullopt;
 }
 
