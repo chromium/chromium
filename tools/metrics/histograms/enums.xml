@@ -108390,18 +108390,6 @@ Full version information for the fingerprint enum values:
   <int value="2" label="Child user changed type to regular"/>
 </enum>
 
-<enum name="UserUninstalledPreinstalledAppMigrationState">
-  <int value="0"
-      label="User uninstalled preinstalled apps migrated due to user
-             uninstalls"/>
-  <int value="1"
-      label="User uninstalled preinstalled apps migrated due to old pref
-             value update"/>
-  <int value="2"
-      label="User uninstalled preinstalled apps already in sync, no migration
-             happened"/>
-</enum>
-
 <enum name="UtilityProcessNameHash">
   <summary>
     The hash of a utility process name generated using `variations::HashName()`.
