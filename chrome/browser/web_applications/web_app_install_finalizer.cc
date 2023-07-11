@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -260,10 +261,9 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
 #endif
 
   if (options.isolated_web_app_location.has_value()) {
-    CHECK(web_app_info.isolated_web_app_version.IsValid());
-    web_app->SetIsolationData(
-        WebApp::IsolationData(*options.isolated_web_app_location,
-                              web_app_info.isolated_web_app_version));
+    UpdateIsolationDataAndResetPendingUpdateInfo(
+        web_app.get(), *options.isolated_web_app_location,
+        web_app_info.isolated_web_app_version);
   }
 
   web_app->SetParentAppId(web_app_info.parent_app_id);
@@ -393,13 +393,26 @@ void WebAppInstallFinalizer::FinalizeUpdate(
       provider_->registrar_unsafe().GetAppShortName(app_id),
       GetFileHandlerUpdateAction(app_id, web_app_info), web_app_info.Clone());
 
+  auto web_app = std::make_unique<WebApp>(*existing_web_app);
+  if (web_app->isolation_data().has_value()) {
+    base::optional_ref<const WebApp::IsolationData::PendingUpdateInfo>
+        pending_update_info = web_app->isolation_data()->pending_update_info();
+    CHECK(pending_update_info.has_value())
+        << "Isolated Web Apps can only be updated if "
+           "`WebApp::IsolationData::PendingUpdateInfo` is set.";
+    CHECK_EQ(web_app_info.isolated_web_app_version,
+             pending_update_info->version);
+    UpdateIsolationDataAndResetPendingUpdateInfo(web_app.get(),
+                                                 pending_update_info->location,
+                                                 pending_update_info->version);
+  }
+
   // Prepare copy-on-write to update existing app.
   // This is not reached unless the data obtained from the manifest
   // update process is valid, so an invariant of the system is that
   // icons are valid here.
   SetWebAppManifestFieldsAndWriteData(
-      web_app_info, std::make_unique<WebApp>(*existing_web_app),
-      std::move(commit_callback),
+      web_app_info, std::move(web_app), std::move(commit_callback),
       /*skip_icon_writes_on_download_failure=*/false);
 }
 
@@ -415,6 +428,26 @@ void WebAppInstallFinalizer::Start() {
 
 void WebAppInstallFinalizer::Shutdown() {
   started_ = false;
+}
+
+void WebAppInstallFinalizer::UpdateIsolationDataAndResetPendingUpdateInfo(
+    WebApp* web_app,
+    const IsolatedWebAppLocation& location,
+    const base::Version& version) {
+  CHECK(version.IsValid());
+
+  // If previous `controlled_frame_partitions` exist, keep them the same. This
+  // can only happen during an update, and never during an install.
+  std::set<std::string> controlled_frame_partitions;
+  if (web_app->isolation_data().has_value()) {
+    controlled_frame_partitions =
+        web_app->isolation_data()->controlled_frame_partitions;
+  }
+  web_app->SetIsolationData(WebApp::IsolationData(
+      location, version, controlled_frame_partitions,
+      // Always reset `pending_update_info`, because reaching this point means
+      // that an install or update just succeeded.
+      /*pending_update_info=*/absl::nullopt));
 }
 
 void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(

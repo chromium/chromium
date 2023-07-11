@@ -45,6 +45,7 @@ class ScopedProfileKeepAlive;
 
 namespace web_app {
 
+struct IsolatedWebAppApplyUpdateCommandError;
 struct IsolatedWebAppUpdatePrepareAndStoreCommandError;
 class IsolatedWebAppUrlInfo;
 class WebApp;
@@ -210,6 +211,20 @@ class WebAppCommandScheduler {
       base::OnceCallback<
           void(base::expected<void,
                               IsolatedWebAppUpdatePrepareAndStoreCommandError>)>
+          callback,
+      const base::Location& call_location = FROM_HERE);
+
+  // Schedules a command to apply a prepared pending update of an Isolated Web
+  // App. This command is safe to run even if the IWA is not installed or
+  // already updated, in which case it will gracefully fail. Regardless of
+  // whether the update succeeds or fails, `IsolationData::pending_update_info`
+  // of the IWA in the Web App database will be cleared.
+  virtual void ApplyPendingIsolatedWebAppUpdate(
+      const IsolatedWebAppUrlInfo& url_info,
+      std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+      base::OnceCallback<
+          void(base::expected<void, IsolatedWebAppApplyUpdateCommandError>)>
           callback,
       const base::Location& call_location = FROM_HERE);
 

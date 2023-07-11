@@ -71,6 +71,10 @@ class WebAppInstallFinalizer {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     absl::optional<ash::SystemWebAppData> system_web_app_data;
 #endif
+
+    // If set, will set `WebApp::IsolationData` with the given location, as well
+    // as the version from `WebAppInstallInfo::isolated_web_app_version`. Will
+    // `CHECK` if `web_app_info.isolated_web_app_version` is invalid.
     absl::optional<web_app::IsolatedWebAppLocation> isolated_web_app_location;
 
     // If true, OsIntegrationManager::InstallOsHooks won't be called at all,
@@ -165,6 +169,11 @@ class WebAppInstallFinalizer {
                                   WebAppManagement::Type source,
                                   UninstallWebAppCallback callback,
                                   OsHooksErrors os_hooks_errors);
+
+  void UpdateIsolationDataAndResetPendingUpdateInfo(
+      WebApp* web_app,
+      const IsolatedWebAppLocation& location,
+      const base::Version& version);
 
   void SetWebAppManifestFieldsAndWriteData(
       const WebAppInstallInfo& web_app_info,
