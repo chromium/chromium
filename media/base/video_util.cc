@@ -8,7 +8,6 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -46,14 +45,6 @@
 namespace media {
 
 namespace {
-
-// Temporary escape hatch in case VideoFrames requiring external sampling are
-// ever passed to ReadbackTexturePlaneToMemorySyncOOP().
-// TODO(crbug.com/1459252): Remove this after 117 has safely gone through
-// stable.
-BASE_FEATURE(kCheckOnExternalSamplerInTextureReadback,
-             "CheckOnExternalSamplerInTextureReadback",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Helper to apply padding to the region outside visible rect up to the coded
 // size with the repeated last column / row of the visible rect.
@@ -203,11 +194,6 @@ bool ReadbackTexturePlaneToMemorySyncOOP(const VideoFrame& src_frame,
                                          uint8_t* dest_pixels,
                                          size_t dest_stride,
                                          gpu::raster::RasterInterface* ri) {
-  // It's not possible to read back individual planes when using external
-  // sampling, and this codepath should not be entered in that case.
-  CHECK(
-      !src_frame.RequiresExternalSampler() ||
-      !base::FeatureList::IsEnabled(kCheckOnExternalSamplerInTextureReadback));
   VideoPixelFormat format = ReadbackFormat(src_frame);
   if (format == PIXEL_FORMAT_UNKNOWN) {
     DLOG(ERROR) << "Readback is not possible for this frame: "
@@ -234,10 +220,6 @@ bool ReadbackTexturePlaneToMemorySyncOOP(const VideoFrame& src_frame,
     ri->ReadbackImagePixels(holder.mailbox, info, dest_stride, src_rect.x(),
                             src_rect.y(), /*plane_index=*/0, dest_pixels);
   } else {
-    // As noted at the top of this function, it is not used (and cannot be
-    // used) with external sampling.
-    CHECK(src_frame.shared_image_format_type() ==
-          SharedImageFormatType::kSharedImageFormat);
     const gpu::MailboxHolder& holder = src_frame.mailbox_holder(0);
     DCHECK(!holder.mailbox.IsZero());
     ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
@@ -779,6 +761,10 @@ scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
   result->metadata().MergeMetadataFrom(txt_frame.metadata());
   result->metadata().ClearTextureFrameMedatada();
 
+  // NOTE: Iterating over the number of planes of the readback format (rather
+  // than `txt_frame`) ensures that frames with external
+  // sampling are correctly sampled as a single opaque texture, as
+  // ReadbackFormat() returns RGB for such frames.
   size_t planes = VideoFrame::NumPlanes(format);
   for (size_t plane = 0; plane < planes; plane++) {
     gfx::Rect src_rect(0, 0, txt_frame.columns(plane), txt_frame.rows(plane));
