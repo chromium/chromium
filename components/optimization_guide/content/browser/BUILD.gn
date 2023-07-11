@@ -9,7 +9,6 @@ import("//components/optimization_guide/features.gni")
 
 static_library("browser") {
   sources = [
-    "optimization_guide_decider.h",
     "page_content_annotations_service.cc",
     "page_content_annotations_service.h",
     "page_content_annotations_validator.cc",
@@ -67,8 +66,6 @@ static_library("browser") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "test_optimization_guide_decider.cc",
-    "test_optimization_guide_decider.h",
     "test_page_content_annotations_service.cc",
     "test_page_content_annotations_service.h",
     "test_page_content_annotator.cc",

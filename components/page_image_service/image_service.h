@@ -25,7 +25,7 @@ class TemplateURL;
 class TemplateURLService;
 
 namespace optimization_guide {
-class NewOptimizationGuideDecider;
+class OptimizationGuideDecider;
 }  // namespace optimization_guide
 
 namespace page_image_service {
@@ -45,7 +45,7 @@ class ImageService : public KeyedService {
 
   ImageService(TemplateURLService* template_url_service,
                RemoteSuggestionsService* remote_suggestions_service,
-               optimization_guide::NewOptimizationGuideDecider* opt_guide,
+               optimization_guide::OptimizationGuideDecider* opt_guide,
                syncer::SyncService* sync_service,
                std::unique_ptr<AutocompleteSchemeClassifier>
                    autocomplete_scheme_classifier);
@@ -129,7 +129,7 @@ class ImageService : public KeyedService {
   // Non-owning pointers to service dependencies. They may be nullptr.
   raw_ptr<TemplateURLService> template_url_service_ = nullptr;
   raw_ptr<RemoteSuggestionsService> remote_suggestions_service_ = nullptr;
-  raw_ptr<optimization_guide::NewOptimizationGuideDecider> opt_guide_ = nullptr;
+  raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_ = nullptr;
 
   // The History consent throttle, used for most clients.
   std::unique_ptr<ImageServiceConsentHelper> history_consent_helper_;

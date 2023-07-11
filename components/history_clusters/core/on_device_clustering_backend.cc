@@ -37,7 +37,7 @@
 #include "components/history_clusters/core/single_visit_cluster_finalizer.h"
 #include "components/optimization_guide/core/batch_entity_metadata_task.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
-#include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "components/url_formatter/url_formatter.h"
 
@@ -100,7 +100,7 @@ void ProcessEntityMetadata(
 OnDeviceClusteringBackend::OnDeviceClusteringBackend(
     optimization_guide::EntityMetadataProvider* entity_metadata_provider,
     site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
-    optimization_guide::NewOptimizationGuideDecider* optimization_guide_decider,
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     base::flat_set<std::string> mid_blocklist)
     : entity_metadata_provider_(entity_metadata_provider),
       engagement_score_provider_(engagement_score_provider),

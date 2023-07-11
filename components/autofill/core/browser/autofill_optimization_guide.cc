@@ -12,7 +12,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 
 namespace autofill {
@@ -47,7 +47,7 @@ GetVcnMerchantOptOutOptimizationTypeForCard(const CreditCard* card) {
 }  // namespace
 
 AutofillOptimizationGuide::AutofillOptimizationGuide(
-    optimization_guide::NewOptimizationGuideDecider* decider)
+    optimization_guide::OptimizationGuideDecider* decider)
     : decider_(decider) {}
 
 AutofillOptimizationGuide::~AutofillOptimizationGuide() = default;

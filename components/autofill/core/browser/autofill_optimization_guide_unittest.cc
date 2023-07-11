@@ -16,7 +16,7 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/prefs/pref_service.h"
@@ -28,7 +28,7 @@
 namespace autofill {
 
 class MockOptimizationGuideDecider
-    : public optimization_guide::NewOptimizationGuideDecider {
+    : public optimization_guide::OptimizationGuideDecider {
  public:
   MOCK_METHOD(void,
               RegisterOptimizationTypes,

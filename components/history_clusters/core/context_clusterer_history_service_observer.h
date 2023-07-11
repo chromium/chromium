@@ -26,7 +26,7 @@ class HistoryService;
 }  // namespace history
 
 namespace optimization_guide {
-class NewOptimizationGuideDecider;
+class OptimizationGuideDecider;
 }  // namespace optimization_guide
 
 namespace site_engagement {
@@ -89,8 +89,7 @@ class ContextClustererHistoryServiceObserver
   ContextClustererHistoryServiceObserver(
       history::HistoryService* history_service,
       TemplateURLService* template_url_service,
-      optimization_guide::NewOptimizationGuideDecider*
-          optimization_guide_decider,
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
       site_engagement::SiteEngagementScoreProvider* engagement_score_provider);
   ~ContextClustererHistoryServiceObserver() override;
 
@@ -158,7 +157,7 @@ class ContextClustererHistoryServiceObserver
 
   // Used to determine whether to include a visit in any cluster. Can be null,
   // but is guaranteed to outlive `this`.
-  raw_ptr<optimization_guide::NewOptimizationGuideDecider>
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_;
 
   // URL host to score mapping.

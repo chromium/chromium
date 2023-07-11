@@ -1,23 +1,27 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_OPTIMIZATION_GUIDE_DECIDER_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_OPTIMIZATION_GUIDE_DECIDER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_DECIDER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_DECIDER_H_
 
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
-#include "components/optimization_guide/core/optimization_metadata.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 
-namespace content {
-class NavigationHandle;
-}  // namespace content
-
 class GURL;
+
+namespace commerce {
+class ShoppingService;
+}  // namespace commerce
+
+namespace page_image_service {
+class ImageService;
+}  // namespace page_image_service
 
 namespace optimization_guide {
 
@@ -29,12 +33,11 @@ class OptimizationGuideDecider {
   virtual void RegisterOptimizationTypes(
       const std::vector<proto::OptimizationType>& optimization_types) = 0;
 
-  // Invokes |callback| with the decision for the URL contained in
-  // |navigation_handle| and |optimization_type|, when sufficient information
-  // has been collected to make the decision. This should only be called for
-  // main frame navigations.
-  virtual void CanApplyOptimizationAsync(
-      content::NavigationHandle* navigation_handle,
+  // Invokes |callback| with the decision for the URL contained in |url| and
+  // |optimization_type|, when sufficient information has been collected to
+  // make the decision.
+  virtual void CanApplyOptimization(
+      const GURL& url,
       proto::OptimizationType optimization_type,
       OptimizationGuideDecisionCallback callback) = 0;
 
@@ -50,6 +53,10 @@ class OptimizationGuideDecider {
   virtual ~OptimizationGuideDecider() = default;
 
  private:
+  // These friend are consumers of the CanApplyOptimizationOnDemand API.
+  friend class commerce::ShoppingService;
+  friend class page_image_service::ImageService;
+
   // Invokes |callback| with the decision for all types contained in
   // |optimization_types| for each URL contained in |urls|, when sufficient
   // information has been collected to make decisions. |request_context| must be
@@ -69,4 +76,4 @@ class OptimizationGuideDecider {
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_OPTIMIZATION_GUIDE_DECIDER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_DECIDER_H_

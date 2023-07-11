@@ -48,7 +48,7 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace optimization_guide {
-class NewOptimizationGuideDecider;
+class OptimizationGuideDecider;
 class OptimizationMetadata;
 }  // namespace optimization_guide
 
@@ -239,7 +239,7 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       const std::string& country_on_startup,
       const std::string& locale_on_startup,
       bookmarks::BookmarkModel* bookmark_model,
-      optimization_guide::NewOptimizationGuideDecider* opt_guide,
+      optimization_guide::OptimizationGuideDecider* opt_guide,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
@@ -541,7 +541,7 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   // A handle to optimization guide for information about URLs that have
   // recently been navigated to.
-  raw_ptr<optimization_guide::NewOptimizationGuideDecider> opt_guide_;
+  raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_;
 
   raw_ptr<PrefService> pref_service_;
 

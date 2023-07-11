@@ -16,7 +16,7 @@
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
-#include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/test_optimization_guide_decider.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,7 +89,7 @@ class TestEntityMetadataProvider
 };
 
 class TestOptimizationGuideDecider
-    : public optimization_guide::NewOptimizationGuideDecider {
+    : public optimization_guide::TestOptimizationGuideDecider {
  public:
   TestOptimizationGuideDecider() = default;
   ~TestOptimizationGuideDecider() override = default;
@@ -102,13 +102,6 @@ class TestOptimizationGuideDecider
               optimization_types[0]);
   }
 
-  void CanApplyOptimization(
-      const GURL& url,
-      optimization_guide::proto::OptimizationType optimization_type,
-      optimization_guide::OptimizationGuideDecisionCallback callback) override {
-    NOTREACHED();
-  }
-
   optimization_guide::OptimizationGuideDecision CanApplyOptimization(
       const GURL& url,
       optimization_guide::proto::OptimizationType optimization_type,
@@ -119,14 +112,6 @@ class TestOptimizationGuideDecider
                ? optimization_guide::OptimizationGuideDecision::kFalse
                : optimization_guide::OptimizationGuideDecision::kTrue;
   }
-
-  void CanApplyOptimizationOnDemand(
-      const std::vector<GURL>& urls,
-      const base::flat_set<optimization_guide::proto::OptimizationType>&
-          optimization_types,
-      optimization_guide::proto::RequestContext request_context,
-      optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
-          callback) override {}
 };
 
 class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {

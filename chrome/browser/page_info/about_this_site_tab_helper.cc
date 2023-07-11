@@ -9,7 +9,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
-#include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -29,7 +29,7 @@ using page_info::proto::AboutThisSiteMetadata;
 
 AboutThisSiteTabHelper::AboutThisSiteTabHelper(
     content::WebContents* web_contents,
-    optimization_guide::NewOptimizationGuideDecider* optimization_guide_decider,
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     page_info::AboutThisSiteService* about_this_site_service)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<AboutThisSiteTabHelper>(*web_contents),

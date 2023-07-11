@@ -13,8 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
-#include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -25,7 +24,6 @@
 
 namespace content {
 class BrowserContext;
-class NavigationHandle;
 }  // namespace content
 
 namespace download {
@@ -63,7 +61,6 @@ class Profile;
 // and no information will be retrieved.
 class OptimizationGuideKeyedService
     : public KeyedService,
-      public optimization_guide::NewOptimizationGuideDecider,
       public optimization_guide::OptimizationGuideDecider,
       public optimization_guide::OptimizationGuideModelProvider,
       public ProfileObserver {
@@ -77,7 +74,7 @@ class OptimizationGuideKeyedService
 
   ~OptimizationGuideKeyedService() override;
 
-  // optimization_guide::NewOptimizationGuideDecider implementation:
+  // optimization_guide::OptimizationGuideDecider implementation:
   void RegisterOptimizationTypes(
       const std::vector<optimization_guide::proto::OptimizationType>&
           optimization_types) override;
@@ -89,14 +86,6 @@ class OptimizationGuideKeyedService
       const GURL& url,
       optimization_guide::proto::OptimizationType optimization_type,
       optimization_guide::OptimizationMetadata* optimization_metadata) override;
-
-  // optimization_guide::OptimizationGuideDecider implementation:
-  // DEPRECATED. Should use |CanApplyOptimization| with void return type
-  // instead.
-  void CanApplyOptimizationAsync(
-      content::NavigationHandle* navigation_handle,
-      optimization_guide::proto::OptimizationType optimization_type,
-      optimization_guide::OptimizationGuideDecisionCallback callback) override;
 
   // optimization_guide::OptimizationGuideModelProvider implementation:
   void AddObserverForOptimizationTargetModel(

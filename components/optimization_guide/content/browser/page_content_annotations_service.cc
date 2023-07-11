@@ -22,8 +22,8 @@
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_validator.h"
 #include "components/optimization_guide/core/entity_metadata.h"
-#include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/optimization_guide/core/noisy_metrics_recorder.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -147,7 +147,7 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     leveldb_proto::ProtoDatabaseProvider* database_provider,
     const base::FilePath& database_dir,
     OptimizationGuideLogger* optimization_guide_logger,
-    NewOptimizationGuideDecider* optimization_guide_decider,
+    OptimizationGuideDecider* optimization_guide_decider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : autocomplete_provider_client_(std::move(autocomplete_provider_client)),
       min_page_category_score_to_persist_(

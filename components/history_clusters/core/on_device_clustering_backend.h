@@ -22,7 +22,7 @@ namespace optimization_guide {
 class BatchEntityMetadataTask;
 struct EntityMetadata;
 class EntityMetadataProvider;
-class NewOptimizationGuideDecider;
+class OptimizationGuideDecider;
 }  // namespace optimization_guide
 
 namespace site_engagement {
@@ -37,8 +37,7 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
   OnDeviceClusteringBackend(
       optimization_guide::EntityMetadataProvider* entity_metadata_provider,
       site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
-      optimization_guide::NewOptimizationGuideDecider*
-          optimization_guide_decider,
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
       base::flat_set<std::string> mid_blocklist);
   ~OnDeviceClusteringBackend() override;
 
@@ -175,7 +174,7 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
 
   // Used to get page load metadata. Can be null if feature not enabled. Not
   // owned. Must outlive `this`.
-  raw_ptr<optimization_guide::NewOptimizationGuideDecider>
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_ = nullptr;
 
   // The set of batch entity metadata tasks currently in flight.

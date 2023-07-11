@@ -15,7 +15,7 @@
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
-#include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -169,7 +169,7 @@ class ImageService::SuggestEntityImageURLFetcher {
 ImageService::ImageService(
     TemplateURLService* template_url_service,
     RemoteSuggestionsService* remote_suggestions_service,
-    optimization_guide::NewOptimizationGuideDecider* opt_guide,
+    optimization_guide::OptimizationGuideDecider* opt_guide,
     syncer::SyncService* sync_service,
     std::unique_ptr<AutocompleteSchemeClassifier>
         autocomplete_scheme_classifier)

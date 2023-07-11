@@ -14,7 +14,7 @@
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/shopping_service_test_base.h"
 #include "components/commerce/core/test_utils.h"
-#include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"

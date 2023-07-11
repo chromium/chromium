@@ -136,6 +136,7 @@ source_set("unit_tests") {
     "//components/history/core/test",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:entities",
+    "//components/optimization_guide/core:test_support",
     "//components/page_image_service",
     "//components/prefs:test_support",
     "//components/search_engines",

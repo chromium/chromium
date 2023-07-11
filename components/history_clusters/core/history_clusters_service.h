@@ -33,7 +33,7 @@ class TemplateURLService;
 
 namespace optimization_guide {
 class EntityMetadataProvider;
-class NewOptimizationGuideDecider;
+class OptimizationGuideDecider;
 }  // namespace optimization_guide
 
 namespace site_engagement {
@@ -69,8 +69,7 @@ class HistoryClustersService : public base::SupportsUserData,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
       TemplateURLService* template_url_service,
-      optimization_guide::NewOptimizationGuideDecider*
-          optimization_guide_decider,
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
       PrefService* pref_service);
   HistoryClustersService(const HistoryClustersService&) = delete;
   HistoryClustersService& operator=(const HistoryClustersService&) = delete;

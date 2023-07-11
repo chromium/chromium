@@ -11,8 +11,8 @@
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/content/browser/test_page_content_annotator.h"
-#include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/test_optimization_guide_decider.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/search_engines/template_url_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -56,7 +56,7 @@ class MockHistoryService : public history::HistoryService {
               (override));
 };
 
-class FakeOptimizationGuideDecider : public NewOptimizationGuideDecider {
+class FakeOptimizationGuideDecider : public TestOptimizationGuideDecider {
  public:
   void RegisterOptimizationTypes(
       const std::vector<proto::OptimizationType>& optimization_types) override {
@@ -110,16 +110,6 @@ class FakeOptimizationGuideDecider : public NewOptimizationGuideDecider {
       override {
     NOTREACHED();
     return optimization_guide::OptimizationGuideDecision::kFalse;
-  }
-
-  void CanApplyOptimizationOnDemand(
-      const std::vector<GURL>& urls,
-      const base::flat_set<optimization_guide::proto::OptimizationType>&
-          optimization_types,
-      optimization_guide::proto::RequestContext request_context,
-      optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
-          callback) override {
-    NOTREACHED();
   }
 
  private:

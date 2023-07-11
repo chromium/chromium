@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/test_new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/test_optimization_guide_decider.h"
 
 namespace optimization_guide {
 
-TestNewOptimizationGuideDecider::TestNewOptimizationGuideDecider() = default;
-TestNewOptimizationGuideDecider::~TestNewOptimizationGuideDecider() = default;
+TestOptimizationGuideDecider::TestOptimizationGuideDecider() = default;
+TestOptimizationGuideDecider::~TestOptimizationGuideDecider() = default;
 
-void TestNewOptimizationGuideDecider::RegisterOptimizationTypes(
+void TestOptimizationGuideDecider::RegisterOptimizationTypes(
     const std::vector<proto::OptimizationType>& optimization_types) {
   registered_optimization_types_.insert(registered_optimization_types_.end(),
                                         optimization_types.begin(),
                                         optimization_types.end());
 }
 
-void TestNewOptimizationGuideDecider::CanApplyOptimization(
+void TestOptimizationGuideDecider::CanApplyOptimization(
     const GURL& url,
     proto::OptimizationType optimization_type,
     OptimizationGuideDecisionCallback callback) {
@@ -24,14 +24,14 @@ void TestNewOptimizationGuideDecider::CanApplyOptimization(
                           /*optimization_metadata=*/{});
 }
 
-OptimizationGuideDecision TestNewOptimizationGuideDecider::CanApplyOptimization(
+OptimizationGuideDecision TestOptimizationGuideDecider::CanApplyOptimization(
     const GURL& url,
     proto::OptimizationType optimization_type,
     OptimizationMetadata* optimization_metadata) {
   return OptimizationGuideDecision::kFalse;
 }
 
-void TestNewOptimizationGuideDecider::CanApplyOptimizationOnDemand(
+void TestOptimizationGuideDecider::CanApplyOptimizationOnDemand(
     const std::vector<GURL>& urls,
     const base::flat_set<proto::OptimizationType>& optimization_types,
     proto::RequestContext request_context,

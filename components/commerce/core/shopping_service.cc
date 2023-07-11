@@ -36,7 +36,7 @@
 #include "components/commerce/core/subscriptions/subscriptions_observer.h"
 #include "components/commerce/core/web_wrapper.h"
 #include "components/grit/components_resources.h"
-#include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -100,7 +100,7 @@ ShoppingService::ShoppingService(
     const std::string& country_on_startup,
     const std::string& locale_on_startup,
     bookmarks::BookmarkModel* bookmark_model,
-    optimization_guide::NewOptimizationGuideDecider* opt_guide,
+    optimization_guide::OptimizationGuideDecider* opt_guide,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,

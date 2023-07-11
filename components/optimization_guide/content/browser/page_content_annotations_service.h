@@ -53,7 +53,7 @@ class ProtoDatabaseProvider;
 
 namespace optimization_guide {
 
-class NewOptimizationGuideDecider;
+class OptimizationGuideDecider;
 class OptimizationGuideModelProvider;
 class OptimizationMetadata;
 class PageContentAnnotationsModelManager;
@@ -136,7 +136,7 @@ class PageContentAnnotationsService : public KeyedService,
       leveldb_proto::ProtoDatabaseProvider* database_provider,
       const base::FilePath& database_dir,
       OptimizationGuideLogger* optimization_guide_logger,
-      NewOptimizationGuideDecider* optimization_guide_decider,
+      OptimizationGuideDecider* optimization_guide_decider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   ~PageContentAnnotationsService() override;
   PageContentAnnotationsService(const PageContentAnnotationsService&) = delete;
@@ -384,7 +384,7 @@ class PageContentAnnotationsService : public KeyedService,
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_ = nullptr;
 
   // Not owned and must outlive |this|.
-  raw_ptr<NewOptimizationGuideDecider> optimization_guide_decider_;
+  raw_ptr<OptimizationGuideDecider> optimization_guide_decider_;
 
   // Observers of PageContentAnnotations that have been registered per
   // AnnotationType.

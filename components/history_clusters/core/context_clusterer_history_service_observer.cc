@@ -11,7 +11,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_util.h"
-#include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 
@@ -124,7 +124,7 @@ CachedEngagementScore::CachedEngagementScore(const CachedEngagementScore&) =
 ContextClustererHistoryServiceObserver::ContextClustererHistoryServiceObserver(
     history::HistoryService* history_service,
     TemplateURLService* template_url_service,
-    optimization_guide::NewOptimizationGuideDecider* optimization_guide_decider,
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     site_engagement::SiteEngagementScoreProvider* engagement_score_provider)
     : history_service_(history_service),
       template_url_service_(template_url_service),

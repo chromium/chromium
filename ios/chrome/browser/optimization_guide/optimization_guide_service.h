@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
@@ -51,7 +51,7 @@ class PrefService;
 // data is cleared.
 class OptimizationGuideService
     : public KeyedService,
-      public optimization_guide::NewOptimizationGuideDecider,
+      public optimization_guide::OptimizationGuideDecider,
       public optimization_guide::OptimizationGuideModelProvider {
  public:
   // BackgroundDownloadService is only available once the profile is fully
@@ -81,14 +81,10 @@ class OptimizationGuideService
   void DoFinalInit(download::BackgroundDownloadService*
                        background_download_service = nullptr);
 
-  // Registers the optimization types that intend to be queried during the
-  // session. It is expected for this to be called right after the browser has
-  // been initialized.
+  // optimization_guide::OptimizationGuideDecider implementation:
   void RegisterOptimizationTypes(
       const std::vector<optimization_guide::proto::OptimizationType>&
           optimization_types) override;
-
-  // optimization_guide::NewOptimizationGuideDecider implementation:
   void CanApplyOptimization(
       const GURL& url,
       optimization_guide::proto::OptimizationType optimization_type,
