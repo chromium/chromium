@@ -259,6 +259,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   uint32_t next_page_index_ = 0;
 
   bool did_get_a_text_run_ = false;
+  bool did_unserialize_nodes_once_ = false;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // The status node contains a notification message for the user.
