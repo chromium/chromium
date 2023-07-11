@@ -43,7 +43,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       int max_copy_texture_chromium_size,
       bool use_partial_raster,
-      bool use_gpu_memory_buffer_resources,
       int max_staging_buffer_usage_in_bytes,
       const RasterCapabilities& raster_caps);
   OneCopyRasterBufferProvider(const OneCopyRasterBufferProvider&) = delete;
@@ -164,12 +163,14 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
   raw_ptr<base::WaitableEvent> shutdown_event_ = nullptr;
   const int max_bytes_per_copy_operation_;
   const bool use_partial_raster_;
-  const bool use_gpu_memory_buffer_resources_;
 
   // Context lock must be acquired when accessing this member.
   int bytes_scheduled_since_last_flush_;
 
   const viz::SharedImageFormat tile_format_;
+  const bool tile_overlay_candidate_;
+  const uint32_t tile_texture_target_;
+
   StagingBufferPool staging_pool_;
 };
 

@@ -37,10 +37,6 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
-namespace gpu {
-struct Capabilities;
-}
-
 namespace viz {
 class ClientResourceProvider;
 class RasterContextProvider;
@@ -74,11 +70,6 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
         const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
         uint64_t tracing_process_id,
         int importance) const = 0;
-
-    void InitOverlayCandidateAndTextureTarget(
-        const viz::SharedImageFormat format,
-        const gpu::Capabilities& caps,
-        bool use_gpu_memory_buffer_resources);
 
     gpu::Mailbox mailbox;
     gpu::SyncToken mailbox_sync_token;

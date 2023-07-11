@@ -152,7 +152,6 @@ OneCopyRasterBufferProvider::OneCopyRasterBufferProvider(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     int max_copy_texture_chromium_size,
     bool use_partial_raster,
-    bool use_gpu_memory_buffer_resources,
     int max_staging_buffer_usage_in_bytes,
     const RasterCapabilities& raster_caps)
     : compositor_context_provider_(compositor_context_provider),
@@ -164,9 +163,10 @@ OneCopyRasterBufferProvider::OneCopyRasterBufferProvider(
                          max_copy_texture_chromium_size)
               : kMaxBytesPerCopyOperation),
       use_partial_raster_(use_partial_raster),
-      use_gpu_memory_buffer_resources_(use_gpu_memory_buffer_resources),
       bytes_scheduled_since_last_flush_(0),
       tile_format_(raster_caps.tile_format),
+      tile_overlay_candidate_(raster_caps.tile_overlay_candidate),
+      tile_texture_target_(raster_caps.tile_texture_target),
       staging_pool_(std::move(task_runner),
                     worker_context_provider,
                     use_partial_raster,
@@ -176,7 +176,7 @@ OneCopyRasterBufferProvider::OneCopyRasterBufferProvider(
   DCHECK(!tile_format_.IsCompressed());
 }
 
-OneCopyRasterBufferProvider::~OneCopyRasterBufferProvider() {}
+OneCopyRasterBufferProvider::~OneCopyRasterBufferProvider() = default;
 
 std::unique_ptr<RasterBuffer>
 OneCopyRasterBufferProvider::AcquireBufferForRaster(
@@ -189,9 +189,8 @@ OneCopyRasterBufferProvider::AcquireBufferForRaster(
   if (!resource.gpu_backing()) {
     auto backing = std::make_unique<OneCopyGpuBacking>();
     backing->worker_context_provider = worker_context_provider_;
-    backing->InitOverlayCandidateAndTextureTarget(
-        resource.format(), compositor_context_provider_->ContextCapabilities(),
-        use_gpu_memory_buffer_resources_);
+    backing->overlay_candidate = tile_overlay_candidate_;
+    backing->texture_target = tile_texture_target_;
     resource.set_gpu_backing(std::move(backing));
   }
   OneCopyGpuBacking* backing =

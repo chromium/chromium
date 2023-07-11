@@ -279,7 +279,6 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
   ResourcePool::InUsePoolResource pool_resource;
   bool needs_clear = false;
   if (draw_mode == DRAW_MODE_HARDWARE) {
-    const auto& caps = raster_context_provider->ContextCapabilities();
     pool_resource = pool_->AcquireResource(
         internal_content_bounds_, raster_caps.tile_format, gfx::ColorSpace());
 
@@ -287,11 +286,8 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       auto backing = std::make_unique<HudGpuBacking>();
       auto* sii = raster_context_provider->SharedImageInterface();
       backing->shared_image_interface = sii;
-      backing->InitOverlayCandidateAndTextureTarget(
-          pool_resource.format(), caps,
-          layer_tree_impl()
-              ->settings()
-              .resource_settings.use_gpu_memory_buffer_resources);
+      backing->overlay_candidate = raster_caps.tile_overlay_candidate;
+      backing->texture_target = raster_caps.tile_texture_target;
 
       uint32_t flags =
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_RASTER;

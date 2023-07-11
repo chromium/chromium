@@ -70,7 +70,8 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
   raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
   raw_ptr<base::WaitableEvent> shutdown_event_ = nullptr;
   raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
-  viz::SharedImageFormat tile_format_;
+  const viz::SharedImageFormat tile_format_;
+  const uint32_t tile_texture_target_;
 };
 
 }  // namespace cc

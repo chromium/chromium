@@ -137,7 +137,6 @@ bool GpuRasterBufferProvider::RasterBufferImpl::
 GpuRasterBufferProvider::GpuRasterBufferProvider(
     viz::RasterContextProvider* compositor_context_provider,
     viz::RasterContextProvider* worker_context_provider,
-    bool use_gpu_memory_buffer_resources,
     const RasterCapabilities& raster_caps,
     const gfx::Size& max_tile_size,
     bool unpremultiply_and_dither_low_bit_depth_tiles,
@@ -145,8 +144,9 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
     float raster_metric_probability)
     : compositor_context_provider_(compositor_context_provider),
       worker_context_provider_(worker_context_provider),
-      use_gpu_memory_buffer_resources_(use_gpu_memory_buffer_resources),
       tile_format_(raster_caps.tile_format),
+      tile_overlay_candidate_(raster_caps.tile_overlay_candidate),
+      tile_texture_target_(raster_caps.tile_texture_target),
       max_tile_size_(max_tile_size),
       pending_raster_queries_(pending_raster_queries),
       raster_metric_probability_(raster_metric_probability),
@@ -181,9 +181,8 @@ std::unique_ptr<RasterBuffer> GpuRasterBufferProvider::AcquireBufferForRaster(
   if (!resource.gpu_backing()) {
     auto backing = std::make_unique<GpuRasterBacking>();
     backing->worker_context_provider = worker_context_provider_;
-    backing->InitOverlayCandidateAndTextureTarget(
-        resource.format(), compositor_context_provider_->ContextCapabilities(),
-        use_gpu_memory_buffer_resources_);
+    backing->overlay_candidate = tile_overlay_candidate_;
+    backing->texture_target = tile_texture_target_;
     backing->is_using_raw_draw =
         !backing->overlay_candidate && is_using_raw_draw_;
     resource.set_gpu_backing(std::move(backing));

@@ -36,7 +36,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
   GpuRasterBufferProvider(
       viz::RasterContextProvider* compositor_context_provider,
       viz::RasterContextProvider* worker_context_provider,
-      bool use_gpu_memory_buffer_resources,
       const RasterCapabilities& raster_caps,
       const gfx::Size& max_tile_size,
       bool unpremultiply_and_dither_low_bit_depth_tiles,
@@ -143,8 +142,9 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
 
   const raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
   const raw_ptr<viz::RasterContextProvider> worker_context_provider_;
-  const bool use_gpu_memory_buffer_resources_;
   const viz::SharedImageFormat tile_format_;
+  const bool tile_overlay_candidate_;
+  const uint32_t tile_texture_target_;
   const gfx::Size max_tile_size_;
 
   const raw_ptr<RasterQueryQueue, DanglingUntriaged> pending_raster_queries_;

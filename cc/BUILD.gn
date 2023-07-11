@@ -411,6 +411,7 @@ cc_component("cc") {
     "trees/proxy_impl.h",
     "trees/proxy_main.cc",
     "trees/proxy_main.h",
+    "trees/raster_capabilities.cc",
     "trees/raster_capabilities.h",
     "trees/raster_context_provider_wrapper.cc",
     "trees/raster_context_provider_wrapper.h",

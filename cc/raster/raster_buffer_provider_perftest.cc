@@ -362,6 +362,7 @@ class RasterBufferProviderPerfTest
 
     RasterCapabilities raster_caps;
     raster_caps.tile_format = viz::SinglePlaneFormat::kRGBA_8888;
+    raster_caps.tile_texture_target = GL_TEXTURE_2D;
 
     switch (GetParam()) {
       case RASTER_BUFFER_PROVIDER_TYPE_ZERO_COPY:
@@ -378,7 +379,7 @@ class RasterBufferProviderPerfTest
         raster_buffer_provider_ = std::make_unique<OneCopyRasterBufferProvider>(
             task_runner_.get(), compositor_context_provider_.get(),
             worker_context_provider_.get(), &gpu_memory_buffer_manager_,
-            std::numeric_limits<int>::max(), false, false,
+            std::numeric_limits<int>::max(), false,
             std::numeric_limits<int>::max(), raster_caps);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:
@@ -386,8 +387,7 @@ class RasterBufferProviderPerfTest
         raster_caps.use_gpu_rasterization = true;
         raster_buffer_provider_ = std::make_unique<GpuRasterBufferProvider>(
             compositor_context_provider_.get(), worker_context_provider_.get(),
-            false, raster_caps, gfx::Size(), true,
-            pending_raster_queries_.get());
+            raster_caps, gfx::Size(), true, pending_raster_queries_.get());
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_BITMAP:
         CreateSoftwareResourceProvider();

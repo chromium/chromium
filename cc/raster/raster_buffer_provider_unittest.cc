@@ -176,6 +176,7 @@ class RasterBufferProviderTest
   void SetUp() override {
     RasterCapabilities raster_caps;
     raster_caps.tile_format = viz::SinglePlaneFormat::kRGBA_8888;
+    raster_caps.tile_texture_target = GL_TEXTURE_2D;
 
     switch (GetParam()) {
       case RASTER_BUFFER_PROVIDER_TYPE_ZERO_COPY:
@@ -193,13 +194,13 @@ class RasterBufferProviderTest
             base::SingleThreadTaskRunner::GetCurrentDefault().get(),
             context_provider_.get(), worker_context_provider_.get(),
             &gpu_memory_buffer_manager_, kMaxBytesPerCopyOperation, false,
-            false, kMaxStagingBuffers, raster_caps);
+            kMaxStagingBuffers, raster_caps);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:
         Create3dResourceProvider();
         raster_caps.use_gpu_rasterization = true;
         raster_buffer_provider_ = std::make_unique<GpuRasterBufferProvider>(
-            context_provider_.get(), worker_context_provider_.get(), false,
+            context_provider_.get(), worker_context_provider_.get(),
             raster_caps, gfx::Size(), true, pending_raster_queries_.get(), 1);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_BITMAP:

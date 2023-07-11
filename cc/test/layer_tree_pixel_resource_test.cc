@@ -58,6 +58,7 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
 
   RasterCapabilities raster_caps;
   if (compositor_context_provider) {
+    raster_caps.tile_texture_target = GL_TEXTURE_2D;
     if (host_impl->settings().use_rgba_4444) {
       raster_caps.tile_format = viz::SinglePlaneFormat::kRGBA_4444;
     } else {
@@ -87,9 +88,8 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
 
       raster_caps.use_gpu_rasterization = true;
       return std::make_unique<GpuRasterBufferProvider>(
-          compositor_context_provider, worker_context_provider, false,
-          raster_caps, gfx::Size(), true,
-          host_impl->GetRasterQueryQueueForTesting());
+          compositor_context_provider, worker_context_provider, raster_caps,
+          gfx::Size(), true, host_impl->GetRasterQueryQueueForTesting());
     case TestRasterType::kZeroCopy:
       EXPECT_TRUE(compositor_context_provider);
       EXPECT_TRUE(gpu_memory_buffer_manager);
@@ -104,7 +104,7 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
 
       return std::make_unique<OneCopyRasterBufferProvider>(
           task_runner, compositor_context_provider, worker_context_provider,
-          gpu_memory_buffer_manager, max_bytes_per_copy_operation, false, false,
+          gpu_memory_buffer_manager, max_bytes_per_copy_operation, false,
           max_staging_buffer_usage_in_bytes, raster_caps);
   }
 }

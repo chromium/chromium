@@ -2867,6 +2867,11 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
   raster_caps_.ui_rgba_format =
       viz::PlatformColor::BestSupportedTextureFormat(context_caps);
 
+  raster_caps_.tile_overlay_candidate =
+      settings_.resource_settings.use_gpu_memory_buffer_resources &&
+      context_caps.supports_scanout_shared_images;
+  raster_caps_.tile_texture_target = GL_TEXTURE_2D;
+
   if (settings_.gpu_rasterization_disabled || !context_caps.gpu_rasterization) {
     // This is the GPU compositing but software rasterization path. Pick the
     // best format for GPU textures to be uploaded to.
@@ -2874,6 +2879,15 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
         settings_.use_rgba_4444
             ? viz::SinglePlaneFormat::kRGBA_4444
             : viz::PlatformColor::BestSupportedTextureFormat(context_caps);
+
+    if (raster_caps_.tile_overlay_candidate) {
+      raster_caps_.tile_texture_target = gpu::GetBufferTextureTarget(
+          gfx::BufferUsage::SCANOUT,
+          viz::SinglePlaneSharedImageFormatToBufferFormat(
+              raster_caps_.tile_format),
+          context_caps);
+    }
+
     return;
   }
 
@@ -2891,6 +2905,14 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
           ? viz::SinglePlaneFormat::kRGBA_4444
           : viz::PlatformColor::BestSupportedRenderBufferFormat(
                 context_provider->ContextCapabilities());
+
+  if (raster_caps_.tile_overlay_candidate) {
+    raster_caps_.tile_texture_target = gpu::GetBufferTextureTarget(
+        gfx::BufferUsage::SCANOUT,
+        viz::SinglePlaneSharedImageFormatToBufferFormat(
+            raster_caps_.tile_format),
+        context_caps);
+  }
 }
 
 ImageDecodeCache* LayerTreeHostImpl::GetImageDecodeCache() const {
@@ -3616,9 +3638,8 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
     DCHECK(worker_context_provider);
 
     return std::make_unique<GpuRasterBufferProvider>(
-        compositor_context_provider, worker_context_provider,
-        settings_.resource_settings.use_gpu_memory_buffer_resources,
-        raster_caps_, settings_.max_gpu_raster_tile_size,
+        compositor_context_provider, worker_context_provider, raster_caps_,
+        settings_.max_gpu_raster_tile_size,
         settings_.unpremultiply_and_dither_low_bit_depth_tiles,
         pending_raster_queries_.get());
   }
@@ -3644,7 +3665,6 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
       GetTaskRunner(), compositor_context_provider, worker_context_provider,
       layer_tree_frame_sink_->gpu_memory_buffer_manager(),
       max_copy_texture_chromium_size, settings_.use_partial_raster,
-      settings_.resource_settings.use_gpu_memory_buffer_resources,
       settings_.max_staging_buffer_usage_in_bytes, raster_caps_);
 }
 
