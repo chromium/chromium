@@ -699,7 +699,6 @@ page_sets/system_health/chrome_stories.py
 page_sets/system_health/loading_stories.py
 page_sets/system_health/long_running_stories.py
 page_sets/system_health/media_stories.py
-page_sets/system_health/multi_tab_stories.py
 page_sets/system_health/platforms.py
 page_sets/system_health/story_tags.py
 page_sets/system_health/system_health_stories.py

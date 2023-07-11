@@ -40,10 +40,6 @@ _DISABLED_TESTS = frozenset({
     # crbug.com/983326 - flaky.
     'system_health.memory_desktop/browse_accessibility:media:youtube',
 
-    # crbug.com/878390 - These stories are already covered by their 2018 or
-    # 2019 versions and will later be removed.
-    'system_health.memory_desktop/multitab:misc:typical24',
-
     # crbug.com/637230
     'system_health.memory_desktop/browse:news:cnn',
     # Permenently disabled from smoke test for being long-running.
@@ -54,9 +50,6 @@ _DISABLED_TESTS = frozenset({
 
     # crbug.com/885320
     'system_health.memory_desktop/browse:search:google:2020',
-
-    # crbug.com/893615
-    'system_health.memory_desktop/multitab:misc:typical24:2018',
 
     # crbug.com/903849
     'system_health.memory_mobile/browse:news:cnn:2018',

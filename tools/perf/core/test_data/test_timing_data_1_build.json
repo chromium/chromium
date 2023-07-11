@@ -3985,10 +3985,6 @@
     },
     {
         "duration": null,
-        "name": "system_health.common_desktop/multitab:misc:typical24"
-    },
-    {
-        "duration": null,
         "name": "system_health.common_desktop/play:media:google_play_music"
     },
     {
@@ -4242,10 +4238,6 @@
     {
         "duration": "484.09042999999997",
         "name": "system_health.memory_desktop/long_running:tools:gmail-foreground"
-    },
-    {
-        "duration": null,
-        "name": "system_health.memory_desktop/multitab:misc:typical24"
     },
     {
         "duration": null,

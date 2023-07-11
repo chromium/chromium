@@ -308,14 +308,6 @@
         "name": "system_health.common_desktop/long_running:tools:gmail-foreground"
     },
     {
-        "duration": "3.0",
-        "name": "system_health.common_desktop/multitab:misc:typical24"
-    },
-    {
-        "duration": "3.0",
-        "name": "system_health.common_desktop/multitab:misc:typical24:2018"
-    },
-    {
         "duration": "44.0",
         "name": "system_health.common_desktop/play:media:google_play_music"
     },

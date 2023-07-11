@@ -1620,7 +1620,6 @@
       "load_accessibility:shopping:amazon",
       "long_running:tools:gmail-background",
       "long_running:tools:gmail-foreground",
-      "multitab:misc:typical24",
       "play:media:google_play_music",
       "play:media:soundcloud"
     ],
@@ -1757,7 +1756,6 @@
       "load_accessibility:shopping:amazon",
       "long_running:tools:gmail-background",
       "long_running:tools:gmail-foreground",
-      "multitab:misc:typical24",
       "play:media:google_play_music",
       "play:media:soundcloud"
     ],

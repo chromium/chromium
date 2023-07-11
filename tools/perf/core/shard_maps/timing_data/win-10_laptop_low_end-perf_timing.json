@@ -3768,14 +3768,6 @@
         "name": "system_health.common_desktop/long_running:tools:gmail-foreground"
     },
     {
-        "duration": "11.0",
-        "name": "system_health.common_desktop/multitab:misc:typical24"
-    },
-    {
-        "duration": "11.0",
-        "name": "system_health.common_desktop/multitab:misc:typical24:2018"
-    },
-    {
         "duration": "55.0",
         "name": "system_health.common_desktop/play:media:google_play_music"
     },
@@ -4090,14 +4082,6 @@
     {
         "duration": "141.0",
         "name": "system_health.memory_desktop/long_running:tools:gmail-foreground"
-    },
-    {
-        "duration": "10.0",
-        "name": "system_health.memory_desktop/multitab:misc:typical24"
-    },
-    {
-        "duration": "10.0",
-        "name": "system_health.memory_desktop/multitab:misc:typical24:2018"
     },
     {
         "duration": "5.0",
