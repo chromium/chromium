@@ -41,7 +41,6 @@ namespace network {
 class SharedStorageRequestHelper {
  public:
   SharedStorageRequestHelper(bool shared_storage_writable,
-                             const url::Origin& original_request_origin,
                              mojom::URLLoaderNetworkServiceObserver* observer);
 
   ~SharedStorageRequestHelper();
@@ -74,7 +73,6 @@ class SharedStorageRequestHelper {
   void OnOperationsQueued(base::OnceClosure done);
 
   bool shared_storage_writable_;
-  url::Origin original_request_origin_;
   raw_ptr<mojom::URLLoaderNetworkServiceObserver> observer_;
   base::WeakPtrFactory<SharedStorageRequestHelper> weak_ptr_factory_{this};
 };

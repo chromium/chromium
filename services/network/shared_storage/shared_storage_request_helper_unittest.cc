@@ -123,10 +123,9 @@ class SharedStorageRequestHelperTest : public net::TestWithTaskEnvironment {
 
   net::URLRequestContext& context() { return *context_; }
 
-  void CreateSharedStorageRequestHelper(bool shared_storage_writable,
-                                        const url::Origin& request_origin) {
+  void CreateSharedStorageRequestHelper(bool shared_storage_writable) {
     helper_ = std::make_unique<SharedStorageRequestHelper>(
-        shared_storage_writable, request_origin, observer_.get());
+        shared_storage_writable, observer_.get());
   }
 
   [[nodiscard]] mojom::URLLoaderNetworkServiceObserver* MaybeGetHeaderObserver(
@@ -223,8 +222,7 @@ class SharedStorageRequestHelperTest : public net::TestWithTaskEnvironment {
 TEST_F(SharedStorageRequestHelperTest,
        SharedStorageWritableHeaderRemoved_EligibityRemoved) {
   GURL request_url = GetHttpsRequestURL();
-  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/true,
-                                   url::Origin::Create(request_url));
+  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/true);
   EXPECT_TRUE(helper_->shared_storage_writable());
 
   std::vector<std::string> removed_headers(
@@ -237,8 +235,7 @@ TEST_F(SharedStorageRequestHelperTest,
 TEST_F(SharedStorageRequestHelperTest,
        SharedStorageWritableHeaderNotRemoved_EligibityNotRemoved) {
   GURL request_url = GetHttpsRequestURL();
-  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/true,
-                                   url::Origin::Create(request_url));
+  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/true);
   EXPECT_TRUE(helper_->shared_storage_writable());
 
   std::vector<std::string> removed_headers;
@@ -249,8 +246,7 @@ TEST_F(SharedStorageRequestHelperTest,
 TEST_F(SharedStorageRequestHelperTest,
        ProcessOutgoingRequest_Eligible_RequestHeaderAdded) {
   GURL request_url = GetHttpsRequestURL();
-  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/true,
-                                   url::Origin::Create(request_url));
+  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/true);
   std::unique_ptr<net::URLRequest> request = CreateTestUrlRequest(request_url);
   RunProcessOutgoingRequest(request.get());
 
@@ -263,8 +259,7 @@ TEST_F(SharedStorageRequestHelperTest,
 TEST_F(SharedStorageRequestHelperTest,
        ProcessOutgoingRequest_NotEligible_RequestHeaderNotAdded) {
   GURL request_url = GetHttpsRequestURL();
-  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/false,
-                                   url::Origin::Create(request_url));
+  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/false);
   std::unique_ptr<net::URLRequest> request = CreateTestUrlRequest(request_url);
   RunProcessOutgoingRequest(request.get());
 
@@ -280,8 +275,7 @@ TEST_F(SharedStorageRequestHelperTest,
   RegisterSharedStorageHandlerAndStartServer(kHeader);
 
   const GURL kUrl = GetRequestURLFromServer();
-  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/false,
-                                   url::Origin::Create(kUrl));
+  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/false);
   auto r = CreateTestUrlRequest(kUrl);
   r->Start();
   EXPECT_TRUE(r->is_pending());
@@ -304,8 +298,7 @@ TEST_F(SharedStorageRequestHelperTest,
   RegisterSharedStorageHandlerAndStartServer(kHeader);
 
   const GURL kUrl = GetRequestURLFromServer();
-  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/true,
-                                   url::Origin::Create(kUrl));
+  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/true);
   auto r = CreateTestUrlRequest(kUrl);
   r->Start();
   EXPECT_TRUE(r->is_pending());
@@ -330,8 +323,7 @@ TEST_F(SharedStorageRequestHelperTest,
   // Get a request whose response will have the Shared-Storage-Write header even
   // though we don't have a helper.
   const GURL kUrl = GetSharedStorageBypassRequestURLFromServer();
-  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/false,
-                                   url::Origin::Create(kUrl));
+  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/false);
   auto r = CreateTestUrlRequest(kUrl);
   r->Start();
   EXPECT_TRUE(r->is_pending());
@@ -357,10 +349,9 @@ class SharedStorageRequestHelperProcessHeaderTest
     : public SharedStorageRequestHelperTest {
  public:
   [[nodiscard]] std::unique_ptr<net::URLRequest> CreateSharedStorageRequest() {
+    CreateSharedStorageRequestHelper(/*shared_storage_writable=*/true);
     GURL request_url = GetRequestURLFromServer();
     request_origin_ = url::Origin::Create(request_url);
-    CreateSharedStorageRequestHelper(/*shared_storage_writable=*/true,
-                                     request_origin_);
     auto request = CreateTestUrlRequest(request_url);
     RunProcessOutgoingRequest(request.get());
 
