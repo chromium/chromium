@@ -230,7 +230,11 @@ interface InitGa4Params {
 
 type Ga4Config = Required<InitGa4Params>;
 
+/**
+ * `ga4Enabled` and `measurementProtocolUrl` are used in tests.
+ */
 let ga4Enabled = true;
+let measurementProtocolUrl = 'https://www.google-analytics.com/mp/collect';
 let ga4Config: Ga4Config|null = null;
 /**
  * Initializes GA4 for sending metrics.
@@ -240,8 +244,9 @@ let ga4Config: Ga4Config|null = null;
  * Protocol.
  * @param initParams.baseParams The event parameters that will be sent in every
  * event.
- * @param initParams.measurementId The GA4 measurement ID.
  * @param initParams.clientId The client ID for the current client for GA4.
+ * @param initParams.measurementId The GA4 measurement ID.
+ * @param initParams.sessionId The session ID in every event.
  * @param setClientId The callback to store client id for GA4.
  */
 function initGa4(
@@ -359,7 +364,7 @@ function sendGa4Event({
     ['session_id']: sessionId,
   };
 
-  const url = `https://www.google-analytics.com/mp/collect?measurement_id=${
+  const url = `${measurementProtocolUrl}?measurement_id=${
       measurementId}&api_secret=${apiSecret}`;
   const body = JSON.stringify({
     ['client_id']: clientId,
@@ -405,6 +410,14 @@ function getScreenResolution() {
   return `${width}x${height}`;
 }
 
+/**
+ * Change the URL that measurement protocol used to send events. This should
+ * be only called in tests.
+ */
+function setMeasurementProtocolUrl(url: string): void {
+  measurementProtocolUrl = url;
+}
+
 export interface GaHelper {
   initGa: typeof initGa;
   initGa4: typeof initGa4;
@@ -413,6 +426,7 @@ export interface GaHelper {
   sendGa4Event: typeof sendGa4Event;
   setGaEnabled: typeof setGaEnabled;
   setGa4Enabled: typeof setGa4Enabled;
+  setMeasurementProtocolUrl: typeof setMeasurementProtocolUrl;
 }
 export {
   initGa,
@@ -422,4 +436,5 @@ export {
   sendGa4Event,
   setGaEnabled,
   setGa4Enabled,
+  setMeasurementProtocolUrl,
 };

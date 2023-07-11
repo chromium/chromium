@@ -19,6 +19,7 @@ import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
 import {Facing, Mode, Resolution} from '../type.js';
+import * as untrustedScripts from '../untrusted_scripts.js';
 import {FpsObserver, sleep} from '../util.js';
 import {windowController} from '../window_controller.js';
 
@@ -538,5 +539,21 @@ export class CCATest {
       }
       state.addObserver(stateKey, onChange);
     });
+  }
+
+  /**
+   * Sets measurement protocol's URL.
+   */
+  static async setMeasurementProtocolUrl(url: string): Promise<void> {
+    const helper = await untrustedScripts.getGaHelper();
+    return helper.setMeasurementProtocolUrl(url);
+  }
+
+  /**
+   * Enables GA4 metrics.
+   */
+  static async enableGa4Metrics(): Promise<void> {
+    const helper = await untrustedScripts.getGaHelper();
+    return helper.setGa4Enabled(true);
   }
 }
