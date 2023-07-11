@@ -194,13 +194,11 @@
 <div class="column" id="powerBookmarksContainer">
   <cr-toolbar-search-field id="searchField" label="$i18n{searchBookmarks}"
       clear-label="$i18n{clearSearch}" on-search-changed="onSearchChanged_"
-      disabled="[[editing_]]" hidden="[[guestMode_]]"
+      disabled="[[editing_]]" hidden="[[!sectionVisibility_.search]]"
       on-blur="onSearchBlurred_">
   </cr-toolbar-search-field>
-  <div class="label-row"
-      hidden="[[shouldHideFilterChips_(guestMode_, labels_)]]"
-      header-hidden$="[[shouldHideHeader_(
-          labels_.*, searchQuery_, shownBookmarks_)]]">
+  <div class="label-row" hidden="[[!sectionVisibility_.filterChips]]"
+      header-hidden$="[[!sectionVisibility_.heading]]" id="filterChips">
     <template is="dom-repeat" items="[[labels_]]">
       <sp-filter-chip
           selected="[[item.active]]"
@@ -212,10 +210,8 @@
     </template>
   </div>
 
-  <div class="sp-card card-top"
-      hidden$="[[shouldHideHeader_(
-          labels_.*, searchQuery_, shownBookmarks_)]]">
-    <sp-heading
+  <div class="sp-card card-top" hidden$="[[!sectionVisibility_.heading]]">
+    <sp-heading id="heading"
         back-button-title="$i18n{tooltipBack}"
         back-button-aria-label="[[getBackButtonLabel_(activeFolderPath_.*)]]"
         on-back-button-click="onBackClicked_"
@@ -250,8 +246,7 @@
   </div>
 
   <div class="sp-scroller"
-      hidden="[[!shouldShowFolderEmptyState_(shownBookmarks_.length,
-                  hasLoadedData_)]]">
+      hidden="[[!sectionVisibility_.folderEmptyState]]">
     <div class="sp-card card-bottom">
       <sp-empty-state id="folderEmptyState"
           image-path="./images/bookmarks_empty.svg"
@@ -263,10 +258,11 @@
   </div>
 
   <div id="bookmarks" class="bookmarks sp-scroller"
-      hidden="[[!shouldShowBookmarksList_(guestMode_, shownBookmarks_.length)]]"
+      hidden="[[!sectionVisibility_.bookmarksList]]"
       role="[[getBookmarksListRole_(editing_)]]"
       aria-multiselectable="[[editing_]]" scrollable>
-    <div class="sp-card card-bottom" is-full-card$="[[searchQuery_]]">
+    <div class="sp-card card-bottom"
+        is-full-card$="[[!sectionVisibility_.heading]]">
       <iron-list id="shownBookmarksIronList"
           items="[[shownBookmarks_]]" scroll-target="bookmarks">
         <template>
@@ -318,16 +314,15 @@
   </div>
 
   <sp-empty-state id="topLevelEmptyState"
-      hidden="[[!shouldShowTopLevelEmptyState_(
-                  shownBookmarks_, guestMode_, hasLoadedData_)]]"
+      hidden="[[!sectionVisibility_.topLevelEmptyState]]"
       guest$="[[guestMode_]]"
-      image-path="[[getEmptyImagePath_(labels_.*, searchQuery_)]]"
-      dark-image-path="[[getEmptyImagePathDark_(labels_.*, searchQuery_)]]"
-      heading="[[getEmptyTitle_(labels_.*, searchQuery_)]]"
-      body="[[getEmptyBody_(labels_.*, searchQuery_)]]">
+      image-path="[[getEmptyImagePath_(hasSomeActiveFilter_)]]"
+      dark-image-path="[[getEmptyImagePathDark_(hasSomeActiveFilter_)]]"
+      heading="[[getEmptyTitle_(hasSomeActiveFilter_)]]"
+      body="[[getEmptyBody_(hasSomeActiveFilter_)]]">
   </sp-empty-state>
-  <sp-footer
-      hidden="[[shouldShowEmptySearchState_(labels_.*, searchQuery_)]]"
+  <sp-footer id="footer"
+      hidden="[[!sectionVisibility_.footer]]"
       pinned="[[shownBookmarks_.length]]">
     <cr-button class="floating-button"
         hidden="[[hideAddTabButton_(editing_)]]"

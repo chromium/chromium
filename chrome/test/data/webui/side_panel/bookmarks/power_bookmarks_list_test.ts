@@ -10,7 +10,6 @@ import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bo
 import {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import {ShoppingListApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
-import {SpEmptyStateElement} from 'chrome://bookmarks-side-panel.top-chrome/shared/sp_empty_state.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -77,6 +76,10 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
   function getBookmarkElements(root: HTMLElement): PowerBookmarkRowElement[] {
     return Array.from(root.shadowRoot!.querySelectorAll('power-bookmark-row'));
+  }
+
+  function isHidden(element: HTMLElement): boolean {
+    return element.matches('[hidden], [hidden] *');
   }
 
   setup(async () => {
@@ -327,38 +330,72 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertNotEquals(0, otherBookmarksUrlListItemElement.imageUrls.length);
   });
 
-  test('ShowsCorrectEmptyState', () => {
-    function emptyStateIsHidden(emptyState: SpEmptyStateElement): boolean {
-      return emptyState.matches('[hidden], [hidden] *');
-    }
-
+  test('TogglesSectionVisibilityAndEmptyStates', async () => {
+    const search = powerBookmarksList.$.searchField;
+    const filterChips = powerBookmarksList.$.filterChips;
+    const heading = powerBookmarksList.$.heading;
     const folderEmptyState = powerBookmarksList.$.folderEmptyState;
+    const bookmarksList = powerBookmarksList.$.bookmarks;
     const topLevelEmptyState = powerBookmarksList.$.topLevelEmptyState;
+    const footer = powerBookmarksList.$.footer;
     assertEquals(
         loadTimeData.getString('emptyTitle'), topLevelEmptyState.heading);
     assertEquals(loadTimeData.getString('emptyBody'), topLevelEmptyState.body);
 
-    // Has bookmarks so both empty states should be hidden.
-    assertTrue(emptyStateIsHidden(folderEmptyState));
-    assertTrue(emptyStateIsHidden(topLevelEmptyState));
+    // Has bookmarks.
+    assertFalse(isHidden(search));
+    assertTrue(isHidden(filterChips));
+    assertFalse(isHidden(heading));
+    assertTrue(isHidden(folderEmptyState));
+    assertFalse(isHidden(bookmarksList));
+    assertTrue(isHidden(topLevelEmptyState));
+    assertFalse(isHidden(footer));
 
-    // Opening an empty folder should show the folder empty state.
+    // Opening an empty folder.
     getBookmarkElements(powerBookmarksList)[0]!.$.crUrlListItem.click();
-    flush();
-    assertFalse(emptyStateIsHidden(folderEmptyState));
-    assertTrue(emptyStateIsHidden(topLevelEmptyState));
+    await flushTasks();
+    assertFalse(isHidden(search));
+    assertTrue(isHidden(filterChips));
+    assertFalse(isHidden(heading));
+    assertFalse(isHidden(folderEmptyState));
+    assertTrue(isHidden(bookmarksList));
+    assertTrue(isHidden(topLevelEmptyState));
+    assertFalse(isHidden(footer));
 
-    // A search with no results should show the top level empty state with
-    // text specific to search.
+    // A search with no results.
     const searchField =
         powerBookmarksList.shadowRoot!.querySelector('cr-toolbar-search-field');
     assertTrue(!!searchField);
     searchField.$.searchInput.value = 'abcdef';
     searchField.onSearchTermSearch();
-    flush();
+    await flushTasks();
     assertEquals(
         loadTimeData.getString('emptyTitleSearch'), topLevelEmptyState.heading);
-    assertTrue(emptyStateIsHidden(folderEmptyState));
-    assertFalse(emptyStateIsHidden(topLevelEmptyState));
+    assertFalse(isHidden(search));
+    assertTrue(isHidden(filterChips));
+    assertTrue(isHidden(heading));
+    assertTrue(isHidden(folderEmptyState));
+    assertTrue(isHidden(bookmarksList));
+    assertFalse(isHidden(topLevelEmptyState));
+    assertTrue(isHidden(footer));
+
+    // Adding a tracked product shows filter chips.
+    const newProduct = {
+      bookmarkId: BigInt(3),
+      info: {
+        title: 'Product Baz',
+        clusterTitle: 'Product Cluster Baz',
+        domain: 'baz.com',
+        imageUrl: {url: 'https://baz.com/image'},
+        productUrl: {url: 'https://baz.com/product'},
+        currentPrice: '$56',
+        previousPrice: '$78',
+        clusterId: BigInt(12345),
+      },
+    };
+    shoppingListApi.getCallbackRouterRemote().priceTrackedForBookmark(
+        newProduct);
+    await flushTasks();
+    assertFalse(isHidden(filterChips));
   });
 });
