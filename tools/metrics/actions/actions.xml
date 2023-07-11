@@ -28657,6 +28657,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SafetyCheck.DetailKeepClicked">
+  <owner>psarouthakis@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    User clicked on the Safety Check Keep button in the chrome://extensions
+    Detail page for an extension that triggered a Safety Check warning.
+  </description>
+</action>
+
 <action name="SafetyCheck.DetailRemoveClicked">
   <owner>psarouthakis@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>

@@ -61,6 +61,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'setItemCollectsErrors',
       'setItemEnabled',
       'setItemHostAccess',
+      'setItemSafetyCheckWarningAcknowledged',
       'setProfileInDevMode',
       'setShortcutHandlingSuspended',
       'setShowAccessRequestsInToolbar',
@@ -150,6 +151,11 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   setItemAllowedOnFileUrls(id: string, isAllowedOnFileUrls: boolean) {
     this.methodCalled('setItemAllowedOnFileUrls', [id, isAllowedOnFileUrls]);
+  }
+
+
+  setItemSafetyCheckWarningAcknowledged(id: string) {
+    this.methodCalled('setItemSafetyCheckWarningAcknowledged', id);
   }
 
   setItemEnabled(id: string, isEnabled: boolean) {

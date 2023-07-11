@@ -116,7 +116,7 @@ suite('ExtensionsReviewPanel', function() {
         element.extensions =
             element.extensions.filter(extension => extension.id !== id);
       }
-      setItemSafetyCheckWarningAcknowledged(): void {}
+      override setItemSafetyCheckWarningAcknowledged(): void {}
     }
     element.delegate = new MockDeleteItemDelegate();
     element.shadowRoot!.querySelector('cr-icon-button')?.click();
@@ -129,7 +129,7 @@ suite('ExtensionsReviewPanel', function() {
     const completionTextContainer =
         element.shadowRoot!.querySelector('.completion-container');
     class MockKeepItemDelegate extends MockItemDelegate {
-      setItemSafetyCheckWarningAcknowledged(): void {
+      override setItemSafetyCheckWarningAcknowledged(): void {
         const extensionItems = [
           createExtensionInfo({
             name: 'Alpha',

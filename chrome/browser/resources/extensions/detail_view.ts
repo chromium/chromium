@@ -269,8 +269,10 @@ export class ExtensionsDetailViewElement extends
   }
 
   private onKeepClick_() {
-    // TODO(crbug/1432194): Replace with keep extension API implementation
-    // and enable string variable.
+    if (this.showSafetyCheck_) {
+      chrome.metricsPrivate.recordUserAction('SafetyCheck.DetailKeepClicked');
+    }
+    this.delegate.setItemSafetyCheckWarningAcknowledged(this.data.id);
   }
 
   private onRepairClick_() {
@@ -392,7 +394,8 @@ export class ExtensionsDetailViewElement extends
     }
 
     return !!(
-        this.data.safetyCheckText && this.data.safetyCheckText.detailString);
+        this.data.safetyCheckText && this.data.safetyCheckText.detailString &&
+        this.data.acknowledgeSafetyCheckWarning !== true);
   }
 
   private onShowSafetyCheckChanged_() {

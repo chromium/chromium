@@ -50,6 +50,7 @@ export interface ItemDelegate {
   getExtensionSize(id: string): Promise<string>;
   addRuntimeHostPermission(id: string, host: string): Promise<void>;
   removeRuntimeHostPermission(id: string, host: string): Promise<void>;
+  setItemSafetyCheckWarningAcknowledged(id: string): void;
   setShowAccessRequestsInToolbar(id: string, showRequests: boolean): void;
 
   // TODO(tjudkins): This function is not specific to items, so should be pulled
