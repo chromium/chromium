@@ -11,12 +11,12 @@
     grid-template-areas:
       '. . breadcrumb . .';
     grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
-    grid-template-rows: 56px;
+    grid-template-rows: var(--personalization-app-breadcrumb-height);
     position: sticky;
     top: 0;
     width: 100%;
-    /* z-index for breadcrumb should be higher than other elements 
-    (such as preview-image-border) so that it won't be overlapped 
+    /* z-index for breadcrumb should be higher than other elements
+    (such as preview-image-border) so that it won't be overlapped
     during scrolling in hub subpages */
     z-index: 3;
   }
@@ -39,9 +39,6 @@
     pointer-events: none;
     position: absolute;
     width: 100%;
-  }
-  wallpaper-subpage {
-    flex-grow: 1;
   }
 </style>
 <div id="container">
