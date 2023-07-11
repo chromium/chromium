@@ -13529,46 +13529,6 @@
             ]
         }
     ],
-    "TranslateTriggeringImprovements": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "SkipAndRetry",
-                    "enable_features": [
-                        "RetryLanguageDetection",
-                        "SkipLanguageDetectionOnEmptyContent"
-                    ]
-                },
-                {
-                    "name": "SkipOnly",
-                    "enable_features": [
-                        "SkipLanguageDetectionOnEmptyContent"
-                    ],
-                    "disable_features": [
-                        "RetryLanguageDetection"
-                    ]
-                },
-                {
-                    "name": "RetryOnly",
-                    "enable_features": [
-                        "RetryLanguageDetection"
-                    ],
-                    "disable_features": [
-                        "SkipLanguageDetectionOnEmptyContent"
-                    ]
-                }
-            ]
-        }
-    ],
     "TrustSafetySentimentSurvey": [
         {
             "platforms": [
