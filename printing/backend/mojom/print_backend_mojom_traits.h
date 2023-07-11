@@ -50,23 +50,23 @@ struct StructTraits<printing::mojom::PaperDataView,
                     printing::PrinterSemanticCapsAndDefaults::Paper> {
   static const std::string& display_name(
       const printing::PrinterSemanticCapsAndDefaults::Paper& p) {
-    return p.display_name;
+    return p.display_name();
   }
   static const std::string& vendor_id(
       const printing::PrinterSemanticCapsAndDefaults::Paper& p) {
-    return p.vendor_id;
+    return p.vendor_id();
   }
   static const gfx::Size& size_um(
       const printing::PrinterSemanticCapsAndDefaults::Paper& p) {
-    return p.size_um;
+    return p.size_um();
   }
   static const gfx::Rect& printable_area_um(
       const printing::PrinterSemanticCapsAndDefaults::Paper& p) {
-    return p.printable_area_um;
+    return p.printable_area_um();
   }
   static int max_height_um(
       const printing::PrinterSemanticCapsAndDefaults::Paper& p) {
-    return p.max_height_um;
+    return p.max_height_um();
   }
 
   static bool Read(printing::mojom::PaperDataView data,

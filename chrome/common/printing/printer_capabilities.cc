@@ -63,17 +63,17 @@ namespace {
 // members. The `Papers` will be sorted in place when this function returns.
 void PopulateAndSortAllPaperNames(PrinterSemanticCapsAndDefaults& info) {
   MediaSizeInfo default_paper =
-      LocalizePaperDisplayName(info.default_paper.size_um);
-  info.default_paper.vendor_id = default_paper.vendor_id;
-  info.default_paper.display_name =
-      base::UTF16ToUTF8(default_paper.display_name);
+      LocalizePaperDisplayName(info.default_paper.size_um());
+  info.default_paper.set_display_name(
+      base::UTF16ToUTF8(default_paper.display_name));
+  info.default_paper.set_vendor_id(default_paper.vendor_id);
 
   // Pair the paper entries with their sort info so they can be sorted.
   std::vector<PaperWithSizeInfo> size_list;
   for (PrinterSemanticCapsAndDefaults::Paper& paper : info.papers) {
     // Copy `paper.size_um` to avoid potentially using `paper` after calling
     // std::move(paper).
-    gfx::Size size_um = paper.size_um;
+    gfx::Size size_um = paper.size_um();
     size_list.emplace_back(LocalizePaperDisplayName(size_um), std::move(paper));
   }
 
@@ -82,8 +82,8 @@ void PopulateAndSortAllPaperNames(PrinterSemanticCapsAndDefaults& info) {
   info.papers.clear();
   for (auto& pair : size_list) {
     auto& paper = info.papers.emplace_back(std::move(pair.paper));
-    paper.vendor_id = pair.size_info.vendor_id;
-    paper.display_name = base::UTF16ToUTF8(pair.size_info.display_name);
+    paper.set_display_name(base::UTF16ToUTF8(pair.size_info.display_name));
+    paper.set_vendor_id(pair.size_info.vendor_id);
   }
 }
 #endif  // BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)

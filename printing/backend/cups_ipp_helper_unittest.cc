@@ -217,8 +217,8 @@ TEST_F(PrintBackendCupsIppHelperTest, DefaultPaper) {
       "media-col",
       MakeMediaColDefault(ipp_, {21000, 29700, 10, 10, 10, 10, {}}));
   PrinterSemanticCapsAndDefaults::Paper default_paper = DefaultPaper(*printer_);
-  EXPECT_EQ(default_paper.size_um.width(), 210000);
-  EXPECT_EQ(default_paper.size_um.height(), 297000);
+  EXPECT_EQ(default_paper.size_um().width(), 210000);
+  EXPECT_EQ(default_paper.size_um().height(), 297000);
 }
 
 TEST_F(PrintBackendCupsIppHelperTest, CopiesCapable) {
@@ -299,8 +299,8 @@ TEST_F(PrintBackendCupsIppHelperTest, A4PaperSupported) {
   CapsAndDefaultsFromPrinter(*printer_, &caps);
 
   PrinterSemanticCapsAndDefaults::Paper paper = caps.papers[0];
-  EXPECT_EQ(210000, paper.size_um.width());
-  EXPECT_EQ(297000, paper.size_um.height());
+  EXPECT_EQ(210000, paper.size_um().width());
+  EXPECT_EQ(297000, paper.size_um().height());
 }
 
 TEST_F(PrintBackendCupsIppHelperTest, LegalPaperDefault) {
@@ -311,8 +311,8 @@ TEST_F(PrintBackendCupsIppHelperTest, LegalPaperDefault) {
 
   PrinterSemanticCapsAndDefaults caps;
   CapsAndDefaultsFromPrinter(*printer_, &caps);
-  EXPECT_EQ(215900, caps.default_paper.size_um.width());
-  EXPECT_EQ(355600, caps.default_paper.size_um.height());
+  EXPECT_EQ(215900, caps.default_paper.size_um().width());
+  EXPECT_EQ(355600, caps.default_paper.size_um().height());
 }
 
 // Tests that CapsAndDefaultsFromPrinter() does not propagate papers with
@@ -343,8 +343,8 @@ TEST_F(PrintBackendCupsIppHelperTest, OmitPapersWithInvalidSizes) {
   // these invalid sizes.
   ASSERT_EQ(2U, caps.papers.size());
   for (const auto& paper : caps.papers) {
-    EXPECT_NE(21000, paper.size_um.width());
-    EXPECT_NE(29700, paper.size_um.height());
+    EXPECT_NE(21000, paper.size_um().width());
+    EXPECT_NE(29700, paper.size_um().height());
   }
 }
 
@@ -382,7 +382,8 @@ TEST_F(PrintBackendCupsIppHelperTest, PreferBorderedSizes) {
                                  }));
   CapsAndDefaultsFromPrinter(*printer_, &caps);
   ASSERT_EQ(1U, caps.papers.size());
-  EXPECT_NE(gfx::Rect(0, 0, 210000, 297000), caps.papers[0].printable_area_um);
+  EXPECT_NE(gfx::Rect(0, 0, 210000, 297000),
+            caps.papers[0].printable_area_um());
 
   printer_->SetMediaColDatabase(
       MakeMediaColDatabase(ipp_, {
@@ -391,7 +392,8 @@ TEST_F(PrintBackendCupsIppHelperTest, PreferBorderedSizes) {
                                  }));
   CapsAndDefaultsFromPrinter(*printer_, &caps);
   ASSERT_EQ(1U, caps.papers.size());
-  EXPECT_NE(gfx::Rect(0, 0, 210000, 297000), caps.papers[0].printable_area_um);
+  EXPECT_NE(gfx::Rect(0, 0, 210000, 297000),
+            caps.papers[0].printable_area_um());
 
   // If the only available version of a size is borderless, go ahead and use it.
   // Not sure if any actual printers do this, but it's allowed by the IPP spec.
@@ -401,7 +403,8 @@ TEST_F(PrintBackendCupsIppHelperTest, PreferBorderedSizes) {
                                  }));
   CapsAndDefaultsFromPrinter(*printer_, &caps);
   ASSERT_EQ(1U, caps.papers.size());
-  EXPECT_EQ(gfx::Rect(0, 0, 210000, 297000), caps.papers[0].printable_area_um);
+  EXPECT_EQ(gfx::Rect(0, 0, 210000, 297000),
+            caps.papers[0].printable_area_um());
 }
 
 // At the time of this writing, there are no media-source or media-type

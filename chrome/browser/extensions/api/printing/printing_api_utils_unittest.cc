@@ -151,9 +151,9 @@ printing::PrinterSemanticCapsAndDefaults ConstructPrinterCapabilities() {
   capabilities.duplex_modes.push_back(printing::mojom::DuplexMode::kLongEdge);
   capabilities.copies_max = kCopies;
   capabilities.dpis.push_back(gfx::Size(kHorizontalDpi, kVerticalDpi));
-  printing::PrinterSemanticCapsAndDefaults::Paper paper;
-  paper.vendor_id = kMediaSizeVendorId;
-  paper.size_um = gfx::Size(kMediaSizeWidth, kMediaSizeHeight);
+  printing::PrinterSemanticCapsAndDefaults::Paper paper(
+      /*display_name=*/"", kMediaSizeVendorId,
+      gfx::Size(kMediaSizeWidth, kMediaSizeHeight));
   capabilities.papers.push_back(paper);
   capabilities.collate_capable = true;
   return capabilities;

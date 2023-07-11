@@ -57,7 +57,7 @@ PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizes() {
 void SetMacCustomPaperSizesForTesting(
     const PrinterSemanticCapsAndDefaults::Papers& papers) {
   for (const PrinterSemanticCapsAndDefaults::Paper& paper : papers)
-    DCHECK_EQ("", paper.vendor_id);
+    DCHECK_EQ("", paper.vendor_id());
 
   GetTestPapers() = papers;
 }
@@ -138,7 +138,7 @@ PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizesFromFile(
   std::sort(custom_paper_sizes.begin(), custom_paper_sizes.end(),
             [](const PrinterSemanticCapsAndDefaults::Paper& a,
                const PrinterSemanticCapsAndDefaults::Paper& b) {
-              return a.display_name < b.display_name;
+              return a.display_name() < b.display_name();
             });
 
   return custom_paper_sizes;

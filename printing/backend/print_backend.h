@@ -187,22 +187,53 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
   mojom::ColorModel color_model = mojom::ColorModel::kUnknownColorModel;
   mojom::ColorModel bw_model = mojom::ColorModel::kUnknownColorModel;
 
-  struct COMPONENT_EXPORT(PRINT_BACKEND) Paper {
-    std::string display_name;
-    std::string vendor_id;
-    gfx::Size size_um;
+  class COMPONENT_EXPORT(PRINT_BACKEND) Paper {
+   public:
+    Paper();
+    Paper(const std::string& display_name,
+          const std::string& vendor_id,
+          const gfx::Size& size_um);
+    Paper(const std::string& display_name,
+          const std::string& vendor_id,
+          const gfx::Size& size_um,
+          const gfx::Rect& printable_area_um);
+    Paper(const std::string& display_name,
+          const std::string& vendor_id,
+          const gfx::Size& size_um,
+          const gfx::Rect& printable_area_um,
+          int max_height_um);
+
+    bool operator==(const Paper& other) const;
+
+    const std::string& display_name() const { return display_name_; }
+    const std::string& vendor_id() const { return vendor_id_; }
+    const gfx::Size& size_um() const { return size_um_; }
+    const gfx::Rect& printable_area_um() const { return printable_area_um_; }
+    int max_height_um() const { return max_height_um_; }
+
+    void set_display_name(const std::string& display_name) {
+      display_name_ = display_name;
+    }
+    void set_vendor_id(const std::string& vendor_id) { vendor_id_ = vendor_id; }
+
+    void set_printable_area_to_paper_size() {
+      printable_area_um_ = gfx::Rect(size_um_);
+    }
+
+   private:
+    std::string display_name_;
+    std::string vendor_id_;
+    gfx::Size size_um_;
 
     // Origin (x,y) is at the bottom-left.
-    gfx::Rect printable_area_um;
+    gfx::Rect printable_area_um_;
 
     // This is used to represent a printer that supports a variable height.
     // This will either be equal to 0 (which indicates the height is not
     // variable) or this will be larger than the height in `size_um` (which
     // indicates the height can be anywhere in that range).  Note that
     // `printable_area_um` is always based on `size_um`.
-    int max_height_um = 0;
-
-    bool operator==(const Paper& other) const;
+    int max_height_um_ = 0;
   };
   using Papers = std::vector<Paper>;
   Papers papers;

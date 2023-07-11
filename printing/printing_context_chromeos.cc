@@ -340,10 +340,10 @@ mojom::ResultCode PrintingContextChromeos::UseDefaultSettings() {
   PrinterSemanticCapsAndDefaults::Paper paper = DefaultPaper(*printer_);
 
   PrintSettings::RequestedMedia media;
-  media.vendor_id = paper.vendor_id;
-  media.size_microns = paper.size_um;
+  media.vendor_id = paper.vendor_id();
+  media.size_microns = paper.size_um();
   settings_->set_requested_media(media);
-  SetPrintableArea(settings_.get(), media, paper.printable_area_um);
+  SetPrintableArea(settings_.get(), media, paper.printable_area_um());
 
   return mojom::ResultCode::kSuccess;
 }
@@ -397,8 +397,8 @@ mojom::ResultCode PrintingContextChromeos::UpdatePrinterSettings(
   if (media.IsDefault()) {
     PrinterSemanticCapsAndDefaults::Paper paper = DefaultPaper(*printer_);
 
-    media.vendor_id = paper.vendor_id;
-    media.size_microns = paper.size_um;
+    media.vendor_id = paper.vendor_id();
+    media.size_microns = paper.size_um();
     settings_->set_requested_media(media);
   }
 

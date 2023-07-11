@@ -131,7 +131,7 @@ mojom::ResultCode TestPrintBackend::GetPrinterSemanticCapsAndDefaults(
   // sizes.
   for (auto& paper : printer_caps->papers) {
     if (paper != printer_caps->default_paper) {
-      paper.printable_area_um = gfx::Rect(paper.size_um);
+      paper.set_printable_area_to_paper_size();
     }
   }
 #endif
@@ -169,8 +169,8 @@ absl::optional<gfx::Rect> TestPrintBackend::GetPaperPrintableArea(
   if (base::StringToUint(paper_vendor_id, &id) && id) {
     PrinterSemanticCapsAndDefaults::Papers& papers = data->caps->papers;
     for (auto paper = papers.begin(); paper != papers.end(); ++paper) {
-      if (paper->vendor_id == paper_vendor_id) {
-        return paper->printable_area_um;
+      if (paper->vendor_id() == paper_vendor_id) {
+        return paper->printable_area_um();
       }
     }
 

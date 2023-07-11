@@ -820,8 +820,8 @@ void SortPaperDisplayNames(std::vector<PaperWithSizeInfo>& papers) {
 
   // Sort dimensional sizes (inch and mm) by width, then height.
   auto size_sort = [](const PaperWithSizeInfo& a, const PaperWithSizeInfo& b) {
-    const gfx::Size& size_a = a.paper.size_um;
-    const gfx::Size& size_b = b.paper.size_um;
+    const gfx::Size& size_a = a.paper.size_um();
+    const gfx::Size& size_b = b.paper.size_um();
 
     if (size_a.width() != size_b.width())
       return size_a.width() < size_b.width();
@@ -833,8 +833,8 @@ void SortPaperDisplayNames(std::vector<PaperWithSizeInfo>& papers) {
   // Sort named sizes by name, then width, then height.
   auto name_sort = [&collator](const PaperWithSizeInfo& a,
                                const PaperWithSizeInfo& b) {
-    const gfx::Size& size_a = a.paper.size_um;
-    const gfx::Size& size_b = b.paper.size_um;
+    const gfx::Size& size_a = a.paper.size_um();
+    const gfx::Size& size_b = b.paper.size_um();
 
     UCollationResult comp = base::i18n::CompareString16WithCollator(
         *collator, a.size_info.display_name, b.size_info.display_name);

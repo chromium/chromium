@@ -67,8 +67,8 @@ printer::TypedValueVendorCapability::ValueType ToCloudValueType(
 
 printer::Media ConvertPaperToMedia(
     const printing::PrinterSemanticCapsAndDefaults::Paper& paper) {
-  gfx::Size paper_size = paper.size_um;
-  gfx::Rect paper_printable_area = paper.printable_area_um;
+  gfx::Size paper_size = paper.size_um();
+  gfx::Rect paper_printable_area = paper.printable_area_um();
   // When converting to Media, the size and printable area should have a larger
   // height than width.
   if (paper_size.width() > paper_size.height()) {
@@ -77,7 +77,7 @@ printer::Media ConvertPaperToMedia(
         paper_printable_area.y(), paper_printable_area.x(),
         paper_printable_area.height(), paper_printable_area.width());
   }
-  printer::Media new_media(paper.display_name, paper.vendor_id, paper_size,
+  printer::Media new_media(paper.display_name(), paper.vendor_id(), paper_size,
                            paper_printable_area);
   new_media.MatchBySize();
   return new_media;
@@ -90,9 +90,9 @@ printer::MediaCapability GetMediaCapabilities(
 
   const printing::PrinterSemanticCapsAndDefaults::Paper& default_paper =
       semantic_info.default_paper;
-  printer::Media default_media(default_paper.display_name,
-                               default_paper.vendor_id, default_paper.size_um,
-                               default_paper.printable_area_um);
+  printer::Media default_media(
+      default_paper.display_name(), default_paper.vendor_id(),
+      default_paper.size_um(), default_paper.printable_area_um());
   default_media.MatchBySize();
 
   for (const auto& paper : semantic_info.papers) {

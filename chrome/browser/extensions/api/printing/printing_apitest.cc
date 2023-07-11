@@ -61,10 +61,10 @@ ConstructPrinterCapabilities() {
   capabilities->duplex_modes.push_back(printing::mojom::DuplexMode::kSimplex);
   capabilities->copies_max = 2;
   capabilities->dpis.emplace_back(kHorizontalDpi, kVerticalDpi);
-  printing::PrinterSemanticCapsAndDefaults::Paper paper;
-  paper.vendor_id = kMediaSizeVendorId;
-  paper.size_um = gfx::Size(kMediaSizeWidth, kMediaSizeHeight);
-  capabilities->papers.push_back(paper);
+  printing::PrinterSemanticCapsAndDefaults::Paper paper(
+      /*display_name=*/"", kMediaSizeVendorId,
+      {kMediaSizeWidth, kMediaSizeHeight});
+  capabilities->papers.push_back(std::move(paper));
   capabilities->collate_capable = true;
   return capabilities;
 }

@@ -342,8 +342,9 @@ TEST(
   // Duplicate papers are known to be possible, seen with the Konica Minolta
   // 4750 Series PS driver.
   // Use a paper with same name but different size.
-  PrinterSemanticCapsAndDefaults::Paper paper_a4_prime = kPaperA4;
-  paper_a4_prime.size_um = kPaperLetter.size_um;
+  PrinterSemanticCapsAndDefaults::Paper paper_a4_prime(
+      kPaperA4.display_name(), kPaperA4.vendor_id(), kPaperLetter.size_um(),
+      kPaperA4.printable_area_um());
   input = GenerateSamplePrinterSemanticCapsAndDefaults({});
   const PrinterSemanticCapsAndDefaults::Papers kDuplicatePapers{
       kPaperA4, kPaperLetter, kPaperLedger, paper_a4_prime};

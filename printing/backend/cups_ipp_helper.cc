@@ -296,19 +296,18 @@ PaperFromMediaColDatabaseEntry(ipp_t* db_entry) {
     return absl::nullopt;
   }
 
-  PrinterSemanticCapsAndDefaults::Paper paper;
-  paper.size_um =
-      gfx::Size(width * kMicronsPerPwgUnit, height * kMicronsPerPwgUnit);
-  paper.printable_area_um = PrintableAreaFromSizeAndPwgMargins(
-      paper.size_um, bottom_margin, left_margin, right_margin, top_margin);
-
-  return paper;
+  gfx::Size size_um(width * kMicronsPerPwgUnit, height * kMicronsPerPwgUnit);
+  gfx::Rect printable_area_um = PrintableAreaFromSizeAndPwgMargins(
+      size_um, bottom_margin, left_margin, right_margin, top_margin);
+  return PrinterSemanticCapsAndDefaults::Paper(
+      /*display_name=*/"", /*vendor_id=*/"", size_um, printable_area_um);
 }
 
 bool PaperIsBorderless(const PrinterSemanticCapsAndDefaults::Paper& paper) {
-  return paper.printable_area_um.x() == 0 && paper.printable_area_um.y() == 0 &&
-         paper.printable_area_um.width() == paper.size_um.width() &&
-         paper.printable_area_um.height() == paper.size_um.height();
+  return paper.printable_area_um().x() == 0 &&
+         paper.printable_area_um().y() == 0 &&
+         paper.printable_area_um().width() == paper.size_um().width() &&
+         paper.printable_area_um().height() == paper.size_um().height();
 }
 
 PrinterSemanticCapsAndDefaults::Papers SupportedPapers(
@@ -337,14 +336,14 @@ PrinterSemanticCapsAndDefaults::Papers SupportedPapers(
     }
 
     const auto& paper = paper_opt.value();
-    if (auto existing_entry = paper_map.find(paper.size_um);
+    if (auto existing_entry = paper_map.find(paper.size_um());
         existing_entry != paper_map.end()) {
       // Prefer non-borderless versions of paper sizes.
       if (PaperIsBorderless(existing_entry->second)) {
         existing_entry->second = paper;
       }
     } else {
-      paper_map.emplace(paper.size_um, paper);
+      paper_map.emplace(paper.size_um(), paper);
     }
   }
 
@@ -498,11 +497,11 @@ gfx::Rect GetPrintableAreaForSize(const CupsPrinter& printer,
     }
 
     const auto& paper = paper_opt.value();
-    if (paper.size_um != size_um) {
+    if (paper.size_um() != size_um) {
       continue;
     }
 
-    result = paper.printable_area_um;
+    result = paper.printable_area_um();
 
     // If this is a borderless size, try to find a non-borderless version.
     if (!PaperIsBorderless(paper)) {

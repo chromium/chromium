@@ -858,20 +858,18 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
     ppd_option_t* paper_option = ppdFindOption(ppd, kPageSize);
     bool is_default_found = false;
     for (int i = 0; i < ppd->num_sizes; ++i) {
-      gfx::Size paper_size_microns(
+      const gfx::Size paper_size_um(
           ConvertUnit(ppd->sizes[i].width, kPointsPerInch, kMicronsPerInch),
           ConvertUnit(ppd->sizes[i].length, kPointsPerInch, kMicronsPerInch));
-      if (!paper_size_microns.IsEmpty()) {
-        PrinterSemanticCapsAndDefaults::Paper paper;
-        paper.size_um = paper_size_microns;
-        paper.vendor_id = ppd->sizes[i].name;
+      if (!paper_size_um.IsEmpty()) {
+        std::string display_name;
         if (paper_option) {
           ppd_choice_t* paper_choice =
               ppdFindChoice(paper_option, ppd->sizes[i].name);
           // Human readable paper name should be UTF-8 encoded, but some PPDs
           // do not follow this standard.
           if (paper_choice && base::IsStringUTF8(paper_choice->text)) {
-            paper.display_name = paper_choice->text;
+            display_name = paper_choice->text;
           }
         }
         int printable_area_left_um =
@@ -887,7 +885,7 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
         int printable_area_top_um =
             ConvertUnit(ppd->sizes[i].top, kPointsPerInch, kMicronsPerInch);
 
-        paper.printable_area_um = gfx::Rect(
+        gfx::Rect printable_area_um(
             printable_area_left_um, printable_area_bottom_um,
             /*width=*/printable_area_right_um - printable_area_left_um,
             /*height=*/printable_area_top_um - printable_area_bottom_um);
@@ -896,11 +894,15 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
         // We've seen some drivers have a printable area that goes out of bounds
         // of the paper size. In those cases, set the printable area to be the
         // size. (See crbug.com/1412305.)
-        const gfx::Rect size_um_rect = gfx::Rect(paper.size_um);
-        if (paper.printable_area_um.IsEmpty() ||
-            !size_um_rect.Contains(paper.printable_area_um)) {
-          paper.printable_area_um = size_um_rect;
+        const gfx::Rect size_um_rect = gfx::Rect(paper_size_um);
+        if (printable_area_um.IsEmpty() ||
+            !size_um_rect.Contains(printable_area_um)) {
+          printable_area_um = size_um_rect;
         }
+
+        PrinterSemanticCapsAndDefaults::Paper paper(
+            display_name,
+            /*vendor_id=*/ppd->sizes[i].name, paper_size_um, printable_area_um);
 
         caps.papers.push_back(paper);
         if (ppd->sizes[i].marked) {
@@ -910,14 +912,13 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
       }
     }
     if (!is_default_found) {
-      gfx::Size locale_paper_microns =
-          GetDefaultPaperSizeFromLocaleMicrons(locale);
+      gfx::Size locale_paper_um = GetDefaultPaperSizeFromLocaleMicrons(locale);
       for (const PrinterSemanticCapsAndDefaults::Paper& paper : caps.papers) {
         // Set epsilon to 500 microns to allow tolerance of rounded paper sizes.
         // While the above utility function returns paper sizes in microns, they
         // are still rounded to the nearest millimeter (1000 microns).
         constexpr int kSizeEpsilon = 500;
-        if (SizesEqualWithinEpsilon(paper.size_um, locale_paper_microns,
+        if (SizesEqualWithinEpsilon(paper.size_um(), locale_paper_um,
                                     kSizeEpsilon)) {
           caps.default_paper = paper;
           is_default_found = true;
