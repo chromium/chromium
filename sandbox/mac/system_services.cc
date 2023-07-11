@@ -16,8 +16,8 @@ void _LSSetApplicationLaunchServicesServerConnectionStatus(
     bool (^connection_allowed)(CFDictionaryRef options));
 
 // See
-// https://github.com/WebKit/webkit/commit/8da694b0b3febcc262653d01a45e946ce91845ed.
-void _CSCheckFixDisable() API_AVAILABLE(macosx(10.15));
+// https://github.com/WebKit/WebKit/blob/24aaedc770d192d03a07ba4a71727274aaa8fc07/Source/WebKit/WebProcess/cocoa/WebProcessCocoa.mm#L840
+void _CSCheckFixDisable();
 }  // extern "C"
 
 namespace sandbox {
@@ -39,9 +39,7 @@ void DisableLaunchServices() {
 }
 
 void DisableCoreServicesCheckFix() {
-  if (__builtin_available(macOS 10.15, *)) {
-    _CSCheckFixDisable();
-  }
+  _CSCheckFixDisable();
 }
 
 }  // namespace sandbox
