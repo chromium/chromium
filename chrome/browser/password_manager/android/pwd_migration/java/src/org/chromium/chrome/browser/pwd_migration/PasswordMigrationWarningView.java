@@ -130,23 +130,28 @@ class PasswordMigrationWarningView implements BottomSheetContent {
     private void setFragment() {
         assert mScreenType != ScreenType.NONE;
         if (mScreenType == ScreenType.INTRO_SCREEN) {
+            String introScreenSubtitle =
+                    mContext.getString(R.string.password_migration_warning_subtitle)
+                            .replace("%1$s", getChannelString());
             PasswordMigrationWarningIntroFragment introFragment =
-                    new PasswordMigrationWarningIntroFragment(mContext,
+                    new PasswordMigrationWarningIntroFragment(introScreenSubtitle,
                             ()
                                     -> mOnClickHandler.onAcknowledge(mBottomSheetController),
-                            () -> mOnClickHandler.onMoreOptions(), getChannelString());
+                            () -> mOnClickHandler.onMoreOptions());
             mFragmentManager.beginTransaction()
                     .setReorderingAllowed(true)
                     .replace(R.id.fragment_container_view, introFragment)
                     .commit();
         } else if (mScreenType == ScreenType.OPTIONS_SCREEN) {
+            String exportOptionSubtitle =
+                    mContext.getString(R.string.password_migration_warning_password_export_subtitle)
+                            .replace("%1$s", getChannelString());
             PasswordMigrationWarningOptionsFragment optionsFragment =
-                    new PasswordMigrationWarningOptionsFragment(mContext, mShouldOfferSync,
-                            mOnClickHandler,
+                    new PasswordMigrationWarningOptionsFragment(exportOptionSubtitle,
+                            mShouldOfferSync, mOnClickHandler,
                             ()
                                     -> mOnClickHandler.onCancel(mBottomSheetController),
-                            getChannelString(), mAccountDisplayName, mFragmentManager,
-                            mOnResumeExportFlowCallback);
+                            mAccountDisplayName, mFragmentManager, mOnResumeExportFlowCallback);
             mFragmentManager.beginTransaction()
                     .setReorderingAllowed(true)
                     .replace(R.id.fragment_container_view, optionsFragment)
