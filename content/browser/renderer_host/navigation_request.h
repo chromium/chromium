@@ -1656,7 +1656,7 @@ class CONTENT_EXPORT NavigationRequest
   //
   // Must not be called for same-document navigation requests nor for requests
   // served from the back-forward cache or from prerendered pages.
-  void UpdateLocalNetworkRequestPolicy();
+  void UpdatePrivateNetworkRequestPolicy();
 
   // Called when the navigation is ready to be committed. This will update the
   // |state_| and inform the delegate.

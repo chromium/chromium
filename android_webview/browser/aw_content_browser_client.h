@@ -250,7 +250,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       override;
   void LogWebFeatureForCurrentPage(content::RenderFrameHost* render_frame_host,
                                    blink::mojom::WebFeature feature) override;
-  bool ShouldAllowInsecureLocalNetworkRequests(
+  bool ShouldAllowInsecurePrivateNetworkRequests(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override;
   content::SpeechRecognitionManagerDelegate*

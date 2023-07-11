@@ -7058,7 +7058,7 @@ bool NavigationRequest::NeedsUrlLoader() {
          !is_mhtml_subframe_loaded_from_achive;
 }
 
-void NavigationRequest::UpdateLocalNetworkRequestPolicy() {
+void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
   // It is useless to update this state for same-document navigations as well
   // as pages served from the back-forward cache or prerendered pages.
   DCHECK(!IsSameDocument());
@@ -7074,7 +7074,7 @@ void NavigationRequest::UpdateLocalNetworkRequestPolicy() {
       frame_tree_node_->navigator().controller().GetBrowserContext();
 
   url::Origin origin = GetOriginToCommit().value();
-  if (client->ShouldAllowInsecureLocalNetworkRequests(context, origin)) {
+  if (client->ShouldAllowInsecurePrivateNetworkRequests(context, origin)) {
     // The content browser client decided to make an exception for this URL.
     local_network_request_policy_ =
         network::mojom::LocalNetworkRequestPolicy::kAllow;
@@ -7164,7 +7164,7 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   }
 
   if (!IsSameDocument() && !IsPageActivation())
-    UpdateLocalNetworkRequestPolicy();
+    UpdatePrivateNetworkRequestPolicy();
 
   RenderFrameHostImpl* previous_render_frame_host =
       frame_tree_node_->current_frame_host();

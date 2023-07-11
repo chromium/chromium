@@ -4367,7 +4367,7 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
       new_frame_origin, base::OptionalToPtr(isolation_info_.nonce())));
 
   // Apply private network request policy according to our new origin.
-  if (GetContentClient()->browser()->ShouldAllowInsecureLocalNetworkRequests(
+  if (GetContentClient()->browser()->ShouldAllowInsecurePrivateNetworkRequests(
           GetBrowserContext(), new_frame_origin)) {
     local_network_request_policy_ =
         network::mojom::LocalNetworkRequestPolicy::kAllow;

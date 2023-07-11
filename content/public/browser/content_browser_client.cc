@@ -1376,7 +1376,7 @@ bool ContentBrowserClient::ShouldServiceWorkerInheritPolicyContainerFromCreator(
   return url.SchemeIsLocal();
 }
 
-bool ContentBrowserClient::ShouldAllowInsecureLocalNetworkRequests(
+bool ContentBrowserClient::ShouldAllowInsecurePrivateNetworkRequests(
     BrowserContext* browser_context,
     const url::Origin& origin) {
   return false;

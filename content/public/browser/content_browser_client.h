@@ -2377,7 +2377,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   //
   // |browser_context| must not be nullptr. Caller retains ownership.
   // |origin| is the origin of a navigation ready to commit.
-  virtual bool ShouldAllowInsecureLocalNetworkRequests(
+  virtual bool ShouldAllowInsecurePrivateNetworkRequests(
       BrowserContext* browser_context,
       const url::Origin& origin);
 
