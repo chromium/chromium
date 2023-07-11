@@ -682,6 +682,7 @@
     "prefix": "new-base-url-inheritance-behavior",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/infrastructure/urls/base-url"],
+    "exclusive_tests": "ALL",
     "args": ["--enable-features=NewBaseUrlInheritanceBehavior"],
     "expires": "Sep 10, 2023"
   },
