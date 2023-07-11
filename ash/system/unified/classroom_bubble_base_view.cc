@@ -24,6 +24,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
@@ -33,12 +34,22 @@ namespace {
 
 constexpr int kSpacingAboveListContainerView = 16;
 
+constexpr int kInteriorGlanceableBubbleMargin = 16;
+
 }  // namespace
 
 ClassroomBubbleBaseView::ClassroomBubbleBaseView(
     DetailedViewDelegate* delegate,
     std::unique_ptr<ui::ComboboxModel> combobox_model)
     : GlanceableTrayChildBubble(delegate) {
+  auto* layout_manager =
+      SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout_manager
+      ->SetInteriorMargin(gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
+                                            kInteriorGlanceableBubbleMargin, 0,
+                                            kInteriorGlanceableBubbleMargin))
+      .SetOrientation(views::LayoutOrientation::kVertical);
+
   header_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
@@ -46,7 +57,6 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred));
-  header_view_->SetProperty(views::kMarginsKey, gfx::Insets(16));
 
   auto* const header_icon =
       header_view_->AddChildView(std::make_unique<views::ImageView>());
@@ -65,11 +75,9 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
   // TODO(b:283370907): Implement accessibility behavior.
   combo_box_view_->SetTooltipTextAndAccessibleName(u"Assignment list selector");
 
-  list_container_view_ =
-      AddChildView(std::make_unique<views::FlexLayoutView>());
+  list_container_view_ = AddChildView(std::make_unique<views::View>());
   list_container_view_->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleListContainer));
-  list_container_view_->SetOrientation(views::LayoutOrientation::kVertical);
   list_container_view_->SetPaintToLayer();
   list_container_view_->layer()->SetFillsBoundsOpaquely(false);
   list_container_view_->layer()->SetRoundedCornerRadius(
@@ -77,6 +85,10 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
   list_container_view_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kSpacingAboveListContainerView, 0, 0, 0));
+  auto* layout =
+      list_container_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+  layout->set_between_child_spacing(2);
 
   list_footer_view_ = AddChildView(
       std::make_unique<GlanceablesListFooterView>(base::BindRepeating(

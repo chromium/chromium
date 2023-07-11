@@ -25,8 +25,6 @@
 namespace ash {
 namespace {
 
-constexpr auto kIndividualItemViewMargin = gfx::Insets::TLBR(0, 0, 2, 0);
-
 constexpr int kMaxAssignments = 3;
 
 enum class StudentAssignmentsListType {
@@ -123,23 +121,17 @@ void ClassroomBubbleStudentView::OnGetStudentAssignments(
   list_container_view_->RemoveAllChildViews();
 
   for (const auto& assignment : assignments) {
-    list_container_view_
-        ->AddChildView(std::make_unique<GlanceablesClassroomItemView>(
+    list_container_view_->AddChildView(
+        std::make_unique<GlanceablesClassroomItemView>(
             assignment.get(),
             base::BindRepeating(&ClassroomBubbleStudentView::OpenUrl,
-                                base::Unretained(this), assignment->link)))
-        ->SetProperty(views::kMarginsKey, kIndividualItemViewMargin);
+                                base::Unretained(this), assignment->link)));
 
     if (list_container_view_->children().size() >= kMaxAssignments) {
       break;
     }
   }
-
-  if (!list_container_view_->children().empty()) {
-    // Reset bottom margin of the last element in the list.
-    list_container_view_->children().back()->SetProperty(views::kMarginsKey,
-                                                         gfx::Insets());
-  }
+  list_container_view_->InvalidateLayout();
 
   list_footer_view_->UpdateItemsCount(list_container_view_->children().size(),
                                       assignments.size());

@@ -34,6 +34,10 @@ namespace {
 
 constexpr int kSeeAllIconSize = 24;
 
+constexpr int kFooterVerticalSpacing = 7;
+
+constexpr int kFooterStartSpacing = 6;
+
 }  // namespace
 
 GlanceablesListFooterView::GlanceablesListFooterView(
@@ -74,6 +78,10 @@ GlanceablesListFooterView::GlanceablesListFooterView(
                                      kSeeAllIconSize));
   see_all_button->SetTextColorId(views::Button::STATE_NORMAL,
                                  cros_tokens::kCrosSysOnSurface);
+
+  SetProperty(views::kMarginsKey,
+              gfx::Insets::TLBR(kFooterVerticalSpacing, kFooterStartSpacing,
+                                kFooterVerticalSpacing, 0));
 }
 
 void GlanceablesListFooterView::UpdateItemsCount(size_t visible_items_count,
