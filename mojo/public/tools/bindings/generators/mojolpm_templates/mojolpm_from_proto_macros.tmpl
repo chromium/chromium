@@ -352,12 +352,12 @@ bool FromProto(
       if (FromProto(input.m_{{name}}(), maybe_local_{{name}})) {
         local_{{name}} = std::move(maybe_local_{{name}});
       }
-      output = {{union|get_qualified_name_for_kind(flatten_nested_kind=true)}}::New{{name|under_to_camel}}(std::move(local_{{name}}));
+      output = {{union|get_qualified_name_for_kind(flatten_nested_kind=true)}}::New{{name|under_to_camel(digits_split=false)}}(std::move(local_{{name}}));
       return true;
 {%-       else %}
       {{field_mojom_type}} local_{{name}}{ {{- kind|default_constructor_args -}} };
       if (FromProto(input.m_{{name}}(), local_{{name}})) {
-        output = {{union|get_qualified_name_for_kind(flatten_nested_kind=true)}}::New{{name|under_to_camel}}(std::move(local_{{name}}));
+        output = {{union|get_qualified_name_for_kind(flatten_nested_kind=true)}}::New{{name|under_to_camel(digits_split=false)}}(std::move(local_{{name}}));
         return true;
       }
       break;
