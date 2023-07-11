@@ -87,6 +87,7 @@ TEST_F(SettingsRootTableViewControllerTest, TestUpdateUIForEditState) {
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
               controller.navigationItem.rightBarButtonItem.title);
   EXPECT_FALSE(controller.navigationController.toolbarHidden);
+  [navigationController cleanUpSettings];
 }
 
 // Tests that the delete button in the bottom toolbar is displayed only when the
@@ -134,4 +135,5 @@ TEST_F(SettingsRootTableViewControllerTest, TestDeleteToolbar) {
   [controller tableView:controller.tableView
       didDeselectRowAtIndexPath:testIndexPath];
   EXPECT_TRUE(navigationController.toolbarHidden);
+  [navigationController cleanUpSettings];
 }

@@ -536,6 +536,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   return self;
 }
 
+- (void)dealloc {
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!_browser);
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
 
@@ -608,6 +613,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.settingsNavigationDelegate = nil;
   self.snackbarCommandsHandler = nil;
   self.currentPresentedViewController = nil;
+  _browser = nil;
 }
 
 - (void)closeSettings {

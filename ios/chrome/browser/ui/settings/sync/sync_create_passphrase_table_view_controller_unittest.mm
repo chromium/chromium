@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/settings/cells/byo_textfield_item.h"
 #import "ios/chrome/browser/ui/settings/cells/passphrase_error_item.h"
 #import "ios/chrome/browser/ui/settings/passphrase_table_view_controller_test.h"
+#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
@@ -36,11 +37,6 @@ class SyncCreatePassphraseTableViewControllerTest
   SyncCreatePassphraseTableViewControllerTest() {}
 
  protected:
-  void TearDown() override {
-    [SyncController() settingsWillBeDismissed];
-    PassphraseTableViewControllerTest::TearDown();
-  }
-
   ChromeTableViewController* InstantiateController() override {
     return [[SyncCreatePassphraseTableViewController alloc]
         initWithBrowser:browser_.get()];

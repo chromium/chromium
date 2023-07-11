@@ -127,7 +127,7 @@ void PassphraseTableViewControllerTest::SetUp() {
 void PassphraseTableViewControllerTest::TearDown() {
   // If the navigation controller exists, clear any of its child view
   // controllers.
-  [nav_controller_ setViewControllers:@[] animated:NO];
+  [nav_controller_ cleanUpSettings];
   nav_controller_ = nil;
   ChromeTableViewControllerTest::TearDown();
 }

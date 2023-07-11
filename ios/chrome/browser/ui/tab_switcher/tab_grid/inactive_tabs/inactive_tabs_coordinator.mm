@@ -152,6 +152,9 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
   // Provides the context menu for the tabs on the grid.
   __weak id<TabContextMenuProvider> _menuProvider;
+
+  // The navigation controller for inactive tabs settings.
+  SettingsNavigationController* _settingsController;
 }
 
 #pragma mark - Public
@@ -671,11 +674,10 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 // Presents the Inactive Tabs settings modally in their own navigation
 // controller.
 - (void)presentSettings {
-  SettingsNavigationController* settingsController =
-      [SettingsNavigationController
-          inactiveTabsControllerForBrowser:self.browser
-                                  delegate:self];
-  [self.viewController presentViewController:settingsController
+  _settingsController = [SettingsNavigationController
+      inactiveTabsControllerForBrowser:self.browser
+                              delegate:self];
+  [self.viewController presentViewController:_settingsController
                                     animated:YES
                                   completion:nil];
   self.presentingSettings = YES;
@@ -684,6 +686,8 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 // Called when Inactive Tabs settings are dismissed.
 - (void)onSettingsDismissed {
   self.presentingSettings = NO;
+  [_settingsController cleanUpSettings];
+  _settingsController = nil;
   if (self.onSettingsDismissedBlock) {
     self.onSettingsDismissedBlock();
     self.onSettingsDismissedBlock = nil;

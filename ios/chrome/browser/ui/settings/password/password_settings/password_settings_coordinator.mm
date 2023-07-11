@@ -198,6 +198,7 @@
   self.passwordSettingsViewController.presentationDelegate = nil;
   self.passwordSettingsViewController.delegate = nil;
   self.passwordSettingsViewController = nil;
+  [self.settingsNavigationController cleanUpSettings];
   self.settingsNavigationController = nil;
   _preparingPasswordsAlert = nil;
 
