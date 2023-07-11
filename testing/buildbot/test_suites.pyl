@@ -730,37 +730,6 @@
       }
     },
 
-    'chromeos_remote_device_isolated_tests': {
-      'telemetry_perf_unittests': {
-        'args': [
-          '--browser=cros-chrome',
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-          '--xvfb',
-        ],
-        'swarming': {
-          'idempotent': False,  # https://crbug.com/549140
-          'shards': 2,
-        },
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-      'telemetry_unittests': {
-        'args': [
-          '--browser=cros-chrome',
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-          '--jobs=1',
-        ],
-        'swarming': {
-          'idempotent': False,  # https://crbug.com/549140
-          'shards': 10,
-        },
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-    },
-
     # Tests that run on Chrome OS systems (ie: VMs, Chromebooks), *not*
     # linux-chromeos.
     # NOTE: We only want a small subset of test suites here, because most

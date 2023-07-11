@@ -22,7 +22,6 @@
       'chromeos-eve-arc-r-chrome': 'chromeos_eve-arc-r_include_unwind_tables_official_reclient',
       'chromeos-eve-chrome': 'chromeos_eve_include_unwind_tables_official_dchecks_reclient',
       'chromeos-jacuzzi-chrome': 'chromeos_jacuzzi_include_unwind_tables_official_reclient',
-      'chromeos-kevin-chrome': 'chromeos_kevin_include_unwind_tables_official_dchecks_reclient',
       'chromeos-octopus-chrome': 'chromeos_octopus_include_unwind_tables_official_dchecks_reclient',
       'chromeos-octopus-chrome-skylab': 'chromeos_octopus_include_unwind_tables_official_dchecks_skylab',
       'chromeos-reven-chrome': 'chromeos_reven_include_unwind_tables_official_dchecks_reclient',
@@ -948,8 +947,6 @@
       'chromeos-jacuzzi-chrome': 'chromeos_jacuzzi_include_unwind_tables_official',
       'chromeos-jacuzzi-chrome-skylab': 'chromeos_jacuzzi_include_unwind_tables_official_dchecks_skylab_reclient',
       'chromeos-jacuzzi-compile-chrome': 'chromeos_jacuzzi_include_unwind_tables_official',
-      'chromeos-kevin-chrome': 'chromeos_kevin_include_unwind_tables_official_dchecks',
-      'chromeos-kevin-compile-chrome': 'chromeos_kevin_include_unwind_tables_official_dchecks',
       'chromeos-octopus-chrome': 'chromeos_octopus_include_unwind_tables_official_dchecks',
       'chromeos-octopus-chrome-skylab': 'chromeos_octopus_include_unwind_tables_official_dchecks_skylab',
       'chromeos-octopus-compile-chrome': 'chromeos_octopus_include_unwind_tables_official_dchecks',
@@ -2257,16 +2254,6 @@
 
     'chromeos_js_coverage_reclient': [
       'chromeos_with_codecs', 'release_bot_reclient', 'use_javascript_coverage', 'optimize_webui_off',
-    ],
-
-    'chromeos_kevin_include_unwind_tables_official_dchecks': [
-      'chromeos_kevin', 'include_unwind_tables', 'official', 'dcheck_always_on',
-      'also_build_lacros_chrome_for_architecture_arm',
-    ],
-
-    'chromeos_kevin_include_unwind_tables_official_dchecks_reclient': [
-      'chromeos_kevin_reclient', 'include_unwind_tables', 'official', 'dcheck_always_on',
-      'also_build_lacros_chrome_for_architecture_arm',
     ],
 
     'chromeos_kevin_include_unwind_tables_official_dchecks_skylab_reclient': [
@@ -3937,10 +3924,6 @@
 
     'chromeos_jacuzzi_reclient': {
       'mixins': ['chromeos_device_reclient', 'jacuzzi', 'ozone_headless']
-    },
-
-    'chromeos_kevin': {
-      'mixins': ['chromeos_device', 'kevin',]
     },
 
     'chromeos_kevin_reclient': {

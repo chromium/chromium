@@ -1484,14 +1484,6 @@
       'chromeos-jacuzzi-chrome': {
         'experiment_percentage': 100,
       },
-      'chromeos-kevin-chrome': {
-        'swarming': {
-          # Reducing parallelism due to DUT shortage (b/238271231)
-          'shards': 5,
-          # Increased timeout to 3 hours due to shard timeout.
-          'hard_timeout': 10800,
-        }
-      },
       'chromeos-reven-chrome': {
         'args': [
           '--tast-shard-method=hash',
@@ -4186,11 +4178,6 @@
           '--skip=benchmarks.benchmark_smoke_unittest.BenchmarkSmokeTest.wasmpspdfkit',
         ],
       },
-      'chromeos-kevin-chrome': {
-        # TODO(crbug.com/1182948): Remove the experiment.
-        # TODO(b/188822176): Restore to 100% when we have additional capacity.
-        'experiment_percentage': 0,
-      },
       'linux-rel-cft': {
         'args': [
           '--xvfb',
@@ -4230,7 +4217,6 @@
     'remove_from': [
       # TODO(crbug.com/1141234): Restore when there's more DUTs
       'chromeos-eve-chrome',
-      'chromeos-kevin-chrome',
 
       'Win10 Tests x64',
       'Win11 Tests x64',

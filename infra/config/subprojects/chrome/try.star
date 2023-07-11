@@ -97,14 +97,6 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
-    builder = "chromeos-kevin-chrome",
-)
-
-chrome_internal_verifier(
-    builder = "chromeos-kevin-compile-chrome",
-)
-
-chrome_internal_verifier(
     builder = "chromeos-octopus-chrome",
 )
 

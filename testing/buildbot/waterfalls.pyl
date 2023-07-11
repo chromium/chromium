@@ -130,25 +130,6 @@
         },
         'os_type': 'chromeos'
       },
-      'chromeos-kevin-chrome': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromeos_device_gtests',
-          'isolated_scripts': 'chromeos_remote_device_isolated_tests',
-        },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'ChromeOS',
-              'device_type': 'kevin',
-              'pool': 'chrome.tests',
-            },
-          ],
-        },
-        'os_type': 'chromeos'
-      },
       'chromeos-octopus-chrome': {
         'additional_compile_targets': [
           'chromiumos_preflight',
