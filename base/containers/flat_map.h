@@ -387,10 +387,11 @@ constexpr flat_map<Key, Mapped, KeyCompare, Container> MakeFlatMap(
 // Mapped> elements. The container does not have to be sorted or contain only
 // unique keys; construction will automatically discard duplicate keys, keeping
 // only the first.
-template <class Container,
-          class Compare = std::less<>,
-          class Key = std::decay_t<Container>::value_type::first_type,
-          class Mapped = std::decay_t<Container>::value_type::second_type>
+template <
+    class Container,
+    class Compare = std::less<>,
+    class Key = typename std::decay_t<Container>::value_type::first_type,
+    class Mapped = typename std::decay_t<Container>::value_type::second_type>
 flat_map(Container&&, Compare comp = {})
     -> flat_map<Key, Mapped, Compare, std::decay_t<Container>>;
 
