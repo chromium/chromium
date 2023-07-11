@@ -14,16 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type {BidiParser} from '../bidiMapper/bidiMapper.js';
 import * as Parser from '../protocol-parser/protocol-parser.js';
 import type {
   BrowsingContext,
   Cdp,
   Input,
-  Network,
   Script,
   Session,
 } from '../protocol/protocol';
-import type {BidiParser} from '../bidiMapper/bidiMapper.js';
 
 export class BidiParserImpl implements BidiParser {
   // Browsing Context domain
@@ -80,41 +79,6 @@ export class BidiParserImpl implements BidiParser {
   }
   parseReleaseActionsParams(params: unknown): Input.ReleaseActionsParameters {
     return Parser.Input.parseReleaseActionsParams(params);
-  }
-  // keep-sorted end block=yes
-
-  // Network domain
-  // keep-sorted start block=yes
-  parseAddInterceptParams(params: unknown): Network.AddInterceptParameters {
-    return Parser.Network.parseAddInterceptParams(params);
-  }
-  parseContinueRequestParams(
-    params: unknown
-  ): Network.ContinueRequestParameters {
-    return Parser.Network.parseContinueRequestParams(params);
-  }
-  parseContinueResponseParams(
-    params: unknown
-  ): Network.ContinueResponseParameters {
-    return Parser.Network.parseContinueResponseParams(params);
-  }
-  parseContinueWithAuthParams(
-    params: unknown
-  ): Network.ContinueWithAuthParameters {
-    return Parser.Network.parseContinueWithAuthParams(params);
-  }
-  parseFailRequestParams(params: unknown): Network.FailRequestParameters {
-    return Parser.Network.parseFailRequestParams(params);
-  }
-  parseProvideResponseParams(
-    params: unknown
-  ): Network.ProvideResponseParameters {
-    return Parser.Network.parseProvideResponseParams(params);
-  }
-  parseRemoveInterceptParams(
-    params: unknown
-  ): Network.RemoveInterceptParameters {
-    return Parser.Network.parseRemoveInterceptParams(params);
   }
   // keep-sorted end block=yes
 

@@ -74,7 +74,6 @@ export const enum ErrorCode {
   NoSuchElement = 'no such element',
   NoSuchFrame = 'no such frame',
   NoSuchHandle = 'no such handle',
-  NoSuchIntercept = 'no such intercept',
   NoSuchNode = 'no such node',
   NoSuchScript = 'no such script',
   SessionNotCreated = 'session not created',
@@ -258,6 +257,17 @@ export namespace BrowsingContext {
   }
 }
 export namespace BrowsingContext {
+  export type Activate = {
+    method: 'browsingContext.activate';
+    params: BrowsingContext.ActivateParameters;
+  };
+}
+export namespace BrowsingContext {
+  export type ActivateParameters = {
+    context: BrowsingContext.BrowsingContext;
+  };
+}
+export namespace BrowsingContext {
   export type CaptureScreenshot = {
     method: 'browsingContext.captureScreenshot';
     params: BrowsingContext.CaptureScreenshotParameters;
@@ -385,12 +395,6 @@ export namespace BrowsingContext {
   };
 }
 export namespace BrowsingContext {
-  /**
-   * Must match the pattern `"^(?:[0-9]+)?(?:-(?:[0-9]+)?)?$"`.
-   */
-  export type PageRange = string;
-}
-export namespace BrowsingContext {
   export type PrintParameters = {
     context: BrowsingContext.BrowsingContext;
     /**
@@ -403,7 +407,7 @@ export namespace BrowsingContext {
      */
     orientation?: 'portrait' | 'landscape';
     page?: BrowsingContext.PrintPageParameters;
-    pageRanges?: [...(JsUint | BrowsingContext.PageRange)[]];
+    pageRanges?: [...(JsUint | string)[]];
     /**
      * Must be between `0.1` and `2`, inclusive.
      *
@@ -576,65 +580,27 @@ export namespace BrowsingContext {
     message: string;
   };
 }
-export type NetworkCommand =
-  | Network.AddIntercept
-  | Network.ContinueRequest
-  | Network.ContinueResponse
-  | Network.ContinueWithAuth
-  | Network.FailRequest
-  | Network.ProvideResponse
-  | Network.RemoveIntercept
-  | {};
+export type NetworkCommand = {};
 export type NetworkResult = {};
 export type NetworkEvent =
-  | Network.AuthRequired
   | Network.BeforeRequestSent
   | Network.FetchError
-  | Network.ResponseCompleted
-  | Network.ResponseStarted;
-export namespace Network {
-  export type AuthChallenge = {
-    scheme: string;
-    realm: string;
-  };
-}
-export namespace Network {
-  export type AuthCredentials = {
-    type: 'password';
-    username: string;
-    password: string;
-  };
-}
+  | Network.ResponseStarted
+  | Network.ResponseCompleted;
 export namespace Network {
   export type BaseParameters = {
     context: BrowsingContext.BrowsingContext | null;
-    isBlocked: boolean;
     navigation: BrowsingContext.Navigation | null;
     redirectCount: JsUint;
     request: Network.RequestData;
     timestamp: JsUint;
-    intercepts?: [...Network.Intercept[]];
-  };
-}
-export namespace Network {
-  export type BytesValue = Network.StringValue | Network.Base64Value;
-}
-export namespace Network {
-  export type StringValue = {
-    type: 'string';
-    value: string;
-  };
-}
-export namespace Network {
-  export type Base64Value = {
-    type: 'base64';
-    value: string;
   };
 }
 export namespace Network {
   export type Cookie = {
     name: string;
-    value: Network.BytesValue;
+    value?: string;
+    binaryValue?: [number];
     domain: string;
     path: string;
     expires?: JsUint;
@@ -664,7 +630,8 @@ export namespace Network {
 export namespace Network {
   export type Header = {
     name: string;
-    value: Network.BytesValue;
+    value?: string;
+    binaryValue?: [number];
   };
 }
 export namespace Network {
@@ -675,9 +642,6 @@ export namespace Network {
     stackTrace?: Script.StackTrace;
     request?: Network.Request;
   };
-}
-export namespace Network {
-  export type Intercept = string;
 }
 export namespace Network {
   export type Request = string;
@@ -712,133 +676,6 @@ export namespace Network {
     headersSize: JsUint | null;
     bodySize: JsUint | null;
     content: Network.ResponseContent;
-    authChallenge?: Network.AuthChallenge;
-  };
-}
-export namespace Network {
-  export type AddIntercept = {
-    method: 'network.addIntercept';
-    params: Network.AddInterceptParameters;
-  };
-}
-export namespace Network {
-  export type AddInterceptParameters = {
-    phases: [...Network.InterceptPhase[]];
-    urlPatterns?: [...string[]];
-  };
-}
-export namespace Network {
-  export type InterceptPhase =
-    | 'beforeRequestSent'
-    | 'responseStarted'
-    | 'authRequired';
-}
-export namespace Network {
-  export type AddInterceptResult = {
-    intercept: Network.Intercept;
-  };
-}
-export namespace Network {
-  export type ContinueRequest = {
-    method: 'network.continueRequest';
-    params: Network.ContinueRequestParameters;
-  };
-}
-export namespace Network {
-  export type ContinueRequestParameters = {
-    request: Network.Request;
-    body?: Network.BytesValue;
-    headers?: [...Network.Header[]];
-    method?: string;
-    url?: string;
-  };
-}
-export namespace Network {
-  export type ContinueResponse = {
-    method: 'network.continueResponse';
-    params: Network.ContinueResponseParameters;
-  };
-}
-export namespace Network {
-  export type ContinueResponseParameters = {
-    request: Network.Request;
-    credentials?: Network.AuthCredentials;
-    headers?: [...Network.Header[]];
-    reasonPhrase?: string;
-    statusCode?: JsUint;
-  };
-}
-export namespace Network {
-  export type ContinueWithAuth = {
-    method: 'network.continueWithAuth';
-    params: Network.ContinueWithAuthParameters;
-  };
-}
-export namespace Network {
-  export type ContinueWithAuthParameters = {
-    request: Network.Request;
-  } & (
-    | Network.ContinueWithAuthCredentials
-    | Network.ContinueWithAuthNoCredentials
-  );
-}
-export namespace Network {
-  export type ContinueWithAuthCredentials = {
-    action: 'provideCredentials';
-    credentials: Network.AuthCredentials;
-  };
-}
-export namespace Network {
-  export type ContinueWithAuthNoCredentials = {
-    action: 'default' | 'cancel';
-  };
-}
-export namespace Network {
-  export type FailRequest = {
-    method: 'network.failRequest';
-    params: Network.FailRequestParameters;
-  };
-}
-export namespace Network {
-  export type FailRequestParameters = {
-    request: Network.Request;
-  };
-}
-export namespace Network {
-  export type ProvideResponse = {
-    method: 'network.provideResponse';
-    params: Network.ProvideResponseParameters;
-  };
-}
-export namespace Network {
-  export type ProvideResponseParameters = {
-    request: Network.Request;
-    body?: Network.BytesValue;
-    headers?: [...Network.Header[]];
-    reasonPhrase?: string;
-    statusCode?: JsUint;
-  };
-}
-export namespace Network {
-  export type RemoveIntercept = {
-    method: 'network.removeIntercept';
-    params: Network.RemoveInterceptParameters;
-  };
-}
-export namespace Network {
-  export type RemoveInterceptParameters = {
-    intercept: Network.Intercept;
-  };
-}
-export namespace Network {
-  export type AuthRequired = {
-    method: 'network.authRequired';
-    params: Network.AuthRequiredParameters;
-  };
-}
-export namespace Network {
-  export type AuthRequiredParameters = Network.BaseParameters & {
-    response: Network.ResponseData;
   };
 }
 export namespace Network {

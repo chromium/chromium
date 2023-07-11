@@ -19,7 +19,6 @@ import type {
   BrowsingContext,
   Cdp,
   Input,
-  Network,
   Script,
   Session,
 } from '../protocol/protocol.js';
@@ -55,27 +54,6 @@ export interface IBidiParser {
   parsePerformActionsParams(params: unknown): Input.PerformActionsParameters;
   parseReleaseActionsParams(params: unknown): Input.ReleaseActionsParameters;
   // keep-sorted end block=yes
-
-  // Network domain
-  // keep-sorted start block=yes
-  parseAddInterceptParams(params: unknown): Network.AddInterceptParameters;
-  parseContinueRequestParams(
-    params: unknown
-  ): Network.ContinueRequestParameters;
-  parseContinueResponseParams(
-    params: unknown
-  ): Network.ContinueResponseParameters;
-  parseContinueWithAuthParams(
-    params: unknown
-  ): Network.ContinueWithAuthParameters;
-  parseFailRequestParams(params: unknown): Network.FailRequestParameters;
-  parseProvideResponseParams(
-    params: unknown
-  ): Network.ProvideResponseParameters;
-  parseRemoveInterceptParams(
-    params: unknown
-  ): Network.RemoveInterceptParameters;
-  // keep-sorted end
 
   // Script domain
   // keep-sorted start block=yes

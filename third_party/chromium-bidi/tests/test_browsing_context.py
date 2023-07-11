@@ -891,7 +891,6 @@ async def test_browsingContext_ignoreCache(websocket, context_id, ignoreCache):
     assert response == {
         "method": "network.beforeRequestSent",
         "params": {
-            "isBlocked": False,
             "context": context_id,
             "initiator": ANY_DICT,
             "navigation": ANY_STR,
@@ -905,7 +904,6 @@ async def test_browsingContext_ignoreCache(websocket, context_id, ignoreCache):
     assert response == {
         "method": "network.responseCompleted",
         "params": {
-            "isBlocked": False,
             "context": context_id,
             "navigation": ANY_STR,
             "redirectCount": 0,

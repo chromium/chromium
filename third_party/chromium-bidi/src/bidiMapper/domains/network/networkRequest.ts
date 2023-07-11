@@ -165,8 +165,6 @@ export class NetworkRequest {
 
   #getBaseEventParams(): Network.BaseParameters {
     return {
-      // TODO: Implement.
-      isBlocked: false,
       context: this.#requestWillBeSentEvent?.frameId ?? null,
       navigation: this.#getNavigationId(),
       // TODO: implement.
@@ -340,7 +338,12 @@ export class NetworkRequest {
   #computeResponseHeadersSize(headers: Network.Header[]): number {
     return headers.reduce((total, header) => {
       return (
-        total + header.name.length + header.value.value.length + 4 // 4 = ': ' + '\r\n'
+        total +
+        header.name.length +
+        ('value' in header
+          ? header.value?.length ?? 0
+          : header.binaryValue?.length ?? 0) +
+        4 // 4 = ': ' + '\r\n'
       );
     }, 0);
   }
@@ -359,10 +362,7 @@ export class NetworkRequest {
 
     return Object.entries(headers).map(([name, value]) => ({
       name,
-      value: {
-        type: 'string',
-        value,
-      },
+      value,
     }));
   }
 
@@ -385,10 +385,7 @@ export class NetworkRequest {
     return associatedCookies.map((cookieInfo) => {
       return {
         name: cookieInfo.cookie.name,
-        value: {
-          type: 'string',
-          value: cookieInfo.cookie.value,
-        },
+        value: cookieInfo.cookie.value,
         domain: cookieInfo.cookie.domain,
         path: cookieInfo.cookie.path,
         expires: cookieInfo.cookie.expires,

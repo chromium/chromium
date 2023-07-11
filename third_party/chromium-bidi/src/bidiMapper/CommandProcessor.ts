@@ -164,38 +164,6 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
         );
       // keep-sorted end
 
-      // Network domain
-      // keep-sorted start block=yes
-      case 'network.addIntercept':
-        return this.#contextProcessor.process_network_addIntercept(
-          this.#parser.parseAddInterceptParams(command.params)
-        );
-      case 'network.continueRequest':
-        return this.#contextProcessor.process_network_continueRequest(
-          this.#parser.parseContinueRequestParams(command.params)
-        );
-      case 'network.continueResponse':
-        return this.#contextProcessor.process_network_continueResponse(
-          this.#parser.parseContinueResponseParams(command.params)
-        );
-      case 'network.continueWithAuth':
-        return this.#contextProcessor.process_network_continueWithAuth(
-          this.#parser.parseContinueWithAuthParams(command.params)
-        );
-      case 'network.failRequest':
-        return this.#contextProcessor.process_network_failRequest(
-          this.#parser.parseFailRequestParams(command.params)
-        );
-      case 'network.provideResponse':
-        return this.#contextProcessor.process_network_provideResponse(
-          this.#parser.parseProvideResponseParams(command.params)
-        );
-      case 'network.removeIntercept':
-        return this.#contextProcessor.process_network_removeIntercept(
-          this.#parser.parseRemoveInterceptParams(command.params)
-        );
-      // keep-sorted end
-
       // Script domain
       // keep-sorted start block=yes
       case 'script.addPreloadScript':

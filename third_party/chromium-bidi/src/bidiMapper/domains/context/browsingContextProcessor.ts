@@ -26,7 +26,6 @@ import {
   Script,
   type Cdp,
   type EmptyResult,
-  type Network,
 } from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {IEventManager} from '../events/EventManager.js';
@@ -584,56 +583,5 @@ export class BrowsingContextProcessor {
       result,
       session: params.session,
     };
-  }
-
-  process_network_addIntercept(
-    _params: Network.AddInterceptParameters
-  ): Network.AddInterceptResult {
-    // TODO: Implement.
-    return {
-      intercept: '',
-    };
-  }
-
-  process_network_continueRequest(
-    _params: Network.ContinueRequestParameters
-  ): EmptyResult {
-    // TODO: Implement.
-    return {};
-  }
-
-  process_network_continueResponse(
-    _params: Network.ContinueResponseParameters
-  ): EmptyResult {
-    // TODO: Implement.
-    return {};
-  }
-
-  process_network_continueWithAuth(
-    _params: Network.ContinueWithAuthParameters
-  ): EmptyResult {
-    // TODO: Implement.
-    return {};
-  }
-
-  process_network_failRequest(
-    _params: Network.FailRequestParameters
-  ): EmptyResult {
-    // TODO: Implement.
-    return {};
-  }
-
-  process_network_provideResponse(
-    _params: Network.ProvideResponseParameters
-  ): EmptyResult {
-    // TODO: Implement.
-    return {};
-  }
-
-  process_network_removeIntercept(
-    _params: Network.RemoveInterceptParameters
-  ): EmptyResult {
-    // TODO: Implement.
-    return {};
   }
 }

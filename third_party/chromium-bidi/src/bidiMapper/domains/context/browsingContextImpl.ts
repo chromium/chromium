@@ -796,15 +796,36 @@ export class BrowsingContextImpl {
     }
     if (params.pageRanges !== undefined) {
       for (const range of params.pageRanges) {
-        if (typeof range === 'string') {
-          const [start, end] = range.split('-');
-          const startPage = start === '' ? 1 : Number(start);
-          const endPage = end === '' ? Infinity : Number(end);
-          if (startPage > endPage) {
-            throw new InvalidArgumentException(
-              `Invalid page range: ${start} > ${end}`
-            );
-          }
+        if (typeof range === 'number') {
+          continue;
+        }
+        const rangeParts = range.split('-');
+        if (rangeParts.length < 1 || rangeParts.length > 2) {
+          throw new InvalidArgumentException(
+            `Invalid page range: ${range} is not a valid integer range.`
+          );
+        }
+        if (rangeParts.length === 1) {
+          void parseInteger(rangeParts[0] ?? '');
+          continue;
+        }
+        let lowerBound: number;
+        let upperBound: number;
+        const [rangeLowerPart = '', rangeUpperPart = ''] = rangeParts;
+        if (rangeLowerPart === '') {
+          lowerBound = 1;
+        } else {
+          lowerBound = parseInteger(rangeLowerPart);
+        }
+        if (rangeUpperPart === '') {
+          upperBound = Number.MAX_SAFE_INTEGER;
+        } else {
+          upperBound = parseInteger(rangeUpperPart);
+        }
+        if (lowerBound > upperBound) {
+          throw new InvalidArgumentException(
+            `Invalid page range: ${rangeLowerPart} > ${rangeUpperPart}`
+          );
         }
       }
       cdpParams.pageRanges = params.pageRanges.join(',');
@@ -839,4 +860,12 @@ export class BrowsingContextImpl {
   async close(): Promise<void> {
     await this.#cdpTarget.cdpClient.sendCommand('Page.close');
   }
+}
+
+function parseInteger(value: string) {
+  value = value.trim();
+  if (!/^[0-9]+$/.test(value)) {
+    throw new InvalidArgumentException(`Invalid integer: ${value}`);
+  }
+  return parseInt(value);
 }
