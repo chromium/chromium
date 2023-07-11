@@ -10729,6 +10729,7 @@ others/histograms.xml -->
   <int value="15" label="Reached code scenario triggered"/>
   <int value="16"
       label="Trace finalization started with a local output location"/>
+  <int value="17" label="Failed to initialize the trace report database"/>
 </enum>
 
 <enum name="BackingStoreResults">

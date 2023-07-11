@@ -1158,6 +1158,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns the path to the First-Party Sets directory.
   virtual base::FilePath GetFirstPartySetsDirectory();
 
+  // Returns the path to Local Traces directory.
+  virtual absl::optional<base::FilePath> GetLocalTracesDirectory();
+
   // Notification that a pepper plugin has just been spawned. This allows the
   // embedder to add filters onto the host to implement interfaces.
   // This is called on the IO thread.

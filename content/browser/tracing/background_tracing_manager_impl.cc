@@ -7,16 +7,19 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
+#include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/tracing/common/trace_startup_config.h"
@@ -24,6 +27,7 @@
 #include "content/browser/tracing/background_tracing_active_scenario.h"
 #include "content/browser/tracing/background_tracing_agent_client_impl.h"
 #include "content/browser/tracing/background_tracing_rule.h"
+#include "content/browser/tracing/trace_report_database.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/common/child_process.mojom.h"
 #include "content/public/browser/browser_child_process_host.h"
@@ -56,13 +60,6 @@ BackgroundTracingManagerImpl* g_background_tracing_manager_impl = nullptr;
 // static
 const char BackgroundTracingManager::kContentTriggerConfig[] =
     "content-trigger-config";
-
-// static
-BackgroundTracingManagerImpl&
-BackgroundTracingManagerImpl::CreateLeakedInstance() {
-  static base::NoDestructor<BackgroundTracingManagerImpl> manager;
-  return *g_background_tracing_manager_impl;
-}
 
 // static
 std::unique_ptr<BackgroundTracingManager>
@@ -121,7 +118,10 @@ void BackgroundTracingManagerImpl::ActivateForProcess(
 }
 
 BackgroundTracingManagerImpl::BackgroundTracingManagerImpl()
-    : delegate_(GetContentClient()->browser()->GetTracingDelegate()) {
+    : delegate_(GetContentClient()->browser()->GetTracingDelegate()),
+      trace_database_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
   SetInstance(this);
   g_background_tracing_manager_impl = this;
   BackgroundStartupTracingObserver::GetInstance();
@@ -131,12 +131,24 @@ BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() {
   DCHECK_EQ(this, g_background_tracing_manager_impl);
   if (active_scenario_) {
     active_scenario_->Abort();
+  } else {
+    for (auto& scenario : scenarios_) {
+      scenario->Disable();
+    }
   }
   if (legacy_active_scenario_) {
     legacy_active_scenario_->AbortScenario();
   }
   SetInstance(nullptr);
   g_background_tracing_manager_impl = nullptr;
+}
+
+void BackgroundTracingManagerImpl::OnTraceDatabaseCreated(
+    bool creation_result) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!creation_result) {
+    RecordMetric(Metrics::DATABASE_INITIALIZATION_FAILED);
+  }
 }
 
 void BackgroundTracingManagerImpl::AddMetadataGeneratorFunction() {
@@ -176,6 +188,8 @@ bool BackgroundTracingManagerImpl::InitializeScenarios(
   }
 
   requires_anonymized_data_ = (data_filtering == ANONYMIZE_DATA);
+  InitializeTraceReportDatabase();
+
   for (const auto& scenario_config : config.scenarios()) {
     auto scenario = TracingScenario::Create(
         scenario_config, requires_anonymized_data_, this, delegate_.get());
@@ -251,6 +265,8 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
         legacy_active_scenario_->GetConfig()->scenario_name());
   }
 
+  InitializeTraceReportDatabase();
+
   if (startup_tracing_enabled) {
     RecordMetric(Metrics::STARTUP_SCENARIO_TRIGGERED);
     DoEmitNamedTrigger(kStartupTracingTriggerName);
@@ -260,6 +276,22 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
   RecordMetric(Metrics::SCENARIO_ACTIVATED_SUCCESSFULLY);
 
   return true;
+}
+
+void BackgroundTracingManagerImpl::InitializeTraceReportDatabase() {
+  auto database_dir = GetContentClient()->browser()->GetLocalTracesDirectory();
+  if (database_dir.has_value()) {
+    trace_database_.AsyncCall(&TraceReportDatabase::OpenDatabase)
+        .WithArgs(database_dir.value())
+        .Then(base::BindOnce(
+            &BackgroundTracingManagerImpl::OnTraceDatabaseCreated,
+            weak_factory_.GetWeakPtr()));
+  } else {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&BackgroundTracingManagerImpl::OnTraceDatabaseCreated,
+                       weak_factory_.GetWeakPtr(), false));
+  }
 }
 
 void BackgroundTracingManagerImpl::OnScenarioActive(

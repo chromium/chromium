@@ -11,8 +11,11 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/threading/sequence_bound.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
+#include "content/browser/tracing/trace_report_database.h"
 #include "content/browser/tracing/tracing_scenario.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/background_tracing_manager.h"
@@ -64,14 +67,10 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
     SYSTEM_TRIGGERED = 14,
     REACHED_CODE_SCENARIO_TRIGGERED = 15,
     FINALIZATION_STARTED_WITH_LOCAL_OUTPUT = 16,
+    DATABASE_INITIALIZATION_FAILED = 17,
     NUMBER_OF_BACKGROUND_TRACING_METRICS,
   };
   static void RecordMetric(Metrics metric);
-
-  // Creates a self owned global BackgroundTracingManagerImpl instance that is
-  // never destroyed. BackgroundTracingManagerImpl is intentionally leaky during
-  // shutdown to avoid aborting an active trace session.
-  CONTENT_EXPORT static BackgroundTracingManagerImpl& CreateLeakedInstance();
 
   CONTENT_EXPORT static BackgroundTracingManagerImpl& GetInstance();
 
@@ -103,6 +102,8 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   void OnScenarioIdle(TracingScenario* scenario) override;
   void OnScenarioRecording(TracingScenario* scenario) override;
   void SaveTrace(TracingScenario* scenario, std::string trace_data) override;
+
+  void OnTraceDatabaseCreated(bool creation_result);
 
   void SetNamedTriggerCallback(const std::string& trigger_name,
                                base::RepeatingCallback<bool()> callback);
@@ -157,6 +158,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   static void ClearPendingAgent(int child_process_id);
   void MaybeConstructPendingAgents();
   void OnFinalizeComplete(bool success);
+  void InitializeTraceReportDatabase();
 
   std::unique_ptr<TracingDelegate> delegate_;
   std::unique_ptr<BackgroundTracingActiveScenario> legacy_active_scenario_;
@@ -177,6 +179,9 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
 
   std::map<int, mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider>>
       pending_agents_;
+
+  // This contains all the traces saved locally.
+  base::SequenceBound<TraceReportDatabase> trace_database_;
 
   // This field contains serialized trace log proto.
   std::string trace_to_upload_;

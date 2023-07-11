@@ -4406,6 +4406,16 @@ base::FilePath ChromeContentBrowserClient::GetFirstPartySetsDirectory() {
   return user_data_dir;
 }
 
+absl::optional<base::FilePath>
+ChromeContentBrowserClient::GetLocalTracesDirectory() {
+  base::FilePath user_data_dir;
+  if (!base::PathService::Get(chrome::DIR_LOCAL_TRACES, &user_data_dir)) {
+    return absl::nullopt;
+  }
+  DCHECK(!user_data_dir.empty());
+  return user_data_dir;
+}
+
 void ChromeContentBrowserClient::DidCreatePpapiPlugin(
     content::BrowserPpapiHost* browser_host) {
 #if BUILDFLAG(ENABLE_PLUGINS)

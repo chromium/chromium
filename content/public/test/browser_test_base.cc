@@ -658,7 +658,6 @@ void BrowserTestBase::SetUp() {
       StartBrowserThreadPool();
 
     BrowserTaskExecutor::PostFeatureListSetup();
-    content::BackgroundTracingManagerImpl::CreateLeakedInstance();
     tracing::InitTracingPostThreadPoolStartAndFeatureList(
         /* enable_consumer */ true);
     InitializeBrowserMemoryInstrumentationClient();

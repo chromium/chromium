@@ -426,6 +426,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   base::FilePath GetGraphiteDawnDiskCacheDirectory() override;
   base::FilePath GetNetLogDefaultDirectory() override;
   base::FilePath GetFirstPartySetsDirectory() override;
+  absl::optional<base::FilePath> GetLocalTracesDirectory() override;
   void DidCreatePpapiPlugin(content::BrowserPpapiHost* browser_host) override;
   content::BrowserPpapiHost* GetExternalBrowserPpapiHost(
       int plugin_process_id) override;

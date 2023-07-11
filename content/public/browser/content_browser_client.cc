@@ -728,6 +728,10 @@ base::FilePath ContentBrowserClient::GetFirstPartySetsDirectory() {
   return base::FilePath();
 }
 
+absl::optional<base::FilePath> ContentBrowserClient::GetLocalTracesDirectory() {
+  return absl::nullopt;
+}
+
 BrowserPpapiHost* ContentBrowserClient::GetExternalBrowserPpapiHost(
     int plugin_process_id) {
   return nullptr;

@@ -7,14 +7,20 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/task_environment.h"
 #include "components/tracing/common/background_tracing_utils.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/public/browser/background_tracing_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using tracing::BackgroundTracingSetupMode;
 
 namespace {
+
+class BackgroundTracingUtilTest : public testing::Test {
+  base::test::TaskEnvironment task_env;
+};
 
 const char kInvalidTracingConfig[] = "{][}";
 
@@ -25,6 +31,7 @@ struct SetupModeParams {
 };
 
 TEST(BackgroundTracingUtilsTest, GetBackgroundTracingSetupMode) {
+  base::test::TaskEnvironment task_env;
   auto background_tracing_manager =
       content::BackgroundTracingManager::CreateInstance();
   const std::vector<SetupModeParams> kParams = {
@@ -70,7 +77,7 @@ TEST(BackgroundTracingUtilsTest, GetBackgroundTracingSetupMode) {
   }
 }
 
-TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromConfigFileFailed) {
+TEST_F(BackgroundTracingUtilTest, SetupBackgroundTracingFromConfigFileFailed) {
   auto background_tracing_manager =
       content::BackgroundTracingManager::CreateInstance();
   ASSERT_FALSE(
@@ -89,8 +96,8 @@ TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromConfigFileFailed) {
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
-TEST(BackgroundTracingUtilTest,
-     SetupBackgroundTracingFromConfigFileEmptyOutputFailed) {
+TEST_F(BackgroundTracingUtilTest,
+       SetupBackgroundTracingFromConfigFileEmptyOutputFailed) {
   auto background_tracing_manager =
       content::BackgroundTracingManager::CreateInstance();
   ASSERT_FALSE(
@@ -117,8 +124,8 @@ TEST(BackgroundTracingUtilTest,
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
-TEST(BackgroundTracingUtilTest,
-     SetupBackgroundTracingFromConfigFileMissingOutputFailed) {
+TEST_F(BackgroundTracingUtilTest,
+       SetupBackgroundTracingFromConfigFileMissingOutputFailed) {
   auto background_tracing_manager =
       content::BackgroundTracingManager::CreateInstance();
   ASSERT_FALSE(
@@ -144,8 +151,8 @@ TEST(BackgroundTracingUtilTest,
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
-TEST(BackgroundTracingUtilTest,
-     SetupBackgroundTracingFromConfigFileInvalidConfig) {
+TEST_F(BackgroundTracingUtilTest,
+       SetupBackgroundTracingFromConfigFileInvalidConfig) {
   auto background_tracing_manager =
       content::BackgroundTracingManager::CreateInstance();
   ASSERT_FALSE(
@@ -176,7 +183,7 @@ TEST(BackgroundTracingUtilTest,
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
-TEST(BackgroundTracingUtilTest, SetupBackgroundTracingWithOutputFileFailed) {
+TEST_F(BackgroundTracingUtilTest, SetupBackgroundTracingWithOutputFileFailed) {
   auto background_tracing_manager =
       content::BackgroundTracingManager::CreateInstance();
   ASSERT_FALSE(
@@ -193,7 +200,8 @@ TEST(BackgroundTracingUtilTest, SetupBackgroundTracingWithOutputFileFailed) {
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
-TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromCommandLineInvalid) {
+TEST_F(BackgroundTracingUtilTest,
+       SetupBackgroundTracingFromCommandLineInvalid) {
   auto background_tracing_manager =
       content::BackgroundTracingManager::CreateInstance();
   ASSERT_FALSE(
@@ -209,7 +217,7 @@ TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromCommandLineInvalid) {
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
-TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromCommandLineConfig) {
+TEST_F(BackgroundTracingUtilTest, SetupBackgroundTracingFromCommandLineConfig) {
   auto background_tracing_manager =
       content::BackgroundTracingManager::CreateInstance();
   ASSERT_FALSE(
@@ -228,8 +236,8 @@ TEST(BackgroundTracingUtilTest, SetupBackgroundTracingFromCommandLineConfig) {
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
-TEST(BackgroundTracingUtilTest,
-     SetupBackgroundTracingFromCommandLineFieldTrial) {
+TEST_F(BackgroundTracingUtilTest,
+       SetupBackgroundTracingFromCommandLineFieldTrial) {
   auto background_tracing_manager =
       content::BackgroundTracingManager::CreateInstance();
   ASSERT_FALSE(

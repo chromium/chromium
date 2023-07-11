@@ -223,6 +223,19 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif
       create_dir = true;
       break;
+    case chrome::DIR_LOCAL_TRACES:
+#if BUILDFLAG(IS_ANDROID)
+      if (!base::PathService::Get(base::DIR_CACHE, &cur)) {
+        return false;
+      }
+#else
+      if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {
+        return false;
+      }
+#endif
+      cur = cur.Append(FILE_PATH_LITERAL("Local Traces"));
+      create_dir = true;
+      break;
 #if BUILDFLAG(IS_WIN)
     case chrome::DIR_WATCHER_DATA:
       // The watcher data is always stored relative to the default user data
