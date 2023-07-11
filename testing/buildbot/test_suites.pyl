@@ -3380,6 +3380,7 @@
           '--test-machine-name',
           '${buildername}',
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',

@@ -68,6 +68,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--deploy-lacros",
           "--remote=variable_chromeos_device_hostname",
           "--git-revision=${got_revision}"
@@ -262,6 +263,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--jobs=1",
           "--deploy-lacros",
           "--remote=variable_chromeos_device_hostname",
           "--git-revision=${got_revision}"
