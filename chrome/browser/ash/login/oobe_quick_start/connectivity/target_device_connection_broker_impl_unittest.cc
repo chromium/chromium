@@ -44,28 +44,11 @@ constexpr uint8_t kEndpointInfoDeviceType = 8u;
 
 constexpr size_t kEndpointInfoRandomSessionIdLength = 10;
 
-// Base qr code url ("https://signin.google/qs/") represented in a 25 byte
-// array.
-constexpr std::array<uint8_t, 25> kBaseUrl = {
-    0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x73,
-    0x69, 0x67, 0x6e, 0x69, 0x6e, 0x2e, 0x67, 0x6f, 0x6f,
-    0x67, 0x6c, 0x65, 0x2f, 0x71, 0x73, 0x2f};
-
-// Qr code key param ("?key=") represented in a 5 byte array.
-constexpr std::array<uint8_t, 5> kUrlKeyParam = {0x3f, 0x6b, 0x65, 0x79, 0x3d};
-
-// Qr code device type param ("&t=7") represented in a 4 byte array.
-constexpr std::array<uint8_t, 4> kUrlDeviceTypeParam = {0x26, 0x74, 0x3d, 0x37};
-
-// 32 random bytes to use as the shared secret when generating QR Code.
+// 32 random bytes to use as the shared secret.
 constexpr std::array<uint8_t, 32> kSharedSecret = {
     0x54, 0xbd, 0x40, 0xcf, 0x8a, 0x7c, 0x2f, 0x6a, 0xca, 0x15, 0x59,
     0xcf, 0xf3, 0xeb, 0x31, 0x08, 0x90, 0x73, 0xef, 0xda, 0x87, 0xd4,
     0x23, 0xc0, 0x55, 0xd5, 0x83, 0x5b, 0x04, 0x28, 0x49, 0xf2};
-
-// Base64 representation of kSharedSecret.
-constexpr char kSharedSecretBase64[] =
-    "VL1Az4p8L2rKFVnP8%2BsxCJBz79qH1CPAVdWDWwQoSfI%3D";
 
 // 32 random bytes to use as the secondary shared secret.
 constexpr std::array<uint8_t, 32> kSecondarySharedSecret = {
@@ -263,11 +246,6 @@ class FakeConnectionLifecycleListener
     pin_ = pin;
   }
 
-  void OnQRCodeVerificationRequested(
-      const std::vector<uint8_t>& qr_code_data) override {
-    qr_code_data_ = qr_code_data;
-  }
-
   void OnConnectionAuthenticated(
       base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
           connection) override {
@@ -284,7 +262,6 @@ class FakeConnectionLifecycleListener
   }
 
   absl::optional<std::string> pin_;
-  absl::optional<std::vector<uint8_t>> qr_code_data_;
   bool connection_authenticated_ = false;
   base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
       authenticated_connection_;
@@ -330,12 +307,11 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
     auto connection_factory = std::make_unique<FakeConnection::Factory>();
     connection_factory_ = connection_factory.get();
     random_session_id_ = RandomSessionId();
-    auto session_context = std::make_unique<SessionContext>(
-        random_session_id_, kSharedSecret, kSecondarySharedSecret,
-        is_resume_after_update);
+    auto session_context =
+        SessionContext(random_session_id_, kSharedSecret,
+                       kSecondarySharedSecret, is_resume_after_update);
     connection_broker_ = std::make_unique<TargetDeviceConnectionBrokerImpl>(
-        std::move(session_context),
-        fake_nearby_connections_manager_.GetWeakPtr(),
+        session_context, fake_nearby_connections_manager_.GetWeakPtr(),
         std::move(connection_factory),
         mojo::SharedRemote<mojom::QuickStartDecoder>(
             fake_quick_start_decoder_->GetRemote()));
@@ -373,12 +349,6 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
     return static_cast<TargetDeviceConnectionBrokerImpl*>(
                connection_broker_.get())
         ->GenerateEndpointInfo();
-  }
-
-  const std::vector<uint8_t> GetQrCodeData() {
-    return static_cast<TargetDeviceConnectionBrokerImpl*>(
-               connection_broker_.get())
-        ->GetQrCodeData(random_session_id_, kSharedSecret);
   }
 
   std::string DerivePin() {
@@ -691,24 +661,6 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   EXPECT_FALSE(start_advertising_callback_success_);
 }
 
-TEST_F(TargetDeviceConnectionBrokerImplTest, GetQRCodeData) {
-  std::string random_session_id = random_session_id_.ToString();
-  std::string encoded_shared_secret(kSharedSecretBase64);
-
-  std::vector<uint8_t> expected_data(std::begin(kBaseUrl), std::end(kBaseUrl));
-  expected_data.insert(expected_data.end(), random_session_id.begin(),
-                       random_session_id.end());
-  expected_data.insert(expected_data.end(), std::begin(kUrlKeyParam),
-                       std::end(kUrlKeyParam));
-  expected_data.insert(expected_data.end(), encoded_shared_secret.begin(),
-                       encoded_shared_secret.end());
-  expected_data.insert(expected_data.end(), std::begin(kUrlDeviceTypeParam),
-                       std::end(kUrlDeviceTypeParam));
-
-  std::vector<uint8_t> actual_data = GetQrCodeData();
-  EXPECT_EQ(expected_data, actual_data);
-}
-
 TEST_F(TargetDeviceConnectionBrokerImplTest, DerivePin) {
   EXPECT_EQ(kAuthenticationTokenPin, DerivePin());
 }
@@ -718,14 +670,12 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, Handshake_Success) {
   connection_broker_->StartAdvertising(&connection_lifecycle_listener_,
                                        /* use_pin_authentication= */ false,
                                        base::DoNothing());
-  EXPECT_FALSE(connection_lifecycle_listener_.qr_code_data_);
   NearbyConnectionsManager::IncomingConnectionListener*
       incoming_connection_listener =
           fake_nearby_connections_manager_.GetAdvertisingListener();
   ASSERT_TRUE(incoming_connection_listener);
   incoming_connection_listener->OnIncomingConnectionInitiated(
       kEndpointId, std::vector<uint8_t>());
-  ASSERT_TRUE(connection_lifecycle_listener_.qr_code_data_);
   incoming_connection_listener->OnIncomingConnectionAccepted(
       kEndpointId, std::vector<uint8_t>(), &fake_nearby_connection_);
 
@@ -742,14 +692,12 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, Handshake_Failed) {
   connection_broker_->StartAdvertising(&connection_lifecycle_listener_,
                                        /* use_pin_authentication= */ false,
                                        base::DoNothing());
-  EXPECT_FALSE(connection_lifecycle_listener_.qr_code_data_);
   NearbyConnectionsManager::IncomingConnectionListener*
       incoming_connection_listener =
           fake_nearby_connections_manager_.GetAdvertisingListener();
   ASSERT_TRUE(incoming_connection_listener);
   incoming_connection_listener->OnIncomingConnectionInitiated(
       kEndpointId, std::vector<uint8_t>());
-  ASSERT_TRUE(connection_lifecycle_listener_.qr_code_data_);
   incoming_connection_listener->OnIncomingConnectionAccepted(
       kEndpointId, std::vector<uint8_t>(), &fake_nearby_connection_);
 
@@ -767,7 +715,6 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   connection_broker_->StartAdvertising(&connection_lifecycle_listener_,
                                        /* use_pin_authentication= */ true,
                                        base::DoNothing());
-  EXPECT_FALSE(connection_lifecycle_listener_.qr_code_data_);
   NearbyConnectionsManager::IncomingConnectionListener*
       incoming_connection_listener =
           fake_nearby_connections_manager_.GetAdvertisingListener();
@@ -788,14 +735,12 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   connection_broker_->StartAdvertising(&connection_lifecycle_listener_,
                                        /* use_pin_authentication= */ false,
                                        base::DoNothing());
-  EXPECT_FALSE(connection_lifecycle_listener_.qr_code_data_);
   NearbyConnectionsManager::IncomingConnectionListener*
       incoming_connection_listener =
           fake_nearby_connections_manager_.GetAdvertisingListener();
   ASSERT_TRUE(incoming_connection_listener);
   incoming_connection_listener->OnIncomingConnectionInitiated(
       kEndpointId, std::vector<uint8_t>());
-  ASSERT_TRUE(connection_lifecycle_listener_.qr_code_data_);
   incoming_connection_listener->OnIncomingConnectionAccepted(
       kEndpointId, std::vector<uint8_t>(), &fake_nearby_connection_);
 
@@ -840,7 +785,6 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   connection_broker_->StartAdvertising(&connection_lifecycle_listener_,
                                        /* use_pin_authentication= */ false,
                                        base::DoNothing());
-  ASSERT_FALSE(connection_lifecycle_listener_.qr_code_data_);
   NearbyConnectionsManager::IncomingConnectionListener*
       incoming_connection_listener =
           fake_nearby_connections_manager_.GetAdvertisingListener();
@@ -849,7 +793,6 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
       kEndpointId, std::vector<uint8_t>());
   // On the first attempt to resume the connection after an update, no QR code
   // or PIN should be generated on connection initiated.
-  EXPECT_FALSE(connection_lifecycle_listener_.qr_code_data_);
   incoming_connection_listener->OnIncomingConnectionAccepted(
       kEndpointId, std::vector<uint8_t>(), &fake_nearby_connection_);
 

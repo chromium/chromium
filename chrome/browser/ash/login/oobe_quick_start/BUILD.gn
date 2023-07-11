@@ -30,7 +30,6 @@ source_set("oobe_quick_start") {
     "//components/account_id:account_id",
     "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/prefs:prefs",
-    "//components/qr_code_generator:qr_code_generator",
     "//components/version_info:channel",
     "//google_apis:google_apis",
     "//google_apis/common:common",

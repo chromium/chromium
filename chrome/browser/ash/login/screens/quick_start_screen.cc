@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/qr_code.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -67,7 +68,7 @@ void QuickStartScreen::ShowImpl() {
 
   switch (flow_state_) {
     case FlowState::INITIAL:
-      bootstrap_controller_->StartAdvertising();
+      bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
       break;
     case FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS:
       view_->ShowTransferringGaiaCredentials();
@@ -107,11 +108,10 @@ void QuickStartScreen::OnUserAction(const base::Value::List& args) {
 void QuickStartScreen::OnStatusChanged(
     const quick_start::TargetDeviceBootstrapController::Status& status) {
   using Step = quick_start::TargetDeviceBootstrapController::Step;
-  using QRCodePixelData =
-      quick_start::TargetDeviceBootstrapController::QRCodePixelData;
+  using QRCodePixelData = quick_start::QRCode::PixelData;
 
   switch (status.step) {
-    case Step::QR_CODE_VERIFICATION: {
+    case Step::ADVERTISING_WITH_QR_CODE: {
       CHECK(absl::holds_alternative<QRCodePixelData>(status.payload));
       if (!view_) {
         return;
@@ -155,7 +155,7 @@ void QuickStartScreen::OnStatusChanged(
       OnTransferredGoogleAccountDetails(status);
       break;
     case Step::NONE:
-    case Step::ADVERTISING:
+    case Step::ADVERTISING_WITHOUT_QR_CODE:
     case Step::CONNECTED:
       // TODO(b/282934168): Implement these screens fully
       quick_start::QS_LOG(INFO)

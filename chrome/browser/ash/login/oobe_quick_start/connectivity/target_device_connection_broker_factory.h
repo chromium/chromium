@@ -22,7 +22,7 @@ namespace ash::quick_start {
 class TargetDeviceConnectionBrokerFactory {
  public:
   static std::unique_ptr<TargetDeviceConnectionBroker> Create(
-      std::unique_ptr<SessionContext> session_context,
+      SessionContext session_context,
       base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
       mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder);
 

@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/qr_code.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/mock_second_device_auth_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
@@ -137,7 +138,7 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
   }
 
   void BootstrapConnection() {
-    bootstrap_controller_->StartAdvertising();
+    bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
     fake_target_device_connection_broker_->on_start_advertising_callback().Run(
         /*success=*/true);
     fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
@@ -169,8 +170,8 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(TargetDeviceBootstrapControllerTest, StartAdvertising) {
-  bootstrap_controller_->StartAdvertising();
+TEST_F(TargetDeviceBootstrapControllerTest, StartAdvertisingAndMaybeGetQRCode) {
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   EXPECT_EQ(
       1u, fake_target_device_connection_broker_->num_start_advertising_calls());
   ASSERT_TRUE(fake_target_device_connection_broker_
@@ -185,11 +186,14 @@ TEST_F(TargetDeviceBootstrapControllerTest, StartAdvertising) {
 
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
-  EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING);
+  EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
+  EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
+      fake_observer_->last_status.payload));
 }
 
-TEST_F(TargetDeviceBootstrapControllerTest, StartAdvertisingFail) {
-  bootstrap_controller_->StartAdvertising();
+TEST_F(TargetDeviceBootstrapControllerTest,
+       StartAdvertisingAndMaybeGetQRCodeFail) {
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/false);
   EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
@@ -202,7 +206,11 @@ TEST_F(TargetDeviceBootstrapControllerTest, StartAdvertisingFail) {
 TEST_F(TargetDeviceBootstrapControllerTest,
        StartAdvertisingWithChromevoxUsesPin) {
   fake_accessibility_manager_->spoken_feedback_enabled_ = true;
-  bootstrap_controller_->StartAdvertising();
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
+  EXPECT_EQ(fake_observer_->last_status.step,
+            Step::ADVERTISING_WITHOUT_QR_CODE);
+  EXPECT_FALSE(absl::holds_alternative<QRCode::PixelData>(
+      fake_observer_->last_status.payload));
   EXPECT_EQ(
       1u, fake_target_device_connection_broker_->num_start_advertising_calls());
   ASSERT_TRUE(fake_target_device_connection_broker_
@@ -214,42 +222,45 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, StopAdvertising) {
-  bootstrap_controller_->StartAdvertising();
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
-  ASSERT_EQ(fake_observer_->last_status.step, Step::ADVERTISING);
+  ASSERT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
 
   bootstrap_controller_->StopAdvertising();
   EXPECT_EQ(
       1u, fake_target_device_connection_broker_->num_stop_advertising_calls());
 
   // Status changes only after the `on_stop_advertising_callback` run.
-  EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING);
+  EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
 
   fake_target_device_connection_broker_->on_stop_advertising_callback().Run();
   EXPECT_EQ(fake_observer_->last_status.step, Step::NONE);
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection_QRCode) {
-  bootstrap_controller_->StartAdvertising();
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
-  ASSERT_EQ(fake_observer_->last_status.step, Step::ADVERTISING);
+  ASSERT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
+  EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
+      fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
-
-  EXPECT_EQ(fake_observer_->last_status.step, Step::QR_CODE_VERIFICATION);
-  using QRCodePixelData = TargetDeviceBootstrapController::QRCodePixelData;
-  EXPECT_TRUE(absl::holds_alternative<QRCodePixelData>(
+  // Status shouldn't change.
+  EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
+  EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
       fake_observer_->last_status.payload));
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection_Pin) {
+  fake_accessibility_manager_->spoken_feedback_enabled_ = true;
   fake_target_device_connection_broker_->set_use_pin_authentication(true);
-  bootstrap_controller_->StartAdvertising();
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
-  ASSERT_EQ(fake_observer_->last_status.step, Step::ADVERTISING);
+  ASSERT_EQ(fake_observer_->last_status.step,
+            Step::ADVERTISING_WITHOUT_QR_CODE);
 
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
 
@@ -288,7 +299,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, FeatureSupportStatus) {
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, RejectConnection) {
-  bootstrap_controller_->StartAdvertising();
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
@@ -303,7 +314,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, RejectConnection) {
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, CloseConnection) {
-  bootstrap_controller_->StartAdvertising();
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
@@ -320,7 +331,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, CloseConnection) {
 
 TEST_F(TargetDeviceBootstrapControllerTest, GetPhoneInstanceId) {
   // Authenticate connection.
-  bootstrap_controller_->StartAdvertising();
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
@@ -383,7 +394,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, RequestWifiCredentials) {
-  bootstrap_controller_->StartAdvertising();
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
@@ -413,7 +424,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, RequestWifiCredentials) {
 
 TEST_F(TargetDeviceBootstrapControllerTest,
        RequestWifiCredentials_FailsIfNoResult) {
-  bootstrap_controller_->StartAdvertising();
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
@@ -435,7 +446,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
 TEST_F(TargetDeviceBootstrapControllerTest,
        RequestWifiCredentialsFailsIfUserNotVerified) {
-  bootstrap_controller_->StartAdvertising();
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
@@ -458,7 +469,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
 TEST_F(TargetDeviceBootstrapControllerTest,
        RequestWifiCredentialsFailsIfEmptyVerificationResult) {
-  bootstrap_controller_->StartAdvertising();
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
@@ -479,7 +490,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
 TEST_F(TargetDeviceBootstrapControllerTest,
        TransferringGaiaAccountSendsChallengeBytesToAuthenticatedConnection) {
-  bootstrap_controller_->StartAdvertising();
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
@@ -501,7 +512,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
 TEST_F(TargetDeviceBootstrapControllerTest,
        FailureFetchingChallengeBytesIsProperlySurfaced) {
-  bootstrap_controller_->StartAdvertising();
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
@@ -522,7 +533,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
 TEST_F(TargetDeviceBootstrapControllerTest,
        TransferGaiaAccountDetailsSucceeds) {
-  bootstrap_controller_->StartAdvertising();
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
@@ -548,7 +559,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
 TEST_F(TargetDeviceBootstrapControllerTest,
        TransferGaiaAccountDetailsFailsIfEmpty) {
-  bootstrap_controller_->StartAdvertising();
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
@@ -584,7 +595,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, DiscoverableName) {
 
 TEST_F(TargetDeviceBootstrapControllerTest,
        RequestWifiCredentials_ConnectionDropped) {
-  bootstrap_controller_->StartAdvertising();
+  bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);

@@ -32,13 +32,15 @@ class SessionContext {
   SessionContext& operator=(const SessionContext& other);
   ~SessionContext();
 
-  RandomSessionId random_session_id() { return random_session_id_; }
+  RandomSessionId random_session_id() const { return random_session_id_; }
 
-  SharedSecret shared_secret() { return shared_secret_; }
+  SharedSecret shared_secret() const { return shared_secret_; }
 
-  SharedSecret secondary_shared_secret() { return secondary_shared_secret_; }
+  SharedSecret secondary_shared_secret() const {
+    return secondary_shared_secret_;
+  }
 
-  bool is_resume_after_update() { return is_resume_after_update_; }
+  bool is_resume_after_update() const { return is_resume_after_update_; }
 
   // Returns Dict that can be persisted to a local state Dict pref if the target
   // device is going to update. This Dict contains the RandomSessionId and

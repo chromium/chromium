@@ -4,20 +4,10 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 
-#include "base/base64.h"
 #include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
-#include "url/url_util.h"
 
 namespace ash::quick_start {
-
-namespace {
-
-// The target device's device type. 7 = CHROME. Values come from this enum:
-// http://google3/java/com/google/android/gmscore/integ/client/smartdevice/src/com/google/android/gms/smartdevice/d2d/DeviceType.java;l=57;rcl=526500829
-constexpr char kDeviceTypeQueryParamValue[] = "7";
-
-}  // namespace
 
 TargetDeviceConnectionBroker::TargetDeviceConnectionBroker() = default;
 TargetDeviceConnectionBroker::~TargetDeviceConnectionBroker() = default;
@@ -52,26 +42,6 @@ void TargetDeviceConnectionBroker::OnConnectionClosed(
     ConnectionClosedReason reason) {
   CHECK(connection_lifecycle_listener_);
   connection_lifecycle_listener_->OnConnectionClosed(reason);
-}
-
-std::vector<uint8_t> TargetDeviceConnectionBroker::GetQrCodeData(
-    const RandomSessionId& random_session_id,
-    const SharedSecret shared_secret) const {
-  std::string shared_secret_str(shared_secret.begin(), shared_secret.end());
-  std::string shared_secret_base64;
-  base::Base64Encode(shared_secret_str, &shared_secret_base64);
-  url::RawCanonOutputT<char> shared_secret_base64_uriencoded;
-  url::EncodeURIComponent(shared_secret_base64.data(),
-                          shared_secret_base64.size(),
-                          &shared_secret_base64_uriencoded);
-
-  std::string url = "https://signin.google/qs/" + random_session_id.ToString() +
-                    "?key=" +
-                    std::string(shared_secret_base64_uriencoded.data(),
-                                shared_secret_base64_uriencoded.length()) +
-                    "&t=" + std::string(kDeviceTypeQueryParamValue);
-
-  return std::vector<uint8_t>(url.begin(), url.end());
 }
 
 std::string TargetDeviceConnectionBroker::DerivePin(

@@ -15,6 +15,7 @@
 #include "base/observer_list_types.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/qr_code.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
@@ -32,8 +33,8 @@ class TargetDeviceBootstrapController
   enum class Step {
     NONE,
     ERROR,
-    ADVERTISING,
-    QR_CODE_VERIFICATION,
+    ADVERTISING_WITH_QR_CODE,
+    ADVERTISING_WITHOUT_QR_CODE,
     PIN_VERIFICATION,
     CONNECTED,
     GAIA_CREDENTIALS,
@@ -53,10 +54,8 @@ class TargetDeviceBootstrapController
     FETCHING_CHALLENGE_BYTES_FAILED,
   };
 
-  using QRCodePixelData = std::vector<uint8_t>;
-
   using Payload = absl::
-      variant<absl::monostate, ErrorCode, QRCodePixelData, FidoAssertionInfo>;
+      variant<absl::monostate, ErrorCode, QRCode::PixelData, FidoAssertionInfo>;
 
   // TODO(b/288054370) - Consolidate fields.
 
@@ -114,8 +113,16 @@ class TargetDeviceBootstrapController
   // valid weakptrs.
   base::WeakPtr<TargetDeviceBootstrapController> GetAsWeakPtrForClient();
 
-  // TODO: Finalize api for frontend.
-  void StartAdvertising();
+  // This method starts advertising and gets the QR code pixel data if using QR
+  // Code verification. The QR Code is needed for the initial Quick Start UI, so
+  // it's retrieved during this initial step when advertising begins.
+  //  After the user scans the QR code with their source device, the source
+  //  device accepts the connection, and a cryptographic handshake using the
+  //  secret contained in the QR code is used to authenticate the connection.
+  //  It's possible for a user to scan the QR Code before the connection is
+  //  initiated between this target device and the remote source device.
+  void StartAdvertisingAndMaybeGetQRCode();
+
   void StopAdvertising();
   void MaybeCloseOpenConnections();
 
@@ -126,8 +133,6 @@ class TargetDeviceBootstrapController
 
   // TargetDeviceConnectionBroker::ConnectionLifecycleListener:
   void OnPinVerificationRequested(const std::string& pin) override;
-  void OnQRCodeVerificationRequested(
-      const std::vector<uint8_t>& qr_code_data) override;
   void OnConnectionAuthenticated(
       base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
           authenticated_connection) override;
@@ -186,6 +191,7 @@ class TargetDeviceBootstrapController
   std::string challenge_bytes_ = "";
 
   std::unique_ptr<quick_start::SecondDeviceAuthBroker> auth_broker_;
+  SessionContext session_context_;
 
   std::unique_ptr<AccessibilityManagerWrapper> accessibility_manager_wrapper_;
 

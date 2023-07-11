@@ -15,6 +15,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/qr_code.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
@@ -26,7 +27,6 @@
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
-#include "components/qr_code_generator/qr_code_generator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -45,19 +45,6 @@ namespace {
 constexpr char kQuickStartTestForcedUpdateSwitch[] =
     "quick-start-test-forced-update";
 
-TargetDeviceBootstrapController::QRCodePixelData GenerateQRCode(
-    std::vector<uint8_t> blob) {
-  QRCodeGenerator qr_generator;
-  auto generated_code = qr_generator.Generate(
-      base::as_bytes(base::make_span(blob.data(), blob.size())));
-  CHECK(generated_code.has_value());
-  auto res = TargetDeviceBootstrapController::QRCodePixelData{
-      generated_code->data.begin(), generated_code->data.end()};
-  CHECK_EQ(res.size(), static_cast<size_t>(generated_code->qr_size *
-                                           generated_code->qr_size));
-  return res;
-}
-
 }  // namespace
 
 TargetDeviceBootstrapController::TargetDeviceBootstrapController(
@@ -69,12 +56,9 @@ TargetDeviceBootstrapController::TargetDeviceBootstrapController(
     mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder)
     : auth_broker_(std::move(auth_broker)),
       accessibility_manager_wrapper_(std::move(accessibility_manager_wrapper)) {
-  auto session_context = std::make_unique<SessionContext>();
-  // TODO(b/287650532) Generate QR Code data before moving |session_context| ptr
-  // to new location.
+  session_context_ = SessionContext();
   connection_broker_ = TargetDeviceConnectionBrokerFactory::Create(
-      std::move(session_context), nearby_connections_manager,
-      quick_start_decoder);
+      session_context_, nearby_connections_manager, quick_start_decoder);
 }
 
 TargetDeviceBootstrapController::~TargetDeviceBootstrapController() = default;
@@ -106,17 +90,26 @@ TargetDeviceBootstrapController::GetAsWeakPtrForClient() {
   return weak_ptr_factory_for_clients_.GetWeakPtr();
 }
 
-void TargetDeviceBootstrapController::StartAdvertising() {
-  DCHECK(connection_broker_->GetFeatureSupportStatus() ==
-         TargetDeviceConnectionBroker::FeatureSupportStatus::kSupported);
-  DCHECK_EQ(status_.step, Step::NONE);
+void TargetDeviceBootstrapController::StartAdvertisingAndMaybeGetQRCode() {
+  CHECK(connection_broker_->GetFeatureSupportStatus() ==
+        TargetDeviceConnectionBroker::FeatureSupportStatus::kSupported);
+  CHECK_EQ(status_.step, Step::NONE);
 
   // No pending requests.
-  DCHECK(!weak_ptr_factory_.HasWeakPtrs());
+  CHECK(!weak_ptr_factory_.HasWeakPtrs());
 
-  status_.step = Step::ADVERTISING;
   bool use_pin_authentication =
       accessibility_manager_wrapper_->IsSpokenFeedbackEnabled();
+
+  if (use_pin_authentication || session_context_.is_resume_after_update()) {
+    status_.step = Step::ADVERTISING_WITHOUT_QR_CODE;
+  } else {
+    auto qr_code = std::make_unique<QRCode>(
+        session_context_.random_session_id(), session_context_.shared_secret());
+    status_.step = Step::ADVERTISING_WITH_QR_CODE;
+    status_.payload.emplace<QRCode::PixelData>(qr_code->pixel_data());
+  }
+
   connection_broker_->StartAdvertising(
       this, use_pin_authentication,
       base::BindOnce(&TargetDeviceBootstrapController::OnStartAdvertisingResult,
@@ -153,8 +146,8 @@ void TargetDeviceBootstrapController::PrepareForUpdate() {
 
 void TargetDeviceBootstrapController::OnPinVerificationRequested(
     const std::string& pin) {
-  constexpr Step kPossibleSteps[] = {Step::ADVERTISING,
-                                     Step::QR_CODE_VERIFICATION};
+  constexpr Step kPossibleSteps[] = {Step::ADVERTISING_WITHOUT_QR_CODE,
+                                     Step::ADVERTISING_WITH_QR_CODE};
   CHECK(base::Contains(kPossibleSteps, status_.step));
 
   pin_ = pin;
@@ -164,21 +157,10 @@ void TargetDeviceBootstrapController::OnPinVerificationRequested(
   NotifyObservers();
 }
 
-void TargetDeviceBootstrapController::OnQRCodeVerificationRequested(
-    const std::vector<uint8_t>& qr_code_data) {
-  constexpr Step kPossibleSteps[] = {Step::ADVERTISING};
-  CHECK(base::Contains(kPossibleSteps, status_.step));
-
-  auto qr_code = GenerateQRCode(qr_code_data);
-  status_.step = Step::QR_CODE_VERIFICATION;
-  status_.payload.emplace<QRCodePixelData>(std::move(qr_code));
-  NotifyObservers();
-}
-
 void TargetDeviceBootstrapController::OnConnectionAuthenticated(
     base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
         authenticated_connection) {
-  constexpr Step kPossibleSteps[] = {Step::QR_CODE_VERIFICATION,
+  constexpr Step kPossibleSteps[] = {Step::ADVERTISING_WITH_QR_CODE,
                                      Step::PIN_VERIFICATION};
   CHECK(base::Contains(kPossibleSteps, status_.step));
 
@@ -227,7 +209,9 @@ void TargetDeviceBootstrapController::NotifyObservers() {
 }
 
 void TargetDeviceBootstrapController::OnStartAdvertisingResult(bool success) {
-  DCHECK_EQ(status_.step, Step::ADVERTISING);
+  constexpr Step kPossibleSteps[] = {Step::ADVERTISING_WITH_QR_CODE,
+                                     Step::ADVERTISING_WITHOUT_QR_CODE};
+  CHECK(base::Contains(kPossibleSteps, status_.step));
   if (success) {
     return;
   }

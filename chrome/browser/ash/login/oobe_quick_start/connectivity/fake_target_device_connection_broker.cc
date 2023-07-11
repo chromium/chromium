@@ -99,9 +99,6 @@ void FakeTargetDeviceConnectionBroker::InitiateConnection(
   if (use_pin_authentication_) {
     connection_lifecycle_listener_->OnPinVerificationRequested(
         DerivePin(kAuthenticationToken));
-  } else {
-    connection_lifecycle_listener_->OnQRCodeVerificationRequested(
-        GetQrCodeData(random_session_id_, kSharedSecret));
   }
 }
 

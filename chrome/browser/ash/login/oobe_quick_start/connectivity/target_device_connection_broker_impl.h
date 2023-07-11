@@ -50,7 +50,7 @@ class TargetDeviceConnectionBrokerImpl
   };
 
   TargetDeviceConnectionBrokerImpl(
-      std::unique_ptr<SessionContext> session_context,
+      SessionContext session_context,
       base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
       std::unique_ptr<Connection::Factory> connection_factory,
       mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder);
@@ -115,7 +115,7 @@ class TargetDeviceConnectionBrokerImpl
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   base::OnceClosure deferred_start_advertising_callback_;
 
-  std::unique_ptr<SessionContext> session_context_;
+  SessionContext session_context_;
   std::unique_ptr<FastPairAdvertiser> fast_pair_advertiser_;
 
   base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager_;

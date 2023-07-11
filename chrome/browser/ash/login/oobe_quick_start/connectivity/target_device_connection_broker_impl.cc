@@ -125,15 +125,15 @@ TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper*
         bluetooth_adapter_factory_wrapper_for_testing_ = nullptr;
 
 TargetDeviceConnectionBrokerImpl::TargetDeviceConnectionBrokerImpl(
-    std::unique_ptr<SessionContext> session_context,
+    SessionContext session_context,
     base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
     std::unique_ptr<Connection::Factory> connection_factory,
     mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder)
-    : session_context_(std::move(session_context)),
+    : session_context_(session_context),
       nearby_connections_manager_(nearby_connections_manager),
       connection_factory_(std::move(connection_factory)),
       quick_start_decoder_(std::move(quick_start_decoder)) {
-  is_resume_after_update_ = session_context_->is_resume_after_update();
+  is_resume_after_update_ = session_context_.is_resume_after_update();
   GetBluetoothAdapter();
 }
 
@@ -220,8 +220,8 @@ void TargetDeviceConnectionBrokerImpl::StartAdvertising(
 void TargetDeviceConnectionBrokerImpl::StartFastPairAdvertising(
     ResultCallback callback) {
   QS_LOG(INFO) << "Starting Fast Pair advertising with session id "
-               << session_context_->random_session_id() << " ("
-               << session_context_->random_session_id().GetDisplayCode() << ")";
+               << session_context_.random_session_id() << " ("
+               << session_context_.random_session_id().GetDisplayCode() << ")";
 
   fast_pair_advertiser_ =
       FastPairAdvertiser::Factory::Create(bluetooth_adapter_);
@@ -235,7 +235,7 @@ void TargetDeviceConnectionBrokerImpl::StartFastPairAdvertising(
       base::BindOnce(
           &TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingError,
           weak_ptr_factory_.GetWeakPtr(), std::move(failure_callback)),
-      session_context_->random_session_id(), use_pin_authentication_);
+      session_context_.random_session_id(), use_pin_authentication_);
 }
 
 void TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingSuccess(
@@ -269,7 +269,7 @@ void TargetDeviceConnectionBrokerImpl::StopAdvertising(
 }
 
 std::string TargetDeviceConnectionBrokerImpl::GetSessionIdDisplayCode() {
-  return session_context_->random_session_id().GetDisplayCode();
+  return session_context_.random_session_id().GetDisplayCode();
 }
 
 void TargetDeviceConnectionBrokerImpl::OnStopFastPairAdvertising(
@@ -291,9 +291,9 @@ void TargetDeviceConnectionBrokerImpl::OnStopFastPairAdvertising(
 //   - Pad with zeros to 60 bytes. Extra space reserved for futureproofing.
 std::vector<uint8_t> TargetDeviceConnectionBrokerImpl::GenerateEndpointInfo()
     const {
-  std::string session_id = session_context_->random_session_id().ToString();
+  std::string session_id = session_context_.random_session_id().ToString();
   std::vector<uint8_t> display_name_bytes =
-      GetEndpointInfoDisplayNameBytes(session_context_->random_session_id());
+      GetEndpointInfoDisplayNameBytes(session_context_.random_session_id());
   uint8_t verification_style = use_pin_authentication_
                                    ? kEndpointInfoVerificationStyleDigits
                                    : kEndpointInfoVerificationStyleOutOfBand;
@@ -420,12 +420,6 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionInitiated(
     std::string pin = DerivePin(*auth_token);
     QS_LOG(INFO) << "Incoming Nearby Connection Initiated: pin=" << pin;
     connection_lifecycle_listener_->OnPinVerificationRequested(pin);
-  } else {
-    // TODO(b/287650532) Delete this after moving QR Code generation inside
-    // TargetDeviceBootstrapController.
-    connection_lifecycle_listener_->OnQRCodeVerificationRequested(
-        GetQrCodeData(session_context_->random_session_id(),
-                      session_context_->shared_secret()));
   }
 }
 
@@ -445,7 +439,7 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
 
   // TODO(b/234655072): Handle Connection Closed in the Connection Broker
   connection_ = connection_factory_->Create(
-      nearby_connection, *session_context_, quick_start_decoder_,
+      nearby_connection, session_context_, quick_start_decoder_,
       base::BindOnce(&TargetDeviceConnectionBrokerImpl::OnConnectionClosed,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(
