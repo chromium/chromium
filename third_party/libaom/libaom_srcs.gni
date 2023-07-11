@@ -191,6 +191,7 @@ aom_av1_encoder_intrin_avx2 = [
   "//third_party/libaom/source/libaom/av1/encoder/x86/rdopt_avx2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/av1_k_means_avx2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/temporal_filter_avx2.c",
+  "//third_party/libaom/source/libaom/av1/encoder/x86/ml_avx2.c",
 ]
 
 aom_av1_encoder_intrin_neon = [
@@ -224,8 +225,10 @@ aom_av1_encoder_intrin_sse2 = [
   "//third_party/libaom/source/libaom/av1/encoder/x86/av1_temporal_denoiser_sse2.c",
 ]
 
-aom_av1_encoder_intrin_sse3 =
-    [ "//third_party/libaom/source/libaom/av1/encoder/x86/ml_sse3.c" ]
+aom_av1_encoder_intrin_sse3 = [
+  "//third_party/libaom/source/libaom/av1/encoder/x86/ml_sse3.c",
+  "//third_party/libaom/source/libaom/av1/encoder/x86/ml_sse3.h",
+]
 
 aom_av1_encoder_intrin_sse4_1 = [
   "//third_party/libaom/source/libaom/av1/encoder/x86/av1_fwd_txfm1d_sse4.c",
