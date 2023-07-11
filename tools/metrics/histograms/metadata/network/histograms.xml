@@ -1843,6 +1843,99 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Multicast.ARC.ActiveTime" units="%"
+    expires_after="2023-12-31">
+  <owner>chuweih@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Percentage of time WiFi multicast packets are forwarded from ChromeOS to
+    ARC. This depends on ARC WiFi multicast lock state and ARC doze mode state.
+    The metric is only emitted when ARC is running and WiFi is connected. The
+    value is recorded for a network whenever it is disconnected.
+  </summary>
+</histogram>
+
+<histogram name="Network.Multicast.ARC.WiFi.{Protocol}.ActiveCount"
+    units="packets" expires_after="2023-12-31">
+  <owner>jasongustaman@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Amount of WiFi multicast packets received by ChromeOS when multicast packets
+    are forwarded to ARC and WiFi is connected. The value is recorded every 2
+    minutes by ChromeOS's patchpanel. The metrics are separated by multicast
+    protocol mDNS and SSDP.
+  </summary>
+  <token key="Protocol">
+    <variant name="MDNS"/>
+    <variant name="SSDP"/>
+  </token>
+</histogram>
+
+<histogram name="Network.Multicast.ARC.WiFi.{Protocol}.InactiveCount"
+    units="packets" expires_after="2023-12-31">
+  <owner>jasongustaman@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Amount of WiFi multicast packets received by ChromeOS when multicast packets
+    are not forwarded to ARC and WiFi is connected. The value is recorded every
+    2 minutes by ChromeOS's patchpanel. The metrics are separated by multicast
+    protocol mDNS and SSDP.
+  </summary>
+  <token key="Protocol">
+    <variant name="MDNS"/>
+    <variant name="SSDP"/>
+  </token>
+</histogram>
+
+<histogram name="Network.Multicast.TotalCount" units="packets"
+    expires_after="2023-12-31">
+  <owner>jasongustaman@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Amount of multicast packets received by ChromeOS. The value is recorded
+    every 2 minutes by ChromeOS's patchpanel. Only multicast protocols mDNS and
+    SSDP are included.
+  </summary>
+</histogram>
+
+<histogram name="Network.Multicast.{Technology}.ConnectedCount" units="packets"
+    expires_after="2023-12-31">
+  <owner>jasongustaman@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Amount of multicast packets received by ChromeOS when at least one network
+    of the specified technology (ethernet or WiFi) is connected. When there are
+    multiple networks of the same technology, the sum is reported. The value is
+    recorded every 2 minutes by ChromeOS's patchpanel. Only multicast protocols
+    mDNS and SSDP are included.
+  </summary>
+  <token key="Technology">
+    <variant name="Ethernet"/>
+    <variant name="WiFi"/>
+  </token>
+</histogram>
+
+<histogram name="Network.Multicast.{Technology}.{Protocol}.ConnectedCount"
+    units="packets" expires_after="2023-12-31">
+  <owner>jasongustaman@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Amount of multicast packets received by ChromeOS when at least one network
+    of the specified technology (ethernet or WiFi) is connected. When there are
+    multiple networks of the same technology, the sum is reported. The value is
+    recorded every 2 minutes by ChromeOS's patchpanel. The metrics are separated
+    by multicast protocol mDNS and SSDP.
+  </summary>
+  <token key="Technology">
+    <variant name="Ethernet"/>
+    <variant name="WiFi"/>
+  </token>
+  <token key="Protocol">
+    <variant name="MDNS"/>
+    <variant name="SSDP"/>
+  </token>
+</histogram>
+
 <histogram name="Network.NetworkPortalDetectorHasProxy" enum="Boolean"
     expires_after="2024-01-05">
   <owner>stevenjb@chromium.org</owner>
