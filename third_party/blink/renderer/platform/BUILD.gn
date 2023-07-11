@@ -812,7 +812,6 @@ component("platform") {
     "graphics/canvas_resource_provider.h",
     "graphics/color.cc",
     "graphics/color.h",
-    "graphics/color_behavior.cc",
     "graphics/color_behavior.h",
     "graphics/color_space_gamut.cc",
     "graphics/color_space_gamut.h",

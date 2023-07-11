@@ -56,7 +56,7 @@ ImageFrame::DisposalMethod ConvertDisposalMethod(
 }  // anonymous namespace
 
 GIFImageDecoder::GIFImageDecoder(AlphaOption alpha_option,
-                                 const ColorBehavior& color_behavior,
+                                 ColorBehavior color_behavior,
                                  wtf_size_t max_decoded_bytes)
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,

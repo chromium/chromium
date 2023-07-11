@@ -202,7 +202,7 @@ String SniffMimeTypeInternal(scoped_refptr<SegmentReader> reader) {
 ImageDecoder::ImageDecoder(
     AlphaOption alpha_option,
     HighBitDepthDecodingOption high_bit_depth_decoding_option,
-    const ColorBehavior& color_behavior,
+    ColorBehavior color_behavior,
     wtf_size_t max_decoded_bytes)
     : premultiply_alpha_(alpha_option == kAlphaPremultiplied),
       high_bit_depth_decoding_option_(high_bit_depth_decoding_option),
@@ -221,7 +221,7 @@ std::unique_ptr<ImageDecoder> ImageDecoder::Create(
     bool data_complete,
     AlphaOption alpha_option,
     HighBitDepthDecodingOption high_bit_depth_decoding_option,
-    const ColorBehavior& color_behavior,
+    ColorBehavior color_behavior,
     const SkISize& desired_size,
     AnimationOption animation_option) {
   auto type = SniffMimeTypeInternal(data);
@@ -240,7 +240,7 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
     bool data_complete,
     AlphaOption alpha_option,
     HighBitDepthDecodingOption high_bit_depth_decoding_option,
-    const ColorBehavior& color_behavior,
+    ColorBehavior color_behavior,
     const SkISize& desired_size,
     AnimationOption animation_option) {
   const wtf_size_t max_decoded_bytes =
@@ -1028,7 +1028,7 @@ sk_sp<SkColorSpace> ImageDecoder::ColorSpaceForSkImages() {
 }
 
 void ImageDecoder::UpdateSkImageColorSpaceAndTransform() {
-  if (color_behavior_.IsIgnore()) {
+  if (color_behavior_ == ColorBehavior::kIgnore) {
     return;
   }
 
@@ -1039,7 +1039,7 @@ void ImageDecoder::UpdateSkImageColorSpaceAndTransform() {
     return;
   }
 
-  if (color_behavior_.IsTag()) {
+  if (color_behavior_ == ColorBehavior::kTag) {
     // Set `sk_image_color_space_` to the best SkColorSpace approximation
     // of `embedded_color_profile_`.
     if (embedded_color_profile_) {
@@ -1085,7 +1085,7 @@ void ImageDecoder::UpdateSkImageColorSpaceAndTransform() {
       return;
     }
   } else {
-    DCHECK(color_behavior_.IsTransformToSRGB());
+    DCHECK(color_behavior_ == ColorBehavior::kTransformToSRGB);
     sk_image_color_space_ = SkColorSpace::MakeSRGB();
 
     // If there is no `embedded_color_profile_`, then assume the content was

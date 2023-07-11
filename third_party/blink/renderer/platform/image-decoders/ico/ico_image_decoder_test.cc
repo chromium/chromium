@@ -15,7 +15,7 @@ namespace {
 
 std::unique_ptr<ImageDecoder> CreateICODecoder() {
   return std::make_unique<ICOImageDecoder>(
-      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::TransformToSRGB(),
+      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
       ImageDecoder::kNoDecodedImageByteLimit);
 }
 }  // namespace
@@ -115,7 +115,7 @@ class ICOImageDecoderCorpusTest : public ImageDecoderBaseTest {
  protected:
   std::unique_ptr<ImageDecoder> CreateImageDecoder() const override {
     return std::make_unique<ICOImageDecoder>(
-        ImageDecoder::kAlphaPremultiplied, ColorBehavior::TransformToSRGB(),
+        ImageDecoder::kAlphaPremultiplied, ColorBehavior::kTransformToSRGB,
         ImageDecoder::kNoDecodedImageByteLimit);
   }
 };

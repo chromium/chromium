@@ -42,9 +42,7 @@ class FastSharedBufferReader;
 // This class decodes the BMP image format.
 class PLATFORM_EXPORT BMPImageDecoder final : public ImageDecoder {
  public:
-  BMPImageDecoder(AlphaOption,
-                  const ColorBehavior&,
-                  wtf_size_t max_decoded_bytes);
+  BMPImageDecoder(AlphaOption, ColorBehavior, wtf_size_t max_decoded_bytes);
 
   ~BMPImageDecoder() override;
 

@@ -41,9 +41,7 @@ namespace blink {
 
 class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
  public:
-  WEBPImageDecoder(AlphaOption,
-                   const ColorBehavior&,
-                   wtf_size_t max_decoded_bytes);
+  WEBPImageDecoder(AlphaOption, ColorBehavior, wtf_size_t max_decoded_bytes);
   WEBPImageDecoder(const WEBPImageDecoder&) = delete;
   WEBPImageDecoder& operator=(const WEBPImageDecoder&) = delete;
   ~WEBPImageDecoder() override;

@@ -372,7 +372,7 @@ namespace blink {
 
 AVIFImageDecoder::AVIFImageDecoder(AlphaOption alpha_option,
                                    HighBitDepthDecodingOption hbd_option,
-                                   const ColorBehavior& color_behavior,
+                                   ColorBehavior color_behavior,
                                    wtf_size_t max_decoded_bytes,
                                    AnimationOption animation_option)
     : ImageDecoder(alpha_option, hbd_option, color_behavior, max_decoded_bytes),

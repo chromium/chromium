@@ -24,7 +24,7 @@ class ImageDecoderCoreTest : public testing::Test {
     DCHECK(data->size()) << "Missing file: " << file_name;
     return std::make_unique<ImageDecoderCore>(
         mime_type, std::move(data),
-        /*data_complete=*/true, ColorBehavior::Tag(), SkISize::MakeEmpty(),
+        /*data_complete=*/true, ColorBehavior::kTag, SkISize::MakeEmpty(),
         ImageDecoder::AnimationOption::kPreferAnimation);
   }
 

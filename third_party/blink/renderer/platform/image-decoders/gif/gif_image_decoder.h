@@ -39,9 +39,7 @@ class SegmentStream;
 // This class decodes the GIF image format.
 class PLATFORM_EXPORT GIFImageDecoder final : public ImageDecoder {
  public:
-  GIFImageDecoder(AlphaOption,
-                  const ColorBehavior&,
-                  wtf_size_t max_decoded_bytes);
+  GIFImageDecoder(AlphaOption, ColorBehavior, wtf_size_t max_decoded_bytes);
   GIFImageDecoder(const GIFImageDecoder&) = delete;
   GIFImageDecoder& operator=(const GIFImageDecoder&) = delete;
   ~GIFImageDecoder() override;

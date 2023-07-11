@@ -37,7 +37,7 @@ class JPEGImageReader;
 class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
  public:
   JPEGImageDecoder(AlphaOption,
-                   const ColorBehavior&,
+                   ColorBehavior,
                    wtf_size_t max_decoded_bytes,
                    wtf_size_t offset = 0);
   JPEGImageDecoder(const JPEGImageDecoder&) = delete;

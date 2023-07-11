@@ -16,7 +16,7 @@ namespace {
 
 std::unique_ptr<ImageDecoder> CreateBMPDecoder() {
   return std::make_unique<BMPImageDecoder>(
-      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::TransformToSRGB(),
+      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
       ImageDecoder::kNoDecodedImageByteLimit);
 }
 
@@ -105,7 +105,7 @@ class BMPImageDecoderCorpusTest : public ImageDecoderBaseTest {
  protected:
   std::unique_ptr<ImageDecoder> CreateImageDecoder() const override {
     return std::make_unique<BMPImageDecoder>(
-        ImageDecoder::kAlphaPremultiplied, ColorBehavior::TransformToSRGB(),
+        ImageDecoder::kAlphaPremultiplied, ColorBehavior::kTransformToSRGB,
         ImageDecoder::kNoDecodedImageByteLimit);
   }
 

@@ -42,7 +42,7 @@ static const wtf_size_t kSizeOfDirectory = 6;
 static const wtf_size_t kSizeOfDirEntry = 16;
 
 ICOImageDecoder::ICOImageDecoder(AlphaOption alpha_option,
-                                 const ColorBehavior& color_behavior,
+                                 ColorBehavior color_behavior,
                                  wtf_size_t max_decoded_bytes)
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,

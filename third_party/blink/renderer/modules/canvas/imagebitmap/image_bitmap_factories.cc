@@ -391,8 +391,8 @@ void ImageBitmapFactories::ImageBitmapLoader::ScheduleAsyncImageBitmapDecoding(
           ? ImageDecoder::AlphaOption::kAlphaPremultiplied
           : ImageDecoder::AlphaOption::kAlphaNotPremultiplied;
   ColorBehavior color_behavior = options_->colorSpaceConversion() == "none"
-                                     ? ColorBehavior::Ignore()
-                                     : ColorBehavior::Tag();
+                                     ? ColorBehavior::kIgnore
+                                     : ColorBehavior::kTag;
   worker_pool::PostTask(
       FROM_HERE,
       CrossThreadBindOnce(

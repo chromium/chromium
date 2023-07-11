@@ -54,7 +54,7 @@ struct AnimParam {
 std::unique_ptr<ImageDecoder> CreateWEBPDecoder(
     ImageDecoder::AlphaOption alpha_option) {
   return std::make_unique<WEBPImageDecoder>(
-      alpha_option, ColorBehavior::TransformToSRGB(),
+      alpha_option, ColorBehavior::kTransformToSRGB,
       ImageDecoder::kNoDecodedImageByteLimit);
 }
 

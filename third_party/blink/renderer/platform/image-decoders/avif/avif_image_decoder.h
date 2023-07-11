@@ -25,7 +25,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
  public:
   AVIFImageDecoder(AlphaOption,
                    HighBitDepthDecodingOption,
-                   const ColorBehavior&,
+                   ColorBehavior,
                    wtf_size_t max_decoded_bytes,
                    AnimationOption);
   AVIFImageDecoder(const AVIFImageDecoder&) = delete;

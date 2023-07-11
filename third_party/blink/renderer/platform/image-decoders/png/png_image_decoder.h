@@ -37,7 +37,7 @@ class PLATFORM_EXPORT PNGImageDecoder final : public ImageDecoder {
  public:
   PNGImageDecoder(AlphaOption,
                   HighBitDepthDecodingOption,
-                  const ColorBehavior&,
+                  ColorBehavior,
                   wtf_size_t max_decoded_bytes,
                   wtf_size_t offset = 0);
   PNGImageDecoder(const PNGImageDecoder&) = delete;

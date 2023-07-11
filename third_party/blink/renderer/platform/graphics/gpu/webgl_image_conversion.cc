@@ -3815,7 +3815,7 @@ WebGLImageConversion::ImageExtractor::ImageExtractor(
       // If we are not ignoring the color space, then tag the image with the
       // target color space. It will be converted later on.
       auto color_behavior =
-          target_color_space ? ColorBehavior::Tag() : ColorBehavior::Ignore();
+          target_color_space ? ColorBehavior::kTag : ColorBehavior::kIgnore;
       std::unique_ptr<ImageDecoder> decoder(
           ImageDecoder::Create(image->Data(), data_complete, alpha_option,
                                bit_depth, color_behavior));

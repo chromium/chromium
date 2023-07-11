@@ -78,7 +78,7 @@ static bool UpdateYUVAInfoSubsamplingAndWidthBytes(
 
 ImageFrameGenerator::ImageFrameGenerator(const SkISize& full_size,
                                          bool is_multi_frame,
-                                         const ColorBehavior& color_behavior,
+                                         ColorBehavior color_behavior,
                                          Vector<SkISize> supported_sizes)
     : full_size_(full_size),
       decoder_color_behavior_(color_behavior),

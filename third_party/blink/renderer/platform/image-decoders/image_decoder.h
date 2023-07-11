@@ -188,7 +188,7 @@ class PLATFORM_EXPORT ImageDecoder {
       bool data_complete,
       AlphaOption,
       HighBitDepthDecodingOption,
-      const ColorBehavior&,
+      ColorBehavior,
       const SkISize& desired_size = SkISize::MakeEmpty(),
       AnimationOption animation_option = AnimationOption::kUnspecified);
   static std::unique_ptr<ImageDecoder> Create(
@@ -196,7 +196,7 @@ class PLATFORM_EXPORT ImageDecoder {
       bool data_complete,
       AlphaOption alpha_option,
       HighBitDepthDecodingOption high_bit_depth_decoding_option,
-      const ColorBehavior& color_behavior,
+      ColorBehavior color_behavior,
       const SkISize& desired_size = SkISize::MakeEmpty(),
       AnimationOption animation_option = AnimationOption::kUnspecified) {
     return Create(SegmentReader::CreateFromSharedBuffer(std::move(data)),
@@ -212,7 +212,7 @@ class PLATFORM_EXPORT ImageDecoder {
       bool data_complete,
       AlphaOption alpha_option,
       HighBitDepthDecodingOption high_bit_depth_decoding_option,
-      const ColorBehavior& color_behavior,
+      ColorBehavior color_behavior,
       const SkISize& desired_size = SkISize::MakeEmpty(),
       AnimationOption animation_option = AnimationOption::kUnspecified);
 
@@ -360,8 +360,10 @@ class PLATFORM_EXPORT ImageDecoder {
   void ApplyMetadata(const DecodedImageMetaData& metadata,
                      const gfx::Size& physical_size);
 
-  bool IgnoresColorSpace() const { return color_behavior_.IsIgnore(); }
-  const ColorBehavior& GetColorBehavior() const { return color_behavior_; }
+  bool IgnoresColorSpace() const {
+    return color_behavior_ == ColorBehavior::kIgnore;
+  }
+  ColorBehavior GetColorBehavior() const { return color_behavior_; }
 
   // This returns the color space that will be included in the SkImageInfo of
   // SkImages created from this decoder. This will be nullptr unless the
@@ -423,7 +425,7 @@ class PLATFORM_EXPORT ImageDecoder {
  protected:
   ImageDecoder(AlphaOption alpha_option,
                HighBitDepthDecodingOption high_bit_depth_decoding_option,
-               const ColorBehavior& color_behavior,
+               ColorBehavior color_behavior,
                wtf_size_t max_decoded_bytes);
 
   // Calculates the most recent frame whose image data may be needed in

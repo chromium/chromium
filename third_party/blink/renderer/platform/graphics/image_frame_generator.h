@@ -68,7 +68,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   static scoped_refptr<ImageFrameGenerator> Create(
       const SkISize& full_size,
       bool is_multi_frame,
-      const ColorBehavior& color_behavior,
+      ColorBehavior color_behavior,
       Vector<SkISize> supported_sizes) {
     return base::AdoptRef(new ImageFrameGenerator(
         full_size, is_multi_frame, color_behavior, std::move(supported_sizes)));
@@ -143,7 +143,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
 
   ImageFrameGenerator(const SkISize& full_size,
                       bool is_multi_frame,
-                      const ColorBehavior&,
+                      ColorBehavior,
                       Vector<SkISize> supported_sizes);
 
   friend class ImageFrameGeneratorTest;

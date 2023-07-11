@@ -43,9 +43,7 @@ class PNGImageDecoder;
 // This class decodes the ICO and CUR image formats.
 class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
  public:
-  ICOImageDecoder(AlphaOption,
-                  const ColorBehavior&,
-                  wtf_size_t max_decoded_bytes);
+  ICOImageDecoder(AlphaOption, ColorBehavior, wtf_size_t max_decoded_bytes);
   ICOImageDecoder(const ICOImageDecoder&) = delete;
   ICOImageDecoder& operator=(const ICOImageDecoder&) = delete;
   ~ICOImageDecoder() override;

@@ -41,7 +41,7 @@ namespace blink {
 static const wtf_size_t kSizeOfFileHeader = 14;
 
 BMPImageDecoder::BMPImageDecoder(AlphaOption alpha_option,
-                                 const ColorBehavior& color_behavior,
+                                 ColorBehavior color_behavior,
                                  wtf_size_t max_decoded_bytes)
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,
