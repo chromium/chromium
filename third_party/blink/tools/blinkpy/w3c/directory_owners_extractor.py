@@ -29,9 +29,9 @@ BASIC_EMAIL_REGEXP = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
 
 
 class WPTDirMetadata(NamedTuple):
-    team_email: Optional[str]
-    component: Optional[str]
-    should_notify: bool
+    team_email: Optional[str] = None
+    component: Optional[str] = None
+    should_notify: bool = False
 
 
 class DirectoryOwnersExtractor:
@@ -80,19 +80,26 @@ class DirectoryOwnersExtractor:
             for owners, owned_directories in email_map.items()
         }
 
-    def find_owners_file(self, start_path):
-        """Finds the first enclosing OWNERS file for a given path.
+    def find_owners_file(self, start_path: str) -> Optional[str]:
+        return self._find_first_file(start_path, 'OWNERS')
 
-        Starting from the given path, walks up the directory tree until the
-        first OWNERS file is found or web_tests/external is reached.
+    def find_dir_metadata_file(self, start_path: str) -> Optional[str]:
+        return self._find_first_file(start_path, 'DIR_METADATA')
+
+    def _find_first_file(self, start_path: str,
+                         filename: str) -> Optional[str]:
+        """Find the first enclosing file for a given path.
+
+        Starting from the given path, walk up the directory tree until the first
+        file with the given name is found or web_tests/external is reached.
 
         Args:
             start_path: A relative path from the root of the repository, or an
                 absolute path. The path can be a file or a directory.
+            filename: File to look for in each candidate directory.
 
         Returns:
-            The absolute path to the first OWNERS file found; None if not found
-            or if start_path is outside of web_tests/external.
+            The absolute path to the first file, if found; None otherwise.
         """
         abs_start_path = (start_path if self.filesystem.isabs(start_path) else
                           self.finder.path_from_chromium_base(start_path))
@@ -103,10 +110,10 @@ class DirectoryOwnersExtractor:
             return None
         # Stop at web_tests, which is the parent of external_root.
         while directory != self.finder.web_tests_dir():
-            owners_file = self.filesystem.join(directory, 'OWNERS')
+            maybe_file = self.filesystem.join(directory, filename)
             if self.filesystem.isfile(
-                    self.finder.path_from_chromium_base(owners_file)):
-                return owners_file
+                    self.finder.path_from_chromium_base(maybe_file)):
+                return maybe_file
             directory = self.filesystem.dirname(directory)
         return None
 

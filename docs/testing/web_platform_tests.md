@@ -221,10 +221,15 @@ wpt {
 }
 ```
 
-When a test under `external/wpt/css/css-grid/` newly fails in a WPT import, the
-importer will automatically file a bug against the Blink>Layout>Grid component
-in [crbug.com](https://crbug.com), with details of which test failed and the
-output.
+When tests under `external/wpt/css/css-grid/` newly fail in a WPT import, the
+importer will automatically file a bug against the `Blink>Layout>Grid` component
+in [crbug.com](https://crbug.com), with details of which tests failed and the
+outputs.
+The importer will also copy `layout-dev@chromium.org` (the `team_email`) and any
+`external/wpt/css/css-grid/OWNERS` on the bug.
+
+Failing tests are grouped according to the most specific `DIR_METADATA` that
+they roll up to.
 
 Note that we are considering making the notifications opt-out instead of
 opt-in: see https://crbug.com/845232

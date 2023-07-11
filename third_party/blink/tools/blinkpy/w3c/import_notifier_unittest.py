@@ -4,12 +4,14 @@
 # found in the LICENSE file.
 
 import unittest
+from unittest import mock
 
 from blinkpy.common.checkout.git_mock import MockGit
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.system.executive_mock import mock_git_commands, MockExecutive
 from blinkpy.common.system.filesystem_mock import MockFileSystem
+from blinkpy.w3c.directory_owners_extractor import WPTDirMetadata
 from blinkpy.w3c.local_wpt_mock import MockLocalWPT
 from blinkpy.w3c.import_notifier import ImportNotifier, TestFailure
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
@@ -162,7 +164,7 @@ class ImportNotifierTest(unittest.TestCase):
 
     def test_examine_baseline_changes(self):
         self.host.filesystem.write_text_file(
-            MOCK_WEB_TESTS + 'external/wpt/foo/OWNERS', 'test@chromium.org')
+            MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA', '')
         changed_test_baselines = {
             'external/wpt/foo/bar.html': [
                 RELATIVE_WEB_TESTS + 'external/wpt/foo/bar-expected.txt',
@@ -195,7 +197,7 @@ class ImportNotifierTest(unittest.TestCase):
 
     def test_examine_new_test_expectations(self):
         self.host.filesystem.write_text_file(
-            MOCK_WEB_TESTS + 'external/wpt/foo/OWNERS', 'test@chromium.org')
+            MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA', '')
         test_expectations = {
             'external/wpt/foo/bar.html': [
                 'crbug.com/12345 [ Linux ] external/wpt/foo/bar.html [ Fail ]',
@@ -245,32 +247,35 @@ class ImportNotifierTest(unittest.TestCase):
             u'ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ: https://github.com/web-platform-tests/wpt/commit/SHA2\n'
         )
 
-    def test_find_owned_directory_non_virtual(self):
+    def test_find_directory_for_bug_non_virtual(self):
         self.host.filesystem.write_text_file(
-            MOCK_WEB_TESTS + 'external/wpt/foo/OWNERS', 'test@chromium.org')
+            MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA', '')
         self.assertEqual(
-            self.notifier.find_owned_directory('external/wpt/foo/bar.html'),
+            self.notifier.find_directory_for_bug('external/wpt/foo/bar.html'),
             'external/wpt/foo')
         self.assertEqual(
-            self.notifier.find_owned_directory(
+            self.notifier.find_directory_for_bug(
                 'external/wpt/foo/bar/baz.html'), 'external/wpt/foo')
 
-    def test_find_owned_directory_virtual(self):
+    def test_find_directory_for_bug_virtual(self):
         self.host.filesystem.write_text_file(
-            MOCK_WEB_TESTS + 'external/wpt/foo/OWNERS', 'test@chromium.org')
+            MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA', '')
         self.assertEqual(
-            self.notifier.find_owned_directory(
+            self.notifier.find_directory_for_bug(
                 'virtual/gpu/external/wpt/foo/bar.html'), 'external/wpt/foo')
 
     def test_create_bugs_from_new_failures(self):
         self.host.filesystem.write_text_file(
+            MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA', '')
+        self.host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'external/wpt/foo/OWNERS', 'foolip@chromium.org')
         self.host.filesystem.write_text_file(
-            MOCK_WEB_TESTS + 'external/wpt/bar/OWNERS', 'test@chromium.org')
+            MOCK_WEB_TESTS + 'external/wpt/bar/DIR_METADATA', '')
 
-        data = ('{"dirs":{"third_party/blink/web_tests/external/wpt/foo":{"monorail":{"component":'
-                '"Blink>Infra>Ecosystem"},"teamEmail":"email","wpt":{'
-                '"notify":"YES"}}}}')
+        data = (
+            '{"dirs":{"third_party/blink/web_tests/external/wpt/foo":{"monorail":{"component":'
+            '"Blink>Infra>Ecosystem"},"teamEmail":"team-email@chromium.org","wpt":{'
+            '"notify":"YES"}}}}')
 
         def mock_run_command(args):
             if args[-1].endswith('external/wpt/foo'):
@@ -302,12 +307,36 @@ class ImportNotifierTest(unittest.TestCase):
         # Only one directory has WPT-NOTIFY enabled.
         self.assertEqual(len(bugs), 1)
         # The formatting of imported commits and new failures are already tested.
-        self.assertEqual(bugs[0].body['cc'], ['foolip@chromium.org'])
+        self.assertEqual(set(bugs[0].body['cc']),
+                         {'team-email@chromium.org', 'foolip@chromium.org'})
         self.assertEqual(bugs[0].body['components'], ['Blink>Infra>Ecosystem'])
         self.assertEqual(
             bugs[0].body['summary'],
             '[WPT] New failures introduced in external/wpt/foo by import https://crrev.com/c/12345'
         )
+
+    def test_file_bug_without_owners(self):
+        """A bug should be filed, even without OWNERS next to DIR_METADATA."""
+        self.notifier.new_failures_by_directory = {
+            'external/wpt/foo': [
+                TestFailure(
+                    TestFailure.NEW_EXPECTATION, 'external/wpt/foo/baz.html',
+                    'crbug.com/12345 external/wpt/foo/baz.html [ Fail ]'),
+            ],
+        }
+        dir_metadata = WPTDirMetadata(component='Blink>Infra>Ecosystem',
+                                      should_notify=True)
+        with mock.patch.object(self.notifier.owners_extractor,
+                               'read_dir_metadata',
+                               return_value=dir_metadata):
+            (bug, ) = self.notifier.create_bugs_from_new_failures(
+                'SHA_START', 'SHA_END', 'https://crrev.com/c/12345')
+            self.assertEqual(bug.body['cc'], [])
+            self.assertEqual(bug.body['components'], ['Blink>Infra>Ecosystem'])
+            self.assertEqual(
+                bug.body['summary'],
+                '[WPT] New failures introduced in external/wpt/foo '
+                'by import https://crrev.com/c/12345')
 
     def test_no_bugs_filed_in_dry_run(self):
         def unreachable(_):

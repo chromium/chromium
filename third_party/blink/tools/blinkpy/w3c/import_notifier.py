@@ -12,6 +12,7 @@ Design doc: https://docs.google.com/document/d/1W3V81l94slAC_rPcTKWXgv3YxRxtlSIA
 from collections import defaultdict
 import logging
 import re
+from typing import Optional
 
 from blinkpy.common.net.luci_auth import LuciAuth
 from blinkpy.common.path_finder import PathFinder
@@ -112,9 +113,8 @@ class ImportNotifier(object):
             gerrit_url_with_ps: Gerrit URL of this CL with the patchset number.
         """
         for test_name, changed_baselines in changed_test_baselines.items():
-            directory = self.find_owned_directory(test_name)
+            directory = self.find_directory_for_bug(test_name)
             if not directory:
-                _log.warning('Cannot find OWNERS of %s', test_name)
                 continue
 
             for baseline in changed_baselines:
@@ -160,9 +160,8 @@ class ImportNotifier(object):
                 be rebaselined to a list of new test expectation lines.
         """
         for test_name, expectation_lines in test_expectations.items():
-            directory = self.find_owned_directory(test_name)
+            directory = self.find_directory_for_bug(test_name)
             if not directory:
-                _log.warning('Cannot find OWNERS of %s', test_name)
                 continue
 
             for expectation_line in expectation_lines:
@@ -201,9 +200,14 @@ class ImportNotifier(object):
                 _log.info("WPT-NOTIFY disabled in %s." % full_directory)
                 continue
 
-            owners = self.owners_extractor.extract_owners(owners_file)
-            # owners may be empty but not None.
-            cc = owners
+            cc = []
+            if metadata.team_email:
+                cc.append(metadata.team_email)
+            try:
+                cc.extend(self.owners_extractor.extract_owners(owners_file))
+            except FileNotFoundError:
+                _log.warning(f'{owners_file!r} does not exist and '
+                             'was not added to the CC list.')
 
             # component could be None.
             components = [metadata.component] if metadata.component else None
@@ -266,26 +270,27 @@ class ImportNotifier(object):
             commit_list += line + '\n'
         return commit_list
 
-    def find_owned_directory(self, test_name):
-        """Finds the lowest directory that contains the test and has OWNERS.
+    def find_directory_for_bug(self, test_name: str) -> Optional[str]:
+        """Find the lowest directory with `DIR_METADATA` containing the test.
 
         Args:
-            The name of the test (a path relative to web_tests).
+            test_name: The name of the test (a path relative to web_tests).
 
         Returns:
-            The path of the found directory relative to web_tests.
+            The path of the found directory relative to web_tests, if found.
         """
-        # Always use non-virtual test names when looking up OWNERS.
+        # Always use non-virtual test names when looking up `DIR_METADATA`.
         if self.default_port.lookup_virtual_test_base(test_name):
             test_name = self.default_port.lookup_virtual_test_base(test_name)
-        # find_owners_file takes either a relative path from the *root* of the
-        # repository, or an absolute path.
+        # `find_dir_metadata_file` takes either a relative path from the *root*
+        # of the repository, or an absolute path.
         abs_test_path = self.finder.path_from_web_tests(test_name)
-        owners_file = self.owners_extractor.find_owners_file(
+        metadata_file = self.owners_extractor.find_dir_metadata_file(
             self.host.filesystem.dirname(abs_test_path))
-        if not owners_file:
+        if not metadata_file:
+            _log.warning('Cannot find DIR_METADATA for %s.', test_name)
             return None
-        owned_directory = self.host.filesystem.dirname(owners_file)
+        owned_directory = self.host.filesystem.dirname(metadata_file)
         short_directory = self.host.filesystem.relpath(
             owned_directory, self.finder.web_tests_dir())
         return short_directory
