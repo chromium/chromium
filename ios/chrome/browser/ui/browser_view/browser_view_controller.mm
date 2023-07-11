@@ -6,6 +6,7 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 
 #import "base/apple/bundle_locations.h"
+#import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -1026,6 +1027,13 @@ enum HeaderBehaviour {
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+
+#if defined(__IPHONE_17_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_17_0
+  if (base::ios::IsRunningOnIOS17OrLater() &&
+      base::FeatureList::IsEnabled(kEnableTraitCollectionWorkAround)) {
+    [self updateTraitsIfNeeded];
+  }
+#endif
 
   // After `-shutdown` is called, browserState is invalid and will cause a
   // crash.

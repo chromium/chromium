@@ -107,6 +107,10 @@ BASE_DECLARE_FEATURE(kEnableLensContextMenuAltText);
 // Feature flag to enable the Lens "Search copied image" omnibox entrypoint.
 BASE_DECLARE_FEATURE(kEnableLensInOmniboxCopiedImage);
 
+// Feature flag to enable UITraitCollection workaround for fixing incorrect
+// trait propagation.
+BASE_DECLARE_FEATURE(kEnableTraitCollectionWorkAround);
+
 // Feature flag to enable the use of UIButtonConfigurations in iOS 15+.
 BASE_DECLARE_FEATURE(kEnableUIButtonConfiguration);
 
