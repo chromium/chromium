@@ -6,8 +6,23 @@
 
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
+#include "build/build_config.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget.h"
+
+namespace {
+
+#if BUILDFLAG(IS_MAC)
+bool IsWidgetInFullscreenWorkspace(views::Widget* widget) {
+  views::Widget* root = widget;
+  while (root->parent()) {
+    root = root->parent();
+  }
+  return root->IsFullscreen();
+}
+#endif
+
+}  // namespace
 
 namespace views {
 
@@ -55,6 +70,17 @@ void SublevelManager::EnsureOwnerSublevel() {
 void SublevelManager::OrderChildWidget(Widget* child) {
   DCHECK_EQ(1, base::ranges::count(children_, child));
   children_.erase(base::ranges::remove(children_, child), std::end(children_));
+
+#if BUILDFLAG(IS_MAC)
+  // macOS bug: a child widget might be rendered behind its parent in fullscreen
+  // if the child is not explicitly StackAbove()'ed its parent.
+  // Note that StackAbove() will make child visible even if its parent is
+  // hidden. We'd like to avoid that therefore only calling StackAbove() when
+  // the parent is visible.
+  if (IsWidgetInFullscreenWorkspace(child) && owner_->IsVisible()) {
+    child->StackAboveWidget(owner_);
+  }
+#endif
 
   ui::ZOrderLevel child_level = child->GetZOrderLevel();
   auto insert_it = FindInsertPosition(child);
