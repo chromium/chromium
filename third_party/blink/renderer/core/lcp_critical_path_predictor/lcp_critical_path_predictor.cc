@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 
-#include "base/logging.h"
+#include <vector>
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -20,6 +20,12 @@ LCPCriticalPathPredictor::LCPCriticalPathPredictor(LocalFrame& frame)
 }
 
 LCPCriticalPathPredictor::~LCPCriticalPathPredictor() = default;
+
+void LCPCriticalPathPredictor::set_lcp_element_locators(
+    Vector<ElementLocator> locators) {
+  CHECK(lcp_element_locators_.empty());
+  lcp_element_locators_ = std::move(locators);
+}
 
 void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     Element* lcp_element) {

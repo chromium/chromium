@@ -6,9 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_H_
 
 #include "base/task/single_thread_task_runner.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-blink.h"
+#include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.pb.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -31,6 +32,16 @@ class CORE_EXPORT LCPCriticalPathPredictor final
   LCPCriticalPathPredictor(const LCPCriticalPathPredictor&) = delete;
   LCPCriticalPathPredictor& operator=(const LCPCriticalPathPredictor&) = delete;
 
+  // Member functions invoked in LCPP hint consumption path (read path):
+
+  void set_lcp_element_locators(Vector<ElementLocator> locators);
+
+  const Vector<ElementLocator>& lcp_element_locators() {
+    return lcp_element_locators_;
+  }
+
+  // Member functions invoked in LCPP hint production path (write path):
+
   void OnLargestContentfulPaintUpdated(Element* lcp_element);
 
   void Trace(Visitor*) const;
@@ -42,6 +53,10 @@ class CORE_EXPORT LCPCriticalPathPredictor final
   Member<LocalFrame> frame_;
   HeapMojoRemote<mojom::blink::LCPCriticalPathPredictorHost> host_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  // LCPP hints for consumption (read path):
+
+  Vector<ElementLocator> lcp_element_locators_;
 };
 
 }  // namespace blink

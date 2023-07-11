@@ -172,6 +172,8 @@ Resource* PreloadRequest::Start(Document* document) {
   }
   params.SetRenderBlockingBehavior(render_blocking_behavior_);
 
+  params.SetIsPotentiallyLCPElement(is_potentially_lcp_element_);
+
   return PreloadHelper::StartPreload(resource_type_, params, *document);
 }
 

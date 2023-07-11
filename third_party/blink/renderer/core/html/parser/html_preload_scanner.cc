@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/fetch_priority_attribute.h"
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
@@ -1059,11 +1060,17 @@ std::unique_ptr<HTMLPreloadScanner> HTMLPreloadScanner::Create(
     Document& document,
     HTMLParserOptions options,
     TokenPreloadScanner::ScannerType scanner_type) {
+  Vector<ElementLocator> locators;
+  if (LocalFrame* frame = document.GetFrame()) {
+    if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
+      locators = lcpp->lcp_element_locators();
+    }
+  }
   return std::make_unique<HTMLPreloadScanner>(
       std::make_unique<HTMLTokenizer>(options), document.Url(),
       std::make_unique<CachedDocumentParameters>(&document),
       MediaValuesCached::MediaValuesCachedData(document), scanner_type,
-      nullptr);
+      /* script_token_scanner=*/nullptr, TakePreloadFn(), locators);
 }
 
 // static
@@ -1073,6 +1080,14 @@ HTMLPreloadScanner::BackgroundPtr HTMLPreloadScanner::CreateBackground(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     TakePreloadFn take_preload) {
   auto* document = parser->GetDocument();
+
+  Vector<ElementLocator> locators;
+  if (LocalFrame* frame = document->GetFrame()) {
+    if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
+      locators = lcpp->lcp_element_locators();
+    }
+  }
+
   return BackgroundPtr(
       new HTMLPreloadScanner(
           std::make_unique<HTMLTokenizer>(options), document->Url(),
@@ -1080,7 +1095,7 @@ HTMLPreloadScanner::BackgroundPtr HTMLPreloadScanner::CreateBackground(
           MediaValuesCached::MediaValuesCachedData(*document),
           TokenPreloadScanner::ScannerType::kMainDocument,
           BackgroundHTMLScanner::ScriptTokenScanner::Create(parser),
-          std::move(take_preload)),
+          std::move(take_preload), locators),
       Deleter{task_runner});
 }
 

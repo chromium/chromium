@@ -227,6 +227,7 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
@@ -3269,8 +3270,21 @@ void WebLocalFrameImpl::SetLCPPHint(
   CHECK(base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor));
 
   if (LCPCriticalPathPredictor* lcpp = GetFrame()->GetLCPP()) {
-    // TODO(crbug.com/1419756): Consume hint.
-    NOTIMPLEMENTED();
+    Vector<ElementLocator> lcp_element_locators;
+    lcp_element_locators.reserve(
+        base::checked_cast<wtf_size_t>(hint->lcp_element_locators.size()));
+    for (const std::string& serialized_locator : hint->lcp_element_locators) {
+      lcp_element_locators.push_back(ElementLocator());
+      bool result =
+          lcp_element_locators.back().ParseFromString(serialized_locator);
+      if (!result) {
+        // This can happen when the host LCPP database is corrupted or we
+        // updated the ElementLocator schema in an incompatible way.
+        LOG(INFO) << "Ignoring an invalid lcp_element_locator hint.";
+        lcp_element_locators.pop_back();
+      }
+    }
+    lcpp->set_lcp_element_locators(std::move(lcp_element_locators));
   }
 }
 
