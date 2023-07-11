@@ -513,6 +513,7 @@ fast/forms/select/disabled-select-change-index.html
 fast/forms/select/listbox-appearance-separator.html
 fast/forms/select/listbox-bidi-align.html
 fast/forms/select/listbox-clip.html
+fast/forms/select/listbox-group-indent.html
 fast/forms/select/listbox-intrinsic-min-width-applies-with-fixed-width.html
 fast/forms/select/listbox-line-height.html
 fast/forms/select/listbox-scrollbar-incremental-load.html
