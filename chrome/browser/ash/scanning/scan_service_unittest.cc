@@ -44,7 +44,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 
 namespace ash {
 
@@ -155,15 +155,13 @@ std::vector<base::FilePath> CreateSavedScanPaths(
   return file_paths;
 }
 
-// Returns a manually generated PNG image. |alpha| is used to make unique PNGs.
-std::string CreatePng(const int alpha = 255) {
-  DCHECK(alpha >= 0 && alpha <= 255);
-
+// Returns a manually generated JPEG image. |alpha| is used to make them unique.
+std::string CreateJpeg(const int alpha = 255) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(100, 100);
-  bitmap.eraseARGB(alpha, 0, 255, 0);
+  bitmap.eraseARGB(alpha, 0, 0, 255);
   std::vector<unsigned char> bytes;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &bytes);
+  CHECK(gfx::JPEGCodec::Encode(bitmap, 90, &bytes));
   return std::string(bytes.begin(), bytes.end());
 }
 
@@ -519,8 +517,8 @@ TEST_F(ScanServiceTest, ScanWithUnsupportedFilePath) {
 TEST_F(ScanServiceTest, Scan) {
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
-  const std::vector<std::string> scan_data = {CreatePng(), CreatePng(),
-                                              CreatePng()};
+  const std::vector<std::string> scan_data = {CreateJpeg(), CreateJpeg(),
+                                              CreateJpeg()};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
@@ -571,8 +569,8 @@ TEST_F(ScanServiceTest, RotateEpsonADF) {
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse({kEpsonTestName});
   fake_lorgnette_scanner_manager_.SetGetScannerCapabilitiesResponse(
       CreateEpsonScannerCapabilities());
-  const std::vector<std::string> scan_data = {CreatePng(), CreatePng(),
-                                              CreatePng()};
+  const std::vector<std::string> scan_data = {CreateJpeg(), CreateJpeg(),
+                                              CreateJpeg()};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
@@ -724,8 +722,8 @@ TEST_F(ScanServiceTest, CancelScanBeforeScanCompletes) {
 TEST_F(ScanServiceTest, HoldingSpaceScan) {
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
-  const std::vector<std::string> scan_data = {CreatePng(), CreatePng(),
-                                              CreatePng()};
+  const std::vector<std::string> scan_data = {CreateJpeg(), CreateJpeg(),
+                                              CreateJpeg()};
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
@@ -794,7 +792,7 @@ TEST_F(ScanServiceTest, MultiPageScan) {
 
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
-  const std::vector<std::string> scan_data = {CreatePng()};
+  const std::vector<std::string> scan_data = {CreateJpeg()};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
@@ -849,7 +847,7 @@ TEST_F(ScanServiceTest, MultiPageScanFails) {
 
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
-  const std::vector<std::string> scan_data = {CreatePng()};
+  const std::vector<std::string> scan_data = {CreateJpeg()};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
@@ -887,7 +885,7 @@ TEST_F(ScanServiceTest, MultiPageScanFails) {
 TEST_F(ScanServiceTest, StartingAnotherMultiPageScan) {
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
-  const std::vector<std::string> scan_data = {CreatePng()};
+  const std::vector<std::string> scan_data = {CreateJpeg()};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
@@ -921,13 +919,13 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveWithTwoPages) {
       scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPdf);
   uint32_t new_page_index = 0;
 
-  const std::string first_scanned_image = CreatePng(/*alpha=*/1);
+  const std::string first_scanned_image = CreateJpeg(/*alpha=*/1);
   const std::vector<std::string> first_scan_data = {first_scanned_image};
   fake_lorgnette_scanner_manager_.SetScanResponse(first_scan_data);
   EXPECT_TRUE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
   EXPECT_EQ(new_page_index++, fake_scan_job_observer_.new_page_index());
 
-  const std::string second_scanned_image = CreatePng(/*alpha=*/2);
+  const std::string second_scanned_image = CreateJpeg(/*alpha=*/2);
   const std::vector<std::string> second_scan_data = {second_scanned_image};
   fake_lorgnette_scanner_manager_.SetScanResponse(second_scan_data);
   EXPECT_TRUE(ScanNextPage(scanners[0]->id, settings.Clone()));
@@ -966,19 +964,19 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveWithThreePages) {
       scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPdf);
   uint32_t new_page_index = 0;
 
-  const std::string first_scanned_image = CreatePng(/*alpha=*/1);
+  const std::string first_scanned_image = CreateJpeg(/*alpha=*/1);
   const std::vector<std::string> first_scan_data = {first_scanned_image};
   fake_lorgnette_scanner_manager_.SetScanResponse(first_scan_data);
   EXPECT_TRUE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
   EXPECT_EQ(new_page_index++, fake_scan_job_observer_.new_page_index());
 
-  const std::string second_scanned_image = CreatePng(/*alpha=*/2);
+  const std::string second_scanned_image = CreateJpeg(/*alpha=*/2);
   const std::vector<std::string> second_scan_data = {second_scanned_image};
   fake_lorgnette_scanner_manager_.SetScanResponse(second_scan_data);
   EXPECT_TRUE(ScanNextPage(scanners[0]->id, settings.Clone()));
   EXPECT_EQ(new_page_index++, fake_scan_job_observer_.new_page_index());
 
-  const std::string third_scanned_image = CreatePng(/*alpha=*/3);
+  const std::string third_scanned_image = CreateJpeg(/*alpha=*/3);
   const std::vector<std::string> third_scan_data = {third_scanned_image};
   fake_lorgnette_scanner_manager_.SetScanResponse(third_scan_data);
   EXPECT_TRUE(ScanNextPage(scanners[0]->id, settings.Clone()));
@@ -1011,7 +1009,7 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveLastPage) {
 
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
-  const std::vector<std::string> scan_data = {CreatePng()};
+  const std::vector<std::string> scan_data = {CreateJpeg()};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
@@ -1061,14 +1059,14 @@ TEST_F(ScanServiceTest, MultiPageScanRescanWithOnePage) {
       scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPdf);
   uint32_t new_page_index = 0;
 
-  const std::string first_scanned_image = CreatePng(/*alpha=*/1);
+  const std::string first_scanned_image = CreateJpeg(/*alpha=*/1);
   const std::vector<std::string> first_scan_data = {first_scanned_image};
   fake_lorgnette_scanner_manager_.SetScanResponse(first_scan_data);
   EXPECT_TRUE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
   EXPECT_EQ(new_page_index++, fake_scan_job_observer_.new_page_index());
 
   // Rescan the page.
-  const std::string rescanned_scanned_image = CreatePng(/*alpha=*/2);
+  const std::string rescanned_scanned_image = CreateJpeg(/*alpha=*/2);
   const std::vector<std::string> rescanned_scan_data = {
       rescanned_scanned_image};
   fake_lorgnette_scanner_manager_.SetScanResponse(rescanned_scan_data);
@@ -1105,26 +1103,26 @@ TEST_F(ScanServiceTest, MultiPageScanRescanWithThreePages) {
       scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPdf);
   uint32_t new_page_index = 0;
 
-  const std::string first_scanned_image = CreatePng(/*alpha=*/1);
+  const std::string first_scanned_image = CreateJpeg(/*alpha=*/1);
   const std::vector<std::string> first_scan_data = {first_scanned_image};
   fake_lorgnette_scanner_manager_.SetScanResponse(first_scan_data);
   EXPECT_TRUE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
   EXPECT_EQ(new_page_index++, fake_scan_job_observer_.new_page_index());
 
-  const std::string second_scanned_image = CreatePng(/*alpha=*/2);
+  const std::string second_scanned_image = CreateJpeg(/*alpha=*/2);
   const std::vector<std::string> second_scan_data = {second_scanned_image};
   fake_lorgnette_scanner_manager_.SetScanResponse(second_scan_data);
   EXPECT_TRUE(ScanNextPage(scanners[0]->id, settings.Clone()));
   EXPECT_EQ(new_page_index++, fake_scan_job_observer_.new_page_index());
 
-  const std::string third_scanned_image = CreatePng(/*alpha=*/3);
+  const std::string third_scanned_image = CreateJpeg(/*alpha=*/3);
   const std::vector<std::string> third_scan_data = {third_scanned_image};
   fake_lorgnette_scanner_manager_.SetScanResponse(third_scan_data);
   EXPECT_TRUE(ScanNextPage(scanners[0]->id, settings.Clone()));
   EXPECT_EQ(new_page_index++, fake_scan_job_observer_.new_page_index());
 
   // Rescan the second page.
-  const std::string rescanned_scanned_image = CreatePng(/*alpha=*/4);
+  const std::string rescanned_scanned_image = CreateJpeg(/*alpha=*/4);
   const std::vector<std::string> rescanned_scan_data = {
       rescanned_scanned_image};
   fake_lorgnette_scanner_manager_.SetScanResponse(rescanned_scan_data);

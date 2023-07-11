@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "printing/units.h"
+#include "third_party/skia/include/codec/SkJpegDecoder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -28,14 +29,17 @@ constexpr int kRotationDegrees = 180;
 // `rotate` indicates whether the page should be rotated 180 degrees.
 // Returns whether the page was successfully created.
 bool AddPdfPage(sk_sp<SkDocument> pdf_doc,
-                const sk_sp<SkData>& image_data,
+                const sk_sp<SkData>& jpeg_image_data,
                 bool rotate,
                 absl::optional<int> dpi) {
-  const sk_sp<SkImage> image = SkImages::DeferredFromEncodedData(image_data);
+  const sk_sp<SkImage> image =
+      SkImages::DeferredFromEncodedData(jpeg_image_data);
   if (!image) {
     LOG(ERROR) << "Unable to generate image from encoded image data.";
     return false;
   }
+  CHECK(
+      SkJpegDecoder::IsJpeg(jpeg_image_data->data(), jpeg_image_data->size()));
 
   // Convert from JPG dimensions in pixels (DPI) to PDF dimensions in points
   // (1/72 in).
