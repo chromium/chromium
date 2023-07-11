@@ -177,6 +177,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether {UiSurface} was shown on the companion page. Recorded as
     soon as the surface is shown.
+
+    Warning: For SearchBox and RegionSearch, this metric is not recorded.
   </summary>
   <token key="UiSurface" variants="UiSurface"/>
 </histogram>
