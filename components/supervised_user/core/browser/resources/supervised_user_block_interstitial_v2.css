@@ -8,10 +8,13 @@
   border-radius: 4px;
   display: flex;
   flex-direction: row;
-  padding: 16px;
+  padding: 0px 20px;
   margin-bottom: 24px;
  }
 
+ #banner-message {
+   padding: 12px 0px;
+ }
 body {
   --avatar-stroke-color: var(--google-gray-50);
   --custodian-name-color: #333333;
@@ -91,11 +94,13 @@ button:active {
   color: var(--header-color);
   line-height: 24px;
   margin-top: 0;
+  font-size: 13px;
 }
 
 .banner-content {
   line-height: 20px;
   margin-top: 0;
+  font-size: 13px;
 }
 
 h1,
