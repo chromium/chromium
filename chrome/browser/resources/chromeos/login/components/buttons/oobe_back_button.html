@@ -30,6 +30,10 @@ found in the LICENSE file.
   :host([disabled]) {
     pointer-events: none;
   }
+
+  :host-context(.jelly-enabled) cr-button#button {
+    background-color: transparent;
+  }
 </style>
 <cr-button id="button" on-click="onClick_" disabled="[[disabled]]"
     aria-label$="[[labelForAria_]]">
