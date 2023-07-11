@@ -14,7 +14,6 @@ namespace features {
 
 // All features in alphabetical order.
 BASE_DECLARE_FEATURE(kAutofillAlwaysReturnCloudTokenizedCard);
-BASE_DECLARE_FEATURE(kAutofillAutoTriggerManualFallbackForCards);
 BASE_DECLARE_FEATURE(kAutofillEnableCardArtImage);
 BASE_DECLARE_FEATURE(kAutofillEnableCardArtServerSideStretching);
 BASE_DECLARE_FEATURE(kAutofillEnableCardProductName);

@@ -8847,13 +8847,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableStickyManualFallbackForCards)},
 
-    {"autofill-auto-trigger-manual-fallback-for-cards",
-     flag_descriptions::kAutofillAutoTriggerManualFallbackForCardsName,
-     flag_descriptions::kAutofillAutoTriggerManualFallbackForCardsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillAutoTriggerManualFallbackForCards)},
-
     {"autofill-prevent-overriding-prefilled-values",
      flag_descriptions::kAutofillPreventOverridingPrefilledValuesName,
      flag_descriptions::kAutofillPreventOverridingPrefilledValuesDescription,
@@ -9122,12 +9115,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableDrDcDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kEnableDrDcVulkan)},
 #endif  //   BUILDFLAG(IS_ANDROID)
-
-    {"autofill-fill-merchant-promo-code-fields",
-     flag_descriptions::kAutofillFillMerchantPromoCodeFieldsName,
-     flag_descriptions::kAutofillFillMerchantPromoCodeFieldsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillFillMerchantPromoCodeFields)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"traffic-counters", flag_descriptions::kTrafficCountersEnabledName,
@@ -9522,13 +9509,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSystemSoundsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSystemSounds)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-    {"autofill-enforce-delays-in-strike-database",
-     flag_descriptions::kAutofillEnforceDelaysInStrikeDatabaseName,
-     flag_descriptions::kAutofillEnforceDelaysInStrikeDatabaseDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnforceDelaysInStrikeDatabase)},
 
     {"autofill-enable-virtual-card-metadata",
      flag_descriptions::kAutofillEnableVirtualCardMetadataName,
@@ -10121,13 +10101,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kServiceWorkerStaticRouterName,
      flag_descriptions::kServiceWorkerStaticRouterDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kServiceWorkerStaticRouter)},
-
-    {"autofill-remove-card-expiration-and-type-titles",
-     flag_descriptions::kAutofillRemoveCardExpirationAndTypeTitlesName,
-     flag_descriptions::kAutofillRemoveCardExpirationAndTypeTitlesDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillRemoveCardExpirationAndTypeTitles)},
 
     {"autofill-offer-to-save-card-with-same-last-four",
      flag_descriptions::kAutofillOfferToSaveCardWithSameLastFourName,

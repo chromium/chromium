@@ -465,11 +465,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "autofill-auto-trigger-manual-fallback-for-cards",
-    "owners": ["siashah", "siyua"],
-    "expiry_milestone": 116
-  },
-  {
     "name": "autofill-disable-profile-updates",
     "owners": ["sebsg"],
     "expiry_milestone": 125

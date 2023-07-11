@@ -231,9 +231,6 @@ extern const char kEnableAutoDisableAccessibilityV2Description[];
 extern const char kAutofillAlwaysReturnCloudTokenizedCardName[];
 extern const char kAutofillAlwaysReturnCloudTokenizedCardDescription[];
 
-extern const char kAutofillAutoTriggerManualFallbackForCardsName[];
-extern const char kAutofillAutoTriggerManualFallbackForCardsDescription[];
-
 extern const char kAutofillEnableCvcStorageAndFillingName[];
 extern const char kAutofillEnableCvcStorageAndFillingDescription[];
 
@@ -306,14 +303,8 @@ extern const char
 extern const char kAutofillEnableVirtualCardMetadataName[];
 extern const char kAutofillEnableVirtualCardMetadataDescription[];
 
-extern const char kAutofillEnforceDelaysInStrikeDatabaseName[];
-extern const char kAutofillEnforceDelaysInStrikeDatabaseDescription[];
-
 extern const char kAutofillFillIbanFieldsName[];
 extern const char kAutofillFillIbanFieldsDescription[];
-
-extern const char kAutofillFillMerchantPromoCodeFieldsName[];
-extern const char kAutofillFillMerchantPromoCodeFieldsDescription[];
 
 extern const char kAutofillHighlightOnlyChangedValuesInPreviewModeName[];
 extern const char kAutofillHighlightOnlyChangedValuesInPreviewModeDescription[];
@@ -333,9 +324,6 @@ extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
 
 extern const char kAutofillPreventOverridingPrefilledValuesName[];
 extern const char kAutofillPreventOverridingPrefilledValuesDescription[];
-
-extern const char kAutofillRemoveCardExpirationAndTypeTitlesName[];
-extern const char kAutofillRemoveCardExpirationAndTypeTitlesDescription[];
 
 extern const char kAutofillSaveAndFillVPAName[];
 extern const char kAutofillSaveAndFillVPADescription[];

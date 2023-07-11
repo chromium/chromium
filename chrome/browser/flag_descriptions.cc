@@ -381,12 +381,6 @@ const char kAutofillAlwaysReturnCloudTokenizedCardDescription[] =
     "(cloud tokenized version of the Primary Account Number) and dCVV (dynamic "
     "CVV).";
 
-const char kAutofillAutoTriggerManualFallbackForCardsName[] =
-    "Auto trigger manual fallback for credit card form-filling failure cases";
-const char kAutofillAutoTriggerManualFallbackForCardsDescription[] =
-    "When enabled, manual fallback will be auto-triggered on form interaction "
-    "in the case where autofill failed to fill a credit card form accurately.";
-
 const char kAutofillEnableCvcStorageAndFillingName[] =
     "Enable CVC storage and filling for payments autofill";
 const char kAutofillEnableCvcStorageAndFillingDescription[] =
@@ -538,24 +532,11 @@ const char kAutofillEnableVirtualCardMetadataDescription[] =
     "When enabled, Chrome will show metadata together with other card "
     "information when the virtual card is presented to users.";
 
-const char kAutofillEnforceDelaysInStrikeDatabaseName[] =
-    "Enforce delay between offering Autofill opportunities in the strike "
-    "database";
-const char kAutofillEnforceDelaysInStrikeDatabaseDescription[] =
-    "When enabled, if previous Autofill feature offer was declined, "
-    "Chrome will wait for some time before showing the offer again.";
-
 const char kAutofillFillIbanFieldsName[] =
     "Enable Autofill of IBAN fields in forms";
 const char kAutofillFillIbanFieldsDescription[] =
     "When enabled, Autofill will attempt to fill IBAN (International Bank "
     "Account Number) fields when data is available.";
-
-const char kAutofillFillMerchantPromoCodeFieldsName[] =
-    "Enable Autofill of promo code fields in forms";
-const char kAutofillFillMerchantPromoCodeFieldsDescription[] =
-    "When enabled, Autofill will attempt to fill merchant promo/coupon/gift "
-    "code fields when data is available.";
 
 const char kAutofillHighlightOnlyChangedValuesInPreviewModeName[] =
     "Highlight only changed values in preview mode.";
@@ -599,13 +580,6 @@ const char kAutofillMoreProminentPopupName[] = "More prominent Autofill popup";
 const char kAutofillMoreProminentPopupDescription[] =
     "If enabled Autofill's popup becomes more prominent, i.e. its shadow "
     "becomes more emphasized, position is also updated";
-
-const char kAutofillRemoveCardExpirationAndTypeTitlesName[] =
-    "Remove expiration and type titles from Chrome Payment Settings page on "
-    "desktop";
-const char kAutofillRemoveCardExpirationAndTypeTitlesDescription[] =
-    "When enabled, expiration and type titles will be removed from the Chrome "
-    "Payment Settings page on desktop platforms.";
 
 const char kAutofillSaveAndFillVPAName[] =
     "Offer save and autofill of UPI/VPA values";

@@ -29,12 +29,6 @@ BASE_FEATURE(kAutofillAlwaysReturnCloudTokenizedCard,
              "AutofillAlwaysReturnCloudTokenizedCard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, manual fallback will be auto-triggered on form interaction in
-// the case where autofill failed to fill a credit card form accurately.
-BASE_FEATURE(kAutofillAutoTriggerManualFallbackForCards,
-             "AutofillAutoTriggerManualFallbackForCards",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, card art images (instead of network icons) will be shown in
 // Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardArtImage,
@@ -184,7 +178,7 @@ BASE_FEATURE(kAutofillEnableVirtualCardMetadata,
 // When enabled, if the previous feature offer was declined, a delay will be
 // added before Chrome attempts to show offer again.
 BASE_FEATURE(kAutofillEnforceDelaysInStrikeDatabase,
-             "AutofillEnforceDelaysInStrikeDatabase",
+             "AutofillEnforceDelaysInStrikeDatabase_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Autofill will attempt to fill IBAN (International Bank Account
@@ -196,7 +190,7 @@ BASE_FEATURE(kAutofillFillIbanFields,
 // When enabled, Autofill will attempt to fill merchant promo/coupon/gift code
 // fields when data is available.
 BASE_FEATURE(kAutofillFillMerchantPromoCodeFields,
-             "AutofillFillMerchantPromoCodeFields",
+             "AutofillFillMerchantPromoCodeFields_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, legal term of save card view and virtual card enroll view will
@@ -228,12 +222,12 @@ BASE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields,
 // When enabled, Expiration and Type titles will be removed from Chrome
 // payment settings page.
 BASE_FEATURE(kAutofillRemoveCardExpirationAndTypeTitles,
-             "AutofillRemoveCardExpirationAndTypeTitles",
+             "AutofillRemoveCardExpirationAndTypeTitles_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the Save Card infobar supports editing before submitting.
 BASE_FEATURE(kAutofillSaveCardInfobarEditSupport,
-             "AutofillSaveCardInfobarEditSupport",
+             "AutofillSaveCardInfobarEditSupport_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the entire PAN and the CVC details of the unmasked cached card
@@ -286,7 +280,7 @@ BASE_FEATURE(kAutofillUpstreamUseAlternateSecureDataType,
 
 // When enabled, we use the Elo regex to match the BIN ranges.
 BASE_FEATURE(kAutofillUseEloRegexForBinMatching,
-             "AutofillUseEloRegexForBinMatching",
+             "AutofillUseEloRegexForBinMatching_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The delay required since the last strike before offering another virtual card
