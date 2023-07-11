@@ -151,7 +151,7 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
 #endif
 
   PhysicalRect layout_overflow = {PhysicalOffset(), physical_size};
-  if (builder->node_ && !builder->is_legacy_layout_root_) {
+  if (builder->node_ && !builder->node_.IsReplaced()) {
     const NGPhysicalBoxStrut scrollbar =
         builder->initial_fragment_geometry_->scrollbar.ConvertToPhysical(
             writing_direction);

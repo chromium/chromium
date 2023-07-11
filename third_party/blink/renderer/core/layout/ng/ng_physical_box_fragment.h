@@ -214,9 +214,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
   // Returns the layout-overflow for this fragment.
   const PhysicalRect LayoutOverflow() const {
-    if (is_legacy_layout_root_ && !GetLayoutObject()->IsLayoutReplaced()) {
-      return To<LayoutBox>(GetLayoutObject())->PhysicalLayoutOverflowRect();
-    }
     if (!HasLayoutOverflow())
       return {{}, Size()};
     return *ComputeLayoutOverflowAddress();
