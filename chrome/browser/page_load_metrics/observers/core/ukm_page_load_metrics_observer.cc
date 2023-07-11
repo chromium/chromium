@@ -652,7 +652,7 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
       WasStartedInForegroundOptionalEventInForeground(
           largest_contentful_paint.Time(), GetDelegate())) {
     builder.SetPaintTiming_LargestContentfulPaint(
-        largest_contentful_paint.Time().value().InMillisecondsF());
+        largest_contentful_paint.Time().value().InMilliseconds());
 
     builder.SetPaintTiming_LargestContentfulPaintType(
         LargestContentfulPaintTypeToUKMFlags(largest_contentful_paint.Type()));
@@ -669,16 +669,21 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
         builder.SetPaintTiming_LargestContentfulPaintRequestPriority(*priority);
       }
 
+      if (largest_contentful_paint.ImageDiscoveryTime().has_value()) {
+        builder.SetPaintTiming_LargestContentfulPaintImageDiscoveryTime(
+            largest_contentful_paint.ImageDiscoveryTime()
+                .value()
+                .InMilliseconds());
+      }
+
       if (largest_contentful_paint.ImageLoadStart().has_value()) {
         builder.SetPaintTiming_LargestContentfulPaintImageLoadStart(
-            largest_contentful_paint.ImageLoadStart()
-                .value()
-                .InMillisecondsF());
+            largest_contentful_paint.ImageLoadStart().value().InMilliseconds());
       }
 
       if (largest_contentful_paint.ImageLoadEnd().has_value()) {
         builder.SetPaintTiming_LargestContentfulPaintImageLoadEnd(
-            largest_contentful_paint.ImageLoadEnd().value().InMillisecondsF());
+            largest_contentful_paint.ImageLoadEnd().value().InMilliseconds());
       }
     }
   }

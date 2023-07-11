@@ -23074,6 +23074,13 @@ be describing additional metrics about the same event.
       image, and omitted when it is text.
     </summary>
   </metric>
+  <metric name="PaintTiming.LargestContentfulPaintImageDiscoveryTime">
+    <summary>
+      Measures the time in milliseconds from soft navigation's start time to the
+      time when the image LCP element is requested. This metric is not recorded
+      when the LCP element is text or video.
+    </summary>
+  </metric>
   <metric name="PaintTiming.LargestContentfulPaintImageLoadEnd">
     <summary>
       Measures the time in milliseconds from soft navigation's start time to the
