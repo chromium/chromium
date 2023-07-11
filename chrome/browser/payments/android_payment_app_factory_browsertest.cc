@@ -83,11 +83,11 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
   test_controller()->SetTwaPaymentApp("https://play.google.com/billing",
                                       "{\"status\": \"" + response + "\"}");
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::string expected_response = response;
 #else
   std::string expected_response = "success";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   NavigateTo("b.com", "/payment_handler_status.html");
   ASSERT_EQ(expected_response,
@@ -107,13 +107,13 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest, PlayBillingPaymentMethod) {
   test_controller()->SetTwaPaymentApp("https://play.google.com/billing",
                                       "{\"status\": \"" + response + "\"}");
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::string expected_response = response;
 #else
   std::string expected_response =
       "NotSupportedError: The payment method "
       "\"https://play.google.com/billing\" is not supported.";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   NavigateTo("b.com", "/payment_handler_status.html");
   ASSERT_EQ(expected_response,
@@ -132,13 +132,13 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
   test_controller()->SetTwaPaymentApp("https://play.google.com/billing",
                                       "{\"status\": \"" + response + "\"}");
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::string expected_response = response;
 #else
   std::string expected_response =
       "NotSupportedError: The payment method "
       "\"https://play.google.com/billing\" is not supported.";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   NavigateTo("b.com", "/payment_handler_status.html");
   ASSERT_EQ(expected_response,
@@ -159,13 +159,13 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
   test_controller()->SetTwaPaymentApp("https://play.google.com/billing",
                                       "{\"status\": \"" + response + "\"}");
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::string expected_response = response;
 #else
   std::string expected_response =
       "NotSupportedError: The payment method "
       "\"https://play.google.com/billing\" is not supported.";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   NavigateTo("b.com", "/payment_handler_status.html");
   ASSERT_EQ(expected_response,

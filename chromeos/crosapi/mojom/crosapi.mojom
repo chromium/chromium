@@ -4,6 +4,7 @@
 
 module crosapi.mojom;
 
+import "chromeos/components/payments/mojom/payment_app.mojom";
 import "chromeos/components/remote_apps/mojom/remote_apps.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
@@ -142,8 +143,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 113
-// Next method id: 116
+// Next version: 114
+// Next method id: 117
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -481,6 +482,11 @@ interface Crosapi {
   // from Ash when needed.
   [MinVersion=97]
   BindParentAccess@101(pending_receiver<ParentAccess> receiver);
+
+  // Binds the PaymentAppInstance to allow Playstore payment to be made for
+  // web apps listing in Playstore.
+  [MinVersion=113] BindPaymentAppInstance@116(
+    pending_receiver<chromeos.payments.mojom.PaymentAppInstance> receiver);
 
   // Binds the Policy service to allow Lacros request policy data from Ash when
   // needed.

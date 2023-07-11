@@ -14,6 +14,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/android_app_communication_test_support.h"
@@ -73,11 +75,17 @@ class AndroidPaymentAppTest : public testing::Test,
                                 const PayerData& payer_data) override {
     method_name_ = method_name;
     stringified_details_ = stringified_details;
+    if (on_payment_app_response_callback_) {
+      std::move(on_payment_app_response_callback_).Run();
+    }
   }
 
   // PaymentApp::Delegate implementation.
   void OnInstrumentDetailsError(const std::string& error_message) override {
     error_message_ = error_message;
+    if (on_payment_app_response_callback_) {
+      std::move(on_payment_app_response_callback_).Run();
+    }
   }
 
   std::unique_ptr<AndroidAppCommunicationTestSupport> support_;
@@ -89,6 +97,7 @@ class AndroidPaymentAppTest : public testing::Test,
   std::string method_name_;
   std::string stringified_details_;
   std::string error_message_;
+  base::OnceClosure on_payment_app_response_callback_;
 
   base::WeakPtrFactory<AndroidPaymentAppTest> weak_ptr_factory_{this};
 };
@@ -117,9 +126,12 @@ TEST_F(AndroidPaymentAppTest, UnableToCommunicateToAndroidApps) {
   support_->ExpectNoPaymentAppInvoke();
 
   auto app = CreateAndroidPaymentApp(communication_, web_contents_);
+  base::RunLoop runloop;
+  on_payment_app_response_callback_ = runloop.QuitClosure();
   app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
+  runloop.Run();
 
-  EXPECT_EQ("Unable to invoke Android apps.", error_message_);
+  EXPECT_EQ(support_->GetNoInstanceExpectedErrorString(), error_message_);
   EXPECT_TRUE(method_name_.empty());
   EXPECT_TRUE(stringified_details_.empty());
 }
@@ -136,7 +148,10 @@ TEST_F(AndroidPaymentAppTest, OnInstrumentDetailsError) {
       /*stringified_details=*/"{}");
 
   auto app = CreateAndroidPaymentApp(communication_, web_contents_);
+  base::RunLoop runloop;
+  on_payment_app_response_callback_ = runloop.QuitClosure();
   app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
+  runloop.Run();
 
   if (support_->AreAndroidAppsSupportedOnThisPlatform()) {
     EXPECT_EQ("User closed the payment app.", error_message_);
@@ -160,7 +175,10 @@ TEST_F(AndroidPaymentAppTest, OnInstrumentDetailsReady) {
       /*stringified_details=*/"{\"status\": \"ok\"}");
 
   auto app = CreateAndroidPaymentApp(communication_, web_contents_);
+  base::RunLoop runloop;
+  on_payment_app_response_callback_ = runloop.QuitClosure();
   app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
+  runloop.Run();
 
   if (support_->AreAndroidAppsSupportedOnThisPlatform()) {
     EXPECT_TRUE(error_message_.empty());
@@ -185,8 +203,13 @@ TEST_F(AndroidPaymentAppTest, AbortWithPaymentAppOpen) {
   app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
 
   bool aborted = false;
+  base::RunLoop runloop_abort;
   app->AbortPaymentApp(base::BindLambdaForTesting(
-      [&aborted](bool abort_success) { aborted = abort_success; }));
+      [&aborted, &runloop_abort](bool abort_success) {
+        aborted = abort_success;
+        runloop_abort.Quit();
+      }));
+  runloop_abort.Run();
 
   if (support_->AreAndroidAppsSupportedOnThisPlatform()) {
     EXPECT_EQ("Payment was aborted.", error_message_);
@@ -222,7 +245,10 @@ TEST_F(AndroidPaymentAppTest, NoAbortWhenDestroyedWithCompletedFlow) {
   support_->ExpectNoAbortPaymentApp();
 
   auto app = CreateAndroidPaymentApp(communication_, web_contents_);
+  base::RunLoop runloop;
+  on_payment_app_response_callback_ = runloop.QuitClosure();
   app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
+  runloop.Run();
   // Payment app will not be aborted when |app| is destroyed.
 }
 

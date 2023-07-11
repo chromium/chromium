@@ -96,6 +96,7 @@ class NetworkSettingsServiceAsh;
 class NetworkingAttributesAsh;
 class NetworkingPrivateAsh;
 class ParentAccessAsh;
+class PaymentAppInstanceAsh;
 class PolicyServiceAsh;
 class PowerAsh;
 class PrefsAsh;
@@ -290,6 +291,9 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::NetworkingPrivate> receiver) override;
   void BindParentAccess(
       mojo::PendingReceiver<mojom::ParentAccess> receiver) override;
+  void BindPaymentAppInstance(
+      mojo::PendingReceiver<chromeos::payments::mojom::PaymentAppInstance>
+          receiver) override;
   void BindPolicyService(
       mojo::PendingReceiver<mojom::PolicyService> receiver) override;
   void BindPower(mojo::PendingReceiver<mojom::Power> receiver) override;
@@ -472,6 +476,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   ParentAccessAsh* parent_access_ash() { return parent_access_ash_.get(); }
 
+  PaymentAppInstanceAsh* payment_app_instance_ash() {
+    return payment_app_instance_ash_.get();
+  }
+
 #if BUILDFLAG(USE_CUPS)
   PrintingMetricsAsh* printing_metrics_ash() {
     return printing_metrics_ash_.get();
@@ -595,6 +603,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<NetworkingPrivateAsh> networking_private_ash_;
   std::unique_ptr<NetworkSettingsServiceAsh> network_settings_service_ash_;
   std::unique_ptr<ParentAccessAsh> parent_access_ash_;
+  std::unique_ptr<PaymentAppInstanceAsh> payment_app_instance_ash_;
   std::unique_ptr<PolicyServiceAsh> policy_service_ash_;
   std::unique_ptr<PowerAsh> power_ash_;
   std::unique_ptr<PrefsAsh> prefs_ash_;

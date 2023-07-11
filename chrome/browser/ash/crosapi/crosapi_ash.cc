@@ -79,6 +79,7 @@
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/networking_private_ash.h"
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
+#include "chrome/browser/ash/crosapi/payment_app_instance_ash.h"
 #include "chrome/browser/ash/crosapi/policy_service_ash.h"
 #include "chrome/browser/ash/crosapi/power_ash.h"
 #include "chrome/browser/ash/crosapi/prefs_ash.h"
@@ -252,6 +253,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       network_settings_service_ash_(std::make_unique<NetworkSettingsServiceAsh>(
           g_browser_process->local_state())),
       parent_access_ash_(std::make_unique<ParentAccessAsh>()),
+      payment_app_instance_ash_(std::make_unique<PaymentAppInstanceAsh>()),
       policy_service_ash_(std::make_unique<PolicyServiceAsh>()),
       power_ash_(std::make_unique<PowerAsh>()),
       prefs_ash_(
@@ -698,6 +700,13 @@ void CrosapiAsh::BindNetworkingPrivate(
 void CrosapiAsh::BindParentAccess(
     mojo::PendingReceiver<mojom::ParentAccess> receiver) {
   parent_access_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindPaymentAppInstance(
+    mojo::PendingReceiver<chromeos::payments::mojom::PaymentAppInstance>
+        receiver) {
+  payment_app_instance_ash_->Initialize();
+  payment_app_instance_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindPolicyService(

@@ -12,8 +12,6 @@ import "chromeos/components/payments/mojom/payment_app_types.mojom";
 // app that is installed in ARC, if it implements payment intents as described
 // in https://web.dev/android-payment-apps-overview/.
 //
-// TODO(https://crbug.com/1343706): Add this mojom interface to crosapi and
-// implement it.
 // This mojom interface is used in crosapi as well to forward the payment
 // request from Lacros.
 //
@@ -41,6 +39,7 @@ import "chromeos/components/payments/mojom/payment_app_types.mojom";
 
 //
 // Next method ID: 3
+[Stable, Uuid="5d046348-1f14-4bfe-840b-75bc2c05ef01"]
 interface PaymentAppInstance {
   // Called by the browser to check whether the TWA with |package_name| (e.g.,
   // "com.example.app") in ARC has intent filters for

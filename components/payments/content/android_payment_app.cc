@@ -157,10 +157,10 @@ void AndroidPaymentApp::OnPaymentDetailsNotUpdated() {}
 
 void AndroidPaymentApp::AbortPaymentApp(
     base::OnceCallback<void(bool)> abort_callback) {
-  // Browser is closing or no payment app active, so no need to invoke a
-  // callback.
-  if (!communication_ || !payment_app_open_)
+  if (!communication_ || !payment_app_open_) {
+    std::move(abort_callback).Run(false);
     return;
+  }
 
   payment_app_open_ = false;
 
@@ -173,9 +173,9 @@ bool AndroidPaymentApp::IsPreferred() const {
   // available is the trusted web application (TWA) that launched this instance
   // of Chrome with a TWA specific payment method, so this app should be
   // preferred.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   DCHECK_EQ(1U, GetAppMethodNames().size());
   DCHECK_EQ(methods::kGooglePlayBilling, *GetAppMethodNames().begin());
   return true;

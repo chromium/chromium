@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
+#include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
@@ -467,6 +468,10 @@ LacrosService::LacrosService()
       Crosapi::MethodMinVersions::kBindNetworkSettingsServiceMinVersion>();
   ConstructRemote<crosapi::mojom::ParentAccess, &Crosapi::BindParentAccess,
                   Crosapi::MethodMinVersions::kBindParentAccessMinVersion>();
+  ConstructRemote<
+      chromeos::payments::mojom::PaymentAppInstance,
+      &Crosapi::BindPaymentAppInstance,
+      Crosapi::MethodMinVersions::kBindPaymentAppInstanceMinVersion>();
   ConstructRemote<crosapi::mojom::PolicyService, &Crosapi::BindPolicyService,
                   Crosapi::MethodMinVersions::kBindPolicyServiceMinVersion>();
   ConstructRemote<

@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/android_app_communication_test_support.h"
@@ -139,22 +140,27 @@ class AndroidPaymentAppFactoryIntegrationTest : public testing::Test {
 };
 
 // The payment app factory should return an error if it's unable to invoke
-// Aneroid payment apps on a platform that supports such apps, e.g, when ARC is
-// disabled on Chrome OS.
-TEST_F(AndroidPaymentAppFactoryIntegrationTest, FactoryReturnsErrorWithoutArc) {
+// Android payment apps on a platform that supports such apps, e.g, when ARC is
+// disabled on Chrome OS, Lacros cannot connect to payment app instance.
+TEST_F(AndroidPaymentAppFactoryIntegrationTest,
+       FactoryReturnsErrorWithoutPaymentAppInstance) {
   EXPECT_CALL(*delegate_, GetTwaPackageName)
       .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
-  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
+  base::RunLoop runloop;
+  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
+    runloop.Quit();
+  });
 
-  EXPECT_CALL(*delegate_,
-              OnPaymentAppCreationError("Unable to invoke Android apps.",
-                                        AppCreationFailureReason::UNKNOWN))
+  EXPECT_CALL(*delegate_, OnPaymentAppCreationError(
+                              support_->GetNoInstanceExpectedErrorString(),
+                              AppCreationFailureReason::UNKNOWN))
       .Times(support_->AreAndroidAppsSupportedOnThisPlatform() ? 1 : 0);
   EXPECT_CALL(*delegate_, OnPaymentAppCreated(testing::_)).Times(0);
   support_->ExpectNoListOfPaymentAppsQuery();
   support_->ExpectNoIsReadyToPayQuery();
 
   factory_.Create(delegate_->GetWeakPtr());
+  runloop.Run();
 }
 
 // The payment app factory should not return any errors when there're no Android
@@ -165,7 +171,10 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, NoErrorsWhenNoApps) {
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
       .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
-  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
+  base::RunLoop runloop;
+  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
+    runloop.Quit();
+  });
 
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
@@ -174,6 +183,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, NoErrorsWhenNoApps) {
   support_->ExpectNoIsReadyToPayQuery();
 
   factory_.Create(delegate_->GetWeakPtr());
+  runloop.Run();
 }
 
 // The |arg| is of type std::unique_ptr<PaymentApp>.
@@ -191,7 +201,10 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
       .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
-  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
+  base::RunLoop runloop;
+  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
+    runloop.Quit();
+  });
 
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
@@ -217,6 +230,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   support_->ExpectNoIsReadyToPayQuery();
 
   factory_.Create(delegate_->GetWeakPtr());
+  runloop.Run();
 }
 
 // The payment app factory should return one payment app and should not query
@@ -231,7 +245,10 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
       .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
-  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
+  base::RunLoop runloop;
+  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
+    runloop.Quit();
+  });
 
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
@@ -257,6 +274,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   support_->ExpectNoIsReadyToPayQuery();
 
   factory_.Create(delegate_->GetWeakPtr());
+  runloop.Run();
 }
 
 // The payment app factory should return the TWA payment app that returns true
@@ -268,7 +286,10 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
       .WillRepeatedly(RunOnceCallback<0>("com.twa.app"));
-  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
+  base::RunLoop runloop;
+  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
+    runloop.Quit();
+  });
 
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
@@ -292,6 +313,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   support_->ExpectQueryIsReadyToPayAndRespond(/*is_ready_to_pay=*/true);
 
   factory_.Create(delegate_->GetWeakPtr());
+  runloop.Run();
 }
 
 // The payment app factory should return no payment apps when IS_READY_TO_PAY
@@ -303,7 +325,10 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
       .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
-  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
+  base::RunLoop runloop;
+  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
+    runloop.Quit();
+  });
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*delegate_, OnPaymentAppCreated(testing::_)).Times(0);
@@ -321,6 +346,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   support_->ExpectQueryIsReadyToPayAndRespond(/*is_ready_to_pay=*/false);
 
   factory_.Create(delegate_->GetWeakPtr());
+  runloop.Run();
 }
 
 // The payment app factory should return the correct TWA payment app out of two
@@ -331,7 +357,10 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, FindTheCorrectTwaAppInTwaMode) {
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
       .WillRepeatedly(RunOnceCallback<0>("com.correct-twa.app"));
-  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
+  base::RunLoop runloop;
+  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
+    runloop.Quit();
+  });
 
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
@@ -370,6 +399,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, FindTheCorrectTwaAppInTwaMode) {
   support_->ExpectQueryIsReadyToPayAndRespond(/*is_ready_to_pay=*/true);
 
   factory_.Create(delegate_->GetWeakPtr());
+  runloop.Run();
 }
 
 // The payment app factory does not return non-TWA payment apps when running in
@@ -380,7 +410,10 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, IgnoreNonTwaAppsInTwaMode) {
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
       .WillRepeatedly(RunOnceCallback<0>("com.twa.app"));
-  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
+  base::RunLoop runloop;
+  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
+    runloop.Quit();
+  });
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*delegate_, OnPaymentAppCreated(testing::_)).Times(0);
@@ -398,6 +431,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, IgnoreNonTwaAppsInTwaMode) {
   support_->ExpectNoIsReadyToPayQuery();
 
   factory_.Create(delegate_->GetWeakPtr());
+  runloop.Run();
 }
 
 // The payment app factory does not return any payment apps when not running
@@ -409,13 +443,17 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
       .WillRepeatedly(RunOnceCallback<0>(""));
-  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
+  base::RunLoop runloop;
+  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
+    runloop.Quit();
+  });
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*delegate_, OnPaymentAppCreated(testing::_)).Times(0);
   support_->ExpectNoListOfPaymentAppsQuery();
 
   factory_.Create(delegate_->GetWeakPtr());
+  runloop.Run();
 }
 
 // The Android payment app factory works only with TWA specific payment methods.
@@ -432,7 +470,10 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
       .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
-  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
+  base::RunLoop runloop;
+  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
+    runloop.Quit();
+  });
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*delegate_, OnPaymentAppCreated(testing::_)).Times(0);
@@ -440,6 +481,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   support_->ExpectNoIsReadyToPayQuery();
 
   factory_.Create(delegate_->GetWeakPtr());
+  runloop.Run();
 }
 
 // If the TWA supports a non-TWA-specific payment method, then it should be
@@ -450,7 +492,10 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, IgnoreNonTwaMethodInTheTwa) {
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
       .WillRepeatedly(RunOnceCallback<0>("com.twa.app"));
-  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
+  base::RunLoop runloop;
+  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
+    runloop.Quit();
+  });
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*delegate_, OnPaymentAppCreated(testing::_)).Times(0);
@@ -468,6 +513,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, IgnoreNonTwaMethodInTheTwa) {
   support_->ExpectNoIsReadyToPayQuery();
 
   factory_.Create(delegate_->GetWeakPtr());
+  runloop.Run();
 }
 
 // If the TWA supports both a TWA-specific and a non-TWA-specific payment
@@ -480,7 +526,10 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
       .WillRepeatedly(RunOnceCallback<0>("com.twa.app"));
-  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
+  base::RunLoop runloop;
+  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
+    runloop.Quit();
+  });
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*delegate_,
@@ -514,6 +563,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   support_->ExpectQueryIsReadyToPayAndRespond(/*is_ready_to_pay=*/true);
 
   factory_.Create(delegate_->GetWeakPtr());
+  runloop.Run();
 }
 
 // At most one IS_READY_TO_PAY service is allowed in an Android payment app.
@@ -524,7 +574,10 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
       .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
-  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
+  base::RunLoop runloop;
+  EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
+    runloop.Quit();
+  });
 
   EXPECT_CALL(*delegate_,
               OnPaymentAppCreationError(
@@ -552,6 +605,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   support_->ExpectNoIsReadyToPayQuery();
 
   factory_.Create(delegate_->GetWeakPtr());
+  runloop.Run();
 }
 
 }  // namespace
