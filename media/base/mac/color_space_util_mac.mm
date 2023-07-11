@@ -134,18 +134,14 @@ const std::vector<CVImageTransferFn>& GetSupportedImageTransferFn() {
         supported_transfer_funcs.push_back({kCVImageBufferTransferFunction_sRGB,
                                             nullptr,
                                             gfx::ColorSpace::TransferID::SRGB});
-        if (@available(macos 10.14, *)) {
-          supported_transfer_funcs.push_back(
-              {kCVImageBufferTransferFunction_Linear,
-               kCMFormatDescriptionTransferFunction_Linear,
-               gfx::ColorSpace::TransferID::LINEAR});
-        }
-        if (@available(macos 10.15, *)) {
-          supported_transfer_funcs.push_back(
-              {kCVImageBufferTransferFunction_sRGB,
-               kCMFormatDescriptionTransferFunction_sRGB,
-               gfx::ColorSpace::TransferID::SRGB});
-        }
+        supported_transfer_funcs.push_back(
+            {kCVImageBufferTransferFunction_Linear,
+             kCMFormatDescriptionTransferFunction_Linear,
+             gfx::ColorSpace::TransferID::LINEAR});
+        supported_transfer_funcs.push_back(
+            {kCVImageBufferTransferFunction_sRGB,
+             kCMFormatDescriptionTransferFunction_sRGB,
+             gfx::ColorSpace::TransferID::SRGB});
 
         return supported_transfer_funcs;
       }());

@@ -300,9 +300,7 @@ bool IsAACSupported(const AudioType& type) {
   return base::android::BuildInfo::GetInstance()->sdk_int() >=
          base::android::SDK_VERSION_P;
 #elif BUILDFLAG(IS_MAC)
-  if (__builtin_available(macOS 10.15, *))
-    return true;
-  return false;
+  return true;
 #elif BUILDFLAG(IS_WIN)
   return base::win::GetVersion() >= base::win::Version::WIN11_22H2;
 #else

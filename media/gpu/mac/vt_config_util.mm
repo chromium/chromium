@@ -74,11 +74,7 @@ CFStringRef GetTransferFunction(
     media::VideoColorSpace::TransferID transfer_id) {
   switch (transfer_id) {
     case media::VideoColorSpace::TransferID::LINEAR:
-      if (@available(macos 10.14, *))
-        return kCMFormatDescriptionTransferFunction_Linear;
-      DLOG(WARNING) << "kCMFormatDescriptionTransferFunction_Linear "
-                       "unsupported prior to 10.14";
-      return nil;
+      return kCMFormatDescriptionTransferFunction_Linear;
 
     case media::VideoColorSpace::TransferID::GAMMA22:
     case media::VideoColorSpace::TransferID::GAMMA28:

@@ -584,41 +584,35 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 - (void)captureOutput:(id)output        // AVCapturePhotoOutput*
     didFinishProcessingPhoto:(id)photo  // AVCapturePhoto*
                        error:(NSError*)error {
-  if (@available(macOS 10.15, iOS 10.0, *)) {
-    base::AutoLock lock(_lock);
-    // If `output` is no longer current, ignore the result of this operation.
-    // `_frameReceiver->OnPhotoError()` will already have been called inside
-    // stopPhotoOutput().
-    if (output != _photoOutput) {
-      return;
-    }
-    if (_frameReceiver) {
-      // Always non-nil according to Apple's documentation.
-      DCHECK(photo);
-      NSData* data = static_cast<AVCapturePhoto*>(photo).fileDataRepresentation;
-      if (!error && data) {
-        _frameReceiver->OnPhotoTaken(
-            reinterpret_cast<const uint8_t*>(data.bytes), data.length,
-            "image/jpeg");
-      } else {
-        _frameReceiver->OnPhotoError();
-      }
-    }
-    // Whether we succeeded or failed, we need to resolve the pending
-    // takePhoto() operation.
-    _mainThreadTaskRunner->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::WeakPtr<SelfHolder> weakSelf) {
-              if (!weakSelf.get()) {
-                return;
-              }
-              [weakSelf.get()->the_self takePhotoResolved];
-            },
-            _weakPtrHolderForTakePhoto.weak_ptr_factory.GetWeakPtr()));
-  } else {
-    NOTREACHED();
+  base::AutoLock lock(_lock);
+  // If `output` is no longer current, ignore the result of this operation.
+  // `_frameReceiver->OnPhotoError()` will already have been called inside
+  // stopPhotoOutput().
+  if (output != _photoOutput) {
+    return;
   }
+  if (_frameReceiver) {
+    // Always non-nil according to Apple's documentation.
+    DCHECK(photo);
+    NSData* data = static_cast<AVCapturePhoto*>(photo).fileDataRepresentation;
+    if (!error && data) {
+      _frameReceiver->OnPhotoTaken(reinterpret_cast<const uint8_t*>(data.bytes),
+                                   data.length, "image/jpeg");
+    } else {
+      _frameReceiver->OnPhotoError();
+    }
+  }
+  // Whether we succeeded or failed, we need to resolve the pending
+  // takePhoto() operation.
+  _mainThreadTaskRunner->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<SelfHolder> weakSelf) {
+                       if (!weakSelf.get()) {
+                         return;
+                       }
+                       [weakSelf.get()->the_self takePhotoResolved];
+                     },
+                     _weakPtrHolderForTakePhoto.weak_ptr_factory.GetWeakPtr()));
 }
 
 - (void)takePhotoResolved {

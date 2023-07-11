@@ -269,9 +269,7 @@ TEST(SupportedTypesTest, XHE_AACSupported) {
                      base::android::SDK_VERSION_P;
 #elif BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(IS_MAC)
-  if (__builtin_available(macOS 10.15, *)) {
-    is_supported = true;
-  }
+  is_supported = true;
 #elif BUILDFLAG(IS_WIN)
   is_supported = base::win::GetVersion() >= base::win::Version::WIN11_22H2;
 #endif
