@@ -189,7 +189,7 @@ void ScreenPinningController::SetPinnedWindow(aura::Window* pinned_window) {
       return;
     }
 
-    aura::Window* container = pinned_window->parent();
+    container_ = pinned_window->parent();
     aura::Window::Windows system_modal_containers =
         GetSystemModalWindowsExceptPinned(pinned_window);
 
@@ -198,8 +198,8 @@ void ScreenPinningController::SetPinnedWindow(aura::Window* pinned_window) {
     // To monitor destruction.
     pinned_window_->AddObserver(this);
     AlwaysOnTopController::SetDisallowReparent(pinned_window);
-    container->StackChildAtTop(pinned_window);
-    container->StackChildBelow(CreateWindowDimmer(container), pinned_window);
+    container_->StackChildAtTop(pinned_window);
+    container_->StackChildBelow(CreateWindowDimmer(container_), pinned_window);
 
     // Set the dim windows to the system containers, other than the one which
     // the root window of the pinned window holds.
@@ -207,8 +207,8 @@ void ScreenPinningController::SetPinnedWindow(aura::Window* pinned_window) {
       system_modal->StackChildAtBottom(CreateWindowDimmer(system_modal));
 
     // Set observers.
-    container->AddObserver(pinned_container_window_observer_.get());
-    AddObserverToChildren(container,
+    container_->AddObserver(pinned_container_window_observer_.get());
+    AddObserverToChildren(container_,
                           pinned_container_child_window_observer_.get());
     for (aura::Window* system_modal : system_modal_containers) {
       system_modal->AddObserver(system_modal_container_window_observer_.get());
@@ -274,7 +274,7 @@ aura::Window* ScreenPinningController::CreateWindowDimmer(
 }
 
 void ScreenPinningController::ResetWindowPinningState() {
-  aura::Window* container = pinned_window_->parent();
+  CHECK(container_);
   aura::Window::Windows system_modal_containers =
       GetSystemModalWindowsExceptPinned(pinned_window_);
 
@@ -285,13 +285,14 @@ void ScreenPinningController::ResetWindowPinningState() {
         system_modal, system_modal_container_child_window_observer_.get());
     system_modal->RemoveObserver(system_modal_container_window_observer_.get());
   }
-  RemoveObserverFromChildren(container,
+  RemoveObserverFromChildren(container_,
                              pinned_container_child_window_observer_.get());
-  container->RemoveObserver(pinned_container_window_observer_.get());
+  container_->RemoveObserver(pinned_container_window_observer_.get());
 
   window_dimmers_->clear();
   pinned_window_->RemoveObserver(this);
   pinned_window_ = nullptr;
+  container_ = nullptr;
 }
 
 void ScreenPinningController::OnDisplayConfigurationChanged() {
