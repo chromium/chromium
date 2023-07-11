@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "content/browser/indexed_db/indexed_db_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
@@ -90,7 +91,7 @@ class ThunkCallbacks : public MockIndexedDBCallbacks {
   void OnSuccess(int64_t value) override;
 
  private:
-  IndexedDBCallbacks& wrapped_;
+  const raw_ref<IndexedDBCallbacks> wrapped_;
 };
 
 }  // namespace content
