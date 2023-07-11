@@ -648,6 +648,10 @@ class TestEventRewriterAshDelegate : public ui::EventRewriterAsh::Delegate {
     return absl::nullopt;
   }
 
+  void NotifyRightClickRewriteBlockedBySetting(
+      ui::mojom::SimulateRightClickModifier blocked_modifier,
+      ui::mojom::SimulateRightClickModifier active_modifier) override {}
+
  protected:
   bool suppress_modifier_key_rewrites_ = false;
 };

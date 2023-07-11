@@ -225,6 +225,10 @@ class ChromeVoxAccessibilityEventRewriterTest
     return absl::nullopt;
   }
 
+  void NotifyRightClickRewriteBlockedBySetting(
+      ui::mojom::SimulateRightClickModifier blocked_modifier,
+      ui::mojom::SimulateRightClickModifier active_modifier) override {}
+
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
 };
 
@@ -638,6 +642,10 @@ class SwitchAccessAccessibilityEventRewriterTest
                                    ui::KeyboardCode key_code) override {
     return absl::nullopt;
   }
+
+  void NotifyRightClickRewriteBlockedBySetting(
+      ui::mojom::SimulateRightClickModifier blocked_modifier,
+      ui::mojom::SimulateRightClickModifier active_modifier) override {}
 
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
 

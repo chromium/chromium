@@ -168,6 +168,13 @@ class EventRewriterAsh : public EventRewriter {
     virtual absl::optional<ui::mojom::SixPackShortcutModifier>
     GetShortcutModifierForSixPackKey(int device_id,
                                      ui::KeyboardCode key_code) = 0;
+
+    // Used to send a notification when an incoming event would have been
+    // remapped to a right click but either the user's setting is inconsistent
+    // with the matched modifier key or remapping to right click is disabled.
+    virtual void NotifyRightClickRewriteBlockedBySetting(
+        ui::mojom::SimulateRightClickModifier blocked_modifier,
+        ui::mojom::SimulateRightClickModifier active_modifier) = 0;
   };
 
   // Enum used to record the usage of the modifier keys on all devices. Do not

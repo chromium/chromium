@@ -6845,6 +6845,18 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard toolbar tile.">
         Toolbar
       </message>
+
+      <!-- TODO(b/286937607): Finalize and translate these strings -->
+      <!-- Input device settings notifications -->
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_ALT_RIGHT_CLICK" translateable="false" desc="">
+        The Alt + click keyboard shortcut has changed. To use your keyboard to right-click, press the Launcher key + click.
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_LAUNCHER_RIGHT_CLICK" translateable="false" desc="">
+        The Launcher + click keyboard shortcut has changed. To use your keyboard to right-click, press the Alt key + click.
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_RIGHT_CLICK_DISABLED" translateable="false" desc="">
+        Simulating a right-click using touchpad and keyboard is disabled, visit device settings to configure.
+      </message>
      </messages>
     </release>
 </grit>

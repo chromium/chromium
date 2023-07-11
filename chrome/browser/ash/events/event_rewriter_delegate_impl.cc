@@ -9,6 +9,7 @@
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -32,15 +33,21 @@ EventRewriterDelegateImpl::EventRewriterDelegateImpl(
           activation_client,
           std::make_unique<DeprecationNotificationController>(
               message_center::MessageCenter::Get()),
+          std::make_unique<InputDeviceSettingsNotificationController>(
+              message_center::MessageCenter::Get()),
           InputDeviceSettingsController::Get()) {}
 
 EventRewriterDelegateImpl::EventRewriterDelegateImpl(
     wm::ActivationClient* activation_client,
     std::unique_ptr<DeprecationNotificationController> deprecation_controller,
+    std::unique_ptr<InputDeviceSettingsNotificationController>
+        input_device_settings_notification_controller,
     InputDeviceSettingsController* input_device_settings_controller)
     : pref_service_for_testing_(nullptr),
       activation_client_(activation_client),
       deprecation_controller_(std::move(deprecation_controller)),
+      input_device_settings_notification_controller_(
+          std::move(input_device_settings_notification_controller)),
       input_device_settings_controller_(input_device_settings_controller) {}
 
 EventRewriterDelegateImpl::~EventRewriterDelegateImpl() {}
@@ -275,4 +282,14 @@ void EventRewriterDelegateImpl::SuppressModifierKeyRewrites(
     bool should_suppress) {
   suppress_modifier_key_rewrites_ = should_suppress;
 }
+
+void EventRewriterDelegateImpl::NotifyRightClickRewriteBlockedBySetting(
+    ui::mojom::SimulateRightClickModifier blocked_modifier,
+    ui::mojom::SimulateRightClickModifier active_modifier) {
+  DCHECK(features::IsAltClickAndSixPackCustomizationEnabled());
+  input_device_settings_notification_controller_
+      ->NotifyRightClickRewriteBlockedBySetting(blocked_modifier,
+                                                active_modifier);
+}
+
 }  // namespace ash

@@ -1264,11 +1264,10 @@ bool EventRewriterAsh::ShouldRemapToRightClick(
                         ::features::IsDeprecateAltClickEnabled();
   bool use_alt_key = is_alt_down_remapping_enabled_;
 
-  // TODO(b/279503977): Show a notification when the incoming event would have
-  // been remapped to a right click but the user's setting is inconsistent with
-  // the matched modifier key.
+  const bool alt_click_down = AreFlagsSet(flags, kAltLeftButton);
+  const bool search_click_down = AreFlagsSet(flags, kSearchLeftButton);
   if (ash::features::IsAltClickAndSixPackCustomizationEnabled()) {
-    const auto modifier =
+    absl::optional<ui::mojom::SimulateRightClickModifier> modifier =
         delegate_->GetRemapRightClickModifier(mouse_event.source_device_id());
     if (!modifier.has_value()) {
       return false;
@@ -1280,13 +1279,34 @@ bool EventRewriterAsh::ShouldRemapToRightClick(
     if (is_alt_down_remapping_enabled_) {
       use_alt_key = modifier == ui::mojom::SimulateRightClickModifier::kAlt;
     }
+
+    // Show a notification when the incoming event would have been remapped to
+    // a right click but either the user's setting is inconsistent with the
+    // matched modifier key or remapping to right click is disabled.
+    if (search_click_down && use_alt_key) {
+      delegate_->NotifyRightClickRewriteBlockedBySetting(
+          ui::mojom::SimulateRightClickModifier::kSearch, *modifier);
+      return false;
+    } else if (alt_click_down && use_search_key) {
+      delegate_->NotifyRightClickRewriteBlockedBySetting(
+          ui::mojom::SimulateRightClickModifier::kAlt, *modifier);
+      return false;
+    } else if ((search_click_down || alt_click_down) &&
+               *modifier == ui::mojom::SimulateRightClickModifier::kNone) {
+      delegate_->NotifyRightClickRewriteBlockedBySetting(
+          search_click_down ? ui::mojom::SimulateRightClickModifier::kSearch
+                            : ui::mojom::SimulateRightClickModifier::kAlt,
+          *modifier);
+      return false;
+    }
   }
+
   if (use_search_key) {
-    if (AreFlagsSet(flags, kSearchLeftButton)) {
+    if (search_click_down) {
       *matched_mask = kSearchLeftButton;
     } else if (release_without_modifier) {
       *matched_mask = kSearchLeftButton;
-    } else if (AreFlagsSet(flags, kAltLeftButton) && use_alt_key) {
+    } else if (alt_click_down && use_alt_key) {
       // When the alt variant is deprecated, report when it would have matched.
       *matched_alt_deprecation = ((mouse_event.type() == ET_MOUSE_PRESSED) ||
                                   pressed_as_right_button_device_ids_.count(
@@ -1297,7 +1317,7 @@ bool EventRewriterAsh::ShouldRemapToRightClick(
     // If currently both Alt key and mouse left button are still pressed,
     // then this would be an easy case, let's still proceed to remap it
     // to a mouse right button press or release event.
-    if (AreFlagsSet(flags, kAltLeftButton)) {
+    if (alt_click_down) {
       *matched_mask = kAltLeftButton;
     } else if (release_without_modifier) {
       *matched_mask = kAltLeftButton;

@@ -5270,6 +5270,10 @@ class DesksAcceleratorsTest : public DesksTest,
     return absl::nullopt;
   }
 
+  void NotifyRightClickRewriteBlockedBySetting(
+      ui::mojom::SimulateRightClickModifier blocked_modifier,
+      ui::mojom::SimulateRightClickModifier active_modifier) override {}
+
   void SendAccelerator(ui::KeyboardCode key_code, int flags) {
     ui::test::EventGenerator* generator = GetEventGenerator();
     generator->PressKey(key_code, flags);
