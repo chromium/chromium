@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller.h"
+#include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller_impl.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -102,8 +104,10 @@ class MockRenderWidgetHost : public content::RenderWidgetHost {
   MOCK_METHOD(void, WriteIntoTrace, (perfetto::TracedValue), (override));
 };
 
-TEST(KeyboardRepacingSurfaceVisibilityControllerTest, Visibility) {
-  KeyboardReplacingSurfaceVisibilityController controller;
+TEST(KeyboardReplacingSurfaceVisibilityControllerImplTest, Visibility) {
+  base::test::ScopedFeatureList enable_feature(
+      features::kPasswordSuggestionBottomSheetV2);
+  KeyboardReplacingSurfaceVisibilityControllerImpl controller;
   MockRenderWidgetHost widget_host;
 
   EXPECT_TRUE(controller.CanBeShown());
@@ -118,8 +122,10 @@ TEST(KeyboardRepacingSurfaceVisibilityControllerTest, Visibility) {
   controller.SetVisible(&widget_host);
 }
 
-TEST(KeyboardRepacingSurfaceVisibilityControllerTest, Reset) {
-  KeyboardReplacingSurfaceVisibilityController controller;
+TEST(KeyboardReplacingSurfaceVisibilityControllerImplTest, Reset) {
+  base::test::ScopedFeatureList enable_feature(
+      features::kPasswordSuggestionBottomSheetV2);
+  KeyboardReplacingSurfaceVisibilityControllerImpl controller;
   MockRenderWidgetHost widget_host;
 
   EXPECT_TRUE(controller.CanBeShown());

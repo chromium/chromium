@@ -25,36 +25,26 @@ class KeyboardReplacingSurfaceVisibilityController
     kShownBefore,
   };
 
-  KeyboardReplacingSurfaceVisibilityController();
-  KeyboardReplacingSurfaceVisibilityController(
-      const KeyboardReplacingSurfaceVisibilityController&) = delete;
-  KeyboardReplacingSurfaceVisibilityController& operator=(
-      const KeyboardReplacingSurfaceVisibilityController&) = delete;
-  ~KeyboardReplacingSurfaceVisibilityController();
+  virtual ~KeyboardReplacingSurfaceVisibilityController() = default;
 
   // Returns `true` iff the state is not shown yet.
   // (i.e. `state` == `kNotShownYet`)
-  bool CanBeShown() const;
+  virtual bool CanBeShown() const = 0;
 
   // Returns `true` iff the state is visible.
   // (i.e. `state` == `kVisible`)
-  bool IsVisible() const;
+  virtual bool IsVisible() const = 0;
 
   // Sets the state to `kVisible` if it's not visible. Adds IME suppression
   // callbacks to the passed `widget_host`.
-  void SetVisible(raw_ptr<content::RenderWidgetHost> widget_host);
+  virtual void SetVisible(raw_ptr<content::RenderWidgetHost> widget_host) = 0;
 
   // Sets the state to `kShownBefore`.
-  void SetShown();
+  virtual void SetShown() = 0;
 
   // Resets the state to the initial (`kNotShownYet`) and removes the added IME
   // suppression if there's one.
-  void Reset();
-
- private:
-  State state_ = State::kNotShownYet;
-  raw_ptr<content::RenderWidgetHost> widget_host_;
-  content::RenderWidgetHost::SuppressShowingImeCallback suppress_callback_;
+  virtual void Reset() = 0;
 };
 
 }  // namespace password_manager

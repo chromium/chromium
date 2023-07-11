@@ -26,8 +26,9 @@ static_library("browser") {
 
   if (is_android) {
     sources += [
-      "keyboard_replacing_surface_visibility_controller.cc",
       "keyboard_replacing_surface_visibility_controller.h",
+      "keyboard_replacing_surface_visibility_controller_impl.cc",
+      "keyboard_replacing_surface_visibility_controller_impl.h",
     ]
   }
 
@@ -55,6 +56,15 @@ source_set("test_support") {
     "content_password_manager_driver_factory_test_api.h",
   ]
 
+  if (is_android) {
+    sources += [
+      "mock_keyboard_replacing_surface_visibility_controller.cc",
+      "mock_keyboard_replacing_surface_visibility_controller.h",
+    ]
+
+    deps = [ "//testing/gmock" ]
+  }
+
   public_deps = [ ":browser" ]
 }
 
@@ -70,7 +80,7 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources +=
-        [ "keyboard_replacing_surface_visibility_controller_unittest.cc" ]
+        [ "keyboard_replacing_surface_visibility_controller_impl_unittest.cc" ]
   }
 
   deps = [
