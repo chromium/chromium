@@ -36,14 +36,14 @@ static inline float EllipseXIntercept(float y, float rx, float ry) {
   return rx * sqrt(1 - (y * y) / (ry * ry));
 }
 
-LayoutRect EllipseShape::ShapeMarginLogicalBoundingBox() const {
+LogicalRect EllipseShape::ShapeMarginLogicalBoundingBox() const {
   DCHECK_GE(ShapeMargin(), 0);
   float margin_radius_x = radius_x_ + ShapeMargin();
   float margin_radius_y = radius_y_ + ShapeMargin();
-  return LayoutRect(LayoutUnit(center_.x() - margin_radius_x),
-                    LayoutUnit(center_.y() - margin_radius_y),
-                    LayoutUnit(margin_radius_x * 2),
-                    LayoutUnit(margin_radius_y * 2));
+  return LogicalRect(LayoutUnit(center_.x() - margin_radius_x),
+                     LayoutUnit(center_.y() - margin_radius_y),
+                     LayoutUnit(margin_radius_x * 2),
+                     LayoutUnit(margin_radius_y * 2));
 }
 
 LineSegment EllipseShape::GetExcludedInterval(LayoutUnit logical_top,

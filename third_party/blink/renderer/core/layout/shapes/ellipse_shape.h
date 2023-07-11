@@ -45,7 +45,7 @@ class CORE_EXPORT EllipseShape final : public Shape {
     DCHECK_GE(radius_y, 0);
   }
 
-  LayoutRect ShapeMarginLogicalBoundingBox() const override;
+  LogicalRect ShapeMarginLogicalBoundingBox() const override;
   bool IsEmpty() const override { return !radius_x_ || !radius_y_; }
   LineSegment GetExcludedInterval(LayoutUnit logical_top,
                                   LayoutUnit logical_height) const override;

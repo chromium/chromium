@@ -126,6 +126,10 @@ struct CORE_EXPORT LogicalRect {
     return LogicalRect(offset, size);
   }
 
+  explicit LogicalRect(const gfx::Rect& r)
+      : offset(LayoutUnit(r.x()), LayoutUnit(r.y())),
+        size(LayoutUnit(r.width()), LayoutUnit(r.height())) {}
+
   String ToString() const;
 };
 

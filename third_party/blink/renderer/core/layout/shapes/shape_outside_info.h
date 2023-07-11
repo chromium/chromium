@@ -100,7 +100,7 @@ class ShapeOutsideInfo final : public GarbageCollected<ShapeOutsideInfo> {
   void SetPercentageResolutionInlineSize(LayoutUnit);
 
   LayoutUnit ShapeLogicalBottom() const {
-    return ComputedShape().ShapeMarginLogicalBoundingBox().MaxY() +
+    return ComputedShape().ShapeMarginLogicalBoundingBox().BlockEndOffset() +
            LogicalTopOffset();
   }
 

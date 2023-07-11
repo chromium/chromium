@@ -70,7 +70,7 @@ class PolygonShape final : public Shape {
   PolygonShape(const PolygonShape&) = delete;
   PolygonShape& operator=(const PolygonShape&) = delete;
 
-  LayoutRect ShapeMarginLogicalBoundingBox() const override;
+  LogicalRect ShapeMarginLogicalBoundingBox() const override;
   bool IsEmpty() const override { return polygon_.IsEmpty(); }
   LineSegment GetExcludedInterval(LayoutUnit logical_top,
                                   LayoutUnit logical_height) const override;

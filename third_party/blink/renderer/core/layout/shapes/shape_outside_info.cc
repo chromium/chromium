@@ -397,22 +397,29 @@ bool ShapeOutsideInfo::IsEnabledFor(const LayoutBox& box) {
 }
 
 PhysicalRect ShapeOutsideInfo::ComputedShapePhysicalBoundingBox() const {
-  LayoutRect physical_bounding_box =
-      ComputedShape().ShapeMarginLogicalBoundingBox();
-  physical_bounding_box.SetX(physical_bounding_box.X() + LogicalLeftOffset());
+  LogicalRect logical_box = ComputedShape().ShapeMarginLogicalBoundingBox();
+  // TODO(crbug.com/1463823): The logic of this function looks incorrect.
+  PhysicalRect physical_bounding_box(
+      logical_box.offset.inline_offset, logical_box.offset.block_offset,
+      logical_box.size.inline_size, logical_box.size.block_size);
+  physical_bounding_box.offset.left += LogicalLeftOffset();
 
-  if (layout_box_->StyleRef().IsFlippedBlocksWritingMode())
-    physical_bounding_box.SetY(layout_box_->LogicalHeight() -
-                               physical_bounding_box.MaxY());
-  else
-    physical_bounding_box.SetY(physical_bounding_box.Y() + LogicalTopOffset());
+  if (layout_box_->StyleRef().IsFlippedBlocksWritingMode()) {
+    physical_bounding_box.offset.top =
+        layout_box_->LogicalHeight() - physical_bounding_box.Bottom();
+  } else {
+    physical_bounding_box.offset.top += LogicalTopOffset();
+  }
 
-  if (!layout_box_->StyleRef().IsHorizontalWritingMode())
-    physical_bounding_box = physical_bounding_box.TransposedRect();
-  else
-    physical_bounding_box.SetY(physical_bounding_box.Y() + LogicalTopOffset());
+  if (!layout_box_->StyleRef().IsHorizontalWritingMode()) {
+    physical_bounding_box = PhysicalRect(
+        physical_bounding_box.offset.top, physical_bounding_box.offset.left,
+        physical_bounding_box.size.height, physical_bounding_box.size.width);
+  } else {
+    physical_bounding_box.offset.top += LogicalTopOffset();
+  }
 
-  return PhysicalRect(physical_bounding_box);
+  return physical_bounding_box;
 }
 
 gfx::PointF ShapeOutsideInfo::ShapeToLayoutObjectPoint(
