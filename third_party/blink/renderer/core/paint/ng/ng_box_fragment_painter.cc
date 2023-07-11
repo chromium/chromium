@@ -2535,16 +2535,6 @@ bool NGBoxFragmentPainter::HitTestFloatingChildren(
     if (child_fragment.IsPaintedAtomically())
       continue;
 
-    // If this is a legacy root, fallback to legacy. It does not have
-    // |HasFloatingDescendantsForPaint()| set, but it may have floating
-    // descendants.
-    if (child_fragment.IsLegacyLayoutRoot()) {
-      if (child_fragment.GetMutableLayoutObject()->NodeAtPoint(
-              *hit_test.result, hit_test.location, child_offset,
-              hit_test.phase))
-        return true;
-      continue;
-    }
     if (!child_fragment.HasFloatingDescendantsForPaint())
       continue;
 
