@@ -32,8 +32,10 @@
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_app_button.h"
+#include "ash/shelf/shelf_context_menu_model.h"
 #include "ash/shelf/shelf_controller.h"
 #include "ash/shelf/shelf_focus_cycler.h"
+#include "ash/shelf/shelf_metrics.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/shelf/shelf_test_util.h"
@@ -3862,4 +3864,18 @@ TEST_F(ShelfViewDeskButtonTest, PrefVisibilityRelationship) {
     }
   }
 }
+
+// Verify that metrics are being correctly recorded for when a user hides the
+// desk button.
+TEST_F(ShelfViewDeskButtonTest, VisibilityMetrics) {
+  SetShowDeskButtonInShelfPref(prefs_, true);
+  base::HistogramTester histogram_tester;
+  ShelfContextMenuModel menu_model(nullptr, GetPrimaryDisplayId(),
+                                   /*menu_in_shelf=*/false);
+  menu_model.ExecuteCommand(
+      static_cast<int>(ShelfContextMenuModel::CommandId::MENU_HIDE_DESK_NAME),
+      /*event_flags=*/0);
+  histogram_tester.ExpectTotalCount(kDeskButtonHiddenHistogramName, 1);
+}
+
 }  // namespace ash

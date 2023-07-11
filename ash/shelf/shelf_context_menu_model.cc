@@ -24,6 +24,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/shelf_metrics.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -135,6 +136,7 @@ void ShelfContextMenuModel::ExecuteCommand(int command_id, int event_flags) {
       shell->app_list_controller()->SetHideContinueSection(false);
       break;
     case MENU_HIDE_DESK_NAME:
+      base::UmaHistogramBoolean(kDeskButtonHiddenHistogramName, true);
       SetShowDeskButtonInShelfPref(prefs, false);
       break;
     case MENU_SHOW_DESK_NAME:

@@ -20,6 +20,11 @@ constexpr char kEnterOverviewHistogramName[] = "Ash.SwipeHomeToOverviewGesture";
 constexpr char kHandleDragWindowFromShelfHistogramName[] =
     "Ash.WindowDragFromShelfResult";
 
+// The name of the histogram which records when the user deliberately hides the
+// desk button in the shelf.
+constexpr char kDeskButtonHiddenHistogramName[] =
+    "Ash.Desks.DeskButton.HiddenByUser";
+
 // Types of gestures supported by the in-app hotseat. These values are persisted
 // to logs. Entries should not be renumbered and numeric values should never be
 // reused.
