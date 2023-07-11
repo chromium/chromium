@@ -37098,6 +37098,7 @@ Called by update_extension_histograms.py.-->
   <int value="1801" label="OS_TELEMETRY_GETDISPLAYINFO"/>
   <int value="1802" label="OS_DIAGNOSTICS_RUNPOWERBUTTONROUTINE"/>
   <int value="1803" label="OS_DIAGNOSTICS_RUNAUDIODRIVERROUTINE"/>
+  <int value="1804" label="READINGLIST_ADDENTRY"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -37745,6 +37746,7 @@ Called by update_extension_permission.py.-->
   <int value="247" label="kSmartCardProviderPrivate"/>
   <int value="248" label="kChromeOSEvents"/>
   <int value="249" label="kChromeOSAttachedDeviceInfo"/>
+  <int value="250" label="kReadingList"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

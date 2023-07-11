@@ -1,0 +1,146 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/extensions/api/reading_list/reading_list_api.h"
+
+#include <memory>
+
+#include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/reading_list/reading_list_model_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/test_browser_window.h"
+#include "components/reading_list/core/reading_list_model.h"
+#include "components/reading_list/core/reading_list_test_utils.h"
+#include "components/version_info/channel.h"
+#include "content/public/browser/browser_context.h"
+#include "extensions/browser/api_test_utils.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/features/feature_channel.h"
+#include "url/gurl.h"
+
+namespace extensions {
+
+namespace {
+
+// Create an extension with "readingList" permission.
+scoped_refptr<const Extension> CreateReadingListExtension() {
+  return ExtensionBuilder("Extension with readingList permission")
+      .AddPermission("readingList")
+      .Build();
+}
+
+}  // namespace
+
+class ReadingListApiUnitTest : public ExtensionServiceTestBase {
+ public:
+  ReadingListApiUnitTest() = default;
+  ReadingListApiUnitTest(const ReadingListApiUnitTest&) = delete;
+  ReadingListApiUnitTest& operator=(const ReadingListApiUnitTest&) = delete;
+  ~ReadingListApiUnitTest() override = default;
+
+ protected:
+  Browser* browser() { return browser_.get(); }
+  TestBrowserWindow* browser_window() { return browser_window_.get(); }
+
+ private:
+  void SetUp() override;
+  void TearDown() override;
+
+  std::unique_ptr<TestBrowserWindow> browser_window_;
+  std::unique_ptr<Browser> browser_;
+  ScopedCurrentChannel channel_{version_info::Channel::UNKNOWN};
+};
+
+void ReadingListApiUnitTest::SetUp() {
+  ExtensionServiceTestBase::SetUp();
+  InitializeEmptyExtensionService();
+
+  // Create a browser window.
+  browser_window_ = std::make_unique<TestBrowserWindow>();
+  Browser::CreateParams params(profile(), /*user_gesture*/ true);
+  params.type = Browser::TYPE_NORMAL;
+  params.window = browser_window_.get();
+  browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+}
+
+void ReadingListApiUnitTest::TearDown() {
+  browser_->tab_strip_model()->CloseAllTabs();
+  browser_.reset();
+  browser_window_.reset();
+  ExtensionServiceTestBase::TearDown();
+}
+
+// Test that it is possible to add a unique URL.
+TEST_F(ReadingListApiUnitTest, AddUniqueURL) {
+  scoped_refptr<const Extension> extension = CreateReadingListExtension();
+
+  static constexpr char kArgs[] =
+      R"([{
+          "url": "https://www.example.com",
+          "title": "example of title",
+          "hasBeenRead": false
+        }])";
+  auto function = base::MakeRefCounted<ReadingListAddEntryFunction>();
+  function->set_extension(extension);
+  ReadingListModel* reading_list_model =
+      ReadingListModelFactory::GetForBrowserContext(profile());
+
+  api_test_utils::RunFunction(function.get(), kArgs, profile(),
+                              api_test_utils::FunctionMode::kNone);
+
+  EXPECT_EQ(reading_list_model->size(), 1u);
+
+  // verify the features of the entry.
+  GURL url = GURL("https://www.example.com");
+  auto entry = reading_list_model->GetEntryByURL(url);
+  EXPECT_EQ(entry->URL(), url);
+  EXPECT_EQ(entry->Title(), "example of title");
+  EXPECT_FALSE(entry->IsRead());
+}
+
+// Test that adding a duplicate URL generates an error.
+TEST_F(ReadingListApiUnitTest, AddDuplicateURL) {
+  scoped_refptr<const Extension> extension = CreateReadingListExtension();
+
+  static constexpr char kArgs[] =
+      R"([{
+          "url": "https://www.example.com",
+          "title": "example of title",
+          "hasBeenRead": false
+        }])";
+  auto function = base::MakeRefCounted<ReadingListAddEntryFunction>();
+  function->set_extension(extension);
+  ReadingListModel* reading_list_model =
+      ReadingListModelFactory::GetForBrowserContext(profile());
+
+  api_test_utils::RunFunction(function.get(), kArgs, profile(),
+                              api_test_utils::FunctionMode::kNone);
+
+  EXPECT_EQ(reading_list_model->size(), 1u);
+
+  // verify the features of the entry.
+  GURL url = GURL("https://www.example.com");
+  auto entry = reading_list_model->GetEntryByURL(url);
+  EXPECT_EQ(entry->URL(), url);
+  EXPECT_EQ(entry->Title(), "example of title");
+  EXPECT_FALSE(entry->IsRead());
+
+  // Try to add a duplicate URL and expect an error.
+  function = base::MakeRefCounted<ReadingListAddEntryFunction>();
+  function->set_extension(extension);
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), kArgs, profile(), api_test_utils::FunctionMode::kNone);
+  EXPECT_EQ(error, "Duplicate URL");
+
+  // Review that the URL added earlier still exists and there is only 1 entry in
+  // the Reading List.
+  EXPECT_EQ(reading_list_model->size(), 1u);
+  entry = reading_list_model->GetEntryByURL(url);
+  EXPECT_EQ(entry->URL(), url);
+  EXPECT_EQ(entry->Title(), "example of title");
+  EXPECT_FALSE(entry->IsRead());
+}
+
+}  // namespace extensions

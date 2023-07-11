@@ -4946,6 +4946,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_EXTENSION_PROMPT_WARNING_BOOKMARKS" desc="Permission string for access to bookmarks.">
           Read and change your bookmarks
         </message>
+        <message name="IDS_EXTENSION_PROMPT_WARNING_READING_LIST" desc="Permission string for the Reading List.">
+          Read and change entries in the reading list
+        </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_CLIPBOARD" desc="Permission string for access to clipboard.">
           Read data you copy and paste
         </message>

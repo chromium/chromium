@@ -1863,6 +1863,7 @@ enum HistogramValue {
   OS_TELEMETRY_GETDISPLAYINFO = 1801,
   OS_DIAGNOSTICS_RUNPOWERBUTTONROUTINE = 1802,
   OS_DIAGNOSTICS_RUNAUDIODRIVERROUTINE = 1803,
+  READINGLIST_ADDENTRY = 1804,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

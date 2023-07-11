@@ -1,0 +1,28 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Use the <code>chrome.readingList</code> API to read from and modify
+// the items in the Reading List.
+namespace readingList{
+  dictionary ReadingListEntry {
+    // The url of the entry.
+    DOMString url;
+
+    // The title of the entry.
+    DOMString title;
+
+    // True if the entry has been read.
+    boolean hasBeenRead;
+  };
+
+  callback AddEntryCallback = void ();
+
+  interface Functions {
+    // Adds an entry to the reading list if it does not exist.
+    // |entry|: The entry to add to the reading list.
+    // |callback|: Invoked once the entry has been added.
+    [supportsPromises] static void addEntry(ReadingListEntry entry,
+                                            AddEntryCallback callback);
+  };
+};

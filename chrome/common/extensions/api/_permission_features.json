@@ -754,6 +754,11 @@
       "CF6B19571334F49878327D557597D23B1458AA39"   // https://crbug.com/1201800
     ]
   },
+  "readingList": {
+    "channel": "trunk",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3
+  },
   "resourcesPrivate": {
     "channel": "stable",
     "extension_types": [

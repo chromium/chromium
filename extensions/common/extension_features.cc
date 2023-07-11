@@ -11,6 +11,11 @@ namespace extensions_features {
 // API Features
 ///////////////////////////////////////////////////////////////////////////////
 
+// Controls the availability of the ReadingList API.
+BASE_FEATURE(kApiReadingList,
+             "ApiReadingList",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls the availability of the runtime.getContexts() API.
 BASE_FEATURE(kApiRuntimeGetContexts,
              "ApiRuntimeGetContexts",

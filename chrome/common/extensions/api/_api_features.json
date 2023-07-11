@@ -743,6 +743,11 @@
     ],
     "platforms": ["chromeos", "lacros"]
   },
+  "readingList": {
+    "dependencies": ["permission:readingList"],
+    "contexts": ["blessed_extension"],
+    "feature_flag": "ApiReadingList"
+  },
   "resourcesPrivate": [{
     "dependencies": ["permission:resourcesPrivate"],
     "contexts": ["blessed_extension"]
