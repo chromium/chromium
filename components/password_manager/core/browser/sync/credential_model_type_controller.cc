@@ -98,10 +98,6 @@ CredentialModelTypeController::GetPreconditionState() const {
 }
 
 bool CredentialModelTypeController::ShouldRunInTransportOnlyMode() const {
-  if (type() == syncer::PASSWORDS &&
-      !base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
-    return false;
-  }
 #if !BUILDFLAG(IS_IOS)
   // Outside iOS, passphrase errors aren't reported in the UI, so it doesn't
   // make sense to enable this datatype.

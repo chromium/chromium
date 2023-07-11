@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "components/sync/base/features.h"
-
 namespace sync_bookmarks {
 
 BookmarkModelTypeController::BookmarkModelTypeController(
@@ -20,9 +18,5 @@ BookmarkModelTypeController::BookmarkModelTypeController(
                           std::move(delegate_for_transport_mode)) {}
 
 BookmarkModelTypeController::~BookmarkModelTypeController() = default;
-
-bool BookmarkModelTypeController::ShouldRunInTransportOnlyMode() const {
-  return base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage);
-}
 
 }  // namespace sync_bookmarks

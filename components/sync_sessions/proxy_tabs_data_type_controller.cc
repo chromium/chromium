@@ -71,8 +71,7 @@ syncer::DataTypeController::State ProxyTabsDataTypeController::state() const {
 }
 
 bool ProxyTabsDataTypeController::ShouldRunInTransportOnlyMode() const {
-  return base::FeatureList::IsEnabled(
-      syncer::kReplaceSyncPromosWithSignInPromos);
+  return true;
 }
 
 void ProxyTabsDataTypeController::GetAllNodes(AllNodesCallback callback) {
