@@ -112,7 +112,10 @@ PasswordForm GenerateExamplePasswordForm() {
   form.in_store = PasswordForm::Store::kProfileStore;
   form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user1"));
   form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user2"));
-
+  form.sender_email = u"sender@gmail.com";
+  form.sender_name = u"Cool Sender";
+  form.date_received = base::Time::Now() - base::Hours(1);
+  form.sharing_notification_displayed = true;
   return form;
 }
 

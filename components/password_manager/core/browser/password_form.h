@@ -492,6 +492,20 @@ struct PasswordForm {
   // with a syncing account AND it was associated with one in the past.
   std::string previously_associated_sync_account_email;
 
+  // Shared Password Metadata:
+  // For credentials that have been shared by another user, this field captures
+  // the sender email. It's empty for credentials that weren't received via
+  // password sharing feature.
+  std::u16string sender_email;
+  // Similar to `sender_email` but for the sender name.
+  std::u16string sender_name;
+  // The time when the password was received via sharing feature from another
+  // user.
+  base::Time date_received;
+  // Whether the user has been already notified that they received this password
+  // from another user via the password sharing feature.
+  bool sharing_notification_displayed = false;
+
   // Returns true if this form is considered to be a login form, i.e. it has
   // a username field, a password field and no new password field. It's based
   // on heuristics and may be inaccurate.

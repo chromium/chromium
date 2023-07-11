@@ -62,7 +62,7 @@ using signin::GaiaIdHash;
 namespace password_manager {
 
 // The current version number of the login database schema.
-constexpr int kCurrentVersionNumber = 36;
+constexpr int kCurrentVersionNumber = 37;
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
 constexpr int kCompatibleVersionNumber = 36;
@@ -165,6 +165,10 @@ enum LoginDatabaseTableColumns {
   COLUMN_DATE_LAST_USED,
   COLUMN_MOVING_BLOCKED_FOR,
   COLUMN_DATE_PASSWORD_MODIFIED,
+  COLUMN_SENDER_EMAIL,
+  COLUMN_SENDER_NAME,
+  COLUMN_DATE_RECEIVED,
+  COLUMN_SHARING_NOTIFICATION_DISPLAYED,
   COLUMN_NUM  // Keep this last.
 };
 
@@ -254,6 +258,11 @@ void BindAddStatement(const PasswordForm& form, sql::Statement* s) {
   s->BindBlob(COLUMN_MOVING_BLOCKED_FOR,
               PickleToSpan(moving_blocked_for_pickle));
   s->BindTime(COLUMN_DATE_PASSWORD_MODIFIED, form.date_password_modified);
+  s->BindString16(COLUMN_SENDER_EMAIL, form.sender_email);
+  s->BindString16(COLUMN_SENDER_NAME, form.sender_name);
+  s->BindTime(COLUMN_DATE_RECEIVED, form.date_received);
+  s->BindBool(COLUMN_SHARING_NOTIFICATION_DISPLAYED,
+              form.sharing_notification_displayed);
 }
 
 // Output parameter is the first one because of binding order.
@@ -525,6 +534,16 @@ void InitializeBuilders(SQLTableBuilders builders) {
   // In version 36, the tables 'incoming_sharing_invitation_sync_model_metadata`
   // and `incoming_sharing_invitation_sync_entities_metadata` are dropped.
   SealVersion(builders, /*expected_version=*/36u);
+
+  // Version 37.
+  // In version 37, more fields are added to the logins table to carry the
+  // metadata of shared password such as sender name.
+  builders.logins->AddColumn("sender_email", "VARCHAR");
+  builders.logins->AddColumn("sender_name", "VARCHAR");
+  builders.logins->AddColumn("date_received", "INTEGER");
+  builders.logins->AddColumn("sharing_notification_displayed",
+                             "INTEGER NOT NULL DEFAULT 0");
+  SealVersion(builders, /*expected_version=*/37u);
 
   DCHECK_EQ(static_cast<size_t>(COLUMN_NUM), builders.logins->NumberOfColumns())
       << "Adjust LoginDatabaseTableColumns if you change column definitions "
@@ -1246,6 +1265,10 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
       SerializeGaiaIdHashVector(form.moving_blocked_for_list);
   s.BindBlob(next_param++, PickleToSpan(moving_blocked_for_pickle));
   s.BindTime(next_param++, form.date_password_modified);
+  s.BindString16(next_param++, form.sender_email);
+  s.BindString16(next_param++, form.sender_name);
+  s.BindTime(next_param++, form.date_received);
+  s.BindBool(next_param++, form.sharing_notification_displayed);
   // NOTE: Add new fields here unless the field is a part of the unique key.
   // If so, add new field below.
 
@@ -1508,6 +1531,11 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
     form->moving_blocked_for_list = DeserializeGaiaIdHashVector(pickle);
   }
   form->date_password_modified = s.ColumnTime(COLUMN_DATE_PASSWORD_MODIFIED);
+  form->sender_email = s.ColumnString16(COLUMN_SENDER_EMAIL);
+  form->sender_name = s.ColumnString16(COLUMN_SENDER_NAME);
+  form->date_received = s.ColumnTime(COLUMN_DATE_RECEIVED);
+  form->sharing_notification_displayed =
+      s.ColumnBool(COLUMN_SHARING_NOTIFICATION_DISPLAYED);
   PopulateFormWithPasswordIssues(form);
   PopulateFormWithNotes(form);
 

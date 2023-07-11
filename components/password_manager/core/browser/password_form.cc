@@ -215,6 +215,12 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
 
   target.Set("previously_associated_sync_account_email",
              form.previously_associated_sync_account_email);
+
+  target.Set("sender_email", form.sender_email);
+  target.Set("sender_name", form.sender_name);
+  target.Set("date_received", base::TimeToValue(form.date_received));
+  target.Set("sharing_notification_displayed",
+             form.sharing_notification_displayed);
 }
 
 }  // namespace
@@ -449,7 +455,12 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
          lhs.moving_blocked_for_list == rhs.moving_blocked_for_list &&
          lhs.password_issues == rhs.password_issues && lhs.notes == rhs.notes &&
          lhs.previously_associated_sync_account_email ==
-             rhs.previously_associated_sync_account_email;
+             rhs.previously_associated_sync_account_email &&
+         lhs.sender_email == rhs.sender_email &&
+         lhs.sender_name == rhs.sender_name &&
+         lhs.date_received == rhs.date_received &&
+         lhs.sharing_notification_displayed ==
+             rhs.sharing_notification_displayed;
 }
 
 bool operator!=(const PasswordForm& lhs, const PasswordForm& rhs) {
