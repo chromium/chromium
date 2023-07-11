@@ -148,6 +148,11 @@ class SystemDialogDelegateView::ButtonContainer : public views::FlexLayoutView {
         ViewID::VIEW_ID_STYLE_SYSTEM_DIALOG_DELEGATE_CANCEL_BUTTON);
     cancel_button_->SetProperty(views::kElementIdentifierKey,
                                 kCancelButtonIdForTesting);
+    cancel_button_->SetBackgroundColorId(cros_tokens::kCrosSysPrimaryContainer);
+    cancel_button_->SetButtonTextColorId(
+        cros_tokens::kCrosSysOnPrimaryContainer);
+    cancel_button_->SetIconColorId(cros_tokens::kCrosSysOnPrimaryContainer);
+
     accept_button_->SetID(
         ViewID::VIEW_ID_STYLE_SYSTEM_DIALOG_DELEGATE_ACCEPT_BUTTON);
     accept_button_->SetProperty(views::kElementIdentifierKey,
