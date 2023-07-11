@@ -3605,6 +3605,7 @@ void HWNDMessageHandler::PerformDwmTransition() {
 
   dwm_transition_desired_ = false;
   delegate_->HandleFrameChanged();
+  SendFrameChanged();
 }
 
 void HWNDMessageHandler::UpdateDwmFrame() {
