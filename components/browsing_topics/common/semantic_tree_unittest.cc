@@ -114,6 +114,14 @@ TEST_F(SemanticTreeUnittest, GetAncestorTopicsMultipleParents) {
   EXPECT_EQ(topics, expected_ancestors);
 }
 
+TEST_F(SemanticTreeUnittest, GetAncestorTopicsMaximumTopic) {
+  std::vector<Topic> topics =
+      semantic_tree_.GetAncestorTopics(Topic(SemanticTree::kNumTopics));
+  EXPECT_FALSE(topics.empty());
+  std::vector<Topic> expected_ancestors = {Topic(332), Topic(626)};
+  EXPECT_EQ(topics, expected_ancestors);
+}
+
 TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdValidTopic) {
   absl::optional<int> message_id =
       semantic_tree_.GetLatestLocalizedNameMessageId(Topic(100));
@@ -126,6 +134,14 @@ TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdAddedTopic) {
       semantic_tree_.GetLatestLocalizedNameMessageId(Topic(363));
   EXPECT_EQ(message_id.value(),
             IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_363);
+}
+
+TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdMaximumTopic) {
+  absl::optional<int> message_id =
+      semantic_tree_.GetLatestLocalizedNameMessageId(
+          Topic(SemanticTree::kNumTopics));
+  EXPECT_EQ(message_id.value(),
+            IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_629);
 }
 
 TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdInvalidTaxonomy) {
