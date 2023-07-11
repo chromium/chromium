@@ -49,7 +49,8 @@ PolicyContainerPolicies MakeTestPolicies() {
       network::CrossOriginOpenerPolicy(), network::CrossOriginEmbedderPolicy(),
       network::mojom::WebSandboxFlags::kNone,
       /*is_credentialless=*/false,
-      /*can_navigate_top_without_user_gesture=*/true);
+      /*can_navigate_top_without_user_gesture=*/true,
+      /*allow_cross_origin_isolation=*/false);
 }
 
 // Shorthand.

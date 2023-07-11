@@ -3011,7 +3011,8 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
             parent_policies.cross_origin_embedder_policy,
             network::mojom::WebSandboxFlags::kNone,
             /*is_credentialless=*/false,
-            /*can_navigate_top_without_user_gesture=*/true)));
+            /*can_navigate_top_without_user_gesture=*/true,
+            parent_policies.allow_cross_origin_isolation)));
   } else if (owner_->GetOpener()) {
     // During a `window.open(...)` without `noopener`, a new popup is created
     // and always starts from the initial empty document. The opener has
@@ -3021,6 +3022,13 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
                                ->current_frame_host()
                                ->policy_container_host()
                                ->Clone());
+    const absl::optional<url::Origin>& coop_origin =
+        policy_container_host_->cross_origin_opener_policy().origin;
+    policy_container_host_->SetAllowCrossOriginIsolation(
+        !coop_origin.has_value() ||
+        coop_origin->IsSameOriginWith(owner_->GetOpener()
+                                          ->current_frame_host()
+                                          ->GetLastCommittedOrigin()));
   } else {
     // In all the other cases, there is no environment to inherit policies
     // from. This is "probably" a new top-level about:blank document created by
@@ -8145,9 +8153,6 @@ void RenderFrameHostImpl::CreateNewWindow(
   bool wait_for_debugger =
       devtools_instrumentation::ShouldWaitForDebuggerInWindowOpen();
 
-  bool coop_forbids_initial_document_to_be_cross_origin_isolated =
-      new_main_rfh->CoopForbidsDocumentToBeCrossOriginIsolated();
-
   mojom::CreateNewWindowReplyPtr reply = mojom::CreateNewWindowReply::New(
       new_main_rfh->GetFrameToken(), new_main_rfh->GetRoutingID(),
       std::move(pending_frame_receiver), std::move(widget_params),
@@ -8158,8 +8163,7 @@ void RenderFrameHostImpl::CreateNewWindow(
       new_main_rfh->policy_container_host()->CreatePolicyContainerForBlink(),
       blink::BrowsingContextGroupInfo(
           new_main_rfh->GetSiteInstance()->browsing_instance_token(),
-          new_main_rfh->GetSiteInstance()->coop_related_group_token()),
-      coop_forbids_initial_document_to_be_cross_origin_isolated);
+          new_main_rfh->GetSiteInstance()->coop_related_group_token()));
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,
                           std::move(reply));
@@ -13340,10 +13344,6 @@ void RenderFrameHostImpl::SendCommitNavigation(
             GetSiteInstance()->coop_related_group_token());
   }
 
-  // For main frames, the check happens before CreateNewWindow.
-  bool coop_forbids_document_to_be_cross_origin_isolated =
-      !is_main_frame() &&
-      GetMainFrame()->CoopForbidsDocumentToBeCrossOriginIsolated();
   commit_params->commit_sent = base::TimeTicks::Now();
   navigation_client->CommitNavigation(
       std::move(common_params), std::move(commit_params),
@@ -13357,7 +13357,6 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(policy_container), std::move(code_cache_host),
       std::move(resource_cache_remote), std::move(cookie_manager_info),
       std::move(storage_info),
-      coop_forbids_document_to_be_cross_origin_isolated,
       BuildCommitNavigationCallback(navigation_request));
   last_commit_navigation_stack_trace_.emplace();
   base::UmaHistogramTimes(
@@ -15555,20 +15554,6 @@ bool RenderFrameHostImpl::LoadedWithCacheControlNoStoreHeader() {
   return GetBackForwardCacheDisablingFeatures().Has(
       blink::scheduler::WebSchedulerTrackedFeature::
           kMainResourceHasCacheControlNoStore);
-}
-
-bool RenderFrameHostImpl::CoopForbidsDocumentToBeCrossOriginIsolated() const {
-  CHECK(is_main_frame());
-
-  // The document cannot be crossOriginIsolated if the COOP was set by a
-  // different origin. This can happen on initial empty documents opened by a
-  // cross-origin iframe.
-  const absl::optional<url::Origin>& coop_origin =
-      policy_container_host_
-          ? policy_container_host_->cross_origin_opener_policy().origin
-          : absl::nullopt;
-  return coop_origin.has_value() &&
-         !coop_origin->IsSameOriginWith(GetLastCommittedOrigin());
 }
 
 }  // namespace content

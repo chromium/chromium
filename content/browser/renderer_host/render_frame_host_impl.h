@@ -2970,11 +2970,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // no-store" header.
   bool LoadedWithCacheControlNoStoreHeader();
 
-  // When this is true, the document or its children cannot be
-  // crossOriginIsolated.
-  // Can only be called by a main frame.
-  bool CoopForbidsDocumentToBeCrossOriginIsolated() const;
-
  protected:
   friend class RenderFrameHostFactory;
 
