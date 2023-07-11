@@ -130,6 +130,16 @@
     font: var(--cros-body-2-font);
   }
 
+  :host-context([theme='refresh23']) #title,
+  :host-context([theme='refresh23']) #description {
+    color: var(--cros-sys-on_surface);
+  }
+
+  :host-context([theme='refresh23']) #card[selected] #title,
+  :host-context([theme='refresh23']) #card[selected] #description {
+    color: var(--cros-sys-on_primary_container);
+  }
+
   #right-icon {
     -webkit-mask-image: url(../icons/list_check.svg);
     -webkit-mask-position: center;
