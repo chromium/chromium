@@ -117,6 +117,9 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
     private boolean mAndroidViewFinishedShowing;
 
+    private Handler mHandler;
+    private Runnable mFinishedShowingRunnable;
+
     private Animator mBackgroundTabAnimation;
 
     private PerfListener mPerfListenerForTesting;
@@ -129,6 +132,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         mStartSurface.setOnTabSelectingListener(this::onTabSelecting);
         mScrimAnchor = tabSwitcherScrimAnchor;
         mScrimCoordinator = scrimCoordinator;
+        mHandler = new Handler();
 
         mTabSwitcherObserver = new TabSwitcherViewObserver() {
             @Override
@@ -150,21 +154,29 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                     // Delay thumbnail taking a bit more to make it less likely to happen before the
                     // thumbnail taking triggered by ThumbnailFetcher. See crbug.com/996385 for
                     // details.
-                    new Handler().postDelayed(() -> {
+                    mFinishedShowingRunnable = () -> {
                         Tab currentTab = mTabModelSelector.getCurrentTab();
                         if (currentTab != null) mTabContentManager.cacheTabThumbnail(currentTab);
                         mLayoutTabs = null;
-                    }, ZOOMING_DURATION);
+                        mFinishedShowingRunnable = null;
+                    };
+                    mHandler.postDelayed(mFinishedShowingRunnable, ZOOMING_DURATION);
                 } else {
                     // crbug.com/1176548, mLayoutTabs is used to capture thumbnail, null it in a
                     // post delay handler to avoid creating a new pending surface in native, which
                     // will hold the thumbnail capturing task.
-                    new Handler().postDelayed(() -> { mLayoutTabs = null; }, ZOOMING_DURATION);
+                    mFinishedShowingRunnable = () -> {
+                        mLayoutTabs = null;
+                        mFinishedShowingRunnable = null;
+                    };
+                    mHandler.postDelayed(mFinishedShowingRunnable, ZOOMING_DURATION);
                 }
             }
 
             @Override
-            public void startedHiding() {}
+            public void startedHiding() {
+                removeFinishedShowingRunnable();
+            }
 
             @Override
             public void finishedHiding() {
@@ -238,6 +250,10 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
         // Lazy initialization if needed.
         mStartSurface.initialize();
+
+        // Prevent pending thumbnail captures from running if we start to show again very
+        // quickly.
+        removeFinishedShowingRunnable();
 
         // Keep the current tab in mLayoutTabs even if we are not going to show the shrinking
         // animation so that thumbnail taking is not blocked.
@@ -510,16 +526,10 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         }
 
         forceAnimationToFinish();
-        // TODO(crbug/1423109): mLayoutTabs shouldn't be null here, but it is possible the delayed
-        // removal via a handler in mTabSwitcherObserver#finishedShowing results in a null
-        // mLayoutTabs. This should be fixed by simplifying thumbnail capture logic.
-        if (mLayoutTabs == null) {
-            LayoutTab sourceLayoutTab = createLayoutTab(
-                    mTabModelSelector.getCurrentTabId(), mTabModelSelector.isIncognitoSelected());
-            sourceLayoutTab.setDecorationAlpha(0);
 
-            mLayoutTabs = new LayoutTab[] {sourceLayoutTab};
-        }
+        assert mLayoutTabs != null
+                && mLayoutTabs.length > 0
+            : "mLayoutTabs should have at least one entry during shrink animation.";
         LayoutTab sourceLayoutTab = mLayoutTabs[0];
         CompositorAnimationHandler handler = getAnimationHandler();
         Collection<Animator> animationList = new ArrayList<>(5);
@@ -592,6 +602,9 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
      * @param source The source {@link Rect} area.
      */
     private void expandTab(Rect source) {
+        assert mLayoutTabs != null
+                && mLayoutTabs.length > 0
+            : "mLayoutTabs should have at least one entry during expand animation.";
         LayoutTab sourceLayoutTab = mLayoutTabs[0];
 
         forceAnimationToFinish();
@@ -883,6 +896,13 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     @Override
     public boolean isRunningAnimations() {
         return mDeferredAnimationRunnable != null || mTabToSwitcherAnimation != null;
+    }
+
+    private void removeFinishedShowingRunnable() {
+        if (mFinishedShowingRunnable != null) {
+            mHandler.removeCallbacks(mFinishedShowingRunnable);
+            mFinishedShowingRunnable = null;
+        }
     }
 
     /**
