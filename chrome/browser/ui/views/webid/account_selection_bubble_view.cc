@@ -213,12 +213,11 @@ class ContinueButton : public views::MdTextButton {
     const SkColor dialog_background_color = bubble_view_->GetBackgroundColor();
     if (color_utils::GetContrastRatio(dialog_background_color,
                                       *brand_background_color_) <
-        color_utils::kMinimumVisibleContrastRatio) {
+        color_utils::kMinimumReadableContrastRatio) {
       SetBgColorOverride(absl::nullopt);
       SetEnabledTextColors(absl::nullopt);
       return;
     }
-
     SetBgColorOverride(*brand_background_color_);
     SkColor text_color;
     if (brand_text_color_) {
