@@ -49,20 +49,21 @@ struct DisableStackScanningScope final {
 
 class PartitionAllocPCScanTestBase : public testing::Test {
  public:
-  PartitionAllocPCScanTestBase() {
+  PartitionAllocPCScanTestBase()
+      : allocator_(PartitionOptions{
+            .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
+            .quarantine = PartitionOptions::Quarantine::kAllowed,
+            .memory_tagging =
+                base::CPU::GetInstanceNoAllocation().has_mte()
+                    ? partition_alloc::PartitionOptions::MemoryTagging::kEnabled
+                    : partition_alloc::PartitionOptions::MemoryTagging::
+                          kDisabled}) {
     PartitionAllocGlobalInit([](size_t) { PA_LOG(FATAL) << "Out of memory"; });
     // Previous test runs within the same process decommit pools, therefore
     // we need to make sure that the card table is recommitted for each run.
     PCScan::ReinitForTesting(
         {PCScan::InitConfig::WantedWriteProtectionMode::kDisabled,
          PCScan::InitConfig::SafepointMode::kEnabled});
-    allocator_.init(PartitionOptions{
-        .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
-        .quarantine = PartitionOptions::Quarantine::kAllowed,
-        .memory_tagging =
-            base::CPU::GetInstanceNoAllocation().has_mte()
-                ? partition_alloc::PartitionOptions::MemoryTagging::kEnabled
-                : partition_alloc::PartitionOptions::MemoryTagging::kDisabled});
     allocator_.root()->UncapEmptySlotSpanMemoryForTesting();
     allocator_.root()->SwitchToDenserBucketDistribution();
 

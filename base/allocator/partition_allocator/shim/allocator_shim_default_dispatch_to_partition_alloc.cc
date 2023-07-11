@@ -585,23 +585,25 @@ void ConfigurePartitions(
   // shouldn't bite us here. Mentioning just in case we move this code earlier.
   static partition_alloc::internal::base::NoDestructor<
       partition_alloc::PartitionAllocator>
-      new_main_allocator{};
-  new_main_allocator->init(partition_alloc::PartitionOptions{
-      .aligned_alloc =
-          !use_dedicated_aligned_partition
-              ? partition_alloc::PartitionOptions::AlignedAlloc::kAllowed
-              : partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
-      .thread_cache = partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-      .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
-      .backup_ref_ptr =
-          enable_brp
-              ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
-              : partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-      .ref_count_size = ref_count_size,
-      .memory_tagging =
-          enable_memory_tagging
-              ? partition_alloc::PartitionOptions::MemoryTagging::kEnabled
-              : partition_alloc::PartitionOptions::MemoryTagging::kDisabled});
+      new_main_allocator(partition_alloc::PartitionOptions{
+          .aligned_alloc =
+              !use_dedicated_aligned_partition
+                  ? partition_alloc::PartitionOptions::AlignedAlloc::kAllowed
+                  : partition_alloc::PartitionOptions::AlignedAlloc::
+                        kDisallowed,
+          .thread_cache =
+              partition_alloc::PartitionOptions::ThreadCache::kDisabled,
+          .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
+          .backup_ref_ptr =
+              enable_brp
+                  ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
+                  : partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+          .ref_count_size = ref_count_size,
+          .memory_tagging =
+              enable_memory_tagging
+                  ? partition_alloc::PartitionOptions::MemoryTagging::kEnabled
+                  : partition_alloc::PartitionOptions::MemoryTagging::
+                        kDisabled});
   partition_alloc::PartitionRoot* new_root = new_main_allocator->root();
 
   partition_alloc::PartitionRoot* new_aligned_root;
@@ -610,16 +612,16 @@ void ConfigurePartitions(
     // result in one less partition, but come at a cost of commingling types.
     static partition_alloc::internal::base::NoDestructor<
         partition_alloc::PartitionAllocator>
-        new_aligned_allocator{};
-    new_aligned_allocator->init(partition_alloc::PartitionOptions{
-        .aligned_alloc =
-            partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
-        .thread_cache =
-            partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-        .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
-        .backup_ref_ptr =
-            partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-    });
+        new_aligned_allocator(partition_alloc::PartitionOptions{
+            .aligned_alloc =
+                partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
+            .thread_cache =
+                partition_alloc::PartitionOptions::ThreadCache::kDisabled,
+            .quarantine =
+                partition_alloc::PartitionOptions::Quarantine::kAllowed,
+            .backup_ref_ptr =
+                partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+        });
     new_aligned_root = new_aligned_allocator->root();
   } else {
     // The new main root can also support AlignedAlloc.

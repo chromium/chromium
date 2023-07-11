@@ -61,14 +61,13 @@ class DeltaCounter {
 // Forbid extras, since they make finding out which bucket is used harder.
 std::unique_ptr<PartitionAllocatorForTesting> CreateAllocator() {
   std::unique_ptr<PartitionAllocatorForTesting> allocator =
-      std::make_unique<PartitionAllocatorForTesting>();
-  allocator->init(PartitionOptions {
-    .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
+      std::make_unique<PartitionAllocatorForTesting>(PartitionOptions {
+        .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    .thread_cache = PartitionOptions::ThreadCache::kEnabled,
+        .thread_cache = PartitionOptions::ThreadCache::kEnabled,
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    .quarantine = PartitionOptions::Quarantine::kAllowed,
-  });
+        .quarantine = PartitionOptions::Quarantine::kAllowed,
+      });
   allocator->root()->UncapEmptySlotSpanMemoryForTesting();
 
   return allocator;
@@ -272,8 +271,7 @@ TEST_P(PartitionAllocThreadCacheTest, Purge) {
 }
 
 TEST_P(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
-  PartitionAllocatorForTesting allocator;
-  allocator.init(PartitionOptions{
+  PartitionAllocatorForTesting allocator(PartitionOptions{
       .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
       .quarantine = PartitionOptions::Quarantine::kAllowed,
   });

@@ -50,6 +50,7 @@ void PartitionAllocGlobalUninitForTesting();
 
 struct PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocator {
   PartitionAllocator();
+  explicit PartitionAllocator(PartitionOptions opts) { init(opts); }
   ~PartitionAllocator();
 
   void init(PartitionOptions);

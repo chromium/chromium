@@ -75,16 +75,13 @@ ArrayBufferAllocator* ArrayBufferAllocator::SharedInstance() {
 // static
 void ArrayBufferAllocator::InitializePartition() {
   static base::NoDestructor<partition_alloc::PartitionAllocator>
-      partition_allocator{};
-
-  // These configuration options are copied from blink's ArrayBufferPartition.
-  partition_allocator->init(partition_alloc::PartitionOptions{
-      .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
-      .backup_ref_ptr =
-          partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-      .use_configurable_pool =
-          partition_alloc::PartitionOptions::UseConfigurablePool::kIfAvailable,
-  });
+      partition_allocator(partition_alloc::PartitionOptions{
+          .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
+          .backup_ref_ptr =
+              partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+          .use_configurable_pool = partition_alloc::PartitionOptions::
+              UseConfigurablePool::kIfAvailable,
+      });
 
   partition_ = partition_allocator->root();
 }

@@ -83,7 +83,7 @@ class CompressedPointerTest : public ::testing::Test {
   using PointerType = UncompressedPointer<T>;
 #endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
-  CompressedPointerTest() { allocator_.init(PartitionOptions{}); }
+  CompressedPointerTest() : allocator_(PartitionOptions{}) {}
 
  protected:
   PartitionAllocator allocator_;
