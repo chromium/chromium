@@ -204,6 +204,11 @@ BASE_DECLARE_FEATURE(kReadingListEnableDualReadingListModel);
 // haven't turned on full sync.
 BASE_DECLARE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn);
 
+// Flags to allow AUTOFILL_WALLET_METADATA and AUTOFILL_WALLET_OFFER,
+// respectively, to run in transport mode.
+BASE_DECLARE_FEATURE(kSyncEnableWalletMetadataInTransportMode);
+BASE_DECLARE_FEATURE(kSyncEnableWalletOfferInTransportMode);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

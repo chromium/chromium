@@ -177,6 +177,9 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   account_autofill_web_data_->GetAutofillBackend(
       base::BindOnce(&InitWalletSyncBridgesOnDBSequence, db_task_runner,
                      account_autofill_web_data_, application_locale));
+  account_autofill_web_data_->GetAutofillBackend(
+      base::BindOnce(&InitWalletOfferSyncBridgeOnDBSequence, db_task_runner,
+                     account_autofill_web_data_));
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletUsageData)) {
     account_autofill_web_data_->GetAutofillBackend(
         base::BindOnce(&InitWalletUsageDataSyncBridgeOnDBSequence,
@@ -184,7 +187,7 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   }
 }
 
-WebDataServiceWrapper::~WebDataServiceWrapper() {}
+WebDataServiceWrapper::~WebDataServiceWrapper() = default;
 
 void WebDataServiceWrapper::Shutdown() {
   profile_autofill_web_data_->ShutdownOnUISequence();

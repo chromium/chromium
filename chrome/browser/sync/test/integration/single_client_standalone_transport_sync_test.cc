@@ -35,24 +35,28 @@ namespace {
 
 syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
   static_assert(48 == syncer::GetNumModelTypes(),
-                "Add new types below if they run in transport mode");
+                "Add new types below if they can run in transport mode");
   // Only some types will run by default in transport mode (i.e. without their
   // own separate opt-in).
   syncer::ModelTypeSet allowed_types = {
-      syncer::DEVICE_INFO,     syncer::USER_CONSENTS,
-      syncer::SECURITY_EVENTS, syncer::AUTOFILL_WALLET_DATA,
-      syncer::CONTACT_INFO,    syncer::SHARING_MESSAGE};
+      syncer::AUTOFILL_WALLET_DATA,  syncer::AUTOFILL_WALLET_METADATA,
+      syncer::AUTOFILL_WALLET_OFFER, syncer::AUTOFILL_WALLET_USAGE,
+      syncer::CONTACT_INFO,          syncer::DEVICE_INFO,
+      syncer::READING_LIST,          syncer::SECURITY_EVENTS,
+      syncer::SEND_TAB_TO_SELF,      syncer::SHARING_MESSAGE,
+      syncer::USER_CONSENTS};
   allowed_types.PutAll(syncer::ControlTypes());
-  allowed_types.Put(syncer::SEND_TAB_TO_SELF);
-  allowed_types.Put(syncer::READING_LIST);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, Apps-related types may run in transport mode.
+  allowed_types.PutAll({syncer::APPS, syncer::APP_SETTINGS, syncer::WEB_APPS});
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // OS sync types run in transport mode.
-  allowed_types.PutAll(
-      {syncer::APPS, syncer::APP_SETTINGS, syncer::APP_LIST,
-       syncer::APP_SETTINGS, syncer::ARC_PACKAGE, syncer::PRINTERS,
-       syncer::PRINTERS_AUTHORIZATION_SERVERS, syncer::OS_PREFERENCES,
-       syncer::OS_PRIORITY_PREFERENCES, syncer::WEB_APPS,
-       syncer::WORKSPACE_DESK, syncer::WIFI_CONFIGURATIONS});
+  allowed_types.PutAll({syncer::APP_LIST, syncer::ARC_PACKAGE,
+                        syncer::OS_PREFERENCES, syncer::OS_PRIORITY_PREFERENCES,
+                        syncer::PRINTERS,
+                        syncer::PRINTERS_AUTHORIZATION_SERVERS,
+                        syncer::WIFI_CONFIGURATIONS, syncer::WORKSPACE_DESK});
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return allowed_types;
 }

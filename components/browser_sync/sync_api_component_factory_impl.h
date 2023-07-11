@@ -8,13 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_api_component_factory.h"
-#include "components/version_info/version_info.h"
+#include "components/version_info/channel.h"
 
 namespace syncer {
 class ModelTypeController;
@@ -68,7 +67,7 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
   ~SyncApiComponentFactoryImpl() override;
 
   // Creates and returns enabled datatypes and their controllers.
-  // |disabled_types| allows callers to prevent certain types from being
+  // `disabled_types` allows callers to prevent certain types from being
   // created.
   syncer::DataTypeController::TypeVector CreateCommonDataTypeControllers(
       syncer::ModelTypeSet disabled_types,
@@ -88,29 +87,23 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
 
  private:
   // Factory function for ModelTypeControllerDelegate instances for models
-  // living in |ui_thread_| that have their delegate accessible via SyncClient.
+  // living in `ui_thread_` that have their delegate accessible via SyncClient.
   std::unique_ptr<syncer::ModelTypeControllerDelegate>
   CreateForwardingControllerDelegate(syncer::ModelType type);
 
   // Factory function for ModelTypeController instances for wallet-related
-  // datatypes, which live in |db_thread_| and have a delegate accessible via
+  // datatypes, which live in `db_thread_` and have a delegate accessible via
   // AutofillWebDataService.
-  std::unique_ptr<syncer::ModelTypeController>
-  CreateWalletModelTypeControllerWithoutTransportModeSupport(
+  // If `with_transport_mode_support` is true, the controller will support
+  // transport mode, implemented via an independent AutofillWebDataService,
+  // namely `web_data_service_in_memory_`.
+  std::unique_ptr<syncer::ModelTypeController> CreateWalletModelTypeController(
       syncer::ModelType type,
       const base::RepeatingCallback<
           base::WeakPtr<syncer::ModelTypeControllerDelegate>(
               autofill::AutofillWebDataService*)>& delegate_from_web_data,
-      syncer::SyncService* sync_service);
-  // Same as above, but supporting transport mode, implemented as an
-  // independent AutofillWebDataService, namely |web_data_service_in_memory_|.
-  std::unique_ptr<syncer::ModelTypeController>
-  CreateWalletModelTypeControllerWithTransportModeSupport(
-      syncer::ModelType type,
-      const base::RepeatingCallback<
-          base::WeakPtr<syncer::ModelTypeControllerDelegate>(
-              autofill::AutofillWebDataService*)>& delegate_from_web_data,
-      syncer::SyncService* sync_service);
+      syncer::SyncService* sync_service,
+      bool with_transport_mode_support);
 
   // Client/platform specific members.
   const raw_ptr<BrowserSyncClient> sync_client_;

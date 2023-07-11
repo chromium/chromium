@@ -173,4 +173,12 @@ BASE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn,
              "ReadingListEnableSyncTransportModeUponSignIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncEnableWalletMetadataInTransportMode,
+             "SyncEnableWalletMetadataInTransportMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncEnableWalletOfferInTransportMode,
+             "SyncEnableWalletOfferInTransportMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace syncer
