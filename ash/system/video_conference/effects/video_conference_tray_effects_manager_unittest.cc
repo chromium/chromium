@@ -113,9 +113,9 @@ TEST_F(VideoConferenceTrayEffectsManagerTest, GetToggleEffectButtonTable) {
   EXPECT_EQ(buttons_table[2].size(), 2UL);
 
   // Seven effects, now four rows of 2-2-2-1.
-  std::unique_ptr<fake_video_conference::GreenhouseEffect> greenhouse =
-      std::make_unique<fake_video_conference::GreenhouseEffect>();
-  effects_manager()->RegisterDelegate(greenhouse.get());
+  auto long_text_label_effect =
+      std::make_unique<fake_video_conference::FakeLongTextLabelToggleEffect>();
+  effects_manager()->RegisterDelegate(long_text_label_effect.get());
   buttons_table = effects_manager()->GetToggleEffectButtonTable();
   EXPECT_EQ(buttons_table.size(), 4UL);
   EXPECT_EQ(buttons_table[0].size(), 2UL);
@@ -142,7 +142,7 @@ TEST_F(VideoConferenceTrayEffectsManagerTest, GetToggleEffectButtonTable) {
   effects_manager()->UnregisterDelegate(office_bunny.get());
   effects_manager()->UnregisterDelegate(calm_forest.get());
   effects_manager()->UnregisterDelegate(stylish_kitchen.get());
-  effects_manager()->UnregisterDelegate(greenhouse.get());
+  effects_manager()->UnregisterDelegate(long_text_label_effect.get());
   effects_manager()->UnregisterDelegate(shaggy_fur.get());
   buttons_table = effects_manager()->GetToggleEffectButtonTable();
   EXPECT_TRUE(buttons_table.empty());

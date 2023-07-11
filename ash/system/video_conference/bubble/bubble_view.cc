@@ -57,7 +57,8 @@ void BubbleView::AddedToWidget() {
   layout_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
   layout_view->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
-  layout_view->SetInsideBorderInsets(gfx::Insets::TLBR(16, 12, 16, 12));
+  layout_view->SetInsideBorderInsets(
+      gfx::Insets::VH(16, kVideoConferenceBubbleHorizontalPadding));
   layout_view->SetBetweenChildSpacing(16);
 
   // Make the effects sections children of the `views::FlexLayoutView`, so that

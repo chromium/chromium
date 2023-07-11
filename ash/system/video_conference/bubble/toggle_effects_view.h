@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_TOGGLE_EFFECTS_VIEW_H_
 #define ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_TOGGLE_EFFECTS_VIEW_H_
 
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
@@ -18,6 +19,7 @@ class Event;
 }  // namespace ui
 
 namespace views {
+class FlexLayout;
 class ImageView;
 class Label;
 }  // namespace views
@@ -42,12 +44,17 @@ class ToggleEffectsButton : public views::Button {
                       const std::u16string& label_text,
                       const int accessible_name_id,
                       absl::optional<int> container_id,
-                      const VcEffectId effect_id);
+                      const VcEffectId effect_id,
+                      int num_button_per_row);
 
   ToggleEffectsButton(const ToggleEffectsButton&) = delete;
   ToggleEffectsButton& operator=(const ToggleEffectsButton&) = delete;
 
   ~ToggleEffectsButton() override;
+
+  views::FlexLayout* layout() { return layout_; }
+
+  views::ImageView* icon() { return icon_; }
 
  private:
   // Callback for clicking the button.
@@ -71,6 +78,8 @@ class ToggleEffectsButton : public views::Button {
   raw_ptr<const gfx::VectorIcon, ExperimentalAsh> enabled_vector_icon_;
   raw_ptr<const gfx::VectorIcon, ExperimentalAsh> disabled_vector_icon_;
   const int accessible_name_id_;
+
+  raw_ptr<views::FlexLayout> layout_ = nullptr;
 
   base::WeakPtrFactory<ToggleEffectsButton> weak_ptr_factory_{this};
 };

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -71,6 +72,9 @@ class BubbleViewPixelTest : public AshTestBase {
 
     office_bunny_ =
         std::make_unique<fake_video_conference::OfficeBunnyEffect>();
+    cat_ears_ = std::make_unique<fake_video_conference::CatEarsEffect>();
+    long_text_effect_ = std::make_unique<
+        fake_video_conference::FakeLongTextLabelToggleEffect>();
 
     AshTestBase::SetUp();
 
@@ -80,6 +84,8 @@ class BubbleViewPixelTest : public AshTestBase {
 
   void TearDown() override {
     AshTestBase::TearDown();
+    long_text_effect_.reset();
+    cat_ears_.reset();
     office_bunny_.reset();
     controller_.reset();
   }
@@ -135,14 +141,23 @@ class BubbleViewPixelTest : public AshTestBase {
     return state;
   }
 
-  ash::fake_video_conference::OfficeBunnyEffect* office_bunny() {
+  fake_video_conference::OfficeBunnyEffect* office_bunny() {
     return office_bunny_.get();
+  }
+
+  fake_video_conference::CatEarsEffect* cat_ears() { return cat_ears_.get(); }
+
+  fake_video_conference::FakeLongTextLabelToggleEffect* long_text_effect() {
+    return long_text_effect_.get();
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<FakeVideoConferenceTrayController> controller_;
-  std::unique_ptr<ash::fake_video_conference::OfficeBunnyEffect> office_bunny_;
+  std::unique_ptr<fake_video_conference::OfficeBunnyEffect> office_bunny_;
+  std::unique_ptr<fake_video_conference::CatEarsEffect> cat_ears_;
+  std::unique_ptr<fake_video_conference::FakeLongTextLabelToggleEffect>
+      long_text_effect_;
 };
 
 // Pixel test that tests toggled on/off and focused/not focused for the toggle
@@ -166,14 +181,14 @@ TEST_F(BubbleViewPixelTest, ToggleButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_no_focus_not_toggled",
-      /*revision_number=*/1, toggle_effect_button_container));
+      /*revision_number=*/2, toggle_effect_button_container));
 
   // Toggle the first button, the UI should change.
   LeftClickOn(first_toggle_effect_button);
   ASSERT_EQ(1, office_bunny()->num_activations_for_testing());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_no_focus_toggled",
-      /*revision_number=*/1, toggle_effect_button_container));
+      /*revision_number=*/2, toggle_effect_button_container));
 
   // Un-toggle the button, then keyboard focus it.
   LeftClickOn(first_toggle_effect_button);
@@ -185,7 +200,7 @@ TEST_F(BubbleViewPixelTest, ToggleButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_with_focus_not_toggled",
-      /*revision_number=*/1, toggle_effect_button_container));
+      /*revision_number=*/2, toggle_effect_button_container));
 
   // Re-toggle the button.
   event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
@@ -194,7 +209,7 @@ TEST_F(BubbleViewPixelTest, ToggleButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_with_focus_toggled",
-      /*revision_number=*/1, toggle_effect_button_container));
+      /*revision_number=*/2, toggle_effect_button_container));
 }
 
 // Pixel test that tests the expanded/collapsed state of the return to app panel
@@ -242,6 +257,55 @@ TEST_F(BubbleViewPixelTest, ReturnToApp) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_return_to_app_two_apps_expanded",
       /*revision_number=*/1, return_to_app_panel));
+}
+
+TEST_F(BubbleViewPixelTest, OneToggleEffects) {
+  // Add 1 toggle effects.
+  controller()->effects_manager().RegisterDelegate(long_text_effect());
+
+  // Click to open the bubble, toggle effect button should be visible.
+  LeftClickOn(video_conference_tray()->GetToggleBubbleButtonForTest());
+  ASSERT_TRUE(bubble_view());
+  ASSERT_TRUE(GetToggleEffectsView()->GetVisible());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "video_conference_bubble_view_one_toggle_effect",
+      /*revision_number=*/0, GetToggleEffectsView()));
+}
+
+TEST_F(BubbleViewPixelTest, TwoToggleEffects) {
+  // Add 2 toggle effects.
+  controller()->effects_manager().RegisterDelegate(office_bunny());
+  controller()->effects_manager().RegisterDelegate(long_text_effect());
+
+  // Click to open the bubble, toggle effect button should be visible.
+  LeftClickOn(video_conference_tray()->GetToggleBubbleButtonForTest());
+  ASSERT_TRUE(bubble_view());
+  ASSERT_TRUE(GetToggleEffectsView()->GetVisible());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "video_conference_bubble_view_two_toggle_effects",
+      /*revision_number=*/0, GetToggleEffectsView()));
+}
+
+TEST_F(BubbleViewPixelTest, ThreeToggleEffects) {
+  // Add 3 toggle effects.
+  // To test multi-line label in the toggle button, we test with 3 strings with
+  // different length: (1) small string that fits into 1 line ("Cat Ears"), (2)
+  // relatively small string that is just a bit more than 1 line ("Office
+  // Bunny"), and (3) long string that is definitely not fit into 1 line.
+  controller()->effects_manager().RegisterDelegate(office_bunny());
+  controller()->effects_manager().RegisterDelegate(cat_ears());
+  controller()->effects_manager().RegisterDelegate(long_text_effect());
+
+  // Click to open the bubble, toggle effect button should be visible.
+  LeftClickOn(video_conference_tray()->GetToggleBubbleButtonForTest());
+  ASSERT_TRUE(bubble_view());
+  ASSERT_TRUE(GetToggleEffectsView()->GetVisible());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "video_conference_bubble_view_three_toggle_effects",
+      /*revision_number=*/0, GetToggleEffectsView()));
 }
 
 }  // namespace ash::video_conference

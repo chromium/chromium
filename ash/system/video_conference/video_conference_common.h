@@ -13,6 +13,8 @@
 
 namespace ash {
 
+constexpr int kVideoConferenceBubbleHorizontalPadding = 12;
+
 // This struct provides aggregated attributes of media apps
 // from one or more clients.
 struct VideoConferenceMediaState {
