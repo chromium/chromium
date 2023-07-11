@@ -641,7 +641,10 @@ Polymer({
    */
   getDescription_() {
     if (!this.isScanningAvailable_()) {
-      return this.i18n('scanQRCodeEnterActivationCode');
+      if (this.showNoProfilesFound) {
+        return this.i18n('enterActivationCodeNoProfilesFound');
+      }
+      return this.i18n('enterActivationCode');
     }
     if (this.showNoProfilesFound) {
       return this.i18n('scanQRCodeNoProfilesFound');

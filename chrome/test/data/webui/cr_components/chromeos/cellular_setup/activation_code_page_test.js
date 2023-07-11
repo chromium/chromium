@@ -89,14 +89,24 @@ suite('CrComponentsActivationCodePageTest', function() {
   test('Page description', async function () {
     const description = activationCodePage.$$('#description');
     assertTrue(!!description);
-    // Mock no profiles found
+
+    // Mock camera on
     activationCodePage.showNoProfilesFound = true;
     assertEquals(description.innerText.trim(),
       loadTimeData.getString('scanQRCodeNoProfilesFound'));
-    // Mock profiles found
     activationCodePage.showNoProfilesFound = false;
     assertEquals(description.innerText.trim(),
       loadTimeData.getString('scanQRCode'));
+
+    // Clearing devices to test without camera
+    mediaDevices.removeDevice();
+    await resolveEnumeratedDevicesPromise();
+    activationCodePage.showNoProfilesFound = true;
+    assertEquals(description.innerText.trim(),
+      loadTimeData.getString('enterActivationCodeNoProfilesFound'));
+    activationCodePage.showNoProfilesFound = false;
+    assertEquals(description.innerText.trim(),
+      loadTimeData.getString('enterActivationCode'));
   });
 
   test('UI states', async function() {
