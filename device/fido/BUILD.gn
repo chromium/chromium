@@ -504,4 +504,18 @@ if (!is_android && !is_ios && !is_chromeos) {
       "//net",
     ]
   }
+
+  static_library("enclave_service") {
+    testonly = true
+    sources = [
+      "enclave/test/enclave_http_server.cc",
+      "enclave/test/enclave_http_server.h",
+    ]
+    deps = [
+      ":fido",
+      "//mojo/public/cpp/bindings",
+      "//net",
+      "//net:test_support",
+    ]
+  }
 }

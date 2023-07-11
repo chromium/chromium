@@ -229,8 +229,11 @@ void EnclaveHttpClient::CompleteRequest(int status) {
     absl::optional<base::Value> response_dict =
         base::JSONReader::Read(response_body_string);
     if (response_dict && response_dict->is_dict()) {
+      std::string field_name = (request_in_progress_ == RequestType::kInit)
+                                   ? "handshakeResponseData"
+                                   : "commandResponseData";
       const std::string* handshake_value =
-          response_dict->GetDict().FindString("handshakeResponseData");
+          response_dict->GetDict().FindString(field_name);
       if (handshake_value) {
         response_data = base::Base64Decode(*handshake_value);
         if (!response_data) {

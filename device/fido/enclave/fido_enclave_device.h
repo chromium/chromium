@@ -59,7 +59,7 @@ class FidoEnclaveDevice : public FidoDevice {
   std::unique_ptr<EnclaveHttpClient> http_client_;
 
   // The peer's public key.
-  std::array<uint8_t, device::kP256X962Length> peer_identity_;
+  const std::array<uint8_t, device::kP256X962Length> peer_identity_;
 
   std::unique_ptr<cablev2::HandshakeInitiator> handshake_;
   absl::optional<std::array<uint8_t, 32>> handshake_hash_;

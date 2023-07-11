@@ -102,14 +102,6 @@ bool ReservedBitsAreZero(const CableEidArray& eid) {
   return eid[0] == 0;
 }
 
-bssl::UniquePtr<EC_KEY> ECKeyFromSeed(
-    base::span<const uint8_t, kQRSeedSize> seed) {
-  bssl::UniquePtr<EC_GROUP> p256(
-      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
-  return bssl::UniquePtr<EC_KEY>(
-      EC_KEY_derive_from_secret(p256.get(), seed.data(), seed.size()));
-}
-
 // kAdditionalDataBytes is the AD input to the AEAD used in caBLEv2. We're
 // transitioning away from this towards not supplying an AD in order to better
 // match Noise.
@@ -627,6 +619,14 @@ bssl::UniquePtr<EC_KEY> IdentityKey(base::span<const uint8_t, 32> root_secret) {
       EC_KEY_derive_from_secret(p256.get(), seed.data(), seed.size()));
 }
 
+bssl::UniquePtr<EC_KEY> ECKeyFromSeed(
+    base::span<const uint8_t, kQRSeedSize> seed) {
+  bssl::UniquePtr<EC_GROUP> p256(
+      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
+  return bssl::UniquePtr<EC_KEY>(
+      EC_KEY_derive_from_secret(p256.get(), seed.data(), seed.size()));
+}
+
 absl::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
     cbor::Value::MapValue map) {
   // The number of padding bytes is a uint16_t, so the granularity cannot be
@@ -985,7 +985,7 @@ HandshakeResult HandshakeInitiator::ProcessResponse(
 }
 
 HandshakeResult RespondToHandshake(
-    base::span<const uint8_t, 32> psk,
+    absl::optional<base::span<const uint8_t, 32>> psk,
     bssl::UniquePtr<EC_KEY> identity,
     absl::optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
     base::span<const uint8_t> in,
@@ -1001,19 +1001,25 @@ HandshakeResult RespondToHandshake(
 
   Noise noise;
   uint8_t prologue[1];
-  if (identity) {
+  if (!psk.has_value()) {
+    noise.Init(device::Noise::HandshakeType::kNK);
+    prologue[0] = 0;
+    noise.MixHash(prologue);
+    noise.MixHashPoint(EC_KEY_get0_public_key(identity.get()));
+  } else if (identity) {
     noise.Init(device::Noise::HandshakeType::kNKpsk0);
     prologue[0] = 0;
     noise.MixHash(prologue);
     noise.MixHashPoint(EC_KEY_get0_public_key(identity.get()));
+    noise.MixKeyAndHash(*psk);
   } else {
     noise.Init(device::Noise::HandshakeType::kKNpsk0);
     prologue[0] = 1;
     noise.MixHash(prologue);
     noise.MixHash(*peer_identity);
+    noise.MixKeyAndHash(*psk);
   }
 
-  noise.MixKeyAndHash(psk);
   noise.MixHash(peer_point_bytes);
   noise.MixKey(peer_point_bytes);
 
