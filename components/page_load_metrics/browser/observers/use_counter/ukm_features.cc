@@ -303,6 +303,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
            WebFeature::kDanglingMarkupInWindowName,
            WebFeature::kWebGPURequestAdapter,
            WebFeature::kWebGPUQueueSubmit,
-           WebFeature::kWebGPUCanvasContextGetCurrentTexture}));
+           WebFeature::kWebGPUCanvasContextGetCurrentTexture,
+           WebFeature::kLinkRelPreloadAsFont}));
   return *opt_in_features;
 }
