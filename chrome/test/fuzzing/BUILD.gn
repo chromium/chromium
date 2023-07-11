@@ -38,7 +38,10 @@ if (!is_android) {
     sources = [ "html_in_process_fuzzer.cc" ]
   }
   in_process_proto_fuzzer("kombucha_in_process_fuzzer") {
-    sources = [ "kombucha_in_process_fuzzer.cc" ]
+    sources = [
+      "kombucha_in_process_fuzzer.cc",
+      "kombucha_in_process_fuzzer.h",
+    ]
 
     proto_source = "kombucha_in_process_fuzzer.proto"
 
