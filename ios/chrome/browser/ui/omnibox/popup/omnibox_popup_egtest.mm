@@ -663,15 +663,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Tests that leading image in omnibox changes based on the suggestion
-// hilighted.
-- (void)testOmniboxLeadingImage {
-  // TODO(crbug.com/1455347): Test is flaky on iPad simulator. Re-enable the
-  // test.
+// highlighted.
+// TODO(crbug.com/1455347): Test is flaky on simulators. Re-enable the test.
 #if TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"This test is flaky on iPad simulator.");
-  }
+#define MAYBE_testOmniboxLeadingImage DISABLED_testOmniboxLeadingImage
+#else
+#define MAYBE_testOmniboxLeadingImage testOmniboxLeadingImage
 #endif
+- (void)MAYBE_testOmniboxLeadingImage {
   // Start a server to be able to navigate to a web page.
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
