@@ -49,7 +49,6 @@ __input_deps = {
         "buildtools/third_party/libc++/__config_site",
     ],
     "third_party/libc++": [
-        "third_party/libc++/__config_site",
         "buildtools/third_party/libc++/__config_site",
     ],
 }
