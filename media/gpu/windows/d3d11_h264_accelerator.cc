@@ -59,8 +59,9 @@ D3D11H264Accelerator::D3D11H264Accelerator(
                      media_log,
                      std::move(video_device),
                      std::move(video_context)) {
-  client->SetDecoderWrapperCB(base::BindRepeating(
-      &D3D11H264Accelerator::SetVideoDecoderWrapper, base::Unretained(this)));
+  client->SetDecoderWrapperCB(
+      base::BindRepeating(&D3D11H264Accelerator::SetVideoDecoderWrapper,
+                          base::UnsafeDanglingUntriaged(this)));
 }
 
 D3D11H264Accelerator::~D3D11H264Accelerator() {}

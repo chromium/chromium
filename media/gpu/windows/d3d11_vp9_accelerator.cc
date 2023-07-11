@@ -34,8 +34,9 @@ D3D11VP9Accelerator::D3D11VP9Accelerator(
                      std::move(video_device),
                      std::move(video_context)),
       status_feedback_(0) {
-  client->SetDecoderWrapperCB(base::BindRepeating(
-      &D3D11VP9Accelerator::SetVideoDecoderWrapper, base::Unretained(this)));
+  client->SetDecoderWrapperCB(
+      base::BindRepeating(&D3D11VP9Accelerator::SetVideoDecoderWrapper,
+                          base::UnsafeDanglingUntriaged(this)));
 }
 
 D3D11VP9Accelerator::~D3D11VP9Accelerator() = default;
