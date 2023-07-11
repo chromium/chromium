@@ -25,7 +25,7 @@ class SyncConsentScreenView
   virtual ~SyncConsentScreenView() = default;
 
   // Shows the contents of the screen.
-  virtual void Show(bool is_arc_restricted) = 0;
+  virtual void Show(bool is_lacros_enabled) = 0;
 
   // The screen is initially shown in a loading state.
   // When SyncScreenBehavior becomes Shown, this method should be called to

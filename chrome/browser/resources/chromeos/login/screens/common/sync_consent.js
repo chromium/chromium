@@ -113,11 +113,10 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
       isMinorMode_: Boolean,
 
       /**
-       * Indicates whether ArcAccountRestrictions and LacrosSupport features are
-       * enabled.
+       * Indicates whether Lacros is enabled.
        * @private
        */
-      isArcRestricted_: Boolean,
+      isLacrosEnabled_: Boolean,
 
       /**
        * The text key for the opt-in button (it could vary based on whether
@@ -154,7 +153,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
     this.UI_STEPS = SyncUIState;
 
     this.isMinorMode_ = false;
-    this.isArcRestricted_ = false;
+    this.isLacrosEnabled_ = false;
     this.osSyncItemsStatus = {
       osApps: true,
       osPreferences: true,
@@ -177,7 +176,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
    * @param {Object} data Screen init payload.
    */
   onBeforeShow(data) {
-    this.isArcRestricted_ = data['isArcRestricted'];
+    this.isLacrosEnabled_ = data['isLacrosEnabled'];
   }
 
   defaultUIStep() {

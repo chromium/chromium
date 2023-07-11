@@ -136,13 +136,13 @@ found in the LICENSE file.
     aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]"
     for-step="ash-sync">
   <iron-icon slot="icon" icon="sync-consent-32:googleg"></iron-icon>
-  <h1 slot="title" consent-description hidden="[[isArcRestricted_]]">
+  <h1 slot="title" consent-description hidden="[[isLacrosEnabled_]]">
     [[i18nDynamic(locale, 'syncConsentScreenTitle')]]
   </h1>
-  <h1 slot="title" consent-description hidden="[[!isArcRestricted_]]">
+  <h1 slot="title" consent-description hidden="[[!isLacrosEnabled_]]">
     [[i18nDynamic(locale, 'syncConsentScreenTitleArcRestrictions')]]
   </h1>
-  <div slot="subtitle" consent-description hidden="[[isArcRestricted_]]">
+  <div slot="subtitle" consent-description hidden="[[isLacrosEnabled_]]">
     [[i18nDynamic(locale, 'syncConsentScreenSubtitle')]]
   </div>
   <iron-icon slot="subtitle"  icon="oobe-illos:sync-consent-illo" class="illustration-jelly">
@@ -150,7 +150,7 @@ found in the LICENSE file.
   </div>
   <div slot="content" class="landscape-header-aligned">
     <div class="overview-list-item layout horizontal"
-        hidden="[[isArcRestricted_]]">
+        hidden="[[isLacrosEnabled_]]">
       <img class="overview-list-item-icon" src="images/settings_gear.svg"
           width="24" height="24" aria-hidden="true">
       <div class="flex layout vertical center-justified">
@@ -161,7 +161,7 @@ found in the LICENSE file.
       </div>
     </div>
     <div class="overview-list-item layout horizontal"
-        hidden="[[isArcRestricted_]]">
+        hidden="[[isLacrosEnabled_]]">
       <img class="overview-list-item-icon" src="images/browser_sync.svg"
           width="24" height="24" aria-hidden="true">
       <div class="flex layout vertical center-justified">
@@ -175,14 +175,14 @@ found in the LICENSE file.
         </div>
       </div>
     </div>
-    <div hidden="[[!isArcRestricted_]]" consent-description>
+    <div hidden="[[!isLacrosEnabled_]]" consent-description>
       [[i18nDynamic(locale,
           'syncConsentScreenOsSyncDescriptionArcRestrictions')]]
     </div>
 
     <cr-checkbox id="reviewSettingsBox" hidden="[[isMinorMode_]]"
         consent-description>
-      [[getReviewSettingText_(locale, isArcRestricted_)]]
+      [[getReviewSettingText_(locale, isLacrosEnabled_)]]
     </cr-checkbox>
   </div>
   <div slot="bottom-buttons">

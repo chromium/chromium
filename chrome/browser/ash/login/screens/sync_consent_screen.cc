@@ -17,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -250,14 +249,11 @@ void SyncConsentScreen::ShowImpl() {
     view_->ShowLoadedStep(IsOsSyncLacros());
   }
 
-  bool is_arc_restricted =
-      AccountAppsAvailability::IsArcAccountRestrictionsEnabled();
-
   // Show the entire screen.
   // If SyncScreenBehavior is show, this should show the sync consent screen.
   // If SyncScreenBehavior is unknown, this should show the loading throbber.
   if (view_)
-    view_->Show(is_arc_restricted);
+    view_->Show(crosapi::browser_util::IsLacrosEnabled());
 }
 
 void SyncConsentScreen::HideImpl() {
@@ -446,7 +442,7 @@ void SyncConsentScreen::PrepareScreenBasedOnCapability() {
 
 // Check if OSSyncRevamp and Lacros are enabled.
 bool SyncConsentScreen::IsOsSyncLacros() {
-  return AccountAppsAvailability::IsArcAccountRestrictionsEnabled() &&
+  return crosapi::browser_util::IsLacrosEnabled() &&
          features::IsOsSyncConsentRevampEnabled();
 }
 
