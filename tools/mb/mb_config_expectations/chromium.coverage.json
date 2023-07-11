@@ -126,7 +126,7 @@
       "enable_mojom_fuzzer": true,
       "enable_nacl": false,
       "ffmpeg_branding": "ChromeOS",
-      "is_component_build": true,
+      "is_component_build": false,
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
       "use_clang_coverage": true,

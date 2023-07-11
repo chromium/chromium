@@ -3112,7 +3112,7 @@
     ],
 
     'linux_fuzz_coverage':[
-      'use_clang_coverage', 'shared', 'mojo_fuzzer', 'libfuzzer', 'dcheck_off', 'disable_nacl',
+      'use_clang_coverage', 'static', 'mojo_fuzzer', 'libfuzzer', 'dcheck_off', 'disable_nacl',
       'reclient', 'chromeos_codecs', 'pdf_xfa'
     ],
 
