@@ -11,12 +11,7 @@
 #endif
 
 TEST(AuthSessionRequestTest, SchemeCanonicalization) {
-  if (@available(macOS 10.15, *)) {
-    EXPECT_EQ("abcdefg", AuthSessionRequest::CanonicalizeScheme("abcdefg"));
-    EXPECT_EQ("abcdefg", AuthSessionRequest::CanonicalizeScheme("aBcDeFg"));
-    EXPECT_EQ(absl::nullopt, AuthSessionRequest::CanonicalizeScheme("🥰"));
-  } else {
-    GTEST_SKIP() << "ASWebAuthenticationSessionRequest is only available on "
-                    "macOS 10.15 and higher.";
-  }
+  EXPECT_EQ("abcdefg", AuthSessionRequest::CanonicalizeScheme("abcdefg"));
+  EXPECT_EQ("abcdefg", AuthSessionRequest::CanonicalizeScheme("aBcDeFg"));
+  EXPECT_EQ(absl::nullopt, AuthSessionRequest::CanonicalizeScheme("🥰"));
 }

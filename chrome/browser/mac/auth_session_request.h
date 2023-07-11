@@ -28,7 +28,7 @@ class Profile;
 
 // A class to manage the WebContents running an
 // ASWebAuthenticationSessionRequest.
-class API_AVAILABLE(macos(10.15)) AuthSessionRequest
+class AuthSessionRequest
     : public content::WebContentsObserver,
       public content::WebContentsUserData<AuthSessionRequest> {
  public:
@@ -102,6 +102,6 @@ class API_AVAILABLE(macos(10.15)) AuthSessionRequest
 // If there is an authentication session in progress for the given navigation
 // handle, install a throttle.
 std::unique_ptr<content::NavigationThrottle> MaybeCreateAuthSessionThrottleFor(
-    content::NavigationHandle* handle) API_AVAILABLE(macos(10.15));
+    content::NavigationHandle* handle);
 
 #endif  // CHROME_BROWSER_MAC_AUTH_SESSION_REQUEST_H_
