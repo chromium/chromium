@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 673 tests; 365 PASS, 308 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 673 tests; 364 PASS, 309 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -631,7 +631,7 @@ FAIL Parsing: <http://foo.0x> against <about:blank> assert_equals: failure shoul
 FAIL Parsing: <http://foo.0XFfFfFfFfFfFfFfFfFfAcE123> against <about:blank> assert_equals: failure should set href to input expected "http://foo.0XFfFfFfFfFfFfFfFfFfAcE123" but got "http://foo.0xfffffffffffffffffface123/"
 FAIL Parsing: <http://💩.123/> against <about:blank> assert_equals: failure should set href to input expected "http://💩.123/" but got "http://xn--ls8h.123/"
 FAIL Parsing: <https://\0y> against <about:blank> assert_equals: failure should set href to input expected "https://\0y" but got "https://%00y/"
-PASS Parsing: <https://x/\0y> against <about:blank>
+FAIL Parsing: <https://x/\0y> against <about:blank> assert_equals: protocol expected "https:" but got ":"
 PASS Parsing: <https://x/?\0y> against <about:blank>
 PASS Parsing: <https://x/?#\0y> against <about:blank>
 FAIL Parsing: <https://￿y> against <about:blank> assert_equals: failure should set href to input expected "https://\uffffy" but got "https://%EF%BF%BFy/"
