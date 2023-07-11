@@ -212,6 +212,10 @@ void FirstPartySetsAccessDelegate::GetCacheFilterMatchInfoAndInvoke(
 void FirstPartySetsAccessDelegate::InvokePendingQueries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(ready_event_.has_value());
+  // !wait_for_init_ implies (pending_queries == nullptr).
+  CHECK(wait_for_init_ || pending_queries_ == nullptr);
+  // !wait_for_init_ implies !first_async_query_timer_.has_value().
+  CHECK(wait_for_init_ || !first_async_query_timer_.has_value());
 
   UmaHistogramTimes(
       "Cookie.FirstPartySets.InitializationDuration."
@@ -245,6 +249,7 @@ void FirstPartySetsAccessDelegate::EnqueuePendingQuery(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(pending_queries_);
   CHECK(!ready_event_.has_value());
+  CHECK(wait_for_init_);
 
   if (!first_async_query_timer_.has_value())
     first_async_query_timer_ = {base::ElapsedTimer()};
