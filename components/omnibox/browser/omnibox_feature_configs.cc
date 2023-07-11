@@ -11,6 +11,22 @@
 namespace omnibox_feature_configs {
 
 // static
+BASE_FEATURE(CalcProvider::kCalcProvider,
+             "OmniboxCalcProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+CalcProvider::CalcProvider() {
+  enabled = base::FeatureList::IsEnabled(kCalcProvider);
+  score =
+      base::FeatureParam<int>(&kCalcProvider, "CalcProviderScore", 900).Get();
+  max_matches =
+      base::FeatureParam<int>(&kCalcProvider, "CalcProviderMaxMatches", 5)
+          .Get();
+  num_non_calc_inputs =
+      base::FeatureParam<int>(&kCalcProvider, "CalcProviderNumNonCalcInputs", 3)
+          .Get();
+}
+
+// static
 BASE_FEATURE(ShortcutBoosting::kShortcutBoost,
              "OmniboxShortcutBoost",
              base::FEATURE_DISABLED_BY_DEFAULT);

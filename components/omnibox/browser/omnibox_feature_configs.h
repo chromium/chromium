@@ -88,6 +88,20 @@ class ScopedConfigForTesting : Config<T> {
 
 // Add new configs below, ordered alphabetically.
 
+// If enabled, adds recent calc suggestions.
+struct CalcProvider : Config<CalcProvider> {
+  DECLARE_FEATURE(kCalcProvider);
+  CalcProvider();
+  bool enabled;
+  // The base score of calc suggestions.
+  int score;
+  // Number of calc suggestions to show.
+  size_t max_matches;
+  // Number of inputs that aren't a clear calculator-y input to continue showing
+  // calc suggestions for.
+  size_t num_non_calc_inputs;
+};
+
 // If enabled, the shortcut provider is more aggressive in scoring.
 struct ShortcutBoosting : Config<ShortcutBoosting> {
   DECLARE_FEATURE(kShortcutBoost);

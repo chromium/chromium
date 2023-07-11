@@ -181,6 +181,8 @@ static_library("browser") {
     "bookmark_scoring_signals_annotator.h",
     "builtin_provider.cc",
     "builtin_provider.h",
+    "calculator_provider.cc",
+    "calculator_provider.h",
     "clipboard_provider.cc",
     "clipboard_provider.h",
     "document_provider.cc",

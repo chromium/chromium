@@ -1,0 +1,144 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "calculator_provider.h"
+
+#include <limits>
+
+#include "base/check.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
+#include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
+#include "components/omnibox/browser/search_provider.h"
+
+CalculatorProvider::CalculatorProvider(AutocompleteProviderListener* listener,
+                                       SearchProvider* search_provider)
+    : AutocompleteProvider(AutocompleteProvider::TYPE_CALCULATOR),
+      search_provider_(search_provider) {
+  CHECK(search_provider_);
+  AddListener(listener);
+  search_provider->AddListener(this);
+}
+
+CalculatorProvider::~CalculatorProvider() = default;
+
+void CalculatorProvider::Start(const AutocompleteInput& input,
+                               bool minimal_changes) {
+  if (!omnibox_feature_configs::CalcProvider::Get().enabled)
+    return;
+
+  matches_.clear();
+  done_ = input.omit_asynchronous_matches();
+  if (done_)
+    return;
+
+  input_ = input.text();
+  grew_input_ = base::StartsWith(input.text(), last_calc_input_,
+                                 base::CompareCase::SENSITIVE);
+  shrunk_input_ = base::StartsWith(last_calc_input_, input.text(),
+                                   base::CompareCase::SENSITIVE);
+
+  if (since_last_calculator_suggestion_ < SIZE_MAX)
+    since_last_calculator_suggestion_++;
+
+  if (search_provider_->done()) {
+    // If the search provider finished before this started (unlikely), read the
+    // search suggestions and finalize the calc suggestions immediately.
+    UpdateFromSearch();
+  } else if (Show()) {
+    // Otherwise, show the cached matches now. Then `OnProviderUpdate()` will
+    // update the matches when the search provider finishes.
+    AddMatches();
+  }
+}
+
+void CalculatorProvider::Stop(bool clear_cached_results,
+                              bool due_to_user_inactivity) {
+  done_ = true;
+}
+
+void CalculatorProvider::DeleteMatch(const AutocompleteMatch& match) {
+  auto it = base::ranges::find_if(cache_, [&](const auto& cached_match) {
+    return cached_match.destination_url == match.destination_url;
+  });
+  if (it != cache_.end()) {
+    cache_.erase(it);
+    AddMatches();
+  }
+}
+
+void CalculatorProvider::OnProviderUpdate(
+    bool updated_matches,
+    const AutocompleteProvider* provider) {
+  CHECK_EQ(provider, search_provider_);
+  if (search_provider_->done() && !done_)
+    UpdateFromSearch();
+}
+
+void CalculatorProvider::UpdateFromSearch() {
+  CHECK(!done_);
+
+  // Find and cache any search calculator matches.
+  for (const auto& match : search_provider_->matches()) {
+    if (match.type == AutocompleteMatchType::CALCULATOR)
+      AddMatchToCache(match);
+  }
+
+  done_ = true;
+  bool show = Show();
+  if (show)
+    AddMatches();
+  NotifyListeners(show);
+}
+
+void CalculatorProvider::AddMatchToCache(AutocompleteMatch match) {
+  match.provider = this;
+  match.deletable = true;
+  match.allowed_to_be_default_match = false;
+  match.additional_info.clear();
+  match.RecordAdditionalInfo("original relevance", match.relevance);
+  match.RecordAdditionalInfo("input", input_);
+
+  if (!cache_.empty() && grew_input_) {
+    // As the user types out an input, e.g. '1+22+33', replace the intermediate
+    // matches to avoid showing all of: '1+2=3', '1+22=23', '1+22+3=26', &
+    // '1+22+33=56'.
+    cache_.pop_back();
+  } else if (cache_.size() >
+             omnibox_feature_configs::CalcProvider::Get().max_matches) {
+    cache_.erase(cache_.begin());
+  }
+
+  cache_.push_back(std::move(match));
+  last_calc_input_ = input_;
+  since_last_calculator_suggestion_ = 0;
+}
+
+void CalculatorProvider::AddMatches() {
+  matches_.clear();
+  // Score sequentially so they're ranked sequentially.
+  // TODO(manukh) Consider enforcing hard grouping (e.g. search v URL).
+  int relevance = omnibox_feature_configs::CalcProvider::Get().score;
+  for (auto& match : cache_)
+    match.relevance = relevance++;
+  matches_ = cache_;
+}
+
+bool CalculatorProvider::Show() {
+  // Show matches if either:
+  // a) the current input is has a calc search suggestion; e.g. '3+2'.
+  if (since_last_calculator_suggestion_ == 0)
+    return true;
+  // b) OR one of the recent inputs had a calc search suggestion and this input
+  // is similar to it. E.g. '3+2-' won't have a calc search suggestion as it's
+  // incomplete. This helps keep the suggestions stable.
+  return (grew_input_ || shrunk_input_) &&
+         since_last_calculator_suggestion_ <=
+             omnibox_feature_configs::CalcProvider::Get().num_non_calc_inputs;
+}

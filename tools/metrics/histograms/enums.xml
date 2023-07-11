@@ -65981,6 +65981,7 @@ from previous Chrome versions.
   <int value="1115532551" label="EnableFrameSinkDesktopCapturerInCrd:enabled"/>
   <int value="1115564918" label="LacrosWaylandLogging:enabled"/>
   <int value="1115635149" label="EnableUnifiedMultiDeviceSetup:enabled"/>
+  <int value="1115732111" label="OmniboxCalcProvider:enabled"/>
   <int value="1115946303"
       label="EnableMachineLearningNeuralNetworkService:enabled"/>
   <int value="1116084116" label="BindingManagerConnectionLimit:enabled"/>
@@ -67066,6 +67067,7 @@ from previous Chrome versions.
   <int value="1678866761" label="SystemLatinPhysicalTyping:disabled"/>
   <int value="1679347136" label="ExperimentalWebAppProfileIsolation:enabled"/>
   <int value="1679558835" label="ArcAvailableForChildAccount:enabled"/>
+  <int value="1680110859" label="OmniboxCalcProvider:disabled"/>
   <int value="1680248931" label="use-fake-device-for-media-stream:enabled"/>
   <int value="1680381128" label="SmartZoom:enabled"/>
   <int value="1680524929" label="AutofillEnableSupportForLandmark:disabled"/>

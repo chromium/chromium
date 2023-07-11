@@ -1235,6 +1235,9 @@ extern const char kOmniboxAdaptNarrowTabletWindowsDescription[];
 extern const char kOmniboxCacheSuggestionResourcesName[];
 extern const char kOmniboxCacheSuggestionResourcesDescription[];
 
+extern const char kOmniboxCalcProviderName[];
+extern const char kOmniboxCalcProviderDescription[];
+
 extern const char kOmniboxConsumesImeInsetsName[];
 extern const char kOmniboxConsumesImeInsetsDescription[];
 

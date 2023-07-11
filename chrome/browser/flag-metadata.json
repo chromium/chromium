@@ -5681,6 +5681,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-calc-provider",
+    "owners": ["manukh", "chrome-omnibox-team@google.com"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "omnibox-consumes-ime-insets",
     "owners": ["pnoland", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 120

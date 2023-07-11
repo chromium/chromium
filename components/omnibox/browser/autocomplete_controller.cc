@@ -49,6 +49,7 @@
 #include "components/omnibox/browser/bookmark_provider.h"
 #include "components/omnibox/browser/bookmark_scoring_signals_annotator.h"
 #include "components/omnibox/browser/builtin_provider.h"
+#include "components/omnibox/browser/calculator_provider.h"
 #include "components/omnibox/browser/clipboard_provider.h"
 #include "components/omnibox/browser/document_provider.h"
 #include "components/omnibox/browser/history_fuzzy_provider.h"
@@ -877,6 +878,10 @@ void AutocompleteController::InitializeAsyncProviders(int provider_types) {
     on_device_head_provider_ =
         OnDeviceHeadProvider::Create(provider_client_.get(), this);
     providers_.push_back(on_device_head_provider_.get());
+  }
+  if (provider_types & AutocompleteProvider::TYPE_CALCULATOR &&
+      search_provider_ != nullptr) {
+    providers_.push_back(new CalculatorProvider(this, search_provider_));
   }
 }
 

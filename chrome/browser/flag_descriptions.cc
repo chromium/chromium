@@ -2180,6 +2180,10 @@ const char kOmniboxCacheSuggestionResourcesDescription[] =
     "When enabled, the omnibox will cache frequently used drawables and "
     "strings rather than loading them from Android every time they're needed.";
 
+const char kOmniboxCalcProviderName[] = "Omnibox calc provider";
+const char kOmniboxCalcProviderDescription[] =
+    "When enabled, suggests recent calculator results in the omnibox.";
+
 const char kOmniboxConsumesImeInsetsName[] =
     "Omnibox Consumes IME (keyboard) insets directly";
 const char kOmniboxConsumesImeInsetsDescription[] =
