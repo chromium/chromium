@@ -26,7 +26,7 @@ class IOSChromeFieldTrials : public variations::PlatformFieldTrials {
       base::FeatureList* feature_list) override;
 
  private:
-  // This boolean tracks whether a seed has been used to set up field trials.
+  // Tracks whether a seed has been used to set up field trials.
   bool used_seed_ = false;
 };
 

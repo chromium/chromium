@@ -19,14 +19,17 @@
 #import "components/variations/variations_switches.h"
 #import "components/variations/variations_test_utils.h"
 #import "ios/chrome/browser/flags/ios_chrome_field_trials.h"
-#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store+fetcher.h"
-#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store+testing.h"
 #import "ios/chrome/browser/variations/ios_chrome_variations_service_client.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "services/network/test/test_network_connection_tracker.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+
+// The following headers should be imported after
+// "ios_chrome_variations_seed_store.h".
+#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store+fetcher.h"
+#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store+testing.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -98,18 +101,20 @@ class IOSChromeVariationsSeedStoreTest : public PlatformTest {
 
   // Sets up variations service.
   void SetUpVariationsService() {
-    if (!variations_service_) {
-      variations_service_ = variations::VariationsService::Create(
-          std::make_unique<IOSChromeVariationsServiceClient>(), GetLocalState(),
-          GetMetricsStateManager(), "dummy-disable-background-switch",
-          variations::UIStringOverrider(),
-          network::TestNetworkConnectionTracker::CreateGetter());
+    if (variations_service_) {
+      return;
     }
+    variations_service_ = variations::VariationsService::Create(
+        std::make_unique<IOSChromeVariationsServiceClient>(), GetLocalState(),
+        GetMetricsStateManager(), "dummy-disable-background-switch",
+        variations::UIStringOverrider(),
+        network::TestNetworkConnectionTracker::CreateGetter());
   }
 
   // Sets up field trials. If the test seed is simulate-fetched, this step
   // should have applied the seed and added the studies.
   void SetUpFieldTrials() {
+    CHECK(variations_service_);
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     variations_service_->SetUpFieldTrials(
         std::vector<std::string>(), std::string(),
@@ -121,7 +126,7 @@ class IOSChromeVariationsSeedStoreTest : public PlatformTest {
   void VerifyTestSeedTrialExists(bool applied) {
     bool trial_exists =
         base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]);
-    EXPECT_TRUE(applied == trial_exists);
+    EXPECT_EQ(applied, trial_exists);
   }
 
  private:
@@ -141,7 +146,7 @@ class IOSChromeVariationsSeedStoreTest : public PlatformTest {
 
 // Tests the scenario when a valid seed is fetched and stored.
 TEST_F(IOSChromeVariationsSeedStoreTest, testGoodSeedFetched) {
-  EXPECT_EQ([IOSChromeVariationsSeedStore seedApplicationStage],
+  ASSERT_EQ([IOSChromeVariationsSeedStore seedApplicationStage],
             SeedApplicationStage::kNoSeed);
   // Simulate seed fetch.
   [IOSChromeVariationsSeedStore updateSharedSeed:GetSeed(/*valid=*/true)];
@@ -159,7 +164,7 @@ TEST_F(IOSChromeVariationsSeedStoreTest, testGoodSeedFetched) {
 
 // Tests the scenario when an invalid seed is fetched and stored.
 TEST_F(IOSChromeVariationsSeedStoreTest, testBadSeedFetched) {
-  EXPECT_EQ([IOSChromeVariationsSeedStore seedApplicationStage],
+  ASSERT_EQ([IOSChromeVariationsSeedStore seedApplicationStage],
             SeedApplicationStage::kNoSeed);
   // Simulate seed download.
   [IOSChromeVariationsSeedStore updateSharedSeed:GetSeed(/*valid=*/false)];
@@ -177,7 +182,7 @@ TEST_F(IOSChromeVariationsSeedStoreTest, testBadSeedFetched) {
 
 // Tests the scenario when no seed is fetched.
 TEST_F(IOSChromeVariationsSeedStoreTest, testNoSeedFetched) {
-  EXPECT_EQ([IOSChromeVariationsSeedStore seedApplicationStage],
+  ASSERT_EQ([IOSChromeVariationsSeedStore seedApplicationStage],
             SeedApplicationStage::kNoSeed);
   // Set up variations service and create field trial before seed is fetched and
   // applied.
@@ -198,7 +203,7 @@ TEST_F(IOSChromeVariationsSeedStoreTest, testLateSeedFetched) {
   GetLocalState()->SetString(variations::prefs::kVariationsSeedSignature,
                              "seed");
 
-  EXPECT_EQ([IOSChromeVariationsSeedStore seedApplicationStage],
+  ASSERT_EQ([IOSChromeVariationsSeedStore seedApplicationStage],
             SeedApplicationStage::kNoSeed);
   // Simulate seed fetch.
   [IOSChromeVariationsSeedStore updateSharedSeed:GetSeed(/*valid=*/true)];

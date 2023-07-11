@@ -37,9 +37,6 @@ const char kIOSChromeVariationsTrialControlGroup[] = "Control-v1";
 const char kIOSChromeVariationsTrialEnabledGroup[] = "Enabled-v1";
 // Histogram name for seed expiry.
 const char kIOSSeedExpiryHistogram[] = "IOS.Variations.CreateTrials.SeedExpiry";
-// Histogram name for seed application stage.
-const char kIOSSeedApplicationStageHistogram[] =
-    "IOS.Variations.FirstRun.SeedApplicationStage";
 
 namespace {
 
@@ -257,9 +254,15 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 - (void)appState:(AppState*)appState
     willTransitionToInitStage:(InitStage)nextInitStage {
   if (self.appState.initStage == InitStageBrowserObjectsForBackgroundHandlers) {
-    if (_group == IOSChromeVariationsGroup::kEnabled) {
+    // Records whether the fetched seed for first run has been applied, and if
+    // not, which stage has the seed application process reached.
+    //
+    // Note that this check is used to makes sure this metric only gets logged
+    // on first run, so that subsequent runs in the `Enabled` group would not
+    // contaminate the data. There is NO field trial group for `kNotFirstRun`.
+    if (_group != IOSChromeVariationsGroup::kNotFirstRun) {
       base::UmaHistogramEnumeration(
-          kIOSSeedApplicationStageHistogram,
+          "IOS.Variations.FirstRun.SeedApplicationStage",
           [IOSChromeVariationsSeedStore seedApplicationStage]);
     }
     ActivateFieldTrialForGroup(_group);
