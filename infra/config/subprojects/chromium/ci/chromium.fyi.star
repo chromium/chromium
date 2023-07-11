@@ -1679,6 +1679,9 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "cros",
     ),
+    # TODO(b/285080767): increase reclient.jobs.HIGH_JOBS_FOR_CQ to 500 and
+    # remove this.
+    reclient_jobs = 500,
 )
 
 build_perf_builder(
