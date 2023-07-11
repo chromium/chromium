@@ -4,19 +4,22 @@
 <canvas id="c" class="output"><p class="fallback">FAIL (fallback content)</p></canvas>
 <script>
 
-var canvas = document.getElementById("c");
+var canvas = new OffscreenCanvas(300, 150);
 var ctx = canvas.getContext('2d');
 
-// P shows as Pass for fontStretch = semi-condensed and shows as fail for
+// P shows as Pass for fontStretch = extra-expanded and shows as fail for
 // fontStretch = fail.
 function draw() {
     ctx.font = '25px test';
-    ctx.fontStretch = "semi-condensed";
+    ctx.fontStretch = "extra-expanded";
     ctx.fillText("P", 10, 40);
+    document.getElementById('c')
+            .getContext("bitmaprenderer")
+            .transferFromImageBitmap(canvas.transferToImageBitmap());
 }
 
 var f = new FontFace('test', 'url(/fonts/pass.woff)');
-f.stretch = "semi-condensed";
+f.stretch = "extra-expanded";
 document.fonts.add(f);
 
 var f2 = new FontFace('test', 'url(/fonts/fail.woff)');

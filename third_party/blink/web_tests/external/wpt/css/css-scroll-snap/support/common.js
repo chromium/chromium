@@ -57,12 +57,8 @@ function waitForAnimationEnd(getValue) {
 
 
 function waitForEvent(eventTarget, type) {
-  return new Promise((resolve, reject) => {
-    const eventListener = (evt) => {
-      eventTarget.removeEventListener('scroll', eventListener);
-      resolve(evt);
-    };
-    eventTarget.addEventListener(type, eventListener);
+  return new Promise(resolve => {
+    eventTarget.addEventListener(type, resolve, { once: true });
   });
 }
 
