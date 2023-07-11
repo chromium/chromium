@@ -395,32 +395,15 @@ void ThirdPartyMetricsObserver::RecordMetrics(
     return;
 
   int cookie_origin_reads = 0;
-  int cookie_origin_writes = 0;
-  int local_storage_origin_access = 0;
-  int session_storage_origin_access = 0;
 
   for (auto it : all_third_party_info_) {
     const ThirdPartyInfo& tpi = it.second;
     if (tpi.access_types[static_cast<size_t>(AccessType::kCookieRead)])
       ++cookie_origin_reads;
-    if (tpi.access_types[static_cast<size_t>(AccessType::kCookieWrite)])
-      ++cookie_origin_writes;
-    if (tpi.access_types[static_cast<size_t>(AccessType::kLocalStorage)])
-      ++local_storage_origin_access;
-    if (tpi.access_types[static_cast<size_t>(AccessType::kSessionStorage)])
-      ++session_storage_origin_access;
   }
 
   UMA_HISTOGRAM_COUNTS_1000("PageLoad.Clients.ThirdParty.Origins.CookieRead2",
                             cookie_origin_reads);
-  UMA_HISTOGRAM_COUNTS_1000("PageLoad.Clients.ThirdParty.Origins.CookieWrite2",
-                            cookie_origin_writes);
-  UMA_HISTOGRAM_COUNTS_1000(
-      "PageLoad.Clients.ThirdParty.Origins.LocalStorageAccess2",
-      local_storage_origin_access);
-  UMA_HISTOGRAM_COUNTS_1000(
-      "PageLoad.Clients.ThirdParty.Origins.SessionStorageAccess2",
-      session_storage_origin_access);
 
   const page_load_metrics::ContentfulPaintTimingInfo&
       all_frames_largest_contentful_paint =

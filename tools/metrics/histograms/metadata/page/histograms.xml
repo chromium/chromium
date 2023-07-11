@@ -1255,37 +1255,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.ThirdParty.Origins.CookieWrite2"
-    units="Count" expires_after="2022-08-30">
-  <owner>jkarlin@chromium.org</owner>
-  <owner>yaoxia@chromium.org</owner>
-  <summary>
-    The number of third party (in respect to scheme://eTLD+1) origins on a page
-    that changed cookies either via resource response headers or
-    document.cookie.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.ThirdParty.Origins.LocalStorageAccess2"
-    units="Count" expires_after="2022-08-30">
-  <owner>yaoxia@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    The number of third-parties (in respect to scheme://eTLD+1) on a page that
-    access local storage via window.localStorage.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.ThirdParty.Origins.SessionStorageAccess2"
-    units="Count" expires_after="2022-08-30">
-  <owner>yaoxia@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    The number of third-parties (in respect to scheme://eTLD+1) on a page that
-    access session storage via window.sessionStorage.
-  </summary>
-</histogram>
-
 <histogram
     name="PageLoad.Clients.ThirdParty.PaintTiming.NavigationToLargestContentfulPaint.HasThirdPartyFont"
     units="ms" expires_after="2021-12-31">

@@ -20,12 +20,6 @@ namespace {
 
 const char kReadCookieHistogram[] =
     "PageLoad.Clients.ThirdParty.Origins.CookieRead2";
-const char kWriteCookieHistogram[] =
-    "PageLoad.Clients.ThirdParty.Origins.CookieWrite2";
-const char kAccessLocalStorageHistogram[] =
-    "PageLoad.Clients.ThirdParty.Origins.LocalStorageAccess2";
-const char kAccessSessionStorageHistogram[] =
-    "PageLoad.Clients.ThirdParty.Origins.SessionStorageAccess2";
 const char kSubframeFCPHistogram[] =
     "PageLoad.Clients.ThirdParty.Frames.NavigationToFirstContentfulPaint3";
 const char kOpaqueSubframeFCPHistogram[] =
@@ -267,9 +261,6 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest, NoStorageEvent) {
   NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 0, 1);
-  histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 0, 1);
-  histogram_tester.ExpectUniqueSample(kAccessLocalStorageHistogram, 0, 1);
-  histogram_tester.ExpectUniqueSample(kAccessSessionStorageHistogram, 0, 1);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kThirdPartyLocalStorage, 0);
@@ -304,7 +295,6 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 0, 1);
-  histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 0, 1);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kThirdPartyCookieRead, 0);
@@ -329,7 +319,6 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 1, 1);
-  histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kThirdPartyCookieRead, 1);
@@ -359,7 +348,6 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 1, 1);
-  histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kThirdPartyCookieRead, 1);
@@ -388,7 +376,6 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 2, 1);
-  histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 2, 1);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kThirdPartyCookieRead, 1);
@@ -416,7 +403,6 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 0, 1);
-  histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 0, 1);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kThirdPartyCookieRead, 0);
@@ -447,7 +433,6 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 1, 1);
-  histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kThirdPartyCookieRead, 1);
@@ -473,7 +458,6 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
   // No read is counted since no cookie has previously been set.
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 0, 1);
-  histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 0, 1);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kThirdPartyCookieRead, 0);
@@ -501,7 +485,6 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 0, 1);
-  histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kThirdPartyCookieRead, 0);
@@ -512,90 +495,6 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
       "Blink.UseCounter.Features", blink::mojom::WebFeature::kThirdPartyAccess,
       1);
 }
-
-class ThirdPartyDomStorageAccessMetricsObserverBrowserTest
-    : public ThirdPartyMetricsObserverBrowserTest,
-      public ::testing::WithParamInterface<bool /* is_local_access */> {
- public:
-  void InvokeStorageAccessOnFrame(content::RenderFrameHost* frame) const {
-    if (GetParam()) {
-      EXPECT_TRUE(content::ExecJs(frame, "window.localStorage;"));
-    } else {
-      EXPECT_TRUE(content::ExecJs(frame, "window.sessionStorage;"));
-    }
-  }
-
-  const char* DomStorageHistogramName() const {
-    return GetParam() ? kAccessLocalStorageHistogram
-                      : kAccessSessionStorageHistogram;
-  }
-};
-
-IN_PROC_BROWSER_TEST_P(ThirdPartyDomStorageAccessMetricsObserverBrowserTest,
-                       FirstPartyDomStorageAccess) {
-  base::HistogramTester histogram_tester;
-  NavigateToPageWithFrame("a.com");
-  NavigateFrameTo("a.com", "/empty.html");
-  InvokeStorageAccessOnFrame(
-      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
-
-  NavigateToUntrackedUrl();
-
-  histogram_tester.ExpectUniqueSample(DomStorageHistogramName(), 0, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(ThirdPartyDomStorageAccessMetricsObserverBrowserTest,
-                       ThirdPartyDomStorageAccess) {
-  base::HistogramTester histogram_tester;
-  NavigateToPageWithFrame("a.com");
-  NavigateFrameTo("b.com", "/empty.html");
-  InvokeStorageAccessOnFrame(
-      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
-
-  NavigateToUntrackedUrl();
-
-  histogram_tester.ExpectUniqueSample(DomStorageHistogramName(), 1, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(ThirdPartyDomStorageAccessMetricsObserverBrowserTest,
-                       DuplicateThirdPartyDomStorageAccess) {
-  base::HistogramTester histogram_tester;
-  NavigateToPageWithFrame("a.com");
-  NavigateFrameTo("b.com", "/empty.html");
-  InvokeStorageAccessOnFrame(
-      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
-
-  NavigateFrameTo("c.com", "/empty.html");
-  NavigateFrameTo("b.com", "/empty.html");
-  InvokeStorageAccessOnFrame(
-      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
-
-  NavigateToUntrackedUrl();
-
-  histogram_tester.ExpectUniqueSample(DomStorageHistogramName(), 1, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(ThirdPartyDomStorageAccessMetricsObserverBrowserTest,
-                       MultipleThirdPartyDomStorageAccess) {
-  base::HistogramTester histogram_tester;
-  NavigateToPageWithFrame("a.com");
-  NavigateFrameTo("b.com", "/empty.html");
-  InvokeStorageAccessOnFrame(
-      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
-
-  NavigateFrameTo("c.com", "/empty.html");
-  InvokeStorageAccessOnFrame(
-      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
-
-  NavigateToUntrackedUrl();
-
-  histogram_tester.ExpectUniqueSample(DomStorageHistogramName(), 2, 1);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ThirdPartyDomStorageAccessMetricsObserverBrowserTest,
-    ::testing::Values(false, true));
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
                        FirstPartyStorageAccess_UseCounterNotRecorded) {
