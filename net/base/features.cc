@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "net/base/cronet_buildflags.h"
 #include "net/net_buildflags.h"
 
 namespace net::features {
@@ -329,6 +330,15 @@ BASE_FEATURE(kKerberosInBrowserRedirect,
 BASE_FEATURE(kAsyncQuicSession,
              "AsyncQuicSession",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A flag to make multiport context creation asynchronous.
+BASE_FEATURE(kAsyncMultiPortPath,
+             "AsyncMultiPortPath",
+#if !BUILDFLAG(CRONET_BUILD) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // IP protection experiment configuration settings
 BASE_FEATURE(kEnableIpProtectionProxy,

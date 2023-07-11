@@ -364,6 +364,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kKerberosInBrowserRedirect);
 // A flag to use asynchronous session creation for new QUIC sessions.
 NET_EXPORT BASE_DECLARE_FEATURE(kAsyncQuicSession);
 
+// A flag to make multiport context creation asynchronous.
+NET_EXPORT BASE_DECLARE_FEATURE(kAsyncMultiPortPath);
+
 // Enables custom proxy configuration for the IP Protection experimental proxy.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableIpProtectionProxy);
 

@@ -2956,15 +2956,27 @@ void QuicChromiumClientSession::CreateContextForMultiPortPath(
   // Create and configure socket on default network
   std::unique_ptr<DatagramClientSocket> probing_socket =
       stream_factory_->CreateSocket(net_log_.net_log(), net_log_.source());
-  DatagramClientSocket* probing_socket_ptr = probing_socket.get();
-  CompletionOnceCallback configure_callback = base::BindOnce(
-      &QuicChromiumClientSession::FinishCreateContextForMultiPortPath,
-      weak_factory_.GetWeakPtr(), std::move(context_observer),
-      std::move(probing_socket));
-  stream_factory_->ConnectAndConfigureSocket(
-      std::move(configure_callback), probing_socket_ptr,
-      ToIPEndPoint(peer_address()), default_network_,
-      session_key_.socket_tag());
+  if (base::FeatureList::IsEnabled(net::features::kAsyncMultiPortPath)) {
+    DatagramClientSocket* probing_socket_ptr = probing_socket.get();
+    CompletionOnceCallback configure_callback = base::BindOnce(
+        &QuicChromiumClientSession::FinishCreateContextForMultiPortPath,
+        weak_factory_.GetWeakPtr(), std::move(context_observer),
+        std::move(probing_socket));
+    stream_factory_->ConnectAndConfigureSocket(
+        std::move(configure_callback), probing_socket_ptr,
+        ToIPEndPoint(peer_address()), default_network_,
+        session_key_.socket_tag());
+    return;
+  }
+
+  if (stream_factory_->ConfigureSocket(
+          probing_socket.get(), ToIPEndPoint(peer_address()), default_network_,
+          session_key_.socket_tag()) != OK) {
+    return;
+  }
+
+  FinishCreateContextForMultiPortPath(std::move(context_observer),
+                                      std::move(probing_socket), OK);
 }
 
 void QuicChromiumClientSession::FinishCreateContextForMultiPortPath(
@@ -2973,6 +2985,7 @@ void QuicChromiumClientSession::FinishCreateContextForMultiPortPath(
     int rv) {
   if (rv != OK) {
     context_observer->OnMultiPortPathContextAvailable(nullptr);
+    return;
   }
   // Create new packet writer and reader on the probing socket.
   auto probing_writer = std::make_unique<QuicChromiumPacketWriter>(
