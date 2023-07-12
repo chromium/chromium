@@ -391,8 +391,15 @@ void CellularPolicyHandler::OnConfigureESimService(
   current_request->retry_backoff.InformOfRequest(/*succeeded=*/true);
   const std::string* iccid =
       policy_util::GetIccidFromONC(current_request->onc_config);
-  // TODO(b/278135304): Implement ash::features::IsSmdsSupportEnabled().
-  if (!ash::features::IsSmdsSupportEnabled()) {
+  DCHECK(iccid);
+
+  if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+    const std::string* name =
+        current_request->onc_config.FindString(::onc::network_config::kName);
+    DCHECK(name);
+    managed_cellular_pref_handler_->AddESimMetadata(
+        *iccid, *name, current_request->activation_code);
+  } else {
     managed_cellular_pref_handler_->AddIccidSmdpPair(
         *iccid, current_request->activation_code.value());
   }
@@ -520,8 +527,16 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
   current_request->retry_backoff.InformOfRequest(/*succeeded=*/true);
   HermesProfileClient::Properties* profile_properties =
       HermesProfileClient::Get()->GetProperties(*profile_path);
-  // TODO(b/278135304): Implement ash::features::IsSmdsSupportEnabled().
-  if (!ash::features::IsSmdsSupportEnabled()) {
+
+  if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+    const std::string* name =
+        current_request->onc_config.FindString(::onc::network_config::kName);
+    DCHECK(name);
+    managed_cellular_pref_handler_->AddESimMetadata(
+        profile_properties->iccid().value(), *name,
+        current_request->activation_code,
+        /*sync_stub_networks=*/false);
+  } else {
     managed_cellular_pref_handler_->AddIccidSmdpPair(
         profile_properties->iccid().value(),
         current_request->activation_code.value(),

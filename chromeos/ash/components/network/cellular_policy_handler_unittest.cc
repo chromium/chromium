@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
-#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,6 +18,7 @@
 #include "chromeos/ash/components/network/cellular_esim_installer.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
+#include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -255,12 +255,12 @@ class CellularPolicyHandlerTest : public testing::Test {
 
   bool HasShillConfiguration(const std::string& guid,
                              const std::string& iccid) {
-    const std::string service_path =
+    const std::string shill_service_path =
         ShillServiceClient::Get()->GetTestInterface()->FindServiceMatchingGUID(
             guid);
     const base::Value::Dict* properties =
         ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
-            service_path);
+            shill_service_path);
 
     if (!properties) {
       LOG(INFO) << "Failed to find Shill service properties";
@@ -285,9 +285,17 @@ class CellularPolicyHandlerTest : public testing::Test {
     return properties->FindString(shill::kUIDataProperty);
   }
 
-  bool HasIccidMetadata(bool expected) {
-    // TODO(b/282998387): Implement me.
-    return expected;
+  bool HasESimMetadata(const std::string& activation_code_value) {
+    HermesProfileClient::Properties* profile_properties =
+        FindProfileProperties(activation_code_value);
+    if (!profile_properties) {
+      LOG(INFO) << "Failed to find Hermes profile properties";
+      return false;
+    }
+    return NetworkHandler::Get()
+               ->managed_cellular_pref_handler()
+               ->GetESimMetadata(profile_properties->iccid().value()) !=
+           nullptr;
   }
 
   void CheckCurrentEuiccSlot(int32_t physical_slot) {
@@ -326,6 +334,25 @@ class CellularPolicyHandlerTest : public testing::Test {
     EXPECT_EQ(static_cast<int64_t>(state.smds_scan_profile_sum),
               histogram_tester_.GetTotalSum(
                   CellularNetworkMetricsLogger::kSmdsScanProfileCount));
+  }
+
+  // This functionality was explicitly separated from InstallProfile() since
+  // multiple tests involve attempting, and failing, to install an eSIM profile.
+  // By separating the installation and auto-connect logic we can simply call
+  // this method specifically when we expect the installation to succeed.
+  void CompleteShillServiceAutoConnect(const base::Value::Dict& onc_config) {
+    const std::string* shill_guid = onc_config.FindString(shill::kGuidProperty);
+    ASSERT_TRUE(shill_guid);
+
+    const std::string shill_service_path =
+        ShillServiceClient::Get()->GetTestInterface()->FindServiceMatchingGUID(
+            *shill_guid);
+    EXPECT_FALSE(shill_service_path.empty());
+
+    ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(
+        shill_service_path, shill::kStateProperty,
+        base::Value(shill::kStateOnline));
+    base::RunLoop().RunUntilIdle();
   }
 
   void FastForwardBy(base::TimeDelta delay) {
@@ -447,9 +474,11 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
         CellularInhibitor::InhibitReason::kRequestingAvailableProfiles);
   }
 
+  CompleteShillServiceAutoConnect(*onc_config);
+
   EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
                                  /*check_for_service=*/true));
-  EXPECT_TRUE(HasIccidMetadata(/*expected=*/true));
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
   expected_state.success_initial_count++;
   CheckHistogramState(expected_state);
 }
@@ -505,9 +534,11 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
         CellularInhibitor::InhibitReason::kRequestingAvailableProfiles);
   }
 
+  CompleteShillServiceAutoConnect(*onc_config);
+
   EXPECT_TRUE(IsProfileInstalled(*onc_config, different_activation_code_value,
                                  /*check_for_service=*/true));
-  EXPECT_TRUE(HasIccidMetadata(/*expected=*/true));
+  EXPECT_TRUE(HasESimMetadata(different_activation_code_value));
   expected_state.success_initial_count++;
   expected_state.smds_scan_profile_total_count++;
   expected_state.smds_scan_profile_sum++;
@@ -606,9 +637,11 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   InstallProfile(*onc_config);
 
+  CompleteShillServiceAutoConnect(*onc_config);
+
   EXPECT_TRUE(IsProfileInstalled(*onc_config, different_activation_code_value,
                                  /*check_for_service=*/true));
-  EXPECT_TRUE(HasIccidMetadata(/*expected=*/true));
+  EXPECT_TRUE(HasESimMetadata(different_activation_code_value));
   expected_state.success_initial_count++;
   expected_state.smds_scan_profile_total_count++;
   expected_state.smds_scan_profile_sum = 5;
@@ -638,16 +671,18 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
                                   /*check_for_service=*/true));
-  EXPECT_FALSE(HasIccidMetadata(/*expected=*/false));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   CheckHistogramState(expected_state);
 
   AddCellularDevice();
 
   FastForwardRefreshDelay();
 
+  CompleteShillServiceAutoConnect(*onc_config);
+
   EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
                                  /*check_for_service=*/true));
-  EXPECT_TRUE(HasIccidMetadata(/*expected=*/true));
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
   expected_state.success_initial_count++;
   CheckHistogramState(expected_state);
 }
@@ -675,16 +710,18 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
                                   /*check_for_service=*/true));
-  EXPECT_FALSE(HasIccidMetadata(/*expected=*/false));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   CheckHistogramState(expected_state);
 
   AddEuiccs();
 
   FastForwardRefreshDelay();
 
+  CompleteShillServiceAutoConnect(*onc_config);
+
   EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
                                  /*check_for_service=*/true));
-  EXPECT_TRUE(HasIccidMetadata(/*expected=*/true));
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
   expected_state.success_initial_count++;
   CheckHistogramState(expected_state);
 }
@@ -714,7 +751,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   // considered failed, and will be retried after a delay.
   EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
                                   /*check_for_service=*/true));
-  EXPECT_FALSE(HasIccidMetadata(/*expected=*/false));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   CheckHistogramState(expected_state);
 
   AddWiFi();
@@ -725,14 +762,16 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
                                   /*check_for_service=*/true));
-  EXPECT_FALSE(HasIccidMetadata(/*expected=*/false));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   CheckHistogramState(expected_state);
 
   FastForwardBy(base::Minutes(1));
 
+  CompleteShillServiceAutoConnect(*onc_config);
+
   EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
                                  /*check_for_service=*/true));
-  EXPECT_TRUE(HasIccidMetadata(/*expected=*/true));
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
   expected_state.success_retry_count++;
   CheckHistogramState(expected_state);
 }
@@ -767,7 +806,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
                                  /*check_for_service=*/false));
-  EXPECT_TRUE(HasIccidMetadata(/*expected=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
 
   const base::Value::Dict* properties =
       network_handler_test_helper()->service_test()->GetServiceProperties(
@@ -780,6 +819,10 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   cellular_policy_handler()->InstallESim(*onc_config);
 
   FastForwardRefreshDelay();
+
+  CompleteShillServiceAutoConnect(*onc_config);
+
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
 
   CheckHistogramState(expected_state);
 }
@@ -840,7 +883,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
                                   /*check_for_service=*/true));
-  EXPECT_FALSE(HasIccidMetadata(/*expected=*/false));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   expected_state.smds_scan_profile_total_count++;
   expected_state.smds_scan_profile_sum++;
   CheckHistogramState(expected_state);
@@ -873,7 +916,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
                                   /*check_for_service=*/true));
-  EXPECT_FALSE(HasIccidMetadata(/*expected=*/false));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   expected_state.hermes_install_failed_initial_count++;
   CheckHistogramState(expected_state);
 
@@ -892,7 +935,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
                                   /*check_for_service=*/true));
-  EXPECT_FALSE(HasIccidMetadata(/*expected=*/false));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   expected_state.hermes_install_failed_retry_count++;
   CheckHistogramState(expected_state);
 
@@ -908,16 +951,18 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
                                   /*check_for_service=*/true));
-  EXPECT_FALSE(HasIccidMetadata(/*expected=*/false));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   expected_state.hermes_install_failed_retry_count++;
   CheckHistogramState(expected_state);
 
   // Please see the comment above for more context.
   FastForwardBy(base::Minutes(40));
 
+  CompleteShillServiceAutoConnect(*onc_config);
+
   EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
                                  /*check_for_service=*/true));
-  EXPECT_TRUE(HasIccidMetadata(/*expected=*/true));
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
   expected_state.success_retry_count++;
   CheckHistogramState(expected_state);
 }
@@ -949,7 +994,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
                                   /*check_for_service=*/true));
-  EXPECT_FALSE(HasIccidMetadata(/*expected=*/false));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   expected_state.hermes_install_failed_initial_count++;
   CheckHistogramState(expected_state);
 
@@ -968,7 +1013,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
                                   /*check_for_service=*/true));
-  EXPECT_FALSE(HasIccidMetadata(/*expected=*/false));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   expected_state.hermes_install_failed_retry_count++;
   CheckHistogramState(expected_state);
 
@@ -985,7 +1030,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
     EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
                                     /*check_for_service=*/true));
-    EXPECT_FALSE(HasIccidMetadata(/*expected=*/false));
+    EXPECT_FALSE(HasESimMetadata(activation_code.value()));
     expected_state.hermes_install_failed_retry_count++;
     CheckHistogramState(expected_state);
   }
@@ -997,7 +1042,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
                                   /*check_for_service=*/true));
-  EXPECT_FALSE(HasIccidMetadata(/*expected=*/false));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   CheckHistogramState(expected_state);
 }
 
@@ -1028,7 +1073,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
                                   /*check_for_service=*/true));
-  EXPECT_FALSE(HasIccidMetadata(/*expected=*/false));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   expected_state.hermes_install_failed_initial_count++;
   CheckHistogramState(expected_state);
 
@@ -1038,7 +1083,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
                                   /*check_for_service=*/true));
-  EXPECT_FALSE(HasIccidMetadata(/*expected=*/false));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   CheckHistogramState(expected_state);
 }
 
@@ -1064,9 +1109,11 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccEnabled,
 
   InstallProfile(*onc_config);
 
+  CompleteShillServiceAutoConnect(*onc_config);
+
   EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
                                  /*check_for_service=*/true));
-  EXPECT_TRUE(HasIccidMetadata(/*expected=*/true));
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
   expected_state.success_initial_count++;
   CheckHistogramState(expected_state);
 }
