@@ -381,6 +381,10 @@ TFLiteOpResolver::TFLiteOpResolver() {
              tflite::ops::builtin::Register_GELU(),
              /* min_version = */ 1,
              /* max_version = */ 2);
+  AddBuiltin(tflite::BuiltinOperator_RANDOM_STANDARD_NORMAL,
+             tflite::ops::builtin::Register_RANDOM_STANDARD_NORMAL());
+  AddBuiltin(tflite::BuiltinOperator_RANDOM_UNIFORM,
+             tflite::ops::builtin::Register_RANDOM_UNIFORM());
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   if (features::TFLiteXNNPACKDelegateEnabled()) {

@@ -222,7 +222,7 @@ enum ModelEngineVersion {
   // A model using only operations that are supported by TensorflowLite 2.9.0.
   MODEL_ENGINE_VERSION_TFLITE_2_9 = 7;
   // A model using only operations that are supported by TensorflowLite 2.9.0.
-  // This adds GELU to the supported ops in Optimiziation Guide.
+  // This adds GELU to the supported ops in Optimization Guide.
   MODEL_ENGINE_VERSION_TFLITE_2_9_0_1 = 8;
   // A model using only operations that are supported by TensorflowLite 2.10.0.
   MODEL_ENGINE_VERSION_TFLITE_2_10 = 9;
@@ -234,6 +234,10 @@ enum ModelEngineVersion {
   MODEL_ENGINE_VERSION_TFLITE_2_13 = 12;
   // A model using only operations that are supported by TensorflowLite 2.14.0.
   MODEL_ENGINE_VERSION_TFLITE_2_14 = 13;
+  // A model using only operations that are supported by TensorflowLite 2.14.0.
+  // This adds RANDOM_UNIFORM and RANDOM_STANDARD_NORMAL to the supported opts
+  // in Optimization Guide.
+  MODEL_ENGINE_VERSION_TFLITE_2_14_1 = 14;
 }
 
 // The set of parameters that the server can use to vary the served model for
