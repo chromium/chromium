@@ -18,7 +18,6 @@ static_library("minidump_uploader") {
     ":minidump_uploader_jni_headers",
     "//base",
     "//components/crash/android:anr_skipped_reason",
-    "//components/crash/android:crash_android",
     "//components/version_info",
     "//components/version_info/android:channel_getter",
     "//third_party/crashpad/crashpad/client",

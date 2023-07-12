@@ -1,3 +1,0 @@
-# TODO(crbug.com/1455096): This resource was moved from the weblayer allowlist.
-# Figure out if this is actually needed and merge with the actual list if so.
-IDR_SAD_WEBVIEW
