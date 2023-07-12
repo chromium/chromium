@@ -2,6 +2,7 @@
 # Instead:
 # 1. Modify //infra/config/targets/mixins.star
 # 2. Run //infra/config/main.star
+# 3. Run //infra/config/scripts/sync-py-files.py
 
 {
   '10-x86-emulator': {
