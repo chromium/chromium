@@ -5142,7 +5142,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter',
         ],
         'swarming': {
-          'shards': 9,
+          'shards': 11, # crbug.com/1294924
         },
       },
       # Keep this same as android-nougat-x86-rel above
