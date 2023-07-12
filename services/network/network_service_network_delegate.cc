@@ -19,6 +19,7 @@
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/first_party_sets/same_party_context.h"
+#include "net/url_request/clear_site_data.h"
 #include "net/url_request/referrer_policy.h"
 #include "net/url_request/url_request.h"
 #include "services/network/cookie_manager.h"
@@ -34,12 +35,6 @@
 #endif
 
 namespace network {
-
-namespace {
-
-const char kClearSiteDataHeader[] = "Clear-Site-Data";
-
-}  // anonymous namespace
 
 NetworkServiceNetworkDelegate::NetworkServiceNetworkDelegate(
     bool enable_referrers,
@@ -361,7 +356,7 @@ int NetworkServiceNetworkDelegate::HandleClearSiteDataHeader(
     return net::OK;
 
   std::string header_value;
-  if (!original_response_headers->GetNormalizedHeader(kClearSiteDataHeader,
+  if (!original_response_headers->GetNormalizedHeader(net::kClearSiteDataHeader,
                                                       &header_value)) {
     return net::OK;
   }

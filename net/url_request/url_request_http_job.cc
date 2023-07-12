@@ -83,6 +83,7 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/ssl/ssl_connection_status_flags.h"
+#include "net/url_request/clear_site_data.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -864,6 +865,22 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
     return;
   }
 
+  HttpResponseHeaders* headers = GetResponseHeaders();
+
+  // If we're clearing the cookies as part of a clear-site-data header we must
+  // not also write new ones in the same response.
+  bool clear_site_data_prevents_cookies_from_being_stored = false;
+  std::string clear_site_data_header;
+  headers->GetNormalizedHeader(kClearSiteDataHeader, &clear_site_data_header);
+  std::vector<std::string> clear_site_data_types =
+      ClearSiteDataHeaderContents(clear_site_data_header);
+  std::set<std::string> clear_site_data_set(clear_site_data_types.begin(),
+                                            clear_site_data_types.end());
+  // TODO(crbug.com/1464260): Add support for wildcard clears too.
+  if (clear_site_data_set.find(kDatatypeCookies) != clear_site_data_set.end()) {
+    clear_site_data_prevents_cookies_from_being_stored = true;
+  }
+
   base::Time response_date;
   absl::optional<base::Time> server_time = absl::nullopt;
   if (GetResponseHeaders()->GetDateValue(&response_date))
@@ -897,7 +914,6 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   const base::StringPiece name("Set-Cookie");
   std::string cookie_string;
   size_t iter = 0;
-  HttpResponseHeaders* headers = GetResponseHeaders();
 
   // NotifyHeadersComplete needs to be called once and only once after the
   // list has been fully processed, and it can either be called in the
@@ -926,6 +942,10 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
     if (cookie && !CanSetCookie(*cookie, &options)) {
       returned_status.AddExclusionReason(
           CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+    }
+    if (clear_site_data_prevents_cookies_from_being_stored) {
+      returned_status.AddExclusionReason(
+          CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
     }
     if (!returned_status.IsInclude()) {
       OnSetCookieResult(options, cookie_to_return, std::move(cookie_string),

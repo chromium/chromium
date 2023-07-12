@@ -16,21 +16,13 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/load_flags.h"
+#include "net/url_request/clear_site_data.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 namespace content {
 
 namespace {
-
-// Datatypes.
-const char kDatatypeWildcard[] = "\"*\"";
-const char kDatatypeCookies[] = "\"cookies\"";
-const char kDatatypeStorage[] = "\"storage\"";
-const char kDatatypeStorageBucketPrefix[] = "\"storage:";
-const char kDatatypeStorageBucketSuffix[] = "\"";
-const char kDatatypeCache[] = "\"cache\"";
-const char kDatatypeClientHints[] = "\"clientHints\"";
 
 // Pretty-printed log output.
 const char kConsoleMessageTemplate[] = "Clear-Site-Data header on '%s': %s";
@@ -275,32 +267,33 @@ bool ClearSiteDataHandler::ParseHeader(
 
   clear_site_data_types->Clear();
 
-  std::vector<std::string> input_types = base::SplitString(
-      header, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string> input_types =
+      net::ClearSiteDataHeaderContents(header);
   std::string output_types;
 
   if (AreExperimentalFeaturesEnabled() &&
-      std::find(input_types.begin(), input_types.end(), kDatatypeWildcard) !=
-          input_types.end()) {
-    input_types.push_back(kDatatypeCookies);
-    input_types.push_back(kDatatypeStorage);
-    input_types.push_back(kDatatypeCache);
+      std::find(input_types.begin(), input_types.end(),
+                net::kDatatypeWildcard) != input_types.end()) {
+    input_types.push_back(net::kDatatypeCookies);
+    input_types.push_back(net::kDatatypeStorage);
+    input_types.push_back(net::kDatatypeCache);
     if (base::FeatureList::IsEnabled(
             features::kClearSiteDataClientHintsSupport)) {
-      input_types.push_back(kDatatypeClientHints);
+      input_types.push_back(net::kDatatypeClientHints);
     }
   }
 
   for (auto& input_type : input_types) {
     // Match here if the beginning is '"storage:' and ends with '"'.
     if (base::FeatureList::IsEnabled(blink::features::kStorageBuckets) &&
-        base::StartsWith(input_type, kDatatypeStorageBucketPrefix) &&
-        base::EndsWith(input_type, kDatatypeStorageBucketSuffix)) {
-      const int prefix_len = strlen(kDatatypeStorageBucketPrefix);
+        base::StartsWith(input_type, net::kDatatypeStorageBucketPrefix) &&
+        base::EndsWith(input_type, net::kDatatypeStorageBucketSuffix)) {
+      const int prefix_len = strlen(net::kDatatypeStorageBucketPrefix);
 
       const std::string bucket_name = input_type.substr(
-          prefix_len, input_type.length() -
-                          (prefix_len + strlen(kDatatypeStorageBucketSuffix)));
+          prefix_len,
+          input_type.length() -
+              (prefix_len + strlen(net::kDatatypeStorageBucketSuffix)));
 
       if (IsValidBucketName(bucket_name))
         storage_buckets_to_remove->insert(bucket_name);
@@ -311,18 +304,18 @@ bool ClearSiteDataHandler::ParseHeader(
     }
 
     ClearSiteDataType data_type = ClearSiteDataType::kUndefined;
-    if (input_type == kDatatypeCookies) {
+    if (input_type == net::kDatatypeCookies) {
       data_type = ClearSiteDataType::kCookies;
-    } else if (input_type == kDatatypeStorage) {
+    } else if (input_type == net::kDatatypeStorage) {
       data_type = ClearSiteDataType::kStorage;
-    } else if (input_type == kDatatypeCache) {
+    } else if (input_type == net::kDatatypeCache) {
       data_type = ClearSiteDataType::kCache;
     } else if (base::FeatureList::IsEnabled(
                    features::kClearSiteDataClientHintsSupport) &&
-               input_type == kDatatypeClientHints) {
+               input_type == net::kDatatypeClientHints) {
       data_type = ClearSiteDataType::kClientHints;
     } else if (AreExperimentalFeaturesEnabled() &&
-               input_type == kDatatypeWildcard) {
+               input_type == net::kDatatypeWildcard) {
       continue;
     } else {
       delegate->AddMessage(

@@ -1016,6 +1016,8 @@ component("net") {
     "ssl/ssl_server_config.h",
     "ssl/threaded_ssl_private_key.cc",
     "ssl/threaded_ssl_private_key.h",
+    "url_request/clear_site_data.cc",
+    "url_request/clear_site_data.h",
     "url_request/redirect_info.cc",
     "url_request/redirect_info.h",
     "url_request/redirect_util.cc",
