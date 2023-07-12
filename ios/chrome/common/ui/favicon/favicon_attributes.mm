@@ -98,8 +98,9 @@ NSString* const kFaviconDefaultImageKey = @"faviconDefaultImage";
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
-  [aCoder encodeObject:UIImagePNGRepresentation(_faviconImage)
-                forKey:kFaviconImageKey];
+  [aCoder
+      encodeObject:_faviconImage ? UIImagePNGRepresentation(_faviconImage) : nil
+            forKey:kFaviconImageKey];
   [aCoder encodeObject:_monogramString forKey:kFaviconMonogramKey];
   [aCoder encodeObject:_textColor forKey:kFaviconTextColorKey];
   [aCoder encodeObject:_backgroundColor forKey:kFaviconBackgroundColorKey];
