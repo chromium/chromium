@@ -250,7 +250,7 @@ void BasicShapeXYWH::GetPath(Path& path,
   DCHECK(path.IsEmpty());
   gfx::RectF rect(FloatValueForLength(x_, bounding_box.width()),
                   FloatValueForLength(y_, bounding_box.height()),
-                  FloatValueForLength(width_, bounding_box.height()),
+                  FloatValueForLength(width_, bounding_box.width()),
                   FloatValueForLength(height_, bounding_box.height()));
 
   gfx::SizeF box_size = bounding_box.size();
