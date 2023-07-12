@@ -56,6 +56,10 @@ const CGFloat kIconCornerRadius = 5.0;
 const CGFloat kFaviconShadowRadius = 3.0;
 const CGFloat kFaviconShadowOpacity = 0.2;
 const CGFloat kFaviconShadowYOffset = 1;
+const CGFloat kFaviconSize = 24.0;
+const CGFloat kFavIconCornerRadius = 5.0;
+const CGFloat kFaviconContainerSize = 36.0;
+const CGFloat kFavIconContainerCornerRadius = 7.0;
 
 // Gesture constants.
 const CGFloat kChangeInPositionForDismissal = -15.0;
@@ -422,20 +426,32 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   faviconContainerView.layer.shadowRadius = kFaviconShadowRadius;
   faviconContainerView.layer.shadowOpacity = kFaviconShadowOpacity;
 
+  UIView* faviconBackgroundContainerView = [[UIView alloc] init];
+  faviconBackgroundContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  faviconBackgroundContainerView.layer.cornerRadius =
+      kFavIconContainerCornerRadius;
+  faviconBackgroundContainerView.backgroundColor =
+      [UIColor colorNamed:kBackgroundColor];
+  [faviconContainerView addSubview:faviconBackgroundContainerView];
+
   UIImageView* faviconImageView =
       [[UIImageView alloc] initWithImage:self.faviconImage];
   faviconImageView.clipsToBounds = YES;
   faviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  faviconImageView.layer.cornerRadius = kIconCornerRadius;
-  [faviconContainerView addSubview:faviconImageView];
+  faviconImageView.layer.cornerRadius = kFavIconCornerRadius;
+  faviconImageView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  [faviconBackgroundContainerView addSubview:faviconImageView];
 
   [NSLayoutConstraint activateConstraints:@[
     [faviconContainerView.widthAnchor
-        constraintEqualToConstant:kInfobarBannerIconSize],
+        constraintEqualToConstant:kFaviconContainerSize],
     [faviconContainerView.heightAnchor
-        constraintEqualToConstant:kInfobarBannerIconSize],
+        constraintEqualToConstant:kFaviconContainerSize],
+    [faviconImageView.widthAnchor constraintEqualToConstant:kFaviconSize],
+    [faviconImageView.heightAnchor constraintEqualToConstant:kFaviconSize],
   ]];
-  AddSameConstraints(faviconContainerView, faviconImageView);
+  AddSameConstraints(faviconContainerView, faviconBackgroundContainerView);
+  AddSameCenterConstraints(faviconContainerView, faviconImageView);
 
   return faviconContainerView;
 }
