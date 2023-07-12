@@ -32,6 +32,9 @@ class PasswordStatusCheckService
   size_t weak_credential_count() { return weak_credential_count_; }
   size_t reused_credential_count() { return reused_credential_count_; }
 
+  // Register a delayed task running the password check.
+  void StartRepeatedUpdates();
+
   // Triggers an update to cached credential issues. Will start initialization
   // of `saved_passwords_presenter_` and observes `OnSavedPasswordsChanged`.
   void UpdateInsecureCredentialCountAsync();

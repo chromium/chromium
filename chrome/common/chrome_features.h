@@ -615,6 +615,9 @@ extern const base::FeatureParam<int>
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kSafetyHub);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kBackgroundPasswordCheckInterval;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

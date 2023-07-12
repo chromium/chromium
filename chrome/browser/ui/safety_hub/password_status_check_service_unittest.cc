@@ -6,10 +6,14 @@
 
 #include <string>
 
+#include "base/json/values_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -64,7 +68,6 @@ class PasswordStatusCheckServiceTest
     PasswordForm form = MakeInsecurePassword(type);
     password_store_->AddLogin(form);
   }
-  TestPasswordStore& store() { return *password_store_; }
 
   void UpdateInsecureCredentials() {
     base::RunLoop loop;
@@ -74,6 +77,7 @@ class PasswordStatusCheckServiceTest
     loop.Run();
   }
 
+  TestingProfile& profile() { return profile_; }
   PasswordStatusCheckService& service() { return service_; }
 
   bool include_weak() const { return std::get<0>(GetParam()); }
@@ -129,6 +133,64 @@ TEST_F(PasswordStatusCheckServiceTest, RepeatedlyUpdatingDoesNotCrash) {
   }
   loop.Run();
   EXPECT_FALSE(service().IsObservingSavedPasswordsPresenterForTesting());
+}
+
+TEST_F(PasswordStatusCheckServiceTest, PrefInitialized) {
+  ASSERT_TRUE(profile().GetPrefs()->HasPrefPath(
+      safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval));
+  const base::Value::Dict& check_schedule_dict = profile().GetPrefs()->GetDict(
+      safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval);
+
+  absl::optional<base::TimeDelta> interval_used_for_scheduling =
+      base::ValueToTimeDelta(check_schedule_dict.Find(
+          safety_hub_prefs::kPasswordCheckIntervalKey));
+  ASSERT_TRUE(interval_used_for_scheduling.has_value());
+  ASSERT_EQ(interval_used_for_scheduling.value(),
+            features::kBackgroundPasswordCheckInterval.Get());
+
+  absl::optional<base::Time> check_time = base::ValueToTime(
+      check_schedule_dict.Find(safety_hub_prefs::kNextPasswordCheckTimeKey));
+  ASSERT_TRUE(check_time.has_value());
+  ASSERT_GE(check_time.value(), base::Time::Now());
+  ASSERT_LT(check_time.value(),
+            base::Time::Now() + interval_used_for_scheduling.value());
+}
+
+// If interval changes, the scheduled time at which the password check runs
+// should be recomputed when `StartRepeatedUpdates` runs.
+TEST_F(PasswordStatusCheckServiceTest, CheckTimeUpdatedOnIntervalChange) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params_before;
+  params_before[features::kBackgroundPasswordCheckInterval.name] = "10d";
+  feature_list.InitAndEnableFeatureWithParameters(features::kSafetyHub,
+                                                  params_before);
+
+  service().StartRepeatedUpdates();
+
+  const base::Value::Dict& dict_before = profile().GetPrefs()->GetDict(
+      safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval);
+  absl::optional<base::TimeDelta> interval_before = base::ValueToTimeDelta(
+      dict_before.Find(safety_hub_prefs::kPasswordCheckIntervalKey));
+  absl::optional<base::Time> check_time_before = base::ValueToTime(
+      dict_before.Find(safety_hub_prefs::kNextPasswordCheckTimeKey));
+
+  base::FieldTrialParams params_after;
+  params_after[features::kBackgroundPasswordCheckInterval.name] = "20d";
+  feature_list.Reset();
+  feature_list.InitAndEnableFeatureWithParameters(features::kSafetyHub,
+                                                  params_after);
+
+  service().StartRepeatedUpdates();
+
+  const base::Value::Dict& dict_after = profile().GetPrefs()->GetDict(
+      safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval);
+  absl::optional<base::TimeDelta> interval_after = base::ValueToTimeDelta(
+      dict_after.Find(safety_hub_prefs::kPasswordCheckIntervalKey));
+  absl::optional<base::Time> check_time_after = base::ValueToTime(
+      dict_after.Find(safety_hub_prefs::kNextPasswordCheckTimeKey));
+
+  ASSERT_EQ(interval_before.value() * 2, interval_after.value());
+  ASSERT_NE(check_time_before.value(), check_time_after.value());
 }
 
 INSTANTIATE_TEST_SUITE_P(
