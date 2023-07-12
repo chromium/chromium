@@ -78,14 +78,15 @@ struct AccessDetails {
                 AccessType access_type,
                 GURL url,
                 bool blocked_by_policy,
-                content::RenderFrameHost* render_frame_host);
+                bool is_from_primary_page);
   ~AccessDetails();
 
   SiteDataType site_data_type = SiteDataType::kUnknown;
   AccessType access_type = AccessType::kUnknown;
   GURL url;
   bool blocked_by_policy = false;
-  raw_ptr<content::RenderFrameHost> render_frame_host;
+  // Specifies whether the access occurred in the primary page.
+  bool is_from_primary_page = false;
 };
 
 // TODO(msramek): Media is storing their state in PageSpecificContentSettings:
@@ -399,7 +400,6 @@ class PageSpecificContentSettings
       mojom::ContentSettingsManager::StorageType storage_type,
       const blink::StorageKey& storage_key,
       bool blocked_by_policy,
-      content::RenderFrameHost* rfh = nullptr,
       content::Page* originating_page = nullptr);
   void OnSharedWorkerAccessed(const GURL& worker_url,
                               const std::string& name,

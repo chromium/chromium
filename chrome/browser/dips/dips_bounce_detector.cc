@@ -527,9 +527,7 @@ void DIPSWebContentsObserver::OnSiteDataAccessed(
     return;
   }
 
-  DCHECK(access_details.render_frame_host);
-
-  if (!IsInPrimaryPage(access_details.render_frame_host) ||
+  if (!access_details.is_from_primary_page ||
       access_details.blocked_by_policy) {
     return;
   }

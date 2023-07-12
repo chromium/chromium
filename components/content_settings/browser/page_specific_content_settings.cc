@@ -490,12 +490,12 @@ AccessDetails::AccessDetails(SiteDataType site_data_type,
                              AccessType access_type,
                              GURL url,
                              bool blocked_by_policy,
-                             content::RenderFrameHost* render_frame_host)
+                             bool is_from_primary_page)
     : site_data_type(site_data_type),
       access_type(access_type),
       url(url),
       blocked_by_policy(blocked_by_policy),
-      render_frame_host(render_frame_host) {}
+      is_from_primary_page(is_from_primary_page) {}
 
 AccessDetails::~AccessDetails() = default;
 
@@ -639,8 +639,7 @@ void PageSpecificContentSettings::StorageAccessed(
       settings->OnBrowsingDataAccessed(storage_key, bdm_storage_type,
                                        blocked_by_policy);
     } else {
-      settings->OnStorageAccessed(storage_type, storage_key, blocked_by_policy,
-                                  rfh);
+      settings->OnStorageAccessed(storage_type, storage_key, blocked_by_policy);
     }
   }
 }
@@ -936,7 +935,6 @@ void PageSpecificContentSettings::OnStorageAccessed(
     StorageType storage_type,
     const blink::StorageKey& storage_key,
     bool blocked_by_policy,
-    content::RenderFrameHost* rfh,
     content::Page* originating_page) {
   GURL url = storage_key.origin().GetURL();
   originating_page = originating_page ? originating_page : &page();
@@ -949,12 +947,13 @@ void PageSpecificContentSettings::OnStorageAccessed(
   }
 
   MaybeUpdateParent(&PageSpecificContentSettings::OnStorageAccessed,
-                    storage_type, storage_key, blocked_by_policy, rfh,
+                    storage_type, storage_key, blocked_by_policy,
                     originating_page);
 
   // TODO(crbug/1454806): Consider exposing `blink::StorageKey` details here.
   AccessDetails access_details{SiteDataType::kStorage, AccessType::kUnknown,
-                               url, blocked_by_policy, rfh};
+                               url, blocked_by_policy,
+                               originating_page->IsPrimary()};
 
   MaybeNotifySiteDataObservers(access_details);
 }
@@ -981,7 +980,7 @@ void PageSpecificContentSettings::OnCookiesAccessed(
       details.type == network::mojom::CookieAccessDetails::Type::kChange
           ? AccessType::kWrite
           : AccessType::kRead,
-      details.url, details.blocked_by_policy, nullptr};
+      details.url, details.blocked_by_policy, originating_page->IsPrimary()};
 
   MaybeNotifySiteDataObservers(access_details);
 }
@@ -1052,7 +1051,7 @@ void PageSpecificContentSettings::OnInterestGroupJoined(
   // Joining an interest is by default modifying data so this is considered an
   // `AccessType::kWrite`.
   AccessDetails access_details{SiteDataType::kInterestGroup, AccessType::kWrite,
-                               api_origin.GetURL(), blocked_by_policy, nullptr};
+                               api_origin.GetURL(), blocked_by_policy, false};
   MaybeNotifySiteDataObservers(access_details);
 }
 
@@ -1107,7 +1106,7 @@ void PageSpecificContentSettings::OnBrowsingDataAccessed(
   // TODO(njeunje): Look into populating an actual url for this access details.
   // Could be obtained from the `data_key`.
   AccessDetails access_details{SiteDataType::kUnknown, AccessType::kUnknown,
-                               GURL(), blocked, nullptr};
+                               GURL(), blocked, false};
   MaybeNotifySiteDataObservers(access_details);
 }
 
@@ -1402,6 +1401,8 @@ void PageSpecificContentSettings::OnPrerenderingPageActivation() {
   }
 
   if (updates_queued_during_prerender_->site_data_accessed) {
+    // TODO(crbug.com/1447929): Re-attribute the
+    // `access_details.is_from_primary_page`.
     WebContentsHandler::FromWebContents(GetWebContents())
         ->NotifySiteDataObservers(
             updates_queued_during_prerender_->access_details);
