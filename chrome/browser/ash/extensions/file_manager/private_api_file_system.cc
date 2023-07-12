@@ -1737,14 +1737,20 @@ FileManagerPrivateResumeIOTaskFunction::Run() {
   }
 
   file_manager::io_task::ResumeParams io_task_resume_params;
-  io_task_resume_params.conflict_params->conflict_resolve =
-      params->params.conflict_params->conflict_resolve.value_or("");
-  io_task_resume_params.conflict_params->conflict_apply_to_all =
-      params->params.conflict_params->conflict_apply_to_all.value_or(false);
-  absl::optional<policy::Policy> policy =
-      ApiPolicyErrorTypeToChromeEnum(params->params.policy_params->type);
-  if (policy.has_value()) {
-    io_task_resume_params.policy_params->type = policy.value();
+  if (params->params.conflict_params) {
+    io_task_resume_params.conflict_params.emplace();
+    io_task_resume_params.conflict_params->conflict_resolve =
+        params->params.conflict_params->conflict_resolve.value_or("");
+    io_task_resume_params.conflict_params->conflict_apply_to_all =
+        params->params.conflict_params->conflict_apply_to_all.value_or(false);
+  }
+  if (params->params.policy_params) {
+    absl::optional<policy::Policy> policy =
+        ApiPolicyErrorTypeToChromeEnum(params->params.policy_params->type);
+    if (policy.has_value()) {
+      io_task_resume_params.policy_params.emplace();
+      io_task_resume_params.policy_params->type = policy.value();
+    }
   }
 
   volume_manager->io_task_controller()->Resume(
