@@ -66,6 +66,7 @@ class Browser;
 class FakeAccountManagerUI;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 class MainThreadStackSamplingProfiler;
+class PrefService;
 class Profile;
 #if BUILDFLAG(IS_MAC)
 class ScopedBundleSwizzlerMac;
@@ -149,6 +150,9 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   InProcessBrowserTest& operator=(const InProcessBrowserTest&) = delete;
   ~InProcessBrowserTest() override;
 
+  // Returns the currently running InProcessBrowserTest.
+  static InProcessBrowserTest* GetCurrent();
+
   // Configures everything for an in process browser test, then invokes
   // BrowserMain(). BrowserMain() ends up invoking RunTestOnMainThreadLoop().
   void SetUp() override;
@@ -190,6 +194,9 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // https://crbug.com/1365899
   // The final value of the result is the format of key1=value1;key2=value2.
   void RecordPropertyFromMap(const std::map<std::string, std::string>& tags);
+
+  // Tests can override this to customize the initial local_state.
+  virtual void SetUpLocalStatePrefService(PrefService* local_state);
 
   // Start ash-chrome with specific flags.
   // In general, there is a shared ash chrome started and a lacros chrome
@@ -276,7 +283,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // after creating the user data directory, but before any browser is launched.
   // If a test wishes to set up some initial non-empty state in the user data
   // directory before the browser starts up, it can do so here. Returns true if
-  // successful.
+  // successful. To set initial prefs, see SetUpLocalStatePrefService.
   [[nodiscard]] virtual bool SetUpUserDataDirectory();
 
   // Initializes the display::Screen instance.

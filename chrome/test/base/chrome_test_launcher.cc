@@ -27,11 +27,13 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/test/base/chrome_test_suite.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/utility/chrome_content_utility_client.h"
 #include "components/crash/core/app/crashpad.h"
 #include "content/public/app/content_main.h"
@@ -185,6 +187,25 @@ ChromeTestChromeMainDelegate::CreateContentUtilityClient() {
       std::make_unique<BrowserTestChromeContentUtilityClient>();
   return chrome_content_utility_client_.get();
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+absl::optional<int> ChromeTestChromeMainDelegate::PostEarlyInitialization(
+    InvokedIn invoked_in) {
+  auto result = ChromeMainDelegate::PostEarlyInitialization(invoked_in);
+  if (absl::get_if<InvokedInBrowserProcess>(&invoked_in)) {
+    // If servicing an `InProcessBrowserTest`, give the test an opportunity to
+    // prepopulate Local State with preferences.
+    ChromeFeatureListCreator* chrome_feature_list_creator =
+        chrome_content_browser_client_->startup_data()
+            ->chrome_feature_list_creator();
+    PrefService* const local_state = chrome_feature_list_creator->local_state();
+    if (auto* test_instance = InProcessBrowserTest::GetCurrent()) {
+      test_instance->SetUpLocalStatePrefService(local_state);
+    }
+  }
+  return result;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 bool ChromeTestChromeMainDelegate::ShouldHandleConsoleControlEvents() {

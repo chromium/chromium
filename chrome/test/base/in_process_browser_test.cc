@@ -65,6 +65,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
@@ -99,6 +100,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
+#include "components/version_info/version_info.h"
 #include "ui/base/win/atl_module.h"
 #endif
 
@@ -259,6 +261,8 @@ void EnsureBrowserContextKeyedServiceFactoriesForTestingBuilt() {
   NotificationDisplayServiceTester::EnsureFactoryBuilt();
 }
 
+InProcessBrowserTest* g_current_test;
+
 }  // namespace
 
 // static
@@ -306,6 +310,7 @@ FakeAccountManagerUI* InProcessBrowserTest::GetFakeAccountManagerUI() const {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void InProcessBrowserTest::Initialize() {
+  g_current_test = this;
   CreateTestServer(GetChromeTestDataDir());
   base::FilePath src_dir;
   CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir));
@@ -347,7 +352,13 @@ void InProcessBrowserTest::Initialize() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
-InProcessBrowserTest::~InProcessBrowserTest() = default;
+InProcessBrowserTest::~InProcessBrowserTest() {
+  g_current_test = nullptr;
+}
+
+InProcessBrowserTest* InProcessBrowserTest::GetCurrent() {
+  return g_current_test;
+}
 
 void InProcessBrowserTest::SetUp() {
   // Browser tests will create their own g_browser_process later.
@@ -570,6 +581,16 @@ void InProcessBrowserTest::RecordPropertyFromMap(
   }
   if (!result.empty())
     RecordProperty("gtest_tag", result);
+}
+
+void InProcessBrowserTest::SetUpLocalStatePrefService(
+    PrefService* local_state) {
+#if BUILDFLAG(IS_WIN)
+  // Put the current build version number in the prefs, so that pinned taskbar
+  // icons aren't migrated.
+  local_state->SetString(prefs::kShortcutMigrationVersion,
+                         std::string(version_info::GetVersionNumber()));
+#endif  // BUILDFLAG(IS_WIN);
 }
 
 void InProcessBrowserTest::CloseBrowserSynchronously(Browser* browser) {
