@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS ORB: Expect error response.
-PASS !CORB: CORB would have expected an empty response.
-Harness: the test ran to completion.
-
