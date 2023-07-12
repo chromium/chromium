@@ -112,7 +112,7 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
   // Returns true if there is an active ScopedThroughputReporterBlocker.
   bool IsBlocked() const;
 
-  raw_ptr<Compositor, LeakedDanglingUntriaged> compositor_;
+  raw_ptr<Compositor> compositor_;
   ReportRepeatingCallback report_repeating_callback_;
   ReportOnceCallback report_once_callback_;
   bool should_delete_ = false;
