@@ -18,6 +18,7 @@ SRC_PATH = os.path.dirname(os.path.dirname(os.path.dirname(SCRIPT_PATH)))
 DEPS_PATH = os.path.join(SRC_PATH, 'DEPS')
 BORINGSSL_PATH = os.path.join(SRC_PATH, 'third_party', 'boringssl')
 BORINGSSL_SRC_PATH = os.path.join(BORINGSSL_PATH, 'src')
+BORINGSSL_DEP = 'src/third_party/boringssl/src'
 
 if not os.path.isfile(DEPS_PATH) or not os.path.isdir(BORINGSSL_SRC_PATH):
   raise Exception('Could not find Chromium checkout')
@@ -48,17 +49,15 @@ def RevParse(repo, rev):
                                  text=True).strip()
 
 
-def UpdateDEPS(deps, from_hash, to_hash):
-  """Updates all references of |from_hash| to |to_hash| in |deps|."""
-  from_hash_bytes = from_hash.encode('utf-8')
-  to_hash_bytes = to_hash.encode('utf-8')
-  with open(deps, 'rb') as f:
-    contents = f.read()
-    if from_hash_bytes not in contents:
-      raise Exception('%s not in DEPS' % from_hash_bytes)
-  contents = contents.replace(from_hash_bytes, to_hash_bytes)
-  with open(deps, 'wb') as f:
-    f.write(contents)
+def GetDep(repo, dep):
+  """Returns the revision of |dep|."""
+  return subprocess.check_output(['gclient', 'getdep', '-r', dep], cwd=repo,
+                                 text=True).strip()
+
+
+def SetDep(repo, dep, rev):
+  """Sets the revision of |dep| to |rev|."""
+  subprocess.check_call(['gclient', 'setdep', '-r', f'{dep}@{rev}'], cwd=repo)
 
 
 def Log(repo, revspec):
@@ -109,10 +108,10 @@ def main():
 
   if not IsPristine(SRC_PATH):
     print('Chromium checkout not pristine.', file=sys.stderr)
-    return 0
+    return 1
   if not IsPristine(BORINGSSL_SRC_PATH):
     print('BoringSSL checkout not pristine.', file=sys.stderr)
-    return 0
+    return 1
 
   if len(sys.argv) > 1:
     new_head = RevParse(BORINGSSL_SRC_PATH, sys.argv[1])
@@ -121,6 +120,11 @@ def main():
     new_head = RevParse(BORINGSSL_SRC_PATH, 'origin/master')
 
   old_head = RevParse(BORINGSSL_SRC_PATH, 'HEAD')
+  old_dep = GetDep(SRC_PATH, BORINGSSL_DEP)
+  if old_head != old_dep:
+    print(f'BoringSSL checkout is at {old_head}, but the dep is at {old_dep}')
+    return 1
+
   if old_head == new_head:
     print('BoringSSL already up to date.')
     return 0
@@ -150,7 +154,7 @@ def main():
     if has_update_note:
       update_note_commits.append(commit)
 
-  UpdateDEPS(DEPS_PATH, old_head, new_head)
+  SetDep(SRC_PATH, BORINGSSL_DEP, new_head)
 
   # Checkout third_party/boringssl/src to generate new files.
   subprocess.check_call(['git', 'checkout', new_head], cwd=BORINGSSL_SRC_PATH)
