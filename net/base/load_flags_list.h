@@ -104,6 +104,5 @@ LOAD_FLAG(RESTRICTED_PREFETCH, 1 << 15)
 // trusted process.
 LOAD_FLAG(CAN_USE_RESTRICTED_PREFETCH, 1 << 16)
 
-// Indicates that Access-Control-Allow-Origin response header check is required
-// before using a shared dictionary.
-LOAD_FLAG(SHARED_DICTIONARY_ORIGIN_CHECK_REQUIRED, 1 << 17)
+// Indicates that this load can use a shared dictionary.
+LOAD_FLAG(CAN_USE_SHARED_DICTIONARY, 1 << 17)

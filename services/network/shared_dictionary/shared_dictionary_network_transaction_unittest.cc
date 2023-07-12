@@ -130,6 +130,7 @@ class DummySharedDictionaryManager : public SharedDictionaryManager {
 
   scoped_refptr<SharedDictionaryStorage> CreateStorage(
       const net::SharedDictionaryIsolationKey& isolation_key) override {
+    create_storage_called_ = true;
     if (storage_) {
       storage_->set_on_deleted_closure_runner(base::ScopedClosureRunner(
           base::BindOnce(&SharedDictionaryManager::OnStorageDeleted,
@@ -154,8 +155,11 @@ class DummySharedDictionaryManager : public SharedDictionaryManager {
           void(std::vector<network::mojom::SharedDictionaryInfoPtr>)> callback)
       override {}
 
+  bool create_storage_called() const { return create_storage_called_; }
+
  private:
   scoped_refptr<DummySharedDictionaryStorage> storage_;
+  bool create_storage_called_ = false;
 };
 
 static void TestTransactionHandler(const net::HttpRequestInfo* request,
@@ -185,7 +189,7 @@ const net::MockTransaction kDictionaryTestTransaction = {
     .method = "GET",
     .request_time = base::Time(),
     .request_headers = "",
-    .load_flags = net::LOAD_NORMAL,
+    .load_flags = net::LOAD_CAN_USE_SHARED_DICTIONARY,
     .transport_info = net::DefaultTransportInfo(),
     .status = "HTTP/1.1 200 OK",
     .response_headers = "content-encoding: sbr\n",
@@ -368,26 +372,23 @@ TEST_F(SharedDictionaryNetworkTransactionTest, OpaqueFrameOrigin) {
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
 }
 
-TEST_F(SharedDictionaryNetworkTransactionTest,
-       OriginChecksPassWithAsteriskACAO) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
+TEST_F(SharedDictionaryNetworkTransactionTest, WithoutValidLoadFlag) {
+  DummySharedDictionaryManager manager(/*storage=*/nullptr);
 
-  // Override MockTransaction to set Access-Control-Allow-Origin header.
+  // Override MockTransaction to check that there is no sec-available-dictionary
+  // header.
   net::MockTransaction new_mock_transaction = kDictionaryTestTransaction;
-  new_mock_transaction.response_headers =
-      "content-encoding: sbr\nAccess-Control-Allow-Origin:*\n";
+  new_mock_transaction.handler =
+      TestTransactionHandlerWithoutAvailableDictionary;
   net::AddMockTransaction(&new_mock_transaction);
 
   net::MockHttpRequest request(new_mock_transaction);
   SharedDictionaryNetworkTransaction transaction(manager,
                                                  CreateNetworkTransaction());
-  transaction.SetIsSharedDictionaryReadAllowedCallback(
-      base::BindRepeating([]() { return true; }));
 
-  // Change load_flags to check the origin before using the shared dictionary.
-  request.load_flags = net::LOAD_SHARED_DICTIONARY_ORIGIN_CHECK_REQUIRED;
+  CHECK_EQ(net::LOAD_CAN_USE_SHARED_DICTIONARY, request.load_flags);
+  // Change load_flags not to trigger the shared dictionary logic.
+  request.load_flags = net::LOAD_NORMAL;
 
   net::TestCompletionCallback start_callback;
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
@@ -404,80 +405,10 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
-}
 
-TEST_F(SharedDictionaryNetworkTransactionTest, OriginChecksPassWithOriginACAO) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
-
-  // Override MockTransaction to set Access-Control-Allow-Origin header.
-  net::MockTransaction new_mock_transaction = kDictionaryTestTransaction;
-  new_mock_transaction.response_headers =
-      "content-encoding: sbr\n"
-      "Access-Control-Allow-Origin: https://test.example\n";
-  net::AddMockTransaction(&new_mock_transaction);
-
-  net::MockHttpRequest request(new_mock_transaction);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
-  transaction.SetIsSharedDictionaryReadAllowedCallback(
-      base::BindRepeating([]() { return true; }));
-
-  // Change load_flags to check the origin before using the shared dictionary.
-  request.load_flags = net::LOAD_SHARED_DICTIONARY_ORIGIN_CHECK_REQUIRED;
-
-  net::TestCompletionCallback start_callback;
-  ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
-
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
-  ASSERT_THAT(
-      transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_IO_PENDING));
-  int read_result = read_callback.WaitForResult();
-  EXPECT_THAT(read_result, kTestData.size());
-  EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
-}
-
-TEST_F(SharedDictionaryNetworkTransactionTest,
-       OriginChecksPassWithWrongOriginACAO) {
-  DummySharedDictionaryManager manager(
-      base::MakeRefCounted<DummySharedDictionaryStorage>(
-          std::make_unique<DummySyncDictionary>(kTestDictionaryData)));
-
-  // Override MockTransaction to set Access-Control-Allow-Origin header.
-  net::MockTransaction new_mock_transaction = kDictionaryTestTransaction;
-  new_mock_transaction.response_headers =
-      "content-encoding: sbr\n"
-      "Access-Control-Allow-Origin: https://invalid.example\n";
-  net::AddMockTransaction(&new_mock_transaction);
-
-  net::MockHttpRequest request(new_mock_transaction);
-  SharedDictionaryNetworkTransaction transaction(manager,
-                                                 CreateNetworkTransaction());
-  transaction.SetIsSharedDictionaryReadAllowedCallback(
-      base::BindRepeating([]() { return true; }));
-
-  // Change load_flags to check the origin before using the shared dictionary.
-  request.load_flags = net::LOAD_SHARED_DICTIONARY_ORIGIN_CHECK_REQUIRED;
-
-  net::TestCompletionCallback start_callback;
-  ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
-                                net::NetLogWithSource()),
-              net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
-
-  scoped_refptr<net::IOBufferWithSize> buf =
-      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
-  net::TestCompletionCallback read_callback;
-  ASSERT_THAT(
-      transaction.Read(buf.get(), buf->size(), read_callback.callback()),
-      net::test::IsError(net::ERR_DICTIONARY_ORIGIN_CHECK_FAILED));
+  // SharedDictionaryManager::CreateStorage() must not be called when
+  // LOAD_CAN_USE_SHARED_DICTIONARY is not set.
+  EXPECT_FALSE(manager.create_storage_called());
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {

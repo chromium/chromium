@@ -1032,5 +1032,4 @@ NET_ERROR(DNS_NO_MATCHING_SUPPORTED_ALPN, -811)
 // The compression dictionary cannot be loaded.
 NET_ERROR(DICTIONARY_LOAD_FAILED, -812)
 
-// The compression dictionary cannot be used as the origin check failed.
-NET_ERROR(DICTIONARY_ORIGIN_CHECK_FAILED, -813)
+// Error -813 was removed (DICTIONARY_ORIGIN_CHECK_FAILED)

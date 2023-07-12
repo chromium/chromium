@@ -730,10 +730,10 @@ URLLoader::URLLoader(
     }
   }
 
-  // Need to check Access-Control-Allow-Origin response header for no-cors
-  // requests before using shared dictionaries.
-  if (request_mode_ == mojom::RequestMode::kNoCors) {
-    request_load_flags |= net::LOAD_SHARED_DICTIONARY_ORIGIN_CHECK_REQUIRED;
+  // We don't allow using shared dictionary for no-cors requests to avoid
+  // information leak.
+  if (request_mode_ != mojom::RequestMode::kNoCors) {
+    request_load_flags |= net::LOAD_CAN_USE_SHARED_DICTIONARY;
   }
 
   url_request_->SetLoadFlags(request_load_flags);

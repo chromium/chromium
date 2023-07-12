@@ -16,7 +16,6 @@
 class GURL;
 
 namespace net {
-class HttpResponseHeaders;
 class SourceStream;
 }  // namespace net
 
@@ -27,7 +26,10 @@ class SharedDictionaryManager;
 class SharedDictionaryStorage;
 
 // A `HttpTransaction` that decodes shared dictionary compression.
-// This class registers a callback with the underlying transaction
+// If the `LOAD_CAN_USE_SHARED_DICTIONARY` flag is not set in the `request`'s
+// `load_flags`, this class delegates all function calls to the underlying
+// transaction.
+// Otherwise, this class registers a callback with the underlying transaction
 // that will be called just before the request is sent to the network. When this
 // callback is called, this class tries to get a registered dictionary from the
 // `shared_dictionary_manager`. If a matching dictionary is found, and the
@@ -131,9 +133,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
   raw_ref<SharedDictionaryManager> shared_dictionary_manager_;
   scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage_;
   std::unique_ptr<SharedDictionary> shared_dictionary_;
-
-  base::OnceCallback<bool(const net::HttpResponseHeaders&)>
-      origin_check_callback_;
 
   DictionaryStatus dictionary_status_ = DictionaryStatus::kNoDictionary;
   HeaderStatus header_status_ = HeaderStatus::kUnknown;

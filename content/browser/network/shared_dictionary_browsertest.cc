@@ -1002,7 +1002,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, CrossOriginDataNoCors) {
       embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
       cross_origin_server()->GetURL("/shared_dictionary/test.dict"));
 
-  EXPECT_EQ("This is compressed test data using a test dictionary",
+  EXPECT_EQ("This is uncompressed.",
             EvalJs(GetTargetShell()->web_contents()->GetPrimaryMainFrame(),
                    JsReplace(R"(
           (async () => {
@@ -1016,32 +1016,6 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, CrossOriginDataNoCors) {
         )",
                              cross_origin_server()->GetURL(
                                  "/shared_dictionary/path/test")))
-                .ExtractString());
-}
-
-IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
-                       CrossOriginDataNoCorsWithoutACAO) {
-  // Registers a dictionary as same as CrossOriginFetchDictionary test.
-  RunWriteDictionaryTest(
-      FetchType::kFetchApi,
-      embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
-      cross_origin_server()->GetURL("/shared_dictionary/test.dict"));
-
-  EXPECT_EQ("Script load failed",
-            EvalJs(GetTargetShell()->web_contents()->GetPrimaryMainFrame(),
-                   JsReplace(R"(
-          (async () => {
-            return await new Promise(resolve => {
-              window.test = resolve;
-              const script = document.createElement('script');
-              script.src = $1;
-              script.onerror = () => {resolve('Script load failed');};
-              document.body.appendChild(script);
-            });
-          })();
-        )",
-                             cross_origin_server()->GetURL(
-                                 "/shared_dictionary/path/test?no_acao")))
                 .ExtractString());
 }
 

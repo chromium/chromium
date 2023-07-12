@@ -19,7 +19,6 @@
 #include "net/filter/source_stream.h"
 #include "net/http/http_request_info.h"
 #include "net/ssl/ssl_private_key.h"
-#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/shared_dictionary/shared_dictionary.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
@@ -65,19 +64,6 @@ bool ContentEncodingIsSbrOnly(const net::HttpResponseHeaders& headers) {
          network::shared_dictionary::kSbrContentEncodingName;
 }
 
-bool CheckAccessControlAllowOrigin(const url::Origin& frame_origin,
-                                   const net::HttpResponseHeaders& headers) {
-  std::string acao_value;
-  if (!headers.GetNormalizedHeader(
-          cors::header_names::kAccessControlAllowOrigin, &acao_value)) {
-    return false;
-  }
-  if (acao_value == "*") {
-    return true;
-  }
-  return acao_value == frame_origin.Serialize();
-}
-
 }  // namespace
 
 SharedDictionaryNetworkTransaction::PendingReadTask::PendingReadTask(
@@ -102,6 +88,9 @@ int SharedDictionaryNetworkTransaction::Start(
     const net::HttpRequestInfo* request,
     net::CompletionOnceCallback callback,
     const net::NetLogWithSource& net_log) {
+  if (!(request->load_flags & net::LOAD_CAN_USE_SHARED_DICTIONARY)) {
+    return network_transaction_->Start(request, std::move(callback), net_log);
+  }
   absl::optional<net::SharedDictionaryIsolationKey> isolation_key =
       net::SharedDictionaryIsolationKey::MaybeCreate(
           request->network_isolation_key, request->frame_origin);
@@ -117,10 +106,6 @@ int SharedDictionaryNetworkTransaction::Start(
       &SharedDictionaryNetworkTransaction::ModifyRequestHeaders,
       base::Unretained(this), request->url));
 
-  if (request->load_flags & net::LOAD_SHARED_DICTIONARY_ORIGIN_CHECK_REQUIRED) {
-    origin_check_callback_ = base::BindOnce(&CheckAccessControlAllowOrigin,
-                                            isolation_key->frame_origin());
-  }
   return network_transaction_->Start(request, std::move(callback), net_log);
 }
 
@@ -225,17 +210,11 @@ int SharedDictionaryNetworkTransaction::Read(
                          *network_transaction_->GetResponseInfo()->headers)
                          ? HeaderStatus::kSharedBrotliUsed
                          : HeaderStatus::kSharedBrotliNotUsed;
-    if (header_status_ == HeaderStatus::kSharedBrotliUsed) {
-      if (origin_check_callback_ &&
-          !std::move(origin_check_callback_)
-               .Run(*network_transaction_->GetResponseInfo()->headers)) {
-        return net::ERR_DICTIONARY_ORIGIN_CHECK_FAILED;
-      }
-      if (dictionary_status_ == DictionaryStatus::kFinished) {
-        shared_brotli_stream_ = net::CreateBrotliSourceStreamWithDictionary(
-            std::make_unique<ProxyingSourceStream>(network_transaction_.get()),
-            shared_dictionary_->data(), shared_dictionary_->size());
-      }
+    if (header_status_ == HeaderStatus::kSharedBrotliUsed &&
+        dictionary_status_ == DictionaryStatus::kFinished) {
+      shared_brotli_stream_ = net::CreateBrotliSourceStreamWithDictionary(
+          std::make_unique<ProxyingSourceStream>(network_transaction_.get()),
+          shared_dictionary_->data(), shared_dictionary_->size());
     }
   }
   if (header_status_ == HeaderStatus::kSharedBrotliNotUsed) {
