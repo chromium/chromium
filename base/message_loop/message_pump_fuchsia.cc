@@ -77,11 +77,21 @@ void MessagePumpFuchsia::ZxHandleWatchController::HandleSignal(
     async_wait_t* wait,
     zx_status_t status,
     const zx_packet_signal_t* signal) {
-  TRACE_EVENT0("toplevel", "ZxHandleSignal");
-
   ZxHandleWatchController* controller =
       static_cast<ZxHandleWatchController*>(wait);
   DCHECK_EQ(controller->handler, &HandleSignal);
+
+  // Inform ThreadController of this native work item for tracking purposes.
+  // This call must precede the "ZxHandleSignal" trace event below as
+  // BeginWorkItem() might generate a top-level trace event for the thread if
+  // this is the first work item post-wakeup.
+  Delegate::ScopedDoWorkItem scoped_do_work_item;
+  if (controller->weak_pump_ && controller->weak_pump_->run_state_) {
+    scoped_do_work_item =
+        controller->weak_pump_->run_state_->delegate->BeginWorkItem();
+  }
+
+  TRACE_EVENT0("toplevel", "ZxHandleSignal");
 
   if (status != ZX_OK) {
     ZX_DLOG(WARNING, status) << "async wait failed: "
@@ -271,16 +281,19 @@ bool MessagePumpFuchsia::HandleIoEventsUntil(zx_time_t deadline) {
 }
 
 void MessagePumpFuchsia::Run(Delegate* delegate) {
-  AutoReset<bool> auto_reset_keep_running(&keep_running_, true);
+  RunState run_state(delegate);
+  AutoReset<RunState*> auto_reset_run_state(&run_state_, &run_state);
 
   for (;;) {
     const Delegate::NextWorkInfo next_work_info = delegate->DoWork();
-    if (!keep_running_)
+    if (run_state.should_quit) {
       break;
+    }
 
     const bool did_handle_io_event = HandleIoEventsUntil(/*deadline=*/0);
-    if (!keep_running_)
+    if (run_state.should_quit) {
       break;
+    }
 
     bool attempt_more_work =
         next_work_info.is_immediate() || did_handle_io_event;
@@ -288,11 +301,14 @@ void MessagePumpFuchsia::Run(Delegate* delegate) {
       continue;
 
     attempt_more_work = delegate->DoIdleWork();
-    if (!keep_running_)
+    if (run_state.should_quit) {
       break;
+    }
 
     if (attempt_more_work)
       continue;
+
+    delegate->BeforeWait();
 
     zx_time_t deadline = next_work_info.delayed_run_time.is_max()
                              ? ZX_TIME_INFINITE
@@ -303,7 +319,8 @@ void MessagePumpFuchsia::Run(Delegate* delegate) {
 }
 
 void MessagePumpFuchsia::Quit() {
-  keep_running_ = false;
+  CHECK(run_state_);
+  run_state_->should_quit = true;
 }
 
 void MessagePumpFuchsia::ScheduleWork() {
