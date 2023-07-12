@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
 }
 
 // Test that when the upload to ODFS fails due an access error that is not
-// because reauthentication to OneDrive is required, the generic access error
+// because reauthentication to OneDrive is required, the generic error
 // notification is shown.
 IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
                        FailToUploadDueToOtherAccessError) {
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
   auto on_notification = base::BindLambdaForTesting(
       [&](const message_center::Notification& notification) {
         if (notification.message() ==
-            base::UTF8ToUTF16(GetGenericOneDriveAccessErrorMessage())) {
+            base::UTF8ToUTF16(GetGenericErrorMessage())) {
           EndWait();
         }
       });

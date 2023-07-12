@@ -1660,7 +1660,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
 }
 
 // Test that when opening a file from ODFS fails due an access error that is not
-// because reauthentication to OneDrive is required, the generic access error
+// because reauthentication to OneDrive is required, the generic error
 // notification is shown.
 IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSOtherAccessError) {
   // Creates a fake ODFS with a test file.
@@ -1685,8 +1685,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSOtherAccessError) {
   // Expect that there was a notification.
   EXPECT_FALSE(notification_message_.empty());
   // Expect that the reauthentication required notification was shown.
-  EXPECT_EQ(notification_message_,
-            ash::cloud_upload::GetGenericOneDriveAccessErrorMessage());
+  EXPECT_EQ(notification_message_, ash::cloud_upload::GetGenericErrorMessage());
 
   NotificationDisplayService::GetForProfile(browser()->profile())
       ->RemoveObserver(this);

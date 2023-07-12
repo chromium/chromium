@@ -7133,9 +7133,6 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OFFICE_UPLOAD_ERROR_REAUTHENTICATION_REQUIRED" desc="Error message for uploading office files indicating that the needs to sign in to Microsoft first before uploading the files.">
     Sign in to your Microsoft account and then try again
   </message>
-  <message name="IDS_OFFICE_UPLOAD_ERROR_ACCESS_DENIED" desc="Error message for uploading office files indicating that access is denied.">
-    Access denied
-  </message>
   <message name="IDS_OFFICE_UPLOAD_ERROR_CANT_OPEN_FILE" desc="Error message for uploading office files indicating that file cannot be open.">
     {NUM_OF_FILES, plural,
       =1 {Can't open file}

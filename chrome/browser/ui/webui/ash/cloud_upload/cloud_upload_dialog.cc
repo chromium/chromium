@@ -174,13 +174,12 @@ void HandleSignInClick(Profile* profile, absl::optional<int> button_index) {
 }
 
 // TODO(b/288038136): Use a notification manager to handle error notifications.
-// Show system error notification to communicate why their file can't be opened.
-// If the user needs to reauthenticate to OneDrive, prompt the user to
+// Show system error notification to communicate that their file can't be
+// opened. If the user needs to reauthenticate to OneDrive, prompt the user to
 // reauthenticate to ODFS via a "Sign in" button.
 void ShowUnableToOpenNotification(Profile* profile,
-                                  base::File::Error error,
                                   bool reauthentication_required = false) {
-  std::string message;
+  std::string message = GetGenericErrorMessage();
   std::vector<message_center::ButtonInfo> notification_buttons;
 
   // Special case of |FILE_ERROR_ACCESS_DENIED| where the user needs to
@@ -190,15 +189,6 @@ void ShowUnableToOpenNotification(Profile* profile,
     //  Add "Sign in" button.
     notification_buttons.emplace_back(
         l10n_util::GetStringUTF16(IDS_OFFICE_NOTIFICATION_SIGN_IN_BUTTON));
-  } else {
-    switch (error) {
-      // Regular case of |FILE_ERROR_ACCESS_DENIED|.
-      case base::File::Error::FILE_ERROR_ACCESS_DENIED:
-        message = GetGenericOneDriveAccessErrorMessage();
-        break;
-      default:
-        message = GetGenericErrorMessage();
-    }
   }
 
   auto notification = ash::CreateSystemNotificationPtr(
@@ -243,7 +233,6 @@ void OnGetReauthenticationRequired(
     return;
   }
   ShowUnableToOpenNotification(profile,
-                               base::File::Error::FILE_ERROR_ACCESS_DENIED,
                                metadata_or_error->reauthentication_required);
 }
 
@@ -254,9 +243,7 @@ void ShowAccessDeniedNotification(Profile* profile) {
   absl::optional<file_system_provider::ProvidedFileSystemInterface*>
       file_system = GetODFS(profile);
   if (!file_system.has_value()) {
-    ShowUnableToOpenNotification(profile,
-                                 base::File::Error::FILE_ERROR_ACCESS_DENIED,
-                                 /*reauthentication_required=*/false);
+    ShowUnableToOpenNotification(profile, /*reauthentication_required=*/false);
     return;
   }
   GetODFSMetadata(file_system.value(),
@@ -284,7 +271,7 @@ void OpenFileFromODFS(
               return;
             }
             if (result != base::File::Error::FILE_OK) {
-              ShowUnableToOpenNotification(profile, result);
+              ShowUnableToOpenNotification(profile);
               return;
             }
             for (const file_system_provider::Action& action : actions) {
