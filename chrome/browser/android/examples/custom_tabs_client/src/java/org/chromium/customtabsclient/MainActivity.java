@@ -140,6 +140,7 @@ public class MainActivity
     private Button mMayLaunchButton;
     private Button mWarmupButton;
     private Button mLaunchButton;
+    private Button mResultLaunchButton;
     private Button mEngagementSignalsButton;
     private MediaPlayer mMediaPlayer;
     private MaterialButtonToggleGroup mCloseButtonPositionToggle;
@@ -658,12 +659,14 @@ public class MainActivity
         mWarmupButton = (Button) findViewById(R.id.warmup_button);
         mMayLaunchButton = (Button) findViewById(R.id.may_launch_button);
         mLaunchButton = (Button) findViewById(R.id.launch_button);
+        mResultLaunchButton = (Button) findViewById(R.id.result_launch_button);
         mEngagementSignalsButton = (Button) findViewById(R.id.engagement_signals_button);
         mConnectButton.setOnClickListener(this);
         mDisconnectButton.setOnClickListener(this);
         mWarmupButton.setOnClickListener(this);
         mMayLaunchButton.setOnClickListener(this);
         mLaunchButton.setOnClickListener(this);
+        mResultLaunchButton.setOnClickListener(this);
         mEngagementSignalsButton.setOnClickListener(this);
         if (configChange) {
             mConnectButton.setEnabled(mSharedPref.getBoolean(SHARED_PREF_CONNECT_BUTTON, true));
@@ -833,11 +836,14 @@ public class MainActivity
             if (sClient != null) success = session.mayLaunchUrl(Uri.parse(url), null, null);
             if (!success) mMayLaunchButton.setEnabled(false);
         } else if (viewId == R.id.test_asm_button) {
-            launchCct(url, editor);
-            new Handler().postDelayed(() -> launchCct("https://abc.xyz", editor), 5000);
+            launchCct(url, editor, false);
+            new Handler().postDelayed(() -> launchCct("https://abc.xyz", editor, false), 5000);
         } else if (viewId == R.id.launch_button) {
             updateUrlsList();
-            launchCct(url, editor);
+            launchCct(url, editor, false);
+        } else if (viewId == R.id.result_launch_button) {
+            updateUrlsList();
+            launchCct(url, editor, true);
         } else if (viewId == R.id.engagement_signals_button) {
             try {
                 getSession().setEngagementSignalsCallback(new EngagementCallback(), Bundle.EMPTY);
@@ -847,7 +853,8 @@ public class MainActivity
         }
     }
 
-    private void launchCct(String url, SharedPreferences.Editor editor) {
+    private void launchCct(
+            String url, SharedPreferences.Editor editor, boolean startActivityForResult) {
         url = mayPrependUrl(url);
         CustomTabsSession session = getSession();
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder(session);
@@ -938,8 +945,14 @@ public class MainActivity
                     new ArrayList<String>(
                             List.of("CCTRealTimeEngagementSignals", "CCTBrandTransparency")));
         }
-        configSessionConnection(session, customTabsIntent);
-        customTabsIntent.launchUrl(this, Uri.parse(url));
+
+        if (startActivityForResult) {
+            customTabsIntent.intent.setData(Uri.parse(url));
+            startActivityForResult(customTabsIntent.intent, 0);
+        } else {
+            configSessionConnection(session, customTabsIntent);
+            customTabsIntent.launchUrl(this, Uri.parse(url));
+        }
 
         editor.putInt(SHARED_PREF_HEIGHT, mPcctInitialHeightSlider.getProgress());
         editor.putInt(SHARED_PREF_WIDTH, mPcctInitialWidthSlider.getProgress());
