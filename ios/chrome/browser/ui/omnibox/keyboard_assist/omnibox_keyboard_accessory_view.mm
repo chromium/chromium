@@ -175,7 +175,8 @@
           updatedConfig.baseForegroundColor = kTitleColorStateHighlighted;
           break;
         case UIControlStateNormal:
-          updatedConfig.baseForegroundColor = kTitleColorStateNormal;
+          updatedConfig.baseForegroundColor =
+              [UIColor colorNamed:kTextPrimaryColor];
           break;
         default:
           break;
@@ -213,7 +214,11 @@
 - (void)keyboardButtonPressed:(id)sender {
   UIButton* button = base::mac::ObjCCastStrict<UIButton>(sender);
   [[UIDevice currentDevice] playInputClick];
-  [_delegate keyPressed:[button currentTitle]];
+  if (IsUIButtonConfigurationEnabled()) {
+    [_delegate keyPressed:button.configuration.title];
+  } else {
+    [_delegate keyPressed:[button currentTitle]];
+  }
 }
 
 - (void)didMoveToWindow {
