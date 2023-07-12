@@ -257,6 +257,13 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 // Tests that there is no query persistence when coming back to a normal tab
 // after switching temporarily to another tab.
 - (void)testFindInPageSwitchingTabs {
+  // TODO(crbug.com/1464379): Failing on iOS17 iPhone.
+  if (@available(iOS 17.0, *)) {
+    if (![ChromeEarlGrey isIPadIdiom]) {
+      XCTSkip(@"Failing on iOS17 iPhone");
+    }
+  }
+
   [_helper helperTestFindInPageSwitchingTabsWithQueryPersistence:NO];
 }
 
