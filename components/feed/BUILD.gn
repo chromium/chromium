@@ -33,7 +33,6 @@ source_set("unit_tests") {
   deps = [
     ":feature_list",
     "core/common:feed_core_common_unit_tests",
-    "core/v2:core_unit_tests",
     "core/v2:ios_shared_unit_tests",
     "//base",
     "//base/test:test_support",
@@ -41,4 +40,7 @@ source_set("unit_tests") {
     "//components/sync/base",
     "//testing/gtest",
   ]
+  if (!is_ios) {
+    deps += [ "core/v2:core_unit_tests" ]
+  }
 }
