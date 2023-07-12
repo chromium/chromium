@@ -586,6 +586,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChange) {
             EXPECT_FALSE(states_in[0]->current_state->inuse);
             EXPECT_FALSE(states_in[0]->current_state->mute);
             EXPECT_FALSE(states_in[0]->current_state->unpowered);
+            EXPECT_EQ(states_in[0]->current_count, 6u);
 
             auto state_flags = SmartCardReaderStateFlags::New();
             state_flags->unaware = false;
@@ -602,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChange) {
 
             std::vector<SmartCardReaderStateOutPtr> states_out;
             states_out.push_back(SmartCardReaderStateOut::New(
-                "Fake Reader", std::move(state_flags),
+                "Fake Reader", std::move(state_flags), 7,
                 std::vector<uint8_t>({1u, 2u, 3u, 4u})));
             auto result =
                 device::mojom::SmartCardStatusChangeResult::NewReaderStates(
@@ -615,12 +616,13 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChange) {
   EXPECT_EQ(
       "Fake Reader, {unaware=false, ignore=false, changed=false, "
       "unknown=false, unavailable=false, empty=false, present=true, "
-      "exclusive=false, inuse=true, mute=false, unpowered=false}, {1,2,3,4}",
+      "exclusive=false, inuse=true, mute=false, unpowered=false}, 7, {1,2,3,4}",
       EvalJs(shell(), R"((async () => {
        let context = await navigator.smartCard.establishContext();
 
        let readerStates = [{readerName: "Fake Reader",
-                            currentState: {empty: true}}];
+                            currentState: {empty: true},
+                            currentCount: 6 }];
        let statesOut = await context.getStatusChange(
            readerStates,
            AbortSignal.timeout(4321));
@@ -644,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChange) {
            + `, unpowered=${flags.unpowered}`;
 
        return `${statesOut[0].readerName}, {${eventStateString}}` +
-         `, {${atrString}}`;
+         `, ${statesOut[0].eventCount}, {${atrString}}`;
      })())"));
 }
 

@@ -140,12 +140,18 @@ struct SmartCardReaderStateFlags {
 struct SmartCardReaderStateIn {
   string reader;
   SmartCardReaderStateFlags current_state;
+  // Number of card insertion and removal events that happened in this reader,
+  // as known by the application.
+  uint16 current_count;
 };
 
 // Describes the actual state of a smart card reader.
 struct SmartCardReaderStateOut {
   string reader;
   SmartCardReaderStateFlags event_state;
+  // Number of card insertion and removal events that happened in this reader.
+  // Will always be zero if not supported by the platform.
+  uint16 event_count;
   array<uint8> answer_to_reset;
 };
 

@@ -7,11 +7,13 @@
 dictionary SmartCardReaderStateIn {
   required DOMString readerName;
   required SmartCardReaderStateFlags currentState;
+  unsigned long currentCount;
 };
 
 dictionary SmartCardReaderStateOut {
   required DOMString readerName;
   required SmartCardReaderStateFlags eventState;
+  required unsigned long eventCount;
   required ArrayBuffer answerToReset;
 };
 

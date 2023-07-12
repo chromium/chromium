@@ -42,7 +42,8 @@ Vector<device::mojom::blink::SmartCardReaderStateInPtr> ToMojomReaderStatesIn(
     mojom_reader_states.push_back(
         device::mojom::blink::SmartCardReaderStateIn::New(
             state_in->readerName(),
-            ToMojomStateFlags(*state_in->currentState())));
+            ToMojomStateFlags(*state_in->currentState()),
+            state_in->getCurrentCountOr(0)));
   }
 
   return mojom_reader_states;
@@ -76,6 +77,7 @@ HeapVector<Member<SmartCardReaderStateOut>> ToV8ReaderStatesOut(
     state_out->setReaderName(mojom_state_out->reader);
     state_out->setEventState(
         ToV8ReaderStateFlags(*mojom_state_out->event_state));
+    state_out->setEventCount(mojom_state_out->event_count);
     state_out->setAnswerToReset(
         DOMArrayBuffer::Create(mojom_state_out->answer_to_reset.data(),
                                mojom_state_out->answer_to_reset.size()));

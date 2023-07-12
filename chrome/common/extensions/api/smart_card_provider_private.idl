@@ -120,11 +120,18 @@ namespace smartCardProviderPrivate {
   dictionary ReaderStateIn {
     DOMString reader;
     ReaderStateFlags currentState;
+    // Number of card insertion and removal events that happened in this reader,
+    // as known by the application.
+    long currentCount;
   };
 
   dictionary ReaderStateOut {
     DOMString reader;
     ReaderStateFlags eventState;
+    // The actual number of card insertion and removal events that happened in
+    // this reader.
+    // Set to zero if not supported.
+    long eventCount;
     ArrayBuffer atr;
   };
 

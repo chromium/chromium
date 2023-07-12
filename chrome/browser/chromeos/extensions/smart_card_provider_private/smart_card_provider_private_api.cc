@@ -148,6 +148,7 @@ ToSmartCardProviderReaderStateOutVector(
     mojom_reader_state->reader = std::move(reader_state.reader);
     mojom_reader_state->event_state =
         ToSmartCardProviderReaderStateFlags(reader_state.event_state);
+    mojom_reader_state->event_count = reader_state.event_count;
     mojom_reader_state->answer_to_reset = std::move(reader_state.atr);
 
     result_vector.push_back(std::move(mojom_reader_state));
@@ -187,6 +188,7 @@ base::Value::Dict ToValue(
 
   to_value_result.Set("reader", state_in.reader);
   to_value_result.Set("currentState", ToValue(*state_in.current_state.get()));
+  to_value_result.Set("currentCount", state_in.current_count);
 
   return to_value_result;
 }

@@ -566,6 +566,9 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, GetStatusChange) {
           let state = {};
           state.reader = stateIn.reader;
           state.eventState = {"present": true};
+          // Just so that the test code can also check that
+          // currentCount was correctly sent.
+          state.eventCount = stateIn.currentCount + 1;
           state.atr = new Uint8Array([1,2,3,4,5]);
           readerStates.push(state);
         }
@@ -591,6 +594,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, GetStatusChange) {
       state_in->current_state = device::mojom::SmartCardReaderStateFlags::New();
       state_in->current_state->unaware = true;
       state_in->current_state->ignore = false;
+      state_in->current_count = 9u;
       states_in.push_back(std::move(state_in));
     }
 
@@ -609,6 +613,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, GetStatusChange) {
   EXPECT_EQ(state_out->reader, "foo");
   EXPECT_FALSE(state_out->event_state->unaware);
   EXPECT_TRUE(state_out->event_state->present);
+  EXPECT_EQ(state_out->event_count, 10u);
   EXPECT_EQ(state_out->answer_to_reset, std::vector<uint8_t>({1, 2, 3, 4, 5}));
 }
 
