@@ -622,12 +622,6 @@ BASE_FEATURE(kLogJsConsoleMessages,
 #endif
 );
 
-// Configures whether we set a lower limit for renderers that do not have a main
-// frame, similar to the limit that is already done for backgrounded renderers.
-BASE_FEATURE(kLowerV8MemoryLimitForNonMainRenderers,
-             "LowerV8MemoryLimitForNonMainRenderers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables a fix for a macOS IME Live Conversion issue. crbug.com/1328530.
 BASE_FEATURE(kMacImeLiveConversionFix,
              "MacImeLiveConversionFix",

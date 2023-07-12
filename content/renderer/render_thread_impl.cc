@@ -904,11 +904,6 @@ void RenderThreadImpl::InitializeWebKit(mojo::BinderMap* binders) {
     isolate->IsolateInBackgroundNotification();
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kLowerV8MemoryLimitForNonMainRenderers)) {
-    isolate->IsolateInBackgroundNotification();
-  }
-
   // Hook up blink's codecs so skia can call them. Since only the renderer
   // processes should be doing image decoding, this is not done in the common
   // skia initialization code for the GPU.
@@ -1738,11 +1733,7 @@ void RenderThreadImpl::OnRendererHidden() {
 }
 
 void RenderThreadImpl::OnRendererVisible() {
-  if (!base::FeatureList::IsEnabled(
-          features::kLowerV8MemoryLimitForNonMainRenderers) ||
-      MainFrameCounter::has_main_frame()) {
-    blink::MainThreadIsolate()->IsolateInForegroundNotification();
-  }
+  blink::MainThreadIsolate()->IsolateInForegroundNotification();
   if (!GetContentClient()->renderer()->RunIdleHandlerWhenWidgetsHidden())
     return;
   main_thread_scheduler_->SetRendererHidden(false);

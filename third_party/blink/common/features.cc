@@ -1785,12 +1785,6 @@ BASE_FEATURE(kUserLevelMemoryPressureSignal,
              "UserLevelMemoryPressureSignal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Prevents workers from sending IsolateInBackgroundNotification to V8
-// and thus instructs V8 to favor performance over memory on workers.
-BASE_FEATURE(kV8OptimizeWorkersForPerformance,
-             "V8OptimizeWorkersForPerformance",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kVSyncDecoding,
              "VSyncDecoding",
              base::FEATURE_DISABLED_BY_DEFAULT);
