@@ -71,8 +71,7 @@ NSView* CreateAccessoryView() {
       [NSTextField labelWithString:l10n_util::GetNSString(
                                        IDS_SAVE_PAGE_FILE_FORMAT_PROMPT_MAC)];
   label.translatesAutoresizingMaskIntoConstraints = NO;
-  if (base::mac::IsAtLeastOS10_14())
-    label.textColor = NSColor.secondaryLabelColor;
+  label.textColor = NSColor.secondaryLabelColor;
   if (base::mac::IsAtLeastOS11())
     label.font = [NSFont systemFontOfSize:[NSFont smallSystemFontSize]];
 

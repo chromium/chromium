@@ -40,10 +40,6 @@
 #include "base/android/build_info.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
 namespace content {
 namespace {
 
@@ -138,16 +134,6 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
         DVLOG(0) << "Android is too old: " << sdk_version;
         GTEST_SKIP();
       }
-    }
-#endif
-
-#if BUILDFLAG(IS_MAC)
-    // Skip these tests on older Mac because of failures:
-    // https://crbug.com/1315962, https://crbug.com/1084565
-    // This is OK because disk cache sandboxing is targeting Android. Running
-    // these tests in other platforms is just for development productivity.
-    if (base::mac::IsAtMostOS10_14()) {
-      GTEST_SKIP();
     }
 #endif
 
