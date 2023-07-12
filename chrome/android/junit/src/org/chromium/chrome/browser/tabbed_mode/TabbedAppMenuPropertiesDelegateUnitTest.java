@@ -16,6 +16,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -221,14 +223,15 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Mockito.when(mAppBannerManagerJniMock.getInstallableWebAppManifestId(any()))
                 .thenReturn(null);
 
+        Context context = new ContextThemeWrapper(
+                ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
         PowerBookmarkUtils.setPowerBookmarkMetaForTesting(PowerBookmarkMeta.newBuilder().build());
-        mTabbedAppMenuPropertiesDelegate = Mockito.spy(
-                new TabbedAppMenuPropertiesDelegate(ContextUtils.getApplicationContext(),
-                        mActivityTabProvider, mMultiWindowModeStateDispatcher, mTabModelSelector,
-                        mToolbarManager, mDecorView, mAppMenuDelegate, mLayoutStateProviderSupplier,
-                        null, mBookmarkModelSupplier, mFeedLauncher, mDialogManager,
-                        mSnackbarManager, mIncognitoReauthControllerSupplier));
+        mTabbedAppMenuPropertiesDelegate = Mockito.spy(new TabbedAppMenuPropertiesDelegate(context,
+                mActivityTabProvider, mMultiWindowModeStateDispatcher, mTabModelSelector,
+                mToolbarManager, mDecorView, mAppMenuDelegate, mLayoutStateProviderSupplier, null,
+                mBookmarkModelSupplier, mFeedLauncher, mDialogManager, mSnackbarManager,
+                mIncognitoReauthControllerSupplier));
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_URL);
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(

@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -198,7 +199,8 @@ public class AppMenuPropertiesDelegateUnitTest {
         MockitoAnnotations.initMocks(this);
         setupFeatureDefaults();
 
-        Context context = ContextUtils.getApplicationContext();
+        Context context = new ContextThemeWrapper(
+                ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mShadowPackageManager = Shadows.shadowOf(context.getPackageManager());
 
         mLayoutStateProviderSupplier.set(mLayoutStateProvider);
@@ -239,11 +241,10 @@ public class AppMenuPropertiesDelegateUnitTest {
         mBookmarkModelSupplier.set(mBookmarkModel);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
         PowerBookmarkUtils.setPowerBookmarkMetaForTesting(PowerBookmarkMeta.newBuilder().build());
-        mAppMenuPropertiesDelegate = Mockito.spy(new AppMenuPropertiesDelegateImpl(
-                ContextUtils.getApplicationContext(), mActivityTabProvider,
-                mMultiWindowModeStateDispatcher, mTabModelSelector, mToolbarManager, mDecorView,
-                mLayoutStateProviderSupplier, mStartSurfaceSupplier, mBookmarkModelSupplier,
-                mIncognitoReauthControllerSupplier));
+        mAppMenuPropertiesDelegate = Mockito.spy(new AppMenuPropertiesDelegateImpl(context,
+                mActivityTabProvider, mMultiWindowModeStateDispatcher, mTabModelSelector,
+                mToolbarManager, mDecorView, mLayoutStateProviderSupplier, mStartSurfaceSupplier,
+                mBookmarkModelSupplier, mIncognitoReauthControllerSupplier));
 
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
     }
