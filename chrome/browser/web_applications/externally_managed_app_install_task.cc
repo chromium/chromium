@@ -66,9 +66,10 @@ void ExternallyManagedAppInstallTask::Install(
     return;
   }
 
-  url_loader_->PrepareForLoad(
-      web_contents,
-      base::BindOnce(&ExternallyManagedAppInstallTask::OnWebContentsReady,
+  url_loader_->LoadUrl(
+      install_options_.install_url, web_contents,
+      WebAppUrlLoader::UrlComparison::kSameOrigin,
+      base::BindOnce(&ExternallyManagedAppInstallTask::OnUrlLoaded,
                      weak_ptr_factory_.GetWeakPtr(), web_contents,
                      std::move(result_callback)));
 }
@@ -76,20 +77,6 @@ void ExternallyManagedAppInstallTask::Install(
 void ExternallyManagedAppInstallTask::SetDataRetrieverFactoryForTesting(
     DataRetrieverFactory data_retriever_factory) {
   data_retriever_factory_ = std::move(data_retriever_factory);
-}
-
-void ExternallyManagedAppInstallTask::OnWebContentsReady(
-    content::WebContents* web_contents,
-    ResultCallback result_callback,
-    WebAppUrlLoader::Result prepare_for_load_result) {
-  // TODO(crbug.com/1098139): Handle the scenario where WebAppUrlLoader fails to
-  // load about:blank and flush WebContents states.
-  url_loader_->LoadUrl(
-      install_options_.install_url, web_contents,
-      WebAppUrlLoader::UrlComparison::kSameOrigin,
-      base::BindOnce(&ExternallyManagedAppInstallTask::OnUrlLoaded,
-                     weak_ptr_factory_.GetWeakPtr(), web_contents,
-                     std::move(result_callback)));
 }
 
 void ExternallyManagedAppInstallTask::OnUrlLoaded(
@@ -243,7 +230,7 @@ void ExternallyManagedAppInstallTask::ContinueWebAppInstall(
           weak_ptr_factory_.GetWeakPtr(),
           /*is_placeholder=*/false,
           /*offline_install=*/false, std::move(result_callback)),
-      web_contents->GetWeakPtr(), data_retriever_factory_.Run(), url_loader_);
+      web_contents->GetWeakPtr(), data_retriever_factory_.Run());
 }
 
 void ExternallyManagedAppInstallTask::InstallPlaceholder(

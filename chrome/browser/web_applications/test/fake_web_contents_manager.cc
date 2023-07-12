@@ -56,16 +56,6 @@ class FakeWebContentsManager::FakeUrlLoader : public WebAppUrlLoader {
       : manager_(manager) {}
   ~FakeUrlLoader() override = default;
 
-  void PrepareForLoad(content::WebContents* web_contents,
-                      ResultCallback callback) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DVLOG(1) << "FakeWebContentsManager::FakeUrlLoader::PrepareForLoad";
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), WebAppUrlLoaderResult::kUrlLoaded));
-    manager_->loaded_urls_[web_contents] = GURL(url::kAboutBlankURL);
-  }
-
   void LoadUrl(const GURL& url,
                content::WebContents* web_contents,
                UrlComparison url_comparison,

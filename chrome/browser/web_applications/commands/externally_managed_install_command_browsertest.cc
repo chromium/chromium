@@ -57,15 +57,6 @@ class ExternallyManagedInstallCommandBrowserTest
       const ExternallyManagedInstallCommandBrowserTest&) = delete;
   ExternallyManagedInstallCommandBrowserTest& operator=(
       const ExternallyManagedInstallCommandBrowserTest&) = delete;
-
- protected:
-  WebAppUrlLoader* GetWebAppUrlLoader() {
-    url_loader_.SetPrepareForLoadResultLoaded();
-    return &url_loader_;
-  }
-
- private:
-  TestWebAppUrlLoader url_loader_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
@@ -84,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   provider().scheduler().InstallExternallyManagedApp(
       install_options, future.GetCallback(),
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      std::make_unique<WebAppDataRetriever>(), GetWebAppUrlLoader());
+      std::make_unique<WebAppDataRetriever>());
 
   const AppId& app_id = future.Get<0>();
   webapps::InstallResultCode result_code = future.Get<1>();
@@ -106,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   provider().scheduler().InstallExternallyManagedApp(
       install_options, future.GetCallback(),
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      std::make_unique<WebAppDataRetriever>(), GetWebAppUrlLoader());
+      std::make_unique<WebAppDataRetriever>());
 
   const AppId& app_id = future.Get<0>();
   webapps::InstallResultCode result_code = future.Get<1>();
@@ -133,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
 
       install_options, future.GetCallback(),
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      std::make_unique<WebAppDataRetriever>(), GetWebAppUrlLoader());
+      std::make_unique<WebAppDataRetriever>());
 
   const AppId& app_id = future.Get<0>();
   webapps::InstallResultCode result_code = future.Get<1>();
@@ -159,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   provider().scheduler().InstallExternallyManagedApp(
       install_options, future.GetCallback(),
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      std::make_unique<WebAppDataRetriever>(), GetWebAppUrlLoader());
+      std::make_unique<WebAppDataRetriever>());
 
   const AppId& app_id = future.Get<0>();
   webapps::InstallResultCode result_code = future.Get<1>();
@@ -182,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
 
   provider().scheduler().InstallExternallyManagedApp(
       install_options, future.GetCallback(), web_contents->GetWeakPtr(),
-      std::make_unique<WebAppDataRetriever>(), GetWebAppUrlLoader());
+      std::make_unique<WebAppDataRetriever>());
 
   // Create a new tab to ensure that the browser isn't destroyed with the web
   // contents closing.
@@ -210,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
 
   provider().scheduler().InstallExternallyManagedApp(
       install_options, future.GetCallback(), web_contents->GetWeakPtr(),
-      std::make_unique<WebAppDataRetriever>(), GetWebAppUrlLoader());
+      std::make_unique<WebAppDataRetriever>());
 
   const AppId& app_id = future.Get<0>();
   webapps::InstallResultCode result_code = future.Get<1>();
@@ -236,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(
   provider().scheduler().InstallExternallyManagedApp(
       install_options, future_first_install.GetCallback(),
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      std::make_unique<WebAppDataRetriever>(), GetWebAppUrlLoader());
+      std::make_unique<WebAppDataRetriever>());
 
   const AppId& first_app_id = future_first_install.Get<0>();
   webapps::InstallResultCode first_install_code = future_first_install.Get<1>();
@@ -265,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(
   provider().scheduler().InstallExternallyManagedApp(
       install_options_policy, future_second_install.GetCallback(),
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      std::make_unique<WebAppDataRetriever>(), GetWebAppUrlLoader());
+      std::make_unique<WebAppDataRetriever>());
 
   const AppId& second_app_id = future_second_install.Get<0>();
   webapps::InstallResultCode second_install_code =
@@ -340,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   provider().scheduler().InstallExternallyManagedApp(
       install_options_policy, future_second_install.GetCallback(),
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      std::make_unique<WebAppDataRetriever>(), GetWebAppUrlLoader());
+      std::make_unique<WebAppDataRetriever>());
 
   const AppId& second_app_id = future_second_install.Get<0>();
   webapps::InstallResultCode second_install_code =

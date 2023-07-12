@@ -107,19 +107,6 @@ void ExternallyManagedAppRegistrationTask::OnDidCheckHasServiceWorker(
     return;
   }
 
-  url_loader_->PrepareForLoad(
-      web_contents_,
-      base::BindOnce(&ExternallyManagedAppRegistrationTask::OnWebContentsReady,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ExternallyManagedAppRegistrationTask::OnWebContentsReady(
-    WebAppUrlLoader::Result result) {
-  // TODO(crbug.com/1098139): Handle the scenario where WebAppUrlLoader fails to
-  // load about:blank and flush WebContents states.
-
-  // No action is needed when the URL loads.
-  // We wait for OnRegistrationCompleted (or registration timeout).
   url_loader_->LoadUrl(install_url(), web_contents_,
                        WebAppUrlLoader::UrlComparison::kExact,
                        base::DoNothing());

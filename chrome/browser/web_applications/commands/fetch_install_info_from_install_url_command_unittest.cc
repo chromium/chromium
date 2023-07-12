@@ -27,11 +27,6 @@ class FetchInstallInfoFromInstallUrlCommandTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
-    auto command_manager_url_loader = std::make_unique<TestWebAppUrlLoader>();
-    command_manager_url_loader->SetPrepareForLoadResultLoaded();
-    provider->GetCommandManager().SetUrlLoaderForTesting(
-        std::move(command_manager_url_loader));
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 

@@ -29,6 +29,8 @@ class SharedWebContentsLock;
 class SharedWebContentsLockDescription;
 class SharedWebContentsWithAppLock;
 class SharedWebContentsWithAppLockDescription;
+class WebAppUrlLoader;
+enum class WebAppUrlLoaderResult;
 
 // Installs a web app using a raw manifest JSON string, which is interpreted as
 // if it was loaded from the renderer for a given URL. This does not attempt to
@@ -74,6 +76,7 @@ class InstallPreloadedVerifiedAppCommand
   base::Value ToDebugValue() const override;
 
  private:
+  void OnAboutBlankLoaded(WebAppUrlLoaderResult result);
   void OnManifestParsed(blink::mojom::ManifestPtr manifest);
   void OnIconsRetrieved(IconsDownloadedResult result,
                         IconsMap icons_map,
@@ -103,6 +106,7 @@ class InstallPreloadedVerifiedAppCommand
   std::unique_ptr<SharedWebContentsWithAppLockDescription>
       app_lock_description_;
 
+  std::unique_ptr<WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
   base::Value::Dict debug_value_;

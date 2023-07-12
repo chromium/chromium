@@ -29,7 +29,6 @@ class WebContents;
 namespace web_app {
 
 class WebAppProvider;
-class WebAppUrlLoader;
 enum class WebAppUrlLoaderResult;
 
 // The command manager is used to schedule commands or callbacks to write & read
@@ -77,9 +76,6 @@ class WebAppCommandManager {
 
   void AwaitAllCommandsCompleteForTesting();
 
-  // TODO(https://crbug.com/1329934): Figure out better ownership of this.
-  void SetUrlLoaderForTesting(std::unique_ptr<WebAppUrlLoader> url_loader);
-
   bool has_web_contents_for_testing() const {
     return shared_web_contents_.get();
   }
@@ -104,12 +100,7 @@ class WebAppCommandManager {
   void OnLockAcquired(WebAppCommand::Id command_id,
                       base::OnceClosure start_command);
 
-  void StartCommandOrPrepareForLoad(WebAppCommand* command,
-                                    base::OnceClosure start_command);
-
-  void OnAboutBlankLoadedForCommandStart(WebAppCommand* command,
-                                         base::OnceClosure start_command,
-                                         WebAppUrlLoaderResult result);
+  void StartCommand(WebAppCommand* command, base::OnceClosure start_command);
 
   content::WebContents* EnsureWebContentsCreated();
 
@@ -120,9 +111,6 @@ class WebAppCommandManager {
   raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> provider_;
 
-  // TODO(https://crbug.com/1329934): Figure out better ownership of this.
-  // Perhaps set as subsystem?
-  std::unique_ptr<WebAppUrlLoader> url_loader_;
   std::unique_ptr<content::WebContents> shared_web_contents_;
 
   bool started_ = false;

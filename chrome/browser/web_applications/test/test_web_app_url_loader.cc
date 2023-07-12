@@ -74,15 +74,6 @@ void TestWebAppUrlLoader::LoadUrl(const GURL& url,
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
-void TestWebAppUrlLoader::SetPrepareForLoadResultLoaded() {
-  AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
-}
-
-void TestWebAppUrlLoader::AddPrepareForLoadResults(
-    const std::vector<Result>& results) {
-  AddNextLoadUrlResults(GURL(url::kAboutBlankURL), results);
-}
-
 TestWebAppUrlLoader::UrlResponses::UrlResponses() = default;
 
 TestWebAppUrlLoader::UrlResponses::~UrlResponses() = default;

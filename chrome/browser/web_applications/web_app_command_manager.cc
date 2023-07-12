@@ -24,7 +24,6 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -131,14 +130,13 @@ void WebAppCommandManager::OnLockAcquired(WebAppCommand::Id command_id,
   // NotifySyncSourceRemoved.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&WebAppCommandManager::StartCommandOrPrepareForLoad,
+      base::BindOnce(&WebAppCommandManager::StartCommand,
                      weak_ptr_factory_.GetWeakPtr(), command_it->second.get(),
                      std::move(start_command)));
 }
 
-void WebAppCommandManager::StartCommandOrPrepareForLoad(
-    WebAppCommand* command,
-    base::OnceClosure start_command) {
+void WebAppCommandManager::StartCommand(WebAppCommand* command,
+                                        base::OnceClosure start_command) {
   if (is_in_shutdown_)
     return;
 #if DCHECK_IS_ON()
@@ -148,49 +146,6 @@ void WebAppCommandManager::StartCommandOrPrepareForLoad(
 #endif
   if (command->lock_description().IncludesSharedWebContents()) {
     CHECK(shared_web_contents_);
-    if (!url_loader_) {
-      // Because the web contents manager might be swapped out by tests (and
-      // this class can be called before the WebAppProvider is initialized),
-      // create the loader here lazily.
-      // TODO(b/280517254): This can be removed when `PrepareForLoad` no longer
-      // needs to be called.
-      url_loader_ = provider_->web_contents_manager().CreateUrlLoader();
-    }
-    url_loader_->PrepareForLoad(
-        // web_contents is created by `WebAppLockManager` when lock is granted,
-        // this grabs the same web_contents.
-        shared_web_contents_.get(),
-        base::BindOnce(&WebAppCommandManager::OnAboutBlankLoadedForCommandStart,
-                       weak_ptr_factory_.GetWeakPtr(), command,
-                       std::move(start_command)));
-    return;
-  }
-  DVLOG(2) << "Starting command: " << CreateCommandMetadata(*command);
-  std::move(start_command).Run();
-}
-
-void WebAppCommandManager::OnAboutBlankLoadedForCommandStart(
-    WebAppCommand* command,
-    base::OnceClosure start_command,
-    WebAppUrlLoader::Result result) {
-  if (is_in_shutdown_) {
-    return;
-  }
-  DCHECK(shared_web_contents_);
-
-  // about:blank must always be loaded.
-  DCHECK_EQ(WebAppUrlLoader::Result::kUrlLoaded, result);
-  if (result != WebAppUrlLoader::Result::kUrlLoaded) {
-    base::Value::Dict url_loader_error;
-    url_loader_error.Set("WebAppUrlLoader::Result",
-                         ConvertUrlLoaderResultToString(result));
-    if (command->lock_description().app_ids().size() == 1) {
-      url_loader_error.Set("task.app_id_to_expect",
-                           *command->lock_description().app_ids().begin());
-    }
-    url_loader_error.Set("!stage", "OnWebContentsReady");
-    provider_->install_manager().TakeCommandErrorLog(
-        PassKey(), std::move(url_loader_error));
   }
   DVLOG(2) << "Starting command: " << CreateCommandMetadata(*command);
   std::move(start_command).Run();
@@ -267,11 +222,6 @@ void WebAppCommandManager::AwaitAllCommandsCompleteForTesting() {
     run_loop_for_testing_ = std::make_unique<base::RunLoop>();
   run_loop_for_testing_->Run();
   run_loop_for_testing_.reset();
-}
-
-void WebAppCommandManager::SetUrlLoaderForTesting(
-    std::unique_ptr<WebAppUrlLoader> url_loader) {
-  url_loader_ = std::move(url_loader);
 }
 
 void WebAppCommandManager::OnCommandComplete(

@@ -77,9 +77,6 @@ class ExternallyManagedAppInstallTask {
   // by system apps.
   void InstallFromInfo(ResultCallback result_callback);
 
-  void OnWebContentsReady(content::WebContents* web_contents,
-                          ResultCallback result_callback,
-                          WebAppUrlLoader::Result prepare_for_load_result);
   void OnUrlLoaded(content::WebContents* web_contents,
                    ResultCallback result_callback,
                    WebAppUrlLoader::Result load_url_result);

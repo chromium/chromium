@@ -216,13 +216,6 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
-    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
-
-    auto command_manager_url_loader = std::make_unique<TestWebAppUrlLoader>();
-    command_manager_url_loader->SetPrepareForLoadResultLoaded();
-    provider->GetCommandManager().SetUrlLoaderForTesting(
-        std::move(command_manager_url_loader));
-
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 

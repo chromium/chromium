@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_CONTENTS_WEB_APP_URL_LOADER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/public/browser/navigation_controller.h"
 
@@ -45,6 +46,10 @@ class WebAppUrlLoader {
     kSameOrigin,
   };
 
+  // Exposed for testing.
+  static constexpr base::TimeDelta kSecondsToWaitForWebContentsLoad =
+      base::Seconds(30);
+
   using Result = WebAppUrlLoaderResult;
 
   using ResultCallback = base::OnceCallback<void(Result)>;
@@ -52,42 +57,36 @@ class WebAppUrlLoader {
   WebAppUrlLoader();
   virtual ~WebAppUrlLoader();
 
-  // Navigates |web_contents| to about:blank to prepare for the next LoadUrl()
-  // call.
-  //
-  // We've observed some races when using LoadUrl() on previously navigated
-  // WebContents. Sometimes events from the last navigation are triggered after
-  // we start the new navigation, causing us to incorrectly run the callback
-  // with a redirect error.
-  //
-  // Clients of LoadUrl() should always call PrepareForLoad() before calling
-  // LoadUrl(). PrepareForLoad() will start a new navigation to about:blank and
-  // ignore all navigation events until we've successfully navigated to
-  // about:blank or timed out.
-  //
-  // Clients should check |callback| result and handle failure scenarios
-  // appropriately.
-  virtual void PrepareForLoad(content::WebContents* web_contents,
-                              ResultCallback callback);
-
-  // Navigates |web_contents| to |url|, compares the resolved URL with
-  // |url_comparison|, and runs callback with the result code.
+  // Navigates `web_contents` to about:blank, followed by navigating to `url`.
+  // This prevents races with events from old contents loaded in the
+  // `web_contents`. After navigating to `url`, the `url` is compared with the
+  // resolved URL with `url_comparison`, and runs callback with the result code.
   virtual void LoadUrl(const GURL& url,
                        content::WebContents* web_contents,
                        UrlComparison url_comparison,
                        ResultCallback callback);
 
-  // Navigates |web_contents| based on |load_url_params|, compares the
-  // resolved URL with |url_comparison|, and runs callback with the result code.
+  // Navigates `web_contents` to about:blank, followed by navigating based on
+  // `load_url_params`. This prevents races with events from old contents loaded
+  // in the `web_contents`. Compares the resolved URL with `url_comparison`, and
+  // runs callback with the result code.
   virtual void LoadUrl(
-      const content::NavigationController::LoadURLParams& load_url_params,
+      content::NavigationController::LoadURLParams load_url_params,
       content::WebContents* web_contents,
       UrlComparison url_comparison,
       ResultCallback callback);
 
-  // Exposed for testing.
-  static constexpr base::TimeDelta kSecondsToWaitForWebContentsLoad =
-      base::Seconds(30);
+ private:
+  void PrepareForLoad(content::WebContents* web_contents,
+                      base::OnceClosure complete);
+
+  void LoadUrlInternal(
+      const content::NavigationController::LoadURLParams& load_url_params,
+      base::WeakPtr<content::WebContents> web_contents,
+      UrlComparison url_comparison,
+      ResultCallback callback);
+
+  base::WeakPtrFactory<WebAppUrlLoader> weak_factory_{this};
 };
 
 const char* ConvertUrlLoaderResultToString(WebAppUrlLoader::Result result);

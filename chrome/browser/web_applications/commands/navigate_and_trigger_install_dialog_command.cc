@@ -96,7 +96,7 @@ void NavigateAndTriggerInstallDialogCommand::StartWithLock(
 
   web_contents_ = ui_manager_->CreateNewTab();
   url_loader_->LoadUrl(
-      load_url_params, web_contents_,
+      std::move(load_url_params), web_contents_,
       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(&NavigateAndTriggerInstallDialogCommand::OnUrlLoaded,
                      weak_factory_.GetWeakPtr()));

@@ -78,8 +78,6 @@ class ExternallyManagedAppRegistrationTask
 
   void OnDidCheckHasServiceWorker(content::ServiceWorkerCapability capability);
 
-  void OnWebContentsReady(WebAppUrlLoader::Result result);
-
   void OnRegistrationTimeout();
 
   const raw_ptr<WebAppUrlLoader> url_loader_;

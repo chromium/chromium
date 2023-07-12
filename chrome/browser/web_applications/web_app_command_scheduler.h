@@ -52,7 +52,6 @@ class WebApp;
 class WebAppDataRetriever;
 struct WebAppInstallInfo;
 class WebAppProvider;
-class WebAppUrlLoader;
 enum class ApiApprovalState;
 struct IsolationData;
 struct SynchronizeOsOptions;
@@ -131,7 +130,6 @@ class WebAppCommandScheduler {
                               bool did_uninstall_and_replace)> install_callback,
       base::WeakPtr<content::WebContents> contents,
       std::unique_ptr<WebAppDataRetriever> data_retriever,
-      WebAppUrlLoader* web_app_url_loader,
       const base::Location& location = FROM_HERE);
 
   // Install a placeholder app, this is used during externally managed install
