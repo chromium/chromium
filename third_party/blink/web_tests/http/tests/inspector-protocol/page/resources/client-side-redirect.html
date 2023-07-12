@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script type='text/javascript'>
+  (async function() {
+    const params = new URLSearchParams(location.search);
+    const event = params.get('event');
+    if (event) {
+      await new Promise(resolve => window.addEventListener(event, resolve, {once: true}));
+    }
+    location.href = params.get('location');
+  })();
+</script>
+</body>
+</html>

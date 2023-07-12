@@ -92,6 +92,7 @@
 #include "third_party/blink/renderer/core/loader/form_submission.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
+#include "third_party/blink/renderer/core/loader/idleness_detector.h"
 #include "third_party/blink/renderer/core/loader/idna_util.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
@@ -1597,6 +1598,7 @@ void FrameLoader::DidDropNavigation() {
     frame_->DomWindow()->GetScriptController().WindowProxy(
         DOMWrapperWorld::MainWorld());
   }
+  frame_->GetIdlenessDetector()->DidDropNavigation();
 }
 
 bool FrameLoader::CancelProvisionalLoaderForNewNavigation() {
