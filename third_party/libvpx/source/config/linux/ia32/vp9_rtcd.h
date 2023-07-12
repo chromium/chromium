@@ -91,27 +91,7 @@ int vp9_diamond_search_sad_c(const struct macroblock* x,
                              int* num00,
                              const struct vp9_sad_table* sad_fn_ptr,
                              const struct mv* center_mv);
-int vp9_diamond_search_sad_avx(const struct macroblock* x,
-                               const struct search_site_config* cfg,
-                               struct mv* ref_mv,
-                               uint32_t start_mv_sad,
-                               struct mv* best_mv,
-                               int search_param,
-                               int sad_per_bit,
-                               int* num00,
-                               const struct vp9_sad_table* sad_fn_ptr,
-                               const struct mv* center_mv);
-RTCD_EXTERN int (*vp9_diamond_search_sad)(
-    const struct macroblock* x,
-    const struct search_site_config* cfg,
-    struct mv* ref_mv,
-    uint32_t start_mv_sad,
-    struct mv* best_mv,
-    int search_param,
-    int sad_per_bit,
-    int* num00,
-    const struct vp9_sad_table* sad_fn_ptr,
-    const struct mv* center_mv);
+#define vp9_diamond_search_sad vp9_diamond_search_sad_c
 
 void vp9_fht16x16_c(const int16_t* input,
                     tran_low_t* output,
@@ -501,9 +481,6 @@ static void setup_rtcd_internal(void) {
   vp9_block_error_fp = vp9_block_error_fp_sse2;
   if (flags & HAS_AVX2)
     vp9_block_error_fp = vp9_block_error_fp_avx2;
-  vp9_diamond_search_sad = vp9_diamond_search_sad_c;
-  if (flags & HAS_AVX)
-    vp9_diamond_search_sad = vp9_diamond_search_sad_avx;
   vp9_highbd_iht16x16_256_add = vp9_highbd_iht16x16_256_add_c;
   if (flags & HAS_SSE4_1)
     vp9_highbd_iht16x16_256_add = vp9_highbd_iht16x16_256_add_sse4_1;
