@@ -18,6 +18,7 @@
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_entry_override.h"
@@ -665,6 +666,49 @@ TEST_F(FirstPartySetsPolicyServiceTest,
                                           future.GetCallback());
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(future.Take(), net::FirstPartySetMetadata());
+}
+
+class ThirdPartyCookieBlockingFirstPartySetsPolicyServiceTest
+    : public DefaultFirstPartySetsPolicyServiceTest {
+ protected:
+  ThirdPartyCookieBlockingFirstPartySetsPolicyServiceTest() {
+    features_.InitWithFeatures(
+        {
+            features::kFirstPartySets,
+            net::features::kForceThirdPartyCookieBlocking,
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(ThirdPartyCookieBlockingFirstPartySetsPolicyServiceTest, EnabledAtInit) {
+  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
+
+  TestingProfile profile;
+  FirstPartySetsPolicyService* service =
+      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(&profile);
+  service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
+
+  env().RunUntilIdle();
+}
+
+TEST_F(ThirdPartyCookieBlockingFirstPartySetsPolicyServiceTest, AlwaysEnabled) {
+  // The mock method is called once during the service construction.
+  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
+
+  TestingProfile profile;
+  FirstPartySetsPolicyService* service =
+      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(&profile);
+  service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
+
+  // These changes should not be forwarded to the delegate.
+  service->OnFirstPartySetsEnabledChanged(false);
+  service->OnFirstPartySetsEnabledChanged(true);
+
+  env().RunUntilIdle();
 }
 
 namespace {
