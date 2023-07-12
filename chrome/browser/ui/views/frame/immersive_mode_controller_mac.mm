@@ -88,6 +88,7 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
       const gfx::Rect& new_visible_bounds_in_screen) override;
   bool ShouldStayImmersiveAfterExitingFullscreen() override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  int GetMinimumContentOffset() const override;
 
   // Set the widget id of the tab hosting widget. Set before calling SetEnabled.
   void SetTabNativeWidgetID(uint64_t widget_id);
@@ -151,6 +152,10 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   // Height of the tab widget, used when resizing. Only non-zero if
   // `separate_tab_strip_` is true.
   int tab_widget_height_ = 0;
+  // Total height of the overlay (including the separate tab strip if relevant).
+  int overlay_height_ = 0;
+  // Whether the find bar is currently visible.
+  bool find_bar_visible_ = false;
 
   base::WeakPtrFactory<ImmersiveModeControllerMac> weak_ptr_factory_;
 };
@@ -352,7 +357,14 @@ ImmersiveModeControllerMac::GetRevealedLock(AnimateReveal animate_reveal) {
 }
 
 void ImmersiveModeControllerMac::OnFindBarVisibleBoundsChanged(
-    const gfx::Rect& new_visible_bounds_in_screen) {}
+    const gfx::Rect& new_visible_bounds_in_screen) {
+  bool was_visible =
+      std::exchange(find_bar_visible_, !new_visible_bounds_in_screen.IsEmpty());
+  if (enabled_ && was_visible != find_bar_visible_) {
+    // Ensure web content is fully visible if find bar is showing.
+    browser_view_->InvalidateLayout();
+  }
+}
 
 bool ImmersiveModeControllerMac::ShouldStayImmersiveAfterExitingFullscreen() {
   return false;
@@ -361,6 +373,10 @@ bool ImmersiveModeControllerMac::ShouldStayImmersiveAfterExitingFullscreen() {
 void ImmersiveModeControllerMac::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {}
+
+int ImmersiveModeControllerMac::GetMinimumContentOffset() const {
+  return find_bar_visible_ ? overlay_height_ : 0;
+}
 
 void ImmersiveModeControllerMac::OnWillChangeFocus(views::View* focused_before,
                                                    views::View* focused_now) {}
@@ -382,12 +398,14 @@ void ImmersiveModeControllerMac::OnViewBoundsChanged(
   if (bounds.IsEmpty()) {
     return;
   }
+  overlay_height_ = bounds.height();
   if (separate_tab_strip_) {
     gfx::Size new_size(bounds.width(), tab_widget_height_);
     browser_view_->tab_overlay_widget()->SetSize(new_size);
     browser_view_->tab_overlay_view()->SetSize(new_size);
     browser_view_->tab_strip_region_view()->SetSize(gfx::Size(
         new_size.width(), browser_view_->tab_strip_region_view()->height()));
+    overlay_height_ += tab_widget_height_;
   }
   browser_view_->overlay_widget()->SetBounds(bounds);
   ns_window_mojo_->OnTopContainerViewBoundsChanged(bounds);

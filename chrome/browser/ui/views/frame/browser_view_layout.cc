@@ -637,7 +637,8 @@ int BrowserViewLayout::LayoutInfoBar(int top) {
       (delegate_->IsTopControlsSlideBehaviorEnabled() &&
        delegate_->GetTopControlsSlideBehaviorShownRatio() == 0.f)) {
     // Can be null in tests.
-    top = browser_view_ ? browser_view_->y() : 0;
+    top = (browser_view_ ? browser_view_->y() : 0) +
+          immersive_mode_controller_->GetMinimumContentOffset();
   }
 
   SetViewVisibility(infobar_container_, IsInfobarVisible());

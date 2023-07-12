@@ -6,15 +6,19 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <tuple>
+
 #import "base/mac/mac_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
+#include "chrome/browser/ui/find_bar/find_bar_host_unittest_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -83,4 +87,27 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacBrowserTest,
   EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
   EXPECT_EQ(GetMovedContentViewForWidget(overlay_widget), nullptr);
   EXPECT_EQ([overlay_widget_window contentView], overlay_widget_content_view);
+}
+
+// Tests that minimum content offset is nonzero iff the find bar is shown.
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacBrowserTest,
+                       MinimumContentOffset) {
+  chrome::DisableFindBarAnimationsDuringTesting(true);
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ImmersiveModeController* controller =
+      browser_view->immersive_mode_controller();
+  controller->SetEnabled(true);
+  EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
+
+  views::NamedWidgetShownWaiter shown_waiter(
+      views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
+  chrome::Find(browser());
+  std::ignore = shown_waiter.WaitIfNeededAndGet();
+  EXPECT_GT(controller->GetMinimumContentOffset(), 0);
+
+  chrome::CloseFind(browser());
+  EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
+
+  chrome::DisableFindBarAnimationsDuringTesting(false);
 }

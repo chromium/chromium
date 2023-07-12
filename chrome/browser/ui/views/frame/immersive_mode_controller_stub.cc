@@ -46,3 +46,7 @@ bool ImmersiveModeControllerStub::ShouldStayImmersiveAfterExitingFullscreen() {
 void ImmersiveModeControllerStub::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {}
+
+int ImmersiveModeControllerStub::GetMinimumContentOffset() const {
+  return 0;
+}

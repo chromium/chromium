@@ -148,6 +148,7 @@ class MockImmersiveModeController : public ImmersiveModeController {
       const gfx::Rect& new_visible_bounds) override {}
   bool ShouldStayImmersiveAfterExitingFullscreen() override { return true; }
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override {}
+  int GetMinimumContentOffset() const override { return 0; }
 };
 
 }  // anonymous namespace
