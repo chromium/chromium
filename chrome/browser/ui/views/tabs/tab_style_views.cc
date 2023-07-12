@@ -759,14 +759,14 @@ bool GM2TabStyleViews::ShouldExtendHitTest() const {
 }
 
 bool GM2TabStyleViews::IsHoverActive() const {
-  if (!hover_controller_)
-    return false;
-  return hover_controller_->ShouldDraw();
+  return tab_->mouse_hovered() ||
+         (hover_controller_ && hover_controller_->ShouldDraw());
 }
 
 double GM2TabStyleViews::GetHoverAnimationValue() const {
-  if (!hover_controller_)
-    return 0.0;
+  if (!hover_controller_) {
+    return IsHoverActive() ? 1.0 : 0.0;
+  }
   return hover_controller_->GetAnimationValue();
 }
 
@@ -962,6 +962,10 @@ void GM2TabStyleViews::PaintTabBackgroundFill(
 
 void GM2TabStyleViews::PaintBackgroundHover(gfx::Canvas* canvas,
                                             float scale) const {
+  if (!hover_controller_) {
+    return;
+  }
+
   SkPoint hover_location(gfx::PointToSkPoint(hover_controller_->location()));
   hover_location.scale(SkFloatToScalar(scale));
   const SkScalar kMinHoverRadius = 16;
