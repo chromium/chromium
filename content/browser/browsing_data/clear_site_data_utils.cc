@@ -27,20 +27,17 @@ namespace content {
 namespace {
 
 // Finds the BrowserContext associated with the request and requests
-// the actual clearing of data for |origin|. The data types to be deleted
-// are determined by |clear_cookies|, |clear_storage|, and |clear_cache|.
-// |web_contents_getter| identifies the WebContents from which the request
-// originated. Must be run on the UI thread. The |callback| will be executed
+// the actual clearing of data for `origin`. The data types to be deleted
+// are determined by `clear_site_data_types` and `storage_buckets_to_remove`.
+// `web_contents_getter` identifies the WebContents from which the request
+// originated. Must be run on the UI thread. The `callback` will be executed
 // on the IO thread.
 class SiteDataClearer : public BrowsingDataRemover::Observer {
  public:
   SiteDataClearer(
       BrowserContext* browser_context,
       const url::Origin& origin,
-      bool clear_cookies,
-      bool clear_storage,
-      bool clear_cache,
-      bool clear_client_hints,
+      const ClearSiteDataTypeSet clear_site_data_types,
       const std::set<std::string>& storage_buckets_to_remove,
       bool avoid_closing_connections,
       const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
@@ -48,10 +45,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
       bool partitioned_state_allowed_only,
       base::OnceClosure callback)
       : origin_(origin),
-        clear_cookies_(clear_cookies),
-        clear_storage_(clear_storage),
-        clear_cache_(clear_cache),
-        clear_client_hints_(clear_client_hints),
+        clear_site_data_types_(clear_site_data_types),
         storage_buckets_to_remove_(storage_buckets_to_remove),
         avoid_closing_connections_(avoid_closing_connections),
         cookie_partition_key_(cookie_partition_key),
@@ -82,7 +76,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
     //    or a subdomain thereof
     // b) |origin|'s host exactly if it is an IP address or an internal hostname
     //    (e.g. "localhost" or "fileserver").
-    if (clear_cookies_) {
+    if (clear_site_data_types_.Has(ClearSiteDataType::kCookies)) {
       std::string domain = GetDomainAndRegistry(
           origin_,
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -129,14 +123,14 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
 
     // Delete origin-scoped data.
     uint64_t remove_mask = 0;
-    if (clear_storage_) {
+    if (clear_site_data_types_.Has(ClearSiteDataType::kStorage)) {
       remove_mask |= BrowsingDataRemover::DATA_TYPE_DOM_STORAGE;
       remove_mask |= BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
       // Internal data should not be removed by site-initiated deletions.
       remove_mask &= ~BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX_INTERNAL;
     }
 
-    if (clear_cache_) {
+    if (clear_site_data_types_.Has(ClearSiteDataType::kCache)) {
       remove_mask |= BrowsingDataRemover::DATA_TYPE_CACHE;
     }
 
@@ -159,7 +153,9 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
     if (client_hints_controller_delegate &&
         base::FeatureList::IsEnabled(
             features::kClearSiteDataClientHintsSupport) &&
-        (clear_cookies_ || clear_cache_ || clear_client_hints_)) {
+        clear_site_data_types_.HasAny({ClearSiteDataType::kCookies,
+                                       ClearSiteDataType::kCache,
+                                       ClearSiteDataType::kClientHints})) {
       pending_task_count_++;
       // TODO(crbug.com/1458394): Migrate into BrowsingDataRemover.
       client_hints_controller_delegate->PersistClientHints(
@@ -187,10 +183,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
   }
 
   const url::Origin origin_;
-  const bool clear_cookies_;
-  const bool clear_storage_;
-  const bool clear_cache_;
-  const bool clear_client_hints_;
+  const ClearSiteDataTypeSet clear_site_data_types_;
   const std::set<std::string> storage_buckets_to_remove_;
   const bool avoid_closing_connections_;
   const absl::optional<net::CookiePartitionKey> cookie_partition_key_;
@@ -209,10 +202,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
 void ClearSiteData(
     const base::RepeatingCallback<BrowserContext*()>& browser_context_getter,
     const url::Origin& origin,
-    bool clear_cookies,
-    bool clear_storage,
-    bool clear_cache,
-    bool clear_client_hints,
+    const ClearSiteDataTypeSet clear_site_data_types,
     const std::set<std::string>& storage_buckets_to_remove,
     bool avoid_closing_connections,
     const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
@@ -221,16 +211,15 @@ void ClearSiteData(
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // `clear_storage` cannot be `true` while `storage_buckets_to_remove` is not
-  // empty and vice-versa
-  DCHECK(!clear_storage || storage_buckets_to_remove.empty());
+  // It's not possible to clear all storage and also only specific buckets.
+  DCHECK(!clear_site_data_types.Has(ClearSiteDataType::kStorage) ||
+         storage_buckets_to_remove.empty());
   BrowserContext* browser_context = browser_context_getter.Run();
   if (!browser_context) {
     std::move(callback).Run();
     return;
   }
-  (new SiteDataClearer(browser_context, origin, clear_cookies, clear_storage,
-                       clear_cache, clear_client_hints,
+  (new SiteDataClearer(browser_context, origin, clear_site_data_types,
                        storage_buckets_to_remove, avoid_closing_connections,
                        cookie_partition_key, storage_key,
                        partitioned_state_allowed_only, std::move(callback)))
