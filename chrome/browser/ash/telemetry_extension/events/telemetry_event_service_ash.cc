@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/ash/telemetry_extension/common/telemetry_extension_converters.h"
 #include "chrome/browser/ash/telemetry_extension/events/telemetry_event_forwarder.h"
 #include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
@@ -79,7 +80,7 @@ void TelemetryEventServiceAsh::IsEventSupported(
               [](IsEventSupportedCallback callback,
                  cros_healthd::mojom::SupportStatusPtr ptr) {
                 std::move(callback).Run(
-                    converters::ConvertStructPtr(std::move(ptr)));
+                    converters::ConvertCommonPtr(std::move(ptr)));
               },
               std::move(callback)));
 }

@@ -19,6 +19,7 @@ source_set("events") {
   deps = [
     "//ash/system/diagnostics/mojom",
     "//base",
+    "//chrome/browser/ash/telemetry_extension/common",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",

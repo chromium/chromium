@@ -10,7 +10,6 @@
 
 #include "ash/system/diagnostics/mojom/input.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
-#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
@@ -80,21 +79,6 @@ crosapi::mojom::UInt32ValuePtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::EventInfoPtr input);
 
-crosapi::mojom::TelemetryExtensionExceptionPtr UncheckedConvertPtr(
-    cros_healthd::mojom::ExceptionPtr input);
-
-crosapi::mojom::TelemetryExtensionSupportedPtr UncheckedConvertPtr(
-    cros_healthd::mojom::SupportedPtr input);
-
-crosapi::mojom::TelemetryExtensionUnsupportedReasonPtr UncheckedConvertPtr(
-    cros_healthd::mojom::UnsupportedReasonPtr input);
-
-crosapi::mojom::TelemetryExtensionUnsupportedPtr UncheckedConvertPtr(
-    cros_healthd::mojom::UnsupportedPtr input);
-
-crosapi::mojom::TelemetryExtensionSupportStatusPtr UncheckedConvertPtr(
-    cros_healthd::mojom::SupportStatusPtr input);
-
 }  // namespace unchecked
 
 crosapi::mojom::TelemetryAudioJackEventInfo::State Convert(
@@ -141,9 +125,6 @@ crosapi::mojom::TelemetryHdmiEventInfo::State Convert(
 
 crosapi::mojom::TelemetryInputTouchButton Convert(
     cros_healthd::mojom::InputTouchButton input);
-
-crosapi::mojom::TelemetryExtensionException::Reason Convert(
-    cros_healthd::mojom::Exception::Reason input);
 
 cros_healthd::mojom::EventCategoryEnum Convert(
     crosapi::mojom::TelemetryEventCategoryEnum input);

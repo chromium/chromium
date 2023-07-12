@@ -10,6 +10,7 @@ source_set("unit_tests") {
   testonly = true
 
   deps = [
+    "common:unit_tests",
     "diagnostics:unit_tests",
     "events:unit_tests",
     "telemetry:unit_tests",
