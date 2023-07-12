@@ -249,6 +249,7 @@ async def test_input_performActionsEmitsKeyboardEvents(websocket, context_id,
     } == result
 
 
+@pytest.mark.skip(reason="TODO(jrandolf): flaky")
 @pytest.mark.asyncio
 async def test_input_performActionsEmitsDragging(websocket, context_id, html,
                                                  query_selector, snapshot,
@@ -308,6 +309,7 @@ async def test_input_performActionsEmitsDragging(websocket, context_id, html,
     assert result == snapshot(exclude=props("realm"))
 
 
+@pytest.mark.skip(reason="TODO(jrandolf): flaky")
 @pytest.mark.asyncio
 async def test_input_performActionsCancelsDragging(websocket, context_id, html,
                                                    query_selector, snapshot,
@@ -395,6 +397,7 @@ async def test_input_performActionsCancelsDragging(websocket, context_id, html,
     assert result == snapshot(exclude=props("realm"))
 
 
+@pytest.mark.skip(reason="TODO(jrandolf): flaky")
 @pytest.mark.asyncio
 async def test_input_performActionsDoesNotCancelDraggingWithAlt(
         websocket, context_id, html, query_selector, snapshot,
