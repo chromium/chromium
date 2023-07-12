@@ -69,7 +69,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1247519845643687288">Aplicații recente</translation>
 <translation id="1252999807265626933">Se încarcă de la <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Cum este vremea?</translation>
-<translation id="1267032506238418139">Modificarea comenzii rapide</translation>
 <translation id="1269405891096105529">Dispozitivul periferic nu este acceptat în modul pentru invitați</translation>
 <translation id="1270290102613614947">Tastatură pe ecran dezactivată</translation>
 <translation id="1272079795634619415">Oprește</translation>
@@ -218,7 +217,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1908992311423394684">Instalare nouă</translation>
 <translation id="1915307458270490472">Încheie apelul</translation>
 <translation id="1918022425394817322">Camera foto este aliniată cu colțul din dreapta sus</translation>
-<translation id="1919743966458266018">Comanda rapidă pentru a deschide managerul de activități a fost modificată. Folosește <ph name="NEW_SHORTCUT" /> în loc de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clicuri automate</translation>
 <translation id="1928739107511554905">Pentru a obține actualizarea, folosește ecranul tactil ca să repornești Chromebookul cu tastatura atașată.</translation>
 <translation id="1948405482892809935">Comută la următorul utilizator</translation>
@@ -397,6 +395,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2750941250130734256">Fereastra activă a fost desprinsă.</translation>
 <translation id="2761723519669354964">Deschide elementul evidențiat de pe raft</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> până la <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl + căutare + s</translation>
 <translation id="2778650143428714839">Dispozitivul <ph name="DEVICE_TYPE" /> gestionat de <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Ieși din modul de capturare</translation>
 <translation id="2785499565474703580">Un dispozitiv conectat</translation>
@@ -460,6 +459,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3062298103034426069">Nu se acceptă</translation>
 <translation id="3068622547379332530">Versiunea <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Raft în partea stângă</translation>
+<translation id="3070639127620815135">tasta de căutare + esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Extinde meniul</translation>
 <translation id="3087734570205094154">Jos</translation>
@@ -473,6 +473,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3120421559657122717">Închizi dispozitivul?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reporniți pentru a actualiza</translation>
+<translation id="3139188263101386725">Folosește comanda rapidă actualizată</translation>
 <translation id="3139942575505304791">Desktop 1</translation>
 <translation id="315116470104423982">Date mobile</translation>
 <translation id="3151786313568798007">Orientare</translation>
@@ -1203,6 +1204,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6231419273573514727">Performanța dispozitivelor periferice poate fi limitată</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> folosește momentan camera și microfonul</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Deschide aplicația Manager de activități cu „<ph name="NEW_SHORTCUT" />”.</translation>
 <translation id="6247728804802644171">Deschide notificările</translation>
 <translation id="6254629735336163724">Blocată pe orizontală</translation>
 <translation id="6259254695169772643">Folosește creionul pentru a selecta</translation>
@@ -1253,6 +1255,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6497418457565568043">Funcția Nu deranja este activată</translation>
 <translation id="6500896621837555595">Actualizează</translation>
 <translation id="6501401484702599040">Se proiectează ecranul pe <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Deschide aplicația Comenzi rapide de la tastatură cu „<ph name="NEW_SHORTCUT" />”.</translation>
 <translation id="6507618042428827377">Comută la următoarea metodă de introducere a textului disponibilă</translation>
 <translation id="6508923215158854599">Verifică dacă Chromebookul este conectat la aceeași rețea Wi-Fi ca dispozitivul Chromecast.</translation>
 <translation id="6515727200518652613">Conexiunea cu camera foto s-a întrerupt, se încearcă reconectarea.</translation>
@@ -1484,7 +1487,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7579778809502851308">Captură de ecran</translation>
 <translation id="7593891976182323525">Căutare sau Shift</translation>
 <translation id="7600875258240007829">Vezi toate notificările</translation>
-<translation id="7601417191446344542">Activezi reafișarea notificării privind sunetul dezactivat?</translation>
+<translation id="7601417191446344542">Activezi alerta de sunet dezactivat?</translation>
 <translation id="7607002721634913082">Întreruptă</translation>
 <translation id="7609951632080598826">Afișarea calendar, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Camera foto a fost reconectată.</translation>
@@ -1760,7 +1763,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8834539327799336565">Conectat</translation>
 <translation id="8841375032071747811">Butonul Înapoi</translation>
 <translation id="8843682306134542540">Comută blocarea rotației. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Tasta de căutare + Esc</translation>
 <translation id="8853703225951107899">Codul PIN sau parola tot nu au putut fi confirmate. Notă: dacă ai schimbat parola recent, folosește vechea parolă. Noua parolă se va aplica după ce te deconectezi.</translation>
 <translation id="8855885154700222542">Tasta pentru ecran complet</translation>
 <translation id="8858369206579825206">Opțiuni de confidențialitate</translation>

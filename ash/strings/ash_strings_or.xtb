@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">ବର୍ତ୍ତମାନର ଆପଗୁଡ଼ିକ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />ରୁ ଚାର୍ଜ ହେଉଛି</translation>
 <translation id="1255033239764210633">ପାଣିପାଗ କିପରି ଅଛି?</translation>
-<translation id="1267032506238418139">ସର୍ଟକଟ୍‍ ପରିବର୍ତ୍ତନ</translation>
 <translation id="1269405891096105529">ଅତିଥି ମୋଡରେ ପେରିଫେରାଲ୍ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="1270290102613614947">ଅନ୍-ସ୍କ୍ରିନ୍ କୀ'ବୋର୍ଡକୁ ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="1272079795634619415">ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">ଏହାକୁ ନୂଆ ଇନଷ୍ଟଲ କରାଯାଇଛି</translation>
 <translation id="1915307458270490472">ସମାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="1918022425394817322">କ୍ୟାମେରାକୁ ଉପର ଡାହାଣପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି</translation>
-<translation id="1919743966458266018">'ଟାସ୍କ୍ ମ୍ୟାନେଜର୍' ଖୋଲିବାକୁ ଥିବା ସର୍ଟ୍‌କଟ୍‌ଟି ବଦଳିଯାଇଛି। ଦୟାକରି <ph name="OLD_SHORTCUT" /> ପରିବର୍ତ୍ତେ <ph name="NEW_SHORTCUT" />ଟିକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1923539912171292317">ସ୍ଵଚାଳିତ କ୍ଲିକ୍</translation>
 <translation id="1928739107511554905">ଅପ୍‌ଡେଟ୍ ପ୍ରାପ୍ତ କରିବା ପାଇଁ, କୀବୋର୍ଡ ସଂଲଗ୍ନ ଥିବା ଆପଣଙ୍କର Chromebook ରିଷ୍ଟାର୍ଟ କରିବାକୁ ଟଚ୍‍ସ୍କ୍ରିନ୍‍ର ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1948405482892809935">ପରବର୍ତ୍ତୀ ୟୁଜରଙ୍କୁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">ସକ୍ରିୟ ୱିଣ୍ଡୋକୁ ଅନଡକ କରାଯାଇଛି।</translation>
 <translation id="2761723519669354964">ସେଲ୍ଫରୁ ହାଇଲାଇଟ କରାଯାଇଥିବା ଆଇଟମ ଖୋଲନ୍ତୁ</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />ରୁ <ph name="KEY_TWO" /> ପର୍ଯ୍ୟନ୍ତ</translation>
+<translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="2782591952652094792">କ୍ୟାପଚର୍ ମୋଡରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="2785499565474703580">1ଟି ଡିଭାଇସ କନେକ୍ଟ କରାଯାଇଛି</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="3068622547379332530"><ph name="VERSION_NAME" /> ସଂସ୍କରଣ (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">ସେଲ୍ଫ ବାମପଟେ ଅଛି</translation>
+<translation id="3070639127620815135">search+esc</translation>
 <translation id="3077734595579995578">Shift</translation>
 <translation id="3081696990447829002">ମେନୁକୁ ପ୍ରସାରିତ କରନ୍ତୁ</translation>
 <translation id="3087734570205094154">ନିମ୍ନଭାଗ</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">ଡିଭାଇସକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">ଅପ୍‍ଡେଟ୍ କରିବା ପାଇଁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
+<translation id="3139188263101386725">ଅପଡେଟ ହୋଇଥିବା ସର୍ଟକଟ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="3139942575505304791">ଡେସ୍କ 1</translation>
 <translation id="315116470104423982">ମୋବାଇଲ୍ ଡାଟା</translation>
 <translation id="3151786313568798007">ଓରିଏଣ୍ଟେସନ୍‍</translation>
@@ -1203,6 +1204,7 @@
 <translation id="6231419273573514727">ପେରିଫେରାଲର ପରଫରମାନ୍ସ ସୀମିତ ହୋଇପାରେ</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ବର୍ତ୍ତମାନ ଆପଣଙ୍କ କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">"<ph name="NEW_SHORTCUT" />" ମାଧ୍ୟମରେ Task Manager ଆପ ଖୋଲନ୍ତୁ।</translation>
 <translation id="6247728804802644171">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="6254629735336163724">ଭୂସମାନ୍ତର ଭାବରେ ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="6259254695169772643">ଚୟନ କରିବାକୁ ଆପଣଙ୍କର ଷ୍ଟାଇଲସ୍ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -1253,6 +1255,7 @@
 <translation id="6497418457565568043">"ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ" ଚାଲୁ ଅଛି</translation>
 <translation id="6500896621837555595">ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />କୁ ସ୍କ୍ରିନ୍ କାଷ୍ଟ କରାଯାଉଛି</translation>
+<translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />" ମାଧ୍ୟମରେ Key Shortcuts ଆପ ଖୋଲନ୍ତୁ।</translation>
 <translation id="6507618042428827377">ପରବର୍ତ୍ତୀ ଉପଲବ୍ଧ ଇନପୁଟ ପଦ୍ଧତିକୁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
 <translation id="6508923215158854599">ଆପଣଙ୍କ Chromebook ଯେଉଁ ୱାଇ-ଫାଇ ନେଟୱାର୍କରେ ଅଛି ସେହି ସମାନ ନେଟୱାର୍କରେ ଆପଣଙ୍କ Chromecast ଡିଭାଇସ ଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="6515727200518652613">କ୍ୟାମେରା ଡିସକନେକ୍ଟ ହୋଇଯାଇଛି, ପୁଣି କନେକ୍ଟ କରିବା ପାଇଁ ଚେଷ୍ଟା କରାଯାଉଛି।</translation>
@@ -1483,7 +1486,7 @@
 <translation id="7579778809502851308">ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍</translation>
 <translation id="7593891976182323525">Search କିମ୍ବା Shift</translation>
 <translation id="7600875258240007829">ସମସ୍ତ ବିଜ୍ଞପ୍ତି ଦେଖନ୍ତୁ</translation>
-<translation id="7601417191446344542">'ନଜକୁ ମ୍ୟୁଟ କରନ୍ତୁ'କୁ ଚାଲୁ କରିବେ?</translation>
+<translation id="7601417191446344542">ମ୍ୟୁଟ ନଜକୁ ଚାଲୁ କରିବେ?</translation>
 <translation id="7607002721634913082">ଅଚଳିତ</translation>
 <translation id="7609951632080598826">କ୍ୟାଲେଣ୍ଡର ଭ୍ୟୁ, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">କ୍ୟାମେରା ପୁଣି କନେକ୍ଟ ହୋଇଛି।</translation>
@@ -1759,7 +1762,6 @@
 <translation id="8834539327799336565">ବର୍ତ୍ତମାନ ସଂଯୁକ୍ତ ଅଛି</translation>
 <translation id="8841375032071747811">ପଛକୁ ଫେରନ୍ତୁ ବଟନ୍</translation>
 <translation id="8843682306134542540">ଘୂର୍ଣ୍ଣନ ଲକ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">ଆପଣଙ୍କ PIN କିମ୍ବା ପାସୱାର୍ଡକୁ ଏବେ ବି ଯାଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ଧ୍ୟାନ ଦିଅନ୍ତୁ: ଯଦି ଆପଣ ଆପଣଙ୍କ ପାସୱାର୍ଡକୁ ବର୍ତ୍ତମାନ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି, ତେବେ ପୁରୁଣା ପାସୱାର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ। ଆପଣ ସାଇନ୍ ଆଉଟ୍ କରିବା ପରେ ଆପଣଙ୍କ ନୂଆ ପାସୱାର୍ଡ ଲାଗୁ ହେବ।</translation>
 <translation id="8855885154700222542">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ୍‌ କୀ</translation>
 <translation id="8858369206579825206">ଗୋପନୀୟତା ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ</translation>

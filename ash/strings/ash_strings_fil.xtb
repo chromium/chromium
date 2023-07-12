@@ -69,7 +69,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1247519845643687288">Mga kamakailang app</translation>
 <translation id="1252999807265626933">Nagcha-charge mula sa <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Ano'ng lagay ng panahon?</translation>
-<translation id="1267032506238418139">Pagbabago ng shortcut</translation>
 <translation id="1269405891096105529">Hindi sinusuportahan ang peripheral sa Guest mode</translation>
 <translation id="1270290102613614947">Naka-disable ang on-screen na keyboard</translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -218,7 +217,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1908992311423394684">Kaka-install lang</translation>
 <translation id="1915307458270490472">Ibaba</translation>
 <translation id="1918022425394817322">Nag-snap ang camera sa kanang sulok sa itaas</translation>
-<translation id="1919743966458266018">Napalitan na ang shortcut para sa pagbubukas sa task manager. Mangyaring gamitin ang <ph name="NEW_SHORTCUT" /> sa halip na gamitin ang <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Mga awtomatikong pag-click</translation>
 <translation id="1928739107511554905">Para makuha ang update, gamitin ang touchscreen para i-restart ang iyong Chromebook nang nakakabit ang keyboard.</translation>
 <translation id="1948405482892809935">Lumipat sa susunod na user</translation>
@@ -397,6 +395,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2750941250130734256">Naka-undock ang aktibong window.</translation>
 <translation id="2761723519669354964">Buksan ang naka-highlight na item sa shelf</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> hanggang <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /></translation>
 <translation id="2782591952652094792">Lumabas sa capture mode</translation>
 <translation id="2785499565474703580">1 device ang nakakonekta</translation>
@@ -460,6 +459,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3062298103034426069">Hindi sinusuportahan</translation>
 <translation id="3068622547379332530">Bersyon <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Nasa kaliwa ang shelf</translation>
+<translation id="3070639127620815135">search+esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">I-expand ang menu</translation>
 <translation id="3087734570205094154">Sa ilalim</translation>
@@ -473,6 +473,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3120421559657122717">I-shut down ang device?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">I-restart upang mag-update</translation>
+<translation id="3139188263101386725">Gamitin ang in-update na shortcut</translation>
 <translation id="3139942575505304791">Desk 1</translation>
 <translation id="315116470104423982">Data sa mobile</translation>
 <translation id="3151786313568798007">Oryentasyon</translation>
@@ -1203,6 +1204,7 @@ Isaksak ang iyong device.</translation>
 <translation id="6231419273573514727">Posibleng maging limitado ang performance ng peripheral</translation>
 <translation id="6232891689835436217">Kasalukuyang ginagamit ng <ph name="APP_NAME" /> ang iyong camera at mikropono</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Buksan ang Task Manager app gamit ang "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">Buksan ang mga notification</translation>
 <translation id="6254629735336163724">Naka-lock sa horizontal</translation>
 <translation id="6259254695169772643">Gamitin ang iyong stylus para pumili</translation>
@@ -1253,6 +1255,7 @@ Isaksak ang iyong device.</translation>
 <translation id="6497418457565568043">Naka-on ang huwag istorbohin</translation>
 <translation id="6500896621837555595">I-update</translation>
 <translation id="6501401484702599040">Kina-cast ang screen sa <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Buksan ang Key Shortcuts app gamit ang "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Lumipat sa susunod na available na pamamaraan ng pag-input</translation>
 <translation id="6508923215158854599">Tiyaking ang iyong Chromebook ay nasa parehong Wi-Fi network tulad ng Chromecast device mo.</translation>
 <translation id="6515727200518652613">Nawala ang camera, sinusubukang kumonekta ulit.</translation>
@@ -1484,7 +1487,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7579778809502851308">Screen capture</translation>
 <translation id="7593891976182323525">Search or Shift</translation>
 <translation id="7600875258240007829">Tingnan ang lahat ng notification</translation>
-<translation id="7601417191446344542">I-on ang nudge sa pag-mute?</translation>
+<translation id="7601417191446344542">I-on ang nudge kapag na-mute?</translation>
 <translation id="7607002721634913082">I-pause</translation>
 <translation id="7609951632080598826">View ng kalendaryo, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Nakakonekta ulit ang camera.</translation>
@@ -1759,7 +1762,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8834539327799336565">Kasalukuyang nakakonekta</translation>
 <translation id="8841375032071747811">Button na Bumalik</translation>
 <translation id="8843682306134542540">I-toggle ang lock ng pag-rotate. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Hindi pa rin ma-verify ang iyong PIN o password. Tandaan: Kung pinalitan mo kamakailan ang iyong password, gamitin ang lumang password mo. Malalapat ang iyong bagong password kapag nag-sign out ka.</translation>
 <translation id="8855885154700222542">Key ng fullscreen</translation>
 <translation id="8858369206579825206">Mga kontrol sa privacy</translation>

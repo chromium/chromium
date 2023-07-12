@@ -69,7 +69,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1247519845643687288">Programu ulizotumia hivi karibuni</translation>
 <translation id="1252999807265626933">Inachaji kwenye <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hali ya hewa ikoje?</translation>
-<translation id="1267032506238418139">Mabadiliko kwenye njia ya mkato</translation>
 <translation id="1269405891096105529">Kifaa ulichounganisha kwenye kompyuta hakiwezi kutumika katika hali ya Wageni</translation>
 <translation id="1270290102613614947">Kibodi ya skrini imezimwa</translation>
 <translation id="1272079795634619415">Simamisha</translation>
@@ -218,7 +217,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1908992311423394684">Imesakinishwa hivi karibuni</translation>
 <translation id="1915307458270490472">Kata simu</translation>
 <translation id="1918022425394817322">Onyesho la kukagua kamera limelinganishwa kwenye kona ya juu kulia</translation>
-<translation id="1919743966458266018">Njia ya mkato ya kufungua kidhibiti cha shughuli kwenye Chrome imebadilika. Tafadhali tumia <ph name="NEW_SHORTCUT" /> badala ya <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Mibofyo ya kiotomatiki</translation>
 <translation id="1928739107511554905">Ili usasishe, tumia skrini ya kugusa kuwasha Chromebook yako upya huku kibodi ikiwa imeunganishwa.</translation>
 <translation id="1948405482892809935">Badilisha uende kwa mtumiaji anayefuata</translation>
@@ -397,6 +395,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2750941250130734256">Dirisha linalotumika limepachuliwa.</translation>
 <translation id="2761723519669354964">Fungua kipengee kilichoangaziwa kwenye rafu</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> hadi <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> inadhibitiwa na <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Funga hali ya kupiga picha</translation>
 <translation id="2785499565474703580">Kifaa 1 kimeunganishwa</translation>
@@ -460,6 +459,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3062298103034426069">Haiwezi kutumika</translation>
 <translation id="3068622547379332530">Toleo la <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Rafu iko upande wa kushoto</translation>
+<translation id="3070639127620815135">search+esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Panua menyu</translation>
 <translation id="3087734570205094154">Chini</translation>
@@ -473,6 +473,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3120421559657122717">Je, ungependa kuzima kifaa?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Anzisha upya ili kusasisha</translation>
+<translation id="3139188263101386725">Tumia njia ya mkato iliyosasishwa</translation>
 <translation id="3139942575505304791">Eneokazi la 1</translation>
 <translation id="315116470104423982">Data ya mtandao wa simu</translation>
 <translation id="3151786313568798007">Mkao</translation>
@@ -1203,6 +1204,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="6231419273573514727">Huenda vifaa unavyounganisha kwenye kompyuta yako visifanye kazi kikamilifu</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> inatumia kamera na maikrofoni yako kwa sasa</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Fungua Kidhibiti cha Shughuli kwenye Chrome ukitumia "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">Fungua arifa</translation>
 <translation id="6254629735336163724">Inatumia skrini ya mlalo pekee</translation>
 <translation id="6259254695169772643">Tumia stylus yako kuchagua</translation>
@@ -1253,6 +1255,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="6497418457565568043">Kipengele cha usinisumbue kimewashwa</translation>
 <translation id="6500896621837555595">Sasisha</translation>
 <translation id="6501401484702599040">Inatuma skrini kwenye <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Fungua programu ya Njia za Mkato za Ufunguo ukitumia "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Badilisha utumie mbinu inayofuata inayopatikana ya kuingiza data</translation>
 <translation id="6508923215158854599">Hakikisha kuwa Chromebook yako inatumia mtandao wa Wi-Fi unaotumika kwenye kifaa chako cha Chromecast.</translation>
 <translation id="6515727200518652613">Kamera imepoteza muunganisho, inajaribu kuunganisha tena.</translation>
@@ -1761,7 +1764,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8834539327799336565">Vilivyounganishwa kwa sasa</translation>
 <translation id="8841375032071747811">Kitufe cha Nyuma</translation>
 <translation id="8843682306134542540">Washa au uzime hali ya kufunga kwa kuzungusha. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Bado imeshindwa kuthibitisha PIN au nenosiri lako. Kumbuka: Iwapo ulibadilisha nenosiri lako hivi majuzi, tumia nenosiri lako la awali. Nenosiri lako jipya litatumika utakapoondoka kwenye akaunti.</translation>
 <translation id="8855885154700222542">Kitufe cha skrini nzima</translation>
 <translation id="8858369206579825206">Vidhibiti vya faragha</translation>

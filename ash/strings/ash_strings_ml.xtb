@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">അടുത്തിടെ ലോഞ്ച് ചെയ്ത ആപ്പുകൾ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> എന്നതിൽ നിന്നും ചാർജ് ചെയ്യുന്നു</translation>
 <translation id="1255033239764210633">കാലാവസ്ഥ എങ്ങനെയുണ്ട്?</translation>
-<translation id="1267032506238418139">കുറുക്കുവഴി മാറ്റം</translation>
 <translation id="1269405891096105529">അതിഥി മോഡിൽ പെരിഫറൽ പിന്തുണയ്‌ക്കുന്നില്ല</translation>
 <translation id="1270290102613614947">ഓൺ-സ്‌ക്രീൻ കീബോർഡ് പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="1272079795634619415">നിര്‍ത്തുക</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">പുതുതായി ഇൻസ്റ്റാൾ ചെയ്തത്</translation>
 <translation id="1915307458270490472">ഹാംഗ് അപ്പ് ചെയ്യുക</translation>
 <translation id="1918022425394817322">മുകളിൽ വലത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു</translation>
-<translation id="1919743966458266018">ടാസ്‌ക് മാനേജർ തുറക്കാനുള്ള കുറുക്കുവഴി മാറ്റി. <ph name="OLD_SHORTCUT" /> എന്നതിന് പകരം <ph name="NEW_SHORTCUT" /> ഉപയോഗിക്കുക.</translation>
 <translation id="1923539912171292317">യാന്ത്രിക ക്ലിക്കുകൾ</translation>
 <translation id="1928739107511554905">അപ്ഡേറ്റ് നേടാൻ, അറ്റാച്ച് ചെയ്‌ത കീബോർഡിനൊപ്പം Chromebook റീസ്‌റ്റാർട്ട് ചെയ്യാൻ ടച്ച്‌സ്‌ക്രീൻ ഉപയോഗിക്കുക.</translation>
 <translation id="1948405482892809935">അടുത്ത ഉപയോക്താവിലേക്ക് മാറുക</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">സജീവ വിൻഡോ അൺഡോക്ക് ചെയ്തു.</translation>
 <translation id="2761723519669354964">ഷെൽഫിൽ നിന്ന് ഹൈലൈറ്റ് ചെയ്‌ത ഇനം തുറക്കുക</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> മുതൽ <ph name="KEY_TWO" /> വരെ</translation>
+<translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്</translation>
 <translation id="2782591952652094792">ക്യാപ്‌ചർ മോഡിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="2785499565474703580">ഒരു ഉപകരണം കണക്‌റ്റ് ചെയ്‌തു</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">പിന്തുണയ്ക്കുന്നില്ല</translation>
 <translation id="3068622547379332530"><ph name="VERSION_NAME" /> പതിപ്പ് (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">സ്‌ക്രീനിൻ്റെ ഇടതുഭാഗത്താണ് ഷെൽഫ്</translation>
+<translation id="3070639127620815135">search+esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">മെനു വികസിപ്പിക്കുക</translation>
 <translation id="3087734570205094154">താഴെ</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">ഉപകരണം ഷട്ട് ഡൗൺ ചെയ്യണോ?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">അപ്‌ഡേറ്റ് ചെയ്യുന്നതിന് റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
+<translation id="3139188263101386725">അപ്ഡേറ്റ് ചെയ്ത കുറുക്കുവഴി ഉപയോഗിക്കുക</translation>
 <translation id="3139942575505304791">ഡെസ്‌ക് 1</translation>
 <translation id="315116470104423982">മൊബൈല്‍ ഡാറ്റ</translation>
 <translation id="3151786313568798007">ഓറിയന്റേഷൻ</translation>
@@ -1203,6 +1204,7 @@
 <translation id="6231419273573514727">പെരിഫറൽ പ്രകടനം പരിമിതപ്പെട്ടേക്കാം</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> നിലവിൽ നിങ്ങളുടെ ക്യാമറയും മൈക്രോഫോണും ഉപയോഗിക്കുന്നു</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">"<ph name="NEW_SHORTCUT" />" ഉപയോഗിച്ച് Task Manager ആപ്പ് തുറക്കുക.</translation>
 <translation id="6247728804802644171">അറിയിപ്പുകൾ തുറക്കുക</translation>
 <translation id="6254629735336163724">സമാന്തരമായി ലോക്ക് ചെയ്‌തു</translation>
 <translation id="6259254695169772643">തിരഞ്ഞെടുക്കാൻ നിങ്ങളുടെ സ്റ്റൈലസ് ഉപയോഗിക്കുക</translation>
@@ -1253,6 +1255,7 @@
 <translation id="6497418457565568043">'ശല്യപ്പെടുത്തരുത്' ഓണാണ്</translation>
 <translation id="6500896621837555595">അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> എന്നതിലേക്ക് സ്‌ക്രീൻ കാസ്‌റ്റുചെയ്യുന്നു</translation>
+<translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />" ഉപയോഗിച്ച് Key Shortcuts ആപ്പ് തുറക്കുക.</translation>
 <translation id="6507618042428827377">ലഭ്യമായ അടുത്ത ഇൻപുട്ട് രീതിയിലേക്ക് മാറുക</translation>
 <translation id="6508923215158854599">Chromecast ഉപകരണത്തിന്റെ അതേ വൈഫൈ നെറ്റ്‌വർക്കിലാണ് Chromebook-ഉം കണക്റ്റ് ചെയ്തിരിക്കുന്നതെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="6515727200518652613">ക്യാമറ വിച്ഛേദിക്കപ്പെട്ടു, വീണ്ടും കണക്റ്റ് ചെയ്യാൻ ശ്രമിക്കുന്നു.</translation>
@@ -1760,7 +1763,6 @@
 <translation id="8834539327799336565">നിലവിൽ കണക്റ്റ് ചെയ്‌തവ</translation>
 <translation id="8841375032071747811">ബാക്ക് ബട്ടൺ</translation>
 <translation id="8843682306134542540">റൊട്ടേഷൻ ലോക്ക് മാറ്റുക. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">തിരയൽ+Esc</translation>
 <translation id="8853703225951107899">നിങ്ങളുടെ പിൻ അല്ലെങ്കിൽ പാസ്‌വേഡ് ഇപ്പോഴും പരിശോധിച്ചുറപ്പിക്കാനായില്ല. ശ്രദ്ധിക്കുക: നിങ്ങൾ അടുത്തിടെ പാസ്‌വേഡ് മാറ്റിയിട്ടുണ്ടെങ്കിൽ, നിങ്ങളുടെ പഴയ പാസ്‌വേഡ് ഉപയോഗിക്കുക. സൈൻ ഔട്ട് ചെയ്‌തുകഴിഞ്ഞാൽ നിങ്ങളുടെ പുതിയ പാസ്‍വേഡ് ബാധകമാകും.</translation>
 <translation id="8855885154700222542">പൂർണ്ണ സ്‌ക്രീൻ കീ</translation>
 <translation id="8858369206579825206">സ്വകാര്യതാ നിയന്ത്രണങ്ങൾ</translation>

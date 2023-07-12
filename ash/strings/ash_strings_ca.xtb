@@ -69,7 +69,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1247519845643687288">Aplicacions recents</translation>
 <translation id="1252999807265626933">S'està carregant amb: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Quin temps fa?</translation>
-<translation id="1267032506238418139">Canvi de drecera</translation>
 <translation id="1269405891096105529">Aquest perifèric no s'admet en mode de convidat</translation>
 <translation id="1270290102613614947">Teclat en pantalla desactivat</translation>
 <translation id="1272079795634619415">Atura</translation>
@@ -218,7 +217,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1908992311423394684">Instal·lació nova</translation>
 <translation id="1915307458270490472">Penja</translation>
 <translation id="1918022425394817322">La càmera s'ha ajustat a l'extrem superior dret</translation>
-<translation id="1919743966458266018">La drecera per obrir el gestor de tasques ha canviat. Utilitzeu <ph name="NEW_SHORTCUT" /> en lloc de la drecera <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clics automàtics</translation>
 <translation id="1928739107511554905">Per obtenir l'actualització, utilitza la pantalla tàctil per reiniciar Chromebook amb el teclat connectat.</translation>
 <translation id="1948405482892809935">Canvia a l'usuari següent</translation>
@@ -397,6 +395,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2750941250130734256">Finestra activa desacoblada.</translation>
 <translation id="2761723519669354964">Obre l'element marcat del prestatge</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> de l'<ph name="KEY_ONE" /> al <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl+cerca+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gestionat per <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Surt del mode de captura</translation>
 <translation id="2785499565474703580">1 dispositiu connectat</translation>
@@ -460,6 +459,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3062298103034426069">No compatible</translation>
 <translation id="3068622547379332530">Versió <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">El prestatge és a l'esquerra</translation>
+<translation id="3070639127620815135">cerca+esc</translation>
 <translation id="3077734595579995578">maj</translation>
 <translation id="3081696990447829002">Desplega el menú</translation>
 <translation id="3087734570205094154">Part inferior</translation>
@@ -473,6 +473,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3120421559657122717">Vols apagar el dispositiu?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reinicia per actualitzar</translation>
+<translation id="3139188263101386725">Utilitza la drecera actualitzada</translation>
 <translation id="3139942575505304791">Escriptori 1</translation>
 <translation id="315116470104423982">Dades mòbils</translation>
 <translation id="3151786313568798007">Orientació</translation>
@@ -1203,6 +1204,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6231419273573514727">És possible que el rendiment dels perifèrics sigui limitat</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> està utilitzant la càmera i el micròfon</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Obre l'aplicació Gestor de tasques amb <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Obre les notificacions</translation>
 <translation id="6254629735336163724">Bloquejada en horitzontal</translation>
 <translation id="6259254695169772643">Fes servir el llapis òptic per seleccionar</translation>
@@ -1253,6 +1255,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6497418457565568043">El mode No molestis està activat</translation>
 <translation id="6500896621837555595">Actualitza</translation>
 <translation id="6501401484702599040">S'està emetent la pantalla a <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Obre l'aplicació Tecles de drecera amb <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Canvia al següent mètode d'introducció de text que estigui disponible</translation>
 <translation id="6508923215158854599">Assegura't que el Chromebook estigui connectat a la mateixa xarxa Wi-Fi que el dispositiu Chromecast.</translation>
 <translation id="6515727200518652613">S'ha perdut la càmera. S'està provant de tornar a connectar.</translation>
@@ -1757,7 +1760,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8834539327799336565">Connectats actualment</translation>
 <translation id="8841375032071747811">Botó Enrere</translation>
 <translation id="8843682306134542540">Activa o desactiva el bloqueig de rotació. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Cerca + Esc</translation>
 <translation id="8853703225951107899">El PIN o la contrasenya continuen sense poder-se verificar. Nota: si fa poc que has canviat la contrasenya, fes servir l'antiga. La contrasenya nova s'aplicarà un cop hagis tancat la sessió.</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8858369206579825206">Controls de privadesa</translation>

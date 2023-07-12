@@ -69,7 +69,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1247519845643687288">Apps recentes</translation>
 <translation id="1252999807265626933">Carregando a partir de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Como está o tempo?</translation>
-<translation id="1267032506238418139">Mudança de atalho</translation>
 <translation id="1269405891096105529">O periférico não é compatível com o modo visitante</translation>
 <translation id="1270290102613614947">Teclado na tela desativado</translation>
 <translation id="1272079795634619415">Parar</translation>
@@ -218,7 +217,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1908992311423394684">Nova instalação</translation>
 <translation id="1915307458270490472">Desligar</translation>
 <translation id="1918022425394817322">Câmera alinhada ao canto direito de cima</translation>
-<translation id="1919743966458266018">O atalho para abrir o gerenciador de tarefas foi alterado. Use <ph name="NEW_SHORTCUT" /> em vez de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Cliques automáticos</translation>
 <translation id="1928739107511554905">Para receber a atualização, use a touchscreen para reiniciar o Chromebook com o teclado conectado.</translation>
 <translation id="1948405482892809935">Mudar para o próximo usuário</translation>
@@ -397,6 +395,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2750941250130734256">Janela ativa desafixada.</translation>
 <translation id="2761723519669354964">Abrir item destacado na estante</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /> <ph name="DELIMITER" /> <ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl + pesquisa + s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gerenciado por <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Sair do modo de captura</translation>
 <translation id="2785499565474703580">1 dispositivo conectado</translation>
@@ -460,6 +459,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3062298103034426069">Sem suporte</translation>
 <translation id="3068622547379332530">Versão <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Estante à esquerda</translation>
+<translation id="3070639127620815135">pesquisa + esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Expandir menu</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
@@ -473,6 +473,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3120421559657122717">Desligar dispositivo?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reiniciar para atualizar</translation>
+<translation id="3139188263101386725">Use o atalho atualizado</translation>
 <translation id="3139942575505304791">Espaço de trabalho 1</translation>
 <translation id="315116470104423982">Dados do celular</translation>
 <translation id="3151786313568798007">Orientação</translation>
@@ -1203,6 +1204,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6231419273573514727">O desempenho dos periféricos pode ser limitado</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está usando sua câmera e seu microfone</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Abra o app Gerenciador de tarefas com "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">Abrir as notificações</translation>
 <translation id="6254629735336163724">Bloqueado na horizontal</translation>
 <translation id="6259254695169772643">Use a stylus para selecionar</translation>
@@ -1253,6 +1255,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6497418457565568043">"Não perturbe" ativado</translation>
 <translation id="6500896621837555595">Atualizar</translation>
 <translation id="6501401484702599040">Transmitindo tela para <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Abra o app de atalhos do teclado com "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Mudar para o próximo método de entrada disponível</translation>
 <translation id="6508923215158854599">Confira se o Chromebook está na mesma rede Wi-Fi do dispositivo Chromecast.</translation>
 <translation id="6515727200518652613">Câmera perdida, tentando reconectar.</translation>
@@ -1760,7 +1763,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8834539327799336565">Conectados no momento</translation>
 <translation id="8841375032071747811">Botão "Voltar"</translation>
 <translation id="8843682306134542540">Alternar bloqueio de rotação. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Pesquisa+Esc</translation>
 <translation id="8853703225951107899">Ainda não foi possível verificar seu PIN ou sua senha. Observação: se você mudou a senha recentemente, use a antiga. A nova senha será aplicada depois que você sair.</translation>
 <translation id="8855885154700222542">Tecla de tela cheia</translation>
 <translation id="8858369206579825206">Controles de privacidade</translation>

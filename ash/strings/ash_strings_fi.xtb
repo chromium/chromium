@@ -69,7 +69,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1247519845643687288">Viimeisimmät sovellukset</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> lataa laitetta.</translation>
 <translation id="1255033239764210633">Miltä päivän sää näyttää?</translation>
-<translation id="1267032506238418139">Pikanäppäimen muutos</translation>
 <translation id="1269405891096105529">Lisälaitetta ei tueta vierastilassa</translation>
 <translation id="1270290102613614947">Ruutunäppäimistö poistettiin käytöstä</translation>
 <translation id="1272079795634619415">Pysäytä</translation>
@@ -218,7 +217,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1908992311423394684">Uusi asennus</translation>
 <translation id="1915307458270490472">Katkaise puhelu</translation>
 <translation id="1918022425394817322">Kamera kohdistettu oikeaan yläkulmaan</translation>
-<translation id="1919743966458266018">Tehtävänhallinnan avaamisen pikanäppäin on muuttunut. Käytä uutta pikanäppäintä <ph name="NEW_SHORTCUT" /> vanhan (<ph name="OLD_SHORTCUT" />) sijaan.</translation>
 <translation id="1923539912171292317">Automaattiset klikkaukset</translation>
 <translation id="1928739107511554905">Voit asentaa päivityksen käynnistämällä Chromebookisi uudelleen kosketusnäytön avulla niin, että näppäimistö on kytkettynä.</translation>
 <translation id="1948405482892809935">Vaihda seuraavaan käyttäjään</translation>
@@ -397,6 +395,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2750941250130734256">Aktiivinen ikkuna irrotettu</translation>
 <translation id="2761723519669354964">Avaa korostettu kohde hyllystä</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> – <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl+haku+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />: ylläpitäjä on <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Sulje tallennustila</translation>
 <translation id="2785499565474703580">1 laite yhdistetty</translation>
@@ -460,6 +459,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3062298103034426069">Ei tuettu</translation>
 <translation id="3068622547379332530">Versio <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Hylly vasemmalla</translation>
+<translation id="3070639127620815135">haku+esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Laajenna valikko</translation>
 <translation id="3087734570205094154">Alaosassa</translation>
@@ -473,6 +473,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3120421559657122717">Sammutetaanko laite?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Päivitä käynnistämällä uudelleen</translation>
+<translation id="3139188263101386725">Käytä päivitettyä pikakuvaketta</translation>
 <translation id="3139942575505304791">Pöytä 1</translation>
 <translation id="315116470104423982">Mobiilidata</translation>
 <translation id="3151786313568798007">Suunta</translation>
@@ -1203,6 +1204,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="6231419273573514727">Lisälaitteen toiminta voi olla rajoitettua</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> käyttää tällä hetkellä kameraa ja mikrofonia</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Avaa Tehtävänhallinta-sovellus pikanäppäimellä "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">Avaa ilmoitukset</translation>
 <translation id="6254629735336163724">Lukittu vaakasuuntaiseksi</translation>
 <translation id="6259254695169772643">Valitse näyttökynällä</translation>
@@ -1253,6 +1255,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="6497418457565568043">Älä häiritse ‑tila on päällä</translation>
 <translation id="6500896621837555595">Päivitä</translation>
 <translation id="6501401484702599040">Näkymä peilataan kohteeseen <ph name="RECEIVER_NAME" />.</translation>
+<translation id="6507042703812908515">Avaa Pikanäppäimet-sovellus pikanäppäimellä "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Vaihda seuraavaan käytettävissä olevaan syöttötapaan</translation>
 <translation id="6508923215158854599">Varmista, että Chromebookisi on yhdistetty samaan Wi-Fi-verkkoon kuin Chromecast-laitteesi.</translation>
 <translation id="6515727200518652613">Kameraa ei löydy, yritetään yhdistää uudelleen.</translation>
@@ -1759,7 +1762,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8834539327799336565">Yhdistetty tällä hetkellä</translation>
 <translation id="8841375032071747811">Takaisin-painike</translation>
 <translation id="8843682306134542540">Laita kierron lukitus päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Haku+Esc</translation>
 <translation id="8853703225951107899">PIN-koodiasi tai salasanaasi ei voitu vieläkään vahvistaa. Huom. Jos vaihdoit salasanasi äskettäin, käytä vanhaa salasanaa. Uusi salasana otetaan käyttöön kirjauduttuasi ulos.</translation>
 <translation id="8855885154700222542">Koko näyttö ‑näppäin</translation>
 <translation id="8858369206579825206">Yksityisyysasetukset</translation>

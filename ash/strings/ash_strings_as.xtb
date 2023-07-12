@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">শেহতীয়া এপ্</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />ৰ পৰা চাৰ্জ কৰি থকা হৈছে</translation>
 <translation id="1255033239764210633">বতৰ কেনে?</translation>
-<translation id="1267032506238418139">শ্বৰ্টকাটৰ সলনিকৰণ</translation>
 <translation id="1269405891096105529">অতিথি ম’ডত পৰিধীয় সমর্থিত নহয়</translation>
 <translation id="1270290102613614947">অন স্ক্ৰীন কীব’র্ড অক্ষম কৰা হৈছে</translation>
 <translation id="1272079795634619415">বন্ধ কৰক</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">নতুনকৈ ইনষ্টল কৰা</translation>
 <translation id="1915307458270490472">কল শেষ কৰক</translation>
 <translation id="1918022425394817322">কেমেৰা ওপৰৰ সোঁফালৰ কোণলৈ স্নেপ কৰা হৈছে</translation>
-<translation id="1919743966458266018">কাৰ্য পৰিচালক খোলা শ্বর্টকাট সলনি কৰা হৈছে। অনুগ্ৰহ কৰি <ph name="OLD_SHORTCUT" />ৰ সলনি <ph name="NEW_SHORTCUT" /> ব্যৱহাৰ কৰক।</translation>
 <translation id="1923539912171292317">স্বয়ংক্ৰিয় ক্লিক</translation>
 <translation id="1928739107511554905">আপডে’টটো পাবলৈ কীব’ৰ্ড সংলগ্ন থকা Chromebook ৰিষ্টাৰ্ট কৰিবলৈ টাচ্‌স্ক্ৰীনখন ব্যৱহাৰ কৰক।</translation>
 <translation id="1948405482892809935">পৰৱৰ্তী ব্যৱহাৰকাৰীলৈ সলনি কৰক</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">ড’ক নকৰা ৱিণ্ড’ সক্ৰিয় কৰক।</translation>
 <translation id="2761723519669354964">শ্বেল্ফৰ পৰা হাইলাইট কৰা বস্তু খোলক</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />ৰ পৰা <ph name="KEY_TWO" />লৈ</translation>
+<translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" />এ পৰিচালনা কৰে</translation>
 <translation id="2782591952652094792">কেপচাৰ ম'ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="2785499565474703580">১ টা ডিভাইচ সংযোগ কৰা হৈছে</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">সমৰ্থিত নহয়</translation>
 <translation id="3068622547379332530">সংস্কৰণ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">শ্বেল্ফটো বাওঁফালে আছে</translation>
+<translation id="3070639127620815135">search+esc</translation>
 <translation id="3077734595579995578">Shift+</translation>
 <translation id="3081696990447829002">মেনু বিস্তাৰ কৰক</translation>
 <translation id="3087734570205094154">একেবাৰে তলি</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">ডিভাইচটো শ্বাট ডাউন কৰিবনে?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">আপডে’ট কৰিবলৈ ৰিষ্টাৰ্ট কৰক</translation>
+<translation id="3139188263101386725">আপডে’ট কৰা শ্বৰ্টকাটটো ব্যৱহাৰ কৰক</translation>
 <translation id="3139942575505304791">ডেস্ক ১</translation>
 <translation id="315116470104423982">ম’বাইল ডেটা</translation>
 <translation id="3151786313568798007">দিশ</translation>
@@ -1203,6 +1204,7 @@
 <translation id="6231419273573514727">পৰিধীয় আহিলাৰ কাৰ্যক্ষমতা সীমিত হ’ব পাৰে</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" />এ আপোনাৰ কেমেৰা আৰু মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">"<ph name="NEW_SHORTCUT" />"ৰ জৰিয়তে Task Manager এপ্‌টো খোলক।</translation>
 <translation id="6247728804802644171">জাননী খোলক</translation>
 <translation id="6254629735336163724">আনুভূমিক হিচাপে লক কৰা হৈছে</translation>
 <translation id="6259254695169772643">বাছনি কৰিবলৈ আপোনাৰ ষ্টাইলাছ ব্যৱহাৰ কৰক</translation>
@@ -1253,6 +1255,7 @@
 <translation id="6497418457565568043">অসুবিধা নিদিব অন আছে</translation>
 <translation id="6500896621837555595">আপডে’ট কৰক</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />লৈ স্ক্ৰীন কাষ্টিং কৰি থকা হৈছে</translation>
+<translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />"ৰ জৰিয়তে Key Shortcuts এপ্‌টো খোলক।</translation>
 <translation id="6507618042428827377">পৰৱৰ্তী উপলব্ধ ইনপুট পদ্ধতিলৈ সলনি কৰক</translation>
 <translation id="6508923215158854599">আপোনাৰ Chromebook আপোনাৰ Chromecast ডিভাইচটো থকা ৱাই-ফাই নেটৱৰ্কটোতে থকাটো নিশ্চিত কৰক।</translation>
 <translation id="6515727200518652613">কেমেৰাৰ সংযোগ বিচ্ছিন্ন হৈছে, পুনৰ সংযোগ কৰিবলৈ চেষ্টা কৰি আছে।</translation>
@@ -1760,7 +1763,6 @@
 <translation id="8834539327799336565">বৰ্তমান সংযোজিত হৈ আছে</translation>
 <translation id="8841375032071747811">পূর্বৱর্তী পৃষ্ঠালৈ যোৱা বুটাম</translation>
 <translation id="8843682306134542540">ঘূৰ্ণন লক ট’গল কৰক৷<ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">আপোনাৰ পিন অথবা পাছৱৰ্ডটো তথাপি সত্যাপন কৰিব পৰা নগ’ল। টোকা: আপুনি যদি শেহতীয়াকৈ আপোনাৰ পাছৱৰ্ড সলনি কৰিছে, আপোনাৰ পুৰণি পাছৱৰ্ডটো ব্যৱহাৰ কৰক। আপুনি ছাইন আউট কৰিলে আপোনাৰ নতুন পাছৱৰ্ডটো প্ৰযোজ্য হ'ব।</translation>
 <translation id="8855885154700222542">সম্পূৰ্ণ স্ক্রীণলৈ যাবৰ বাবে কী</translation>
 <translation id="8858369206579825206">গোপনীয়তাৰ নিয়ন্ত্ৰণ</translation>

@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">Недавне апликације</translation>
 <translation id="1252999807265626933">Пуњење из уређаја <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Какво је време?</translation>
-<translation id="1267032506238418139">Промена пречице</translation>
 <translation id="1269405891096105529">Периферни уређај није подржан у режиму госта</translation>
 <translation id="1270290102613614947">Тастатура на екрану је онемогућена</translation>
 <translation id="1272079795634619415">Заустави</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">Ново инсталирање</translation>
 <translation id="1915307458270490472">Прекини везу</translation>
 <translation id="1918022425394817322">Камера је уклопљена у горњи десни угао</translation>
-<translation id="1919743966458266018">Пречица за отварање менаџера задатака је промењена. Користите <ph name="NEW_SHORTCUT" /> уместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Аутоматски кликови</translation>
 <translation id="1928739107511554905">Да бисте преузели ажурирање, рестартујте Chromebook са прикљученом тастатуром на додирном екрану.</translation>
 <translation id="1948405482892809935">Пређите на следећег корисника</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">Активни прозор је одвојен.</translation>
 <translation id="2761723519669354964">Отворите истакнуту ставку са полице</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> од <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-ом управља <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Изађите из режима снимања</translation>
 <translation id="2785499565474703580">1 уређај је повезан</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">Није подржано</translation>
 <translation id="3068622547379332530">Верзија <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Полица на левој страни</translation>
+<translation id="3070639127620815135">search+esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Прошири мени</translation>
 <translation id="3087734570205094154">Дно</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">Желите да искључите уређај?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Покрените поново да бисте ажурирали</translation>
+<translation id="3139188263101386725">Користите ажурирану пречицу</translation>
 <translation id="3139942575505304791">Радна површина 1</translation>
 <translation id="315116470104423982">Мобилни подаци</translation>
 <translation id="3151786313568798007">Положај</translation>
@@ -1204,6 +1205,7 @@
 <translation id="6231419273573514727">Учинак периферних уређаја ће можда бити ограничен</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> тренутно користи камеру и микрофон</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Отворите апликацију Менаџер задатака помоћу апликације <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Отворите обавештења</translation>
 <translation id="6254629735336163724">Хоризонтални приказ је закључан</translation>
 <translation id="6259254695169772643">Изаберите помоћу писаљке</translation>
@@ -1254,6 +1256,7 @@
 <translation id="6497418457565568043">Не узнемиравај је укључено</translation>
 <translation id="6500896621837555595">Ажурирај</translation>
 <translation id="6501401484702599040">Екран се пребацује на <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Отворите апликацију Тастерске пречице помоћу пречице <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Пређите на следећи доступни метод уноса</translation>
 <translation id="6508923215158854599">Уверите се да је Chromebook повезан на исту WiFi мрежу као и Chromecast уређај.</translation>
 <translation id="6515727200518652613">Веза са камером је прекинута, покушава да се поново повеже.</translation>
@@ -1485,7 +1488,7 @@
 <translation id="7579778809502851308">Снимање екрана</translation>
 <translation id="7593891976182323525">Тастер за претрагу или Shift</translation>
 <translation id="7600875258240007829">Погледајте сва обавештења</translation>
-<translation id="7601417191446344542">Желите ли да укључите аутоматски подсетник у нечујном режиму?</translation>
+<translation id="7601417191446344542">Желите ли да укључите подсетник за микрофон?</translation>
 <translation id="7607002721634913082">Паузирано</translation>
 <translation id="7609951632080598826">Приказ календара, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камера је поново повезана.</translation>
@@ -1761,7 +1764,6 @@
 <translation id="8834539327799336565">Тренутно повезани</translation>
 <translation id="8841375032071747811">Дугме Назад</translation>
 <translation id="8843682306134542540">Укључите/искључите закључавање ротације. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Верификација PIN-а или лозинке још увек није успела. Напомена: Ако сте недавно променили лозинку, користите стару. Нова лозинка ће бити примењена када се одјавите.</translation>
 <translation id="8855885154700222542">Тастер за цео екран</translation>
 <translation id="8858369206579825206">Контроле приватности</translation>

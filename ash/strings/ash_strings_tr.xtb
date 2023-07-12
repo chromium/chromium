@@ -69,7 +69,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1247519845643687288">Son uygulamalar</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> güç kaynağından şarj ediliyor</translation>
 <translation id="1255033239764210633">Hava nasıl?</translation>
-<translation id="1267032506238418139">Kısayol değişikliği</translation>
 <translation id="1269405891096105529">Çevre birimi, Misafir modunda desteklenmiyor</translation>
 <translation id="1270290102613614947">Dokunmatik klavye devre dışı</translation>
 <translation id="1272079795634619415">Durdur</translation>
@@ -218,7 +217,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1908992311423394684">Yeni yükleme</translation>
 <translation id="1915307458270490472">Kapat</translation>
 <translation id="1918022425394817322">Kamera sağ üst köşeye tutturuldu</translation>
-<translation id="1919743966458266018">Görev yöneticisini açma kısayolu değişti. Lütfen <ph name="OLD_SHORTCUT" /> yerine <ph name="NEW_SHORTCUT" /> kısayolunu kullanın.</translation>
 <translation id="1923539912171292317">Otomatik tıklamalar</translation>
 <translation id="1928739107511554905">Güncellemeyi almak için dokunmatik ekranı kullanarak Chromebook'unuzu klavye takılıyken yeniden başlatın.</translation>
 <translation id="1948405482892809935">Sonraki kullanıcıya geçin</translation>
@@ -397,6 +395,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2750941250130734256">Etkin pencere çıkarıldı.</translation>
 <translation id="2761723519669354964">Rafta vurgulanan öğeyi açın</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> - <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl+arama+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="2782591952652094792">Ekran görüntüsü alma modundan çıkılıyor</translation>
 <translation id="2785499565474703580">1 cihaz bağlandı</translation>
@@ -460,6 +459,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3062298103034426069">Desteklenmiyor</translation>
 <translation id="3068622547379332530"><ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /> sürümü</translation>
 <translation id="3068711042108640621">Raf, ekranın sol tarafında</translation>
+<translation id="3070639127620815135">ara+esc</translation>
 <translation id="3077734595579995578">üstkrktr</translation>
 <translation id="3081696990447829002">Menüyü genişlet</translation>
 <translation id="3087734570205094154">Alt</translation>
@@ -473,6 +473,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3120421559657122717">Cihaz kapatılsın mı?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Güncellemek için yeniden başlat</translation>
+<translation id="3139188263101386725">Güncellenen kısayolu kullanın</translation>
 <translation id="3139942575505304791">Çalışma Masası 1</translation>
 <translation id="315116470104423982">Mobil veriler</translation>
 <translation id="3151786313568798007">Yön</translation>
@@ -1203,6 +1204,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6231419273573514727">Çevre birimlerinin performansı sınırlı olabilir</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> şu anda kameranızı ve mikrofonunuzu kullanıyor</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Görev Yöneticisi uygulamasını "<ph name="NEW_SHORTCUT" />" ile açın.</translation>
 <translation id="6247728804802644171">Bildirimleri açın</translation>
 <translation id="6254629735336163724">Yatay olarak kilitlendi</translation>
 <translation id="6259254695169772643">Seçmek için ekran kaleminizi kullanın</translation>
@@ -1253,6 +1255,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6497418457565568043">Rahatsız Etmeyin modu etkin</translation>
 <translation id="6500896621837555595">Güncelle</translation>
 <translation id="6501401484702599040">Ekran, <ph name="RECEIVER_NAME" /> üzerinde yayınlanıyor</translation>
+<translation id="6507042703812908515">Tuş Kısayolları uygulamasını "<ph name="NEW_SHORTCUT" />" ile açın.</translation>
 <translation id="6507618042428827377">Bir sonraki kullanılabilir giriş yöntemine geçin</translation>
 <translation id="6508923215158854599">Chromebook'unuzun Chromecast cihazınızla aynı kablosuz ağa bağlı olduğundan emin olun.</translation>
 <translation id="6515727200518652613">Kamera bağlantısı kesildi, yeniden bağlanmaya çalışılıyor.</translation>
@@ -1484,7 +1487,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7579778809502851308">Ekran görüntüsü</translation>
 <translation id="7593891976182323525">Arama veya Üst Karakter</translation>
 <translation id="7600875258240007829">Tüm bildirimleri göster</translation>
-<translation id="7601417191446344542">Mikrofon kapalıyken uyaran otomatik hatırlatma açılsın mı?</translation>
+<translation id="7601417191446344542">Kapalı mikrofon uyarısı açılsın mı?</translation>
 <translation id="7607002721634913082">Duraklatıldı</translation>
 <translation id="7609951632080598826">Takvim görünümü, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera yeniden bağlandı.</translation>
@@ -1760,7 +1763,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8834539327799336565">Şu anda bağlı</translation>
 <translation id="8841375032071747811">Geri düğmesi</translation>
 <translation id="8843682306134542540">Döndürme kilidini aç/kapat. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Ara+Esc</translation>
 <translation id="8853703225951107899">PIN'iniz veya şifreniz hâlâ doğrulanamadı. Not: Şifrenizi yakın zamanda değiştirdiyseniz eski şifrenizi kullanın. Yeni şifreniz, oturumunuzu kapattıktan sonra geçerli olacaktır.</translation>
 <translation id="8855885154700222542">Tam ekran tuşu</translation>
 <translation id="8858369206579825206">Gizlilik denetimleri</translation>

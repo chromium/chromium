@@ -69,7 +69,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1247519845643687288">Ứng dụng gần đây</translation>
 <translation id="1252999807265626933">Đang sạc từ <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Tình hình thời tiết thế nào?</translation>
-<translation id="1267032506238418139">Thay đổi phím tắt</translation>
 <translation id="1269405891096105529">Chế độ khách không hỗ trợ thiết bị ngoại vi</translation>
 <translation id="1270290102613614947">Đã tắt bàn phím ảo</translation>
 <translation id="1272079795634619415">Dừng</translation>
@@ -218,7 +217,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1908992311423394684">Mới cài đặt</translation>
 <translation id="1915307458270490472">Kết thúc</translation>
 <translation id="1918022425394817322">Máy ảnh đang bám theo góc trên bên phải</translation>
-<translation id="1919743966458266018">Phím tắt để mở trình quản lý tác vụ đã thay đổi. Vui lòng sử dụng <ph name="NEW_SHORTCUT" /> thay vì <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Nhấp chuột tự động</translation>
 <translation id="1928739107511554905">Để cập nhật, hãy dùng màn hình cảm ứng để khởi động lại Chromebook bằng bàn phím đã kết nối.</translation>
 <translation id="1948405482892809935">Chuyển sang người dùng tiếp theo</translation>
@@ -397,6 +395,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2750941250130734256">Đã gỡ cửa sổ đang hoạt động.</translation>
 <translation id="2761723519669354964">Mở mục được đánh dấu trên kệ</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> rồi đến <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl+tìm kiếm+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý</translation>
 <translation id="2782591952652094792">Thoát khỏi chế độ chụp</translation>
 <translation id="2785499565474703580">1 thiết bị đã kết nối</translation>
@@ -460,6 +459,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3062298103034426069">Không được hỗ trợ</translation>
 <translation id="3068622547379332530">Phiên bản <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Giá ở bên trái</translation>
+<translation id="3070639127620815135">tìm kiếm+esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Mở rộng menu</translation>
 <translation id="3087734570205094154">Bên dưới</translation>
@@ -473,6 +473,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3120421559657122717">Tắt thiết bị?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Khởi động lại để cập nhật</translation>
+<translation id="3139188263101386725">Sử dụng phím tắt mới</translation>
 <translation id="3139942575505304791">Không gian làm việc 1</translation>
 <translation id="315116470104423982">Dữ liệu di động</translation>
 <translation id="3151786313568798007">Hướng</translation>
@@ -1203,6 +1204,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="6231419273573514727">Hiệu suất của thiết bị ngoại vi có thể bị hạn chế</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> hiện đang sử dụng máy ảnh và micrô của bạn</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Mở ứng dụng Trình quản lý tác vụ bằng "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">Mở thông báo</translation>
 <translation id="6254629735336163724">Đã khóa theo chiều ngang</translation>
 <translation id="6259254695169772643">Sử dụng bút cảm ứng để chọn</translation>
@@ -1253,6 +1255,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="6497418457565568043">Tính năng Không làm phiền đang bật</translation>
 <translation id="6500896621837555595">Cập nhật</translation>
 <translation id="6501401484702599040">Đang truyền màn hình tới <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Mở ứng dụng Phím tắt bằng "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Chuyển sang phương thức nhập hiện có tiếp theo</translation>
 <translation id="6508923215158854599">Đảm bảo Chromebook kết nối với cùng một mạng Wi-Fi như thiết bị Chromecast.</translation>
 <translation id="6515727200518652613">Máy ảnh bị mất kết nối, đang cố gắng kết nối lại.</translation>
@@ -1760,7 +1763,6 @@ Mới cài đặt</translation>
 <translation id="8834539327799336565">Hiện đang kết nối</translation>
 <translation id="8841375032071747811">Nút quay lại</translation>
 <translation id="8843682306134542540">Bật/tắt khóa xoay. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Hệ thống vẫn chưa xác minh được mã PIN hoặc mật khẩu của bạn. Lưu ý: Nếu bạn đổi mật khẩu gần đây, hãy dùng mật khẩu cũ. Bạn có thể dùng mật khẩu mới sau khi đăng xuất.</translation>
 <translation id="8855885154700222542">Phím toàn màn hình</translation>
 <translation id="8858369206579825206">Chế độ kiểm soát quyền riêng tư</translation>

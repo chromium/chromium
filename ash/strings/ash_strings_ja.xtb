@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">最近使ったアプリ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> から充電しています</translation>
 <translation id="1255033239764210633">今日の天気は？</translation>
-<translation id="1267032506238418139">ショートカットの変更</translation>
 <translation id="1269405891096105529">ゲストモードでは周辺機器を使用できません</translation>
 <translation id="1270290102613614947">画面キーボードは無効です</translation>
 <translation id="1272079795634619415">停止</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">新たなインストール</translation>
 <translation id="1915307458270490472">通話を終了</translation>
 <translation id="1918022425394817322">カメラは右上にスナップされています</translation>
-<translation id="1919743966458266018">タスク マネージャを起動するショートカットが変わりました。<ph name="OLD_SHORTCUT" /> ではなく <ph name="NEW_SHORTCUT" /> をご使用ください。</translation>
 <translation id="1923539912171292317">自動クリック</translation>
 <translation id="1928739107511554905">アップデートを取得するには、キーボードが接続された状態で、タッチスクリーンを使って Chromebook を再起動してください。</translation>
 <translation id="1948405482892809935">次のユーザーに切り替えます</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">アクティブなウィンドウの固定を解除しました。</translation>
 <translation id="2761723519669354964">シェルフのハイライト表示されたアイテムを開きます</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />～<ph name="KEY_TWO" /> キーを押す</translation>
+<translation id="2778197796481941784">Ctrl+Search+S</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="2782591952652094792">キャプチャ モードを終了</translation>
 <translation id="2785499565474703580">1 台のデバイスが接続されています</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">未対応</translation>
 <translation id="3068622547379332530">バージョン <ph name="VERSION_NAME" />（<ph name="OFFICIAL_STATUS" />）<ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">シェルフは左側にあります</translation>
+<translation id="3070639127620815135">Search+Esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">メニューを展開</translation>
 <translation id="3087734570205094154">下</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">デバイスをシャットダウンしますか？</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">再起動して更新</translation>
+<translation id="3139188263101386725">新しいショートカットを使用</translation>
 <translation id="3139942575505304791">デスク 1</translation>
 <translation id="315116470104423982">モバイル データ</translation>
 <translation id="3151786313568798007">向き</translation>
@@ -1203,6 +1204,7 @@
 <translation id="6231419273573514727">周辺機器のパフォーマンスが制限されている可能性があります</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> がカメラとマイクを使用しています</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">「<ph name="NEW_SHORTCUT" />」でタスク マネージャー アプリを開きます。</translation>
 <translation id="6247728804802644171">通知を開きます</translation>
 <translation id="6254629735336163724">横に固定</translation>
 <translation id="6259254695169772643">タッチペンを使って選択してください</translation>
@@ -1253,6 +1255,7 @@
 <translation id="6497418457565568043">サイレント モードがオンです</translation>
 <translation id="6500896621837555595">更新</translation>
 <translation id="6501401484702599040">画面を <ph name="RECEIVER_NAME" /> にキャスト中</translation>
+<translation id="6507042703812908515">「<ph name="NEW_SHORTCUT" />」でキー ショートカット アプリを開きます。</translation>
 <translation id="6507618042428827377">次の利用可能な入力方法に切り替える</translation>
 <translation id="6508923215158854599">Chromebook がお使いの Chromecast デバイスと同じ Wi-Fi ネットワークに接続されていることを確認します。</translation>
 <translation id="6515727200518652613">カメラの接続が解除されました。再接続を試行しています。</translation>
@@ -1760,7 +1763,6 @@
 <translation id="8834539327799336565">現在接続中のデバイス</translation>
 <translation id="8841375032071747811">戻るボタン</translation>
 <translation id="8843682306134542540">画面の向きの固定を切り替えます。<ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN またはパスワードはまだ確認されていません。注: パスワードを最近変更した場合は、古いパスワードを使用してください。新しいパスワードはログアウトした後に適用されます。</translation>
 <translation id="8855885154700222542">全画面表示キー</translation>
 <translation id="8858369206579825206">プライバシー管理</translation>

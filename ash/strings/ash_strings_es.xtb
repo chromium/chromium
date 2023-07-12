@@ -69,7 +69,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1247519845643687288">Aplicaciones recientes</translation>
 <translation id="1252999807265626933">Cargando a través de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">¿Qué tiempo hace?</translation>
-<translation id="1267032506238418139">Cambio de la combinación de teclas</translation>
 <translation id="1269405891096105529">No se puede usar el periférico en el modo Invitado</translation>
 <translation id="1270290102613614947">Teclado en pantalla inhabilitado</translation>
 <translation id="1272079795634619415">Detener</translation>
@@ -218,7 +217,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1908992311423394684">Nueva instalación</translation>
 <translation id="1915307458270490472">Colgar</translation>
 <translation id="1918022425394817322">Cámara ajustada a la esquina superior derecha</translation>
-<translation id="1919743966458266018">La combinación de teclas para abrir el Administrador de tareas ha cambiado. Utiliza <ph name="NEW_SHORTCUT" /> en lugar de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clics automáticos</translation>
 <translation id="1928739107511554905">Para recibir la actualización, usa la pantalla táctil para reiniciar tu Chromebook con el teclado conectado.</translation>
 <translation id="1948405482892809935">Cambiar a siguiente usuario</translation>
@@ -397,6 +395,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2750941250130734256">Ventana activa desanclada.</translation>
 <translation id="2761723519669354964">Abre el elemento destacado de la estantería</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" />teclas del <ph name="KEY_ONE" /> al <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">Ctrl + Tecla de búsqueda + S</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gestionado por <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Salir del modo de captura</translation>
 <translation id="2785499565474703580">1 dispositivo conectado</translation>
@@ -460,6 +459,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3062298103034426069">No compatible</translation>
 <translation id="3068622547379332530">Versión <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">La estantería está en la parte izquierda</translation>
+<translation id="3070639127620815135">Tecla de búsqueda + Esc</translation>
 <translation id="3077734595579995578">mayús</translation>
 <translation id="3081696990447829002">Mostrar menú</translation>
 <translation id="3087734570205094154">Inferior</translation>
@@ -473,6 +473,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3120421559657122717">¿Apagar el dispositivo?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reiniciar para actualizar</translation>
+<translation id="3139188263101386725">Usar el acceso directo actualizado</translation>
 <translation id="3139942575505304791">Escritorio 1</translation>
 <translation id="315116470104423982">Redes móviles</translation>
 <translation id="3151786313568798007">Orientación</translation>
@@ -1204,6 +1205,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6231419273573514727">Es posible que el rendimiento de los periféricos esté limitado</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está usando tu cámara y tu micrófono</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Abre la aplicación Administrador de tareas con <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Abrir notificaciones</translation>
 <translation id="6254629735336163724">Bloqueada en horizontal</translation>
 <translation id="6259254695169772643">Usa el lápiz óptico para seleccionar contenido</translation>
@@ -1254,6 +1256,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6497418457565568043">Función No molestar activada</translation>
 <translation id="6500896621837555595">Actualizar</translation>
 <translation id="6501401484702599040">Enviando la pantalla a <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Abre la aplicación Accesos directos con <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Cambiar al siguiente método de introducción de texto disponible</translation>
 <translation id="6508923215158854599">Asegúrate de que tu Chromebook esté conectado a la misma red Wi‐Fi que tu dispositivo Chromecast.</translation>
 <translation id="6515727200518652613">La cámara ha perdido la conexión, intentando volver a conectar.</translation>
@@ -1761,7 +1764,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8834539327799336565">Conectado ahora</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>
 <translation id="8843682306134542540">Activa o desactiva el bloqueo. <ph name="STATE_TEXT" />.</translation>
-<translation id="8850991929411075241">Buscar+Esc</translation>
 <translation id="8853703225951107899">Todavía no se ha podido verificar tu PIN o contraseña. Nota: Si has cambiado la contraseña recientemente, utiliza la contraseña anterior. La nueva contraseña se aplicará cuando hayas cerrado la sesión.</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8858369206579825206">Controles de privacidad</translation>

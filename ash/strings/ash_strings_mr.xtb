@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">अलीकडील अ‍ॅप्स</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> पासून चार्ज होत आहे</translation>
 <translation id="1255033239764210633">हवामान कसे आहे?</translation>
-<translation id="1267032506238418139">शॉर्टकट बदल</translation>
 <translation id="1269405891096105529">अतिथी मोडमध्ये पेरिफेरलला सपोर्ट नाही</translation>
 <translation id="1270290102613614947">ऑन-स्क्रीन कीबोर्ड अक्षम</translation>
 <translation id="1272079795634619415">थांबा</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">नवीन इंस्टॉल केले आहे</translation>
 <translation id="1915307458270490472">बंद करा</translation>
 <translation id="1918022425394817322">कॅमेरा सर्वात वरच्या उजव्या कोपर्‍यात स्नॅप केला आहे</translation>
-<translation id="1919743966458266018">टास्क मॅनेजर उघडण्‍याचा शॉर्टकट बदलला आहे. कृपया <ph name="OLD_SHORTCUT" /> ऐवजी <ph name="NEW_SHORTCUT" /> वापरा.</translation>
 <translation id="1923539912171292317">स्वयंचलित क्लिक</translation>
 <translation id="1928739107511554905">अपडेट करण्यासाठी, संलग्न केलेल्या कीबोर्डसह तुमचे Chromebook रीस्टार्ट करण्यासाठी टचस्क्रीन वापरा.</translation>
 <translation id="1948405482892809935">पुढील वापरकर्त्यावर स्विच करा</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">अ‍ॅक्टिव्ह विंडो अनडॉक केली आहे.</translation>
 <translation id="2761723519669354964">शेल्फमधील हायलाइट केलेला आयटम उघडा</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> ते <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> हे <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे</translation>
 <translation id="2782591952652094792">कॅप्चर मोडमधून बाहेर पडा</translation>
 <translation id="2785499565474703580">एक डिव्हाइस कनेक्ट केलेले आहे</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">सपोर्ट करत नाही</translation>
 <translation id="3068622547379332530">आवृत्ती <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">शेल्फ डावीकडे आहे</translation>
+<translation id="3070639127620815135">search+esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">मेनूचा विस्तार करा</translation>
 <translation id="3087734570205094154">तळाकडील</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">डिव्हाइस बंद करायचे का?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">अपडेटासाठी पुनर्सुरू करा</translation>
+<translation id="3139188263101386725">अपडेट केलेला शॉर्टकट वापरा</translation>
 <translation id="3139942575505304791">डेस्‍क १</translation>
 <translation id="315116470104423982">मोबाइल डेटा</translation>
 <translation id="3151786313568798007">अभिमुखता</translation>
@@ -1203,6 +1204,7 @@
 <translation id="6231419273573514727">पेरिफेरल परफॉर्मन्स मर्यादित असू शकतो</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> हे सध्या तुमचा कॅमेरा आणि मायक्रोफोन वापरत आहे</translation>
 <translation id="6237231532760393653">१X</translation>
+<translation id="6244986124527896815">"<ph name="NEW_SHORTCUT" />" वापरून Task Manager अ‍ॅप उघडा.</translation>
 <translation id="6247728804802644171">सूचना उघडा</translation>
 <translation id="6254629735336163724">आडव्या दिशेने लॉक केले</translation>
 <translation id="6259254695169772643">निवडण्यासाठी तुमचे स्टायलस वापरा</translation>
@@ -1253,6 +1255,7 @@
 <translation id="6497418457565568043">व्यत्यय आणू नका सुरू आहे</translation>
 <translation id="6500896621837555595">अपडेट करा</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> वर स्क्रीन कास्ट करीत आहे</translation>
+<translation id="6507042703812908515"><ph name="NEW_SHORTCUT" />" वापरून Shortcuts ॲप उघडा.</translation>
 <translation id="6507618042428827377">उपलब्ध असलेल्या पुढील इनपुट पद्धतीवर स्विच करा</translation>
 <translation id="6508923215158854599">तुमचे Chromebook आणि Chromecast डिव्हाइस एकाच वाय-फाय नेटवर्कवर असल्याची खात्री करा.</translation>
 <translation id="6515727200518652613">कॅमेरा डिस्कनेक्ट झाला, पुन्हा कनेक्ट करण्याचा प्रयत्न करत आहे.</translation>
@@ -1760,7 +1763,6 @@
 <translation id="8834539327799336565">सध्या कनेक्ट केलेली</translation>
 <translation id="8841375032071747811">मागे जा बटण</translation>
 <translation id="8843682306134542540">रोटेशन लॉक टॉगल करा. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">तुमच्या पिन किंवा पासवर्डची अद्याप पडताळणी करता आली नाही. टीप: तुम्ही अलीकडेच तुमचा पासवर्ड बदलला असल्यास, जुना पासवर्ड वापरा. तुम्ही साइन आउट केल्यानंतर तुमचा नवीन पासवर्ड लागू केला जाईल.</translation>
 <translation id="8855885154700222542">क्षेत्रे की</translation>
 <translation id="8858369206579825206">गोपनीयता नियंत्रणे</translation>

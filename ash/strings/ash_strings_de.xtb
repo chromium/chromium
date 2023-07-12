@@ -69,7 +69,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1247519845643687288">Zuletzt verwendete Apps</translation>
 <translation id="1252999807265626933">Wird über ein <ph name="POWER_SOURCE" /> aufgeladen</translation>
 <translation id="1255033239764210633">Wie ist das Wetter?</translation>
-<translation id="1267032506238418139">Änderung der Tastenkombination</translation>
 <translation id="1269405891096105529">Peripheriegerät wird im Gastmodus nicht unterstützt</translation>
 <translation id="1270290102613614947">Bildschirmtastatur deaktiviert</translation>
 <translation id="1272079795634619415">Stoppen</translation>
@@ -218,7 +217,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1908992311423394684">Neuinstallation</translation>
 <translation id="1915307458270490472">Auflegen</translation>
 <translation id="1918022425394817322">Kamera ist an der oberen rechten Ecke angepinnt</translation>
-<translation id="1919743966458266018">Die Tastenkombination zum Öffnen des Task-Managers hat sich geändert. Bitte drücke <ph name="NEW_SHORTCUT" /> statt <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatische Klicks</translation>
 <translation id="1928739107511554905">Du kannst das Update vornehmen, indem du den Touchscreen verwendest, um dein Chromebook mit angeschlossener Tastatur neu zu starten.</translation>
 <translation id="1948405482892809935">Zum nächsten Nutzer wechseln</translation>
@@ -397,6 +395,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2750941250130734256">Fixierung des aktiven Fensters rückgängig gemacht.</translation>
 <translation id="2761723519669354964">Hervorgehobenes Element in der Ablage öffnen</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /> <ph name="DELIMITER" /> <ph name="KEY_ONE" /> bis <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">Strg + Suchtaste + S</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> verwaltet von <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Aufnahmemodus beenden</translation>
 <translation id="2785499565474703580">1 Gerät verbunden</translation>
@@ -460,6 +459,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3062298103034426069">Wird nicht unterstützt</translation>
 <translation id="3068622547379332530">Version <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Ablage links</translation>
+<translation id="3070639127620815135">Suchtaste + Esc</translation>
 <translation id="3077734595579995578">Umschalttaste</translation>
 <translation id="3081696990447829002">Menü maximieren</translation>
 <translation id="3087734570205094154">Unten</translation>
@@ -473,6 +473,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3120421559657122717">Gerät herunterfahren?</translation>
 <translation id="3126026824346185272">Strg</translation>
 <translation id="3126069444801937830">Zum Aktualisieren neu starten</translation>
+<translation id="3139188263101386725">Aktualisierte Tastenkombination verwenden</translation>
 <translation id="3139942575505304791">Desktop 1</translation>
 <translation id="315116470104423982">Mobile Daten</translation>
 <translation id="3151786313568798007">Ausrichtung</translation>
@@ -1202,6 +1203,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6231419273573514727">Die Leistung der Peripheriegeräte ist möglicherweise eingeschränkt</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> verwendet gerade deine Kamera und dein Mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Öffne den Task-Manager mit „<ph name="NEW_SHORTCUT" />“.</translation>
 <translation id="6247728804802644171">Benachrichtigungen öffnen</translation>
 <translation id="6254629735336163724">Horizontale Ausrichtung aktiv</translation>
 <translation id="6259254695169772643">Verwende den Eingabestift, um deine Auswahl zu treffen</translation>
@@ -1252,6 +1254,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6497418457565568043">„Bitte nicht stören“ ist aktiviert</translation>
 <translation id="6500896621837555595">Aktualisieren</translation>
 <translation id="6501401484702599040">Bildschirm wird an <ph name="RECEIVER_NAME" /> gestreamt</translation>
+<translation id="6507042703812908515">Öffne die App für Tastenkombinationen mit „<ph name="NEW_SHORTCUT" />“.</translation>
 <translation id="6507618042428827377">Zur nächsten verfügbaren Eingabemethode wechseln</translation>
 <translation id="6508923215158854599">Dein Chromebook muss mit demselben WLAN wie dein Chromecast verbunden sein.</translation>
 <translation id="6515727200518652613">Verbindung zur Kamera getrennt. Es wird versucht, die Verbindung wiederherzustellen.</translation>
@@ -1483,7 +1486,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7579778809502851308">Screenshot</translation>
 <translation id="7593891976182323525">Suchen oder Umschalttaste</translation>
 <translation id="7600875258240007829">Alle Benachrichtigungen ansehen</translation>
-<translation id="7601417191446344542">Automatische Erinnerung für die Stummschaltung aktivieren?</translation>
+<translation id="7601417191446344542">Erinnerung an Stummschaltung aktivieren?</translation>
 <translation id="7607002721634913082">Angehalten</translation>
 <translation id="7609951632080598826">Kalenderansicht, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera ist wieder verbunden.</translation>
@@ -1759,7 +1762,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8834539327799336565">Derzeit verbunden</translation>
 <translation id="8841375032071747811">Schaltfläche "Zurück"</translation>
 <translation id="8843682306134542540">Rotationssperre an/aus. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Suche + Esc</translation>
 <translation id="8853703225951107899">Deine PIN oder dein Passwort konnten noch immer nicht bestätigt werden. Hinweis: Wenn du kürzlich dein Passwort geändert hast, verwende dein altes Passwort. Dein neues Passwort wird übernommen, sobald du dich abmeldest.</translation>
 <translation id="8855885154700222542">Taste für Vollbildmodus</translation>
 <translation id="8858369206579825206">Datenschutzeinstellungen</translation>

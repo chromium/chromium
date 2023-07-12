@@ -69,7 +69,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1247519845643687288">App recenti</translation>
 <translation id="1252999807265626933">In carica da: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Che tempo fa?</translation>
-<translation id="1267032506238418139">Modifica alla scorciatoia</translation>
 <translation id="1269405891096105529">Periferica non supportata in modalità Ospite</translation>
 <translation id="1270290102613614947">Tastiera sullo schermo disattivata</translation>
 <translation id="1272079795634619415">Interrompi</translation>
@@ -218,7 +217,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1908992311423394684">Nuova installazione</translation>
 <translation id="1915307458270490472">Chiudi</translation>
 <translation id="1918022425394817322">Fotocamera allineata all'angolo in alto a destra</translation>
-<translation id="1919743966458266018">La scorciatoia per aprire Task Manager è cambiata. Utilizza <ph name="NEW_SHORTCUT" /> invece di <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clic automatici</translation>
 <translation id="1928739107511554905">Per scaricare l'aggiornamento, utilizza il touchscreen e riavvia il Chromebook con la tastiera collegata.</translation>
 <translation id="1948405482892809935">Passa all'utente successivo</translation>
@@ -397,6 +395,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2750941250130734256">Finestra attiva sganciata.</translation>
 <translation id="2761723519669354964">Apri l'elemento evidenziato dalla barra delle app</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> da <ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">Ctrl+ Tasto per la ricerca + S</translation>
 <translation id="2778650143428714839">Dispositivo <ph name="DEVICE_TYPE" /> gestito da <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Esci dalla modalità di acquisizione</translation>
 <translation id="2785499565474703580">1 dispositivo connesso</translation>
@@ -460,6 +459,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3062298103034426069">Non supportate</translation>
 <translation id="3068622547379332530">Versione <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Barra delle app a sinistra</translation>
+<translation id="3070639127620815135">Tasto per la ricerca + Esc</translation>
 <translation id="3077734595579995578">maiusc</translation>
 <translation id="3081696990447829002">Espandi il menu</translation>
 <translation id="3087734570205094154">In basso</translation>
@@ -473,6 +473,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3120421559657122717">Arrestare il dispositivo?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Riavvia per aggiornare</translation>
+<translation id="3139188263101386725">Usa la scorciatoia aggiornata</translation>
 <translation id="3139942575505304791">Scrivania 1</translation>
 <translation id="315116470104423982">Dati mobili</translation>
 <translation id="3151786313568798007">Orientamento</translation>
@@ -1200,6 +1201,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6231419273573514727">Le prestazioni delle periferiche potrebbero essere limitate</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sta usando la fotocamera e il microfono</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Apri l'app Task Manager con "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">Apri le notifiche</translation>
 <translation id="6254629735336163724">Bloccata in orizzontale</translation>
 <translation id="6259254695169772643">Usa lo stilo per selezionare</translation>
@@ -1250,6 +1252,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6497418457565568043">Non disturbare attiva</translation>
 <translation id="6500896621837555595">Aggiorna</translation>
 <translation id="6501401484702599040">Trasmissione dello schermo a <ph name="RECEIVER_NAME" /> in corso</translation>
+<translation id="6507042703812908515">Apri l'app Scorciatoie da tastiera con "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Passa al metodo di immissione disponibile successivo</translation>
 <translation id="6508923215158854599">Assicurati che Chromebook sia connesso alla stessa rete Wi-Fi del dispositivo Chromecast.</translation>
 <translation id="6515727200518652613">Fotocamera disconnessa, tentativo di riconnessione.</translation>
@@ -1756,7 +1759,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8834539327799336565">Attualmente connesso</translation>
 <translation id="8841375032071747811">Pulsante Indietro</translation>
 <translation id="8843682306134542540">Attiva/disattiva blocco rotazione. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Tasto di ricerca+ESC</translation>
 <translation id="8853703225951107899">Non è stato di nuovo possibile verificare il PIN o la password. Nota: se hai modificato la password di recente, usa la password precedente. La nuova password verrà applicata quando uscirai dall'account.</translation>
 <translation id="8855885154700222542">Tasto schermo intero</translation>
 <translation id="8858369206579825206">Controlli per la privacy</translation>

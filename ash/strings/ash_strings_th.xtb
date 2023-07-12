@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">แอปที่ใช้ล่าสุด</translation>
 <translation id="1252999807265626933">กำลังชาร์จจาก<ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">วันนี้อากาศเป็นยังไงบ้าง</translation>
-<translation id="1267032506238418139">มีการเปลี่ยนแปลงทางลัด</translation>
 <translation id="1269405891096105529">ไม่รองรับอุปกรณ์ต่อพ่วงในโหมดผู้มาเยือน</translation>
 <translation id="1270290102613614947">ปิดใช้แป้นพิมพ์บนหน้าจออยู่</translation>
 <translation id="1272079795634619415">หยุด</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">ติดตั้งใหม่</translation>
 <translation id="1915307458270490472">วางซ้อนไว้ด้านบน</translation>
 <translation id="1918022425394817322">จัดกล้องพอดีกับมุมขวาบนแล้ว</translation>
-<translation id="1919743966458266018">มีการเปลี่ยนแปลงทางลัดที่ใช้เปิดตัวจัดการงาน โปรดใช้ <ph name="NEW_SHORTCUT" /> แทน <ph name="OLD_SHORTCUT" /></translation>
 <translation id="1923539912171292317">การคลิกอัตโนมัติ</translation>
 <translation id="1928739107511554905">หากต้องการรับอัปเดต ให้ใช้หน้าจอสัมผัสเพื่อรีสตาร์ท Chromebook ในขณะที่ยังเชื่อมต่อกับแป้นพิมพ์</translation>
 <translation id="1948405482892809935">เปลี่ยนเป็นผู้ใช้ถัดไป</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">เลิกตรึงหน้าต่างที่ใช้งานแล้ว</translation>
 <translation id="2761723519669354964">เปิดรายการที่ไฮไลต์ไว้จากแถบ</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> จนถึง <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">Ctrl + Search + S</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> จัดการโดย <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">ออกจากโหมดจับภาพ</translation>
 <translation id="2785499565474703580">มีอุปกรณ์ที่เชื่อมต่ออยู่ 1 เครื่อง</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">ไม่รองรับ</translation>
 <translation id="3068622547379332530">เวอร์ชัน <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">ชั้นวางอยู่ทางซ้าย</translation>
+<translation id="3070639127620815135">Search + Esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">ขยายเมนู</translation>
 <translation id="3087734570205094154">ด้านล่าง</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">ปิดอุปกรณ์ใช่ไหม</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">รีสตาร์ทเพื่ออัปเดต</translation>
+<translation id="3139188263101386725">ใช้แป้นพิมพ์ลัดที่อัปเดต</translation>
 <translation id="3139942575505304791">เดสก์ที่ 1</translation>
 <translation id="315116470104423982">เน็ตมือถือ</translation>
 <translation id="3151786313568798007">การวางแนว</translation>
@@ -1199,6 +1200,7 @@
 <translation id="6231419273573514727">อุปกรณ์ต่อพ่วงอาจมีประสิทธิภาพจำกัด</translation>
 <translation id="6232891689835436217">"<ph name="APP_NAME" />" กำลังใช้กล้องและไมโครโฟน</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">เปิดแอปตัวจัดการงานโดยใช้ "<ph name="NEW_SHORTCUT" />"</translation>
 <translation id="6247728804802644171">เปิดการแจ้งเตือน</translation>
 <translation id="6254629735336163724">ล็อกไว้ที่แนวนอนแล้ว</translation>
 <translation id="6259254695169772643">ใช้สไตลัสเพื่อเลือก</translation>
@@ -1249,6 +1251,7 @@
 <translation id="6497418457565568043">ฟีเจอร์ห้ามรบกวนเปิดอยู่</translation>
 <translation id="6500896621837555595">อัปเดต</translation>
 <translation id="6501401484702599040">กำลังแคสต์หน้าจอไปยัง <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">เปิดแอปแป้นพิมพ์ลัดโดยใช้ "<ph name="NEW_SHORTCUT" />"</translation>
 <translation id="6507618042428827377">เปลี่ยนไปใช้วิธีการป้อนข้อมูลถัดไปที่มีอยู่</translation>
 <translation id="6508923215158854599">ตรวจสอบว่า Chromebook อยู่ในเครือข่าย Wi-Fi เดียวกับอุปกรณ์ Chromecast</translation>
 <translation id="6515727200518652613">กล้องขาดการเชื่อมต่อ กำลังพยายามเชื่อมต่ออีกครั้ง</translation>
@@ -1756,7 +1759,6 @@
 <translation id="8834539327799336565">เชื่อมต่ออยู่</translation>
 <translation id="8841375032071747811">ปุ่มกลับ</translation>
 <translation id="8843682306134542540">เปิด/ปิดการล็อกการหมุน <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">ยังคงยืนยัน PIN หรือรหัสผ่านของคุณไม่ได้ หากคุณเพิ่งเปลี่ยนรหัสผ่านไปไม่นาน ให้ใช้รหัสผ่านเก่า รหัสผ่านใหม่จะมีผลเมื่อคุณออกจากระบบ</translation>
 <translation id="8855885154700222542">แป้นแสดงเต็มหน้าจอ</translation>
 <translation id="8858369206579825206">การควบคุมความเป็นส่วนตัว</translation>

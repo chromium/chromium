@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">Нядаўнія праграмы</translation>
 <translation id="1252999807265626933">Зараджаецца ад крыніцы сілкавання <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Якое надвор'е?</translation>
-<translation id="1267032506238418139">Змяненне спалучэння клавіш</translation>
 <translation id="1269405891096105529">Перыферыйная прылада не падтрымліваецца ў гасцявым рэжыме</translation>
 <translation id="1270290102613614947">Экранная клавіятура выключана</translation>
 <translation id="1272079795634619415">Спыніць</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">Усталявана нядаўна</translation>
 <translation id="1915307458270490472">Закрыць</translation>
 <translation id="1918022425394817322">Акно перадпрагляду камеры прывязана да правага верхняга вугла</translation>
-<translation id="1919743966458266018">Спалучэнне клавіш для адкрыцця менеджара заданняў змянілася. Замест <ph name="OLD_SHORTCUT" /> выкарыстоўвайце <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Аўтаматычныя націсканні</translation>
 <translation id="1928739107511554905">Для абнаўлення падключыце клавіятуру і перазапусціце Chromebook, выкарыстоўваючы сэнсарны экран.</translation>
 <translation id="1948405482892809935">Пераключыцца на наступнага карыстальніка</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">Актыўнае акно адмацавана.</translation>
 <translation id="2761723519669354964">Адкрыць на панэлі доступу вылучаны элемент</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />…<ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">Ctrl + Пошук + S</translation>
 <translation id="2778650143428714839">Прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Выйсці з рэжыму здымання</translation>
 <translation id="2785499565474703580">Падключана 1 прылада</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">Не падтрымліваецца</translation>
 <translation id="3068622547379332530">Версія <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Паліца злева</translation>
+<translation id="3070639127620815135">Пошук + Esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Разгарнуць меню</translation>
 <translation id="3087734570205094154">Знізу</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">Завяршыць працу прылады?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Перазапусціце для абнаўлення</translation>
+<translation id="3139188263101386725">Карыстайцеся новым спалучэннем клавіш</translation>
 <translation id="3139942575505304791">Стол 1</translation>
 <translation id="315116470104423982">Мабільная перадача даных</translation>
 <translation id="3151786313568798007">Арыентацыя</translation>
@@ -1203,6 +1204,7 @@
 <translation id="6231419273573514727">Прадукцыйнасць перыферыйных прылад можа быць абмежаванай</translation>
 <translation id="6232891689835436217">Зараз <ph name="APP_NAME" /> выкарыстоўвае камеру і мікрафон</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Адкрыць праграму "Менеджар заданняў" можна, націснуўшы <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Адкрыць апавяшчэнні</translation>
 <translation id="6254629735336163724">Зафіксаваны гарызантальны фармат</translation>
 <translation id="6259254695169772643">Для выбару выкарыстайце стыло</translation>
@@ -1253,6 +1255,7 @@
 <translation id="6497418457565568043">Рэжым "Не турбаваць" уключаны</translation>
 <translation id="6500896621837555595">Абнавіць</translation>
 <translation id="6501401484702599040">Ідзе трансляцыя экрана на <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Адкрыць праграму "Спалучэнні клавіш" можна, націснуўшы <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Пераключыць на наступны спосаб уводу з даступных</translation>
 <translation id="6508923215158854599">Chromebook і прыладу Chromecast трэба падключыць да адной сеткі Wi-Fi.</translation>
 <translation id="6515727200518652613">Сувязь з камерай страчана. Ажыццяўляецца спроба паўторнага падключэння.</translation>
@@ -1484,7 +1487,7 @@
 <translation id="7579778809502851308">Здымак экрана</translation>
 <translation id="7593891976182323525">"Пошук" або Shift</translation>
 <translation id="7600875258240007829">Паказаць усе апавяшчэнні</translation>
-<translation id="7601417191446344542">Уключыць напамін пра выключаны гук?</translation>
+<translation id="7601417191446344542">Уключыць напамін пра выключаны мікрафон?</translation>
 <translation id="7607002721634913082">Прыпынена</translation>
 <translation id="7609951632080598826">Каляндар, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камера зноў падключана.</translation>
@@ -1760,7 +1763,6 @@
 <translation id="8834539327799336565">Падключаныя цяпер прылады</translation>
 <translation id="8841375032071747811">Кнопка "Назад"</translation>
 <translation id="8843682306134542540">Уключыць або выключыць блакіроўку павароту. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Клавіша пошуку + Esc</translation>
 <translation id="8853703225951107899">Пароль або PIN-код спраўдзіць зноў не ўдалося. Заўвага: калі вы нядаўна змянілі пароль, то выкарыстайце тут стары пароль. Новы пароль будзе прыменены пасля выхаду.</translation>
 <translation id="8855885154700222542">Клавіша поўнаэкраннага рэжыму</translation>
 <translation id="8858369206579825206">Налады прыватнасці</translation>

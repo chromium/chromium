@@ -69,7 +69,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1247519845643687288">Recente apps</translation>
 <translation id="1252999807265626933">Opladen via <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Wat voor weer is het?</translation>
-<translation id="1267032506238418139">Sneltoets gewijzigd</translation>
 <translation id="1269405891096105529">Randapparaat wordt niet ondersteund in de gastmodus</translation>
 <translation id="1270290102613614947">Schermtoetsenbord staat uit</translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -218,7 +217,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1908992311423394684">Nieuwe installatie</translation>
 <translation id="1915307458270490472">Ophangen</translation>
 <translation id="1918022425394817322">Camera uitgelijnd op de rechterbovenhoek</translation>
-<translation id="1919743966458266018">De sneltoets om Taakbeheer te openen is gewijzigd. Gebruik <ph name="NEW_SHORTCUT" /> in plaats van <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatische klikken</translation>
 <translation id="1928739107511554905">Als je de update wilt downloaden, sluit je het toetsenbord aan en start je je Chromebook opnieuw op via het touchscreen.</translation>
 <translation id="1948405482892809935">Overschakelen naar volgende gebruiker</translation>
@@ -397,6 +395,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2750941250130734256">Actief venster losgemaakt.</translation>
 <translation id="2761723519669354964">Gemarkeerd item openen vanuit plank</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> tot en met <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl+zoeken+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> beheerd door <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Opnamemodus sluiten</translation>
 <translation id="2785499565474703580">1 verbonden apparaat</translation>
@@ -460,6 +459,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3062298103034426069">Niet ondersteund</translation>
 <translation id="3068622547379332530">Versie <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Plank aan linkerkant</translation>
+<translation id="3070639127620815135">zoeken+esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Menu uitvouwen</translation>
 <translation id="3087734570205094154">Onderaan</translation>
@@ -473,6 +473,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3120421559657122717">Apparaat uitzetten?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Opnieuw starten om updates uit te voeren</translation>
+<translation id="3139188263101386725">De geüpdatete sneltoets gebruiken</translation>
 <translation id="3139942575505304791">Bureau 1</translation>
 <translation id="315116470104423982">Mobiele data</translation>
 <translation id="3151786313568798007">Stand</translation>
@@ -1203,6 +1204,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6231419273573514727">De prestaties van randapparaten kunnen beperkt zijn</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> gebruikt momenteel je camera en microfoon</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Open de Taakbeheer-app met <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Meldingen openen</translation>
 <translation id="6254629735336163724">Vergrendeld in horizontale stand</translation>
 <translation id="6259254695169772643">Gebruik je stylus om te selecteren</translation>
@@ -1253,6 +1255,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6497418457565568043">Niet storen staat aan</translation>
 <translation id="6500896621837555595">Updaten</translation>
 <translation id="6501401484702599040">Scherm casten naar <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Open de Sneltoetsen-app met <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Overschakelen naar volgende beschikbare invoermethode</translation>
 <translation id="6508923215158854599">Zorg dat je Chromebook is verbonden met hetzelfde wifi-netwerk als je Chromecast-apparaat.</translation>
 <translation id="6515727200518652613">Verbinding met camera verbroken. Er wordt geprobeerd opnieuw verbinding te maken.</translation>
@@ -1481,7 +1484,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7579778809502851308">Schermopname</translation>
 <translation id="7593891976182323525">Zoeken of Shift</translation>
 <translation id="7600875258240007829">Alle meldingen bekijken</translation>
-<translation id="7601417191446344542">Porren voor gedempt aanzetten?</translation>
+<translation id="7601417191446344542">Melding dat microfoon is gedempt aanzetten?</translation>
 <translation id="7607002721634913082">Onderbroken</translation>
 <translation id="7609951632080598826">Agendaweergave, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Camera opnieuw verbonden.</translation>
@@ -1757,7 +1760,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8834539327799336565">Momenteel verbonden</translation>
 <translation id="8841375032071747811">Knop Terug</translation>
 <translation id="8843682306134542540">Draaivergrendeling aan- of uitzetten. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Zoeken+Esc</translation>
 <translation id="8853703225951107899">Je pincode of wachtwoord kan nog steeds niet worden geverifieerd. Opmerking: Als je onlangs je wachtwoord hebt gewijzigd, gebruik je je oude wachtwoord. Je nieuwe wachtwoord wordt toegepast zodra je uitlogt.</translation>
 <translation id="8855885154700222542">Toets voor volledig scherm</translation>
 <translation id="8858369206579825206">Privacyopties</translation>

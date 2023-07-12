@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">Соңғы қолданбалар</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> арқылы зарядтау</translation>
 <translation id="1255033239764210633">Ауа райы қандай?</translation>
-<translation id="1267032506238418139">Таңбаша өзгерісі</translation>
 <translation id="1269405891096105529">Қонақ режимінде перифериялық құрылғыға қолдау көрсетілмейді.</translation>
 <translation id="1270290102613614947">Экрандағы пернетақта өшірілді</translation>
 <translation id="1272079795634619415">Тоқтату</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">Жаңадан орнатылған</translation>
 <translation id="1915307458270490472">Жабу</translation>
 <translation id="1918022425394817322">Камера жоғарғы оң жақ бұрышқа ауыстырылды.</translation>
-<translation id="1919743966458266018">Тапсырмалар реттегішін ашатын пернелер тіркесімі өзгертілді. <ph name="OLD_SHORTCUT" /> орнына <ph name="NEW_SHORTCUT" /> пайдаланыңыз.</translation>
 <translation id="1923539912171292317">Автоматты басу әрекеттері</translation>
 <translation id="1928739107511554905">Жаңартылған нұсқаны алу үшін, пернетақта жалғанған күйі Chromebook ноутбугын сенсорлық экран арқылы қайта қосыңыз.</translation>
 <translation id="1948405482892809935">Келесі пайдаланушыға ауысу</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">Белсенді терезе бекітілмеген.</translation>
 <translation id="2761723519669354964">Сөреден ерекшеленген элементті ашу</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> – <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады.</translation>
 <translation id="2782591952652094792">Түсіру режимінен шығу</translation>
 <translation id="2785499565474703580">1 құрылғы жалғанған.</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">Қолдау көрсетілмейді</translation>
 <translation id="3068622547379332530"><ph name="VERSION_NAME" />-нұсқа (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Сол жақтағы сөре</translation>
+<translation id="3070639127620815135">search+esc</translation>
 <translation id="3077734595579995578">ауысу</translation>
 <translation id="3081696990447829002">Мәзірді жаю</translation>
 <translation id="3087734570205094154">Астына</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">Құрылғы өшірілсін бе?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Жаңарту үшін қайта іске қосу</translation>
+<translation id="3139188263101386725">Жаңартылған таңбашаны пайдалану</translation>
 <translation id="3139942575505304791">1-ші жұмыс үстелі</translation>
 <translation id="315116470104423982">Мобильді деректер</translation>
 <translation id="3151786313568798007">Бағдары</translation>
@@ -1203,6 +1204,7 @@
 <translation id="6231419273573514727">Перифериялық құрылғының өнімділігі шектеулі болуы мүмкін</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> қолданбасы камера мен микрофонды пайдаланып жатыр.</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">"<ph name="NEW_SHORTCUT" />" көмегімен Тапсырмалар реттегіші қолданбасын ашыңыз.</translation>
 <translation id="6247728804802644171">Хабарландыруларды ашу</translation>
 <translation id="6254629735336163724">Көлденең күйде құлыптаулы</translation>
 <translation id="6259254695169772643">Стилустың көмегімен таңдаңыз</translation>
@@ -1253,6 +1255,7 @@
 <translation id="6497418457565568043">Мазаламау режимі қосулы</translation>
 <translation id="6500896621837555595">Жаңарту</translation>
 <translation id="6501401484702599040">Экранды <ph name="RECEIVER_NAME" /> құрылғысына трансляциялау</translation>
+<translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />" көмегімен Перне таңбашалары қолданбасын ашыңыз.</translation>
 <translation id="6507618042428827377">Келесі енгізу әдісіне ауысу</translation>
 <translation id="6508923215158854599">Chromebook құрылғыңыздың Chromecast құрылғыңызбен бір Wi-Fi желісінде екеніне көз жеткізіңіз.</translation>
 <translation id="6515727200518652613">Камера ажырап кетті, қайта жалғанып жатыр.</translation>
@@ -1760,7 +1763,6 @@
 <translation id="8834539327799336565">Қазір жалғанғандар</translation>
 <translation id="8841375032071747811">"Артқа" түймесі</translation>
 <translation id="8843682306134542540">Бұру құлпын ашу/жабу. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN кодыңыз не құпия сөзіңіз әлі расталмады. Ескертпе: құпия сөзіңізді жақында өзгерткен болсаңыз, бұрынғы құпия сөзіңізді пайдаланыңыз. Жаңа құпия сөз, аккаунттан шыққаннан кейін, күшіне енеді.</translation>
 <translation id="8855885154700222542">Толық экран пернесі</translation>
 <translation id="8858369206579825206">Құпиялық параметрлері</translation>

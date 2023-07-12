@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">برنامه‌های اخیر</translation>
 <translation id="1252999807265626933">در حال شارژ شدن از <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">‏?‎What's the weather (آب‌وهوا چطور است؟)</translation>
-<translation id="1267032506238418139">تغییر میان‌بر</translation>
 <translation id="1269405891096105529">دستگاه جانبی در «حالت مهمان» پشتیبانی نمی‌شود</translation>
 <translation id="1270290102613614947">صفحه‌کلید مجازی غیرفعال شد</translation>
 <translation id="1272079795634619415">توقف</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">نصب جدید</translation>
 <translation id="1915307458270490472">قطع تماس</translation>
 <translation id="1918022425394817322">دوربین به گوشه بالا سمت راست چسبید</translation>
-<translation id="1919743966458266018">کلیدهای میان‌بر باز کردن مدیر وظایف تغییر کرده است. لطفاً از <ph name="NEW_SHORTCUT" /> به‌جای <ph name="OLD_SHORTCUT" /> استفاده کنید.</translation>
 <translation id="1923539912171292317">کلیک‌های خودکار</translation>
 <translation id="1928739107511554905">‏برای دریافت به‌روزرسانی، از صفحه لمسی برای بازراه‌اندازی Chromebook خود با صفحه‌کلید متصل استفاده کنید.</translation>
 <translation id="1948405482892809935">جابه‌جایی به کاربر بعدی</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">پنجره فعال جدا شد.</translation>
 <translation id="2761723519669354964">باز کردن مورد برجسته‌شده در قفسه</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> تا <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">‏مهار+جستجو+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> تحت مدیریت <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">خروج از حالت ضبط</translation>
 <translation id="2785499565474703580">یک دستگاه متصل است</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">پشتیبانی نمی‌شود</translation>
 <translation id="3068622547379332530">نسخه <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">قفسه در سمت راست است</translation>
+<translation id="3070639127620815135">جستجو+گریز</translation>
 <translation id="3077734595579995578">تبدیل</translation>
 <translation id="3081696990447829002">بزرگ کردن منو</translation>
 <translation id="3087734570205094154">پایین</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">دستگاه خاموش شود؟</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">راه‌اندازی مجدد برای به‌روزرسانی</translation>
+<translation id="3139188263101386725">از میان‌بر به‌روزشده استفاده کنید</translation>
 <translation id="3139942575505304791">میز ۱</translation>
 <translation id="315116470104423982">داده‌های تلفن همراه</translation>
 <translation id="3151786313568798007">جهت‌‌</translation>
@@ -1202,6 +1203,7 @@
 <translation id="6231419273573514727">عملکرد لوازم جانبی ممکن است محدود باشند</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> درحال استفاده از دوربین و میکروفون است</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">برنامه «مدیر وظایف» را با «<ph name="NEW_SHORTCUT" />» باز کنید</translation>
 <translation id="6247728804802644171">باز کردن اعلان‌ها</translation>
 <translation id="6254629735336163724">قفل درحالت افقی</translation>
 <translation id="6259254695169772643">برای انتخاب از قلم استفاده کنید</translation>
@@ -1252,6 +1254,7 @@
 <translation id="6497418457565568043">«مزاحم نشوید» روشن است</translation>
 <translation id="6500896621837555595">به‌روزرسانی</translation>
 <translation id="6501401484702599040">ارسال محتوای صفحه به <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">برنامه «میان‌برهای کلیدی» را با «<ph name="NEW_SHORTCUT" />» باز کنید.</translation>
 <translation id="6507618042428827377">رفتن به روش ورودی بعدی دردسترس</translation>
 <translation id="6508923215158854599">‏مطمئن شوید Chromebook روشن و به همان شبکه Wi-Fi متصل باشد که دستگاه Chromecast شما متصل است.</translation>
 <translation id="6515727200518652613">دوربین قطع شد، درحال اتصال مجدد.</translation>
@@ -1483,7 +1486,7 @@
 <translation id="7579778809502851308">ضبط صفحه‌نمایش</translation>
 <translation id="7593891976182323525">‏جستجو یا Shift</translation>
 <translation id="7600875258240007829">دیدن همه اعلان‌ها</translation>
-<translation id="7601417191446344542">سقلمه بی‌صدا کردن روشن شود؟</translation>
+<translation id="7601417191446344542">«تذکر میکروفون خاموش» روشن شود؟</translation>
 <translation id="7607002721634913082">متوقف</translation>
 <translation id="7609951632080598826">نمای «تقویم» ،<ph name="DATE" />، <ph name="TIME" /></translation>
 <translation id="7611213136657090146">دوربین دوباره متصل شد.</translation>
@@ -1758,7 +1761,6 @@
 <translation id="8834539327799336565">درحال‌حاضر متصل</translation>
 <translation id="8841375032071747811">دکمه برگشت</translation>
 <translation id="8843682306134542540">تغییر وضعیت قفل چرخش. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">همچنان نمی‌توان پین یا گذرواژه را تأیید کرد. توجه: اگر اخیراً گذرواژه‌تان را تغییر داده‌اید، از گذرواژه قدیمی‌تان استفاده کنید. گذرواژه جدیدتان بعد از خروج شما از سیستم اعمال می‌شود.</translation>
 <translation id="8855885154700222542">کلید تمام‌صفحه</translation>
 <translation id="8858369206579825206">تنظیمات حریم خصوصی</translation>

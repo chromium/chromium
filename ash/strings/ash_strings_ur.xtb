@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">حالیہ ایپس</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> سے چارج ہو رہا ہے</translation>
 <translation id="1255033239764210633">موسم کیسا ہے؟</translation>
-<translation id="1267032506238418139">شارکٹ میں تبدیلی</translation>
 <translation id="1269405891096105529">پیریفرل مہمان وضع میں تعاون یافتہ نہیں ہے</translation>
 <translation id="1270290102613614947">آن اسکرین کی بورڈ غیر فعال کر دیا گیا</translation>
 <translation id="1272079795634619415">روکیں</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">نئی انسٹال کردہ ایپ</translation>
 <translation id="1915307458270490472">کال منقطع کریں</translation>
 <translation id="1918022425394817322">کیمرا اوپری دائیں کونے میں اسنیپ کیا گیا ہے</translation>
-<translation id="1919743966458266018">ٹاسک مینیجر کھولنے کے شارٹ کٹ کو تبدیل کر دیا گیا ہے۔ براہ کرم <ph name="OLD_SHORTCUT" /> کی بجائے <ph name="NEW_SHORTCUT" /> استعمال کریں۔</translation>
 <translation id="1923539912171292317">خودکار کلکس</translation>
 <translation id="1928739107511554905">‏اپ ڈیٹ حاصل کرنے کیلئے، ٹچ اسکرین استعمال کر کے منسلک شدہ کی بورڈ سے اپنا Chromebook دوبارہ شروع کریں۔</translation>
 <translation id="1948405482892809935">اگلے صارف پر سوئچ کریں</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">فعال ونڈو کو غیر مقفل کیا گیا۔</translation>
 <translation id="2761723519669354964">شیلف سے نمایاں کردہ آئٹم کھولیں</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> سے <ph name="KEY_TWO" /> تک</translation>
+<translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے</translation>
 <translation id="2782591952652094792">کیپچر وضع سے باہر نکلیں</translation>
 <translation id="2785499565474703580">1 آلہ منسلک ہے</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">تعاون یافتہ نہیں ہے</translation>
 <translation id="3068622547379332530">ورژن <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">شیلف بائیں ہے</translation>
+<translation id="3070639127620815135">search+esc</translation>
 <translation id="3077734595579995578">شفٹ</translation>
 <translation id="3081696990447829002">مینیو کو پھیلائیں</translation>
 <translation id="3087734570205094154">نیچے</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">آلہ بند کریں؟</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">اپ ڈیٹ کرنے کیلئے دوبارہ شروع کریں</translation>
+<translation id="3139188263101386725">اپ ڈیٹ کردہ شارٹ کٹ استعمال کریں</translation>
 <translation id="3139942575505304791">ڈیسک 1</translation>
 <translation id="315116470104423982">موبائل ڈیٹا</translation>
 <translation id="3151786313568798007">سمت بندی</translation>
@@ -1203,6 +1204,7 @@
 <translation id="6231419273573514727">پیریفیرل کی کارکردگی محدود ہو سکتی ہے</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> فی الحال آپ کا کیمرا اور مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">"<ph name="NEW_SHORTCUT" />" کی مدد سے ٹاسک مینیجر ایپ کھولیں۔</translation>
 <translation id="6247728804802644171">اطلاعات کھولیں</translation>
 <translation id="6254629735336163724">افقی پر مقفل ہے</translation>
 <translation id="6259254695169772643">منتخب کرنے کے لئے اپنا اسٹائلس استعمال کریں</translation>
@@ -1253,6 +1255,7 @@
 <translation id="6497418457565568043">ڈسٹرب نہ کریں آن ہے</translation>
 <translation id="6500896621837555595">اپ ڈیٹ کریں</translation>
 <translation id="6501401484702599040">اسکرین کو <ph name="RECEIVER_NAME" /> پر کاسٹ کیا جا رہا ہے</translation>
+<translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />" کی مدد سے کی شارٹ کٹس ایپ کھولیں۔</translation>
 <translation id="6507618042428827377">اگلے دستیاب ان پٹ طریقے پر سوئچ کریں</translation>
 <translation id="6508923215158854599">‏یقینی بنائیں کہ آپ کا Chromebook اسی Wi-Fi نیٹ ورک پر ہے جس پر آپ کا Chromecast آلہ ہے۔</translation>
 <translation id="6515727200518652613">کیمرا غیر منسلک ہو گیا، دوبارہ منسلک کرنے کی کوشش کی جا رہی ہے۔</translation>
@@ -1759,7 +1762,6 @@
 <translation id="8834539327799336565">فی الحال منسلک ہے</translation>
 <translation id="8841375032071747811">'پیچھے' بٹن</translation>
 <translation id="8843682306134542540">گردش لاک ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">‏آپ کے PIN یا پاس ورڈ کی توثیق ابھی بھی نہیں کی جا سکی۔ نوٹ: اگر آپ نے حال ہی میں اپنا پاس ورڈ تبدیل کیا ہے تو اپنا پرانا پاس ورڈ استعمال کریں۔ آپ کے سائن آؤٹ ہونے کے بعد آپ کا نیا پاس ورڈ لاگو ہوگا۔</translation>
 <translation id="8855885154700222542">پوری اسکرین کی کلید</translation>
 <translation id="8858369206579825206">رازداری سے متعلق کنٹرولز</translation>

@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">ბოლოდროინდელი აპები</translation>
 <translation id="1252999807265626933">იტენება წყაროდან: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">რა ამინდია?</translation>
-<translation id="1267032506238418139">მალსახმობის ცვლილება</translation>
 <translation id="1269405891096105529">პერიფერიული მოწყობილობა მხარდაუჭერელია სტუმრის რეჟიმში</translation>
 <translation id="1270290102613614947">ეკრანული კლავიატურა გამორთულია</translation>
 <translation id="1272079795634619415">შეწყვეტა</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">ახალდაინსტალირებული</translation>
 <translation id="1915307458270490472">გათიშვა</translation>
 <translation id="1918022425394817322">კამერა მიზიდულია ზედა მარჯვენა კუთხეში</translation>
-<translation id="1919743966458266018">ამოცანების მმართველის გახსნის მალსახმობი შეიცვალა. გთხოვთ, <ph name="OLD_SHORTCUT" />-ის ნაცვლად გამოიყენოთ <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">ავტომატური დაწკაპუნებები</translation>
 <translation id="1928739107511554905">განახლების ჩამოსატვირთად გადატვირთეთ თქვენი Chromebook სენსორული ეკრანის მეშვეობით და არ გამოართოთ კლავიატურა.</translation>
 <translation id="1948405482892809935">შემდეგ მომხმარებელზე გადართვა</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">აქტიური ფანჯრის ჩამაგრება მოხსნილია.</translation>
 <translation id="2761723519669354964">გამოყოფილი ერთეულის გახსნა თაროდან</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />-დან <ph name="KEY_TWO" />-მდე</translation>
+<translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ</translation>
 <translation id="2782591952652094792">აღბეჭდვის რეჟიმიდან გასვლა</translation>
 <translation id="2785499565474703580">დაკავშირებულია 1 მოწყობილობა</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">მხარდაუჭერელია</translation>
 <translation id="3068622547379332530">ვერსია <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">თარო მდებარეობს მარცხენა ნაწილში</translation>
+<translation id="3070639127620815135">search+esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">მენიუს გაშლა</translation>
 <translation id="3087734570205094154">ქვედა საზღვარი</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">გსურთ, გათიშოთ მოწყობილობა?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">გადატვირთეთ განახლებისთვის</translation>
+<translation id="3139188263101386725">გამოიყენეთ განახლებული მალსახმობი</translation>
 <translation id="3139942575505304791">დესკტოპი 1</translation>
 <translation id="315116470104423982">მობილური მონაცემები</translation>
 <translation id="3151786313568798007">ორიენტაცია</translation>
@@ -1203,6 +1204,7 @@
 <translation id="6231419273573514727">შესაძლოა, პერიფერიული მოწყობილობების წარმადობა შეზღუდული იყოს</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ამჟამად იყენებს თქვენს კამერას და მიკროფონს</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">გახსენით ამოცანების მმართველის აპი „<ph name="NEW_SHORTCUT" />“ კომბინაციით.</translation>
 <translation id="6247728804802644171">შეტყობინებების გახსნა</translation>
 <translation id="6254629735336163724">ჩაკეტილია ჰორიზონტალურზე</translation>
 <translation id="6259254695169772643">ასარჩევად ისარგებლეთ სტილუსით</translation>
@@ -1253,6 +1255,7 @@
 <translation id="6497418457565568043">„არ შემაწუხო“ ჩართულია</translation>
 <translation id="6500896621837555595">განახლება</translation>
 <translation id="6501401484702599040">ეკრანის ტრანსლირება აქ: <ph name="RECEIVER_NAME" />…</translation>
+<translation id="6507042703812908515">გახსენით კლავიშების მალსახმობების აპი „<ph name="NEW_SHORTCUT" />“ კომბინაციით.</translation>
 <translation id="6507618042428827377">შეყვანის მომდევნო ხელმისაწვდომ მეთოდზე გადართვა</translation>
 <translation id="6508923215158854599">დარწმუნდით, რომ თქვენი Chromebook და Chromecast მოწყობილობა დაკავშირებულია ერთსა და იმავე Wi-Fi ქსელთან.</translation>
 <translation id="6515727200518652613">კამერა დაიკარგა, ვცდილობთ ხელახლა დაკავშირებას.</translation>
@@ -1760,7 +1763,6 @@
 <translation id="8834539327799336565">ამჟამად დაკავშირებული</translation>
 <translation id="8841375032071747811">ღილაკი „უკან“</translation>
 <translation id="8843682306134542540">ბრუნვის ჩაკეტვის გადართვა. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">თქვენი PIN-კოდის ან პაროლის დადასტურება კვლავ ვერ მოხერხდა. გაითვალისწინეთ: თუ ახლახან შეცვალეთ პაროლი, გამოიყენეთ თქვენი ძველი პაროლი. ახალი პაროლი ძალაში შევა, როცა სისტემიდან გახვალთ.</translation>
 <translation id="8855885154700222542">სრულეკრანიან რეჟიმზე გადართვის კლავიში</translation>
 <translation id="8858369206579825206">კონფიდენციალურობის მართვის პარამეტრები</translation>

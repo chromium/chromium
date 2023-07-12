@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">最近使用的應用程式</translation>
 <translation id="1252999807265626933">正在使用 <ph name="POWER_SOURCE" />充電</translation>
 <translation id="1255033239764210633">天氣點樣？</translation>
-<translation id="1267032506238418139">快速鍵有變動</translation>
 <translation id="1269405891096105529">訪客模式不支援周邊裝置</translation>
 <translation id="1270290102613614947">屏幕鍵盤已停用</translation>
 <translation id="1272079795634619415">停止</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">新安裝</translation>
 <translation id="1915307458270490472">結束通話</translation>
 <translation id="1918022425394817322">攝錄機已經對齊右上角</translation>
-<translation id="1919743966458266018">開啟工作管理員的快速鍵已變更，請改用 <ph name="NEW_SHORTCUT" /> 取代 <ph name="OLD_SHORTCUT" /> 。</translation>
 <translation id="1923539912171292317">自動按一下</translation>
 <translation id="1928739107511554905">如要下載更新，請連接鍵盤並使用觸控螢幕重新啟動 Chromebook。</translation>
 <translation id="1948405482892809935">切換至下一位使用者</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">已經取消固定用緊嘅視窗。</translation>
 <translation id="2761723519669354964">開啟捷徑列的突顯項目</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> 到 <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">Ctrl + 搜尋鍵 + S 鍵</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>
 <translation id="2782591952652094792">結束擷取模式</translation>
 <translation id="2785499565474703580">已連接 1 部裝置</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">不支援</translation>
 <translation id="3068622547379332530">版本 <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">捷徑列喺螢幕左邊</translation>
+<translation id="3070639127620815135">搜尋鍵 + Esc 鍵</translation>
 <translation id="3077734595579995578">Shift</translation>
 <translation id="3081696990447829002">打開選單</translation>
 <translation id="3087734570205094154">下方</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">要將裝置關機嗎？</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">重新啟動即可更新</translation>
+<translation id="3139188263101386725">使用已更新的快速鍵</translation>
 <translation id="3139942575505304791">桌面 1</translation>
 <translation id="315116470104423982">流動數據</translation>
 <translation id="3151786313568798007">方向</translation>
@@ -1202,6 +1203,7 @@
 <translation id="6231419273573514727">周邊裝置的效能可能受到限制</translation>
 <translation id="6232891689835436217">「<ph name="APP_NAME" />」目前正在使用您的相機和麥克風</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">使用「<ph name="NEW_SHORTCUT" />」開啟「工作管理員」應用程式。</translation>
 <translation id="6247728804802644171">開啟通知</translation>
 <translation id="6254629735336163724">已鎖定為水平</translation>
 <translation id="6259254695169772643">使用觸控筆選擇</translation>
@@ -1252,6 +1254,7 @@
 <translation id="6497418457565568043">「請勿騷擾」模式已開啟</translation>
 <translation id="6500896621837555595">更新</translation>
 <translation id="6501401484702599040">正在將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
+<translation id="6507042703812908515">使用「<ph name="NEW_SHORTCUT" />」開啟「鍵盤快速鍵」應用程式。</translation>
 <translation id="6507618042428827377">切換至下一個可用的輸入方法</translation>
 <translation id="6508923215158854599">確定您的 Chromebook 與 Chromecast 裝置位於同一個 Wi-Fi 網絡上。</translation>
 <translation id="6515727200518652613">攝錄機連線中斷，嘗試緊重新連線。</translation>
@@ -1758,7 +1761,6 @@
 <translation id="8834539327799336565">目前已連接的裝置</translation>
 <translation id="8841375032071747811">[返回] 按鈕</translation>
 <translation id="8843682306134542540">切換旋轉鎖定。<ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">搜尋鍵 + Esc 鍵</translation>
 <translation id="8853703225951107899">系統仍然無法驗證您的 PIN 或密碼。注意：如果您最近變更過密碼，請嘗試使用舊密碼，新密碼會在您登出後立即生效。</translation>
 <translation id="8855885154700222542">全螢幕鍵</translation>
 <translation id="8858369206579825206">私隱權設定</translation>

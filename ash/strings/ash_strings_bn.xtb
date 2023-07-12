@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">সাম্প্রতিক অ্যাপ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> থেকে চার্জ হচ্ছে</translation>
 <translation id="1255033239764210633">আবহাওয়া কি রকম?</translation>
-<translation id="1267032506238418139">শর্টকাটে পরিবর্তন</translation>
 <translation id="1269405891096105529">গেস্ট মোডে পেরিফেরাল কাজ করে না</translation>
 <translation id="1270290102613614947">অন-স্ক্রিন কীবোর্ড অক্ষম করা রয়েছে</translation>
 <translation id="1272079795634619415">বন্ধ</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">নতুন ইনস্টল</translation>
 <translation id="1915307458270490472">কল নামিয়ে রাখুন</translation>
 <translation id="1918022425394817322">ক্যামেরাটি উপরে ডানদিকের কোণে স্ন্যাপ করা হয়েছে</translation>
-<translation id="1919743966458266018">কার্য পরিচালক খোলার শর্টকাটটি পরিবর্তিত হয়েছে। <ph name="OLD_SHORTCUT" /> এর পরিবর্তে দয়া করে <ph name="NEW_SHORTCUT" /> ব্যবহার করুন।</translation>
 <translation id="1923539912171292317">স্বয়ংক্রিয় ক্লিকগুলি</translation>
 <translation id="1928739107511554905">আপডেট পেতে, অ্যাটাচ করা কীবোর্ডের মাধ্যমে আপনার Chromebook রিস্টার্ট করার জন্য টাচস্ক্রিন ব্যবহার করুন।</translation>
 <translation id="1948405482892809935">পরের ব্যবহারকারীতে সুইচ করুন</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">অ্যাক্টিভ উইন্ডোটি আনডক করা হয়েছে।</translation>
 <translation id="2761723519669354964">শেল্ফ থেকে হাইলাইট করা আইটেম খুলুন</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> <ph name="KEY_TWO" />-এর মাধ্যমে</translation>
+<translation id="2778197796481941784">Ctrl+Search+S</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />, <ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়</translation>
 <translation id="2782591952652094792">ক্যাপচার মোড থেকে বেরিয়ে আসুন</translation>
 <translation id="2785499565474703580">১টি ডিভাইস কানেক্ট করা আছে</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">কাজ করে না</translation>
 <translation id="3068622547379332530">ভার্সন <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">শেল্ফ বাঁ দিকে দেখানো হচ্ছে</translation>
+<translation id="3070639127620815135">Search+Esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">মেনুটি বড় করুন</translation>
 <translation id="3087734570205094154">নিচে</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">ডিভাইস বন্ধ করবেন?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">আপডেট করার জন্য পুনরারম্ভ করুন</translation>
+<translation id="3139188263101386725">আপডেট করা শর্টকাট ব্যবহার করুন</translation>
 <translation id="3139942575505304791">ডেস্ক ১</translation>
 <translation id="315116470104423982">মোবাইল ডেটা</translation>
 <translation id="3151786313568798007">সজ্জা</translation>
@@ -1203,6 +1204,7 @@
 <translation id="6231419273573514727">পেরিফেরাল পারফর্ম্যন্স সীমাবদ্ধ হতে পারে</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> এখন আপনার ক্যামেরা এবং মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">"<ph name="NEW_SHORTCUT" />" শর্টকাট ব্যবহার করে Task Manager অ্য়াপ খুলুন।</translation>
 <translation id="6247728804802644171">বিজ্ঞপ্তি খুলুন</translation>
 <translation id="6254629735336163724">স্ক্রিনটি ল্যান্ডস্কেপ মোডে লক করা আছে</translation>
 <translation id="6259254695169772643">বেছে নিতে স্টাইলাস ব্যবহার করুন</translation>
@@ -1253,6 +1255,7 @@
 <translation id="6497418457565568043">'বিরক্ত করবে না' চালু আছে</translation>
 <translation id="6500896621837555595">আপডেট করুন</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> এ স্ক্রিন কাস্ট করা হচ্ছে</translation>
+<translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />" প্রেস করে Key Shortcuts অ্যাপ খুলুন।</translation>
 <translation id="6507618042428827377">উপলভ্য রয়েছে, পরবর্তী এমন ইনপুট পদ্ধতিতে সুইচ করুন</translation>
 <translation id="6508923215158854599">আপনার Chromebook এবং Chromecast ডিভাইস একই ওয়াই-ফাই নেটওয়ার্কে কানেক্ট আছে কিনা কনফার্ম করুন।</translation>
 <translation id="6515727200518652613">ক্যামেরা ডিসকানেক্ট হয়ে গেছে, আবার কানেক্ট করার চেষ্টা করা হচ্ছে।</translation>
@@ -1760,7 +1763,6 @@
 <translation id="8834539327799336565">এখন কানেক্ট করা রয়েছে</translation>
 <translation id="8841375032071747811">ফিরে যাওয়ার বোতাম</translation>
 <translation id="8843682306134542540">রোটেশন লক টগল করুন। <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">আপনার পিন বা পাসওয়ার্ড এখনও যাচাই করা যায়নি। মনে রাখবেন: আপনি সম্প্রতি পাসওয়ার্ড পরিবর্তন করে থাকলে, পুরনো পাসওয়ার্ড ব্যবহার করুন। আপনি সাইন-আউট করলে নতুন পাসওয়ার্ড প্রয়োগ করা হবে।</translation>
 <translation id="8855885154700222542">ফুলস্ক্রিন করার বোতাম</translation>
 <translation id="8858369206579825206">গোপনীয়তা নিয়ন্ত্রণ</translation>

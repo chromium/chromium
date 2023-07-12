@@ -69,7 +69,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1247519845643687288">Aplikasi terbaru</translation>
 <translation id="1252999807265626933">Mengisi daya dari <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Gimana kondisi cuaca?</translation>
-<translation id="1267032506238418139">Perubahan pintasan</translation>
 <translation id="1269405891096105529">Periferal tidak didukung dalam mode Tamu</translation>
 <translation id="1270290102613614947">Keyboard di layar dinonaktifkan</translation>
 <translation id="1272079795634619415">Berhenti</translation>
@@ -218,7 +217,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1908992311423394684">Baru diinstal</translation>
 <translation id="1915307458270490472">Akhiri</translation>
 <translation id="1918022425394817322">Kamera dipaskan ke pojok kanan atas</translation>
-<translation id="1919743966458266018">Pintasan untuk membuka pengelola tugas telah berubah. Gunakan <ph name="NEW_SHORTCUT" /> sebagai ganti <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Klik otomatis</translation>
 <translation id="1928739107511554905">Untuk mendapatkan update, gunakan layar sentuh untuk menyalakan ulang Chromebook dengan keyboard yang disertakan.</translation>
 <translation id="1948405482892809935">Beralih ke pengguna berikutnya</translation>
@@ -397,6 +395,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2750941250130734256">Jendela yang aktif dilepas kaitannya.</translation>
 <translation id="2761723519669354964">Buka item yang ditandai dari rak</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> hingga <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">Ctrl+penelusuran+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> dikelola oleh <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Keluar dari mode tangkapan layar</translation>
 <translation id="2785499565474703580">1 perangkat terhubung</translation>
@@ -460,6 +459,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3062298103034426069">Tidak didukung</translation>
 <translation id="3068622547379332530">Versi <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Rak di bagian kiri</translation>
+<translation id="3070639127620815135">penelusuran+esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Luaskan menu</translation>
 <translation id="3087734570205094154">Bawah</translation>
@@ -473,6 +473,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3120421559657122717">Matikan perangkat?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Mulai ulang untuk memperbarui</translation>
+<translation id="3139188263101386725">Gunakan pintasan yang diperbarui</translation>
 <translation id="3139942575505304791">Halaman kerja 1</translation>
 <translation id="315116470104423982">Data seluler</translation>
 <translation id="3151786313568798007">Orientasi</translation>
@@ -1203,6 +1204,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6231419273573514727">Performa periferal mungkin dibatasi</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sedang menggunakan kamera dan mikrofon Anda</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Buka aplikasi Pengelola Tugas dengan "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">Buka notifikasi</translation>
 <translation id="6254629735336163724">Terkunci ke horizontal</translation>
 <translation id="6259254695169772643">Gunakan stilus untuk memilih</translation>
@@ -1253,6 +1255,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6497418457565568043">Fitur jangan ganggu aktif</translation>
 <translation id="6500896621837555595">Update</translation>
 <translation id="6501401484702599040">Mentransmisi layar ke <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Buka aplikasi Pintasan Keyboard dengan "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Beralih ke metode input berikutnya yang tersedia</translation>
 <translation id="6508923215158854599">Pastikan Chromebook berada di jaringan Wi-Fi yang sama dengan perangkat Chromecast.</translation>
 <translation id="6515727200518652613">Koneksi kamera terputus, mencoba menghubungkan kembali.</translation>
@@ -1484,7 +1487,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7579778809502851308">Screenshot</translation>
 <translation id="7593891976182323525">Telusuri atau Shift</translation>
 <translation id="7600875258240007829">Lihat semua notifikasi</translation>
-<translation id="7601417191446344542">Aktifkan pengingat bisukan audio?</translation>
+<translation id="7601417191446344542">Aktifkan pengingat aktifkan mikrofon?</translation>
 <translation id="7607002721634913082">Dijeda</translation>
 <translation id="7609951632080598826">Tampilan kalender, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera dihubungkan kembali.</translation>
@@ -1760,7 +1763,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8834539327799336565">Saat ini terhubung</translation>
 <translation id="8841375032071747811">Tombol kembali</translation>
 <translation id="8843682306134542540">Alihkan kunci rotasi. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN atau sandi Anda belum dapat diverifikasi. Catatan: Jika Anda baru-baru ini mengubah sandi, gunakan sandi lama Anda. Sandi baru akan diterapkan setelah Anda logout.</translation>
 <translation id="8855885154700222542">Tombol layar penuh</translation>
 <translation id="8858369206579825206">Kontrol privasi</translation>

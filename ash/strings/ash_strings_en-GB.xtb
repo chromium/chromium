@@ -69,7 +69,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1247519845643687288">Recent apps</translation>
 <translation id="1252999807265626933">Charging from <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">What's the weather?</translation>
-<translation id="1267032506238418139">Shortcut change</translation>
 <translation id="1269405891096105529">Peripheral not supported in Guest Mode</translation>
 <translation id="1270290102613614947">On-screen keyboard disabled</translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -218,7 +217,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1908992311423394684">New install</translation>
 <translation id="1915307458270490472">Hang up</translation>
 <translation id="1918022425394817322">Camera snapped to the top-right corner</translation>
-<translation id="1919743966458266018">The shortcut to open the task manager has changed. Please use <ph name="NEW_SHORTCUT" /> instead of <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatic clicks</translation>
 <translation id="1928739107511554905">To get the update, use the touchscreen to restart your Chromebook with the keyboard attached.</translation>
 <translation id="1948405482892809935">Switch to next user</translation>
@@ -397,6 +395,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2750941250130734256">Active window undocked.</translation>
 <translation id="2761723519669354964">Open highlighted item from shelf</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> to <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> managed by <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Exit capture mode</translation>
 <translation id="2785499565474703580">One device connected</translation>
@@ -460,6 +459,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3062298103034426069">Not supported</translation>
 <translation id="3068622547379332530">Version <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Shelf on left</translation>
+<translation id="3070639127620815135">search+esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Expand menu</translation>
 <translation id="3087734570205094154">Bottom</translation>
@@ -473,6 +473,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3120421559657122717">Shut down device?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Restart to update</translation>
+<translation id="3139188263101386725">Use the updated shortcut</translation>
 <translation id="3139942575505304791">Desk 1</translation>
 <translation id="315116470104423982">Mobile data</translation>
 <translation id="3151786313568798007">Orientation</translation>
@@ -1203,6 +1204,7 @@ Connect your device to power.</translation>
 <translation id="6231419273573514727">Peripheral performance may be limited</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> is currently using your camera and microphone</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Open the Task manager app with '<ph name="NEW_SHORTCUT" />'.</translation>
 <translation id="6247728804802644171">Open notifications</translation>
 <translation id="6254629735336163724">Locked to horizontal</translation>
 <translation id="6259254695169772643">Use your stylus to select</translation>
@@ -1253,6 +1255,7 @@ Connect your device to power.</translation>
 <translation id="6497418457565568043">Do Not Disturb is on</translation>
 <translation id="6500896621837555595">Update</translation>
 <translation id="6501401484702599040">Casting screen to <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Open the Key shortcuts app with '<ph name="NEW_SHORTCUT" />'.</translation>
 <translation id="6507618042428827377">Switch to next available input method</translation>
 <translation id="6508923215158854599">Make sure that your Chromebook is on the same Wi-Fi network as your Chromecast device.</translation>
 <translation id="6515727200518652613">Camera lost; trying to reconnect.</translation>
@@ -1760,7 +1763,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8834539327799336565">Currently connected</translation>
 <translation id="8841375032071747811">Back button</translation>
 <translation id="8843682306134542540">Toggle rotation lock. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Your PIN or password still couldn't be verified. Note: If you recently changed your password, use your old password. Your new password will be applied once you've signed out.</translation>
 <translation id="8855885154700222542">Full-screen key</translation>
 <translation id="8858369206579825206">Privacy controls</translation>

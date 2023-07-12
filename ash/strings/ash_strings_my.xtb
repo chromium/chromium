@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">လတ်တလောသုံး အက်ပ်များ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />မှ အားသွင်းနေပါသည်</translation>
 <translation id="1255033239764210633">မိုးလေဝသအခြေအနေ ဘယ်လိုရှိလဲ။</translation>
-<translation id="1267032506238418139">ဖြတ်လမ်းလင့်ခ် ပြောင်းလဲခြင်း</translation>
 <translation id="1269405891096105529">‘ဧည့်သည်မုဒ်’ တွင် ချိတ်ဆက်ပစ္စည်းကို မပံ့ပိုးပါ</translation>
 <translation id="1270290102613614947">မျက်နှာပြင် ပေါ်က ကီးဘုတ် ပိတ်ထား</translation>
 <translation id="1272079795634619415">ရပ်ရန်</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">အသစ်ထည့်သွင်းမှု</translation>
 <translation id="1915307458270490472">ဖုန်းချရန်</translation>
 <translation id="1918022425394817322">ကင်မရာကို အပေါ်ညာဘက်ထောင့်သို့ ကပ်ထားသည်</translation>
-<translation id="1919743966458266018">တာဝန်များ မန်နေဂျာကို ဖွင့်ရန် ဖြတ်လမ်း ပြောင်းသွားပါပြီ။ ကျေးဇူးပြုပြီး<ph name="OLD_SHORTCUT" /> အစား<ph name="NEW_SHORTCUT" />ကို သုံးပါ။</translation>
 <translation id="1923539912171292317">အလိုအလျောက် နှိပ်ချက်များ</translation>
 <translation id="1928739107511554905">အပ်ဒိတ်ရယူရန်အတွက် ကီးဘုတ်ကို ချိတ်ဆက်ထားပြီး Chromebook ကို ပြန်လည်စတင်ရန် ထိတွေ့မျက်နှာပြင်ကို အသုံးပြုပါ။</translation>
 <translation id="1948405482892809935">အသုံးပြုသူနောက်တစ်ဦးသို့ ပြောင်းရန်</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">ဖွင့်ထားသည့်ဝင်းဒိုးကို ဖြုတ်လိုက်သည်။</translation>
 <translation id="2761723519669354964">စင်ပေါ်တွင် မြင်သာအောင်လုပ်ထားသည့် အက်ပ်ကိုဖွင့်ရန်</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> မှ <ph name="KEY_TWO" /> အထိ</translation>
+<translation id="2778197796481941784">Ctrl+ရှာဖွေမှု+S</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ကို <ph name="MANAGER" /> က စီမံခန့်ခွဲသည်</translation>
 <translation id="2782591952652094792">ပုံဖမ်းယူမှုမုဒ်မှ ထွက်မည်</translation>
 <translation id="2785499565474703580">စက်ပစ္စည်း ၁ ခု ချိတ်ဆက်ထားသည်</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">ပံ့ပိုးမထားပါ</translation>
 <translation id="3068622547379332530">ဗားရှင်း <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">စင်ကို ဘယ်ဘက် ရွှေ့လိုက်ပါပြီ</translation>
+<translation id="3070639127620815135">ရှာဖွေမှု+Esc</translation>
 <translation id="3077734595579995578">shift ကီး</translation>
 <translation id="3081696990447829002">မီနူးကို ချဲ့ရန်</translation>
 <translation id="3087734570205094154">အောက်ခြေပိုင်း</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">စက်ကို အပြီးပိတ်မလား။</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">အပ်ဒိတ်လုပ်ရန် ပြန်ဖွင့်ပါ</translation>
+<translation id="3139188263101386725">အပ်ဒိတ်လုပ်ထားသော ဖြတ်လမ်းလင့်ခ် သုံးပါ</translation>
 <translation id="3139942575505304791">စာရေးခုံ ၁</translation>
 <translation id="315116470104423982">မိုဘိုင်း ဒေတာ</translation>
 <translation id="3151786313568798007">အနေအထား</translation>
@@ -1203,6 +1204,7 @@
 <translation id="6231419273573514727">ချိတ်ဆက်ပစ္စည်း စွမ်းဆောင်ရည်ကို ကန့်သတ်ထားနိုင်သည်</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> က သင့်ကင်မရာနှင့် မိုက်ခရိုဖုန်းကို လက်ရှိသုံးနေသည်</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">‘လုပ်ဆောင်ချက်မန်နေဂျာ’ အက်ပ်ကို “<ph name="NEW_SHORTCUT" />” ဖြင့် ဖွင့်ပါ။</translation>
 <translation id="6247728804802644171">အကြောင်းကြားချက် ဖွင့်ရန်</translation>
 <translation id="6254629735336163724">အလျားလိုက်မုဒ်အဖြစ် လော့ခ်ချထားသည်</translation>
 <translation id="6259254695169772643">ရွေးချယ်ရန် သင့်စတိုင်လပ်စ် အသုံးပြုပါ</translation>
@@ -1253,6 +1255,7 @@
 <translation id="6497418457565568043">‘မနှောင့်ယှက်ရ’ ဖွင့်ထားသည်</translation>
 <translation id="6500896621837555595">အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />သို့ မျက်နှာပြင်ကို ကာစ် လုပ်နေသည်</translation>
+<translation id="6507042703812908515">‘လက်ကွက်ဖြတ်လမ်းများ’ အက်ပ်ကို “<ph name="NEW_SHORTCUT" />” ဖြင့် ဖွင့်ပါ။</translation>
 <translation id="6507618042428827377">ရနိုင်သော နောက်လက်ကွက်တစ်ခုသို့ ပြောင်းရန်</translation>
 <translation id="6508923215158854599">သင်၏ Chromebook နှင့် Chromecast စက်သည် Wi-Fi ကွန်ရက်တစ်ခုတည်းကို ချိတ်ဆက်ထားကြောင်း သေချာပါစေ။</translation>
 <translation id="6515727200518652613">ကင်မရာပျောက်သွား၍ ပြန်လည်ချိတ်ဆက်နေသည်။</translation>
@@ -1484,7 +1487,7 @@
 <translation id="7579778809502851308">ဖန်သားပြင် ပုံဖမ်းခြင်း</translation>
 <translation id="7593891976182323525">ရှာဖွေမည် သို့မဟုတ် ပြောင်းလဲမည်</translation>
 <translation id="7600875258240007829">အကြောင်းကြားချက်အားလုံးကို ကြည့်ရန်</translation>
-<translation id="7601417191446344542">အသံပိတ်ရန် သတိပေးချက်ကို ဖွင့်မလား။</translation>
+<translation id="7601417191446344542">အသံပိတ်နေကြောင်း အသိပေးချက်ကို ဖွင့်မလား။</translation>
 <translation id="7607002721634913082">ဆိုင်းငံ့ထား</translation>
 <translation id="7609951632080598826">ပြက္ခဒိန်ပြသခြင်း၊ <ph name="DATE" />၊ <ph name="TIME" /></translation>
 <translation id="7611213136657090146">ကင်မရာကို ပြန်လည်ချိတ်ဆက်ထားသည်။</translation>
@@ -1760,7 +1763,6 @@
 <translation id="8834539327799336565">လက်ရှိ ချိတ်ဆက်ထားသည်</translation>
 <translation id="8841375032071747811">နောက်သို့ပြန်သည့် ခလုတ်</translation>
 <translation id="8843682306134542540">လှည့်ခြင်းလော့ခ် ခလုတ်။ <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">ရှာဖွေမှု+Esc</translation>
 <translation id="8853703225951107899">သင့်ပင်နံပါတ် သို့မဟုတ် စကားဝှက်ကို စစ်ဆေး၍မရနိုင်သေးပါ။ မှတ်ချက် - လတ်တလောတွင် သင့်စကားဝှက်ကို ပြောင်းထားပါက စကားဝှက်အဟောင်းကို သုံးပါ။ ထွက်ပြီးသည့်အခါ စကားဝှက်အသစ်ကို အသုံးပြုပါမည်။</translation>
 <translation id="8855885154700222542">မျက်နှာပြင်ပြည့် ခလုတ်</translation>
 <translation id="8858369206579825206">ကိုယ်ရေးအချက်အလက် လုံခြုံမှုဆိုင်ရာ ထိန်းချုပ်မှုများ</translation>

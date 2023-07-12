@@ -69,7 +69,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1247519845643687288">Senaste apparna</translation>
 <translation id="1252999807265626933">Laddar från <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Vad är det för väder?</translation>
-<translation id="1267032506238418139">Kortkommandot har ändrats</translation>
 <translation id="1269405891096105529">Kringutrustningen stöds inte i gästläget</translation>
 <translation id="1270290102613614947">Skärmen på tangentbordet har inaktiverats</translation>
 <translation id="1272079795634619415">Stopp</translation>
@@ -218,7 +217,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1908992311423394684">Nyligen installerad</translation>
 <translation id="1915307458270490472">Lägg på</translation>
 <translation id="1918022425394817322">Kameran har fästs i det övre högra hörnet</translation>
-<translation id="1919743966458266018">Kortkommandot för att öppna aktivitetshanteraren har ändrats. Använd <ph name="NEW_SHORTCUT" /> i stället för <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatiska klick</translation>
 <translation id="1928739107511554905">Starta om Chromebook-enheten via pekskärmen med tangentbordet tillkopplat för att uppdatera.</translation>
 <translation id="1948405482892809935">Byt till nästa användare</translation>
@@ -397,6 +395,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2750941250130734256">Det aktiva fönstret är inte längre dockat.</translation>
 <translation id="2761723519669354964">Öppna det markerade objektet från hyllan</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> via <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl + sök + s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Stäng läget för skärmbild/skärminspelning</translation>
 <translation id="2785499565474703580">1 enhet är ansluten</translation>
@@ -460,6 +459,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3062298103034426069">Stöds inte</translation>
 <translation id="3068622547379332530">Version <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Hyllan till vänster</translation>
+<translation id="3070639127620815135">sök + esc</translation>
 <translation id="3077734595579995578">skift</translation>
 <translation id="3081696990447829002">Utöka menyn</translation>
 <translation id="3087734570205094154">Nederst</translation>
@@ -473,6 +473,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3120421559657122717">Vill du stänga av enheten?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Starta om för att uppdatera</translation>
+<translation id="3139188263101386725">Använd det uppdaterade kortkommandot</translation>
 <translation id="3139942575505304791">Skrivbord 1</translation>
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3151786313568798007">Orientering</translation>
@@ -1203,6 +1204,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6231419273573514727">Kringutrustningens prestanda kan vara begränsad</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> använder just nu kameran och mikrofonen</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Öppna Aktivitetshanteraren med <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Öppna aviseringar</translation>
 <translation id="6254629735336163724">Låst i liggande läge</translation>
 <translation id="6259254695169772643">Välj något med e-pennan</translation>
@@ -1253,6 +1255,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6497418457565568043">Stör ej är aktiverat</translation>
 <translation id="6500896621837555595">Uppdatera</translation>
 <translation id="6501401484702599040">Skärmen castas till <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Öppna appen Kortkommandon med <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Byt till nästa tillgängliga inmatningsmetod</translation>
 <translation id="6508923215158854599">Kontrollera att Chromebook är ansluten till samma wifi-nätverk som Chromecast-enheten.</translation>
 <translation id="6515727200518652613">Kameran kopplades från. Försöker återansluta.</translation>
@@ -1484,7 +1487,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7579778809502851308">Skärmbild</translation>
 <translation id="7593891976182323525">Sök eller Skift</translation>
 <translation id="7600875258240007829">Visa alla aviseringar</translation>
-<translation id="7601417191446344542">Vill du aktivera puff för avstängt ljud?</translation>
+<translation id="7601417191446344542">Aktivera påminnelse om att mikrofonen är avstängd?</translation>
 <translation id="7607002721634913082">Pausad</translation>
 <translation id="7609951632080598826">Kalendervy: <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kameran har återanslutits.</translation>
@@ -1760,7 +1763,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8834539327799336565">Anslutna just nu</translation>
 <translation id="8841375032071747811">Bakåtknapp</translation>
 <translation id="8843682306134542540">Aktivera och inaktivera rotationslås. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Sök+Escape</translation>
 <translation id="8853703225951107899">Det gick fortfarande inte att verifiera pinkoden eller lösenordet. Obs! Om du nyligen har bytt lösenord ska du använda det gamla lösenordet. Det nya lösenordet börjar gälla när du loggar ut.</translation>
 <translation id="8855885154700222542">Tangent för helskärm</translation>
 <translation id="8858369206579825206">Integritetsinställningar</translation>

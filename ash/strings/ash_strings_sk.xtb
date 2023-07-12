@@ -69,7 +69,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1247519845643687288">Nedávne aplikácie</translation>
 <translation id="1252999807265626933">Nabíja sa zo <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Aké je počasie?</translation>
-<translation id="1267032506238418139">Zmena skratky</translation>
 <translation id="1269405891096105529">Periféria nie je v režime pre hostí podporovaná</translation>
 <translation id="1270290102613614947">Klávesnica na obrazovke je zakázaná</translation>
 <translation id="1272079795634619415">Zastaviť</translation>
@@ -218,7 +217,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1908992311423394684">Nová inštalácia</translation>
 <translation id="1915307458270490472">Zložiť</translation>
 <translation id="1918022425394817322">Kamera bola prichytená do pravého horného rohu</translation>
-<translation id="1919743966458266018">Skratka otvorenia správcu úloh bola zmenená. Namiesto skratky <ph name="OLD_SHORTCUT" /> používajte kombináciu klávesov <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatické kliknutia</translation>
 <translation id="1928739107511554905">Ak chcete získať aktualizáciu, reštartuje Chromebook s pripojenou klávesnicou pomocou dotykovej obrazovky.</translation>
 <translation id="1948405482892809935">Prepnutie na ďalšieho používateľa</translation>
@@ -397,6 +395,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2750941250130734256">Aktívne okno bolo uvoľnené.</translation>
 <translation id="2761723519669354964">Otvorenie zvýraznenej položku z poličky</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> pomocou klávesa <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl + kláves vyhľadávania + s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Ukončiť režim snímania</translation>
 <translation id="2785499565474703580">1 pripojené zariadenie</translation>
@@ -460,6 +459,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3062298103034426069">Nepodporované</translation>
 <translation id="3068622547379332530">Verzia <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Polička naľavo</translation>
+<translation id="3070639127620815135">kláves vyhľadávania + Esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Rozbaliť ponuku</translation>
 <translation id="3087734570205094154">Spodok</translation>
@@ -473,6 +473,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3120421559657122717">Chcete zariadenie vypnúť?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reštartovaním vykonáte aktualizáciu</translation>
+<translation id="3139188263101386725">Použite aktualizovanú skratku</translation>
 <translation id="3139942575505304791">1. plocha</translation>
 <translation id="315116470104423982">Mobilné dátové prenosy</translation>
 <translation id="3151786313568798007">Orientácia</translation>
@@ -1203,6 +1204,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6231419273573514727">Výkonnosť periférie môže byť obmedzená</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> momentálne používa kameru a mikrofón</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Otvorte aplikáciu Správca úloh skratkou <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Otvorenie upozornení</translation>
 <translation id="6254629735336163724">Uzamknuté vodorovne</translation>
 <translation id="6259254695169772643">Vyberte pomocou dotykového pera</translation>
@@ -1253,6 +1255,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6497418457565568043">Režim bez vyrušení je zapnutý</translation>
 <translation id="6500896621837555595">Aktualizovať</translation>
 <translation id="6501401484702599040">Prenášanie obrazovky do zariadenia <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Otvorte aplikáciu Klávesové skratky skratkou <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Prepnutie na ďalšiu dostupnú metódu vstupu</translation>
 <translation id="6508923215158854599">Skontrolujte, či sú Chromebook a zariadenie Chromecast pripojené k rovnakej sieti Wi‑Fi.</translation>
 <translation id="6515727200518652613">Spojenie s kamerou bolo prerušené, prebieha pokus o jeho obnovenie.</translation>
@@ -1484,7 +1487,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7579778809502851308">Snímanie obrazovky</translation>
 <translation id="7593891976182323525">Hľadať alebo Shift</translation>
 <translation id="7600875258240007829">Zobraziť všetky upozornenia</translation>
-<translation id="7601417191446344542">Chcete zapnúť štuchnutie pri vypnutom mikrofóne?</translation>
+<translation id="7601417191446344542">Chcete zapnúť upozornenia na vypnutý mikrofón?</translation>
 <translation id="7607002721634913082">Pozastavené</translation>
 <translation id="7609951632080598826">Zobrazenie kalendára, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera bola odpojená</translation>
@@ -1759,7 +1762,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8834539327799336565">Aktuálne pripojené</translation>
 <translation id="8841375032071747811">Tlačidlo Späť</translation>
 <translation id="8843682306134542540">Prepnúť uzamknutie otočenia. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Hľadať+Esc</translation>
 <translation id="8853703225951107899">Váš kód PIN alebo heslo sa stále nepodarilo overiť. Poznámka: Ak ste nedávno zmenili svoje heslo, použite predchádzajúce. Nové heslo bude uplatnené až po odhlásení.</translation>
 <translation id="8855885154700222542">Kláves celej obrazovky</translation>
 <translation id="8858369206579825206">Nastavenia ochrany súkromia</translation>

@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">Нещодавні додатки</translation>
 <translation id="1252999807265626933">Джерело заряджання: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Який прогноз погоди?</translation>
-<translation id="1267032506238418139">Зміна комбінацій клавіш</translation>
 <translation id="1269405891096105529">Периферійні пристрої не підтримуються в режимі гостя</translation>
 <translation id="1270290102613614947">Екранну клавіатуру вимкнено</translation>
 <translation id="1272079795634619415">Зупинити</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">Нещодавно встановлений додаток</translation>
 <translation id="1915307458270490472">Закрити</translation>
 <translation id="1918022425394817322">Зображення з камери закріплено у верхньому правому куті</translation>
-<translation id="1919743966458266018">Комбінація клавіш для запуску Диспетчера завдань змінилася. Тепер це <ph name="NEW_SHORTCUT" />, а не <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Автоматичні кліки</translation>
 <translation id="1928739107511554905">Щоб завантажити оновлення, перезапустіть Chromebook із під’єднаною клавіатурою, використовуючи сенсорний екран.</translation>
 <translation id="1948405482892809935">Перейти в наступний профіль користувача</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">Активне вікно відкріплено.</translation>
 <translation id="2761723519669354964">Відкрити виділений елемент на панелі запуску</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> від <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl + пошук + s</translation>
 <translation id="2778650143428714839">Пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Вийти з режиму зйомки</translation>
 <translation id="2785499565474703580">Підключено 1 пристрій</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">Не підтримується</translation>
 <translation id="3068622547379332530">Версія <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />), <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Полицю розташовано ліворуч</translation>
+<translation id="3070639127620815135">пошук + esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Розгорнути меню</translation>
 <translation id="3087734570205094154">Низ</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">Завершити роботу пристрою?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Перезапустіть, щоб оновити</translation>
+<translation id="3139188263101386725">Використовуйте оновлену комбінацію клавіш</translation>
 <translation id="3139942575505304791">Робочий стіл 1</translation>
 <translation id="315116470104423982">Мобільне передавання даних</translation>
 <translation id="3151786313568798007">Орієнтація</translation>
@@ -1203,6 +1204,7 @@
 <translation id="6231419273573514727">Ефективність периферійних пристроїв може бути обмежена</translation>
 <translation id="6232891689835436217">Додаток <ph name="APP_NAME" /> використовує ваші камеру та мікрофон</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Щоб відкрити додаток Диспетчер завдань, натисніть <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Відкрити сповіщення</translation>
 <translation id="6254629735336163724">Заблоковано в горизонтальному положенні</translation>
 <translation id="6259254695169772643">Вибирайте елементи за допомогою стилуса</translation>
@@ -1253,6 +1255,7 @@
 <translation id="6497418457565568043">Режим "Не турбувати" ввімкнено</translation>
 <translation id="6500896621837555595">Оновити</translation>
 <translation id="6501401484702599040">Вміст екрана транслюється на пристрій "<ph name="RECEIVER_NAME" />"</translation>
+<translation id="6507042703812908515">Щоб відкрити додаток Комбінації клавіш, натисніть <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Вибрати наступний доступний метод введення</translation>
 <translation id="6508923215158854599">Переконайтеся, що Chromebook підключено до тієї самої мережі Wi-Fi, що й пристрій Chromecast.</translation>
 <translation id="6515727200518652613">Немає з’єднання з камерою. Триває підключення.</translation>
@@ -1760,7 +1763,6 @@
 <translation id="8834539327799336565">Підключено</translation>
 <translation id="8841375032071747811">Кнопка "Назад"</translation>
 <translation id="8843682306134542540">Заблокувати/розблокувати обертання. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search (Пошук)+Esc</translation>
 <translation id="8853703225951107899">PIN-код або пароль усе ще не вдається підтвердити. Примітка: якщо ви нещодавно змінювали пароль, введіть старий. Новий пароль буде застосовано, щойно ви вийдете з облікового запису.</translation>
 <translation id="8855885154700222542">Клавіша повноекранного режиму</translation>
 <translation id="8858369206579825206">Налаштування конфіденційності</translation>

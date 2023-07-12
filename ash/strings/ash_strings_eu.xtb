@@ -69,7 +69,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1247519845643687288">Azken aplikazioak</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> gailutik kargatzen</translation>
 <translation id="1255033239764210633">Zer eguraldi dago?</translation>
-<translation id="1267032506238418139">Aldatu egin da lasterbidea</translation>
 <translation id="1269405891096105529">Gailu periferikoa ez da onartzen gonbidatu moduan</translation>
 <translation id="1270290102613614947">Pantailako teklatua desgaitu egin da</translation>
 <translation id="1272079795634619415">Gelditu</translation>
@@ -218,7 +217,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1908992311423394684">Berriki instalatu da</translation>
 <translation id="1915307458270490472">Amaitu deia</translation>
 <translation id="1918022425394817322">Atxiki egin da kamera goiko eskuinaldeko izkinan</translation>
-<translation id="1919743966458266018">Aldatu egin da ataza-kudeatzailea irekitzeko lasterbidea. Erabili <ph name="NEW_SHORTCUT" />, eta ez <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Klik automatikoak</translation>
 <translation id="1928739107511554905">Eguneratzea eskuratzeko, erabili ukipen-pantaila Chromebook-a berrabiarazteko teklatua konektatuta daukala.</translation>
 <translation id="1948405482892809935">Aldatu hurrengo erabiltzailera</translation>
@@ -397,6 +395,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2750941250130734256">Kendu zaio aingura leiho aktiboari.</translation>
 <translation id="2761723519669354964">Ireki apaleko elementu nabarmendua</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />-<ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">Ktrl + Bilaketa + S</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> domeinuak kudeatzen du <ph name="DEVICE_TYPE" /> gailua</translation>
 <translation id="2782591952652094792">Irten edukia kapturatzeko modutik</translation>
 <translation id="2785499565474703580">1 gailu dago konektatuta</translation>
@@ -460,6 +459,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3062298103034426069">Ez da onartzen</translation>
 <translation id="3068622547379332530">Bertsioa: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Apala ezkerraldean dago</translation>
+<translation id="3070639127620815135">Bilaketa + Ihes</translation>
 <translation id="3077734595579995578">maius</translation>
 <translation id="3081696990447829002">Zabaldu menua</translation>
 <translation id="3087734570205094154">Behekoa</translation>
@@ -473,6 +473,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3120421559657122717">Gailua itzali nahi duzu?</translation>
 <translation id="3126026824346185272">Ktrl</translation>
 <translation id="3126069444801937830">Eguneratzeko, berrabiarazi</translation>
+<translation id="3139188263101386725">Erabili eguneratutako lasterbidea</translation>
 <translation id="3139942575505304791">1. lan-eremua</translation>
 <translation id="315116470104423982">Datu-konexioa</translation>
 <translation id="3151786313568798007">Orientazioa</translation>
@@ -1204,6 +1205,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6231419273573514727">Baliteke gailu periferikoaren errendimendua mugatuta egotea</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> kamera eta mikrofonoa erabiltzen ari da une honetan</translation>
 <translation id="6237231532760393653">1×</translation>
+<translation id="6244986124527896815">Ireki Ataza-kudeatzailea aplikazioa "<ph name="NEW_SHORTCUT" />" lasterbidearekin.</translation>
 <translation id="6247728804802644171">Ireki jakinarazpenak</translation>
 <translation id="6254629735336163724">Modu horizontalean blokeatuta</translation>
 <translation id="6259254695169772643">Hautatzeko, erabili arkatza</translation>
@@ -1254,6 +1256,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6497418457565568043">Aktibatuta dago ez molestatzeko modua</translation>
 <translation id="6500896621837555595">Eguneratu</translation>
 <translation id="6501401484702599040">Pantaila <ph name="RECEIVER_NAME" /> gailura igortzen ari da</translation>
+<translation id="6507042703812908515">Ireki Lasterbideak aplikazioa "<ph name="NEW_SHORTCUT" />" lasterbidearekin.</translation>
 <translation id="6507618042428827377">Aldatu erabilgarri dagoen hurrengo idazketa-metodora</translation>
 <translation id="6508923215158854599">Ziurtatu Chromebook-a eta Chromecast gailua wifi-sare berera konektatuta daudela.</translation>
 <translation id="6515727200518652613">Galdu egin da kameraren seinalea. Berriro konektatzen saiatzen.</translation>
@@ -1760,7 +1763,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8834539327799336565">Konektatuta daudenak</translation>
 <translation id="8841375032071747811">Atzera botoia</translation>
 <translation id="8843682306134542540">Aldatu biratzearen blokeoa. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Bilaketa + Ihes</translation>
 <translation id="8853703225951107899">Oraindik ezin izan da egiaztatu PINa edo pasahitza. Oharra: pasahitza duela gutxi aldatu baduzu, erabili pasahitz zaharra. Saioa amaitu eta gero aplikatuko da pasahitz berria.</translation>
 <translation id="8855885154700222542">Pantaila osoaren tekla</translation>
 <translation id="8858369206579825206">Pribatutasun-ezarpenak</translation>

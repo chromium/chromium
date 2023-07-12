@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">ແອັບຫຼ້າສຸດ</translation>
 <translation id="1252999807265626933">ກຳລັງສາກຈາກ <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">ສະພາບອາກາດເປັນແນວໃດ?</translation>
-<translation id="1267032506238418139">ການປ່ຽນແປງທາງລັດ</translation>
 <translation id="1269405891096105529">ບໍ່ຮອງຮັບອຸປະກອນຕໍ່ພ່ວງໃນໂໝດແຂກ</translation>
 <translation id="1270290102613614947">ແປ້ນພິມ​ເທິງ​ໜ້າ​ຈໍ​ປິດ​ໃຊ້​ງານ​ແລ້ວ</translation>
 <translation id="1272079795634619415">ຢຸດ</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">ຕິດຕັ້ງໃໝ່</translation>
 <translation id="1915307458270490472">ວາງສາຍ</translation>
 <translation id="1918022425394817322">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຂວາເທິງແລ້ວ</translation>
-<translation id="1919743966458266018">ປ່ຽນທາ​ງລັດ​ເພື່ອ​ເປີດ​ຕົວ​ຈັດການ​ໜ້າ​ວຽກ​ແລ້ວ. ກະລຸນາ​ໃຊ້ <ph name="NEW_SHORTCUT" /> ​ແທນ <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">ຄລິກອັດ​ຕະ​ໂນ​ມັດ</translation>
 <translation id="1928739107511554905">ເພື່ອຮັບເອົາການອັບເດດ, ກະລຸນາໃຊ້ຈໍສຳຜັດເພື່ອປິດເປີດ Chromebook ຂອງທ່ານຄືນໃໝ່ທີ່ມີແປ້ນພິມເຊື່ອມຕໍ່ແລ້ວ.</translation>
 <translation id="1948405482892809935">ສະຫຼັບໄປເປັນຜູ້ໃຊ້ຕໍ່ໄປ</translation>
@@ -397,6 +395,7 @@
 <translation id="2750941250130734256">ຢຸດຈອດໜ້າຈໍທີ່ນຳໃຊ້ແລ້ວ.</translation>
 <translation id="2761723519669354964">ເປີດລາຍການທີ່ໄຮໄລ້ໄວ້ແລ້ວຈາກຖ້ານ</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> ຫາ <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ທີ່ຖືກຈັດການໂດຍ <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">ອອກຈາກໂໝດຖ່າຍຮູບ</translation>
 <translation id="2785499565474703580">ເຊື່ອມຕໍ່ 1 ອຸປະກອນແລ້ວ</translation>
@@ -460,6 +459,7 @@
 <translation id="3062298103034426069">ບໍ່ຮອງຮັບ</translation>
 <translation id="3068622547379332530">ເວີຊັນ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">ຊັ້ນວາງຢູ່ເບື້ອງຊ້າຍ</translation>
+<translation id="3070639127620815135">search+esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">ຂະຫຍາຍເມນູ</translation>
 <translation id="3087734570205094154">ດ້ານລຸ່ມ</translation>
@@ -473,6 +473,7 @@
 <translation id="3120421559657122717">ປິດອຸປະກອນບໍ?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">ເລີ່ມການອັບເດດໃໝ່</translation>
+<translation id="3139188263101386725">ໃຊ້ທາງລັດທີ່ອັບເດດແລ້ວ</translation>
 <translation id="3139942575505304791">ໂຕະ 1</translation>
 <translation id="315116470104423982">ຂໍ້​ມູນ​ມື​ຖື</translation>
 <translation id="3151786313568798007">ລວງເຈ້ຍ</translation>
@@ -1203,6 +1204,7 @@
 <translation id="6231419273573514727">ປະສິດທິພາບອຸປະກອນຕໍ່ພ່ວງອາດຖືກຈຳກັດໄວ້</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ກຳລັງໃຊ້ກ້ອງ ແລະ ໄມໂຄຣໂຟນຂອງທ່ານຢູ່</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">ເປີດແອັບຕົວຈັດການໜ້າວຽກດ້ວຍ "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6247728804802644171">ເປີດການແຈ້ງເຕືອນ</translation>
 <translation id="6254629735336163724">ລັອກເປັນລວງນອນ</translation>
 <translation id="6259254695169772643">ໃຊ້ປາຍປາກກາຂອງທ່ານເພື່ອເລືອກ</translation>
@@ -1253,6 +1255,7 @@
 <translation id="6497418457565568043">ໂໝດຫ້າມລົບກວນເປີດຢູ່</translation>
 <translation id="6500896621837555595">ອັບເດດ</translation>
 <translation id="6501401484702599040">ກຳລັງ​ສົ່ງສັນຍານໜ້າ​ຈໍ​ຫາ <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">ເປີດແອັບທາງລັດປຸ່ມດ້ວຍ "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">ສະຫຼັບໄປຫາວິທີການປ້ອນຂໍ້ມູນທີ່ສາມາດໃຊ້ໄດ້ອັນຕໍ່ໄປ</translation>
 <translation id="6508923215158854599">ກວດສອບໃຫ້ແນ່ໃຈວ່າ Chromebook ຂອງທ່ານຢູ່ໃນເຄືອຂ່າຍ Wi-Fi ດຽວກັນກັບອຸປະກອນ Chromecast ຂອງທ່ານ.</translation>
 <translation id="6515727200518652613">ກ້ອງຖ່າຍຮູບຂາດການເຊື່ອມຕໍ່, ກຳລັງພະຍາຍາມເຊື່ອມຕໍ່ຄືນໃໝ່.</translation>
@@ -1484,7 +1487,7 @@
 <translation id="7579778809502851308">ການຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="7593891976182323525">ຄົ້ນ​ຫາ ຫຼື Shift</translation>
 <translation id="7600875258240007829">ເບິ່ງການແຈ້ງເຕືອນທັງໝົດ</translation>
-<translation id="7601417191446344542">ເປີດການສະກິດເຕືອນການປິດສຽງບໍ?</translation>
+<translation id="7601417191446344542">ເປີດແຈ້ງເຕືອນໄມຖືກປິດບໍ?</translation>
 <translation id="7607002721634913082">ຢຸດແລ້ວ</translation>
 <translation id="7609951632080598826">ມຸມມອງປະຕິທິນ, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">ເຊື່ອມຕໍ່ກ້ອງຖ່າຍຮູບຄືນໃໝ່ແລ້ວ.</translation>
@@ -1760,7 +1763,6 @@
 <translation id="8834539327799336565">ຕອນນີ້ເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="8841375032071747811">ປຸ່ມກັບຄືນ</translation>
 <translation id="8843682306134542540">ປິດເປີດການລັອກການໝຸນ. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">ຍັງບໍ່ສາມາດຢັ້ງຢືນ PIN ຫຼື ລະຫັດຜ່ານຂອງທ່ານໄດ້. ໝາຍເຫດ: ຖ້າທ່ານໄດ້ປ່ຽນລະຫັດຜ່ານຂອງທ່ານເມື່ອບໍ່ດົນມານີ້, ກະລຸນາໃຊ້ລະຫັດຜ່ານເກົ່າຂອງທ່ານ. ຈະມີການນຳໃຊ້ລະຫັດຜ່ານໃໝ່ຂອງທ່ານເມື່ອທ່ານອອກຈາກລະບົບແລ້ວ.</translation>
 <translation id="8855885154700222542">ປຸ່ມເຕັມຈໍ</translation>
 <translation id="8858369206579825206">ການຄວບຄຸມຄວາມເປັນສ່ວນຕົວ</translation>
