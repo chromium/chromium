@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/attribution_mojom_traits.h"
+#include "base/uuid.h"
 #include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
 
@@ -23,7 +24,7 @@ bool StructTraits<network::mojom::TriggerVerificationDataView,
   }
 
   auto trigger_verification = network::TriggerVerification::Create(
-      std::move(token), aggregatable_report_id);
+      std::move(token), base::Uuid::ParseLowercase(aggregatable_report_id));
   if (!trigger_verification) {
     return false;
   }

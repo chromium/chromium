@@ -27,13 +27,13 @@ TriggerVerification& TriggerVerification::operator=(TriggerVerification&&) =
 // static
 absl::optional<TriggerVerification> TriggerVerification::Create(
     std::string token,
-    const std::string& aggregatable_report_id) {
-  base::Uuid id = base::Uuid::ParseLowercase(aggregatable_report_id);
-  if (!id.is_valid() || token.empty()) {
+    base::Uuid aggregatable_report_id) {
+  if (!aggregatable_report_id.is_valid() || token.empty()) {
     return absl::nullopt;
   }
 
-  return TriggerVerification(std::move(token), std::move(id));
+  return TriggerVerification(std::move(token),
+                             std::move(aggregatable_report_id));
 }
 
 TriggerVerification::TriggerVerification(std::string token,

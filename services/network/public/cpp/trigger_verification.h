@@ -19,7 +19,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_ATTRIBUTION) TriggerVerification {
   // valid id and `token` is not empty.
   static absl::optional<TriggerVerification> Create(
       std::string token,
-      const std::string& aggregatable_report_id);
+      base::Uuid aggregatable_report_id);
 
   // Creates an invalid instance for use with Mojo deserialization, which
   // requires types to be default-constructible.

@@ -10,6 +10,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -392,9 +393,11 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithVerifications) {
 
   response.SetTriggerVerifications(
       {*network::TriggerVerification::Create(
-           "token-1", "11fa6760-8e5c-4ccb-821d-b5d82bef2b37"),
+           "token-1",
+           base::Uuid::ParseLowercase("11fa6760-8e5c-4ccb-821d-b5d82bef2b37")),
        *network::TriggerVerification::Create(
-           "token-2", "22fa6760-8e5c-4ccb-821d-b5d82bef2b37")});
+           "token-2", base::Uuid::ParseLowercase(
+                          "22fa6760-8e5c-4ccb-821d-b5d82bef2b37"))});
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());

@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -1210,9 +1211,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   std::vector<network::TriggerVerification> verifications;
   verifications.push_back(*network::TriggerVerification::Create(
-      "abc", "aaab30b9-d664-4dfc-a9db-85f9729b9a30"));
+      "abc",
+      base::Uuid::ParseLowercase("aaab30b9-d664-4dfc-a9db-85f9729b9a30")));
   verifications.push_back(*network::TriggerVerification::Create(
-      "def", "bbab30b9-d664-4dfc-a9db-85f9729b9a30"));
+      "def",
+      base::Uuid::ParseLowercase("bbab30b9-d664-4dfc-a9db-85f9729b9a30")));
   notify_trigger_handled(create_trigger(std::move(verifications)),
                          AttributionTrigger::EventLevelResult::kSuccess,
                          AttributionTrigger::AggregatableResult::kSuccess,
