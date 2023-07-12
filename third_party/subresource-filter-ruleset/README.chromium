@@ -5,13 +5,15 @@ License: Creative Commons Attribution-ShareAlike 3.0 Unported
 License Android Compatible: yes
 License File: LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 After fetching from Google storage, the data/ folder contains a filter list
 derived from EasyList. It is used for the Subresource Filter, as described at
 https://cs.chromium.org/chromium/src/components/subresource_filter/README.md.
 This copy is included in WebLayer releases, but is not used for Chrome. Instead,
-Chrome's filter list is updated via the component updater.
+Chrome's filter list is updated via the component updater. Still, we have set
+the Shipped field to yes to ensure the license is included in chrome://credits.
 
 Local Modifications:
 The filter list is processed to reduce its size substantially. We include the
