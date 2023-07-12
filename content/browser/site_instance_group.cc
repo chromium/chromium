@@ -52,6 +52,8 @@ void SiteInstanceGroup::RemoveObserver(Observer* observer) {
 }
 
 void SiteInstanceGroup::AddSiteInstance(SiteInstanceImpl* site_instance) {
+  CHECK(site_instance);
+  CHECK(!site_instances_.contains(site_instance));
   CHECK_EQ(browsing_instance_id(), site_instance->GetBrowsingInstanceId());
   site_instances_.insert(site_instance);
 }
