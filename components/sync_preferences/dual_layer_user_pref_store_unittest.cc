@@ -1038,60 +1038,6 @@ TEST_F(DualLayerUserPrefStoreTestForTypes,
   }
 }
 
-TEST_F(DualLayerUserPrefStoreTestForTypes,
-       ShouldRemoveValueFromAccountStoreOnSetValueIfTypeNotActive) {
-  // PREFERENCES type is not active.
-  ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
-
-  account_store()->SetValueSilently(kPrefName, base::Value("account value"), 0);
-  ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "account value"));
-
-  store()->SetValue(kPrefName, base::Value("new value"), 0);
-  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "new value"));
-  // `kPrefName` is removed from account store.
-  EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
-}
-
-TEST_F(DualLayerUserPrefStoreTestForTypes,
-       ShouldRemoveValueFromAccountStoreOnSetValueSilentlyIfTypeNotEnabled) {
-  // PREFERENCES type is not active.
-  ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
-
-  account_store()->SetValueSilently(kPrefName, base::Value("account value"), 0);
-  ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "account value"));
-
-  store()->SetValueSilently(kPrefName, base::Value("new value"), 0);
-  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "new value"));
-  // `kPrefName` is removed from account store.
-  EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
-}
-
-TEST_F(DualLayerUserPrefStoreTestForTypes,
-       ShouldRemoveValueFromAccountStoreOnReportValueChangedIfTypeNotEnabled) {
-  // PREFERENCES type is not active.
-  ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
-
-  account_store()->SetValueSilently(kPrefName, base::Value("account value"), 0);
-  ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "account value"));
-
-  store()->ReportValueChanged(kPrefName, 0);
-  // `kPrefName` is removed from account store.
-  EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
-}
-
-TEST_F(DualLayerUserPrefStoreTestForTypes,
-       ShouldRemoveValueFromAccountStoreIfTypeNotEnabled) {
-  // PREFERENCES type is not active.
-  ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
-
-  account_store()->SetValueSilently(kPrefName, base::Value("account value"), 0);
-  ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "account value"));
-
-  store()->RemoveValue(kPrefName, 0);
-  // `kPrefName` is removed from account store.
-  EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
-}
-
 class MergeTestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:
   MergeTestPrefModelAssociatorClient()
@@ -2354,6 +2300,100 @@ TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
 
   EXPECT_TRUE(ValueInStoreIs(*account_store(), kHistorySensitivePrefName,
                              "sensitive value3"));
+
+  account_store()->RemoveObserver(&account_store_observer);
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldNotRemoveFromAccountStoreUponSetIfHistorySyncOff) {
+  store()->SetIsHistorySyncEnabledForTest(false);
+
+  base::Value account_value("account value");
+  account_store()->SetValueSilently(kHistorySensitivePrefName,
+                                    account_value.Clone(), 0);
+
+  testing::StrictMock<MockPrefStoreObserver> account_store_observer;
+  account_store()->AddObserver(&account_store_observer);
+
+  // No call should be made for `kHistorySensitivePrefName` since history sync
+  // is off.
+  EXPECT_CALL(account_store_observer,
+              OnPrefValueChanged(kHistorySensitivePrefName))
+      .Times(0);
+
+  // Check SetValue().
+  store()->SetValue(kHistorySensitivePrefName, base::Value("sensitive value1"),
+                    0);
+
+  EXPECT_TRUE(ValueInStoreIs(*account_store(), kHistorySensitivePrefName,
+                             account_value));
+  ASSERT_TRUE(
+      ValueInStoreIs(*store(), kHistorySensitivePrefName, "sensitive value1"));
+
+  // Check SetValueSilently().
+  store()->SetValueSilently(kHistorySensitivePrefName,
+                            base::Value("sensitive value2"), 0);
+
+  EXPECT_TRUE(ValueInStoreIs(*account_store(), kHistorySensitivePrefName,
+                             account_value));
+  ASSERT_TRUE(
+      ValueInStoreIs(*store(), kHistorySensitivePrefName, "sensitive value2"));
+
+  // Check ReportValueChanged(). Observer is not notified.
+  base::Value* value = nullptr;
+  ASSERT_TRUE(store()->GetMutableValue(kHistorySensitivePrefName, &value));
+  *value = base::Value("sensitive value3");
+  store()->ReportValueChanged(kHistorySensitivePrefName, 0);
+
+  EXPECT_TRUE(ValueInStoreIs(*account_store(), kHistorySensitivePrefName,
+                             account_value));
+  ASSERT_TRUE(
+      ValueInStoreIs(*store(), kHistorySensitivePrefName, "sensitive value3"));
+
+  account_store()->RemoveObserver(&account_store_observer);
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldNotRemoveFromAccountStoreUponRemoveIfHistorySyncOff) {
+  store()->SetIsHistorySyncEnabledForTest(false);
+
+  base::Value local_value("local value");
+  local_store()->SetValueSilently(kHistorySensitivePrefName,
+                                  local_value.Clone(), 0);
+  base::Value account_value("account value");
+  account_store()->SetValueSilently(kHistorySensitivePrefName,
+                                    account_value.Clone(), 0);
+
+  testing::StrictMock<MockPrefStoreObserver> account_store_observer;
+  account_store()->AddObserver(&account_store_observer);
+
+  // No call should be made for `kHistorySensitivePrefName` since history sync
+  // is off.
+  EXPECT_CALL(account_store_observer,
+              OnPrefValueChanged(kHistorySensitivePrefName))
+      .Times(0);
+
+  // Check RemoveValue().
+  store()->RemoveValue(kHistorySensitivePrefName, 0);
+
+  // Not removed from the account store.
+  EXPECT_TRUE(ValueInStoreIs(*account_store(), kHistorySensitivePrefName,
+                             account_value));
+  // But removed from the local store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*local_store(), kHistorySensitivePrefName));
+
+  // Repopulate the local store.
+  local_store()->SetValueSilently(kHistorySensitivePrefName,
+                                  local_value.Clone(), 0);
+
+  // Check RemoveValuesByPrefixSilently().
+  store()->RemoveValuesByPrefixSilently(kHistorySensitivePrefName);
+
+  // Not removed from the account store.
+  EXPECT_TRUE(ValueInStoreIs(*account_store(), kHistorySensitivePrefName,
+                             account_value));
+  // But removed from the local store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*local_store(), kHistorySensitivePrefName));
 
   account_store()->RemoveObserver(&account_store_observer);
 }

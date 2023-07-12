@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
@@ -194,9 +195,6 @@ void DualLayerUserPrefStore::SetValue(const std::string& key,
       }
     } else {
       local_pref_store_->SetValue(key, std::move(value), flags);
-      // Try removing it from account store for the case where sync machinery
-      // has not loaded yet and the type has not been enabled.
-      account_pref_store_->RemoveValue(key, flags);
     }
   }
 
@@ -217,7 +215,9 @@ void DualLayerUserPrefStore::RemoveValue(const std::string& key,
   {
     base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
     local_pref_store_->RemoveValue(key, flags);
-    account_pref_store_->RemoveValue(key, flags);
+    if (ShouldSetValueInAccountStore(key)) {
+      account_pref_store_->RemoveValue(key, flags);
+    }
   }
 
   // Remove from the list of merge prefs if exists.
@@ -284,10 +284,6 @@ void DualLayerUserPrefStore::ReportValueChanged(const std::string& key,
         account_pref_store_->SetValueSilently(key, new_value->Clone(), flags);
       }
       // It is possible that the pref just doesn't exist (anymore).
-    } else {
-      // Try removing it from account store for the case where sync machinery
-      // has not loaded yet and the type has not been enabled.
-      account_pref_store_->RemoveValue(key, flags);
     }
     // Forward the ReportValueChanged() call to the underlying stores, so they
     // can notify their own observers.
@@ -319,22 +315,28 @@ void DualLayerUserPrefStore::SetValueSilently(const std::string& key,
     }
   } else {
     local_pref_store_->SetValueSilently(key, std::move(value), flags);
-    {
-      base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
-      // Try removing it from account store for the case where sync machinery
-      // has not loaded yet and the type has not been enabled.
-      account_pref_store_->RemoveValue(key, flags);
-    }
   }
 }
 
 void DualLayerUserPrefStore::RemoveValuesByPrefixSilently(
     const std::string& prefix) {
   local_pref_store_->RemoveValuesByPrefixSilently(prefix);
-  // Note: There's no good way to check for syncability of the prefix, but
-  // silently removing some values that don't exist in the first place is
-  // harmless.
-  account_pref_store_->RemoveValuesByPrefixSilently(prefix);
+
+  // RemoveValuesByPrefixSilently() is not used for the account store since it
+  // will remove values which are not being synced yet(for e.g. prefs behind
+  // history opt-in). Instead, each pref in the account store is checked and
+  // removed if it is writeable right now.
+  {
+    base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
+    // Clear all synced preferences with the prefix from the account store.
+    for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
+      if (base::StartsWith(pref_name, prefix) &&
+          ShouldSetValueInAccountStore(pref_name)) {
+        account_pref_store_->RemoveValue(
+            pref_name, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+      }
+    }
+  }
 
   // Remove from the list of merged prefs if exists.
   merged_prefs_.ClearWithPrefix(prefix);
