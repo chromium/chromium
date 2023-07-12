@@ -172,6 +172,15 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     private ServiceWorkerController mServiceWorkerController;
 
+    // Timestamp of init start and duration, used in the
+    // 'WebView.Startup.CreationTime.Stage1.FactoryInit' trace event.
+    public class InitInfo {
+        public long mStartTime;
+        public long mDuration;
+    };
+
+    private InitInfo mInitInfo = new InitInfo();
+
     @RequiresApi(Build.VERSION_CODES.P)
     private ObjectHolderForP mObjectHolderForP =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? new ObjectHolderForP() : null;
@@ -286,7 +295,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @SuppressWarnings("NoContextGetApplicationContext")
     private void initialize(WebViewDelegate webViewDelegate) {
-        long startTime = SystemClock.uptimeMillis();
+        mInitInfo.mStartTime = SystemClock.uptimeMillis();
         try (ScopedSysTraceEvent e1 =
                         ScopedSysTraceEvent.scoped("WebViewChromiumFactoryProvider.initialize")) {
             PackageInfo packageInfo;
@@ -487,9 +496,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             }
         }
 
+        mInitInfo.mDuration = SystemClock.uptimeMillis() - mInitInfo.mStartTime;
         RecordHistogram.recordTimesHistogram(
-                "Android.WebView.Startup.CreationTime.Stage1.FactoryInit",
-                SystemClock.uptimeMillis() - startTime);
+                "Android.WebView.Startup.CreationTime.Stage1.FactoryInit", mInitInfo.mDuration);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             final long webviewLoadStart =
@@ -837,5 +846,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     @Override
     public PacProcessor createPacProcessor() {
         return GlueApiHelperForR.createPacProcessor();
+    }
+
+    public InitInfo getInitInfo() {
+        return mInitInfo;
     }
 }

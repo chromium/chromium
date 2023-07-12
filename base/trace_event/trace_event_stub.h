@@ -157,6 +157,10 @@ class BASE_EXPORT MemoryDumpManager {
       TRACE_DISABLED_BY_DEFAULT("memory-infra");
 };
 
+inline uint64_t GetNextGlobalTraceId() {
+  return 0;
+}
+
 }  // namespace trace_event
 }  // namespace base
 

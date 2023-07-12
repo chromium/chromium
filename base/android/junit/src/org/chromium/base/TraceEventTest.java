@@ -97,4 +97,29 @@ public class TraceEventTest {
         verify(mNativeMock).beginWithIntArg("TestEvent", 15);
         TraceEvent.setEnabled(false);
     }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testWebViewStartupStage1() {
+        TraceEvent.setEnabled(true);
+        long startTime = 10;
+        long duration = 50;
+        TraceEvent.webViewStartupStage1(startTime, duration);
+        verify(mNativeMock).webViewStartupStage1(startTime, duration);
+        TraceEvent.setEnabled(false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testWebViewStartupStage2() {
+        TraceEvent.setEnabled(true);
+        long startTime = 10;
+        long duration = 50;
+        boolean isCold = true;
+        TraceEvent.webViewStartupStage2(startTime, duration, isCold);
+        verify(mNativeMock).webViewStartupStage2(startTime, duration, isCold);
+        TraceEvent.setEnabled(false);
+    }
 }
