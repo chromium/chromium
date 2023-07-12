@@ -12,6 +12,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -1351,7 +1352,7 @@ error::Error GLES2DecoderPassthroughImpl::DoFlushMappedBufferRange(
   }
 
   base::CheckedNumeric<size_t> range_start(offset);
-  base::CheckedNumeric<size_t> range_end = offset + size;
+  base::CheckedNumeric<size_t> range_end = range_start + size;
   if (!range_end.IsValid() || range_end.ValueOrDefault(0) > map_info.size) {
     InsertError(GL_INVALID_OPERATION,
                 "Flush range is not within the original mapping size.");
