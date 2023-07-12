@@ -257,6 +257,9 @@ void ChromeBrowserStateManagerImpl::AddBrowserStateToCache(
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
+  // TODO(crbug.com/1463438): Requires additional investigation regarding
+  // whether to remove kSync or replace it with kSignin. See
+  // ConsentLevel::kSync for details.
   CoreAccountInfo account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   std::u16string username = base::UTF8ToUTF16(account_info.email);
