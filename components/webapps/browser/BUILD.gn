@@ -157,10 +157,13 @@ source_set("test_support") {
   sources = [
     "installable/fake_installable_manager.cc",
     "installable/fake_installable_manager.h",
+    "test/service_worker_registration_waiter.cc",
+    "test/service_worker_registration_waiter.h",
   ]
   deps = [
     ":browser",
     "//base",
+    "//content/test:test_support",
     "//skia",
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/mojom:mojom_platform_headers",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
+#include "components/webapps/browser/test/service_worker_registration_waiter.h"
 
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_context.h"
@@ -28,8 +28,9 @@ ServiceWorkerRegistrationWaiter::ServiceWorkerRegistrationWaiter(
 }
 
 ServiceWorkerRegistrationWaiter::~ServiceWorkerRegistrationWaiter() {
-  if (service_worker_context_)
+  if (service_worker_context_) {
     service_worker_context_->RemoveObserver(this);
+  }
 }
 
 void ServiceWorkerRegistrationWaiter::AwaitRegistration(
@@ -44,8 +45,9 @@ void ServiceWorkerRegistrationWaiter::AwaitRegistrationStored(
 
 void ServiceWorkerRegistrationWaiter::OnRegistrationCompleted(
     const GURL& pattern) {
-  if (content::ServiceWorkerContext::ScopeMatches(pattern, url_))
+  if (content::ServiceWorkerContext::ScopeMatches(pattern, url_)) {
     complete_run_loop_.Quit();
+  }
 }
 
 void ServiceWorkerRegistrationWaiter::OnRegistrationStored(
