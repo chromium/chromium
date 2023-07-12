@@ -65,6 +65,12 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
     // non-exists.
     password_specifics.mutable_notes();
   }
+  // The current code always populates shared password metadata for outgoing
+  // protos even when none exist.
+  password_specifics.set_sender_email("");
+  password_specifics.set_sender_name("");
+  password_specifics.set_date_received_windows_epoch_micros(0);
+  password_specifics.set_sharing_notification_displayed(false);
   return password_specifics;
 }
 

@@ -86,6 +86,11 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
     // non-exists.
     password_specifics.mutable_notes();
   }
+  password_specifics.set_sender_email("sender@example.com");
+  password_specifics.set_sender_name("Sender Name");
+  password_specifics.set_date_received_windows_epoch_micros(
+      kIssuesCreationTime);
+  password_specifics.set_sharing_notification_displayed(true);
   return password_specifics;
 }
 

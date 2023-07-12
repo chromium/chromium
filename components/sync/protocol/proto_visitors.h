@@ -957,6 +957,10 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData& proto) {
   VISIT(password_issues);
   VISIT(date_password_modified_windows_epoch_micros);
   VISIT(notes);
+  VISIT(sender_email);
+  VISIT(sender_name);
+  VISIT(date_received_windows_epoch_micros);
+  VISIT(sharing_notification_displayed);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordIssues& proto) {

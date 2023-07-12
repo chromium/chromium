@@ -184,6 +184,25 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier, Update) {
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
 }
 
+IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier,
+                       SharedPasswordMetadataAreSynced) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
+
+  PasswordForm form = CreateTestPasswordForm(0);
+  form.sender_email = u"sender@example.com";
+  form.sender_name = u"Sender Name";
+  form.date_received = form.date_created;
+  form.sharing_notification_displayed = true;
+  GetVerifierProfilePasswordStoreInterface()->AddLogin(form);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
+
+  // Wait for client 0 to commit and client 1 to receive the update.
+  ASSERT_TRUE(SamePasswordFormsAsVerifierChecker(1).Wait());
+
+  ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
+}
+
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, AddTwice) {
   // Password store supports adding the same form twice, so this is testing this
   // behaviour.

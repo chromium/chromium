@@ -211,6 +211,10 @@ sync_pb::PasswordSpecificsData TrimPasswordSpecificsDataForCaching(
   trimmed_password_data.clear_date_last_used();
   trimmed_password_data.clear_password_issues();
   trimmed_password_data.clear_date_password_modified_windows_epoch_micros();
+  trimmed_password_data.clear_sender_email();
+  trimmed_password_data.clear_sender_name();
+  trimmed_password_data.clear_date_received_windows_epoch_micros();
+  trimmed_password_data.clear_sharing_notification_displayed();
 
   TrimPasswordSpecificsDataNotesForCaching(trimmed_password_data);
 
@@ -280,6 +284,12 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
     *password_data.mutable_notes() =
         PasswordNotesToProto(password_form.notes, base_password_data.notes());
   }
+  password_data.set_sender_email(base::UTF16ToUTF8(password_form.sender_email));
+  password_data.set_sender_name(base::UTF16ToUTF8(password_form.sender_name));
+  password_data.set_date_received_windows_epoch_micros(
+      password_form.date_received.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  password_data.set_sharing_notification_displayed(
+      password_form.sharing_notification_displayed);
   return password_data;
 }
 
@@ -336,6 +346,12 @@ PasswordForm PasswordFromSpecifics(
   if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
     password.notes = PasswordNotesFromProto(password_data.notes());
   }
+  password.sender_email = base::UTF8ToUTF16(password_data.sender_email());
+  password.sender_name = base::UTF8ToUTF16(password_data.sender_name());
+  password.date_received =
+      ConvertToBaseTime(password_data.date_received_windows_epoch_micros());
+  password.sharing_notification_displayed =
+      password_data.sharing_notification_displayed();
   return password;
 }
 
