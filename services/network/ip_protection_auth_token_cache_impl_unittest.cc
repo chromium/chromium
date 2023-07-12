@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/ip_protection_auth_token_cache_impl.h"
@@ -17,6 +18,7 @@ namespace {
 
 const int kExpectedBatchSize = 1024;
 const base::Time kFutureExpiration = base::Time::Now() + base::Hours(1);
+constexpr char kHistogram[] = "NetworkService.IpProtection.GetAuthTokenResult";
 
 class MockIpProtectionAuthTokenGetter
     : public network::mojom::IpProtectionAuthTokenGetter {
@@ -67,12 +69,24 @@ class MockIpProtectionAuthTokenGetter
 
 }  // namespace
 
+struct HistogramState {
+  // Number of successful requests (true).
+  int success;
+  // Number of failed requests (false).
+  int failure;
+};
+
 class IpProtectionAuthTokenCacheImplTest : public testing::Test {
  protected:
   IpProtectionAuthTokenCacheImplTest()
       : receiver_(&mock_),
         auth_token_cache_(std::make_unique<IpProtectionAuthTokenCacheImpl>(
             receiver_.BindNewPipeAndPassRemote())) {}
+
+  void ExpectHistogramState(HistogramState state) {
+    histogram_tester_.ExpectBucketCount(kHistogram, true, state.success);
+    histogram_tester_.ExpectBucketCount(kHistogram, false, state.failure);
+  }
 
   base::test::TaskEnvironment task_environment_;
 
@@ -81,6 +95,8 @@ class IpProtectionAuthTokenCacheImplTest : public testing::Test {
 
   // The IpProtectionAuthTokenCache being tested.
   std::unique_ptr<IpProtectionAuthTokenCacheImpl> auth_token_cache_;
+
+  base::HistogramTester histogram_tester_;
 };
 
 // `MayNeedAuthTokenSoon()` triggers a request for a single token, and once that
@@ -103,10 +119,12 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_Fills_Cache) {
   auto got_token = auth_token_cache_->GetAuthToken();
   EXPECT_EQ(got_token.value()->token, "token1");
   EXPECT_EQ(got_token.value()->expiration, kFutureExpiration);
+  ExpectHistogramState(HistogramState{.success = 1, .failure = 0});
 
   // But that's the only one.
   got_token = auth_token_cache_->GetAuthToken();
   ASSERT_FALSE(got_token);
+  ExpectHistogramState(HistogramState{.success = 1, .failure = 1});
 
   // Request another token and wait for it.
   mock_.Reset();
@@ -128,11 +146,14 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_Fills_Cache) {
   got_token = auth_token_cache_->GetAuthToken();
   EXPECT_EQ(got_token.value()->token, "token2");
   EXPECT_EQ(got_token.value()->expiration, kFutureExpiration);
+  ExpectHistogramState(HistogramState{.success = 2, .failure = 1});
   got_token = auth_token_cache_->GetAuthToken();
   EXPECT_EQ(got_token.value()->token, "token3");
   EXPECT_EQ(got_token.value()->expiration, kFutureExpiration);
+  ExpectHistogramState(HistogramState{.success = 3, .failure = 1});
   got_token = auth_token_cache_->GetAuthToken();
   ASSERT_FALSE(got_token);
+  ExpectHistogramState(HistogramState{.success = 3, .failure = 2});
 }
 
 // `MayNeedAuthTokenSoon()` can be called repeatedly, and only gets one token
@@ -205,12 +226,14 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, SkipExpiredTokens) {
   auto got_token = auth_token_cache_->GetAuthToken();
   EXPECT_EQ(got_token.value()->token, "good-token");
   EXPECT_EQ(got_token.value()->expiration, kFutureExpiration);
+  ExpectHistogramState(HistogramState{.success = 1, .failure = 0});
 }
 
 // `GetAuthToken()` returns nothing if `MayNeedAuthTokenSoon()` is not called.
 TEST_F(IpProtectionAuthTokenCacheImplTest, GetToken_Returns_Nothing) {
   auto token = auth_token_cache_->GetAuthToken();
   ASSERT_FALSE(token);
+  ExpectHistogramState(HistogramState{.success = 0, .failure = 1});
 }
 
 // If the `IpProtectionAuthTokenGetter` is nullptr, no tokens are gotten,
@@ -221,6 +244,7 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, Null_Getter) {
   auth_token_cache.MayNeedAuthTokenSoon();
   auto token = auth_token_cache.GetAuthToken();
   ASSERT_FALSE(token);
+  ExpectHistogramState(HistogramState{.success = 0, .failure = 1});
 }
 
 }  // namespace network

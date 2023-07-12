@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/network/ip_protection_auth_token_cache_impl.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 
 namespace network {
@@ -72,6 +73,10 @@ absl::optional<network::mojom::BlindSignedAuthTokenPtr>
 IpProtectionAuthTokenCacheImpl::GetAuthToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RemoveExpiredTokens();
+
+  base::UmaHistogramBoolean("NetworkService.IpProtection.GetAuthTokenResult",
+                            cache_.size() > 0);
+
   if (cache_.size() > 0) {
     auto result = std::move(cache_.front());
     cache_.pop_front();
