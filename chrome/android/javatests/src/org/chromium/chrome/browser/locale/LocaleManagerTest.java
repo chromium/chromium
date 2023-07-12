@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.locale;
 
-import android.os.Build;
-
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -17,7 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
@@ -51,10 +49,8 @@ public class LocaleManagerTest {
     @Policies.Add({ @Policies.Item(key = "DefaultSearchProviderEnabled", string = "false") })
     @SmallTest
     @Test
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.O,
-            message = "Flaky on Android M and N: https://crbug.com/1170670")
-    public void
-    testShowSearchEnginePromoDseDisabled() throws TimeoutException {
+    @DisabledTest(message = "https://crbug.com/1170670")
+    public void testShowSearchEnginePromoDseDisabled() throws TimeoutException {
         final CallbackHelper getShowTypeCallback = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             LocaleManager.getInstance().setDelegateForTest(new LocaleManagerDelegate() {
