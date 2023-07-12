@@ -1084,7 +1084,7 @@
 <translation id="5841296711770970362">الانتقال إلى المقطع الصوتي التالي</translation>
 <translation id="584525477304726060">انقر مع الاستمرار على النافذة لتكبيرها.</translation>
 <translation id="5856638668464565213">الشبكة <ph name="NETWORK_NAME" /> غير مفعّلة.</translation>
-<translation id="5860033963881614850">غير مفعّل</translation>
+<translation id="5860033963881614850">غير مفعّلة</translation>
 <translation id="5860491529813859533">تفعيل</translation>
 <translation id="5867217927013474703">جارٍ جمع معلومات الشبكة</translation>
 <translation id="5867606971598166637">يراقب مشرف النظام الشاشات المعروضة على جهازك.</translation>
@@ -1461,7 +1461,7 @@
 <translation id="7579778809502851308">لقطة الشاشة</translation>
 <translation id="7593891976182323525">‏مفتاح البحث أو Shift</translation>
 <translation id="7600875258240007829">الاطّلاع على جميع الإشعارات</translation>
-<translation id="7601417191446344542">هل تريد تفعيل تذكير تلقائي ينبّهك إلى أن الصوت مكتوم؟</translation>
+<translation id="7601417191446344542">هل تريد تفعيل "التذكير بإعادة صوت الميكروفون"؟</translation>
 <translation id="7607002721634913082">تعليق التحميل</translation>
 <translation id="7609951632080598826">عرض التقويم، <ph name="DATE" />، <ph name="TIME" /></translation>
 <translation id="7611213136657090146">تمت إعادة توصيل الكاميرا.</translation>

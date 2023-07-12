@@ -2823,7 +2823,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3417836307470882032">24-satni brojčanik</translation>
 <translation id="3420501302812554910">Potrebno je vratiti interni sigurnosni ključ na zadano</translation>
 <translation id="3421387094817716717">Javni ključ s eliptičnom krivuljom</translation>
-<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> sličan glas ili snimka možda bi mogli pristupiti vašim osobnim rezultatima ili vašem Asistentu.</translation>
+<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> netko sa sličnim glasom ili snimkom vašeg glasa možda bi mogao pristupiti vašim osobnim rezultatima ili vašem Asistentu.</translation>
 <translation id="3423463006624419153">Na telefonima <ph name="PHONE_NAME_1" /> i <ph name="PHONE_NAME_2" />:</translation>
 <translation id="3423858849633684918">Ponovo pokrenite <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Opišite što ste radili kada se kartica srušila</translation>
@@ -7867,7 +7867,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Ako dopustite svojim uređajima s OS-om Chrome da nam šalju automatska izvješća, lakše ćemo odrediti prioritete za ispravljanje pogrešaka i poboljšavanje OS-a Chrome. Ta izvješća mogu uključivati, primjerice, informacije o situacijama u kojima se OS Chrome ruši, o tome kojim se značajkama koristite, koliko memorije obično upotrebljavate te podatke o upotrebi i dijagnostici Android aplikacija. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ta izvješća možete uključiti ili isključiti kad god želite u postavkama uređaja s OS-om Chrome. Ako ste administrator domene, tu postavku možete promijeniti na administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ako je za vaš Google račun uključena postavka Aktivnost na webu i u aplikacijama, vaši podaci s Androida mogu se spremati na vaš Google račun. Na stranici account.google.com možete pogledati svoje podatke, izbrisati ih ili promijeniti postavke računa.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> sličan glas ili snimka možda bi mogli pristupiti vašim osobnim rezultatima ili vašem Asistentu. Radi štednje baterije u postavkama Asistenta možete odabrati da se "Hey Google" detektira samo kad je uređaj priključen na izvor napajanja.</translation>
+<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> netko sa sličnim glasom ili snimkom vašeg glasa možda bi mogao pristupiti vašim osobnim rezultatima ili vašem Asistentu. Radi štednje baterije u postavkama Asistenta možete odabrati da se "Hey Google" detektira samo kad je uređaj priključen na izvor napajanja.</translation>
 <translation id="7851457902707056880">Prijava je ograničena na vlasnički račun. Ponovo pokrenite uređaj i prijavite se vlasničkim računom. Uređaj će se automatski ponovo pokrenuti za 30 sekundi.</translation>
 <translation id="7851716364080026749">Uvijek blokiraj pristup kameri i mikrofonu</translation>
 <translation id="7851720427268294554">IPP raščlanjivač</translation>
