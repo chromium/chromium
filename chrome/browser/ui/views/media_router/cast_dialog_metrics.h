@@ -53,8 +53,6 @@ class CastDialogMetrics {
 
   void OnStopCasting(bool is_local_route);
 
-  void OnCastModeSelected();
-
   // Records the time it took to close the dialog, if no other action was taken
   // prior to that after opening the dialog.
   void OnCloseDialog(const base::Time& close_time);
@@ -67,9 +65,6 @@ class CastDialogMetrics {
           sink_views);
 
  private:
-  // Records the first user action if it hasn't already been recorded.
-  void MaybeRecordFirstAction(MediaRouterUserAction action);
-
   void MaybeRecordActivationLocationAndCastMode(MediaCastMode cast_mode);
 
   // The time when the dialog UI started initializing.

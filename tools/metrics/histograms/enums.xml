@@ -70580,16 +70580,6 @@ Called by update_use_counter_css.py.-->
   <int value="8" label="Local Media"/>
 </enum>
 
-<enum name="MediaRouterUserAction">
-  <int value="0" label="Change Mode"/>
-  <int value="1" label="Start Local Route"/>
-  <int value="2" label="Stop Local Route"/>
-  <int value="3" label="Close"/>
-  <int value="4" label="Status Remote"/>
-  <int value="5" label="Replace Local Route"/>
-  <int value="6" label="Stop Remote Route"/>
-</enum>
-
 <enum name="MediaRouterUserPromptWhenLaunchingCast">
   <int value="0" label="Total prompts"/>
   <int value="1" label="User rejects cast request"/>

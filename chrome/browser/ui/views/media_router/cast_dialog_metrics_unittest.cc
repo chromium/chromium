@@ -119,15 +119,6 @@ TEST_F(CastDialogMetricsTest, OnRecordSinkCountSinkView) {
                              sink_views.size(), 1);
 }
 
-TEST_F(CastDialogMetricsTest, RecordFirstAction) {
-  metrics_.OnStopCasting(true);
-  metrics_.OnCastModeSelected();
-  metrics_.OnCloseDialog(close_dialog_time);
-  // Only the first action should be recorded for the first action metric.
-  tester_.ExpectUniqueSample(MediaRouterMetrics::kHistogramUiFirstAction,
-                             MediaRouterUserAction::STOP_LOCAL, 1);
-}
-
 TEST_F(CastDialogMetricsTest, RecordIconState) {
   tester_.ExpectUniqueSample(
       MediaRouterMetrics::kHistogramUiDialogIconStateAtOpen,

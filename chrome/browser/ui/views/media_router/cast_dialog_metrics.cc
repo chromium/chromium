@@ -160,7 +160,6 @@ void CastDialogMetrics::OnStartCasting(const base::Time& start_time,
     MediaRouterMetrics::RecordStartLocalSessionLatency(start_time -
                                                        sinks_load_time_);
   }
-  MaybeRecordFirstAction(MediaRouterUserAction::START_LOCAL);
   MaybeRecordActivationLocationAndCastMode(cast_mode);
   MediaRouterMetrics::RecordMediaSinkTypeForCastDialog(icon_type);
 }
@@ -168,21 +167,14 @@ void CastDialogMetrics::OnStartCasting(const base::Time& start_time,
 void CastDialogMetrics::OnStopCasting(bool is_local_route) {
   if (is_local_route) {
     MediaRouterMetrics::RecordStopLocalRoute();
-    MaybeRecordFirstAction(MediaRouterUserAction::STOP_LOCAL);
   } else {
     MediaRouterMetrics::RecordStopRemoteRoute();
-    MaybeRecordFirstAction(MediaRouterUserAction::STOP_REMOTE);
   }
-}
-
-void CastDialogMetrics::OnCastModeSelected() {
-  MaybeRecordFirstAction(MediaRouterUserAction::CHANGE_MODE);
 }
 
 void CastDialogMetrics::OnCloseDialog(const base::Time& close_time) {
   if (!first_action_recorded_ && !paint_time_.is_null())
     MediaRouterMetrics::RecordCloseDialogLatency(close_time - paint_time_);
-  MaybeRecordFirstAction(MediaRouterUserAction::CLOSE);
 }
 
 void CastDialogMetrics::OnRecordSinkCount(
@@ -194,13 +186,6 @@ void CastDialogMetrics::OnRecordSinkCount(
     const std::vector<raw_ptr<CastDialogSinkView, DanglingUntriaged>>&
         sink_views) {
   media_router::MediaRouterMetrics::RecordDeviceCount(sink_views.size());
-}
-
-void CastDialogMetrics::MaybeRecordFirstAction(MediaRouterUserAction action) {
-  if (first_action_recorded_)
-    return;
-  MediaRouterMetrics::RecordMediaRouterInitialUserAction(action);
-  first_action_recorded_ = true;
 }
 
 void CastDialogMetrics::MaybeRecordActivationLocationAndCastMode(

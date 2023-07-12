@@ -313,7 +313,6 @@ void CastDialogView::SelectSource(SourceType source) {
   selected_source_ = source;
   DisableUnsupportedSinks();
   GetWidget()->UpdateWindowTitle();
-  metrics_.OnCastModeSelected();
 }
 
 void CastDialogView::SinkPressed(size_t index) {
