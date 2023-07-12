@@ -62,6 +62,7 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAssistantOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kCloudPlatformProjectsOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kNearbyShareOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kNearbyPresenceOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGCMGroupServerOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGCMCheckinServerOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kChromeWebstoreOAuth2Scope[];

@@ -141,6 +141,10 @@ const char kCloudPlatformProjectsOAuth2Scope[] =
 const char kNearbyShareOAuth2Scope[] =
     "https://www.googleapis.com/auth/nearbysharing-pa";
 
+// OAuth2 scope for access to nearby sharing.
+const char kNearbyPresenceOAuth2Scope[] =
+    "https://www.googleapis.com/auth/nearbypresence-pa";
+
 // OAuth2 scopes for access to GCM account tracker.
 const char kGCMGroupServerOAuth2Scope[] = "https://www.googleapis.com/auth/gcm";
 const char kGCMCheckinServerOAuth2Scope[] =
