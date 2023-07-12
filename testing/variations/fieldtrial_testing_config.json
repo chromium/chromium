@@ -9614,21 +9614,6 @@
             ]
         }
     ],
-    "OnDemandAT": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OnDemandAccessibilityEvents"
-                    ]
-                }
-            ]
-        }
-    ],
     "OneGroupPerRenderer": [
         {
             "platforms": [

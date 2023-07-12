@@ -1507,7 +1507,7 @@ BASE_FEATURE(kReduceGpuPriorityOnBackground,
 // that are not relevant to currently enabled accessibility services.
 BASE_FEATURE(kOnDemandAccessibilityEvents,
              "OnDemandAccessibilityEvents",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Request Desktop Site secondary settings for Android; including display
 // setting and peripheral setting.
