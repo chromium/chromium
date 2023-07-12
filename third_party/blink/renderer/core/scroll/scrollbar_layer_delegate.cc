@@ -71,9 +71,9 @@ bool ScrollbarLayerDelegate::IsOverlay() const {
 }
 
 gfx::Rect ScrollbarLayerDelegate::ThumbRect() const {
-  gfx::Rect track_rect = scrollbar_->GetTheme().ThumbRect(*scrollbar_);
-  track_rect.Offset(-scrollbar_->Location().OffsetFromOrigin());
-  return track_rect;
+  gfx::Rect thumb_rect = scrollbar_->GetTheme().ThumbRect(*scrollbar_);
+  thumb_rect.Offset(-scrollbar_->Location().OffsetFromOrigin());
+  return thumb_rect;
 }
 
 gfx::Rect ScrollbarLayerDelegate::TrackRect() const {
