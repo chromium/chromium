@@ -1,0 +1,27 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+static_library("3p_diagnostics") {
+  sources = [
+    "external_app_dialog.cc",
+    "external_app_dialog.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//content/public/browser",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/views/controls/webview",
+    "//ui/web_dialogs",
+    "//url",
+  ]
+}
