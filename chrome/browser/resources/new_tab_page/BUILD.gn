@@ -65,6 +65,7 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/new_tab_page/modules/drive/drive.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/feed/feed.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/history_clusters/history_clusters_layout_type.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/history_clusters/cart/cart.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/photos/photos.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/recipes/recipes.mojom-webui.ts",

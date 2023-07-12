@@ -5,7 +5,10 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
-  sources = [ "history_clusters.mojom" ]
+  sources = [
+    "history_clusters.mojom",
+    "history_clusters_layout_type.mojom",
+  ]
   webui_module_path = "/"
   use_typescript_sources = true
   public_deps = [

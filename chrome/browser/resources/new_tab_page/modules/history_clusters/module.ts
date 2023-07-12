@@ -12,7 +12,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {Cart} from '../../cart.mojom-webui.js';
 import {Cluster, URLVisit} from '../../history_cluster_types.mojom-webui.js';
-import {LayoutType} from '../../history_clusters.mojom-webui.js';
+import {LayoutType} from '../../history_clusters_layout_type.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {NewTabPageProxy} from '../../new_tab_page_proxy.js';
 import {InfoDialogElement} from '../info_dialog';

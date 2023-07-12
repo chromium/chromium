@@ -6,7 +6,8 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {Cart} from 'chrome://new-tab-page/cart.mojom-webui.js';
 import {Cluster, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
-import {LayoutType, PageHandlerRemote} from 'chrome://new-tab-page/history_clusters.mojom-webui.js';
+import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters.mojom-webui.js';
+import {LayoutType} from 'chrome://new-tab-page/history_clusters_layout_type.mojom-webui.js';
 import {DismissModuleEvent, HistoryClusterElementType, HistoryClusterImageDisplayState, historyClustersDescriptor, HistoryClustersModuleElement, HistoryClustersProxyImpl, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS, PageImageServiceBrowserProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
