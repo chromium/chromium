@@ -252,8 +252,9 @@ CompositingReasons CompositingReasonsForScrollDependentPosition(
         reasons |= CompositingReason::kFixedPosition;
     }
 
-    if (box->HasAnchorScrollTranslation())
-      reasons |= CompositingReason::kAnchorScroll;
+    if (box->HasAnchorPositionScrollTranslation()) {
+      reasons |= CompositingReason::kAnchorPosition;
+    }
   }
 
   // Don't promote sticky position elements that cannot move with scrolls.

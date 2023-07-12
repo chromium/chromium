@@ -68,7 +68,7 @@ namespace blink {
 
 class AccessibleNode;
 class AnchorElementObserver;
-class AnchorScrollData;
+class AnchorPositionScrollData;
 class AriaNotificationOptions;
 class Attr;
 class Attribute;
@@ -1191,9 +1191,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   PopoverData* EnsurePopoverData();
   PopoverData* GetPopoverData() const;
 
-  AnchorScrollData& EnsureAnchorScrollData();
-  void RemoveAnchorScrollData();
-  AnchorScrollData* GetAnchorScrollData() const;
+  AnchorPositionScrollData& EnsureAnchorPositionScrollData();
+  void RemoveAnchorPositionScrollData();
+  AnchorPositionScrollData* GetAnchorPositionScrollData() const;
 
   // Returns true if any element is implicitly anchored to this element.
   bool HasImplicitlyAnchoredElement() const;

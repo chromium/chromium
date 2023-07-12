@@ -155,7 +155,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
-#include "third_party/blink/renderer/core/layout/anchor_scroll_data.h"
+#include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
@@ -3577,11 +3577,11 @@ void LocalFrame::ScheduleNextServiceForScrollSnapshotClients() {
   }
 }
 
-void LocalFrame::CollectAnchorScrollContainerIds(
+void LocalFrame::CollectAnchorPositionScrollerIds(
     Vector<cc::ElementId>* ids) const {
   for (const auto& client : scroll_snapshot_clients_) {
-    if (const AnchorScrollData* data =
-            DynamicTo<AnchorScrollData>(client.Get());
+    if (const AnchorPositionScrollData* data =
+            DynamicTo<AnchorPositionScrollData>(client.Get());
         data && data->IsActive()) {
       ids->AppendVector(data->ScrollContainerIds());
     }

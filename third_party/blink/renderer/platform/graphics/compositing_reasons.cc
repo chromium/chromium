@@ -47,8 +47,9 @@ constexpr ReasonAndDescription kReasonDescriptionMap[] = {
     {CompositingReason::kUndoOverscroll,
      "Is fixed position that should undo overscroll of the viewport."},
     {CompositingReason::kStickyPosition, "Is sticky position."},
-    {CompositingReason::kAnchorScroll,
-     "Is an element with anchor-scroll css property."},
+    {CompositingReason::kAnchorPosition,
+     "Is an anchor-positioned element translated by its anchor's scroll "
+     "offset."},
     {CompositingReason::kBackdropFilter, "Has a backdrop filter."},
     {CompositingReason::kBackdropFilterMask, "Is a mask for backdrop filter."},
     {CompositingReason::kRootScroller, "Is the document.rootScroller."},

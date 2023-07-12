@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
-#include "third_party/blink/renderer/core/layout/anchor_scroll_data.h"
+#include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observation.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -375,18 +375,20 @@ CSSToggleMap& ElementRareDataVector::EnsureToggleMap(Element* owner_element) {
   return EnsureField<CSSToggleMap>(FieldId::kToggleMap, owner_element);
 }
 
-AnchorScrollData* ElementRareDataVector::GetAnchorScrollData() const {
-  return static_cast<AnchorScrollData*>(GetField(FieldId::kAnchorScrollData));
+AnchorPositionScrollData* ElementRareDataVector::GetAnchorPositionScrollData()
+    const {
+  return static_cast<AnchorPositionScrollData*>(
+      GetField(FieldId::kAnchorPositionScrollData));
 }
-void ElementRareDataVector::RemoveAnchorScrollData() {
-  SetField(FieldId::kAnchorScrollData, nullptr);
+void ElementRareDataVector::RemoveAnchorPositionScrollData() {
+  SetField(FieldId::kAnchorPositionScrollData, nullptr);
 }
-AnchorScrollData& ElementRareDataVector::EnsureAnchorScrollData(
+AnchorPositionScrollData& ElementRareDataVector::EnsureAnchorPositionScrollData(
     Element* owner_element) {
-  DCHECK(!GetAnchorScrollData() ||
-         GetAnchorScrollData()->OwnerElement() == owner_element);
-  return EnsureField<AnchorScrollData>(FieldId::kAnchorScrollData,
-                                       owner_element);
+  DCHECK(!GetAnchorPositionScrollData() ||
+         GetAnchorPositionScrollData()->OwnerElement() == owner_element);
+  return EnsureField<AnchorPositionScrollData>(
+      FieldId::kAnchorPositionScrollData, owner_element);
 }
 
 AnchorElementObserver& ElementRareDataVector::EnsureAnchorElementObserver(

@@ -2203,7 +2203,7 @@ TEST_P(PaintPropertyTreeUpdateTest, AnchorPositioningScrollUpdate) {
 
   // The anchor positioning translation should be updated on main thread.
   EXPECT_EQ(PaintPropertiesForElement("target")
-                ->AnchorScrollTranslation()
+                ->AnchorPositionScrollTranslation()
                 ->Get2dTranslation(),
             gfx::Vector2dF(0, -300));
 

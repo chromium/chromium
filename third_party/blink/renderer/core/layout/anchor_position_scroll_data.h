@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_SCROLL_DATA_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_SCROLL_DATA_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_POSITION_SCROLL_DATA_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_POSITION_SCROLL_DATA_H_
 
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
@@ -18,7 +18,12 @@ namespace blink {
 
 class Element;
 
-// Created for each anchor-positioned element that uses anchor-scroll.
+// https://drafts.csswg.org/css-anchor-position-1/#scroll
+//
+// Created for each anchor-positioned element that needs to track the scroll
+// offset of another element (its default anchor or the additional
+// fallback-bounds rect).
+//
 // Stores a snapshot of all the scroll containers of the anchor up to the
 // containing block (exclusively) for use by layout, paint and compositing.
 // Also stores a similar snapshot for the target of the
@@ -29,19 +34,20 @@ class Element;
 // The snapshot is updated once per frame update on top of animation frame to
 // avoid layout cycling. If there is any change, we trigger an update to
 // layout and/or paint.
-class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
-                         public ScrollSnapshotClient,
-                         public ElementRareDataField {
+class AnchorPositionScrollData
+    : public GarbageCollected<AnchorPositionScrollData>,
+      public ScrollSnapshotClient,
+      public ElementRareDataField {
  public:
-  explicit AnchorScrollData(Element*);
-  virtual ~AnchorScrollData();
+  explicit AnchorPositionScrollData(Element*);
+  virtual ~AnchorPositionScrollData();
 
   struct ScrollContainersData {
     DISALLOW_NEW();
 
     // Compositor element ids of the ancestor scroll containers of some element
-    // element (anchor or position-fallback-bounds), up to the containing block
-    // of `owner_` (exclusively).
+    // (anchor or position-fallback-bounds), up to the containing block of
+    // `owner_` (exclusively).
     Vector<CompositorElementId> scroll_container_ids;
 
     // Sum of the scroll offsets of the above scroll containers. This is the
@@ -86,7 +92,7 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
   void UpdateSnapshot() override;
   bool ValidateSnapshot() override;
   bool ShouldScheduleNextService() override;
-  bool IsAnchorScrollData() const override { return true; }
+  bool IsAnchorPositionScrollData() const override { return true; }
 
   void Trace(Visitor*) const override;
 
@@ -102,8 +108,8 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
   void InvalidateLayoutAndPaint();
   void InvalidatePaint();
 
-  // ValidateSnapshot is called every frame, but AnchorScrollData only needs
-  // to perform the validation once (during the frame it was created).
+  // ValidateSnapshot is called every frame, but AnchorPositionScrollData only
+  // needs to perform the validation once (during the frame it was created).
   bool is_snapshot_validated_ = false;
 
   // The anchor-positioned element.
@@ -126,12 +132,12 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
 };
 
 template <>
-struct DowncastTraits<AnchorScrollData> {
+struct DowncastTraits<AnchorPositionScrollData> {
   static bool AllowFrom(const ScrollSnapshotClient& client) {
-    return client.IsAnchorScrollData();
+    return client.IsAnchorPositionScrollData();
   }
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_SCROLL_DATA_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_POSITION_SCROLL_DATA_H_

@@ -51,9 +51,9 @@ struct CC_EXPORT TransformNode {
   // transform node. -1 indicates there are no sticky position constraints.
   int sticky_position_constraint_id;
 
-  // This is the data of the scroll container of the anchor node specified by
-  // the `anchor-scroll` property. -1 indicates there is no such node.
-  int anchor_scroll_containers_data_id;
+  // This is the data of the scroll container of the default anchor of an
+  // anchor positioned element. -1 indicates there is no such node.
+  int anchor_position_scrollers_data_id;
 
   // This id determines which 3d rendering context the node is in. 0 is a
   // special value and indicates that the node is not in any 3d rendering

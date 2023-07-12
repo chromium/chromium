@@ -996,8 +996,8 @@ class CORE_EXPORT LocalFrameView final
   void GetUserScrollTranslationNodes(
       Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes);
 
-  void GetAnchorScrollContainerNodes(
-      Vector<const TransformPaintPropertyNode*>& anchor_scroll_container_nodes);
+  void GetAnchorPositionScrollerIds(
+      Vector<const TransformPaintPropertyNode*>& anchor_position_scrollers);
 
   // Return the sticky-ad detector for this frame, creating it if necessary.
   StickyAdDetector& EnsureStickyAdDetector();

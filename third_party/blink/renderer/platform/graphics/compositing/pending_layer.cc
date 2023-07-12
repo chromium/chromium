@@ -400,7 +400,7 @@ void PendingLayer::DecompositeTransforms(Vector<PendingLayer>& pending_layers) {
         break;
       }
       DCHECK(!node->GetStickyConstraint());
-      DCHECK(!node->GetAnchorScrollContainersData());
+      DCHECK(!node->GetAnchorPositionScrollersData());
       DCHECK(!node->IsAffectedByOuterViewportBoundsDelta());
       can_be_decomposited.insert(node, true);
     }

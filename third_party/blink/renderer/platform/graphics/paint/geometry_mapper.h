@@ -181,7 +181,7 @@ class PLATFORM_EXPORT GeometryMapper {
  private:
   struct ExtraProjectionResult {
     bool has_animation = false;
-    bool has_sticky_or_anchor_scroll = false;
+    bool has_sticky_or_anchor_position = false;
     STACK_ALLOCATED();
   };
 

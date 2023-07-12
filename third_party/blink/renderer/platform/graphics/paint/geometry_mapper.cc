@@ -102,9 +102,9 @@ gfx::Transform GeometryMapper::SourceToDestinationProjectionInternal(
     return gfx::Transform();
 
   if (source.Parent() && &destination == &source.Parent()->Unalias()) {
-    extra_result.has_sticky_or_anchor_scroll =
+    extra_result.has_sticky_or_anchor_position =
         source.RequiresCompositingForStickyPosition() ||
-        source.RequiresCompositingForAnchorScroll();
+        source.RequiresCompositingForAnchorPosition();
     if (source.IsIdentityOr2dTranslation() && source.Origin().IsOrigin()) {
       // The result will be translate(origin)*matrix*translate(-origin) which
       // equals to matrix if the origin is zero or if the matrix is just
@@ -123,8 +123,8 @@ gfx::Transform GeometryMapper::SourceToDestinationProjectionInternal(
   const auto& source_cache = source.GetTransformCache();
   const auto& destination_cache = destination.GetTransformCache();
 
-  extra_result.has_sticky_or_anchor_scroll |=
-      source_cache.has_sticky_or_anchor_scroll();
+  extra_result.has_sticky_or_anchor_position |=
+      source_cache.has_sticky_or_anchor_position();
 
   // Case 1a (fast path of case 1b): check if source and destination are under
   // the same 2d translation root.
@@ -258,10 +258,10 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
 
   if (for_compositing_overlap == ForCompositingOverlap::kYes &&
       (extra_result.has_animation ||
-       extra_result.has_sticky_or_anchor_scroll)) {
-    // Assume during the animation, the sticky translation or the anchor-scroll
-    // translation can map |rect_to_map| to anywhere during animation or
-    // composited scroll. Ancestor clips will still apply.
+       extra_result.has_sticky_or_anchor_position)) {
+    // Assume during the animation, the sticky translation or the anchor
+    // position scroll translation can map |rect_to_map| to anywhere during
+    // animation or composited scroll. Ancestor clips will still apply.
     // TODO(crbug.com/1026653): Use animation bounds instead of infinite rect.
     // TODO(crbug.com/1117658): Use sticky bounds instead of infinite rect.
     rect_to_map = InfiniteLooseFloatClipRect();
@@ -433,7 +433,7 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
 
     if (for_compositing_overlap == ForCompositingOverlap::kYes &&
         (extra_result.has_animation ||
-         extra_result.has_sticky_or_anchor_scroll)) {
+         extra_result.has_sticky_or_anchor_position)) {
       continue;
     }
 
@@ -449,7 +449,7 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
       node->GetClipCache().SetCachedClip(
           GeometryMapperClipCache::ClipCacheEntry{
               clip_and_transform, clip, extra_result.has_animation,
-              extra_result.has_sticky_or_anchor_scroll});
+              extra_result.has_sticky_or_anchor_position});
     }
   }
   // Clips that are inclusive intersected or expanded for animation are not

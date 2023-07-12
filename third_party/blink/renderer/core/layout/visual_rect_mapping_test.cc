@@ -1289,7 +1289,7 @@ TEST_P(VisualRectMappingTest, PerspectiveWithAnonymousTable) {
   EXPECT_EQ(gfx::Rect(1, -1, 8, 12), ToEnclosingRect(rect));
 }
 
-TEST_P(VisualRectMappingTest, AnchorScroll) {
+TEST_P(VisualRectMappingTest, AnchorPositionScroll) {
   ScopedCSSAnchorPositioningForTest enabled_scope(true);
 
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));

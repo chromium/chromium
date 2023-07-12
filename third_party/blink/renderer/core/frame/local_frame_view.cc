@@ -3029,12 +3029,12 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
         });
   }
 
-  Vector<const TransformPaintPropertyNode*> anchor_scroll_container_nodes;
+  Vector<const TransformPaintPropertyNode*> anchor_position_scrollers;
   if (!base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    ForAllNonThrottledLocalFrameViews([&anchor_scroll_container_nodes](
-                                          LocalFrameView& frame_view) {
-      frame_view.GetAnchorScrollContainerNodes(anchor_scroll_container_nodes);
-    });
+    ForAllNonThrottledLocalFrameViews(
+        [&anchor_position_scrollers](LocalFrameView& frame_view) {
+          frame_view.GetAnchorPositionScrollerIds(anchor_position_scrollers);
+        });
   }
 
   WTF::Vector<std::unique_ptr<ViewTransitionRequest>> view_transition_requests;
@@ -3042,7 +3042,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
 
   paint_artifact_compositor_->Update(
       paint_controller_->GetPaintArtifactShared(), viewport_properties,
-      scroll_translation_nodes, anchor_scroll_container_nodes,
+      scroll_translation_nodes, anchor_position_scrollers,
       std::move(view_transition_requests));
 
   CreatePaintTimelineEvents();
@@ -4755,8 +4755,8 @@ void LocalFrameView::GetUserScrollTranslationNodes(
   }
 }
 
-void LocalFrameView::GetAnchorScrollContainerNodes(
-    Vector<const TransformPaintPropertyNode*>& anchor_scroll_container_nodes) {
+void LocalFrameView::GetAnchorPositionScrollerIds(
+    Vector<const TransformPaintPropertyNode*>& anchor_position_scrollers) {
   const auto* scrollable_areas = UserScrollableAreas();
   if (!scrollable_areas) {
     return;
@@ -4769,7 +4769,7 @@ void LocalFrameView::GetAnchorScrollContainerNodes(
   // see crbug.com/1378021) and is not performance-sensitive, we choose to just
   // use vector and binary search.
   Vector<cc::ElementId> scroll_container_ids;
-  GetFrame().CollectAnchorScrollContainerIds(&scroll_container_ids);
+  GetFrame().CollectAnchorPositionScrollerIds(&scroll_container_ids);
   std::sort(scroll_container_ids.begin(), scroll_container_ids.end());
   scroll_container_ids.erase(
       std::unique(scroll_container_ids.begin(), scroll_container_ids.end()),
@@ -4788,7 +4788,7 @@ void LocalFrameView::GetAnchorScrollContainerNodes(
               std::lower_bound(scroll_container_ids.begin(),
                                scroll_container_ids.end(), element_id);
           iter != scroll_container_ids.end() && *iter == element_id) {
-        anchor_scroll_container_nodes.push_back(
+        anchor_position_scrollers.push_back(
             paint_properties->ScrollTranslation());
       }
     }

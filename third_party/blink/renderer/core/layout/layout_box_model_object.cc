@@ -76,8 +76,9 @@ void CollapseLoneAnonymousBlockChild(LayoutBox* parent, LayoutObject* child) {
   parent_block_flow->CollapseAnonymousBlockChild(child_block_flow);
 }
 
-bool NeedsAnchorScrollData(Element& element, const ComputedStyle& style) {
-  // `AnchorScrollData` is for anchor positioned elements, which must be
+bool NeedsAnchorPositionScrollData(Element& element,
+                                   const ComputedStyle& style) {
+  // `AnchorPositionScrollData` is for anchor positioned elements, which must be
   // absolutely positioned.
   if (!style.HasOutOfFlowPosition()) {
     return false;
@@ -87,8 +88,8 @@ bool NeedsAnchorScrollData(Element& element, const ComputedStyle& style) {
   if (style.AnchorDefault() || style.PositionFallbackBounds()) {
     return true;
   }
-  // Now we have `anchor-default: implicit`. We need `AnchorScrollData` only if
-  // there's an implicit anchor element to track.
+  // Now we have `anchor-default: implicit`. We need `AnchorPositionScrollData`
+  // only if there's an implicit anchor element to track.
   return element.ImplicitAnchorElement();
 }
 
@@ -315,10 +316,10 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   }
 
   if (Element* element = DynamicTo<Element>(GetNode())) {
-    if (NeedsAnchorScrollData(*element, StyleRef())) {
-      element->EnsureAnchorScrollData();
+    if (NeedsAnchorPositionScrollData(*element, StyleRef())) {
+      element->EnsureAnchorPositionScrollData();
     } else {
-      element->RemoveAnchorScrollData();
+      element->RemoveAnchorPositionScrollData();
     }
   }
 }
@@ -814,9 +815,11 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
         reference_point +=
             To<LayoutBox>(offset_parent_object)->PhysicalLocation();
       }
-    } else if (UNLIKELY(IsBox() &&
-                        To<LayoutBox>(this)->HasAnchorScrollTranslation())) {
-      reference_point += To<LayoutBox>(this)->AnchorScrollTranslationOffset();
+    } else if (UNLIKELY(
+                   IsBox() &&
+                   To<LayoutBox>(this)->HasAnchorPositionScrollTranslation())) {
+      reference_point +=
+          To<LayoutBox>(this)->AnchorPositionScrollTranslationOffset();
     }
 
     if (offset_parent_object->IsLayoutInline()) {

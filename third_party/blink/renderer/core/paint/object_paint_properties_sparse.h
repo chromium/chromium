@@ -92,7 +92,7 @@ class CORE_EXPORT ObjectPaintPropertiesSparse : public ObjectPaintProperties {
     // Transforms
     kPaintOffsetTranslation = 0,
     kStickyTranslation = 1,
-    kAnchorScrollTranslation = 2,
+    kAnchorPositionScrollTranslation = 2,
     kTranslate = 3,
     kRotate = 4,
     kScale = 5,
@@ -154,7 +154,8 @@ class CORE_EXPORT ObjectPaintPropertiesSparse : public ObjectPaintProperties {
 
   ADD_TRANSFORM(PaintOffsetTranslation, NodeId::kPaintOffsetTranslation)
   ADD_TRANSFORM(StickyTranslation, NodeId::kStickyTranslation)
-  ADD_TRANSFORM(AnchorScrollTranslation, NodeId::kAnchorScrollTranslation)
+  ADD_TRANSFORM(AnchorPositionScrollTranslation,
+                NodeId::kAnchorPositionScrollTranslation)
   ADD_TRANSFORM(Translate, NodeId::kTranslate)
   ADD_TRANSFORM(Rotate, NodeId::kRotate)
   ADD_TRANSFORM(Scale, NodeId::kScale)

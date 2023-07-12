@@ -1653,8 +1653,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // See StickyPositionScrollingConstraints::constraining_rect.
   PhysicalRect ComputeStickyConstrainingRect() const;
 
-  bool HasAnchorScrollTranslation() const;
-  PhysicalOffset AnchorScrollTranslationOffset() const;
+  bool HasAnchorPositionScrollTranslation() const;
+  PhysicalOffset AnchorPositionScrollTranslationOffset() const;
 
   bool HasScrollbarGutters(ScrollbarOrientation orientation) const;
 

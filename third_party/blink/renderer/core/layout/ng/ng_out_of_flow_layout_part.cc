@@ -6,7 +6,7 @@
 
 #include <math.h>
 
-#include "third_party/blink/renderer/core/layout/anchor_scroll_data.h"
+#include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -1708,7 +1708,8 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   gfx::Vector2dF anchor_scroll_offset;
   gfx::Vector2dF additional_bounds_scroll_offset;
   if (Element* element = DynamicTo<Element>(node_info.node.GetDOMNode())) {
-    if (const AnchorScrollData* data = element->GetAnchorScrollData()) {
+    if (const AnchorPositionScrollData* data =
+            element->GetAnchorPositionScrollData()) {
       anchor_scroll_offset = data->AccumulatedScrollOffset();
       additional_bounds_scroll_offset = data->AdditionalBoundsScrollOffset();
     }

@@ -34,7 +34,7 @@ using CompositingReasons = uint64_t;
   V(FixedPosition)                                                             \
   V(UndoOverscroll)                                                            \
   V(StickyPosition)                                                            \
-  V(AnchorScroll)                                                              \
+  V(AnchorPosition)                                                            \
   V(BackdropFilter)                                                            \
   V(BackdropFilterMask)                                                        \
   V(RootScroller)                                                              \
@@ -170,7 +170,7 @@ class PLATFORM_EXPORT CompositingReason {
         // the scroll container, but it needs expansion by itself if there is
         // additional clip between the sticky element and its scroll container.
         // Similar for anchor positioned elements.
-        kStickyPosition | kAnchorScroll,
+        kStickyPosition | kAnchorPosition,
   };
 };
 

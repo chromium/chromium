@@ -877,7 +877,7 @@ class CORE_EXPORT LocalFrame final
 
   void ScheduleNextServiceForScrollSnapshotClients();
 
-  void CollectAnchorScrollContainerIds(
+  void CollectAnchorPositionScrollerIds(
       Vector<cc::ElementId>* scroll_container_ids) const;
 
   using BlockingDetailsList = Vector<mojom::blink::BlockingDetailsPtr>;

@@ -83,8 +83,8 @@ class CORE_EXPORT ObjectPaintPropertiesImpl : public ObjectPaintProperties {
   // Transform node implementations.
   bool HasTransformNode() const override {
     return paint_offset_translation_ || sticky_translation_ ||
-           anchor_scroll_translation_ || translate_ || rotate_ || scale_ ||
-           offset_ || transform_ || perspective_ ||
+           anchor_position_scroll_translation_ || translate_ || rotate_ ||
+           scale_ || offset_ || transform_ || perspective_ ||
            replaced_content_transform_ || scroll_translation_ ||
            transform_isolation_node_;
   }
@@ -97,7 +97,8 @@ class CORE_EXPORT ObjectPaintPropertiesImpl : public ObjectPaintProperties {
   }
   ADD_TRANSFORM(PaintOffsetTranslation, paint_offset_translation_);
   ADD_TRANSFORM(StickyTranslation, sticky_translation_);
-  ADD_TRANSFORM(AnchorScrollTranslation, anchor_scroll_translation_);
+  ADD_TRANSFORM(AnchorPositionScrollTranslation,
+                anchor_position_scroll_translation_);
   ADD_TRANSFORM(Translate, translate_);
   ADD_TRANSFORM(Rotate, rotate_);
   ADD_TRANSFORM(Scale, scale_);

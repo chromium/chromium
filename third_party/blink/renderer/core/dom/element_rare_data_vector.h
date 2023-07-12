@@ -89,7 +89,7 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kNonce = 22,
     kIsValue = 23,
     kSavedLayerScrollOffset = 24,
-    kAnchorScrollData = 25,
+    kAnchorPositionScrollData = 25,
     kAnchorElementObserver = 26,
     kImplicitlyAnchoredElementCount = 27,
     kLastRememberedBlockSize = 28,
@@ -298,9 +298,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     ClearElementFlag(ElementFlags::kTabIndexWasSetExplicitly);
   }
 
-  AnchorScrollData* GetAnchorScrollData() const;
-  void RemoveAnchorScrollData();
-  AnchorScrollData& EnsureAnchorScrollData(Element*);
+  AnchorPositionScrollData* GetAnchorPositionScrollData() const;
+  void RemoveAnchorPositionScrollData();
+  AnchorPositionScrollData& EnsureAnchorPositionScrollData(Element*);
 
   AnchorElementObserver& EnsureAnchorElementObserver(HTMLElement*);
   AnchorElementObserver* GetAnchorElementObserver() const;

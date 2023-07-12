@@ -58,7 +58,7 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
-#include "third_party/blink/renderer/core/layout/anchor_scroll_data.h"
+#include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/box_layout_extra_input.h"
 #include "third_party/blink/renderer/core/layout/custom_scrollbar.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
@@ -2825,8 +2825,9 @@ PhysicalOffset LayoutBox::OffsetFromContainerInternal(
   if (o->IsScrollContainer())
     offset += OffsetFromScrollableContainer(o, ignore_scroll_offset);
 
-  if (HasAnchorScrollTranslation())
-    offset += AnchorScrollTranslationOffset();
+  if (HasAnchorPositionScrollTranslation()) {
+    offset += AnchorPositionScrollTranslationOffset();
+  }
 
   return offset;
 }
@@ -3242,8 +3243,8 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
 
   if (IsStickyPositioned()) {
     container_offset += StickyPositionOffset();
-  } else if (UNLIKELY(HasAnchorScrollTranslation())) {
-    container_offset += AnchorScrollTranslationOffset();
+  } else if (UNLIKELY(HasAnchorPositionScrollTranslation())) {
+    container_offset += AnchorPositionScrollTranslationOffset();
   }
 
   if (skip_info.FilterSkipped()) {
@@ -5805,18 +5806,20 @@ PhysicalRect LayoutBox::ComputeStickyConstrainingRect() const {
   return constraining_rect;
 }
 
-bool LayoutBox::HasAnchorScrollTranslation() const {
+bool LayoutBox::HasAnchorPositionScrollTranslation() const {
   if (Element* element = DynamicTo<Element>(GetNode())) {
-    return element->GetAnchorScrollData() &&
-           element->GetAnchorScrollData()->HasTranslation();
+    return element->GetAnchorPositionScrollData() &&
+           element->GetAnchorPositionScrollData()->HasTranslation();
   }
   return false;
 }
 
-PhysicalOffset LayoutBox::AnchorScrollTranslationOffset() const {
+PhysicalOffset LayoutBox::AnchorPositionScrollTranslationOffset() const {
   if (Element* element = DynamicTo<Element>(GetNode())) {
-    if (AnchorScrollData* data = element->GetAnchorScrollData())
+    if (AnchorPositionScrollData* data =
+            element->GetAnchorPositionScrollData()) {
       return data->TranslationAsPhysicalOffset();
+    }
   }
   return PhysicalOffset();
 }

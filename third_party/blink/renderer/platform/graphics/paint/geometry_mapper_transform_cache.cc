@@ -44,9 +44,10 @@ void GeometryMapperTransformCache::Update(
   const GeometryMapperTransformCache& parent =
       node.UnaliasedParent()->GetTransformCache();
 
-  has_sticky_or_anchor_scroll_ = node.RequiresCompositingForStickyPosition() ||
-                                 node.RequiresCompositingForAnchorScroll() ||
-                                 parent.has_sticky_or_anchor_scroll_;
+  has_sticky_or_anchor_position_ =
+      node.RequiresCompositingForStickyPosition() ||
+      node.RequiresCompositingForAnchorPosition() ||
+      parent.has_sticky_or_anchor_position_;
 
   is_backface_hidden_ =
       node.IsBackfaceHiddenInternal(parent.is_backface_hidden_);

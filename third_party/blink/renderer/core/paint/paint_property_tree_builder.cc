@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
-#include "third_party/blink/renderer/core/layout/anchor_scroll_data.h"
+#include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/fragmentainer_iterator.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
@@ -251,7 +251,7 @@ class FragmentPaintPropertyTreeBuilder {
   ALWAYS_INLINE void UpdateForObjectLocationAndSize(
       absl::optional<gfx::Vector2d>& paint_offset_translation);
   ALWAYS_INLINE void UpdateStickyTranslation();
-  ALWAYS_INLINE void UpdateAnchorScrollTranslation();
+  ALWAYS_INLINE void UpdateAnchorPositionScrollTranslation();
 
   void UpdateIndividualTransform(
       bool (*needs_property)(const LayoutObject&, CompositingReasons),
@@ -497,9 +497,9 @@ static bool NeedsStickyTranslation(const LayoutObject& object) {
   return To<LayoutBoxModelObject>(object).StickyConstraints();
 }
 
-static bool NeedsAnchorScrollTranslation(const LayoutObject& object) {
+static bool NeedsAnchorPositionScrollTranslation(const LayoutObject& object) {
   if (const LayoutBox* box = DynamicTo<LayoutBox>(object))
-    return box->HasAnchorScrollTranslation();
+    return box->HasAnchorPositionScrollTranslation();
   return false;
 }
 
@@ -539,8 +539,9 @@ static bool NeedsPaintOffsetTranslation(
     return true;
   if (NeedsStickyTranslation(object))
     return true;
-  if (NeedsAnchorScrollTranslation(object))
+  if (NeedsAnchorPositionScrollTranslation(object)) {
     return true;
+  }
   if (NeedsPaintOffsetTranslationForOverflowControls(box_model))
     return true;
   if (NeedsReplacedContentTransform(object))
@@ -811,15 +812,15 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
     context_.current.transform = properties_->StickyTranslation();
 }
 
-void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
+void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
   DCHECK(properties_);
   if (NeedsPaintPropertyUpdate()) {
-    if (NeedsAnchorScrollTranslation(object_)) {
+    if (NeedsAnchorPositionScrollTranslation(object_)) {
       const auto& box = To<LayoutBox>(object_);
-      const AnchorScrollData& anchor_scroll_data =
-          *To<Element>(box.GetNode())->GetAnchorScrollData();
+      const AnchorPositionScrollData& anchor_position_scroll_data =
+          *To<Element>(box.GetNode())->GetAnchorPositionScrollData();
       gfx::Vector2dF translation_offset =
-          -anchor_scroll_data.AccumulatedScrollOffset();
+          -anchor_position_scroll_data.AccumulatedScrollOffset();
       TransformPaintPropertyNode::State state{
           {gfx::Transform::MakeTranslation(translation_offset)}};
 
@@ -827,8 +828,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
       // snapshot's scrollers do not match the current scrollers.
 
       DCHECK(full_context_.direct_compositing_reasons &
-             CompositingReason::kAnchorScroll);
-      state.direct_compositing_reasons = CompositingReason::kAnchorScroll;
+             CompositingReason::kAnchorPosition);
+      state.direct_compositing_reasons = CompositingReason::kAnchorPosition;
 
       // TODO(crbug.com/1309178): Not using GetCompositorElementId() here
       // because anchor-positioned elements don't work properly under multicol
@@ -837,29 +838,30 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
       // LayoutNG block fragments.
       state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
           box.UniqueId(),
-          CompositorElementIdNamespace::kAnchorScrollTranslation);
+          CompositorElementIdNamespace::kAnchorPositionScrollTranslation);
       state.rendering_context_id = context_.rendering_context_id;
       state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
 
-      state.anchor_scroll_containers_data =
-          std::make_unique<cc::AnchorScrollContainersData>();
-      state.anchor_scroll_containers_data->scroll_container_ids =
+      state.anchor_position_scrollers_data =
+          std::make_unique<cc::AnchorPositionScrollersData>();
+      state.anchor_position_scrollers_data->scroll_container_ids =
           std::vector<CompositorElementId>(
-              anchor_scroll_data.ScrollContainerIds().begin(),
-              anchor_scroll_data.ScrollContainerIds().end());
-      state.anchor_scroll_containers_data->accumulated_scroll_origin =
-          anchor_scroll_data.AccumulatedScrollOrigin();
+              anchor_position_scroll_data.ScrollContainerIds().begin(),
+              anchor_position_scroll_data.ScrollContainerIds().end());
+      state.anchor_position_scrollers_data->accumulated_scroll_origin =
+          anchor_position_scroll_data.AccumulatedScrollOrigin();
 
-      OnUpdateTransform(properties_->UpdateAnchorScrollTranslation(
+      OnUpdateTransform(properties_->UpdateAnchorPositionScrollTranslation(
           *context_.current.transform, std::move(state)));
     } else {
-      OnClearTransform(properties_->ClearAnchorScrollTranslation());
+      OnClearTransform(properties_->ClearAnchorPositionScrollTranslation());
     }
   }
 
-  if (properties_->AnchorScrollTranslation())
-    context_.current.transform = properties_->AnchorScrollTranslation();
+  if (properties_->AnchorPositionScrollTranslation()) {
+    context_.current.transform = properties_->AnchorPositionScrollTranslation();
+  }
 }
 
 // Directly updates the associated cc transform node if possible, and
@@ -2959,8 +2961,10 @@ static bool IsLayoutShiftRoot(const LayoutObject& object,
   }
   if (auto* sticky_translation = properties->StickyTranslation())
     return true;
-  if (auto* anchor_scroll_translation = properties->AnchorScrollTranslation())
+  if (auto* anchor_position_scroll_translation =
+          properties->AnchorPositionScrollTranslation()) {
     return true;
+  }
   if (properties->OverflowClip())
     return true;
   return false;
@@ -3002,7 +3006,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
 
   if (properties_) {
     UpdateStickyTranslation();
-    UpdateAnchorScrollTranslation();
+    UpdateAnchorPositionScrollTranslation();
     if (object_.IsSVGChild()) {
       // TODO(crbug.com/1278452): Merge SVG handling into the primary codepath.
       UpdateTransformForSVGChild(full_context_.direct_compositing_reasons);
@@ -3209,7 +3213,7 @@ void PaintPropertyTreeBuilder::UpdateFragments() {
                                    context_.container_for_fixed_position,
                                    context_.painting_layer) ||
        NeedsStickyTranslation(object_) ||
-       NeedsAnchorScrollTranslation(object_) ||
+       NeedsAnchorPositionScrollTranslation(object_) ||
        NeedsTranslate(object_, context_.direct_compositing_reasons) ||
        NeedsRotate(object_, context_.direct_compositing_reasons) ||
        NeedsScale(object_, context_.direct_compositing_reasons) ||

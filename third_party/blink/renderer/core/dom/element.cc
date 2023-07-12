@@ -2963,7 +2963,7 @@ void Element::DetachLayoutTree(bool performing_reattach) {
       element_animations->RestartAnimationOnCompositor();
     }
 
-    data->RemoveAnchorScrollData();
+    data->RemoveAnchorPositionScrollData();
   }
 
   DetachPrecedingPseudoElements(performing_reattach);
@@ -8804,18 +8804,19 @@ CSSToggleMap& Element::EnsureToggleMap() {
   return EnsureElementRareData().EnsureToggleMap(this);
 }
 
-AnchorScrollData& Element::EnsureAnchorScrollData() {
-  return EnsureElementRareData().EnsureAnchorScrollData(this);
+AnchorPositionScrollData& Element::EnsureAnchorPositionScrollData() {
+  return EnsureElementRareData().EnsureAnchorPositionScrollData(this);
 }
 
-void Element::RemoveAnchorScrollData() {
+void Element::RemoveAnchorPositionScrollData() {
   if (HasRareData()) {
-    GetElementRareData()->RemoveAnchorScrollData();
+    GetElementRareData()->RemoveAnchorPositionScrollData();
   }
 }
 
-AnchorScrollData* Element::GetAnchorScrollData() const {
-  return HasRareData() ? GetElementRareData()->GetAnchorScrollData() : nullptr;
+AnchorPositionScrollData* Element::GetAnchorPositionScrollData() const {
+  return HasRareData() ? GetElementRareData()->GetAnchorPositionScrollData()
+                       : nullptr;
 }
 
 void Element::IncrementImplicitlyAnchoredElementCount() {

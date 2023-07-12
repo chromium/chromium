@@ -27,8 +27,8 @@ blink_core_hot_sources_layout = [
 ]
 
 blink_core_sources_layout = [
-  "anchor_scroll_data.cc",
-  "anchor_scroll_data.h",
+  "anchor_position_scroll_data.cc",
+  "anchor_position_scroll_data.h",
   "background_bleed_avoidance.h",
   "box_layout_extra_input.h",
   "content_change_type.h",
@@ -697,7 +697,7 @@ if (is_fuchsia) {
 }
 
 blink_core_tests_layout = [
-  "anchor_scroll_data_test.cc",
+  "anchor_position_scroll_data_test.cc",
   "geometry/axis_test.cc",
   "geometry/logical_rect_test.cc",
   "geometry/physical_rect_test.cc",

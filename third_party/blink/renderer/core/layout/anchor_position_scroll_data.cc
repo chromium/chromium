@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/anchor_scroll_data.h"
+#include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -17,8 +17,9 @@ namespace {
 
 // Finds the LayoutObject of the anchor element given by anchor-default.
 const LayoutObject* AnchorDefaultObject(const LayoutObject* layout_object) {
-  if (!layout_object || !layout_object->IsOutOfFlowPositioned())
+  if (!layout_object || !layout_object->IsOutOfFlowPositioned()) {
     return nullptr;
+  }
   const LayoutBox* box = To<LayoutBox>(layout_object);
   const ComputedStyle& style = box->StyleRef();
   return style.AnchorDefault() ? box->FindTargetAnchor(*style.AnchorDefault())
@@ -57,10 +58,10 @@ const Vector<NonOverflowingScrollRange>* GetNonOverflowingScrollRanges(
   return To<LayoutBox>(layout_object)->PositionFallbackNonOverflowingRanges();
 }
 
-AnchorScrollData::ScrollContainersData GetScrollContainersData(
+AnchorPositionScrollData::ScrollContainersData GetScrollContainersData(
     const LayoutObject* layout_object,
     const LayoutObject* anchor_or_bounds) {
-  AnchorScrollData::ScrollContainersData result;
+  AnchorPositionScrollData::ScrollContainersData result;
   if (!layout_object || !anchor_or_bounds) {
     return result;
   }
@@ -89,18 +90,18 @@ AnchorScrollData::ScrollContainersData GetScrollContainersData(
 
 }  // namespace
 
-AnchorScrollData::AnchorScrollData(Element* element)
+AnchorPositionScrollData::AnchorPositionScrollData(Element* element)
     : ScrollSnapshotClient(element->GetDocument().GetFrame()),
       owner_(element) {}
 
-AnchorScrollData::~AnchorScrollData() = default;
+AnchorPositionScrollData::~AnchorPositionScrollData() = default;
 
-bool AnchorScrollData::IsActive() const {
-  return owner_->GetAnchorScrollData() == this;
+bool AnchorPositionScrollData::IsActive() const {
+  return owner_->GetAnchorPositionScrollData() == this;
 }
 
-AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
-    bool update) {
+AnchorPositionScrollData::SnapshotDiff
+AnchorPositionScrollData::TakeAndCompareSnapshot(bool update) {
   DCHECK(IsActive());
 
   const LayoutObject* layout_object = owner_->GetLayoutObject();
@@ -149,7 +150,7 @@ AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
   return diff;
 }
 
-bool AnchorScrollData::IsFallbackPositionValid(
+bool AnchorPositionScrollData::IsFallbackPositionValid(
     const gfx::Vector2dF& new_accumulated_scroll_offset,
     const gfx::Vector2dF& new_additional_bounds_scroll_offset) const {
   const Vector<NonOverflowingScrollRange>* non_overflowing_scroll_ranges =
@@ -171,9 +172,10 @@ bool AnchorScrollData::IsFallbackPositionValid(
   return true;
 }
 
-void AnchorScrollData::UpdateSnapshot() {
-  if (!IsActive())
+void AnchorPositionScrollData::UpdateSnapshot() {
+  if (!IsActive()) {
     return;
+  }
 
   SnapshotDiff diff = TakeAndCompareSnapshot(true /* update */);
   switch (diff) {
@@ -188,16 +190,17 @@ void AnchorScrollData::UpdateSnapshot() {
   }
 }
 
-bool AnchorScrollData::ValidateSnapshot() {
+bool AnchorPositionScrollData::ValidateSnapshot() {
   if (is_snapshot_validated_) {
     return true;
   }
   is_snapshot_validated_ = true;
 
-  // If this AnchorScrollData is detached in the previous style recalc, we no
-  // longer need to validate it.
-  if (!IsActive())
+  // If this AnchorPositionScrollData is detached in the previous style recalc,
+  // we no longer need to validate it.
+  if (!IsActive()) {
     return true;
+  }
 
   SnapshotDiff diff = TakeAndCompareSnapshot(true /* update */);
   switch (diff) {
@@ -213,12 +216,12 @@ bool AnchorScrollData::ValidateSnapshot() {
   }
 }
 
-bool AnchorScrollData::ShouldScheduleNextService() {
+bool AnchorPositionScrollData::ShouldScheduleNextService() {
   return IsActive() &&
          TakeAndCompareSnapshot(false /*update*/) != SnapshotDiff::kNone;
 }
 
-void AnchorScrollData::InvalidateLayoutAndPaint() {
+void AnchorPositionScrollData::InvalidateLayoutAndPaint() {
   DCHECK(IsActive());
   DCHECK(owner_->GetLayoutObject());
   owner_->GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
@@ -226,13 +229,13 @@ void AnchorScrollData::InvalidateLayoutAndPaint() {
   owner_->GetLayoutObject()->SetNeedsPaintPropertyUpdate();
 }
 
-void AnchorScrollData::InvalidatePaint() {
+void AnchorPositionScrollData::InvalidatePaint() {
   DCHECK(IsActive());
   DCHECK(owner_->GetLayoutObject());
   owner_->GetLayoutObject()->SetNeedsPaintPropertyUpdate();
 }
 
-void AnchorScrollData::Trace(Visitor* visitor) const {
+void AnchorPositionScrollData::Trace(Visitor* visitor) const {
   visitor->Trace(owner_);
   ScrollSnapshotClient::Trace(visitor);
   ElementRareDataField::Trace(visitor);

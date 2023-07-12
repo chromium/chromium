@@ -84,8 +84,8 @@ class CORE_EXPORT ObjectPaintProperties {
   // +-[ StickyTranslation ]
   //  /    This applies the sticky offset induced by position:sticky.
   // |
-  // +-[ AnchorScrollTranslation ]
-  //  /    This applies the scrolling offset induced by CSS anchor-scroll.
+  // +-[ AnchorPositionScrollTranslation ]
+  //  /    This applies the scrolling offset induced by CSS anchor positioning.
   // |
   // +-[ Translate ]
   //   |   The transform from CSS 'translate' (including the effects of
@@ -144,7 +144,7 @@ class CORE_EXPORT ObjectPaintProperties {
   AllCSSTransformPropertiesOutsideToInside() const = 0;
   ADD_TRANSFORM_DECL(PaintOffsetTranslation);
   ADD_TRANSFORM_DECL(StickyTranslation);
-  ADD_TRANSFORM_DECL(AnchorScrollTranslation);
+  ADD_TRANSFORM_DECL(AnchorPositionScrollTranslation);
   ADD_TRANSFORM_DECL(Translate);
   ADD_TRANSFORM_DECL(Rotate);
   ADD_TRANSFORM_DECL(Scale);
