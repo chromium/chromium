@@ -27,6 +27,9 @@ import type {
 export class BidiParserImpl implements BidiParser {
   // Browsing Context domain
   // keep-sorted start block=yes
+  parseActivateParams(params: unknown): BrowsingContext.ActivateParameters {
+    return Parser.BrowsingContext.parseActivateParams(params);
+  }
   parseCaptureScreenshotParams(
     params: unknown
   ): BrowsingContext.CaptureScreenshotParameters {

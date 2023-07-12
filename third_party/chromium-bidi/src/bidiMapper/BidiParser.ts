@@ -26,6 +26,7 @@ import type {
 export interface IBidiParser {
   // Browsing Context domain
   // keep-sorted start block=yes
+  parseActivateParams(params: unknown): BrowsingContext.ActivateParameters;
   parseCaptureScreenshotParams(
     params: unknown
   ): BrowsingContext.CaptureScreenshotParameters;

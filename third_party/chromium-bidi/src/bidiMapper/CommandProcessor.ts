@@ -102,6 +102,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     switch (command.method) {
       // Browsing Context domain
       // keep-sorted start block=yes
+      case 'browsingContext.activate':
+        return this.#contextProcessor.process_browsingContext_activate(
+          this.#parser.parseActivateParams(command.params)
+        );
       case 'browsingContext.captureScreenshot':
         return this.#contextProcessor.process_browsingContext_captureScreenshot(
           this.#parser.parseCaptureScreenshotParams(command.params)

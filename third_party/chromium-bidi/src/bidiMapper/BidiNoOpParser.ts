@@ -28,6 +28,9 @@ import type {IBidiParser} from './BidiParser.js';
 export class BidiNoOpParser implements IBidiParser {
   // Browsing Context domain
   // keep-sorted start block=yes
+  parseActivateParams(params: unknown): BrowsingContext.ActivateParameters {
+    return params as BrowsingContext.ActivateParameters;
+  }
   parseCaptureScreenshotParams(
     params: unknown
   ): BrowsingContext.CaptureScreenshotParameters {

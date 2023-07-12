@@ -90,6 +90,13 @@ export namespace Script {
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-browsingContext */
 export namespace BrowsingContext {
+  export function parseActivateParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.BrowsingContext.ActivateParametersSchema
+    ) as Protocol.BrowsingContext.ActivateParameters;
+  }
+
   export function parseGetTreeParams(
     params: unknown
   ): Protocol.BrowsingContext.GetTreeParameters {

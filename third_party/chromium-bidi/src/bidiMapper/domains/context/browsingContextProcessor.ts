@@ -300,6 +300,19 @@ export class BrowsingContextProcessor {
     );
   }
 
+  async process_browsingContext_activate(
+    params: BrowsingContext.ActivateParameters
+  ): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    if (!context.isTopLevelContext()) {
+      throw new InvalidArgumentException(
+        'Activation is only supported on the top-level context'
+      );
+    }
+    await context.activate();
+    return {};
+  }
+
   async process_browsingContext_captureScreenshot(
     params: BrowsingContext.CaptureScreenshotParameters
   ): Promise<BrowsingContext.CaptureScreenshotResult> {

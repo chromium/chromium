@@ -713,6 +713,10 @@ export class BrowsingContextImpl {
     });
   }
 
+  async activate(): Promise<void> {
+    await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
+  }
+
   async captureScreenshot(): Promise<BrowsingContext.CaptureScreenshotResult> {
     // XXX: Focus the original tab after the screenshot is taken.
     // This is needed because the screenshot gets blocked until the active tab gets focus.
