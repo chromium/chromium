@@ -29,6 +29,11 @@ python3 sign.py --in_file UpdaterSetup.exe --out_file ChromeOfflineSetup.exe
     --manifest_path path/to/OfflineManifest.gup
 ```
 
+`OfflineManifest.gup` can include the following replaceable parameters that will
+be replaced with the computed values:
+* `${INSTALLER_SIZE}`.
+* `${INSTALLER_HASH_SHA256}`.
+
 To run locally with a certificate in `My` store:
  1. Create a self-signed developer certificate if you haven't yet by executing
  `New-SelfSignedCertificate -DnsName id@domain.tld -Type CodeSigning
@@ -39,7 +44,9 @@ To run locally with a certificate in `My` store:
 """
 
 import argparse
-import os.path
+import array
+import hashlib
+import os
 import shutil
 import subprocess
 import tempfile
@@ -95,20 +102,40 @@ class Signer:
         command += [in_file]
         subprocess.run(command, check=True)
 
+    def _generate_target_manifest(self, installer_path, manifest_path):
+        """Replaces `${INSTALLER_SIZE}` and `${INSTALLER_HASH_SHA256}` in the
+        manifest with the computed size and hash, and returns the resultant
+        string."""
+        size = os.stat(os.path.abspath(installer_path)).st_size
+        data = array.array('B')
+        with open(os.path.abspath(installer_path), 'rb') as installer_file:
+            data.fromfile(installer_file, size)
+
+        with open(manifest_path, 'rt') as f:
+            manifest_result = f.read()
+            for key, value in {
+                    '${INSTALLER_SIZE}': str(size),
+                    '${INSTALLER_HASH_SHA256}':
+                    hashlib.sha256(data).hexdigest()
+            }.items():
+                manifest_result = manifest_result.replace(key, value)
+        return manifest_result
+
     def _copy_offline_installer_files(self, root, appid, installer_path,
                                       manifest_path):
-        """Copies the offline installer and manifest under `root`."""
+        """Copies the offline installer and generated manifest under `root`."""
         offline_dir = os.path.join(root, 'Offline',
                                    '{' + str(uuid.uuid4()) + '}')
         app_dir = os.path.join(offline_dir, appid)
         os.makedirs(app_dir)
 
-        target_manifest_path = os.path.join(offline_dir, 'OfflineManifest.gup')
-        shutil.copyfile(manifest_path, target_manifest_path)
-
-        target_installer_path = os.path.join(app_dir,
-                                             os.path.basename(installer_path))
-        shutil.copyfile(installer_path, target_installer_path)
+        with open(os.path.join(offline_dir, 'OfflineManifest.gup'),
+                  'w') as f_out:
+            f_out.write(
+                self._generate_target_manifest(installer_path, manifest_path))
+        shutil.copyfile(
+            installer_path,
+            os.path.join(app_dir, os.path.basename(installer_path)))
 
     def _sign_7z(self, in_file, appid, installer_path, manifest_path):
         """Extract, sign, and rearchive the contents of a 7z archive."""
