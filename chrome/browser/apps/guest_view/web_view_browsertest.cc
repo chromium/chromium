@@ -4204,10 +4204,7 @@ IN_PROC_BROWSER_TEST_P(
   Profile* profile = browser()->profile();
   int rules_registry_id =
       extensions::WebViewGuest::GetOrGenerateRulesRegistryID(
-          guest_view->owner_web_contents()
-              ->GetPrimaryMainFrame()
-              ->GetProcess()
-              ->GetID(),
+          guest_view->owner_rfh()->GetProcess()->GetID(),
           guest_view->view_instance_id());
 
   extensions::RulesRegistryService* registry_service =
@@ -4248,10 +4245,7 @@ IN_PROC_BROWSER_TEST_P(WebViewChannelTest,
       extensions::RulesRegistryService::Get(profile);
   int rules_registry_id =
       extensions::WebViewGuest::GetOrGenerateRulesRegistryID(
-          guest_view->owner_web_contents()
-              ->GetPrimaryMainFrame()
-              ->GetProcess()
-              ->GetID(),
+          guest_view->owner_rfh()->GetProcess()->GetID(),
           guest_view->view_instance_id());
 
   // Get an existing registered rule for the guest.

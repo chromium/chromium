@@ -294,8 +294,8 @@ void WebViewGuest::CleanUp(content::BrowserContext* browser_context,
 
 // static
 std::unique_ptr<GuestViewBase> WebViewGuest::Create(
-    WebContents* owner_web_contents) {
-  return base::WrapUnique(new WebViewGuest(owner_web_contents));
+    content::RenderFrameHost* owner_rfh) {
+  return base::WrapUnique(new WebViewGuest(owner_rfh));
 }
 
 // static
@@ -417,8 +417,7 @@ void WebViewGuest::DidInitialize(const base::Value::Dict& create_params) {
   web_view_permission_helper_ = std::make_unique<WebViewPermissionHelper>(this);
 
   rules_registry_id_ = GetOrGenerateRulesRegistryID(
-      owner_web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      view_instance_id());
+      owner_rfh()->GetProcess()->GetID(), view_instance_id());
 
   // We must install the mapping from guests to WebViews prior to resuming
   // suspended resource loads so that the WebRequest API will catch resource
@@ -429,7 +428,7 @@ void WebViewGuest::DidInitialize(const base::Value::Dict& create_params) {
 }
 
 void WebViewGuest::MaybeRecreateGuestContents(
-    content::WebContents* embedder_web_contents) {
+    content::RenderFrameHost* outer_contents_frame) {
   if (!AreWebviewMPArchBehaviorsEnabled(browser_context())) {
     return;
   }
@@ -453,7 +452,7 @@ void WebViewGuest::MaybeRecreateGuestContents(
   }
 
   ClearOwnedGuestContents();
-  SetNewOwnerWebContents(embedder_web_contents);
+  UpdateWebContentsForNewOwner(outer_contents_frame->GetParent());
 
   std::unique_ptr<WebContents> new_contents =
       WebContents::Create(new_web_contents_create_params);
@@ -674,7 +673,7 @@ void WebViewGuest::CreateNewGuestWebViewWindow(
   create_params.Set(webview::kStoragePartitionId, storage_partition_id);
 
   guest_manager->CreateGuestAndTransferOwnership(
-      WebViewGuest::Type, embedder_web_contents(), create_params,
+      WebViewGuest::Type, embedder_rfh(), create_params,
       base::BindOnce(&WebViewGuest::NewGuestWebViewCallback,
                      weak_ptr_factory_.GetWeakPtr(), params));
 }
@@ -809,8 +808,8 @@ bool WebViewGuest::ClearData(base::Time remove_since,
   return true;
 }
 
-WebViewGuest::WebViewGuest(WebContents* owner_web_contents)
-    : GuestView<WebViewGuest>(owner_web_contents),
+WebViewGuest::WebViewGuest(content::RenderFrameHost* owner_rfh)
+    : GuestView<WebViewGuest>(owner_rfh),
       rules_registry_id_(RulesRegistryService::kInvalidRulesRegistryID),
       find_helper_(this),
       javascript_dialog_helper_(this),
@@ -1069,8 +1068,7 @@ void WebViewGuest::PushWebViewStateToIOThread(
       guest_host->GetSiteInstance()->GetStoragePartitionConfig();
 
   WebViewRendererState::WebViewInfo web_view_info;
-  web_view_info.embedder_process_id =
-      owner_web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+  web_view_info.embedder_process_id = owner_rfh()->GetProcess()->GetID();
   web_view_info.instance_id = view_instance_id();
   web_view_info.partition_id = storage_partition_config.partition_name();
   web_view_info.owner_host = owner_host();
@@ -1118,8 +1116,7 @@ void WebViewGuest::SignalWhenReady(base::OnceClosure callback) {
 
 void WebViewGuest::WillAttachToEmbedder() {
   rules_registry_id_ = GetOrGenerateRulesRegistryID(
-      owner_web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      view_instance_id());
+      owner_rfh()->GetProcess()->GetID(), view_instance_id());
 
   // We must install the mapping from guests to WebViews prior to resuming
   // suspended resource loads so that the WebRequest API will catch resource
@@ -1358,8 +1355,7 @@ bool WebViewGuest::LoadDataWithBaseURL(const GURL& data_url,
                         data_url.possibly_invalid_spec().c_str());
     return false;
   }
-  const url::Origin& owner_origin =
-      owner_web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  const url::Origin& owner_origin = owner_rfh()->GetLastCommittedOrigin();
   const bool base_in_owner_origin = owner_origin.IsSameOriginWith(base_url);
   // |base_url| must be a valid URL. It is also limited to URLs that the owner
   // is trusted to have control over.
@@ -1647,9 +1643,8 @@ GURL WebViewGuest::ResolveURL(const std::string& src) {
 void WebViewGuest::OnWebViewNewWindowResponse(int new_window_instance_id,
                                               bool allow,
                                               const std::string& user_input) {
-  auto* guest = WebViewGuest::FromInstanceID(
-      owner_web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      new_window_instance_id);
+  auto* guest = WebViewGuest::FromInstanceID(owner_rfh()->GetProcess()->GetID(),
+                                             new_window_instance_id);
   if (!guest)
     return;
 

@@ -88,17 +88,14 @@ class MimeHandlerViewGuest
   MimeHandlerViewGuest& operator=(const MimeHandlerViewGuest&) = delete;
 
   static std::unique_ptr<GuestViewBase> Create(
-      content::WebContents* owner_web_contents);
+      content::RenderFrameHost* owner_rfh);
 
   static const char Type[];
 
   // GuestViewBase overrides.
   bool CanBeEmbeddedInsideCrossProcessFrames() const override;
-  content::RenderWidgetHost* GetOwnerRenderWidgetHost() override;
-  content::SiteInstance* GetOwnerSiteInstance() override;
 
   content::RenderFrameHost* GetEmbedderFrame();
-  void SetEmbedderFrame(content::GlobalRenderFrameHostId frame_id);
 
   void SetBeforeUnloadController(
       mojo::PendingRemote<mime_handler::BeforeUnloadControl>
@@ -128,7 +125,7 @@ class MimeHandlerViewGuest
   base::WeakPtr<StreamContainer> GetStreamWeakPtr();
 
  protected:
-  explicit MimeHandlerViewGuest(content::WebContents* owner_web_contents);
+  explicit MimeHandlerViewGuest(content::RenderFrameHost* owner_rfh);
 
  private:
   friend class TestMimeHandlerViewGuest;
@@ -142,7 +139,7 @@ class MimeHandlerViewGuest
   void DidAttachToEmbedder() override;
   void DidInitialize(const base::Value::Dict& create_params) final;
   void MaybeRecreateGuestContents(
-      content::WebContents* embedder_web_contents) final;
+      content::RenderFrameHost* outer_contents_frame) final;
   void EmbedderFullscreenToggled(bool entered_fullscreen) final;
   bool ZoomPropagatesFromEmbedderToGuest() const final;
 
@@ -199,10 +196,6 @@ class MimeHandlerViewGuest
 
   std::unique_ptr<MimeHandlerViewGuestDelegate> delegate_;
   std::unique_ptr<StreamContainer> stream_;
-
-  content::GlobalRenderFrameHostId embedder_frame_id_{
-      content::ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE};
-  int embedder_widget_routing_id_ = MSG_ROUTING_NONE;
 
   bool is_guest_fullscreen_ = false;
   bool is_embedder_fullscreen_ = false;

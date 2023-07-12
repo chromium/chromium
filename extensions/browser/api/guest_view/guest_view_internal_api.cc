@@ -48,9 +48,14 @@ ExtensionFunction::ResponseAction GuestViewInternalCreateGuestFunction::Run() {
             browser_context()));
   }
 
-  content::WebContents* sender_web_contents = GetSenderWebContents();
-  if (!sender_web_contents)
+  // TODO(crbug.com/769461): The initial RenderFrameHost acting as the owner
+  // should be more specific. For example, we could have the renderer tell us
+  // the frame associated with the guest container element.
+  content::RenderFrameHost* sender_rfh =
+      render_frame_host() ? render_frame_host()->GetMainFrame() : nullptr;
+  if (!sender_rfh) {
     return RespondNow(Error("Guest views can only be embedded in web content"));
+  }
 
   auto callback = base::BindOnce(
       &GuestViewInternalCreateGuestFunction::CreateGuestCallback, this);
@@ -59,7 +64,7 @@ ExtensionFunction::ResponseAction GuestViewInternalCreateGuestFunction::Run() {
   // in logical units.
   create_params.Set(guest_view::kElementSizeIsLogical, true);
 
-  guest_view_manager->CreateGuest(view_type, sender_web_contents, create_params,
+  guest_view_manager->CreateGuest(view_type, sender_rfh, create_params,
                                   std::move(callback));
   return did_respond() ? AlreadyResponded() : RespondLater();
 }

@@ -8,11 +8,9 @@
 
 namespace extensions {
 
-ShellAppViewGuestDelegate::ShellAppViewGuestDelegate() {
-}
+ShellAppViewGuestDelegate::ShellAppViewGuestDelegate() = default;
 
-ShellAppViewGuestDelegate::~ShellAppViewGuestDelegate() {
-}
+ShellAppViewGuestDelegate::~ShellAppViewGuestDelegate() = default;
 
 bool ShellAppViewGuestDelegate::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
@@ -22,7 +20,7 @@ bool ShellAppViewGuestDelegate::HandleContextMenu(
 }
 
 AppDelegate* ShellAppViewGuestDelegate::CreateAppDelegate(
-    content::WebContents* web_contents) {
+    content::BrowserContext* browser_context) {
   return new ShellAppDelegate();
 }
 

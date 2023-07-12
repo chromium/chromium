@@ -65,7 +65,7 @@ class MockShellAppViewGuestDelegate
   MockShellAppViewGuestDelegate() = default;
 
   extensions::AppDelegate* CreateAppDelegate(
-      content::WebContents* web_contents) override {
+      content::BrowserContext* browser_context) override {
     return new MockShellAppDelegate();
   }
 };

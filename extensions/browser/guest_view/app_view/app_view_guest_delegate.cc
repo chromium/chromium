@@ -6,7 +6,6 @@
 
 namespace extensions {
 
-AppViewGuestDelegate::~AppViewGuestDelegate() {
-}
+AppViewGuestDelegate::~AppViewGuestDelegate() = default;
 
 }  // namespace extensions

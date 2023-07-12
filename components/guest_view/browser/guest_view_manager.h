@@ -77,7 +77,7 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
 
   using GuestViewCreateFunction =
       base::RepeatingCallback<std::unique_ptr<GuestViewBase>(
-          content::WebContents* owner_web_contents)>;
+          content::RenderFrameHost* owner_rfh)>;
   using GuestViewCleanUpFunction =
       base::RepeatingCallback<void(content::BrowserContext*,
                                    int embedder_process_id,
@@ -98,12 +98,12 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
       base::OnceCallback<void(std::unique_ptr<GuestViewBase>)>;
   // Creates a guest and has the GuestViewManager assume ownership.
   void CreateGuest(const std::string& view_type,
-                   content::WebContents* owner_web_contents,
+                   content::RenderFrameHost* owner_rfh,
                    const base::Value::Dict& create_params,
                    UnownedGuestCreatedCallback callback);
   // Creates a guest which the caller will own.
   void CreateGuestAndTransferOwnership(const std::string& view_type,
-                                       content::WebContents* owner_web_contents,
+                                       content::RenderFrameHost* owner_rfh,
                                        const base::Value::Dict& create_params,
                                        OwnedGuestCreatedCallback callback);
 
@@ -114,7 +114,7 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
 
   std::unique_ptr<content::WebContents> CreateGuestWithWebContentsParams(
       const std::string& view_type,
-      content::WebContents* owner_web_contents,
+      content::RenderFrameHost* owner_rfh,
       const content::WebContents::CreateParams& create_params);
 
   content::SiteInstance* GetGuestSiteInstance(
@@ -171,7 +171,7 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
 
   // Creates a guest of the provided |view_type|.
   std::unique_ptr<GuestViewBase> CreateGuestInternal(
-      content::WebContents* owner_web_contents,
+      content::RenderFrameHost* owner_rfh,
       const std::string& view_type);
 
   // Adds GuestView types to the GuestView registry.

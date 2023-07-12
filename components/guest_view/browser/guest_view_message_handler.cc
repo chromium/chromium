@@ -108,19 +108,18 @@ void GuestViewMessageHandler::AttachToEmbedderFrame(
 
   content::WebContents* owner_web_contents = guest->owner_web_contents();
   DCHECK(owner_web_contents);
-  auto* embedder_frame = RenderFrameHost::FromID(
+  auto* outer_contents_frame = RenderFrameHost::FromID(
       render_process_id(), embedder_local_render_frame_id);
 
   const bool changed_owner_web_contents =
       owner_web_contents !=
-      content::WebContents::FromRenderFrameHost(embedder_frame);
+      content::WebContents::FromRenderFrameHost(outer_contents_frame);
   base::UmaHistogramBoolean(
       "Extensions.GuestView.ChangeOwnerWebContentsOnAttach",
       changed_owner_web_contents);
 
   if (changed_owner_web_contents) {
-    guest->MaybeRecreateGuestContents(
-        content::WebContents::FromRenderFrameHost(embedder_frame));
+    guest->MaybeRecreateGuestContents(outer_contents_frame);
   }
 
   // Update the guest manager about the attachment.
@@ -130,7 +129,7 @@ void GuestViewMessageHandler::AttachToEmbedderFrame(
                        guest_instance_id, params);
 
   guest->AttachToOuterWebContentsFrame(
-      std::move(owned_guest), embedder_frame, element_instance_id,
+      std::move(owned_guest), outer_contents_frame, element_instance_id,
       false /* is_full_page_plugin */, std::move(callback));
 }
 
