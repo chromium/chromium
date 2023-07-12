@@ -77,6 +77,12 @@ BASE_FEATURE(kWinSboxHighRendererJobMemoryLimits,
 BASE_FEATURE(kWinSboxRendererCloseKsecDD,
              "WinSboxRendererCloseKsecDD",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, only warm up `bcryptprimitives!ProcessPrng` - if disabled warms
+// up `advapi32!RtlGenRandom`.
+BASE_FEATURE(kWinSboxWarmupProcessPrng,
+             "WinSboxWarmupProcessPrng",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
