@@ -141,4 +141,9 @@ int GetFrameCornerRadius(const aura::Window* native_window) {
   return 0;
 }
 
+bool CanPropertyEffectFrameRadius(const void* class_property_key) {
+  return class_property_key == kIsShowingInOverviewKey ||
+         class_property_key == kWindowStateTypeKey;
+}
+
 }  // namespace chromeos

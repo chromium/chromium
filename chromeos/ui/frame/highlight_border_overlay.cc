@@ -111,7 +111,9 @@ void HighlightBorderOverlay::OnWindowPropertyChanged(aura::Window* window,
     return;
   }
 
-  if (key == chromeos::kWindowStateTypeKey) {
+  // We need to update the highlight border radius to match the radius of the
+  // frame.
+  if (chromeos::CanPropertyEffectFrameRadius(key)) {
     const int corner_radius = chromeos::GetFrameCornerRadius(window);
     if (rounded_corner_radius_ != corner_radius) {
       rounded_corner_radius_ = corner_radius;

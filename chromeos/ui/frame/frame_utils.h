@@ -41,6 +41,11 @@ SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top);
 COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
 int GetFrameCornerRadius(const aura::Window* native_window);
 
+// Returns true if the ClassProperty associated with native_window of the frame
+// can effect the radius of the frame.
+COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
+bool CanPropertyEffectFrameRadius(const void* class_property_key);
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_UI_FRAME_FRAME_UTILS_H_
