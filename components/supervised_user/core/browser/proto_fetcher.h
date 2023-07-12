@@ -161,7 +161,7 @@ class RepeatableFetchManager {
       base::RepeatingCallback<std::unique_ptr<Fetcher>(const Request&)>;
 
   RepeatableFetchManager() = delete;
-  explicit RepeatableFetchManager(FetcherFactory factory);
+  explicit RepeatableFetchManager(FetcherFactory fetcher_factory);
   RepeatableFetchManager(const RepeatableFetchManager&) = delete;
   RepeatableFetchManager& operator=(const RepeatableFetchManager&) = delete;
   ~RepeatableFetchManager() = default;
@@ -179,7 +179,7 @@ class RepeatableFetchManager {
   std::unique_ptr<Fetcher> MakeFetcher(const Request& request) const;
 
   base::IDMap<std::unique_ptr<Fetcher>, KeyType> requests_in_flight_;
-  base::RepeatingCallback<std::unique_ptr<Fetcher>(const Request&)> factory_;
+  FetcherFactory fetcher_factory_;
   base::WeakPtrFactory<RepeatableFetchManager<Request, Response>> weak_factory_{
       this};
 };

@@ -441,8 +441,8 @@ const GoogleServiceAuthError& ProtoFetcherStatus::google_service_auth_error()
 
 template <typename Request, typename Response>
 RepeatableFetchManager<Request, Response>::RepeatableFetchManager(
-    FetcherFactory factory)
-    : factory_(factory) {}
+    FetcherFactory fetcher_factory)
+    : fetcher_factory_(fetcher_factory) {}
 
 template <typename Request, typename Response>
 void RepeatableFetchManager<Request, Response>::Fetch(
@@ -464,7 +464,7 @@ template <typename Request, typename Response>
 std::unique_ptr<DeferredProtoFetcher<Response>>
 RepeatableFetchManager<Request, Response>::MakeFetcher(
     const Request& request) const {
-  return factory_.Run(request);
+  return fetcher_factory_.Run(request);
 }
 
 // Required, because users of RepeatableFetchManager are externally linked.

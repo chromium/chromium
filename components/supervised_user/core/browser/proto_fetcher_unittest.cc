@@ -480,7 +480,7 @@ TEST_F(FetchManagerTest, CancelsRequestsUponDestruction) {
                                               base::Unretained(this)));
 
     // Callbacks are pending on blocked network traffic.
-    EXPECT_EQ(this->test_url_loader_factory_.NumPending(), 2L);
+    ASSERT_EQ(this->test_url_loader_factory_.NumPending(), 2L);
 
     // Now under_test will go out of scope.
   }
@@ -495,61 +495,71 @@ TEST_F(FetchManagerTest, CancelsRequestsUponDestruction) {
       response_.SerializeAsString());
 }
 
-bool Callback(CreatePermissionRequestResponse response) {
-  return true;
-}
+class DeferredFetcherTest : public ::testing::Test {
+ protected:
+  using CallbackType = void(ProtoFetcherStatus,
+                            std::unique_ptr<CreatePermissionRequestResponse>);
 
-void WrappedCallback(
+ public:
+  MOCK_METHOD2(Done, CallbackType);
+
+ protected:
+  void SetUp() override {
+    // Fetch process is two-phase (access token and then rpc). The test flow
+    // will be controlled by releasing pending requests.
+    identity_test_env_.MakePrimaryAccountAvailable("bob@gmail.com",
+                                                   ConsentLevel::kSignin);
+    identity_test_env_.SetAutomaticIssueOfAccessTokens(/*grant=*/true);
+  }
+
+  // Used to demonstrate DeferredProtoFetcher anit-pattern.
+  static void OnResponse(
+      std::unique_ptr<DeferredProtoFetcher<CreatePermissionRequestResponse>>
+          fetcher,
+      base::OnceCallback<CallbackType> callback,
+      ProtoFetcherStatus status,
+      std::unique_ptr<CreatePermissionRequestResponse> response) {
+    std::move(callback).Run(status, std::move(response));
+  }
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  base::test::TaskEnvironment task_environment_;
+  IdentityTestEnvironment identity_test_env_;
+};
+
+TEST_F(DeferredFetcherTest, IsCreatedAndStarted) {
+  EXPECT_CALL(*this, Done(::testing::_, ::testing::_)).Times(1);
+
+  {
+    // Putting the following code in separate scope demonstrates that this
+    // fetcher survives going out-of-scope, because it is bound to the callback
+    // which is in turn referenced in the task environment. Outside of this
+    // scope, there is no way to cancel this fetcher.
     std::unique_ptr<DeferredProtoFetcher<CreatePermissionRequestResponse>>
-        fetcher,
-    base::OnceCallback<bool(CreatePermissionRequestResponse)> callback,
-    ProtoFetcherStatus::State* target_state,
-    /* free arguments */ ProtoFetcherStatus status,
-    std::unique_ptr<CreatePermissionRequestResponse> response) {
-  *target_state = status.state();
-  std::move(callback).Run(*response);
-  // and now we forget about fetcher.
-}
+        fetcher = CreatePermissionRequestFetcher(
+            *identity_test_env_.identity_manager(),
+            test_url_loader_factory_.GetSafeWeakWrapper(),
+            // Payload does not matter, not validated on client side.
+            PermissionRequest());
 
-TEST(DeferredFetcher, IsCreated) {
-  network::TestURLLoaderFactory test_url_loader_factory;
-  base::test::TaskEnvironment task_environment;
-  IdentityTestEnvironment identity_test_env;
+    base::OnceCallback<CallbackType> callback =
+        base::BindOnce(&DeferredFetcherTest::Done, base::Unretained(this));
 
-  AccountInfo account = identity_test_env.MakePrimaryAccountAvailable(
-      "bob@gmail.com", ConsentLevel::kSignin);
+    // Self-bind pattern.
+    auto* fetcher_ptr = fetcher.get();
+    fetcher_ptr->Start(
+        base::BindOnce(&OnResponse, std::move(fetcher), std::move(callback)));
 
-  auto callback = base::BindRepeating(&Callback);
+    // Reference to the fetcher is already lost (last chance in fetcher_ptr
+    // which will soon go out-of-scope without destroying the fetcher).
+    ASSERT_TRUE(!fetcher);
+  }
 
-  std::unique_ptr<DeferredProtoFetcher<CreatePermissionRequestResponse>>
-      fetcher = CreatePermissionRequestFetcher(
-          *identity_test_env.identity_manager(),
-          test_url_loader_factory.GetSafeWeakWrapper(),
-          // Payload does not matter, not validated on client side.
-          kids_chrome_management::PermissionRequest());
-  auto* fetcher_ptr = fetcher.get();
-
-  ProtoFetcherStatus::State target_state =
-      ProtoFetcherStatus::State::INVALID_RESPONSE;
-
-  fetcher_ptr->Start(base::BindOnce(&WrappedCallback, std::move(fetcher),
-                                    std::move(callback),
-                                    base::Unretained(&target_state)));
-  ASSERT_TRUE(!fetcher);
-
-  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", Time::Max());
-
-  CreatePermissionRequestResponse response;
-  TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory.GetPendingRequest(0);
-
-  ASSERT_NE(target_state, ProtoFetcherStatus::State::OK);
-
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      pending_request->request.url.spec(),
-      /*content=*/response.SerializeAsString());
-  EXPECT_EQ(target_state, ProtoFetcherStatus::State::OK);
+  // Callbacks are pending on blocked network traffic.
+  ASSERT_EQ(this->test_url_loader_factory_.NumPending(), 1L);
+  this->test_url_loader_factory_.SimulateResponseForPendingRequest(
+      this->test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
+      CreatePermissionRequestResponse().SerializeAsString());
 }
 
 }  // namespace
