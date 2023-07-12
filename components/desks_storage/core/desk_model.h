@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -174,7 +175,7 @@ class DeskModel {
   // Returns a vector of desk template UUIDs.
   // This method assumes each implementation has a cache and can return the
   // UUIDs synchronously.
-  virtual std::vector<base::Uuid> GetAllEntryUuids() const = 0;
+  virtual std::set<base::Uuid> GetAllEntryUuids() const = 0;
 
   // Whether this model is ready for saving and reading desk templates.
   virtual bool IsReady() const = 0;

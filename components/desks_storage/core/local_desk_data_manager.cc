@@ -452,12 +452,12 @@ size_t LocalDeskDataManager::GetMaxDeskTemplateEntryCount() const {
   return kMaxDeskTemplateCount + policy_entries_.size();
 }
 
-std::vector<base::Uuid> LocalDeskDataManager::GetAllEntryUuids() const {
-  std::vector<base::Uuid> keys;
+std::set<base::Uuid> LocalDeskDataManager::GetAllEntryUuids() const {
+  std::set<base::Uuid> keys;
   for (const auto& type_and_saved_desks : saved_desks_list_) {
     for (const auto& [uuid, template_entry] : type_and_saved_desks.second) {
       DCHECK_EQ(uuid, template_entry->uuid());
-      keys.emplace_back(uuid);
+      keys.emplace(uuid);
     }
   }
   return keys;

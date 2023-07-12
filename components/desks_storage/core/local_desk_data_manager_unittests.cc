@@ -458,6 +458,28 @@ TEST_F(LocalDeskDataManagerTest, CanGetAllEntries) {
   EXPECT_FALSE(FindUuidInUuidList(GetTestUuid(TestUuidId(4)), result.entries));
 }
 
+TEST_F(LocalDeskDataManagerTest, CanGetAllUuids) {
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
+
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_two_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
+
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_three_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
+
+  task_environment_.RunUntilIdle();
+
+  std::set<base::Uuid> entry_uuids = data_manager_->GetAllEntryUuids();
+
+  entry_uuids.erase(GetTestUuid(TestUuidId(1)));
+  entry_uuids.erase(GetTestUuid(TestUuidId(2)));
+  entry_uuids.erase(GetTestUuid(TestUuidId(3)));
+
+  // We should have exactly the correct set of IDs returned from the model.
+  EXPECT_TRUE(entry_uuids.empty());
+}
+
 TEST_F(LocalDeskDataManagerTest, GetAllEntriesIncludesPolicyValues) {
   data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
                                   base::BindOnce(&VerifyEntryAddedCorrectly));

@@ -168,16 +168,16 @@ size_t FakeDeskSyncBridge::GetMaxDeskTemplateEntryCount() const {
   return 6u + policy_entries_.size();
 }
 
-std::vector<base::Uuid> FakeDeskSyncBridge::GetAllEntryUuids() const {
-  std::vector<base::Uuid> keys;
+std::set<base::Uuid> FakeDeskSyncBridge::GetAllEntryUuids() const {
+  std::set<base::Uuid> keys;
 
   for (const auto& it : policy_entries_) {
-    keys.push_back(it.get()->uuid());
+    keys.emplace(it.get()->uuid());
   }
 
   for (const auto& it : desk_template_entries_) {
     DCHECK_EQ(it.first, it.second->uuid());
-    keys.emplace_back(it.first);
+    keys.emplace(it.first);
   }
   return keys;
 }

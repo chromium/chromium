@@ -1411,6 +1411,22 @@ TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldSucceed) {
   EXPECT_TRUE(result.entry);
 }
 
+TEST_F(DeskSyncBridgeTest, GetAllEntriesByUuidsReturnsCorrectSet) {
+  InitializeBridge();
+
+  AddTwoTemplates();
+
+  std::set<base::Uuid> entry_uuids = bridge()->GetAllEntryUuids();
+
+  EXPECT_EQ(2ul, entry_uuids.size());
+
+  entry_uuids.erase(MakeTestUuid(TestUuidId(1)));
+  entry_uuids.erase(MakeTestUuid(TestUuidId(2)));
+
+  // IFF the set is correct it should be empty.
+  EXPECT_TRUE(entry_uuids.empty());
+}
+
 // Verify that event_flag placeholder has been set. This is a short-term
 // fix for https://crbug.com/1301798
 TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldFillEventFlag) {

@@ -444,7 +444,7 @@ DeskModel::DeleteEntryStatus DeskSyncBridge::DeleteAllEntriesSync() {
   std::unique_ptr<ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
-  std::vector<base::Uuid> all_uuids = GetAllEntryUuids();
+  std::set<base::Uuid> all_uuids = GetAllEntryUuids();
 
   for (const auto& uuid : all_uuids) {
     change_processor()->Delete(uuid.AsLowercaseString(),
@@ -484,15 +484,15 @@ size_t DeskSyncBridge::GetMaxDeskTemplateEntryCount() const {
   return kMaxTemplateCount + policy_entries_.size();
 }
 
-std::vector<base::Uuid> DeskSyncBridge::GetAllEntryUuids() const {
-  std::vector<base::Uuid> keys;
+std::set<base::Uuid> DeskSyncBridge::GetAllEntryUuids() const {
+  std::set<base::Uuid> keys;
 
   for (const auto& it : policy_entries_)
-    keys.push_back(it.get()->uuid());
+    keys.emplace(it.get()->uuid());
 
   for (const auto& it : desk_template_entries_) {
     DCHECK_EQ(it.first, it.second->uuid());
-    keys.emplace_back(it.first);
+    keys.emplace(it.first);
   }
   return keys;
 }
