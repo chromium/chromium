@@ -88,6 +88,10 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
 
   void ClearHistory() override;
   size_t CommitDurationSampleCountForTesting() const override;
+  const DelayedUniqueNotifier& SmoothnessPriorityExpirationNotifierForTesting()
+      const {
+    return smoothness_priority_expiration_notifier_;
+  }
 
  private:
   // LayerTreeHostImplClient implementation
@@ -202,8 +206,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   bool inside_draw_;
 
   bool send_compositor_frame_ack_;
-
-  TreePriority last_raster_priority_;
 
   raw_ptr<TaskRunnerProvider> task_runner_provider_;
 

@@ -28,6 +28,7 @@
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "cc/trees/proxy_impl.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/transform_node.h"
@@ -2659,7 +2660,7 @@ class LayerTreeHostScrollTestImplSideInvalidation
 
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestImplSideInvalidation);
 
-class LayerTreeHostScrollTestMainRepaint : public LayerTreeHostScrollTest {
+class LayerTreeHostRasterPriorityTest : public LayerTreeHostScrollTest {
  public:
   void SetupTree() override {
     LayerTreeHostScrollTest::SetupTree();
@@ -2678,6 +2679,8 @@ class LayerTreeHostScrollTestMainRepaint : public LayerTreeHostScrollTest {
   void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
     int frame_number = host_impl->active_tree()->source_frame_number();
     InputHandler& input_handler = host_impl->GetInputHandler();
+    auto* proxy_impl =
+        static_cast<const ProxyImpl*>(host_impl->client_for_testing());
 
     if (frame_number == 0) {
       EXPECT_EQ(SAME_PRIORITY_FOR_BOTH_TREES, host_impl->GetTreePriority());
@@ -2699,7 +2702,29 @@ class LayerTreeHostScrollTestMainRepaint : public LayerTreeHostScrollTest {
       // Prioritize smoothness.
       EXPECT_EQ(SMOOTHNESS_TAKES_PRIORITY, host_impl->GetTreePriority());
       input_handler.ScrollEnd();
-      EndTest();
+      PostSetNeedsCommitToMainThread();
+    }
+
+    if (frame_number == 2) {
+      // We should stay in smoothness mode for another 250ms.
+      EXPECT_EQ(SMOOTHNESS_TAKES_PRIORITY, host_impl->GetTreePriority());
+      PostSetNeedsCommitToMainThread();
+    }
+
+    if (frame_number > 2) {
+      if (proxy_impl->SmoothnessPriorityExpirationNotifierForTesting()
+              .HasPendingNotification()) {
+        EXPECT_EQ(SMOOTHNESS_TAKES_PRIORITY, host_impl->GetTreePriority());
+        MainThreadTaskRunner()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&LayerTreeTest::PostSetNeedsCommitToMainThread,
+                           base::Unretained(this)),
+            base::Milliseconds(50));
+      } else {
+        // Once the notifier fires, we should return to the default.
+        EXPECT_EQ(SAME_PRIORITY_FOR_BOTH_TREES, host_impl->GetTreePriority());
+        EndTest();
+      }
     }
   }
 
@@ -2720,7 +2745,7 @@ class LayerTreeHostScrollTestMainRepaint : public LayerTreeHostScrollTest {
   }
 };
 
-MULTI_THREAD_TEST_F(LayerTreeHostScrollTestMainRepaint);
+MULTI_THREAD_TEST_F(LayerTreeHostRasterPriorityTest);
 
 class NonScrollingNonFastScrollableRegion : public LayerTreeHostScrollTest {
  public:

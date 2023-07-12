@@ -104,7 +104,6 @@ ProxyImpl::ProxyImpl(
 
   host_impl_ = layer_tree_host->CreateLayerTreeHostImpl(this);
   send_compositor_frame_ack_ = settings->send_compositor_frame_ack;
-  last_raster_priority_ = SAME_PRIORITY_FOR_BOTH_TREES;
 
   SchedulerSettings scheduler_settings(settings->ToSchedulerSettings());
   scheduler_settings.main_frame_before_commit_enabled =
@@ -482,57 +481,37 @@ bool ProxyImpl::IsInsideDraw() {
 void ProxyImpl::RenewTreePriority() {
   DCHECK(IsImplThread());
 
-  bool scroll_type_considered_interaction = false;
+  bool precise_scrolling_in_progress =
+      host_impl_->GetActivelyScrollingType() == ActivelyScrollingType::kPrecise;
+
   bool prefer_new_content = false;
-  bool non_scroll_interaction_in_progress =
-      host_impl_->IsPinchGestureActive() ||
-      host_impl_->page_scale_animation_active();
-
-  ActivelyScrollingType actively_scrolling_type =
-      host_impl_->GetActivelyScrollingType();
-
-  switch (actively_scrolling_type) {
-    case ActivelyScrollingType::kNone:
-      break;
-    case ActivelyScrollingType::kPrecise:
-      scroll_type_considered_interaction = true;
-      break;
-    case ActivelyScrollingType::kAnimated:
-      scroll_type_considered_interaction = base::FeatureList::IsEnabled(
-          features::kSchedulerSmoothnessForAnimatedScrolls);
-  }
-
-  bool user_interaction_in_progress =
-      non_scroll_interaction_in_progress || scroll_type_considered_interaction;
-
   if (host_impl_->CurrentScrollCheckerboardsDueToNoRecording() &&
       base::FeatureList::IsEnabled(
           features::kPreferNewContentForCheckerboardedScrolls)) {
     prefer_new_content = true;
   }
-  if (scroll_type_considered_interaction &&
+  if (precise_scrolling_in_progress &&
       host_impl_->IsCurrentScrollMainRepainted()) {
     prefer_new_content = true;
   }
 
+  bool non_scroll_interaction_in_progress =
+      host_impl_->IsPinchGestureActive() ||
+      host_impl_->page_scale_animation_active();
+
   // Schedule expiration if smoothness currently takes priority.
-  if (user_interaction_in_progress && !prefer_new_content)
+  if ((non_scroll_interaction_in_progress || precise_scrolling_in_progress) &&
+      !prefer_new_content) {
     smoothness_priority_expiration_notifier_.Schedule();
+  }
 
   // We use the same priority for both trees by default.
-  TreePriority scheduler_tree_priority = SAME_PRIORITY_FOR_BOTH_TREES;
-  TreePriority raster_tree_priority = SAME_PRIORITY_FOR_BOTH_TREES;
+  TreePriority tree_priority = SAME_PRIORITY_FOR_BOTH_TREES;
 
   // Smoothness takes priority if we have an expiration for it scheduled.
   if (smoothness_priority_expiration_notifier_.HasPendingNotification()) {
-    scheduler_tree_priority = SMOOTHNESS_TAKES_PRIORITY;
-    if (non_scroll_interaction_in_progress ||
-        actively_scrolling_type == ActivelyScrollingType::kPrecise ||
-        last_raster_priority_ == SMOOTHNESS_TAKES_PRIORITY)
-      raster_tree_priority = SMOOTHNESS_TAKES_PRIORITY;
+    tree_priority = SMOOTHNESS_TAKES_PRIORITY;
   }
-
-  last_raster_priority_ = raster_tree_priority;
 
   // New content takes priority in certain cases:
   // - When ui resources have been evicted.
@@ -546,10 +525,10 @@ void ProxyImpl::RenewTreePriority() {
     // tree might be freed. We need to set RequiresHighResToDraw to ensure that
     // high res tiles will be required to activate pending tree.
     host_impl_->SetRequiresHighResToDraw();
-    scheduler_tree_priority = raster_tree_priority = NEW_CONTENT_TAKES_PRIORITY;
+    tree_priority = NEW_CONTENT_TAKES_PRIORITY;
   }
 
-  host_impl_->SetTreePriority(raster_tree_priority);
+  host_impl_->SetTreePriority(tree_priority);
 
   // Only put the scheduler in impl latency prioritization mode if we don't
   // have a scroll listener. This gives the scroll listener a better chance of
@@ -559,7 +538,7 @@ void ProxyImpl::RenewTreePriority() {
       host_impl_->ScrollAffectsScrollHandler()
           ? ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER
           : ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER;
-  scheduler_->SetTreePrioritiesAndScrollState(scheduler_tree_priority,
+  scheduler_->SetTreePrioritiesAndScrollState(tree_priority,
                                               scroll_handler_state);
 }
 
