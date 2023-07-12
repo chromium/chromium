@@ -11,9 +11,11 @@
 #import <memory>
 
 #import "base/mac/foundation_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
@@ -99,6 +101,11 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
   void SetUp() override {
     BlockCleanupTest::SetUp();
+
+    scoped_feature_list_.InitWithFeatures(
+        {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS},
+        {});
+
     // Set up a TestChromeBrowserState instance.
     TestChromeBrowserState::Builder test_cbs_builder;
 
@@ -355,6 +362,15 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     return web_state;
   }
 
+  std::unique_ptr<web::WebState> CreateOffTheRecordWebState() {
+    web::WebState::CreateParams params(
+        chrome_browser_state_
+            ->CreateOffTheRecordBrowserStateWithTestingFactories({}));
+    auto web_state = web::WebState::Create(params);
+    AttachTabHelpers(web_state.get(), NO);
+    return web_state;
+  }
+
   // Fakes loading the NTP for a given `web_state`.
   void LoadNTP(web::WebState* web_state) {
     web::FakeWebState fake_web_state;
@@ -421,6 +437,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   SafeAreaProvider* safe_area_provider_;
   PagePlaceholderBrowserAgent* page_placeholder_browser_agent_;
   id mockApplicationCommandHandler_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {
@@ -494,6 +511,27 @@ TEST_F(BrowserViewControllerTest,
 
   // Verify that the command was dispatched.
   EXPECT_OCMOCK_VERIFY(mockApplicationCommandHandler_);
+}
+
+// Tests that an off-the-record web state can be created and inserted in the
+// browser view controller.
+TEST_F(BrowserViewControllerTest, didInsertOffTheRecordWebState) {
+  // The animation being tested only runs on the phone form factor.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  id container_view_mock = OCMPartialMock(container_.view);
+
+  // Add an off-the-record web state with supported tab helpers.
+  std::unique_ptr<web::WebState> web_state = CreateOffTheRecordWebState();
+  UIView* web_state_view = web_state->GetView();
+
+  // Insert in browser web state list.
+  [[container_view_mock expect] addSubview:OCMArgWithContentView(^{
+                                  return web_state_view;
+                                })];
+  InsertWebState(std::move(web_state));
+  EXPECT_OCMOCK_VERIFY(container_view_mock);
 }
 
 // Tests that when a webstate is inserted, the correct view is used during

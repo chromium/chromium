@@ -273,6 +273,7 @@ source_set("unit_tests") {
     "//components/reading_list/core",
     "//components/search_engines",
     "//components/sessions",
+    "//components/supervised_user/core/common:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/content_settings",
