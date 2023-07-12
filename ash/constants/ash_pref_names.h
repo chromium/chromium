@@ -1682,6 +1682,14 @@ inline constexpr char kInputForceRespectUiGainsEnabled[] =
 // used for managed device.
 inline constexpr char kGlanceablesEnabled[] = "ash.glanceables_enabled";
 
+// An integer pref that tracks how many times (3) we'll show the user a
+// notification when an incoming event would have been remapped to a right
+// click but either the user's setting is inconsistent with the matched
+// modifier key or remapping to right click is disabled before hiding new
+// notifications.
+inline constexpr char kRemapToRightClickNotificationsRemaining[] =
+    "ash.settings.remap_to_right_click_notifications_remaining";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

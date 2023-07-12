@@ -9,13 +9,14 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 
+class PrefRegistrySimple;
+
 namespace message_center {
 class MessageCenter;
 }  // namespace message_center
 
 namespace ash {
 
-// TODO(b/279503977): Show notification up to 3 times for each setting.
 class ASH_EXPORT InputDeviceSettingsNotificationController {
  public:
   explicit InputDeviceSettingsNotificationController(
@@ -25,6 +26,8 @@ class ASH_EXPORT InputDeviceSettingsNotificationController {
   InputDeviceSettingsNotificationController& operator=(
       const InputDeviceSettingsNotificationController&) = delete;
   virtual ~InputDeviceSettingsNotificationController();
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* pref_registry);
 
   void NotifyRightClickRewriteBlockedBySetting(
       ui::mojom::SimulateRightClickModifier blocked_modifier,

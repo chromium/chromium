@@ -16,6 +16,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/supervised_user/core/common/buildflags.h"
+#include "components/sync/base/model_type.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
@@ -261,6 +262,7 @@ enum {
   kiOSPasswordPromoImpressionsCounter = 100207,
   kiOSPasswordPromoOptOut = 100208,
   kDynamicColorUseKMeans = 100209,
+  kRemapToRightClickNotificationsRemaining = 100210,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -565,6 +567,9 @@ const auto& SyncablePreferences() {
           syncer::OS_PREFERENCES, false}},
         {ash::prefs::kProjectorSWAUIPrefsMigrated,
          {syncable_prefs_ids::kProjectorSWAUIPrefsMigrated,
+          syncer::OS_PREFERENCES, false}},
+        {ash::prefs::kRemapToRightClickNotificationsRemaining,
+         {syncable_prefs_ids::kRemapToRightClickNotificationsRemaining,
           syncer::OS_PREFERENCES, false}},
         {ash::prefs::kShelfAlignment,
          {syncable_prefs_ids::kShelfAlignment, syncer::OS_PREFERENCES, false}},

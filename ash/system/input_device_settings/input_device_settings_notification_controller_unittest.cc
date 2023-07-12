@@ -4,12 +4,42 @@
 
 #include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/message_center/fake_message_center.h"
 
 namespace ash {
+
+namespace {
+
+int GetPrefNotificationCount() {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  return prefs->GetInteger(
+      ash::prefs::kRemapToRightClickNotificationsRemaining);
+}
+
+class TestMessageCenter : public message_center::FakeMessageCenter {
+ public:
+  TestMessageCenter() = default;
+
+  TestMessageCenter(const TestMessageCenter&) = delete;
+  TestMessageCenter& operator=(const TestMessageCenter&) = delete;
+
+  ~TestMessageCenter() override = default;
+
+  void ClickOnNotification(const std::string& id) override {
+    message_center::Notification* notification =
+        FindVisibleNotificationById(id);
+    CHECK(notification);
+    notification->delegate()->Click(absl::nullopt, absl::nullopt);
+  }
+};
+
+}  // namespace
 
 class InputDeviceSettingsNotificationControllerTest : public AshTestBase {
  public:
@@ -32,7 +62,7 @@ class InputDeviceSettingsNotificationControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    message_center_ = std::make_unique<message_center::FakeMessageCenter>();
+    message_center_ = std::make_unique<TestMessageCenter>();
     controller_ = std::make_unique<InputDeviceSettingsNotificationController>(
         message_center_.get());
   }
@@ -44,7 +74,7 @@ class InputDeviceSettingsNotificationControllerTest : public AshTestBase {
   }
 
  protected:
-  std::unique_ptr<message_center::FakeMessageCenter> message_center_;
+  std::unique_ptr<TestMessageCenter> message_center_;
   std::unique_ptr<InputDeviceSettingsNotificationController> controller_;
 };
 
@@ -84,6 +114,47 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
       ui::mojom::SimulateRightClickModifier::kAlt,
       ui::mojom::SimulateRightClickModifier::kSearch);
   EXPECT_EQ(message_center()->NotificationCount(), 0u);
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       NotificationShownAtMostThreeTimes) {
+  EXPECT_EQ(3, GetPrefNotificationCount());
+
+  controller()->NotifyRightClickRewriteBlockedBySetting(
+      ui::mojom::SimulateRightClickModifier::kAlt,
+      ui::mojom::SimulateRightClickModifier::kSearch);
+  EXPECT_EQ(1u, message_center()->NotificationCount());
+  EXPECT_EQ(2, GetPrefNotificationCount());
+
+  controller()->NotifyRightClickRewriteBlockedBySetting(
+      ui::mojom::SimulateRightClickModifier::kSearch,
+      ui::mojom::SimulateRightClickModifier::kAlt);
+  EXPECT_EQ(2u, message_center()->NotificationCount());
+  EXPECT_EQ(1, GetPrefNotificationCount());
+
+  controller()->NotifyRightClickRewriteBlockedBySetting(
+      ui::mojom::SimulateRightClickModifier::kAlt,
+      ui::mojom::SimulateRightClickModifier::kNone);
+  EXPECT_EQ(3u, message_center()->NotificationCount());
+  EXPECT_EQ(0, GetPrefNotificationCount());
+
+  controller()->NotifyRightClickRewriteBlockedBySetting(
+      ui::mojom::SimulateRightClickModifier::kAlt,
+      ui::mojom::SimulateRightClickModifier::kSearch);
+  EXPECT_EQ(3u, message_center()->NotificationCount());
+  EXPECT_EQ(0, GetPrefNotificationCount());
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       StopShowingNotificationIfUserClicksOnIt) {
+  EXPECT_EQ(3, GetPrefNotificationCount());
+
+  controller()->NotifyRightClickRewriteBlockedBySetting(
+      ui::mojom::SimulateRightClickModifier::kAlt,
+      ui::mojom::SimulateRightClickModifier::kSearch);
+  message_center()->ClickOnNotification(
+      "alt_right_click_rewrite_blocked_by_setting");
+  EXPECT_EQ(0, GetPrefNotificationCount());
 }
 
 }  // namespace ash

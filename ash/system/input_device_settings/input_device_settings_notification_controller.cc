@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -16,6 +17,9 @@
 #include "ash/system/model/system_tray_model.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/message_center/message_center.h"
@@ -85,6 +89,13 @@ bool IsActiveUserSession() {
          !session_controller->IsUserSessionBlocked();
 }
 
+// If the user has reached the settings page through the notification, do
+// not show any more new notifications.
+void StopShowingRightClickNotification() {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kRemapToRightClickNotificationsRemaining, 0);
+}
+
 }  // namespace
 
 InputDeviceSettingsNotificationController::
@@ -92,6 +103,14 @@ InputDeviceSettingsNotificationController::
         message_center::MessageCenter* message_center)
     : message_center_(message_center) {
   CHECK(message_center_);
+}
+
+void InputDeviceSettingsNotificationController::RegisterProfilePrefs(
+    PrefRegistrySimple* pref_registry) {
+  // We'll show the remap to right click notification a total of three times.
+  pref_registry->RegisterIntegerPref(
+      prefs::kRemapToRightClickNotificationsRemaining, 3,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 InputDeviceSettingsNotificationController::
@@ -106,6 +125,17 @@ void InputDeviceSettingsNotificationController::
     return;
   }
 
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  CHECK(prefs);
+  int num_notifications_remaining =
+      prefs->GetInteger(prefs::kRemapToRightClickNotificationsRemaining);
+  if (num_notifications_remaining == 0) {
+    return;
+  }
+
+  prefs->SetInteger(prefs::kRemapToRightClickNotificationsRemaining,
+                    num_notifications_remaining - 1);
   auto on_click_handler =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating([]() {
@@ -114,6 +144,7 @@ void InputDeviceSettingsNotificationController::
                   ->system_tray_model()
                   ->client()
                   ->ShowTouchpadSettings();
+              StopShowingRightClickNotification();
             }
           }));
   auto notification = CreateSystemNotificationPtr(
