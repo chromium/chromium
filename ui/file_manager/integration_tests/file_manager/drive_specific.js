@@ -6,6 +6,7 @@ import {addEntries, createTestFile, ENTRIES, EntryType, expectHistogramTotalCoun
 import {testcase} from '../testcase.js';
 
 import {navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady, waitForMediaApp} from './background.js';
+import {FakeTask} from './tasks.js';
 import {BASIC_DRIVE_ENTRY_SET, FILE_MANAGER_EXTENSIONS_ID, OFFLINE_ENTRY_SET, SHARED_WITH_ME_ENTRY_SET} from './test_data.js';
 
 /**
@@ -1905,4 +1906,55 @@ testcase.driveBulkPinningBannerEnabled = async () => {
   // welcome banner.
   await remoteCall.waitForElement(
       appId, 'drive-bulk-pinning-banner:not([hidden])');
+};
+
+/*
+ * Checks that we cannot open Google Doc without network connection.
+ */
+testcase.openDriveDocWhenOffline = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [
+    ENTRIES.testDocument,
+    ENTRIES.hello,
+  ]);
+
+  // Setup the open-with task for drive.
+  const fakeOpenWith = new FakeTask(
+      true, {appId: 'id', taskType: 'drive', actionId: 'open-with'},
+      'DummyOpenWith');
+  await remoteCall.callRemoteTestUtil('overrideTasks', appId, [
+    [fakeOpenWith],
+  ]);
+
+  // Start bulk pinning.
+  await remoteCall.setSpacedFreeSpace(4n << 30n);
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
+  await remoteCall.waitForBulkPinningStage('Syncing');
+
+  // Wait for the hello.txt file to be pinned.
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="hello.txt"].pinned');
+  // Check that the gdoc file is not pinned.
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="Test Document.gdoc"]:not(.pinned)');
+
+  // Turn off all services.
+  await sendTestMessage({name: 'setDeviceOffline'});
+
+  // Check that hello.txt opens on double click without network.
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
+  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
+      'fakeMouseDoubleClick', appId,
+      ['#file-list li.table-row[selected] .filename-label span']));
+  await remoteCall.waitUntilTaskExecutes(
+      appId, fakeOpenWith.descriptor, ['hello.txt']);
+
+  // Check that Test Document.gdoc does not open on double click. We do not
+  // check that the task was NOT executed. Instead we check that the "You
+  // are offline" dialog was shown.
+  await remoteCall.waitUntilSelected(appId, 'Test Document.gdoc');
+  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
+      'fakeMouseDoubleClick', appId,
+      ['#file-list li.table-row[selected] .filename-label span']));
+  await remoteCall.waitForElement(
+      appId, '.files-alert-dialog[aria-label="You are offline"]');
 };

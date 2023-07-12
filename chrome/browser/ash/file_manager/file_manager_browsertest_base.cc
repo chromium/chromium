@@ -108,6 +108,7 @@
 #include "chrome/test/base/test_switches.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/fake_cros_disks_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/disks/mount_point.h"
@@ -3681,6 +3682,13 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isJellybean") {
     *output = options.enable_jellybean ? "true" : "false";
+    return;
+  }
+
+  if (name == "setDeviceOffline") {
+    ash::ShillServiceClient::Get()->GetTestInterface()->ClearServices();
+    content::NetworkConnectionChangeSimulator().SetConnectionType(
+        network::mojom::ConnectionType::CONNECTION_NONE);
     return;
   }
 
