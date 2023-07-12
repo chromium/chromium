@@ -233,7 +233,9 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
   ScopedD3D11DecoderBuffer(const ScopedD3D11DecoderBuffer&) = delete;
   ScopedD3D11DecoderBuffer& operator=(const ScopedD3D11DecoderBuffer&) = delete;
 
-  bool Commit() override { return Commit(desired_size_); }
+  bool Commit() override {
+    return Commit(std::min(static_cast<size_t>(desired_size_), data_.size()));
+  }
 
   bool Commit(uint32_t written_size) override {
     if (data_.empty()) {

@@ -8,17 +8,10 @@
 #include <d3d11_1.h>
 #include <d3d9.h>
 #include <dxva.h>
-#include <windows.h>
-#include <wrl/client.h>
 
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "media/base/media_log.h"
 #include "media/gpu/av1_decoder.h"
-#include "media/gpu/windows/d3d11_com_defs.h"
-#include "media/gpu/windows/d3d11_status.h"
-#include "media/gpu/windows/d3d11_video_context_wrapper.h"
-#include "media/gpu/windows/d3d11_video_decoder_client.h"
 #include "media/gpu/windows/d3d_accelerator.h"
 
 typedef struct _DXVA_PicParams_AV1 DXVA_PicParams_AV1;
@@ -29,10 +22,7 @@ namespace media {
 class D3D11AV1Accelerator : public D3DAccelerator,
                             public AV1Decoder::AV1Accelerator {
  public:
-  D3D11AV1Accelerator(D3D11VideoDecoderClient* client,
-                      MediaLog* media_log,
-                      ComD3D11VideoDevice video_device,
-                      std::unique_ptr<VideoContextWrapper> video_context);
+  D3D11AV1Accelerator(D3D11VideoDecoderClient* client, MediaLog* media_log);
 
   D3D11AV1Accelerator(const D3D11AV1Accelerator&) = delete;
   D3D11AV1Accelerator& operator=(const D3D11AV1Accelerator&) = delete;
@@ -50,9 +40,6 @@ class D3D11AV1Accelerator : public D3DAccelerator,
   bool OutputPicture(const AV1Picture& pic) override;
 
  private:
-  class ScopedDecoderBuffer;
-  ScopedDecoderBuffer GetBuffer(D3D11_VIDEO_DECODER_BUFFER_TYPE type);
-
   bool SubmitDecoderBuffer(
       const DXVA_PicParams_AV1& pic_params,
       const libgav1::Vector<libgav1::TileBuffer>& tile_buffers);

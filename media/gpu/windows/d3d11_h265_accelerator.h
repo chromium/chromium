@@ -8,9 +8,6 @@
 #include <d3d11_1.h>
 #include <d3d9.h>
 #include <dxva.h>
-#include <wrl/client.h>
-
-#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -18,10 +15,6 @@
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/h265_decoder.h"
 #include "media/gpu/h265_dpb.h"
-#include "media/gpu/windows/d3d11_com_defs.h"
-#include "media/gpu/windows/d3d11_status.h"
-#include "media/gpu/windows/d3d11_video_context_wrapper.h"
-#include "media/gpu/windows/d3d11_video_decoder_client.h"
 #include "media/gpu/windows/d3d_accelerator.h"
 #include "media/video/picture.h"
 #include "third_party/angle/include/EGL/egl.h"
@@ -32,7 +25,6 @@ namespace media {
 // Maximum of valid DXVA_PicEntry_HEVC entries in RefPicList
 constexpr unsigned kMaxRefPicListSize = 15;
 
-class D3D11H265Accelerator;
 class MediaLog;
 
 // Picture Parameters DXVA buffer struct for Rext/Scc is not specified in DXVA
@@ -109,10 +101,7 @@ typedef struct {
 class D3D11H265Accelerator : public D3DAccelerator,
                              public H265Decoder::H265Accelerator {
  public:
-  D3D11H265Accelerator(D3D11VideoDecoderClient* client,
-                       MediaLog* media_log,
-                       ComD3D11VideoDevice video_device,
-                       std::unique_ptr<VideoContextWrapper> video_context);
+  D3D11H265Accelerator(D3D11VideoDecoderClient* client, MediaLog* media_log);
 
   D3D11H265Accelerator(const D3D11H265Accelerator&) = delete;
   D3D11H265Accelerator& operator=(const D3D11H265Accelerator&) = delete;
@@ -148,9 +137,6 @@ class D3D11H265Accelerator : public D3DAccelerator,
   bool IsChromaSamplingSupported(VideoChromaSampling chroma_sampling) override;
 
  private:
-  bool SubmitSliceData();
-  bool RetrieveBitstreamBuffer();
-
   // Gets a pic params struct with the constant fields set.
   void FillPicParamsWithConstants(DXVA_PicParams_HEVC_Rext* pic_param);
 
@@ -187,12 +173,6 @@ class D3D11H265Accelerator : public D3DAccelerator,
   bool use_scaling_lists_ = false;
   // If current stream is encoded with range extension profile.
   bool is_rext_ = false;
-
-  // Information that's accumulated during slices and submitted at the end
-  std::vector<DXVA_Slice_HEVC_Short> slice_info_;
-  size_t current_offset_ = 0;
-  size_t bitstream_buffer_size_ = 0;
-  raw_ptr<uint8_t, AllowPtrArithmetic> bitstream_buffer_bytes_ = nullptr;
 
   // For HEVC this number needs to be larger than 1 and different
   // in each call to Execute().

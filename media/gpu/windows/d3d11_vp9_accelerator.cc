@@ -24,20 +24,9 @@ using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
     }                                               \
   } while (0)
 
-D3D11VP9Accelerator::D3D11VP9Accelerator(
-    D3D11VideoDecoderClient* client,
-    MediaLog* media_log,
-    ComD3D11VideoDevice video_device,
-    std::unique_ptr<VideoContextWrapper> video_context)
-    : D3DAccelerator(client,
-                     media_log,
-                     std::move(video_device),
-                     std::move(video_context)),
-      status_feedback_(0) {
-  client->SetDecoderWrapperCB(
-      base::BindRepeating(&D3D11VP9Accelerator::SetVideoDecoderWrapper,
-                          base::UnsafeDanglingUntriaged(this)));
-}
+D3D11VP9Accelerator::D3D11VP9Accelerator(D3D11VideoDecoderClient* client,
+                                         MediaLog* media_log)
+    : D3DAccelerator(client, media_log), status_feedback_(0) {}
 
 D3D11VP9Accelerator::~D3D11VP9Accelerator() = default;
 
