@@ -110,9 +110,8 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
                 mView.getContinueButton().getText());
         assertEquals("The continue button should always be visible.", View.VISIBLE,
                 mView.getContinueButton().getVisibility());
-        assertEquals(
-                "The dismiss button should be invisible when there is a pre-existing device lock.",
-                View.INVISIBLE, mView.getDismissButton().getVisibility());
+        assertEquals("The dismiss button should always be visible", View.VISIBLE,
+                mView.getDismissButton().getVisibility());
     }
 
     @Test
@@ -138,9 +137,8 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
                 mView.getContinueButton().getText());
         assertEquals("The continue button should always be visible.", View.VISIBLE,
                 mView.getContinueButton().getVisibility());
-        assertEquals("The dismiss button should be visible when there is no pre-existing "
-                        + "device lock.",
-                View.VISIBLE, mView.getDismissButton().getVisibility());
+        assertEquals("The dismiss button should always be visible", View.VISIBLE,
+                mView.getDismissButton().getVisibility());
     }
 
     @Test
@@ -168,9 +166,8 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
                 mView.getContinueButton().getText());
         assertEquals("The continue button should always be visible.", View.VISIBLE,
                 mView.getContinueButton().getVisibility());
-        assertEquals(
-                "The dismiss button should be visible when there is no pre-existing device lock.",
-                View.VISIBLE, mView.getDismissButton().getVisibility());
+        assertEquals("The dismiss button should always be visible", View.VISIBLE,
+                mView.getDismissButton().getVisibility());
     }
 
     @Test

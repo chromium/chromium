@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui.device_lock;
 
-import android.view.View;
-
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -18,9 +16,6 @@ public class DeviceLockViewBinder {
             DeviceLockViewBinder.setTitle(model, view);
             DeviceLockViewBinder.setDescription(model, view);
             DeviceLockViewBinder.setContinueButton(model, view);
-            view.getDismissButton().setVisibility(
-                    model.get(DeviceLockProperties.PREEXISTING_DEVICE_LOCK) ? View.INVISIBLE
-                                                                            : View.VISIBLE);
         } else if (propertyKey == DeviceLockProperties.DEVICE_SUPPORTS_PIN_CREATION_INTENT) {
             DeviceLockViewBinder.setDescription(model, view);
             DeviceLockViewBinder.setContinueButton(model, view);
