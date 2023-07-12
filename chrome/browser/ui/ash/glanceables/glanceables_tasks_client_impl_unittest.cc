@@ -15,7 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "content/public/test/browser_task_environment.h"
@@ -39,7 +38,6 @@
 namespace ash {
 namespace {
 
-using ::base::test::RepeatingTestFuture;
 using ::base::test::TestFuture;
 using ::google_apis::ApiErrorCode;
 using ::google_apis::util::FormatTimeAsString;
@@ -217,8 +215,8 @@ TEST_F(GlanceablesTasksClientImplTest, GetTaskListsOnSubsequentCalls) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           kDefaultTaskListsResponseContent))));
 
-  RepeatingTestFuture<ui::ListModel<GlanceablesTaskList>*> future;
-  client()->GetTaskLists(future.GetCallback());
+  TestFuture<ui::ListModel<GlanceablesTaskList>*> future;
+  client()->GetTaskLists(future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
   const auto* const task_lists = future.Take();
@@ -330,8 +328,8 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasksOnSubsequentCalls) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           kDefaultTasksResponseContent))));
 
-  RepeatingTestFuture<ui::ListModel<GlanceablesTask>*> future;
-  client()->GetTasks("test-task-list-id", future.GetCallback());
+  TestFuture<ui::ListModel<GlanceablesTask>*> future;
+  client()->GetTasks("test-task-list-id", future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
   const auto* const root_tasks = future.Take();

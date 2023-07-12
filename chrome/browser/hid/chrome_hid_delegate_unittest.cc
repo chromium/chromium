@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -55,7 +54,6 @@
 
 namespace {
 
-using ::base::test::RepeatingTestFuture;
 using ::base::test::RunClosure;
 using ::base::test::TestFuture;
 using ::testing::ElementsAre;
@@ -397,11 +395,11 @@ class ChromeHidTestHelper {
 
     // Disconnect all four devices. The `mock_client` should be notified only
     // for the devices it has permission to access.
-    RepeatingTestFuture<device::mojom::HidDeviceInfoPtr> device_removed_future;
+    TestFuture<device::mojom::HidDeviceInfoPtr> device_removed_future;
     EXPECT_CALL(mock_client, DeviceRemoved)
         .Times(2)
         .WillRepeatedly(
-            [&](auto d) { device_removed_future.AddValue(std::move(d)); });
+            [&](auto d) { device_removed_future.SetValue(std::move(d)); });
     RemoveDevice(allowed_device1);
     RemoveDevice(allowed_device2);
     RemoveDevice(other_device1);
@@ -411,9 +409,9 @@ class ChromeHidTestHelper {
 
     // Reconnect all four devices. The `mock_client` should be notified only for
     // the devices it has permission to access.
-    RepeatingTestFuture<device::mojom::HidDeviceInfoPtr> device_added_future;
+    TestFuture<device::mojom::HidDeviceInfoPtr> device_added_future;
     EXPECT_CALL(mock_client, DeviceAdded).Times(2).WillRepeatedly([&](auto d) {
-      device_added_future.AddValue(std::move(d));
+      device_added_future.SetValue(std::move(d));
     });
     AddDevice(allowed_device1);
     AddDevice(allowed_device2);
@@ -534,8 +532,9 @@ class ChromeHidTestHelper {
         hid_connection_client.InitWithNewPipeAndPassReceiver());
     TestFuture<mojo::PendingRemote<device::mojom::HidConnection>>
         pending_remote_future;
-    if (supports_hid_connection_tracker_)
+    if (supports_hid_connection_tracker_) {
       EXPECT_CALL(hid_connection_tracker(), IncrementConnectionCount(origin));
+    }
     hid_service->Connect(device->guid, std::move(hid_connection_client),
                          pending_remote_future.GetCallback());
     mojo::Remote<device::mojom::HidConnection> connection;
@@ -590,8 +589,9 @@ class ChromeHidTestHelper {
         hid_connection_client.InitWithNewPipeAndPassReceiver());
     TestFuture<mojo::PendingRemote<device::mojom::HidConnection>>
         pending_remote_future;
-    if (supports_hid_connection_tracker_)
+    if (supports_hid_connection_tracker_) {
       EXPECT_CALL(hid_connection_tracker(), IncrementConnectionCount(origin));
+    }
     hid_service->Connect(device->guid, std::move(hid_connection_client),
                          pending_remote_future.GetCallback());
     mojo::Remote<device::mojom::HidConnection> connection;
@@ -647,8 +647,9 @@ class ChromeHidTestHelper {
         hid_connection_client.InitWithNewPipeAndPassReceiver());
     TestFuture<mojo::PendingRemote<device::mojom::HidConnection>>
         pending_remote_future;
-    if (supports_hid_connection_tracker_)
+    if (supports_hid_connection_tracker_) {
       EXPECT_CALL(hid_connection_tracker(), IncrementConnectionCount(origin));
+    }
     hid_service->Connect(device->guid, std::move(hid_connection_client),
                          pending_remote_future.GetCallback());
     mojo::Remote<device::mojom::HidConnection> connection;
@@ -713,8 +714,9 @@ class ChromeHidTestHelper {
         hid_connection_client.InitWithNewPipeAndPassReceiver());
     TestFuture<mojo::PendingRemote<device::mojom::HidConnection>>
         pending_remote_future;
-    if (supports_hid_connection_tracker_)
+    if (supports_hid_connection_tracker_) {
       EXPECT_CALL(hid_connection_tracker(), IncrementConnectionCount(origin));
+    }
     hid_service->Connect(device->guid, std::move(hid_connection_client),
                          pending_remote_future.GetCallback());
     mojo::Remote<device::mojom::HidConnection> connection;
