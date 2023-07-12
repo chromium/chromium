@@ -96,9 +96,10 @@ PrefServiceSyncable::PrefServiceSyncable(
                                         dual_layer_user_prefs,
                                         syncer::OS_PRIORITY_PREFERENCES),
 #endif
-      pref_registry_(std::move(pref_registry)) {
+      pref_registry_(std::move(pref_registry)),
+      dual_layer_user_prefs_(std::move(dual_layer_user_prefs)) {
   CHECK(base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage));
-  CHECK(dual_layer_user_prefs);
+  CHECK(dual_layer_user_prefs_);
   ConnectAssociatorsAndRegisterPreferences();
 }
 
@@ -283,7 +284,10 @@ uint32_t PrefServiceSyncable::GetWriteFlags(
 
 void PrefServiceSyncable::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
-  // TODO(crbug.com/1448001): Pass `sync_service` to the associators.
+  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
+    CHECK(dual_layer_user_prefs_);
+    dual_layer_user_prefs_->OnSyncServiceInitialized(sync_service);
+  }
 }
 
 }  // namespace sync_preferences

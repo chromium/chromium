@@ -145,6 +145,10 @@ class PrefServiceSyncable : public PrefService,
   const scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
 
   base::ObserverList<PrefServiceSyncableObserver>::Unchecked observer_list_;
+
+  // DualLayerUserPrefStore instance passed to the associators. This is non-null
+  // iff EnablePreferencesAccountStorage feature is enabled.
+  scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs_;
 };
 
 }  // namespace sync_preferences

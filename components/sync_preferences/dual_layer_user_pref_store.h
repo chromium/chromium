@@ -18,6 +18,11 @@
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/value_map_pref_store.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/service/sync_service_observer.h"
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 namespace sync_preferences {
 
@@ -32,7 +37,8 @@ class PrefModelAssociatorClient;
 // * Dual writes: Any changes made to prefs *on this device* are written to both
 //   stores. However, incoming changes made on other devices only go into the
 //   account store.
-class DualLayerUserPrefStore : public PersistentPrefStore {
+class DualLayerUserPrefStore : public PersistentPrefStore,
+                               public syncer::SyncServiceObserver {
  public:
   DualLayerUserPrefStore(
       scoped_refptr<PersistentPrefStore> local_pref_store,
@@ -49,6 +55,8 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
   // corresponding preference entries(belonging to this type) from account
   // storage. This should be called when a data type stops syncing.
   void DisableTypeAndClearAccountStore(syncer::ModelType model_type);
+
+  void OnSyncServiceInitialized(syncer::SyncService* sync_service);
 
   scoped_refptr<PersistentPrefStore> GetLocalPrefStore();
   scoped_refptr<WriteablePrefStore> GetAccountPrefStore();
@@ -86,9 +94,14 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
   void SchedulePendingLossyWrites() override;
   void OnStoreDeletionFromDisk() override;
 
+  // SyncServiceObserver implementation
+  void OnStateChanged(syncer::SyncService* sync_service) override;
+  void OnSyncShutdown(syncer::SyncService* sync_service) override;
+
   // Return the set of active pref types.
   base::flat_set<syncer::ModelType> GetActiveTypesForTest() const;
 
+  bool IsHistorySyncEnabledForTest() const;
   void SetIsHistorySyncEnabledForTest(bool is_history_sync_enabled);
 
  protected:
@@ -186,8 +199,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
   // Used to avoid self-notifications.
   bool is_setting_prefs_ = false;
 
-  // TODO(crbug.com/1448000): Set this based on actual history sync value.
-  bool is_history_sync_enabled_ = true;
+  bool is_history_sync_enabled_ = false;
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
 

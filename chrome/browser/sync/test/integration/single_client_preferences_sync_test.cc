@@ -21,6 +21,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/ntp_tiles/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
@@ -43,6 +44,10 @@ using testing::Eq;
 using testing::Ne;
 using testing::NotNull;
 using user_prefs::PrefRegistrySyncable;
+
+// An actual privacy-sensitive pref.
+const std::string kHistorySensitiveListPrefName =
+    ntp_tiles::prefs::kCustomLinksList;
 
 std::string ConvertToSyncedPrefValue(const base::Value& value) {
   std::string result;
@@ -401,6 +406,144 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
                   syncer::ModelType::PREFERENCES, kNonSyncablePref,
                   ConvertToSyncedPrefValue(base::Value("account value")))
                   .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
+                       ShouldNotSyncSensitivePrefsIfHistorySyncOff) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
+
+  base::Value::List local_value;
+  local_value.Append("local value");
+  preferences_helper::ChangeListPref(0, kHistorySensitiveListPrefName.c_str(),
+                                     local_value);
+
+  base::Value::List account_value;
+  account_value.Append("account value");
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               kHistorySensitiveListPrefName.c_str(),
+                               base::Value(account_value.Clone()));
+
+  ASSERT_EQ(GetPrefs(0)->GetList(kHistorySensitiveListPrefName), local_value);
+
+  // Enable Sync but not history data type.
+  ASSERT_TRUE(GetClient(0)->SetupSync(
+      base::BindOnce([](syncer::SyncUserSettings* settings) {
+        syncer::UserSelectableTypeSet types =
+            settings->GetRegisteredSelectableTypes();
+        types.Remove(syncer::UserSelectableType::kHistory);
+        settings->SetSelectedTypes(/*sync_everything=*/false, types);
+      })))
+      << "SetupSync() failed.";
+
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
+
+  // Account value is not returned.
+  EXPECT_EQ(GetPrefs(0)->GetList(kHistorySensitiveListPrefName), local_value);
+
+  base::Value::List new_value;
+  new_value.Append("new value");
+  preferences_helper::ChangeListPref(0, kHistorySensitiveListPrefName.c_str(),
+                                     new_value);
+
+  ASSERT_TRUE(AwaitQuiescence());
+  // New value is not uploaded to the account.
+  EXPECT_NE(preferences_helper::GetPreferenceInFakeServer(
+                syncer::PREFERENCES, kHistorySensitiveListPrefName.c_str(),
+                GetFakeServer())
+                ->value(),
+            ConvertToSyncedPrefValue(base::Value(new_value.Clone())));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
+                       ShouldSyncSensitivePrefsIfHistorySyncOn) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
+
+  base::Value::List local_value;
+  local_value.Append("local value");
+  preferences_helper::ChangeListPref(0, kHistorySensitiveListPrefName.c_str(),
+                                     local_value);
+
+  base::Value::List account_value;
+  account_value.Append("account value");
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               kHistorySensitiveListPrefName.c_str(),
+                               base::Value(account_value.Clone()));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
+
+  // Account value is returned.
+  EXPECT_EQ(GetPrefs(0)->GetList(kHistorySensitiveListPrefName), account_value);
+
+  base::Value::List new_value;
+  new_value.Append("new value");
+  preferences_helper::ChangeListPref(0, kHistorySensitiveListPrefName.c_str(),
+                                     new_value);
+
+  // New value is synced to account.
+  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
+                  syncer::ModelType::PREFERENCES, kHistorySensitiveListPrefName,
+                  ConvertToSyncedPrefValue(base::Value(new_value.Clone())))
+                  .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
+                       ShouldListenToHistorySyncOptInChanges) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
+
+  base::Value::List local_value;
+  local_value.Append("local value");
+  preferences_helper::ChangeListPref(0, kHistorySensitiveListPrefName.c_str(),
+                                     local_value);
+
+  base::Value::List account_value;
+  account_value.Append("account value");
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               kHistorySensitiveListPrefName.c_str(),
+                               base::Value(account_value.Clone()));
+
+  // Enable Sync but not history data type.
+  ASSERT_TRUE(GetClient(0)->SetupSync(
+      base::BindOnce([](syncer::SyncUserSettings* settings) {
+        syncer::UserSelectableTypeSet types =
+            settings->GetRegisteredSelectableTypes();
+        types.Remove(syncer::UserSelectableType::kHistory);
+        settings->SetSelectedTypes(/*sync_everything=*/false, types);
+      })))
+      << "SetupSync() failed.";
+
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
+
+  // Account value is not returned.
+  ASSERT_EQ(GetPrefs(0)->GetList(kHistorySensitiveListPrefName), local_value);
+
+  // Enable history sync.
+  ASSERT_TRUE(
+      GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kHistory));
+
+  // Account value is now returned.
+  ASSERT_EQ(GetPrefs(0)->GetList(kHistorySensitiveListPrefName), account_value);
+
+  // Disable history sync.
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
+
+  // Account value is not returned.
+  ASSERT_EQ(GetPrefs(0)->GetList(kHistorySensitiveListPrefName), local_value);
 }
 
 // TODO(crbug.com/1416480): Consider making other fixtures parameterized with

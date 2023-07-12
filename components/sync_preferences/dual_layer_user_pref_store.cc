@@ -15,6 +15,8 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/preferences_merge_helper.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
@@ -681,9 +683,51 @@ bool DualLayerUserPrefStore::IsHistorySyncEnabled() const {
   return is_history_sync_enabled_;
 }
 
+bool DualLayerUserPrefStore::IsHistorySyncEnabledForTest() const {
+  return IsHistorySyncEnabled();
+}
+
 void DualLayerUserPrefStore::SetIsHistorySyncEnabledForTest(
     bool is_history_sync_enabled) {
   is_history_sync_enabled_ = is_history_sync_enabled;
+}
+
+void DualLayerUserPrefStore::OnSyncServiceInitialized(
+    syncer::SyncService* sync_service) {
+  sync_service->AddObserver(this);
+  // `sync_service` init should be considered as a state change.
+  OnStateChanged(sync_service);
+}
+
+void DualLayerUserPrefStore::OnStateChanged(syncer::SyncService* sync_service) {
+  bool is_history_sync_enabled =
+      sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kHistory);
+  if (is_history_sync_enabled == is_history_sync_enabled_) {
+    return;
+  }
+
+  is_history_sync_enabled_ = is_history_sync_enabled;
+
+  if (!pref_model_associator_client_) {
+    return;
+  }
+
+  for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
+    auto metadata = pref_model_associator_client_->GetSyncablePrefsDatabase()
+                        .GetSyncablePrefMetadata(pref_name);
+    CHECK(metadata.has_value());
+    if (metadata->is_history_opt_in_required()) {
+      for (PrefStore::Observer& observer : observers_) {
+        observer.OnPrefValueChanged(pref_name);
+      }
+    }
+  }
+}
+
+void DualLayerUserPrefStore::OnSyncShutdown(syncer::SyncService* sync_service) {
+  // Pref service and hence the pref store outlives sync service.
+  sync_service->RemoveObserver(this);
 }
 
 }  // namespace sync_preferences

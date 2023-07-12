@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/test_syncable_prefs_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -2396,6 +2397,102 @@ TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
   EXPECT_TRUE(ValueInStoreIsAbsent(*local_store(), kHistorySensitivePrefName));
 
   account_store()->RemoveObserver(&account_store_observer);
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldCheckHistoryOptInUponSubscribe) {
+  local_store()->SetValueSilently(kHistorySensitivePrefName,
+                                  base::Value("local value"), 0);
+  account_store()->SetValueSilently(kHistorySensitivePrefName,
+                                    base::Value("account value"), 0);
+
+  syncer::TestSyncService sync_service;
+
+  ASSERT_FALSE(store()->IsHistorySyncEnabledForTest());
+
+  // OnSyncServiceInitialized() should check the history sync opt-in state.
+  store()->OnSyncServiceInitialized(&sync_service);
+  EXPECT_TRUE(store()->IsHistorySyncEnabledForTest());
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldListenToHistorySyncDisable) {
+  local_store()->SetValueSilently(kHistorySensitivePrefName,
+                                  base::Value("local value"), 0);
+  account_store()->SetValueSilently(kHistorySensitivePrefName,
+                                    base::Value("account value"), 0);
+
+  syncer::TestSyncService sync_service;
+  store()->OnSyncServiceInitialized(&sync_service);
+  ASSERT_TRUE(store()->IsHistorySyncEnabledForTest());
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  // Turning history sync off should raise notification since effective value of
+  // `kHistorySensitivePrefName` pref changed.
+  EXPECT_CALL(observer, OnPrefValueChanged(kHistorySensitivePrefName));
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+  sync_service.FireStateChanged();
+  EXPECT_FALSE(store()->IsHistorySyncEnabledForTest());
+
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldListenToHistorySyncEnable) {
+  local_store()->SetValueSilently(kHistorySensitivePrefName,
+                                  base::Value("local value"), 0);
+  account_store()->SetValueSilently(kHistorySensitivePrefName,
+                                    base::Value("account value"), 0);
+
+  syncer::TestSyncService sync_service;
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+  ASSERT_FALSE(sync_service.GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
+
+  store()->OnSyncServiceInitialized(&sync_service);
+  ASSERT_FALSE(store()->IsHistorySyncEnabledForTest());
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  // Turning history sync on should raise notification since effective value of
+  // `kHistorySensitivePrefName` pref changed.
+  EXPECT_CALL(observer, OnPrefValueChanged(kHistorySensitivePrefName));
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      syncer::UserSelectableTypeSet({syncer::UserSelectableType::kHistory}));
+  sync_service.FireStateChanged();
+  EXPECT_TRUE(store()->IsHistorySyncEnabledForTest());
+
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldNotReactIfHistoryOptInIsUnchanged) {
+  local_store()->SetValueSilently(kHistorySensitivePrefName,
+                                  base::Value("local value"), 0);
+  account_store()->SetValueSilently(kHistorySensitivePrefName,
+                                    base::Value("account value"), 0);
+
+  syncer::TestSyncService sync_service;
+
+  ASSERT_FALSE(store()->IsHistorySyncEnabledForTest());
+
+  store()->OnSyncServiceInitialized(&sync_service);
+  ASSERT_TRUE(store()->IsHistorySyncEnabledForTest());
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  // Should not lead to notification.
+  sync_service.FireStateChanged();
+  ASSERT_TRUE(store()->IsHistorySyncEnabledForTest());
+
+  store()->RemoveObserver(&observer);
 }
 
 }  // namespace
