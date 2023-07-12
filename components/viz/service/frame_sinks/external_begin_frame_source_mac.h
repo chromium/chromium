@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_EXTERNAL_BEGIN_FRAME_SOURCE_MAC_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
@@ -46,6 +47,8 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   BeginFrameArgs GetMissedBeginFrameArgs(BeginFrameObserver* obs) override;
   void SetPreferredInterval(base::TimeDelta interval) override;
   base::TimeDelta GetMaximumRefreshFrameInterval() override;
+  std::vector<base::TimeDelta> GetSupportedFrameIntervals(
+      base::TimeDelta interval) override;
 
   // CVDisplayLink Callback on the Viz thread.
   void OnDisplayLinkCallback(ui::VSyncParamsMac params);
@@ -65,8 +68,9 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
 
   bool needs_begin_frames_ = false;
 
-  bool run_at_half_refresh_rate_ = false;
-  bool skip_next_vsync_ = false;
+  // Used for preferred frame intervals.
+  int vsync_subsampling_factor_ = 1;
+  int vsyncs_to_skip_ = 0;
 
   // CVDisplayLink and related structures to set timer parameters.
   int64_t display_id_ = display::kInvalidDisplayId;

@@ -12,6 +12,8 @@
 #include "base/trace_event/trace_event.h"
 
 namespace viz {
+
+constexpr base::TimeDelta kMaxSupportedFrameInterval = base::Hertz(14);
 namespace {
 BASE_FEATURE(kForceMacVSyncTimerForDebugging,
              "ForceMacVSyncTimerForDebugging",
@@ -152,12 +154,12 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
     return;
   }
 
-  if (skip_next_vsync_) {
+  if (vsyncs_to_skip_ > 0) {
     TRACE_EVENT_INSTANT0(
         "viz",
         "ExternalBeginFrameSourceMac::OnDisplayLinkCallback - skip_vsync",
         TRACE_EVENT_SCOPE_THREAD);
-    skip_next_vsync_ = false;
+    vsyncs_to_skip_--;
     return;
   }
 
@@ -178,10 +180,10 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
   }
   nominal_refresh_period_ = interval;
 
-  if (run_at_half_refresh_rate_) {
-    skip_next_vsync_ = true;
-    interval *= 2;
-  }
+  // If the preferred frame interval is not equal to |nominal_refresh_period_|,
+  // vsync_subsampling_factor_ is bigger than 1.
+  vsyncs_to_skip_ = vsync_subsampling_factor_ - 1;
+  interval *= vsync_subsampling_factor_;
 
   OnBeginFrame(begin_frame_args_generator_.GenerateBeginFrameArgs(
       source_id(), frame_time, frame_time + interval, interval));
@@ -206,8 +208,7 @@ BeginFrameArgs ExternalBeginFrameSourceMac::GetMissedBeginFrameArgs(
       frame_time = now.SnappedToNextTick(frame_time, interval) - interval;
     } else {
       frame_time = now;
-      interval = run_at_half_refresh_rate_ ? nominal_refresh_period_ * 2
-                                           : nominal_refresh_period_;
+      interval = nominal_refresh_period_ * vsync_subsampling_factor_;
     }
   } else {
     base::TimeTicks now = base::TimeTicks::Now();
@@ -262,18 +263,14 @@ void ExternalBeginFrameSourceMac::SetPreferredInterval(
     return;
   }
 
-  auto interval_for_half_refresh_rate = nominal_refresh_period_ * 2;
-  constexpr auto kMaxDelta = base::Milliseconds(0.5);
-  bool run_at_half_refresh_rate =
-      interval > (interval_for_half_refresh_rate - kMaxDelta);
-  if (run_at_half_refresh_rate_ == run_at_half_refresh_rate) {
-    return;
-  }
+  CHECK(interval >= nominal_refresh_period_);
+  CHECK(interval == nominal_refresh_period_ ||
+        interval <= kMaxSupportedFrameInterval);
+  vsyncs_to_skip_ = 0;
+  vsync_subsampling_factor_ = interval.IntDiv(nominal_refresh_period_);
 
   TRACE_EVENT1("gpu", "ExternalBeginFrameSourceMac::SetPreferredInterval",
-               "run_at_half_refresh_rate", run_at_half_refresh_rate);
-  run_at_half_refresh_rate_ = run_at_half_refresh_rate;
-  skip_next_vsync_ = false;
+               "vsync_subsampling_factor", vsync_subsampling_factor_);
 }
 
 base::TimeDelta ExternalBeginFrameSourceMac::GetMaximumRefreshFrameInterval() {
@@ -283,6 +280,25 @@ base::TimeDelta ExternalBeginFrameSourceMac::GetMaximumRefreshFrameInterval() {
 void ExternalBeginFrameSourceMac::SetUpdateVSyncParametersCallback(
     UpdateVSyncParametersCallback callback) {
   update_vsync_params_callback_ = callback;
+}
+
+std::vector<base::TimeDelta>
+ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
+    base::TimeDelta current_interval) {
+  if (nominal_refresh_period_ > kMaxSupportedFrameInterval) {
+    return {nominal_refresh_period_};
+  }
+
+  // |nominal_refresh_period_| is updated in SetVSyncDisplayID() or in the last
+  // OnDisplayLinkCallback().
+  std::vector<base::TimeDelta> supported_intervals;
+  base::TimeDelta interval = nominal_refresh_period_;
+  while (interval <= kMaxSupportedFrameInterval) {
+    supported_intervals.push_back(interval);
+    interval *= 2;
+  }
+
+  return supported_intervals;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

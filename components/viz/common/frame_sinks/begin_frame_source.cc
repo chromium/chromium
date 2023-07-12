@@ -545,4 +545,9 @@ base::TimeDelta ExternalBeginFrameSource::GetMaximumRefreshFrameInterval() {
   return BeginFrameArgs::DefaultInterval();
 }
 
+std::vector<base::TimeDelta>
+ExternalBeginFrameSource::GetSupportedFrameIntervals(base::TimeDelta interval) {
+  return {interval, interval * 2};
+}
+
 }  // namespace viz

@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
@@ -433,6 +434,9 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
 
   // Returns the maximum supported refresh rate interval for a given BFS.
   virtual base::TimeDelta GetMaximumRefreshFrameInterval();
+
+  virtual std::vector<base::TimeDelta> GetSupportedFrameIntervals(
+      base::TimeDelta interval);
 
  protected:
   // Called on AddObserver and gets missed BeginFrameArgs for the given

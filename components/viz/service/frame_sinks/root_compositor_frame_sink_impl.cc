@@ -327,7 +327,8 @@ void RootCompositorFrameSinkImpl::SetDisplayVSyncParameters(
     // If the incoming display interval changes, we should update the
     // |supported_intervals_| in FrameRateDecider
     if (display_frame_interval_ != interval) {
-      display_->SetSupportedFrameIntervals({interval, interval * 2});
+      display_->SetSupportedFrameIntervals(
+          GetSupportedFrameIntervals(interval));
       display_frame_interval_ = interval;
     }
 
@@ -363,6 +364,16 @@ void RootCompositorFrameSinkImpl::SetDisplayVSyncParameters(
   }
 
   UpdateVSyncParameters();
+}
+
+std::vector<base::TimeDelta>
+RootCompositorFrameSinkImpl::GetSupportedFrameIntervals(
+    base::TimeDelta interval) {
+  if (external_begin_frame_source_) {
+    return external_begin_frame_source_->GetSupportedFrameIntervals(interval);
+  }
+
+  return {interval, interval * 2};
 }
 
 void RootCompositorFrameSinkImpl::UpdateVSyncParameters() {
@@ -571,7 +582,7 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
 #else
   if (!hw_support_for_multiple_refresh_rates) {
     display_->SetSupportedFrameIntervals(
-        {display_frame_interval_, display_frame_interval_ * 2});
+        GetSupportedFrameIntervals(display_frame_interval_));
     use_preferred_interval_ = true;
   }
 #endif

@@ -166,6 +166,9 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   void UpdateVSyncParameters();
   BeginFrameSource* begin_frame_source();
 
+  std::vector<base::TimeDelta> GetSupportedFrameIntervals(
+      base::TimeDelta interval);
+
   mojo::Remote<mojom::CompositorFrameSinkClient> compositor_frame_sink_client_;
   mojo::AssociatedReceiver<mojom::CompositorFrameSink>
       compositor_frame_sink_receiver_;
