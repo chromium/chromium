@@ -40,6 +40,9 @@ class GURL;
 // Returns the spotlight ID for an item indexing URL.
 - (NSString*)spotlightIDForURL:(const GURL&)URL;
 
+// Cancel all large icon tasks if there are any.
+- (void)cancelAllLargeIconPendingTasks;
+
 @end
 
 #endif  // IOS_CHROME_APP_SPOTLIGHT_SEARCHABLE_ITEM_FACTORY_H_

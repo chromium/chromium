@@ -13,6 +13,7 @@
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #import "ios/chrome/app/spotlight/reading_list_spotlight_manager.mm"
+#import "ios/chrome/app/spotlight/searchable_item_factory.h"
 #import "ios/chrome/app/spotlight/spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
@@ -44,23 +45,31 @@
 
 + (ReadingListSpotlightManager*)readingListSpotlightManagerWithBrowserState:
     (ChromeBrowserState*)browserState {
+  favicon::LargeIconService* largeIconService =
+      IOSChromeLargeIconServiceFactory::GetForBrowserState(browserState);
+
   return [[ReadingListSpotlightManager alloc]
-      initWithLargeIconService:IOSChromeLargeIconServiceFactory::
-                                   GetForBrowserState(browserState)
+      initWithLargeIconService:largeIconService
               readingListModel:ReadingListModelFactory::GetInstance()
                                    ->GetForBrowserState(browserState)
-            spotlightInterface:[SpotlightInterface defaultInterface]];
+            spotlightInterface:[SpotlightInterface defaultInterface]
+         searchableItemFactory:
+             [[SearchableItemFactory alloc]
+                 initWithLargeIconService:largeIconService
+                                   domain:spotlight::DOMAIN_READING_LIST]];
 }
 
 - (instancetype)
     initWithLargeIconService:(favicon::LargeIconService*)largeIconService
             readingListModel:(ReadingListModel*)model
-          spotlightInterface:(SpotlightInterface*)spotlightInterface {
-  self = [super initWithLargeIconService:largeIconService
-                                  domain:spotlight::DOMAIN_READING_LIST
-                      spotlightInterface:spotlightInterface];
+          spotlightInterface:(SpotlightInterface*)spotlightInterface
+       searchableItemFactory:(SearchableItemFactory*)searchableItemFactory {
+  self = [super init];
+
   if (self) {
     _model = model;
+    _searchableItemFactory = searchableItemFactory;
+    _spotlightInterface = spotlightInterface;
     _modelBridge.reset(new ReadingListModelBridge(self, model));
   }
   return self;
@@ -73,16 +82,6 @@
 
 - (void)shutdown {
   [self detachModel];
-  [super shutdown];
-}
-
-- (NSString*)spotlightIDForURL:(const GURL&)URL {
-  return [self spotlightIDForURL:URL title:nil];
-}
-
-- (NSString*)spotlightIDForURL:(const GURL&)URL title:(NSString*)title {
-  // In Spotlight model, URLs are unique keys.
-  return [super spotlightIDForURL:URL title:@""];
 }
 
 - (void)clearAndReindexReadingList {
@@ -93,13 +92,18 @@
   }
 
   __weak ReadingListSpotlightManager* weakSelf = self;
-  [self clearAllSpotlightItems:^(NSError* error) {
-    if (error) {
-      [SpotlightLogger logSpotlightError:error];
-      return;
-    }
-    [weakSelf indexAllReadingListItems];
-  }];
+  [self.searchableItemFactory cancelAllLargeIconPendingTasks];
+  [self.spotlightInterface
+      deleteSearchableItemsWithDomainIdentifiers:@[
+        spotlight::StringFromSpotlightDomain(spotlight::DOMAIN_READING_LIST)
+      ]
+                               completionHandler:^(NSError* error) {
+                                 if (error) {
+                                   [SpotlightLogger logSpotlightError:error];
+                                   return;
+                                 }
+                                 [weakSelf indexAllReadingListItems];
+                               }];
 }
 
 - (void)indexAllReadingListItems {
@@ -114,7 +118,13 @@
         self.model->GetEntryByURL(url).get();
     DCHECK(entry);
     NSString* title = base::SysUTF8ToNSString(entry->Title());
-    [self refreshItemsWithURL:entry->URL() title:title];
+    [self.searchableItemFactory
+        generateSearchableItem:entry->URL()
+                         title:title
+            additionalKeywords:@[]
+             completionHandler:^(CSSearchableItem* item) {
+               [self.spotlightInterface indexSearchableItems:@[ item ]];
+             }];
   }
 }
 
@@ -180,7 +190,8 @@
     if (p.second) {
       [self addReadingListEntryToSpotlight:p.first];
     } else {
-      [entriesToRemove addObject:[self spotlightIDForURL:p.first]];
+      [entriesToRemove
+          addObject:[self.searchableItemFactory spotlightIDForURL:p.first]];
     }
   }
 
@@ -206,7 +217,13 @@
       self.model->GetEntryByURL(url).get();
   DCHECK(entry);
   NSString* title = base::SysUTF8ToNSString(entry->Title());
-  [self refreshItemsWithURL:entry->URL() title:title];
+  [self.searchableItemFactory
+      generateSearchableItem:entry->URL()
+                       title:title
+          additionalKeywords:@[]
+           completionHandler:^(CSSearchableItem* item) {
+             [self.spotlightInterface indexSearchableItems:@[ item ]];
+           }];
 }
 
 - (void)removeReadingListEntryFromSpotlight:(const GURL&)url {
@@ -226,9 +243,7 @@
   scoped_refptr<const ReadingListEntry> entry =
       self.model->GetEntryByURL(url).get();
   DCHECK(entry);
-  NSString* spotlightID =
-      [self spotlightIDForURL:url
-                        title:base::SysUTF8ToNSString(entry->Title())];
+  NSString* spotlightID = [self.searchableItemFactory spotlightIDForURL:url];
   [self.spotlightInterface deleteSearchableItemsWithIdentifiers:@[ spotlightID ]
                                               completionHandler:nil];
 }

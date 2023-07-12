@@ -105,9 +105,11 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
 }
 
 - (void)dealloc {
-  _largeIconTaskTracker->TryCancelAll();
-  _largeIconTaskTracker.reset();
-  _largeIconService = nullptr;
+  if (_largeIconTaskTracker) {
+    _largeIconTaskTracker->TryCancelAll();
+    _largeIconTaskTracker.reset();
+    _largeIconService = nullptr;
+  }
 }
 
 - (void)generateSearchableItem:(const GURL&)URLToRefresh
@@ -148,6 +150,10 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
                        spotlight::StringFromSpotlightDomain(_spotlightDomain),
                        [self hashForURL:URL title:title]];
   return spotlightID;
+}
+
+- (void)cancelAllLargeIconPendingTasks {
+  _largeIconTaskTracker->TryCancelAll();
 }
 
 #pragma mark private methods
