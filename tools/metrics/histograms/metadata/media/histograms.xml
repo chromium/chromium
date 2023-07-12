@@ -2232,7 +2232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CrosCdmType" enum="CrosCdmType"
-    expires_after="2022-01-15">
+    expires_after="2024-01-15">
   <owner>jkardatzke@chromium.org</owner>
   <owner>cros-gfx-video@google.com</owner>
   <summary>
@@ -2242,7 +2242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CrosPlatformCdm.SystemCode" enum="CdmSystemCode"
-    expires_after="2022-01-15">
+    expires_after="2024-01-15">
   <owner>jkardatzke@chromium.org</owner>
   <owner>cros-gfx-video@google.com</owner>
   <summary>System code in promise rejection for ChromeOS platform CDM.</summary>
