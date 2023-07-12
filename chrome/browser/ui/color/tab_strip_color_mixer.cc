@@ -161,6 +161,10 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabDividerFrameActive] = {kColorToolbar};
   mixer[kColorTabDividerFrameInactive] = {kColorToolbar};
 
+  mixer[kColorNewTabButtonForegroundFrameActive] = {
+      kColorTabForegroundActiveFrameActive};
+  mixer[kColorNewTabButtonForegroundFrameInactive] = {
+      kColorTabForegroundActiveFrameInactive};
   mixer[kColorNewTabButtonBackgroundFrameActive] = {
       kColorTabBackgroundInactiveFrameActive};
   mixer[kColorNewTabButtonBackgroundFrameInactive] = {
