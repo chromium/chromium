@@ -25,12 +25,6 @@ void SystemColorsDidChange(int aqua_color_variant) {
   // volatile. Registering in the normal application domain fails from within
   // the sandbox.
   [defaults removeVolatileDomainForName:NSArgumentDomain];
-
-  // LayoutThemeMac reads AppleAquaColorVariant on macOS versions before 10.14.
-  NSDictionary* domain_values = @{
-    @"AppleAquaColorVariant" : @(aqua_color_variant),
-  };
-  [defaults setVolatileDomain:domain_values forName:NSArgumentDomain];
 }
 
 bool IsSubpixelAntialiasingAvailable() {
