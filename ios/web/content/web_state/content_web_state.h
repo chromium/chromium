@@ -43,9 +43,16 @@ class ContentWebState : public WebState,
  public:
   explicit ContentWebState(const CreateParams& params);
 
-  // Constructor for ContentWebState created for deserialized sessions
+  // Constructor for ContentWebState created for deserialized sessions.
   ContentWebState(const CreateParams& params,
                   CRWSessionStorage* session_storage);
+
+  // Constructor for ContentWebState created for deserialized sessions.
+  ContentWebState(BrowserState* browser_state,
+                  SessionID unique_identifier,
+                  proto::WebStateMetadataStorage metadata,
+                  WebStateStorageLoader storage_loader,
+                  NativeSessionFetcher session_fetcher);
 
   ~ContentWebState() override;
 
@@ -53,6 +60,7 @@ class ContentWebState : public WebState,
   content::WebContents* GetWebContents();
 
   // WebState implementation.
+  void SerializeToProto(proto::WebStateStorage& storage) const override;
   WebStateDelegate* GetDelegate() override;
   void SetDelegate(WebStateDelegate* delegate) override;
   std::unique_ptr<WebState> Clone() const override;

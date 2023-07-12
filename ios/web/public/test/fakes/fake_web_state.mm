@@ -57,6 +57,8 @@ FakeWebState::~FakeWebState() {
     observer.ResetWebState();
 }
 
+void FakeWebState::SerializeToProto(proto::WebStateStorage& storage) const {}
+
 WebStateDelegate* FakeWebState::GetDelegate() {
   return nil;
 }

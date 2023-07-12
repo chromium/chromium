@@ -35,9 +35,6 @@
 enum WKPermissionDecision : NSInteger;
 
 namespace web {
-namespace proto {
-class WebStateStorage;
-}  // namespace proto
 
 class BrowserState;
 struct FaviconURL;
@@ -62,14 +59,6 @@ class WebFramesManagerImpl;
 //    writing them out for session saves.
 class WebStateImpl final : public WebState {
  public:
-  // Callback used to load the full information for the WebState when
-  // it will become realized.
-  using WebStateStorageLoader =
-      base::OnceCallback<void(proto::WebStateStorage&)>;
-
-  // Callback used to fetch the native session for the WebState.
-  using NativeSessionFetcher = base::OnceCallback<NSData*()>;
-
   // Empty structure used to mark the constructor used to implement Clone.
   struct CloneFrom {};
 
@@ -84,6 +73,15 @@ class WebStateImpl final : public WebState {
 
   // Constructor for WebStateImpls created for deserialized sessions
   WebStateImpl(const CreateParams& params, CRWSessionStorage* session_storage);
+
+  // Constructor for WebStateImpls created for deserialized sessions. The
+  // callbacks are used to load the complete serialized data from disk when
+  // the WebState transition to the realized state.
+  WebStateImpl(BrowserState* browser_state,
+               SessionID unique_identifier,
+               proto::WebStateMetadataStorage metadata,
+               WebStateStorageLoader storage_loader,
+               NativeSessionFetcher session_fetcher);
 
   // Constructor for cloned WebStateImpl.
   WebStateImpl(CloneFrom, const RealizedWebState& pimpl);
@@ -286,6 +284,7 @@ class WebStateImpl final : public WebState {
       API_AVAILABLE(ios(15.0));
 
   // WebState:
+  void SerializeToProto(proto::WebStateStorage& storage) const final;
   WebStateDelegate* GetDelegate() final;
   void SetDelegate(WebStateDelegate* delegate) final;
   std::unique_ptr<WebState> Clone() const final;

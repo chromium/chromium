@@ -68,12 +68,12 @@ void WebStateImpl::SerializedData::SetSessionStorage(
   DCHECK(session_storage_);
 }
 
-WebStateImpl::WebStateStorageLoader
+WebState::WebStateStorageLoader
 WebStateImpl::SerializedData::TakeStorageLoader() {
   return std::move(storage_loader_);
 }
 
-WebStateImpl::NativeSessionFetcher
+WebState::NativeSessionFetcher
 WebStateImpl::SerializedData::TakeNativeSessionFetcher() {
   return std::move(session_fetcher_);
 }

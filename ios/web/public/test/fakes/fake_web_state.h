@@ -33,6 +33,7 @@ class FakeWebState : public WebState {
   ~FakeWebState() override;
 
   // WebState implementation.
+  void SerializeToProto(proto::WebStateStorage& storage) const override;
   WebStateDelegate* GetDelegate() override;
   void SetDelegate(WebStateDelegate* delegate) override;
   std::unique_ptr<WebState> Clone() const override;

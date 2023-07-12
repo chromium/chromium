@@ -16,6 +16,7 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/session/proto/metadata.pb.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_client.h"
@@ -26,6 +27,10 @@
 #import "ios/web/web_state/web_state_impl_serialized_data.h"
 #import "net/base/mac/url_conversions.h"
 #import "url/gurl.h"
+
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -97,6 +102,7 @@ WebStateImpl::WebStateImpl(const CreateParams& params) {
 
 WebStateImpl::WebStateImpl(const CreateParams& params,
                            CRWSessionStorage* session_storage) {
+  DCHECK(!features::UseSessionSerializationOptimizations());
   AddWebStateImplMarker();
 
   // Restore the serializable user data as user code may depend on accessing
@@ -121,6 +127,22 @@ WebStateImpl::WebStateImpl(const CreateParams& params,
       }),
       base::BindOnce(&FetchSessionDataBlob, GetWeakPtr()));
   saved_->SetSessionStorage(session_storage);
+
+  SendGlobalCreationEvent();
+}
+
+WebStateImpl::WebStateImpl(BrowserState* browser_state,
+                           SessionID unique_identifier,
+                           proto::WebStateMetadataStorage metadata,
+                           WebStateStorageLoader storage_loader,
+                           NativeSessionFetcher session_fetcher) {
+  DCHECK(features::UseSessionSerializationOptimizations());
+  AddWebStateImplMarker();
+
+  saved_ = std::make_unique<SerializedData>(
+      this, browser_state, [[NSUUID UUID] UUIDString], unique_identifier,
+      std::move(metadata), std::move(storage_loader),
+      std::move(session_fetcher));
 
   SendGlobalCreationEvent();
 }
@@ -397,6 +419,12 @@ void WebStateImpl::RequestPermissionsWithDecisionHandler(
 
 #pragma mark - WebState implementation
 
+void WebStateImpl::SerializeToProto(proto::WebStateStorage& storage) const {
+  DCHECK(features::UseSessionSerializationOptimizations());
+  DCHECK(IsRealized());
+  pimpl_->SerializeToProto(storage);
+}
+
 WebStateDelegate* WebStateImpl::GetDelegate() {
   return LIKELY(pimpl_) ? pimpl_->GetDelegate() : nullptr;
 }
@@ -566,6 +594,7 @@ WebStateImpl::GetSessionCertificatePolicyCache() {
 }
 
 CRWSessionStorage* WebStateImpl::BuildSessionStorage() const {
+  DCHECK(!features::UseSessionSerializationOptimizations());
   CRWSessionStorage* session_storage = nil;
   if (LIKELY(pimpl_)) {
     proto::WebStateStorage storage;

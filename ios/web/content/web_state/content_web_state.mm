@@ -19,6 +19,8 @@
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/session/proto/metadata.pb.h"
+#import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/text_fragments/text_fragments_manager_impl.h"
@@ -68,6 +70,25 @@ FaviconURL::IconType IconTypeFromContentIconType(
   }
   NOTREACHED();
   return FaviconURL::IconType::kInvalid;
+}
+
+// Creates a CRWSessionStorage instance from protobuf message.
+// TODO(crbug.com/1383087): remove when ContentWebState supports serialization
+// using protobuf message format directly.
+CRWSessionStorage* CreateSessionStorage(
+    SessionID unique_identifier,
+    proto::WebStateMetadataStorage metadata,
+    WebState::WebStateStorageLoader storage_loader) {
+  // Load the data from disk as this is needed to create the CRWSessionStorage.
+  proto::WebStateStorage storage;
+  std::move(storage_loader).Run(storage);
+  *storage.mutable_metadata() = std::move(metadata);
+
+  CRWSessionStorage* session_storage =
+      [[CRWSessionStorage alloc] initWithProto:storage];
+  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
+  session_storage.uniqueIdentifier = unique_identifier;
+  return session_storage;
 }
 
 }  // namespace
@@ -126,6 +147,16 @@ ContentWebState::ContentWebState(const CreateParams& params,
   }
 }
 
+ContentWebState::ContentWebState(BrowserState* browser_state,
+                                 SessionID unique_identifier,
+                                 proto::WebStateMetadataStorage metadata,
+                                 WebStateStorageLoader storage_loader,
+                                 NativeSessionFetcher session_fetcher)
+    : ContentWebState(CreateParams(browser_state),
+                      CreateSessionStorage(unique_identifier,
+                                           std::move(metadata),
+                                           std::move(storage_loader))) {}
+
 ContentWebState::~ContentWebState() {
   WebContentsObserver::Observe(nullptr);
   for (auto& observer : observers_) {
@@ -141,6 +172,14 @@ ContentWebState::~ContentWebState() {
 
 content::WebContents* ContentWebState::GetWebContents() {
   return web_contents_.get();
+}
+
+void ContentWebState::SerializeToProto(proto::WebStateStorage& storage) const {
+  // TODO(crbug.com/1383087): implement directly instead of serialising to
+  // CRWSessionStorage and then converting to protobuf message format.
+  DCHECK(IsRealized());
+  CRWSessionStorage* session_storage = BuildSessionStorage();
+  [session_storage serializeToProto:storage];
 }
 
 WebStateDelegate* ContentWebState::GetDelegate() {
