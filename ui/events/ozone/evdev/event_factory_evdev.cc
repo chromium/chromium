@@ -132,6 +132,13 @@ class ProxyDeviceEventDispatcher : public DeviceEventDispatcherEvdev {
         base::BindOnce(&EventFactoryEvdev::DispatchTouchpadDevicesUpdated,
                        event_factory_evdev_, devices, has_haptic_touchpad));
   }
+  void DispatchGraphicsTabletDevicesUpdated(
+      const std::vector<InputDevice>& devices) override {
+    ui_thread_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&EventFactoryEvdev::DispatchGraphicsTabletDevicesUpdated,
+                       event_factory_evdev_, devices));
+  }
   void DispatchDeviceListsComplete() override {
     ui_thread_runner_->PostTask(
         FROM_HERE,
@@ -477,6 +484,14 @@ void EventFactoryEvdev::DispatchMicrophoneMuteSwitchValueChanged(bool muted) {
   TRACE_EVENT0("evdev",
                "EventFactoryEvdev::DispatchMicrophoneMuteSwitchValueChanged");
   MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(muted);
+}
+
+void EventFactoryEvdev::DispatchGraphicsTabletDevicesUpdated(
+    const std::vector<InputDevice>& devices) {
+  TRACE_EVENT0("evdev",
+               "EventFactoryEvdev::DispatchGraphicsTabletDevicesUpdated");
+  DeviceHotplugEventObserver* observer = DeviceDataManager::GetInstance();
+  observer->OnGraphicsTabletDevicesUpdated(devices);
 }
 
 void EventFactoryEvdev::DispatchUncategorizedDevicesUpdated(

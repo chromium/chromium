@@ -134,6 +134,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   // Returns true if the converter is used for a device with gamepad input.
   virtual bool HasGamepad() const;
 
+  // Returns true if the converter is used for a device with graphics tablet
+  // input.
+  virtual bool HasGraphicsTablet() const;
+
   // Returns true if the converter is used for a device with a caps lock LED.
   virtual bool HasCapsLockLed() const;
 

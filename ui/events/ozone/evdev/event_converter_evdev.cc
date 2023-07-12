@@ -147,6 +147,10 @@ bool EventConverterEvdev::HasGamepad() const {
   return false;
 }
 
+bool EventConverterEvdev::HasGraphicsTablet() const {
+  return false;
+}
+
 bool EventConverterEvdev::HasAssistantKey() const {
   return false;
 }

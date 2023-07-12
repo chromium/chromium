@@ -96,6 +96,10 @@ void TabletEventConverterEvdev::OnFileCanReadWithoutBlocking(int fd) {
   ProcessEvents(inputs, read_size / sizeof(*inputs));
 }
 
+bool TabletEventConverterEvdev::HasGraphicsTablet() const {
+  return true;
+}
+
 std::ostream& TabletEventConverterEvdev::DescribeForLog(
     std::ostream& os) const {
   os << "class=ui::TabletEventConverterEvdev id=" << input_device_.id
