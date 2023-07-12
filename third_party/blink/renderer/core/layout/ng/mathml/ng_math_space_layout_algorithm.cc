@@ -34,13 +34,10 @@ const NGLayoutResult* NGMathSpaceLayoutAlgorithm::Layout() {
 
 MinMaxSizesResult NGMathSpaceLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
-  if (auto result = CalculateMinMaxSizesIgnoringChildren(
-          Node(), BorderScrollbarPadding()))
-    return *result;
-
-  MinMaxSizes sizes;
-  sizes += BorderScrollbarPadding().InlineSum();
-  return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
+  auto result =
+      CalculateMinMaxSizesIgnoringChildren(Node(), BorderScrollbarPadding());
+  DCHECK(result);
+  return *result;
 }
 
 }  // namespace blink
