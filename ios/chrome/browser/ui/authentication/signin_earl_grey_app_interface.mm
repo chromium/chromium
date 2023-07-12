@@ -18,6 +18,7 @@
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
@@ -147,6 +148,18 @@
   AccountCapabilitiesTestMutator* mutator =
       systemIdentityManager->GetCapabilitiesMutator(fakeIdentity);
   mutator->set_is_subject_to_parental_controls(value);
+
+  // Update child account status to reflect parental controls support.
+  // TODO(b/276899041): Add support for test classes to listen to extended
+  // account info changes and reflect the new state in services.
+  PrefService* prefService =
+      chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+  if (value) {
+    supervised_user::EnableParentalControls(*prefService);
+  } else {
+    supervised_user::DisableParentalControls(*prefService);
+  }
+  systemIdentityManager->FireIdentityUpdatedNotification(fakeIdentity);
 }
 
 + (void)setCanHaveEmailAddressDisplayed:(BOOL)value

@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
@@ -305,6 +306,9 @@ enum class IOSOverflowMenuActionType {
           GetApplicationContext()->GetBrowserPolicyConnector();
       self.overflowMenuMediator.syncService =
           SyncServiceFactory::GetForBrowserState(
+              self.browser->GetBrowserState());
+      self.overflowMenuMediator.supervisedUserService =
+          SupervisedUserServiceFactory::GetForBrowserState(
               self.browser->GetBrowserState());
       self.overflowMenuMediator.promosManager =
           PromosManagerFactory::GetForBrowserState(

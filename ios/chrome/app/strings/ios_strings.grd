@@ -4362,6 +4362,12 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_TOOLS_MENU_ENTERPRISE_LEARN_MORE" desc="Link displayed to allow the user to learn more why the browser is managed by Enterprise policies. Shown at the bottom of the overflow menu. [iOS only]">
         Learn More
       </message>
+      <message name="IDS_IOS_TOOLS_MENU_PARENT_MANAGED" desc="Text displayed to inform the user that the browser is managed by their parent at the bottom of the overflow menu (without link). [iOS only]">
+        Managed by your parent
+      </message>
+      <message name="IDS_IOS_TOOLS_MENU_PARENT_LEARN_MORE" desc="Link displayed to allow the user to learn more why the browser is managed by their parent. Shown at the bottom of the overflow menu. [iOS only]">
+        Learn More
+      </message>
       <message name="IDS_IOS_TOOLS_MENU_FOLLOW" desc="The iOS menu item for following web content. [iOS only]">
         Follow <ph name="DOMAIN_NAME">$1<ex>google.com</ex></ph>
       </message>

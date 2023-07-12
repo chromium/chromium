@@ -20,6 +20,8 @@
 #import "components/policy/core/common/mock_configuration_policy_provider.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/supervised_user/core/browser/supervised_user_preferences.h"
+#import "components/supervised_user/core/common/pref_names.h"
 #import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/test/mock_sync_service.h"
@@ -44,6 +46,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
 #import "ios/chrome/browser/ui/popup_menu//overflow_menu/overflow_menu_orderer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
@@ -118,6 +121,10 @@ class OverflowMenuMediatorTest : public PlatformTest {
   OverflowMenuMediatorTest() {
     pref_service_.registry()->RegisterBooleanPref(
         translate::prefs::kOfferTranslateEnabled, true);
+    pref_service_.registry()->RegisterStringPref(prefs::kSupervisedUserId,
+                                                 std::string());
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kChildAccountStatusKnown, false);
   }
 
   void SetUp() override {
@@ -203,6 +210,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
     mediator_.isIncognito = is_incognito;
     mediator_.menuOrderer = orderer_;
     mediator_.baseViewController = baseViewController_;
+    mediator_.supervisedUserService =
+        SupervisedUserServiceFactory::GetForBrowserState(browser_state_.get());
     return mediator_;
   }
 
@@ -322,6 +331,16 @@ class OverflowMenuMediatorTest : public PlatformTest {
              .actionGroups) {
       if (group.footer.accessibilityIdentifier == kTextMenuEnterpriseInfo)
         return YES;
+    }
+    return NO;
+  }
+
+  bool HasFamilyLinkInfoItem() {
+    for (OverflowMenuActionGroup* group in mediator_.overflowMenuModel
+             .actionGroups) {
+      if (group.footer.accessibilityIdentifier == kTextMenuFamilyLinkInfo) {
+        return YES;
+      }
     }
     return NO;
   }
@@ -556,6 +575,36 @@ TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoShown) {
   [mediator_ overflowMenuModel];
 
   ASSERT_TRUE(HasEnterpriseInfoItem());
+}
+
+// Tests that the Family Link item is hidden for non-supervised users.
+TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoHidden) {
+  supervised_user::DisableParentalControls(*browser_state_->GetPrefs());
+
+  CreateMediator(/*is_incognito=*/NO);
+  SetUpActiveWebState();
+
+  mediator_.webStateList = browser_->GetWebStateList();
+
+  // Force creation of the model.
+  [mediator_ overflowMenuModel];
+
+  ASSERT_FALSE(HasFamilyLinkInfoItem());
+}
+
+// Tests that the Family Link item is shown for supervised users.
+TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoShown) {
+  supervised_user::EnableParentalControls(*browser_state_->GetPrefs());
+
+  CreateMediator(/*is_incognito=*/NO);
+  SetUpActiveWebState();
+
+  mediator_.webStateList = browser_->GetWebStateList();
+
+  // Force creation of the model.
+  [mediator_ overflowMenuModel];
+
+  ASSERT_TRUE(HasFamilyLinkInfoItem());
 }
 
 // Tests that 1) the tools menu has an enabled 'Add to Bookmarks' button when

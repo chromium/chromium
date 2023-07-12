@@ -42,6 +42,7 @@ NSString* const kToolsMenuSiteInformation = @"kToolsMenuSiteInformation";
 NSString* const kToolsMenuIncognitoSearch = @"kToolsMenuIncognitoSearch";
 NSString* const kToolsMenuTextZoom = @"kToolsMenuTextZoom";
 NSString* const kTextMenuEnterpriseInfo = @"kTextMenuEnterpriseInfo";
+NSString* const kTextMenuFamilyLinkInfo = @"kTextMenuFamilyLinkInfo";
 NSString* const kToolsMenuFollow = @"kToolsMenuFollow";
 NSString* const kToolsMenuUnfollow = @"kToolsMenuUnfollow";
 NSString* const kToolsMenuClearBrowsingData = @"kToolsMenuClearBrowsingData";

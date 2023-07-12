@@ -93,6 +93,7 @@ source_set("popup_menu") {
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/supervised_user",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/translate",

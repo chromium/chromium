@@ -21,6 +21,8 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/profile_metrics/browser_profile_type.h"
+#import "components/supervised_user/core/browser/supervised_user_service.h"
+#import "components/supervised_user/core/common/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
@@ -144,16 +146,18 @@ OverflowMenuAction* CreateOverflowMenuAction(
                                             accessibilityID, handler);
 }
 
-OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
-                                                    int linkID,
-                                                    NSString* imageName,
-                                                    Handler handler) {
+OverflowMenuFooter* CreateOverflowMenuManagedFooter(
+    int nameID,
+    int linkID,
+    NSString* accessibilityIdentifier,
+    NSString* imageName,
+    Handler handler) {
   NSString* name = l10n_util::GetNSString(nameID);
   NSString* link = l10n_util::GetNSString(linkID);
   return [[OverflowMenuFooter alloc] initWithName:name
                                              link:link
                                             image:[UIImage imageNamed:imageName]
-                          accessibilityIdentifier:kTextMenuEnterpriseInfo
+                          accessibilityIdentifier:accessibilityIdentifier
                                           handler:handler];
 }
 
@@ -465,6 +469,17 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   _syncService = syncService;
 
   if (!syncService) {
+    return;
+  }
+
+  [self updateModel];
+}
+
+- (void)setSupervisedUserService:
+    (supervised_user::SupervisedUserService*)supervisedUserService {
+  _supervisedUserService = supervisedUserService;
+
+  if (!supervisedUserService) {
     return;
   }
 
@@ -1001,9 +1016,16 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       _browserPolicyConnector->HasMachineLevelPolicies()) {
     self.helpActionsGroup.footer = CreateOverflowMenuManagedFooter(
         IDS_IOS_TOOLS_MENU_ENTERPRISE_MANAGED,
-        IDS_IOS_TOOLS_MENU_ENTERPRISE_LEARN_MORE,
+        IDS_IOS_TOOLS_MENU_ENTERPRISE_LEARN_MORE, kTextMenuEnterpriseInfo,
         @"overflow_menu_footer_managed", ^{
           [self enterpriseLearnMore];
+        });
+  } else if (self.supervisedUserService &&
+             self.supervisedUserService->IsSubjectToParentalControls()) {
+    self.helpActionsGroup.footer = CreateOverflowMenuManagedFooter(
+        IDS_IOS_TOOLS_MENU_PARENT_MANAGED, IDS_IOS_TOOLS_MENU_PARENT_LEARN_MORE,
+        kTextMenuFamilyLinkInfo, @"overflow_menu_footer_family_link", ^{
+          [self parentLearnMore];
         });
   } else {
     self.helpActionsGroup.footer = nil;
@@ -1818,6 +1840,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   [self.dispatcher
       openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:
                                              GURL(kChromeUIManagementURL)]];
+}
+
+- (void)parentLearnMore {
+  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  GURL familyLinkURL =
+      GURL(supervised_user::kManagedByParentUiMoreInfoUrl.Get());
+  [self.dispatcher openURLInNewTab:[OpenNewTabCommand
+                                       commandWithURLFromChrome:familyLinkURL]];
 }
 
 - (void)openSpotlightDebugger {

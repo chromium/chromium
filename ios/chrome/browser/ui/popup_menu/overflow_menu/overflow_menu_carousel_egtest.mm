@@ -224,4 +224,31 @@ void ResolvePassphraseErrorFromOverflowMenu() {
       assertWithMatcher:grey_notNil()];
 }
 
+// Tests that the overflow menu footer displays Family Link disclaimer with a
+// link to more information about family accounts.
+- (void)testOverflowMenuFooterFamilyLink {
+  if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
+    EARL_GREY_TEST_SKIPPED(kOverflowMenuSkipTestMessage)
+  }
+
+  // Sign in and Sync account.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
+
+  // Open tools menu to click on "Learn more" family link footer.
+  [ChromeEarlGreyUI openToolsMenu];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kTextMenuFamilyLinkInfo),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(
+                               kPopupMenuToolsMenuActionListId)]
+      performAction:grey_tap()];
+
+  // Wait for the Family Link page to be visible.
+  [ChromeEarlGrey waitForWebStateVisible];
+}
+
 @end

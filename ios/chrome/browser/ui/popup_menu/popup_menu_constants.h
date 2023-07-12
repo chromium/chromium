@@ -70,6 +70,8 @@ extern NSString* const kToolsMenuIncognitoSearch;
 extern NSString* const kToolsMenuTextZoom;
 // Text Enterprise info item accessibility identifier.
 extern NSString* const kTextMenuEnterpriseInfo;
+// Text Family Link info item accessibility identifier.
+extern NSString* const kTextMenuFamilyLinkInfo;
 // Follow item accessibility Identifier.
 extern NSString* const kToolsMenuFollow;
 // Unfollow item accessibility Identifier.
