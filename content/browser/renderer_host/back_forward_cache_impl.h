@@ -396,6 +396,11 @@ class CONTENT_EXPORT BackForwardCacheImpl
   void Flush(
       const StoragePartition::StorageKeyMatcherFunction& storage_key_filter);
 
+  // Evict all entries from the BackForwardCache that were loaded with
+  // "Cache-Control: no-store" header and match the removal filter.
+  void FlushCacheControlNoStoreEntries(
+      const StoragePartition::StorageKeyMatcherFunction& storage_key_filter);
+
   // RenderProcessHostInternalObserver methods
   void RenderProcessBackgroundedChanged(RenderProcessHostImpl* host) override;
 

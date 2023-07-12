@@ -611,6 +611,17 @@ void BrowsingDataRemoverImpl::RemoveImpl(
         filter_builder->BuildNetworkServiceFilter(),
         CreateTaskCompletionClosureForMojo(
             TracingDataType::kNetworkErrorLogging));
+
+    // Clears the BFCache entries that are loaded with "Cache-Control: no-store"
+    // header and match the removal filter for the current browser context.
+    auto storage_key_filter = filter_builder->BuildStorageKeyFilter();
+    for (WebContentsImpl* web_contents : WebContentsImpl::GetAllWebContents()) {
+      if (web_contents->GetBrowserContext() == browser_context_) {
+        web_contents->GetController()
+            .GetBackForwardCache()
+            .FlushCacheControlNoStoreEntries(storage_key_filter);
+      }
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

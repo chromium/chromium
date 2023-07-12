@@ -1249,6 +1249,23 @@ void BackForwardCacheImpl::Flush(
   }
 }
 
+void BackForwardCacheImpl::FlushCacheControlNoStoreEntries(
+    const StoragePartition::StorageKeyMatcherFunction& storage_key_filter) {
+  for (std::unique_ptr<Entry>& entry : entries_) {
+    RenderFrameHostImpl* rfh = entry->render_frame_host();
+    if (rfh->LoadedWithCacheControlNoStoreHeader() &&
+        storage_key_filter.Run(blink::StorageKey::CreateFirstParty(
+            rfh->GetLastCommittedOrigin()))) {
+      BackForwardCacheCanStoreDocumentResult flattened_reasons;
+      flattened_reasons.No(
+          BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore);
+      flattened_reasons.No(
+          BackForwardCacheMetrics::NotRestoredReason::kCookieFlushed);
+      rfh->EvictFromBackForwardCacheWithFlattenedReasons(flattened_reasons);
+    }
+  }
+}
+
 void BackForwardCacheImpl::Shutdown() {
   if (UsingForegroundBackgroundCacheSizeLimit()) {
     for (auto& entry : entries_)
