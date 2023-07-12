@@ -51,15 +51,10 @@ class ClangPluginTest(object):
 
     clang_cmd = [self._clang_path, '-c', '-std=c++14']
 
-    # If the -fno-diagnostics-show-line-numbers flag exists, we need it to get
-    # the traditional diagnostics format. (crbug.com/1450229).
-    clang_exe = self._clang_path + ('.exe' if sys.platform == 'win32' else '')
-    with open(clang_exe, 'rb') as f:
-      if 'diagnostics-show-line-numbers'.encode('ascii') in f.read():
-        clang_cmd.extend([
-            '-fno-diagnostics-show-line-numbers',
-            '-fcaret-diagnostics-max-lines=1'
-        ])
+    # Use the traditional diagnostics format (see crbug.com/1450229).
+    clang_cmd.extend([
+        '-fno-diagnostics-show-line-numbers', '-fcaret-diagnostics-max-lines=1'
+    ])
 
     clang_cmd.extend(['-Xclang', '-add-plugin', '-Xclang', self._plugin_name])
     self.AdjustClangArguments(clang_cmd)
