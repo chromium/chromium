@@ -407,7 +407,12 @@ export class FileTasks {
     const filename = this.entries_[0]!.name;
     const extension = util.splitExtension(filename)[1] || null;
 
-    await this.checkAvailability_();
+    try {
+      await this.checkAvailability_();
+    } catch (error) {
+      console.warn('Rejected after checking availability due to', error);
+      return;
+    }
 
     try {
       const descriptor = {
@@ -471,7 +476,12 @@ export class FileTasks {
   private async executeInternal_(task: chrome.fileManagerPrivate.FileTask):
       Promise<void> {
     const entries = this.entries_;
-    await this.checkAvailability_();
+    try {
+      await this.checkAvailability_();
+    } catch (error) {
+      console.warn('Rejected after checking availability due to', error);
+      return;
+    }
     this.taskHistory_.recordTaskExecuted(task.descriptor);
     const msg = (entries.length === 1) ?
         strf('OPEN_A11Y', entries[0]!.name) :
@@ -563,7 +573,7 @@ export class FileTasks {
               str('OFFLINE_COLUMN_LABEL'));
 
       this.ui_.alertDialog.showHtml(str('OFFLINE_HEADER'), msg);
-      return Promise.reject();
+      return Promise.reject('drive is offline');
     }
 
     const isOnMetered = this.volumeManager_.getDriveConnectionState().type ===
