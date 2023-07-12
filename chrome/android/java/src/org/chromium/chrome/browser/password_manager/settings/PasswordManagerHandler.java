@@ -92,4 +92,12 @@ public interface PasswordManagerHandler {
      * @param bottomSheetController the controller displaying the warning bottom sheet.
      */
     void showMigrationWarning(Activity activity, BottomSheetController bottomSheetController);
+
+    /**
+     * Calls C++ to check whether the PasswordManagerHandler is still waiting for the passwords to
+     * be fetched from the password store.
+     *
+     * @return Returns true if the request to fetch the passwords is still pending.
+     */
+    boolean isWaitingForPasswordStore();
 }

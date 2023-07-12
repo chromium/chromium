@@ -315,7 +315,7 @@ public class PasswordMigrationWarningMediatorTest {
     public void testOnNextWithoutPasswordsWithExportingSelectedStartsTheExportFlow() {
         mMediator.onNext(MigrationOption.EXPORT_AND_DELETE, mFragmentManager);
 
-        verify(mOptionsHandler).startExportFlow(mFragmentManager, false);
+        verify(mOptionsHandler).startExportFlow(mFragmentManager);
     }
 
     @Test
@@ -323,7 +323,7 @@ public class PasswordMigrationWarningMediatorTest {
         mMediator.passwordListAvailable(2);
         mMediator.onNext(MigrationOption.EXPORT_AND_DELETE, mFragmentManager);
 
-        verify(mOptionsHandler).startExportFlow(mFragmentManager, true);
+        verify(mOptionsHandler).startExportFlow(mFragmentManager);
     }
 
     @Test
