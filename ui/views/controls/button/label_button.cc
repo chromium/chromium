@@ -73,11 +73,15 @@ LabelButton::~LabelButton() {
 
 gfx::ImageSkia LabelButton::GetImage(ButtonState for_state) const {
   for_state = ImageStateForState(for_state);
-  return button_state_image_models_[for_state].Rasterize(GetColorProvider());
+  return GetImageModel(for_state).Rasterize(GetColorProvider());
 }
 
 void LabelButton::SetImage(ButtonState for_state, const gfx::ImageSkia& image) {
   SetImageModel(for_state, ui::ImageModel::FromImageSkia(image));
+}
+
+const ui::ImageModel& LabelButton::GetImageModel(ButtonState for_state) const {
+  return button_state_image_models_[for_state];
 }
 
 void LabelButton::SetImageModel(ButtonState for_state,
