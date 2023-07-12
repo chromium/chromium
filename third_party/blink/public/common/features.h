@@ -1139,6 +1139,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignal);
 
+// If enabled, file backed blobs are registered by using the
+// FileBackedBlobFactory interface. This interface allows to capture the URL
+// from which these blobs are accessed. Access from certain URLs may be disabled
+// for managed users according to Data Leak Prevention policies.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableFileBackedBlobFactory);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kV8OptimizeWorkersForPerformance);
 
 // Feature flag for driving the Metronome by VSyncs instead of by timer.

@@ -1753,6 +1753,10 @@ BASE_FEATURE(kUseBlinkSchedulerTaskRunnerWithCustomDeleter,
              "UseBlinkSchedulerTaskRunnerWithCustomDeleter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableFileBackedBlobFactory,
+             "EnableFileBackedBlobFactory",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Whether to use 'TexImage2D' instead of 'TexStorage2DEXT' when creating a
 // staging texture for |DrawingBuffer|. This is a killswitch; remove when
 // launched.

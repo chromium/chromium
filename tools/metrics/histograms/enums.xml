@@ -66368,6 +66368,7 @@ from previous Chrome versions.
       label="AutofillSuppressCreditCardSaveForAssistant:disabled"/>
   <int value="1299784522" label="EmptyStates:disabled"/>
   <int value="1300282719" label="OfflinePagesBackgroundLoading:enabled"/>
+  <int value="1300449228" label="EnableFileBackedBlobFactory:enabled"/>
   <int value="1300753556" label="ManualPasswordGenerationAndroid:disabled"/>
   <int value="1300900599" label="ArcUpdateO4CListViaA2C2:enabled"/>
   <int value="1301902557" label="AutofillCreditCardAuthentication:disabled"/>
@@ -67183,6 +67184,7 @@ from previous Chrome versions.
   <int value="1725438666" label="NewStyleNotifications:enabled"/>
   <int value="1726144143" label="ZstdContentEncoding:enabled"/>
   <int value="1726197412" label="FencedFramesDefaultMode:disabled"/>
+  <int value="1726578007" label="EnableFileBackedBlobFactory:disabled"/>
   <int value="1729369067" label="StartSurfaceDisabledFeedImprovement:disabled"/>
   <int value="1730094138" label="enable-md-storage-manager"/>
   <int value="1730236697" label="force-device-scale-factor"/>

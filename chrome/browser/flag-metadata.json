@@ -2652,6 +2652,11 @@
     "expiry_milestone": 119
   },
   {
+    "name": "enable-file-backed-blob-factory",
+    "owners": [ "chromeos-dlp@google.com", "accorsi" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-first-party-sets",
     "owners": [ "chrome-first-party-sets@chromium.org" ],
     "expiry_milestone": 120

@@ -10338,6 +10338,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop, FEATURE_VALUE_TYPE(::features::kGetTheMostOutOfChrome)},
 #endif
 
+    {"enable-file-backed-blob-factory",
+     flag_descriptions::kEnableFileBackedBlobFactoryName,
+     flag_descriptions::kEnableFileBackedBlobFactoryDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kEnableFileBackedBlobFactory)},
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
     {"autofill-enable-payments-mandatory-reauth",
      flag_descriptions::kAutofillEnablePaymentsMandatoryReauthName,
