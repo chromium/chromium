@@ -159,9 +159,19 @@ class TestCommandLine(unittest.TestCase):
 
     def test_notarize_unspecified(self, sign_all, **kwargs):
         driver.main([
-            '--input', '/input', '--output', '/output', '--identity', 'G',
-            '--notarize', '--notary-user', 'Notary-User', '--notary-password',
-            '@env:NOTARY'
+            '--input',
+            '/input',
+            '--output',
+            '/output',
+            '--identity',
+            'G',
+            '--notarize',
+            '--notary-user',
+            'Notary-User',
+            '--notary-password',
+            '@env:NOTARY',
+            '--notary-team-id',
+            'TeamId',
         ])
         self.assertEquals(1, sign_all.call_count)
         config = sign_all.call_args.args[1]
@@ -169,12 +179,24 @@ class TestCommandLine(unittest.TestCase):
         self.assertEquals('Notary-User', config.invoker.notarizer._notary_user)
         self.assertEquals('@env:NOTARY',
                           config.invoker.notarizer._notary_password)
+        self.assertEquals('TeamId', config.invoker.notarizer._notary_team_id)
 
     def test_notarize_specific(self, sign_all, **kwargs):
         driver.main([
-            '--input', '/input', '--output', '/output', '--identity', 'G',
-            '--notarize', 'nowait', '--notary-user', 'Notary-User',
-            '--notary-password', '@env:NOTARY'
+            '--input',
+            '/input',
+            '--output',
+            '/output',
+            '--identity',
+            'G',
+            '--notarize',
+            'nowait',
+            '--notary-user',
+            'Notary-User',
+            '--notary-password',
+            '@env:NOTARY',
+            '--notary-team-id',
+            'TeamId',
         ])
         self.assertEquals(1, sign_all.call_count)
         config = sign_all.call_args.args[1]
@@ -182,6 +204,7 @@ class TestCommandLine(unittest.TestCase):
         self.assertEquals('Notary-User', config.invoker.notarizer._notary_user)
         self.assertEquals('@env:NOTARY',
                           config.invoker.notarizer._notary_password)
+        self.assertEquals('TeamId', config.invoker.notarizer._notary_team_id)
 
     def test_notarize_missing_args(self, sign_all, **kwargs):
         with self.assertRaises(SystemExit):
@@ -203,15 +226,13 @@ class TestCommandLine(unittest.TestCase):
             driver.main([
                 '--input', '/input', '--output', '/output', '--identity', 'G',
                 '--notarize', '--notary-user', 'u', '--notary-password', 'p',
-                '--notarization-tool', 'notarytool'
             ])
 
     def test_notarize_notarytool(self, sign_all, **kwargs):
         driver.main([
             '--input', '/input', '--output', '/output', '--identity', 'G',
-            '--notarization-tool', 'notarytool', '--notarize', 'staple',
-            '--notary-user', 'Notary-User', '--notary-password', '@env:NOTARY',
-            '--notary-team-id', 'Team1'
+            '--notarize', 'staple', '--notary-user', 'Notary-User',
+            '--notary-password', '@env:NOTARY', '--notary-team-id', 'Team1'
         ])
         self.assertEquals(1, sign_all.call_count)
         config = sign_all.call_args.args[1]
@@ -219,7 +240,4 @@ class TestCommandLine(unittest.TestCase):
         self.assertEquals('Notary-User', config.invoker.notarizer._notary_user)
         self.assertEquals('@env:NOTARY',
                           config.invoker.notarizer._notary_password)
-        self.assertEquals('Team1',
-                          config.invoker.notarizer._notarizer._notary_team_id)
-        self.assertEquals(model.NotarizationTool.NOTARYTOOL,
-                          config.invoker.notarizer.notarization_tool)
+        self.assertEquals('Team1', config.invoker.notarizer._notary_team_id)

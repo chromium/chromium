@@ -4,7 +4,6 @@
 # found in the LICENSE file.
 
 from .config import CodeSignConfig
-from .model import NotarizationTool
 
 
 class BuildPropsCodeSignConfig(CodeSignConfig):

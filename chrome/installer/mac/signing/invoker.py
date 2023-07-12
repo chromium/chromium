@@ -95,14 +95,6 @@ class Interface(Base):
         notarization-related operations.
         """
 
-        @property
-        def notarization_tool(self):
-            """Returns the name of the tool to use for communicating with
-            Apple's notary service. The values are from the
-            signing.model.NotarizationTool enum.
-            """
-            raise NotImplementedError('notarization_tool')
-
         def submit(self, path, config):
             """Submits an artifact to Apple for notarization.
 

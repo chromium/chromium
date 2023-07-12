@@ -4,7 +4,7 @@
 
 import os.path
 
-from signing.model import Distribution, NotarizeAndStapleLevel, NotarizationTool
+from signing.model import Distribution, NotarizeAndStapleLevel
 
 
 class ConfigError(Exception):
