@@ -81,6 +81,11 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
                                               bool show) override;
   void OnAppRegistrarDestroyed() override;
 
+  // Creates an inset from the caption button size which controls for which edge
+  // the captions buttons exists on. Used to position the tab strip region view
+  // and the caption button placeholder container. Returns the distance from the
+  // leading edge of the frame to the first tab in the tabstrip not including
+  // the corner radius.
   gfx::Insets GetCaptionButtonInsets() const;
 
   // Used by TabContainerOverlayView to paint the tab strip background.
