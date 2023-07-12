@@ -51,7 +51,11 @@ from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.results_fetcher import Build
 from blinkpy.common.net.web_test_results import Artifact, WebTestResult
-from blinkpy.tool.commands.command import Command, check_dir_option
+from blinkpy.tool.commands.command import (
+    Command,
+    check_dir_option,
+    check_file_option,
+)
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.test_expectations import SystemConfigurationEditor, TestExpectations
 from blinkpy.web_tests.models.typ_types import RESULT_TAGS, ResultType
@@ -108,6 +112,13 @@ class AbstractRebaseliningCommand(Command):
         help=('Fully-qualified name of the port that new baselines belong to, '
               'e.g. "mac-mac11". If not given, this is determined based on '
               '--builder.'))
+    test_name_file_option = optparse.make_option(
+        '--test-name-file',
+        action='callback',
+        callback=check_file_option,
+        type='string',
+        help=('Read names of tests to update from this file, '
+              'one test per line.'))
 
     def __init__(self, options=None):
         super(AbstractRebaseliningCommand, self).__init__(options=options)

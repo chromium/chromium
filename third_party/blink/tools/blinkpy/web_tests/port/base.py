@@ -42,6 +42,7 @@ import tempfile
 from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime
+from typing import Set
 
 import six
 from six.moves import zip_longest
@@ -1390,7 +1391,7 @@ class Port(object):
                 or self.skipped_due_to_exclusive_virtual_tests(test))
 
     @memoized
-    def _tests_from_file(self, filename):
+    def tests_from_file(self, filename: str) -> Set[str]:
         tests = set()
         file_contents = self._filesystem.read_text_file(filename)
         for line in file_contents.splitlines():
@@ -1411,7 +1412,7 @@ class Port(object):
         smoke_test_filename = self.path_to_smoke_tests_file()
         if not self._filesystem.exists(smoke_test_filename):
             return False
-        smoke_tests = self._tests_from_file(smoke_test_filename)
+        smoke_tests = self.tests_from_file(smoke_test_filename)
         return test not in smoke_tests
 
     def default_smoke_test_only(self):

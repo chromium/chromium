@@ -21,7 +21,7 @@ from blinkpy.tool.commands.build_resolver import (
     BuildResolver,
     UnresolvedBuildException,
 )
-from blinkpy.tool.commands.command import check_file_option
+from blinkpy.tool.commands.command import resolve_test_patterns
 from blinkpy.tool.commands.rebaseline import AbstractParallelRebaselineCommand
 from blinkpy.tool.commands.rebaseline import TestBaselineSet
 
@@ -53,13 +53,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         action='store_false',
         default=True,
         help='Do not trigger any try jobs.')
-    test_name_file_option = optparse.make_option(
-        '--test-name-file',
-        action='callback',
-        callback=check_file_option,
-        type='string',
-        help=('Read names of tests to update from this file, '
-              'one test per line.'))
     patchset_option = optparse.make_option(
         '--patchset',
         default=None,
@@ -271,17 +264,10 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         return builds_to_results
 
     def _make_test_baseline_set_from_file(self, filename, builds_to_results):
-        tests = []
+        tests = set()
         try:
-            with self._tool.filesystem.open_text_file_for_reading(
-                    filename) as fh:
-                _log.info('Reading list of tests to rebaseline '
-                          'from %s', filename)
-                for test in fh.readlines():
-                    test = test.strip()
-                    if not test or test.startswith('#'):
-                        continue
-                    tests.append(test)
+            _log.info('Reading list of tests to rebaseline from %s', filename)
+            tests = self._host_port.tests_from_file(filename)
         except IOError:
             _log.info('Could not read test names from %s', filename)
         return self._make_test_baseline_set_for_tests(tests, builds_to_results)
@@ -298,15 +284,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             A TestBaselineSet object.
         """
         test_baseline_set = TestBaselineSet(self._tool.builders)
-        port, tests = self._tool.port_factory.get(), set()
-        for test_pattern in sorted(test_patterns):
-            resolved_tests = port.tests([test_pattern])
-            if not resolved_tests:
-                _log.warning(
-                    '%r does not represent any tests and may be misspelled.',
-                    test_pattern)
-            tests.update(resolved_tests)
-
+        port = self._tool.port_factory.get()
+        tests = resolve_test_patterns(port, test_patterns)
         for test, (build, builder_results) in itertools.product(
                 tests, builds_to_results.items()):
             for step_results in builder_results:
