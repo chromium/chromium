@@ -85,6 +85,8 @@ component("report") {
   sources = [
     "//chromeos/ash/components/report/device_metrics/actives/one_day_impl.cc",
     "//chromeos/ash/components/report/device_metrics/actives/one_day_impl.h",
+    "//chromeos/ash/components/report/device_metrics/actives/twenty_eight_day_impl.cc",
+    "//chromeos/ash/components/report/device_metrics/actives/twenty_eight_day_impl.h",
     "//chromeos/ash/components/report/device_metrics/use_case/fake_psm_delegate.cc",
     "//chromeos/ash/components/report/device_metrics/use_case/fake_psm_delegate.h",
     "//chromeos/ash/components/report/device_metrics/use_case/use_case.cc",
@@ -97,6 +99,7 @@ source_set("unit_tests") {
 
   sources = [
     "//chromeos/ash/components/report/device_metrics/actives/one_day_impl_unittest.cc",
+    "//chromeos/ash/components/report/device_metrics/actives/twenty_eight_day_impl_unittest.cc",
     "//chromeos/ash/components/report/utils/device_metadata_utils_unittest.cc",
     "//chromeos/ash/components/report/utils/network_utils_unittest.cc",
     "//chromeos/ash/components/report/utils/pref_utils_unittest.cc",
