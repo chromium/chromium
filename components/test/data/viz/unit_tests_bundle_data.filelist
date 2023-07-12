@@ -6,6 +6,8 @@
 #       instructions on how to regenerate. Otherwise, do not edit.
 //components/test/data/viz/10_10_layer_tree.json
 //components/test/data/viz/16_color_rects.png
+//components/test/data/viz/anti_aliasing_graphite.png
+//components/test/data/viz/anti_aliasing_perspective_graphite.png
 //components/test/data/viz/anti_aliasing_perspective_skia.png
 //components/test/data/viz/anti_aliasing_perspective_skia_angle_metal.png
 //components/test/data/viz/anti_aliasing_skia.png
@@ -28,6 +30,7 @@
 //components/test/data/viz/backdrop_filter_masked_sw.png
 //components/test/data/viz/backdrop_filter_offset.png
 //components/test/data/viz/backdrop_filter_on_scaled_layer_skia_gl.png
+//components/test/data/viz/backdrop_filter_on_scaled_layer_skia_graphite.png
 //components/test/data/viz/backdrop_filter_on_scaled_layer_skia_vk.png
 //components/test/data/viz/backdrop_filter_on_scaled_layer_sw.png
 //components/test/data/viz/backdrop_filter_rotated_skia_gl.png
@@ -197,9 +200,11 @@
 //components/test/data/viz/render_pass_data/top_real_world_mobile/amazon_mobile_2018/amazon_mobile_2018.zip
 //components/test/data/viz/render_pass_data/top_real_world_mobile/youtube_mobile_2018/youtube_mobile_2018.zip
 //components/test/data/viz/rotated_drop_shadow_filter_skia_gl.png
+//components/test/data/viz/rotated_drop_shadow_filter_skia_graphite.png
 //components/test/data/viz/rotated_drop_shadow_filter_skia_vk.png
 //components/test/data/viz/rotated_drop_shadow_filter_sw.png
 //components/test/data/viz/rotated_filter_skia_gl.png
+//components/test/data/viz/rotated_filter_skia_graphite.png
 //components/test/data/viz/rotated_filter_skia_vk.png
 //components/test/data/viz/rotated_filter_sw.png
 //components/test/data/viz/rounded_corner_multi_quad.png
@@ -211,6 +216,7 @@
 //components/test/data/viz/scaled_mask_with_effect_skia_vk.png
 //components/test/data/viz/scaled_mask_with_effect_sw.png
 //components/test/data/viz/scaled_render_surface_layer_skia_gl.png
+//components/test/data/viz/scaled_render_surface_layer_skia_graphite.png
 //components/test/data/viz/scaled_render_surface_layer_skia_vk.png
 //components/test/data/viz/scaled_render_surface_layer_sw.png
 //components/test/data/viz/solid_color_empty_mask_with_effect.png
@@ -255,4 +261,5 @@
 //components/test/data/viz/yuv_stripes_clipped.png
 //components/test/data/viz/yuv_stripes_offset.png
 //components/test/data/viz/zoom_filter_skia_gl.png
+//components/test/data/viz/zoom_filter_skia_graphite.png
 //components/test/data/viz/zoom_filter_skia_vk.png

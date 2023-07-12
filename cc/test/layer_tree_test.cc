@@ -724,10 +724,6 @@ LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type)
     scoped_feature_list_.InitAndEnableFeature(features::kSkiaGraphite);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     init_vulkan = true;
-#elif BUILDFLAG(IS_WIN)
-    // TODO(rivr): Initialize D3D12 for Windows.
-#else
-    NOTREACHED();
 #endif
   }
 
