@@ -927,7 +927,7 @@ void VideoDecoderPipeline::PrepareChangeResolution() {
 
 void VideoDecoderPipeline::CallApplyResolutionChangeIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DVLOGF(3);
+  DVLOGF(4);
 
   if (need_apply_new_resolution && !HasPendingFrames()) {
     need_apply_new_resolution = false;
@@ -936,7 +936,6 @@ void VideoDecoderPipeline::CallApplyResolutionChangeIfNeeded() {
 }
 
 DmabufVideoFramePool* VideoDecoderPipeline::GetVideoFramePool() const {
-  DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
 
   // TODO(andrescj): consider returning a WeakPtr instead. That way, if callers

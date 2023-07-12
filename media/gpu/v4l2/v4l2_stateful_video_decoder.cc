@@ -438,45 +438,17 @@ bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
                                       ? num_codec_reference_frames + 2
                                       : VIDEO_MAX_FRAME;
 
-  VLOG(2) << "Chosen CAPTURE queue format: " << chosen_fourcc.ToString() << " "
-          << chosen_size.ToString() << " (modifier: 0x" << std::hex
+  VLOG(2) << "Chosen |CAPTURE_queue_| format: " << chosen_fourcc.ToString()
+          << " " << chosen_size.ToString() << " (modifier: 0x" << std::hex
           << chosen_modifier << std::dec << "). Using " << v4l2_num_buffers
-          << " " << (use_v4l2_allocated_buffers ? "driver" : "|client_|s")
-          << " allocated buffers";
+          << " |CAPTURE_queue_| slots.";
 
   const auto allocated_buffers = CAPTURE_queue_->AllocateBuffers(
       v4l2_num_buffers, buffer_type, /*incoherent=*/false);
   CHECK_GE(allocated_buffers, v4l2_num_buffers);
 
-  if (!CAPTURE_queue_->Streamon()) {
-    return false;
-  }
-
-  if (use_v4l2_allocated_buffers) {
-    while (auto v4l2_buffer = CAPTURE_queue_->GetFreeBuffer()) {
-      if (!std::move(*v4l2_buffer).QueueMMap()) {
-        LOG(ERROR) << "CAPTURE queue failed to enqueue an MMAP buffer.";
-        return false;
-      }
-    }
-  } else {
-    while (auto v4l2_buffer = CAPTURE_queue_->GetFreeBuffer()) {
-      // At this point we haven't started decoding properly so if |client_|s
-      // frame pool is emptied, is because it has given us all its VideoFrames.
-      if (client_->GetVideoFramePool()->IsExhausted()) {
-        break;
-      }
-
-      auto video_frame = client_->GetVideoFramePool()->GetFrame();
-      CHECK(video_frame);
-      if (!std::move(*v4l2_buffer).QueueDMABuf(std::move(video_frame))) {
-        LOG(ERROR) << "CAPTURE queue failed to enqueue a DmaBuf buffer.";
-        return false;
-      }
-    }
-  }
-
-  return true;
+  // We need to "enqueue" allocated buffers in the driver in order to use them.
+  return CAPTURE_queue_->Streamon() && TryAndEnqueueCAPTUREQueueBuffers();
 }
 
 std::vector<ImageProcessor::PixelLayoutCandidate>
@@ -547,6 +519,41 @@ size_t V4L2StatefulVideoDecoder::GetNumberOfReferenceFrames() {
   CHECK_LE(num_codec_reference_frames, 16u);
 
   return num_codec_reference_frames;
+}
+
+bool V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(CAPTURE_queue_) << "|CAPTURE_queue_| must be created at this point";
+  const v4l2_memory queue_type = CAPTURE_queue_->GetMemoryType();
+
+  DCHECK(queue_type == V4L2_MEMORY_MMAP || queue_type == V4L2_MEMORY_DMABUF);
+  // V4L2Queue is funny because even though it might have "free" buffers, the
+  // user (i.e. this code) needs to "enqueue" then for the actual v4l2 queue
+  // to use them.
+  while (auto v4l2_buffer = CAPTURE_queue_->GetFreeBuffer()) {
+    if (queue_type == V4L2_MEMORY_MMAP) {
+      if (!std::move(*v4l2_buffer).QueueMMap()) {
+        LOG(ERROR) << "CAPTURE queue failed to enqueue an MMAP buffer.";
+        return false;
+      }
+    } else {
+      // When using a V4L2_MEMORY_DMABUF queue, resource ownership is in our
+      // |client_|s frame pool, and usually has less resources than what we
+      // have allocated here (because ours are just empty queue slots and we
+      // allocate conservatively). So, it's common that said frame pool gets
+      // exhausted before we run out of |CAPTURE_queue_|s free "buffers" here.
+      if (client_->GetVideoFramePool()->IsExhausted()) {
+        return true;
+      }
+
+      auto video_frame = client_->GetVideoFramePool()->GetFrame();
+      if (!std::move(*v4l2_buffer).QueueDMABuf(std::move(video_frame))) {
+        LOG(ERROR) << "CAPTURE queue failed to enqueue a DmaBuf buffer.";
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 }  // namespace media

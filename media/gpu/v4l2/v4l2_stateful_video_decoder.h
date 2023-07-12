@@ -91,6 +91,11 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   // default, conservative value).
   size_t GetNumberOfReferenceFrames();
 
+  // Tries to "enqueue" all available |CAPTURE_queue_| buffers in the driver's
+  // CAPTURE queue (V4L2Queues don't do that by default upon allocation).
+  // Returns false if any enqueuing operation failed,  true otherwise.
+  bool TryAndEnqueueCAPTUREQueueBuffers();
+
   base::ScopedFD device_fd_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Bitstream information, written during Initialize().
