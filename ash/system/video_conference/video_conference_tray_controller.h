@@ -24,6 +24,7 @@ class UnguessableToken;
 
 namespace ash {
 
+struct AnchoredNudgeData;
 class VideoConferenceTray;
 
 using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
@@ -90,6 +91,14 @@ class ASH_EXPORT VideoConferenceTrayController
 
   // Whether the tray should be shown.
   bool ShouldShowTray() const;
+
+  // Caches a nudge data object for nudges that attempt to show while the tray
+  // is animating in, so they only show once the tray animation has ended. The
+  // request will be run immediately if the tray is not animating.
+  void CreateNudgeRequest(std::unique_ptr<AnchoredNudgeData> nudge_data);
+
+  // Shows the cached `requested_nudge_data_` object, if one exists.
+  void MaybeRunNudgeRequest();
 
   // Attempts showing the speak-on-mute opt-in nudge.
   void MaybeShowSpeakOnMuteOptInNudge(
@@ -248,6 +257,10 @@ class ASH_EXPORT VideoConferenceTrayController
   // Used to record metrics of repeated shows per 100 ms.
   int count_repeated_shows_ = 0;
   base::DelayTimer repeated_shows_timer_;
+
+  // The contents of a nudge data object that is cached so it can be shown once
+  // the tray has fully animated in.
+  std::unique_ptr<AnchoredNudgeData> requested_nudge_data_;
 
   base::WeakPtrFactory<VideoConferenceTrayController> weak_ptr_factory_{this};
 };

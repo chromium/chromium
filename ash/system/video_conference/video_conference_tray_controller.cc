@@ -37,6 +37,8 @@
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 
 namespace ash {
 
@@ -160,6 +162,33 @@ bool VideoConferenceTrayController::ShouldShowTray() const {
   return Shell::Get()->session_controller()->GetSessionState() ==
              session_manager::SessionState::ACTIVE &&
          state_.has_media_app;
+}
+
+void VideoConferenceTrayController::CreateNudgeRequest(
+    std::unique_ptr<AnchoredNudgeData> nudge_data) {
+  // Ignore new requests if we already have one pending nudge.
+  if (requested_nudge_data_) {
+    return;
+  }
+  requested_nudge_data_ = std::move(nudge_data);
+
+  auto* tray = GetVcTrayInActiveWindow();
+  if (!tray) {
+    return;
+  }
+
+  // Attempt showing the nudge immediately if tray is not animating.
+  if (!tray->layer()->GetAnimator()->is_animating()) {
+    MaybeRunNudgeRequest();
+  }
+}
+
+void VideoConferenceTrayController::MaybeRunNudgeRequest() {
+  if (!requested_nudge_data_) {
+    return;
+  }
+  AnchoredNudgeManager::Get()->Show(*requested_nudge_data_);
+  requested_nudge_data_.reset();
 }
 
 void VideoConferenceTrayController::MaybeShowSpeakOnMuteOptInNudge(
@@ -673,7 +702,8 @@ void VideoConferenceTrayController::HandleDeviceUsedWhileDisabled(
       nudge_id, catalog_name,
       l10n_util::GetStringFUTF16(text_id, app_name, device_name), anchor_view);
   nudge_data.anchored_to_shelf = true;
-  AnchoredNudgeManager::Get()->Show(nudge_data);
+  CreateNudgeRequest(
+      std::make_unique<AnchoredNudgeData>(std::move(nudge_data)));
 }
 
 void VideoConferenceTrayController::UpdateCameraIcons() {

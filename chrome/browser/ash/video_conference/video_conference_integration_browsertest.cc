@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -33,6 +34,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/visibility.h"
@@ -640,6 +642,11 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, UseWhileDisabled) {
       "screenplay-f583c1ff-db6f-460e-b1f2-ddec173359a6");
   base::AddFeatureIdTagToTestResult(
       "screenplay-3042cdd9-978d-432c-8488-77684b09a9e4");
+
+  // Prevent "Speak-on-mute opt-in" nudge from showing so it doesn't cancel
+  // other shown nudges.
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kShouldShowSpeakOnMuteOptInNudge, false);
 
   // Trigger the VcTray with microphone.
   content::WebContents* web_contents =

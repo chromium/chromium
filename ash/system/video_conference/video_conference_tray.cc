@@ -315,9 +315,13 @@ void VideoConferenceTray::AnchorUpdated() {
 void VideoConferenceTray::OnAnimationEnded() {
   TrayBackgroundView::OnAnimationEnded();
 
-  // `MaybeShowSpeakOnMuteOptInNudge()` will only attempt to show the nudge if
-  // the tray was made visible.
-  VideoConferenceTrayController::Get()->MaybeShowSpeakOnMuteOptInNudge(this);
+  if (!visible_preferred()) {
+    return;
+  }
+
+  auto* controller = VideoConferenceTrayController::Get();
+  controller->MaybeRunNudgeRequest();
+  controller->MaybeShowSpeakOnMuteOptInNudge(this);
 }
 
 bool VideoConferenceTray::ShouldEnterPushedState(const ui::Event& event) {
