@@ -151,6 +151,11 @@
     font: var(--cros-headline-1-font);
   }
 
+  :host-context(body.jelly-enabled) .primary-text,
+  :host-context(body.jelly-enabled) ::slotted(.primary-text) {
+    font: var(--cros-title-2-font);
+  }
+
   p.primary-text:last-of-type,
   ::slotted(p.primary-text:last-of-type) {
     margin-bottom: var(--cros-annotation-2-line-height);
