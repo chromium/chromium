@@ -10,7 +10,6 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../../css/common.css.js';
 
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AmbientModeAlbum, TopicSource} from '../../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -51,12 +50,6 @@ export class AlbumList extends WithPersonalizationStore {
 
   topicSource: TopicSource;
   albums: AmbientModeAlbum[]|null;
-
-  override ready() {
-    super.ready();
-    /** When element is ready, force rendering iron-list */
-    afterNextRender(this, () => this.$.grid.fire('iron-resize'));
-  }
 
   /** Invoked on selection of an album. */
   private onAlbumSelected_(e: Event&{model: {album: AmbientModeAlbum}}) {

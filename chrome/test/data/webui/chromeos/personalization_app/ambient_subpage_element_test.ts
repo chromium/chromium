@@ -659,6 +659,10 @@ suite('AmbientSubpageTest', function() {
       path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kArtGallery},
     });
+    personalizationStore.data.ambient.ambientModeEnabled = true;
+    personalizationStore.data.ambient.albums = ambientProvider.albums;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpageElement);
 
     await ambientProvider.whenCalled('setAmbientObserver');
     ambientProvider.updateAmbientObserver();
@@ -675,12 +679,6 @@ suite('AmbientSubpageTest', function() {
 
     const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
     assertTrue(!!albumList, '!!albumList');
-
-    // The grid may not have templated all the items yet since it was just
-    // instantiated. See crbug/1334962.
-    const grid = albumList.shadowRoot!.getElementById('grid');
-    assertTrue(!!grid, 'albums subpage has a grid');
-    await waitAfterNextRender(grid);
 
     const albums = albumList.shadowRoot!.querySelectorAll<WallpaperGridItem>(
         'wallpaper-grid-item:not([hidden])');
@@ -717,6 +715,10 @@ suite('AmbientSubpageTest', function() {
       path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kArtGallery},
     });
+    personalizationStore.data.ambient.ambientModeEnabled = true;
+    personalizationStore.data.ambient.albums = ambientProvider.albums;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpageElement);
 
     await ambientProvider.whenCalled('setAmbientObserver');
     ambientProvider.updateAmbientObserver();
@@ -733,12 +735,6 @@ suite('AmbientSubpageTest', function() {
 
     const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
     assertTrue(!!albumList);
-
-    // The grid may not have templated all the items yet since it was just
-    // instantiated. See crbug/1334962.
-    const grid = albumList.shadowRoot!.getElementById('grid');
-    assertTrue(!!grid, 'albums subpage has a grid');
-    await waitAfterNextRender(grid);
 
     const albums = albumList.shadowRoot!.querySelectorAll<WallpaperGridItem>(
         'wallpaper-grid-item:not([hidden])');
@@ -915,12 +911,6 @@ suite('AmbientSubpageTest', function() {
         ambientSubpageElement.shadowRoot!.querySelector('animation-theme-list');
     assertTrue(!!animationThemeList);
 
-    // The grid may not have templated all the items yet since it was just
-    // instantiated. See crbug/1334962.
-    const grid = animationThemeList.shadowRoot!.getElementById('grid');
-    assertTrue(!!grid, 'animation theme list has a grid');
-    await waitAfterNextRender(grid);
-
     const animationThemeItems =
         animationThemeList!.shadowRoot!.querySelectorAll<AnimationThemeItem>(
             'animation-theme-item:not([hidden])');
@@ -969,6 +959,10 @@ suite('AmbientSubpageTest', function() {
       path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kVideo},
     });
+    personalizationStore.data.ambient.ambientModeEnabled = true;
+    personalizationStore.data.ambient.albums = ambientProvider.albums;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpageElement);
 
     await ambientProvider.whenCalled('setAmbientObserver');
     ambientProvider.updateAmbientObserver();
@@ -985,12 +979,6 @@ suite('AmbientSubpageTest', function() {
 
     const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
     assertTrue(!!albumList);
-
-    // The grid may not have templated all the items yet since it was just
-    // instantiated. See crbug/1334962.
-    const grid = albumList.shadowRoot!.getElementById('grid');
-    assertTrue(!!grid, 'albums subpage has a grid');
-    await waitAfterNextRender(grid);
 
     const albums = albumList.shadowRoot!.querySelectorAll<WallpaperGridItem>(
         'wallpaper-grid-item:not([hidden])');
