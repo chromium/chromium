@@ -36,6 +36,8 @@ SelectedLinuxBackend SelectBackend(const std::string& type,
     return SelectedLinuxBackend::KWALLET;
   if (type == "kwallet5")
     return SelectedLinuxBackend::KWALLET5;
+  if (type == "kwallet6")
+    return SelectedLinuxBackend::KWALLET6;
   if (type == "gnome-libsecret")
     return SelectedLinuxBackend::GNOME_LIBSECRET;
   if (type == "basic")

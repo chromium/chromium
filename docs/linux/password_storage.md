@@ -1,10 +1,11 @@
 # Linux Password Storage
 
-On Linux, Chromium can store passwords in four ways:
+On Linux, Chromium can store passwords in five ways:
 
 *   GNOME Libsecret
 *   KWallet 4
 *   KWallet 5
+*   KWallet 6
 *   plain text
 
 Chromium chooses which store to use automatically, based on your desktop
@@ -27,6 +28,7 @@ also be specified with a command line argument:
 *   `--password-store=gnome-libsecret` (to use GNOME Libsecret)
 *   `--password-store=kwallet` (to use KWallet 4)
 *   `--password-store=kwallet5` (to use KWallet 5)
+*   `--password-store=kwallet6` (to use KWallet 6)
 *   `--password-store=basic` (to use the plain text store)
 
 Note that Chromium will fall back to `basic` if a requested or autodetected

@@ -729,8 +729,8 @@ const char kHelp[] = "help";
 const char kHelpShort[] = "h";
 
 // Specifies which encryption storage backend to use. Possible values are
-// kwallet, kwallet5, gnome, gnome-keyring, gnome-libsecret, basic. Any other
-// value will lead to Chrome detecting the best backend automatically.
+// kwallet, kwallet5, kwallet6, gnome, gnome-keyring, gnome-libsecret, basic.
+// Any other value will lead to Chrome detecting the best backend automatically.
 // TODO(crbug.com/571003): Once PasswordStore no longer uses the Keyring or
 // KWallet for storing passwords, rename this flag to stop referencing
 // passwords. Do not rename it sooner, though; developers and testers might
