@@ -97,6 +97,14 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "chromeos-jacuzzi-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-jacuzzi-compile-chrome",
+)
+
+chrome_internal_verifier(
     builder = "chromeos-octopus-chrome",
 )
 
