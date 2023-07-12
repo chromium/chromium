@@ -143,6 +143,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   friend class SafeBrowsingBlockingPageRealTimeUrlCheckTest;
   friend class SafeBrowsingBlockingPageHashRealTimeCheckTest;
   friend class VerdictCacheManagerTest;
+  friend class ArtificialHashRealTimeVerdictCacheManagerTest;
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest, TestCleanUpExpiredVerdict);
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
                            TestCleanUpExpiredVerdictWithInvalidEntry);
@@ -219,6 +220,12 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   // real-time lookups.
   void CacheArtificialHashRealTimeLookupVerdict(const std::string& url_spec,
                                                 bool is_unsafe);
+
+  // Resets the value of |has_artificial_cached_url_| back to false. If a unit
+  // test sets an artificial URL, it is responsible for resetting the value
+  // when the test completes so that it's not still true when later unit tests
+  // run.
+  static void ResetHasArtificialCachedUrlForTesting();
 
   // Number of verdict stored for this profile for password on focus pings.
   absl::optional<size_t> stored_verdict_count_password_on_focus_;

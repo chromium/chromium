@@ -161,6 +161,10 @@ class ArtificialHashRealTimeVerdictCacheManagerTest
         safe_browsing::kArtificialCachedHashPrefixRealTimeVerdictFlag,
         kArtificialHashRealTimeUnsafeUrl);
   }
+  void TearDown() override {
+    VerdictCacheManagerTest::TearDown();
+    VerdictCacheManager::ResetHasArtificialCachedUrlForTesting();
+  }
 };
 
 TEST_F(VerdictCacheManagerTest, TestCanRetrieveCachedVerdict) {

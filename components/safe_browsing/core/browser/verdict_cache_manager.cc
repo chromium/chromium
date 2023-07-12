@@ -1200,10 +1200,11 @@ void VerdictCacheManager::SetPageLoadTokenForTesting(
 
 // static
 bool VerdictCacheManager::has_artificial_cached_url_ = false;
-
-// static
 bool VerdictCacheManager::has_artificial_cached_url() {
   return has_artificial_cached_url_;
+}
+void VerdictCacheManager::ResetHasArtificialCachedUrlForTesting() {
+  has_artificial_cached_url_ = false;
 }
 
 }  // namespace safe_browsing
