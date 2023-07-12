@@ -115,6 +115,15 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   }
 
   CalendarUpNextView* up_next_view() { return up_next_view_; }
+  CalendarEventListView* event_list_view() { return event_list_view_; }
+
+  // Sets the bounds of the container of the `up_next_view_` and
+  // `event_list_view_` to be flush with the bottom of the scroll view. Only the
+  // position will be animated, so give the view its final bounds. The
+  // `event_list_view_open` need to be passed in, because under some cases, the
+  // `event_list_view_` is still there but we want to use the `up_next_view_`'s
+  // bounds.
+  void SetCalendarSlidingSurfaceBounds(bool event_list_view_open);
 
  private:
   // The header of each month view which shows the month's name. If the year of
@@ -329,11 +338,6 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Calculates the first fully visible row (which lives in `content_view_`)
   // shown in `scroll_view_`'s visible window.
   int CalculateFirstFullyVisibleRow();
-
-  // Sets the bounds of the container of the `up_next_view_` and
-  // `event_list_view_` to be flush with the bottom of the scroll view. Only the
-  // position will be animated, so give the view its final bounds.
-  void SetCalendarSlidingSurfaceBounds(bool event_list_view_open);
 
   // Conditionally displays the `up_next_view_`.
   void MaybeShowUpNextView();

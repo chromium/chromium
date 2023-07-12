@@ -47,6 +47,19 @@ void GlanceableTrayBubbleView::UpdateBubble() {
   // blur applied to child bubble views.
   scroll_view_->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(24));
 
+  // Adjusts the calendar sliding surface bounds (`UpNextView`) with the
+  // glanceable view's scrolling.
+  on_contents_scrolled_subscription_ =
+      scroll_view_->AddContentsScrolledCallback(base::BindRepeating(
+          [](GlanceableTrayBubbleView* bubble) {
+            if (!bubble || !bubble->calendar_view_ ||
+                bubble->calendar_view_->event_list_view()) {
+              return;
+            }
+            bubble->calendar_view_->SetCalendarSlidingSurfaceBounds(false);
+          },
+          base::Unretained(this)));
+
   auto child_glanceable_container = std::make_unique<views::FlexLayoutView>();
   child_glanceable_container->SetOrientation(
       views::LayoutOrientation::kVertical);

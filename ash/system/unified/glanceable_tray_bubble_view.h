@@ -61,6 +61,8 @@ class GlanceableTrayBubbleView : public TrayBubbleView {
 
   // Child bubble view for the calendar glanceable. Owned by bubble_view_.
   raw_ptr<CalendarView, ExperimentalAsh> calendar_view_ = nullptr;
+
+  base::CallbackListSubscription on_contents_scrolled_subscription_;
 };
 
 }  // namespace ash
