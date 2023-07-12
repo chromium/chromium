@@ -41,16 +41,25 @@ message CrossUserSharingPublicKey {
   optional bytes x25519_public_key = 2;
 }
 
-message NigoriKeyBag {
-  // Used for encrypting within the sync account boundary.
+message EncryptionKeys {
+  // Used for encrypting data in the user's account.
   repeated NigoriKey key = 2;
   // Used for encrypting/authenticating using Public-private cryptography
-  // primarily across user accounts, e.g. sharing offers.
+  // primarily across user accounts, e.g. sharing invitations.
   repeated CrossUserSharingPrivateKey cross_user_sharing_private_key = 3;
+}
+
+// Deprecated: use EncryptionKeys instead.
+message NigoriKeyBag {
+  option deprecated = true;
+
+  // Used for encrypting data in the user's account.
+  repeated NigoriKey key = 2;
 }
 
 // Properties of nigori sync object.
 message NigoriSpecifics {
+  // Encrypted proto of type EncryptionKeys.
   optional EncryptedData encryption_keybag = 1;
   // Once keystore migration is performed, we have to freeze the keybag so that
   // older clients (that don't support keystore encryption) do not attempt to

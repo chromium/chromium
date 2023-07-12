@@ -804,7 +804,7 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
     return absl::nullopt;
   }
 
-  sync_pb::NigoriKeyBag decrypted_pending_keys;
+  sync_pb::EncryptionKeys decrypted_pending_keys;
   if (!decrypted_pending_keys.ParseFromString(decrypted_pending_keys_str)) {
     return absl::nullopt;
   }

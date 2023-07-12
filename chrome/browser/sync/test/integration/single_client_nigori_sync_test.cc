@@ -743,7 +743,7 @@ IN_PROC_BROWSER_TEST_F(
   std::string decrypted_keys_str;
   EXPECT_TRUE(cryptographer->DecryptToString(specifics.encryption_keybag(),
                                              &decrypted_keys_str));
-  sync_pb::NigoriKeyBag decrypted_keys;
+  sync_pb::EncryptionKeys decrypted_keys;
 
   EXPECT_TRUE(decrypted_keys.ParseFromString(decrypted_keys_str));
   ASSERT_THAT(decrypted_keys.cross_user_sharing_private_key(), SizeIs(1));
@@ -814,7 +814,7 @@ IN_PROC_BROWSER_TEST_F(
   std::string decrypted_keys_str;
   EXPECT_TRUE(cryptographer->DecryptToString(specifics.encryption_keybag(),
                                              &decrypted_keys_str));
-  sync_pb::NigoriKeyBag decrypted_keys;
+  sync_pb::EncryptionKeys decrypted_keys;
   EXPECT_TRUE(decrypted_keys.ParseFromString(decrypted_keys_str));
   ASSERT_THAT(decrypted_keys.cross_user_sharing_private_key(), SizeIs(1));
   auto private_key_proto = decrypted_keys.cross_user_sharing_private_key()

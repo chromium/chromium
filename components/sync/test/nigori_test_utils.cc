@@ -76,7 +76,7 @@ sync_pb::NigoriSpecifics BuildKeystoreNigoriSpecifics(
         key_params.derivation_params, key_params.password));
   }
 
-  sync_pb::NigoriKeyBag keys_for_encryption;
+  sync_pb::EncryptionKeys keys_for_encryption;
 
   keys_for_encryption.mutable_key()->CopyFrom(
       encryption_keybag.ToProto().key());
@@ -223,7 +223,7 @@ std::unique_ptr<Cryptographer> InitCustomPassphraseCryptographerFromNigori(
   EXPECT_TRUE(cryptographer->DecryptToString(nigori.encryption_keybag(),
                                              &decrypted_keys_str));
 
-  sync_pb::NigoriKeyBag decrypted_keys;
+  sync_pb::EncryptionKeys decrypted_keys;
   EXPECT_TRUE(decrypted_keys.ParseFromString(decrypted_keys_str));
 
   NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();

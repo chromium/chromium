@@ -50,15 +50,15 @@ KeyDerivationParams CustomPassphraseKeyDerivationParamsFromProto(
 }
 
 // |encrypted| must not be null.
-bool EncryptKeyBag(const CryptographerImpl& cryptographer,
-                   sync_pb::EncryptedData* encrypted) {
+bool EncryptEncryptionKeys(const CryptographerImpl& cryptographer,
+                           sync_pb::EncryptedData* encrypted) {
   DCHECK(encrypted);
   DCHECK(cryptographer.CanEncrypt());
 
   sync_pb::CryptographerData proto = cryptographer.ToProto();
   DCHECK(!proto.key_bag().key().empty());
 
-  sync_pb::NigoriKeyBag keys_for_encryption;
+  sync_pb::EncryptionKeys keys_for_encryption;
 
   keys_for_encryption.mutable_key()->CopyFrom(proto.key_bag().key());
   keys_for_encryption.mutable_cross_user_sharing_private_key()->CopyFrom(
@@ -259,7 +259,8 @@ sync_pb::NigoriModel NigoriState::ToLocalProto() const {
 sync_pb::NigoriSpecifics NigoriState::ToSpecificsProto() const {
   sync_pb::NigoriSpecifics specifics;
   if (cryptographer->CanEncrypt()) {
-    EncryptKeyBag(*cryptographer, specifics.mutable_encryption_keybag());
+    EncryptEncryptionKeys(*cryptographer,
+                          specifics.mutable_encryption_keybag());
   } else {
     DCHECK(pending_keys.has_value());
     // This case is reachable only from processor's GetAllNodesForDebugging(),
