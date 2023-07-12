@@ -1868,6 +1868,7 @@ void CopyPasswordDetailWithID(int detail_id) {
                                    IDS_IOS_EXPORT_PASSWORDS)]
       assertWithMatcher:exportButtonStatusMatcher];
 
+  [ChromeEarlGrey verifyActivitySheetVisible];
   [ChromeEarlGrey closeActivitySheet];
 
   // Wait until the activity view is dismissed.
