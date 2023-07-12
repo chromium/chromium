@@ -270,7 +270,7 @@ void BrowsingTopicsCalculator::DeriveTopTopics(
     do {
       int taxonomy_version =
           blink::features::kBrowsingTopicsTaxonomyVersion.Get();
-      int padded_topic_index_decision = GenerateRandUint64();
+      uint64_t padded_topic_index_decision = GenerateRandUint64();
       padded_topic = semantic_tree.GetRandomTopic(taxonomy_version,
                                                   padded_topic_index_decision);
     } while (base::Contains(top_topics, padded_topic));

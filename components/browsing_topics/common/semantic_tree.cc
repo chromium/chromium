@@ -99,7 +99,7 @@ const uint16_t kDeletedTopicsV2[] = {
     302, 305, 306, 307, 308, 311, 312, 313, 314, 316, 318, 319, 320, 326, 329,
     330, 331, 333, 339, 342, 344, 346, 347, 348, 349};
 
-TaxonomyUpdate* GetTaxonomyUpdateForTaxonomy2() {
+const TaxonomyUpdate* GetTaxonomyUpdateForTaxonomy2() {
   static base::NoDestructor<TaxonomyUpdate> taxonomy_update([] {
     TaxonomyUpdate ret = {
         .taxonomy_size = 469,
@@ -116,8 +116,8 @@ TaxonomyUpdate* GetTaxonomyUpdateForTaxonomy2() {
 }
 
 // Each incremental taxonomy update after taxonomy 1.
-const std::vector<TaxonomyUpdate*>& GetTaxonomyUpdates() {
-  static const base::NoDestructor<std::vector<TaxonomyUpdate*>>
+const std::vector<const TaxonomyUpdate*>& GetTaxonomyUpdates() {
+  static const base::NoDestructor<std::vector<const TaxonomyUpdate*>>
       kTaxonomyUpdates{{GetTaxonomyUpdateForTaxonomy2()}};
   return *kTaxonomyUpdates;
 }
