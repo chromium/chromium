@@ -15,10 +15,14 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/webauthn/cablev2_devices.h"
 #include "chrome/browser/webauthn/local_credential_management.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -1128,6 +1132,10 @@ void PasskeysHandler::RegisterMessages() {
       base::BindRepeating(&PasskeysHandler::HandleHasPasskeys,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "passkeysManagePasskeys",
+      base::BindRepeating(&PasskeysHandler::HandleManagePasskeys,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "passkeysEnumerate",
       base::BindRepeating(&PasskeysHandler::HandleEnumerate,
                           base::Unretained(this)));
@@ -1158,6 +1166,30 @@ void PasskeysHandler::OnHasPasskeysComplete(std::string callback_id,
                                             bool has_passkeys) {
   ResolveJavascriptCallback(base::Value(std::move(callback_id)),
                             base::Value(has_passkeys));
+}
+
+void PasskeysHandler::HandleManagePasskeys(const base::Value::List& args) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(0u, args.size());
+
+  AllowJavascript();
+
+#if BUILDFLAG(IS_WIN)
+  auto* windows_api = device::WinWebAuthnApi::GetDefault();
+  // webauthn.dll version six includes management support, so if at least that
+  // version is found then Windows does management natively.
+  constexpr int kWebAuthnDLLWithManagementSupport = 6;
+  if (windows_api->IsAvailable() &&
+      windows_api->Version() >= kWebAuthnDLLWithManagementSupport) {
+    platform_util::OpenExternal(GURL("ms-settings:savedpasskeys"));
+    return;
+  }
+#endif
+
+  // If no system management exists, fall back to Chrome's own settings UI.
+  chrome::ShowSettingsSubPage(
+      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()),
+      chrome::kPasskeysSubPage);
 }
 
 void PasskeysHandler::HandleEnumerate(const base::Value::List& args) {

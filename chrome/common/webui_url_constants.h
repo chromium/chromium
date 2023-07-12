@@ -515,6 +515,7 @@ extern const char kLanguagesSubPage[];
 extern const char kLanguageOptionsSubPage[];
 extern const char kManageProfileSubPage[];
 extern const char kOnStartupSubPage[];
+extern const char kPasskeysSubPage[];
 extern const char kPasswordCheckSubPage[];
 extern const char kPasswordManagerSubPage[];
 extern const char kPaymentsSubPage[];
