@@ -656,13 +656,16 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
     return;
 
   SetEphemeralModeConfig(EphemeralModeConfig());
-  ResetOwnerId();
+
+  auto trusted_values = cros_settings_->PrepareTrustedValues(
+      base::BindOnce(&ChromeUserManagerImpl::RetrieveTrustedDevicePolicies,
+                     weak_factory_.GetWeakPtr()));
 
   // Schedule a callback if device policy has not yet been verified.
-  if (CrosSettingsProvider::TRUSTED !=
-      cros_settings_->PrepareTrustedValues(
-          base::BindOnce(&ChromeUserManagerImpl::RetrieveTrustedDevicePolicies,
-                         weak_factory_.GetWeakPtr()))) {
+  if (CrosSettingsProvider::TRUSTED != trusted_values) {
+    // TODO(crbug.com/1461981): Remove the log once it's fixed.
+    LOG(WARNING) << "Trusted values is not TRUSTED but instead: "
+                 << static_cast<int>(trusted_values);
     return;
   }
 
@@ -674,6 +677,10 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   const AccountId owner_account_id = known_user.GetAccountId(
       owner_email, std::string() /* id */, AccountType::UNKNOWN);
   SetOwnerId(owner_account_id);
+
+  // TODO(crbug.com/1461981): Remove the log once it's fixed.
+  LOG(WARNING) << "Retrived trusted device policies. Setting Owner ID to "
+               << owner_account_id;
 
   EnsureUsersLoaded();
 
