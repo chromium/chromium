@@ -229,10 +229,10 @@ either another committer to LGTM the CL or, for clean reverts, a `Bot-Commit:
 ## Mechanical changes
 
 ### Global Approvals
-For one-off CLs, API owners of `base`, `build`, `content`, `third_party/blink`
-and `url` can `Owners-Override +1` a change to their APIs to avoid waiting for
-rubberstamp +1s from affected directories' owners. This should only be used for
-mechanical updates to the affected directories.
+For one-off CLs, API owners of `base`, `build`, `content`,
+`third_party/blink/public` and `url` can `Owners-Override +1` a change to their
+APIs to avoid waiting for rubberstamp +1s from affected directories' owners.
+This should only be used for mechanical updates to the affected directories.
 
 If you are making one-off CLs that touch many directories and cannot be
 handled by the global approvers, you can ask one of Chrome ATLs.
