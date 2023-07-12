@@ -483,10 +483,10 @@ void ShoppingListHandler::OnGetPriceTrackingStatusForCurrentUrl(
   std::move(callback).Run(tracked);
 }
 
-void ShoppingListHandler::SetDelegateForTesting(
-    std::unique_ptr<Delegate> delegate) {
-  delegate_.reset();
-  delegate_ = std::move(delegate);
+void ShoppingListHandler::OpenUrlInNewTab(const GURL& url) {
+  if (delegate_) {
+    delegate_->OpenUrlInNewTab(url);
+  }
 }
 
 }  // namespace commerce

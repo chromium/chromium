@@ -13,7 +13,10 @@
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/webui/shopping_list_handler.h"
+#include "content/public/browser/page_navigator.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/base/page_transition_types.h"
 
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/browser.h"
@@ -80,6 +83,18 @@ ShoppingUiHandlerDelegate::GetOrAddBookmarkForCurrentUrl() {
                                       title, url);
   }
   return nullptr;
+}
+
+void ShoppingUiHandlerDelegate::OpenUrlInNewTab(const GURL& url) {
+  auto* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+
+  content::OpenURLParams params(url, content::Referrer(),
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_LINK, false);
+  browser->OpenURL(params);
 }
 
 void ShoppingUiHandlerDelegate::ShowBookmarkEditorForCurrentUrl() {

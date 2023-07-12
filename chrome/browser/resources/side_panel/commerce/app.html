@@ -69,14 +69,10 @@
         hidden="[[!priceInsightsInfo.typicalLowPrice.length]]">
       [[getRangeDescription_(priceInsightsInfo)]]
     </div>
-    <div class="panel-subtitle"
+    <catalog-attributes-row class="panel-subtitle"
+        price-insights-info="[[priceInsightsInfo]]"
         hidden="[[priceInsightsInfo.typicalLowPrice.length]]">
-      <span hidden="[[!priceInsightsInfo.hasMultipleCatalogs]]"
-          id="attributes1">
-        [[priceInsightsInfo.catalogAttributes]]
-      </span>
-      <!-- TODO(b:283465961): Add buying options button -->
-    </div>
+    </catalog-attributes-row>
     <div hidden="[[priceInsightsInfo.history.length]]"
         class="section-details" id="desc1">
       $i18n{historyDescription}
@@ -89,14 +85,10 @@
       <div class="section-title" id="historyTitle">
         [[getHistoryTitle_(priceInsightsInfo)]]
       </div>
-      <div hidden="[[!priceInsightsInfo.typicalLowPrice.length]]"
-          class="history-subtitle">
-        <span hidden="[[!priceInsightsInfo.hasMultipleCatalogs]]"
-            id="attributes2">
-          [[priceInsightsInfo.catalogAttributes]]
-        </span>
-        <!-- TODO(b:283465961): Add buying options button -->
-      </div>
+      <catalog-attributes-row class="history-subtitle"
+          price-insights-info="[[priceInsightsInfo]]"
+          hidden="[[!priceInsightsInfo.typicalLowPrice.length]]">
+      </catalog-attributes-row>
       <shopping-insights-history-graph data="[[priceInsightsInfo.history]]"
           locale="[[priceInsightsInfo.locale]]"
           currency="[[priceInsightsInfo.currencyCode]]">

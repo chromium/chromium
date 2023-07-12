@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -56,6 +57,7 @@ class MockDelegate : public ShoppingListHandler::Delegate {
 
   MOCK_METHOD(absl::optional<GURL>, GetCurrentTabUrl, (), (override));
   MOCK_METHOD(void, ShowInsightsSidePanelUI, (), (override));
+  MOCK_METHOD(void, OpenUrlInNewTab, (const GURL& url), (override));
   MOCK_METHOD(const bookmarks::BookmarkNode*,
               GetOrAddBookmarkForCurrentUrl,
               (),
@@ -118,11 +120,14 @@ class ShoppingListHandlerTest : public testing::Test {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     RegisterPrefs(pref_service_->registry());
     SetShoppingListEnterprisePolicyPref(pref_service_.get(), true);
+
+    auto delegate = std::make_unique<MockDelegate>();
+    delegate_ = delegate.get();
     handler_ = std::make_unique<commerce::ShoppingListHandler>(
         page_.BindAndGetRemote(),
         mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler>(),
         bookmark_model_.get(), shopping_service_.get(), pref_service_.get(),
-        &tracker_, "en-us", std::make_unique<MockDelegate>());
+        &tracker_, "en-us", std::move(delegate));
   }
 
   MockPage page_;
@@ -130,6 +135,7 @@ class ShoppingListHandlerTest : public testing::Test {
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<commerce::ShoppingListHandler> handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  base::raw_ptr<MockDelegate> delegate_;
   feature_engagement::test::MockTracker tracker_;
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList features_;
@@ -469,11 +475,16 @@ TEST_F(ShoppingListHandlerTest, TestGetPriceInsightsInfoForCurrentUrl) {
 }
 
 TEST_F(ShoppingListHandlerTest, TestShowInsightsSidePanelUI) {
-  auto delegate = std::make_unique<MockDelegate>();
-  EXPECT_CALL(*delegate, ShowInsightsSidePanelUI).Times(1);
+  EXPECT_CALL(*delegate_, ShowInsightsSidePanelUI).Times(1);
 
-  handler_->SetDelegateForTesting(std::move(delegate));
   handler_->ShowInsightsSidePanelUI();
+}
+
+TEST_F(ShoppingListHandlerTest, TestOpenUrlInNewTab) {
+  const GURL url = GURL("http://example.com/");
+  EXPECT_CALL(*delegate_, OpenUrlInNewTab(url)).Times(1);
+
+  handler_->OpenUrlInNewTab(url);
 }
 
 TEST_F(ShoppingListHandlerTest, TestIsShoppingListEligible) {
@@ -493,10 +504,8 @@ TEST_F(ShoppingListHandlerTest, TestIsShoppingListEligible) {
 TEST_F(ShoppingListHandlerTest,
        TestGetPriceTrackingStatusForCurrentUrl_WithBookmark) {
   base::RunLoop run_loop;
-  auto delegate = std::make_unique<MockDelegate>();
   const GURL current_url = GURL("http://example.com/1");
-  delegate->SetCurrentTabUrl(current_url);
-  handler_->SetDelegateForTesting(std::move(delegate));
+  delegate_->SetCurrentTabUrl(current_url);
 
   AddProductBookmark(bookmark_model_.get(), u"product 1", current_url, 123L,
                      true, 1230000, "usd");
@@ -530,34 +539,30 @@ TEST_F(ShoppingListHandlerTest,
 }
 
 TEST_F(ShoppingListHandlerTest, TestTrackPriceForCurrentUrl) {
-  auto delegate = std::make_unique<MockDelegate>();
   const bookmarks::BookmarkNode* product = AddProductBookmark(
       bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
       false, 1230000, "usd");
-  EXPECT_CALL(*delegate, GetOrAddBookmarkForCurrentUrl)
+  EXPECT_CALL(*delegate_, GetOrAddBookmarkForCurrentUrl)
       .Times(1)
       .WillOnce(testing::Return(product));
   EXPECT_CALL(*shopping_service_,
               Subscribe(VectorHasSubscriptionWithId("123"), testing::_))
       .Times(1);
 
-  handler_->SetDelegateForTesting(std::move(delegate));
   handler_->SetPriceTrackingStatusForCurrentUrl(true);
 }
 
 TEST_F(ShoppingListHandlerTest, TestUntrackPriceForCurrentUrl) {
-  auto delegate = std::make_unique<MockDelegate>();
   const bookmarks::BookmarkNode* product = AddProductBookmark(
       bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
       false, 1230000, "usd");
-  EXPECT_CALL(*delegate, GetOrAddBookmarkForCurrentUrl)
+  EXPECT_CALL(*delegate_, GetOrAddBookmarkForCurrentUrl)
       .Times(1)
       .WillOnce(testing::Return(product));
   EXPECT_CALL(*shopping_service_,
               Unsubscribe(VectorHasSubscriptionWithId("123"), testing::_))
       .Times(1);
 
-  handler_->SetDelegateForTesting(std::move(delegate));
   handler_->SetPriceTrackingStatusForCurrentUrl(false);
 }
 
@@ -576,10 +581,8 @@ TEST_F(ShoppingListHandlerTest, TestGetParentBookmarkFolderNameForCurrentUrl) {
 }
 
 TEST_F(ShoppingListHandlerTest, TestShowBookmarkEditorForCurrentUrl) {
-  auto delegate = std::make_unique<MockDelegate>();
-  EXPECT_CALL(*delegate, ShowBookmarkEditorForCurrentUrl).Times(1);
+  EXPECT_CALL(*delegate_, ShowBookmarkEditorForCurrentUrl).Times(1);
 
-  handler_->SetDelegateForTesting(std::move(delegate));
   handler_->ShowBookmarkEditorForCurrentUrl();
 }
 

@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/mwb_element_shared_style.css.js';
 import '../strings.m.js';
 import './price_tracking_section.js';
 import './history_graph.js';
+import './catalog_attributes_row.js';
 
 import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
 import {PriceInsightsInfo, PriceInsightsInfo_PriceBucket, ProductInfo} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';

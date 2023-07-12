@@ -73,6 +73,22 @@ suite('ShoppingInsightsAppTest', () => {
     locale: 'en-us',
     currencyCode: 'usd',
   };
+  const priceInsights4: PriceInsightsInfo = {
+    clusterId: BigInt(123),
+    typicalLowPrice: '',
+    typicalHighPrice: '',
+    catalogAttributes: 'Unlocked, 4GB',
+    jackpot: {url: ''},
+    bucket: PriceInsightsInfo_PriceBucket.kHigh,
+    hasMultipleCatalogs: false,
+    history: [{
+      date: '2021-01-01',
+      price: 100,
+      formattedPrice: '$100',
+    }],
+    locale: 'en-us',
+    currencyCode: 'usd',
+  };
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -109,20 +125,43 @@ suite('ShoppingInsightsAppTest', () => {
         loadTimeData.getStringF('rangeMultipleOptions', '$100', '$200'),
         range.textContent!.trim());
 
-    assertFalse(isVisible(
-        shoppingInsightsApp.shadowRoot!.querySelector('#attributes1')));
+    const titleSection =
+        shoppingInsightsApp.shadowRoot!.querySelector('#titleSection');
+    assertTrue(!!titleSection);
     assertFalse(
-        isVisible(shoppingInsightsApp.shadowRoot!.querySelector('#desc1')));
-    assertTrue(isVisible(
-        shoppingInsightsApp.shadowRoot!.querySelector('#historySection')));
+        isVisible(titleSection.querySelector('catalog-attributes-row')));
 
+    const historySection =
+        shoppingInsightsApp.shadowRoot!.querySelector('#historySection');
+    assertTrue(!!historySection);
+    assertTrue(isVisible(historySection));
 
-    const historyTitle =
-        shoppingInsightsApp.shadowRoot!.querySelector('#historyTitle');
+    const historyTitle = historySection.querySelector('#historyTitle');
     assertTrue(!!historyTitle);
+    assertTrue(isVisible(historyTitle));
     assertEquals(
         loadTimeData.getString('lowPriceMultipleOptions'),
         historyTitle.textContent!.trim());
+
+    const attributesRow =
+        historySection.querySelector('catalog-attributes-row');
+    assertTrue(!!attributesRow);
+    assertTrue(isVisible(attributesRow));
+
+    const attributes = attributesRow.shadowRoot!.querySelector('.attributes');
+    assertTrue(!!attributes);
+    assertEquals('Unlocked, 4GB', attributes.textContent!.trim());
+
+    const buyOption = attributesRow.shadowRoot!.querySelector('.link');
+    assertTrue(!!buyOption);
+    assertEquals(
+        loadTimeData.getString('buyOptions'), buyOption.textContent!.trim());
+
+    const button = attributesRow.shadowRoot!.querySelector('iron-icon');
+    assertTrue(!!button);
+    button.click();
+    const url = await shoppingListApi.whenCalled('openUrlInNewTab');
+    assertEquals('https://foo.com/jackpot', url.url);
 
     assertTrue(isVisible(shoppingInsightsApp.shadowRoot!.querySelector(
         'shopping-insights-history-graph')));
@@ -149,6 +188,12 @@ suite('ShoppingInsightsAppTest', () => {
         loadTimeData.getStringF('rangeSingleOptionOnePrice', '$100'),
         range.textContent!.trim());
 
+    const titleSection =
+        shoppingInsightsApp.shadowRoot!.querySelector('#titleSection');
+    assertTrue(!!titleSection);
+    assertFalse(
+        isVisible(titleSection.querySelector('catalog-attributes-row')));
+
     assertFalse(isVisible(
         shoppingInsightsApp.shadowRoot!.querySelector('#historySection')));
   });
@@ -171,8 +216,28 @@ suite('ShoppingInsightsAppTest', () => {
     assertFalse(isVisible(
         shoppingInsightsApp.shadowRoot!.querySelector('#priceRange')));
 
-    assertTrue(isVisible(
-        shoppingInsightsApp.shadowRoot!.querySelector('#historySection')));
+    const titleSection =
+        shoppingInsightsApp.shadowRoot!.querySelector('#titleSection');
+    assertTrue(!!titleSection);
+    const attributesRow = titleSection.querySelector('catalog-attributes-row');
+    assertTrue(!!attributesRow);
+    assertTrue(isVisible(attributesRow));
+
+    assertFalse(
+        isVisible(attributesRow.shadowRoot!.querySelector('.attributes')));
+    const buyOption =
+        attributesRow.shadowRoot!.querySelector('.link') as HTMLElement;
+    assertTrue(!!buyOption);
+    assertEquals(
+        loadTimeData.getString('buyOptions'), buyOption.textContent!.trim());
+    buyOption.click();
+    const url = await shoppingListApi.whenCalled('openUrlInNewTab');
+    assertEquals('https://foo.com/jackpot', url.url);
+
+    const historySection =
+        shoppingInsightsApp.shadowRoot!.querySelector('#historySection');
+    assertTrue(!!historySection);
+    assertTrue(isVisible(historySection));
 
     const historyTitle =
         shoppingInsightsApp.shadowRoot!.querySelector('#historyTitle');
@@ -180,9 +245,29 @@ suite('ShoppingInsightsAppTest', () => {
     assertEquals(
         loadTimeData.getString('highPriceSingleOption'),
         historyTitle.textContent!.trim());
+    assertFalse(
+        isVisible(historySection.querySelector('catalog-attributes-row')));
 
     assertTrue(isVisible(shoppingInsightsApp.shadowRoot!.querySelector(
         'shopping-insights-history-graph')));
+  });
+
+  test('EmptyJackpotLink', async () => {
+    shoppingListApi.setResultFor(
+        'getPriceInsightsInfoForCurrentUrl',
+        Promise.resolve({priceInsightsInfo: priceInsights4}));
+
+    document.body.appendChild(shoppingInsightsApp);
+    await shoppingListApi.whenCalled('getProductInfoForCurrentUrl');
+    await shoppingListApi.whenCalled('getPriceInsightsInfoForCurrentUrl');
+    await flushTasks();
+
+    const titleSection =
+        shoppingInsightsApp.shadowRoot!.querySelector('#titleSection');
+    assertTrue(!!titleSection);
+    const attributesRow = titleSection.querySelector('catalog-attributes-row');
+    assertTrue(!!attributesRow);
+    assertFalse(isVisible(attributesRow));
   });
 
   /**

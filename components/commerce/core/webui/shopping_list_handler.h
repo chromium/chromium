@@ -55,6 +55,8 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
 
     virtual const bookmarks::BookmarkNode* GetOrAddBookmarkForCurrentUrl() = 0;
 
+    virtual void OpenUrlInNewTab(const GURL& url) = 0;
+
     virtual void ShowBookmarkEditorForCurrentUrl() = 0;
   };
 
@@ -87,6 +89,7 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
   void GetPriceTrackingStatusForCurrentUrl(
       GetPriceTrackingStatusForCurrentUrlCallback callback) override;
   void SetPriceTrackingStatusForCurrentUrl(bool track) override;
+  void OpenUrlInNewTab(const GURL& url) override;
   void GetParentBookmarkFolderNameForCurrentUrl(
       GetParentBookmarkFolderNameForCurrentUrlCallback callback) override;
   void ShowBookmarkEditorForCurrentUrl() override;
@@ -102,8 +105,6 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
       bookmarks::BookmarkModel& model,
       const std::vector<const bookmarks::BookmarkNode*>& bookmarks,
       const std::string& locale);
-
-  void SetDelegateForTesting(std::unique_ptr<Delegate> delegate);
 
  private:
   void onPriceTrackResult(int64_t bookmark_id,
