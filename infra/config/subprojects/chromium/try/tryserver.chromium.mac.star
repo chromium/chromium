@@ -64,7 +64,7 @@ try_.builder(
     name = "mac-inverse-fieldtrials-fyi-rel",
     mirrors = [
         "ci/Mac Builder",
-        "ci/Mac12 Tests",
+        "ci/Mac13 Tests",
         "ci/GPU Mac Builder",
         "ci/Mac Release (Intel)",
         "ci/Mac Retina Release (AMD)",
@@ -115,7 +115,7 @@ try_.orchestrator_builder(
     branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
         "ci/Mac Builder",
-        "ci/Mac12 Tests",
+        "ci/Mac13 Tests",
         "ci/GPU Mac Builder",
         "ci/Mac Release (Intel)",
         "ci/Mac Retina Release (AMD)",
