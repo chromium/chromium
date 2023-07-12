@@ -1,11 +1,11 @@
 <!doctype html>
 <html class="reftest-wait">
 <meta charset="utf8">
-<title>CSS Content Visibility: content-visibility: auto descendant in dialog is shown on showModal</title>
+<title>CSS Content Visibility: content-visibility: auto descendant in popover is shown on showPopover</title>
 <link rel="author" title="Rob Buis" href="mailto:rbuis@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/css-contain/#content-visibility">
-<link rel="match" href="content-visibility-with-top-layer-and-auto-descendant-ref.html">
-<meta name="assert" content="content-visibility: auto descendant in dialog is shown on showModal">
+<link rel="match" href="content-visibility-with-popover-top-layer-and-auto-descendant-ref.html">
+<meta name="assert" content="content-visibility: auto descendant in popover is shown on showPopover">
 <script src="/common/reftest-wait.js"></script>
 
 <style>
@@ -16,13 +16,13 @@
 </style>
 
 <div id="spacer" style="height: 100vh"></div>
-<dialog id="dialog" style="display: block; position: static;">
+<div popover="manual" style="display: block; position: static;" id="popover">
   <span id="inner">Test passes if this is visible</span>
-</dialog>
+</div>
 
 <script>
 function runTest() {
-  dialog.showModal();
+  popover.showPopover();
   requestAnimationFrame(takeScreenshot);
 }
 

@@ -1,13 +1,13 @@
 <!doctype html>
 <meta charset="utf8">
-<title>CSS Content Visibility: content-visibility: auto descendant in popover is shown on showPopover"</title>
-<meta name="assert" content="content-visibility: auto descendant in popover is shown on showPopover">
+<title>CSS Content Visibility: content-visibility: auto descendant in dialog is shown on showModal"</title>
+<meta name="assert" content="content-visibility: auto descendant in dialog is shown on showModal">
 
 <div id="spacer" style="height: 100vh"></div>
-<div popover="manual" style="display: block; position: static;" id="popover">
+<dialog id="dialog" style="display: block; position: static;">
   <span>Test passes if this is visible</span>
-</div>
+</dialog>
 
 <script>
-  popover.showPopover();
+  dialog.showModal();
 </script>
