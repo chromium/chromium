@@ -231,7 +231,7 @@ if (toolchain_has_rust) {
       not_needed([ "invoker" ])
       static_library("sanitizer_rt_$rt_name") {
         sources = []
-        output_name = "librustc-nightly_rt.$rt_name"
+        output_name = "librustc-${rust_channel}_rt.$rt_name"
         output_dir = "$local_rustc_sysroot/$sysroot_lib_subdir"
         if (is_win) {
           arflags = [ "/llvmlibempty" ]

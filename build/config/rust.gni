@@ -149,6 +149,9 @@ if (enable_rust) {
                                    update_rust_args,
                                    "trim string")
     }
+
+    # The same as written in `config.toml.template`.
+    rust_channel = "dev"
   } else {
     toolchain_has_rust = custom_toolchain_supports_platform
     rustc_revision = rustc_version

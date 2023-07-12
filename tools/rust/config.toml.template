@@ -20,7 +20,7 @@ static-libstdcpp = true
 
 [rust]
 download-rustc = false
-channel = "nightly"
+channel = "dev"
 description = "$PACKAGE_VERSION chromium"
 
 [build]
