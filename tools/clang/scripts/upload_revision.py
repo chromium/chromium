@@ -397,13 +397,13 @@ def main():
         "chromium/try",
         *itertools.chain(*[['-b', bot] for bot in BUILD_CLANG_BOTS]),
         no_run=args.no_git)
-  if not args.skip_rust:
-    Git('cl',
-        'try',
-        '-B',
-        "chromium/try",
-        *itertools.chain(*[['-b', bot] for bot in BUILD_RUST_BOTS]),
-        no_run=args.no_git)
+
+  Git('cl',
+      'try',
+      '-B',
+      "chromium/try",
+      *itertools.chain(*[['-b', bot] for bot in BUILD_RUST_BOTS]),
+      no_run=args.no_git)
 
   print('Please, wait until the try bots succeeded '
         'and then push the binaries to goma.')
