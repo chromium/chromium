@@ -188,11 +188,19 @@ enum class AttestedApiStatus {
 class PrivacySandboxSettingsAttestationsBrowserTestBase
     : public PrivacySandboxSettingsBrowserTest {
  public:
-  PrivacySandboxSettingsAttestationsBrowserTestBase()
-      : scoped_attestations_(
-            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {
+  PrivacySandboxSettingsAttestationsBrowserTestBase() {
     attestations_feature_.InitAndEnableFeature(
         privacy_sandbox::kEnforcePrivacySandboxAttestations);
+  }
+
+  void SetUpOnMainThread() override {
+    // `PrivacySandboxAttestations` has a member of type
+    // `scoped_refptr<base::SequencedTaskRunner>`, its initialization must be
+    // done after a browser process is created.
+    PrivacySandboxSettingsBrowserTest::SetUpOnMainThread();
+    scoped_attestations_ =
+        std::make_unique<privacy_sandbox::ScopedPrivacySandboxAttestations>(
+            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
   }
 
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
@@ -285,7 +293,8 @@ class PrivacySandboxSettingsAttestationsBrowserTestBase
   }
 
  private:
-  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations_;
+  std::unique_ptr<privacy_sandbox::ScopedPrivacySandboxAttestations>
+      scoped_attestations_;
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
   base::test::ScopedFeatureList attestations_feature_;
 };

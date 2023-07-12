@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -23,6 +22,7 @@
 #include "base/version.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/component_installer.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/update_client/update_client.h"
 
@@ -45,10 +45,6 @@ constexpr uint8_t kPrivacySandboxAttestationsPublicKeySHA256[32] = {
 const char kPrivacySandboxAttestationsManifestName[] =
     "Privacy Sandbox Attestations";
 
-base::File OpenFile(const base::FilePath& path) {
-  return base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-}
-
 }  // namespace
 
 namespace component_updater {
@@ -64,7 +60,7 @@ PrivacySandboxAttestationsComponentInstallerPolicy::
 bool PrivacySandboxAttestationsComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
-  return base::PathExists(install_dir);
+  return base::PathExists(GetInstalledPath(install_dir));
 }
 
 bool PrivacySandboxAttestationsComponentInstallerPolicy::
@@ -102,17 +98,14 @@ void PrivacySandboxAttestationsComponentInstallerPolicy::ComponentReady(
     return;
   }
 
-  if (install_dir.empty()) {
+  if (install_dir.empty() || !version.IsValid()) {
     return;
   }
 
   VLOG(1) << "Privacy Sandbox Attestations Component ready, version "
           << version.GetString() << " in " << install_dir.value();
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&OpenFile, GetInstalledPath(install_dir)),
-      base::BindOnce(on_attestations_ready_, version));
+  on_attestations_ready_.Run(std::move(version), std::move(install_dir));
 }
 
 base::FilePath
@@ -170,11 +163,11 @@ void RegisterPrivacySandboxAttestationsComponent(ComponentUpdateService* cus) {
   auto policy =
       std::make_unique<PrivacySandboxAttestationsComponentInstallerPolicy>(
           /*on_attestations_ready=*/base::BindRepeating(
-              [](base::Version version, base::File attestations_file) {
-                // TODO(xiaochenzh): Once the handler is implemented, the body
-                // of this lambda is the call to the handler's entry point for
-                // parsing and loading of the attestations file.
+              [](base::Version version, base::FilePath install_dir) {
                 VLOG(1) << "Received privacy sandbox attestations file";
+                privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+                    ->LoadAttestations(std::move(version),
+                                       std::move(install_dir));
               }));
 
   base::MakeRefCounted<ComponentInstaller>(std::move(policy))

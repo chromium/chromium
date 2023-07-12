@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -230,9 +231,7 @@ MakeSharedStoragePrivacySandboxAttestationsMap(
 
 class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
  public:
-  SharedStorageChromeBrowserTestBase()
-      : scoped_attestations_(
-            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {
+  SharedStorageChromeBrowserTestBase() {
     base::test::TaskEnvironment task_environment;
 
     scoped_feature_list_.InitWithFeatures(
@@ -246,6 +245,14 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
   }
 
   void SetUpOnMainThread() override {
+    // `PrivacySandboxAttestations` has a member of type
+    // `scoped_refptr<base::SequencedTaskRunner>`, its initialization must be
+    // done after a browser process is created.
+    PlatformBrowserTest::SetUpOnMainThread();
+    scoped_attestations_ =
+        std::make_unique<privacy_sandbox::ScopedPrivacySandboxAttestations>(
+            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
+
     host_resolver()->AddRule("*", "127.0.0.1");
 
     https_server()->AddDefaultHandlers(GetChromeTestDataDir());
@@ -544,7 +551,8 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations_;
+  std::unique_ptr<privacy_sandbox::ScopedPrivacySandboxAttestations>
+      scoped_attestations_;
 };
 
 class SharedStorageChromeBrowserTest

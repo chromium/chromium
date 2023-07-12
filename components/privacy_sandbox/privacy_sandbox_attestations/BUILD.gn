@@ -14,6 +14,7 @@ source_set("privacy_sandbox_attestations") {
     "//components/privacy_sandbox:features",
     "//components/privacy_sandbox:privacy_sandbox_settings_headers",
     "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
+    "//content/public/browser",
   ]
 
   public_deps = [
@@ -35,6 +36,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/privacy_sandbox:features",
     "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
+    "//content/test:test_support",
     "//net",
     "//testing/gtest",
     "//testing/gtest:gtest",

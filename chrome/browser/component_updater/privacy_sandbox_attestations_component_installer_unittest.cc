@@ -9,9 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/path_service.h"
@@ -24,20 +22,9 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace component_updater {
-
-namespace {
-
-std::string ReadToString(base::File file) {
-  std::string contents;
-  base::ScopedFILE scoped_file(base::FileToFILE(std::move(file), "r"));
-  return base::ReadStreamToString(scoped_file.get(), &contents) ? contents : "";
-}
-
-}  // namespace
 
 class PrivacySandboxAttestationsInstallerTest : public testing::Test {
  public:
@@ -114,6 +101,29 @@ class PrivacySandboxAttestationsInstallerFeatureEnabledTest
 };
 
 TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest,
+       VerifyInstallation) {
+  PrivacySandboxAttestationsComponentInstallerPolicy policy(base::DoNothing());
+
+  ASSERT_FALSE(policy.VerifyInstallation(base::Value::Dict(),
+                                         component_install_dir_.GetPath()));
+
+  base::FilePath install_path =
+      PrivacySandboxAttestationsComponentInstallerPolicy::GetInstalledPath(
+          component_install_dir_.GetPath());
+  ASSERT_TRUE(base::WriteFile(install_path, "Attestations list"));
+
+  EXPECT_TRUE(policy.VerifyInstallation(base::Value::Dict(),
+                                        component_install_dir_.GetPath()));
+}
+
+TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest, OnCustomInstall) {
+  PrivacySandboxAttestationsComponentInstallerPolicy policy(base::DoNothing());
+
+  EXPECT_EQ(policy.OnCustomInstall(base::Value::Dict(), base::FilePath()).error,
+            0);
+}
+
+TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest,
        RegisterIfFeatureEnabled) {
   component_updater::MockComponentUpdateService mock_update_service;
   EXPECT_CALL(mock_update_service, RegisterComponent(testing::_)).Times(1);
@@ -123,88 +133,106 @@ TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest,
 }
 
 TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest,
-       LoadAttestationsFileOnComponentReady) {
-  base::test::RepeatingTestFuture<base::Version, base::File> future;
+       InvokeOnAttestationsReadyCallbackOnComponentReady) {
+  base::test::RepeatingTestFuture<base::Version, base::FilePath> future;
   PrivacySandboxAttestationsComponentInstallerPolicy policy(
       future.GetCallback());
-
-  const std::string content = "Attestations list";
-  ASSERT_TRUE(base::WriteFile(
-      PrivacySandboxAttestationsComponentInstallerPolicy::GetInstalledPath(
-          component_install_dir_.GetPath()),
-      content));
 
   const base::Version version = base::Version("0.0.1");
   policy.ComponentReady(version, component_install_dir_.GetPath(),
                         base::Value::Dict());
 
-  auto [loaded_version, loaded_file] = future.Take();
+  auto [loaded_version, loaded_path] = future.Take();
   EXPECT_TRUE(loaded_version.IsValid());
   EXPECT_EQ(loaded_version, version);
-  EXPECT_TRUE(loaded_file.IsValid());
-  EXPECT_EQ(ReadToString(std::move(loaded_file)), content);
+  EXPECT_EQ(loaded_path, component_install_dir_.GetPath());
 }
 
 TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest,
-       LoadNewAttestationsFileWhenUpdated) {
-  base::test::RepeatingTestFuture<base::Version, base::File> future;
+       DoNotInvokeOnAttestationsReadyCallbackIfInvalidVersion) {
+  base::test::RepeatingTestFuture<base::Version, base::FilePath> future;
   PrivacySandboxAttestationsComponentInstallerPolicy policy(
       future.GetCallback());
 
-  const std::string content_v1 = "Attestations list v1";
-  base::ScopedTempDir dir_v1;
-  ASSERT_TRUE(
-      dir_v1.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
-  ASSERT_TRUE(base::WriteFile(
-      PrivacySandboxAttestationsComponentInstallerPolicy::GetInstalledPath(
-          dir_v1.GetPath()),
-      content_v1));
-
-  const base::Version version_1 = base::Version("0.0.1");
-  policy.ComponentReady(version_1, dir_v1.GetPath(), base::Value::Dict());
-
-  auto [loaded_version_1, loaded_file_v1] = future.Take();
-  EXPECT_TRUE(loaded_version_1.IsValid());
-  EXPECT_EQ(loaded_version_1, version_1);
-  EXPECT_TRUE(loaded_file_v1.IsValid());
-  EXPECT_EQ(ReadToString(std::move(loaded_file_v1)), content_v1);
-
-  // Install a newer version of the component, which should be picked up during
-  // the `ComponentReady()` call.
-  const std::string content_v2 = "Attestations list v2";
-  base::ScopedTempDir dir_v2;
-  ASSERT_TRUE(
-      dir_v2.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
-  ASSERT_TRUE(base::WriteFile(
-      PrivacySandboxAttestationsComponentInstallerPolicy::GetInstalledPath(
-          dir_v2.GetPath()),
-      content_v2));
-
-  const base::Version version_2 = base::Version("0.0.2");
-  policy.ComponentReady(version_2, dir_v2.GetPath(), base::Value::Dict());
-
-  auto [loaded_version_2, loaded_file_v2] = future.Take();
-  EXPECT_TRUE(loaded_version_2.IsValid());
-  EXPECT_EQ(loaded_version_2, version_2);
-  EXPECT_TRUE(loaded_file_v2.IsValid());
-  EXPECT_EQ(ReadToString(std::move(loaded_file_v2)), content_v2);
-}
-
-TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest,
-       NonexistentFileOnComponentReady) {
-  ASSERT_TRUE(base::DeleteFile(
-      PrivacySandboxAttestationsComponentInstallerPolicy::GetInstalledPath(
-          component_install_dir_.GetPath())));
-
-  base::test::RepeatingTestFuture<base::Version, base::File> future;
-  PrivacySandboxAttestationsComponentInstallerPolicy policy(
-      future.GetCallback());
+  // First call with an invalid version.
   policy.ComponentReady(base::Version(), component_install_dir_.GetPath(),
                         base::Value::Dict());
 
-  auto [loaded_version, loaded_file] = future.Take();
-  EXPECT_FALSE(loaded_version.IsValid());
-  EXPECT_FALSE(loaded_file.IsValid());
+  // Second call with a valid version.
+  policy.ComponentReady(base::Version("0.0.1"),
+                        component_install_dir_.GetPath(), base::Value::Dict());
+
+  // Only the second call succeeded.
+  auto [loaded_version, loaded_path] = future.Take();
+  EXPECT_TRUE(loaded_version.IsValid());
+  EXPECT_EQ(loaded_version, base::Version("0.0.1"));
+  EXPECT_EQ(loaded_path, component_install_dir_.GetPath());
+}
+
+TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest,
+       DoNotInvokeOnAttestationsReadyCallbackIfEmptyPath) {
+  base::test::RepeatingTestFuture<base::Version, base::FilePath> future;
+  PrivacySandboxAttestationsComponentInstallerPolicy policy(
+      future.GetCallback());
+
+  // First call with an empty path.
+  policy.ComponentReady(base::Version("0.0.1"), base::FilePath(),
+                        base::Value::Dict());
+
+  // Second call with a valid path.
+  policy.ComponentReady(base::Version("0.0.1"),
+                        component_install_dir_.GetPath(), base::Value::Dict());
+
+  // Only the second call succeeded.
+  auto [loaded_version, loaded_path] = future.Take();
+  EXPECT_TRUE(loaded_version.IsValid());
+  EXPECT_EQ(loaded_version, base::Version("0.0.1"));
+  EXPECT_EQ(loaded_path, component_install_dir_.GetPath());
+}
+
+// Whenever there is an attestations file ready, `ComponentReady()` should
+// invoke the stored callback `on_attestations_ready_`, even if this version
+// is older than the existing one. The comparison of the passed and existing
+// version should be done inside the callback. See
+// `PrivacySandboxAttestations::LoadAttestationsInternal()`.
+TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest,
+       CallLoadNewAttestationsFile) {
+  base::test::RepeatingTestFuture<base::Version, base::FilePath> future;
+  PrivacySandboxAttestationsComponentInstallerPolicy policy(
+      future.GetCallback());
+
+  // Load the initial version.
+  base::ScopedTempDir dir_v1;
+  ASSERT_TRUE(
+      dir_v1.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
+  const base::Version version_1 = base::Version("0.0.1");
+  policy.ComponentReady(version_1, dir_v1.GetPath(), base::Value::Dict());
+
+  auto [loaded_version_1, loaded_path_v1] = future.Take();
+  EXPECT_TRUE(loaded_version_1.IsValid());
+  EXPECT_EQ(loaded_version_1, version_1);
+  EXPECT_EQ(loaded_path_v1, dir_v1.GetPath());
+
+  // Load the newer version.
+  base::ScopedTempDir dir_v2;
+  ASSERT_TRUE(
+      dir_v2.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
+  const base::Version version_2 = base::Version("0.0.2");
+  policy.ComponentReady(version_2, dir_v2.GetPath(), base::Value::Dict());
+
+  auto [loaded_version_2, loaded_path_v2] = future.Take();
+  EXPECT_TRUE(loaded_version_2.IsValid());
+  EXPECT_EQ(loaded_version_2, version_2);
+  EXPECT_EQ(loaded_path_v2, dir_v2.GetPath());
+
+  // Load the initial version again, callback `on_attestations_ready_` should
+  // still be invoked.
+  policy.ComponentReady(version_1, dir_v1.GetPath(), base::Value::Dict());
+
+  auto [loaded_version_3, loaded_path_v3] = future.Take();
+  EXPECT_TRUE(loaded_version_3.IsValid());
+  EXPECT_EQ(loaded_version_3, version_1);
+  EXPECT_EQ(loaded_path_v3, dir_v1.GetPath());
 }
 
 }  // namespace component_updater
