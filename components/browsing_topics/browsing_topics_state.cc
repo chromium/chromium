@@ -27,7 +27,8 @@ const char kEpochsNameKey[] = "epochs";
 const char kNextScheduledCalculationTimeNameKey[] =
     "next_scheduled_calculation_time";
 const char kHexEncodedHmacKeyNameKey[] = "hex_encoded_hmac_key";
-const char kConfigVersionNameKey[] = "config_version";
+
+// `config_version` is a deprecated key. Do not reuse.
 
 std::unique_ptr<BrowsingTopicsState::LoadResult> LoadFileOnBackendTaskRunner(
     const base::FilePath& file_path) {
@@ -45,6 +46,34 @@ std::unique_ptr<BrowsingTopicsState::LoadResult> LoadFileOnBackendTaskRunner(
 
   return std::make_unique<BrowsingTopicsState::LoadResult>(/*file_exists=*/true,
                                                            std::move(value));
+}
+
+bool AreConfigVersionsCompatible(int preexisting, int current) {
+  // The config version can be 0 for a failed topics calculation.
+  CHECK_GE(preexisting, 0);
+  CHECK_GE(current, 1);
+  CHECK_LE(current, ConfigVersion::kMaxValue);
+
+  // This could happen in rare case when Chrome rolls back to an earlier
+  // version.
+  if (preexisting > ConfigVersion::kMaxValue) {
+    return false;
+  }
+
+  // Epoch from a failed calculation is compatible with any version.
+  if (preexisting == 0) {
+    return true;
+  }
+
+  if (preexisting == current) {
+    return true;
+  }
+
+  // Currently only version 1 is supported. Update this logic when more versions
+  // are introduced.
+  CHECK_EQ(preexisting, 1);
+  CHECK_EQ(current, 1);
+  return true;
 }
 
 }  // namespace
@@ -256,8 +285,6 @@ base::Value::Dict BrowsingTopicsState::ToDictValue() const {
   std::string hex_encoded_hmac_key = base::HexEncode(hmac_key_);
   result_dict.Set(kHexEncodedHmacKeyNameKey, base::HexEncode(hmac_key_));
 
-  result_dict.Set(kConfigVersionNameKey, CurrentConfigVersion());
-
   return result_dict;
 }
 
@@ -328,17 +355,6 @@ BrowsingTopicsState::ParseResult BrowsingTopicsState::ParseValue(
     return ParseResult{.success = false, .should_save_state_to_file = true};
   }
 
-  absl::optional<int> config_version_in_storage =
-      dict_value->FindInt(kConfigVersionNameKey);
-  if (!config_version_in_storage) {
-    return ParseResult{.success = false, .should_save_state_to_file = true};
-  }
-
-  // If the config is has been updated, start with a fresh `epoch_`.
-  if (*config_version_in_storage != CurrentConfigVersion()) {
-    return ParseResult{.success = true, .should_save_state_to_file = true};
-  }
-
   const base::Value::List* epochs_value = dict_value->FindList(kEpochsNameKey);
   if (!epochs_value) {
     return ParseResult{.success = false, .should_save_state_to_file = true};
@@ -351,6 +367,16 @@ BrowsingTopicsState::ParseResult BrowsingTopicsState::ParseValue(
     }
 
     epochs_.push_back(EpochTopics::FromDictValue(*epoch_dict_value));
+  }
+
+  for (const EpochTopics& epoch : epochs_) {
+    // If any preexisting epoch's version is incompatible with the current
+    // version, start with a fresh `epoch_`.
+    if (!AreConfigVersionsCompatible(epoch.config_version(),
+                                     CurrentConfigVersion())) {
+      epochs_.clear();
+      return ParseResult{.success = true, .should_save_state_to_file = true};
+    }
   }
 
   const base::Value* next_scheduled_calculation_time_value =

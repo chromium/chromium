@@ -463,7 +463,7 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
   OnCalculateCompleted(
       CalculatorResultStatus::kSuccess,
       EpochTopics(std::move(top_topics_and_observing_domains),
-                  padded_top_topics_start_index,
+                  padded_top_topics_start_index, CurrentConfigVersion(),
                   blink::features::kBrowsingTopicsTaxonomyVersion.Get(),
                   model_version, calculation_time_, is_manually_triggered_));
 }

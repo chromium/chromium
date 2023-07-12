@@ -39,8 +39,8 @@ std::vector<ApiResultUkmMetrics> ReadApiResultUkmMetrics(
     if (topic0_metric) {
       topics.emplace_back(CandidateTopic::Create(
           Topic(*topic0_metric), *topic0_is_true_topic_metric,
-          *topic0_should_be_filtered_metric, *topic0_taxonomy_version_metric,
-          *topic0_model_version_metric));
+          *topic0_should_be_filtered_metric, /*config_version=*/0,
+          *topic0_taxonomy_version_metric, *topic0_model_version_metric));
 
       DCHECK(topic0_is_true_topic_metric);
       DCHECK(topic0_should_be_filtered_metric);
@@ -70,8 +70,8 @@ std::vector<ApiResultUkmMetrics> ReadApiResultUkmMetrics(
     if (topic1_metric) {
       topics.emplace_back(CandidateTopic::Create(
           Topic(*topic1_metric), *topic1_is_true_topic_metric,
-          *topic1_should_be_filtered_metric, *topic1_taxonomy_version_metric,
-          *topic1_model_version_metric));
+          *topic1_should_be_filtered_metric, /*config_version=*/0,
+          *topic1_taxonomy_version_metric, *topic1_model_version_metric));
 
       DCHECK(topic1_is_true_topic_metric);
       DCHECK(topic1_should_be_filtered_metric);
@@ -101,8 +101,8 @@ std::vector<ApiResultUkmMetrics> ReadApiResultUkmMetrics(
     if (topic2_metric) {
       topics.emplace_back(CandidateTopic::Create(
           Topic(*topic2_metric), *topic2_is_true_topic_metric,
-          *topic2_should_be_filtered_metric, *topic2_taxonomy_version_metric,
-          *topic2_model_version_metric));
+          *topic2_should_be_filtered_metric, /*config_version=*/0,
+          *topic2_taxonomy_version_metric, *topic2_model_version_metric));
 
       DCHECK(topic2_is_true_topic_metric);
       DCHECK(topic2_should_be_filtered_metric);

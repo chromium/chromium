@@ -17,6 +17,7 @@ class CandidateTopic {
   static CandidateTopic Create(Topic topic,
                                bool is_true_topic,
                                bool should_be_filtered,
+                               int config_version,
                                int taxonomy_version,
                                int64_t model_version);
 
@@ -36,6 +37,8 @@ class CandidateTopic {
 
   bool should_be_filtered() const { return should_be_filtered_; }
 
+  int config_version() const { return config_version_; }
+
   int taxonomy_version() const { return taxonomy_version_; }
 
   int64_t model_version() const { return model_version_; }
@@ -44,12 +47,14 @@ class CandidateTopic {
   CandidateTopic(Topic topic,
                  bool is_true_topic,
                  bool should_be_filtered,
+                 int config_version,
                  int taxonomy_version,
                  int64_t model_version);
 
   Topic topic_;
   bool is_true_topic_;
   bool should_be_filtered_;
+  int config_version_;
   int taxonomy_version_;
   int64_t model_version_;
 };

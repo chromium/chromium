@@ -59,6 +59,7 @@ constexpr base::Time kTime1 =
 constexpr base::Time kTime2 =
     base::Time::FromDeltaSinceWindowsEpoch(base::Days(2));
 
+constexpr int kConfigVersion = 1;
 constexpr int kTaxonomyVersion = 1;
 constexpr int64_t kModelVersion = 5000000000LL;
 
@@ -76,8 +77,8 @@ EpochTopics CreateTestEpochTopics(
   }
 
   return EpochTopics(std::move(top_topics_and_observing_domains),
-                     padded_top_topics_start_index, kTaxonomyVersion,
-                     model_version, calculation_time,
+                     padded_top_topics_start_index, kConfigVersion,
+                     kTaxonomyVersion, model_version, calculation_time,
                      /*from_manually_triggered_calculation=*/false);
 }
 

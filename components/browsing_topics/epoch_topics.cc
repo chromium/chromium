@@ -22,6 +22,7 @@ const char kTopTopicsAndObservingDomainsNameKey[] =
     "top_topics_and_observing_domains";
 const char kPaddedTopTopicsStartIndexNameKey[] =
     "padded_top_topics_start_index";
+const char kConfigVersionNameKey[] = "config_version";
 const char kTaxonomyVersionNameKey[] = "taxonomy_version";
 const char kModelVersionNameKey[] = "model_version";
 const char kCalculationTimeNameKey[] = "calculation_time";
@@ -40,6 +41,7 @@ EpochTopics::EpochTopics(base::Time calculation_time)
 EpochTopics::EpochTopics(
     std::vector<TopicAndDomains> top_topics_and_observing_domains,
     size_t padded_top_topics_start_index,
+    int config_version,
     int taxonomy_version,
     int64_t model_version,
     base::Time calculation_time,
@@ -47,6 +49,7 @@ EpochTopics::EpochTopics(
     : top_topics_and_observing_domains_(
           std::move(top_topics_and_observing_domains)),
       padded_top_topics_start_index_(padded_top_topics_start_index),
+      config_version_(config_version),
       taxonomy_version_(taxonomy_version),
       model_version_(model_version),
       calculation_time_(calculation_time),
@@ -56,6 +59,7 @@ EpochTopics::EpochTopics(
             blink::features::kBrowsingTopicsNumberOfTopTopicsPerEpoch.Get());
   DCHECK_LE(padded_top_topics_start_index,
             top_topics_and_observing_domains_.size());
+  DCHECK_GT(config_version_, 0);
   DCHECK_GT(taxonomy_version_, 0);
   DCHECK_GT(model_version_, 0);
 }
@@ -104,6 +108,14 @@ EpochTopics EpochTopics::FromDictValue(const base::Value::Dict& dict_value) {
   size_t padded_top_topics_start_index =
       static_cast<size_t>(*padded_top_topics_start_index_value);
 
+  absl::optional<int> config_version_value =
+      dict_value.FindInt(kConfigVersionNameKey);
+
+  // `kConfigVersionNameKey` is introduced after the initial release. Instead of
+  // treating it as an error and using a fresh epoch, we'll use version 1 which
+  // is the only valid version before this field is introduced.
+  int config_version = config_version_value ? *config_version_value : 1;
+
   absl::optional<int> taxonomy_version_value =
       dict_value.FindInt(kTaxonomyVersionNameKey);
   if (!taxonomy_version_value)
@@ -124,8 +136,8 @@ EpochTopics EpochTopics::FromDictValue(const base::Value::Dict& dict_value) {
   int64_t model_version = *model_version_int64_value;
 
   return EpochTopics(std::move(top_topics_and_observing_domains),
-                     padded_top_topics_start_index, taxonomy_version,
-                     model_version, calculation_time,
+                     padded_top_topics_start_index, config_version,
+                     taxonomy_version, model_version, calculation_time,
                      /*from_manually_triggered_calculation=*/false);
 }
 
@@ -142,6 +154,7 @@ base::Value::Dict EpochTopics::ToDictValue() const {
                   std::move(top_topics_and_observing_domains_list));
   result_dict.Set(kPaddedTopTopicsStartIndexNameKey,
                   base::checked_cast<int>(padded_top_topics_start_index_));
+  result_dict.Set(kConfigVersionNameKey, config_version_);
   result_dict.Set(kTaxonomyVersionNameKey, taxonomy_version_);
   result_dict.Set(kModelVersionNameKey, base::Int64ToValue(model_version_));
   result_dict.Set(kCalculationTimeNameKey,
@@ -186,13 +199,13 @@ CandidateTopic EpochTopics::CandidateTopicForSite(
     Topic topic = SemanticTree().GetRandomTopic(taxonomy_version(),
                                                 random_topic_index_decision);
     return CandidateTopic::Create(topic, /*is_true_topic=*/false,
-                                  should_be_filtered, taxonomy_version(),
-                                  model_version());
+                                  should_be_filtered, config_version(),
+                                  taxonomy_version(), model_version());
   }
 
-  return CandidateTopic::Create(topic_and_observing_domains.topic(),
-                                is_true_topic, should_be_filtered,
-                                taxonomy_version(), model_version());
+  return CandidateTopic::Create(
+      topic_and_observing_domains.topic(), is_true_topic, should_be_filtered,
+      config_version(), taxonomy_version(), model_version());
 }
 
 void EpochTopics::ClearTopics() {

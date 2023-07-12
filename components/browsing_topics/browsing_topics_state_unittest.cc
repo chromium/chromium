@@ -38,12 +38,14 @@ constexpr browsing_topics::HmacKey kZeroKey = {};
 constexpr browsing_topics::HmacKey kTestKey = {1};
 constexpr browsing_topics::HmacKey kTestKey2 = {2};
 
+constexpr int kConfigVersion = 1;
 constexpr int kTaxonomyVersion = 1;
 constexpr int64_t kModelVersion = 2;
 constexpr size_t kPaddedTopTopicsStartIndex = 3;
 
 EpochTopics CreateTestEpochTopics(base::Time calculation_time,
-                                  bool from_manually_triggered_calculation) {
+                                  bool from_manually_triggered_calculation,
+                                  int config_version = kConfigVersion) {
   std::vector<TopicAndDomains> top_topics_and_observing_domains;
   top_topics_and_observing_domains.emplace_back(
       TopicAndDomains(Topic(1), {HashedDomain(1)}));
@@ -57,8 +59,8 @@ EpochTopics CreateTestEpochTopics(base::Time calculation_time,
       TopicAndDomains(Topic(5), {HashedDomain(1)}));
 
   EpochTopics epoch_topics(std::move(top_topics_and_observing_domains),
-                           kPaddedTopTopicsStartIndex, kTaxonomyVersion,
-                           kModelVersion, calculation_time,
+                           kPaddedTopTopicsStartIndex, config_version,
+                           kTaxonomyVersion, kModelVersion, calculation_time,
                            from_manually_triggered_calculation);
 
   return epoch_topics;
@@ -92,8 +94,7 @@ class BrowsingTopicsStateTest : public testing::Test {
 
   void CreateOrOverrideTestFile(std::vector<EpochTopics> epochs,
                                 base::Time next_scheduled_calculation_time,
-                                std::string hex_encoded_hmac_key,
-                                int config_version) {
+                                std::string hex_encoded_hmac_key) {
     base::Value::List epochs_list;
     for (const EpochTopics& epoch : epochs) {
       epochs_list.Append(epoch.ToDictValue());
@@ -104,7 +105,6 @@ class BrowsingTopicsStateTest : public testing::Test {
     dict.Set("next_scheduled_calculation_time",
              base::TimeToValue(next_scheduled_calculation_time));
     dict.Set("hex_encoded_hmac_key", std::move(hex_encoded_hmac_key));
-    dict.Set("config_version", config_version);
 
     JSONFileValueSerializer(TestFilePath()).Serialize(dict);
   }
@@ -163,7 +163,7 @@ TEST_F(BrowsingTopicsStateTest, InitFromNoFile_SaveToDiskAfterDelay) {
   EXPECT_TRUE(base::PathExists(TestFilePath()));
   EXPECT_EQ(
       GetTestFileContent(),
-      "{\"config_version\": 1,\"epochs\": [ ],\"hex_encoded_hmac_key\": "
+      "{\"epochs\": [ ],\"hex_encoded_hmac_key\": "
       "\"0100000000000000000000000000000000000000000000000000000000000000\","
       "\"next_scheduled_calculation_time\": \"0\"}");
 }
@@ -191,7 +191,7 @@ TEST_F(BrowsingTopicsStateTest,
   EXPECT_FALSE(state.HasScheduledSaveForTesting());
 
   std::string expected_content = base::StrCat(
-      {"{\"config_version\": 1,\"epochs\": [ ],\"hex_encoded_hmac_key\": "
+      {"{\"epochs\": [ ],\"hex_encoded_hmac_key\": "
        "\"0100000000000000000000000000000000000000000000000000000000000000"
        "\",\"next_scheduled_calculation_time\": \"",
        base::NumberToString(state.next_scheduled_calculation_time()
@@ -526,8 +526,7 @@ TEST_F(BrowsingTopicsStateTest, InitFromPreexistingFile_CorruptedHmacKey) {
 
   CreateOrOverrideTestFile(std::move(epochs),
                            /*next_scheduled_calculation_time=*/kTime2,
-                           /*hex_encoded_hmac_key=*/"123",
-                           /*config_version=*/1);
+                           /*hex_encoded_hmac_key=*/"123");
 
   BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
   task_environment_->RunUntilIdle();
@@ -550,8 +549,7 @@ TEST_F(BrowsingTopicsStateTest, InitFromPreexistingFile_SameConfigVersion) {
 
   CreateOrOverrideTestFile(std::move(epochs),
                            /*next_scheduled_calculation_time=*/kTime2,
-                           /*hex_encoded_hmac_key=*/base::HexEncode(kTestKey2),
-                           /*config_version=*/1);
+                           /*hex_encoded_hmac_key=*/base::HexEncode(kTestKey2));
 
   BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
   task_environment_->RunUntilIdle();
@@ -568,17 +566,17 @@ TEST_F(BrowsingTopicsStateTest, InitFromPreexistingFile_SameConfigVersion) {
 }
 
 TEST_F(BrowsingTopicsStateTest,
-       InitFromPreexistingFile_DifferentConfigVersion) {
+       InitFromPreexistingFile_IncompatibleConfigVersion) {
   base::HistogramTester histograms;
 
   std::vector<EpochTopics> epochs;
   epochs.emplace_back(CreateTestEpochTopics(
-      kTime1, /*from_manually_triggered_calculation=*/false));
+      kTime1, /*from_manually_triggered_calculation=*/false,
+      /*config_version=*/100));
 
   CreateOrOverrideTestFile(std::move(epochs),
                            /*next_scheduled_calculation_time=*/kTime2,
-                           /*hex_encoded_hmac_key=*/base::HexEncode(kTestKey2),
-                           /*config_version=*/100);
+                           /*hex_encoded_hmac_key=*/base::HexEncode(kTestKey2));
 
   BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
   task_environment_->RunUntilIdle();
@@ -751,7 +749,7 @@ TEST_F(BrowsingTopicsStateTest, ShouldSaveFileDespiteShutdownWhileScheduled) {
   EXPECT_TRUE(base::PathExists(TestFilePath()));
   EXPECT_EQ(
       GetTestFileContent(),
-      "{\"config_version\": 1,\"epochs\": [ ],\"hex_encoded_hmac_key\": "
+      "{\"epochs\": [ ],\"hex_encoded_hmac_key\": "
       "\"0100000000000000000000000000000000000000000000000000000000000000\","
       "\"next_scheduled_calculation_time\": \"0\"}");
 }
