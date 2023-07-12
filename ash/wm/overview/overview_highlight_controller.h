@@ -25,6 +25,9 @@ class ScopedA11yOverrideWindowSetter;
 // mode such as a desk textfield, saved desk button and an `OverviewItem`. The
 // idea behind the movement strategy is that it should be possible to access any
 // highlightable view via keyboard by pressing the tab or arrow keys repeatedly.
+// Views API has built in support for focus traversal, but we don't use it here
+// since we need to tab between different widgets, some of which may not be
+// activatable.
 // +-------+  +-------+  +-------+
 // |   0   |  |   1   |  |   2   |
 // +-------+  +-------+  +-------+
@@ -39,6 +42,8 @@ class ScopedA11yOverrideWindowSetter;
 //    0, 1, 2, 3, 4, 5, 6
 // The highlight is switched to the next window grid (if available) or wrapped
 // if it reaches the end of its movement sequence.
+// TODO(b/290377356): Update this class and related classes from *Highlight* to
+// *FocusCycler*.
 class ASH_EXPORT OverviewHighlightController {
  public:
   explicit OverviewHighlightController(OverviewSession* overview_session);

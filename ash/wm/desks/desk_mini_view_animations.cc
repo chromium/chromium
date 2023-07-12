@@ -227,17 +227,9 @@ class RemovedMiniViewAnimation {
     }
 
     parent->RemoveChildViewT(removed_mini_view_.get());
-
-    const auto* overview_controller = Shell::Get()->overview_controller();
-    if (!overview_controller) {
-      // If we're being destroyed due to Shell being destroyed, the
-      // OverviewController is probably already gone. In this case, just stop.
-      return;
-    }
-
     bar_view_->UpdateDeskButtonsVisibility();
 
-    if (overview_controller->InOverviewSession()) {
+    if (Shell::Get()->overview_controller()->InOverviewSession()) {
       UpdateAccessibilityFocusInOverview();
     }
   }
