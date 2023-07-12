@@ -113,7 +113,8 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
     const GURL& request_url,
     net::HttpRequestHeaders* request_headers) {
   DCHECK(shared_dictionary_storage_);
-  shared_dictionary_ = shared_dictionary_storage_->GetDictionary(request_url);
+  shared_dictionary_ =
+      shared_dictionary_storage_->GetDictionarySync(request_url);
   if (!shared_dictionary_) {
     return;
   }

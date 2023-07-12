@@ -9,8 +9,6 @@
 #include "base/logging.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner.h"
 #include "net/base/io_buffer.h"
 #include "services/network/shared_dictionary/shared_dictionary_in_memory.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager_in_memory.h"
@@ -30,7 +28,7 @@ SharedDictionaryStorageInMemory::SharedDictionaryStorageInMemory(
 SharedDictionaryStorageInMemory::~SharedDictionaryStorageInMemory() = default;
 
 std::unique_ptr<SharedDictionary>
-SharedDictionaryStorageInMemory::GetDictionary(const GURL& url) {
+SharedDictionaryStorageInMemory::GetDictionarySync(const GURL& url) {
   DictionaryInfo* info =
       GetMatchingDictionaryFromDictionaryInfoMap(dictionary_info_map_, url);
 
@@ -47,11 +45,10 @@ SharedDictionaryStorageInMemory::GetDictionary(const GURL& url) {
                                                     info->hash());
 }
 
-void SharedDictionaryStorageInMemory::GetDictionaryAsync(
+void SharedDictionaryStorageInMemory::GetDictionary(
     const GURL& url,
     base::OnceCallback<void(std::unique_ptr<SharedDictionary>)> callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), GetDictionary(url)));
+  std::move(callback).Run(GetDictionarySync(url));
 }
 
 void SharedDictionaryStorageInMemory::DeleteDictionary(

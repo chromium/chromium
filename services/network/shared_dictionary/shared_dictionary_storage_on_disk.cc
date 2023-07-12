@@ -12,8 +12,6 @@
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
@@ -131,8 +129,8 @@ SharedDictionaryStorageOnDisk::SharedDictionaryStorageOnDisk(
 
 SharedDictionaryStorageOnDisk::~SharedDictionaryStorageOnDisk() = default;
 
-std::unique_ptr<SharedDictionary> SharedDictionaryStorageOnDisk::GetDictionary(
-    const GURL& url) {
+std::unique_ptr<SharedDictionary>
+SharedDictionaryStorageOnDisk::GetDictionarySync(const GURL& url) {
   if (!get_dictionary_called_) {
     get_dictionary_called_ = true;
     base::UmaHistogramBoolean(
@@ -179,16 +177,15 @@ std::unique_ptr<SharedDictionary> SharedDictionaryStorageOnDisk::GetDictionary(
       std::move(ref_counted_shared_dictionary));
 }
 
-void SharedDictionaryStorageOnDisk::GetDictionaryAsync(
+void SharedDictionaryStorageOnDisk::GetDictionary(
     const GURL& url,
     base::OnceCallback<void(std::unique_ptr<SharedDictionary>)> callback) {
   if (is_metadata_ready_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), GetDictionary(url)));
+    std::move(callback).Run(GetDictionarySync(url));
     return;
   }
   pending_get_dictionary_tasks_.emplace_back(
-      base::BindOnce(&SharedDictionaryStorageOnDisk::GetDictionaryAsync,
+      base::BindOnce(&SharedDictionaryStorageOnDisk::GetDictionary,
                      weak_factory_.GetWeakPtr(), url, std::move(callback)));
 }
 

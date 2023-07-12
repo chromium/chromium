@@ -95,13 +95,13 @@ class DummySharedDictionaryStorage : public SharedDictionaryStorage {
       : dictionary_(std::move(dictionary)) {}
 
   // SharedDictionaryStorage
-  std::unique_ptr<SharedDictionary> GetDictionary(const GURL& url) override {
+  std::unique_ptr<SharedDictionary> GetDictionarySync(
+      const GURL& url) override {
     return std::move(dictionary_);
   }
-  void GetDictionaryAsync(
-      const GURL& url,
-      base::OnceCallback<void(std::unique_ptr<SharedDictionary>)> callback)
-      override {}
+  void GetDictionary(const GURL& url,
+                     base::OnceCallback<void(std::unique_ptr<SharedDictionary>)>
+                         callback) override {}
   scoped_refptr<SharedDictionaryWriter> CreateWriter(
       const GURL& url,
       base::Time response_time,

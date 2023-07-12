@@ -326,7 +326,11 @@ CorsURLLoader::CorsURLLoader(
   SetCorsFlagIfNeeded();
 
   if (shared_dictionary_storage_) {
-    shared_dictionary_storage_->GetDictionaryAsync(
+    // This is intended to load the dictionary as soon as possible. Without
+    // this, the dictionary will be loaded from the disk when
+    // `HttpNetworkTransaction` builds the request header just before sending it
+    // to the server.
+    shared_dictionary_storage_->GetDictionary(
         request_.url,
         base::BindOnce(
             [](base::WeakPtr<CorsURLLoader> loader,

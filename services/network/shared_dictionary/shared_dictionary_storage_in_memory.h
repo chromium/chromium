@@ -90,11 +90,10 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
       const SharedDictionaryStorageInMemory&) = delete;
 
   // SharedDictionaryStorage
-  std::unique_ptr<SharedDictionary> GetDictionary(const GURL& url) override;
-  void GetDictionaryAsync(
-      const GURL& url,
-      base::OnceCallback<void(std::unique_ptr<SharedDictionary>)> callback)
-      override;
+  std::unique_ptr<SharedDictionary> GetDictionarySync(const GURL& url) override;
+  void GetDictionary(const GURL& url,
+                     base::OnceCallback<void(std::unique_ptr<SharedDictionary>)>
+                         callback) override;
   scoped_refptr<SharedDictionaryWriter> CreateWriter(
       const GURL& url,
       base::Time response_time,
