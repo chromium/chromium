@@ -1509,11 +1509,14 @@ copy("form_controls_pickers_js") {
   outputs = [ "{{source_gen_dir}}/{{source_file_part}}" ]
 }
 
-group("js_files_for_form_controls_web_tests") {
+group("gen_files_for_web_tests") {
   testonly = true
   visibility = []  # Allow re-assignment of list.
   visibility = [ "*" ]
-  data_deps = [ ":form_controls_pickers_js" ]
+  data_deps = [
+    ":element_locator_test_protobuf",
+    ":form_controls_pickers_js",
+  ]
 }
 
 source_set("perf_tests") {
@@ -1680,7 +1683,44 @@ proto_library("css_proto") {
 
 proto_library("element_locator_proto") {
   sources = [ "lcp_critical_path_predictor/element_locator.proto" ]
+
   proto_out_dir = "third_party/blink/renderer/core/lcp_critical_path_predictor"
+}
+
+# Builds a wire format proto to that is consumed from LCPP web_tests. Used in
+# third_party/blink/web_tests/http/tests/lcp_critical_path_predictor
+action_foreach("element_locator_test_protobuf") {
+  script =
+      "lcp_critical_path_predictor/generate_element_locator_binary_proto.py"
+
+  python_path_root = "${root_out_dir}/pyproto"
+  python_path_proto = "${python_path_root}/third_party/blink/renderer/core/lcp_critical_path_predictor"
+
+  mnemonic = "ELOC_PROTO"
+
+  source_dir = "lcp_critical_path_predictor/test_proto"
+  sources = rebase_path([ "lcp_image_id.asciipb" ], "", source_dir)
+
+  deps = [
+    ":element_locator_proto",
+    "//third_party/protobuf:py_proto",
+  ]
+
+  outputs = [ "${target_gen_dir}/${source_dir}/{{source_name_part}}.pb" ]
+
+  args = [
+    "-w",
+    "-i",
+    "{{source}}",
+    "-d",
+    rebase_path("${target_gen_dir}/${source_dir}", root_build_dir),
+    "-o",
+    "{{source_name_part}}.pb",
+    "-p",
+    rebase_path(python_path_root, root_build_dir),
+    "-p",
+    rebase_path(python_path_proto, root_build_dir),
+  ]
 }
 
 fuzzer_test("blink_html_tokenizer_fuzzer") {
