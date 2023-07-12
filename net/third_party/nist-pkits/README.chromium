@@ -4,7 +4,7 @@ URL: http://csrc.nist.gov/groups/ST/crypto_apps_infra/pki/pkitesting.html
 Version: 1.0.1
 Date: April 14, 2011
 License: Public Domain: United States Government Work under 17 U.S.C. 105
-License File: NOT_SHIPPED
+Shipped: no
 
 Description:
 The Public Key Interoperability Test Suite (PKITS) is a comprehensive X.509

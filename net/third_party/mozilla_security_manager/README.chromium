@@ -3,7 +3,8 @@ URL: https://dxr.mozilla.org/mozilla1.9.2/source/security/manager/
 InfoURL: http://www.mozilla.org/
 Version: Mozilla 1.9.2
 License: MPL 1.1 / GPL 2.0 / LGPL 2.1
-License File: NOT_SHIPPED
+License File: LICENSE
+Shipped: no
 
 Description:
 This is selected code bits from Mozilla's Personal Security Manager.
