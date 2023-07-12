@@ -7,7 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {AmbientObserver, AmbientPreviewLarge, Paths, PersonalizationRouter, TopicSource} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -186,6 +186,65 @@ suite('AmbientPreviewLargeTest', function() {
     assertEquals(
         topicSource, TopicSource.kGooglePhotos,
         'navigates to google photos topic source');
+  });
+
+  test('jelly shows 2 or 3 preview images', async () => {
+    loadTimeData.overrideValues({
+      isPersonalizationJellyEnabled: true,
+      isAmbientModeAllowed: true,
+    });
+    personalizationStore.data.ambient = {
+      ...personalizationStore.data.ambient,
+      albums: ambientProvider.albums,
+      topicSource: TopicSource.kArtGallery,
+      ambientModeEnabled: true,
+      previews: ambientProvider.previews,
+    };
+    ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientPreviewLargeElement);
+
+    assertEquals(
+        'http://test_url2',
+        ambientPreviewLargeElement.shadowRoot!
+            .querySelector<HTMLImageElement>(
+                '#imageContainer .preview-image')!.getAttribute('auto-src'),
+        'large container shows album preview image from first selected album');
+
+    assertFalse(
+        !!ambientPreviewLargeElement.shadowRoot!.getElementById(
+            'collageContainer'),
+        'collageContainer does not exist with jelly enabled');
+
+    const thumbnailContainer =
+        ambientPreviewLargeElement.shadowRoot!.getElementById(
+            'thumbnailContainer');
+    assertTrue(!!thumbnailContainer, 'thumbnailContainer exists');
+
+    let thumbnailImages =
+        thumbnailContainer.querySelectorAll<HTMLImageElement>('img');
+    assertDeepEquals(
+        [
+          'http://preview0',
+          'http://preview1',
+        ],
+        Array.from(thumbnailImages).map(img => img.getAttribute('auto-src')),
+        'first two preview images are shown for kArtGallery');
+
+    personalizationStore.data.ambient.topicSource = TopicSource.kGooglePhotos;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientPreviewLargeElement);
+
+    thumbnailImages =
+        thumbnailContainer.querySelectorAll<HTMLImageElement>('img');
+    assertDeepEquals(
+        [
+          'http://preview0',
+          'http://preview1',
+          'http://preview2',
+        ],
+        Array.from(thumbnailImages).map(img => img.getAttribute('auto-src')),
+        'first three preview images are shown for kGooglePhotos');
   });
 
   test('click ambient thumbnail goes to ambient subpage', async () => {
