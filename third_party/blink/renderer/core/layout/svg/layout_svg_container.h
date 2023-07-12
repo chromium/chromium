@@ -112,6 +112,11 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
                 LayoutObject* before_child = nullptr) final;
   void RemoveChild(LayoutObject*) final;
 
+  gfx::RectF StrokeBoundingBox() const final {
+    NOT_DESTROYED();
+    return content_.ComputeStrokeBoundingBox();
+  }
+
   gfx::RectF DecoratedBoundingBox() const final {
     NOT_DESTROYED();
     return content_.DecoratedBoundingBox();

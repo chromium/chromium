@@ -44,7 +44,7 @@
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_type.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -2157,14 +2157,14 @@ class ComputedStyle : public ComputedStyleBase,
   };
   void ApplyTransform(gfx::Transform&,
                       const LayoutBox* box,
-                      PhysicalSize border_box_data_size,
+                      const PhysicalRect& reference_box,
                       ApplyTransformOperations,
                       ApplyTransformOrigin,
                       ApplyMotionPath,
                       ApplyIndependentTransformProperties) const;
   void ApplyTransform(gfx::Transform&,
                       const LayoutBox* box,
-                      const gfx::RectF& bounding_box,
+                      const gfx::RectF& reference_box,
                       ApplyTransformOperations,
                       ApplyTransformOrigin,
                       ApplyMotionPath,

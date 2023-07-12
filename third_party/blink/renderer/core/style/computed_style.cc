@@ -1327,14 +1327,14 @@ void ComputedStyle::LoadDeferredImages(Document& document) const {
 void ComputedStyle::ApplyTransform(
     gfx::Transform& result,
     const LayoutBox* box,
-    PhysicalSize border_box_size,
+    const PhysicalRect& reference_box,
     ApplyTransformOperations apply_operations,
     ApplyTransformOrigin apply_origin,
     ApplyMotionPath apply_motion_path,
     ApplyIndependentTransformProperties apply_independent_transform_properties)
     const {
-  ApplyTransform(result, box, gfx::RectF(gfx::SizeF(border_box_size)),
-                 apply_operations, apply_origin, apply_motion_path,
+  ApplyTransform(result, box, gfx::RectF(reference_box), apply_operations,
+                 apply_origin, apply_motion_path,
                  apply_independent_transform_properties);
 }
 

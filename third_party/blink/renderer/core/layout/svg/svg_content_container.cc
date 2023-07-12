@@ -213,4 +213,17 @@ bool SVGContentContainer::ComputeHasNonIsolatedBlendingDescendants() const {
   return false;
 }
 
+gfx::RectF SVGContentContainer::ComputeStrokeBoundingBox() const {
+  gfx::RectF stroke_bbox;
+  for (LayoutObject* child = children_.FirstChild(); child;
+       child = child->NextSibling()) {
+    // Don't include elements that are not rendered.
+    if (!HasValidBoundingBoxForContainer(*child)) {
+      continue;
+    }
+    stroke_bbox.Union(child->StrokeBoundingBox());
+  }
+  return stroke_bbox;
+}
+
 }  // namespace blink

@@ -83,6 +83,11 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
   void WillBeDestroyed() override;
 
  private:
+  gfx::RectF StrokeBoundingBox() const override {
+    NOT_DESTROYED();
+    return object_bounding_box_;
+  }
+
   gfx::RectF DecoratedBoundingBox() const override {
     NOT_DESTROYED();
     return object_bounding_box_;

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 371 tests; 354 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 371 tests; 357 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testInterpolation function
 PASS isolation uses discrete animation when animating between "auto" and "isolate" with linear easing
@@ -320,9 +320,9 @@ PASS transform: non-invertible matrices in matched transform lists
 PASS transform: non-invertible matrices in mismatched transform lists
 PASS transform: perspective
 PASS transform-box (type: discrete) has testInterpolation function
-FAIL transform-box uses discrete animation when animating between "fill-box" and "border-box" with linear easing assert_equals: The value should be border-box at 500ms expected "border-box" but got "view-box"
-FAIL transform-box uses discrete animation when animating between "fill-box" and "border-box" with effect easing assert_equals: The value should be border-box at 960ms expected "border-box" but got "view-box"
-FAIL transform-box uses discrete animation when animating between "fill-box" and "border-box" with keyframe easing assert_equals: The value should be border-box at 960ms expected "border-box" but got "view-box"
+PASS transform-box uses discrete animation when animating between "fill-box" and "border-box" with linear easing
+PASS transform-box uses discrete animation when animating between "fill-box" and "border-box" with effect easing
+PASS transform-box uses discrete animation when animating between "fill-box" and "border-box" with keyframe easing
 PASS transform-style (type: discrete) has testInterpolation function
 PASS transform-style uses discrete animation when animating between "flat" and "preserve-3d" with linear easing
 PASS transform-style uses discrete animation when animating between "flat" and "preserve-3d" with effect easing

@@ -39,6 +39,7 @@ class SVGContentContainer {
   }
 
   bool ComputeHasNonIsolatedBlendingDescendants() const;
+  gfx::RectF ComputeStrokeBoundingBox() const;
 
   LayoutObjectChildList& Children() { return children_; }
   const LayoutObjectChildList& Children() const { return children_; }

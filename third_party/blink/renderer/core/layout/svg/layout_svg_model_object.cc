@@ -117,6 +117,9 @@ bool LayoutSVGModelObject::CheckForImplicitTransformChange(
     case ETransformBox::kViewBox:
       return SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(this);
     case ETransformBox::kFillBox:
+    case ETransformBox::kContentBox:
+    case ETransformBox::kStrokeBox:
+    case ETransformBox::kBorderBox:
       return bbox_changed;
   }
   NOTREACHED();

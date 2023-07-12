@@ -82,15 +82,24 @@ void LayoutSVGShape::StyleDidChange(StyleDifference diff,
       TransformHelper::UpdateReferenceBoxDependency(*this);
   SVGResources::UpdatePaints(*this, old_style, StyleRef());
 
-  // Most of the stroke attributes (caps, joins, miters, width, etc.) will cause
-  // a re-layout which will clear the stroke-path cache; however, there are a
-  // couple of additional properties that *won't* cause a layout, but are
-  // significant enough to require invalidating the cache.
-  if (!diff.NeedsFullLayout() && old_style && stroke_path_cache_) {
+  if (old_style) {
     const ComputedStyle& style = StyleRef();
-    if (old_style->StrokeDashOffset() != style.StrokeDashOffset() ||
-        *old_style->StrokeDashArray() != *style.StrokeDashArray()) {
-      stroke_path_cache_.reset();
+    // Most of the stroke attributes (caps, joins, miters, width, etc.) will
+    // cause a re-layout which will clear the stroke-path cache; however, there
+    // are a couple of additional properties that *won't* cause a layout, but
+    // are significant enough to require invalidating the cache.
+    if (!diff.NeedsFullLayout() && stroke_path_cache_) {
+      if (old_style->StrokeDashOffset() != style.StrokeDashOffset() ||
+          *old_style->StrokeDashArray() != *style.StrokeDashArray()) {
+        stroke_path_cache_.reset();
+      }
+    }
+
+    if (transform_uses_reference_box_ && !needs_transform_update_) {
+      if (TransformHelper::CheckReferenceBoxDependencies(*old_style, style)) {
+        SetNeedsTransformUpdate();
+        SetNeedsPaintPropertyUpdate();
+      }
     }
   }
 
@@ -191,6 +200,33 @@ gfx::RectF LayoutSVGShape::HitTestStrokeBoundingBox() const {
   if (StyleRef().HasStroke())
     return decorated_bounding_box_;
   return ApproximateStrokeBoundingBox(fill_bounding_box_);
+}
+
+gfx::RectF LayoutSVGShape::StrokeBoundingBox() const {
+  NOT_DESTROYED();
+  if (!StyleRef().HasStroke()) {
+    return fill_bounding_box_;
+  }
+  // If no Path object has been created for the shape, assume that it is
+  // 'simple' and thus the approximation is accurate.
+  if (!HasPath()) {
+    DCHECK_EQ(geometry_class_, kSimple);
+    return decorated_bounding_box_;
+  }
+  StrokeData stroke_data;
+  SVGLayoutSupport::ApplyStrokeStyleToStrokeData(stroke_data, StyleRef(), *this,
+                                                 DashScaleFactor());
+  // Reset the dash pattern.
+  //
+  // "...set box to be the union of box and the tightest rectangle in
+  // coordinate system space that contains the stroke shape of the element,
+  // with the assumption that the element has no dash pattern."
+  //
+  // (https://www.w3.org/TR/SVG2/coords.html#TermStrokeBoundingBox)
+  DashArray dashes;
+  stroke_data.SetLineDash(dashes, 0);
+  const gfx::RectF stroke_bounds = GetPath().StrokeBoundingRect(stroke_data);
+  return gfx::UnionRects(fill_bounding_box_, stroke_bounds);
 }
 
 bool LayoutSVGShape::ShapeDependentStrokeContains(

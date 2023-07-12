@@ -18,6 +18,18 @@
 
 namespace blink {
 
+namespace {
+
+bool StrokeBoundingBoxMayHaveChanged(const ComputedStyle& old_style,
+                                     const ComputedStyle& style) {
+  return old_style.StrokeWidth() != style.StrokeWidth() ||
+         old_style.CapStyle() != style.CapStyle() ||
+         old_style.StrokeMiterLimit() != style.StrokeMiterLimit() ||
+         old_style.JoinStyle() != style.JoinStyle();
+}
+
+}  // namespace
+
 static inline bool TransformOriginIsFixed(const ComputedStyle& style) {
   // If the transform box is view-box and the transform origin is absolute,
   // then is does not depend on the reference box. For fill-box, the origin
@@ -85,17 +97,38 @@ void TransformHelper::UpdateReferenceBoxDependency(
   }
 }
 
+bool TransformHelper::CheckReferenceBoxDependencies(
+    const ComputedStyle& old_style,
+    const ComputedStyle& style) {
+  ETransformBox transform_box = style.TransformBox();
+  // Changes to fill-box and view-box are handled by the
+  // `CheckForImplicitTransformChange()` implementations.
+  if (transform_box != ETransformBox::kStrokeBox &&
+      transform_box != ETransformBox::kBorderBox) {
+    return false;
+  }
+  return StrokeBoundingBoxMayHaveChanged(old_style, style);
+}
+
 gfx::RectF TransformHelper::ComputeReferenceBox(
     const LayoutObject& layout_object) {
   const ComputedStyle& style = layout_object.StyleRef();
   gfx::RectF reference_box;
-  if (style.TransformBox() == ETransformBox::kFillBox) {
-    reference_box = layout_object.ObjectBoundingBox();
-  } else {
-    DCHECK_EQ(style.TransformBox(), ETransformBox::kViewBox);
-    SVGLengthContext length_context(
-        DynamicTo<SVGElement>(layout_object.GetNode()));
-    reference_box.set_size(length_context.ResolveViewport());
+  switch (style.TransformBox()) {
+    case ETransformBox::kFillBox:
+    case ETransformBox::kContentBox:
+      reference_box = layout_object.ObjectBoundingBox();
+      break;
+    case ETransformBox::kStrokeBox:
+    case ETransformBox::kBorderBox:
+      reference_box = layout_object.StrokeBoundingBox();
+      break;
+    case ETransformBox::kViewBox: {
+      SVGLengthContext length_context(
+          DynamicTo<SVGElement>(layout_object.GetNode()));
+      reference_box.set_size(length_context.ResolveViewport());
+      break;
+    }
   }
   const float zoom = style.EffectiveZoom();
   if (zoom != 1)

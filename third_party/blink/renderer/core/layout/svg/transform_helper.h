@@ -37,6 +37,11 @@ class TransformHelper {
   static void UpdateReferenceBoxDependency(LayoutObject&,
                                            bool transform_uses_reference_box);
 
+  // Check if ComputedStyle has changed in a way that could be reflected in the
+  // transform reference box.
+  static bool CheckReferenceBoxDependencies(const ComputedStyle& old_style,
+                                            const ComputedStyle& style);
+
   // Computes the reference box for the LayoutObject based on the
   // 'transform-box'. Applies zoom if needed.
   static gfx::RectF ComputeReferenceBox(const LayoutObject&);

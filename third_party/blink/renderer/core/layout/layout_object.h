@@ -1343,6 +1343,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // coordinate space is the viewport space.
   virtual gfx::RectF VisualRectInLocalSVGCoordinates() const;
 
+  // Compute the SVG stroke bounding box per
+  // https://www.w3.org/TR/SVG2/coords.html#TermStrokeBoundingBox .
+  virtual gfx::RectF StrokeBoundingBox() const;
+
   // Like VisualRectInLocalSVGCoordinates() but does not include visual overflow
   // (name is misleading). May be zoomed (currently only for <foreignObject>,
   // which represents this via its LocalToSVGParentTransform()).

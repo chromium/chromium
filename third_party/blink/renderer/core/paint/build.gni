@@ -210,6 +210,8 @@ blink_core_sources_paint = [
   "timing/text_element_timing.h",
   "timing/text_paint_timing_detector.cc",
   "timing/text_paint_timing_detector.h",
+  "transform_utils.cc",
+  "transform_utils.h",
   "url_metadata_utils.cc",
   "url_metadata_utils.h",
   "video_painter.cc",

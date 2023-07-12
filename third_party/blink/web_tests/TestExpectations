@@ -4399,16 +4399,6 @@ crbug.com/1046784 http/tests/devtools/elements/styles/stylesheet-tracking.js [ F
 crbug.com/1084637 compositing/video/video-reflection.html [ Failure Pass ]
 crbug.com/1083362 compositing/reflections/load-video-in-reflection.html [ Failure Pass ]
 
-
-# Ecosystem-Infra Rotation 2020-06-15
-crbug.com/924472 external/wpt/css/css-transforms/transform-box/cssbox-content-box.html [ Failure ]
-crbug.com/924472 external/wpt/css/css-transforms/transform-box/cssbox-border-box.html [ Failure ]
-crbug.com/924472 external/wpt/css/css-transforms/transform-box/cssbox-stroke-box.html [ Failure ]
-crbug.com/924472 external/wpt/css/css-transforms/transform-box/cssbox-fill-box.html [ Failure ]
-crbug.com/924472 external/wpt/css/css-transforms/transform-box/svgbox-border-box.html [ Failure ]
-crbug.com/924472 external/wpt/css/css-transforms/transform-box/svgbox-content-box.html [ Failure ]
-crbug.com/924472 external/wpt/css/css-transforms/transform-box/svgbox-stroke-box.html [ Failure ]
-
 # Sheriff 2020-06-17
 crbug.com/1092975 http/tests/inspector-protocol/target/target-expose-devtools-protocol.js [ Failure Pass ]
 

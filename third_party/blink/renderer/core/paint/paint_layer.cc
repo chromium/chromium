@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
+#include "third_party/blink/renderer/core/paint/transform_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
@@ -311,11 +312,12 @@ void PaintLayer::UpdateLayerPositionRecursive() {
 
 void PaintLayer::UpdateTransform() {
   if (gfx::Transform* transform = Transform()) {
-    LayoutBox* box = GetLayoutBox();
+    const LayoutBox* box = GetLayoutBox();
     DCHECK(box);
     transform->MakeIdentity();
+    const PhysicalRect reference_box = ComputeReferenceBox(*box);
     box->StyleRef().ApplyTransform(
-        *transform, box, PhysicalSize(box->Size()),
+        *transform, box, reference_box,
         ComputedStyle::kIncludeTransformOperations,
         ComputedStyle::kIncludeTransformOrigin,
         ComputedStyle::kIncludeMotionPath,

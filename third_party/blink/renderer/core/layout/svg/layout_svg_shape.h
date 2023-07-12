@@ -198,6 +198,10 @@ class LayoutSVGShape : public LayoutSVGModelObject {
                     const HitTestLocation&,
                     PointerEventsHitRules);
 
+  // Calculates the tight stroke bounding box of the shape excluding any dash
+  // pattern.
+  gfx::RectF StrokeBoundingBox() const final;
+
   gfx::RectF DecoratedBoundingBox() const final {
     NOT_DESTROYED();
     return decorated_bounding_box_;

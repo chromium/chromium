@@ -5255,7 +5255,7 @@
       name: "transform-box",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_template: "keyword",
-      keywords: ["fill-box", "view-box"],
+      keywords: ["content-box", "border-box", "fill-box", "stroke-box", "view-box"],
       default_value: "view-box",
       typedom_types: ["Keyword"],
       computable: false,

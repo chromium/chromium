@@ -49,6 +49,11 @@ gfx::RectF LayoutNGSVGForeignObject::ObjectBoundingBox() const {
   return viewport_;
 }
 
+gfx::RectF LayoutNGSVGForeignObject::StrokeBoundingBox() const {
+  NOT_DESTROYED();
+  return viewport_;
+}
+
 gfx::RectF LayoutNGSVGForeignObject::DecoratedBoundingBox() const {
   NOT_DESTROYED();
   return VisualRectInLocalSVGCoordinates();

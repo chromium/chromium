@@ -4471,6 +4471,12 @@ gfx::RectF LayoutObject::ObjectBoundingBox() const {
   return gfx::RectF();
 }
 
+gfx::RectF LayoutObject::StrokeBoundingBox() const {
+  NOT_DESTROYED();
+  NOTREACHED();
+  return gfx::RectF();
+}
+
 gfx::RectF LayoutObject::DecoratedBoundingBox() const {
   NOT_DESTROYED();
   NOTREACHED();

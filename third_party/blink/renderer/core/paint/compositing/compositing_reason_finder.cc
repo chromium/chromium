@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/paint/transform_utils.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
@@ -111,8 +112,9 @@ CompositingReasons CompositingReasonsFor3DTransform(
     // In theory this should operate on fragment sizes, but using the box size
     // is probably good enough for a use counter.
     auto& box = To<LayoutBox>(layout_object);
+    const PhysicalRect reference_box = ComputeReferenceBox(box);
     gfx::Transform matrix;
-    style.ApplyTransform(matrix, &box, PhysicalSize(box.Size()),
+    style.ApplyTransform(matrix, &box, reference_box,
                          ComputedStyle::kIncludeTransformOperations,
                          ComputedStyle::kExcludeTransformOrigin,
                          ComputedStyle::kExcludeMotionPath,

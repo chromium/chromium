@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 301 tests; 286 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 301 tests; 287 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testAddition function
 PASS isolation: "isolate" onto "auto"
@@ -257,7 +257,7 @@ PASS transform: non-invertible matrices
 PASS transform: non-invertible matrices in matched transform lists
 PASS transform: non-invertible matrices in mismatched transform lists
 PASS transform-box (type: discrete) has testAddition function
-FAIL transform-box: "border-box" onto "fill-box" assert_equals: The value should be border-box at 0ms expected "border-box" but got "fill-box"
+PASS transform-box: "border-box" onto "fill-box"
 PASS transform-box: "fill-box" onto "border-box"
 PASS transform-style (type: discrete) has testAddition function
 PASS transform-style: "preserve-3d" onto "flat"

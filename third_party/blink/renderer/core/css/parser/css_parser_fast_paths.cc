@@ -1546,6 +1546,13 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kBalance ||
              value_id == CSSValueID::kPretty;
     case CSSPropertyID::kTransformBox:
+      if (RuntimeEnabledFeatures::CSSTransformBoxAdditionalKeywordsEnabled()) {
+        return value_id == CSSValueID::kContentBox ||
+               value_id == CSSValueID::kBorderBox ||
+               value_id == CSSValueID::kStrokeBox ||
+               value_id == CSSValueID::kFillBox ||
+               value_id == CSSValueID::kViewBox;
+      }
       return value_id == CSSValueID::kFillBox ||
              value_id == CSSValueID::kViewBox;
     case CSSPropertyID::kTransformStyle:
