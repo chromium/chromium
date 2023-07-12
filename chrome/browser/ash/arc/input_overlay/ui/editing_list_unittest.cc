@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/test/view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
@@ -63,10 +64,16 @@ class EditingListTest : public ViewTestBase {
 };
 
 TEST_F(EditingListTest, TestEditingListAddNewAction) {
+  CheckActions(touch_injector_.get(), /*expect_size=*/2u, /*expect_types=*/
+               {ActionType::TAP, ActionType::MOVE}, /*expect_ids=*/{1, 0});
   EXPECT_EQ(2u, GetActionListItemsSize());
   EXPECT_EQ(2u, GetActionViewSize());
   EXPECT_EQ(2u, GetTouchInjectorActionSize());
+  // Add a new action by pressing add button.
   PressAddButton();
+  CheckActions(touch_injector_.get(), /*expect_size=*/3u, /*expect_types=*/
+               {ActionType::TAP, ActionType::MOVE, ActionType::TAP},
+               /*expect_ids=*/{1, 0, kMaxDefaultActionID + 1});
   EXPECT_EQ(3u, GetActionListItemsSize());
   EXPECT_EQ(3u, GetActionViewSize());
   EXPECT_EQ(3u, GetTouchInjectorActionSize());

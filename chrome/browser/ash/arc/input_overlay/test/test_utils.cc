@@ -6,8 +6,13 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
+#include "ui/aura/window.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace arc::input_overlay {
@@ -35,6 +40,23 @@ std::unique_ptr<views::Widget> CreateArcWindow(
   widget->Activate();
 
   return widget;
+}
+
+void CheckActions(TouchInjector* injector,
+                  size_t expect_size,
+                  const std::vector<ActionType>& expect_types,
+                  const std::vector<int>& expect_ids) {
+  CHECK(injector) << "The touch injector should be not nullptr.";
+  CHECK_EQ(expect_size, expect_types.size())
+      << "Expected size for expect_types: " << expect_size;
+  CHECK_EQ(expect_size, expect_ids.size())
+      << "Expected size for expect_ids: " << expect_size;
+
+  EXPECT_EQ(expect_size, injector->actions().size());
+  for (size_t i = 0; i < expect_size; i++) {
+    EXPECT_EQ(expect_types[i], injector->actions()[i]->GetType());
+    EXPECT_EQ(expect_ids[i], injector->actions()[i]->id());
+  }
 }
 
 }  // namespace arc::input_overlay

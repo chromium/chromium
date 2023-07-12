@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/aura_test_helper.h"
@@ -226,10 +227,7 @@ class TouchInjectorTest : public views::ViewsTestBase {
  protected:
   TouchInjectorTest()
       : views::ViewsTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kArcInputOverlayAlphaV2}, {});
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   int GetRewrittenTouchIdForTesting(ui::PointerId original_id) {
     return injector_->GetRewrittenTouchIdForTesting(original_id);
@@ -255,8 +253,6 @@ class TouchInjectorTest : public views::ViewsTestBase {
     injector_->LoadMenuEntryFromProto(temp_proto);
   }
 
-  int GetNextActionID() { return injector_->next_action_id_; }
-
   void PrepareToBindPosition(Action* action,
                              std::unique_ptr<Position> position) {
     action->PrepareToBindPositionForTesting(std::move(position));
@@ -275,9 +271,31 @@ class TouchInjectorTest : public views::ViewsTestBase {
   int caption_height_;
   std::unique_ptr<TouchInjector> injector_;
 
+ protected:
+  void InitWithFeature(absl::optional<base::test::FeatureRef> feature) {
+    if (feature) {
+      scoped_feature_list_.InitWithFeatures({*feature}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures({}, {});
+    }
+    Init();
+  }
+
+  // views::ViewsTestBase:
+  void TearDown() override {
+    injector_.reset();
+    widget_->CloseNow();
+
+    root_window()->RemovePreTargetHandler(&event_capturer_);
+
+    event_generator_.reset();
+    event_capturer_.Clear();
+
+    views::ViewsTestBase::TearDown();
+  }
+
  private:
-  void SetUp() override {
-    views::ViewsTestBase::SetUp();
+  void Init() {
     event_generator_ =
         std::make_unique<ui::test::EventGenerator>(root_window());
 
@@ -296,22 +314,33 @@ class TouchInjectorTest : public views::ViewsTestBase {
             [&](std::unique_ptr<AppDataProto>, std::string) {}));
   }
 
-  void TearDown() override {
-    injector_.reset();
-    widget_->CloseNow();
-
-    root_window()->RemovePreTargetHandler(&event_capturer_);
-
-    event_generator_.reset();
-    event_capturer_.Clear();
-
-    views::ViewsTestBase::TearDown();
-  }
-
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
+// -----------------------------------------------------------------------------
+// VersionTouchInjectorTest:
+// Test fixture to test both pre-beta and beta version depending on the test
+// param (true for beta version, false for pre-beta version).
+class VersionTouchInjectorTest : public TouchInjectorTest,
+                                 public testing::WithParamInterface<bool> {
+ public:
+  VersionTouchInjectorTest() = default;
+  ~VersionTouchInjectorTest() override = default;
+
+  // TouchInjectorTest:
+  void SetUp() override {
+    TouchInjectorTest::SetUp();
+    InitWithFeature(IsBetaVersion()
+                        ? absl::make_optional<base::test::FeatureRef>(
+                              ash::features::kArcInputOverlayBeta)
+                        : absl::nullopt);
+  }
+
+ private:
+  bool IsBetaVersion() const { return GetParam(); }
+};
+
+TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapKey) {
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
   injector_->ParseActions(json_value->GetDict());
@@ -464,7 +493,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   event_capturer_.Clear();
 }
 
-TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
+TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapMouse) {
   injector_->set_enable_mouse_lock(true);
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapMouse);
@@ -528,7 +557,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
   EXPECT_POINTF_NEAR(expect_primary, event->root_location_f(), kTolerance);
 }
 
-TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
+TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveKey) {
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveKey);
   injector_->ParseActions(json_value->GetDict());
@@ -623,7 +652,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   event_capturer_.Clear();
 }
 
-TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
+TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveMouse) {
   injector_->set_enable_mouse_lock(true);
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveMouse);
@@ -703,7 +732,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
   event_capturer_.Clear();
 }
 
-TEST_F(TouchInjectorTest, TestEventRewriterTouchToTouch) {
+TEST_P(VersionTouchInjectorTest, TestEventRewriterTouchToTouch) {
   // Setup.
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
@@ -830,7 +859,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterTouchToTouch) {
   EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
 }
 
-TEST_F(TouchInjectorTest, TestProtoConversion) {
+TEST_P(VersionTouchInjectorTest, TestProtoConversion) {
   // Check whether AppDataProto is serialized correctly.
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
@@ -893,5 +922,7 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
   EXPECT_TRUE(deserialized_menu_entry_location);
   EXPECT_EQ(*deserialized_menu_entry_location, *expected_menu_entry_location);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, VersionTouchInjectorTest, ::testing::Bool());
 
 }  // namespace arc::input_overlay

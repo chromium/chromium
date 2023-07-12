@@ -111,15 +111,13 @@ class TouchInjector : public ui::EventRewriter {
   void UpdatePositionsForRegister();
   void UpdateForOverlayBoundsChanged(const gfx::RectF& new_bounds);
 
-  // Add or delete an Action.
-  // Return an action ID (> kMaxDefaultActionID) for adding a new action.
-  int GetNextActionID();
+  // Returns the smallest unused ID (> kMaxDefaultActionID) for adding a new
+  // action.
+  int GetNextNewActionID();
   // Add a new action of type |action_type| from UI without input binding and
   // with default position binding at the center.
   void AddNewAction(ActionType action_type);
   void RemoveAction(Action* action);
-  // Remove action view for |action|.
-  void RemoveActionView(Action* action);
   // Create a new action with guidance from the reference action, and delete
   // the reference action.
   void ChangeActionType(Action* reference_action, ActionType action_type);
@@ -244,9 +242,6 @@ class TouchInjector : public ui::EventRewriter {
   void AddSystemVersionToProto(AppDataProto& proto);
   void LoadSystemVersionFromProto(AppDataProto& proto);
 
-  // Create Action by |action_type| without any input bindings.
-  std::unique_ptr<Action> CreateRawAction(ActionType action_type);
-
   // For observers.
   void NotifyActionAdded(Action& action);
   void NotifyActionRemoved(Action& action);
@@ -301,10 +296,6 @@ class TouchInjector : public ui::EventRewriter {
   // Key is the original touch id. Value is a struct containing required info
   // for this touch event.
   base::flat_map<ui::PointerId, TouchPointInfo> rewritten_touch_infos_;
-
-  // This for Action adding or deleting. For default action, ID <=
-  // kMaxDefaultActionID. For custom actions, ID > kMaxDefaultActionID.
-  int next_action_id_ = kMaxDefaultActionID + 1;
 
   base::ReentrantObserverList<TouchInjectorObserver> observers_;
 

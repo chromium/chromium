@@ -143,6 +143,65 @@ bool ProcessKeyEventOnFocusedMenuEntry(const ui::KeyEvent& event) {
   return false;
 }
 
+// Find the smallest integer larger than `kMaxDefaultActionID` and not in
+// `id_list` by binary search.
+//
+// `id_list` has below requirements:
+//  - All the integers in `id_list` are larger than `kMaxDefaultActionID`.
+//  - No repeated integer in `id_list`.
+//  - `id_list` is sorted.
+//
+// For example, if `kMaxDefaultActionID + 1` == 0, the `id_list` could be {0, 1,
+// 2, 3, ..., x}, each index is the value if there is no missing integer.
+//  - If there is `id_list[index] == index`, it means there is no integer
+//    missing before `index`, then check the values after `index`.
+//  - If there is `id_list[index] > index`, it means there is at least one
+//    missing integer before `index`.
+//  - Since there is no repeating integer, `id_list[index] < index` shouldn't
+//    happen.
+int FindNewCustomActionID(const std::vector<int>& id_list) {
+  // Index `end` is excluded.
+  int start = 0, end = id_list.size();
+  while (start < end) {
+    int mid = start + (end - start) / 2;
+    if (id_list[mid] == mid + kMaxDefaultActionID + 1) {
+      // There is no missing integer in the range of [start, mid], so check the
+      // values after `mid`.
+      start = mid + 1;
+    } else if (id_list[mid] > mid + kMaxDefaultActionID + 1) {
+      // There is at least one missing integer in the range of [start, mid), so
+      // check the values before `mid`.
+      end = mid;
+    } else {
+      // This is unlikely to happen because there is no repeated number in
+      // `id_list`.
+      NOTREACHED();
+    }
+  }
+
+  // In the end, `start` points at the position where the smallest missing
+  // integer should be and the value is `start + kMaxDefaultActionID + 1`.
+  return start + kMaxDefaultActionID + 1;
+}
+
+// Create Action by |action_type| without any input bindings.
+std::unique_ptr<Action> CreateRawAction(ActionType type,
+                                        TouchInjector* injector) {
+  std::unique_ptr<Action> action;
+  switch (type) {
+    case ActionType::TAP:
+      action = std::make_unique<ActionTap>(injector);
+      break;
+    case ActionType::MOVE:
+      action = std::make_unique<ActionMove>(injector);
+      break;
+    default:
+      NOTREACHED();
+      return nullptr;
+  }
+  return action;
+}
+
 }  // namespace
 
 // Calculate the window content bounds (excluding caption if it exists) in the
@@ -301,9 +360,6 @@ void TouchInjector::OnBindingSave() {
 
 void TouchInjector::OnBindingCancel() {
   for (auto& action : actions_) {
-    if (beta_ && next_action_id_ <= action->id()) {
-      next_action_id_ = action->id() + 1;
-    }
     action->CancelPendingBind();
   }
 
@@ -331,11 +387,7 @@ void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
 
       action->OverwriteFromProto(action_proto);
     } else if (beta_) {
-      if (next_action_id_ <= action_proto.id()) {
-        next_action_id_ = action_proto.id() + 1;
-      }
-
-      auto action = CreateRawAction(action_proto.action_type());
+      auto action = CreateRawAction(action_proto.action_type(), this);
       if (!action) {
         continue;
       }
@@ -856,20 +908,68 @@ void TouchInjector::RemoveObserver(TouchInjectorObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-std::unique_ptr<Action> TouchInjector::CreateRawAction(ActionType action_type) {
-  std::unique_ptr<Action> action;
-  switch (action_type) {
-    case ActionType::TAP:
-      action = std::make_unique<ActionTap>(this);
-      break;
-    case ActionType::MOVE:
-      action = std::make_unique<ActionMove>(this);
-      break;
-    default:
-      NOTREACHED();
-      return nullptr;
+int TouchInjector::GetNextNewActionID() {
+  if (actions_.empty()) {
+    return kMaxDefaultActionID + 1;
   }
-  return action;
+
+  std::vector<int> ids;
+  for (const auto& action : actions_) {
+    int id = action->id();
+    if (id > kMaxDefaultActionID) {
+      ids.emplace_back(id);
+    }
+  }
+  std::sort(ids.begin(), ids.end());
+
+  return FindNewCustomActionID(ids);
+}
+
+void TouchInjector::AddNewAction(ActionType action_type) {
+  DCHECK(IsBeta());
+  auto action = CreateRawAction(action_type, this);
+  if (!action) {
+    return;
+  }
+  action->InitFromEditor();
+
+  // Apply the change right away for beta.
+  NotifyActionAdded(*actions_.emplace_back(std::move(action)));
+}
+
+void TouchInjector::RemoveAction(Action* action) {
+  auto it = std::find_if(
+      actions_.begin(), actions_.end(),
+      [&](const std::unique_ptr<Action>& p) { return action == p.get(); });
+  DCHECK(it != actions_.end());
+  actions_.erase(it);
+
+  NotifyActionRemoved(*action);
+}
+
+void TouchInjector::ChangeActionType(Action* action, ActionType action_type) {
+  auto new_action = CreateRawAction(action_type, this);
+  if (!new_action) {
+    return;
+  }
+
+  new_action->InitFromAction(action);
+  auto* new_action_raw = new_action.get();
+
+  auto it = std::find_if(
+      actions_.begin(), actions_.end(),
+      [&](const std::unique_ptr<Action>& p) { return action == p.get(); });
+  DCHECK(it != actions_.end());
+  actions_.erase(it);
+  actions_.emplace_back(std::move(new_action));
+  NotifyActionTypeChanged(action, new_action_raw);
+}
+
+void TouchInjector::ChangeActionName(Action* action, std::u16string name) {
+  DCHECK(IsBeta());
+  action->set_name_label(name);
+
+  NotifyActionNameUpdated(*action);
 }
 
 void TouchInjector::NotifyActionAdded(Action& action) {
@@ -901,57 +1001,6 @@ void TouchInjector::NotifyActionNameUpdated(const Action& action) {
   for (auto& observer : observers_) {
     observer.OnActionNameUpdated(action);
   }
-}
-
-int TouchInjector::GetNextActionID() {
-  return next_action_id_++;
-}
-
-void TouchInjector::AddNewAction(ActionType action_type) {
-  DCHECK(IsBeta());
-  auto action = CreateRawAction(action_type);
-  if (!action) {
-    return;
-  }
-  action->InitFromEditor();
-
-  // Apply the change right away for beta.
-  NotifyActionAdded(*actions_.emplace_back(std::move(action)));
-}
-
-void TouchInjector::ChangeActionType(Action* action, ActionType action_type) {
-  auto new_action = CreateRawAction(action_type);
-  if (!new_action) {
-    return;
-  }
-
-  new_action->InitFromAction(action);
-  auto* new_action_raw = new_action.get();
-
-  auto it = std::find_if(
-      actions_.begin(), actions_.end(),
-      [&](const std::unique_ptr<Action>& p) { return action == p.get(); });
-  DCHECK(it != actions_.end());
-  actions_.erase(it);
-  actions_.emplace_back(std::move(new_action));
-  NotifyActionTypeChanged(action, new_action_raw);
-}
-
-void TouchInjector::RemoveAction(Action* action) {
-  auto it = std::find_if(
-      actions_.begin(), actions_.end(),
-      [&](const std::unique_ptr<Action>& p) { return action == p.get(); });
-  DCHECK(it != actions_.end());
-  actions_.erase(it);
-
-  NotifyActionRemoved(*action);
-}
-
-void TouchInjector::ChangeActionName(Action* action, std::u16string name) {
-  DCHECK(IsBeta());
-  action->set_name_label(name);
-
-  NotifyActionNameUpdated(*action);
 }
 
 void TouchInjector::RecordMenuStateOnLaunch() {

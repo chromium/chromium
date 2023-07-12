@@ -262,7 +262,7 @@ bool Action::InitFromEditor() {
   if (!touch_injector_) {
     return false;
   }
-  id_ = touch_injector_->GetNextActionID();
+  id_ = touch_injector_->GetNextNewActionID();
 
   InitPositions(original_positions_);
   InitPositions(current_positions_);
