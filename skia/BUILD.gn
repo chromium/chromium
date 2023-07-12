@@ -423,7 +423,8 @@ component("skia") {
 
   if (skia_support_xmp) {
     sources += skia_xml_sources
-    sources += [ "//third_party/skia/src/codec/SkJpegXmp.cpp" ]
+    sources += skia_codec_xmp
+    sources += skia_codec_jpeg_xmp
     deps += [ "//third_party/expat" ]
     defines += [ "SK_CODEC_DECODES_JPEG_GAINMAPS" ]
   }
