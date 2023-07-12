@@ -17,11 +17,9 @@ import android.os.LocaleList;
 import android.provider.Browser;
 import android.text.TextUtils;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
@@ -56,7 +54,6 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -552,26 +549,12 @@ public class BookmarkUtils {
      * @return The tint used on the bookmark folder icon.
      */
     public static ColorStateList getFolderIconTint(Context context, @BookmarkType int type) {
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            return type == BookmarkType.READING_LIST
-                    ? ColorStateList.valueOf(SemanticColorUtils.getDefaultIconColorAccent1(context))
-                    : AppCompatResources.getColorStateList(
-                            context, R.color.default_icon_color_secondary_tint_list);
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
+                && type == BookmarkType.READING_LIST) {
+            return ColorStateList.valueOf(SemanticColorUtils.getDefaultIconColorAccent1(context));
         }
 
         return ColorStateList.valueOf(context.getColor(R.color.default_icon_color_tint_list));
-    }
-
-    /**
-     * @param context {@link Context} used to retrieve the drawable.
-     * @param type The bookmark type of the folder.
-     * @return The tint used on the bookmark folder icon.
-     */
-    public static @ColorInt int getFolderIconBackgroundColor(
-            Context context, @BookmarkType int type) {
-        return type == BookmarkType.READING_LIST
-                ? SemanticColorUtils.getColorPrimaryContainer(context)
-                : ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_1);
     }
 
     /**
