@@ -1991,18 +1991,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmModuleCodeSizeTopTierMiB" units="MB"
-    expires_after="M102">
-  <owner>ecmziegler@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>clemensb@chromium.org</owner>
-  <owner>wasm-v8@google.com</owner>
-  <summary>
-    The amount of generated code in MiB for one WebAssembly module. Recorded
-    when top-tier compilation finished.
-  </summary>
-</histogram>
-
 <histogram name="V8.WasmModuleNumberOfCodeGCsTriggered" units="gcs"
     expires_after="2024-06-20">
   <owner>ecmziegler@chromium.org</owner>
