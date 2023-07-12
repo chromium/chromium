@@ -5,10 +5,10 @@
 #include "components/unified_consent/unified_consent_service.h"
 
 #include "base/check_op.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/signin/public/identity_manager/tribool.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -16,6 +16,17 @@
 #include "components/unified_consent/pref_names.h"
 
 namespace unified_consent {
+namespace {
+
+// Returns whether history sync is enabled.
+bool IsHistorySyncEnabled(syncer::SyncService* sync_service) {
+  CHECK(
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  return sync_service->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory);
+}
+
+}  // namespace
 
 UnifiedConsentService::UnifiedConsentService(
     sync_preferences::PrefServiceSyncable* pref_service,
@@ -35,12 +46,18 @@ UnifiedConsentService::UnifiedConsentService(
     MigrateProfileToUnifiedConsent();
 #endif
 
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    last_history_sync_enabled_ =
+        signin::TriboolFromBool(IsHistorySyncEnabled(sync_service_));
+  }
+
   pref_service_->AddObserver(this);
   identity_manager_->AddObserver(this);
   sync_service_->AddObserver(this);
 }
 
-UnifiedConsentService::~UnifiedConsentService() {}
+UnifiedConsentService::~UnifiedConsentService() = default;
 
 // static
 void UnifiedConsentService::RegisterPrefs(
@@ -73,6 +90,9 @@ void UnifiedConsentService::Shutdown() {
 
 void UnifiedConsentService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
+  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
     // By design, clearing the primary account disables URL-keyed data
@@ -82,6 +102,24 @@ void UnifiedConsentService::OnPrimaryAccountChanged(
 }
 
 void UnifiedConsentService::OnStateChanged(syncer::SyncService* sync) {
+  // Update the UrlKeyedAnonymizedDataCollectionEnabled if user changed the
+  // history opt-in state.
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    bool new_history_sync_enabled = IsHistorySyncEnabled(sync_service_);
+    if (new_history_sync_enabled !=
+        signin::TriboolToBoolOrDie(last_history_sync_enabled_)) {
+      last_history_sync_enabled_ =
+          signin::TriboolFromBool(new_history_sync_enabled);
+
+      // Ignore syncing users - UrlKeyedAnonymizedDataCollectionEnabled is
+      // updated based on their sync opt-in state.
+      if (!sync_service_->HasSyncConsent()) {
+        SetUrlKeyedAnonymizedDataCollectionEnabled(new_history_sync_enabled);
+      }
+    }
+  }
+
   // Start observing pref changes when the user enters sync setup.
   // Note: Only |sync->IsSetupInProgress()| is used (i.e. no check for
   // |IsInitialSyncFeatureSetupComplete()|), because on Android
@@ -97,11 +135,12 @@ void UnifiedConsentService::OnStateChanged(syncer::SyncService* sync) {
       service_pref_changes_.clear();
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!sync_service_->CanSyncFeatureStart() ||
       !sync_service_->IsEngineInitialized()) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+
   if (GetMigrationState() == MigrationState::kInProgressWaitForSyncInit)
     UpdateSettingsForMigration();
 #endif
@@ -184,6 +223,6 @@ void UnifiedConsentService::UpdateSettingsForMigration() {
       !sync_service_->GetUserSettings()->IsUsingExplicitPassphrase();
   SetUrlKeyedAnonymizedDataCollectionEnabled(url_keyed_metrics_enabled);
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  //  namespace unified_consent

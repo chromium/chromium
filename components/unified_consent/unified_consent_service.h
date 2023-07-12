@@ -15,10 +15,9 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/model_type.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
-#include "components/unified_consent/unified_consent_metrics.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -113,6 +112,9 @@ class UnifiedConsentService
   raw_ptr<sync_preferences::PrefServiceSyncable> pref_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<syncer::SyncService> sync_service_;
+
+  // Used to monitor changes to history sync opt-in
+  signin::Tribool last_history_sync_enabled_ = signin::Tribool::kUnknown;
 
   // Used for tracking the service pref states during the advanced sync opt-in.
   const std::vector<std::string> service_pref_names_;

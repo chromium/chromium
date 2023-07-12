@@ -11,6 +11,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
 #include "components/unified_consent/pref_names.h"
+#include "components/unified_consent/unified_consent_metrics.h"
 #include "components/unified_consent/unified_consent_service.h"
 
 using base::android::JavaParamRef;

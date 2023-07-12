@@ -4,7 +4,18 @@
 
 #include "components/signin/public/identity_manager/tribool.h"
 
+#include "base/check_op.h"
+
 namespace signin {
+
+Tribool TriboolFromBool(bool b) {
+  return b ? Tribool::kTrue : Tribool::kFalse;
+}
+
+bool TriboolToBoolOrDie(Tribool tribool) {
+  CHECK_NE(tribool, Tribool::kUnknown);
+  return tribool == Tribool::kTrue;
+}
 
 std::string TriboolToString(Tribool tribool) {
   switch (tribool) {
