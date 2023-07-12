@@ -48,8 +48,6 @@ class TestPublisher : public GuestOSApps {
               int32_t event_flags,
               LaunchSource launch_source,
               WindowInfoPtr window_info) override {}
-  void LaunchAppWithParams(AppLaunchParams&& params,
-                           LaunchCallback callback) override {}
 
   void CreateAppOverrides(
       const guest_os::GuestOsRegistryService::Registration& registration,
