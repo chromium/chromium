@@ -505,9 +505,13 @@ void WizardController::Init(OobeScreenId first_screen) {
 
 void WizardController::OnDestroyingOobeUI() {
   previous_screens_.clear();
+
   // Reset `current_screen_` to prevent its usage after OobeUI is gone.
-  current_screen_->Hide();
-  current_screen_ = nullptr;
+  if (current_screen_) {
+    current_screen_->Hide();
+    current_screen_ = nullptr;
+  }
+
   // Reset screens, they should not access handlers anymore.
   // TODO(https://crbug.com/1309022): This should probably be removed when all
   // the screen/handlers migrated to the new patterns.
