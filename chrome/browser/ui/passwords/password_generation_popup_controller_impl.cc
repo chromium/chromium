@@ -197,9 +197,14 @@ bool PasswordGenerationPopupControllerImpl::PossiblyAcceptPassword() {
   return false;
 }
 
+bool PasswordGenerationPopupControllerImpl::IsPasswordSelectable() const {
+  return state_ == kOfferGeneration;
+}
+
 void PasswordGenerationPopupControllerImpl::PasswordSelected(bool selected) {
-  if (state_ == kEditGeneratedPassword || selected == password_selected_)
+  if (!IsPasswordSelectable() || selected == password_selected_) {
     return;
+  }
 
   password_selected_ = selected;
   view_->PasswordSelectionUpdated();
@@ -319,6 +324,9 @@ void PasswordGenerationPopupControllerImpl::SelectionCleared() {
 }
 
 void PasswordGenerationPopupControllerImpl::SetSelected() {
+  if (!IsPasswordSelectable()) {
+    return;
+  }
   PasswordSelected(true);
   driver_->PreviewGenerationSuggestion(current_generated_password_);
 }

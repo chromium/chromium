@@ -127,6 +127,7 @@ class PasswordGenerationPopupControllerImpl
 
 #if defined(UNIT_TEST)
   PasswordGenerationPopupView* view() const { return view_; }
+  void SetViewForTesting(PasswordGenerationPopupView* view) { view_ = view; }
 #endif
 
  protected:
@@ -167,9 +168,11 @@ class PasswordGenerationPopupControllerImpl
 
   bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
 
+  // Returns whether the password is selectable. This is true iff the password
+  // has not been accepted yet.
+  bool IsPasswordSelectable() const;
   // Set if the password is currently selected.
   void PasswordSelected(bool selected);
-
   // Accept password if it's selected.
   bool PossiblyAcceptPassword();
 
