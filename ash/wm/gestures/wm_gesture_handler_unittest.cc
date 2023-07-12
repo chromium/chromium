@@ -374,4 +374,31 @@ TEST_F(ReverseGestureHandlerTest, SwitchDesk) {
   EXPECT_EQ(desk1, GetActiveDesk());
 }
 
+// Test state for gestures in kiosk.
+class WmGestureHandlerKioskTest : public WmGestureHandlerTest {
+ public:
+  WmGestureHandlerKioskTest() = default;
+  WmGestureHandlerKioskTest(const WmGestureHandlerKioskTest&) = delete;
+  WmGestureHandlerKioskTest& operator=(const WmGestureHandlerKioskTest&) =
+      delete;
+  ~WmGestureHandlerKioskTest() override = default;
+
+  void SetUp() override {
+    WmGestureHandlerTest::SetUp();
+    SimulateKioskMode(user_manager::USER_TYPE_KIOSK_APP);
+  }
+};
+
+// Tests that a three fingers upwards scroll gesture does not enter overview.
+TEST_F(WmGestureHandlerKioskTest, VerticalScrollDisabledKiosk) {
+  EXPECT_FALSE(InOverviewSession());
+
+  const float long_scroll = 2 * WmGestureHandler::kVerticalThresholdDp;
+  const int finger_count = 3;
+  Scroll(0, long_scroll, finger_count);
+
+  // Overview was not opened by gesture.
+  EXPECT_FALSE(InOverviewSession());
+}
+
 }  // namespace ash
