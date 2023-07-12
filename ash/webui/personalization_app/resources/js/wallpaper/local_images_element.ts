@@ -27,7 +27,7 @@ import {isImageDataUrl} from '../utils.js';
 import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './constants.js';
 import {getTemplate} from './local_images_element.html.js';
 import {getPathOrSymbol, isDefaultImage, isFilePath} from './utils.js';
-import {fetchLocalData, getDefaultImageThumbnail, selectWallpaper} from './wallpaper_controller.js';
+import {selectWallpaper} from './wallpaper_controller.js';
 import {WallpaperGridItemSelectedEvent} from './wallpaper_grid_item_element.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
@@ -43,13 +43,6 @@ export class LocalImages extends WithPersonalizationStore {
 
   static get properties() {
     return {
-      hidden: {
-        type: Boolean,
-        value: true,
-        reflectToAttribute: true,
-        observer: 'onHiddenChanged_',
-      },
-
       images_: {
         type: Array,
         observer: 'onImagesChanged_',
@@ -77,8 +70,6 @@ export class LocalImages extends WithPersonalizationStore {
     return ['onImageLoaded_(imageData_, imageDataLoading_)'];
   }
 
-  override hidden: boolean;
-
   private wallpaperProvider_: WallpaperProviderInterface;
   private images_: Array<FilePath|DefaultImageSymbol>|null;
   private imageData_: Record<FilePath['path']|DefaultImageSymbol, Url>;
@@ -91,6 +82,13 @@ export class LocalImages extends WithPersonalizationStore {
   constructor() {
     super();
     this.wallpaperProvider_ = getWallpaperProvider();
+  }
+
+  override ready() {
+    super.ready();
+    afterNextRender(this, () => {
+      this.shadowRoot!.getElementById('main')!.focus();
+    });
   }
 
   override connectedCallback() {
@@ -106,26 +104,6 @@ export class LocalImages extends WithPersonalizationStore {
     this.watch<LocalImages['pendingSelected_']>(
         'pendingSelected_', state => state.wallpaper.pendingSelected);
     this.updateFromStore();
-    getDefaultImageThumbnail(this.wallpaperProvider_, this.getStore());
-    fetchLocalData(this.wallpaperProvider_, this.getStore());
-    window.addEventListener('focus', () => {
-      fetchLocalData(this.wallpaperProvider_, this.getStore());
-    });
-  }
-
-  /**
-   * When iron-list items change while parent element is hidden, iron-list will
-   * render incorrectly. Force another layout to happen by calling iron-resize
-   * when this element is visible again.
-   */
-  private onHiddenChanged_(hidden: boolean) {
-    if (!hidden) {
-      document.title = this.i18n('myImagesLabel');
-      this.shadowRoot!.getElementById('main')!.focus();
-      afterNextRender(this, () => {
-        this.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
-      });
-    }
   }
 
   /** Sets |imagesToDisplay| when a new set of local images loads. */

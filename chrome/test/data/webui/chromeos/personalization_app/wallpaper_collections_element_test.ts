@@ -112,6 +112,13 @@ suite('WallpaperCollectionsTest', function() {
             'id_2': false,
             '_time_of_day_chromebook_collection': false,
           },
+          local: {
+            data: {
+              'LocalImage0.png': false,
+              'LocalImage1.png': false,
+            },
+            images: false,
+          },
         },
         personalizationStore.data.wallpaper.loading,
         'expected loading state is set',

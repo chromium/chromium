@@ -29,7 +29,7 @@ import {getCountText, isImageDataUrl, isNonEmptyArray, isSelectionEvent} from '.
 import {DefaultImageSymbol, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './constants.js';
 import {getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, getPathOrSymbol} from './utils.js';
 import {getTemplate} from './wallpaper_collections_element.html.js';
-import {initializeBackdropData} from './wallpaper_controller.js';
+import {fetchLocalData, getDefaultImageThumbnail, initializeBackdropData} from './wallpaper_controller.js';
 import {WallpaperGridItemSelectedEvent} from './wallpaper_grid_item_element.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
@@ -381,6 +381,11 @@ export class WallpaperCollections extends WithPersonalizationStore {
         'localImageData_', state => state.wallpaper.local.data);
     this.updateFromStore();
     initializeBackdropData(getWallpaperProvider(), this.getStore());
+    getDefaultImageThumbnail(getWallpaperProvider(), this.getStore());
+    fetchLocalData(getWallpaperProvider(), this.getStore());
+    window.addEventListener('focus', () => {
+      fetchLocalData(getWallpaperProvider(), this.getStore());
+    });
   }
 
   /**

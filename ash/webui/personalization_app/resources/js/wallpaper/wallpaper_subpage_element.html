@@ -66,8 +66,9 @@
         hidden="[[!shouldShowGooglePhotosCollection_(path)]]">
     </google-photos-collection>
   </template>
-  <local-images hidden="[[!shouldShowLocalCollection_(path)]]">
-  </local-images>
+  <template is="dom-if" if="[[shouldShowLocalCollection_(path)]]" restamp>
+    <local-images></local-images>
+  </template>
   <!-- Prevent the right margin from collapsing when window gets very
            narrow -->
   <div class="rightspacertop"></div>

@@ -213,6 +213,10 @@ export class PersonalizationRouter extends PolymerElement {
         }
         break;
       }
+      case Paths.LOCAL_COLLECTION: {
+        document.title = loadTimeData.getString('myImagesLabel');
+        break;
+      }
       case Paths.USER:
         document.title = loadTimeData.getString('avatarLabel');
         break;
