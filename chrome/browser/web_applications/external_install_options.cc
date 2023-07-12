@@ -74,6 +74,7 @@ bool ExternalInstallOptions::operator==(
         options.launch_query_params,
         options.load_and_await_service_worker_registration,
         options.service_worker_registration_url,
+        options.service_worker_registration_timeout,
         options.uninstall_and_replace,
         options.additional_search_terms,
         options.only_use_app_info_factory,
@@ -149,6 +150,8 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
            service_worker_registration_url
                ? base::Value(service_worker_registration_url->spec())
                : base::Value());
+  root.Set("service_worker_registration_timeout_in_seconds",
+           service_worker_registration_timeout.InSecondsF());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   root.Set("system_app_type",
            system_app_type ? base::Value(static_cast<int>(*system_app_type))

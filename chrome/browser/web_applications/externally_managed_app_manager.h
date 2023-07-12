@@ -181,7 +181,8 @@ class ExternallyManagedAppManager {
   CreateInstallationTask(ExternalInstallOptions install_options);
 
   virtual std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
-  CreateRegistration(GURL launch_url);
+  CreateRegistration(GURL install_url,
+                     const base::TimeDelta registration_timeout);
 
   virtual void OnRegistrationFinished(const GURL& launch_url,
                                       RegistrationResultCode result);
@@ -270,7 +271,8 @@ class ExternallyManagedAppManager {
   std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
       current_registration_;
 
-  base::circular_deque<GURL> pending_registrations_;
+  using UrlAndTimeout = std::tuple<GURL, const base::TimeDelta>;
+  base::circular_deque<UrlAndTimeout> pending_registrations_;
 
   RegistrationCallback registration_callback_;
 

@@ -19,20 +19,23 @@
 namespace web_app {
 
 ExternallyManagedAppRegistrationTaskBase::
-    ExternallyManagedAppRegistrationTaskBase(GURL install_url)
-    : install_url_(std::move(install_url)) {}
+    ExternallyManagedAppRegistrationTaskBase(
+        GURL install_url,
+        const base::TimeDelta registration_timeout)
+    : install_url_(std::move(install_url)),
+      registration_timeout_(registration_timeout) {}
 
 ExternallyManagedAppRegistrationTaskBase::
     ~ExternallyManagedAppRegistrationTaskBase() = default;
 
-int ExternallyManagedAppRegistrationTask::registration_timeout_in_seconds_ = 40;
-
 ExternallyManagedAppRegistrationTask::ExternallyManagedAppRegistrationTask(
     GURL install_url,
+    const base::TimeDelta registration_timeout,
     WebAppUrlLoader* url_loader,
     content::WebContents* web_contents,
     RegistrationCallback callback)
-    : ExternallyManagedAppRegistrationTaskBase(std::move(install_url)),
+    : ExternallyManagedAppRegistrationTaskBase(std::move(install_url),
+                                               registration_timeout),
       url_loader_(url_loader),
       web_contents_(web_contents),
       callback_(std::move(callback)) {}
@@ -47,7 +50,7 @@ void ExternallyManagedAppRegistrationTask::Start() {
   service_worker_context_->AddObserver(this);
 
   registration_timer_.Start(
-      FROM_HERE, base::Seconds(registration_timeout_in_seconds_),
+      FROM_HERE, registration_timeout(),
       base::BindOnce(
           &ExternallyManagedAppRegistrationTask::OnRegistrationTimeout,
           weak_ptr_factory_.GetWeakPtr()));
@@ -77,11 +80,6 @@ void ExternallyManagedAppRegistrationTask::OnDestruct(
     content::ServiceWorkerContext* context) {
   service_worker_context_->RemoveObserver(this);
   service_worker_context_ = nullptr;
-}
-
-void ExternallyManagedAppRegistrationTask::SetTimeoutForTesting(
-    int registration_timeout_in_seconds) {
-  registration_timeout_in_seconds_ = registration_timeout_in_seconds;
 }
 
 void ExternallyManagedAppRegistrationTask::CheckHasServiceWorker() {

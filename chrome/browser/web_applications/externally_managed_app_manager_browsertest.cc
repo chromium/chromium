@@ -605,7 +605,6 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        RegistrationTimeout) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ExternallyManagedAppRegistrationTask::SetTimeoutForTesting(0);
   GURL url(embedded_test_server()->GetURL(
       "/banners/manifest_no_service_worker.html"));
   CheckServiceWorkerStatus(url,
@@ -613,6 +612,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
 
   ExternalInstallOptions install_options = CreateInstallOptions(url);
   install_options.bypass_service_worker_check = true;
+  install_options.service_worker_registration_timeout = base::Seconds(0);
   InstallApp(std::move(install_options));
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());

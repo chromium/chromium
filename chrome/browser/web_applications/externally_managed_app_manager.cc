@@ -252,14 +252,16 @@ ExternallyManagedAppManager::CreateInstallationTask(
 }
 
 std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
-ExternallyManagedAppManager::CreateRegistration(GURL install_url) {
+ExternallyManagedAppManager::CreateRegistration(
+    GURL install_url,
+    const base::TimeDelta registration_timeout) {
   DCHECK(!IsShuttingDown());
   ExternallyManagedAppRegistrationTask::RegistrationCallback callback =
       base::BindOnce(&ExternallyManagedAppManager::OnRegistrationFinished,
                      weak_ptr_factory_.GetWeakPtr(), install_url);
   return std::make_unique<ExternallyManagedAppRegistrationTask>(
-      std::move(install_url), url_loader_.get(), web_contents_.get(),
-      std::move(callback));
+      std::move(install_url), registration_timeout, url_loader_.get(),
+      web_contents_.get(), std::move(callback));
 }
 
 void ExternallyManagedAppManager::OnRegistrationFinished(
@@ -394,7 +396,9 @@ void ExternallyManagedAppManager::StartInstallationTask(
   DCHECK(!is_in_shutdown_);
   if (current_registration_) {
     // Preempt current registration.
-    pending_registrations_.push_front(current_registration_->install_url());
+    pending_registrations_.push_front(
+        {current_registration_->install_url(),
+         current_registration_->registration_timeout()});
     current_registration_.reset();
   }
 
@@ -414,9 +418,11 @@ bool ExternallyManagedAppManager::RunNextRegistration() {
     return false;
   }
 
-  GURL url_to_check = std::move(pending_registrations_.front());
+  const auto [url_to_check, registration_timeout] =
+      std::move(pending_registrations_.front());
   pending_registrations_.pop_front();
-  current_registration_ = CreateRegistration(std::move(url_to_check));
+  current_registration_ =
+      CreateRegistration(std::move(url_to_check), registration_timeout);
   current_registration_->Start();
   return true;
 }
@@ -491,7 +497,8 @@ void ExternallyManagedAppManager::MaybeEnqueueServiceWorkerRegistration(
     return;
   }
 
-  pending_registrations_.push_back(url);
+  pending_registrations_.push_back(
+      {url, install_options.service_worker_registration_timeout});
 }
 
 bool ExternallyManagedAppManager::IsShuttingDown() {

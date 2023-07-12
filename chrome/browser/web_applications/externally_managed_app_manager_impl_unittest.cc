@@ -213,7 +213,8 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
   }
 
   std::unique_ptr<ExternallyManagedAppRegistrationTaskBase> CreateRegistration(
-      GURL install_url) override {
+      GURL install_url,
+      const base::TimeDelta registration_timeout) override {
     ++registration_run_count_;
     last_registered_install_url_ = install_url;
     return std::make_unique<TestExternallyManagedAppRegistrationTask>(
@@ -355,7 +356,8 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
     TestExternallyManagedAppRegistrationTask(
         const GURL& install_url,
         TestExternallyManagedAppManager* externally_managed_app_manager_impl)
-        : ExternallyManagedAppRegistrationTaskBase(install_url),
+        : ExternallyManagedAppRegistrationTaskBase(install_url,
+                                                   base::Seconds(40)),
           externally_managed_app_manager_impl_(
               externally_managed_app_manager_impl) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
