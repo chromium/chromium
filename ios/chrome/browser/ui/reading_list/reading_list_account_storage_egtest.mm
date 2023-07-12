@@ -9,6 +9,7 @@
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/reading_list/reading_list_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -45,6 +47,7 @@ NSString* kPage1Title = @"Page 1 Title";
 const char kPage1URL[] = "/page1";
 NSString* kPage2Title = @"Page 2 Title";
 const char kPage2URL[] = "/page2";
+constexpr base::TimeDelta kSyncInitializedTimeout = base::Seconds(5);
 
 id<GREYMatcher> SignedInSnackbar(NSString* email) {
   NSString* snackbarMessage = l10n_util::GetNSStringF(
@@ -106,7 +109,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Reading List integration tests for Chrome with account storage and UI
 // enabled.
-@interface ReadingListAccountStorageTestCase : WebHttpServerChromeTestCase
+@interface ReadingListAccountStorageTestCase : ChromeTestCase
 @end
 
 @implementation ReadingListAccountStorageTestCase
@@ -119,10 +122,18 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 - (void)tearDown {
-  [super tearDown];
-  [ChromeEarlGrey clearBrowsingHistory];
   GREYAssertNil([ReadingListAppInterface clearEntries],
                 @"Unable to clear Reading List entries");
+  [ChromeEarlGrey clearBrowsingHistory];
+  // Prevent failure due to clear browsing data spinner. Should be called
+  // before [super tearDown] which calls sign-out.
+  // TODO(crbug.com/1451733): Remove this when ChromeTestCase will always wait
+  // for sign-out completion.
+  [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
+  [ChromeEarlGrey waitForSyncEngineInitialized:NO
+                                   syncTimeout:kSyncInitializedTimeout];
+
+  [super tearDown];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -385,6 +396,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Sign-in with full sync.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncInitializedTimeout];
   // Add Page 2 to the Reading List and verify that the snackbar containing the
   // user's email and an undo button appears.
   AddURLToReadingList(self.testServer->GetURL(kPage2URL));
@@ -418,6 +431,92 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Sign-in with full sync.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncInitializedTimeout];
+  // Add Page 1 to the Reading List.
+  AddURLToReadingList(self.testServer->GetURL(kPage1URL));
+  // Tap on undo when the snackbar appears.
+  [ChromeEarlGrey
+      waitForAndTapButton:grey_allOf(
+                              AddedToAccountReadingListSnackbarUndoButton(),
+                              grey_sufficientlyVisible(), nil)];
+  // Verify that Page 1 is not in the Reading List.
+  OpenReadingList();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(ReadingListItem(kPage1Title),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Add a page when signed-out and another after sign-in with the Reading List
+// promo. Test that only the first item has the cloud icon in the Reading List.
+- (void)testAddItemWithAccountStorage {
+  AddURLToReadingList(self.testServer->GetURL(kPage1URL));
+  // Sign-in with the Reading List promo.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  OpenReadingList();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Ensure that the first sync spinner has disappeared.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
+  // Verify that the cloud icon is shown on the first item.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(LocalItemIcon(kPage1Title),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+  // Close the Reading List.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTableViewNavigationDismissButtonId)]
+      performAction:grey_tap()];
+  // Add Page 2 to the Reading List and verify that the snackbar containing the
+  // user's email and an undo button appears.
+  AddURLToReadingList(self.testServer->GetURL(kPage2URL));
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:AddedToAccountReadingListSnackbar(
+                                              fakeIdentity.userEmail)];
+  // Verify that both items are visible in the Reading List, and that there's
+  // one cloud icon on the first item, but none on the second.
+  OpenReadingList();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(ReadingListItem(kPage1Title),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(ReadingListItem(kPage2Title),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(LocalItemIcon(kPage1Title),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(LocalItemIcon(kPage2Title),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+}
+
+// When signed-in with the Reading List promo, test that tapping on "Undo" from
+// the "item added" snackbar removes the item from the Reading List.
+- (void)testUndoAddItemWithAccountStorage {
+  // Sign-in with the Reading List promo.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  OpenReadingList();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
+  // Close the Reading List.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTableViewNavigationDismissButtonId)]
+      performAction:grey_tap()];
   // Add Page 1 to the Reading List.
   AddURLToReadingList(self.testServer->GetURL(kPage1URL));
   // Tap on undo when the snackbar appears.

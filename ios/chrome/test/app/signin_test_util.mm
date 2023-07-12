@@ -51,6 +51,13 @@ void StartForgetAllIdentities(ChromeBrowserState* browser_state,
       ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
 
   NSArray* identities_to_remove = account_manager_service->GetAllIdentities();
+  if (identities_to_remove.count == 0) {
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
   __block int pending_tasks_count =
       static_cast<int>(identities_to_remove.count);
   ProceduralBlock tasks_completion = ^{
