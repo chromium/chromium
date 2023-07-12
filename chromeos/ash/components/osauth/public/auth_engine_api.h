@@ -28,6 +28,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthEngineApi {
   static void AuthenticateWithPassword(AuthHubConnector* connector,
                                        AshAuthFactor factor,
                                        const std::string& raw_password);
+
+  static void AuthenticateWithPin(AuthHubConnector* connector,
+                                  AshAuthFactor factor,
+                                  const std::string& raw_pin);
 };
 
 }  // namespace ash

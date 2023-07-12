@@ -46,6 +46,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
+#include "chrome/browser/ui/ash/auth/cryptohome_pin_engine.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
@@ -566,7 +567,7 @@ void LoginDisplayHostCommon::ShowNewTermsForFlexUsers() {
 void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
     const UserContext& user_context) {
   AuthPerformer auth_performer(UserDataAuthClient::Get());
-  CryptohomePinEngine cryptohome_pin_engine(&auth_performer);
+  legacy::CryptohomePinEngine cryptohome_pin_engine(&auth_performer);
   if (cryptohome_pin_engine.ShouldSkipSetupBecauseOfPolicy(
           user_context.GetAccountId()) &&
       !features::IsCryptohomeRecoveryEnabled() &&

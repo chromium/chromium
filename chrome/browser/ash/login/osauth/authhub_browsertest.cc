@@ -110,4 +110,46 @@ IN_PROC_BROWSER_TEST_F(AuthHubTest, LoginScreenWithPasswordOnly) {
   base::RunLoop().RunUntilIdle();
 }
 
+IN_PROC_BROWSER_TEST_F(AuthHubTest, LoginScreenAuthenticateWithPin) {
+  // We're on the login screen.
+  ash::AuthHub::Get()->InitializeForMode(AuthHubMode::kLoginScreen);
+  base::test::TestFuture<void> future;
+  ash::AuthHub::Get()->EnsureInitialized(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // User has a password as a factor.
+  cryptohome_mixin_.AddGaiaPassword(test_account_id_, "password");
+
+  // User has a PIN as a factor.
+  cryptohome_mixin_.AddCryptohomePin(test_account_id_, "123123");
+
+  ASSERT_TRUE(cryptohome_mixin_.HasPinFactor(test_account_id_));
+
+  // User pod is selected.
+  ExpectAuthenticationStarted();
+  ash::AuthHub::Get()->StartAuthentication(
+      test_account_id_, AuthPurpose::kLogin, &attempt_consumer_);
+  base::RunLoop().RunUntilIdle();
+
+  // Pin is entered.
+  ExpectSuccessfulAuthentication();
+  AuthEngineApi::AuthenticateWithPin(connector_, AshAuthFactor::kCryptohomePin,
+                                     "123123");
+  base::RunLoop().RunUntilIdle();
+
+  // Check that authentication was successful.
+  EXPECT_TRUE(auth_token_.has_value());
+  EXPECT_TRUE(AuthSessionStorage::Get()->IsValid(*auth_token_));
+  std::unique_ptr<UserContext> context =
+      AuthSessionStorage::Get()->Borrow(FROM_HERE, *auth_token_);
+  ASSERT_NE(context.get(), nullptr);
+  EXPECT_EQ(context->GetAuthorizedIntents(),
+            AuthSessionIntents{AuthSessionIntent::kDecrypt});
+  EXPECT_EQ(context->GetAccountId(), test_account_id_);
+
+  // Check that authhub can correctly switch to in-session after that.
+  ash::AuthHub::Get()->InitializeForMode(AuthHubMode::kInSession);
+  base::RunLoop().RunUntilIdle();
+}
+
 }  // namespace ash

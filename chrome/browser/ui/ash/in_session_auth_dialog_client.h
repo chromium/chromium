@@ -143,7 +143,8 @@ class InSessionAuthDialogClient
 
   // Passed as a callback to `CryptohomePinEngine::InPinAuthAvailable`
   // Takes back ownership of the `user_context` that was borrowed by
-  // `CryptohomePinEngine` and notifies callers of pin availability status.
+  // `CryptohomePinEngine` and notifies callers of pin availability
+  // status.
   void OnCheckPinAuthAvailability(
       base::OnceCallback<void(bool)> callback,
       bool is_pin_auth_available,
@@ -158,7 +159,7 @@ class InSessionAuthDialogClient
   // Used to start and authenticate auth sessions.
   ash::AuthPerformer auth_performer_;
 
-  absl::optional<ash::CryptohomePinEngine> pin_engine_;
+  absl::optional<ash::legacy::CryptohomePinEngine> pin_engine_;
 
   absl::optional<ash::LegacyFingerprintEngine> legacy_fingerprint_engine_;
 

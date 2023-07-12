@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/shell.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
@@ -14,6 +16,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/known_user.h"
 
 namespace ash {
 
@@ -54,6 +57,32 @@ void CryptohomeMixin::AddGaiaPassword(const AccountId& user,
   // Add the password key to the user.
   cryptohome::Key cryptohome_key;
   cryptohome_key.mutable_data()->set_label(kCryptohomeGaiaKeyLabel);
+  cryptohome_key.set_secret(key.GetSecret());
+  FakeUserDataAuthClient::TestApi::Get()->AddKey(account_identifier,
+                                                 cryptohome_key);
+}
+
+void CryptohomeMixin::AddCryptohomePin(const AccountId& user,
+                                       const std::string& pin) {
+  auto account_identifier =
+      cryptohome::CreateAccountIdentifierFromAccountId(user);
+
+  const std::string pin_salt = "pin_salt";
+
+  user_manager::KnownUser known_user(Shell::Get()->local_state());
+  known_user.SetStringPref(user, prefs::kQuickUnlockPinSalt, pin_salt);
+
+  // Hash the pin, as only hashed secrets appear at the userdataauth
+  // level.
+  Key key(std::move(pin));
+  key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF, pin_salt);
+
+  // Add the pin key to the user.
+  cryptohome::Key cryptohome_key;
+  cryptohome::KeyData* data = cryptohome_key.mutable_data();
+  data->set_label(kCryptohomePinLabel);
+  data->set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
+  data->mutable_policy()->set_low_entropy_credential(true);
   cryptohome_key.set_secret(key.GetSecret());
   FakeUserDataAuthClient::TestApi::Get()->AddKey(account_identifier,
                                                  cryptohome_key);

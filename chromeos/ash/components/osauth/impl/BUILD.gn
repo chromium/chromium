@@ -47,6 +47,8 @@ component("impl") {
     "engines/cryptohome_based_engine.h",
     "engines/cryptohome_password_engine.cc",
     "engines/cryptohome_password_engine.h",
+    "engines/cryptohome_pin_engine.cc",
+    "engines/cryptohome_pin_engine.h",
     "login_screen_auth_policy_connector.cc",
     "login_screen_auth_policy_connector.h",
   ]

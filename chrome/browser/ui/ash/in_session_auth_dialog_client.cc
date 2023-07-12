@@ -149,9 +149,9 @@ void InSessionAuthDialogClient::CheckPinAuthAvailability(
                      weak_factory_.GetWeakPtr(), std::move(callback));
 
   CHECK(pin_engine_.has_value());
-  pin_engine_->IsPinAuthAvailable(ash::CryptohomePinEngine::Purpose::kWebAuthn,
-                                  std::move(user_context_),
-                                  std::move(on_pin_availability_checked));
+  pin_engine_->IsPinAuthAvailable(
+      ash::legacy::CryptohomePinEngine::Purpose::kWebAuthn,
+      std::move(user_context_), std::move(on_pin_availability_checked));
 }
 
 void InSessionAuthDialogClient::OnCheckPinAuthAvailability(

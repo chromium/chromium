@@ -16,7 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 
-namespace ash {
+namespace ash::legacy {
 namespace {
 
 // Possible values for the `kQuickUnlockModeAllowlist` policy.
@@ -158,4 +158,4 @@ void CryptohomePinEngine::OnGetAuthFactorsConfiguration(
   std::move(callback).Run(true, std::move(user_context));
 }
 
-}  // namespace ash
+}  // namespace ash::legacy
