@@ -9,6 +9,11 @@
 
 :host {
     --radio-button-height: 120px;
+    --oobe-card-radio-button-icon-color: var(--cr-checked-color);
+}
+
+:host-context(.jelly-enabled) {
+  --oobe-card-radio-button-icon-color: var(--cros-sys-primary);
 }
 
 cr-radio-group {
@@ -38,6 +43,10 @@ cr-card-radio-button {
     */
     --cr-radio-button-ink-size: 0;
     --cr-radio-group-item-padding: 0;
+}
+
+:host-context(.jelly-enabled) cr-card-radio-button {
+  --focus-shadow-color: var(--cros-sys-focus_ring);
 }
 
 cr-card-radio-button:not(:last-child) {
@@ -114,7 +123,5 @@ cr-card-radio-button:not(:last-child) {
   --cr-checked-color: var(--cros-sys-on_primary_container);
   --iron-icon-height: 20px;
   --iron-icon-width: 20px;
+  --oobe-card-radio-button-icon-color: var(--cros-sys-on_primary_container);
 }
-
-/* TODO(b/289211091); Implement logic to change icon fill color depending on
-the selection state. */
