@@ -3646,24 +3646,6 @@ Turning on battery saver to increase your battery life.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MAGNIFIER_ZOOM_OUT" desc="Label for accelerator action - Zoom out when magnifier is on.">
         Zoom out when magnifier is on
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MEDIA_FAST_FORWARD" translateable="false" desc="Label for accelerator action - Fast forward the media.">
-        Fast forward media
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MEDIA_NEXT_TRACK" translateable="false" desc="Label for accelerator action - Go to next track.">
-        Go to next track
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MEDIA_PAUSE" translateable="false" desc="Label for accelerator action - Pause media.">
-        Pause media
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MEDIA_PLAY" translateable="false" desc="Label for accelerator action - Play media.">
-        Play media
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MEDIA_PLAY_PAUSE" desc="Label for accelerator action - Play or pause media.">
-        Play or pause media
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MEDIA_PREV_TRACK" desc="Label for accelerator action - Go to previous track.">
-        Go to previous track
-      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MEDIA_REWIND" translateable="false" desc="Label for accelerator action - Rewind media.">
         Rewind media
       </message>
@@ -4146,10 +4128,6 @@ Turning on battery saver to increase your battery life.
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU" desc="Label for accelerator action - Cycle forward through windows.">
         Cycle forward through windows
-      </message>
-      <!-- TODO(b/286268215): Translate this string -->
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_RIGHT_CLICK" translateable="false" desc="Label for accelerator description - Right-click a link.">
-        Right-click a link
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SAVE_LINK_AS_BOOKMARK" desc="Label for accelerator description - Save link as bookmark.">
         Save link as bookmark

@@ -555,7 +555,9 @@ suite('shortcutCustomizationAppTest', function() {
   test('ValidateAcceleratorMaximumAccelerators', async () => {
     const acceleratorConfigResult =
         AcceleratorConfigResult.kMaximumAcceleratorsReached;
-    const expectedErrorMessage = 'Maximum accelerators have reached.';
+    const expectedErrorMessage =
+        'You can only customize 5 shortcuts. Delete a shortcut to add a new ' +
+        'one.';
     await validateAcceleratorInDialog(
         acceleratorConfigResult, expectedErrorMessage);
   });
@@ -573,7 +575,7 @@ suite('shortcutCustomizationAppTest', function() {
   test('ValidateAcceleratorMissingAccelerator', async () => {
     const acceleratorConfigResult = AcceleratorConfigResult.kMissingModifier;
     const expectedErrorMessage =
-        'Shortcut is not valid. Must include at lease one modifier key. ' +
+        'Shortcut is not valid. Must include at least one modifier key. ' +
         'Press a new shortcut.';
     await validateAcceleratorInDialog(
         acceleratorConfigResult, expectedErrorMessage);

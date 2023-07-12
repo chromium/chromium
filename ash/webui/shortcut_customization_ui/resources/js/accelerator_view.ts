@@ -322,9 +322,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     switch (result.result) {
       // Shift is the only modifier.
       case AcceleratorConfigResult.kShiftOnlyNotAllowed: {
-        this.statusMessage =
-            'Shortcut is not valid. Shift can not be used as the only ' +
-            'modifier key. Press a new shortcut.';
+        this.statusMessage = this.i18n('shiftOnlyNotAllowedStatusMessage');
         this.hasError = true;
         return;
       }
@@ -333,16 +331,13 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         // This is a backup check, since only valid accelerators are processed
         // and a valid accelerator will have modifier(s) and a key or is
         // function key.
-        this.statusMessage =
-            'Shortcut is not valid. Must include at lease one modifier key. ' +
-            'Press a new shortcut.';
+        this.statusMessage = this.i18n('missingModifierStatusMessage');
         this.hasError = true;
         return;
       }
       // Top row key used as activation keys(no search key pressed).
       case AcceleratorConfigResult.kKeyNotAllowed: {
-        this.statusMessage =
-            'Shortcut with top row keys need to include the search key.';
+        this.statusMessage = this.i18n('keyNotAllowedStatusMessage');
         this.hasError = true;
         return;
       }
@@ -365,7 +360,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       }
       // Limit to only 5 accelerators allowed.
       case AcceleratorConfigResult.kMaximumAcceleratorsReached: {
-        this.statusMessage = 'Maximum accelerators have reached.';
+        this.statusMessage = this.i18n('maxAcceleratorsReachedHint');
         this.hasError = true;
         return;
       }

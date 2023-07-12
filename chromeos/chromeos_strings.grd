@@ -4057,6 +4057,25 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_MAX_ACCELERATORS_REACHED_HINT" desc="The hint message that displays when there are five accelerators in the dialog" translateable="false">
           You can only customize 5 shortcuts. Delete a shortcut to add a new one.
         </message>
+        <!-- TODO(b/286268215): Translate this string -->
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SHIFT_ONLY_NOT_ALLOWED_STATUS_MESSAGE"
+            desc="The status message that displays when user press a key combination
+            that use only 'shift' as modifier" translateable="false">
+          Shortcut is not valid. Shift can not be used as the only modifier key. Press a new shortcut.
+        </message>
+        <!-- TODO(b/286268215): Translate this string -->
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_MISSING_MODIFIER_STATUS_MESSAGE"
+            desc="The status message that displays when user press a key combination
+            that does not include a modifier key." translateable="false">
+          Shortcut is not valid. Must include at least one modifier key. Press a new shortcut.
+        </message>
+        <!-- TODO(b/286268215): Translate this string -->
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_NOT_ALLOWED_STATUS_MESSAGE"
+            desc="The status message that displays when user press a key combination
+            that includes a top row key but does not include the search key"
+            translateable="false">
+          Shortcut with top row keys need to include the search key.
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_NO_RESULTS" desc="Text description of a search that has no results.">
           No search results found
         </message>
