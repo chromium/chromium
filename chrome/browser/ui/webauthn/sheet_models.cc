@@ -575,7 +575,7 @@ bool AuthenticatorBlePermissionMacSheetModel::IsAcceptButtonEnabled() const {
 }
 
 bool AuthenticatorBlePermissionMacSheetModel::IsCancelButtonVisible() const {
-  return false;
+  return true;
 }
 
 std::u16string AuthenticatorBlePermissionMacSheetModel::GetAcceptButtonLabel()
