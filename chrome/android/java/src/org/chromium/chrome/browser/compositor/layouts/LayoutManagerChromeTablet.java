@@ -149,7 +149,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
         super.tabModelSwitched(incognito);
         getTabModelSelector().commitAllTabClosures();
         if (getActiveLayout() == mStaticLayout && !incognito
-                && getTabModelSelector().getModel(false).getCount() == 0) {
+                && getTabModelSelector().getModel(false).getCount() == 0
+                && getNextLayoutType() != LayoutType.TAB_SWITCHER) {
             showLayout(LayoutType.TAB_SWITCHER, /*animate=*/false);
         }
     }

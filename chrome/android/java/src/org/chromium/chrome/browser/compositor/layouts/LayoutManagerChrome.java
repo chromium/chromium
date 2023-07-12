@@ -405,7 +405,8 @@ public class LayoutManagerChrome
         boolean showOverview = nextId == Tab.INVALID_TAB_ID;
         boolean animate = !tabRemoved && animationsEnabled();
         if (getActiveLayoutType() != LayoutType.TAB_SWITCHER
-                && getActiveLayoutType() != LayoutType.START_SURFACE && showOverview) {
+                && getActiveLayoutType() != LayoutType.START_SURFACE && showOverview
+                && getNextLayoutType() != LayoutType.TAB_SWITCHER) {
             showLayout(LayoutType.TAB_SWITCHER, animate);
         }
         super.tabClosed(id, nextId, incognito, tabRemoved);
