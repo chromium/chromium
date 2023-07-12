@@ -247,9 +247,16 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_AbuseDetectorPolicyAllowedForValidUrl) {
 
 // Tests that AppLauncherTabHelper waits for any pending app launch completion
 // before calling policy decision callbacks for subsequent navigation requests.
-// TODO(crbug.com/1464006): This is flaky; investigate and reenable.
+// TODO(crbug.com/1172516): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_ShouldAllowRequestWhileAppLaunchPending \
+  ShouldAllowRequestWhileAppLaunchPending
+#else
+#define MAYBE_ShouldAllowRequestWhileAppLaunchPending \
+  DISABLED_ShouldAllowRequestWhileAppLaunchPending
+#endif
 TEST_F(AppLauncherTabHelperTest,
-       DISABLED_ShouldAllowRequestWhileAppLaunchPending) {
+       MAYBE_ShouldAllowRequestWhileAppLaunchPending) {
   delegate_.SetShouldCompleteAppLaunchImmediately(false);
 
   // Should not allow navigation request with App-URL.
