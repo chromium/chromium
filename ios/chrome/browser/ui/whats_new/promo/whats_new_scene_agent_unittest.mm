@@ -47,6 +47,8 @@ void ClearWhatsNewUserData() {
   [[NSUserDefaults standardUserDefaults]
       removeObjectForKey:kWhatsNewPromoRegistrationKey];
   [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:kWhatsNewM116PromoRegistrationKey];
+  [[NSUserDefaults standardUserDefaults]
       removeObjectForKey:kWhatsNewUsageEntryKey];
   [[NSUserDefaults standardUserDefaults]
       removeObjectForKey:kWhatsNewM116UsageEntryKey];

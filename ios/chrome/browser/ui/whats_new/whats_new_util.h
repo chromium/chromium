@@ -17,11 +17,20 @@ BASE_DECLARE_FEATURE(kWhatsNewIOSM116);
 // Key to store whether the What's New promo has been register.
 extern NSString* const kWhatsNewPromoRegistrationKey;
 
+// Key to store whether the What's New m116 promo has been register.
+extern NSString* const kWhatsNewM116PromoRegistrationKey;
+
 // Key to store the date of FRE.
 extern NSString* const kWhatsNewDaysAfterFre;
 
+// Key to store the date of FRE for What's New M116.
+extern NSString* const kWhatsNewM116DaysAfterFre;
+
 // Key to store the number of launches after FRE.
 extern NSString* const kWhatsNewLaunchesAfterFre;
+
+// Key to store the number of launches after FRE for What's New M116.
+extern NSString* const kWhatsNewM116LaunchesAfterFre;
 
 // Key to store whether a user interacted with What's New from the overflow
 // menu.
