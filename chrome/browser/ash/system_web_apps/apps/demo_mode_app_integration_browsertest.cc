@@ -6,28 +6,33 @@
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
 #include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
+#include "base/functional/bind.h"
+#include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/time/time.h"
+#include "base/threading/thread_checker_impl.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/system_web_apps/apps/chrome_demo_mode_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+
+using ::testing::_;
 
 namespace ash {
 namespace {
@@ -41,29 +46,9 @@ const char kTestHtml[] =
     "<script src=\"test.js\" type=\"module\"></script>"
     "</body>";
 
-const char kTestJs[] =
-    "import {pageHandler} from './page_handler.js'; "
-    "document.addEventListener('DOMContentLoaded', function () {"
-    " pageHandler.toggleFullscreen(); "
-    "});";
-
-/**
- * Mocks a user breaks attrack loop and enters the demo session,
- * clicks the Easy page button, stays for 10 sec, clicks Next button,
- * and clicks Fast page button.
- */
-const char kTestMetricsServiceJs[] =
-    "import {metricsService, Page, PillarButton} from "
-    "'./demo_mode_metrics_service.js'; "
-    "document.addEventListener('DOMContentLoaded', function () {"
-    " metricsService.recordAttractLoopBreak();"
-    " metricsService.recordHomePageButtonClick(Page.EASY); "
-    " metricsService.recordPageViewDuration(Page.EASY, 10000); "
-    " metricsService.recordPillarPageButtonClick(PillarButton.NEXT); "
-    " metricsService.recordNavbarButtonClick(Page.FAST); "
-    "});";
-
 const char kEmptyHtml[] = "<head></head><body></body>";
+
+const char kFakeAppId[] = "fake_app_id";
 
 // Base class that sets everything up for the Demo Mode SWA to run, except for
 // putting the device in Demo Mode itself. This is used to verify that the app
@@ -85,7 +70,8 @@ class DemoModeAppIntegrationTestBase : public ash::SystemWebAppIntegrationTest {
         [&](content::WebUI* web_ui,
             const GURL& url) -> std::unique_ptr<content::WebUIController> {
           return std::make_unique<DemoModeAppUntrustedUI>(
-              web_ui, component_dir_.GetPath());
+              web_ui, component_dir_.GetPath(),
+              std::make_unique<ChromeDemoModeAppDelegate>(web_ui));
         });
     content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
         std::make_unique<ash::DemoModeAppUntrustedUIConfig>(
@@ -150,6 +136,41 @@ class WidgetFullscreenWaiter : public views::WidgetObserver {
       widget_observation_{this};
 };
 
+// Mock app publisher to test that web app launches are invoked by the LaunchApp
+// Mojo API.
+class MockWebAppPublisher : public apps::AppPublisher {
+ public:
+  explicit MockWebAppPublisher(apps::AppServiceProxy* proxy)
+      : apps::AppPublisher(proxy) {
+    RegisterPublisher(apps::AppType::kWeb);
+
+    std::vector<apps::AppPtr> apps;
+    auto fake_app =
+        std::make_unique<apps::App>(apps::AppType::kWeb, kFakeAppId);
+    fake_app->readiness = apps::Readiness::kReady;
+    apps.push_back(std::move(fake_app));
+    Publish(std::move(apps), apps::AppType::kWeb, true);
+  }
+
+  MOCK_METHOD4(Launch,
+               void(const std::string& app_id,
+                    int32_t event_flags,
+                    apps::LaunchSource launch_source,
+                    apps::WindowInfoPtr window_info));
+
+  MOCK_METHOD2(LaunchAppWithParams,
+               void(apps::AppLaunchParams&& params,
+                    apps::LaunchCallback callback));
+
+  MOCK_METHOD6(LoadIcon,
+               void(const std::string& app_id,
+                    const apps::IconKey& icon_key,
+                    apps::IconType icon_type,
+                    int32_t size_hint_in_dip,
+                    bool allow_placeholder_icon,
+                    apps::LoadIconCallback callback));
+};
+
 // Verify that the app isn't registered by SystemWebAppManager when not in Demo
 // Mode.
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTestBase, AppIsMissing) {
@@ -200,6 +221,12 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
                        DemoModeAppToggleFullscreenFromComponentContent) {
   base::ScopedAllowBlockingForTesting allow_blocking;
+  const std::string kTestJs =
+      "import {pageHandler} from './page_handler.js'; "
+      "document.addEventListener('DOMContentLoaded', () => {"
+      "  pageHandler.toggleFullscreen(); "
+      "});";
+
   base::FilePath file_path = component_dir_.GetPath().AppendASCII("test.html");
   base::WriteFile(file_path, kTestHtml);
   base::FilePath js_file_path = component_dir_.GetPath().AppendASCII("test.js");
@@ -221,12 +248,23 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
 // the metricsPrivateIndividualApis extension API
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
                        DemoModeAppRecordMetricsFromComponentContent) {
+  const std::string kTestJs =
+      "import {metricsService, Page, PillarButton} from "
+      "'./demo_mode_metrics_service.js'; "
+      "document.addEventListener('DOMContentLoaded', () => {"
+      "  metricsService.recordAttractLoopBreak();"
+      "  metricsService.recordHomePageButtonClick(Page.EASY); "
+      "  metricsService.recordPageViewDuration(Page.EASY, 10000); "
+      "  metricsService.recordPillarPageButtonClick(PillarButton.NEXT); "
+      "  metricsService.recordNavbarButtonClick(Page.FAST); "
+      "});";
+
   base::UserActionTester user_action_tester;
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath file_path = component_dir_.GetPath().AppendASCII("test.html");
   base::WriteFile(file_path, kTestHtml);
   base::FilePath js_file_path = component_dir_.GetPath().AppendASCII("test.js");
-  base::WriteFile(js_file_path, kTestMetricsServiceJs);
+  base::WriteFile(js_file_path, kTestJs);
   WaitForTestSystemAppInstall();
 
   apps::AppLaunchParams params =
@@ -269,6 +307,45 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
       std::string(kEmptyHtml),
       content::EvalJs(web_contents, R"(document.documentElement.innerHTML)",
                       content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
+}
+
+IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
+                       LaunchWebAppFromComponentContent) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Configure WebUI to serve HTML/JS invoking LaunchApp Mojo API
+  const std::string kTestJs = content::JsReplace(
+      "import {pageHandler} from './page_handler.js'; "
+      "document.addEventListener('DOMContentLoaded', () => {"
+      "  pageHandler.launchApp($1); "
+      "});",
+      kFakeAppId);
+  base::FilePath file_path = component_dir_.GetPath().AppendASCII("test.html");
+  base::WriteFile(file_path, kTestHtml);
+  base::FilePath js_file_path = component_dir_.GetPath().AppendASCII("test.js");
+  base::WriteFile(js_file_path, kTestJs);
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+
+  // Launch SWA
+  WaitForTestSystemAppInstall();
+  apps::AppLaunchParams params =
+      LaunchParamsForApp(ash::SystemWebAppType::DEMO_MODE);
+  params.override_url = GURL(ash::kChromeUntrustedUIDemoModeAppURL +
+                             file_path.BaseName().MaybeAsASCII());
+
+  // Assert that AppServiceProxy::Launch is called by using a mock AppPublisher.
+  // We mock here instead of testing that an actual app is launched due to this
+  // test having a parameterized crosapi variant, which would require spinning
+  // up Lacros as part of test setup.
+  base::RunLoop run_loop;
+  MockWebAppPublisher mock_web_app_publisher(
+      apps::AppServiceProxyFactory::GetForProfile(profile));
+  EXPECT_CALL(mock_web_app_publisher,
+              Launch(kFakeAppId, 0, apps::LaunchSource::kFromOtherApp, _))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  LaunchApp(std::move(params));
+  run_loop.Run();
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(

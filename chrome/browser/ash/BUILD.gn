@@ -3137,6 +3137,8 @@ source_set("ash") {
     "system_web_apps/apps/camera_app/chrome_camera_app_ui_constants.h",
     "system_web_apps/apps/camera_app/chrome_camera_app_ui_delegate.cc",
     "system_web_apps/apps/camera_app/chrome_camera_app_ui_delegate.h",
+    "system_web_apps/apps/chrome_demo_mode_app_delegate.cc",
+    "system_web_apps/apps/chrome_demo_mode_app_delegate.h",
     "system_web_apps/apps/chrome_file_manager_ui_delegate.cc",
     "system_web_apps/apps/chrome_file_manager_ui_delegate.h",
     "system_web_apps/apps/connectivity_diagnostics_system_web_app_info.cc",

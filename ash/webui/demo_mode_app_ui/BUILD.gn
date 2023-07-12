@@ -11,6 +11,7 @@ assert(is_chromeos_ash, "Demo Mode App is ash-chrome only")
 
 static_library("demo_mode_app_ui") {
   sources = [
+    "demo_mode_app_delegate.h",
     "demo_mode_app_untrusted_ui.cc",
     "demo_mode_app_untrusted_ui.h",
     "demo_mode_untrusted_page_handler.cc",

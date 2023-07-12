@@ -95,9 +95,11 @@ void DemoModeAppUntrustedUI::SourceDataFromComponent(
       base::BindOnce(&ReadFile, absolute_resource_path), std::move(callback));
 }
 
-DemoModeAppUntrustedUI::DemoModeAppUntrustedUI(content::WebUI* web_ui,
-                                               base::FilePath component_path)
-    : ui::UntrustedWebUIController(web_ui) {
+DemoModeAppUntrustedUI::DemoModeAppUntrustedUI(
+    content::WebUI* web_ui,
+    base::FilePath component_path,
+    std::unique_ptr<DemoModeAppDelegate> delegate)
+    : ui::UntrustedWebUIController(web_ui), delegate_(std::move(delegate)) {
   // We tack the resource path onto this component path, so CHECK that it's
   // absolute so ".." parent references can't be used as an exploit
   DCHECK(component_path.IsAbsolute());
@@ -141,7 +143,7 @@ void DemoModeAppUntrustedUI::CreatePageHandler(
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
       web_ui()->GetWebContents()->GetTopLevelNativeWindow());
   demo_mode_page_handler_ = std::make_unique<DemoModeUntrustedPageHandler>(
-      std::move(handler), widget);
+      std::move(handler), widget, this);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DemoModeAppUntrustedUI)

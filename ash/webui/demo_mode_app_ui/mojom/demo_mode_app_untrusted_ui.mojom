@@ -13,10 +13,14 @@ interface UntrustedPageHandlerFactory {
   CreatePageHandler(pending_receiver<UntrustedPageHandler> handler);
 };
 
-// Implemented in the browser process. Interface for sending ToggleFullscreen()
-// commands from the Web UI to the browser process.
+// Implemented in the browser process. Interface for sending commands from the
+// Demo Mode App Web UI to the browser process.
 interface UntrustedPageHandler {
   // Fire-and-forget command to trigger enter or exit fullscreen on a native
   // window. Used for when we need to enter fullscreen without user interaction.
   ToggleFullscreen();
+
+  // Fire-and-forget command to launch an already-installed app, specified by
+  // the App Service/Registry app_id.
+  LaunchApp(string app_id);
 };

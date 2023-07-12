@@ -18,6 +18,7 @@
 #include "ash/webui/os_feedback_ui/os_feedback_untrusted_ui.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/camera_app_untrusted_ui_config.h"
+#include "chrome/browser/ash/system_web_apps/apps/chrome_demo_mode_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/apps/crosh_ui.h"
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_untrusted_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/media_app/media_app_guest_ui_config.h"
@@ -37,7 +38,8 @@ std::unique_ptr<content::WebUIConfig> MakeDemoModeAppUntrustedUIConfig() {
       [](content::WebUI* web_ui,
          const GURL& url) -> std::unique_ptr<content::WebUIController> {
         return std::make_unique<DemoModeAppUntrustedUI>(
-            web_ui, DemoSession::Get()->GetDemoAppComponentPath());
+            web_ui, DemoSession::Get()->GetDemoAppComponentPath(),
+            std::make_unique<ChromeDemoModeAppDelegate>(web_ui));
       });
   return std::make_unique<DemoModeAppUntrustedUIConfig>(create_controller_func);
 }
