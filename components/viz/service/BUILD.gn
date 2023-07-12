@@ -551,6 +551,7 @@ viz_source_set("unit_tests") {
     "//components/viz/test:test_suite",
     "//components/viz/test:test_support",
     "//gpu/command_buffer/client",
+    "//gpu/command_buffer/client:raster_interface",
     "//gpu/ipc:gl_in_process_context",
     "//gpu/ipc/service",
     "//media",

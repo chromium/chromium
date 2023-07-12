@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "skia/ext/rgba_to_yuva.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -1007,6 +1008,10 @@ base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
     std::unique_ptr<SkiaImageRepresentation> dest_shared_image,
     std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
         dest_scoped_access) {
+  // Order of destruction for moved unique pointers is not guaranteed and the
+  // ScopedWriteAccess must be destroyed before representation; so perform a
+  // Cleanup before exiting.
+  absl::Cleanup cleanup = [&]() { dest_scoped_access.reset(); };
   viz::SharedImageFormat dest_format = dest_shared_image->format();
   auto* gr_context = shared_context_state_->gr_context();
   for (int plane = 0; plane < dest_format.NumberOfPlanes(); plane++) {
@@ -1041,7 +1046,6 @@ base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
   if (!dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(gfx::Rect(src_width, src_height));
   }
-
   return base::ok();
 }
 

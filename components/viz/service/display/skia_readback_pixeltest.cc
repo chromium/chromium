@@ -28,6 +28,7 @@
 #include "components/viz/test/buildflags.h"
 #include "components/viz/test/gl_scaler_test_util.h"
 #include "components/viz/test/paths.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -40,6 +41,7 @@
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
@@ -177,7 +179,6 @@ void WriteTextureOnGpuMainThread(gpu::SharedImageManager* shared_image_manager,
                                  const gpu::Mailbox& mailbox,
                                  const gfx::Size& texture_size,
                                  SkColorType color_type,
-                                 int plane,
                                  base::span<const uint8_t> pixel_data) {
   if (!context_state->MakeCurrent(nullptr)) {
     return;
@@ -208,7 +209,7 @@ void WriteTextureOnGpuMainThread(gpu::SharedImageManager* shared_image_manager,
                                     color_type, kUnpremul_SkAlphaType),
                   pixel_data.data(), row_bytes);
 
-  auto* surface = scoped_write->surface(plane);
+  auto* surface = scoped_write->surface();
   surface->writePixels(pixmap, 0, 0);
 
   GrFlushInfo flush_info;
@@ -290,20 +291,19 @@ void WriteNV12Plane(TestGpuServiceHolder* gpu_service_holder,
                     gpu::Mailbox mailbox,
                     const gfx::Size& texture_size,
                     SkColorType color_type,
-                    int plane,
                     base::span<const uint8_t> pixel_data) {
   base::WaitableEvent wait;
 
   // Write the texture on the GPU main thread to ensure ordering with the
   // creation of the SharedImage referred to by `mailbox`.
   gpu_service_holder->ScheduleGpuMainTask(base::BindLambdaForTesting(
-      [&mailbox, &texture_size, &color_type, &plane, &pixel_data, &wait]() {
+      [&mailbox, &texture_size, &color_type, &pixel_data, &wait]() {
         WriteTextureOnGpuMainThread(
             TestGpuServiceHolder::GetInstance()
                 ->gpu_service()
                 ->shared_image_manager(),
             TestGpuServiceHolder::GetInstance()->GetSharedContextState().get(),
-            mailbox, texture_size, color_type, plane, pixel_data);
+            mailbox, texture_size, color_type, pixel_data);
         wait.Signal();
       }));
 
@@ -823,10 +823,15 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
       static_cast<uint8_t>(yuv_red.fG * 255.0f),
       static_cast<uint8_t>(yuv_red.fB * 255.0f)};
 
+  auto* sii = child_context_provider_->SharedImageInterface();
+  auto* ri = child_context_provider_->RasterInterface();
+
   size_t num_mailboxes =
       use_multiplanar_si() ? 1 : CopyOutputResult::kNV12MaxPlanes;
 
   std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes> mailboxes;
+  std::array<std::vector<uint8_t>, CopyOutputResult::kNV12MaxPlanes> pixels;
+  SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
   for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
     const auto format = use_multiplanar_si() ? MultiPlaneFormat::kNV12
                         : i == 0             ? SinglePlaneFormat::kR_8
@@ -836,28 +841,48 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
                : gfx::Size(source_size.width() / 2, source_size.height() / 2);
     const size_t plane_size_in_bytes = plane_size.GetArea() * (i == 0 ? 1 : 2);
 
-    std::vector<uint8_t> pixels =
-        (i == 0) ? GeneratePixels(plane_size_in_bytes, luma_pattern)
-                 : GeneratePixels(plane_size_in_bytes, chromas_pattern);
+    pixels[i] = (i == 0) ? GeneratePixels(plane_size_in_bytes, luma_pattern)
+                         : GeneratePixels(plane_size_in_bytes, chromas_pattern);
+
+    auto color_type = i == 0 ? kAlpha_8_SkColorType : kR8G8_unorm_SkColorType;
+    size_t row_bytes = plane_size.width() * (i == 0 ? 1 : 2);
+    pixmaps[i] =
+        SkPixmap(SkImageInfo::Make(plane_size.width(), plane_size.height(),
+                                   color_type, kUnpremul_SkAlphaType),
+                 pixels[i].data(), row_bytes);
 
     if (!use_multiplanar_si() || i == 0) {
-      mailboxes[i].mailbox =
-          child_context_provider_->SharedImageInterface()->CreateSharedImage(
-              format, plane_size, gfx::ColorSpace::CreateREC709(),
-              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels",
-              gpu::kNullSurfaceHandle);
+      mailboxes[i].mailbox = sii->CreateSharedImage(
+          format, plane_size, gfx::ColorSpace::CreateREC709(),
+          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels",
+          gpu::kNullSurfaceHandle);
       DCHECK(!mailboxes[i].mailbox.IsZero());
     }
 
     // Populate the data. Note that this is done on the GPU main thread, so it
     // is ordered with the creation of the SharedImage above.
-    auto mailbox =
-        use_multiplanar_si() ? mailboxes[0].mailbox : mailboxes[i].mailbox;
-    int plane = use_multiplanar_si() ? i : 0;
-    auto color_type = i == 0 ? kAlpha_8_SkColorType : kR8G8_unorm_SkColorType;
-    WriteNV12Plane(gpu_service_holder_, mailbox, plane_size, color_type, plane,
-                   pixels);
+    if (!use_multiplanar_si()) {
+      WriteNV12Plane(gpu_service_holder_, mailboxes[i].mailbox, plane_size,
+                     color_type, pixels[i]);
+    }
+  }
+
+  if (use_multiplanar_si()) {
+    // Create and wait on shared image interface sync token to wait for shared
+    // image creation.
+    ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+
+    SkYUVAInfo info = SkYUVAInfo({source_size.width(), source_size.height()},
+                                 SkYUVAInfo::PlaneConfig::kY_UV,
+                                 SkYUVAInfo::Subsampling::k420,
+                                 SkYUVColorSpace::kIdentity_SkYUVColorSpace);
+    SkYUVAPixmaps yuv_pixmap =
+        SkYUVAPixmaps::FromExternalPixmaps(info, pixmaps);
+    ri->WritePixelsYUV(mailboxes[0].mailbox, yuv_pixmap);
+
+    // Create and wait on raster interface sync token for write pixels YUV.
+    ri->GenUnverifiedSyncTokenCHROMIUM(mailboxes[0].sync_token.GetData());
   }
 
   std::unique_ptr<CopyOutputResult> result = IssueCopyOutputRequestAndRender(
@@ -900,7 +925,7 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
                      chroma_planes);
 
   for (size_t i = 0; i < num_mailboxes; ++i) {
-    child_context_provider_->SharedImageInterface()->DestroySharedImage(
+    sii->DestroySharedImage(
         result->GetTextureResult()->mailbox_holders[i].sync_token,
         result->GetTextureResult()->mailbox_holders[i].mailbox);
   }
