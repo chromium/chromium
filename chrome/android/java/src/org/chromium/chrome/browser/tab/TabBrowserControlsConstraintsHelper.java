@@ -138,7 +138,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                 updateAfterRendererProcessSwitch(tab, true);
             }
         });
-        if (mTab.isInitialized() && !TabImpl.isDetached(mTab)) updateVisibilityDelegate();
+        if (mTab.isInitialized() && !TabUtils.isDetached(mTab)) updateVisibilityDelegate();
     }
 
     @Override

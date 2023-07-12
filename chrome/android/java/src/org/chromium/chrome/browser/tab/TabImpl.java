@@ -825,22 +825,6 @@ public class TabImpl implements Tab {
         return null;
     }
 
-    /**
-     * @param tab {@link Tab} instance being checked.
-     * @return Whether the tab is detached from any Activity and its {@link WindowAndroid}.
-     * Certain functionalities will not work until it is attached to an activity
-     * with {@link ReparentingTask#finish}.
-     */
-    static boolean isDetached(Tab tab) {
-        if (tab.getWebContents() == null) return true;
-        // Should get WindowAndroid from WebContents since the one from |getWindowAndroid()|
-        // is always non-null even when the tab is in detached state. See the comment in |detach()|.
-        WindowAndroid window = tab.getWebContents().getTopLevelNativeWindow();
-        if (window == null) return true;
-        Activity activity = ContextUtils.activityFromContext(window.getContext().get());
-        return !(activity instanceof ChromeActivity);
-    }
-
     @Override
     public void setIsTabSaveEnabled(boolean isTabSaveEnabled) {
         mIsTabSaveEnabledSupplier.set(isTabSaveEnabled);
@@ -1220,7 +1204,7 @@ public class TabImpl implements Tab {
         // While detached for reparenting we don't have an owning Activity, or TabModelSelector,
         // so we can't create the native page. The native page will be created once reparenting is
         // completed.
-        if (isDetached(this)) return false;
+        if (TabUtils.isDetached(this)) return false;
         NativePage candidateForReuse = forceReload ? null : getNativePage();
         NativePage nativePage = mDelegateFactory.createNativePage(url, candidateForReuse, this);
         if (nativePage != null) {
@@ -1442,8 +1426,8 @@ public class TabImpl implements Tab {
             mWebContentsDelegate = createWebContentsDelegate();
 
             assert mNativeTabAndroid != 0;
-            TabImplJni.get().initWebContents(mNativeTabAndroid, mIncognito, isDetached(this),
-                    webContents, mWebContentsDelegate,
+            TabImplJni.get().initWebContents(mNativeTabAndroid, mIncognito,
+                    TabUtils.isDetached(this), webContents, mWebContentsDelegate,
                     new TabContextMenuPopulatorFactory(
                             mDelegateFactory.createContextMenuPopulatorFactory(this), this));
 
@@ -1536,7 +1520,7 @@ public class TabImpl implements Tab {
      */
     private void updateInteractableState() {
         boolean currentState =
-                !mIsHidden && !isFrozen() && mIsViewAttachedToWindow && !isDetached(this);
+                !mIsHidden && !isFrozen() && mIsViewAttachedToWindow && !TabUtils.isDetached(this);
 
         if (currentState == mInteractableState) return;
 
