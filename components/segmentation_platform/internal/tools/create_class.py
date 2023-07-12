@@ -109,7 +109,7 @@ _MODEL_HEADER_TEMPLATE = """// Copyright {year} The Chromium Authors
 namespace {namespace} {{
 
 // Model to predict whether the user belongs to {clas} segment.
-class {clas} : public ModelProvider {{
+class {clas} : public DefaultModelProvider {{
  public:
   {clas}();
   ~{clas}() override = default;
@@ -120,11 +120,9 @@ class {clas} : public ModelProvider {{
   static std::unique_ptr<Config> GetConfig();
 
   // ModelProvider implementation.
-  void InitAndFetchModel(
-      const ModelUpdatedCallback& model_updated_callback) override;
+  std::unique_ptr<ModelConfig> GetModelConfig() override;
   void ExecuteModelWithInput(const ModelProvider::Request& inputs,
                              ExecutionCallback callback) override;
-  bool ModelAvailable() override;
 }};
 
 }}
@@ -140,9 +138,9 @@ _MODEL_CC_TEMPLATE = """// Copyright {year} The Chromium Authors
 
 #include <memory>
 
+#include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/config.h"
-#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -155,6 +153,7 @@ using proto::SegmentId;
 // Default parameters for {clas} model.
 constexpr SegmentId kSegmentId =
     SegmentId::{segment_id};
+constexpr int64_t kModelVersion = 1;
 // Store 28 buckets of input data (28 days).
 constexpr int64_t kSignalStorageLength = 28;
 // Wait until we have 7 days of data.
@@ -200,10 +199,9 @@ std::unique_ptr<Config> {clas}::GetConfig() {{
 }}
 
 {clas}::{clas}()
-    : ModelProvider(kSegmentId) {{}}
+    : DefaultModelProvider(kSegmentId) {{}}
 
-void {clas}::InitAndFetchModel(
-    const ModelUpdatedCallback& model_updated_callback) {{
+std::unique_ptr<DefaultModelProvider::ModelConfig> {clas}::GetModelConfig() {{
   proto::SegmentationModelMetadata metadata;
   MetadataWriter writer(&metadata);
   writer.SetDefaultSegmentationMetadataConfig(
@@ -224,11 +222,7 @@ void {clas}::InitAndFetchModel(
   writer.AddUmaFeatures(kUMAFeatures.data(),
                         kUMAFeatures.size());
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindRepeating(model_updated_callback, kSegmentId,
-                          std::move(metadata),
-                          /* Model version number. */ 1));
+  return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
 }}
 
 void {clas}::ExecuteModelWithInput(
@@ -254,10 +248,6 @@ void {clas}::ExecuteModelWithInput(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
-}}
-
-bool {clas}::ModelAvailable() {{
-  return true;
 }}
 
 }}

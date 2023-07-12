@@ -13,7 +13,7 @@ struct Config;
 
 // Segmentation low engagement model provider. Provides a default model and
 // metadata for the low user engagement optimization target.
-class LowUserEngagementModel : public ModelProvider {
+class LowUserEngagementModel : public DefaultModelProvider {
  public:
   LowUserEngagementModel();
   ~LowUserEngagementModel() override = default;
@@ -25,11 +25,10 @@ class LowUserEngagementModel : public ModelProvider {
   static std::unique_ptr<Config> GetConfig();
 
   // ModelProvider implementation.
-  void InitAndFetchModel(
-      const ModelUpdatedCallback& model_updated_callback) override;
+  std::unique_ptr<ModelConfig> GetModelConfig() override;
+
   void ExecuteModelWithInput(const ModelProvider::Request& inputs,
                              ExecutionCallback callback) override;
-  bool ModelAvailable() override;
 };
 
 }  // namespace segmentation_platform

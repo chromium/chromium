@@ -81,10 +81,11 @@ std::unique_ptr<Config> QueryTilesModel::GetConfig() {
   return config;
 }
 
-QueryTilesModel::QueryTilesModel() : ModelProvider(kQueryTilesSegmentId) {}
+QueryTilesModel::QueryTilesModel()
+    : DefaultModelProvider(kQueryTilesSegmentId) {}
 
-void QueryTilesModel::InitAndFetchModel(
-    const ModelUpdatedCallback& model_updated_callback) {
+std::unique_ptr<DefaultModelProvider::ModelConfig>
+QueryTilesModel::GetModelConfig() {
   proto::SegmentationModelMetadata query_tiles_metadata;
   MetadataWriter writer(&query_tiles_metadata);
   writer.SetDefaultSegmentationMetadataConfig(
@@ -97,10 +98,8 @@ void QueryTilesModel::InitAndFetchModel(
   writer.AddUmaFeatures(kQueryTilesUMAFeatures.data(),
                         kQueryTilesUMAFeatures.size());
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindRepeating(model_updated_callback, kQueryTilesSegmentId,
-                          std::move(query_tiles_metadata), 2));
+  return std::make_unique<ModelConfig>(std::move(query_tiles_metadata),
+                                       /*model_version=*/2);
 }
 
 void QueryTilesModel::ExecuteModelWithInput(
@@ -126,10 +125,6 @@ void QueryTilesModel::ExecuteModelWithInput(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
-}
-
-bool QueryTilesModel::ModelAvailable() {
-  return true;
 }
 
 }  // namespace segmentation_platform

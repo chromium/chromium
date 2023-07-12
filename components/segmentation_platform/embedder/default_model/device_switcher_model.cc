@@ -67,10 +67,10 @@ std::unique_ptr<Config> DeviceSwitcherModel::GetConfig() {
 }
 
 DeviceSwitcherModel::DeviceSwitcherModel()
-    : ModelProvider(kDeviceSwitcherModelId) {}
+    : DefaultModelProvider(kDeviceSwitcherModelId) {}
 
-void DeviceSwitcherModel::InitAndFetchModel(
-    const ModelUpdatedCallback& model_updated_callback) {
+std::unique_ptr<DefaultModelProvider::ModelConfig>
+DeviceSwitcherModel::GetModelConfig() {
   proto::SegmentationModelMetadata metadata;
   MetadataWriter writer(&metadata);
   writer.SetDefaultSegmentationMetadataConfig(
@@ -90,10 +90,7 @@ void DeviceSwitcherModel::InitAndFetchModel(
       kOutputLabels.begin(), kOutputLabels.size(), kOutputLabels.size(), 0.1);
 
   constexpr int kModelVersion = 1;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindRepeating(model_updated_callback, kDeviceSwitcherModelId,
-                          std::move(metadata), kModelVersion));
+  return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
 }
 
 void DeviceSwitcherModel::ExecuteModelWithInput(
@@ -132,10 +129,6 @@ void DeviceSwitcherModel::ExecuteModelWithInput(
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
-}
-
-bool DeviceSwitcherModel::ModelAvailable() {
-  return true;
 }
 
 }  // namespace segmentation_platform

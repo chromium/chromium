@@ -69,10 +69,10 @@ std::unique_ptr<Config> ChromeStartModelV2::GetConfig() {
 }
 
 ChromeStartModelV2::ChromeStartModelV2()
-    : ModelProvider(kChromeStartSegmentId) {}
+    : DefaultModelProvider(kChromeStartSegmentId) {}
 
-void ChromeStartModelV2::InitAndFetchModel(
-    const ModelUpdatedCallback& model_updated_callback) {
+std::unique_ptr<DefaultModelProvider::ModelConfig>
+ChromeStartModelV2::GetModelConfig() {
   proto::SegmentationModelMetadata chrome_start_metadata;
   MetadataWriter writer(&chrome_start_metadata);
   writer.SetDefaultSegmentationMetadataConfig(
@@ -83,10 +83,8 @@ void ChromeStartModelV2::InitAndFetchModel(
                         kChromeStartUMAFeatures.size());
 
   constexpr int kModelVersion = 1;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindRepeating(model_updated_callback, kChromeStartSegmentId,
-                          std::move(chrome_start_metadata), kModelVersion));
+  return std::make_unique<ModelConfig>(std::move(chrome_start_metadata),
+                                       kModelVersion);
 }
 
 void ChromeStartModelV2::ExecuteModelWithInput(
@@ -108,10 +106,6 @@ void ChromeStartModelV2::ExecuteModelWithInput(
       FROM_HERE,
       base::BindOnce(std::move(callback),
                      ModelProvider::Response(1, return_time_in_seconds)));
-}
-
-bool ChromeStartModelV2::ModelAvailable() {
-  return true;
 }
 
 }  // namespace segmentation_platform

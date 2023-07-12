@@ -4,10 +4,11 @@
 
 #include "components/segmentation_platform/embedder/default_model/tab_resumption_ranker.h"
 
-#include "base/metrics/field_trial_params.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/model_provider.h"
 
 namespace segmentation_platform {
 
@@ -30,11 +31,11 @@ std::unique_ptr<Config> TabResumptionRanker::GetConfig() {
 }
 
 TabResumptionRanker::TabResumptionRanker()
-    : ModelProvider(SegmentId::TAB_RESUMPTION_CLASSIFIER) {}
+    : DefaultModelProvider(SegmentId::TAB_RESUMPTION_CLASSIFIER) {}
 TabResumptionRanker::~TabResumptionRanker() = default;
 
-void TabResumptionRanker::InitAndFetchModel(
-    const ModelUpdatedCallback& model_updated_callback) {
+std::unique_ptr<DefaultModelProvider::ModelConfig>
+TabResumptionRanker::GetModelConfig() {
   proto::SegmentationModelMetadata metadata;
   MetadataWriter writer(&metadata);
   writer.SetDefaultSegmentationMetadataConfig(
@@ -52,10 +53,8 @@ void TabResumptionRanker::InitAndFetchModel(
       ->mutable_generic_predictor()
       ->add_output_labels(kTabResumptionClassifierKey);
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindRepeating(model_updated_callback, kSegmentId,
-                          std::move(metadata), kTabResumptionRankerVersion));
+  return std::make_unique<ModelConfig>(std::move(metadata),
+                                       kTabResumptionRankerVersion);
 }
 
 void TabResumptionRanker::ExecuteModelWithInput(
@@ -82,7 +81,4 @@ void TabResumptionRanker::ExecuteModelWithInput(
                                 ModelProvider::Response(1, resumption_score)));
 }
 
-bool TabResumptionRanker::ModelAvailable() {
-  return true;
-}
 }  // namespace segmentation_platform

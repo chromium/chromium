@@ -186,7 +186,8 @@ std::unique_ptr<Config> PowerUserSegment::GetConfig() {
   return config;
 }
 
-PowerUserSegment::PowerUserSegment() : ModelProvider(kPowerUserSegmentId) {}
+PowerUserSegment::PowerUserSegment()
+    : DefaultModelProvider(kPowerUserSegmentId) {}
 
 absl::optional<std::string> PowerUserSegment::GetSubsegmentName(
     int subsegment_rank) {
@@ -197,8 +198,8 @@ absl::optional<std::string> PowerUserSegment::GetSubsegmentName(
   return PowerUserSubsegmentToString(subgroup);
 }
 
-void PowerUserSegment::InitAndFetchModel(
-    const ModelUpdatedCallback& model_updated_callback) {
+std::unique_ptr<DefaultModelProvider::ModelConfig>
+PowerUserSegment::GetModelConfig() {
   proto::SegmentationModelMetadata chrome_start_metadata;
   MetadataWriter writer(&chrome_start_metadata);
   writer.SetDefaultSegmentationMetadataConfig(
@@ -214,10 +215,8 @@ void PowerUserSegment::InitAndFetchModel(
                         kPowerUserUMAFeatures.size());
 
   constexpr int kModelVersion = 1;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindRepeating(model_updated_callback, kPowerUserSegmentId,
-                          std::move(chrome_start_metadata), kModelVersion));
+  return std::make_unique<ModelConfig>(std::move(chrome_start_metadata),
+                                       kModelVersion);
 }
 
 static void AddToScoreIf(bool usage, int& score) {
@@ -278,10 +277,6 @@ void PowerUserSegment::ExecuteModelWithInput(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
-}
-
-bool PowerUserSegment::ModelAvailable() {
-  return true;
 }
 
 }  // namespace segmentation_platform

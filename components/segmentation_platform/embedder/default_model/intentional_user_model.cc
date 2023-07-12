@@ -68,10 +68,10 @@ std::unique_ptr<Config> IntentionalUserModel::GetConfig() {
 }
 
 IntentionalUserModel::IntentionalUserModel()
-    : ModelProvider(kIntentionalUserSegmentId) {}
+    : DefaultModelProvider(kIntentionalUserSegmentId) {}
 
-void IntentionalUserModel::InitAndFetchModel(
-    const ModelUpdatedCallback& model_updated_callback) {
+std::unique_ptr<DefaultModelProvider::ModelConfig>
+IntentionalUserModel::GetModelConfig() {
   proto::SegmentationModelMetadata intentional_user_metadata;
   MetadataWriter writer(&intentional_user_metadata);
   writer.SetDefaultSegmentationMetadataConfig(
@@ -85,11 +85,8 @@ void IntentionalUserModel::InitAndFetchModel(
   writer.AddUmaFeatures(kIntentionalUserUMAFeatures.data(),
                         kIntentionalUserUMAFeatures.size());
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindRepeating(model_updated_callback, kIntentionalUserSegmentId,
-                          std::move(intentional_user_metadata),
-                          /* Model version number. */ 1));
+  return std::make_unique<ModelConfig>(std::move(intentional_user_metadata),
+                                       /*model_version=*/1);
 }
 
 void IntentionalUserModel::ExecuteModelWithInput(
@@ -112,10 +109,6 @@ void IntentionalUserModel::ExecuteModelWithInput(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
-}
-
-bool IntentionalUserModel::ModelAvailable() {
-  return true;
 }
 
 }  // namespace segmentation_platform

@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_MODEL_PROVIDER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_MODEL_PROVIDER_H_
 
+#include <memory>
 #include "base/functional/callback.h"
-#include "base/task/sequenced_task_runner.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -58,6 +59,40 @@ class ModelProvider {
 
  protected:
   const proto::SegmentId segment_id_;
+};
+
+// ModelProvider wrapper for implementing default models in c++.
+class DefaultModelProvider : public ModelProvider {
+ public:
+  explicit DefaultModelProvider(proto::SegmentId segment_id);
+  ~DefaultModelProvider() override;
+
+  DefaultModelProvider(const DefaultModelProvider&) = delete;
+  DefaultModelProvider& operator=(const DefaultModelProvider&) = delete;
+
+  // Config needed for the model.
+  struct ModelConfig {
+    // Model metadata that contains inputs, outputs, and other configuration
+    // fields.
+    proto::SegmentationModelMetadata metadata;
+    // Model version. Should be incremented for any changes to the model.
+    int64_t model_version;
+
+    ModelConfig(proto::SegmentationModelMetadata metadata,
+                int64_t model_version);
+    ~ModelConfig();
+
+    ModelConfig(const ModelConfig&) = delete;
+    ModelConfig& operator=(const ModelConfig&) = delete;
+  };
+  virtual std::unique_ptr<ModelConfig> GetModelConfig() = 0;
+
+  // Returns true by default. Can be overridden to disable the model if needed.
+  bool ModelAvailable() override;
+
+ private:
+  void InitAndFetchModel(
+      const ModelUpdatedCallback& model_updated_callback) final;
 };
 
 // Interface used by segmentation platform to create ModelProvider(s).
