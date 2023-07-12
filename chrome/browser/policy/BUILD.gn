@@ -185,6 +185,7 @@ source_set("policy_specific_browser_tests") {
     "test/hsts_policy_browsertest.cc",
     "test/network_prediction_policy_browsertest.cc",
     "test/offset_parent_new_spec_behavior_policy_browsertest.cc",
+    "test/policy_statistics_collector_browsertest.cc",
     "test/proxy_policies_browsertest.cc",
     "test/safe_browsing_policy_browsertest.cc",
     "test/send_mouse_events_disabled_form_controls_policy_browsertest.cc",

@@ -27,12 +27,14 @@ class PolicyStatisticsCollectorTest : public PolicyTest {
   void SetUpInProcessBrowserTestFixture() override {
     PolicyTest::SetUpInProcessBrowserTestFixture();
     PolicyMap policies;
+#if !BUILDFLAG(IS_ANDROID)
     policies.Set(key::kShowHomeButton, POLICY_LEVEL_MANDATORY,
                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
                  nullptr);
     policies.Set(key::kBookmarkBarEnabled, POLICY_LEVEL_MANDATORY,
                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
                  nullptr);
+#endif  // !BUILDFLAG(IS_ANDROID)
     policies.Set(key::kHomepageLocation, POLICY_LEVEL_MANDATORY,
                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                  base::Value("http://chromium.org"), nullptr);
@@ -52,10 +54,12 @@ IN_PROC_BROWSER_TEST_F(PolicyStatisticsCollectorTest, Startup) {
   std::unique_ptr<base::HistogramSamples> samples(histogram->SnapshotSamples());
   // HomepageLocation has policy ID 1.
   EXPECT_GT(samples->GetCount(1), 0);
+#if !BUILDFLAG(IS_ANDROID)
   // ShowHomeButton has policy ID 35.
   EXPECT_GT(samples->GetCount(35), 0);
   // BookmarkBarEnabled has policy ID 82.
   EXPECT_GT(samples->GetCount(82), 0);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace policy
