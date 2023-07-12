@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/user_education/user_education_delegate.h"
+#include "ash/user_education/user_education_types.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 
@@ -44,7 +45,9 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
                      ui::ElementContext element_context,
                      base::OnceClosure completed_callback,
                      base::OnceClosure aborted_callback) override;
-  void AbortTutorial(const AccountId& account_id) override;
+  void AbortTutorial(
+      const AccountId& account_id,
+      absl::optional<ash::TutorialId> tutorial_id = absl::nullopt) override;
   void LaunchSystemWebAppAsync(const AccountId& account_id,
                                ash::SystemWebAppType system_web_app_type,
                                int64_t display_id) override;

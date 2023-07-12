@@ -136,7 +136,9 @@ void ChromeUserEducationDelegate::StartTutorial(
                      std::move(aborted_callback));
 }
 
-void ChromeUserEducationDelegate::AbortTutorial(const AccountId& account_id) {
+void ChromeUserEducationDelegate::AbortTutorial(
+    const AccountId& account_id,
+    absl::optional<ash::TutorialId> tutorial_id) {
   Profile* profile = Profile::FromBrowserContext(
       ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
           account_id));
@@ -145,9 +147,17 @@ void ChromeUserEducationDelegate::AbortTutorial(const AccountId& account_id) {
   // user profile. This is a self-imposed restriction.
   CHECK(IsPrimaryProfile(profile));
 
-  UserEducationServiceFactory::GetForProfile(profile)
-      ->tutorial_service()
-      .AbortTutorial(/*abort_step=*/absl::nullopt);
+  auto& tutorial_service =
+      UserEducationServiceFactory::GetForProfile(profile)->tutorial_service();
+
+  const absl::optional<std::string> tutorial_id_string =
+      tutorial_id ? absl::make_optional(
+                        ash::user_education_util::ToString(tutorial_id.value()))
+                  : absl::nullopt;
+
+  if (tutorial_service.IsRunningTutorial(tutorial_id_string)) {
+    tutorial_service.AbortTutorial(/*abort_step=*/absl::nullopt);
+  }
 }
 
 void ChromeUserEducationDelegate::LaunchSystemWebAppAsync(

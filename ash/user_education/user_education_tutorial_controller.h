@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 class ElementContext;
@@ -44,11 +45,13 @@ class ASH_EXPORT UserEducationTutorialController {
                      base::OnceClosure completed_callback,
                      base::OnceClosure aborted_callback);
 
-  // Aborts the currently running tutorial, whether it was started by this
-  // controller or not. Any `aborted_callback` passed in at the time of start
-  // will be called.
+  // Aborts the currently running tutorial. If `tutorial_id` is given, will only
+  // abort the tutorial if it matches the id. If no `tutorial_id` is given, it
+  // aborts any running tutorial whether it was started by this controller or
+  // not. Any `aborted_callback` passed in at the time of start will be called.
   // NOTE: Currently only the primary user profile is supported.
-  void AbortTutorial(UserEducationPrivateApiKey);
+  void AbortTutorial(UserEducationPrivateApiKey,
+                     absl::optional<TutorialId> tutorial_id = absl::nullopt);
 
  private:
   // The delegate owned by the `UserEducationController` which facilitates

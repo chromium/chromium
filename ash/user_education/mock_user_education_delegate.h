@@ -57,7 +57,11 @@ class ASH_EXPORT MockUserEducationDelegate : public UserEducationDelegate {
                base::OnceClosure completed_callback,
                base::OnceClosure aborted_callback),
               (override));
-  MOCK_METHOD(void, AbortTutorial, (const AccountId& account_id), (override));
+  MOCK_METHOD(void,
+              AbortTutorial,
+              (const AccountId& account_id,
+               absl::optional<TutorialId> tutorial_id),
+              (override));
   MOCK_METHOD(void,
               LaunchSystemWebAppAsync,
               (const AccountId& account_id,

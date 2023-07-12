@@ -61,12 +61,13 @@ void UserEducationTutorialController::StartTutorial(
 }
 
 void UserEducationTutorialController::AbortTutorial(
-    UserEducationPrivateApiKey) {
+    UserEducationPrivateApiKey,
+    absl::optional<TutorialId> tutorial_id) {
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
   const AccountId account_id = GetActiveAccountId();
   CHECK(user_education_util::IsPrimaryAccountId(account_id));
-  delegate_->AbortTutorial(account_id);
+  delegate_->AbortTutorial(account_id, tutorial_id);
 }
 
 }  // namespace ash
