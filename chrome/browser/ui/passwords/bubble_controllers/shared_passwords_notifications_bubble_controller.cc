@@ -1,0 +1,29 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/passwords/bubble_controllers/shared_passwords_notifications_bubble_controller.h"
+
+SharedPasswordsNotificationBubbleController::
+    SharedPasswordsNotificationBubbleController(
+        base::WeakPtr<PasswordsModelDelegate> delegate)
+    : PasswordBubbleControllerBase(
+          std::move(delegate),
+          // TODO(crbug.com/1464209): Use correct metrics enum value.
+          password_manager::metrics_util::AUTOMATIC_MOVE_TO_ACCOUNT_STORE) {}
+
+SharedPasswordsNotificationBubbleController::
+    ~SharedPasswordsNotificationBubbleController() {
+  // Make sure the interactions are reported even if Views didn't notify the
+  // controller about the bubble being closed.
+  OnBubbleClosing();
+}
+
+std::u16string SharedPasswordsNotificationBubbleController::GetTitle() const {
+  // TODO(crbug.com/1464209): Use internationalized string.
+  return u"New Password for this site";
+}
+
+void SharedPasswordsNotificationBubbleController::ReportInteractions() {
+  // TODO(crbug.com/1464209): Report necessary interactions.
+}
