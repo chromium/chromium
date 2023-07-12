@@ -220,6 +220,12 @@ Tab::Tab(TabSlotController* controller)
   // need a manual suppression by detecting cases where the text is painted onto
   // onto opaque parts of a not-entirely-opaque layer.
   title_->SetSkipSubpixelRenderingOpacityCheck(true);
+
+  if (features::IsChromeRefresh2023()) {
+    title_->SetTextContext(views::style::CONTEXT_LABEL);
+    title_->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
+  }
+
   AddChildView(title_.get());
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
