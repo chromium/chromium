@@ -78,6 +78,8 @@
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/snackbar/snackbar_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
@@ -128,14 +130,14 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }  // namespace
 
 @interface TabGridCoordinator () <BringAndroidTabsCommands,
-                                  RecentTabsPresentationDelegate,
+                                  GridMediatorDelegate,
+                                  HistoryCoordinatorDelegate,
                                   HistoryPresentationDelegate,
                                   InactiveTabsCoordinatorDelegate,
+                                  RecentTabsPresentationDelegate,
                                   SceneStateObserver,
                                   SnackbarCoordinatorDelegate,
-                                  HistoryCoordinatorDelegate,
                                   TabContextMenuDelegate,
-                                  TabGridMediatorDelegate,
                                   TabPresentationDelegate,
                                   TabGridViewControllerDelegate> {
   // Use an explicit ivar instead of synthesizing as the setter isn't using the
@@ -175,9 +177,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @property(nonatomic, strong)
     LegacyTabGridTransitionHandler* legacyTransitionHandler;
 // Mediator for regular Tabs.
-@property(nonatomic, strong) TabGridMediator* regularTabsMediator;
+@property(nonatomic, strong) RegularGridMediator* regularTabsMediator;
 // Mediator for incognito Tabs.
-@property(nonatomic, strong) TabGridMediator* incognitoTabsMediator;
+@property(nonatomic, strong) IncognitoGridMediator* incognitoTabsMediator;
 // Mediator for PriceCardView - this is only for regular Tabs.
 @property(nonatomic, strong) PriceCardMediator* priceCardMediator;
 // Mediator for incognito reauth.
@@ -635,7 +637,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   baseViewController.tabPresentationDelegate = self;
   baseViewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
   baseViewController.delegate = self;
-  baseViewController.mutator = [[TabGridMediator alloc] initWithConsumer:nil];
+  baseViewController.mutator = [[TabGridMediator alloc] init];
   _baseViewController = baseViewController;
 
   _toolbarsCoordinator =
@@ -649,7 +651,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.baseViewController.bottomToolbar = _toolbarsCoordinator.bottomToolbar;
   self.baseViewController.toolbarCommandsWrangler = _toolbarsCoordinator;
 
-  self.regularTabsMediator = [[TabGridMediator alloc]
+  self.regularTabsMediator = [[RegularGridMediator alloc]
       initWithConsumer:baseViewController.regularTabsConsumer];
   ChromeBrowserState* regularBrowserState =
       _regularBrowser ? _regularBrowser->GetBrowserState() : nullptr;
@@ -680,7 +682,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
              prefService:GetApplicationContext()->GetLocalState()];
   }
 
-  self.incognitoTabsMediator = [[TabGridMediator alloc]
+  self.incognitoTabsMediator = [[IncognitoGridMediator alloc]
       initWithConsumer:baseViewController.incognitoTabsConsumer];
   self.incognitoTabsMediator.browser = _incognitoBrowser;
   self.incognitoTabsMediator.delegate = self;
@@ -904,15 +906,17 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                focusOmnibox:focusOmnibox];
 }
 
+#pragma mark - GridMediatorDelegate
+
 - (void)
-    showCloseItemsConfirmationActionSheetWithTabGridMediator:
-        (TabGridMediator*)tabGridMediator
-                                                       items:
-                                                           (NSArray<NSString*>*)
-                                                               items
-                                                      anchor:(UIBarButtonItem*)
-                                                                 buttonAnchor {
-  if (tabGridMediator == self.regularTabsMediator) {
+    showCloseItemsConfirmationActionSheetWithBaseGridMediator:
+        (BaseGridMediator*)baseGridMediator
+                                                        items:(NSArray<
+                                                                  NSString*>*)
+                                                                  items
+                                                       anchor:(UIBarButtonItem*)
+                                                                  buttonAnchor {
+  if (baseGridMediator == self.regularTabsMediator) {
     base::RecordAction(base::UserMetricsAction(
         "MobileTabGridSelectionCloseRegularTabsConfirmationPresented"));
 
@@ -936,7 +940,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   self.actionSheetCoordinator.alertStyle = UIAlertControllerStyleActionSheet;
 
-  __weak TabGridMediator* weakTabGridMediator = tabGridMediator;
+  __weak BaseGridMediator* weakBaseGridMediator = baseGridMediator;
   [self.actionSheetCoordinator
       addItemWithTitle:base::SysUTF16ToNSString(
                            l10n_util::GetPluralStringFUTF16(
@@ -945,7 +949,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                 action:^{
                   base::RecordAction(base::UserMetricsAction(
                       "MobileTabGridSelectionCloseTabsConfirmed"));
-                  [weakTabGridMediator closeItemsWithIDs:items];
+                  [weakBaseGridMediator closeItemsWithIDs:items];
                 }
                  style:UIAlertActionStyleDestructive];
   [self.actionSheetCoordinator
@@ -958,9 +962,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.actionSheetCoordinator start];
 }
 
-- (void)tabGridMediator:(TabGridMediator*)tabGridMediator
-              shareURLs:(NSArray<URLWithTitle*>*)URLs
-                 anchor:(UIBarButtonItem*)buttonAnchor {
+- (void)baseGridMediator:(BaseGridMediator*)baseGridMediator
+               shareURLs:(NSArray<URLWithTitle*>*)URLs
+                  anchor:(UIBarButtonItem*)buttonAnchor {
   SharingParams* params = [[SharingParams alloc]
       initWithURLs:URLs
           scenario:SharingScenario::TabGridSelectionMode];

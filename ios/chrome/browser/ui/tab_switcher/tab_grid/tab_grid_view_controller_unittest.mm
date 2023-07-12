@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -188,7 +188,7 @@ TEST_F(TabGridViewControllerTest, CanPerform_CloseAllAndUndo) {
 
   EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
   EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
-  TabGridMediator* incognitoMediator = [[TabGridMediator alloc]
+  IncognitoGridMediator* incognitoMediator = [[IncognitoGridMediator alloc]
       initWithConsumer:view_controller_.incognitoTabsConsumer];
   [incognitoMediator setBrowser:browser_.get()];
   view_controller_.incognitoTabsDelegate = incognitoMediator;
@@ -199,7 +199,7 @@ TEST_F(TabGridViewControllerTest, CanPerform_CloseAllAndUndo) {
   EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
   EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
 
-  // Forces the TabGridMediator to removes its Observer from WebStateList
+  // Forces the IncognitoGridMediator to removes its Observer from WebStateList
   // before the Browser is destroyed.
   incognitoMediator.browser = nullptr;
   incognitoMediator = nil;

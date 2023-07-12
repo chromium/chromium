@@ -190,7 +190,7 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
           change.As<WebStateListChangeMove>();
       if (webStateList->IsWebStatePinnedAt(selection.index)) {
         // PinnedTabsMediator handles only pinned tabs because non pinned tabs
-        // are handled in TabGridMediator.
+        // are handled in BaseGridMediator.
         [self.consumer
             moveItemWithID:moveChange.moved_web_state()->GetStableIdentifier()
                    toIndex:selection.index];
