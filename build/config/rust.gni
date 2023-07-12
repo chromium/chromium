@@ -97,10 +97,7 @@ declare_args() {
   # that include Blink (e.g. it is *not* present on iOS).
   #
   # TODO(crbug.com/1463749): Enable on ChromeOS.
-  # TODO(crbug.com/1386212): Enable on Mac (note that this feature is not
-  # used on iOS).
-  enable_rust_crash =
-      !(is_chromeos || is_ios || is_mac) || enable_all_rust_features
+  enable_rust_crash = !is_chromeos || enable_all_rust_features
 
   # Support for QR code generation - see https://crbug.com/1431991.
   #
