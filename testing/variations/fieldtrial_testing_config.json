@@ -5467,6 +5467,22 @@
             ]
         }
     ],
+    "EnableReportingStorageControlledDegradation": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableReportingStorageControlledDegradation"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableShoppingListDesktop": [
         {
             "platforms": [
