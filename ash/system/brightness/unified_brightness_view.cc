@@ -13,7 +13,6 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
-#include "ash/system/tray/tray_constants.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
@@ -33,7 +32,8 @@ UnifiedBrightnessView::UnifiedBrightnessView(
     : UnifiedSliderView(views::Button::PressedCallback(),
                         controller,
                         kUnifiedMenuBrightnessIcon,
-                        IDS_ASH_STATUS_TRAY_BRIGHTNESS),
+                        IDS_ASH_STATUS_TRAY_BRIGHTNESS,
+                        /*is_togglable=*/false),
       model_(model),
       night_light_controller_(Shell::Get()->night_light_controller()) {
   model_->AddObserver(this);

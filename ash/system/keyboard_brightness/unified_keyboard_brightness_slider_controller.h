@@ -13,8 +13,9 @@ namespace ash {
 
 class UnifiedSystemTrayModel;
 
-// Controller of a read-only slider showing keyboard brightness.
-class UnifiedKeyboardBrightnessSliderController : public UnifiedSliderListener {
+// Controller of a slider showing keyboard brightness.
+class ASH_EXPORT UnifiedKeyboardBrightnessSliderController
+    : public UnifiedSliderListener {
  public:
   explicit UnifiedKeyboardBrightnessSliderController(
       UnifiedSystemTrayModel* model);

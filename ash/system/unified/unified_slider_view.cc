@@ -16,16 +16,13 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/controls/slider.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -62,9 +59,10 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
                                      UnifiedSliderListener* listener,
                                      const gfx::VectorIcon& icon,
                                      int accessible_name_id,
+                                     bool is_togglable,
                                      bool read_only,
                                      QuickSettingsSlider::Style slider_style)
-    : icon_(&icon), callback_(callback) {
+    : icon_(&icon), callback_(callback), is_togglable_(is_togglable) {
   if (!features::IsQsRevampEnabled()) {
     button_ = AddChildView(std::make_unique<IconButton>(
         std::move(callback), IconButton::Type::kMedium, &icon,
@@ -121,6 +119,10 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
   slider_button_->SetIconColorId(cros_tokens::kCrosSysSystemOnPrimaryContainer);
   // The `slider_button_` should be focusable by the ChromeVox.
   slider_button_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  // `slider_button_` should disable event processing if it's not togglable.
+  if (!is_togglable_) {
+    slider_button_->SetCanProcessEventsWithinSubtree(/*can_process=*/false);
+  }
 
   // Prevent an accessibility event while initiallizing this view.
   // Typically the first update of the slider value is conducted by the
@@ -161,6 +163,15 @@ void UnifiedSliderView::SetSliderValue(float value, bool by_user) {
 UnifiedSliderView::~UnifiedSliderView() = default;
 
 void UnifiedSliderView::OnEvent(ui::Event* event) {
+  const bool is_qs_revamp_enabled = features::IsQsRevampEnabled();
+
+  // If `slider_button_` is not togglable, pressing the return key should not
+  // trigger the clicking callback.
+  if (is_qs_revamp_enabled && !is_togglable_) {
+    views::View::OnEvent(event);
+    return;
+  }
+
   if (!event->IsKeyEvent()) {
     views::View::OnEvent(event);
     return;
@@ -171,7 +182,7 @@ void UnifiedSliderView::OnEvent(ui::Event* event) {
 
   // Only handles press event to avoid handling the event again when the key is
   // released.
-  if (features::IsQsRevampEnabled() && key_code == ui::VKEY_RETURN &&
+  if (is_qs_revamp_enabled && key_code == ui::VKEY_RETURN &&
       key_event->type() == ui::EventType::ET_KEY_PRESSED) {
     slider_button_->NotifyClick(*event);
     return;

@@ -107,6 +107,19 @@ class UnifiedBrightnessViewTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Tests to ensure that the `slider_button` does not handle any events,
+// letting them get through to the slider. Effectively the `slider_button` is
+// part of the slider in the brightness view.
+TEST_F(UnifiedBrightnessViewTest, SliderButtonClickThrough) {
+  slider()->SetValue(1.0);
+  EXPECT_FLOAT_EQ(unified_brightness_view()->slider()->GetValue(), 1.0);
+
+  // A click on the `slider_button` for `unified_brightness_view()` should go
+  // through to the slider and change the value to the minimum.
+  LeftClickOn(unified_brightness_view()->slider_button());
+  EXPECT_FLOAT_EQ(unified_brightness_view()->slider()->GetValue(), 0.0);
+}
+
 // Tests that `UnifiedBrightnessView` is made up of a `QuickSettingsSlider`, a
 // `NightLight` button, and a drill-in button that leads to the display subpage.
 TEST_F(UnifiedBrightnessViewTest, SliderButtonComponents) {

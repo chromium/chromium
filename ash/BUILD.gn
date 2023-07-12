@@ -3383,6 +3383,7 @@ test("ash_unittests") {
     "system/input_device_settings/pref_handlers/touchpad_pref_handler_unittest.cc",
     "system/keyboard_brightness/keyboard_backlight_color_controller_unittest.cc",
     "system/keyboard_brightness/keyboard_backlight_color_nudge_controller_unittest.cc",
+    "system/keyboard_brightness/unified_keyboard_brightness_slider_controller_unittest.cc",
     "system/locale/locale_detailed_view_unittest.cc",
     "system/locale/locale_feature_pod_controller_unittest.cc",
     "system/lock_screen_notification_controller_unittest.cc",
