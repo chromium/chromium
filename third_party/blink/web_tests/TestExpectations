@@ -6216,24 +6216,12 @@ crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-nested-cr
 crbug.com/1383990 [ Mac ] external/wpt/html/dom/idlharness.worker.html [ Failure Skip ]
 crbug.com/1383989 [ Mac ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Failure Skip ]
 
-# Base URL for about:blank & about:srcdoc
-# The following test can pass/fail depending on whether the associate feature,
-# NewBaseUrlInheritanceBehavior, is enabled or not.
-crbug.com/1356658 external/wpt/html/infrastructure/urls/terminology-0/document-base-url-changes-after-nav-about-srcdoc.https.window.html [ Failure ]
-crbug.com/1356658 virtual/no-auto-wpt-origin-isolation/external/wpt/html/infrastructure/urls/terminology-0/document-base-url-changes-after-nav-about-srcdoc.https.window.html [ Failure ]
-
 # Tests disabled for the memory measurement API.
 crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/detached.https.window.html [ Skip Timeout ]
 crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/window-open.mix.https.window.html [ Skip Timeout ]
 crbug.com/1207146 virtual/force-eager/external/wpt/measure-memory/main-frame-and-worker.https.window.html [ Failure Pass ]
 
 crbug.com/1385413 media/controls/text-track-menu-pointer-selection.html [ Failure Pass Skip Timeout ]
-
-# Base URL for about:blank & about:srcdoc
-# The following test can pass/fail depending on whether the associate feature,
-# NewBaseUrlInheritanceBehavior, is enabled or not.
-crbug.com/1356658 external/wpt/html/infrastructure/urls/terminology-0/document-base-url-initiated-grand-parent.https.window.html [ Failure Pass ]
-crbug.com/1356658 virtual/no-auto-wpt-origin-isolation/external/wpt/html/infrastructure/urls/terminology-0/document-base-url-initiated-grand-parent.https.window.html [ Failure Pass ]
 
 # Sheriff 2022-11-17
 crbug.com/1385642 [ Linux ] external/wpt/css/css-values/calc-in-media-queries-with-mixed-units.html [ Failure Pass Skip Timeout ]
