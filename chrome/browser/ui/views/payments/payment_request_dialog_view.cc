@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,13 +25,10 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/payments/content/payment_request.h"
-#include "components/payments/core/features.h"
-#include "components/payments/core/payments_experimental_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -153,21 +149,20 @@ void PaymentRequestDialogView::ShowPaymentHandlerScreen(
   if (!request_->spec())
     return;
 
-  if (PaymentsExperimentalFeatures::IsEnabled(
-          features::kPaymentHandlerPopUpSizeWindow)) {
-    is_showing_large_payment_handler_window_ = true;
+  // The Payment Handler window is larger than the Payment Request sheet, which
+  // causes us to make different decisions when e.g. animating it.
+  is_showing_large_payment_handler_window_ = true;
 
-    // Calculate |payment_handler_window_height_|
-    auto* browser =
-        chrome::FindBrowserWithWebContents(request_->web_contents());
-    int browser_window_content_height =
-        browser->window()->GetContentsSize().height();
-    payment_handler_window_height_ =
-        std::max(kDialogHeight, std::min(kPreferredPaymentHandlerDialogHeight,
-                                         browser_window_content_height));
+  // Calculate |payment_handler_window_height_|
+  auto* browser = chrome::FindBrowserWithWebContents(request_->web_contents());
+  int browser_window_content_height =
+      browser->window()->GetContentsSize().height();
+  payment_handler_window_height_ =
+      std::max(kDialogHeight, std::min(kPreferredPaymentHandlerDialogHeight,
+                                       browser_window_content_height));
 
-    ResizeDialogWindow();
-  }
+  ResizeDialogWindow();
+
   view_stack_->Push(
       CreateViewAndInstallController(
           std::make_unique<PaymentHandlerWebFlowViewController>(
@@ -545,11 +540,6 @@ gfx::Size PaymentRequestDialogView::CalculatePreferredSize() const {
 }
 
 int PaymentRequestDialogView::GetActualPaymentHandlerDialogHeight() const {
-  if (!PaymentsExperimentalFeatures::IsEnabled(
-          features::kPaymentHandlerPopUpSizeWindow)) {
-    return kDialogHeight;
-  }
-
   DCHECK_NE(0, payment_handler_window_height_);
   return payment_handler_window_height_ > 0 ? payment_handler_window_height_
                                             : kDialogHeight;

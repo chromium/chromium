@@ -8,15 +8,13 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/payments/core/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments {
 
-class PaymentHandlerWindowSizeTest : public PaymentRequestBrowserTestBase,
-                                     public testing::WithParamInterface<bool> {
+class PaymentHandlerWindowSizeTest : public PaymentRequestBrowserTestBase {
  public:
   PaymentHandlerWindowSizeTest(const PaymentHandlerWindowSizeTest&) = delete;
   PaymentHandlerWindowSizeTest& operator=(const PaymentHandlerWindowSizeTest&) =
@@ -24,17 +22,8 @@ class PaymentHandlerWindowSizeTest : public PaymentRequestBrowserTestBase,
 
  protected:
   PaymentHandlerWindowSizeTest()
-      : payment_handler_pop_up_size_window_enabled_(GetParam()),
-        expected_payment_request_dialog_size_(
-            gfx::Size(kDialogMinWidth, kDialogHeight)) {
-    if (payment_handler_pop_up_size_window_enabled_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kPaymentHandlerPopUpSizeWindow);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kPaymentHandlerPopUpSizeWindow);
-    }
-  }
+      : expected_payment_request_dialog_size_(
+            gfx::Size(kDialogMinWidth, kDialogHeight)) {}
 
   ~PaymentHandlerWindowSizeTest() override = default;
 
@@ -45,14 +34,10 @@ class PaymentHandlerWindowSizeTest : public PaymentRequestBrowserTestBase,
 
   gfx::Size DialogViewSize() { return dialog_view()->CalculatePreferredSize(); }
 
-  const bool payment_handler_pop_up_size_window_enabled_;
   const gfx::Size expected_payment_request_dialog_size_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
   // Add an autofill profile, so [Continue] button is enabled.
   autofill::AutofillProfile profile(autofill::test::GetFullProfile());
   AddAutofillProfile(profile);
@@ -73,19 +58,13 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
   ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_EQ(expected_payment_request_dialog_size_, DialogViewSize());
 
-  gfx::Size expected_payment_handler_dialog_size;
-  if (payment_handler_pop_up_size_window_enabled_) {
-    // Adjust the expected PH window height based on the browser content height.
-    int browser_window_content_height =
-        browser()->window()->GetContentsSize().height();
-    expected_payment_handler_dialog_size = gfx::Size(
-        kPreferredPaymentHandlerDialogWidth,
-        std::max(kDialogHeight, std::min(kPreferredPaymentHandlerDialogHeight,
-                                         browser_window_content_height)));
-  } else {
-    expected_payment_handler_dialog_size =
-        gfx::Size(kDialogMinWidth, kDialogHeight);
-  }
+  // Adjust the expected PH window height based on the browser content height.
+  int browser_window_content_height =
+      browser()->window()->GetContentsSize().height();
+  gfx::Size expected_payment_handler_dialog_size = gfx::Size(
+      kPreferredPaymentHandlerDialogWidth,
+      std::max(kDialogHeight, std::min(kPreferredPaymentHandlerDialogHeight,
+                                       browser_window_content_height)));
 
   // Click on Pay and check dialog size when payment handler view is shown.
   EXPECT_TRUE(IsPayButtonEnabled());
@@ -100,7 +79,5 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
   ClickOnBackArrow();
   EXPECT_EQ(expected_payment_request_dialog_size_, DialogViewSize());
 }
-
-INSTANTIATE_TEST_SUITE_P(All, PaymentHandlerWindowSizeTest, testing::Bool());
 
 }  // namespace payments

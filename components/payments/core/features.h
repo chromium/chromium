@@ -29,10 +29,6 @@ BASE_DECLARE_FEATURE(kAppStoreBillingDebug);
 // Used to control whether allow crawling just-in-time installable payment app.
 BASE_DECLARE_FEATURE(kWebPaymentsJustInTimePaymentApp);
 
-// Desktop only, if enabled payment handler window size matches the pop up
-// window size.
-BASE_DECLARE_FEATURE(kPaymentHandlerPopUpSizeWindow);
-
 // Used to test icon refetch for JIT installed apps with missing icons.
 BASE_DECLARE_FEATURE(kAllowJITInstallationWhenAppIconIsMissing);
 

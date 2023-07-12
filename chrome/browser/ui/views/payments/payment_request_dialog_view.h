@@ -222,8 +222,8 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   // The number of initialization tasks that are not yet initialized.
   size_t number_of_initialization_tasks_ = 0;
 
-  // True when payment handler screen is shown and the
-  // kPaymentHandlerPopUpSizeWindow runtime flag is set.
+  // True when payment handler screen is shown, as it is larger than the Payment
+  // Request sheet view.
   bool is_showing_large_payment_handler_window_ = false;
 
   // Calculated based on the browser content size at the time of opening payment

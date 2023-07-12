@@ -37,10 +37,6 @@ BASE_FEATURE(kAppStoreBillingDebug,
              "AppStoreBillingDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPaymentHandlerPopUpSizeWindow,
-             "PaymentHandlerPopUpSizeWindow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAllowJITInstallationWhenAppIconIsMissing,
              "AllowJITInstallationWhenAppIconIsMissing",
              base::FEATURE_DISABLED_BY_DEFAULT);
