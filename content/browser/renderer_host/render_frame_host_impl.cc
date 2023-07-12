@@ -8311,7 +8311,9 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
   if (navigation_request.GetNavigationInitiatorActivationAndAdStatus() ==
           blink::mojom::NavigationInitiatorActivationAndAdStatus::
               kDidNotStartWithTransientActivation &&
-      !initiator_rfh->HasTransientUserActivation()) {
+      !initiator_rfh->HasTransientUserActivation() &&
+      navigation_request.commit_params().was_activated !=
+          blink::mojom::WasActivatedOption::kYes) {
     return;
   }
 
