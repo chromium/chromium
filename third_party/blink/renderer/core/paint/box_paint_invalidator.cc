@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/box_paint_invalidator.h"
 
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
@@ -137,6 +138,15 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
   if (style.MaskLayers().AnyLayerUsesContentBox() &&
       box_.PreviousPhysicalContentBoxRect() != box_.PhysicalContentBoxRect())
     return PaintInvalidationReason::kLayout;
+
+  if (const auto* layout_replaced = DynamicTo<LayoutReplaced>(box_)) {
+    if (RuntimeEnabledFeatures::PaintNewReplacedInvalidationEnabled() &&
+        layout_replaced->ReplacedContentRect() !=
+            layout_replaced->ReplacedContentRectFrom(
+                box_.PreviousPhysicalContentBoxRect())) {
+      return PaintInvalidationReason::kLayout;
+    }
+  }
 
 #if DCHECK_IS_ON()
   // TODO(crbug.com/1205708): Audit this.

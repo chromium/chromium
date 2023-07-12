@@ -132,6 +132,10 @@ void LayoutReplaced::UpdateLayout() {
 
   ClearNeedsLayout();
 
+  if (RuntimeEnabledFeatures::PaintNewReplacedInvalidationEnabled()) {
+    return;
+  }
+
   if (ReplacedContentRectFrom(PhysicalContentBoxRectFromNG()) !=
       old_content_rect) {
     SetShouldDoFullPaintInvalidation();
