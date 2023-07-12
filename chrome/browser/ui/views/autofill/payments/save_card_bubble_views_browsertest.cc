@@ -147,8 +147,11 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
  protected:
   SaveCardBubbleViewsFullFormBrowserTest() : SyncTest(SINGLE_CLIENT) {
-    if (move_legal_terms_and_icon()) {
+    if (should_move_legal_terms_param()) {
       feature_list_.InitAndEnableFeature(
+          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment);
+    } else {
+      feature_list_.InitAndDisableFeature(
           features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment);
     }
   }
@@ -309,7 +312,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
   void VerifyExpirationDateDropdownsAreVisible() {
     EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_UPLOAD)
                     ->GetVisible());
-    EXPECT_TRUE(FindViewInBubbleById(move_legal_terms_and_icon()
+    EXPECT_TRUE(FindViewInBubbleById(should_move_legal_terms_param()
                                          ? DialogViewId::LEGAL_MESSAGE_VIEW
                                          : DialogViewId::FOOTNOTE_VIEW)
                     ->GetVisible());
@@ -375,7 +378,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
     ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_UPLOAD)
                     ->GetVisible());
-    EXPECT_TRUE(FindViewInBubbleById(move_legal_terms_and_icon()
+    EXPECT_TRUE(FindViewInBubbleById(should_move_legal_terms_param()
                                          ? DialogViewId::LEGAL_MESSAGE_VIEW
                                          : DialogViewId::FOOTNOTE_VIEW)
                     ->GetVisible());
@@ -741,7 +744,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
     return &test_url_loader_factory_;
   }
 
-  bool move_legal_terms_and_icon() const { return GetParam(); }
+  bool should_move_legal_terms_param() const { return GetParam(); }
 
  private:
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
@@ -780,11 +783,15 @@ class SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream
   SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream() {
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kAutofillUpstream};
-    if (move_legal_terms_and_icon()) {
+    std::vector<base::test::FeatureRef> disabled_features = {};
+    if (should_move_legal_terms_param()) {
       enabled_features.push_back(
           features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment);
+    } else {
+      disabled_features.push_back(
+          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment);
     }
-    feature_list_.InitWithFeatures(enabled_features, {});
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
  private:
@@ -817,8 +824,13 @@ class SaveCardBubbleViewsFullFormBrowserTestSettings
     : public SaveCardBubbleViewsFullFormBrowserTest {
  public:
   SaveCardBubbleViewsFullFormBrowserTestSettings() {
-    feature_list_.InitAndEnableFeature(
-        features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment);
+    if (should_move_legal_terms_param()) {
+      feature_list_.InitAndEnableFeature(
+          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment);
+    }
   }
 
   void SetUpOnMainThread() override {
@@ -954,11 +966,15 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
     // Add wallet data type to the list of enabled types.
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kAutofillUpstream};
-    if (move_legal_terms_and_icon()) {
+    std::vector<base::test::FeatureRef> disabled_features = {};
+    if (should_move_legal_terms_param()) {
       enabled_features.push_back(
           features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment);
+    } else {
+      disabled_features.push_back(
+          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment);
     }
-    feature_list_.InitWithFeatures(enabled_features, {});
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
  public:
@@ -2037,7 +2053,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_UPLOAD)
                   ->GetVisible());
-  EXPECT_TRUE(FindViewInBubbleById(move_legal_terms_and_icon()
+  EXPECT_TRUE(FindViewInBubbleById(should_move_legal_terms_param()
                                        ? DialogViewId::LEGAL_MESSAGE_VIEW
                                        : DialogViewId::FOOTNOTE_VIEW)
                   ->GetVisible());
