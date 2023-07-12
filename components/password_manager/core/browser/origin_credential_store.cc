@@ -36,16 +36,16 @@ UiCredential::UiCredential(const PasswordForm& form,
                            const url::Origin& affiliated_origin)
     : username_(form.username_value),
       password_(form.password_value),
-      origin_(form.is_affiliation_based_match ? affiliated_origin
-                                              : url::Origin::Create(form.url)),
       match_type_(password_manager_util::GetMatchType(form)),
       last_used_(form.date_last_used) {
   FacetURI facet_uri = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
   if (facet_uri.IsValidAndroidFacetURI()) {
+    origin_ = affiliated_origin;
     display_name_ = form.app_display_name.empty()
                         ? SplitByDotAndReverse(facet_uri.android_package_name())
                         : form.app_display_name;
   } else {
+    origin_ = url::Origin::Create(form.url);
     display_name_ =
         base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
             url::Origin::Create(form.url),
