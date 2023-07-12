@@ -8,10 +8,6 @@
 #include "build/build_config.h"
 #include "ui/base/device_form_factor.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace metrics {
 
 void FormFactorMetricsProvider::ProvideSystemProfileMetrics(
@@ -21,16 +17,6 @@ void FormFactorMetricsProvider::ProvideSystemProfileMetrics(
 
 SystemProfileProto::Hardware::FormFactor
 FormFactorMetricsProvider::GetFormFactor() const {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1300338): Move the TV form factor logic to
-  // ui/base/device_form_factor_android.cc.
-  if (base::android::BuildInfo::GetInstance()->is_tv())
-    return SystemProfileProto::Hardware::FORM_FACTOR_TV;
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    return SystemProfileProto::Hardware::FORM_FACTOR_AUTOMOTIVE;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(PLATFORM_CFM)
   return SystemProfileProto::Hardware::FORM_FACTOR_MEET_DEVICE;
 #else
@@ -41,6 +27,10 @@ FormFactorMetricsProvider::GetFormFactor() const {
       return SystemProfileProto::Hardware::FORM_FACTOR_PHONE;
     case ui::DEVICE_FORM_FACTOR_TABLET:
       return SystemProfileProto::Hardware::FORM_FACTOR_TABLET;
+    case ui::DEVICE_FORM_FACTOR_TV:
+      return SystemProfileProto::Hardware::FORM_FACTOR_TV;
+    case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
+      return SystemProfileProto::Hardware::FORM_FACTOR_AUTOMOTIVE;
     default:
       return SystemProfileProto::Hardware::FORM_FACTOR_UNKNOWN;
   }

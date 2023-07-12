@@ -36,7 +36,7 @@ version_info::Channel VariationsServiceClient::GetChannelForVariations() {
 
 Study::FormFactor VariationsServiceClient::GetCurrentFormFactor() {
 #if BUILDFLAG(PLATFORM_CFM)
-  return variations::Study::MEET_DEVICE;
+  return Study::MEET_DEVICE;
 #else
   switch (ui::GetDeviceFormFactor()) {
     case ui::DEVICE_FORM_FACTOR_PHONE:
@@ -45,6 +45,10 @@ Study::FormFactor VariationsServiceClient::GetCurrentFormFactor() {
       return Study::TABLET;
     case ui::DEVICE_FORM_FACTOR_DESKTOP:
       return Study::DESKTOP;
+    case ui::DEVICE_FORM_FACTOR_TV:
+      return Study::TV;
+    case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
+      return Study::AUTOMOTIVE;
   }
   NOTREACHED();
   return Study::DESKTOP;
