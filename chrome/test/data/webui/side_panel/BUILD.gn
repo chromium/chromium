@@ -10,7 +10,7 @@ build_webui_tests("build") {
   files = [
     "bookmarks/bookmark_folder_test.ts",
     "bookmarks/bookmarks_drag_manager_test.ts",
-    "bookmarks/bookmarks_list_interactive_ui_test.ts",
+    "bookmarks/bookmarks_list_focus_test.ts",
     "bookmarks/bookmarks_list_test.ts",
     "bookmarks/power_bookmarks_context_menu_test.ts",
     "bookmarks/power_bookmarks_drag_manager_test.ts",

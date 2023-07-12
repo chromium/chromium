@@ -6,9 +6,8 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
-using SidePanelBookmarksListInteractiveUITest = WebUIMochaFocusTest;
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListInteractiveUITest, All) {
+using SidePanelBookmarksFocusTest = WebUIMochaFocusTest;
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksFocusTest, List) {
   set_test_loader_host(chrome::kChromeUIBookmarksSidePanelHost);
-  RunTest("side_panel/bookmarks/bookmarks_list_interactive_ui_test.js",
-          "mocha.run()");
+  RunTest("side_panel/bookmarks/bookmarks_list_focus_test.js", "mocha.run()");
 }

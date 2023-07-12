@@ -17,7 +17,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestShoppingListApiProxy} from './commerce/test_shopping_list_api_proxy.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
-suite('SidePanelBookmarksListInteractiveUITest', () => {
+suite('SidePanelBookmarksListFocusTest', () => {
   let bookmarksList: BookmarksListElement;
   let bookmarksApi: TestBookmarksApiProxy;
 
