@@ -238,7 +238,7 @@ template("single_gcc_toolchain") {
       link_prefix =
           "\"$python_path\" " +
           rebase_path("//tools/clang/scripts/remote_ld.py", root_build_dir) +
-          " --wrapper ${goma_path} --jobs 200 -- "
+          " --wrapper ${goma_path} --jobs 200 --ar-path ${invoker.ar} -- "
     } else {
       link_prefix = ""
       not_needed([ "goma_path" ])
