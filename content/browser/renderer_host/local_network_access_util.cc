@@ -21,7 +21,7 @@
 namespace content {
 namespace {
 
-using Policy = network::mojom::LocalNetworkRequestPolicy;
+using Policy = network::mojom::PrivateNetworkRequestPolicy;
 using AddressSpace = network::mojom::IPAddressSpace;
 using RequestContext = PrivateNetworkRequestContext;
 

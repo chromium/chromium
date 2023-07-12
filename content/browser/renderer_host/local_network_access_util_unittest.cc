@@ -22,7 +22,7 @@ namespace content {
 namespace {
 
 using AddressSpace = network::mojom::IPAddressSpace;
-using Policy = network::mojom::LocalNetworkRequestPolicy;
+using Policy = network::mojom::PrivateNetworkRequestPolicy;
 
 using ::testing::ElementsAreArray;
 

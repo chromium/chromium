@@ -543,7 +543,7 @@ class InterestGroupAuctionReporterTest
           /*is_web_secure_context=*/true,
           /*ip_address_space=*/network::mojom::IPAddressSpace::kPublic,
           /*is_web_secure_context=*/
-          network::mojom::LocalNetworkRequestPolicy::kBlock)};
+          network::mojom::PrivateNetworkRequestPolicy::kBlock)};
 
   const GURL kSellerReportUrl =
       GURL("https://seller.report.test/seller-report");

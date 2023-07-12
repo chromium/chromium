@@ -1230,8 +1230,8 @@ mojom::ClientSecurityStatePtr CorsURLLoader::CloneClientSecurityState() const {
 
 bool CorsURLLoader::ShouldIgnorePrivateNetworkAccessErrors() const {
   const mojom::ClientSecurityState* state = GetClientSecurityState();
-  return state && state->local_network_request_policy ==
-                      mojom::LocalNetworkRequestPolicy::kPreflightWarn;
+  return state && state->private_network_request_policy ==
+                      mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
 }
 
 PrivateNetworkAccessPreflightBehavior

@@ -935,9 +935,9 @@ class CONTENT_EXPORT NavigationRequest
   // separate callback, WillCommitWithoutUrlLoader().
   bool NeedsUrlLoader();
 
-  network::mojom::LocalNetworkRequestPolicy local_network_request_policy()
+  network::mojom::PrivateNetworkRequestPolicy private_network_request_policy()
       const {
-    return local_network_request_policy_;
+    return private_network_request_policy_;
   }
 
   // Whether this navigation request waits for the result of beforeunload before
@@ -1652,7 +1652,7 @@ class CONTENT_EXPORT NavigationRequest
   // redirect.
   void UpdateStateFollowingRedirect(const GURL& new_referrer_url);
 
-  // Updates |local_network_request_policy_| for ReadyToCommitNavigation().
+  // Updates |private_network_request_policy_| for ReadyToCommitNavigation().
   //
   // Must not be called for same-document navigation requests nor for requests
   // served from the back-forward cache or from prerendered pages.
@@ -2440,8 +2440,8 @@ class CONTENT_EXPORT NavigationRequest
   // TODO(ahemery, titouan): Move some elements to the policy container or
   // rework inheritance.
   // https://crbug.com/1154729
-  network::mojom::LocalNetworkRequestPolicy local_network_request_policy_ =
-      network::mojom::LocalNetworkRequestPolicy::kWarn;
+  network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
+      network::mojom::PrivateNetworkRequestPolicy::kWarn;
 
   // The list of web features that were used by the new document during
   // navigation. These can only be logged once the document commits, so they are

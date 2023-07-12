@@ -735,8 +735,8 @@ TEST_F(PreflightControllerTest, CheckPrivateNetworkAccessRequest) {
 
   mojom::ClientSecurityStatePtr client_security_state =
       ClientSecurityStateBuilder()
-          .WithLocalNetworkRequestPolicy(
-              mojom::LocalNetworkRequestPolicy::kPreflightWarn)
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
           .Build();
 
   // Set the client security state in the request's trusted params, because the
@@ -769,8 +769,8 @@ TEST_F(PreflightControllerTest, CheckPrivateNetworkAccessRequestWarningOnly) {
 
   mojom::ClientSecurityStatePtr client_security_state =
       ClientSecurityStateBuilder()
-          .WithLocalNetworkRequestPolicy(
-              mojom::LocalNetworkRequestPolicy::kPreflightWarn)
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
           .Build();
 
   // Set the client security state in the request's trusted params, because the
@@ -821,8 +821,8 @@ TEST_F(PreflightControllerTest,
 
   mojom::ClientSecurityStatePtr client_security_state =
       ClientSecurityStateBuilder()
-          .WithLocalNetworkRequestPolicy(
-              mojom::LocalNetworkRequestPolicy::kPreflightBlock)
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
           .Build();
 
   // Set the client security state in the request's trusted params, because the
@@ -855,8 +855,8 @@ TEST_F(PreflightControllerTest,
 
   mojom::ClientSecurityStatePtr client_security_state =
       ClientSecurityStateBuilder()
-          .WithLocalNetworkRequestPolicy(
-              mojom::LocalNetworkRequestPolicy::kPreflightWarn)
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
           .Build();
 
   // Set the client security state in the request's trusted params, because the
@@ -889,8 +889,8 @@ TEST_F(PreflightControllerTest,
 
   mojom::ClientSecurityStatePtr client_security_state =
       ClientSecurityStateBuilder()
-          .WithLocalNetworkRequestPolicy(
-              mojom::LocalNetworkRequestPolicy::kPreflightBlock)
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
           .Build();
 
   // Set the client security state in the request's trusted params, because the
@@ -935,8 +935,8 @@ TEST_F(PreflightControllerNoPNAPreflightShortTimeoutTest,
 
   mojom::ClientSecurityStatePtr client_security_state =
       ClientSecurityStateBuilder()
-          .WithLocalNetworkRequestPolicy(
-              mojom::LocalNetworkRequestPolicy::kPreflightWarn)
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
           .Build();
 
   // Set the client security state in the request's trusted params, because the

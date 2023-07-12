@@ -21,7 +21,7 @@ namespace network {
 namespace {
 
 using Result = PrivateNetworkAccessCheckResult;
-using Policy = mojom::LocalNetworkRequestPolicy;
+using Policy = mojom::PrivateNetworkRequestPolicy;
 
 mojom::ClientSecurityStatePtr GetRequestClientSecurityState(
     const ResourceRequest& request) {
@@ -83,8 +83,8 @@ PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
   SetRequestUrl(request.url);
 
   if (!client_security_state_ ||
-      client_security_state_->local_network_request_policy ==
-          mojom::LocalNetworkRequestPolicy::kAllow) {
+      client_security_state_->private_network_request_policy ==
+          mojom::PrivateNetworkRequestPolicy::kAllow) {
     // No client security state means PNA is implicitly disabled. A policy of
     // `kAllow` means PNA is explicitly disabled. In both cases, the target IP
     // address space should not be set on the request.
@@ -176,8 +176,8 @@ mojom::IPAddressSpace PrivateNetworkAccessChecker::ClientAddressSpace() const {
 
 bool PrivateNetworkAccessChecker::IsPolicyPreflightWarn() const {
   return client_security_state_ &&
-         client_security_state_->local_network_request_policy ==
-             mojom::LocalNetworkRequestPolicy::kPreflightWarn;
+         client_security_state_->private_network_request_policy ==
+             mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
 }
 
 Result PrivateNetworkAccessChecker::CheckInternal(
@@ -198,10 +198,10 @@ Result PrivateNetworkAccessChecker::CheckInternal(
     return Result::kAllowedMissingClientSecurityState;
   }
 
-  mojom::LocalNetworkRequestPolicy policy =
-      client_security_state_->local_network_request_policy;
+  mojom::PrivateNetworkRequestPolicy policy =
+      client_security_state_->private_network_request_policy;
 
-  if (policy == mojom::LocalNetworkRequestPolicy::kAllow) {
+  if (policy == mojom::PrivateNetworkRequestPolicy::kAllow) {
     return Result::kAllowedByPolicyAllow;
   }
 
@@ -210,7 +210,7 @@ Result PrivateNetworkAccessChecker::CheckInternal(
       return Result::kAllowedByTargetIpAddressSpace;
     }
 
-    if (policy == mojom::LocalNetworkRequestPolicy::kPreflightWarn) {
+    if (policy == mojom::PrivateNetworkRequestPolicy::kPreflightWarn) {
       return Result::kAllowedByPolicyPreflightWarn;
     }
 
@@ -233,12 +233,12 @@ Result PrivateNetworkAccessChecker::CheckInternal(
     // for this request. Further checks should not be run, otherwise we might
     // return `kBlockedByPolicyPreflightWarn` and trigger a new preflight to be
     // sent, thus causing https://crbug.com/1279376 all over again.
-    if (policy == mojom::LocalNetworkRequestPolicy::kPreflightWarn) {
+    if (policy == mojom::PrivateNetworkRequestPolicy::kPreflightWarn) {
       return Result::kAllowedByPolicyPreflightWarn;
     }
 
     // See also https://crbug.com/1334689.
-    if (policy == mojom::LocalNetworkRequestPolicy::kWarn) {
+    if (policy == mojom::PrivateNetworkRequestPolicy::kWarn) {
       return Result::kAllowedByPolicyWarn;
     }
 
@@ -251,7 +251,7 @@ Result PrivateNetworkAccessChecker::CheckInternal(
   }
 
   // We use a switch statement to force this code to be amended when values are
-  // added to the `LocalNetworkRequestPolicy` enum.
+  // added to the `PrivateNetworkRequestPolicy` enum.
   switch (policy) {
     case Policy::kAllow:
       NOTREACHED();  // Should have been handled by the if statement above.

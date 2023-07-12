@@ -3330,21 +3330,21 @@ void NetworkHandler::OnSubresourceWebBundleInnerResponseError(
 }
 
 String NetworkHandler::BuildPrivateNetworkRequestPolicy(
-    network::mojom::LocalNetworkRequestPolicy policy) {
+    network::mojom::PrivateNetworkRequestPolicy policy) {
   switch (policy) {
-    case network::mojom::LocalNetworkRequestPolicy::kAllow:
+    case network::mojom::PrivateNetworkRequestPolicy::kAllow:
       return protocol::Network::PrivateNetworkRequestPolicyEnum::Allow;
-    case network::mojom::LocalNetworkRequestPolicy::kBlock:
+    case network::mojom::PrivateNetworkRequestPolicy::kBlock:
       // TODO(https://crbug.com/1141824): Fix this.
       return protocol::Network::PrivateNetworkRequestPolicyEnum::
           BlockFromInsecureToMorePrivate;
-    case network::mojom::LocalNetworkRequestPolicy::kWarn:
+    case network::mojom::PrivateNetworkRequestPolicy::kWarn:
       // TODO(https://crbug.com/1141824): Fix this.
       return protocol::Network::PrivateNetworkRequestPolicyEnum::
           WarnFromInsecureToMorePrivate;
-    case network::mojom::LocalNetworkRequestPolicy::kPreflightBlock:
+    case network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock:
       return protocol::Network::PrivateNetworkRequestPolicyEnum::PreflightBlock;
-    case network::mojom::LocalNetworkRequestPolicy::kPreflightWarn:
+    case network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn:
       return protocol::Network::PrivateNetworkRequestPolicyEnum::PreflightWarn;
   }
 }
@@ -3372,8 +3372,8 @@ NetworkHandler::MaybeBuildClientSecurityState(
     return {};
   }
   return protocol::Network::ClientSecurityState::Create()
-      .SetPrivateNetworkRequestPolicy(
-          BuildPrivateNetworkRequestPolicy(state->local_network_request_policy))
+      .SetPrivateNetworkRequestPolicy(BuildPrivateNetworkRequestPolicy(
+          state->private_network_request_policy))
       .SetInitiatorIPAddressSpace(BuildIpAddressSpace(state->ip_address_space))
       .SetInitiatorIsSecureContext(state->is_web_secure_context)
       .Build();
