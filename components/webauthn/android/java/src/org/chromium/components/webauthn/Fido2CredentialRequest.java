@@ -309,8 +309,10 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             mAppIdExtensionUsed = true;
         }
 
-        // Payments should still go through Google Play Services.
-        if (payment == null && isCredManEnabled()) {
+        // Payments should still go through Google Play Services. Also, if the request has
+        // pre-hashed PRF inputs then we cannot represent that in JSON and so can only forward to
+        // Play Services.
+        if (payment == null && !options.extensions.prfInputsHashed && isCredManEnabled()) {
             if (options.isConditional) {
                 prefetchCredentialsViaCredMan(options, origin, /*maybeClientDataHash=*/null);
             } else if (hasAllowCredentials && mPlayServicesAvailable) {

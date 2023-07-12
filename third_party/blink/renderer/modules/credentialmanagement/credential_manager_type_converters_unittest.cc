@@ -31,13 +31,6 @@ using blink::mojom::blink::RpContext;
 
 const uint8_t kSample[] = {1, 2, 3, 4, 5, 6};
 
-// This constant is the result of hashing the prefix "WebAuthn\x00" with
-// kSample: sha256("WebAuthn\x00\x01\x02\x03\x04\x05\x06")
-const uint8_t kSamplePrfHashed[] = {
-    0x36, 0x43, 0xbb, 0x85, 0x29, 0xcd, 0xab, 0x07, 0xe3, 0x2d, 0x2e,
-    0x0d, 0xb9, 0xb7, 0x60, 0x56, 0x39, 0x9a, 0x58, 0x29, 0x02, 0x9c,
-    0xfa, 0x5c, 0xb8, 0x1c, 0x6d, 0x09, 0x30, 0x8c, 0x77, 0x29};
-
 static blink::V8UnionArrayBufferOrArrayBufferView* arrayBufferOrView(
     const uint8_t* data,
     size_t size);
@@ -220,7 +213,7 @@ TEST(CredentialManagerTypeConvertersTest,
       ConvertTo<blink::mojom::blink::AuthenticationExtensionsClientInputsPtr>(
           *blink_type);
 
-  auto sample_vector = vectorOf(kSamplePrfHashed, std::size(kSamplePrfHashed));
+  auto sample_vector = vectorOf(kSample, std::size(kSample));
   Vector<blink::mojom::blink::PRFValuesPtr> expected_prf_values;
   expected_prf_values.emplace_back(blink::mojom::blink::PRFValues::New(
       absl::optional<Vector<uint8_t>>(), sample_vector,

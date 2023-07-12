@@ -53,6 +53,7 @@
 #include "net/der/parse_values.h"
 #include "net/der/parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/include/openssl/sha.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator.h"
@@ -381,6 +382,63 @@ absl::optional<device::CredProtectRequest> ProtectionPolicyToCredProtect(
     case blink::mojom::ProtectionPolicy::UV_REQUIRED:
       return device::CredProtectRequest::kUVRequired;
   }
+}
+
+// HashPRFValue hashes a PRF evaluation point with a fixed prefix in order to
+// separate the set of points that a website can evaluate. See
+// https://w3c.github.io/webauthn/#prf-extension.
+std::array<uint8_t, 32> HashPRFValue(base::span<const uint8_t> value) {
+  constexpr char kPrefix[] = "WebAuthn PRF";
+
+  SHA256_CTX ctx;
+  SHA256_Init(&ctx);
+  // This deliberately includes the terminating NUL.
+  SHA256_Update(&ctx, kPrefix, sizeof(kPrefix));
+  SHA256_Update(&ctx, value.data(), value.size());
+
+  std::array<uint8_t, 32> digest;
+  SHA256_Final(digest.data(), &ctx);
+  return digest;
+}
+
+absl::optional<std::vector<device::PRFInput>> ParsePRFInputs(
+    base::span<const blink::mojom::PRFValuesPtr> inputs) {
+  std::vector<device::PRFInput> ret;
+  bool is_first = true;
+  absl::optional<std::vector<uint8_t>> last_id;
+
+  // TODO(agl): should match the credential IDs from the allow list, which
+  // will also limit the size to the size of the allow list.
+  for (const auto& prf_input_from_renderer : inputs) {
+    device::PRFInput prf_input;
+
+    // This statement enforces invariants that should be established by the
+    // renderer.
+    if (
+        // Only the first element in the vector may be the default.
+        (!is_first && !prf_input_from_renderer->id) ||
+        // The PRF inputs must be sorted by credential ID to show that there
+        // are no duplicates.
+        (last_id.has_value() && prf_input_from_renderer->id.has_value() &&
+         *last_id >= *prf_input_from_renderer->id)) {
+      return absl::nullopt;
+    }
+    is_first = false;
+    last_id = prf_input_from_renderer->id;
+
+    if (prf_input_from_renderer->id) {
+      prf_input.credential_id = std::move(*prf_input_from_renderer->id);
+    }
+
+    prf_input.salt1 = HashPRFValue(prf_input_from_renderer->first);
+    if (prf_input_from_renderer->second) {
+      prf_input.salt2 = HashPRFValue(*prf_input_from_renderer->second);
+    }
+
+    ret.emplace_back(std::move(prf_input));
+  }
+
+  return ret;
 }
 
 }  // namespace
@@ -1145,52 +1203,19 @@ void AuthenticatorCommonImpl::GetAssertion(
   if (options->extensions->prf) {
     req_state_->requested_extensions.insert(RequestExtension::kPRF);
 
-    bool is_first = true;
-    absl::optional<std::vector<uint8_t>> last_id;
-    // TODO(agl): should match the credential IDs from the allow list, which
-    // will also limit the size to the size of the allow list.
-    for (const auto& prf_input_from_renderer :
-         options->extensions->prf_inputs) {
-      device::PRFInput prf_input;
+    absl::optional<std::vector<device::PRFInput>> prf_inputs =
+        ParsePRFInputs(options->extensions->prf_inputs);
 
-      // This statement enforces invariants that should be established by the
-      // renderer.
-      if (
-          // Only the first element in the vector may be the default.
-          (!is_first && !prf_input_from_renderer->id) ||
-          // The PRF inputs must be sorted by credential ID to show that there
-          // are no duplicates.
-          (last_id.has_value() && prf_input_from_renderer->id.has_value() &&
-           *last_id >= *prf_input_from_renderer->id) ||
-          // The lengths are specified in authenticator.mojom, so hopefully Mojo
-          // enforces them too.
-          prf_input_from_renderer->first.size() != prf_input.salt1.size() ||
-          (prf_input_from_renderer->second &&
-           prf_input_from_renderer->second->size() != prf_input.salt1.size())) {
-        NOTREACHED();
-
-        CompleteGetAssertionRequest(
-            blink::mojom::AuthenticatorStatus::UNKNOWN_ERROR);
-        return;
-      }
-      is_first = false;
-      last_id = prf_input_from_renderer->id;
-
-      if (prf_input_from_renderer->id) {
-        prf_input.credential_id = std::move(*prf_input_from_renderer->id);
-      }
-
-      memcpy(prf_input.salt1.data(), prf_input_from_renderer->first.data(),
-             prf_input.salt1.size());
-      if (prf_input_from_renderer->second) {
-        prf_input.salt2.emplace();
-        memcpy(prf_input.salt2->data(), prf_input_from_renderer->second->data(),
-               prf_input.salt2->size());
-      }
-
-      req_state_->ctap_get_assertion_options->prf_inputs.emplace_back(
-          std::move(prf_input));
+    // This should never happen for inputs from the renderer, which should sort
+    // the values itself. Additionally, `prf_inputs_hashed` is for hybrid
+    // authenticator support on Android.
+    if (!prf_inputs || options->extensions->prf_inputs_hashed) {
+      mojo::ReportBadMessage("invalid PRF inputs");
+      CompleteGetAssertionRequest(
+          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+      return;
     }
+    req_state_->ctap_get_assertion_options->prf_inputs = std::move(*prf_inputs);
   }
 
   if (options->extensions->device_public_key) {

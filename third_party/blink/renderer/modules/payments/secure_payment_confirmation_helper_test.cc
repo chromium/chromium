@@ -26,13 +26,6 @@ namespace {
 
 static const uint8_t kPrfInputData[] = {1, 2, 3, 4, 5, 6};
 
-// Expected pseudo-random function (prf) output, sha256sum(
-// "WebAuthn PRF\0\1\2\3\4\5\6").
-static const uint8_t kPrfOutputData[] = {
-    0x36, 0x43, 0xbb, 0x85, 0x29, 0xcd, 0xab, 0x07, 0xe3, 0x2d, 0x2e,
-    0x0d, 0xb9, 0xb7, 0x60, 0x56, 0x39, 0x9a, 0x58, 0x29, 0x02, 0x9c,
-    0xfa, 0x5c, 0xb8, 0x1c, 0x6d, 0x09, 0x30, 0x8c, 0x77, 0x29};
-
 WTF::Vector<uint8_t> CreateVector(const uint8_t* buffer,
                                   const unsigned length) {
   WTF::Vector<uint8_t> vector;
@@ -398,10 +391,9 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_Extensions) {
           scope.GetExceptionState());
 
   ASSERT_FALSE(parsed_request->extensions.is_null());
-  WTF::Vector<uint8_t> prf_output_vector =
-      CreateVector(kPrfOutputData, sizeof(kPrfOutputData));
-  ASSERT_EQ(parsed_request->extensions->prf_inputs[0]->first,
-            prf_output_vector);
+  WTF::Vector<uint8_t> prf_expected =
+      CreateVector(kPrfInputData, sizeof(kPrfInputData));
+  ASSERT_EQ(parsed_request->extensions->prf_inputs[0]->first, prf_expected);
 }
 
 }  // namespace blink

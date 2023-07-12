@@ -104,24 +104,6 @@ PublicKeyCredentialParametersPtr CreatePublicKeyCredentialParameter(int alg) {
   return mojo_parameter;
 }
 
-// HashPRFValue hashes a PRF evaluation point with a fixed prefix in order to
-// separate the set of points that a website can evaluate. See
-// https://w3c.github.io/webauthn/#prf-extension.
-Vector<uint8_t> HashPRFValue(const blink::DOMArrayPiece value) {
-  constexpr char kPrefix[] = "WebAuthn PRF";
-
-  SHA256_CTX ctx;
-  SHA256_Init(&ctx);
-  // This deliberately includes the terminating NUL.
-  SHA256_Update(&ctx, kPrefix, sizeof(kPrefix));
-  SHA256_Update(&ctx, value.Data(), value.ByteLength());
-
-  uint8_t digest[SHA256_DIGEST_LENGTH];
-  SHA256_Final(digest, &ctx);
-
-  return Vector<uint8_t>(base::span(digest));
-}
-
 // SortPRFValuesByCredentialId is a "less than" function that puts the single,
 // optional element without a credential ID at the beginning and otherwise
 // lexicographically sorts by credential ID. The browser requires that PRF
@@ -845,9 +827,9 @@ PRFValuesPtr
 TypeConverter<PRFValuesPtr, blink::AuthenticationExtensionsPRFValues>::Convert(
     const blink::AuthenticationExtensionsPRFValues& values) {
   PRFValuesPtr ret = PRFValues::New();
-  ret->first = HashPRFValue(values.first());
+  ret->first = ConvertTo<Vector<uint8_t>>(values.first());
   if (values.hasSecond()) {
-    ret->second = HashPRFValue(values.second());
+    ret->second = ConvertTo<Vector<uint8_t>>(values.second());
   }
   return ret;
 }

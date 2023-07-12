@@ -1004,6 +1004,17 @@ bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
   return true;
 }
 
+const char* validatePRFInputs(
+    const blink::AuthenticationExtensionsPRFValues& values) {
+  constexpr size_t kMaxInputSize = 256;
+  if (DOMArrayPiece(values.first()).ByteLength() > kMaxInputSize ||
+      (values.hasSecond() &&
+       DOMArrayPiece(values.second()).ByteLength() > kMaxInputSize)) {
+    return "'prf' extension contains excessively large input";
+  }
+  return nullptr;
+}
+
 const char* validateGetPublicKeyCredentialPRFExtension(
     const AuthenticationExtensionsPRFInputs& prf,
     const HeapVector<Member<PublicKeyCredentialDescriptor>>&
@@ -1019,6 +1030,13 @@ const char* validateGetPublicKeyCredentialPRFExtension(
     return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
   };
   std::sort(cred_ids.begin(), cred_ids.end(), compare);
+
+  if (prf.hasEval()) {
+    const char* error = validatePRFInputs(*prf.eval());
+    if (error != nullptr) {
+      return error;
+    }
+  }
 
   if (prf.hasEvalByCredential()) {
     for (const auto& pair : prf.evalByCredential()) {
@@ -1037,6 +1055,10 @@ const char* validateGetPublicKeyCredentialPRFExtension(
                               compare)) {
         return "'prf' extension contains 'evalByCredential' key that doesn't "
                "match any in allowedCredentials";
+      }
+      const char* error = validatePRFInputs(*pair.second);
+      if (error != nullptr) {
+        return error;
       }
     }
   }

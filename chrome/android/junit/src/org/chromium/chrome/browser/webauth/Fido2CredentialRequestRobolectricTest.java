@@ -395,6 +395,25 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
+    public void testGetAssertion_prfInputsHashed_goesToPlayServices() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        final byte[] clientDataHash = new byte[] {1, 2, 3, 4};
+        mRequestOptions.extensions.prfInputsHashed = true;
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, /*frameHost=*/null,
+                clientDataHash, mOrigin, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
+        assertThat(credManRequest).isNull();
+        assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
+        assertThat(mFido2ApiCallHelper.mClientDataHash).isEqualTo(clientDataHash);
+    }
+
+    @Test
+    @SmallTest
     public void testGetAssertion_credManNoCredentials_fallbackToPlayServices() {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);

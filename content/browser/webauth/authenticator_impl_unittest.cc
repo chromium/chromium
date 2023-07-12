@@ -9839,13 +9839,24 @@ TEST_F(AuthenticatorCableV2AuthenticatorTest, PRFMakeCredential) {
   EXPECT_TRUE(result.response->prf);
 }
 
+static std::vector<uint8_t> HashPRFInput(base::span<const uint8_t> input) {
+  std::vector<uint8_t> hash_input;
+  constexpr char kPrefix[] = "WebAuthn PRF";
+  hash_input.insert(hash_input.end(), std::begin(kPrefix), std::end(kPrefix));
+  hash_input.insert(hash_input.end(), std::begin(input), std::end(input));
+  return device::fido_parsing_utils::Materialize(
+      crypto::SHA256Hash(hash_input));
+}
+
 static std::tuple<PublicKeyCredentialRequestOptionsPtr,
                   std::vector<uint8_t>,
                   std::vector<uint8_t>>
 BuildPRFGetAssertion(device::VirtualCtap2Device& virtual_device,
                      bool use_eval_by_credential) {
-  const std::vector<uint8_t> salt1(32, 1);
-  const std::vector<uint8_t> salt2(32, 2);
+  const std::vector<uint8_t> input1(32, 1);
+  const std::vector<uint8_t> input2(32, 2);
+  const std::vector<uint8_t> salt1 = HashPRFInput(input1);
+  const std::vector<uint8_t> salt2 = HashPRFInput(input2);
   const std::array<uint8_t, 32> key1 = {1};
   const std::array<uint8_t, 32> key2 = {2};
   const std::array<uint8_t, 32> output1 = EvaluateHMAC(key2, salt1);
@@ -9860,8 +9871,8 @@ BuildPRFGetAssertion(device::VirtualCtap2Device& virtual_device,
 
   std::vector<blink::mojom::PRFValuesPtr> prf_inputs;
   auto prf_value = blink::mojom::PRFValues::New();
-  prf_value->first = salt1;
-  prf_value->second = salt2;
+  prf_value->first = input1;
+  prf_value->second = input2;
   if (use_eval_by_credential) {
     prf_value->id = options->allow_credentials[0].id;
   }

@@ -35,6 +35,8 @@ import org.chromium.blink.mojom.UserVerificationRequirement;
 import org.chromium.blink.mojom.UvmEntry;
 import org.chromium.mojo_base.mojom.TimeDelta;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -492,14 +494,14 @@ public final class Fido2Api {
             parcel.writeInt(2 * options.extensions.prfInputs.length);
             for (PrfValues input : options.extensions.prfInputs) {
                 parcel.writeByteArray(input.id);
-                if (input.second == null) {
-                    parcel.writeByteArray(input.first);
+                if (options.extensions.prfInputsHashed) {
+                    if (input.second == null) {
+                        parcel.writeByteArray(input.first);
+                    } else {
+                        parcel.writeByteArray(concat(input.first, input.second));
+                    }
                 } else {
-                    byte[] values = new byte[input.first.length + input.second.length];
-                    System.arraycopy(input.first, 0, values, 0, input.first.length);
-                    System.arraycopy(
-                            input.second, 0, values, input.first.length, input.second.length);
-                    parcel.writeByteArray(values);
+                    parcel.writeByteArray(hashPrfInputs(input));
                 }
             }
             writeLength(d, parcel);
@@ -518,6 +520,50 @@ public final class Fido2Api {
         }
 
         writeLength(a, parcel);
+    }
+
+    /**
+     * Hash a PRF input.
+     *
+     * The WebAuthn spec says (https://w3c.github.io/webauthn/#prf-extension)
+     * that PRF inputs are hashed with a prefix to provide domain separation.
+     * This function performs that transform.
+     */
+    private static byte[] hashPrfInput(MessageDigest h, byte[] input) {
+        h.reset();
+        h.update("WebAuthn PRF\u0000".getBytes(StandardCharsets.UTF_8));
+        return h.digest(input);
+    }
+
+    /**
+     * Convert PRF inputs from renderer to Play Services form.
+     *
+     * The WebAuthn spec says (https://w3c.github.io/webauthn/#prf-extension)
+     * that PRF inputs are hashed with a prefix to provide domain separation.
+     * Additionally, Play Services wants the inputs concatenated. This function
+     * takes care of that.
+     */
+    private static byte[] hashPrfInputs(PrfValues input) {
+        MessageDigest hash;
+        try {
+            hash = MessageDigest.getInstance("SHA256");
+        } catch (NoSuchAlgorithmException e) {
+            // It is unreasonable for the runtime not to provide SHA-256.
+            throw new RuntimeException(e);
+        }
+        byte[] first = hashPrfInput(hash, input.first);
+        if (input.second == null) {
+            return first;
+        }
+        byte[] second = hashPrfInput(hash, input.second);
+        return concat(first, second);
+    }
+
+    private static byte[] concat(byte[] a, byte[] b) {
+        byte[] ret = new byte[a.length + b.length];
+        System.arraycopy(a, 0, ret, 0, a.length);
+        System.arraycopy(b, 0, ret, a.length, b.length);
+        return ret;
     }
 
     private static void appendCredentialListToParcel(
