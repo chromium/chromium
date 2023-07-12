@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_APP_SPOTLIGHT_SPOTLIGHT_INTERFACE_H_
 #define IOS_CHROME_APP_SPOTLIGHT_SPOTLIGHT_INTERFACE_H_
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-@class SpotlightLogger;
 @class CSSearchableIndex;
 @class CSSearchableItem;
 
@@ -23,10 +22,7 @@
 + (SpotlightInterface*)defaultInterface;
 
 - (instancetype)initWithSearchableIndex:(CSSearchableIndex*)searchableIndex
-                            maxAttempts:(NSUInteger)maxAttempts
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
+                            maxAttempts:(NSUInteger)maxAttempts;
 
 // Searchable index used internally.
 @property(nonatomic, readonly) CSSearchableIndex* searchableIndex;
