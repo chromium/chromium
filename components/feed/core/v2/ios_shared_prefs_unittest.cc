@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "components/feed/core/common/pref_names.h"
-#include "components/feed/core/v2/types.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
