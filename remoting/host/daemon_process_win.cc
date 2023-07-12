@@ -80,13 +80,13 @@ constexpr wchar_t kLoggingRegistryKeyName[] = L"SOFTWARE\\Chromoting\\logging";
 constexpr wchar_t kLogToFileRegistryValue[] = L"LogToFile";
 constexpr wchar_t kLogToEventLogRegistryValue[] = L"LogToEventLog";
 
+const char* const kCopiedSwitchNames[] = {switches::kV, switches::kVModule};
+
 }  // namespace
 
 namespace remoting {
 
 class WtsTerminalMonitor;
-
-const char* kCopiedSwitchNames[] = {switches::kV, switches::kVModule};
 
 class DaemonProcessWin : public DaemonProcess {
  public:
@@ -269,7 +269,7 @@ void DaemonProcessWin::LaunchNetworkProcess() {
   std::unique_ptr<base::CommandLine> target(new base::CommandLine(host_binary));
   target->AppendSwitchASCII(kProcessTypeSwitchName, kProcessTypeHost);
   target->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                           kCopiedSwitchNames, std::size(kCopiedSwitchNames));
+                           kCopiedSwitchNames);
 
   std::unique_ptr<UnprivilegedProcessDelegate> delegate(
       new UnprivilegedProcessDelegate(io_task_runner(), std::move(target)));

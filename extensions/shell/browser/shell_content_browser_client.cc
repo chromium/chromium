@@ -392,14 +392,14 @@ void ShellContentBrowserClient::AppendRendererSwitches(
       switches::kExtensionProcess,
   };
   command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                                 kSwitchNames, std::size(kSwitchNames));
+                                 kSwitchNames);
 
 #if BUILDFLAG(ENABLE_NACL)
   static const char* const kNaclSwitchNames[] = {
       ::switches::kEnableNaClDebug,
   };
   command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                                 kNaclSwitchNames, std::size(kNaclSwitchNames));
+                                 kNaclSwitchNames);
 #endif  // BUILDFLAG(ENABLE_NACL)
 }
 

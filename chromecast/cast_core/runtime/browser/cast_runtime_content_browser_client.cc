@@ -95,8 +95,8 @@ void CastRuntimeContentBrowserClient::AppendExtraCommandLineSwitches(
       base::CommandLine::ForCurrentProcess();
   if (browser_command_line->HasSwitch(switches::kLogFile) &&
       !command_line->HasSwitch(switches::kLogFile)) {
-    const char* path[1] = {switches::kLogFile};
-    command_line->CopySwitchesFrom(*browser_command_line, path, size_t{1});
+    static const char* const kPath[] = {switches::kLogFile};
+    command_line->CopySwitchesFrom(*browser_command_line, kPath);
   }
 }
 

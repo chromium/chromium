@@ -365,7 +365,7 @@ void AwContentBrowserClient::AppendExtraCommandLineSwitches(
     };
 
     command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                                   kSwitchNames, std::size(kSwitchNames));
+                                   kSwitchNames);
   }
 }
 

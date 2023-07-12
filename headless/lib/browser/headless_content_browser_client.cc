@@ -228,8 +228,7 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
         embedder_support::kOriginTrialDisabledFeatures,
         embedder_support::kOriginTrialPublicKey,
     };
-    command_line->CopySwitchesFrom(old_command_line, kSwitchNames,
-                                   std::size(kSwitchNames));
+    command_line->CopySwitchesFrom(old_command_line, kSwitchNames);
   }
 }
 

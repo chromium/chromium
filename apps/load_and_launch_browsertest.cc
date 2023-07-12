@@ -43,7 +43,7 @@ constexpr char kTestExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 // comment for InProcessBrowserTest::GetCommandLineForRelaunch().
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-const char* kSwitchesToCopy[] = {
+const char* const kSwitchesToCopy[] = {
     sandbox::policy::switches::kNoSandbox,
     switches::kUserDataDir,
 };
@@ -64,8 +64,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 
   const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
   base::CommandLine new_cmdline(cmdline.GetProgram());
-  new_cmdline.CopySwitchesFrom(cmdline, kSwitchesToCopy,
-                               std::size(kSwitchesToCopy));
+  new_cmdline.CopySwitchesFrom(cmdline, kSwitchesToCopy);
 
   base::FilePath app_path = test_data_dir_
       .AppendASCII("platform_apps")
@@ -100,8 +99,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 
   const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
   base::CommandLine new_cmdline(cmdline.GetProgram());
-  new_cmdline.CopySwitchesFrom(cmdline, kSwitchesToCopy,
-                               std::size(kSwitchesToCopy));
+  new_cmdline.CopySwitchesFrom(cmdline, kSwitchesToCopy);
 
   base::FilePath app_path = test_data_dir_
       .AppendASCII("platform_apps")

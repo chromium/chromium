@@ -440,8 +440,7 @@ void CastContentBrowserClient::AppendExtraCommandLineSwitches(
         switches::kForceMediaResolutionHeight,
         switches::kForceMediaResolutionWidth,
         network::switches::kUnsafelyTreatInsecureOriginAsSecure};
-    command_line->CopySwitchesFrom(*browser_command_line, kForwardSwitches,
-                                   std::size(kForwardSwitches));
+    command_line->CopySwitchesFrom(*browser_command_line, kForwardSwitches);
   } else if (process_type == switches::kUtilityProcess) {
     if (browser_command_line->HasSwitch(switches::kAudioOutputChannels)) {
       command_line->AppendSwitchASCII(switches::kAudioOutputChannels,
@@ -462,8 +461,7 @@ void CastContentBrowserClient::AppendExtraCommandLineSwitches(
         switches::kCastInitialScreenWidth,
         switches::kVSyncInterval,
     };
-    command_line->CopySwitchesFrom(*browser_command_line, kForwardSwitches,
-                                   std::size(kForwardSwitches));
+    command_line->CopySwitchesFrom(*browser_command_line, kForwardSwitches);
 
     auto display = display::Screen::GetScreen()->GetPrimaryDisplay();
     gfx::Size res = display.GetSizeInPixel();
