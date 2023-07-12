@@ -3,7 +3,9 @@ URL: https://git.gnome.org/browse/libsecret/
 Version: 0.18
 Revision: commit e8a2b3cd5addd9605de513b8ee0d437c1e82c16c
 Security Critical: Yes
+Shipped: yes
 License: LGPL 2.1
+License File: LICENSE
 
 Description:
 Headers for libsecret library. 
