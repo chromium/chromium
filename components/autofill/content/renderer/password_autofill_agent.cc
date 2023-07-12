@@ -20,6 +20,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -98,6 +99,13 @@ const char kDebugAttributeForFormSignature[] = "form_signature";
 const char kDebugAttributeForFieldSignature[] = "field_signature";
 const char kDebugAttributeForParserAnnotations[] = "pm_parser_annotation";
 const char kDebugAttributeForVisibility[] = "visibility_annotation";
+// Name of HTML attribute that stores the copy of autofill tooltip for
+// debugging.
+constexpr char kDebugAttributeForAutofill[] = "autofill-information";
+
+// HTML attribute that is used as a tooltip if
+// |kAutofillShowTypePredictions| is on.
+constexpr char kHtmlAttributeForAutofillTooltip[] = "title";
 
 // Maps element names to the actual elements to simplify form filling.
 typedef std::map<std::u16string, WebInputElement> FormInputElementMap;
@@ -402,9 +410,10 @@ bool IsCredentialForm(const FormData& form) {
                      });
 }
 
-void AnnotateFieldWithParsingResult(WebDocument doc,
-                                    FieldRendererId renderer_id,
-                                    const std::string& text) {
+void AnnotateFieldWithParsingResult(
+    WebDocument doc,
+    FieldRendererId renderer_id,
+    const std::string& password_managers_annotation) {
   if (renderer_id.is_null())
     return;
   auto element = FindFormControlElementByUniqueRendererId(doc, renderer_id);
@@ -415,7 +424,27 @@ void AnnotateFieldWithParsingResult(WebDocument doc,
   // browser. This means that we should not be in a ScriptForbiddenScope.
   element.SetAttribute(
       WebString::FromASCII(kDebugAttributeForParserAnnotations),
-      WebString::FromASCII(text));
+      WebString::FromASCII(password_managers_annotation));
+
+  if (!base::FeatureList::IsEnabled(
+          features::test::kAutofillShowTypePredictions)) {
+    return;
+  }
+
+  if (!element.HasAttribute(kDebugAttributeForAutofill)) {
+    // No autofill tooltip yet, don't fill anything.
+    return;
+  }
+
+  std::string autofill_tooltip =
+      element.GetAttribute(kDebugAttributeForAutofill).Utf8();
+
+  element.SetAttribute(
+      kHtmlAttributeForAutofillTooltip,
+      WebString::FromUTF8(
+          base::StrCat({element.GetAttribute(kDebugAttributeForAutofill).Utf8(),
+                        "\n", kDebugAttributeForParserAnnotations, ": ",
+                        password_managers_annotation})));
 }
 
 bool HasDocumentWithValidFrame(const WebInputElement& element) {
