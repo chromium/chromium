@@ -16,8 +16,8 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/service/frame_sinks/video_capture/shared_memory_video_frame_pool.h"
@@ -143,11 +143,11 @@ class DesktopCapturerCallback : public DesktopCapturer::Callback {
 
   void OnCaptureResult(DesktopCapturer::Result result,
                        std::unique_ptr<DesktopFrame> frame) override {
-    result_.AddValue(CaptureResult{result, std::move(frame)});
+    result_.SetValue(CaptureResult{result, std::move(frame)});
   }
 
  private:
-  base::test::RepeatingTestFuture<CaptureResult> result_;
+  base::test::TestFuture<CaptureResult> result_;
 };
 
 // Helper class that keeps the ref_ptr to a video frame alive until the Done()

@@ -261,7 +261,7 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   base::WeakPtrFactory<It2MeHostTest> weak_factory_{this};
 };
 
-It2MeHostTest::It2MeHostTest() {}
+It2MeHostTest::It2MeHostTest() = default;
 It2MeHostTest::~It2MeHostTest() = default;
 
 void It2MeHostTest::SetUp() {

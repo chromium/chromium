@@ -6,7 +6,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/repeating_test_future.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/crd_event.pb.h"
 #include "remoting/protocol/transport.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,20 +26,28 @@ constexpr char kSessionId[] = "0123456789/client@example.com";
 constexpr ::ash::reporting::ConnectionType kConnectionType =
     ::ash::reporting::ConnectionType::CRD_CONNECTION_DIRECT;
 
+class HostEventReporterDelegateStub : public HostEventReporterImpl::Delegate {
+ public:
+  HostEventReporterDelegateStub() = default;
+
+  void EnqueueEvent(::ash::reporting::CRDRecord record) override {}
+};
+
 class TestHostEventReporterDelegate : public HostEventReporterImpl::Delegate {
  public:
   TestHostEventReporterDelegate() = default;
 
   void EnqueueEvent(::ash::reporting::CRDRecord record) override {
-    records_.AddValue(std::move(record));
+    records_.SetValue(std::move(record));
   }
 
-  ::ash::reporting::CRDRecord WaitForEvent() { return records_.Take(); }
+  bool WaitForEvent() { return records_.Wait(); }
+  ::ash::reporting::CRDRecord TakeEvent() { return records_.Take(); }
 
-  bool IsEmpty() const { return records_.IsEmpty(); }
+  bool IsEmpty() const { return !records_.IsReady(); }
 
  private:
-  base::test::RepeatingTestFuture<::ash::reporting::CRDRecord> records_;
+  base::test::TestFuture<::ash::reporting::CRDRecord> records_;
 };
 
 class HostEventReporterTest : public ::testing::Test {
@@ -48,46 +57,64 @@ class HostEventReporterTest : public ::testing::Test {
         monitor_(new HostStatusMonitor()),
         reporter_(monitor_, base::WrapUnique(delegate_.get())) {}
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
   const raw_ptr<TestHostEventReporterDelegate, ExperimentalAsh> delegate_;
   scoped_refptr<HostStatusMonitor> monitor_;
   HostEventReporterImpl reporter_;
 };
 
 TEST_F(HostEventReporterTest, ReportConnectedAndDisconnected) {
-  reporter_.OnHostStarted(kHostUser);
-  reporter_.OnClientConnected(kHostIp);
+  {
+    reporter_.OnHostStarted(kHostUser);
 
-  protocol::TransportRoute route;
-  route.type = protocol::TransportRoute::RouteType::DIRECT;
-  route.remote_address = net::IPEndPoint(net::IPAddress(99, 88, 77, 66), 4321);
-  route.local_address = net::IPEndPoint(net::IPAddress(127, 0, 0, 1), 1234);
+    ASSERT_TRUE(delegate_->WaitForEvent());
+    auto received = delegate_->TakeEvent();
+    EXPECT_THAT(received.host_user().user_email(), StrEq(kHostUser));
+    ASSERT_TRUE(received.has_started());
+  }
 
-  reporter_.OnClientRouteChange(kSessionId, "", route);
-  reporter_.OnClientDisconnected(kSessionId);
-  reporter_.OnHostShutdown();
+  {
+    reporter_.OnClientConnected(kHostIp);
 
-  auto received = delegate_->WaitForEvent();
-  EXPECT_THAT(received.host_user().user_email(), StrEq(kHostUser));
-  ASSERT_TRUE(received.has_started());
+    protocol::TransportRoute route;
+    route.type = protocol::TransportRoute::RouteType::DIRECT;
+    route.remote_address =
+        net::IPEndPoint(net::IPAddress(99, 88, 77, 66), 4321);
+    route.local_address = net::IPEndPoint(net::IPAddress(127, 0, 0, 1), 1234);
 
-  received = delegate_->WaitForEvent();
-  EXPECT_THAT(received.host_user().user_email(), StrEq(kHostUser));
-  ASSERT_TRUE(received.has_connected());
-  EXPECT_THAT(received.connected().host_ip(), StrEq(kHostIp));
-  EXPECT_THAT(received.connected().client_ip(), StrEq(kClientIp));
-  EXPECT_THAT(received.connected().session_id(), StrEq(kSessionId));
-  EXPECT_THAT(received.connected().connection_type(), Eq(kConnectionType));
+    reporter_.OnClientRouteChange(kSessionId, "", route);
 
-  received = delegate_->WaitForEvent();
-  EXPECT_THAT(received.host_user().user_email(), StrEq(kHostUser));
-  ASSERT_TRUE(received.has_disconnected());
-  EXPECT_THAT(received.disconnected().host_ip(), StrEq(kHostIp));
-  EXPECT_THAT(received.disconnected().client_ip(), StrEq(kClientIp));
-  EXPECT_THAT(received.disconnected().session_id(), StrEq(kSessionId));
+    ASSERT_TRUE(delegate_->WaitForEvent());
+    auto received = delegate_->TakeEvent();
+    EXPECT_THAT(received.host_user().user_email(), StrEq(kHostUser));
+    ASSERT_TRUE(received.has_connected());
+    EXPECT_THAT(received.connected().host_ip(), StrEq(kHostIp));
+    EXPECT_THAT(received.connected().client_ip(), StrEq(kClientIp));
+    EXPECT_THAT(received.connected().session_id(), StrEq(kSessionId));
+    EXPECT_THAT(received.connected().connection_type(), Eq(kConnectionType));
+  }
 
-  received = delegate_->WaitForEvent();
-  EXPECT_THAT(received.host_user().user_email(), StrEq(kHostUser));
-  ASSERT_TRUE(received.has_ended());
+  {
+    reporter_.OnClientDisconnected(kSessionId);
+
+    ASSERT_TRUE(delegate_->WaitForEvent());
+    auto received = delegate_->TakeEvent();
+    EXPECT_THAT(received.host_user().user_email(), StrEq(kHostUser));
+    ASSERT_TRUE(received.has_disconnected());
+    EXPECT_THAT(received.disconnected().host_ip(), StrEq(kHostIp));
+    EXPECT_THAT(received.disconnected().client_ip(), StrEq(kClientIp));
+    EXPECT_THAT(received.disconnected().session_id(), StrEq(kSessionId));
+  }
+
+  {
+    reporter_.OnHostShutdown();
+
+    ASSERT_TRUE(delegate_->WaitForEvent());
+    auto received = delegate_->TakeEvent();
+    EXPECT_THAT(received.host_user().user_email(), StrEq(kHostUser));
+    ASSERT_TRUE(received.has_ended());
+  }
 
   EXPECT_TRUE(delegate_->IsEmpty());
 }
@@ -98,7 +125,7 @@ TEST_F(HostEventReporterTest, ReportConnectedAndDisconnected) {
 std::unique_ptr<HostEventReporter> HostEventReporter::Create(
     scoped_refptr<HostStatusMonitor> monitor) {
   return std::make_unique<HostEventReporterImpl>(
-      monitor, std::make_unique<TestHostEventReporterDelegate>());
+      monitor, std::make_unique<HostEventReporterDelegateStub>());
 }
 
 }  // namespace remoting
