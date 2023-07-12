@@ -305,7 +305,9 @@ GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image) {
       (image->format() == VK_FORMAT_R8G8B8A8_UNORM ||
        image->format() == VK_FORMAT_R8G8B8_UNORM ||
        image->format() == VK_FORMAT_B8G8R8A8_UNORM ||
-       image->format() == VK_FORMAT_B8G8R8_UNORM)) {
+       image->format() == VK_FORMAT_B8G8R8_UNORM ||
+       image->format() == VK_FORMAT_R8_UNORM ||
+       image->format() == VK_FORMAT_R8G8_UNORM)) {
     image_info.fImageTiling = VK_IMAGE_TILING_OPTIMAL;
   } else {
     image_info.fImageTiling = image->image_tiling();
