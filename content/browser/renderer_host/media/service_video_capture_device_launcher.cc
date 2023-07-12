@@ -151,6 +151,13 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
       params.requested_format.pixel_format == media::PIXEL_FORMAT_NV12) {
     new_params.buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
   }
+#elif BUILDFLAG(IS_MAC)
+  // For mac(https://crbug.com/1175142), zero-copy is always enabled unless the
+  // user explicitly asks to disable it.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableVideoCaptureUseGpuMemoryBuffer)) {
+    new_params.buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
+  }
 #else
   if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
     new_params.buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;

@@ -17,6 +17,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "media/base/media_switches.h"
+#include "media/capture/capture_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -87,6 +88,8 @@ class WebRtcVideoCaptureSharedDeviceBrowserTest : public ContentBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
+    command_line->AppendSwitch(
+        switches::kDisableVideoCaptureUseGpuMemoryBuffer);
   }
 
   void SetUp() override {
