@@ -5,30 +5,32 @@
 #include <cstdint>
 
 #include "base/json/json_reader.h"
-#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/frame_test_utils.h"
-#include "net/base/features.h"
-#include "net/cookies/canonical_cookie.h"
-#include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace policy {
 namespace {
@@ -41,21 +43,6 @@ const char* kHostA = "a.test";
 const char* kHostB = "b.test";
 const char* kHostC = "c.test";
 const char* kHostD = "d.test";
-const char* kSamePartyLaxCookieName = "sameparty_lax_cookie";
-const char* kSamePartyNoneCookieName = "sameparty_none_cookie";
-const char* kSamePartyUnspecifiedCookieName = "sameparty_unspecified_cookie";
-const std::string kSetSamePartyCookiesURL = base::StrCat({
-    "/set-cookie?",
-    kSamePartyLaxCookieName,
-    "=1;SameParty;Secure;SameSite=Lax&",
-    kSamePartyNoneCookieName,
-    "=1;SameParty;Secure;SameSite=None&",
-    kSamePartyUnspecifiedCookieName,
-    "=1;SameParty;Secure",
-});
-const std::vector<std::string> kAllCookies = {kSamePartyLaxCookieName,
-                                              kSamePartyNoneCookieName,
-                                              kSamePartyUnspecifiedCookieName};
 
 class EnabledPolicyBrowsertest
     : public PolicyTest,
@@ -63,14 +50,23 @@ class EnabledPolicyBrowsertest
  public:
   EnabledPolicyBrowsertest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        blink::features::kStorageAccessAPI};
+    std::vector<base::test::FeatureRef> disabled_features;
     if (IsFeatureEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kFirstPartySets,
-           net::features::kSamePartyAttributeEnabled},
-          {});
+      enabled_features.emplace_back(features::kFirstPartySets);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kFirstPartySets);
+      disabled_features.emplace_back(features::kFirstPartySets);
     }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void SetBlockThirdPartyCookies(bool value) {
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            value ? content_settings::CookieControlsMode::kBlockThirdParty
+                  : content_settings::CookieControlsMode::kOff));
   }
 
   void SetUpOnMainThread() override {
@@ -80,11 +76,22 @@ class EnabledPolicyBrowsertest
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
+
+    permissions::PermissionRequestManager* manager =
+        permissions::PermissionRequestManager::FromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents());
+    prompt_factory_ =
+        std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+    prompt_factory_->set_response_type(
+        permissions::PermissionRequestManager::DISMISS);
+
+    SetBlockThirdPartyCookies(true);
   }
+
+  void TearDownOnMainThread() override { prompt_factory_.reset(); }
 
   void SetUpInProcessBrowserTestFixture() override {
     PolicyTest::SetUpInProcessBrowserTestFixture();
-
     if (absl::optional<std::string> policy = GetOverridesPolicy();
         policy.has_value()) {
       SetPolicyValue(policy::key::kFirstPartySetsOverrides,
@@ -112,6 +119,16 @@ class EnabledPolicyBrowsertest
     }
   }
 
+  content::RenderFrameHost* GetPrimaryMainFrame() {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    return web_contents->GetPrimaryMainFrame();
+  }
+
+  content::RenderFrameHost* GetFrame() {
+    return ChildFrameAt(GetPrimaryMainFrame(), 0);
+  }
+
  protected:
   virtual absl::optional<std::string> GetOverridesPolicy() {
     return absl::nullopt;
@@ -130,19 +147,23 @@ class EnabledPolicyBrowsertest
     return IsFeatureEnabled() && GetPrefState() != PrefState::kDisabled;
   }
 
+  void NavigateToPageWithFrame(const std::string& host) {
+    GURL main_url(https_server_.GetURL(host, "/iframe.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  }
+
+  void NavigateFrameTo(const GURL& url) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", url));
+  }
+
   bool AreSitesInSameFirstPartySet(const std::string& first_host,
                                    const std::string& second_host) {
-    content::WebContents* web_contents =
-        chrome_test_utils::GetActiveWebContents(this);
-    std::vector<net::CanonicalCookie> cookies =
-        ArrangeFramesAndGetCanonicalCookiesForLeaf(
-            web_contents, &https_server_,
-            base::StringPrintf("%s(%%s)", first_host.c_str()),
-            https_server_.GetURL(second_host, kSetSamePartyCookiesURL));
-    content::DeleteCookies(web_contents->GetBrowserContext(),
-                           network::mojom::CookieDeletionFilter());
-    return testing::Value(
-        cookies, UnorderedPointwise(net::CanonicalCookieNameIs(), kAllCookies));
+    NavigateToPageWithFrame(first_host);
+    NavigateFrameTo(https_server_.GetURL(second_host, "/empty.html"));
+
+    return content::ExecJs(GetFrame(), "document.requestStorageAccess()");
   }
 
   bool IsFeatureEnabled() { return std::get<0>(GetParam()); }
@@ -157,6 +178,7 @@ class EnabledPolicyBrowsertest
                   POLICY_SOURCE_ENTERPRISE_DEFAULT, std::move(value), nullptr);
   }
 
+  std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
   net::test_server::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
   PolicyMap policies_;
@@ -172,6 +194,8 @@ IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest, ToggleFeature_Memberships) {
             AreSitesInSameFirstPartySet(kHostA, kHostB));
 
   SetEnabledPolicyState(!pref_initially_enabled);
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->ClearSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
 
   EXPECT_EQ(feature_enabled && !pref_initially_enabled,
             AreSitesInSameFirstPartySet(kHostA, kHostC));
@@ -181,9 +205,10 @@ IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest, ToggleFeature_Memberships) {
 
 IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest, ToggleFeature_NonMemberships) {
   EXPECT_FALSE(AreSitesInSameFirstPartySet(kHostD, kHostA));
-
   const bool pref_initially_enabled = GetPrefState() != PrefState::kDisabled;
   SetEnabledPolicyState(!pref_initially_enabled);
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->ClearSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
 
   EXPECT_FALSE(AreSitesInSameFirstPartySet(kHostD, kHostA));
 }
