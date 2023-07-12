@@ -93,7 +93,7 @@ import java.util.List;
 @Features.EnableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.BOOKMARKS_REFRESH})
 @Features.DisableFeatures({ChromeFeatureList.SHOPPING_LIST})
 public class TabbedAppMenuPropertiesDelegateUnitTest {
-    // Costants defining flags that determines multi-window menu items visibility.
+    // Constants defining flags that determines multi-window menu items visibility.
     private static final boolean TAB_M = true; // multiple tabs
     private static final boolean TAB_S = false;
     private static final boolean WIN_M = true; // in multi-window mode
