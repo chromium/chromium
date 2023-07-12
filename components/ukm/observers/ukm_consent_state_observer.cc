@@ -109,7 +109,7 @@ UkmConsentStateObserver::ProfileState UkmConsentStateObserver::GetProfileState(
     state.SetConsentType(APPS);
   }
 #else
-  // This separation isn't actually needed for non ChromeOs devices. But for
+  // This separation isn't actually needed for non-ChromeOS devices. But for
   // clarity it is added.
   if (msbb_consent && CanUploadUkmForType(sync_service, syncer::ModelType::APPS,
                                           msbb_consent)) {
@@ -205,7 +205,7 @@ void UkmConsentStateObserver::UpdateProfileState(
   ProfileState state = GetProfileState(sync, consent_helper);
 
   // Trigger a total purge of all local UKM data if the current state no longer
-  // allows tracking UKM.
+  // allows recording of UKMs.
   bool total_purge = previous_state.IsUkmConsented() && !state.IsUkmConsented();
 
   base::UmaHistogramBoolean("UKM.ConsentObserver.Purge", total_purge);

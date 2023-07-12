@@ -79,7 +79,7 @@ class METRICS_EXPORT UkmRecorder {
   virtual ~UkmRecorder();
 
   // Provides access to a global UkmRecorder instance for recording metrics.
-  // This is typically passed to the Record() method of a entry object from
+  // This is typically passed to the Record() method of an entry object from
   // ukm_builders.h.
   // Use TestAutoSetUkmRecorder for capturing data written this way in tests.
   static UkmRecorder* Get();
@@ -88,33 +88,33 @@ class METRICS_EXPORT UkmRecorder {
   // session.
   static SourceId GetNewSourceID();
 
-  // Gets new source Id for WEBAPK_ID type and updates the manifest url. This
+  // Gets new source Id for WEBAPK_ID type and updates the manifest URL. This
   // method should only be called by WebApkUkmRecorder class.
   static SourceId GetSourceIdForWebApkManifestUrl(
       base::PassKey<WebApkUkmRecorder>,
       const GURL& manifest_url);
 
-  // Gets new source Id for PAYMENT_APP_ID type and updates the source url to
+  // Gets new source Id for PAYMENT_APP_ID type and updates the source URL to
   // the scope of the app. This method should only be called by
   // PaymentAppProviderUtil class when the payment app window is opened.
   static SourceId GetSourceIdForPaymentAppFromScope(
       base::PassKey<content::PaymentAppProviderUtil>,
       const GURL& payment_app_from_scope_url);
 
-  // Gets a new SourceId for WEB_IDENTITY_ID type and updates the source url
+  // Gets a new SourceId for WEB_IDENTITY_ID type and updates the source URL
   // from the identity provider. This method should only be called in the
   // FedCmMetrics class.
   static SourceId GetSourceIdForWebIdentityFromScope(
       base::PassKey<content::FedCmMetrics>,
       const GURL& provider_url);
 
-  // Gets a new SourceId of REDIRECT_ID type and updates the source url
+  // Gets a new SourceId of REDIRECT_ID type and updates the source URL
   // from the redirect chain. This method should only be called in the
   // DIPSNavigationHandle class.
   static SourceId GetSourceIdForRedirectUrl(base::PassKey<DIPSNavigationHandle>,
                                             const GURL& redirect_url);
 
-  // Gets a new SourceId of EXTENSION_ID type and updates the source url
+  // Gets a new SourceId of EXTENSION_ID type and updates the source URL
   // from the extension message port. This method should only be called in the
   // ExtensionMessagePort class.
   static SourceId GetSourceIdForExtensionUrl(
@@ -162,7 +162,7 @@ class METRICS_EXPORT UkmRecorder {
   // Associates the SourceId with a URL. Most UKM recording code should prefer
   // to use a shared SourceId that is already associated with a URL, rather
   // than using this API directly. New uses of this API must be audited to
-  // maintain privacy constraints.
+  // maintain privacy constraints. See go/ukm-api.
   virtual void UpdateSourceURL(SourceId source_id, const GURL& url) = 0;
 
   // Associates the SourceId with an app URL for APP_ID sources. This method
@@ -178,9 +178,12 @@ class METRICS_EXPORT UkmRecorder {
       SourceId source_id,
       const UkmSource::NavigationData& navigation_data) = 0;
 
-  // Marks a source as no longer needed to kept alive in memory. Called by
-  // SourceUrlRecorderWebContentsObserver when a browser tab or its WebContents
-  // are no longer alive. Not to be used through mojo interface.
+  // Marks a source as no longer needed to keep alive in memory. Called by
+  // SourceUrlRecorderWebContentsObserver and AppSourceUrlRecorder (and possibly
+  // others in the future) when a browser tab, its WebContents, or a ChromeOS
+  // app is no longer alive, implying that no more metrics will be recorded for
+  // this source. This reduces UkmRecorder's memory usage. Not to be used
+  // through mojo interface.
   virtual void MarkSourceForDeletion(ukm::SourceId source_id) = 0;
 };
 
