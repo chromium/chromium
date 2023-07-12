@@ -52,10 +52,12 @@ const uint8_t kSkeletonTypeBitLength = 1;
 
 // Represents a top domain entry in the trie.
 struct TopDomainEntry {
-  // The domain name.
+  // The domain in ASCII (punycode for IDN).
   std::string domain;
-  // True if the domain is in the top 500.
-  bool is_top_500 = false;
+  // True if the domain is in the top bucket (i.e. in the most popular subset of
+  // top domains). These domains can have additional skeletons associated with
+  // them.
+  bool is_top_bucket = false;
   // Type of the skeleton stored in the trie node.
   SkeletonType skeleton_type;
 };

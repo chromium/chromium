@@ -422,7 +422,7 @@ bool DoesETLDPlus1MatchTopDomainOrEngagedSite(
     const url_formatter::TopDomainEntry top_domain =
         url_formatter::LookupSkeletonInTopDomains(
             skeleton, url_formatter::SkeletonType::kFull);
-    if (!top_domain.domain.empty() && top_domain.is_top_500) {
+    if (!top_domain.domain.empty() && top_domain.is_top_bucket) {
       *embedded_target = top_domain.domain;
       return true;
     }
@@ -980,9 +980,10 @@ bool GetMatchingDomain(
       DCHECK_NE(navigated_domain.domain_and_registry,
                 navigated_domain.idn_result.matching_top_domain.domain);
       *matched_domain = navigated_domain.idn_result.matching_top_domain.domain;
-      *match_type = navigated_domain.idn_result.matching_top_domain.is_top_500
-                        ? LookalikeUrlMatchType::kSkeletonMatchTop500
-                        : LookalikeUrlMatchType::kSkeletonMatchTop5k;
+      *match_type =
+          navigated_domain.idn_result.matching_top_domain.is_top_bucket
+              ? LookalikeUrlMatchType::kSkeletonMatchTop500
+              : LookalikeUrlMatchType::kSkeletonMatchTop5k;
       return true;
     }
   }

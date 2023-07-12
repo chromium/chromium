@@ -49,7 +49,7 @@ namespace {
 // eligible top-500 domains marked (e.g. because some are too short), the
 // generated array may be padded with blank entries up to kMaxDomains.
 const size_t kMaxDomains = 500;
-const char* kTop500Separator = "###END_TOP_500###";
+const char* kTopBucketSeparator = "###END_TOP_BUCKET###";
 
 // Similar to kMaxDomains, but for kTopKeywords. Unlike the top domain array,
 // this array is a fixed length, and we also output a kNumTopKeywords variable.
@@ -141,7 +141,7 @@ int main(int argc, char* argv[]) {
     }
     base::TrimWhitespaceASCII(line, base::TRIM_ALL, &line);
 
-    if (line == kTop500Separator) {
+    if (line == kTopBucketSeparator) {
       break;
     }
 

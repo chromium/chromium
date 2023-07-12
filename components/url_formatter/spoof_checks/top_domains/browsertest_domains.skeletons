@@ -6,14 +6,14 @@
 # components/url_formatter/spoof_checks/make_top_domain_skeletons.cc
 # DO NOT MANUALLY EDIT!
 
-# This list contains top 500 domains followed by the top 5000 domains. These are
-# separated by ###END_TOP_500### line.
+# This list contains top bucket domains followed by the remaining domains.
+# These are separated by ###END_TOP_BUCKET### line.
 
-# For top 500 domains, each row has three columns: full skeleton, skeleton
-# without label separators (e.g. '.' and '-'), and the domain itself.
+# For the top bucket domains, each row has three columns: full skeleton,
+# skeleton without label separators (e.g. '.' and '-'), and the domain itself.
 
-# For top 5000 domains, each row has two columns: full skeleton and the domain
-# itself.
+# For the remaining domains, each row has two columns: full skeleton and the
+# domain itself.
 
 # Each entry is the skeleton of a top domain for the confusability check
 # in components/url_formatter/url_formatter.cc.
@@ -27,5 +27,5 @@ google.rs, googlers, google.rs
 google.corn.tr, googlecorntr, google.com.tr
 acadernia.edu, acaderniaedu, academia.edu
 acadernic.ru, acadernicru, academic.ru
-###END_TOP_500###
+###END_TOP_BUCKET###
 google.sk, google.sk
