@@ -2645,6 +2645,7 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
         ContainingBlock()->SetNeedsSimplifiedLayout();
       } else {
         ContainingBlock()->SetChildNeedsLayout();
+        Parent()->DirtyLinesFromChangedChild(this);
       }
     }
   }
