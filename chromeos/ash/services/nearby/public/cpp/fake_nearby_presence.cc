@@ -64,4 +64,10 @@ void FakeNearbyPresence::UpdateLocalDeviceMetadataAndGenerateCredentials(
                           generate_credentials_response_status_);
 }
 
+// Not implemented.
+void FakeNearbyPresence::UpdateRemoteSharedCredentials(
+    std::vector<mojom::SharedCredentialPtr> shared_credentials,
+    const std::string& account_name,
+    FakeNearbyPresence::UpdateRemoteSharedCredentialsCallback callback) {}
+
 }  // namespace ash::nearby::presence

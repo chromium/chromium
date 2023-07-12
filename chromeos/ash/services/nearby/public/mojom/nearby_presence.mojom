@@ -167,4 +167,10 @@ interface NearbyPresence {
   // callback for CrOS to upload to the web.
   UpdateLocalDeviceMetadataAndGenerateCredentials(Metadata metadata)
       => (array<SharedCredential> shared_credentials, StatusCode status);
+
+  // Updates the remote shared credentials downloaded from the NP server stored
+  // in the NP library.
+  UpdateRemoteSharedCredentials(array<SharedCredential> shared_credentials,
+                                string account_name)
+      => (StatusCode status);
 };

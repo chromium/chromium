@@ -9,11 +9,13 @@
 #include "chrome/services/sharing/nearby/nearby_shared_remotes.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
+#include "third_party/nearby/internal/proto/credential.pb.h"
+#include "third_party/nearby/src/presence/presence_client_impl.h"
 #include "third_party/nearby/src/presence/presence_service_impl.h"
 
 namespace {
 
-constexpr char kChromeOSManagerAppName[] = "CHROMEOS";
+constexpr char kChromeOSManagerAppId[] = "CHROMEOS";
 constexpr int kCredentialLifeCycleDays = 5;
 constexpr int kNumCredentials = 6;
 
@@ -168,7 +170,7 @@ void NearbyPresence::UpdateLocalDeviceMetadata(mojom::MetadataPtr metadata) {
   // metadata changes (e.g. the user's name).
   presence_service_->UpdateLocalDeviceMetadata(
       MetadataFromMojom(metadata.get()), /*regen_credentials=*/false,
-      /*manager_app_id=*/kChromeOSManagerAppName,
+      /*manager_app_id=*/kChromeOSManagerAppId,
       /*identity_types=*/
       {::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE},
       /*credential_life_cycle_days=*/kCredentialLifeCycleDays,
@@ -181,7 +183,7 @@ void NearbyPresence::UpdateLocalDeviceMetadataAndGenerateCredentials(
     UpdateLocalDeviceMetadataAndGenerateCredentialsCallback callback) {
   presence_service_->UpdateLocalDeviceMetadata(
       MetadataFromMojom(metadata.get()), /*regen_credentials=*/true,
-      /*manager_app_id=*/kChromeOSManagerAppName,
+      /*manager_app_id=*/kChromeOSManagerAppId,
       /*identity_types=*/
       {::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE},
       /*credential_life_cycle_days=*/kCredentialLifeCycleDays,
@@ -228,6 +230,34 @@ void NearbyPresence::OnScanSessionDisconnect(uint64_t scan_session_id) {
     }
     iter++;
   }
+}
+
+void NearbyPresence::UpdateRemoteSharedCredentials(
+    std::vector<mojom::SharedCredentialPtr> shared_credentials,
+    const std::string& account_name,
+    UpdateRemoteSharedCredentialsCallback callback) {
+  std::vector<::nearby::internal::SharedCredential> proto_credentials;
+  for (const auto& credential : shared_credentials) {
+    proto_credentials.push_back(SharedCredentialFromMojom(credential.get()));
+  }
+
+  presence_service_->UpdateRemotePublicCredentials(
+      /*manager_app_id=*/kChromeOSManagerAppId, account_name, proto_credentials,
+      {.credentials_updated_cb =
+           [cb = base::BindOnce(std::move(callback)),
+            task_runner =
+                base::SequencedTaskRunner::GetCurrentDefault()](auto status) {
+             // absl::AnyInvocable marks its bound parameters as const&, but
+             // base::BindOnce() expects a non-const rvalue. Cast it as
+             // non-const to allow the bind.
+             task_runner->PostTask(
+                 FROM_HERE,
+                 base::BindOnce(
+                     std::move(
+                         const_cast<UpdateRemoteSharedCredentialsCallback&>(
+                             cb)),
+                     CovertStatusToMojomStatus(status)));
+           }});
 }
 
 NearbyPresence::ScanSessionImpl::ScanSessionImpl() {}

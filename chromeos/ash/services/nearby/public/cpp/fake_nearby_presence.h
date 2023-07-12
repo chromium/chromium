@@ -47,6 +47,11 @@ class FakeNearbyPresence : public mojom::NearbyPresence,
       FakeNearbyPresence::
           UpdateLocalDeviceMetadataAndGenerateCredentialsCallback callback)
       override;
+  void UpdateRemoteSharedCredentials(
+      std::vector<mojom::SharedCredentialPtr> shared_credentials,
+      const std::string& account_name,
+      FakeNearbyPresence::UpdateRemoteSharedCredentialsCallback callback)
+      override;
 
   // ScanSession:
   void OnDisconnect();
