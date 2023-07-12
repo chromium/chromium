@@ -271,11 +271,9 @@ class OzonePlatformX11 : public OzonePlatform,
   void InitializeGPU(const InitParams& params) override {
     InitializeCommon(params);
     if (params.enable_native_gpu_memory_buffers) {
-      base::ThreadPool::PostTask(
-          FROM_HERE, base::BindOnce([]() {
-            SCOPED_UMA_HISTOGRAM_TIMER("Linux.X11.GbmSupportX11CreationTime");
-            ui::GpuMemoryBufferSupportX11::GetInstance();
-          }));
+      base::ThreadPool::PostTask(FROM_HERE, base::BindOnce([]() {
+                                   ui::GpuMemoryBufferSupportX11::GetInstance();
+                                 }));
     }
     // In single process mode either the UI thread will create an event source
     // or it's a test and an event source isn't desired.
