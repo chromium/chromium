@@ -388,7 +388,6 @@ white-space-collapse: collapse
 widows: 2
 width: 769px
 will-change: auto
-word-boundary-detection: normal
 word-break: normal
 word-spacing: 0px
 writing-mode: horizontal-tb

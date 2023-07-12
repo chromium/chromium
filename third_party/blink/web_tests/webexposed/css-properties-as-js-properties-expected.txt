@@ -642,7 +642,6 @@ whiteSpaceCollapse
 widows
 width
 willChange
-wordBoundaryDetection
 wordBreak
 wordSpacing
 wordWrap

@@ -7395,32 +7395,6 @@ CSSValue* ParseSpacing(CSSParserTokenRange& range,
                        UnitlessQuirk::kAllow);
 }
 
-CSSFunctionValue* CreateWordBoundaryDetectionValue() {
-  CSSFunctionValue* function =
-      MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kAuto);
-  function->Append(*CSSIdentifierValue::Create(CSSValueID::kJa));
-  return function;
-}
-
-CSSValue* ParseWordBoundaryDetection(CSSParserTokenRange& range,
-                                     const CSSParserContext& context) {
-  if (CSSValue* ident = ConsumeIdent<CSSValueID::kNormal>(range)) {
-    return ident;
-  }
-
-  // Parse `auto(ja)`.
-  if (range.Peek().FunctionId() == CSSValueID::kAuto) {
-    CSSParserTokenRange block = range.ConsumeBlock();
-    const CSSParserToken& lang = block.Consume();
-    if (lang.Id() == CSSValueID::kJa && block.AtEnd()) {
-      return CreateWordBoundaryDetectionValue();
-    }
-    // If the `lang` is not supported, make the declaration invalid.
-    // https://drafts.csswg.org/css-text-4/#valdef-word-boundary-detection-auto-lang
-  }
-  return nullptr;
-}
-
 CSSValue* ConsumeSingleContainerName(CSSParserTokenRange& range,
                                      const CSSParserContext& context) {
   if (range.Peek().GetType() != kIdentToken) {

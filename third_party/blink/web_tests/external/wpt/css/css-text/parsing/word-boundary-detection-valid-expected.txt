@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-PASS e.style['word-boundary-detection'] = "normal" should set the property value
+FAIL e.style['word-boundary-detection'] = "normal" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['word-boundary-detection'] = "manual" should set the property value assert_not_equals: property should be set got disallowed value ""
 Harness: the test ran to completion.
 

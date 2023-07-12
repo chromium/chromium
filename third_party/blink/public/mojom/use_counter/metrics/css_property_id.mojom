@@ -817,7 +817,7 @@ enum CSSSampleId {
     kScrollStartTarget = 761,
     kTimelineScope = 762,
     kScrollbarColor = 763,
-    kWordBoundaryDetection = 764,
+    // kWordBoundaryDetection = 764,
     kPositionFallbackBounds = 765,
     kTransitionAnimationType = 766,
     // 1. Add new features above this line (don't change the assigned numbers of
