@@ -7395,6 +7395,90 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), other_url);
 }
 
+// Ensure that the browser process doesn't see a javascript: URL when opening a
+// new window to a javascript: URL. These URLs are typically handled on the
+// renderer side, and the renderer should not send the javascript: URL to the
+// browser in a navigation request. Previously, this was not correctly handled
+// for initial navigations to javascript: URLs. See https://crbug.com/1357515.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FilterURL_JavascriptURLs) {
+  GURL http_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), http_url));
+
+  {
+    SCOPED_TRACE(testing::Message() << "Testing opener case.");
+    base::HistogramTester histograms;
+    ShellAddedObserver new_shell_observer;
+    EXPECT_TRUE(
+        ExecJs(shell(), "window.open('javascript:window.foo=\"bar\"');"));
+    WebContents* popup_contents = new_shell_observer.GetShell()->web_contents();
+    EXPECT_EQ(url::kAboutBlankURL, EvalJs(popup_contents, "location.href"));
+    // No commit message is sent to the browser in this case, so the last
+    // committed URL is still empty.
+    EXPECT_EQ(GURL(), popup_contents->GetLastCommittedURL());
+    histograms.ExpectTotalCount("BrowserRenderProcessHost.BlockedByFilterURL",
+                                0);
+
+    // The javascript: URL should have run.
+    EXPECT_EQ("bar", EvalJs(popup_contents, "window.foo"));
+  }
+
+  {
+    SCOPED_TRACE(testing::Message() << "Testing noopener case.");
+    base::HistogramTester histograms;
+    ShellAddedObserver new_shell_observer;
+    EXPECT_TRUE(ExecJs(
+        shell(),
+        "window.open('javascript:window.foo=\"bar\"', '', 'noopener');"));
+    WebContents* popup_contents = new_shell_observer.GetShell()->web_contents();
+    EXPECT_EQ(url::kAboutBlankURL, EvalJs(popup_contents, "location.href"));
+    EXPECT_EQ(url::kAboutBlankURL, popup_contents->GetLastCommittedURL());
+    histograms.ExpectTotalCount("BrowserRenderProcessHost.BlockedByFilterURL",
+                                0);
+
+    // The Javascript URL should not have run in the noopener case, because the
+    // origin should not be inherited according to spec. See:
+    // https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names%3Acreating-a-new-top-level-traversable
+    // https://html.spec.whatwg.org/multipage/document-sequences.html#creating-a-new-browsing-context
+    // TODO(https://crbug.com/1357515): Also prevent the origin from being
+    // inherited.
+    EXPECT_EQ(nullptr, EvalJs(popup_contents, "window.foo"));
+  }
+}
+
+// Ensure that opening popups to empty URLs does not fail FilterURL. The
+// renderer process treats empty URLs as about:blank, but the browser process
+// does not consider them valid and may treat them as attempts to go to the NTP
+// in some cases. As a result, the renderer should map empty URLs to about:blank
+// before making navigation requests. See https://crbug.com/1357515.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FilterURL_EmptyURL) {
+  GURL http_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), http_url));
+
+  {
+    SCOPED_TRACE(testing::Message() << "Testing opener case.");
+    base::HistogramTester histograms;
+    ShellAddedObserver new_shell_observer;
+    EXPECT_TRUE(ExecJs(shell(), "window.open('');"));
+    WebContents* popup_contents = new_shell_observer.GetShell()->web_contents();
+    EXPECT_EQ(url::kAboutBlankURL, EvalJs(popup_contents, "location.href"));
+    EXPECT_EQ(url::kAboutBlankURL, popup_contents->GetLastCommittedURL());
+    histograms.ExpectTotalCount("BrowserRenderProcessHost.BlockedByFilterURL",
+                                0);
+  }
+
+  {
+    SCOPED_TRACE(testing::Message() << "Testing noopener case.");
+    base::HistogramTester histograms;
+    ShellAddedObserver new_shell_observer;
+    EXPECT_TRUE(ExecJs(shell(), "window.open('', '', 'noopener');"));
+    WebContents* popup_contents = new_shell_observer.GetShell()->web_contents();
+    EXPECT_EQ(url::kAboutBlankURL, EvalJs(popup_contents, "location.href"));
+    EXPECT_EQ(url::kAboutBlankURL, popup_contents->GetLastCommittedURL());
+    histograms.ExpectTotalCount("BrowserRenderProcessHost.BlockedByFilterURL",
+                                0);
+  }
+}
+
 // Verifies that cross-origin iframes can navigate the top frame to another URL
 // belonging to the top frame's origin without user activation.
 //

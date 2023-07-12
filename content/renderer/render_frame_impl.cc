@@ -6319,6 +6319,21 @@ WebView* RenderFrameImpl::CreateNewWindow(
   params->disposition = NavigationPolicyToDisposition(policy);
   if (!request.IsNull()) {
     params->target_url = request.Url();
+    // The browser process does not consider empty URLs as valid (partly due to
+    // a risk of treating them as a navigation to the privileged NTP in some
+    // cases), so treat an attempt to create a window with an empty URL as
+    // opening about:blank.
+    //
+    // Similarly, javascript: URLs should not be sent to the browser process,
+    // since they are either handled within the renderer process (if a window is
+    // created within the same browsing context group) or ignored (in the
+    // noopener case). Use about:blank for the URL in that case as well, to
+    // reduce the risk of running them incorrectly.
+    if (params->target_url.is_empty() ||
+        params->target_url.SchemeIs(url::kJavaScriptScheme)) {
+      params->target_url = GURL(url::kAboutBlankURL);
+    }
+
     params->referrer = blink::mojom::Referrer::New(
         blink::WebStringToGURL(request.ReferrerString()),
         request.GetReferrerPolicy());

@@ -14555,7 +14555,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, NavigateToEmptyURL) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(), GURL("about:blank")));
 
   entry = controller.GetLastCommittedEntry();
-  EXPECT_EQ(GURL("about:blank"), entry->GetURL());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), entry->GetURL());
   EXPECT_EQ(2, controller.GetEntryCount());
   EXPECT_TRUE(
       contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
@@ -14631,10 +14631,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, NavigateToEmptyURL) {
   }
 
   {
-    // Pop open another window,  this time to an empty URL and with the
-    // 'noopener' option. This navigation will go through the browser and the
-    // empty URL will be rewritten to about:blank#blocked, but the initiator
-    // origin is still set to the opener's origin.
+    // Pop open another window, this time to an empty URL and with the
+    // 'noopener' option. This navigation will go through the browser, but the
+    // initiator origin is still set to the opener's origin.
     ShellAddedObserver new_shell_observer;
     EXPECT_TRUE(ExecJs(shell(), "window.open('', '_blank', 'noopener');"));
     Shell* new_shell = new_shell_observer.GetShell();
@@ -14646,7 +14645,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, NavigateToEmptyURL) {
     EXPECT_EQ(1, new_controller.GetEntryCount());
     entry = new_controller.GetLastCommittedEntry();
     EXPECT_FALSE(entry->IsInitialEntry());
-    EXPECT_EQ(GURL("about:blank#blocked"), entry->GetURL());
+    EXPECT_EQ(GURL(url::kAboutBlankURL), entry->GetURL());
 
     scoped_refptr<FrameNavigationEntry> frame_entry =
         entry->root_node()->frame_entry.get();

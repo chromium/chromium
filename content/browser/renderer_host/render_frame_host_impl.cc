@@ -7979,10 +7979,6 @@ void RenderFrameHostImpl::CreateNewWindow(
   bool no_javascript_access = false;
 
   // Filter out URLs to which navigation is disallowed from this context.
-  //
-  // Note that currently, "javascript:" URLs and empty strings (both of which
-  // are legal arguments to window.open) make it here; FilterURL rewrites them
-  // to "about:blank" -- they shouldn't be cancelled.
   GetProcess()->FilterURL(false, &params->target_url);
 
   bool effective_transient_activation_state =
