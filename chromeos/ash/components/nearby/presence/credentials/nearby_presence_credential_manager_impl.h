@@ -172,12 +172,14 @@ class NearbyPresenceCredentialManagerImpl
       std::vector<::nearby::internal::SharedCredential> credentials,
       bool success);
 
-  // Helper functions to trigger uploading and downloading credentials in the NP
-  // server. The helper functions are used for first time server registration to
-  // upload newly generated credentials and download remote devices'
-  // credentials, as well as daily syncs with the server to upload
-  // credentials if they have changed and download remote devices' credentials.
-  // These helper functions are also used in `UpdateCredentials` flows.
+  // Callback for first time remote credential saving in the NP library.
+  void OnFirstTimeRemoteCredentialsSaved(mojom::StatusCode status);
+
+  // Helper functions to trigger uploading credentials in the NP server. The
+  // helper functions are used for first time server registration to upload
+  // newly generated credentials, daily syncs with the server to upload
+  // credentials if they have changed. These helper functions are also used in
+  // `UpdateCredentials` flows.
   //
   // They take a repeating callback because `UploadCredentials()` and
   // `DownloadCredentials()` must be bound as a RepeatingCallback itself as a

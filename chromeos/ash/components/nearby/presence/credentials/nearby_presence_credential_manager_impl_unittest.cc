@@ -474,4 +474,31 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, DownloadCredentialsTimeout) {
   EXPECT_FALSE(credential_manager_);
 }
 
+TEST_F(NearbyPresenceCredentialManagerImplTest,
+       UpdateRemoteCredentialsFailure) {
+  // Wait until after the generated credentials are saved to continue the test.
+  base::RunLoop generate_creds_run_loop;
+  fake_local_device_data_provider_->SetUpdatePersistedSharedCredentialsCallback(
+      generate_creds_run_loop.QuitClosure());
+
+  // Simulate the remote device credentials being unsuccessfully set in the
+  // NP library.
+  fake_nearby_presence_.SetUpdateRemoteCredentialsStatus(
+      mojom::StatusCode::kFailure);
+
+  base::RunLoop create_credential_manager_run_loop;
+  CreateCredentialManager(create_credential_manager_run_loop.QuitClosure());
+
+  TriggerFirstTimeRegistrationSuccess();
+
+  // Required for credentials to be generated and passed over the mojo pipe.
+  generate_creds_run_loop.Run();
+
+  TriggerFirstTimeLocalCredentialUploadSuccess();
+  TriggerFirstTimeDownloadRemoteCredentialSuccess();
+
+  create_credential_manager_run_loop.Run();
+  EXPECT_FALSE(credential_manager_);
+}
+
 }  // namespace ash::nearby::presence

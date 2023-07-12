@@ -31,6 +31,11 @@ mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata);
 ::nearby::internal::SharedCredential SharedCredentialFromMojom(
     mojom::SharedCredential* shared_credential);
 
+mojom::IdentityType IdentityTypeToMojom(
+    ::nearby::internal::IdentityType identity_type);
+mojom::SharedCredentialPtr SharedCredentialToMojom(
+    ::nearby::internal::SharedCredential shared_credential);
+
 ash::nearby::proto::PublicCertificate PublicCertificateFromSharedCredential(
     ::nearby::internal::SharedCredential shared_credential);
 ash::nearby::proto::TrustType TrustTypeFromIdentityType(

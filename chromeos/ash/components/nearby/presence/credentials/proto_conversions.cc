@@ -103,6 +103,50 @@ mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata) {
   return proto;
 }
 
+mojom::SharedCredentialPtr SharedCredentialToMojom(
+    ::nearby::internal::SharedCredential shared_credential) {
+  return mojom::SharedCredential::New(
+      std::vector<uint8_t>(shared_credential.secret_id().begin(),
+                           shared_credential.secret_id().end()),
+      std::vector<uint8_t>(shared_credential.key_seed().begin(),
+                           shared_credential.key_seed().end()),
+      shared_credential.start_time_millis(),
+      shared_credential.end_time_millis(),
+      std::vector<uint8_t>(
+          shared_credential.encrypted_metadata_bytes_v0().begin(),
+          shared_credential.encrypted_metadata_bytes_v0().end()),
+      std::vector<uint8_t>(
+          shared_credential.metadata_encryption_key_unsigned_adv_tag().begin(),
+          shared_credential.metadata_encryption_key_unsigned_adv_tag().end()),
+      std::vector<uint8_t>(
+          shared_credential.connection_signature_verification_key().begin(),
+          shared_credential.connection_signature_verification_key().end()),
+      std::vector<uint8_t>(
+          shared_credential.advertisement_signature_verification_key().begin(),
+          shared_credential.advertisement_signature_verification_key().end()),
+      IdentityTypeToMojom(shared_credential.identity_type()),
+      std::vector<uint8_t>(shared_credential.version().begin(),
+                           shared_credential.version().end()));
+}
+
+mojom::IdentityType IdentityTypeToMojom(
+    ::nearby::internal::IdentityType identity_type) {
+  switch (identity_type) {
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED:
+      return mojom::IdentityType::kIdentityTypeUnspecified;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE:
+      return mojom::IdentityType::kIdentityTypePrivate;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED:
+      return mojom::IdentityType::kIdentityTypeTrusted;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PUBLIC:
+      return mojom::IdentityType::kIdentityTypePublic;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PROVISIONED:
+      return mojom::IdentityType::kIdentityTypeProvisioned;
+    default:
+      return mojom::IdentityType::kIdentityTypeUnspecified;
+  }
+}
+
 ash::nearby::proto::PublicCertificate PublicCertificateFromSharedCredential(
     ::nearby::internal::SharedCredential shared_credential) {
   ash::nearby::proto::PublicCertificate certificate;

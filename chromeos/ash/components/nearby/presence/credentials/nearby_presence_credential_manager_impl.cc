@@ -429,17 +429,36 @@ void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsDownload(
   first_time_download_on_demand_scheduler_->HandleResult(/*success=*/true);
   first_time_download_on_demand_scheduler_.reset();
 
-  // TODO(b/276307539): Currently first time registration is considered
-  // successful on the successful download of remote credentials, however this
-  // is not fully complete. Next, the CredentialManager needs to save the
-  // download credentials to the NP library over the mojo pipe.
-  //
   // We've completed the 4th of 5 steps for first time registration.
   //      1. Register this device with the server.
   //      2. Generate this device's credentials.
   //      3. Upload this device's credentials.
   //   -> 4. Download other devices' credentials.
   //      5. Save other devices' credentials.
+  // Next, kick off Step 5: save the remote shared credentials to the NP library
+  // over mojo pipe.
+  std::vector<mojom::SharedCredentialPtr> mojo_credentials;
+  for (auto cred : credentials) {
+    mojo_credentials.push_back(proto::SharedCredentialToMojom(cred));
+  }
+
+  nearby_presence_->UpdateRemoteSharedCredentials(
+      std::move(mojo_credentials),
+      local_device_data_provider_->GetAccountName(),
+      base::BindOnce(&NearbyPresenceCredentialManagerImpl::
+                         OnFirstTimeRemoteCredentialsSaved,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NearbyPresenceCredentialManagerImpl::OnFirstTimeRemoteCredentialsSaved(
+    mojom::StatusCode status) {
+  if (status != mojom::StatusCode::kOk) {
+    // TODO(b/276307539): Add metrics to record failures.
+    CHECK(on_registered_callback_);
+    std::move(on_registered_callback_).Run(/*success=*/false);
+    return;
+  }
+
   local_device_data_provider_->SetRegistrationComplete(/*complete=*/true);
   CHECK(on_registered_callback_);
   std::move(on_registered_callback_).Run(/*success=*/true);
