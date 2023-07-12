@@ -57,11 +57,6 @@ const char kObsoletePpapiBrokerDefaultPref[] =
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-// This setting was moved and should be migrated on profile startup.
-const char kDeprecatedEnableDRM[] = "settings.privacy.drm_enabled";
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-
 ContentSetting GetDefaultValue(const WebsiteSettingsInfo* info) {
   const base::Value& initial_default = info->initial_default_value();
   if (initial_default.is_none())
@@ -138,10 +133,6 @@ void DefaultProvider::RegisterProfilePrefs(
   registry->RegisterIntegerPref(kObsoletePpapiBrokerDefaultPref, 0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
-
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-  registry->RegisterBooleanPref(kDeprecatedEnableDRM, true);
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 }
 
 DefaultProvider::DefaultProvider(PrefService* prefs,
@@ -344,22 +335,6 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoletePpapiBrokerDefaultPref);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
-
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1191642): Remove this migration logic in M100.
-  WebsiteSettingsRegistry* website_settings =
-      WebsiteSettingsRegistry::GetInstance();
-  const base::Value* deprecated_enable_drm_value =
-      prefs_->GetUserPrefValue(kDeprecatedEnableDRM);
-  if (deprecated_enable_drm_value) {
-    prefs_->SetInteger(
-        website_settings->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER)
-            ->default_value_pref_name(),
-        deprecated_enable_drm_value->GetBool() ? CONTENT_SETTING_ALLOW
-                                               : CONTENT_SETTING_BLOCK);
-  }
-  prefs_->ClearPref(kDeprecatedEnableDRM);
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 }
 
 void DefaultProvider::RecordHistogramMetrics() {
