@@ -12,19 +12,46 @@ class HistoryUIBrowserTest : public WebUIMochaBrowserTest {
   HistoryUIBrowserTest() { set_test_loader_host(chrome::kChromeUIHistoryHost); }
 };
 
-typedef HistoryUIBrowserTest HistoryDrawerTest;
-IN_PROC_BROWSER_TEST_F(HistoryDrawerTest, All) {
+using HistoryTest = HistoryUIBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(HistoryTest, Drawer) {
   RunTest("history/history_drawer_test.js", "mocha.run()");
 }
 
-typedef HistoryUIBrowserTest HistoryItemTest;
-IN_PROC_BROWSER_TEST_F(HistoryItemTest, All) {
+IN_PROC_BROWSER_TEST_F(HistoryTest, Item) {
   RunTest("history/history_item_test.js", "mocha.run()");
 }
 
-typedef HistoryUIBrowserTest HistoryLinkClickTest;
-IN_PROC_BROWSER_TEST_F(HistoryLinkClickTest, All) {
+IN_PROC_BROWSER_TEST_F(HistoryTest, LinkClick) {
   RunTest("history/link_click_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryTest, Metrics) {
+  RunTest("history/history_metrics_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryTest, OverflowMenu) {
+  RunTest("history/history_overflow_menu_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryTest, Routing) {
+  RunTest("history/history_routing_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryTest, RoutingWithQueryParam) {
+  RunTest("history/history_routing_with_query_param_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryTest, SyncedTabs) {
+  RunTest("history/history_synced_tabs_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryTest, Toolbar) {
+  RunTest("history/history_toolbar_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryTest, SearchedLabel) {
+  RunTest("history/searched_label_test.js", "mocha.run()");
 }
 
 class HistoryListTest : public HistoryUIBrowserTest {
@@ -112,39 +139,4 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest, ClickingFileUrlSendsMessageToChrome) {
 IN_PROC_BROWSER_TEST_F(HistoryListTest,
                        DeleteHistoryResultsInQueryHistoryEvent) {
   RunTestCase("DeleteHistoryResultsInQueryHistoryEvent");
-}
-
-typedef HistoryUIBrowserTest HistoryMetricsTest;
-IN_PROC_BROWSER_TEST_F(HistoryMetricsTest, All) {
-  RunTest("history/history_metrics_test.js", "mocha.run()");
-}
-
-typedef HistoryUIBrowserTest HistoryOverflowMenuTest;
-IN_PROC_BROWSER_TEST_F(HistoryOverflowMenuTest, All) {
-  RunTest("history/history_overflow_menu_test.js", "mocha.run()");
-}
-
-typedef HistoryUIBrowserTest HistoryRoutingTest;
-IN_PROC_BROWSER_TEST_F(HistoryRoutingTest, All) {
-  RunTest("history/history_routing_test.js", "mocha.run()");
-}
-
-typedef HistoryUIBrowserTest HistoryRoutingWithQueryParamTest;
-IN_PROC_BROWSER_TEST_F(HistoryRoutingWithQueryParamTest, All) {
-  RunTest("history/history_routing_with_query_param_test.js", "mocha.run()");
-}
-
-typedef HistoryUIBrowserTest HistorySyncedTabsTest;
-IN_PROC_BROWSER_TEST_F(HistorySyncedTabsTest, All) {
-  RunTest("history/history_synced_tabs_test.js", "mocha.run()");
-}
-
-typedef HistoryUIBrowserTest HistoryToolbarTest;
-IN_PROC_BROWSER_TEST_F(HistoryToolbarTest, All) {
-  RunTest("history/history_toolbar_test.js", "mocha.run()");
-}
-
-typedef HistoryUIBrowserTest HistorySearchedLabelTest;
-IN_PROC_BROWSER_TEST_F(HistorySearchedLabelTest, All) {
-  RunTest("history/searched_label_test.js", "mocha.run()");
 }

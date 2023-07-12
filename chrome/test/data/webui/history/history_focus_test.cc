@@ -11,32 +11,26 @@ class HistoryFocusTest : public WebUIMochaFocusTest {
   HistoryFocusTest() { set_test_loader_host(chrome::kChromeUIHistoryHost); }
 };
 
-typedef HistoryFocusTest HistoryToolbarFocusTest;
-
 // Flaky, https://crbug.com/1200678
 #if BUILDFLAG(IS_MAC)
-#define MAYBE_All DISABLED_All
+#define MAYBE_Toolbar DISABLED_Toolbar
 #else
-#define MAYBE_All All
+#define MAYBE_Toolbar Toolbar
 #endif
-IN_PROC_BROWSER_TEST_F(HistoryToolbarFocusTest, MAYBE_All) {
+IN_PROC_BROWSER_TEST_F(HistoryFocusTest, MAYBE_Toolbar) {
   RunTest("history/history_toolbar_focus_test.js", "mocha.run()");
 }
 #undef MAYBE_All
 
-typedef HistoryFocusTest HistoryListFocusTest;
-
 // Flaky. See crbug.com/1040940.
-IN_PROC_BROWSER_TEST_F(HistoryListFocusTest, DISABLED_All) {
+IN_PROC_BROWSER_TEST_F(HistoryFocusTest, DISABLED_List) {
   RunTest("history/history_list_focus_test.js", "mocha.run()");
 }
 
-typedef HistoryFocusTest HistorySyncedDeviceManagerFocusTest;
-IN_PROC_BROWSER_TEST_F(HistorySyncedDeviceManagerFocusTest, All) {
+IN_PROC_BROWSER_TEST_F(HistoryFocusTest, SyncedDeviceManager) {
   RunTest("history/history_synced_device_manager_focus_test.js", "mocha.run()");
 }
 
-typedef HistoryFocusTest HistoryItemFocusTest;
-IN_PROC_BROWSER_TEST_F(HistoryItemFocusTest, All) {
+IN_PROC_BROWSER_TEST_F(HistoryFocusTest, Item) {
   RunTest("history/history_item_focus_test.js", "mocha.run()");
 }
