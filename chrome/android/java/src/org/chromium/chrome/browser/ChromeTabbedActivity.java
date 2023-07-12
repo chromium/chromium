@@ -2472,7 +2472,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      */
     @Override
     public boolean backShouldCloseTab(Tab tab) {
-        if (!tab.isInitialized()) {
+        if (!tab.isInitialized() || tab.isClosing() || tab.isDestroyed()) {
             return false;
         }
         @TabLaunchType
@@ -2505,9 +2505,24 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // If the runnable doesn't run before the Activity dies, Chrome won't crash but the tab
             // won't be closed (crbug.com/587565).
             mHandler.postDelayed(() -> {
-                Tab nextTab = getCurrentTabModel().getNextTabIfClosed(
-                        tabToClose.getId(), /*uponExit=*/true);
-                getCurrentTabModel().closeTab(tabToClose, nextTab, false, true, false);
+                if (mTabModelSelector == null || tabToClose.isClosing()
+                        || tabToClose.isDestroyed()) {
+                    return;
+                }
+
+                final TabModel currentModel = mTabModelSelector.getCurrentModel();
+                final TabModel tabToCloseModel =
+                        mTabModelSelector.getModel(tabToClose.isIncognito());
+                if (currentModel != tabToCloseModel) {
+                    // This seems improbable; however, crbug/1463397 suggests otherwise. If this
+                    // happens, remain on the current tab and close the tab in the other model.
+                    tabToCloseModel.closeTab(tabToClose, null, false, true, false);
+                    return;
+                }
+
+                Tab nextTab =
+                        currentModel.getNextTabIfClosed(tabToClose.getId(), /*uponExit=*/true);
+                currentModel.closeTab(tabToClose, nextTab, false, true, false);
 
                 // If there is no next tab to open, enter overview mode.
                 if (nextTab == null && !isActivityFinishingOrDestroyed()) {
