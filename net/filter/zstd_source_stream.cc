@@ -104,7 +104,7 @@ class ZstdSourceStream : public FilterSourceStream {
       // internal buffers.
       return output.pos;
     } else if (result == 0u) {
-      CHECK_LT(output.pos, output.size);
+      CHECK_LE(output.pos, output.size);
       // Decoder finished and flushed all remaining buffers.
       decoding_status_ = DecodingStatus::kDecodingDone;
       return output.pos;
