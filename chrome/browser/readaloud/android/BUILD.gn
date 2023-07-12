@@ -15,9 +15,12 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
     "//third_party/android_deps:guava_android_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//url:gurl_java",
   ]
-  jar_excluded_patterns = [ "*/ReadAloudReadabilityHooksImpl*.class" ]
 }
 
 robolectric_library("junit") {
@@ -32,9 +35,13 @@ robolectric_library("junit") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 }

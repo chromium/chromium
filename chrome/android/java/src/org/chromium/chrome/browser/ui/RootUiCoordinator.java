@@ -676,6 +676,10 @@ public class RootUiCoordinator
             mRestoreTabsFeatureHelper = null;
         }
 
+        if (mReadAloudControllerSupplier.hasValue()) {
+            mReadAloudControllerSupplier.get().destroy();
+            mReadAloudControllerSupplier.set(null);
+        }
         mActivity = null;
     }
 
@@ -815,7 +819,8 @@ public class RootUiCoordinator
         }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
-            ReadAloudController controller = new ReadAloudController(mProfileSupplier);
+            ReadAloudController controller = new ReadAloudController(
+                    mProfileSupplier, mTabModelSelectorSupplier.get().getModel(false));
             mReadAloudControllerSupplier.set(controller);
         }
     }

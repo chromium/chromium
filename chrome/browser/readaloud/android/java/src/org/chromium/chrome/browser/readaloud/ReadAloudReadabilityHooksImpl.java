@@ -6,6 +6,17 @@ package org.chromium.chrome.browser.readaloud;
 
 /** Empty implementation of ReadAloudReadabilityHooks. */
 public class ReadAloudReadabilityHooksImpl implements ReadAloudReadabilityHooks {
+    private static ReadAloudReadabilityHooksImpl sHooks;
+
+    private ReadAloudReadabilityHooksImpl(){};
+
+    public static ReadAloudReadabilityHooksImpl getInstance() {
+        if (sHooks == null) {
+            sHooks = new ReadAloudReadabilityHooksImpl();
+        }
+        return sHooks;
+    }
+
     @Override
     public boolean isEnabled() {
         return false;

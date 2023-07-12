@@ -15,13 +15,14 @@ public interface ReadAloudReadabilityHooks {
         /**
          * Called if isPageReadable() succeeds.
          *
+         * @param url url of the page to check
          * @param isReadable          if page can be played
          * @param timepointsSupported whether timepoints are supported. Timepoints are
          *                            used forword-by-word highlighting.
          */
-        void onSuccess(boolean isReadable, boolean timepointsSupported);
+        void onSuccess(String url, boolean isReadable, boolean timepointsSupported);
         /** Called if isPageReadable() fails. */
-        void onFailure(Throwable t);
+        void onFailure(String url, Throwable t);
     }
 
     /** Returns true if ReadAloud feature is available. */
