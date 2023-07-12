@@ -6544,7 +6544,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Ash.UnlockAnimation.Smoothness" units="%"
-    expires_after="2022-04-17">
+    expires_after="2024-07-12">
   <owner>oshima@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
 <!-- Name completed by histogram_suffixes
@@ -6552,7 +6552,9 @@ chromium-metrics-reviews@google.com.
 
   <summary>
     Relative smoothness of all animations applied during the unlock process.
-    100% represents the ideal smoothness for 60 frames per second.
+    100% represents the ideal smoothness for 60 frames per second. The metric
+    was expired from 2022-04-18 to 2023-07-12 (revived in M117), it's possible
+    some data was dropped during that time.
   </summary>
 </histogram>
 
