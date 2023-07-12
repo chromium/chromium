@@ -322,6 +322,8 @@ void WelcomeTourController::StartTutorial() {
 // TODO(http://b/277091624): Stabilize nudges/toasts.
 void WelcomeTourController::OnWelcomeTourStarted() {
   notification_blocker_ = std::make_unique<WelcomeTourNotificationBlocker>();
+  notification_blocker_->Init();
+
   scrim_ = std::make_unique<WelcomeTourScrim>();
 
   for (auto& observer : observer_list_) {

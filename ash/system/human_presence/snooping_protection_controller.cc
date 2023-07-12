@@ -43,6 +43,9 @@ SnoopingProtectionController::SnoopingProtectionController()
   // and we never have any user preferences active. Hence, our default state
   // values are correct.
 
+  // Finish initializing `notification_blocker_`.
+  notification_blocker_->Init();
+
   // Session controller is instantiated before us in the shell.
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
