@@ -55,11 +55,13 @@
   #savedPrintersContainer {
     border-bottom: var(--cr-separator-line);
     padding-bottom: 8px;
+    padding-inline-start: var(--cr-section-padding);
   }
 
   #savedPrintersDescription {
     height: 64px;
     margin-bottom: 8px;
+    padding-inline-start: 0;
   }
 
   #enterprisePrintersContainer {
@@ -106,6 +108,7 @@
     border-radius: 12px;
     display: flex;
     margin-bottom: 8px;
+    margin-inline: -6px;
     padding: 16px 12px;
   }
 
@@ -145,6 +148,11 @@
 
   #addPrinterSectionRevamp {
     height: 64px;
+    padding-inline-start: 20px;
+  }
+
+  #addPrinterSectionRevampContainer {
+    padding-top: 8px;
   }
 
   cr-button {
@@ -277,7 +285,8 @@
       </settings-cups-nearby-printers>
       <div id="addPrinterSectionRevamp" class="list-frame add-printer-section"
           hidden="[[!isPrinterSettingsRevampEnabled_]]">
-        <div class="layout horizontal center custom-list-item-top">
+        <div id="addPrinterSectionRevampContainer"
+            class="layout horizontal center custom-list-item-top">
           <cr-button on-click="onAddPrinterClick_"
               disabled="[[!addPrinterButtonActive_(canAddPrinter,
                   prefs.native_printing.user_native_printers_allowed.value)]]"
