@@ -357,7 +357,7 @@ void SystemInfoCardProvider::OnBatteryInfoUpdated(
   PopulatePowerStatus(proto.value(), *new_battery_health.get());
 
   std::u16string description = l10n_util::GetStringFUTF16(
-      IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION,
+      IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION_RIGHT,
       base::NumberToString16(new_battery_health->GetBatteryWearPercentage()),
       base::NumberToString16(new_battery_health->GetCycleCount()));
 

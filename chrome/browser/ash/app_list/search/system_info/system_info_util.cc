@@ -248,12 +248,13 @@ std::u16string CalculatePowerTime(
   std::u16string status_text;
   if (show_time) {
     status_text = l10n_util::GetStringFUTF16(
-        charging ? IDS_ASH_BATTERY_STATUS_CHARGING_IN_LAUNCHER_TITLE
-                 : IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_TITLE,
+        charging ? IDS_ASH_BATTERY_STATUS_CHARGING_IN_LAUNCHER_DESCRIPTION_LEFT
+                 : IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION_LEFT,
         base::NumberToString16(percent), GetBatteryTimeText(time_left));
   } else {
-    status_text = l10n_util::GetStringFUTF16(IDS_SETTINGS_BATTERY_STATUS_SHORT,
-                                             base::NumberToString16(percent));
+    status_text = l10n_util::GetStringFUTF16(
+        IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION_LEFT_SHORT,
+        base::NumberToString16(percent));
   }
   return status_text;
 }

@@ -1997,21 +1997,24 @@ Style notes:
         Version <ph name="VERSION_NAME">$1<ex>109.0.5414.125</ex></ph> (<ph name="OFFICIAL_STATUS">$2<ex>Official Build</ex></ph>) <ph name="CHANNEL_NAME">$3<ex>Beta</ex></ph> <ph name="PROCESSOR_VARIATION">$4<ex>(64-bit)</ex></ph>
       </message>
       <message name="IDS_ASH_CPU_IN_LAUNCHER_TITLE" desc="Message content for the title of the answer card with the current CPU system information in the launcher.">
-        CPU current usage: <ph name="CPU_USEAGE">$1<ex>89</ex></ph>%
+        CPU usage snapshot: <ph name="CPU_USEAGE">$1<ex>89</ex></ph>%
       </message>
       <message name="IDS_ASH_CPU_IN_LAUNCHER_DESCRIPTION" desc="Message content for the description of the answer card with the current CPU system information in the launcher.">
         Temperature: <ph name="TEMPERATURE">$1<ex>34</ex></ph>°C - Current speed: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ">$2<ex>1.52</ex></ph>GHz
       </message>
       <message name="IDS_ASH_MEMORY_USAGE_IN_LAUNCHER_DESCRIPTION" desc="Message content for the description of the answer card with the current memory usage information in the launcher.">
-        <ph name="USED_MEMORY">$1<ex>2.4 GB</ex></ph> of <ph name="TOTAL_MEMORY">$2<ex>7.6 GB</ex></ph> available
+        Memory <ph name="USED_MEMORY">$1<ex>2.4 GB</ex></ph> | <ph name="TOTAL_MEMORY">$2<ex>7.6 GB</ex></ph> total
       </message>
-      <message name="IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_TITLE" desc="Message content for the title of the battery answer card while the battery is discharging, showing the battery power as a percentage and the time left until the battery is empty.">
-        <ph name="BATTERY_PERCENTAGE">$1<ex>56</ex></ph>% | <ph name="TIME">$2<ex>2 hours and 20 minutes</ex></ph> left
+      <message name="IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION_LEFT_SHORT" desc="Message content for the short description on the left of the battery answer card.">
+        Battery <ph name="BATTERY_PERCENTAGE">$1<ex>56</ex></ph>%
       </message>
-      <message name="IDS_ASH_BATTERY_STATUS_CHARGING_IN_LAUNCHER_TITLE" desc="Message content for the title of the battery answer card while the battery is charging, showing the battery power as a percentage and the time left until the battery is full.">
-        <ph name="BATTERY_PERCENTAGE">$1<ex>56</ex></ph>% | <ph name="TIME">$2<ex>2 hours and 20 minutes</ex></ph> until full
+      <message name="IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION_LEFT" desc="Message content for the description on the left of the battery answer card while the battery is discharging, showing the battery power as a percentage and the time left until the battery is empty.">
+        Battery <ph name="BATTERY_PERCENTAGE">$1<ex>56</ex></ph>% | <ph name="TIME">$2<ex>2 hours and 20 minutes</ex></ph> left
       </message>
-      <message name="IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION" desc="Message content for the description of the battery answer card, showing the battery health percentage and the cycle count.">
+      <message name="IDS_ASH_BATTERY_STATUS_CHARGING_IN_LAUNCHER_DESCRIPTION_LEFT" desc="Message content for the description on the left of the battery answer card while the battery is charging, showing the battery power as a percentage and the time left until the battery is full.">
+        Battery <ph name="BATTERY_PERCENTAGE">$1<ex>56</ex></ph>% | <ph name="TIME">$2<ex>2 hours and 20 minutes</ex></ph> until full
+      </message>
+      <message name="IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION_RIGHT" desc="Message content for the description on the right of the battery answer card, showing the battery health percentage and the cycle count.">
         Battery health <ph name="BATTERY_HEALTH_PERCENTAGE">$1<ex>97</ex></ph>% | Cycle count <ph name="CYCLE_COUNT">$2<ex>15</ex></ph>
       </message>
       <message name="IDS_ASH_STORAGE_STATUS_IN_LAUNCHER_DESCRIPTION" desc="Message content for the description of the storage answer card, showing the amount of storage currently in use and the total storage size.">
