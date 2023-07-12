@@ -272,7 +272,7 @@ enum {
 
 const auto& SyncablePreferences() {
   // Non-iOS specific list of syncable preferences.
-  static const auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
+  static constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       base::StringPiece, sync_preferences::SyncablePrefMetadata>({
 #if BUILDFLAG(IS_ANDROID)
     {language::prefs::kAppLanguagePromptShown,
