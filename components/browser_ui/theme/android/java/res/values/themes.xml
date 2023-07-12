@@ -18,8 +18,8 @@ found in the LICENSE file.
         <item name="colorOnPrimary">@color/baseline_primary_100</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_90</item>
         <item name="colorOnPrimaryContainer">@color/baseline_primary_10</item>
-        <item name="colorSecondaryContainer">@color/baseline_secondary_100</item>
-        <item name="colorOnSecondaryContainer">@color/baseline_secondary_900</item>
+        <item name="colorSecondaryContainer">@color/baseline_secondary_90</item>
+        <item name="colorOnSecondaryContainer">@color/baseline_secondary_10</item>
         <item name="colorAccent">@macro/default_control_color_active</item>
         <item name="android:colorBackground">@color/baseline_neutral_100</item>
         <item name="colorOnBackground">@color/baseline_neutral_10</item>
@@ -118,8 +118,8 @@ found in the LICENSE file.
         <item name="colorOnPrimary">@color/baseline_primary_100</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_90</item>
         <item name="colorOnPrimaryContainer">@color/baseline_primary_10</item>
-        <item name="colorSecondaryContainer">@color/baseline_secondary_100</item>
-        <item name="colorOnSecondaryContainer">@color/baseline_secondary_900</item>
+        <item name="colorSecondaryContainer">@color/baseline_secondary_90</item>
+        <item name="colorOnSecondaryContainer">@color/baseline_secondary_10</item>
         <item name="colorAccent">@macro/default_control_color_active</item>
         <item name="android:colorBackground">@color/baseline_neutral_100</item>
         <item name="colorOnBackground">@color/baseline_neutral_10</item>
@@ -185,8 +185,8 @@ found in the LICENSE file.
         <item name="colorOnPrimary">@color/baseline_primary_100</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_90</item>
         <item name="colorOnPrimaryContainer">@color/baseline_primary_10</item>
-        <item name="colorSecondaryContainer">@color/baseline_secondary_100</item>
-        <item name="colorOnSecondaryContainer">@color/baseline_secondary_900</item>
+        <item name="colorSecondaryContainer">@color/baseline_secondary_90</item>
+        <item name="colorOnSecondaryContainer">@color/baseline_secondary_10</item>
         <item name="colorAccent">@macro/default_control_color_active</item>
         <item name="android:colorBackground">@color/baseline_neutral_100</item>
         <item name="colorOnBackground">@color/baseline_neutral_10</item>
