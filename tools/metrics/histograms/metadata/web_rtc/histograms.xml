@@ -1625,31 +1625,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.Simulcast.ApplyLocalDescription"
-    enum="SimulcastApiVersion" expires_after="2020-08-23">
-  <owner>amithi@chromium.org</owner>
-  <summary>
-    Was simulcast applied to the local description and with which API surface.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.Simulcast.ApplyRemoteDescription"
-    enum="SimulcastApiVersion" expires_after="2020-08-30">
-  <owner>amithi@chromium.org</owner>
-  <summary>
-    Was simulcast applied to the remote description and with which API surface.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.Simulcast.Disabled" units="units"
-    expires_after="M81">
-  <owner>amithi@chromium.org</owner>
-  <summary>
-    Simulcast was disabled because it is not supported by the remote party. This
-    is a counter that can take on only a single value (1).
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.PeerConnection.Simulcast.NumberOfSendEncodings"
     units="units" expires_after="2020-08-30">
   <owner>amithi@chromium.org</owner>
