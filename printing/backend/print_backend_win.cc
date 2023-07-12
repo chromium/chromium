@@ -319,7 +319,8 @@ class PrintBackendWin : public PrintBackend {
       const std::string& printer_name,
       const std::string& paper_vendor_id,
       const gfx::Size& paper_size_um) override;
-  std::string GetPrinterDriverInfo(const std::string& printer_name) override;
+  std::vector<std::string> GetPrinterDriverInfo(
+      const std::string& printer_name) override;
   bool IsValidPrinter(const std::string& printer_name) override;
 
  protected:
@@ -592,10 +593,11 @@ absl::optional<gfx::Rect> PrintBackendWin::GetPaperPrintableArea(
 }
 
 // Gets the information about driver for a specific printer.
-std::string PrintBackendWin::GetPrinterDriverInfo(
+std::vector<std::string> PrintBackendWin::GetPrinterDriverInfo(
     const std::string& printer_name) {
   ScopedPrinterHandle printer = GetPrinterHandle(printer_name);
-  return printer.IsValid() ? GetDriverInfo(printer.Get()) : std::string();
+  return printer.IsValid() ? GetDriverInfo(printer.Get())
+                           : std::vector<std::string>();
 }
 
 bool PrintBackendWin::IsValidPrinter(const std::string& printer_name) {

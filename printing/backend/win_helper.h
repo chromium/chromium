@@ -160,7 +160,8 @@ void SetGetDisplayNameFunction(
 COMPONENT_EXPORT(PRINT_BACKEND)
 bool InitBasicPrinterInfo(HANDLE printer, PrinterBasicInfo* printer_info);
 
-COMPONENT_EXPORT(PRINT_BACKEND) std::string GetDriverInfo(HANDLE printer);
+COMPONENT_EXPORT(PRINT_BACKEND)
+std::vector<std::string> GetDriverInfo(HANDLE printer);
 
 // Determines if the specified printer driver is known to cause a file save
 // UI dialog to be displayed when printing a document.

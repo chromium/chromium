@@ -183,10 +183,10 @@ absl::optional<gfx::Rect> TestPrintBackend::GetPaperPrintableArea(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-std::string TestPrintBackend::GetPrinterDriverInfo(
+std::vector<std::string> TestPrintBackend::GetPrinterDriverInfo(
     const std::string& printer_name) {
   // not implemented
-  return "";
+  return std::vector<std::string>();
 }
 
 bool TestPrintBackend::IsValidPrinter(const std::string& printer_name) {

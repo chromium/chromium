@@ -32,7 +32,8 @@ class PrintBackendChromeOS : public PrintBackend {
   mojom::ResultCode GetPrinterSemanticCapsAndDefaults(
       const std::string& printer_name,
       PrinterSemanticCapsAndDefaults* printer_info) override;
-  std::string GetPrinterDriverInfo(const std::string& printer_name) override;
+  std::vector<std::string> GetPrinterDriverInfo(
+      const std::string& printer_name) override;
   bool IsValidPrinter(const std::string& printer_name) override;
 
  protected:
@@ -57,10 +58,9 @@ mojom::ResultCode PrintBackendChromeOS::GetPrinterSemanticCapsAndDefaults(
   return mojom::ResultCode::kFailed;
 }
 
-std::string PrintBackendChromeOS::GetPrinterDriverInfo(
+std::vector<std::string> PrintBackendChromeOS::GetPrinterDriverInfo(
     const std::string& printer_name) {
-  NOTREACHED();
-  return std::string();
+  NOTREACHED_NORETURN();
 }
 
 mojom::ResultCode PrintBackendChromeOS::GetDefaultPrinterName(

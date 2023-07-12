@@ -331,8 +331,11 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
       const gfx::Size& paper_size_um) = 0;
 #endif
 
-  // Gets the information about driver for a specific printer.
-  virtual std::string GetPrinterDriverInfo(const std::string& printer_name) = 0;
+  // Gets the information about driver for a specific printer.  A maximum of
+  // 4 elements can be in the returned result, due to limitations on how this
+  // is intended to be used for crash keys by `ScopedPrinterInfo`.
+  virtual std::vector<std::string> GetPrinterDriverInfo(
+      const std::string& printer_name) = 0;
 
   // Returns true if printer_name points to a valid printer.
   virtual bool IsValidPrinter(const std::string& printer_name) = 0;

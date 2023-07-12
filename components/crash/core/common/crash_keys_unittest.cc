@@ -116,7 +116,7 @@ TEST_F(CrashKeysTest, FilterFlags) {
 TEST_F(CrashKeysTest, PrinterInfoReset) {
   // After ScopedPrinterInfo goes out of scope, printer keys should be reset.
   {
-    constexpr char kPrinterInfoFull[] = "1;2;3;4";
+    const std::vector<std::string> kPrinterInfoFull{"1", "2", "3", "4"};
     crash_keys::ScopedPrinterInfo keys(kPrinterInfoFull);
     EXPECT_EQ(GetCrashKeyValue("prn-info-1"), "1");
     EXPECT_EQ(GetCrashKeyValue("prn-info-2"), "2");
@@ -130,23 +130,14 @@ TEST_F(CrashKeysTest, PrinterInfoReset) {
 }
 
 TEST_F(CrashKeysTest, PrinterInfoContainsSemicolon) {
-  // Use of a crash keys string with ScopedPrinterInfo expects keys to be
-  // joined with a semicolon separator.  When the values provided from system
-  // calls already contain a semicolon then they can have an unintended effect
-  // of being split into two different keys.  In addition to not displaying the
-  // information as desired in crash reports, it is dangerous because too many
-  // keys from the printer info could cause a buffer overflow of the fixed
-  // printer crash keys.
+  // Provided data containing semicolons does not get split between keys.
   constexpr char kWithoutSemicolon[] = "printer name";
   constexpr char kWithSemicolon[] = "CUPS version 1.2; OS version 3.4";
-  std::string printer_info =
-      base::JoinString({kWithoutSemicolon, kWithSemicolon}, ";");
-  crash_keys::ScopedPrinterInfo keys(printer_info);
+  const std::vector<std::string> kPrinterInfo{kWithoutSemicolon,
+                                              kWithSemicolon};
+  crash_keys::ScopedPrinterInfo keys(kPrinterInfo);
   EXPECT_EQ(GetCrashKeyValue("prn-info-1"), kWithoutSemicolon);
-  // TODO(crbug.com/1458058):  Update expecations of "prn-info-2" and
-  // "prn-info-3" once the provided result for a single key can be guaranteed
-  // to be kept together.
-  EXPECT_NE(GetCrashKeyValue("prn-info-2"), kWithSemicolon);
-  EXPECT_FALSE(GetCrashKeyValue("prn-info-3").empty());
+  EXPECT_EQ(GetCrashKeyValue("prn-info-2"), kWithSemicolon);
+  EXPECT_TRUE(GetCrashKeyValue("prn-info-3").empty());
   EXPECT_TRUE(GetCrashKeyValue("prn-info-4").empty());
 }

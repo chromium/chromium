@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/types/optional_util.h"
@@ -32,7 +33,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -204,9 +204,9 @@ base::Value::Dict GetSettingsOnBlockingTaskRunner(
                                                 base::BlockingType::MAY_BLOCK);
 
   PRINTER_LOG(EVENT) << "Get printer capabilities start for " << device_name;
-  const std::string driver_info =
+  const std::vector<std::string> driver_info =
       print_backend->GetPrinterDriverInfo(device_name);
-  PRINTER_LOG(EVENT) << "Driver info: " << driver_info;
+  PRINTER_LOG(EVENT) << "Driver info: " << base::JoinString(driver_info, ";");
 
   crash_keys::ScopedPrinterInfo crash_key(driver_info);
 
