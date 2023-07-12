@@ -1572,6 +1572,25 @@ std::string ToString(CSPDirectiveName name) {
   return "";
 }
 
+bool AllowCspFromAllowOrigin(
+    const url::Origin& request_origin,
+    const network::mojom::AllowCSPFromHeaderValue* allow_csp_from) {
+  if (!allow_csp_from) {
+    return false;
+  }
+
+  if (allow_csp_from->is_allow_star()) {
+    return true;
+  }
+
+  if (allow_csp_from->is_origin() &&
+      request_origin.IsSameOriginWith(allow_csp_from->get_origin())) {
+    return true;
+  }
+
+  return false;
+}
+
 bool AllowsBlanketEnforcementOfRequiredCSP(
     const url::Origin& request_origin,
     const GURL& response_url,
@@ -1589,16 +1608,7 @@ bool AllowsBlanketEnforcementOfRequiredCSP(
     return true;
   }
 
-  if (!allow_csp_from)
-    return false;
-
-  if (allow_csp_from->is_allow_star()) {
-    required_csp->self_origin = ComputeSelfOrigin(response_url);
-    return true;
-  }
-
-  if (allow_csp_from->is_origin() &&
-      request_origin.IsSameOriginWith(allow_csp_from->get_origin())) {
+  if (AllowCspFromAllowOrigin(request_origin, allow_csp_from)) {
     required_csp->self_origin = ComputeSelfOrigin(response_url);
     return true;
   }
