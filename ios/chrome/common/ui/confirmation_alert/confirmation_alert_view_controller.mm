@@ -654,7 +654,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
 // Helper to create the subtitle view.
 - (UITextView*)createSubtitleView {
   if (!self.subtitleTextStyle) {
-    self.titleTextStyle = UIFontTextStyleBody;
+    self.subtitleTextStyle = UIFontTextStyleBody;
   }
   UITextView* subtitle = [self createTextView];
   subtitle.font = [UIFont preferredFontForTextStyle:self.subtitleTextStyle];
