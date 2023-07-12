@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_event_queue.h"
 
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -67,6 +68,7 @@ ServiceWorkerEventQueue::~ServiceWorkerEventQueue() {
 
 void ServiceWorkerEventQueue::Start() {
   DCHECK(!timer_.IsRunning());
+  timer_started_ = true;
   if (!HasInflightEvent() && !HasScheduledIdleCallback()) {
     // If no event happens until Start(), the idle callback should be scheduled.
     OnNoInflightEvent();
@@ -300,8 +302,19 @@ void ServiceWorkerEventQueue::UpdateStatus() {
 }
 
 void ServiceWorkerEventQueue::ScheduleIdleCallback(base::TimeDelta delay) {
-  DCHECK(!HasInflightEvent());
-  DCHECK(!HasScheduledIdleCallback());
+  CHECK(!HasInflightEvent());
+  CHECK(!HasScheduledIdleCallback());
+
+  if (!timer_started_) {
+    // TODO(crbug.com/1462568): After investigating crash bug, the following
+    // DumpWithoutCrashing should be removed.
+    static bool has_dumped_without_crashing = false;
+    if (!has_dumped_without_crashing) {
+      has_dumped_without_crashing = true;
+      SCOPED_CRASH_KEY_NUMBER("SWEventQueue", "delay", delay.InMilliseconds());
+      base::debug::DumpWithoutCrashing();
+    }
+  }
 
   // WTF::Unretained() is safe because the task runner will be destroyed
   // before |this| is destroyed at ServiceWorkerGlobalScope::Dispose().
