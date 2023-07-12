@@ -23,7 +23,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -84,7 +83,6 @@ public class CreditCardAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
     public void testCreditCardSheetAvailable_whenManualFallbackEnabled() {
         mHelper.loadTestPage(false);
 
@@ -96,10 +94,8 @@ public class CreditCardAccessoryIntegrationTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MANUAL_FALLBACK_FOR_VIRTUAL_CARDS})
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY,
-            ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
-    public void
-    testCreditCardSheetAvailable_whenManualFallbackForVirtualCardsEnabled() {
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
+    public void testCreditCardSheetAvailable_whenManualFallbackForVirtualCardsEnabled() {
         mHelper.loadTestPage(false);
 
         CriteriaHelper.pollUiThread(() -> {
@@ -109,19 +105,6 @@ public class CreditCardAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID,
-            ChromeFeatureList.AUTOFILL_ENABLE_MANUAL_FALLBACK_FOR_VIRTUAL_CARDS})
-    public void
-    testCreditCardSheetUnavailableWithoutFeature() {
-        mHelper.loadTestPage(false);
-
-        Assert.assertNull("Credit Card sheet should not have been created.",
-                mHelper.getOrCreateCreditCardAccessorySheet());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1182626
     public void testDisplaysEmptyStateMessageWithoutSavedCards() throws TimeoutException {
         mHelper.loadTestPage(false);
@@ -144,7 +127,6 @@ public class CreditCardAccessoryIntegrationTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
     @DisabledTest(message = "https://crbug.com/1392789, https://crbug.com/1182626")
     public void testFillsSuggestionOnClick() throws TimeoutException {
         loadTestPage(FakeKeyboard::new);

@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_ENABLE_MANUAL_FALLBACK_FOR_VIRTUAL_CARDS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KEYBOARD_EXTENSION_STATE;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.EXTENDING_KEYBOARD;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.FLOATING_BAR;
@@ -783,11 +781,7 @@ class ManualFillingMediator
         if (!isInitialized()) return false;
         switch (tabType) {
             case AccessoryTabType.CREDIT_CARDS:
-                return ChromeFeatureList.isEnabled(AUTOFILL_MANUAL_FALLBACK_ANDROID)
-                        || ChromeFeatureList.isEnabled(
-                                AUTOFILL_ENABLE_MANUAL_FALLBACK_FOR_VIRTUAL_CARDS);
             case AccessoryTabType.ADDRESSES:
-                return ChromeFeatureList.isEnabled(AUTOFILL_MANUAL_FALLBACK_ANDROID);
             case AccessoryTabType.PASSWORDS:
                 return true;
             case AccessoryTabType.OBSOLETE_TOUCH_TO_FILL:

@@ -145,7 +145,6 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
     public void testAccessorySheetShown() throws TimeoutException {
         mHelper.loadTestPage(false);
         // Register a sheet data provider so that sheet is available when needed.

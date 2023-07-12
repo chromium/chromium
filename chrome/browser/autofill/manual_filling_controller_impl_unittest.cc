@@ -78,11 +78,6 @@ class ManualFillingControllerTest : public testing::Test {
   ManualFillingControllerTest() = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {autofill::features::kAutofillManualFallbackAndroid},
-        /*disabled_features=*/{});
-
     ON_CALL(mock_pwd_controller_, RegisterFillingSourceObserver(_))
         .WillByDefault(SaveArg<0>(&pwd_source_observer_));
     ON_CALL(mock_cc_controller_, RegisterFillingSourceObserver(_))

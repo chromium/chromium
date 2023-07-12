@@ -29,7 +29,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +45,6 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 
@@ -91,7 +89,6 @@ public class AddressAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
     public void testAddressSheetIsAvailable() {
         mHelper.loadTestPage(false);
 
@@ -102,17 +99,6 @@ public class AddressAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
-    public void testAddressSheetUnavailableWithoutFeature() {
-        mHelper.loadTestPage(false);
-
-        Assert.assertNull("Address sheet should not have been created.",
-                mHelper.getOrCreateAddressAccessorySheet());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
     public void testDisplaysEmptyStateMessageWithoutSavedPasswords() throws TimeoutException {
         mHelper.loadTestPage(false);
 
@@ -131,7 +117,6 @@ public class AddressAccessoryIntegrationTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
     public void testFillsSuggestionOnClick() throws TimeoutException {
         loadTestPage(FakeKeyboard::new);
         mHelper.clickNodeAndShowKeyboard("NAME_FIRST", 1);

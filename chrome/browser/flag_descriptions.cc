@@ -3833,12 +3833,6 @@ const char kDrawEdgeToEdgeName[] = "DrawEdgeToEdge";
 const char kDrawEdgeToEdgeDescription[] =
     "Enables the Android feature Edge-to-Edge to draw below the Nav Bar.";
 
-const char kAutofillManualFallbackAndroidName[] =
-    "Enable Autofill manual fallback for Addresses and Payments (Android)";
-const char kAutofillManualFallbackAndroidDescription[] =
-    "If enabled, adds toggle for addresses and payments bottom sheet to the "
-    "keyboard accessory.";
-
 const char kEnableCommandLineOnNonRootedName[] =
     "Enable command line on non-rooted devices";
 const char kEnableCommandLineOnNoRootedDescription[] =

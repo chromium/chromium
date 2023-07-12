@@ -107,8 +107,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY,
-        ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
+@EnableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
 public class ManualFillingControllerTest {
     private static final int sKeyboardHeightDp = 100;
     private static final int sAccessoryHeightDp = 48;
