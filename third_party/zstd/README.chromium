@@ -4,7 +4,9 @@ URL: https://github.com/facebook/zstd
 Version: 25822342be59d831bad65426ae51f5cc22157b09
 License: BSD and GPLv2
 License File: src/LICENSE
+CPEPrefix: cpe:/a:facebook:zstandard:1.5.5
 Security Critical: yes
+Shipped: yes
 
 Description:
 Zstandard is a fast lossless compression algorithm, targeting real-time
