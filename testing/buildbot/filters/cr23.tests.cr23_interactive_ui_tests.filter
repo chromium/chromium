@@ -1,5 +1,6 @@
 # interactive_ui_tests that are run on the bots with the Chrome2023Refresh
 # feature flag enabled as the cr23_interactive_ui_tests test suite:
+AppMenuFullscreenInteractiveTest.*
 AppMenuModelInteractiveTest.*
 ExtensionsMenuModelInteractiveTest.*
 ExtensionsMenuModelPresenceTest.*
@@ -9,11 +10,13 @@ FullscreenTabSearchBubbleDialogTest.InvokeUi_default
 LocalCardMigrationBrowserTest.*
 MdTextButtonTest.*
 PasswordManagerMenuItemInteractiveTest.*
+PermissionIndicatorsInteractiveUITest.*
 PermissionsFlowInteractiveUITest.*
 PriceTrackingBubbleInteractiveTest.*
 PriceTrackingIconViewErrorHandelingTest.*
 PriceTrackingIconViewInteractiveTest.*
 TabDragging/DetachToBrowserTabDragControllerTest.*
+TabHoverCardInteractiveUiTest.*
 TabStripRegionViewBrowserTest.*
 TestMenuControllerUITest.*
 TouchableMenuItemViewTest.*
