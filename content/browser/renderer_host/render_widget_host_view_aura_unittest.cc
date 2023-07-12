@@ -553,6 +553,7 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
         site_instance_group_->GetSafeRef(), routing_id, /*hidden = */ false);
     delegates_.back()->set_widget_host(parent_host_);
 
+    // This is an owning pointer. Released manually in TearDownEnvironment().
     parent_view_ = new RenderWidgetHostViewAura(parent_host_);
     parent_view_->InitAsChild(nullptr);
     aura::client::ParentWindowWithContext(parent_view_->GetNativeView(),
@@ -612,10 +613,14 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
   }
 
   void TearDownEnvironment() {
+    parent_host_ = nullptr;  // Owned indirectly by `view_`, destroyed below.
+
     sink_ = nullptr;
-    if (view_)
-      DestroyView(view_);
-    parent_view_->Destroy();
+    widget_host_ = nullptr;  // Owned by `view_` destroyed below:
+    if (view_) {
+      DestroyView(view_.ExtractAsDangling());
+    }
+    parent_view_.ExtractAsDangling()->Destroy();
 
     process_host_->Cleanup();
     site_instance_group_.reset();
@@ -659,6 +664,10 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
 
   bool HasTouchEventHandlers(bool has_handlers) { return has_handlers; }
   bool HasHitTestableScrollbar(bool has_scrollbar) { return has_scrollbar; }
+
+  ui::InputMethod* GetInputMethod() const {
+    return parent_view_->GetInputMethod();
+  }
 
  protected:
   BrowserContext* browser_context() { return browser_context_.get(); }
@@ -718,13 +727,15 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
 
   // Tests should set these to nullptr if they've already triggered their
   // destruction.
-  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> parent_host_;
-  raw_ptr<RenderWidgetHostViewAura, DanglingUntriaged> parent_view_;
+  raw_ptr<RenderWidgetHostImpl> parent_host_ = nullptr;
+  // The `parent_view_` owns the object.
+  // Note: It would be great turning this into a std::unique_ptr<>.
+  raw_ptr<RenderWidgetHostViewAura> parent_view_ = nullptr;
 
-  // Tests should set these to nullptr if they've already triggered their
+  // Tests should set `view` to nullptr if they've already triggered their
   // destruction.
-  raw_ptr<MockRenderWidgetHostImpl, DanglingUntriaged> widget_host_;
-  raw_ptr<FakeRenderWidgetHostViewAura, DanglingUntriaged> view_;
+  raw_ptr<FakeRenderWidgetHostViewAura> view_;
+  raw_ptr<MockRenderWidgetHostImpl> widget_host_ = nullptr;  // Owned by `view_`
 
   raw_ptr<IPC::TestSink> sink_ = nullptr;
   base::test::ScopedFeatureList mojo_feature_list_;
@@ -1188,12 +1199,11 @@ TEST_F(RenderWidgetHostViewAuraTest, DestroyPopupClickOutsidePopup) {
 
   TestWindowObserver observer(window);
   ui::test::EventGenerator generator(window->GetRootWindow(), click_point);
+  widget_host_ = nullptr;  // Owned by `view_`.
+  view_ = nullptr;         // Self destroying during `ClickLeftButton`.
   generator.ClickLeftButton();
   ASSERT_TRUE(parent_view_->HasFocus());
   ASSERT_TRUE(observer.destroyed());
-
-  widget_host_ = nullptr;
-  view_ = nullptr;
 }
 
 // Checks that a popup view is destroyed when a user taps outside of the popup
@@ -1215,12 +1225,11 @@ TEST_F(RenderWidgetHostViewAuraTest, DestroyPopupTapOutsidePopup) {
 
   TestWindowObserver observer(window);
   ui::test::EventGenerator generator(window->GetRootWindow(), tap_point);
+  widget_host_ = nullptr;  // Owned by `view_`.
+  view_ = nullptr;         // Self destroying during `GestureTapAt`.
   generator.GestureTapAt(tap_point);
   ASSERT_TRUE(parent_view_->HasFocus());
   ASSERT_TRUE(observer.destroyed());
-
-  widget_host_ = nullptr;
-  view_ = nullptr;
 }
 #endif
 
@@ -1266,13 +1275,12 @@ TEST_F(RenderWidgetHostViewAuraTest, PopupClosesWhenParentLosesFocus) {
       dialog_window.get(), popup_window, gfx::Rect());
   dialog_window->Show();
   wm::ActivateWindow(dialog_window.get());
+  widget_host_ = nullptr;  // Owned by `view_`.
+  view_ = nullptr;         // Self destroying during `Focus` below:
   dialog_window->Focus();
 
   ASSERT_TRUE(wm::IsActiveWindow(dialog_window.get()));
   EXPECT_TRUE(observer.destroyed());
-
-  widget_host_ = nullptr;
-  view_ = nullptr;
 }
 
 // Checks that IME-composition-event state is maintained correctly.
@@ -5832,16 +5840,16 @@ class RenderWidgetHostViewAuraWithViewHarnessTest
   }
 
   void TearDown() override {
-    view_->Destroy();
+    view_.ExtractAsDangling()->Destroy();
     RenderViewHostImplTestHarness::TearDown();
   }
 
-  RenderWidgetHostViewAura* view() {
-    return view_;
-  }
+  RenderWidgetHostViewAura* view() { return view_; }
 
  private:
-  raw_ptr<RenderWidgetHostViewAura, DanglingUntriaged> view_;
+  // The `view_` pointer owns the object.
+  // Note: It would be great turning this into a std::unique_ptr<>.
+  raw_ptr<RenderWidgetHostViewAura> view_;
 };
 
 // Provides a mock implementation of the WebContentsViewDelegate class.
@@ -5963,52 +5971,57 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     RenderWidgetHostViewAuraTest::SetUp();
     InitializeAura();
 
-    widget_host_for_first_process_ =
+    MockRenderWidgetHostImpl* widget_host_for_process_1 =
         CreateRenderWidgetHostForSiteInstanceGroup(tab_site_instance_group());
-    view_for_first_process_ =
-        CreateViewForProcess(widget_host_for_first_process_);
+
+    view_for_first_process_ = CreateViewForProcess(widget_host_for_process_1);
 
     second_process_host_ = CreateNewProcessHost();
     second_site_instance_group_ =
         base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
             tab_site_instance_group(), second_process_host_.get()));
-    widget_host_for_second_process_ =
+    MockRenderWidgetHostImpl* widget_host_for_process_2 =
         CreateRenderWidgetHostForSiteInstanceGroup(
             second_site_instance_group_.get());
-    view_for_second_process_ =
-        CreateViewForProcess(widget_host_for_second_process_);
+    view_for_second_process_ = CreateViewForProcess(widget_host_for_process_2);
 
     third_process_host_ = CreateNewProcessHost();
     third_site_instance_group_ =
         base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
             tab_site_instance_group(), third_process_host_.get()));
-    widget_host_for_third_process_ = CreateRenderWidgetHostForSiteInstanceGroup(
-        third_site_instance_group_.get());
-    view_for_third_process_ =
-        CreateViewForProcess(widget_host_for_third_process_);
+    MockRenderWidgetHostImpl* widget_host_for_process_3 =
+        CreateRenderWidgetHostForSiteInstanceGroup(
+            third_site_instance_group_.get());
+    view_for_third_process_ = CreateViewForProcess(widget_host_for_process_3);
 
-    views_.insert(views_.begin(),
-                  {tab_view(), view_for_first_process_,
-                   view_for_second_process_, view_for_third_process_});
-    widget_hosts_.insert(
-        widget_hosts_.begin(),
-        {tab_widget_host(), widget_host_for_first_process_,
-         widget_host_for_second_process_, widget_host_for_third_process_});
+    views_.insert(views_.begin(), {
+                                      tab_view(),
+                                      view_for_first_process_.get(),
+                                      view_for_second_process_.get(),
+                                      view_for_third_process_.get(),
+                                  });
+    widget_hosts_.insert(widget_hosts_.begin(), {
+                                                    tab_widget_host(),
+                                                    widget_host_for_process_1,
+                                                    widget_host_for_process_2,
+                                                    widget_host_for_process_3,
+                                                });
     active_view_sequence_.insert(active_view_sequence_.begin(),
                                  {0, 1, 2, 1, 1, 3, 0, 3, 1});
   }
 
   void TearDown() override {
-    view_for_first_process_->Destroy();
+    view_for_first_process_.ExtractAsDangling()->Destroy();
+    view_for_second_process_.ExtractAsDangling()->Destroy();
+    view_for_third_process_.ExtractAsDangling()->Destroy();
 
-    view_for_second_process_->Destroy();
     second_process_host_->Cleanup();
-    second_site_instance_group_.reset();
-    second_process_host_.reset();
-
-    view_for_third_process_->Destroy();
     third_process_host_->Cleanup();
+
+    second_site_instance_group_.reset();
     third_site_instance_group_.reset();
+
+    second_process_host_.reset();
     third_process_host_.reset();
 
     RenderWidgetHostViewAuraTest::TearDown();
@@ -6072,18 +6085,15 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     InitViewForFrame(nullptr);
     view_->Show();
   }
-
-  raw_ptr<MockRenderWidgetHostImpl, DanglingUntriaged>
-      widget_host_for_first_process_;
-  raw_ptr<TestRenderWidgetHostView, DanglingUntriaged> view_for_first_process_;
   std::unique_ptr<MockRenderProcessHost> second_process_host_;
-  scoped_refptr<SiteInstanceGroup> second_site_instance_group_;
-  raw_ptr<MockRenderWidgetHostImpl> widget_host_for_second_process_;
-  raw_ptr<TestRenderWidgetHostView, DanglingUntriaged> view_for_second_process_;
   std::unique_ptr<MockRenderProcessHost> third_process_host_;
+
+  raw_ptr<TestRenderWidgetHostView> view_for_first_process_;
+  raw_ptr<TestRenderWidgetHostView> view_for_second_process_;
+  raw_ptr<TestRenderWidgetHostView> view_for_third_process_;
+
+  scoped_refptr<SiteInstanceGroup> second_site_instance_group_;
   scoped_refptr<SiteInstanceGroup> third_site_instance_group_;
-  raw_ptr<MockRenderWidgetHostImpl> widget_host_for_third_process_;
-  raw_ptr<TestRenderWidgetHostView, DanglingUntriaged> view_for_third_process_;
 };
 
 // A group of tests which verify that the IME method results are routed to the
@@ -6623,9 +6633,8 @@ class RenderWidgetHostViewAuraInputMethodTest
 
   ~RenderWidgetHostViewAuraInputMethodTest() override {}
   void SetUp() override {
-    input_method_ = new ui::MockInputMethod(nullptr);
-    // transfers ownership.
-    ui::SetUpInputMethodForTesting(input_method_);
+    // TODO(https://crbug.com/1463412) Pass as unique_ptr<>.
+    ui::SetUpInputMethodForTesting(new ui::MockInputMethod(nullptr));
     SetUpEnvironment();
     text_input_client_ = nullptr;
   }
@@ -6640,21 +6649,14 @@ class RenderWidgetHostViewAuraInputMethodTest
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
 
  protected:
-  // Not owned.
-  raw_ptr<ui::MockInputMethod, DanglingUntriaged> input_method_ = nullptr;
   raw_ptr<const ui::TextInputClient, DanglingUntriaged> text_input_client_;
 };
 
 // This test is for notifying InputMethod for surrounding text changes.
 TEST_F(RenderWidgetHostViewAuraInputMethodTest, OnCaretBoundsChanged) {
-  ui::InputMethod* input_method = parent_view_->GetInputMethod();
-  if (input_method != input_method_) {
-    // Some platforms don't support mocking input method. In that case, ignore this test.
-    return;
-  }
   ActivateViewForTextInputManager(parent_view_, ui::TEXT_INPUT_TYPE_TEXT);
-  input_method->SetFocusedTextInputClient(parent_view_);
-  input_method->AddObserver(this);
+  GetInputMethod()->SetFocusedTextInputClient(parent_view_);
+  GetInputMethod()->AddObserver(this);
 
   parent_view_->SelectionChanged(std::u16string(), 0, gfx::Range());
   EXPECT_EQ(parent_view_, text_input_client_);
@@ -6667,22 +6669,16 @@ TEST_F(RenderWidgetHostViewAuraInputMethodTest, OnCaretBoundsChanged) {
       /*bounding_box=*/gfx::Rect(), true);
   EXPECT_EQ(parent_view_, text_input_client_);
 
-  input_method->RemoveObserver(this);
+  GetInputMethod()->RemoveObserver(this);
 }
 
 // The input method should still receive caret bounds changes even if inputmode
 // is NONE. See crbug.com/1114559.
 TEST_F(RenderWidgetHostViewAuraInputMethodTest,
        OnCaretBoundsChangedInputModeNone) {
-  ui::InputMethod* input_method = parent_view_->GetInputMethod();
-  if (input_method != input_method_) {
-    // Some platforms don't support mocking input method. In that case, ignore
-    // this test.
-    return;
-  }
   ActivateViewForTextInputManager(parent_view_, ui::TEXT_INPUT_TYPE_TEXT);
-  input_method->SetFocusedTextInputClient(parent_view_);
-  input_method->AddObserver(this);
+  GetInputMethod()->SetFocusedTextInputClient(parent_view_);
+  GetInputMethod()->AddObserver(this);
 
   text_input_client_ = nullptr;
 
@@ -6696,7 +6692,7 @@ TEST_F(RenderWidgetHostViewAuraInputMethodTest,
 
   EXPECT_EQ(parent_view_, text_input_client_);
 
-  input_method->RemoveObserver(this);
+  GetInputMethod()->RemoveObserver(this);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
@@ -6778,21 +6774,23 @@ class RenderWidgetHostViewAuraKeyboardTest
 
   ~RenderWidgetHostViewAuraKeyboardTest() override {}
   void SetUp() override {
-    input_method_ = new RenderWidgetHostViewAuraKeyboardMockInputMethod();
-    // transfers ownership.
-    ui::SetUpInputMethodForTesting(input_method_);
+    // TODO(https://crbug.com/1463412) Pass as unique_ptr<>.
+    ui::SetUpInputMethodForTesting(
+        new RenderWidgetHostViewAuraKeyboardMockInputMethod());
     SetUpEnvironment();
   }
 
-  size_t keyboard_controller_observer_count() const {
-    return input_method_->keyboard_controller_observer_count();
+  RenderWidgetHostViewAuraKeyboardMockInputMethod* GetMockInputMethod() const {
+    return static_cast<RenderWidgetHostViewAuraKeyboardMockInputMethod*>(
+        GetInputMethod());
   }
-  bool IsKeyboardVisible() const { return input_method_->IsKeyboardVisible(); }
 
- private:
-  // Not owned.
-  raw_ptr<RenderWidgetHostViewAuraKeyboardMockInputMethod, DanglingUntriaged>
-      input_method_ = nullptr;
+  size_t keyboard_controller_observer_count() const {
+    return GetMockInputMethod()->keyboard_controller_observer_count();
+  }
+  bool IsKeyboardVisible() const {
+    return GetMockInputMethod()->IsKeyboardVisible();
+  }
 };
 #endif
 
