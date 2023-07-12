@@ -12,8 +12,8 @@
 #include "base/barrier_closure.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_service.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace password_manager {

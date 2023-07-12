@@ -424,11 +424,6 @@ extern const char kFeedExperimentTaggingDescription[];
 extern const char kFeedInvisibleForegroundRefreshName[];
 extern const char kFeedInvisibleForegroundRefreshDescription[];
 
-// Title and description for the flag to enable filling across affiliated
-// websites.
-extern const char kFillingAcrossAffiliatedWebsitesName[];
-extern const char kFillingAcrossAffiliatedWebsitesDescription[];
-
 // Title and description for the flag to set the default Following feed sort
 // type.
 extern const char kFollowingFeedDefaultSortTypeName[];

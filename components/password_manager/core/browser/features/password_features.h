@@ -26,6 +26,9 @@ BASE_DECLARE_FEATURE(kDisablePasswordsDropdownForCvcFields);
 
 BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
 
+BASE_DECLARE_FEATURE(kFillingAcrossAffiliatedWebsites);
+BASE_DECLARE_FEATURE(kFillingAcrossGroupedSites);
+
 }  // namespace password_manager::features
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FEATURES_PASSWORD_FEATURES_H_
