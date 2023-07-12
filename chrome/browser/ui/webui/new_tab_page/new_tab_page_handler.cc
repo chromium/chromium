@@ -164,9 +164,13 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   } else {
     text_color = color_provider.GetColor(kColorNewTabPageText);
     if (theme_provider->GetDisplayProperty(
-            ThemeProperties::NTP_LOGO_ALTERNATE) == 1) {
+            ThemeProperties::NTP_LOGO_ALTERNATE) == 1 ||
+        (features::IsChromeWebuiRefresh2023() &&
+         !theme_service->GetIsGrayscale() &&
+         theme_service->GetUserColor().has_value())) {
       theme->logo_color = color_provider.GetColor(kColorNewTabPageLogo);
     }
+
     most_visited->background_color =
         color_provider.GetColor(kColorNewTabPageMostVisitedTileBackground);
   }
