@@ -75,5 +75,8 @@ interface Performance : EventTarget {
     [Exposed=Window, SameObject, SaveSameObject] readonly attribute EventCounts eventCounts;
     [Exposed=Window, RuntimeEnabled=EventTimingInteractionCount] readonly attribute unsigned long long interactionCount;
 
+    // TODO(https://crbug.com/1457049): remove this once visited links are partitioned.
+    [RuntimeEnabled=SoftNavigationHeuristicsExposeFPAndFCP] readonly attribute boolean softNavPaintMetricsSupported;
+
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

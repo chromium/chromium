@@ -246,7 +246,10 @@ void SoftNavigationHeuristics::ResetPaintsIfNeeded(LocalFrame* frame,
     CHECK(local_frame_view);
 
     if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window)) {
-      if (Document* document = window->document()) {
+      if (Document* document = window->document();
+          document &&
+          RuntimeEnabledFeatures::SoftNavigationHeuristicsExposeFPAndFCPEnabled(
+              window)) {
         PaintTiming::From(*document).ResetFirstPaintAndFCP();
       }
       local_frame_view->GetPaintTimingDetector().RestartRecordingLCP();
