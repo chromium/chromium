@@ -68,25 +68,27 @@ std::string GetFileMimeType(const base::FilePath& path,
 
 std::pair<BinaryUploadService::Result, BinaryUploadService::Request::Data>
 GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
+  DCHECK(!path.empty());
+
+  // The returned `Data` must always have a valid `path` member, regardless
+  // if this function succeeds or not.  The other members of `Data` may or
+  // may not be filled in.
+  BinaryUploadService::Request::Data file_data;
+  file_data.path = path;
+
   // FLAG_WIN_SHARE_DELETE is necessary to allow the file to be renamed by the
   // user clicking "Open Now" without causing download errors.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                             base::File::FLAG_WIN_SHARE_DELETE);
 
   if (!file.IsValid()) {
-    return std::make_pair(BinaryUploadService::Result::UNKNOWN,
-                          BinaryUploadService::Request::Data());
+    return std::make_pair(BinaryUploadService::Result::UNKNOWN, file_data);
   }
 
-  size_t file_size = file.GetLength();
-  if (file_size == 0) {
-    return std::make_pair(BinaryUploadService::Result::SUCCESS,
-                          BinaryUploadService::Request::Data());
+  file_data.size = file.GetLength();
+  if (file_data.size == 0) {
+    return std::make_pair(BinaryUploadService::Result::SUCCESS, file_data);
   }
-
-  BinaryUploadService::Request::Data file_data;
-  file_data.size = file_size;
-  file_data.path = path;
 
   std::unique_ptr<crypto::SecureHash> secure_hash =
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);
@@ -94,12 +96,14 @@ GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
   std::string buf;
   buf.reserve(kReadFileChunkSize);
 
-  while (bytes_read < file_size) {
+  while (bytes_read < file_data.size) {
     int64_t bytes_currently_read =
         file.ReadAtCurrentPos(&buf[0], kReadFileChunkSize);
     if (bytes_currently_read == -1) {
-      return {BinaryUploadService::Result::UNKNOWN,
-              BinaryUploadService::Request::Data()};
+      // Reset the size to zero since some code assumes an UNKNOWN result is
+      // matched with a zero size.
+      file_data.size = 0;
+      return {BinaryUploadService::Result::UNKNOWN, file_data};
     }
 
     // Use the first read chunk to get the mimetype as necessary.
@@ -117,7 +121,7 @@ GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
   file_data.hash =
       base::HexEncode(base::as_bytes(base::make_span(file_data.hash)));
 
-  return {file_size <= BinaryUploadService::kMaxUploadSizeBytes
+  return {file_data.size <= BinaryUploadService::kMaxUploadSizeBytes
               ? BinaryUploadService::Result::SUCCESS
               : BinaryUploadService::Result::FILE_TOO_LARGE,
           std::move(file_data)};
@@ -155,6 +159,7 @@ FileAnalysisRequest::FileAnalysisRequest(
       path_(std::move(path)),
       file_name_(std::move(file_name)),
       delay_opening_file_(delay_opening_file) {
+  DCHECK(!path_.empty());
   set_filename(path_.AsUTF8Unsafe());
   cached_data_.mime_type = std::move(mime_type);
 }
@@ -202,6 +207,9 @@ bool FileAnalysisRequest::HasMalwareRequest() const {
 
 void FileAnalysisRequest::OnGotFileData(
     std::pair<BinaryUploadService::Result, Data> result_and_data) {
+  DCHECK(!result_and_data.second.path.empty());
+  DCHECK_EQ(result_and_data.second.path, path_);
+
   scoped_file_access_.reset();
   if (result_and_data.first != BinaryUploadService::Result::SUCCESS) {
     CacheResultAndData(result_and_data.first,
@@ -261,6 +269,7 @@ void FileAnalysisRequest::CacheResultAndData(BinaryUploadService::Result result,
   if (!cached_data_.mime_type.empty())
     data.mime_type = std::move(cached_data_.mime_type);
 
+  DCHECK(!data.path.empty());
   cached_data_ = std::move(data);
 
   set_digest(cached_data_.hash);
@@ -269,14 +278,7 @@ void FileAnalysisRequest::CacheResultAndData(BinaryUploadService::Result result,
 
 void FileAnalysisRequest::RunCallback() {
   if (!data_callback_.is_null()) {
-    // Manually copy `cached_data_` since it is move-only.
-    BinaryUploadService::Request::Data data;
-    data.hash = cached_data_.hash;
-    data.mime_type = cached_data_.mime_type;
-    data.path = cached_data_.path;
-    data.size = cached_data_.size;
-
-    std::move(data_callback_).Run(cached_result_, std::move(data));
+    std::move(data_callback_).Run(cached_result_, cached_data_);
   }
 }
 

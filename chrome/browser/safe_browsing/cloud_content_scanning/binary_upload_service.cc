@@ -89,6 +89,7 @@ BinaryUploadService::Request::Data::operator=(
   path = other.path;
   hash = other.hash;
   size = other.size;
+  mime_type = other.mime_type;
   page = other.page.Duplicate();
   return *this;
 }

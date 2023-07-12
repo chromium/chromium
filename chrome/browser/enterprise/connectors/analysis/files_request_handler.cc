@@ -231,6 +231,13 @@ void FilesRequestHandler::OnGotFileInfo(
     return;
   }
 
+  // Don't bother sending empty files for deep scanning.
+  if (data.size == 0) {
+    FinishRequestEarly(std::move(request),
+                       safe_browsing::BinaryUploadService::Result::SUCCESS);
+    return;
+  }
+
   // If |throttled_| is true, then the file shouldn't be upload since the server
   // is receiving too many requests.
   if (throttled_) {
@@ -277,8 +284,12 @@ void FilesRequestHandler::FileRequestCallback(
     size_t index,
     safe_browsing::BinaryUploadService::Result upload_result,
     enterprise_connectors::ContentAnalysisResponse response) {
-  // Remember to send an ack for this response.
-  if (upload_result == safe_browsing::BinaryUploadService::Result::SUCCESS) {
+  // Remember to send an ack for this response.  It's possible for the response
+  // to be empty and have no request token.  This may happen if Chrome decides
+  // to allow the file without uploading with the binary upload service.  For
+  // example, zero length files.
+  if (upload_result == safe_browsing::BinaryUploadService::Result::SUCCESS &&
+      response.has_request_token()) {
     request_tokens_to_ack_final_actions_[response.request_token()] =
         GetAckFinalAction(response);
   }

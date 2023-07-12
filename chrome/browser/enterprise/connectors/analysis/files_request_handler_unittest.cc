@@ -372,6 +372,24 @@ TEST_F(FilesRequestHandlerTest, Empty) {
   EXPECT_EQ(0u, results->size());
 }
 
+TEST_F(FilesRequestHandlerTest, ZeroLengthFileSucceeds) {
+  GURL url(kTestUrl);
+
+  std::vector<base::FilePath> paths =
+      CreateFilesForTest({FILE_PATH_LITERAL("zerolength.doc")}, "");
+  PathFailsDeepScan(
+      paths[0],
+      test::FakeContentAnalysisDelegate::MalwareResponse(TriggeredRule::BLOCK));
+
+  auto results = ScanUpload(paths);
+  ASSERT_TRUE(results.has_value());
+
+  EXPECT_EQ(1u, results->size());
+  EXPECT_THAT((*results)[0],
+              MatchesRequestHandlerResult(
+                  true, FinalContentAnalysisResult::SUCCESS, ""));
+}
+
 TEST_F(FilesRequestHandlerTest, FileDataPositiveMalwareAndDlpVerdicts) {
   GURL url(kTestUrl);
 
