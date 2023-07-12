@@ -7588,13 +7588,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Linux.SystemTheme.Default" enum="Ui.SystemTheme"
     expires_after="2023-12-10">
-  <owner>thomasanderson@google.com</owner>
+  <owner>thomasanderson@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
   <summary>The default system theme. Logged once on startup.</summary>
 </histogram>
 
 <histogram name="Linux.SystemTheme.Profile" enum="Ui.SystemTheme"
     expires_after="M120">
-  <owner>thomasanderson@google.com</owner>
+  <owner>thomasanderson@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
   <summary>
     The per-profile system theme. Logged once for each profile on startup, and
     whenever the system theme changes.
