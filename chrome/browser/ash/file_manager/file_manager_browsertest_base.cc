@@ -862,6 +862,7 @@ ash::LoggedInUserMixin::LogInType LogInTypeFor(
       // TODO(crbug.com/1061742): `base::ImmediateCrash` is necessary.
       base::ImmediateCrash();
     case kEnterprise:
+    case kGoogler:
       return ash::LoggedInUserMixin::LogInType::kRegular;
     case kChild:
       return ash::LoggedInUserMixin::LogInType::kChild;
@@ -882,9 +883,10 @@ absl::optional<AccountId> AccountIdFor(TestAccountType test_account_type) {
       return AccountId::FromUserEmailGaiaId(
           FakeGaiaMixin::kEnterpriseUser1,
           FakeGaiaMixin::kEnterpriseUser1GaiaId);
+    case kGoogler:
+      return AccountId::FromUserEmailGaiaId(
+          "user@google.com", FakeGaiaMixin::kEnterpriseUser1GaiaId);
     case kChild:
-      // Use the default account provided by `LoggedInUserMixin`.
-      return absl::nullopt;
     case kNonManaged:
     case kNonManagedNonOwner:
       // Use the default account provided by `LoggedInUserMixin`.

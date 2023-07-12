@@ -49,6 +49,7 @@ enum TestAccountType {
   kNonManaged,
   // Non-managed account as a non owner profile on a device.
   kNonManagedNonOwner,
+  kGoogler,
 };
 enum DeviceMode { kDeviceModeNotSet, kConsumerOwned, kEnrolled };
 

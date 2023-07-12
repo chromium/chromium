@@ -377,6 +377,9 @@ struct TestCase {
       case kNonManagedNonOwner:
         full_name += "_AccountTypeNonManagedNonOwner";
         break;
+      case kGoogler:
+        full_name += "_AccountTypeGoogler";
+        break;
     }
 
     return full_name;
@@ -458,6 +461,7 @@ class LoggedInUserFilesAppBrowserTest : public FilesAppBrowserTest {
         case kEnterprise:
         case kChild:
         case kNonManaged:
+        case kGoogler:
           owner_email = logged_in_user_mixin_->GetAccountId().GetUserEmail();
           break;
         case kNonManagedNonOwner:
@@ -1848,7 +1852,35 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveGoogleOneOfferBannerDisabled")
             .EnableGoogleOneOfferFilesBanner()
             .SetDeviceMode(kConsumerOwned)
-            .SetTestAccountType(kNonManagedNonOwner)));
+            .SetTestAccountType(kNonManagedNonOwner),
+        TestCase("driveBulkPinningBannerDisabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kConsumerOwned)
+            .SetTestAccountType(TestAccountType::kEnterprise),
+        TestCase("driveBulkPinningBannerDisabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kConsumerOwned)
+            .SetTestAccountType(TestAccountType::kChild),
+        TestCase("driveBulkPinningBannerDisabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kEnrolled)
+            .SetTestAccountType(TestAccountType::kChild),
+        TestCase("driveBulkPinningBannerDisabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kEnrolled)
+            .SetTestAccountType(TestAccountType::kEnterprise),
+        TestCase("driveBulkPinningBannerEnabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kConsumerOwned)
+            .SetTestAccountType(TestAccountType::kNonManaged),
+        TestCase("driveBulkPinningBannerEnabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kConsumerOwned)
+            .SetTestAccountType(TestAccountType::kNonManagedNonOwner),
+        TestCase("driveBulkPinningBannerEnabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kEnrolled)
+            .SetTestAccountType(TestAccountType::kGoogler)));
 
 #define FILE_TRANSFER_TEST_CASE(name) \
   TestCase(name).EnableFileTransferConnector()

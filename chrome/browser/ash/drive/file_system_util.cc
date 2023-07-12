@@ -28,9 +28,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 using content::BrowserThread;
@@ -121,11 +123,29 @@ bool IsDriveEnabledForProfile(const Profile* const profile) {
 
 bool IsDriveFsBulkPinningEnabled(const Profile* const profile) {
   DCHECK(profile);
-  if (profile->GetProfilePolicyConnector()->IsManaged()) {
-    return false;
+  bool is_enabled = !profile->GetProfilePolicyConnector()->IsManaged() &&
+                    ash::features::IsDriveFsBulkPinningEnabled();
+
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  if (!user_manager) {
+    return is_enabled;
   }
 
-  return ash::features::IsDriveFsBulkPinningEnabled();
+  user_manager::User* user = user_manager->GetActiveUser();
+  if (!user) {
+    return is_enabled;
+  }
+
+  // For Googlers, only rely on the feature flag not the feature management
+  // flag. This enables dogfooding for Googlers and that the regular feature
+  // flag can be kill switched if needed.
+  // TODO(b/290727126): Update this check in time for M117 branch.
+  if (profile->GetProfilePolicyConnector()->IsManaged() &&
+      gaia::IsGoogleInternalAccountEmail(user->GetAccountId().GetUserEmail())) {
+    return base::FeatureList::IsEnabled(ash::features::kDriveFsBulkPinning);
+  }
+
+  return is_enabled;
 }
 
 ConnectionStatusType GetDriveConnectionStatus(Profile* profile) {

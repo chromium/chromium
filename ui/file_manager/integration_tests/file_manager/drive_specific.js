@@ -1860,3 +1860,49 @@ testcase.driveDirtyItemsShouldBeDisplayedAsQueued = async () => {
       appId,
       '#file-list [file-name="dirty.txt"][data-sync-status=in_progress]');
 };
+
+/**
+ * Tests that the Drive bulk pinning banner is disabled (i.e. doesn't appear
+ * between the Drive welcome banner but before the Holding space banner).
+ */
+testcase.driveBulkPinningBannerDisabled = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+
+  // Visibility of a banner is controlled with hidden attribute once it gets
+  // attached to the DOM.
+  await remoteCall.waitForElement(appId, 'drive-welcome-banner:not([hidden])');
+
+  // extra-button (get perk button) is provided by google-one-offer-banner.
+  await remoteCall.waitAndClickElement(
+      appId, ['drive-welcome-banner', 'educational-banner', '#dismiss-button']);
+
+  await remoteCall.waitForElement(appId, 'drive-welcome-banner[hidden]');
+  // Check: If Google One offer banner is shown, Drive welcome banner should not
+  // be shown. Holding space welcome banner is the next one after the Drive
+  // welcome banner.
+  await remoteCall.waitForElement(
+      appId, 'holding-space-welcome-banner:not([hidden])');
+};
+
+/**
+ * Tests that the Drive bulk pinning banner is enabled (i.e. it appears directly
+ * after the Drive welcome banner).
+ */
+testcase.driveBulkPinningBannerEnabled = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+
+  // Visibility of a banner is controlled with hidden attribute once it gets
+  // attached to the DOM.
+  await remoteCall.waitForElement(appId, 'drive-welcome-banner:not([hidden])');
+
+  // extra-button (get perk button) is provided by google-one-offer-banner.
+  await remoteCall.waitAndClickElement(
+      appId, ['drive-welcome-banner', 'educational-banner', '#dismiss-button']);
+
+  await remoteCall.waitForElement(appId, 'drive-welcome-banner[hidden]');
+  // Check: If Google One offer banner is shown, Drive welcome banner should not
+  // be shown. Holding space welcome banner is the next one after the Drive
+  // welcome banner.
+  await remoteCall.waitForElement(
+      appId, 'drive-bulk-pinning-banner:not([hidden])');
+};
