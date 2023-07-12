@@ -177,7 +177,6 @@ class MODULES_EXPORT IDBValueWrapper {
 
   // Used to serialize the wrapped value. Exposed for testing.
   static void WriteVarInt(unsigned value, Vector<char>& output);
-  static void WriteBytes(const Vector<uint8_t>& bytes, Vector<char>& output);
 
  private:
   // V8 value serialization state.

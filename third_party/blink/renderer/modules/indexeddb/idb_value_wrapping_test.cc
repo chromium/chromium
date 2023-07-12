@@ -153,35 +153,6 @@ TEST(IDBValueWrapperTest, WriteVarIntMultiByteEdgeCases) {
   output.clear();
 }
 
-TEST(IDBValueWrapperTest, WriteBytes) {
-  Vector<char> output;
-
-  Vector<uint8_t> empty;
-  IDBValueWrapper::WriteBytes(empty, output);
-  ASSERT_EQ(1U, output.size());
-  EXPECT_EQ('\x00', output.data()[0]);
-  output.clear();
-
-  Vector<uint8_t> one_char;
-  one_char.Append("\x42", 1);
-  IDBValueWrapper::WriteBytes(one_char, output);
-  ASSERT_EQ(2U, output.size());
-  EXPECT_EQ('\x01', output.data()[0]);
-  EXPECT_EQ('\x42', output.data()[1]);
-  output.clear();
-
-  Vector<uint8_t> long_vector;
-  for (int i = 0; i < 256; ++i)
-    long_vector.push_back(static_cast<uint8_t>(i));
-  IDBValueWrapper::WriteBytes(long_vector, output);
-  ASSERT_EQ(258U, output.size());
-  EXPECT_EQ('\x80', output.data()[0]);
-  EXPECT_EQ('\x02', output.data()[1]);
-  EXPECT_TRUE(std::equal(long_vector.begin(), long_vector.end(),
-                         reinterpret_cast<const uint8_t*>(output.data() + 2)));
-  output.clear();
-}
-
 // Friend class of IDBValueUnwrapper with access to its internals.
 class IDBValueUnwrapperReadTestHelper {
   STACK_ALLOCATED();

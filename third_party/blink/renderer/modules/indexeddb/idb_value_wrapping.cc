@@ -104,13 +104,6 @@ void IDBValueWrapper::WriteVarInt(unsigned value, Vector<char>& output) {
   output.back() &= 0x7F;
 }
 
-// static
-void IDBValueWrapper::WriteBytes(const Vector<uint8_t>& bytes,
-                                 Vector<char>& output) {
-  IDBValueWrapper::WriteVarInt(bytes.size(), output);
-  output.Append(bytes.data(), bytes.size());
-}
-
 void IDBValueWrapper::DoneCloning() {
 #if DCHECK_IS_ON()
   DCHECK(!had_exception_) << __func__
