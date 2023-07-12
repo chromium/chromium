@@ -327,6 +327,9 @@ void CompanionPageHandler::OnExpsOptInStatusAvailable(bool is_exps_opted_in) {
 
 void CompanionPageHandler::OnOpenInNewTabButtonURLChanged(
     const GURL& url_to_open) {
+  if (!web_contents()) {
+    return;
+  }
   auto* companion_helper =
       companion::CompanionTabHelper::FromWebContents(web_contents());
   DCHECK(companion_helper);
