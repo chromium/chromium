@@ -181,6 +181,9 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // Returns a Value::List representing Nigori node.
   void GetNigoriNodeForDebugging(AllNodesCallback callback);
 
+  // Returns types that have local changes yet to be synced to the server.
+  ModelTypeSet GetTypesWithUnsyncedData() const;
+
   bool HasUnsyncedItemsForTest() const;
 
   // Called on each device infos change and might be called more than once with

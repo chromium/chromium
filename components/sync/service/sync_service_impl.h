@@ -152,6 +152,8 @@ class SyncServiceImpl : public SyncService,
   void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) override;
   ModelTypeDownloadStatus GetDownloadStatusFor(ModelType type) const override;
+  void GetTypesWithUnsyncedData(
+      base::OnceCallback<void(ModelTypeSet)> callback) const override;
 
   // SyncEngineHost implementation.
   void OnEngineInitialized(bool success,

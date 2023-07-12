@@ -155,6 +155,11 @@ class SyncEngine : public ModelTypeConfigurer {
   // Returns current detailed status information.
   virtual const SyncStatus& GetDetailedStatus() const = 0;
 
+  // Returns types that have local changes yet to be synced to the server.
+  // ONLY CALL THIS IF OnInitializationComplete was called!
+  virtual void GetTypesWithUnsyncedData(
+      base::OnceCallback<void(ModelTypeSet)> cb) const = 0;
+
   // Determines if the underlying sync engine has made any local changes to
   // items that have not yet been synced with the server.
   // ONLY CALL THIS IF OnInitializationComplete was called!

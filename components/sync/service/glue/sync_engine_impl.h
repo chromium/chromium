@@ -94,6 +94,8 @@ class SyncEngineImpl : public SyncEngine,
   void DisconnectDataType(ModelType type) override;
   void SetProxyTabsDatatypeEnabled(bool enabled) override;
   const Status& GetDetailedStatus() const override;
+  void GetTypesWithUnsyncedData(
+      base::OnceCallback<void(ModelTypeSet)> cb) const override;
   void HasUnsyncedItemsForTest(
       base::OnceCallback<void(bool)> cb) const override;
   void GetThrottledDataTypesForTest(

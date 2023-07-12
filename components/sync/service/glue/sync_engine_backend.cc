@@ -508,6 +508,12 @@ bool SyncEngineBackend::HasUnsyncedItemsForTest() const {
   return sync_manager_->HasUnsyncedItemsForTest();
 }
 
+ModelTypeSet SyncEngineBackend::GetTypesWithUnsyncedData() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(sync_manager_);
+  return sync_manager_->GetTypesWithUnsyncedData();
+}
+
 void SyncEngineBackend::LoadAndConnectNigoriController() {
   // The controller for Nigori is not exposed to the UI thread or the
   // DataTypeManager, so we need to start it here manually.

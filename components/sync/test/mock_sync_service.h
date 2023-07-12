@@ -142,6 +142,10 @@ class MockSyncService : public SyncService {
               GetDownloadStatusFor,
               (ModelType type),
               (const override));
+  MOCK_METHOD(void,
+              GetTypesWithUnsyncedData,
+              (base::OnceCallback<void(ModelTypeSet)>),
+              (const override));
 
   // KeyedService implementation.
   MOCK_METHOD(void, Shutdown, (), (override));

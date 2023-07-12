@@ -2340,4 +2340,9 @@ void SyncServiceImpl::DownloadStatusRecorder::OnTimeout() {
   std::move(on_finished_callback_).Run();
 }
 
+void SyncServiceImpl::GetTypesWithUnsyncedData(
+    base::OnceCallback<void(ModelTypeSet)> callback) const {
+  engine_->GetTypesWithUnsyncedData(std::move(callback));
+}
+
 }  // namespace syncer

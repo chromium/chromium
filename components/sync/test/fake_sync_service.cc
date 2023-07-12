@@ -181,4 +181,9 @@ bool FakeSyncService::IsSyncFeatureConsideredRequested() const {
 
 void FakeSyncService::Shutdown() {}
 
+void FakeSyncService::GetTypesWithUnsyncedData(
+    base::OnceCallback<void(ModelTypeSet)> cb) const {
+  std::move(cb).Run(ModelTypeSet());
+}
+
 }  // namespace syncer

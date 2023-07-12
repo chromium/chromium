@@ -351,4 +351,13 @@ void TestSyncService::Shutdown() {
     observer.OnSyncShutdown(this);
 }
 
+void TestSyncService::SetTypesWithUnsyncedData(const ModelTypeSet& types) {
+  unsynced_types_ = types;
+}
+
+void TestSyncService::GetTypesWithUnsyncedData(
+    base::OnceCallback<void(ModelTypeSet)> cb) const {
+  std::move(cb).Run(unsynced_types_);
+}
+
 }  // namespace syncer

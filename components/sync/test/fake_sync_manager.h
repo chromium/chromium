@@ -101,6 +101,7 @@ class FakeSyncManager : public SyncManager {
   std::string cache_guid() override;
   std::string birthday() override;
   std::string bag_of_chips() override;
+  ModelTypeSet GetTypesWithUnsyncedData() override;
   bool HasUnsyncedItemsForTest() override;
   SyncEncryptionHandler* GetEncryptionHandler() override;
   std::vector<std::unique_ptr<ProtocolEvent>> GetBufferedProtocolEvents()

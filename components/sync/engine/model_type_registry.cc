@@ -140,6 +140,12 @@ KeystoreKeysHandler* ModelTypeRegistry::keystore_keys_handler() {
   return sync_encryption_handler_->GetKeystoreKeysHandler();
 }
 
+ModelTypeSet ModelTypeRegistry::GetTypesWithUnsyncedData() const {
+  // TODO(crbug.com/1447032): Implementation and tests.
+  NOTIMPLEMENTED();
+  return ModelTypeSet();
+}
+
 bool ModelTypeRegistry::HasUnsyncedItems() const {
   // For model type workers, we ask them individually.
   for (const std::unique_ptr<ModelTypeWorker>& worker :

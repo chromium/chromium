@@ -220,4 +220,9 @@ void FakeSyncManager::UpdateActiveDevicesInvalidationInfo(
   // Do nothing.
 }
 
+ModelTypeSet FakeSyncManager::GetTypesWithUnsyncedData() {
+  NOTIMPLEMENTED();
+  return ModelTypeSet();
+}
+
 }  // namespace syncer

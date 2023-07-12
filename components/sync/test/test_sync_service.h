@@ -70,6 +70,7 @@ class TestSyncService : public SyncService {
   void SetIsUsingExplicitPassphrase(bool enabled);
   void SetDownloadStatusFor(const ModelTypeSet& types,
                             ModelTypeDownloadStatus download_status);
+  void SetTypesWithUnsyncedData(const ModelTypeSet& types);
 
   void FireStateChanged();
   void FirePaymentsIntegrationEnabledChanged();
@@ -129,6 +130,8 @@ class TestSyncService : public SyncService {
       base::OnceCallback<void(base::Value::List)> callback) override;
   ModelTypeDownloadStatus GetDownloadStatusFor(ModelType type) const override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
+  void GetTypesWithUnsyncedData(
+      base::OnceCallback<void(ModelTypeSet)> cb) const override;
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -161,6 +164,8 @@ class TestSyncService : public SyncService {
   base::ObserverList<SyncServiceObserver>::Unchecked observers_;
 
   GURL sync_service_url_;
+
+  ModelTypeSet unsynced_types_;
 };
 
 }  // namespace syncer

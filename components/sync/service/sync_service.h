@@ -408,6 +408,12 @@ class SyncService : public KeyedService {
   // implementation may return a sensible likely value.
   virtual ModelTypeSet GetTypesWithPendingDownloadForInitialSync() const = 0;
 
+  // Returns the datatypes which have local changes that have not yet been
+  // synced with the server.
+  // Note: This includes deletions as well.
+  virtual void GetTypesWithUnsyncedData(
+      base::OnceCallback<void(ModelTypeSet)> callback) const = 0;
+
   //////////////////////////////////////////////////////////////////////////////
   // ACTIONS / STATE CHANGE REQUESTS
   //////////////////////////////////////////////////////////////////////////////
