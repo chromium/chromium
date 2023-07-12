@@ -230,8 +230,8 @@ void CompanionMetricsLogger::FlushStats() {
     ukm_builder.SetPH_LastEvent(static_cast<int64_t>(iter->second.last_event));
   }
 
-  // PHResult surface shown after PH request was made by clicking the generate
-  // button.
+  // PHResult surface shown after PH request was made by clicking the
+  // generate button.
   iter = ui_surface_metrics_.find(UiSurface::kPHResult);
   if (iter != ui_surface_metrics_.end()) {
     ukm_builder.SetPHResult_LastEvent(

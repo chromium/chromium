@@ -137,6 +137,52 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Companion.VisualQuery.ClassificationInitStatus"
+    enum="Companion.VisualQuery.InitStatus" expires_after="2023-10-20">
+  <owner>srna@google.com</owner>
+  <owner>pstjuste@google.com</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records whether classification initialization succeeded or failed, along
+    with a cause for failure. Recorded as soon as classification start has
+    aborted, or after IPC is made if all preliminary steps were successful.
+  </summary>
+</histogram>
+
+<histogram name="Companion.VisualQuery.ClassificationLatency" units="ms"
+    expires_after="2023-10-20">
+  <owner>srna@google.com</owner>
+  <owner>pstjuste@google.com</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records the latency of the classifer host in completing classification.
+    Recorded after the classification results are sent to the callback.
+  </summary>
+</histogram>
+
+<histogram name="Companion.VisualQuery.ClassifierInitializationLatency"
+    units="ms" expires_after="2023-10-20">
+  <owner>srna@google.com</owner>
+  <owner>pstjuste@google.com</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records the latency of the classifier host in actually starting
+    classification. Recorded after IPC is made and as soon as the remote
+    interface begins Visual Query classification.
+  </summary>
+</histogram>
+
+<histogram name="Companion.VisualQuery.ClassifierModelAvailable"
+    enum="BooleanAvailable" expires_after="2023-10-20">
+  <owner>srna@google.com</owner>
+  <owner>pstjuste@google.com</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records whether the classifier model is available and valid. Recorded as
+    soon as classification with model has started.
+  </summary>
+</histogram>
+
 <histogram name="Companion.{UiSurface}.ChildElementCount" units="Index"
     expires_after="2023-10-20">
   <owner>shaktisahu@chromium.org</owner>
