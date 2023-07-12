@@ -1194,7 +1194,7 @@ Usage: Applies to arguments of methods. See modules/webgl/WebGLRenderingContextB
 ### [IsolatedContext]
 
 Summary: Interfaces and interface members with a `IsolatedContext` extended attribute are exposed only inside isolated contexts.
-This attribute is primarily intended for Isolated Apps (see [explainer](https://github.com/reillyeon/isolated-web-apps)) with an option for the embedder to include their own additional scenarios.
+This attribute is primarily intended for Isolated Web Apps (see [explainer](https://github.com/WICG/isolated-web-apps)) with an option for the embedder to include their own additional scenarios.
 
 Note that it's likely for these requirements to shift over time: <https://crbug.com/1206150>.
 
