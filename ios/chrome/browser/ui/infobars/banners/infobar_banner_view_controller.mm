@@ -485,7 +485,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   AddSameCenterConstraints(iconContainerView, backgroundIconView);
   AddSameCenterConstraints(iconContainerView, iconImageView);
 
-  return iconImageView;
+  return iconContainerView;
 }
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
