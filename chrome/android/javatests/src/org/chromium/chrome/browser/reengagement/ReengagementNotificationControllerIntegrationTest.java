@@ -141,6 +141,7 @@ public class ReengagementNotificationControllerIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1464323")
     public void testReengagementNotificationNotSentDueToIPH() {
         DefaultBrowserInfo2.setDefaultInfoForTests(
                 createDefaultInfo(/* passesPrecondition = */ true));
