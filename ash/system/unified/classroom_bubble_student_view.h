@@ -9,7 +9,7 @@
 
 namespace ash {
 
-struct GlanceablesClassroomStudentAssignment;
+struct GlanceablesClassroomAssignment;
 
 // class ClassroomBubbleStudentView : public views::View {
 class ASH_EXPORT ClassroomBubbleStudentView : public ClassroomBubbleBaseView {
@@ -30,8 +30,7 @@ class ASH_EXPORT ClassroomBubbleStudentView : public ClassroomBubbleBaseView {
   // Handles received student assignments by rendering them in
   // `list_container_view_`.
   void OnGetStudentAssignments(
-      std::vector<std::unique_ptr<GlanceablesClassroomStudentAssignment>>
-          assignments);
+      std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments);
 
   base::WeakPtrFactory<ClassroomBubbleStudentView> weak_ptr_factory_{this};
 };

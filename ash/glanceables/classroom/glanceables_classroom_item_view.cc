@@ -113,7 +113,7 @@ std::unique_ptr<views::ImageView> BuildIcon() {
 }
 
 std::unique_ptr<views::BoxLayoutView> BuildAssignmentTitleLabels(
-    const GlanceablesClassroomStudentAssignment* assignment) {
+    const GlanceablesClassroomAssignment* assignment) {
   const auto* const typography_provider = TypographyProvider::Get();
 
   return views::Builder<views::BoxLayoutView>()
@@ -146,7 +146,7 @@ std::unique_ptr<views::BoxLayoutView> BuildAssignmentTitleLabels(
 }
 
 std::unique_ptr<views::BoxLayoutView> BuildDueLabels(
-    const GlanceablesClassroomStudentAssignment* assignment) {
+    const GlanceablesClassroomAssignment* assignment) {
   const auto* const typography_provider = TypographyProvider::Get();
 
   return views::Builder<views::BoxLayoutView>()
@@ -178,7 +178,7 @@ std::unique_ptr<views::BoxLayoutView> BuildDueLabels(
 }  // namespace
 
 GlanceablesClassroomItemView::GlanceablesClassroomItemView(
-    const GlanceablesClassroomStudentAssignment* assignment,
+    const GlanceablesClassroomAssignment* assignment,
     base::RepeatingClosure pressed_callback)
     : views::Button(std::move(pressed_callback)) {
   CHECK(assignment);
@@ -205,16 +205,9 @@ BEGIN_METADATA(GlanceablesClassroomItemView, views::View)
 END_METADATA
 
 GlanceablesClassroomTeacherItemView::GlanceablesClassroomTeacherItemView(
-    const GlanceablesClassroomTeacherAssignment* assignment,
+    const GlanceablesClassroomAssignment* assignment,
     base::RepeatingClosure pressed_callback)
-    : GlanceablesClassroomItemView(
-          std::make_unique<GlanceablesClassroomStudentAssignment>(
-              assignment->course_title,
-              assignment->course_work_title,
-              assignment->link,
-              assignment->due)
-              .get(),
-          std::move(pressed_callback)) {
+    : GlanceablesClassroomItemView(assignment, std::move(pressed_callback)) {
   // TODO(b/283371064): Add grading/submission status for assignments in teacher
   // glanceable UI
 }

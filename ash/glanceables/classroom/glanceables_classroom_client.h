@@ -15,18 +15,14 @@ class GURL;
 
 namespace ash {
 
-struct GlanceablesClassroomStudentAssignment;
-struct GlanceablesClassroomTeacherAssignment;
+struct GlanceablesClassroomAssignment;
 
 // Interface for the classroom browser client.
 class ASH_EXPORT GlanceablesClassroomClient {
  public:
   using IsRoleEnabledCallback = base::OnceCallback<void(bool active)>;
-  using GetStudentAssignmentsCallback = base::OnceCallback<void(
-      std::vector<std::unique_ptr<GlanceablesClassroomStudentAssignment>>
-          assignments)>;
-  using GetTeacherAssignmentsCallback = base::OnceCallback<void(
-      std::vector<std::unique_ptr<GlanceablesClassroomTeacherAssignment>>
+  using GetAssignmentsCallback = base::OnceCallback<void(
+      std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>
           assignments)>;
 
   virtual ~GlanceablesClassroomClient() = default;
@@ -38,13 +34,13 @@ class ASH_EXPORT GlanceablesClassroomClient {
   // Return student assignments based on different due date/time and submission
   // state filters.
   virtual void GetCompletedStudentAssignments(
-      GetStudentAssignmentsCallback callback) = 0;
+      GetAssignmentsCallback callback) = 0;
   virtual void GetStudentAssignmentsWithApproachingDueDate(
-      GetStudentAssignmentsCallback callback) = 0;
+      GetAssignmentsCallback callback) = 0;
   virtual void GetStudentAssignmentsWithMissedDueDate(
-      GetStudentAssignmentsCallback callback) = 0;
+      GetAssignmentsCallback callback) = 0;
   virtual void GetStudentAssignmentsWithoutDueDate(
-      GetStudentAssignmentsCallback callback) = 0;
+      GetAssignmentsCallback callback) = 0;
 
   // Returns `true` if current teacher has least one classroom course
   // as a teacher.
@@ -53,13 +49,12 @@ class ASH_EXPORT GlanceablesClassroomClient {
   // Return teacher assignments based on different due date/time and graded
   // state filter.
   virtual void GetTeacherAssignmentsWithApproachingDueDate(
-      GetTeacherAssignmentsCallback callback) = 0;
+      GetAssignmentsCallback callback) = 0;
   virtual void GetTeacherAssignmentsRecentlyDue(
-      GetTeacherAssignmentsCallback callback) = 0;
+      GetAssignmentsCallback callback) = 0;
   virtual void GetTeacherAssignmentsWithoutDueDate(
-      GetTeacherAssignmentsCallback callback) = 0;
-  virtual void GetGradedTeacherAssignments(
-      GetTeacherAssignmentsCallback callback) = 0;
+      GetAssignmentsCallback callback) = 0;
+  virtual void GetGradedTeacherAssignments(GetAssignmentsCallback callback) = 0;
 
   // Opens classroom url.
   virtual void OpenUrl(const GURL& url) const = 0;

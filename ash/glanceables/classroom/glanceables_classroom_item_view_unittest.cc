@@ -62,9 +62,10 @@ class GlanceablesClassroomItemViewTest : public AshTestBase {
 };
 
 TEST_F(GlanceablesClassroomItemViewTest, RendersWithoutDueDateTime) {
-  const auto assignment = GlanceablesClassroomStudentAssignment(
+  const auto assignment = GlanceablesClassroomAssignment(
       "Algebra", "Solve equation",
-      GURL("https://classroom.google.com/test-link-1"), absl::nullopt);
+      GURL("https://classroom.google.com/test-link-1"), absl::nullopt,
+      absl::nullopt);
   const auto view =
       GlanceablesClassroomItemView(&assignment, base::DoNothing());
 
@@ -103,9 +104,9 @@ TEST_F(GlanceablesClassroomItemViewTest, RendersWithDueDateTime) {
   // date and time labels.
   base::Time due = base::Time::Now() - base::Days(1);
   for (size_t i = 0; i < 9; ++i) {
-    const auto assignment = GlanceablesClassroomStudentAssignment(
+    const auto assignment = GlanceablesClassroomAssignment(
         "Algebra", "Solve equation",
-        GURL("https://classroom.google.com/test-link-1"), due);
+        GURL("https://classroom.google.com/test-link-1"), due, absl::nullopt);
     const auto view =
         GlanceablesClassroomItemView(&assignment, base::DoNothing());
 
@@ -126,9 +127,9 @@ TEST_F(GlanceablesClassroomItemViewTest, RendersDueTimeIn24HrFormat) {
   base::Time due;
   ASSERT_TRUE(base::Time::FromString("10 Apr 2023 00:15 GMT", &due));
 
-  const auto assignment = GlanceablesClassroomStudentAssignment(
+  const auto assignment = GlanceablesClassroomAssignment(
       "Algebra", "Solve equation",
-      GURL("https://classroom.google.com/test-link-1"), due);
+      GURL("https://classroom.google.com/test-link-1"), due, absl::nullopt);
   const auto view =
       GlanceablesClassroomItemView(&assignment, base::DoNothing());
   const auto* const due_time_label = GetDueTimeLabel(view);
@@ -145,9 +146,9 @@ TEST_F(GlanceablesClassroomItemViewTest, DoesNotRenderDueTimeFor2359) {
   base::Time due;
   ASSERT_TRUE(base::Time::FromString("10 Apr 2023 06:59 GMT", &due));
 
-  const auto assignment = GlanceablesClassroomStudentAssignment(
+  const auto assignment = GlanceablesClassroomAssignment(
       "Algebra", "Solve equation",
-      GURL("https://classroom.google.com/test-link-1"), due);
+      GURL("https://classroom.google.com/test-link-1"), due, absl::nullopt);
   const auto view =
       GlanceablesClassroomItemView(&assignment, base::DoNothing());
   const auto* const due_time_label = GetDueTimeLabel(view);

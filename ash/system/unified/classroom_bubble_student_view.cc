@@ -116,8 +116,7 @@ void ClassroomBubbleStudentView::OnSeeAllPressed() {
 }
 
 void ClassroomBubbleStudentView::OnGetStudentAssignments(
-    std::vector<std::unique_ptr<GlanceablesClassroomStudentAssignment>>
-        assignments) {
+    std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments) {
   list_container_view_->RemoveAllChildViews();
 
   for (const auto& assignment : assignments) {

@@ -62,57 +62,43 @@ std::string GlanceablesClassroomStudentSubmission::ToString() const {
 }
 
 // ----------------------------------------------------------------------------
-// GlanceablesClassroomStudentAssignment:
-
-GlanceablesClassroomStudentAssignment::GlanceablesClassroomStudentAssignment(
-    const std::string& course_title,
-    const std::string& course_work_title,
-    const GURL& link,
-    const absl::optional<base::Time>& due)
-    : course_title(course_title),
-      course_work_title(course_work_title),
-      link(link),
-      due(due) {}
-
-std::string GlanceablesClassroomStudentAssignment::ToString() const {
-  std::stringstream ss;
-  ss << "Course Title: " << course_title
-     << ", Course Work Title: " << course_work_title << ", Link: " << link;
-  if (due.has_value()) {
-    ss << ", Due: " << base::TimeFormatHTTP(due.value());
-  }
-  return ss.str();
-}
+// GlanceablesClassroomAggregatedSubmissionsState
+GlanceablesClassroomAggregatedSubmissionsState::
+    GlanceablesClassroomAggregatedSubmissionsState(int total_count,
+                                                   int number_turned_in,
+                                                   int number_graded)
+    : total_count(total_count),
+      number_turned_in(number_turned_in),
+      number_graded(number_graded) {}
 
 // ----------------------------------------------------------------------------
-// GlanceablesClassroomTeacherAssignment
+// GlanceablesClassroomAssignment
 
-GlanceablesClassroomTeacherAssignment::GlanceablesClassroomTeacherAssignment(
+GlanceablesClassroomAssignment::GlanceablesClassroomAssignment(
     const std::string& course_title,
     const std::string& course_work_title,
     const GURL& link,
     const absl::optional<base::Time>& due,
-    int total_submission_count,
-    int number_turned_in,
-    int number_graded)
+    absl::optional<GlanceablesClassroomAggregatedSubmissionsState>
+        submissions_state)
     : course_title(course_title),
       course_work_title(course_work_title),
       link(link),
       due(due),
-      total_submission_count(total_submission_count),
-      number_turned_in(number_turned_in),
-      number_graded(number_graded) {}
+      submissions_state(std::move(submissions_state)) {}
 
-std::string GlanceablesClassroomTeacherAssignment::ToString() const {
+std::string GlanceablesClassroomAssignment::ToString() const {
   std::stringstream ss;
   ss << "Course Title: " << course_title
      << ", Course Work Title: " << course_work_title << ", Link: " << link;
   if (due.has_value()) {
     ss << ", Due: " << base::TimeFormatHTTP(due.value());
   }
-  ss << ", total_submission_count: " << total_submission_count
-     << ", number turned in: " << number_turned_in
-     << ", number graded:" << number_graded;
+  if (submissions_state.has_value()) {
+    ss << ", total_submission_count: " << submissions_state->total_count
+       << ", number turned in: " << submissions_state->number_turned_in
+       << ", number graded:" << submissions_state->number_graded;
+  }
   return ss.str();
 }
 

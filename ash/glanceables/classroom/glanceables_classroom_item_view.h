@@ -12,7 +12,7 @@
 
 namespace ash {
 
-struct GlanceablesClassroomStudentAssignment;
+struct GlanceablesClassroomAssignment;
 
 // A view which shows information about a single assignment in the classroom
 // glanceable.
@@ -20,9 +20,9 @@ class ASH_EXPORT GlanceablesClassroomItemView : public views::Button {
  public:
   METADATA_HEADER(GlanceablesClassroomItemView);
 
-  GlanceablesClassroomItemView(
-      const GlanceablesClassroomStudentAssignment* assignment,
-      base::RepeatingClosure pressed_callback);
+  GlanceablesClassroomItemView(const GlanceablesClassroomAssignment* assignment,
+                               base::RepeatingClosure pressed_callback);
+
   GlanceablesClassroomItemView(const GlanceablesClassroomItemView&) = delete;
   GlanceablesClassroomItemView& operator=(const GlanceablesClassroomItemView&) =
       delete;
@@ -37,7 +37,7 @@ class ASH_EXPORT GlanceablesClassroomTeacherItemView
   METADATA_HEADER(GlanceablesClassroomTeacherItemView);
 
   GlanceablesClassroomTeacherItemView(
-      const GlanceablesClassroomTeacherAssignment* assignment,
+      const GlanceablesClassroomAssignment* assignment,
       base::RepeatingClosure pressed_callback);
   GlanceablesClassroomTeacherItemView(
       const GlanceablesClassroomTeacherItemView&) = delete;
