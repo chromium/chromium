@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
@@ -131,25 +132,30 @@ std::u16string FilesPolicyWarnDialog::GetCancelButton() {
 }
 
 std::u16string FilesPolicyWarnDialog::GetTitle() {
-  // TODO(b/279435843): Replace with translation strings.
   if (DlpFilesController::kNewFilesPolicyUXEnabled) {
     switch (action_) {
       case dlp::FileAction::kDownload:
-        return u"Review is required before downloading";
+        return l10n_util::GetStringUTF16(
+            IDS_POLICY_DLP_FILES_DOWNLOAD_REVIEW_TITLE);
       case dlp::FileAction::kUpload:
-        return u"Review is required before uploading";
+        return l10n_util::GetStringUTF16(
+            IDS_POLICY_DLP_FILES_UPLOAD_REVIEW_TITLE);
       case dlp::FileAction::kCopy:
-        return u"Review is required before copying";
+        return l10n_util::GetStringUTF16(
+            IDS_POLICY_DLP_FILES_COPY_REVIEW_TITLE);
       case dlp::FileAction::kMove:
-        return u"Review is required before moving";
+        return l10n_util::GetStringUTF16(
+            IDS_POLICY_DLP_FILES_MOVE_REVIEW_TITLE);
       case dlp::FileAction::kOpen:
       case dlp::FileAction::kShare:
-        return u"Review is required before opening";
+        return l10n_util::GetStringUTF16(
+            IDS_POLICY_DLP_FILES_OPEN_REVIEW_TITLE);
       case dlp::FileAction::kTransfer:
       case dlp::FileAction::kUnknown:  // TODO(crbug.com/1361900)
                                        // Set proper text when file
                                        // action is unknown
-        return u"Review is required before transferring";
+        return l10n_util::GetStringUTF16(
+            IDS_POLICY_DLP_FILES_TRANSFER_REVIEW_TITLE);
     }
   }
   switch (action_) {
@@ -181,8 +187,11 @@ std::u16string FilesPolicyWarnDialog::GetTitle() {
 
 std::u16string FilesPolicyWarnDialog::GetMessage() {
   if (DlpFilesController::kNewFilesPolicyUXEnabled) {
-    // TODO(b/279435843): Replace with translation strings.
-    return u"Files may contain sensitive content";
+    return base::ReplaceStringPlaceholders(
+        l10n_util::GetPluralStringFUTF16(IDS_POLICY_DLP_FILES_WARN_MESSAGE,
+                                         files_.size()),
+        base::NumberToString16(files_.size()),
+        /*offset=*/nullptr);
   }
   CHECK(destination_.has_value());
   DlpFileDestination destination_val = destination_.value();

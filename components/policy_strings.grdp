@@ -916,6 +916,24 @@ Additional details:
           =1 {Open confidential file?}
           other {Open confidential files?}}
   </message>
+  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_REVIEW_TITLE" desc="The title for notification/dialog informing the user that downloading selected files is not recommended.">
+    Review is required before downloading
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_TRANSFER_REVIEW_TITLE" desc="The title for notification/dialog informing the user that transferring selected files is not recommended.">
+    Review is required before transferring
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_REVIEW_TITLE" desc="The title for notification/dialog informing the user that uploading selected files is not recommended.">
+    Review is required before uploading
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_MOVE_REVIEW_TITLE" desc="The title for notification/dialog informing the user that moving selected files is not recommended.">
+    Review is required before moving
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_COPY_REVIEW_TITLE" desc="The title for notification/dialog informing the user that copying selected files is not recommended.">
+    Review is required before copying
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_OPEN_REVIEW_TITLE" desc="The title for notification/dialog informing the user that opening selected files is not recommended.">
+    Review is required before opening
+  </message>
   <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE" desc="The message for notification informing the user that downloading files is not recommended.">
         {0, plural,
                 =1 {Administrator policy doesn’t recommend downloading this file to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}
@@ -946,6 +964,11 @@ Additional details:
                 =1 {Administrator policy doesn’t recommend opening this file in <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}
                 other {Administrator policy doesn’t recommend opening these files in <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}}
   </message>
+  <message name="IDS_POLICY_DLP_FILES_WARN_MESSAGE" desc="The message for notification/dialog warning the user that the selected file(s) might contain sensitive content and need to be reviewed before performing an action (e.g. open, upload).">
+        {0, plural,
+                =1 {<ph name="FILE_NAME">$1<ex>Example.txt</ex></ph> may contain sensitive content}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files may contain sensitive content}}
+  </message>
   <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before downloading files.">
     Download anyway
   </message>
@@ -966,6 +989,9 @@ Additional details:
   </message>
   <message name="IDS_POLICY_DLP_FILES_DESTINATION_REMOVABLE_STORAGE" desc="A label for the 'Removable storage' files transfer destination.">
     Removable storage
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_REVIEW_BUTTON" desc="The label of the warn or block notification 'Review' button, shown when some files action is under a policy restriction, that allows the user to open a dialog with more information.">
+    Review
   </message>
   <message name="IDS_POLICY_DLP_WARN_CANCEL_BUTTON" desc="Cancel dialog button label for warning.">
     Cancel

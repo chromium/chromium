@@ -28,12 +28,14 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace policy {
 
@@ -45,6 +47,55 @@ using policy::CreateDummyFile;
 using policy::CreateFileSystemURL;
 using policy::GetIOTaskController;
 using policy::kNotificationId;
+
+std::u16string GetWarningTitle(dlp::FileAction action) {
+  switch (action) {
+    case dlp::FileAction::kDownload:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_DOWNLOAD_REVIEW_TITLE);
+    case dlp::FileAction::kTransfer:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_TRANSFER_REVIEW_TITLE);
+    case dlp::FileAction::kUpload:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_UPLOAD_REVIEW_TITLE);
+    case dlp::FileAction::kCopy:
+      return l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_COPY_REVIEW_TITLE);
+    case dlp::FileAction::kMove:
+      return l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_MOVE_REVIEW_TITLE);
+    case dlp::FileAction::kOpen:
+    case dlp::FileAction::kShare:
+      return l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_OPEN_REVIEW_TITLE);
+    case dlp::FileAction::kUnknown:
+      return u"";
+  }
+}
+
+std::u16string GetWarningOkButton(dlp::FileAction action) {
+  switch (action) {
+    case dlp::FileAction::kDownload:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_CONTINUE_BUTTON);
+    case dlp::FileAction::kTransfer:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_TRANSFER_WARN_CONTINUE_BUTTON);
+    case dlp::FileAction::kUpload:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_UPLOAD_WARN_CONTINUE_BUTTON);
+    case dlp::FileAction::kCopy:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_COPY_WARN_CONTINUE_BUTTON);
+    case dlp::FileAction::kMove:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_MOVE_WARN_CONTINUE_BUTTON);
+    case dlp::FileAction::kOpen:
+    case dlp::FileAction::kShare:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_OPEN_WARN_CONTINUE_BUTTON);
+    case dlp::FileAction::kUnknown:
+      return u"";
+  }
+}
 
 class IOTaskStatusObserver
     : public file_manager::io_task::IOTaskController::Observer {
@@ -502,17 +553,25 @@ class FPNMPausedStatusNotification
       public ::testing::WithParamInterface<
           std::tuple<file_manager::io_task::OperationType,
                      Policy,
-                     std::u16string,
-                     std::u16string>> {};
+                     dlp::FileAction>> {};
 
 TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Single) {
-  auto [type, policy, title, ok_button] = GetParam();
+  auto [type, policy, action] = GetParam();
   NotificationDisplayServiceTester display_service_tester(profile_.get());
   const std::string notification_id = "notification_id";
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
 
+  file_manager::io_task::IOTaskId task_id = 1;
+  bool is_copy = type == file_manager::io_task::OperationType::kCopy;
+  ASSERT_FALSE(AddCopyOrMoveIOTask(task_id, is_copy).empty());
+  EXPECT_TRUE(fpnm_->HasIOTask(task_id));
+  fpnm_->ShowDlpWarning(
+      base::DoNothing(), task_id, {base::FilePath("test1.txt")},
+      DlpFileDestination("https://example.com"),
+      is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+
   file_manager::io_task::ProgressStatus status;
-  status.task_id = 1;
+  status.task_id = task_id;
   status.state = file_manager::io_task::State::kPaused;
   status.type = type;
   base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
@@ -523,24 +582,40 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Single) {
   status.pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
       policy, /*warning_files_count=*/1);
 
-  fpnm_->ShowsFilesPolicyNotification(notification_id, status);
+  fpnm_->ShowFilesPolicyNotification(notification_id, status);
   auto notification = display_service_tester.GetNotification(notification_id);
   ASSERT_TRUE(notification.has_value());
-  EXPECT_EQ(notification->title(), title);
-  EXPECT_EQ(notification->message(), u"File may contain sensitive content");
-  EXPECT_EQ(notification->buttons()[0].title, u"Cancel");
-  EXPECT_EQ(notification->buttons()[1].title, ok_button);
+  EXPECT_EQ(notification->title(), GetWarningTitle(action));
+  EXPECT_EQ(
+      notification->message(),
+      base::ReplaceStringPlaceholders(l10n_util::GetPluralStringFUTF16(
+                                          IDS_POLICY_DLP_FILES_WARN_MESSAGE, 1),
+                                      u"test1.txt",
+                                      /*offset=*/nullptr));
+  EXPECT_EQ(notification->buttons()[0].title,
+            l10n_util::GetStringUTF16(IDS_POLICY_DLP_WARN_CANCEL_BUTTON));
+  EXPECT_EQ(notification->buttons()[1].title, GetWarningOkButton(action));
   EXPECT_TRUE(notification->never_timeout());
 }
 
 TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Multi) {
-  auto [type, policy, title, ok_button] = GetParam();
+  auto [type, policy, action] = GetParam();
   NotificationDisplayServiceTester display_service_tester(profile_.get());
   const std::string notification_id = "notification_id";
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
 
+  file_manager::io_task::IOTaskId task_id = 1;
+  bool is_copy = type == file_manager::io_task::OperationType::kCopy;
+  ASSERT_FALSE(AddCopyOrMoveIOTask(task_id, is_copy).empty());
+  EXPECT_TRUE(fpnm_->HasIOTask(task_id));
+  fpnm_->ShowDlpWarning(
+      base::DoNothing(), task_id,
+      {base::FilePath("test1.txt"), base::FilePath("test2.txt")},
+      DlpFileDestination("https://example.com"),
+      is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+
   file_manager::io_task::ProgressStatus status;
-  status.task_id = 1;
+  status.task_id = task_id;
   status.state = file_manager::io_task::State::kPaused;
   status.type = type;
   base::FilePath src_file_path_1 = temp_dir_.GetPath().AppendASCII("test1.txt");
@@ -556,13 +631,20 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Multi) {
   status.pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
       policy, /*warning_files_count=*/2);
 
-  fpnm_->ShowsFilesPolicyNotification(notification_id, status);
+  fpnm_->ShowFilesPolicyNotification(notification_id, status);
   auto notification = display_service_tester.GetNotification(notification_id);
   ASSERT_TRUE(notification.has_value());
-  EXPECT_EQ(notification->title(), title);
-  EXPECT_EQ(notification->message(), u"Files may contain sensitive content");
-  EXPECT_EQ(notification->buttons()[0].title, u"Cancel");
-  EXPECT_EQ(notification->buttons()[1].title, u"Review");
+  EXPECT_EQ(notification->title(), GetWarningTitle(action));
+  EXPECT_EQ(
+      notification->message(),
+      base::ReplaceStringPlaceholders(l10n_util::GetPluralStringFUTF16(
+                                          IDS_POLICY_DLP_FILES_WARN_MESSAGE, 2),
+                                      u"2",
+                                      /*offset=*/nullptr));
+  EXPECT_EQ(notification->buttons()[0].title,
+            l10n_util::GetStringUTF16(IDS_POLICY_DLP_WARN_CANCEL_BUTTON));
+  EXPECT_EQ(notification->buttons()[1].title,
+            l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_REVIEW_BUTTON));
   EXPECT_TRUE(notification->never_timeout());
 }
 
@@ -572,20 +654,16 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         std::make_tuple(file_manager::io_task::OperationType::kCopy,
                         Policy::kDlp,
-                        u"Review is required before copying",
-                        u"Copy anyway"),
+                        dlp::FileAction::kCopy),
         std::make_tuple(file_manager::io_task::OperationType::kCopy,
                         Policy::kEnterpriseConnectors,
-                        u"Review is required before copying",
-                        u"Copy anyway"),
+                        dlp::FileAction::kCopy),
         std::make_tuple(file_manager::io_task::OperationType::kMove,
                         Policy::kDlp,
-                        u"Review is required before moving",
-                        u"Move anyway"),
+                        dlp::FileAction::kMove),
         std::make_tuple(file_manager::io_task::OperationType::kMove,
                         Policy::kEnterpriseConnectors,
-                        u"Review is required before moving",
-                        u"Move anyway")));
+                        dlp::FileAction::kMove)));
 
 class FPNMErrorStatusNotification
     : public FilesPolicyNotificationManagerTest,
@@ -600,8 +678,16 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Single) {
   const std::string notification_id = "notification_id";
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
 
+  file_manager::io_task::IOTaskId task_id = 1;
+  bool is_copy = type == file_manager::io_task::OperationType::kCopy;
+  ASSERT_FALSE(AddCopyOrMoveIOTask(task_id, is_copy).empty());
+  EXPECT_TRUE(fpnm_->HasIOTask(task_id));
+  fpnm_->ShowDlpBlockedFiles(
+      task_id, {base::FilePath("test1.txt")},
+      is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+
   file_manager::io_task::ProgressStatus status;
-  status.task_id = 1;
+  status.task_id = task_id;
   status.state = file_manager::io_task::State::kError;
   status.type = type;
   base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
@@ -609,15 +695,16 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Single) {
   status.sources.emplace_back(
       CreateFileSystemURL(kTestStorageKey, src_file_path.value()),
       absl::nullopt);
-  status.policy_error.emplace(policy, 1);
+  status.policy_error.emplace(policy, /*blocked_files=*/1);
 
-  fpnm_->ShowsFilesPolicyNotification(notification_id, status);
+  fpnm_->ShowFilesPolicyNotification(notification_id, status);
   auto notification = display_service_tester.GetNotification(notification_id);
   ASSERT_TRUE(notification.has_value());
   EXPECT_EQ(notification->title(), title);
   EXPECT_EQ(notification->message(), u"File was blocked");
   EXPECT_EQ(notification->buttons()[0].title, u"Dismiss");
-  EXPECT_EQ(notification->buttons()[1].title, u"Learn more");
+  EXPECT_EQ(notification->buttons()[1].title,
+            l10n_util::GetStringUTF16(IDS_LEARN_MORE));
   EXPECT_TRUE(notification->never_timeout());
 }
 
@@ -627,8 +714,16 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Multi) {
   const std::string notification_id = "notification_id";
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
 
+  file_manager::io_task::IOTaskId task_id = 1;
+  bool is_copy = type == file_manager::io_task::OperationType::kCopy;
+  ASSERT_FALSE(AddCopyOrMoveIOTask(task_id, is_copy).empty());
+  EXPECT_TRUE(fpnm_->HasIOTask(task_id));
+  fpnm_->ShowDlpBlockedFiles(
+      task_id, {base::FilePath("test1.txt"), base::FilePath("test2.txt")},
+      is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+
   file_manager::io_task::ProgressStatus status;
-  status.task_id = 1;
+  status.task_id = task_id;
   status.state = file_manager::io_task::State::kError;
   status.type = type;
   base::FilePath src_file_path_1 = temp_dir_.GetPath().AppendASCII("test1.txt");
@@ -643,13 +738,14 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Multi) {
       absl::nullopt);
   status.policy_error.emplace(policy, 2);
 
-  fpnm_->ShowsFilesPolicyNotification(notification_id, status);
+  fpnm_->ShowFilesPolicyNotification(notification_id, status);
   auto notification = display_service_tester.GetNotification(notification_id);
   ASSERT_TRUE(notification.has_value());
   EXPECT_EQ(notification->title(), title);
   EXPECT_EQ(notification->message(), u"Review for further details");
   EXPECT_EQ(notification->buttons()[0].title, u"Dismiss");
-  EXPECT_EQ(notification->buttons()[1].title, u"Review");
+  EXPECT_EQ(notification->buttons()[1].title,
+            l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_REVIEW_BUTTON));
   EXPECT_TRUE(notification->never_timeout());
 }
 
@@ -686,6 +782,13 @@ TEST_P(FPNMTimeoutStatusNotification, TimeoutErrorShowsTimeoutNotification) {
   const std::string notification_id = "notification_id";
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
 
+  file_manager::io_task::IOTaskId task_id = 1;
+  ASSERT_FALSE(AddCopyOrMoveIOTask(
+                   task_id, /*is_copy=*/type ==
+                                file_manager::io_task::OperationType::kCopy)
+                   .empty());
+  EXPECT_TRUE(fpnm_->HasIOTask(task_id));
+
   file_manager::io_task::ProgressStatus status;
   status.task_id = 1;
   status.state = file_manager::io_task::State::kError;
@@ -703,7 +806,7 @@ TEST_P(FPNMTimeoutStatusNotification, TimeoutErrorShowsTimeoutNotification) {
   status.policy_error.emplace(
       file_manager::io_task::PolicyErrorType::kDlpWarningTimeout);
 
-  fpnm_->ShowsFilesPolicyNotification(notification_id, status);
+  fpnm_->ShowFilesPolicyNotification(notification_id, status);
   auto notification = display_service_tester.GetNotification(notification_id);
   ASSERT_TRUE(notification.has_value());
   EXPECT_EQ(notification->title(), title);
@@ -737,54 +840,6 @@ class FPNMShowBlockTest : public FilesPolicyNotificationManagerTest,
   }
 };
 
-class FPNMShowWarningTest
-    : public FilesPolicyNotificationManagerTest,
-      public ::testing::WithParamInterface<
-          std::tuple<dlp::FileAction, std::u16string, std::u16string>> {
-  void SetUp() override {
-    FilesPolicyNotificationManagerTest::SetUp();
-    DlpFilesController::SetNewFilesPolicyUXEnabledForTesting(
-        /*is_enabled=*/true);
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    PolicyFilesNotify,
-    FPNMShowBlockTest,
-    ::testing::Values(
-        std::make_tuple(dlp::FileAction::kDownload, u"Blocked download"),
-        std::make_tuple(dlp::FileAction::kUpload, u"Blocked upload"),
-        std::make_tuple(dlp::FileAction::kOpen, u"Blocked open"),
-        std::make_tuple(dlp::FileAction::kShare, u"Blocked open"),
-        std::make_tuple(dlp::FileAction::kCopy, u"Blocked copy"),
-        std::make_tuple(dlp::FileAction::kMove, u"Blocked move"),
-        std::make_tuple(dlp::FileAction::kTransfer, u"Blocked transfer")));
-
-INSTANTIATE_TEST_SUITE_P(
-    PolicyFilesNotify,
-    FPNMShowWarningTest,
-    ::testing::Values(std::make_tuple(dlp::FileAction::kDownload,
-                                      u"Review is required before downloading",
-                                      u"Download anyway"),
-                      std::make_tuple(dlp::FileAction::kUpload,
-                                      u"Review is required before uploading",
-                                      u"Upload anyway"),
-                      std::make_tuple(dlp::FileAction::kOpen,
-                                      u"Review is required before opening",
-                                      u"Open anyway"),
-                      std::make_tuple(dlp::FileAction::kShare,
-                                      u"Review is required before opening",
-                                      u"Open anyway"),
-                      std::make_tuple(dlp::FileAction::kCopy,
-                                      u"Review is required before copying",
-                                      u"Copy anyway"),
-                      std::make_tuple(dlp::FileAction::kMove,
-                                      u"Review is required before moving",
-                                      u"Move anyway"),
-                      std::make_tuple(dlp::FileAction::kTransfer,
-                                      u"Review is required before transferring",
-                                      u"Transfer anyway")));
-
 TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification_Single) {
   auto [action, title] = GetParam();
   NotificationDisplayServiceTester display_service_tester(profile_.get());
@@ -798,7 +853,8 @@ TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification_Single) {
   EXPECT_EQ(notification->title(), title);
   EXPECT_EQ(notification->message(), u"File was blocked");
   EXPECT_EQ(notification->buttons()[0].title, u"Dismiss");
-  EXPECT_EQ(notification->buttons()[1].title, u"Learn more");
+  EXPECT_EQ(notification->buttons()[1].title,
+            l10n_util::GetStringUTF16(IDS_LEARN_MORE));
 }
 
 TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification_Multi) {
@@ -817,11 +873,34 @@ TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification_Multi) {
   EXPECT_EQ(notification->title(), title);
   EXPECT_EQ(notification->message(), u"Review for further details");
   EXPECT_EQ(notification->buttons()[0].title, u"Dismiss");
-  EXPECT_EQ(notification->buttons()[1].title, u"Review");
+  EXPECT_EQ(notification->buttons()[1].title,
+            l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_REVIEW_BUTTON));
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    PolicyFilesNotify,
+    FPNMShowBlockTest,
+    ::testing::Values(
+        std::make_tuple(dlp::FileAction::kDownload, u"Blocked download"),
+        std::make_tuple(dlp::FileAction::kUpload, u"Blocked upload"),
+        std::make_tuple(dlp::FileAction::kOpen, u"Blocked open"),
+        std::make_tuple(dlp::FileAction::kShare, u"Blocked open"),
+        std::make_tuple(dlp::FileAction::kCopy, u"Blocked copy"),
+        std::make_tuple(dlp::FileAction::kMove, u"Blocked move"),
+        std::make_tuple(dlp::FileAction::kTransfer, u"Blocked transfer")));
+
+class FPNMShowWarningTest
+    : public FilesPolicyNotificationManagerTest,
+      public ::testing::WithParamInterface<dlp::FileAction> {
+  void SetUp() override {
+    FilesPolicyNotificationManagerTest::SetUp();
+    DlpFilesController::SetNewFilesPolicyUXEnabledForTesting(
+        /*is_enabled=*/true);
+  }
+};
+
 TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {
-  auto [action, title, ok_button] = GetParam();
+  auto action = GetParam();
   NotificationDisplayServiceTester display_service_tester(profile_.get());
 
   EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
@@ -831,14 +910,20 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {
   absl::optional<message_center::Notification> notification =
       display_service_tester.GetNotification(kNotificationId);
   EXPECT_TRUE(notification.has_value());
-  EXPECT_EQ(notification->title(), title);
-  EXPECT_EQ(notification->message(), u"File may contain sensitive content");
-  EXPECT_EQ(notification->buttons()[0].title, u"Cancel");
-  EXPECT_EQ(notification->buttons()[1].title, ok_button);
+  EXPECT_EQ(notification->title(), GetWarningTitle(action));
+  EXPECT_EQ(
+      notification->message(),
+      base::ReplaceStringPlaceholders(l10n_util::GetPluralStringFUTF16(
+                                          IDS_POLICY_DLP_FILES_WARN_MESSAGE, 1),
+                                      u"file1.txt",
+                                      /*offset=*/nullptr));
+  EXPECT_EQ(notification->buttons()[0].title,
+            l10n_util::GetStringUTF16(IDS_POLICY_DLP_WARN_CANCEL_BUTTON));
+  EXPECT_EQ(notification->buttons()[1].title, GetWarningOkButton(action));
 }
 
 TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
-  auto [action, title, ok_button] = GetParam();
+  auto action = GetParam();
 
   NotificationDisplayServiceTester display_service_tester(profile_.get());
 
@@ -850,11 +935,28 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
   absl::optional<message_center::Notification> notification =
       display_service_tester.GetNotification(kNotificationId);
   EXPECT_TRUE(notification.has_value());
-  EXPECT_EQ(notification->title(), title);
-  EXPECT_EQ(notification->message(), u"Files may contain sensitive content");
-  EXPECT_EQ(notification->buttons()[0].title, u"Cancel");
-  EXPECT_EQ(notification->buttons()[1].title, u"Review");
+  EXPECT_EQ(notification->title(), GetWarningTitle(action));
+  EXPECT_EQ(
+      notification->message(),
+      base::ReplaceStringPlaceholders(l10n_util::GetPluralStringFUTF16(
+                                          IDS_POLICY_DLP_FILES_WARN_MESSAGE, 2),
+                                      u"2",
+                                      /*offset=*/nullptr));
+  EXPECT_EQ(notification->buttons()[0].title,
+            l10n_util::GetStringUTF16(IDS_POLICY_DLP_WARN_CANCEL_BUTTON));
+  EXPECT_EQ(notification->buttons()[1].title,
+            l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_REVIEW_BUTTON));
 }
+
+INSTANTIATE_TEST_SUITE_P(PolicyFilesNotify,
+                         FPNMShowWarningTest,
+                         ::testing::Values(dlp::FileAction::kDownload,
+                                           dlp::FileAction::kUpload,
+                                           dlp::FileAction::kOpen,
+                                           dlp::FileAction::kShare,
+                                           dlp::FileAction::kCopy,
+                                           dlp::FileAction::kMove,
+                                           dlp::FileAction::kTransfer));
 
 class FPNMShowTimeoutTest
     : public FilesPolicyNotificationManagerTest,

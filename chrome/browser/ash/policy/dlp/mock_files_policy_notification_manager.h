@@ -7,7 +7,13 @@
 
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 
+#include "base/files/file_path.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::Mock;
 
@@ -38,6 +44,12 @@ class MockFilesPolicyNotificationManager
                std::vector<base::FilePath> warning_files,
                const DlpFileDestination& destination,
                dlp::FileAction action),
+              (override));
+
+  MOCK_METHOD(void,
+              ShowFilesPolicyNotification,
+              (const std::string& notification_id,
+               const file_manager::io_task::ProgressStatus& status),
               (override));
 };
 

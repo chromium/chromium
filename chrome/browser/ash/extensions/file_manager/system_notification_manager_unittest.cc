@@ -23,6 +23,9 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
+#include "chrome/browser/ash/policy/dlp/mock_files_policy_notification_manager.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegator.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
@@ -1096,99 +1099,6 @@ TEST_F(SystemNotificationManagerTest, CancelButtonIOTask) {
   ASSERT_EQ(io_task::State::kCancelled, task_statuses_[task_id].back());
 }
 
-TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressWarning) {
-  // The system notification only sees the IOTask ProgressStatus.
-  file_manager::io_task::ProgressStatus status;
-  status.task_id = 1;
-  status.state = file_manager::io_task::State::kQueued;
-  status.type = file_manager::io_task::OperationType::kCopy;
-  status.total_bytes = 100;
-  status.bytes_transferred = 0;
-  status.sources.emplace_back(CreateTestFile("volume/src_file1.txt"),
-                              absl::nullopt);
-  status.sources.emplace_back(CreateTestFile("volume/src_file2.txt"),
-                              absl::nullopt);
-  status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
-
-  // Send the copy begin/queued progress.
-  notification_manager_->HandleIOTaskProgress(status);
-
-  // Check: We have the 1 notification.
-  ASSERT_EQ(1u, GetNotificationCount());
-
-  Strings strings = bridge_->GetStrings("swa-file-operation-1");
-
-  // Check: the expected strings match.
-  EXPECT_EQ(strings.title, u"Files");
-  EXPECT_EQ(strings.message, u"Copying 2 items\x2026");
-
-  // Set the status to warning.
-  status.state = file_manager::io_task::State::kPaused;
-  status.pause_params.policy_params =
-      io_task::PolicyPauseParams(policy::Policy::kDlp);
-  notification_manager_->HandleIOTaskProgress(status);
-
-  // Check: We have the same notification.
-  ASSERT_EQ(1u, GetNotificationCount());
-  strings = bridge_->GetStrings("swa-file-operation-1");
-  EXPECT_EQ(strings.title, u"Review is required before copying");
-  EXPECT_EQ(strings.message, u"Files may contain sensitive content");
-
-  // Send the success progress status.
-  status.bytes_transferred = 100;
-  status.state = file_manager::io_task::State::kSuccess;
-  notification_manager_->HandleIOTaskProgress(status);
-
-  // Notification should disappear.
-  ASSERT_EQ(0u, GetNotificationCount());
-}
-
-TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyError) {
-  // The system notification only sees the IOTask ProgressStatus.
-  file_manager::io_task::ProgressStatus status;
-  status.task_id = 1;
-  status.state = file_manager::io_task::State::kQueued;
-  status.type = file_manager::io_task::OperationType::kCopy;
-  status.total_bytes = 100;
-  status.bytes_transferred = 0;
-  status.sources.emplace_back(CreateTestFile("volume/src_file.txt"),
-                              absl::nullopt);
-  status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
-
-  // Send the copy begin/queued progress.
-  notification_manager_->HandleIOTaskProgress(status);
-
-  // Check: We have the 1 notification.
-  ASSERT_EQ(1u, GetNotificationCount());
-
-  Strings strings = bridge_->GetStrings("swa-file-operation-1");
-
-  // Check: the expected strings match.
-  EXPECT_EQ(strings.title, u"Files");
-  EXPECT_EQ(strings.message, u"Copying src_file.txt\x2026");
-
-  // Set the security error value.
-  status.state = file_manager::io_task::State::kError;
-  status.policy_error.emplace(
-      file_manager::io_task::PolicyErrorType::kEnterpriseConnectors,
-      /*blocked_files=*/1);
-  notification_manager_->HandleIOTaskProgress(status);
-
-  // Check: We have the same notification.
-  ASSERT_EQ(1u, GetNotificationCount());
-  strings = bridge_->GetStrings("swa-file-operation-1");
-  EXPECT_EQ(strings.title, u"Blocked copy");
-  EXPECT_EQ(strings.message, u"File was blocked");
-
-  // Send the success progress status.
-  status.bytes_transferred = 100;
-  status.state = file_manager::io_task::State::kSuccess;
-  notification_manager_->HandleIOTaskProgress(status);
-
-  // Notification should disappear.
-  ASSERT_EQ(0u, GetNotificationCount());
-}
-
 TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyScanning) {
   // The system notification only sees the IOTask ProgressStatus.
   file_manager::io_task::ProgressStatus status;
@@ -1798,6 +1708,132 @@ TEST_F(SystemNotificationManagerTest, PinProgressMultiple) {
   // Check: the expected strings match.
   EXPECT_EQ(strings.title, u"Files");
   EXPECT_EQ(strings.message, u"Making 10 files available offline");
+}
+
+class SystemNotificationManagerPolicyTest
+    : public SystemNotificationManagerTest {
+ public:
+  void SetUp() override {
+    SystemNotificationManagerTest::SetUp();
+    // Set FilesPolicyNotificationManager.
+    policy::FilesPolicyNotificationManagerFactory::GetInstance()
+        ->SetTestingFactory(
+            profile_.get(),
+            base::BindRepeating(&SystemNotificationManagerPolicyTest::
+                                    SetFilesPolicyNotificationManager,
+                                base::Unretained(this)));
+    ASSERT_TRUE(
+        policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+            profile_.get()));
+    ASSERT_TRUE(fpnm_);
+  }
+
+  policy::MockFilesPolicyNotificationManager* fpnm() { return fpnm_; }
+
+ private:
+  std::unique_ptr<KeyedService> SetFilesPolicyNotificationManager(
+      content::BrowserContext* context) {
+    auto fpnm = std::make_unique<policy::MockFilesPolicyNotificationManager>(
+        profile_.get());
+    fpnm_ = fpnm.get();
+
+    return fpnm;
+  }
+
+  raw_ptr<policy::MockFilesPolicyNotificationManager, ExperimentalAsh> fpnm_ =
+      nullptr;
+};
+
+TEST_F(SystemNotificationManagerPolicyTest, HandleIOTaskProgressWarning) {
+  // The system notification only sees the IOTask ProgressStatus.
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = 1;
+  status.state = file_manager::io_task::State::kQueued;
+  status.type = file_manager::io_task::OperationType::kCopy;
+  status.total_bytes = 100;
+  status.bytes_transferred = 0;
+  status.sources.emplace_back(CreateTestFile("volume/src_file1.txt"),
+                              absl::nullopt);
+  status.sources.emplace_back(CreateTestFile("volume/src_file2.txt"),
+                              absl::nullopt);
+  status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
+
+  // Send the copy begin/queued progress.
+  notification_manager_->HandleIOTaskProgress(status);
+
+  // Check: We have the 1 notification.
+  ASSERT_EQ(1u, GetNotificationCount());
+
+  Strings strings = bridge_->GetStrings("swa-file-operation-1");
+
+  // Check: the expected strings match.
+  EXPECT_EQ(strings.title, u"Files");
+  EXPECT_EQ(strings.message, u"Copying 2 items\x2026");
+
+  // Set the status to warning.
+  status.state = file_manager::io_task::State::kPaused;
+  status.pause_params.policy_params =
+      io_task::PolicyPauseParams(policy::Policy::kDlp);
+  // The manager delegates to FPNM to show the notification.
+  EXPECT_CALL(
+      *fpnm(),
+      ShowFilesPolicyNotification(
+          "swa-file-operation-1",
+          AllOf(testing::Field(&file_manager::io_task::ProgressStatus::task_id,
+                               status.task_id),
+                testing::Field(&file_manager::io_task::ProgressStatus::state,
+                               file_manager::io_task::State::kPaused),
+                testing::Field(
+                    &file_manager::io_task::ProgressStatus::pause_params,
+                    status.pause_params))))
+      .Times(1);
+  notification_manager_->HandleIOTaskProgress(status);
+}
+
+TEST_F(SystemNotificationManagerPolicyTest, HandleIOTaskProgressPolicyError) {
+  // The system notification only sees the IOTask ProgressStatus.
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = 1;
+  status.state = file_manager::io_task::State::kQueued;
+  status.type = file_manager::io_task::OperationType::kCopy;
+  status.total_bytes = 100;
+  status.bytes_transferred = 0;
+  status.sources.emplace_back(CreateTestFile("volume/src_file.txt"),
+                              absl::nullopt);
+  status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
+
+  // Send the copy begin/queued progress.
+  notification_manager_->HandleIOTaskProgress(status);
+
+  // Check: We have the 1 notification.
+  ASSERT_EQ(1u, GetNotificationCount());
+
+  Strings strings = bridge_->GetStrings("swa-file-operation-1");
+
+  // Check: the expected strings match.
+  EXPECT_EQ(strings.title, u"Files");
+  EXPECT_EQ(strings.message, u"Copying src_file.txt\x2026");
+
+  // Set the security error value.
+  status.state = file_manager::io_task::State::kError;
+  status.policy_error.emplace(
+      file_manager::io_task::PolicyErrorType::kEnterpriseConnectors,
+      /*blocked_files=*/1);
+  // The manager delegates to FPNM to show the notification.
+  EXPECT_CALL(
+      *fpnm(),
+      ShowFilesPolicyNotification(
+          "swa-file-operation-1",
+          AllOf(testing::Field(&file_manager::io_task::ProgressStatus::task_id,
+                               status.task_id),
+                testing::Field(&file_manager::io_task::ProgressStatus::state,
+                               file_manager::io_task::State::kError),
+                testing::Field(
+                    &file_manager::io_task::ProgressStatus::policy_error,
+                    status.policy_error))))
+      .Times(1);
+
+  notification_manager_->HandleIOTaskProgress(status);
 }
 
 }  // namespace file_manager

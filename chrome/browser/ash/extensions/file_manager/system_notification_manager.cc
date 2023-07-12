@@ -795,7 +795,7 @@ void SystemNotificationManager::HandleIOTaskProgress(
       return;
     }
     Dismiss(id);
-    manager->ShowsFilesPolicyNotification(id, status);
+    manager->ShowFilesPolicyNotification(id, status);
     return;
   }
 

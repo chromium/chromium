@@ -39,7 +39,6 @@
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
-#include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -62,54 +61,68 @@ std::u16string GetNotificationTitle(dlp::FileAction action,
       return type == NotificationType::kError
                  ? l10n_util::GetStringUTF16(
                        IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_TITLE)
-                 : u"Review is required before downloading";
+                 : l10n_util::GetStringUTF16(
+                       IDS_POLICY_DLP_FILES_DOWNLOAD_REVIEW_TITLE);
     case dlp::FileAction::kUpload:
       return type == NotificationType::kError
                  ? l10n_util::GetStringUTF16(
                        IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_TITLE)
-                 : u"Review is required before uploading";
+                 : l10n_util::GetStringUTF16(
+                       IDS_POLICY_DLP_FILES_UPLOAD_REVIEW_TITLE);
     case dlp::FileAction::kOpen:
     case dlp::FileAction::kShare:
       return type == NotificationType::kError
                  ? l10n_util::GetStringUTF16(
                        IDS_POLICY_DLP_FILES_OPEN_BLOCK_TITLE)
-                 : u"Review is required before opening";
+                 : l10n_util::GetStringUTF16(
+                       IDS_POLICY_DLP_FILES_OPEN_REVIEW_TITLE);
     case dlp::FileAction::kCopy:
       return type == NotificationType::kError
                  ? u"Blocked copy"
-                 : u"Review is required before copying";
+                 : l10n_util::GetStringUTF16(
+                       IDS_POLICY_DLP_FILES_COPY_REVIEW_TITLE);
     case dlp::FileAction::kMove:
       return type == NotificationType::kError
                  ? u"Blocked move"
-                 : u"Review is required before moving";
+                 : l10n_util::GetStringUTF16(
+                       IDS_POLICY_DLP_FILES_MOVE_REVIEW_TITLE);
     case dlp::FileAction::kTransfer:
       return type == NotificationType::kError
                  ? u"Blocked transfer"
-                 : u"Review is required before transferring";
+                 : l10n_util::GetStringUTF16(
+                       IDS_POLICY_DLP_FILES_TRANSFER_REVIEW_TITLE);
     case dlp::FileAction::kUnknown:
       NOTREACHED_NORETURN();
   }
 }
 
+// Returns the message for notification of `type` and with `file_count`
+// blocked/warned files. `first_file` is the name of the first restricted file
+// and is only used for single file notifications.
 // TODO(b/279435843): Replace with translation strings.
 std::u16string GetNotificationMessage(size_t file_count,
-                                      NotificationType type) {
+                                      NotificationType type,
+                                      const std::u16string& first_file) {
   if (type == NotificationType::kError) {
     return file_count == 1 ? u"File was blocked"
                            : u"Review for further details";
   }
   // kWarning
-  return file_count == 1 ? u"File may contain sensitive content"
-                         : u"Files may contain sensitive content";
+  const std::u16string placeholder_value =
+      file_count == 1 ? first_file : base::NumberToString16(file_count);
+  return base::ReplaceStringPlaceholders(
+      l10n_util::GetPluralStringFUTF16(IDS_POLICY_DLP_FILES_WARN_MESSAGE,
+                                       file_count),
+      placeholder_value,
+      /*offset=*/nullptr);
 }
 
-// TODO(b/279435843): Replace with translation strings.
 std::u16string GetOkButton(dlp::FileAction action,
                            size_t file_count,
                            NotificationType type) {
   // Multiple files - both warnings and errors have a Review button.
   if (file_count > 1) {
-    return u"Review";
+    return l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_REVIEW_BUTTON);
   }
   // Single file - button text depends on the type.
   if (type == NotificationType::kError) {
@@ -328,9 +341,14 @@ void FilesPolicyNotificationManager::ShowDlpWarning(
   }
 }
 
-void FilesPolicyNotificationManager::ShowsFilesPolicyNotification(
+void FilesPolicyNotificationManager::ShowFilesPolicyNotification(
     const std::string& notification_id,
     const file_manager::io_task::ProgressStatus& status) {
+  const file_manager::io_task::IOTaskId id(status.task_id);
+  if (!HasIOTask(id)) {
+    // Task probably timed out.
+    return;
+  }
   const dlp::FileAction action =
       status.type == file_manager::io_task::OperationType::kCopy
           ? dlp::FileAction::kCopy
@@ -342,8 +360,6 @@ void FilesPolicyNotificationManager::ShowsFilesPolicyNotification(
     ShowDlpWarningTimeoutNotification(action, notification_id);
     return;
   }
-
-  const file_manager::io_task::IOTaskId id(status.task_id);
   auto callback =
       status.HasWarning()
           ? base::BindRepeating(&FilesPolicyNotificationManager::
@@ -353,7 +369,6 @@ void FilesPolicyNotificationManager::ShowsFilesPolicyNotification(
                                     HandleFilesPolicyErrorNotificationClick,
                                 weak_factory_.GetWeakPtr(), id,
                                 notification_id);
-  // The notification should stay visible until actioned upon.
   message_center::RichNotificationData optional_fields;
   optional_fields.never_timeout = true;
   const NotificationType type = status.HasWarning() ? NotificationType::kWarning
@@ -362,9 +377,12 @@ void FilesPolicyNotificationManager::ShowsFilesPolicyNotification(
       status.HasWarning()
           ? status.pause_params.policy_params->warning_files_count
           : status.policy_error->blocked_files;
+  std::u16string file_name =
+      status.HasWarning() ? io_tasks_.at(id).warning_info->files.begin()->title
+                          : io_tasks_.at(id).blocked_files.begin()->first.title;
   auto notification = file_manager::CreateSystemNotification(
       notification_id, GetNotificationTitle(action, type),
-      GetNotificationMessage(file_count, type),
+      GetNotificationMessage(file_count, type, file_name),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           std::move(callback)),
       optional_fields);
@@ -939,7 +957,9 @@ void FilesPolicyNotificationManager::ShowDlpBlockNotification(
     optional_fields.never_timeout = true;
     notification = file_manager::CreateSystemNotification(
         notification_id, GetNotificationTitle(action, NotificationType::kError),
-        GetNotificationMessage(blocked_files.size(), NotificationType::kError),
+        GetNotificationMessage(
+            blocked_files.size(), NotificationType::kError,
+            blocked_files.begin()->BaseName().LossyDisplayName()),
         base::MakeRefCounted<PolicyNotificationClickHandler>(base::BindOnce(
             &FilesPolicyNotificationManager::HandleDlpErrorNotificationClick,
             weak_factory_.GetWeakPtr(), notification_id,
@@ -1019,7 +1039,9 @@ void FilesPolicyNotificationManager::ShowDlpWarningNotification(
     auto notification = file_manager::CreateSystemNotification(
         notification_id,
         GetNotificationTitle(action, NotificationType::kWarning),
-        GetNotificationMessage(files.size(), NotificationType::kWarning),
+        GetNotificationMessage(
+            files.size(), NotificationType::kWarning,
+            warning_files.begin()->BaseName().LossyDisplayName()),
         base::MakeRefCounted<PolicyNotificationClickHandler>(base::BindOnce(
             &FilesPolicyNotificationManager::HandleDlpWarningNotificationClick,
             weak_factory_.GetWeakPtr(), std::move(notification_id),
