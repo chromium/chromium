@@ -743,17 +743,12 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
 TEST_F(SyncEngineImplWithSyncInvalidationsTest, DoNotUseOldInvalidationsAtAll) {
   enabled_types_.PutAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
 
-  // Since the old invalidations system is not being used anymore (based on the
-  // enabled feature flags), SyncEngine should call the (old) invalidator with
-  // an empty TopicSet upon initialization.
-  EXPECT_CALL(invalidator_,
-              UpdateInterestedTopics(_, invalidation::TopicSet()));
-  EXPECT_CALL(invalidator_, UnsubscribeFromUnregisteredTopics);
+  EXPECT_CALL(invalidator_, UpdateInterestedTopics).Times(0);
+  EXPECT_CALL(invalidator_, UnsubscribeFromUnregisteredTopics).Times(0);
   EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
       .WillRepeatedly(Return(enabled_types_));
   InitializeBackend(/*expect_success=*/true);
 
-  EXPECT_CALL(invalidator_, UpdateInterestedTopics).Times(0);
   ConfigureDataTypes();
 }
 

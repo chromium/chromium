@@ -187,11 +187,6 @@ void SyncEngineImpl::Initialize(InitParams params) {
   // InvalidationService anymore.
   if (invalidator_ && base::FeatureList::IsEnabled(kUseSyncInvalidations)) {
     DCHECK(!invalidation_handler_registered_);
-    invalidator_->RegisterInvalidationHandler(this);
-    bool success = invalidator_->UpdateInterestedTopics(this, /*topics=*/{});
-    DCHECK(success);
-    invalidator_->UnsubscribeFromUnregisteredTopics(this);
-    invalidator_->UnregisterInvalidationHandler(this);
     invalidator_ = nullptr;
   }
 }
