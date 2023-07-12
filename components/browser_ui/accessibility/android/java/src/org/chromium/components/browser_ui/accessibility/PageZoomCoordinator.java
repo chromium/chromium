@@ -14,6 +14,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -85,6 +87,9 @@ public class PageZoomCoordinator {
 
         // Consume hover events so screen readers do not select web contents behind slider.
         mView.setOnHoverListener((v, event) -> true);
+
+        mModel.set(PageZoomProperties.RESET_ZOOM_VISIBLE,
+                ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM));
 
         // Adjust bottom margin for any bottom controls
         setBottomMargin(mBottomControlsOffset);
