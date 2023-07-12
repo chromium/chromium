@@ -19,6 +19,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #import "components/signin/public/identity_manager/primary_account_mutator.h"
+#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "google_apis/gaia/gaia_auth_util.h"
@@ -386,6 +387,17 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
 void AuthenticationService::GrantSyncConsent(
     id<SystemIdentity> identity,
     signin_metrics::AccessPoint access_point) {
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    // TODO(crbug.com/1462858): Turn sync on was deprecated. Remove
+    // `GrantSyncConsent()` as it is obsolete.
+    DUMP_WILL_BE_CHECK(access_point !=
+                       signin_metrics::AccessPoint::
+                           ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO)
+        << "Turn sync on should not be available as sync promos are deprecated "
+           "[access point = "
+        << int(access_point) << "]";
+  }
   DCHECK(account_manager_service_->IsValidIdentity(identity));
   DCHECK(identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
@@ -638,6 +650,9 @@ void AuthenticationService::HandleForgottenIdentity(
 
   // Reauth prompt should only be set when the user is syncing, since reauth
   // turns on sync by default.
+  // TODO(crbug.com/1463438): Requires additional investigation regarding
+  // whether to remove kSync or replace it with kSignin. See
+  // ConsentLevel::kSync for details.
   should_prompt = should_prompt && identity_manager_->HasPrimaryAccount(
                                        signin::ConsentLevel::kSync);
 
