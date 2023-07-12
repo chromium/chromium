@@ -103,10 +103,6 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
                                      const AppId& app_id,
                                      const std::string& app_name);
 
-  // Used to clear all shortcut override paths during tests. This should only be
-  // run on Windows, Mac and Linux.
-  bool ForceDeleteAllShortcuts();
-
 #if BUILDFLAG(IS_MAC)
   bool DeleteChromeAppsDir();
 #endif  // BUILDFLAG(IS_MAC)

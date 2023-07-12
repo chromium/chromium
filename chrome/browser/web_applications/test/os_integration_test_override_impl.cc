@@ -236,19 +236,6 @@ bool OsIntegrationTestOverrideImpl::SimulateDeleteShortcutsByUser(
 #endif
 }
 
-bool OsIntegrationTestOverrideImpl::ForceDeleteAllShortcuts() {
-#if BUILDFLAG(IS_WIN)
-  return DeleteDesktopDirOnWin() && DeleteApplicationMenuDirOnWin();
-#elif BUILDFLAG(IS_MAC)
-  return DeleteChromeAppsDir();
-#elif BUILDFLAG(IS_LINUX)
-  return DeleteDesktopDirOnLinux();
-#else
-  NOTREACHED() << "Not implemented on ChromeOS/Fuchsia ";
-  return true;
-#endif
-}
-
 #if BUILDFLAG(IS_MAC)
 bool OsIntegrationTestOverrideImpl::DeleteChromeAppsDir() {
   if (chrome_apps_folder_.IsValid()) {

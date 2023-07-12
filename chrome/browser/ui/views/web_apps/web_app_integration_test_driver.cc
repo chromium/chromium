@@ -891,12 +891,6 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
     provider->command_manager().AwaitAllCommandsCompleteForTesting();
     FlushShortcutTasks();
   }
-  LOG(INFO) << "TearDownOnMainThread: Deleting dangling shortcuts.";
-  // TODO(crbug.com/1273568): Investigate the true source of flakiness instead
-  // of papering over it here.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-  ASSERT_TRUE(override_registration_->test_override->ForceDeleteAllShortcuts());
-#endif
   LOG(INFO)
       << "TearDownOnMainThread: Destroying shortcut override and waiting.";
   override_registration_.reset();
