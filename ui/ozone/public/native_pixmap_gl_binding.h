@@ -6,6 +6,7 @@
 #define UI_OZONE_PUBLIC_NATIVE_PIXMAP_GL_BINDING_H_
 
 #include "base/component_export.h"
+#include "ui/gfx/buffer_types.h"
 
 typedef unsigned int GLuint;
 typedef unsigned int GLenum;
@@ -20,6 +21,13 @@ class COMPONENT_EXPORT(OZONE_BASE) NativePixmapGLBinding {
 
   virtual GLuint GetInternalFormat() = 0;
   virtual GLenum GetDataType() = 0;
+
+ protected:
+  // Maps buffer format to GL internalformat. Returns GL_NONE if no sensible
+  // mapping. Available for concrete implementations to use, although they might
+  // choose to use alternative or extended mappings.
+  static unsigned BufferFormatToGLInternalFormatDefaultMapping(
+      gfx::BufferFormat format);
 };
 
 }  // namespace ui

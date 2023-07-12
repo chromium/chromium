@@ -49,8 +49,6 @@ component("gl") {
   output_name = "gl_wrapper"  # Avoid colliding with OS X"s libGL.dylib.
 
   sources = [
-    "buffer_format_utils.cc",
-    "buffer_format_utils.h",
     "dual_gpu_state.cc",
     "dual_gpu_state.h",
     "egl_timestamps.h",

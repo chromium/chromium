@@ -88,7 +88,6 @@ include_rules = [
 specific_include_rules = {
   ".*_test.cc": [
     "+components/viz/test",
-    "+ui/gl/buffer_format_utils.h",
   ],
   "(graphics_context|skia_utils)\.cc" : [ "+ui/base/ui_base_features.h" ],
   "graphics_context.h": [

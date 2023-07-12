@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/platform/graphics/color_correction_test_utils.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gl/buffer_format_utils.h"
 
 namespace blink {
 

@@ -16,7 +16,6 @@
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/dri3.h"
 #include "ui/gfx/x/future.h"
-#include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/scoped_binders.h"
 
@@ -273,7 +272,8 @@ bool NativePixmapEGLX11Binding::BindTexture(GLenum target, GLuint texture_id) {
 }
 
 GLuint NativePixmapEGLX11Binding::GetInternalFormat() {
-  return base::strict_cast<GLuint>(gl::BufferFormatToGLInternalFormat(format_));
+  return NativePixmapGLBinding::BufferFormatToGLInternalFormatDefaultMapping(
+      format_);
 }
 
 GLenum NativePixmapEGLX11Binding::GetDataType() {
