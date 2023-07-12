@@ -44,6 +44,7 @@ class TabPickupInfobarDelegate : public ConfirmInfoBarDelegate {
   // ConfirmInfoBarDelegate implementation.
   std::u16string GetMessageText() const override;
   InfoBarIdentifier GetIdentifier() const override;
+  bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override;
 
  private:
   // Session name.

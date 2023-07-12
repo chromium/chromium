@@ -37,3 +37,8 @@ infobars::InfoBarDelegate::InfoBarIdentifier
 PermissionsInfobarDelegate::GetIdentifier() const {
   return IOS_PERMISSIONS_INFOBAR_DELEGATE;
 }
+
+bool PermissionsInfobarDelegate::EqualsDelegate(
+    infobars::InfoBarDelegate* delegate) const {
+  return delegate->GetIdentifier() == GetIdentifier();
+}

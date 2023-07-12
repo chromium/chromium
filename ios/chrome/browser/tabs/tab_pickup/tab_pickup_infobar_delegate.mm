@@ -108,3 +108,8 @@ infobars::InfoBarDelegate::InfoBarIdentifier
 TabPickupInfobarDelegate::GetIdentifier() const {
   return TAB_PICKUP_INFOBAR_DELEGATE;
 }
+
+bool TabPickupInfobarDelegate::EqualsDelegate(
+    infobars::InfoBarDelegate* delegate) const {
+  return delegate->GetIdentifier() == GetIdentifier();
+}
