@@ -56,7 +56,6 @@ component("crypto") {
     "unexportable_key.h",
     "unexportable_key_metrics.cc",
     "unexportable_key_metrics.h",
-    "unexportable_key_software_unsecure.cc",
   ]
 
   deps = [

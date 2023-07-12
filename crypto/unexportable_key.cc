@@ -26,10 +26,6 @@ std::unique_ptr<VirtualUnexportableKeyProvider>
 GetVirtualUnexportableKeyProviderWin();
 #endif
 
-// Implemented in unexportable_key_software_unsecure.cc.
-std::unique_ptr<UnexportableKeyProvider>
-GetUnexportableKeyProviderSoftwareUnsecure();
-
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProvider() {
   if (g_mock_provider) {
     return g_mock_provider();
