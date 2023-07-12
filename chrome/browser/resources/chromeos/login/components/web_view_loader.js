@@ -123,7 +123,7 @@ export class WebViewLoader {
       webview.addEventListener('contentload', () => {
         webview.executeScript(CLEAR_ANCHORS_CONTENT_SCRIPT, () => {
           if (chrome.runtime.lastError) {
-            console.error(
+            console.warn(
                 'Clear anchors script failed: ' +
                 chrome.runtime.lastError.message);
           }
