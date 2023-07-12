@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/enrollment/account_status_check_fetcher.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -232,7 +233,18 @@ void GaiaScreen::OnScreenBacklightStateChanged(
 }
 
 void GaiaScreen::HandleIdentifierEntered(const std::string& user_email) {
-  if (MaybeTriggerEnrollmentNudge(user_email)) {
+  if (ShouldFetchEnrollmentNudgePolicy(user_email)) {
+    view_->ToggleLoadingUI(true);
+    account_status_fetcher_.reset();
+    account_status_fetcher_ =
+        std::make_unique<policy::AccountStatusCheckFetcher>(user_email);
+    account_status_fetcher_->Fetch(
+        base::BindOnce(&GaiaScreen::OnAccountStatusFetched,
+                       base::Unretained(this), user_email),
+        /*fetch_entollment_nudge_policy=*/true);
+    // Note: we don't check if user is allowlisted since
+    // `ShouldFetchEnrollmentNudgePolicy` would return true only for unowned
+    // devices in which case there are no device policies yet.
     return;
   }
 
@@ -279,7 +291,27 @@ void GaiaScreen::OnGaiaReauthTokenFetched(const AccountId& account,
   view_->LoadGaiaAsync(account);
 }
 
-bool GaiaScreen::MaybeTriggerEnrollmentNudge(const std::string& user_email) {
+void GaiaScreen::OnAccountStatusFetched(const std::string& user_email,
+                                        bool fetch_succeeded,
+                                        policy::AccountStatus status) {
+  view_->ToggleLoadingUI(false);
+  if (!fetch_succeeded) {
+    // Enrollment Nudge is perceived as a non-critical UX improvement, so it is
+    // acceptable to allow users to sign in if fetch fails for some reason.
+    // Hence we just log an error here.
+    // TODO(b/290924246): maybe also record this with UMA?
+    LOG(ERROR) << "Failed to fetch Enrollment Nudge policy";
+    return;
+  }
+  if (status.enrollment_required) {
+    const std::string email_domain =
+        chrome::enterprise_util::GetDomainFromEmail(user_email);
+    view_->ShowEnrollmentNudge(email_domain);
+  }
+}
+
+bool GaiaScreen::ShouldFetchEnrollmentNudgePolicy(
+    const std::string& user_email) {
   const bool is_enterprise_managed = g_browser_process->platform_part()
                                          ->browser_policy_connector_ash()
                                          ->IsDeviceEnterpriseManaged();
@@ -298,24 +330,8 @@ bool GaiaScreen::MaybeTriggerEnrollmentNudge(const std::string& user_email) {
   }
   const std::string email_domain =
       chrome::enterprise_util::GetDomainFromEmail(user_email);
-  if (chrome::enterprise_util::IsKnownConsumerDomain(email_domain)) {
-    // User doesn't belong to a managed domain, so enrollment nudging can't
-    // apply.
-    return false;
-  }
-
-  // TODO(b/271104781): replace this check with a policy fetch through a special
-  // DM server API when it is available.
-  if (!ash::features::IsEnrollmentNudgingForTestingEnabled()) {
-    return false;
-  }
-
-  if (!view_) {
-    return false;
-  }
-
-  view_->ShowEnrollmentNudge(email_domain);
-  return true;
+  // Enrollment nudging can't apply to users not belonging to a managed domain
+  return !chrome::enterprise_util::IsKnownConsumerDomain(email_domain);
 }
 
 }  // namespace ash

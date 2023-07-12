@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/test_support/remote_commands_state.h"
+#include "components/policy/test_support/request_handler_for_check_user_account.h"
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -111,6 +112,7 @@ EmbeddedPolicyTestServer::EmbeddedPolicyTestServer()
   RegisterHandler(std::make_unique<RequestHandlerForCertUpload>(this));
   RegisterHandler(
       std::make_unique<RequestHandlerForCheckAndroidManagement>(this));
+  RegisterHandler(std::make_unique<RequestHandlerForCheckUserAccount>(this));
   RegisterHandler(std::make_unique<RequestHandlerForChromeDesktopReport>(this));
   RegisterHandler(
       std::make_unique<RequestHandlerForClientCertProvisioning>(this));

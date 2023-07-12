@@ -234,10 +234,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnableTouchscreensInDiagnosticsApp);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnforceAshExtensionKeeplist);
-// TODO(b/271104781): Temporary flag while feature is being implemented. Remove
-// this once enrollment nudging policy can be fetched through a DM server API.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kEnrollmentNudgingForTesting);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEolWarningNotifications);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEolIncentive);
 enum class EolIncentiveParam { kNoOffer, kOffer, kOfferWithWarning };

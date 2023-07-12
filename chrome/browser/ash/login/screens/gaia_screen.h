@@ -21,6 +21,11 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 
+namespace policy {
+struct AccountStatus;
+class AccountStatusCheckFetcher;
+}  // namespace policy
+
 namespace ash {
 
 class GaiaView;
@@ -83,13 +88,17 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
   void FetchGaiaReauthToken(const AccountId& account);
   void OnGaiaReauthTokenFetched(const AccountId& account,
                                 const std::string& token);
+  void OnAccountStatusFetched(const std::string& user_email,
+                              bool result,
+                              policy::AccountStatus status);
 
   // Triggers the enrollment nudge flow and returns true if all requirements are
   // met, otherwise does nothing and returns false.
-  bool MaybeTriggerEnrollmentNudge(const std::string& user_email);
+  bool ShouldFetchEnrollmentNudgePolicy(const std::string& user_email);
 
   AuthFactorEditor auth_factor_editor_;
   std::unique_ptr<GaiaReauthTokenFetcher> gaia_reauth_token_fetcher_;
+  std::unique_ptr<policy::AccountStatusCheckFetcher> account_status_fetcher_;
 
   base::WeakPtr<TView> view_;
 

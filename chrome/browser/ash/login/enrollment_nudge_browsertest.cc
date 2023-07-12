@@ -10,8 +10,11 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
+#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "components/policy/test_support/embedded_policy_test_server.h"
+#include "components/policy/test_support/policy_storage.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,14 +37,15 @@ constexpr test::UIPath kSigninNextButton = {
 
 class EnrollmentNudgeTest : public OobeBaseTest {
  public:
-  EnrollmentNudgeTest() {
-    // TODO(b/271104781): replace with policy-based setup after we land DM
-    // server API changes. For now `kEnrollmentNudgingForTesting` feature is
-    // used to enable enrollment nudging for all managed users.
-    feature_list_.InitAndEnableFeature(
-        ash::features::kEnrollmentNudgingForTesting);
-  }
+  EnrollmentNudgeTest() = default;
   ~EnrollmentNudgeTest() override = default;
+
+  void SetUpOnMainThread() override {
+    policy_server_.server()->policy_storage()->add_managed_user(
+        FakeGaiaMixin::kEnterpriseUser1);
+    policy_server_.SetEnrollmentNudgePolicy(true);
+    OobeBaseTest::SetUpOnMainThread();
+  }
 
   void WaitForEnrollmentNudgeDialogToOpen() {
     test::OobeJS()
@@ -63,6 +67,7 @@ class EnrollmentNudgeTest : public OobeBaseTest {
  private:
   base::test::ScopedFeatureList feature_list_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_server_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(EnrollmentNudgeTest, SwitchToEnrollment) {

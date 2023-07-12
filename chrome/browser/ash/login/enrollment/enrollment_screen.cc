@@ -653,13 +653,13 @@ void EnrollmentScreen::OnFrameLoadingCompleted() {
 }
 
 void EnrollmentScreen::OnAccountStatusFetched(const std::string& email,
-                                              bool result,
+                                              bool fetch_succeeded,
                                               AccountStatus status) {
   if (!view_)
     return;
 
   if (status.type == AccountStatus::Type::kDasher ||
-      status.type == AccountStatus::Type::kUnknown || result == false) {
+      status.type == AccountStatus::Type::kUnknown || !fetch_succeeded) {
     view_->ShowSigninScreen();
     return;
   }

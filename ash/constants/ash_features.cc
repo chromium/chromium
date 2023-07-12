@@ -777,13 +777,6 @@ BASE_FEATURE(kEnforceAshExtensionKeeplist,
              "EnforceAshExtensionKeeplist",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enforces enrollment nudging for managed users during OOBE. This is a
-// temporary flag for WIP feature to until we implement required DM server
-// controls.
-BASE_FEATURE(kEnrollmentNudgingForTesting,
-             "EnrollmentNudgingForTesting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables access to the chrome://enterprise-reporting WebUI.
 BASE_FEATURE(kEnterpriseReportingUI,
              "EnterpriseReportingUI",
@@ -3239,10 +3232,6 @@ bool IsLockScreenHideSensitiveNotificationsSupported() {
 
 bool IsEducationEnrollmentOobeFlowEnabled() {
   return base::FeatureList::IsEnabled(kEducationEnrollmentOobeFlow);
-}
-
-bool IsEnrollmentNudgingForTestingEnabled() {
-  return base::FeatureList::IsEnabled(kEnrollmentNudgingForTesting);
 }
 
 bool IsGameDashboardEnabled() {

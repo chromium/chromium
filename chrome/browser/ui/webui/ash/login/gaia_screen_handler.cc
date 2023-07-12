@@ -1603,4 +1603,8 @@ void GaiaScreenHandler::CheckIfAllowlisted(const std::string& user_email) {
   }
 }
 
+void GaiaScreenHandler::ToggleLoadingUI(bool is_shown) {
+  CallExternalAPI("toggleLoadingUI", is_shown);
+}
+
 }  // namespace ash

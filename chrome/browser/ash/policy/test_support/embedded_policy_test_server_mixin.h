@@ -144,6 +144,8 @@ class EmbeddedPolicyTestServerMixin : public InProcessBrowserTestMixin {
   // via command line and calling `ConfigureFakeStatisticsForZeroTouch`.
   void SetupZeroTouchForcedEnrollment();
 
+  void SetEnrollmentNudgePolicy(bool enrollment_required);
+
   // Configures fake statistics provider with values that can be used with
   // zero-touch enrollment.
   void ConfigureFakeStatisticsForZeroTouch(

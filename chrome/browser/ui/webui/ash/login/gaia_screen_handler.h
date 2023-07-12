@@ -85,7 +85,7 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
   virtual void SetGaiaPath(GaiaPath gaia_path) = 0;
   // Returns the currently set Gaia path
   virtual GaiaPath GetGaiaPath() = 0;
-  // Show error UI at the end of GAIA flow when user is not allowlisted.
+  // Show error UI at the end of Gaia flow when user is not allowlisted.
   virtual void ShowAllowlistCheckFailedError() = 0;
   // Reloads authenticator.
   virtual void ReloadGaiaAuthenticator() = 0;
@@ -97,6 +97,8 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
   virtual void ShowEnrollmentNudge(const std::string& email_domain) = 0;
   // Checks if user's email is allowlisted.
   virtual void CheckIfAllowlisted(const std::string& user_email) = 0;
+  // Shows a page with loading animation on top of the Gaia screen.
+  virtual void ToggleLoadingUI(bool is_shown) = 0;
 
   // Show sign-in screen for the given credentials. `services` is a list of
   // services returned by userInfo call as JSON array. Should be an empty array
@@ -154,6 +156,7 @@ class GaiaScreenHandler
   void SetReauthRequestToken(const std::string& reauth_request_token) override;
   void ShowEnrollmentNudge(const std::string& email_domain) override;
   void CheckIfAllowlisted(const std::string& user_email) override;
+  void ToggleLoadingUI(bool is_shown) override;
 
   void ShowSigninScreenForTest(const std::string& username,
                                const std::string& password,

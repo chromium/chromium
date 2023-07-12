@@ -370,6 +370,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       'clickPrimaryButtonForTesting',
       'onBeforeLoad',
       'reset',
+      'toggleLoadingUI',
     ];
   }
 
@@ -938,6 +939,13 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     this.reset();
     this.emailDomain_ = domain;
     this.$.enrollmentNudge.showDialog();
+  }
+
+  /**
+   * @param {boolean} isShown
+   */
+  toggleLoadingUI(isShown) {
+    this.loadingFrameContents_ = isShown;
   }
 
   /**
