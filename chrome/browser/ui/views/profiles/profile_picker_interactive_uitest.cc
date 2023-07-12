@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
 #include "base/check.h"
 #include "base/run_loop.h"
-#include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -24,15 +21,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
-#include "ui/base/interaction/element_test_util.h"
-#include "ui/events/event_constants.h"
-#include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -343,27 +335,42 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
       CheckResult(HasPendingNav(), IsFalse()));
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_NavigateBackFromNewProfileWithKeyboard \
-  DISABLED_NavigateBackFromNewProfileWithKeyboard
-#else
-#define MAYBE_NavigateBackFromNewProfileWithKeyboard \
-  NavigateBackFromNewProfileWithKeyboard
-#endif
-// TODO(crbug.com/1446225): re-enable this flaky test.
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
-                       MAYBE_NavigateBackFromNewProfileWithKeyboard) {
+                       NavigateBackFromNewProfileWithKeyboard) {
+  // Check that when deep-linking into the flow via the "Add profile" menu entry
+  // populates the navigation list is populated correctly such that back
+  // navigations make sense.
   ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile,
                      GURL("chrome://profile-picker/new-profile"));
-  EXPECT_EQ(2, web_contents()->GetController().GetEntryCount());
-  EXPECT_EQ(1, web_contents()->GetController().GetLastCommittedEntryIndex());
 
-  // For applying the history manipulation, it needs user activation.
-  SimulateUserActivation();
-  EXPECT_TRUE(web_contents()->GetController().CanGoBack());
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
 
-  // Navigate back with the keyboard.
-  SendBackKeyboardCommand();
-  WaitForLoadStop(GURL("chrome://profile-picker"), web_contents());
-  EXPECT_EQ(0, web_contents()->GetController().GetLastCommittedEntryIndex());
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kPickerWebContentsId, web_view()),
+      WaitForWebContentsReady(kPickerWebContentsId,
+                              GURL("chrome://profile-picker/new-profile")),
+
+      // Even though we start straight on the "new-profile" page, the picker
+      // main view should be loaded under it in the nav stack.
+      CheckResult(GetNavState(), Eq(NavState{.entry_count = 2,
+                                             .last_committed_entry_index = 1})),
+
+      // Focus the window to ensure the keyboard shortcut reaches it.
+      Do([&] { SimulateUserActivation(); }),
+
+      // Navigate back with the keyboard.
+      SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
+      CheckResult(HasPendingNav(), IsTrue(),
+                  /*check_description=*/"HasPendingNav"),
+      WaitForStateChange(kPickerWebContentsId,
+                         UrlEntryMatches(GURL("chrome://profile-picker"))),
+      CheckResult(GetNavState(), Eq(NavState{.entry_count = 2,
+                                             .last_committed_entry_index = 0})),
+
+      // Navigating back once again does nothing.
+      SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
+      CheckResult(HasPendingNav(), IsFalse())
+
+  );
 }
