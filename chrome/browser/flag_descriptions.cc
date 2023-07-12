@@ -3231,13 +3231,6 @@ const char kTopChromeTouchUiName[] = "Touch UI Layout";
 const char kTopChromeTouchUiDescription[] =
     "Enables touch UI layout in the browser's top chrome.";
 
-const char kThreadedScrollingName[] = "Threaded scrolling";
-const char kThreadedScrollingDescription[] =
-    "Threaded handling of scroll-related input events. Disabling this will "
-    "force all such scroll events to be handled on the main thread. Note that "
-    "this can dramatically hurt scrolling performance of most websites and is "
-    "intended for testing purposes only.";
-
 const char kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesName[] =
     "Throttle non-visible cross-origin iframes";
 const char

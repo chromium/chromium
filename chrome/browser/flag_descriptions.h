@@ -1876,9 +1876,6 @@ extern const char kTintCompositedContentDescription[];
 extern const char kTopChromeTouchUiName[];
 extern const char kTopChromeTouchUiDescription[];
 
-extern const char kThreadedScrollingName[];
-extern const char kThreadedScrollingDescription[];
-
 extern const char
     kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesName[];
 extern const char

@@ -4676,9 +4676,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInProductHelpUseClientConfigName,
      flag_descriptions::kInProductHelpUseClientConfigDescription, kOsAll,
      FEATURE_VALUE_TYPE(feature_engagement::kUseClientConfigIPH)},
-    {"disable-threaded-scrolling", flag_descriptions::kThreadedScrollingName,
-     flag_descriptions::kThreadedScrollingDescription, kOsAll,
-     SINGLE_DISABLE_VALUE_TYPE(blink::switches::kDisableThreadedScrolling)},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-lock-screen-notification",
      flag_descriptions::kLockScreenNotificationName,

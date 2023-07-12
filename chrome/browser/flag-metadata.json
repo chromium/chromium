@@ -1669,13 +1669,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "disable-threaded-scrolling",
-    "owners": [ "bokan", "input-dev" ],
-    // This flag is a useful debugging control when investigating scrolling
-    // issues.
-    "expiry_milestone": -1
-  },
-  {
     "name": "disable-virtual-keyboard",
     "owners": [ "dvallet", "essential-inputs-team@google.com" ],
     "expiry_milestone": 116
