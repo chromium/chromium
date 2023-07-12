@@ -11141,6 +11141,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="300" label="RFHI_FULLSCREEN_NAV_INVALID_INITIAL_DOCUMENT"/>
   <int value="301" label="RFHI_FULLSCREEN_NAV_NOT_OUTERMOST_MAIN_FRAME"/>
   <int value="302" label="MH_MIDI_PERMISSION"/>
+  <int value="303" label="RFH_CAN_ACCESS_FILES_OF_PAGE_STATE_AT_COMMIT"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

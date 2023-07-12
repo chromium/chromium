@@ -12233,7 +12233,7 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   // filenames it can't access in a future session restore.
   if (!CanAccessFilesOfPageState(params->page_state)) {
     bad_message::ReceivedBadMessage(
-        process, bad_message::RFH_CAN_ACCESS_FILES_OF_PAGE_STATE);
+        process, bad_message::RFH_CAN_ACCESS_FILES_OF_PAGE_STATE_AT_COMMIT);
     return false;
   }
 

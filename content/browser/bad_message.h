@@ -327,6 +327,7 @@ enum BadMessageReason {
   RFHI_FULLSCREEN_NAV_INVALID_INITIAL_DOCUMENT = 300,
   RFHI_FULLSCREEN_NAV_NOT_OUTERMOST_MAIN_FRAME = 301,
   MH_MIDI_PERMISSION = 302,
+  RFH_CAN_ACCESS_FILES_OF_PAGE_STATE_AT_COMMIT = 303,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
