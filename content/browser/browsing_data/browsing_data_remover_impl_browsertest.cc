@@ -346,6 +346,56 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplBrowserTest,
                     {}, {}, {}, {}, FROM_HERE);
 }
 
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplBrowserTest,
+                       ClearBackForwardCacheEntriesWithOrigin) {
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    return;
+  }
+
+  GURL url_1 = ssl_server().GetURL("/title1.html");
+  GURL url_2 = ssl_server().GetURL("/title2.html");
+
+  // 1) Navigate to url_1, then to url_2.
+  ASSERT_TRUE(NavigateToURL(shell(), url_1));
+  ASSERT_TRUE(NavigateToURL(shell(), url_2));
+
+  // 2) Go back, the page should be restored from BFCache.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+
+  // 3) Navigate to url_2 again.
+  ASSERT_TRUE(NavigateToURL(shell(), url_2));
+
+  // 4) Remove the browsing data with DATA_TYPE_CACHE and some random domain
+  // that doesn't match the BFCached document's origin.
+  auto filter = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter->AddRegisterableDomain("foobar.com");
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
+                          std::move(filter));
+
+  // 5) Go back, the page should be restored from BFCache.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+
+  // 6) Navigate to url_2 again.
+  ASSERT_TRUE(NavigateToURL(shell(), url_2));
+
+  // 7) Remove the browsing data with DATA_TYPE_CACHE and the domain that
+  // matches the BFCached document's origin.
+  filter = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter->AddRegisterableDomain("localhost");
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
+                          std::move(filter));
+
+  // 8) Go back, and the page should not be restored from BFCache since the
+  // BFCache entry should be flushed.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::kCacheFlushed},
+                    {}, {}, {}, {}, FROM_HERE);
+}
+
 class CookiesBrowsingDataRemoverImplBrowserTest
     : public BrowsingDataRemoverImplBrowserTest {
  public:

@@ -570,11 +570,13 @@ void BrowsingDataRemoverImpl::RemoveImpl(
         filter_builder->BuildNetworkServiceFilter(),
         CreateTaskCompletionClosureForMojo(TracingDataType::kPreflightCache));
 
-    // Clears the BFCache entries for the current browser context.
+    // Clears the BFCache entries that match the removal filter for the current
+    // browser context.
+    auto storage_key_filter = filter_builder->BuildStorageKeyFilter();
     for (WebContentsImpl* web_contents : WebContentsImpl::GetAllWebContents()) {
-      if (web_contents->GetBrowserContext()->UniqueId() ==
-          browser_context_->UniqueId()) {
-        web_contents->GetController().GetBackForwardCache().Flush();
+      if (web_contents->GetBrowserContext() == browser_context_) {
+        web_contents->GetController().GetBackForwardCache().Flush(
+            storage_key_filter);
       }
     }
   }

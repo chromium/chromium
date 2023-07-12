@@ -1238,6 +1238,17 @@ void BackForwardCacheImpl::Flush() {
   }
 }
 
+void BackForwardCacheImpl::Flush(
+    const StoragePartition::StorageKeyMatcherFunction& storage_key_filter) {
+  for (std::unique_ptr<Entry>& entry : entries_) {
+    if (storage_key_filter.Run(blink::StorageKey::CreateFirstParty(
+            entry->render_frame_host()->GetLastCommittedOrigin()))) {
+      entry->render_frame_host()->EvictFromBackForwardCacheWithReason(
+          BackForwardCacheMetrics::NotRestoredReason::kCacheFlushed);
+    }
+  }
+}
+
 void BackForwardCacheImpl::Shutdown() {
   if (UsingForegroundBackgroundCacheSizeLimit()) {
     for (auto& entry : entries_)

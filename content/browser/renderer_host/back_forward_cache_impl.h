@@ -30,6 +30,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -390,6 +391,10 @@ class CONTENT_EXPORT BackForwardCacheImpl
   void Flush() override;
   void Prune(size_t limit) override;
   void DisableForTesting(DisableForTestingReason reason) override;
+
+  // Evict all entries from the BackForwardCache that match the removal filter.
+  void Flush(
+      const StoragePartition::StorageKeyMatcherFunction& storage_key_filter);
 
   // RenderProcessHostInternalObserver methods
   void RenderProcessBackgroundedChanged(RenderProcessHostImpl* host) override;
