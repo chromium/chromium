@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/barrier_callback.h"
 #include "base/check_is_test.h"
 #include "base/containers/cxx20_erase_set.h"
 #include "base/feature_list.h"
@@ -147,7 +146,7 @@ void AppPreloadService::OnGetAppsForFirstLoginCompleted(
     base::TimeTicks start_time,
     absl::optional<std::vector<PreloadAppDefinition>> apps) {
   if (!apps.has_value()) {
-    OnFirstLoginFlowComplete(/*success=*/false, start_time);
+    OnFirstLoginFlowComplete(start_time, /*success=*/false);
     return;
   }
 
@@ -156,27 +155,13 @@ void AppPreloadService::OnGetAppsForFirstLoginCompleted(
     return !ShouldInstallApp(app);
   });
 
-  // Request installation of any remaining apps. If there are no apps to
-  // install, OnAllAppInstallationFinished will be called immediately.
-  const auto install_barrier_callback_ = base::BarrierCallback<bool>(
-      apps.value().size(),
-      base::BindOnce(&AppPreloadService::OnAllAppInstallationFinished,
-                     weak_ptr_factory_.GetWeakPtr(), start_time));
-
-  for (const PreloadAppDefinition& app : apps.value()) {
-    web_app_installer_->InstallApp(app, install_barrier_callback_);
-  }
+  web_app_installer_->InstallAllApps(
+      apps.value(), base::BindOnce(&AppPreloadService::OnFirstLoginFlowComplete,
+                                   weak_ptr_factory_.GetWeakPtr(), start_time));
 }
 
-void AppPreloadService::OnAllAppInstallationFinished(
-    base::TimeTicks start_time,
-    const std::vector<bool>& results) {
-  OnFirstLoginFlowComplete(
-      base::ranges::all_of(results, [](bool b) { return b; }), start_time);
-}
-
-void AppPreloadService::OnFirstLoginFlowComplete(bool success,
-                                                 base::TimeTicks start_time) {
+void AppPreloadService::OnFirstLoginFlowComplete(base::TimeTicks start_time,
+                                                 bool success) {
   if (success) {
     ScopedDictPrefUpdate(profile_->GetPrefs(), prefs::kApsStateManager)
         ->Set(kFirstLoginFlowCompletedKey, true);

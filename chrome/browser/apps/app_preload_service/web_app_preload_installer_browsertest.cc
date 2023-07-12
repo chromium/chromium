@@ -46,14 +46,21 @@ class WebAppPreloadInstallerBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    if (request.relative_url != "/manifest.json" || manifest_.empty()) {
+    if ((request.relative_url != "/manifest.json" &&
+         request.relative_url != "/manifest2.json") ||
+        manifest_.empty()) {
       return nullptr;
     }
 
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
     response->set_content_type("application/json");
-    response->set_content(manifest_);
+    if (request.relative_url == "/manifest.json") {
+      response->set_content(manifest_);
+
+    } else {
+      response->set_content(manifest2_);
+    }
     return response;
   }
 
@@ -71,7 +78,34 @@ class WebAppPreloadInstallerBrowserTest : public InProcessBrowserTest {
                                            nullptr);
   }
 
+  proto::AppPreloadListResponse_App CreateValidPreloadApp(
+      const std::string& name,
+      const std::string& package_id,
+      const std::string& original_manifest_url,
+      const std::string& test_manifest_url) {
+    proto::AppPreloadListResponse_App app;
+    app.set_name(name);
+    app.set_package_id(package_id);
+    app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
+
+    auto* web_extras = app.mutable_web_extras();
+    web_extras->set_original_manifest_url(original_manifest_url);
+    web_extras->set_manifest_url(
+        https_server()->GetURL(test_manifest_url).spec());
+    return app;
+  }
+
+  void VerifyAppInstalled(web_app::AppId app_id, const std::string& app_name) {
+    bool found = app_registry_cache().ForOneApp(
+        app_id, [app_name](const AppUpdate& update) {
+          EXPECT_EQ(update.Name(), app_name);
+          EXPECT_EQ(update.InstallReason(), InstallReason::kOem);
+        });
+    ASSERT_TRUE(found);
+  }
+
   void SetManifestResponse(std::string manifest) { manifest_ = manifest; }
+  void SetManifest2Response(std::string manifest) { manifest2_ = manifest; }
 
   Profile* profile() { return browser()->profile(); }
 
@@ -85,20 +119,15 @@ class WebAppPreloadInstallerBrowserTest : public InProcessBrowserTest {
  private:
   net::EmbeddedTestServer https_server_;
   std::string manifest_;
+  std::string manifest2_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallOemApp) {
+IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallOneOemApp) {
   WebAppPreloadInstaller installer(profile());
 
-  proto::AppPreloadListResponse_App app;
-  app.set_name("Example App");
-  app.set_package_id("web:https://www.example.com/index.html");
-  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
-
-  auto* web_extras = app.mutable_web_extras();
-  web_extras->set_original_manifest_url(
-      "https://www.example.com/manifest.json");
-  web_extras->set_manifest_url(https_server()->GetURL("/manifest.json").spec());
+  proto::AppPreloadListResponse_App app = CreateValidPreloadApp(
+      "Example App", "web:https://www.example.com/index.html",
+      "https://www.example.com/manifest.json", "/manifest.json");
 
   constexpr char kManifestTemplate[] = R"({
     "name": "Example App",
@@ -110,17 +139,12 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallOemApp) {
 
   base::HistogramTester histograms;
   base::test::TestFuture<bool> result;
-  installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
+  installer.InstallAllApps({PreloadAppDefinition(app)}, result.GetCallback());
   ASSERT_TRUE(result.Get());
 
   auto app_id = web_app::GenerateAppId(
       absl::nullopt, GURL("https://www.example.com/index.html"));
-  bool found =
-      app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {
-        EXPECT_EQ(update.Name(), "Example App");
-        EXPECT_EQ(update.InstallReason(), InstallReason::kOem);
-      });
-  ASSERT_TRUE(found);
+  VerifyAppInstalled(app_id, "Example App");
 
   histograms.ExpectBucketCount("AppPreloadService.WebAppInstall.InstallResult",
                                WebAppPreloadResult::kSuccess, 1);
@@ -130,18 +154,61 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallOemApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
+                       InstallMultipleOemApps) {
+  WebAppPreloadInstaller installer(profile());
+
+  proto::AppPreloadListResponse_App app = CreateValidPreloadApp(
+      "Example App", "web:https://www.example.com/index.html",
+      "https://www.example.com/manifest.json", "/manifest.json");
+  proto::AppPreloadListResponse_App app2 = CreateValidPreloadApp(
+      "Example App2", "web:https://www.example2.com/index.html",
+      "https://www.example2.com/manifest2.json", "/manifest2.json");
+
+  constexpr char kManifestTemplate[] = R"({
+    "name": "Example App",
+    "start_url": "/index.html",
+    "scope": "/",
+    "icons": $1
+  })";
+  constexpr char kManifestTemplate2[] = R"({
+    "name": "Example App2",
+    "start_url": "/index.html",
+    "scope": "/",
+    "icons": $1
+  })";
+  SetManifestResponse(AddIconToManifest(kManifestTemplate));
+  SetManifest2Response(AddIconToManifest(kManifestTemplate2));
+
+  base::HistogramTester histograms;
+  base::test::TestFuture<bool> result;
+  installer.InstallAllApps(
+      {PreloadAppDefinition(app), PreloadAppDefinition(app2)},
+      result.GetCallback());
+  ASSERT_TRUE(result.Get());
+
+  auto app_id = web_app::GenerateAppId(
+      absl::nullopt, GURL("https://www.example.com/index.html"));
+  VerifyAppInstalled(app_id, "Example App");
+
+  auto app_id2 = web_app::GenerateAppId(
+      absl::nullopt, GURL("https://www.example2.com/index.html"));
+  VerifyAppInstalled(app_id2, "Example App2");
+
+  histograms.ExpectBucketCount("AppPreloadService.WebAppInstall.InstallResult",
+                               WebAppPreloadResult::kSuccess, 2);
+  histograms.ExpectBucketCount(
+      "AppPreloadService.WebAppInstall.CommandResultCode",
+      webapps::InstallResultCode::kSuccessNewInstall, 2);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
                        InstallWithManifestId) {
   WebAppPreloadInstaller installer(profile());
 
-  proto::AppPreloadListResponse_App app;
-  app.set_name("Example App");
+  proto::AppPreloadListResponse_App app = CreateValidPreloadApp(
+      "Example App", "web:https://www.example.com/index.html",
+      "https://www.example.com/manifest.json", "/manifest.json");
   app.set_package_id("web:https://www.example.com/manifest_id");
-  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
-
-  auto* web_extras = app.mutable_web_extras();
-  web_extras->set_original_manifest_url(
-      "https://www.example.com/manifest.json");
-  web_extras->set_manifest_url(https_server()->GetURL("/manifest.json").spec());
 
   SetManifestResponse(AddIconToManifest(R"({
     "id": "manifest_id",
@@ -152,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
   })"));
 
   base::test::TestFuture<bool> result;
-  installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
+  installer.InstallAllApps({PreloadAppDefinition(app)}, result.GetCallback());
   ASSERT_TRUE(result.Get());
 
   // The generated app ID should take the manifest ID into account.
@@ -175,14 +242,9 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallOverUserApp) {
   auto app_id = web_app::test::InstallDummyWebApp(profile(), kUserAppName,
                                                   GURL(kStartUrl));
 
-  proto::AppPreloadListResponse_App app;
-  app.set_name("OEM Installed app");
-  app.set_package_id(base::StrCat({"web:", kStartUrl}));
-  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
-
-  auto* web_extras = app.mutable_web_extras();
-  web_extras->set_manifest_url(https_server()->GetURL("/manifest.json").spec());
-  web_extras->set_original_manifest_url(kOriginalManifestUrl);
+  proto::AppPreloadListResponse_App app = CreateValidPreloadApp(
+      "OEM Installed app", base::StrCat({"web:", kStartUrl}),
+      kOriginalManifestUrl, "/manifest.json");
 
   SetManifestResponse(AddIconToManifest(R"({
     "name": "OEM Installed app",
@@ -191,15 +253,10 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallOverUserApp) {
   })"));
 
   base::test::TestFuture<bool> result;
-  installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
+  installer.InstallAllApps({PreloadAppDefinition(app)}, result.GetCallback());
   ASSERT_TRUE(result.Get());
 
-  bool found =
-      app_registry_cache().ForOneApp(app_id, [&](const AppUpdate& update) {
-        EXPECT_EQ(update.Name(), kUserAppName);
-        EXPECT_EQ(update.InstallReason(), InstallReason::kOem);
-      });
-  ASSERT_TRUE(found);
+  VerifyAppInstalled(app_id, kUserAppName);
 }
 
 // The manifest id in the proto does not match the calculated manifest id.
@@ -207,15 +264,9 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
                        InstallMismatchedDataManifestId) {
   WebAppPreloadInstaller installer(profile());
 
-  proto::AppPreloadListResponse_App app;
-  app.set_name("Example App");
-  app.set_package_id("web:https://www.example.com/manifest_id");
-  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
-
-  auto* web_extras = app.mutable_web_extras();
-  web_extras->set_original_manifest_url(
-      "https://www.example.com/manifest.json");
-  web_extras->set_manifest_url(https_server()->GetURL("/manifest.json").spec());
+  proto::AppPreloadListResponse_App app = CreateValidPreloadApp(
+      "Example App", "web:https://www.example.com/manifest_id",
+      "https://www.example.com/manifest.json", "/manifest.json");
 
   SetManifestResponse(AddIconToManifest(R"({
     "name": "Example App",
@@ -226,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
 
   base::HistogramTester histograms;
   base::test::TestFuture<bool> result;
-  installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
+  installer.InstallAllApps({PreloadAppDefinition(app)}, result.GetCallback());
   ASSERT_FALSE(result.Get());
 
   auto app_id = web_app::GenerateAppId(
@@ -246,20 +297,13 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
                        ManifestFileIsNotJSON) {
   WebAppPreloadInstaller installer(profile());
 
-  proto::AppPreloadListResponse_App app;
-  app.set_name("Example App");
-  app.set_package_id("web:https://www.example.com/manifest_id");
-  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
-
-  auto* web_extras = app.mutable_web_extras();
-  web_extras->set_original_manifest_url(
-      "https://www.example.com/manifest.json");
-  web_extras->set_manifest_url(https_server()->GetURL("/manifest.json").spec());
-
+  proto::AppPreloadListResponse_App app = CreateValidPreloadApp(
+      "Example App", "web:https://www.example.com/manifest_id",
+      "https://www.example.com/manifest.json", "/manifest.json");
   SetManifestResponse("INVALID");
 
   base::test::TestFuture<bool> result;
-  installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
+  installer.InstallAllApps({PreloadAppDefinition(app)}, result.GetCallback());
   ASSERT_FALSE(result.Get());
 
   auto app_id = web_app::GenerateAppId(
@@ -273,23 +317,16 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
                        ManifestFileIsHasMissingFields) {
   WebAppPreloadInstaller installer(profile());
 
-  proto::AppPreloadListResponse_App app;
-  app.set_name("Example App");
-  app.set_package_id("web:https://www.example.com/manifest_id");
-  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
-
-  auto* web_extras = app.mutable_web_extras();
-  web_extras->set_original_manifest_url(
-      "https://www.example.com/manifest.json");
-  web_extras->set_manifest_url(https_server()->GetURL("/manifest.json").spec());
-
+  proto::AppPreloadListResponse_App app = CreateValidPreloadApp(
+      "Example App", "web:https://www.example.com/manifest_id",
+      "https://www.example.com/manifest.json", "/manifest.json");
   SetManifestResponse(R"({
     "is_valid": "no."
   })");
 
   base::HistogramTester histograms;
   base::test::TestFuture<bool> result;
-  installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
+  installer.InstallAllApps({PreloadAppDefinition(app)}, result.GetCallback());
   ASSERT_FALSE(result.Get());
 
   auto app_id = web_app::GenerateAppId(
@@ -307,16 +344,9 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
                        ManifestWithFailingIcons) {
   WebAppPreloadInstaller installer(profile());
 
-  proto::AppPreloadListResponse_App app;
-  app.set_name("Example App");
-  app.set_package_id("web:https://www.example.com/manifest_id");
-  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
-
-  auto* web_extras = app.mutable_web_extras();
-  web_extras->set_original_manifest_url(
-      "https://www.example.com/manifest.json");
-  web_extras->set_manifest_url(https_server()->GetURL("/manifest.json").spec());
-
+  proto::AppPreloadListResponse_App app = CreateValidPreloadApp(
+      "Example App", "web:https://www.example.com/manifest_id",
+      "https://www.example.com/manifest.json", "/manifest.json");
   constexpr char kManifestTemplate[] = R"({
     "name": "Example App",
     "start_url": "/index.html",
@@ -337,12 +367,20 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
 
   base::HistogramTester histograms;
   base::test::TestFuture<bool> result;
-  installer.InstallApp(PreloadAppDefinition(app), result.GetCallback());
+  installer.InstallAllApps({PreloadAppDefinition(app)}, result.GetCallback());
   ASSERT_FALSE(result.Get());
 
   histograms.ExpectBucketCount(
       "AppPreloadService.WebAppInstall.CommandResultCode",
       webapps::InstallResultCode::kIconDownloadingFailed, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallNoApps) {
+  WebAppPreloadInstaller installer(profile());
+  base::test::TestFuture<bool> result;
+  std::vector<PreloadAppDefinition> apps;
+  installer.InstallAllApps(apps, result.GetCallback());
+  ASSERT_TRUE(result.Get());
 }
 
 }  // namespace apps
