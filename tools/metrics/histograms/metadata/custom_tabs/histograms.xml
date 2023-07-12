@@ -154,23 +154,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.CloseButton.ChildTab.ScopeAlgorithm.ClosesOneTab"
-    enum="BooleanCloseJustCurrentTab" expires_after="M114">
-  <owner>peconn@chromium.org</owner>
-  <owner>
-    src/chrome/android/java/src/org/chromium/chrome/browser/browserservices/OWNERS
-  </owner>
-  <summary>
-    Records whether the CustomTab/TrustedWebActivity &quot;navigate to landing
-    page&quot; algorithm for child tabs - e.g. tabs opened via window.open() -
-    produces the same behaviour (closes the current tab) as the webapp
-    &quot;close current tab&quot; algorithm. Recorded when the user clicks the
-    CustomTab/TrustedWebActivity close button on a child tab. Starting with M84
-    this is is also recorded for webapps/WebAPKs. Filter the platform for just
-    CCT/TWA data.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.CloseCause" enum="CustomTabsCloseCause"
     expires_after="2023-12-24">
   <owner>jinsukkim@chromium.org</owner>
