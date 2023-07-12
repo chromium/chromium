@@ -16,7 +16,7 @@ namespace ash {
 // System Web App during reinstall, i.e. before
 // `SystemWebAppManager::OnAppsSynchronized` is called.
 struct SystemWebAppData {
-  base::Value::Dict AsDebugValue() const;
+  base::Value AsDebugValue() const;
 
   SystemWebAppType system_app_type;
 };

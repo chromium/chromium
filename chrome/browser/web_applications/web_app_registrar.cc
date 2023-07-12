@@ -1384,8 +1384,8 @@ base::Value WebAppRegistrar::AsDebugValue() const {
         *effective_fields.EnsureDict("run_on_os_login_mode");
     web_app::ValueWithPolicy<web_app::RunOnOsLoginMode> run_on_os_login_mode =
         GetAppRunOnOsLoginMode(app_id);
-    run_on_os_login_fields.Set(
-        "value", RunOnOsLoginModeToString(run_on_os_login_mode.value));
+    run_on_os_login_fields.Set("value",
+                               base::ToString(run_on_os_login_mode.value));
     run_on_os_login_fields.Set("user_controllable",
                                run_on_os_login_mode.user_controllable);
 

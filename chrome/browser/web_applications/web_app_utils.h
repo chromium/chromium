@@ -12,20 +12,21 @@
 #include <tuple>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
-#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
-#include "components/services/app_service/public/cpp/run_on_os_login_types.h"
-#include "content/public/common/alternative_error_page_override_info.mojom.h"
+#include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 
 class GURL;
 class Profile;
+
+namespace apps {
+enum class LaunchContainer;
+enum class RunOnOsLoginMode;
+}  // namespace apps
 
 namespace base {
 class FilePath;
@@ -37,8 +38,6 @@ class BrowserContext;
 }
 
 namespace web_app {
-
-class WebAppProvider;
 
 namespace error_page {
 // |alternative_error_page_params| dictionary key values in the
@@ -206,8 +205,6 @@ DisplayMode ResolveEffectiveDisplayMode(
 
 apps::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
     DisplayMode display_mode);
-
-std::string RunOnOsLoginModeToString(RunOnOsLoginMode mode);
 
 // Converts RunOnOsLoginMode from RunOnOsLoginMode to
 // apps::RunOnOsLoginMode.

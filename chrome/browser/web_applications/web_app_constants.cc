@@ -54,6 +54,17 @@ std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
 static_assert(OsHookType::kShortcuts == 0,
               "OsHookType enum should be zero based");
 
+std::ostream& operator<<(std::ostream& os, RunOnOsLoginMode mode) {
+  switch (mode) {
+    case RunOnOsLoginMode::kWindowed:
+      return os << "windowed";
+    case RunOnOsLoginMode::kMinimized:
+      return os << "minimized";
+    case RunOnOsLoginMode::kNotRun:
+      return os << "not run";
+  }
+}
+
 std::ostream& operator<<(std::ostream& os, ApiApprovalState state) {
   switch (state) {
     case ApiApprovalState::kAllowed:

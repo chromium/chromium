@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <initializer_list>
 #include <iosfwd>
 #include <string>
 
@@ -195,6 +196,8 @@ enum class RunOnOsLoginMode {
   kMinimized = 2,
   kMaxValue = kMinimized,
 };
+
+std::ostream& operator<<(std::ostream& os, RunOnOsLoginMode mode);
 
 // Command line parameter representing RunOnOsLoginMode::kWindowed.
 extern const char kRunOnOsLoginModeWindowed[];

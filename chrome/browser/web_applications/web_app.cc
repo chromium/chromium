@@ -47,13 +47,23 @@ namespace web_app {
 
 namespace {
 
-// Converts an optional value to a string, or to "nullopt" if absent.
+// Converts an optional to a string wrapped in a `Value`, or an empty `Value` if
+// absent.
 template <typename T>
-std::string OptionalToString(const absl::optional<T>& optional) {
+base::Value OptionalToStringValue(const absl::optional<T>& optional) {
   if (optional.has_value()) {
-    return base::ToString(optional.value());
+    return base::Value(base::ToString(optional.value()));
   }
-  return "nullopt";
+  return base::Value();
+}
+
+// Converts an optional to a debug `Value`, or an empty `Value` if absent.
+template <typename T>
+base::Value OptionalAsDebugValue(const absl::optional<T>& optional) {
+  if (optional.has_value()) {
+    return optional.value().AsDebugValue();
+  }
+  return base::Value();
 }
 
 std::string ColorToString(absl::optional<SkColor> color) {
@@ -243,6 +253,58 @@ base::Value::Dict UrlPatternDebugValue(const blink::SafeUrlPattern& pattern) {
   base::Value::Dict pattern_dict;
   pattern_dict.Set("pathname", pathname.GeneratePatternString());
   return pattern_dict;
+}
+
+base::Value OptTabStripToDebugValue(
+    absl::optional<blink::Manifest::TabStrip> tab_strip) {
+  if (!tab_strip.has_value()) {
+    return base::Value();
+  }
+
+  base::Value::Dict result;
+  if (absl::holds_alternative<TabStrip::Visibility>(
+          tab_strip->new_tab_button)) {
+    result.Set("new_tab_button", base::ToString(absl::get<TabStrip::Visibility>(
+                                     tab_strip->new_tab_button)));
+  } else {
+    base::Value::Dict new_tab_button_json;
+    new_tab_button_json.Set(
+        "url", base::ToString(absl::get<blink::Manifest::NewTabButtonParams>(
+                                  tab_strip->new_tab_button)
+                                  .url.value_or(GURL(""))));
+    result.Set("new_tab_button", std::move(new_tab_button_json));
+  }
+
+  if (absl::holds_alternative<TabStrip::Visibility>(tab_strip->home_tab)) {
+    result.Set(
+        "home_tab",
+        base::ToString(absl::get<TabStrip::Visibility>(tab_strip->home_tab)));
+  } else {
+    base::Value::Dict home_tab_json;
+    const blink::Manifest::HomeTabParams& home_tab_params =
+        absl::get<blink::Manifest::HomeTabParams>(tab_strip->home_tab);
+
+    base::Value::List icons_json;
+    absl::optional<std::vector<blink::Manifest::ImageResource>> icons =
+        home_tab_params.icons;
+
+    for (auto& icon : *icons) {
+      icons_json.Append(ImageResourceDebugDict(icon));
+    }
+
+    base::Value::List scope_patterns_json;
+    const std::vector<blink::SafeUrlPattern>& scope_patterns =
+        home_tab_params.scope_patterns;
+
+    for (const auto& scope_pattern : scope_patterns) {
+      scope_patterns_json.Append(UrlPatternDebugValue(scope_pattern));
+    }
+
+    home_tab_json.Set("icons", std::move(icons_json));
+    home_tab_json.Set("scope_patterns", std::move(scope_patterns_json));
+    result.Set("home_tab", std::move(home_tab_json));
+  }
+  return base::Value(std::move(result));
 }
 
 }  // namespace
@@ -686,9 +748,7 @@ WebApp::ClientData::ClientData(const ClientData& client_data) = default;
 base::Value WebApp::ClientData::AsDebugValue() const {
   base::Value::Dict root;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  root.Set("system_web_app_data", system_web_app_data
-                                      ? system_web_app_data->AsDebugValue()
-                                      : base::Value::Dict());
+  root.Set("system_web_app_data", OptionalAsDebugValue(system_web_app_data));
 #endif
   return base::Value(std::move(root));
 }
@@ -794,9 +854,7 @@ base::Value WebApp::IsolationData::AsDebugValue() const {
     partitions->Append(partition);
   }
 
-  value.Set("pending_update_info", pending_update_info_.has_value()
-                                       ? pending_update_info_->AsDebugValue()
-                                       : base::Value());
+  value.Set("pending_update_info", OptionalAsDebugValue(pending_update_info_));
 
   return base::Value(std::move(value));
 }
@@ -945,7 +1003,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("app_service_icon_url",
            base::StrCat({"chrome://app-icon/", app_id_, "/32"}));
 
-  root.Set("app_size_in_bytes", OptionalToString(app_size_in_bytes_));
+  root.Set("app_size_in_bytes", OptionalToStringValue(app_size_in_bytes_));
 
   root.Set("allowed_launch_protocols", ConvertList(allowed_launch_protocols_));
 
@@ -953,7 +1011,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("capture_links", base::ToString(capture_links_));
 
-  root.Set("data_size_in_bytes", OptionalToString(data_size_in_bytes_));
+  root.Set("data_size_in_bytes", OptionalToStringValue(data_size_in_bytes_));
 
   root.Set("dark_mode_background_color",
            ColorToString(dark_mode_background_color_));
@@ -989,7 +1047,8 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("manifest_icons", ConvertDebugValueList(manifest_icons_));
 
-  root.Set("latest_install_source", OptionalToString(latest_install_source_));
+  root.Set("latest_install_source",
+           OptionalToStringValue(latest_install_source_));
 
   base::Value::Dict external_map;
   for (auto it : management_to_external_config_map_) {
@@ -1034,7 +1093,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("note_taking_new_note_url",
            base::ToString(note_taking_new_note_url_));
 
-  root.Set("parent_app_id", parent_app_id_ ? *parent_app_id_ : AppId());
+  root.Set("parent_app_id", OptionalToStringValue(parent_app_id_));
 
   if (!permissions_policy_.empty()) {
     base::Value::List policy_list;
@@ -1061,18 +1120,13 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("protocol_handlers", ConvertDebugValueList(protocol_handlers_));
 
-  root.Set("run_on_os_login_mode",
-           RunOnOsLoginModeToString(run_on_os_login_mode_));
-  root.Set(
-      "run_on_os_login_os_integration_state",
-      run_on_os_login_os_integration_state_
-          ? RunOnOsLoginModeToString(*run_on_os_login_os_integration_state_)
-          : "not set");
+  root.Set("run_on_os_login_mode", base::ToString(run_on_os_login_mode_));
+  root.Set("run_on_os_login_os_integration_state",
+           OptionalToStringValue(run_on_os_login_os_integration_state_));
 
   root.Set("scope", base::ToString(scope_));
 
-  root.Set("share_target",
-           share_target_ ? share_target_->AsDebugValue() : base::Value());
+  root.Set("share_target", OptionalAsDebugValue(share_target_));
 
   root.Set("shortcuts_menu_item_infos",
            ConvertDebugValueList(shortcuts_menu_item_infos_));
@@ -1100,7 +1154,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("scope_extensions_validated",
            ConvertDebugValueList(validated_scope_extensions_));
 
-  root.Set("user_display_mode", OptionalToString(user_display_mode_));
+  root.Set("user_display_mode", OptionalToStringValue(user_display_mode_));
 
   root.Set("user_launch_ordinal", user_launch_ordinal_.ToDebugString());
 
@@ -1108,57 +1162,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("window_controls_overlay_enabled", window_controls_overlay_enabled_);
 
-  if (tab_strip_.has_value()) {
-    base::Value::Dict tab_strip_json;
-    if (absl::holds_alternative<TabStrip::Visibility>(
-            tab_strip_.value().new_tab_button)) {
-      tab_strip_json.Set("new_tab_button",
-                         base::ToString(absl::get<TabStrip::Visibility>(
-                             tab_strip_.value().new_tab_button)));
-    } else {
-      base::Value::Dict new_tab_button_json;
-      new_tab_button_json.Set(
-          "url", base::ToString(absl::get<blink::Manifest::NewTabButtonParams>(
-                                    tab_strip_.value().new_tab_button)
-                                    .url.value_or(GURL(""))));
-      tab_strip_json.Set("new_tab_button", std::move(new_tab_button_json));
-    }
-
-    if (absl::holds_alternative<TabStrip::Visibility>(
-            tab_strip_.value().home_tab)) {
-      tab_strip_json.Set("home_tab",
-                         base::ToString(absl::get<TabStrip::Visibility>(
-                             tab_strip_.value().home_tab)));
-    } else {
-      base::Value::Dict home_tab_json;
-      const blink::Manifest::HomeTabParams& home_tab_params =
-          absl::get<blink::Manifest::HomeTabParams>(
-              tab_strip_.value().home_tab);
-
-      base::Value::List icons_json;
-      absl::optional<std::vector<blink::Manifest::ImageResource>> icons =
-          home_tab_params.icons;
-
-      for (auto& icon : *icons) {
-        icons_json.Append(ImageResourceDebugDict(icon));
-      }
-
-      base::Value::List scope_patterns_json;
-      const std::vector<blink::SafeUrlPattern>& scope_patterns =
-          home_tab_params.scope_patterns;
-
-      for (const auto& scope_pattern : scope_patterns) {
-        scope_patterns_json.Append(UrlPatternDebugValue(scope_pattern));
-      }
-
-      home_tab_json.Set("icons", std::move(icons_json));
-      home_tab_json.Set("scope_patterns", std::move(scope_patterns_json));
-      tab_strip_json.Set("home_tab", std::move(home_tab_json));
-    }
-    root.Set("tab_strip", std::move(tab_strip_json));
-  } else {
-    root.Set("tab_strip", base::Value());
-  }
+  root.Set("tab_strip", OptTabStripToDebugValue(tab_strip_));
 
   root.Set("always_show_toolbar_in_fullscreen",
            always_show_toolbar_in_fullscreen_);
@@ -1166,9 +1170,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("current_os_integration_states",
            OsStatesDebugValue(current_os_integration_states_));
 
-  if (isolation_data_.has_value()) {
-    root.Set("isolation_data", isolation_data_->AsDebugValue());
-  }
+  root.Set("isolation_data", OptionalAsDebugValue(isolation_data_));
 
   return base::Value(std::move(root));
 }
@@ -1177,8 +1179,7 @@ base::Value WebApp::AsDebugValue() const {
   base::Value value = AsDebugValueWithOnlyPlatformAgnosticFields();
   auto& root = value.GetDict();
 
-  root.Set("chromeos_data",
-           chromeos_data_ ? chromeos_data_->AsDebugValue() : base::Value());
+  root.Set("chromeos_data", OptionalAsDebugValue(chromeos_data_));
 
   root.Set("client_data", client_data_.AsDebugValue());
 
