@@ -50,6 +50,7 @@ import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -85,7 +86,7 @@ public final class ShareSheetBottomSheetContentTest {
     private static final Uri sImageUri = Uri.parse("content://testImage.png");
     private static final String sText = "Text";
     private static final String sTitle = "Title";
-    private static final String sUrl = "https://www.example.com";
+    private static final String sUrl = "https://www.example.com/path?query#hash";
     private String mPreviewUrl;
 
     private Activity mActivity;
@@ -99,7 +100,8 @@ public final class ShareSheetBottomSheetContentTest {
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
 
-        mPreviewUrl = UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(sUrl);
+        mPreviewUrl = UrlFormatter.formatUrlForSecurityDisplay(
+                sUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         mShareParams = new ShareParams.Builder(/*window=*/null, sTitle, sUrl)
                                .setText(sText)
                                .setSingleImageUri(sImageUri)
