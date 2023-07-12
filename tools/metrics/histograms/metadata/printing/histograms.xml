@@ -451,7 +451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.PrintServers.ServersToQuery" units="servers"
-    expires_after="2023-07-16">
+    expires_after="2024-09-01">
   <owner>pawliczek@chromium.org</owner>
   <owner>bmgordon@chromium.org</owner>
   <summary>
