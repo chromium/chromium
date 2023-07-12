@@ -326,6 +326,17 @@ void ShoppingListHandler::HandleSubscriptionChange(
 
   std::vector<const bookmarks::BookmarkNode*> bookmarks =
       GetBookmarksWithClusterId(bookmark_model_, cluster_id);
+  // Special handling when the unsubscription is caused by bookmark deletion and
+  // therefore the bookmark can no longer be retrieved.
+  // TODO(crbug.com/1462668): Update mojo call to pass cluster ID and make
+  // BookmarkProductInfo a nullable parameter.
+  if (!bookmarks.size()) {
+    auto bookmark_info = shopping_list::mojom::BookmarkProductInfo::New();
+    bookmark_info->info = shopping_list::mojom::ProductInfo::New();
+    bookmark_info->info->cluster_id = cluster_id;
+    remote_page_->PriceUntrackedForBookmark(std::move(bookmark_info));
+    return;
+  }
   for (auto* node : bookmarks) {
     auto product = BookmarkNodeToMojoProduct(*bookmark_model_, node, locale_);
     if (is_tracking) {

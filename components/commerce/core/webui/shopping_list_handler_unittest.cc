@@ -101,6 +101,12 @@ MATCHER_P(MojoBookmarkInfoWithId, expected_id, "") {
   return arg->bookmark_id == expected_id;
 }
 
+// A matcher for checking if a mojo bookmark info has the specified cluster ID
+// (uint64_t).
+MATCHER_P(MojoBookmarkInfoWithClusterId, expected_id, "") {
+  return arg->info->cluster_id == expected_id;
+}
+
 class ShoppingListHandlerTest : public testing::Test {
  public:
   ShoppingListHandlerTest() { features_.InitAndEnableFeature(kShoppingList); }
@@ -307,6 +313,17 @@ TEST_F(ShoppingListHandlerTest, PageUpdateForPriceTrackChange) {
 
   // Assume the plumbing for subscriptions works and fake an unsubscribe event.
   handler_->OnUnsubscribe(CreateUserTrackedSubscription(123L), true);
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(ShoppingListHandlerTest, TestUnsubscribeCausedByBookmarkDeletion) {
+  int64_t cluster_id = 123L;
+  EXPECT_CALL(page_, PriceUntrackedForBookmark(
+                         MojoBookmarkInfoWithClusterId(cluster_id)))
+      .Times(1);
+
+  handler_->OnUnsubscribe(CreateUserTrackedSubscription(cluster_id), true);
 
   task_environment_.RunUntilIdle();
 }
