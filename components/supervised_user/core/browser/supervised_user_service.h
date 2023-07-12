@@ -148,6 +148,10 @@ class SupervisedUserService : public KeyedService,
   // Returns true if the interstitial banner needs to be shown to user.
   bool ShouldShowFirstTimeInterstitialBanner() const;
 
+  // Some Google-affiliated domains are not allowed to delete cookies for
+  // supervised users.
+  bool IsCookieDeletionDisabled(const GURL& origin) const;
+
   // Use |SupervisedUserServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
   // Public to allow visibility to iOS factory.

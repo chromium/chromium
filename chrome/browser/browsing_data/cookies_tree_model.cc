@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -40,6 +41,8 @@
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/permissions/permissions_client.h"
+#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
@@ -63,7 +66,10 @@
 #include "extensions/common/extension_set.h"
 #endif
 
-
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
+#endif
 namespace {
 
 struct NodeTitleComparator {
@@ -1692,6 +1698,21 @@ void CookiesTreeModel::MaybeNotifyBatchesEnded() {
 // static
 browsing_data::CookieHelper::IsDeletionDisabledCallback
 CookiesTreeModel::GetCookieDeletionDisabledCallback(Profile* profile) {
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+    return base::BindRepeating(
+        [](content::BrowserContext* browser_context, const GURL& url) {
+          supervised_user::SupervisedUserService* supervised_user_service =
+              SupervisedUserServiceFactory::GetForBrowserContext(
+                  browser_context);
+          return supervised_user_service->IsCookieDeletionDisabled(url);
+        },
+        profile);
+#else
+    return base::NullCallback();
+#endif
+  }
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   if (profile->IsChild()) {
     return base::BindRepeating(
