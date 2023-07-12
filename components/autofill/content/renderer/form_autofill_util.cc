@@ -1438,7 +1438,6 @@ void EmitDevtoolsIssueForLabelWithoutControl(
     // Add a DevTools issue informing the developer that the `label`'s for-
     // attribute is pointing to the name of a field, even though the ID should
     // be used.
-    // TODO(crbug.com/1339277): Use `root` once the feature is launched.
     label.GetDocument().GetFrame()->AddGenericIssue(
         GenericIssueErrorType::kFormLabelForNameError,
         label.GetDevToolsNodeId(), GetWebString<kFor>());
