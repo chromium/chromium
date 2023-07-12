@@ -26,8 +26,6 @@ class CONTENT_EXPORT BrowserPluginGuestDelegate {
 
   // Returns the RenderFrameHost that owns this guest, but has not yet attached
   // it.
-  // TODO(crbug.com/769461): Have all guest types return the specific owner
-  // RenderFrameHost and not assume it's the owner's main frame.
   virtual RenderFrameHost* GetProspectiveOuterDocument();
 
   virtual base::WeakPtr<BrowserPluginGuestDelegate> GetGuestDelegateWeakPtr();

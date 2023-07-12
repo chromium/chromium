@@ -41,6 +41,9 @@ class GuestViewInternalCustomBindings : public ObjectBackedNativeHandler {
   // guest identified by |guest_instance_id|.
   void AttachIframeGuest(const v8::FunctionCallbackInfo<v8::Value>& args);
 
+  // Takes a window object and returns the associated RenderFrame's routing id.
+  void GetRoutingId(const v8::FunctionCallbackInfo<v8::Value>& args);
+
   // Destroys the GuestViewContainer given an element instance ID in |args|.
   void DestroyContainer(const v8::FunctionCallbackInfo<v8::Value>& args);
 

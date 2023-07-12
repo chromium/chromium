@@ -50,21 +50,22 @@ AppViewImpl.prototype.connect = function(app, data, callback) {
   this.data = data;
 
   this.guest.destroy($Function.bind(this.prepareForReattach, this));
-  this.guest.create(this.buildParams(), $Function.bind(function() {
-    if (!this.guest.getId()) {
-      var errorMsg = 'Unable to connect to app "' + app + '".';
-      window.console.warn(errorMsg);
-      $HTMLElement.innerText.set(this.getErrorNode(), errorMsg);
-      if (callback) {
-        callback(false);
-      }
-      return;
-    }
-    this.attachWindow();
-    if (callback) {
-      callback(true);
-    }
-  }, this));
+  this.guest.create(
+      this.viewInstanceId, this.buildParams(), $Function.bind(function() {
+        if (!this.guest.getId()) {
+          var errorMsg = 'Unable to connect to app "' + app + '".';
+          window.console.warn(errorMsg);
+          $HTMLElement.innerText.set(this.getErrorNode(), errorMsg);
+          if (callback) {
+            callback(false);
+          }
+          return;
+        }
+        this.attachWindow();
+        if (callback) {
+          callback(true);
+        }
+      }, this));
 };
 
 // Exports.

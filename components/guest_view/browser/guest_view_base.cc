@@ -414,9 +414,6 @@ WebContents* GuestViewBase::GetOwnerWebContents() {
 
 content::RenderFrameHost* GuestViewBase::GetProspectiveOuterDocument() {
   DCHECK(!attached());
-  // TODO(crbug.com/769461): Some GuestViewBase construction still assumes the
-  // owner is a primary main frame. We should be more specific so we can return
-  // the intended owner RenderFrameHost here.
   return owner_rfh();
 }
 

@@ -199,10 +199,6 @@ std::unique_ptr<GuestViewBase> GuestViewManager::TransferOwnership(
 }
 
 void GuestViewManager::ManageOwnership(std::unique_ptr<GuestViewBase> guest) {
-  // TODO(crbug.com/769461): Guest types for which it is incorrect to assume the
-  // owner WebContents' main frame's process is the owner process can't
-  // be stored this way until issue 769461 is addressed.
-  DCHECK(!guest->CanBeEmbeddedInsideCrossProcessFrames());
   RenderProcessHost* owner_process = guest->owner_rfh()->GetProcess();
   DCHECK(owner_process);
   ObserveEmbedderLifetime(owner_process);

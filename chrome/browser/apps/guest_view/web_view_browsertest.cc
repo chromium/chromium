@@ -5650,6 +5650,32 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, ShutdownWithUnshownPopup) {
   CloseAppWindow(GetFirstAppWindow());
 }
 
+IN_PROC_BROWSER_TEST_F(WebViewTest, InsertIntoIframe) {
+  TestHelper("testInsertIntoIframe", "web_view/shim", NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, CreateAndInsertInIframe) {
+  TestHelper("testCreateAndInsertInIframe", "web_view/shim", NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, InsertIntoMainFrameFromIframe) {
+  TestHelper("testInsertIntoMainFrameFromIframe", "web_view/shim",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, InsertIntoOtherWindow) {
+  TestHelper("testInsertIntoOtherWindow", "web_view/shim", NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, CreateAndInsertInOtherWindow) {
+  TestHelper("testCreateAndInsertInOtherWindow", "web_view/shim",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, InsertFromOtherWindow) {
+  TestHelper("testInsertFromOtherWindow", "web_view/shim", NEEDS_TEST_SERVER);
+}
+
 IN_PROC_BROWSER_TEST_F(WebViewTest, InsertIntoDetachedIframe) {
   TestHelper("testInsertIntoDetachedIframe", "web_view/shim",
              NEEDS_TEST_SERVER);

@@ -3540,6 +3540,137 @@ function testActivatePortal() {
   document.body.appendChild(webview);
 }
 
+// This test and several tests below test scenarios where a webview element is
+// created and/or attached by different documents. In this test, we create a
+// webview element with the main frame's document, but embed it in an iframe's
+// document.
+function testInsertIntoIframe() {
+  let webview = document.createElement('webview');
+  webview.src = embedder.emptyGuestURL;
+  let iframe = document.createElement('iframe');
+  iframe.src = 'empty.html';
+
+  webview.addEventListener('loadstop', () => {
+    embedder.test.succeed();
+  });
+
+  iframe.addEventListener('load', () => {
+    iframe.contentDocument.body.appendChild(webview);
+  });
+
+  document.body.appendChild(iframe);
+}
+
+// See testInsertIntoIframe.
+// Here an iframe both creates and embeds the webview element.
+function testCreateAndInsertInIframe() {
+  let iframe = document.createElement('iframe');
+  iframe.src = 'empty.html';
+
+  iframe.addEventListener('load', () => {
+    let webview = iframe.contentDocument.createElement('webview');
+    webview.src = embedder.emptyGuestURL;
+    webview.addEventListener('loadstop', () => {
+      embedder.test.succeed();
+    });
+
+    iframe.contentDocument.body.appendChild(webview);
+  });
+
+  document.body.appendChild(iframe);
+}
+
+// See testInsertIntoIframe.
+// Here an iframe creates a webview element, but embeds it in the main document.
+function testInsertIntoMainFrameFromIframe() {
+  let iframe = document.createElement('iframe');
+  iframe.src = 'empty.html';
+
+  iframe.addEventListener('load', () => {
+    let webview = iframe.contentDocument.createElement('webview');
+    webview.src = embedder.emptyGuestURL;
+    webview.addEventListener('loadstop', () => {
+      embedder.test.succeed();
+    });
+
+    document.body.appendChild(webview);
+  });
+
+  document.body.appendChild(iframe);
+}
+
+// See testInsertIntoIframe.
+// Here this document creates a webview element, but embeds it in another app
+// window.
+function testInsertIntoOtherWindow() {
+  let webview = document.createElement('webview');
+  webview.src = embedder.emptyGuestURL;
+
+  webview.addEventListener('loadstop', () => {
+    embedder.test.succeed();
+  });
+
+  chrome.app.window.create('new_window_main.html', {}, (app_new_window) => {
+    if (chrome.runtime.lastError) {
+      console.log('Error:' + chrome.runtime.lastError.message);
+      embedder.test.fail();
+      return;
+    }
+
+    let new_window = app_new_window.contentWindow;
+    new_window.addEventListener('load', () => {
+      new_window.document.body.appendChild(webview);
+    });
+  });
+}
+
+// See testInsertIntoIframe.
+// Here another app window both creates and embeds the webview element.
+function testCreateAndInsertInOtherWindow() {
+  chrome.app.window.create('new_window_main.html', {}, (app_new_window) => {
+    if (chrome.runtime.lastError) {
+      console.log('Error:' + chrome.runtime.lastError.message);
+      embedder.test.fail();
+      return;
+    }
+
+    let new_window = app_new_window.contentWindow;
+    new_window.addEventListener('load', () => {
+      let webview = new_window.document.createElement('webview');
+      webview.src = embedder.emptyGuestURL;
+      webview.addEventListener('loadstop', () => {
+        embedder.test.succeed();
+      });
+
+      new_window.document.body.appendChild(webview);
+    });
+  });
+}
+
+// See testInsertIntoIframe.
+// Here another app window creates a webview element, but embeds it in this
+// document.
+function testInsertFromOtherWindow() {
+  chrome.app.window.create('new_window_main.html', {}, (app_new_window) => {
+    if (chrome.runtime.lastError) {
+      console.log('Error:' + chrome.runtime.lastError.message);
+      embedder.test.fail();
+      return;
+    }
+
+    let new_window = app_new_window.contentWindow;
+    new_window.addEventListener('load', () => {
+      let webview = new_window.document.createElement('webview');
+      webview.src = embedder.emptyGuestURL;
+      webview.addEventListener('loadstop', () => {
+        embedder.test.succeed();
+      });
+
+      document.body.appendChild(webview);
+    });
+  });
+}
+
 // Inserting a webview element into a detached iframe's document shouldn't
 // crash.
 function testInsertIntoDetachedIframe() {
@@ -3697,6 +3828,12 @@ embedder.test.testList = {
   'testWebRequestBlockedNavigation': testWebRequestBlockedNavigation,
   'testAddFencedFrame': testAddFencedFrame,
   'testActivatePortal': testActivatePortal,
+  'testInsertIntoIframe': testInsertIntoIframe,
+  'testCreateAndInsertInIframe': testCreateAndInsertInIframe,
+  'testInsertIntoMainFrameFromIframe': testInsertIntoMainFrameFromIframe,
+  'testInsertIntoOtherWindow': testInsertIntoOtherWindow,
+  'testCreateAndInsertInOtherWindow': testCreateAndInsertInOtherWindow,
+  'testInsertFromOtherWindow': testInsertFromOtherWindow,
   'testInsertIntoDetachedIframe': testInsertIntoDetachedIframe,
 };
 
