@@ -4646,11 +4646,13 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     if (layer_tree_frame_sink_->context_provider()) {
       scaled_surface = SkSurfaces::Raster(SkImageInfo::MakeN32Premul(
           upload_size.width(), upload_size.height()));
+      CHECK(scaled_surface);  // This would fail in OOM situations.
     } else {
       SkImageInfo dst_info =
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
       scaled_surface = SkSurfaces::WrapPixels(dst_info, shm.mapping.memory(),
                                               dst_info.minRowBytes());
+      CHECK(scaled_surface);  // This could fail on invalid parameters.
     }
     SkCanvas* scaled_canvas = scaled_surface->getCanvas();
     scaled_canvas->scale(canvas_scale_x, canvas_scale_y);
