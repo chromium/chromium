@@ -2303,9 +2303,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   PositionWithAffinity PositionAfterThis() const;
   PositionWithAffinity PositionBeforeThis() const;
 
-  virtual void DirtyLinesFromChangedChild(
-      LayoutObject*,
-      MarkingBehavior marking_behaviour = kMarkContainerChain);
+  virtual void DirtyLinesFromChangedChild(LayoutObject*) { NOT_DESTROYED(); }
 
   // Set the style of the object and update the state of the object accordingly.
   // ApplyStyleChanges = kYes means we will apply any changes between the old

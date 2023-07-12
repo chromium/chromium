@@ -868,9 +868,7 @@ void LayoutInline::UpdateHitTestResult(HitTestResult& result,
   }
 }
 
-void LayoutInline::DirtyLinesFromChangedChild(
-    LayoutObject* child,
-    MarkingBehavior marking_behavior) {
+void LayoutInline::DirtyLinesFromChangedChild(LayoutObject* child) {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
     if (const LayoutBlockFlow* container = FragmentItemsContainer())

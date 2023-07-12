@@ -62,8 +62,7 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const final;
 
-  void DirtyLinesFromChangedChild(LayoutObject* child,
-                                  MarkingBehavior marking_behavior) final;
+  void DirtyLinesFromChangedChild(LayoutObject* child) final;
 
   Member<NGInlineNodeData> ng_inline_node_data_;
 

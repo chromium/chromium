@@ -2248,10 +2248,6 @@ HitTestResult LayoutObject::HitTestForOcclusion(
                                                           this, true);
 }
 
-void LayoutObject::DirtyLinesFromChangedChild(LayoutObject*, MarkingBehavior) {
-  NOT_DESTROYED();
-}
-
 std::ostream& operator<<(std::ostream& out, const LayoutObject& object) {
   String info;
 #if DCHECK_IS_ON()

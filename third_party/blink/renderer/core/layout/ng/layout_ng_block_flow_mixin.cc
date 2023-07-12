@@ -185,10 +185,8 @@ PositionWithAffinity LayoutNGBlockFlowMixin<Base>::PositionForPoint(
 
 template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::DirtyLinesFromChangedChild(
-    LayoutObject* child,
-    MarkingBehavior marking_behavior) {
+    LayoutObject* child) {
   Base::CheckIsNotDestroyed();
-  DCHECK_EQ(marking_behavior, kMarkContainerChain);
 
   // We need to dirty line box fragments only if the child is once laid out in
   // LayoutNG inline formatting context. New objects are handled in
