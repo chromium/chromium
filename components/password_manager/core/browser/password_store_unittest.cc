@@ -1106,7 +1106,12 @@ class PasswordStoreGroupsTest : public PasswordStoreTest,
     store_->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
   }
 
-  void TearDown() override { store_->ShutdownOnUIThread(); }
+  void TearDown() override {
+    // The store owns the mocked match helper, so null the raw pointer to avoid
+    // dangling.
+    mock_affiliated_match_helper_ = nullptr;
+    store_->ShutdownOnUIThread();
+  }
 
  protected:
   std::vector<std::unique_ptr<PasswordForm>> CreateCredentialsAndAddToStore() {
@@ -1146,8 +1151,7 @@ class PasswordStoreGroupsTest : public PasswordStoreTest,
   }
 
   scoped_refptr<PasswordStore> store_;
-  raw_ptr<MockAffiliatedMatchHelper, DanglingUntriaged>
-      mock_affiliated_match_helper_;
+  raw_ptr<MockAffiliatedMatchHelper> mock_affiliated_match_helper_ = nullptr;
 
  private:
   FakeAffiliationService affiliation_service_;
