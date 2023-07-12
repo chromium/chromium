@@ -43,6 +43,8 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
    public:
     virtual void OnSubscriptionChannelStateChanged(
         SubscriptionChannelState state) = 0;
+    virtual void OnSubscriptionRequestStarted(Topic topic) = 0;
+    virtual void OnSubscriptionRequestFinished(Topic topic, Status code) = 0;
   };
 
   PerUserTopicSubscriptionManager(
@@ -136,6 +138,8 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
 
   void NotifySubscriptionChannelStateChange(
       SubscriptionChannelState invalidator_state);
+  void NotifySubscriptionRequestStarted(Topic topic);
+  void NotifySubscriptionRequestFinished(Topic topic, Status code);
 
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<IdentityProvider> identity_provider_;

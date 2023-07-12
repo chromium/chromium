@@ -76,6 +76,8 @@ class FCMInvalidationListener
   // PerUserTopicSubscriptionManager::Observer implementation.
   void OnSubscriptionChannelStateChanged(
       SubscriptionChannelState state) override;
+  void OnSubscriptionRequestStarted(Topic topic) override;
+  void OnSubscriptionRequestFinished(Topic topic, Status code) override;
 
   virtual void RequestDetailedStatus(
       const base::RepeatingCallback<void(base::Value::Dict)>& callback) const;
