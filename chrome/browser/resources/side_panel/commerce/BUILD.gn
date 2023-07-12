@@ -15,6 +15,7 @@ build_webui("build") {
     "app.ts",
     "catalog_attributes_row.ts",
     "history_graph.ts",
+    "insights_comment_row.ts",
     "price_tracking_section.ts",
   ]
 

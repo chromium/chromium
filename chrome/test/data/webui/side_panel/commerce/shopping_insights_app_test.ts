@@ -130,6 +130,7 @@ suite('ShoppingInsightsAppTest', () => {
     assertTrue(!!titleSection);
     assertFalse(
         isVisible(titleSection.querySelector('catalog-attributes-row')));
+    assertFalse(isVisible(titleSection.querySelector('insights-comment-row')));
 
     const historySection =
         shoppingInsightsApp.shadowRoot!.querySelector('#historySection');
@@ -163,6 +164,24 @@ suite('ShoppingInsightsAppTest', () => {
     const url = await shoppingListApi.whenCalled('openUrlInNewTab');
     assertEquals('https://foo.com/jackpot', url.url);
 
+    const commentRow = historySection.querySelector('insights-comment-row');
+    assertTrue(!!commentRow);
+    assertTrue(isVisible(commentRow));
+
+    const comment = commentRow.shadowRoot!.querySelector('#comment');
+    assertTrue(!!comment);
+    assertEquals(
+        loadTimeData.getString('historyDescription'),
+        comment.textContent!.trim());
+
+    const feedbackButton =
+        commentRow.shadowRoot!.querySelector('.link') as HTMLElement;
+    assertTrue(!!feedbackButton);
+    assertEquals(
+        loadTimeData.getString('feedback'), feedbackButton.textContent!.trim());
+    feedbackButton.click();
+    assertEquals(1, shoppingListApi.getCallCount('showFeedback'));
+
     assertTrue(isVisible(shoppingInsightsApp.shadowRoot!.querySelector(
         'shopping-insights-history-graph')));
   });
@@ -193,6 +212,7 @@ suite('ShoppingInsightsAppTest', () => {
     assertTrue(!!titleSection);
     assertFalse(
         isVisible(titleSection.querySelector('catalog-attributes-row')));
+    assertTrue(isVisible(titleSection.querySelector('insights-comment-row')));
 
     assertFalse(isVisible(
         shoppingInsightsApp.shadowRoot!.querySelector('#historySection')));
@@ -234,6 +254,8 @@ suite('ShoppingInsightsAppTest', () => {
     const url = await shoppingListApi.whenCalled('openUrlInNewTab');
     assertEquals('https://foo.com/jackpot', url.url);
 
+    assertFalse(isVisible(titleSection.querySelector('insights-comment-row')));
+
     const historySection =
         shoppingInsightsApp.shadowRoot!.querySelector('#historySection');
     assertTrue(!!historySection);
@@ -247,6 +269,8 @@ suite('ShoppingInsightsAppTest', () => {
         historyTitle.textContent!.trim());
     assertFalse(
         isVisible(historySection.querySelector('catalog-attributes-row')));
+
+    assertTrue(isVisible(historySection.querySelector('insights-comment-row')));
 
     assertTrue(isVisible(shoppingInsightsApp.shadowRoot!.querySelector(
         'shopping-insights-history-graph')));

@@ -10,12 +10,15 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/webui/shopping_list_handler.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
@@ -95,6 +98,21 @@ void ShoppingUiHandlerDelegate::OpenUrlInNewTab(const GURL& url) {
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
   browser->OpenURL(params);
+}
+
+void ShoppingUiHandlerDelegate::ShowFeedback() {
+  auto* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+
+  chrome::ShowFeedbackPage(
+      browser, chrome::kFeedbackSourcePriceInsights,
+      /*description_template=*/std::string(),
+      /*description_placeholder_text=*/
+      l10n_util::GetStringUTF8(IDS_SHOPPING_INSIGHTS_FEEDBACK_FORM_TITLE),
+      /*category_tag=*/"price_insights",
+      /*extra_diagnostics=*/std::string());
 }
 
 void ShoppingUiHandlerDelegate::ShowBookmarkEditorForCurrentUrl() {

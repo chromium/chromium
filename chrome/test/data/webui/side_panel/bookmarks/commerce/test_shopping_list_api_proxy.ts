@@ -44,6 +44,7 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
       'getPriceInsightsInfoForCurrentUrl',
       'showInsightsSidePanelUi',
       'openUrlInNewTab',
+      'showFeedback',
       'isShoppingListEligible',
       'getPriceTrackingStatusForCurrentUrl',
       'setPriceTrackingStatusForCurrentUrl',
@@ -95,6 +96,10 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
 
   openUrlInNewTab() {
     this.methodCalled('openUrlInNewTab');
+  }
+
+  showFeedback() {
+    this.methodCalled('showFeedback');
   }
 
   isShoppingListEligible() {

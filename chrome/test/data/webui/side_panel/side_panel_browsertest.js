@@ -10,6 +10,7 @@ GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "components/user_notes/user_notes_features.h"');
 GEN('#include "components/power_bookmarks/core/power_bookmark_features.h"');
+GEN('#include "components/commerce/core/commerce_feature_list.h"');
 
 class SidePanelBrowserTest extends PolymerTest {
   /** @override */
@@ -219,6 +220,14 @@ var PriceTrackingSectionTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://shopping-insights-side-panel.top-chrome/test_loader.html?module=side_panel/commerce/price_tracking_section_test.js';
+  }
+
+  /** @override */
+  get featuresWithParameters() {
+    return [{
+      featureName: 'commerce::kPriceInsights',
+      parameters: [{name: 'price-insights-show-feedback', value: true}],
+    }];
   }
 };
 
