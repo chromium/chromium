@@ -1063,27 +1063,12 @@ const std::u16string& AXNode::GetHypertext() const {
   return hypertext_.hypertext;
 }
 
-void AXNode::SetNeedsToUpdateHypertext() {
-  old_hypertext_ = hypertext_;
-  hypertext_.needs_update = true;
-  // TODO(nektar): Introduce proper caching of hypertext via
-  // `AXHypertext::needs_update`.
-  GetHypertext();  // Forces `hypertext_` to immediately update.
-}
-
 const std::map<int, int>& AXNode::GetHypertextOffsetToHyperlinkChildIndex()
     const {
   // TODO(nektar): Introduce proper caching of hypertext via
   // `AXHypertext::needs_update`.
   GetHypertext();  // Update `hypertext_` if not up-to-date.
   return hypertext_.hypertext_offset_to_hyperlink_child_index;
-}
-
-const AXHypertext& AXNode::GetOldHypertext() const {
-  // TODO(nektar): Introduce proper caching of hypertext via
-  // `AXHypertext::needs_update`.
-  GetHypertext();  // Update `hypertext_` if not up-to-date.
-  return old_hypertext_;
 }
 
 const std::string& AXNode::GetTextContentUTF8() const {
