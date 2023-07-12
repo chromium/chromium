@@ -310,10 +310,9 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
 
   // Android Search Widget.
   if (page_class == OEP::ANDROID_SHORTCUTS_WIDGET) {
-    // Ignore any additional testing. Omnibox on Search Widget can be focused
-    // only once, any further testing is irrelevant and may falsely redirect the
-    // user to cached suggestions.
-    return ResultType::kRemoteNoURL;
+    if (focus_type_input_type.first != OFT::INTERACTION_DEFAULT) {
+      return ResultType::kRemoteNoURL;
+    }
   }
 
   // New Tab Page.
