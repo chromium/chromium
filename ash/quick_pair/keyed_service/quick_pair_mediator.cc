@@ -81,7 +81,8 @@ Mediator::Mediator(
       fast_pair_repository_(std::move(fast_pair_repository)),
       process_manager_(std::move(process_manager)),
       fast_pair_bluetooth_config_delegate_(
-          std::make_unique<FastPairBluetoothConfigDelegate>()) {
+          std::make_unique<FastPairBluetoothConfigDelegate>(
+              this /* delegate */)) {
   metrics_logger_ = std::make_unique<QuickPairMetricsLogger>(
       scanner_broker_.get(), pairer_broker_.get(), ui_broker_.get(),
       retroactive_pairing_detector_.get());
@@ -94,8 +95,6 @@ Mediator::Mediator(
       retroactive_pairing_detector_.get());
   pairer_broker_observation_.Observe(pairer_broker_.get());
   ui_broker_observation_.Observe(ui_broker_.get());
-  config_delegate_observation_.Observe(
-      fast_pair_bluetooth_config_delegate_.get());
 
   // If we already have a discovery session via the Settings pairing dialog,
   // don't start Fast Pair scanning.
