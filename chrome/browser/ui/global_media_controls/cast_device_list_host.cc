@@ -88,7 +88,8 @@ CastDeviceListHost::CastDeviceListHost(
     : cast_controller_(std::move(dialog_controller)),
       client_(std::move(client)),
       media_remoting_callback_(std::move(media_remoting_callback)),
-      hide_dialog_callback_(std::move(hide_dialog_callback)) {
+      hide_dialog_callback_(std::move(hide_dialog_callback)),
+      id_(next_id_++) {
   cast_controller_->AddObserver(this);
   cast_controller_->RegisterDestructor(
       base::BindOnce(&CastDeviceListHost::DestroyCastController,
@@ -181,3 +182,5 @@ void CastDeviceListHost::StartCasting(const media_router::UIMediaSink& sink) {
 void CastDeviceListHost::DestroyCastController() {
   cast_controller_.reset();
 }
+
+int CastDeviceListHost::next_id_ = 0;

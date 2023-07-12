@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
@@ -25,7 +24,6 @@
 #include "components/global_media_controls/public/media_dialog_delegate.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_item_producer.h"
-#include "components/global_media_controls/public/media_item_ui.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
@@ -241,14 +239,21 @@ MediaNotificationService::~MediaNotificationService() {
 }
 
 void MediaNotificationService::Shutdown() {
-  // `cast_notification_producer_` and
-  // `presentation_request_notification_producer_` depend on MediaRouter,
-  // which is another keyed service. So they must be destroyed here.
+  shutdown_has_started_ = true;
+  // `cast_notification_producer_`,
+  // `presentation_request_notification_producer_` and `host_receivers_`
+  // depend on MediaRouter, which is another keyed service. So they must be
+  // destroyed here.
   if (cast_notification_producer_) {
     item_manager_->RemoveItemProducer(cast_notification_producer_.get());
   }
   cast_notification_producer_.reset();
   presentation_request_notification_producer_.reset();
+  for (const auto& host : host_receivers_) {
+    if (host.second) {
+      host.second->Close();
+    }
+  }
 }
 
 void MediaNotificationService::OnAudioSinkChosen(const std::string& item_id,
@@ -471,7 +476,7 @@ MediaNotificationService::CreateCastDialogControllerForPresentationRequest() {
 
 void MediaNotificationService::CreateCastDeviceListHost(
     std::unique_ptr<media_router::CastDialogController> dialog_controller,
-    mojo::PendingReceiver<mojom::DeviceListHost> host_receiver,
+    mojo::PendingReceiver<mojom::DeviceListHost> host_pending_receiver,
     mojo::PendingRemote<mojom::DeviceListClient> client_remote,
     absl::optional<std::string> session_id) {
   if (!dialog_controller) {
@@ -485,14 +490,19 @@ void MediaNotificationService::CreateCastDeviceListHost(
                 &MediaNotificationService::OnMediaRemotingRequested,
                 weak_ptr_factory_.GetWeakPtr(), session_id.value())
           : base::DoNothing();
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<CastDeviceListHost>(
-          std::move(dialog_controller), std::move(client_remote),
-          std::move(media_remoting_callback_),
-          base::BindRepeating(
-              &global_media_controls::MediaItemManager::HideDialog,
-              item_manager_->GetWeakPtr())),
-      std::move(host_receiver));
+  auto host = std::make_unique<CastDeviceListHost>(
+      std::move(dialog_controller), std::move(client_remote),
+      std::move(media_remoting_callback_),
+      base::BindRepeating(&global_media_controls::MediaItemManager::HideDialog,
+                          item_manager_->GetWeakPtr()));
+  int host_id = host->id();
+  mojo::SelfOwnedReceiverRef<global_media_controls::mojom::DeviceListHost>
+      host_receiver = mojo::MakeSelfOwnedReceiver(
+          std::move(host), std::move(host_pending_receiver));
+  host_receiver->set_connection_error_handler(
+      base::BindOnce(&MediaNotificationService::RemoveDeviceListHost,
+                     weak_ptr_factory_.GetWeakPtr(), host_id));
+  host_receivers_.emplace(host_id, std::move(host_receiver));
 }
 
 void MediaNotificationService::set_device_provider_for_testing(
@@ -554,4 +564,13 @@ MediaNotificationService::GetActiveControllableSessionForWebContents(
     }
   }
   return "";
+}
+
+void MediaNotificationService::RemoveDeviceListHost(int host_id) {
+  // If shutdown has started, then we may currently be iterating through
+  // `host_receivers_` so we should not erase from it. `host_receivers_` will
+  // get destroyed soon anyways.
+  if (!shutdown_has_started_) {
+    host_receivers_.erase(host_id);
+  }
 }
