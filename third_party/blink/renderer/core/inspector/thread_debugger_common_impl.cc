@@ -947,7 +947,9 @@ void ThreadDebuggerCommonImpl::consoleTime(
   // TODO(dgozman): we can save on a copy here if trace macro would take a
   // pointer with length.
   TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN0(
-      "blink.console", ToCoreString(title).Utf8().c_str(), this);
+      "blink.console", ToCoreString(title).Utf8().c_str(),
+      TRACE_ID_WITH_SCOPE(ToCoreString(title).Utf8().c_str(),
+                          TRACE_ID_LOCAL(this)));
 }
 
 void ThreadDebuggerCommonImpl::consoleTimeEnd(
@@ -955,7 +957,9 @@ void ThreadDebuggerCommonImpl::consoleTimeEnd(
   // TODO(dgozman): we can save on a copy here if trace macro would take a
   // pointer with length.
   TRACE_EVENT_COPY_NESTABLE_ASYNC_END0(
-      "blink.console", ToCoreString(title).Utf8().c_str(), this);
+      "blink.console", ToCoreString(title).Utf8().c_str(),
+      TRACE_ID_WITH_SCOPE(ToCoreString(title).Utf8().c_str(),
+                          TRACE_ID_LOCAL(this)));
 }
 
 void ThreadDebuggerCommonImpl::consoleTimeStamp(
