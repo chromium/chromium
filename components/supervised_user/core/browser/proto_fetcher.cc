@@ -12,8 +12,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
-#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -30,6 +28,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -142,27 +141,23 @@ class FetcherImpl final : public ProtoFetcher<Response> {
               const google::protobuf::MessageLite& request,
               const FetcherConfig& fetcher_config,
               Callback callback)
-      : payload_(request.SerializeAsString()), config_(fetcher_config) {
-    access_token_fetcher_ = std::make_unique<ApiAccessTokenFetcher>(
-        identity_manager, fetcher_config,
-        BindOnce(&FetcherImpl::OnAccessTokenFetchComplete, Unretained(this),
-                 url_loader_factory,
-                 std::move(callback)));  // Unretained(.) is safe because `this`
-                                         // owns `access_token_fetcher_`.
-  }
+      : FetcherImpl(identity_manager,
+                    url_loader_factory,
+                    request.SerializeAsString(),
+                    fetcher_config,
+                    std::move(callback)) {}
+
   FetcherImpl(IdentityManager& identity_manager,
               scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
               const std::string& payload,
               const FetcherConfig& fetcher_config,
               Callback callback)
-      : payload_(payload), config_(fetcher_config) {
-    access_token_fetcher_ = std::make_unique<ApiAccessTokenFetcher>(
-        identity_manager, fetcher_config,
-        BindOnce(&FetcherImpl::OnAccessTokenFetchComplete, Unretained(this),
-                 url_loader_factory,
-                 std::move(callback)));  // Unretained(.) is safe because `this`
-                                         // owns `access_token_fetcher_`.
-  }
+      : fetcher_(LaunchFetcher(identity_manager,
+                               url_loader_factory,
+                               fetcher_config,
+                               std::move(callback))),
+        payload_(payload),
+        config_(fetcher_config) {}
 
   // Not copyable.
   FetcherImpl(const FetcherImpl&) = delete;
@@ -176,11 +171,8 @@ class FetcherImpl final : public ProtoFetcher<Response> {
                       latency);
   }
 
-  void WrapCallbackWithMetrics(Callback callback,
-                               TimeTicks start_time,
-                               ProtoFetcherStatus status,
-                               std::unique_ptr<Response> response) {
-    TimeDelta latency = TimeTicks::Now() - start_time;
+  void RecordMetrics(ProtoFetcherStatus status) {
+    TimeDelta latency = TimeTicks::Now() - start_time_;
     RecordStabilityMetrics(latency, status);
 
     // Record additional metrics for various failures.
@@ -188,9 +180,6 @@ class FetcherImpl final : public ProtoFetcher<Response> {
       UmaHistogramSparse(GetMetricKey("HttpStatusOrNetError"),
                          status.http_status_or_net_error().value());
     }
-
-    CHECK(callback) << "Use base::DoNothing() instead of empty callback.";
-    std::move(callback).Run(status, std::move(response));
   }
 
   std::string GetMetricKey(StringPiece metric_id) const {
@@ -202,21 +191,30 @@ class FetcherImpl final : public ProtoFetcher<Response> {
                       ".");
   }
 
+  // Launch of the fetch process.
+  std::unique_ptr<ApiAccessTokenFetcher> LaunchFetcher(
+      IdentityManager& identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const FetcherConfig& fetcher_config,
+      Callback callback) {
+    CHECK(callback) << "Use base::DoNothing() instead of empty callback.";
+    return std::make_unique<ApiAccessTokenFetcher>(
+        identity_manager, fetcher_config,
+        BindOnce(&FetcherImpl::OnAccessTokenFetchComplete, Unretained(this),
+                 url_loader_factory,
+                 std::move(callback)));  // Unretained(.) is safe because `this`
+                                         // owns `access_token_fetcher_`.
+  }
+
   // First phase of fetching done: the access token response is ready.
   void OnAccessTokenFetchComplete(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Callback callback,
       base::expected<signin::AccessTokenInfo, GoogleServiceAuthError>
           access_token) {
-    CHECK(callback) << "Use base::DoNothing() instead of empty callback.";
-    Callback callback_with_metrics =
-        BindOnce(&FetcherImpl::WrapCallbackWithMetrics, Unretained(this),
-                 std::move(callback), TimeTicks::Now());
-
     if (!access_token.has_value()) {
-      std::move(callback_with_metrics)
-          .Run(ProtoFetcherStatus::GoogleServiceAuthError(access_token.error()),
-               std::make_unique<Response>());
+      OnError(std::move(callback),
+              ProtoFetcherStatus::GoogleServiceAuthError(access_token.error()));
       return;
     }
 
@@ -224,11 +222,9 @@ class FetcherImpl final : public ProtoFetcher<Response> {
         access_token.value(), config_, GetRequestPayload());
     simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory.get(),
-        BindOnce(
-            &FetcherImpl::OnSimpleUrlLoaderComplete, Unretained(this),
-            std::move(
-                callback_with_metrics)));  // Unretained(.) is safe because
-                                           // `this` owns `simple_url_loader_`.
+        BindOnce(&FetcherImpl::OnSimpleUrlLoaderComplete, Unretained(this),
+                 std::move(callback)));  // Unretained(.) is safe because
+                                         // `this` owns `simple_url_loader_`.
   }
 
   // Second phase of fetching done: the remote service responded.
@@ -236,22 +232,19 @@ class FetcherImpl final : public ProtoFetcher<Response> {
                                  std::unique_ptr<std::string> response_body) {
     if (!IsLoadingSuccessful(*simple_url_loader_) ||
         !HasHttpOkResponse(*simple_url_loader_)) {
-      std::move(callback).Run(ProtoFetcherStatus::HttpStatusOrNetError(
-                                  HttpStatusOrNetError(*simple_url_loader_)),
-                              nullptr);
+      OnError(std::move(callback),
+              ProtoFetcherStatus::HttpStatusOrNetError(
+                  HttpStatusOrNetError(*simple_url_loader_)));
       return;
     }
 
     std::unique_ptr<Response> response = std::make_unique<Response>();
     if (!response->ParseFromString(*response_body)) {
-      std::move(callback).Run(ProtoFetcherStatus::InvalidResponse(), nullptr);
+      OnError(std::move(callback), ProtoFetcherStatus::InvalidResponse());
       return;
     }
 
-    CHECK(response) << "ProtoFetcherStatus::Ok implies non-empty response "
-                       "(which is always a valid message).";
-    std::move(callback).Run(std::move(ProtoFetcherStatus::Ok()),
-                            std::move(response));
+    OnSuccess(std::move(callback), std::move(response));
   }
 
   // Returns payload when it's eligible for the request type.
@@ -263,10 +256,27 @@ class FetcherImpl final : public ProtoFetcher<Response> {
     return payload_;
   }
 
-  std::unique_ptr<ApiAccessTokenFetcher> access_token_fetcher_;
+  void OnError(Callback callback, ProtoFetcherStatus status) {
+    RecordMetrics(status);
+    std::move(callback).Run(status, nullptr);
+  }
+
+  void OnSuccess(Callback callback, std::unique_ptr<Response> response) {
+    CHECK(response) << "ProtoFetcherStatus::Ok implies non-empty response "
+                       "(which is always a valid message).";
+    RecordMetrics(ProtoFetcherStatus::Ok());
+    std::move(callback).Run(ProtoFetcherStatus::Ok(), std::move(response));
+  }
+
+  // Entrypoint of the fetch process, which starts with ApiAccessToken access
+  // followed by a request made with SimpleURLLoader.
+  std::unique_ptr<ApiAccessTokenFetcher> fetcher_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
+
   const std::string payload_;
   const FetcherConfig config_;
+
+  const TimeTicks start_time_{TimeTicks::Now()};
 };
 
 // Wraps FetcherImpl deferring its startup until explicitly invoked.
