@@ -7416,7 +7416,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Dark
       </message>
       <message name="IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_SYSTEM_LABEL" desc="A color scheme mode option for browser system mode, which follows the OS color scheme mode in customize chrome side panel.">
-        System
+        Device
       </message>
 
       <!-- NTP Modules -->
