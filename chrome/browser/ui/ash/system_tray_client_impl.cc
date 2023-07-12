@@ -796,6 +796,13 @@ void SystemTrayClientImpl::ShowAudioSettings() {
       chromeos::settings::mojom::kAudioSubpagePath);
 }
 
+void SystemTrayClientImpl::ShowTouchpadSettings() {
+  DCHECK(ash::features::IsInputDeviceSettingsSplitEnabled());
+  base::RecordAction(base::UserMetricsAction("ShowTouchpadSettingsPage"));
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath);
+}
+
 void SystemTrayClientImpl::ShowEolInfoPage() {
   const bool use_offer_url = ash::features::kEolIncentiveParam.Get() !=
                                  ash::features::EolIncentiveParam::kNoOffer &&

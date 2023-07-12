@@ -16,7 +16,6 @@ class MessageCenter;
 namespace ash {
 
 // TODO(b/279503977): Show notification up to 3 times for each setting.
-// TODO(b/279503977): Add link to touchpad settings subpage.
 // TODO(b/279503977): Only display notification for active user sessions.
 class ASH_EXPORT InputDeviceSettingsNotificationController {
  public:

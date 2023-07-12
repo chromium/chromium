@@ -8,8 +8,12 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/model/system_tray_model.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -89,6 +93,16 @@ void InputDeviceSettingsNotificationController::
         SimulateRightClickModifier blocked_modifier,
         SimulateRightClickModifier active_modifier) {
   CHECK_NE(blocked_modifier, SimulateRightClickModifier::kNone);
+  auto on_click_handler =
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating([]() {
+            if (!Shell::Get()->session_controller()->IsUserSessionBlocked()) {
+              Shell::Get()
+                  ->system_tray_model()
+                  ->client()
+                  ->ShowTouchpadSettings();
+            }
+          }));
   auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       GetRightClickNotificationId(blocked_modifier, active_modifier),
@@ -99,7 +113,7 @@ void InputDeviceSettingsNotificationController::
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
           NotificationCatalogName::kEventRewriterDeprecation),
-      message_center::RichNotificationData(), nullptr,
+      message_center::RichNotificationData(), std::move(on_click_handler),
       kNotificationKeyboardIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   message_center_->AddNotification(std::move(notification));

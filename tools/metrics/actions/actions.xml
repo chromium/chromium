@@ -31425,6 +31425,16 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ShowTouchpadSettingsPage">
+  <owner>michaelcheco@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <description>
+    Recorded when a user navigates to the touchpad settings subpage by clicking
+    on the notification shown when they attempted to simulate a right-click
+    using a rewrite that is inconsistent with their setting for that behavior.
+  </description>
+</action>
+
 <action name="Shutdown">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

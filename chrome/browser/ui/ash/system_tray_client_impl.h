@@ -113,6 +113,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowEolInfoPage() override;
   void RecordEolNoticeShown() override;
   bool IsUserFeedbackEnabled() override;
+  void ShowTouchpadSettings() override;
 
  protected:
   // Used by mocks in tests.

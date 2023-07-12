@@ -177,4 +177,8 @@ void TestSystemTrayClient::ShowEolInfoPage() {
 
 void TestSystemTrayClient::RecordEolNoticeShown() {}
 
+void TestSystemTrayClient::ShowTouchpadSettings() {
+  ++show_touchpad_settings_count_;
+}
+
 }  // namespace ash

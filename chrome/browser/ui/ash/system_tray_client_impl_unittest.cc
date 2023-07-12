@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
@@ -11,6 +12,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+constexpr const char kShowTouchpadSettingsPage[] = "ShowTouchpadSettingsPage";
 
 class TestSettingsWindowManager : public chrome::SettingsWindowManager {
  public:
@@ -41,6 +44,21 @@ TEST_F(SystemTrayClientImplTest, ShowAccountSettings) {
       test_manager.last_url(),
       chrome::GetOSSettingsUrl(chromeos::settings::mojom::kPeopleSectionPath));
 
+  chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
+}
+
+TEST_F(SystemTrayClientImplTest, ShowTouchpadSettings) {
+  base::UserActionTester user_action_tester;
+  SystemTrayClientImpl client_impl;
+
+  TestSettingsWindowManager test_manager;
+  chrome::SettingsWindowManager::SetInstanceForTesting(&test_manager);
+
+  client_impl.ShowTouchpadSettings();
+  EXPECT_EQ(test_manager.last_url(),
+            chrome::GetOSSettingsUrl(
+                chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kShowTouchpadSettingsPage));
   chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
 }
 

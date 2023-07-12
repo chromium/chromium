@@ -201,6 +201,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // feedback, 'false' otherwise.
   virtual bool IsUserFeedbackEnabled() = 0;
 
+  // Shows settings related to touchpads.
+  virtual void ShowTouchpadSettings() = 0;
+
  protected:
   SystemTrayClient() {}
 };
