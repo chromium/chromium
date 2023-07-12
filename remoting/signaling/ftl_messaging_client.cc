@@ -40,17 +40,37 @@ constexpr net::NetworkTrafficAnnotationTag kAckMessagesTrafficAnnotation =
         "Remote Desktop backend."
       trigger:
         "Initiating a Chrome Remote Desktop connection."
+      user_data {
+        type: CREDENTIALS
+      }
       data:
         "User's auth code and message ID for the message to be acknowledged."
       destination: GOOGLE_OWNED_SERVICE
+      internal {
+        contacts { email: "garykac@chromium.org" }
+        contacts { email: "jamiewalch@chromium.org" }
+        contacts { email: "joedow@chromium.org" }
+        contacts { email: "lambroslambrou@chromium.org" }
+        contacts { email: "rkjnsn@chromium.org" }
+        contacts { email: "yuweih@chromium.org" }
+      }
+      last_reviewed: "2023-07-07"
     }
     policy {
       cookies_allowed: NO
       setting:
         "This request cannot be stopped in settings, but will not be sent "
         "if the user does not use Chrome Remote Desktop."
-      policy_exception_justification:
-        "Not implemented."
+      chrome_policy {
+        RemoteAccessHostAllowRemoteSupportConnections {
+          policy_options {mode: MANDATORY}
+          RemoteAccessHostAllowRemoteSupportConnections: false
+        }
+        RemoteAccessHostAllowEnterpriseRemoteSupportConnections {
+          policy_options {mode: MANDATORY}
+          RemoteAccessHostAllowEnterpriseRemoteSupportConnections: false
+        }
+      }
     })");
 
 constexpr net::NetworkTrafficAnnotationTag kReceiveMessagesTrafficAnnotation =
@@ -64,17 +84,37 @@ constexpr net::NetworkTrafficAnnotationTag kReceiveMessagesTrafficAnnotation =
         "Desktop backend."
       trigger:
         "Initiating a Chrome Remote Desktop connection."
+      user_data {
+        type: CREDENTIALS
+      }
       data:
         "User's auth code and registration ID for retrieving messages."
       destination: GOOGLE_OWNED_SERVICE
+      internal {
+        contacts { email: "garykac@chromium.org" }
+        contacts { email: "jamiewalch@chromium.org" }
+        contacts { email: "joedow@chromium.org" }
+        contacts { email: "lambroslambrou@chromium.org" }
+        contacts { email: "rkjnsn@chromium.org" }
+        contacts { email: "yuweih@chromium.org" }
+      }
+      last_reviewed: "2023-07-07"
     }
     policy {
       cookies_allowed: NO
       setting:
         "This request cannot be stopped in settings, but will not be sent "
         "if the user does not use Chrome Remote Desktop."
-      policy_exception_justification:
-        "Not implemented."
+      chrome_policy {
+        RemoteAccessHostAllowRemoteSupportConnections {
+          policy_options {mode: MANDATORY}
+          RemoteAccessHostAllowRemoteSupportConnections: false
+        }
+        RemoteAccessHostAllowEnterpriseRemoteSupportConnections {
+          policy_options {mode: MANDATORY}
+          RemoteAccessHostAllowEnterpriseRemoteSupportConnections: false
+        }
+      }
     })");
 
 constexpr net::NetworkTrafficAnnotationTag kSendMessageTrafficAnnotation =
@@ -88,6 +128,9 @@ constexpr net::NetworkTrafficAnnotationTag kSendMessageTrafficAnnotation =
         "backend."
       trigger:
         "Initiating a Chrome Remote Desktop connection."
+      user_data {
+        type: CREDENTIALS
+      }
       data:
         "User's auth code and Chrome Remote Desktop P2P signaling messages. "
         "This includes session authentication data, SDP (Session Description "
@@ -96,14 +139,31 @@ constexpr net::NetworkTrafficAnnotationTag kSendMessageTrafficAnnotation =
         "https://tools.ietf.org/html/rfc4566 and "
         "https://tools.ietf.org/html/rfc5245."
       destination: GOOGLE_OWNED_SERVICE
+      internal {
+        contacts { email: "garykac@chromium.org" }
+        contacts { email: "jamiewalch@chromium.org" }
+        contacts { email: "joedow@chromium.org" }
+        contacts { email: "lambroslambrou@chromium.org" }
+        contacts { email: "rkjnsn@chromium.org" }
+        contacts { email: "yuweih@chromium.org" }
+      }
+      last_reviewed: "2023-07-07"
     }
     policy {
       cookies_allowed: NO
       setting:
         "This request cannot be stopped in settings, but will not be sent "
         "if the user does not use Chrome Remote Desktop."
-      policy_exception_justification:
-        "Not implemented."
+      chrome_policy {
+        RemoteAccessHostAllowRemoteSupportConnections {
+          policy_options {mode: MANDATORY}
+          RemoteAccessHostAllowRemoteSupportConnections: false
+        }
+        RemoteAccessHostAllowEnterpriseRemoteSupportConnections {
+          policy_options {mode: MANDATORY}
+          RemoteAccessHostAllowEnterpriseRemoteSupportConnections: false
+        }
+      }
     })");
 
 constexpr base::TimeDelta kInboxMessageTtl = base::Minutes(1);

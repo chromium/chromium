@@ -324,7 +324,6 @@ missing_new_fields,remoting/protocol/remoting_ice_config_request.cc
 missing_new_fields,remoting/protocol/ssl_hmac_channel_authenticator.cc
 missing_new_fields,remoting/protocol/stream_message_pipe_adapter.cc
 missing_new_fields,remoting/protocol/stream_packet_socket.cc
-missing_new_fields,remoting/signaling/ftl_messaging_client.cc
 missing_new_fields,remoting/signaling/ftl_registration_manager.cc
 missing_new_fields,remoting/signaling/remoting_log_to_server.cc
 missing_new_fields,rlz/lib/financial_ping.cc
