@@ -123,7 +123,8 @@ class BackForwardCacheMetrics
     kFencedFramesEmbedder = 59,
     kCookieDisabled = 60,
     kHTTPAuthRequired = 61,
-    kMaxValue = kHTTPAuthRequired,
+    kCookieFlushed = 62,
+    kMaxValue = kCookieFlushed,
   };
 
   using NotRestoredReasons =

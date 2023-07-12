@@ -10548,6 +10548,7 @@ others/histograms.xml -->
   <int value="60" label="Cookie is disabled"/>
   <int value="61"
       label="Same-origin HTTP authentication is required from another tab"/>
+  <int value="62" label="Cookie is flushed"/>
 </enum>
 
 <enum name="BackForwardCachePageWithFormStorable">

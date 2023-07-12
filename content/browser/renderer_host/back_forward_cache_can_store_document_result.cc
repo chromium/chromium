@@ -191,6 +191,8 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::COOKIE_DISABLED;
     case Reason::kHTTPAuthRequired:
       return ProtoEnum::HTTP_AUTH_REQUIRED;
+    case Reason::kCookieFlushed:
+      return ProtoEnum::COOKIE_FLUSHED;
     case Reason::kBlocklistedFeatures:
       return ProtoEnum::BLOCKLISTED_FEATURES;
     case Reason::kUnknown:
@@ -452,6 +454,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Cookie is disabled for the page.";
     case Reason::kHTTPAuthRequired:
       return "Same-origin HTTP authentication is required in another tab.";
+    case Reason::kCookieFlushed:
+      return "Cookie is flushed.";
   }
 }
 
@@ -538,6 +542,8 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
       return "Cookie is disabled";
     case Reason::kHTTPAuthRequired:
       return "Same-origin HTTP authentication is required in another tab";
+    case Reason::kCookieFlushed:
+      return "Cookie is flushed";
     case Reason::kDisableForRenderFrameHostCalled:
       return DisabledReasonsToString(disabled_reasons_,
                                      /*for_not_restored_reasons=*/true);

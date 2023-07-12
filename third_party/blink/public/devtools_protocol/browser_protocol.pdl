@@ -8581,6 +8581,7 @@ domain Page
       FencedFramesEmbedder
       CookieDisabled
       HTTPAuthRequired
+      CookieFlushed
       #Blocklisted features
       WebSocket
       WebTransport
