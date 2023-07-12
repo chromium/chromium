@@ -14,6 +14,7 @@ ci.defaults.set(
     os = os.LINUX_DEFAULT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+    shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(
@@ -23,6 +24,7 @@ consoles.console_view(
 def packager_builder(**kwargs):
     return ci.builder(
         service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
+        shadow_service_account = "chromium-cipd-try-builder@chops-service-accounts.iam.gserviceaccount.com",
         **kwargs
     )
 

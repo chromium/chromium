@@ -15,6 +15,7 @@ ci.defaults.set(
     cpu = cpu.X86_64,
     free_space = builders.free_space.standard,
     build_numbers = True,
+    shadow_pool = "luci.chromium.try",
 )
 
 luci.bucket(
@@ -57,6 +58,28 @@ luci.bucket(
             ],
         ),
     ],
+)
+
+# Shadow bucket of `ci`, for led builds.
+luci.bucket(
+    name = "ci.shadow",
+    shadows = "ci",
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = [
+                "mdb/chrome-troopers",
+            ],
+        ),
+        # Allow ci builders to create invocations in their own builds.
+        luci.binding(
+            roles = "role/resultdb.invocationCreator",
+            groups = [
+                "project-chromium-ci-task-accounts",
+            ],
+        ),
+    ],
+    dynamic = True,
 )
 
 luci.gitiles_poller(
