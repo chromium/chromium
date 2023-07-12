@@ -15,7 +15,6 @@
 #include "components/reporting/util/rate_limiter_interface.h"
 #include "components/reporting/util/statusor.h"
 #include "net/base/backoff_entry.h"
-#include "report_queue_configuration.h"
 
 namespace reporting {
 
