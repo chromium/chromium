@@ -22,7 +22,7 @@ import java.util.Map;
  * {@link VerificationStatus.USER_VERIFIED} status.
  */
 @JNINamespace("autofill")
-public class AutofillProfile implements PersonalDataManager.AutofillProfile {
+public class AutofillProfile {
     private String mGUID;
     private boolean mIsLocal;
     private @Source int mSource;
@@ -303,18 +303,15 @@ public class AutofillProfile implements PersonalDataManager.AutofillProfile {
     }
 
     @CalledByNative
-    @Override
     public String getGUID() {
         return mGUID;
     }
 
     @CalledByNative
-    @Override
     public @Source int getSource() {
         return mSource;
     }
 
-    @Override
     public String getLabel() {
         return mLabel;
     }
@@ -335,7 +332,6 @@ public class AutofillProfile implements PersonalDataManager.AutofillProfile {
         return mFields.get(fieldType).getStatus();
     }
 
-    @Override
     public String getHonorificPrefix() {
         return getInfo(ServerFieldType.NAME_HONORIFIC_PREFIX);
     }
@@ -344,7 +340,6 @@ public class AutofillProfile implements PersonalDataManager.AutofillProfile {
         return getInfoStatus(ServerFieldType.NAME_HONORIFIC_PREFIX);
     }
 
-    @Override
     public String getFullName() {
         return getInfo(ServerFieldType.NAME_FULL);
     }
@@ -355,7 +350,6 @@ public class AutofillProfile implements PersonalDataManager.AutofillProfile {
         return getInfoStatus(ServerFieldType.NAME_FULL);
     }
 
-    @Override
     public String getCompanyName() {
         return getInfo(ServerFieldType.COMPANY_NAME);
     }
@@ -365,7 +359,6 @@ public class AutofillProfile implements PersonalDataManager.AutofillProfile {
         return getInfoStatus(ServerFieldType.COMPANY_NAME);
     }
 
-    @Override
     public String getStreetAddress() {
         return getInfo(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS);
     }
@@ -376,7 +369,6 @@ public class AutofillProfile implements PersonalDataManager.AutofillProfile {
         return getInfoStatus(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS);
     }
 
-    @Override
     public String getRegion() {
         return getInfo(ServerFieldType.ADDRESS_HOME_STATE);
     }
@@ -387,7 +379,6 @@ public class AutofillProfile implements PersonalDataManager.AutofillProfile {
         return getInfoStatus(ServerFieldType.ADDRESS_HOME_STATE);
     }
 
-    @Override
     public String getLocality() {
         return getInfo(ServerFieldType.ADDRESS_HOME_CITY);
     }
@@ -398,7 +389,6 @@ public class AutofillProfile implements PersonalDataManager.AutofillProfile {
         return getInfoStatus(ServerFieldType.ADDRESS_HOME_CITY);
     }
 
-    @Override
     public String getDependentLocality() {
         return getInfo(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
     }
@@ -407,7 +397,6 @@ public class AutofillProfile implements PersonalDataManager.AutofillProfile {
         return getInfoStatus(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
     }
 
-    @Override
     public String getPostalCode() {
         return getInfo(ServerFieldType.ADDRESS_HOME_ZIP);
     }
@@ -418,7 +407,6 @@ public class AutofillProfile implements PersonalDataManager.AutofillProfile {
         return getInfoStatus(ServerFieldType.ADDRESS_HOME_ZIP);
     }
 
-    @Override
     public String getSortingCode() {
         return getInfo(ServerFieldType.ADDRESS_HOME_SORTING_CODE);
     }
@@ -427,7 +415,6 @@ public class AutofillProfile implements PersonalDataManager.AutofillProfile {
         return getInfoStatus(ServerFieldType.ADDRESS_HOME_SORTING_CODE);
     }
 
-    @Override
     public String getCountryCode() {
         return getInfo(ServerFieldType.ADDRESS_HOME_COUNTRY);
     }
@@ -436,7 +423,6 @@ public class AutofillProfile implements PersonalDataManager.AutofillProfile {
         return getInfoStatus(ServerFieldType.ADDRESS_HOME_COUNTRY);
     }
 
-    @Override
     public String getPhoneNumber() {
         return getInfo(ServerFieldType.PHONE_HOME_WHOLE_NUMBER);
     }
@@ -445,7 +431,6 @@ public class AutofillProfile implements PersonalDataManager.AutofillProfile {
         return getInfoStatus(ServerFieldType.PHONE_HOME_WHOLE_NUMBER);
     }
 
-    @Override
     public String getEmailAddress() {
         return getInfo(ServerFieldType.EMAIL_ADDRESS);
     }
@@ -455,27 +440,22 @@ public class AutofillProfile implements PersonalDataManager.AutofillProfile {
     }
 
     @CalledByNative
-    @Override
     public String getLanguageCode() {
         return mLanguageCode;
     }
 
-    @Override
     public boolean getIsLocal() {
         return mIsLocal;
     }
 
-    @Override
     public void setGUID(String guid) {
         mGUID = guid;
     }
 
-    @Override
     public void setLabel(String label) {
         mLabel = label;
     }
 
-    @Override
     public void setSource(@Source int source) {
         mSource = source;
     }
@@ -485,72 +465,58 @@ public class AutofillProfile implements PersonalDataManager.AutofillProfile {
         mFields.put(fieldType, new ValueWithStatus(value, VerificationStatus.USER_VERIFIED));
     }
 
-    @Override
     public void setHonorificPrefix(String honorificPrefix) {
         setInfo(ServerFieldType.NAME_HONORIFIC_PREFIX, honorificPrefix);
     }
 
-    @Override
     public void setFullName(String fullName) {
         setInfo(ServerFieldType.NAME_FULL, fullName);
     }
 
-    @Override
     public void setCompanyName(String companyName) {
         setInfo(ServerFieldType.COMPANY_NAME, companyName);
     }
 
-    @Override
     public void setStreetAddress(String streetAddress) {
         setInfo(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS, streetAddress);
     }
 
-    @Override
     public void setRegion(String region) {
         setInfo(ServerFieldType.ADDRESS_HOME_STATE, region);
     }
 
-    @Override
     public void setLocality(String locality) {
         setInfo(ServerFieldType.ADDRESS_HOME_CITY, locality);
     }
 
-    @Override
     public void setDependentLocality(String dependentLocality) {
         setInfo(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY, dependentLocality);
     }
 
-    @Override
     public void setPostalCode(String postalCode) {
         setInfo(ServerFieldType.ADDRESS_HOME_ZIP, postalCode);
     }
 
-    @Override
     public void setSortingCode(String sortingCode) {
         setInfo(ServerFieldType.ADDRESS_HOME_SORTING_CODE, sortingCode);
     }
 
-    @Override
     public void setCountryCode(String countryCode) {
         setInfo(ServerFieldType.ADDRESS_HOME_COUNTRY, countryCode);
     }
 
-    @Override
     public void setPhoneNumber(String phoneNumber) {
         setInfo(ServerFieldType.PHONE_HOME_WHOLE_NUMBER, phoneNumber);
     }
 
-    @Override
     public void setEmailAddress(String emailAddress) {
         setInfo(ServerFieldType.EMAIL_ADDRESS, emailAddress);
     }
 
-    @Override
     public void setLanguageCode(String languageCode) {
         mLanguageCode = languageCode;
     }
 
-    @Override
     public void setIsLocal(boolean isLocal) {
         mIsLocal = isLocal;
     }

@@ -83,7 +83,7 @@ public class PersonalDataManager {
          * @param profile The profile with the normalized address.
          */
         @CalledByNative("NormalizedAddressRequestDelegate")
-        void onAddressNormalized(org.chromium.chrome.browser.autofill.AutofillProfile profile);
+        void onAddressNormalized(AutofillProfile profile);
 
         /**
          * Called when the address could not be normalized.
@@ -91,84 +91,7 @@ public class PersonalDataManager {
          * @param profile The non normalized profile.
          */
         @CalledByNative("NormalizedAddressRequestDelegate")
-        void onCouldNotNormalize(org.chromium.chrome.browser.autofill.AutofillProfile profile);
-    }
-
-    // This is a temporary compatibility interface to avoid breaking chrome
-    // internal try bots.
-    // TODO(crbug.com/1441904): remove this interface.
-    public interface AutofillProfile {
-        static org.chromium.chrome.browser.autofill.AutofillProfile.Builder builder() {
-            return new org.chromium.chrome.browser.autofill.AutofillProfile.Builder();
-        }
-
-        public String getGUID();
-
-        public @Source int getSource();
-
-        public String getHonorificPrefix();
-
-        public String getFullName();
-
-        public String getCompanyName();
-
-        public String getStreetAddress();
-
-        public String getRegion();
-
-        public String getLocality();
-
-        public String getDependentLocality();
-
-        public String getLabel();
-
-        public String getPostalCode();
-
-        public String getSortingCode();
-
-        public String getCountryCode();
-
-        public String getPhoneNumber();
-
-        public String getEmailAddress();
-
-        public String getLanguageCode();
-
-        public boolean getIsLocal();
-
-        public void setGUID(String guid);
-
-        public void setLabel(String label);
-
-        public void setSource(@Source int source);
-
-        public void setHonorificPrefix(String honorificPrefix);
-
-        public void setFullName(String fullName);
-
-        public void setCompanyName(String companyName);
-
-        public void setStreetAddress(String streetAddress);
-
-        public void setRegion(String region);
-
-        public void setLocality(String locality);
-
-        public void setDependentLocality(String dependentLocality);
-
-        public void setPostalCode(String postalCode);
-
-        public void setSortingCode(String sortingCode);
-
-        public void setCountryCode(String countryCode);
-
-        public void setPhoneNumber(String phoneNumber);
-
-        public void setEmailAddress(String emailAddress);
-
-        public void setLanguageCode(String languageCode);
-
-        public void setIsLocal(boolean isLocal);
+        void onCouldNotNormalize(AutofillProfile profile);
     }
 
     /**
@@ -519,7 +442,7 @@ public class PersonalDataManager {
      *
      * @return The list of profiles to show in the settings.
      */
-    public List<org.chromium.chrome.browser.autofill.AutofillProfile> getAutofillProfilesForSettings() {
+    public List<AutofillProfile> getAutofillProfilesForSettings() {
         ThreadUtils.assertOnUiThread();
         return getProfilesWithLabels(PersonalDataManagerJni.get().getProfileLabelsForSettings(
                                              mPersonalDataManagerAndroid, PersonalDataManager.this),
@@ -528,7 +451,10 @@ public class PersonalDataManager {
     }
 
     public List<AutofillProfile> getProfilesForSettings() {
-      return getAutofillProfilesForSettings().stream().map(profile -> (AutofillProfile) profile).collect(Collectors.toList());
+        return getAutofillProfilesForSettings()
+                .stream()
+                .map(profile -> (AutofillProfile) profile)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -540,8 +466,7 @@ public class PersonalDataManager {
      * @param includeNameInLabel Whether to include the name in the profile's label.
      * @return The list of profiles to suggest to the user.
      */
-    public ArrayList<org.chromium.chrome.browser.autofill.AutofillProfile> getProfilesToSuggest(
-            boolean includeNameInLabel) {
+    public ArrayList<AutofillProfile> getProfilesToSuggest(boolean includeNameInLabel) {
         ThreadUtils.assertOnUiThread();
         return getProfilesWithLabels(
                 PersonalDataManagerJni.get().getProfileLabelsToSuggest(mPersonalDataManagerAndroid,
@@ -562,8 +487,8 @@ public class PersonalDataManager {
      *
      * @return The list of billing addresses to suggest to the user.
      */
-    public ArrayList<org.chromium.chrome.browser.autofill.AutofillProfile>
-    getBillingAddressesToSuggest(boolean includeOrganizationInLabel) {
+    public ArrayList<AutofillProfile> getBillingAddressesToSuggest(
+            boolean includeOrganizationInLabel) {
         ThreadUtils.assertOnUiThread();
         return getProfilesWithLabels(
                 PersonalDataManagerJni.get().getProfileLabelsToSuggest(mPersonalDataManagerAndroid,
@@ -573,15 +498,12 @@ public class PersonalDataManager {
                         mPersonalDataManagerAndroid, PersonalDataManager.this));
     }
 
-    private ArrayList<org.chromium.chrome.browser.autofill.AutofillProfile> getProfilesWithLabels(
+    private ArrayList<AutofillProfile> getProfilesWithLabels(
             String[] profileLabels, String[] profileGUIDs) {
-        ArrayList<org.chromium.chrome.browser.autofill.AutofillProfile> profiles =
-                new ArrayList<org.chromium.chrome.browser.autofill.AutofillProfile>(
-                        profileGUIDs.length);
+        ArrayList<AutofillProfile> profiles = new ArrayList<AutofillProfile>(profileGUIDs.length);
         for (int i = 0; i < profileGUIDs.length; i++) {
-            org.chromium.chrome.browser.autofill.AutofillProfile profile =
-                    PersonalDataManagerJni.get().getProfileByGUID(
-                            mPersonalDataManagerAndroid, PersonalDataManager.this, profileGUIDs[i]);
+            AutofillProfile profile = PersonalDataManagerJni.get().getProfileByGUID(
+                    mPersonalDataManagerAndroid, PersonalDataManager.this, profileGUIDs[i]);
             profile.setLabel(profileLabels[i]);
             profiles.add(profile);
         }
@@ -589,7 +511,7 @@ public class PersonalDataManager {
         return profiles;
     }
 
-    public org.chromium.chrome.browser.autofill.AutofillProfile getProfile(String guid) {
+    public AutofillProfile getProfile(String guid) {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().getProfileByGUID(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
@@ -601,17 +523,13 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
     }
 
-    public String setProfile(org.chromium.chrome.browser.autofill.AutofillProfile profile) {
+    public String setProfile(AutofillProfile profile) {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().setProfile(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
     }
 
-    public String setProfile(AutofillProfile profile) {
-        return setProfile((org.chromium.chrome.browser.autofill.AutofillProfile) profile);
-    }
-
-    public String setProfileToLocal(org.chromium.chrome.browser.autofill.AutofillProfile profile) {
+    public String setProfileToLocal(AutofillProfile profile) {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().setProfileToLocal(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
@@ -705,20 +623,17 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
     }
 
-    public String getShippingAddressLabelWithCountryForPaymentRequest(
-            org.chromium.chrome.browser.autofill.AutofillProfile profile) {
+    public String getShippingAddressLabelWithCountryForPaymentRequest(AutofillProfile profile) {
         return PersonalDataManagerJni.get().getShippingAddressLabelWithCountryForPaymentRequest(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
     }
 
-    public String getShippingAddressLabelWithoutCountryForPaymentRequest(
-            org.chromium.chrome.browser.autofill.AutofillProfile profile) {
+    public String getShippingAddressLabelWithoutCountryForPaymentRequest(AutofillProfile profile) {
         return PersonalDataManagerJni.get().getShippingAddressLabelWithoutCountryForPaymentRequest(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
     }
 
-    public String getBillingAddressLabelForPaymentRequest(
-            org.chromium.chrome.browser.autofill.AutofillProfile profile) {
+    public String getBillingAddressLabelForPaymentRequest(AutofillProfile profile) {
         return PersonalDataManagerJni.get().getBillingAddressLabelForPaymentRequest(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
     }
@@ -890,8 +805,8 @@ public class PersonalDataManager {
      * @param profile The profile to normalize.
      * @param delegate The object requesting the normalization.
      */
-    public void normalizeAddress(org.chromium.chrome.browser.autofill.AutofillProfile profile,
-            NormalizedAddressRequestDelegate delegate) {
+    public void normalizeAddress(
+            AutofillProfile profile, NormalizedAddressRequestDelegate delegate) {
         ThreadUtils.assertOnUiThread();
         PersonalDataManagerJni.get().startAddressNormalization(mPersonalDataManagerAndroid,
                 PersonalDataManager.this, profile, sRequestTimeoutSeconds, delegate);
@@ -1108,25 +1023,24 @@ public class PersonalDataManager {
         String[] getProfileLabelsToSuggest(long nativePersonalDataManagerAndroid,
                 PersonalDataManager caller, boolean includeNameInLabel,
                 boolean includeOrganizationInLabel, boolean includeCountryInLabel);
-        org.chromium.chrome.browser.autofill.AutofillProfile getProfileByGUID(
+        AutofillProfile getProfileByGUID(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);
         boolean isEligibleForAddressAccountStorage(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller);
         boolean isCountryEligibleForAccountStorage(long nativePersonalDataManagerAndroid,
                 PersonalDataManager caller, String countryCode);
         String setProfile(long nativePersonalDataManagerAndroid, PersonalDataManager caller,
-                org.chromium.chrome.browser.autofill.AutofillProfile profile);
+                AutofillProfile profile);
         String setProfileToLocal(long nativePersonalDataManagerAndroid, PersonalDataManager caller,
-                org.chromium.chrome.browser.autofill.AutofillProfile profile);
+                AutofillProfile profile);
         String getShippingAddressLabelWithCountryForPaymentRequest(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller,
-                org.chromium.chrome.browser.autofill.AutofillProfile profile);
+                AutofillProfile profile);
         String getShippingAddressLabelWithoutCountryForPaymentRequest(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller,
-                org.chromium.chrome.browser.autofill.AutofillProfile profile);
+                AutofillProfile profile);
         String getBillingAddressLabelForPaymentRequest(long nativePersonalDataManagerAndroid,
-                PersonalDataManager caller,
-                org.chromium.chrome.browser.autofill.AutofillProfile profile);
+                PersonalDataManager caller, AutofillProfile profile);
         String[] getCreditCardGUIDsForSettings(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller);
         String[] getCreditCardGUIDsToSuggest(
@@ -1176,8 +1090,7 @@ public class PersonalDataManager {
         void loadRulesForSubKeys(long nativePersonalDataManagerAndroid, PersonalDataManager caller,
                 String regionCode);
         void startAddressNormalization(long nativePersonalDataManagerAndroid,
-                PersonalDataManager caller,
-                org.chromium.chrome.browser.autofill.AutofillProfile profile, int timeoutSeconds,
+                PersonalDataManager caller, AutofillProfile profile, int timeoutSeconds,
                 NormalizedAddressRequestDelegate delegate);
         void startRegionSubKeysRequest(long nativePersonalDataManagerAndroid,
                 PersonalDataManager caller, String regionCode, int timeoutSeconds,
