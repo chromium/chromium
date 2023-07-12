@@ -1031,6 +1031,9 @@ extern const char kStorageBucketsDescription[];
 extern const char kHiddenNetworkMigrationName[];
 extern const char kHiddenNetworkMigrationDescription[];
 
+extern const char kHideIncognitoMediaMetadataName[];
+extern const char kHideIncognitoMediaMetadataDescription[];
+
 extern const char kHttpsOnlyModeName[];
 extern const char kHttpsOnlyModeDescription[];
 
@@ -2625,9 +2628,6 @@ extern const char kGlobalMediaControlsCastStartStopDescription[];
 
 extern const char kHeuristicMemorySaverName[];
 extern const char kHeuristicMemorySaverDescription[];
-
-extern const char kHideIncognitoMediaMetadataName[];
-extern const char kHideIncognitoMediaMetadataDescription[];
 
 extern const char kHighEfficiencyMultistateModeAvailableName[];
 extern const char kHighEfficiencyMultistateModeAvailableDescription[];

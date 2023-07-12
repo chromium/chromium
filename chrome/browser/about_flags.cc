@@ -9844,11 +9844,6 @@ const FeatureEntry kFeatureEntries[] = {
          kHeuristicMemorySaverVariations,
          "HeuristicMemorySaver")},
 
-    {"hide-incognito-media-metadata",
-     flag_descriptions::kHideIncognitoMediaMetadataName,
-     flag_descriptions::kHideIncognitoMediaMetadataDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(media::kHideIncognitoMediaMetadata)},
-
     {"memory-saver-multi-state-mode",
      flag_descriptions::kHighEfficiencyMultistateModeAvailableName,
      flag_descriptions::kHighEfficiencyMultistateModeAvailableDescription,
@@ -10592,6 +10587,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadAloudDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kReadAloud)},
 #endif
+
+    {"hide-incognito-media-metadata",
+     flag_descriptions::kHideIncognitoMediaMetadataName,
+     flag_descriptions::kHideIncognitoMediaMetadataDescription, kOsAll,
+     FEATURE_VALUE_TYPE(media::kHideIncognitoMediaMetadata)},
 };
 
 class FlagsStateSingleton : public flags_ui::FlagsState::Delegate {

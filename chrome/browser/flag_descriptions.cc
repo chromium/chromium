@@ -1816,6 +1816,12 @@ const char kHiddenNetworkMigrationDescription[] =
     "Enables a privacy improvement that removes wrongly configured hidden"
     "networks and mitigates the creation of these networks.";
 
+const char kHideIncognitoMediaMetadataName[] =
+    "Hide media metadata when in Incognito";
+const char kHideIncognitoMediaMetadataDescription[] =
+    "When enabled, media metadata will be hidden from your OS' media player "
+    "if you are in an Incognito session.";
+
 const char kTabAudioMutingName[] = "Tab audio muting UI control";
 const char kTabAudioMutingDescription[] =
     "When enabled, the audio indicators in the tab strip double as tab audio "
@@ -4555,12 +4561,6 @@ const char kHeuristicMemorySaverDescription[] =
     "When enabled, Memory Saver will take multiple signals into account before "
     "discarding a tab rather than doing it after a fixed amount of time in the "
     "background.";
-
-const char kHideIncognitoMediaMetadataName[] =
-    "Hide media metadata when in Incognito";
-const char kHideIncognitoMediaMetadataDescription[] =
-    "When enabled, media metadata will be hidden from your OS' media player "
-    "if you are in an Incognito session.";
 
 const char kHighEfficiencyMultistateModeAvailableName[] =
     "Enable the multi-state option for Memory Saver Mode.";
