@@ -893,11 +893,19 @@ AcceleratorConfigurationProvider::PreprocessAddAccelerator(
     return result_data;
   }
 
+  const auto& layout_iter = accelerator_layout_lookup_.find(
+      GetUuid(mojom::AcceleratorSource::kAsh, *found_ash_action));
+  // If there is a valid `found_ash_action` with no layout lookup associated
+  // with it, this indicates a hidden accelerator not displayed in the
+  // shortcuts app. Allow this accelerator to be used for the new action.
+  if (layout_iter == accelerator_layout_lookup_.end()) {
+    return absl::nullopt;
+  }
+
+  // The accelerator is not hidden and appears in the app, go through conflict
+  // detection checks.
   if (!ash_accelerator_configuration_->IsDeprecated(accelerator)) {
     // Accelerator already exists, check if it belongs to a locked action.
-    const auto& layout_iter = accelerator_layout_lookup_.find(
-        GetUuid(mojom::AcceleratorSource::kAsh, *found_ash_action));
-    CHECK(layout_iter != accelerator_layout_lookup_.end());
     const AcceleratorLayoutDetails& layout_details = layout_iter->second;
     const std::u16string& shortcut_name =
         l10n_util::GetStringUTF16(layout_details.description_string_id);
