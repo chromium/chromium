@@ -26,7 +26,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Addresses" label="Address suggestions."/>
   <suffix name="CreditCards" label="Payment suggestions."/>
   <suffix name="Passwords" label="Password suggestions and generation."/>
-  <affected-histogram name="KeyboardAccessory.AccessorySheetSuggestionCount"/>
   <affected-histogram
       name="KeyboardAccessory.AccessorySheetSuggestionsSelected"/>
   <affected-histogram name="KeyboardAccessory.AccessorySheetTriggered"/>

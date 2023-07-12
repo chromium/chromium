@@ -1096,14 +1096,6 @@ Unknown properties are collapsed to zero. -->
   <int value="9" label="'Use passkey on a different device' link"/>
 </enum>
 
-<enum name="AccessoryBarContents">
-  <int value="0" label="Without contents (should never be logged)"/>
-  <int value="1" label="With any content (should always be logged)"/>
-  <int value="2" label="With Tabs"/>
-  <int value="3" label="With Actions"/>
-  <int value="4" label="With Autofill Suggestions"/>
-</enum>
-
 <enum name="AccessorySheetTrigger">
   <int value="0" label="Sheet was closed (user-triggered or automatic)"/>
   <int value="1" label="User closed an accessory sheet"/>

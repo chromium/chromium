@@ -78,8 +78,6 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
 
     @CallSuper
     void onTabShown() {
-        AccessorySheetTabMetricsRecorder.recordSheetSuggestions(mTabType, mModel.get(ITEMS));
-
         // This is a compromise: we log an impression, even if the user didn't scroll down far
         // enough to see it. If we moved it into the view layer (i.e. when the actual button is
         // created and shown), we could record multiple impressions of the user scrolls up and
