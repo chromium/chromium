@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationOrigin, NativeLayerCrosImpl, PrinterStatusReason, PrinterStatusSeverity, PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
@@ -18,6 +19,13 @@ const destination_item_test_cros = {
     NewStatusUpdatesIcon: 'new status updates icon',
     ChangingDestinationUpdatesIcon: 'changing destination updates icon',
     OnlyUpdateMatchingDestination: 'only update matching destination',
+    // TODO(b/289091283): Remove test for flag off and update test name for flag
+    //                    on when `isPrintPreviewSetupAssistanceEnabled` flag is
+    //                    removed.
+    PrinterIconMapsToPrinterStatus_FlagOff: 'printer icon maps to printer ' +
+        'status with isPrintPreviewSetupAssistanceEnabled flag off',
+    PrinterIconMapsToPrinterStatus_FlagOn: 'printer icon maps to printer ' +
+        'status with isPrintPreviewSetupAssistanceEnabled flag on',
   },
 };
 
@@ -48,6 +56,24 @@ suite(destination_item_test_cros.suiteName, function() {
          severity: PrinterStatusSeverity.ERROR,
        }],
        timestamp: 0,
+     },
+     {
+       printerId: 'Three',
+       statusReasons: [
+         {
+           reason: PrinterStatusReason.PRINTER_UNREACHABLE,
+           severity: PrinterStatusSeverity.ERROR,
+         },
+       ],
+       timestamp: 0,
+     },
+     {
+       printerId: 'Four',
+       statusReasons: [{
+         reason: PrinterStatusReason.UNKNOWN_REASON,
+         severity: PrinterStatusSeverity.ERROR,
+       }],
+       timestamp: 0,
      }]
         .forEach(
             status => nativeLayerCros.addPrinterStatusToMap(
@@ -65,10 +91,21 @@ suite(destination_item_test_cros.suiteName, function() {
     assertFalse(window.matchMedia('(prefers-color-scheme: dark)').matches);
   }
 
+  function createTestDestination(printerId: string): Destination {
+    return new Destination(
+        printerId, DestinationOrigin.CROS, `Destination ${printerId}`,
+        {description: 'ABC'});
+  }
+
   setup(function() {
     // Mock configuration needs to happen before element added to UI to
     // ensure iron-media-query uses mock.
     configureMatchMediaMock();
+
+    // Default setup assistance flag to off.
+    loadTimeData.overrideValues({
+      isPrintPreviewSetupAssistanceEnabled: false,
+    });
 
     document.body.innerHTML = getTrustedHTML`
           <print-preview-destination-list-item id="listItem">
@@ -111,6 +148,8 @@ suite(destination_item_test_cros.suiteName, function() {
             'Two', DestinationOrigin.CROS, 'Destination Two',
             {description: 'ABC'});
 
+        // TODO(b/289091283): Update expected icon to be
+        // `print-preview:printer-status-orange` when flag is removed.
         return waitBeforeNextRender(listItem).then(() => {
           assertEquals('print-preview:printer-status-red', icon.icon);
         });
@@ -138,5 +177,81 @@ suite(destination_item_test_cros.suiteName, function() {
           // status request response doesn't match.
           assertEquals('print-preview:printer-status-grey', icon.icon);
         });
+      });
+
+  // Verifies expected icon displays for given status when
+  // `isPrintPreviewSetupAssistanceEnabled` flag is disabled.
+  test(
+      destination_item_test_cros.TestNames
+          .PrinterIconMapsToPrinterStatus_FlagOff,
+      async function() {
+        const icon = listItem.shadowRoot!.querySelector('iron-icon')!;
+        // Before destination status request icon should be grey.
+        assertEquals('print-preview:printer-status-grey', icon.icon);
+
+        // Verify destination with `PrinterStatusReason.NO_ERROR` uses a green
+        // icon.
+        listItem.destination = createTestDestination('One');
+        await listItem.destination.requestPrinterStatus();
+        assertEquals('print-preview:printer-status-green', icon.icon);
+
+        // Verify destination with PrinterStatusReason that is not `NO_ERROR`,
+        // null, or `UNKNOWN_REASON` uses a red icon.
+        listItem.destination = createTestDestination('Two');
+        await listItem.destination.requestPrinterStatus();
+        assertEquals('print-preview:printer-status-red', icon.icon);
+
+        // Verify destination with `PrinterStatusReason.PRINTER_UNREACHABLE`
+        // uses a red icon.
+        listItem.destination = createTestDestination('Three');
+        await listItem.destination.requestPrinterStatus();
+        assertEquals('print-preview:printer-status-red', icon.icon);
+
+        // Verify destination with `PrinterStatusReason.UNKNOWN_REASON` uses a
+        // grey icon.
+        listItem.destination = createTestDestination('Four');
+        await listItem.destination.requestPrinterStatus();
+        assertEquals('print-preview:printer-status-grey', icon.icon);
+      });
+
+  // Verifies expected icon displays for given status when
+  // `isPrintPreviewSetupAssistanceEnabled` flag is enabled.
+  test(
+      destination_item_test_cros.TestNames
+          .PrinterIconMapsToPrinterStatus_FlagOn,
+      async function() {
+        // Set flag on and reset destination item to ensure it is using the
+        // latest flag state.
+        loadTimeData.overrideValues({
+          isPrintPreviewSetupAssistanceEnabled: true,
+        });
+
+        const icon = listItem.shadowRoot!.querySelector('iron-icon')!;
+        // Before destination status request icon should be grey.
+        assertEquals('print-preview:printer-status-grey', icon.icon);
+
+        // Verify destination with `PrinterStatusReason.NO_ERROR` uses a green
+        // icon.
+        listItem.destination = createTestDestination('One');
+        await listItem.destination.requestPrinterStatus();
+        assertEquals('print-preview:printer-status-green', icon.icon);
+
+        // Verify destination with PrinterStatusReason that is not
+        // `PRINTER_UNREACHABLE`, `NO_ERROR`, or unknown uses a orange icon.
+        listItem.destination = createTestDestination('Two');
+        await listItem.destination.requestPrinterStatus();
+        assertEquals('print-preview:printer-status-orange', icon.icon);
+
+        // Verify destination with `PrinterStatusReason.PRINTER_UNREACHABLE`
+        // uses a red icon.
+        listItem.destination = createTestDestination('Three');
+        await listItem.destination.requestPrinterStatus();
+        assertEquals('print-preview:printer-status-red', icon.icon);
+
+        // Verify destination with `PrinterStatusReason.UNKNOWN_REASON` uses a
+        // green icon.
+        listItem.destination = createTestDestination('Four');
+        await listItem.destination.requestPrinterStatus();
+        assertEquals('print-preview:printer-status-green', icon.icon);
       });
 });

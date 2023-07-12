@@ -1121,6 +1121,20 @@ TEST_F(
       this.runMochaTest(
           destination_item_test_cros.TestNames.OnlyUpdateMatchingDestination);
     });
+
+TEST_F(
+    'PrintPreviewDestinationItemTestCros',
+    'PrinterIconMapsToPrinterStatus_FlagOff', function() {
+      this.runMochaTest(destination_item_test_cros.TestNames
+                            .PrinterIconMapsToPrinterStatus_FlagOff);
+    });
+
+TEST_F(
+    'PrintPreviewDestinationItemTestCros',
+    'PrinterIconMapsToPrinterStatus_FlagOn', function() {
+      this.runMochaTest(destination_item_test_cros.TestNames
+                            .PrinterIconMapsToPrinterStatus_FlagOn);
+    });
 GEN('#endif');
 
 var PrintPreviewAdvancedItemTest = class extends PrintPreviewTest {
