@@ -732,7 +732,11 @@ IN_PROC_BROWSER_TEST_P(OnIONotificationClickedTest,
   GetIOTaskController(browser()->profile())
       ->CompleteWithError(kTaskId1,
                           file_manager::io_task::PolicyError(
-                              file_manager::io_task::PolicyErrorType::kDlp, 2));
+                              file_manager::io_task::PolicyErrorType::kDlp,
+                              /*blocked_files=*/2));
+  // Task Info shouldn't be removed after completion.
+  ASSERT_TRUE(fpnm->HasIOTask(kTaskId1));
+
   auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
   ASSERT_TRUE(notification.has_value());
   const std::u16string title =
@@ -745,7 +749,11 @@ IN_PROC_BROWSER_TEST_P(OnIONotificationClickedTest,
   GetIOTaskController(browser()->profile())
       ->CompleteWithError(kTaskId2,
                           file_manager::io_task::PolicyError(
-                              file_manager::io_task::PolicyErrorType::kDlp, 2));
+                              file_manager::io_task::PolicyErrorType::kDlp,
+                              /*blocked_files=*/2));
+  // Task Info shouldn't be removed after completion.
+  ASSERT_TRUE(fpnm->HasIOTask(kTaskId2));
+
   notification = bridge_->GetDisplayedNotification(kNotificationId2);
   ASSERT_TRUE(notification.has_value());
   EXPECT_EQ(notification->title(), title);
@@ -757,6 +765,8 @@ IN_PROC_BROWSER_TEST_P(OnIONotificationClickedTest,
   Browser* first_app = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(first_app);
   ASSERT_EQ(first_app, FindFilesApp());
+  // Task info is removed after the dialog is shown.
+  EXPECT_FALSE(fpnm->HasIOTask(kTaskId1));
 
   // The notification should be closed.
   // TODO(b/289903108): Uncomment when notifications are deduped.
@@ -770,6 +780,106 @@ IN_PROC_BROWSER_TEST_P(OnIONotificationClickedTest,
   // Check that the last active Files app is the same as before.
   ASSERT_TRUE(first_app);
   ASSERT_EQ(first_app, FindFilesApp());
+  // Task info is removed after the dialog is shown.
+  EXPECT_FALSE(fpnm->HasIOTask(kTaskId2));
+}
+
+// Tests that the IO task info for copy or move with multiple blocked files will
+// be removed upon clicking the DISMISS button on the error notification.
+IN_PROC_BROWSER_TEST_P(OnIONotificationClickedTest,
+                       MultiFileDismissRemovesIOInfo_Error) {
+  auto [type, action] = GetParam();
+
+  auto* fpnm = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+      browser()->profile());
+  ASSERT_TRUE(fpnm);
+
+  // Add the task.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_FALSE(policy::AddCopyOrMoveIOTask(
+                     browser()->profile(), file_system_context_, kTaskId1, type,
+                     temp_dir_.GetPath(), "test1.txt", kTestStorageKey)
+                     .empty());
+  }
+  ASSERT_TRUE(fpnm->HasIOTask(kTaskId1));
+
+  // Save blocked files in FPNM. Once we complete the tasks with policy error,
+  // the file_manager::EventRouter will notify FPNM with the error status and
+  // trigger the notification. Do this before any Files App is opened so that
+  // we are sure we show system notifications.
+  fpnm->ShowDlpBlockedFiles(
+      kTaskId1, {base::FilePath("file1.txt"), base::FilePath("file2.txt")},
+      action);
+  GetIOTaskController(browser()->profile())
+      ->CompleteWithError(kTaskId1,
+                          file_manager::io_task::PolicyError(
+                              file_manager::io_task::PolicyErrorType::kDlp,
+                              /*blocked_files=*/2));
+  // Task Info shouldn't be removed after completion.
+  ASSERT_TRUE(fpnm->HasIOTask(kTaskId1));
+
+  auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification.has_value());
+  const std::u16string title =
+      action == dlp::FileAction::kCopy ? u"Blocked copy" : u"Blocked move";
+  EXPECT_EQ(notification->title(), title);
+
+  // Dismiss the notification.
+  bridge_->Click(kNotificationId1, NotificationButton::CANCEL);
+  // Task info is removed after the notification is dismissed.
+  EXPECT_FALSE(fpnm->HasIOTask(kTaskId1));
+
+  // The notification should be closed.
+  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+}
+
+// Tests that the IO task info for copy or move with single blocked file will
+// be removed upon the error notification is clicked.
+IN_PROC_BROWSER_TEST_P(OnIONotificationClickedTest,
+                       SingleFileNotificationRemovesIOInfo_Error) {
+  auto [type, action] = GetParam();
+
+  auto* fpnm = FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+      browser()->profile());
+  ASSERT_TRUE(fpnm);
+
+  // Add the task.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_FALSE(policy::AddCopyOrMoveIOTask(
+                     browser()->profile(), file_system_context_, kTaskId1, type,
+                     temp_dir_.GetPath(), "test1.txt", kTestStorageKey)
+                     .empty());
+  }
+  ASSERT_TRUE(fpnm->HasIOTask(kTaskId1));
+
+  // Save blocked files in FPNM. Once we complete the tasks with policy error,
+  // the file_manager::EventRouter will notify FPNM with the error status and
+  // trigger the notification. Do this before any Files App is opened so that
+  // we are sure we show system notifications.
+  fpnm->ShowDlpBlockedFiles(kTaskId1, {base::FilePath("file1.txt")}, action);
+  GetIOTaskController(browser()->profile())
+      ->CompleteWithError(kTaskId1,
+                          file_manager::io_task::PolicyError(
+                              file_manager::io_task::PolicyErrorType::kDlp,
+                              /*blocked_files=*/1));
+  // Task Info shouldn't be removed after completion.
+  EXPECT_TRUE(fpnm->HasIOTask(kTaskId1));
+  auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification.has_value());
+  const std::u16string title =
+      action == dlp::FileAction::kCopy ? u"Blocked copy" : u"Blocked move";
+  EXPECT_EQ(notification->title(), title);
+
+  // Click Learn more.
+  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+  bridge_->Click(kNotificationId1, NotificationButton::OK);
+  // Task info is removed after the notification is clicked.
+  EXPECT_FALSE(fpnm->HasIOTask(kTaskId1));
+
+  // The notification should be closed.
+  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
 }
 
 INSTANTIATE_TEST_SUITE_P(

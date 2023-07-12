@@ -678,26 +678,32 @@ void FilesPolicyNotificationManager::HandleFilesPolicyErrorNotificationClick(
     return;
   }
 
-  if (button_index.value() == NotificationButton::CANCEL) {
-    Dismiss(context_, notification_id);
-  }
-
-  if (button_index.value() == NotificationButton::OK) {
-    if (io_tasks_.at(task_id).blocked_files.size() == 1) {
-      // Single file - open help page.
-      // TODO(b/283786134): Open page based on policy.
-      ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-          GURL(dlp::kDlpLearnMoreUrl),
-          ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-          ash::NewWindowDelegate::Disposition::kNewForegroundTab);
-      // Only delete if we don't need to show the dialog.
+  switch (button_index.value()) {
+    case NotificationButton::CANCEL:
       io_tasks_.erase(task_id);
-    } else {
-      // Multiple files - review.
-      ShowDialog(task_id, FilesDialogType::kError);
-    }
+      Dismiss(context_, notification_id);
+      return;
+
+    case NotificationButton::OK:
+      if (io_tasks_.at(task_id).blocked_files.size() == 1) {
+        // Single file - open help page.
+        // TODO(b/283786134): Open page based on policy.
+        ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+            GURL(dlp::kDlpLearnMoreUrl),
+            ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+            ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+        // Only delete if we don't need to show the dialog.
+        io_tasks_.erase(task_id);
+      } else {
+        // Multiple files - review.
+        ShowDialog(task_id, FilesDialogType::kError);
+      }
+      Dismiss(context_, notification_id);
+      return;
+
+    default:
+      NOTREACHED();
   }
-  Dismiss(context_, notification_id);
 }
 
 void FilesPolicyNotificationManager::ShowDialogForIOTask(
