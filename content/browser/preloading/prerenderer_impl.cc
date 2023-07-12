@@ -148,9 +148,9 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     started_it = equal_prerender_end;
   }
 
-  registry_->CancelHosts(
-      removed_prerender_rules,
-      PrerenderCancellationReason(PrerenderFinalStatus::kTriggerDestroyed));
+  registry_->CancelHosts(removed_prerender_rules,
+                         PrerenderCancellationReason(
+                             PrerenderFinalStatus::kSpeculationRuleRemoved));
   {
     base::flat_set<int> removed_prerender_rules_set(
         removed_prerender_rules.begin(), removed_prerender_rules.end());

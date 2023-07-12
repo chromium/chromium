@@ -128,7 +128,11 @@ enum class PrerenderFinalStatus {
   // loading.
   kResourceLoadBlockedByClient = 70,
 
-  kMaxValue = kResourceLoadBlockedByClient,
+  // A trigger page removed a corresponding prerender rule from
+  // <script type="speculationrules">.
+  kSpeculationRuleRemoved = 71,
+
+  kMaxValue = kSpeculationRuleRemoved,
 };
 
 // Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.

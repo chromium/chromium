@@ -11240,6 +11240,7 @@ experimental domain Preload
       MemoryPressureAfterTriggered
       PrerenderingDisabledByDevTools
       ResourceLoadBlockedByClient
+      SpeculationRuleRemoved
 
   # Fired when a prerender attempt is completed.
   event prerenderAttemptCompleted

@@ -166,6 +166,8 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::PrerenderingDisabledByDevTools;
     case PrerenderFinalStatus::kResourceLoadBlockedByClient:
       return Preload::PrerenderFinalStatusEnum::ResourceLoadBlockedByClient;
+    case PrerenderFinalStatus::kSpeculationRuleRemoved:
+      return Preload::PrerenderFinalStatusEnum::SpeculationRuleRemoved;
   }
 }
 

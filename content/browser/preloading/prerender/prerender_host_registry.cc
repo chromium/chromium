@@ -288,6 +288,8 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
       return PreloadingEligibility::kPreloadingDisabledByDevTools;
     case PrerenderFinalStatus::kResourceLoadBlockedByClient:
       return PreloadingEligibility::kPreloadingDisabledByDevTools;
+    case PrerenderFinalStatus::kSpeculationRuleRemoved:
+      NOTREACHED_NORETURN();
   }
 
   NOTREACHED_NORETURN();
