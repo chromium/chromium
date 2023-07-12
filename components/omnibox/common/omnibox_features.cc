@@ -39,13 +39,6 @@ constexpr auto enabled_by_default_desktop_android =
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
-constexpr auto enabled_by_default_desktop_ios =
-#if BUILDFLAG(IS_ANDROID)
-    base::FEATURE_DISABLED_BY_DEFAULT;
-#else
-    base::FEATURE_ENABLED_BY_DEFAULT;
-#endif
-
 const auto enabled_by_default_android_ios =
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     base::FEATURE_ENABLED_BY_DEFAULT;
@@ -114,9 +107,11 @@ BASE_FEATURE(kSingleSortAndCullPass,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature to debounce `AutocompleteController::NotifyChanged()`.
+// TODO(manukh): Enabled by default 7/11/23 m117. Clean up feature code 9/12
+//   when m117 reaches stable.
 BASE_FEATURE(kUpdateResultDebounce,
              "OmniboxUpdateResultDebounce",
-             enabled_by_default_desktop_ios);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature used to cap max zero suggestions shown according to the param
 // OmniboxMaxZeroSuggestMatches. If omitted,
