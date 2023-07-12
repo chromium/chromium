@@ -284,7 +284,7 @@ TEST_P(QRCodeGeneratorTest, HugeInput) {
   ASSERT_FALSE(qr.Generate(huge_input));
 }
 
-#if BUILDFLAG(BUILD_RUST_QR)
+#if BUILDFLAG(ENABLE_RUST_QR)
 INSTANTIATE_TEST_SUITE_P(RustEnabled,
                          QRCodeGeneratorTest,
                          ::testing::Values(RustFeatureState::kRustEnabled));

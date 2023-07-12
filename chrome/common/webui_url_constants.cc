@@ -821,12 +821,12 @@ const char* const kChromeDebugURLs[] = {
     blink::kChromeUIBrowserCrashURL,
     blink::kChromeUIBrowserDcheckURL,
     blink::kChromeUICrashURL,
-#if BUILDFLAG(BUILD_RUST_CRASH)
+#if BUILDFLAG(ENABLE_RUST_CRASH)
     blink::kChromeUICrashRustURL,
 #if defined(ADDRESS_SANITIZER)
     blink::kChromeUICrashRustOverflowURL,
 #endif
-#endif  // BUILDFLAG(BUILD_RUST_CRASH)
+#endif  // BUILDFLAG(ENABLE_RUST_CRASH)
     blink::kChromeUIDumpURL,
     blink::kChromeUIKillURL,
     blink::kChromeUIHangURL,

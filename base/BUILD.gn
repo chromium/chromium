@@ -115,18 +115,18 @@ if (is_fuchsia) {
   import("//third_party/fuchsia-sdk/sdk/build/fidl_library.gni")
 }
 
+# The Rust implementation of base::JSONReader. NaCl depends on base and doesn't
+# have a Rust toolchain, so we need a fallback to C++ for it until it removes
+# its dependency on //base.
+#
 # TODO(crbug.com/1280708): Drop toolchain_has_rust and move the C++ parser into
 # components/nacl to just run in-process there. Don't compile base::JSONReader
 # on NaCL at all.
-#
-# TODO(crbug.com/1304707): Drop toolchain_has_rust after we have support for all
-# our toolchains: Linux x86 is missing in order to build for Android.
-#
-# Rust to C++ type conversions.
-build_rust_base_conversions = toolchain_has_rust && enable_rust_base_conversions
-
-# The Rust implementation of base::JSONReader.
 build_rust_json_reader = toolchain_has_rust && enable_rust_json
+
+# Rust to C++ type conversions. Also can not be enabled while NaCl depends on
+# //base.
+build_rust_base_conversions = toolchain_has_rust && enable_rust_base_conversions
 
 assert(build_rust_base_conversions || !build_rust_json_reader,
        "Cannot enable Rust JSON decoder without also base conversions")
@@ -304,7 +304,6 @@ component("base") {
     "containers/lru_cache.h",
     "containers/small_map.h",
     "containers/span.h",
-    "containers/span_rust.h",
     "containers/stack.h",
     "containers/stack_container.h",
     "containers/unique_ptr_adapters.h",
@@ -648,7 +647,6 @@ component("base") {
     "strings/string_number_conversions_internal.h",
     "strings/string_piece.h",
     "strings/string_piece_forward.h",
-    "strings/string_piece_rust.h",
     "strings/string_split.cc",
     "strings/string_split.h",
     "strings/string_split_internal.h",
@@ -1087,6 +1085,11 @@ component("base") {
   ]
 
   if (build_rust_base_conversions) {
+    sources += [
+      "containers/span_rust.h",
+      "strings/string_piece_rust.h",
+    ]
+
     # Base provides conversions between CXX types and base types (e.g.
     # StringPiece).
     public_deps += [ "//build/rust:cxx_cppdeps" ]

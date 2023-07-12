@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CheckCrashRenderers) {
 #endif
 }
 
-#if BUILDFLAG(BUILD_RUST_CRASH)
+#if BUILDFLAG(ENABLE_RUST_CRASH)
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CrashRenderersInRust) {
   base::HistogramTester histogram_tester;
 
@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CrashRenderersInRust) {
   histogram_tester.ExpectBucketCount(
       "Stability.Counts2", metrics::StabilityEventType::kRendererCrash, 1);
 }
-#endif  // BUILDFLAG(BUILD_RUST_CRASH)
+#endif  // BUILDFLAG(ENABLE_RUST_CRASH)
 
 // OOM code only works on Windows.
 #if BUILDFLAG(IS_WIN) && !defined(ADDRESS_SANITIZER)

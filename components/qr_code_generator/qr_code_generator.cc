@@ -16,7 +16,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "components/qr_code_generator/features.h"
 
-#if BUILDFLAG(BUILD_RUST_QR)
+#if BUILDFLAG(ENABLE_RUST_QR)
 #include "base/containers/span_rust.h"
 #include "components/qr_code_generator/qr_code_generator_ffi_glue.rs.h"
 #endif
@@ -573,7 +573,7 @@ size_t SegmentSpanLength(base::span<const QRCodeGenerator::Segment> segments) {
   return sum;
 }
 
-#if BUILDFLAG(BUILD_RUST_QR)
+#if BUILDFLAG(ENABLE_RUST_QR)
 absl::optional<QRCodeGenerator::GeneratedCode> GenerateQrCodeUsingRust(
     base::span<const uint8_t> in,
     absl::optional<int> min_version) {
@@ -618,10 +618,10 @@ absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
   }
 
   if (IsRustyQrCodeGeneratorFeatureEnabled()) {
-#if BUILDFLAG(BUILD_RUST_QR)
+#if BUILDFLAG(ENABLE_RUST_QR)
     return GenerateQrCodeUsingRust(in, min_version);
 #else
-    CHECK(false);  // The `if` condition guarantees `BUILD_RUST_QR`.
+    CHECK(false);  // The `if` condition guarantees `ENABLE_RUST_QR`.
 #endif
   }
 

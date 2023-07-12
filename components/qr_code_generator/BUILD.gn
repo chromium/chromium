@@ -13,7 +13,7 @@ declare_args() {
 
 buildflag_header("rust_buildflags") {
   header = "rust_buildflags.h"
-  flags = [ "BUILD_RUST_QR=$build_rust_qr" ]
+  flags = [ "ENABLE_RUST_QR=$enable_rust_qr" ]
 }
 
 # Separate target to:
@@ -50,7 +50,7 @@ source_set("qr_code_generator") {
     ":rust_buildflags",
     "//base",
   ]
-  if (build_rust_qr) {
+  if (enable_rust_qr) {
     deps += [
       ":qr_code_generator_ffi_glue",
       "//build/rust:cxx_cppdeps",
@@ -59,7 +59,7 @@ source_set("qr_code_generator") {
   public_deps = [ "//base" ]
 }
 
-if (build_rust_qr) {
+if (enable_rust_qr) {
   rust_static_library("qr_code_generator_ffi_glue") {
     allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
     crate_root = "qr_code_generator_ffi_glue.rs"

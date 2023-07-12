@@ -85,42 +85,41 @@ declare_args() {
   # TODO(crbug.com/1463749): Enable on ChromeOS.
   # TODO(crbug.com/1386212): Enable on Mac.
   enable_rust_base_conversions =
-      !(is_chromeos || is_ios || is_mac) || enable_all_rust_features
+      enable_rust &&
+      (!(is_chromeos || is_ios || is_mac) || enable_all_rust_features)
 
   # The base::JSONReader implementation. Requires base conversions.
-  enable_rust_json = enable_all_rust_features
+  enable_rust_json = enable_rust && enable_all_rust_features
 
   # Support for chrome://crash-rust to check crash dump collection works.
   #
-  # Note that `enable_rust_crash` is true on all platforms except Mac and ChromeOS,
-  # but `chrome://crash-rust` is only actually building and present on platforms
-  # that include Blink (e.g. it is *not* present on iOS).
+  # Note that `enable_rust_crash` is true on all platforms except Mac and
+  # ChromeOS, but `chrome://crash-rust` is only actually building and present
+  # on platforms that include Blink (e.g. it is *not* present on iOS).
   #
   # TODO(crbug.com/1463749): Enable on ChromeOS.
-  enable_rust_crash = !is_chromeos || enable_all_rust_features
+  enable_rust_crash = enable_rust && (!is_chromeos || enable_all_rust_features)
 
   # Support for QR code generation - see https://crbug.com/1431991.
   #
   # TODO(crbug.com/1463749): Enable on ChromeOS.
   # TODO(crbug.com/1386212): Enable on Mac (per go/rusty-qr-code-generation
   # this feature is not used on iOS).
-  enable_rust_qr =
-      !(is_chromeos || is_ios || is_mac) || enable_all_rust_features
+  enable_rust_qr = enable_rust && (!(is_chromeos || is_ios || is_mac) ||
+                                   enable_all_rust_features)
 
   # Support for Rust mojo bindings.
-  enable_rust_mojo = enable_all_rust_features
-
-  # Support for the 'gnrt' Rust tool.
-  enable_rust_gnrt = host_toolchain == current_toolchain
+  enable_rust_mojo = enable_rust && enable_all_rust_features
 
   # Rust gtest interop
   # TODO(https://bugs.chromium.org/p/gn/issues/detail?id=340): Framework search
   # paths produce invalid Ninja files with GN, and they show up in the iOS
   # build here.
-  enable_rust_gtest_interop = !is_ios || enable_all_rust_features
+  enable_rust_gtest_interop =
+      enable_rust && (!is_ios || enable_all_rust_features)
 
   # Enable Boringssl Rust bindings generation
-  enable_rust_boringssl = enable_all_rust_features
+  enable_rust_boringssl = enable_rust && enable_all_rust_features
 }
 
 # Use the Rust toolchain built in-tree. When false, we use the prebuilt Rust
@@ -162,14 +161,6 @@ if (enable_rust) {
 # them as a dylib and put them into an APK. We should reuse all the same logic
 # for gtests from the `//testing/test:test` template.
 can_build_rust_unit_tests = toolchain_has_rust && !is_android
-
-# Whether to build chrome://crash/rust support.
-build_rust_crash = toolchain_has_rust && enable_rust_crash
-
-# Whether to build http://go/rusty-qr-code-generator (which depends on
-# `enable_rust_base_conversions` for `//base/containers/span_rust.h`).
-build_rust_qr =
-    toolchain_has_rust && enable_rust_qr && enable_rust_base_conversions
 
 # We want to store rust_sysroot as a source-relative variable for ninja
 # portability. In practice if an external toolchain was specified, it might

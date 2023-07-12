@@ -13,8 +13,7 @@
 BASE_DECLARE_FEATURE(kRustyQrCodeGeneratorFeature);
 
 // Returns true if Rust should be used for QR code generation:
-// 1) the GN-level `build_rust_qr` is true (i.e. the target platform has Rust
-//    toolchain and `enable_rust_qr` is true)
+// 1) the GN-level `enable_rust_qr` is true.
 // *and*
 // 2) the `"RustyQrCodeGenerator"` base::Feature has been enabled.
 //
@@ -28,7 +27,7 @@ BASE_DECLARE_FEATURE(kRustyQrCodeGeneratorFeature);
 // See https://crbug.com/1431991 for more details about the feature and the
 // Rust QR Code Generator project.
 inline bool IsRustyQrCodeGeneratorFeatureEnabled() {
-#if BUILDFLAG(BUILD_RUST_QR)
+#if BUILDFLAG(ENABLE_RUST_QR)
   return base::FeatureList::IsEnabled(kRustyQrCodeGeneratorFeature);
 #else
   return false;

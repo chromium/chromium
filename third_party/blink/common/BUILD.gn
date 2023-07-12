@@ -337,7 +337,7 @@ source_set("common") {
     "//ui/latency/mojom:shared_mojom_traits",
   ]
 
-  if (build_rust_crash) {
+  if (enable_rust_crash) {
     deps += [ "//third_party/blink/common/rust_crash" ]
   }
 
