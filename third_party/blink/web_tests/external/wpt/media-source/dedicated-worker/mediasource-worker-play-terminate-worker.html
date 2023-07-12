@@ -28,7 +28,10 @@ function startWorkerAndTerminateWorker(test, when_to_start_timeouts, timeouts_to
 
   const video = document.createElement("video");
   document.body.appendChild(video);
-  video.onerror = test.unreached_func("video element error");
+  video.onerror = _ => {
+    test.unreached_func(
+        `video element error: \"${video.error.message}\": ${video.error.code}`);
+  }
 
   if (when_to_start_timeouts == "after first ended event") {
     video.addEventListener("ended", test.step_func(() => {
