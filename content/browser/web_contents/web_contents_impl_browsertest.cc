@@ -55,7 +55,6 @@
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/javascript_dialog_manager.h"
-#include "content/public/browser/load_notification_details.h"
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -174,32 +173,6 @@ WebContentsImplBrowserTest::WebContentsImplBrowserTest() {
       features::kSurfaceSyncFullscreenKillswitch);
 }
 
-// Keeps track of data from LoadNotificationDetails so we can later verify that
-// they are correct, after the LoadNotificationDetails object is deleted.
-class LoadStopNotificationObserver : public WindowedNotificationObserver {
- public:
-  explicit LoadStopNotificationObserver(NavigationController* controller)
-      : WindowedNotificationObserver(NOTIFICATION_LOAD_STOP,
-                                     Source<NavigationController>(controller)),
-        session_index_(-1),
-        controller_(nullptr) {}
-  void Observe(int type,
-               const NotificationSource& source,
-               const NotificationDetails& details) override {
-    if (type == NOTIFICATION_LOAD_STOP) {
-      const Details<LoadNotificationDetails> load_details(details);
-      url_ = load_details->url;
-      session_index_ = load_details->session_index;
-      controller_ = load_details->controller;
-    }
-    WindowedNotificationObserver::Observe(type, source, details);
-  }
-
-  GURL url_;
-  int session_index_;
-  raw_ptr<NavigationController> controller_;
-};
-
 // Starts a new navigation as soon as the current one commits, but does not
 // wait for it to complete.  This allows us to observe DidStopLoading while
 // a pending entry is present.
@@ -295,22 +268,6 @@ class LoadingStateChangedDelegate : public WebContentsDelegate {
   int loadingStateShowLoadingUICount_ = 0;
 };
 
-// Test that DidStopLoading includes the correct URL in the details.
-IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, DidStopLoadingDetails) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  LoadStopNotificationObserver load_observer(
-      &shell()->web_contents()->GetController());
-  EXPECT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
-  load_observer.Wait();
-
-  EXPECT_EQ("/title1.html", load_observer.url_.path());
-  EXPECT_EQ(0, load_observer.session_index_);
-  EXPECT_EQ(&shell()->web_contents()->GetController(),
-            load_observer.controller_);
-}
-
 // Regression test for https://crbug.com/1405036
 // Dumping the accessibility tree should not crash, even if it has not received
 // an ID through a renderer tree yet.
@@ -318,8 +275,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        DumpAccessibilityTreeWithoutTreeID) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  LoadStopNotificationObserver load_observer(
-      &shell()->web_contents()->GetController());
+  TestNavigationObserver load_observer(shell()->web_contents());
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   load_observer.Wait();
@@ -329,32 +285,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(
       shell()->web_contents()->DumpAccessibilityTree(false, property_filters),
       expected);
-}
-
-// Test that DidStopLoading includes the correct URL in the details when a
-// pending entry is present.
-IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       DidStopLoadingDetailsWithPending) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  // TODO(clamy): Add a cross-process navigation case as well once
-  // crbug.com/581024 is fixed.
-  GURL url1 = embedded_test_server()->GetURL("/title1.html");
-  GURL url2 = embedded_test_server()->GetURL("/title2.html");
-
-  // Listen for the first load to stop.
-  LoadStopNotificationObserver load_observer(
-      &shell()->web_contents()->GetController());
-  // Start a new pending navigation as soon as the first load commits.
-  // We will hear a DidStopLoading from the first load as the new load
-  // is started.
-  NavigateOnCommitObserver commit_observer(shell(), url2);
-  EXPECT_TRUE(NavigateToURL(shell(), url1));
-  load_observer.Wait();
-
-  EXPECT_EQ(url1, load_observer.url_);
-  EXPECT_EQ(0, load_observer.session_index_);
-  EXPECT_EQ(&shell()->web_contents()->GetController(),
-            load_observer.controller_);
 }
 
 namespace {
@@ -5554,8 +5484,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        ReinitializeMainFrameForCrashedTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  LoadStopNotificationObserver load_observer(
-      &shell()->web_contents()->GetController());
+  TestNavigationObserver load_observer(shell()->web_contents());
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   load_observer.Wait();

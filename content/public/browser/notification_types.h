@@ -44,8 +44,7 @@ enum NotificationType {
 
   // A content load has stopped. The source will be a
   // Source<NavigationController> corresponding to the tab in which the load
-  // is occurring.  Details in the form of a LoadNotificationDetails object
-  // are optional.
+  // is occurring.  No details are expected for this notification.
   // DEPRECATED: Use WebContentsObserver::DidStopLoading()
   // TODO(https://crbug.com/1174764): Remove.
   NOTIFICATION_LOAD_STOP,

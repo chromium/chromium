@@ -123,7 +123,6 @@
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
-#include "content/public/browser/load_notification_details.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_service.h"
@@ -7758,34 +7757,24 @@ void WebContentsImpl::DidStopLoading() {
   if (IsBeingDestroyed()) {
     return;
   }
-  std::unique_ptr<LoadNotificationDetails> details;
 
   // Use the last committed entry rather than the active one, in case a
   // pending entry has been created.
-  NavigationEntry* entry = GetController().GetLastCommittedEntry();
-
   // An entry may not exist for a stop when loading an initial blank page or
   // if an iframe injected by script into a blank page finishes loading.
-  if (entry) {
-    details = std::make_unique<LoadNotificationDetails>(
-        entry->GetVirtualURL(), &GetController(),
-        GetController().GetCurrentEntryIndex());
-  }
+  NavigationEntry* entry = GetController().GetLastCommittedEntry();
+  std::string url =
+      (entry ? entry->GetVirtualURL().possibly_invalid_spec() : "NULL");
 
-  std::string url = (details ? details->url.possibly_invalid_spec() : "NULL");
   TRACE_EVENT_NESTABLE_ASYNC_END1("browser,navigation",
                                   "WebContentsImpl Loading", this, "URL", url);
   SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStopLoading");
   observers_.NotifyObservers(&WebContentsObserver::DidStopLoading);
 
   // TODO(avi): Remove. http://crbug.com/170921
-  NotificationDetails det = NotificationService::NoDetails();
-  if (details) {
-    det = Details<LoadNotificationDetails>(details.get());
-  }
   NotificationService::current()->Notify(
       NOTIFICATION_LOAD_STOP, Source<NavigationController>(&GetController()),
-      det);
+      NotificationService::NoDetails());
 }
 
 void WebContentsImpl::DidChangeLoadProgressForPrimaryMainFrame() {

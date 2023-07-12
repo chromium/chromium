@@ -20,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -68,10 +69,10 @@
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/load_notification_details.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -1042,17 +1043,22 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
                                GetDeviceId().c_str()),
             dice_request_header_);
 
-  content::WindowedNotificationObserver ntp_url_observer(
-      content::NOTIFICATION_LOAD_STOP,
-      base::BindRepeating([](const content::NotificationSource&,
-                             const content::NotificationDetails& details) {
-        auto url =
-            content::Details<content::LoadNotificationDetails>(details)->url;
-        // Some test flags (e.g. ForceWebRequestProxyForTest) can change whether
-        // the reported NTP URL is chrome://newtab or chrome://new-tab-page.
-        return url == GURL(chrome::kChromeUINewTabPageURL) ||
-               url == GURL(chrome::kChromeUINewTabURL);
-      }));
+  content::WebContents* tab_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  base::RunLoop ntp_run_loop;
+  content::DidFinishNavigationObserver ntp_url_observer(
+      tab_contents,
+      base::BindLambdaForTesting(
+          [&ntp_run_loop](content::NavigationHandle* navigation_handle) {
+            const GURL& url = navigation_handle->GetURL();
+            // Some test flags (e.g. ForceWebRequestProxyForTest) can change
+            // whether the reported NTP URL is chrome://newtab or
+            // chrome://new-tab-page.
+            if (url == GURL(chrome::kChromeUINewTabPageURL) ||
+                url == GURL(chrome::kChromeUINewTabURL)) {
+              ntp_run_loop.Quit();
+            }
+          }));
 
   WaitForSigninSucceeded();
   EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
@@ -1067,7 +1073,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
   EXPECT_EQ(1, reconcilor_started_count_);
 
   // Check that the tab was navigated to the NTP.
-  ntp_url_observer.Wait();
+  ntp_run_loop.Run();
 
   // Dismiss the Sync confirmation UI.
   EXPECT_TRUE(login_ui_test_utils::ConfirmSyncConfirmationDialog(browser()));
