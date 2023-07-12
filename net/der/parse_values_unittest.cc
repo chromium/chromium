@@ -190,7 +190,7 @@ struct Uint64TestData {
   bool should_pass;
   const uint8_t input[9];
   size_t length;
-  uint64_t expected_value;
+  uint64_t expected_value = 0;
 };
 
 const Uint64TestData kUint64TestData[] = {
@@ -230,7 +230,7 @@ struct Uint8TestData {
   bool should_pass;
   const uint8_t input[9];
   size_t length;
-  uint8_t expected_value;
+  uint8_t expected_value = 0;
 };
 
 const Uint8TestData kUint8TestData[] = {
@@ -267,7 +267,7 @@ struct IsValidIntegerTestData {
   bool should_pass;
   const uint8_t input[2];
   size_t length;
-  bool negative;
+  bool negative = false;
 };
 
 const IsValidIntegerTestData kIsValidIntegerTestData[] = {

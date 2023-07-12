@@ -46,7 +46,7 @@ struct PemBlockMapping {
 
   // True to indicate that the block is not required to be present. If the
   // block is optional and is not present, then |value| will not be modified.
-  bool optional;
+  bool optional = false;
 };
 
 // ReadTestDataFromPemFile() is a helper function that reads a PEM test file
