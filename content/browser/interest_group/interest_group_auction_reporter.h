@@ -339,6 +339,15 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       base::TimeDelta reporting_latency,
       const std::vector<std::string>& errors);
 
+  // Invoked with the results from ReportResult. Split out as a separate
+  // function from OnSellerReportResultComplete since this is also called by
+  // `InitializeFromServerResponse()`.
+  bool AddReportResultResult(
+      const absl::optional<GURL>& seller_report_url,
+      const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
+      blink::FencedFrame::ReportingDestination destination,
+      std::vector<std::string>& errors_out);
+
   // Starts request for a bidder worklet. Invokes OnBidderWorkletReceived() on
   // success, OnBidderWorkletFatalError() on error.
   void RequestBidderWorklet(const std::string& signals_for_winner);
@@ -364,6 +373,14 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       PrivateAggregationRequests pa_requests,
       base::TimeDelta reporting_latency,
       const std::vector<std::string>& errors);
+
+  // Invoked with the results from ReportWin. Split out as a separate function
+  // from OnBidderReportWinComplete since this is also called by
+  // `InitializeFromServerResponse()`.
+  bool AddReportWinResult(
+      const absl::optional<GURL>& bidder_report_url,
+      const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
+      std::vector<std::string>& errors_out);
 
   // Sets `reporting_complete_` to true an invokes MaybeCompleteCallback().
   void OnReportingComplete(
