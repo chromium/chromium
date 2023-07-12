@@ -42,6 +42,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -109,6 +110,8 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "pdf/buildflags.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -131,6 +134,8 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/kids_chrome_management_client.h"
+#include "components/supervised_user/core/browser/kids_chrome_management_test_utils.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
@@ -576,8 +581,43 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+class ContextMenuForSupervisedUsersBrowserTest : public ContextMenuBrowserTest {
+ public:
+  ContextMenuForSupervisedUsersBrowserTest() = default;
+  void SetUpOnMainThread() override {
+    ContextMenuBrowserTest::SetUpOnMainThread();
+    // Set up child user profile.
+    Profile* profile = browser()->profile();
+    profile->GetPrefs()->SetString(prefs::kSupervisedUserId,
+                                   supervised_user::kChildAccountSUID);
+  }
+
+  supervised_user::SupervisedUserService* GetSupervisedUserService() {
+    return SupervisedUserServiceFactory::GetForProfile(browser()->profile());
+  }
+
+  void InitAsyncURLCheckerWithClassification(
+      safe_search_api::ClientClassification classification) {
+    test_client_ =
+        std::make_unique<kids_management::KidsChromeManagementClientForTesting>(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_),
+            IdentityManagerFactory::GetForProfile(browser()->profile()));
+    test_client_->SetResponseWithError(
+        kids_management::BuildResponseProto(classification),
+        KidsChromeManagementClient::ErrorCode::kSuccess);
+    GetSupervisedUserService()->GetURLFilter()->InitAsyncURLChecker(
+        test_client_.get());
+  }
+
+ private:
+  std::unique_ptr<kids_management::KidsChromeManagementClientForTesting>
+      test_client_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+};
+
 class ContextMenuWithoutFilteringForSupervisedUsersBrowserTest
-    : public ContextMenuBrowserTest {
+    : public ContextMenuForSupervisedUsersBrowserTest {
  public:
   ContextMenuWithoutFilteringForSupervisedUsersBrowserTest() {
     scoped_feature_list_.InitAndDisableFeature(
@@ -588,22 +628,12 @@ class ContextMenuWithoutFilteringForSupervisedUsersBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(
-    ContextMenuWithoutFilteringForSupervisedUsersBrowserTest,
-    SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChildWithoutFiltering) {
-  // Set up child user profile.
-  Profile* profile = browser()->profile();
-  browser()->profile()->GetPrefs()->SetString(
-      prefs::kSupervisedUserId, supervised_user::kChildAccountSUID);
-
+IN_PROC_BROWSER_TEST_F(ContextMenuWithoutFilteringForSupervisedUsersBrowserTest,
+                       SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChild) {
   // Block access to http://www.google.com/ in the URL filter.
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile);
-  supervised_user::SupervisedUserURLFilter* url_filter =
-      supervised_user_service->GetURLFilter();
   std::map<std::string, bool> hosts;
   hosts["www.google.com"] = false;
-  url_filter->SetManualHosts(std::move(hosts));
+  GetSupervisedUserService()->GetURLFilter()->SetManualHosts(std::move(hosts));
 
   base::RunLoop().RunUntilIdle();
 
@@ -614,15 +644,106 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVELINKAS));
 
   // The entry is only disabled for platforms on which URL filtering is enabled.
-  if (supervised_user_service->IsURLFilteringEnabled()) {
+  if (GetSupervisedUserService()->IsURLFilteringEnabled()) {
     EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
   } else {
     EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
   }
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuWithoutFilteringForSupervisedUsersBrowserTest,
+    SaveLinkAsEntryIsDisabledForUrlsBlockedByAsyncCheckerForChild) {
+  ContextMenuWaiter menu_observer;
+
+  InitAsyncURLCheckerWithClassification(
+      safe_search_api::ClientClassification::kRestricted);
+
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/download-anchor-same-origin.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Open a context menu.
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = blink::WebMouseEvent::Button::kRight;
+  mouse_event.SetPositionInWidget(15, 15);
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
+  mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
+
+  // Wait for context menu to be visible.
+  menu_observer.WaitForMenuOpenAndClose();
+
+  std::u16string suggested_filename = menu_observer.params().suggested_filename;
+  // The save link as action is only blocked for platforms on which URL
+  // filtering is enabled.
+  if (GetSupervisedUserService()->IsURLFilteringEnabled()) {
+    const std::string kSuggestedFilename("");
+    ASSERT_EQ(kSuggestedFilename,
+              base::UTF16ToUTF8(suggested_filename).c_str());
+  } else {
+    const std::string kSuggestedFilename("test_filename.png");
+    ASSERT_EQ(kSuggestedFilename,
+              base::UTF16ToUTF8(suggested_filename).c_str());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuWithoutFilteringForSupervisedUsersBrowserTest,
+    SaveLinkAsEntryIsEnabledForUrlsAllowedByAsyncCheckerForChild) {
+  ContextMenuWaiter menu_observer;
+
+  InitAsyncURLCheckerWithClassification(
+      safe_search_api::ClientClassification::kAllowed);
+
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/download-anchor-same-origin.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Open a context menu.
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = blink::WebMouseEvent::Button::kRight;
+  mouse_event.SetPositionInWidget(15, 15);
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
+  mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
+
+  // Wait for context menu to be visible.
+  menu_observer.WaitForMenuOpenAndClose();
+
+  const std::string kSuggestedFilename("test_filename.png");
+  std::u16string suggested_filename = menu_observer.params().suggested_filename;
+  ASSERT_EQ(kSuggestedFilename, base::UTF16ToUTF8(suggested_filename).c_str());
+}
+
 class ContextMenuWithFilteringForSupervisedUsersBrowserTest
-    : public ContextMenuBrowserTest {
+    : public ContextMenuForSupervisedUsersBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS};
@@ -654,6 +775,89 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVELINKAS));
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
 }
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuWithFilteringForSupervisedUsersBrowserTest,
+    SaveLinkAsEntryIsDisabledForUrlsBlockedByAsyncCheckerForChild) {
+  ContextMenuWaiter menu_observer;
+
+  InitAsyncURLCheckerWithClassification(
+      safe_search_api::ClientClassification::kRestricted);
+
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/download-anchor-same-origin.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Open a context menu.
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = blink::WebMouseEvent::Button::kRight;
+  mouse_event.SetPositionInWidget(15, 15);
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
+  mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
+
+  // Wait for context menu to be visible.
+  menu_observer.WaitForMenuOpenAndClose();
+
+  const std::string kSuggestedFilename("");
+  std::u16string suggested_filename = menu_observer.params().suggested_filename;
+  ASSERT_EQ(kSuggestedFilename, base::UTF16ToUTF8(suggested_filename).c_str());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuWithFilteringForSupervisedUsersBrowserTest,
+    SaveLinkAsEntryIsEnabledForUrlsAllowedByAsyncCheckerForChild) {
+  ContextMenuWaiter menu_observer;
+
+  InitAsyncURLCheckerWithClassification(
+      safe_search_api::ClientClassification::kAllowed);
+
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/download-anchor-same-origin.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Open a context menu.
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = blink::WebMouseEvent::Button::kRight;
+  mouse_event.SetPositionInWidget(15, 15);
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
+  mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
+  tab->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
+
+  // Wait for context menu to be visible.
+  menu_observer.WaitForMenuOpenAndClose();
+
+  const std::string kSuggestedFilename("test_filename.png");
+  std::u16string suggested_filename = menu_observer.params().suggested_filename;
+  ASSERT_EQ(kSuggestedFilename, base::UTF16ToUTF8(suggested_filename).c_str());
+}
+
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -2882,7 +2882,11 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_CONTENT_CONTEXT_SAVELINKAS:
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+      CheckSupervisedUserURLFilterAndSaveLinkAs();
+#else
       ExecSaveLinkAs();
+#endif
       break;
 
     case IDC_CONTENT_CONTEXT_SAVEAVAS:
@@ -3390,6 +3394,11 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
       supervised_user_service->IsURLFilteringEnabled()) {
     supervised_user::SupervisedUserURLFilter* url_filter =
         supervised_user_service->GetURLFilter();
+    // Use the URL filter's synchronous call to check if a site has been
+    // manually blocked for the user. This does not filter websites that are
+    // blocked by SafeSites API for having mature content. The mature content
+    // filter requires an async call. This call is made if the user selects
+    // "Save link as" and blocks the download.
     if (url_filter->GetFilteringBehaviorForURL(params_.link_url) !=
         supervised_user::SupervisedUserURLFilter::FilteringBehavior::ALLOW) {
       return false;
@@ -3754,6 +3763,38 @@ void RenderViewContextMenu::ExecInspectBackgroundPage() {
 
   extensions::devtools_util::InspectBackgroundPage(platform_app, GetProfile());
 }
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+void RenderViewContextMenu::CheckSupervisedUserURLFilterAndSaveLinkAs() {
+  Profile* const profile = Profile::FromBrowserContext(browser_context_);
+  supervised_user::SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(profile);
+
+  if (supervised_user_service &&
+      supervised_user_service->IsURLFilteringEnabled()) {
+    supervised_user::SupervisedUserURLFilter* url_filter =
+        supervised_user_service->GetURLFilter();
+    url_filter->GetFilteringBehaviorForURLWithAsyncChecks(
+        params_.link_url,
+        base::BindOnce(&RenderViewContextMenu::OnSupervisedUserURLFilterChecked,
+                       weak_pointer_factory_.GetWeakPtr()),
+        /* skip_manual_parent_filter= */ false);
+    return;
+  }
+  ExecSaveLinkAs();
+}
+
+void RenderViewContextMenu::OnSupervisedUserURLFilterChecked(
+    supervised_user::SupervisedUserURLFilter::FilteringBehavior
+        filtering_behavior,
+    supervised_user::FilteringBehaviorReason reason,
+    bool uncertain) {
+  if (filtering_behavior ==
+      supervised_user::SupervisedUserURLFilter::FilteringBehavior::ALLOW) {
+    ExecSaveLinkAs();
+  }
+}
+#endif
 
 void RenderViewContextMenu::ExecSaveLinkAs() {
   RenderFrameHost* render_frame_host = GetRenderFrameHost();
