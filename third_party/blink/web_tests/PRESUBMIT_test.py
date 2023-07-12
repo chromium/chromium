@@ -1,11 +1,15 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import fnmatch
+import functools
 import unittest
 import sys
 import os
+import posixpath
+from unittest import mock
 import PRESUBMIT
 
 sys.path.append(
@@ -14,6 +18,55 @@ from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi, MockAffectedFile
 
 
 class PresubmitTest(unittest.TestCase):
+    def testTestsCorrespondingToAffectedBaselines(self):
+        test_files = [
+            '/chromium/src/third_party/blink/web_tests/'
+            'path/to/test-without-behavior-change.html',
+            '/chromium/src/third_party/blink/web_tests/'
+            'path/to/test-with-behavior-change.html',
+            '/chromium/src/third_party/blink/web_tests/'
+            'path/to/test-with-variants.html',
+            '/chromium/src/third_party/blink/web_tests/'
+            'path/to/test-multiglobals.any.js',
+        ]
+        mock_input_api = MockInputApi()
+        mock_input_api.os_path = posixpath
+        mock_input_api.presubmit_local_path = '/chromium/src/third_party/blink/web_tests'
+        mock_input_api.glob = mock.Mock(
+            side_effect=functools.partial(fnmatch.filter, test_files))
+        mock_input_api.files = [
+            MockAffectedFile(
+                '/chromium/src/third_party/blink/web_tests/'
+                'path/to/test-without-behavior-change.html', []),
+            MockAffectedFile(
+                '/chromium/src/third_party/blink/web_tests/'
+                'path/to/test-with-behavior-change.html', []),
+            MockAffectedFile(
+                '/chromium/src/third_party/blink/web_tests/'
+                'flag-specific/fake-flag/'
+                'path/to/test-with-behavior-change-expected.txt', []),
+            MockAffectedFile(
+                '/chromium/src/third_party/blink/web_tests/'
+                'platform/fake-platform/virtual/fake-suite/'
+                'path/to/test-with-variants_query-param-expected.txt', []),
+            MockAffectedFile(
+                '/chromium/src/third_party/blink/web_tests/'
+                'path/to/test-multiglobals.any-expected.txt', []),
+            MockAffectedFile(
+                '/chromium/src/third_party/blink/web_tests/'
+                'path/to/test-multiglobals.any.worker-expected.txt', []),
+        ]
+        tests = PRESUBMIT._TestsCorrespondingToAffectedBaselines(
+            mock_input_api)
+        self.assertEqual(
+            set(tests),
+            {
+                'path/to/test-multiglobals.any.js',
+                'path/to/test-with-behavior-change.html',
+                # `path/to/test-with-variants.html` is not checked; see inline
+                # comments.
+            })
+
     def testCheckForDoctypeHTML(self):
         """This verifies that we correctly identify missing DOCTYPE html tags.
         """

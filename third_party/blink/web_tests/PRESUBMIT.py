@@ -15,6 +15,7 @@ import sys
 import tempfile
 import re
 from html.parser import HTMLParser
+from typing import List
 
 WPT_IMPORTER_EMAIL = "wpt-autoroller@chops-service-accounts.iam.gserviceaccount.com"
 
@@ -109,6 +110,82 @@ def _CheckTestExpectations(input_api, output_api):
         PresubmitCheckTestExpectations)
     results.extend(PresubmitCheckTestExpectations(input_api, output_api))
     return results
+
+
+def _CheckForRedundantBaselines(input_api, output_api, max_tests: int = 1000):
+    tests = _TestsCorrespondingToAffectedBaselines(input_api, max_tests)
+    if not tests:
+        return []
+    elif len(tests) > max_tests:
+        return [
+            output_api.PresubmitNotifyResult(
+                'Too many tests to check for redundant baselines; skipping.',
+                items=tests),
+        ]
+    path_to_blink_tool = input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                                input_api.os_path.pardir,
+                                                'tools', 'blink_tool.py')
+    with input_api.CreateTemporaryFile(mode='w+') as test_name_file:
+        for test in tests:
+            test_name_file.write(f'{test}\n')
+        test_name_file.flush()
+        command_args = [
+            input_api.python3_executable,
+            path_to_blink_tool,
+            'optimize-baselines',
+            '--check',
+            f'--test-name-file={test_name_file.name}',
+        ]
+        command = input_api.Command(
+            name='Checking for redundant affected baselines ...',
+            cmd=command_args,
+            kwargs={},
+            message=output_api.PresubmitPromptWarning,
+            python3=True)
+        return input_api.RunTests([command])
+
+
+def _TestsCorrespondingToAffectedBaselines(input_api,
+                                           max_tests: int = 1000) -> List[str]:
+    sep = input_api.re.escape(input_api.os_path.sep)
+    baseline_pattern = input_api.re.compile(
+        r'((platform|flag-specific)%s[^%s]+%s)?(virtual%s[^%s]+%s)?'
+        r'(?P<test_prefix>.*)-expected\.(txt|png|wav)' % ((sep, ) * 6))
+    test_paths = set()
+    for affected_file in input_api.AffectedFiles():
+        if len(test_paths) > max_tests:
+            # Exit early; no need to glob for more tests.
+            break
+        baseline_path_from_web_tests = input_api.os_path.relpath(
+            affected_file.AbsoluteLocalPath(), input_api.PresubmitLocalPath())
+        baseline_match = baseline_pattern.fullmatch(
+            baseline_path_from_web_tests)
+        if not baseline_match:
+            continue
+        # Baselines for WPT-style variants have sanitized filenames with '?' and
+        # '&' in the query parameter section converted to '_', like:
+        #   a/b.html?c&d -> a/b_c_d-expected.txt
+        #
+        # Regrettably, this is a lossy coercion that cannot be distinguished
+        # from tests with '_' in the original test ID, like:
+        #   a/b_c_d.html -> a/b_c_d-expected.txt
+        #
+        # Here, we err on the side of not attempting to check such tests, which
+        # could be unrelated.
+        test_prefix = baseline_match['test_prefix']
+        # Getting the test name from the baseline path is not as easy as the
+        # other direction. Try all extensions as a heuristic instead.
+        for extension in [
+                'html', 'xml', 'xhtml', 'xht', 'pl', 'htm', 'php', 'svg',
+                'mht', 'pdf', 'js'
+        ]:
+            abs_prefix = input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                                test_prefix)
+            test_paths.update(input_api.glob(f'{abs_prefix}*.{extension}'))
+    return [
+        input_api.os_path.relpath(test_path, input_api.PresubmitLocalPath())
+        for test_path in sorted(test_paths)
+    ]
 
 
 def _CheckForJSTest(input_api, output_api):
@@ -383,6 +460,7 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckTestharnessResults(input_api, output_api))
     results.extend(_CheckFilesUsingEventSender(input_api, output_api))
     results.extend(_CheckTestExpectations(input_api, output_api))
+    results.extend(_CheckForRedundantBaselines(input_api, output_api))
     results.extend(_CheckForJSTest(input_api, output_api))
     results.extend(_CheckForInvalidPreferenceError(input_api, output_api))
     results.extend(_CheckRunAfterLayoutAndPaintJS(input_api, output_api))
@@ -398,6 +476,7 @@ def CheckChangeOnCommit(input_api, output_api):
     results.extend(_CheckTestharnessResults(input_api, output_api))
     results.extend(_CheckFilesUsingEventSender(input_api, output_api))
     results.extend(_CheckTestExpectations(input_api, output_api))
+    results.extend(_CheckForRedundantBaselines(input_api, output_api))
     results.extend(_CheckForUnlistedTestFolder(input_api, output_api))
     results.extend(_CheckForExtraVirtualBaselines(input_api, output_api))
     results.extend(_CheckWebViewExpectations(input_api, output_api))
