@@ -466,6 +466,9 @@ class PasswordManagerTest : public testing::Test {
   }
 
   void TearDown() override {
+    // The PasswordManager may own objects that keep raw pointers for the
+    // password store - therefore reset it first.
+    manager_.reset();
     mock_match_helper_ = nullptr;
     if (account_store_) {
       account_store_->ShutdownOnUIThread();
@@ -1151,6 +1154,9 @@ TEST_F(PasswordManagerTest, FormSubmitWhenPasswordsCannotBeSaved) {
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed);
   task_environment_.RunUntilIdle();
+  // Objects owned by the manager may keep references to the store - therefore
+  // destroy the manager prior to store destruction.
+  manager_.reset();
   store->ShutdownOnUIThread();
 }
 

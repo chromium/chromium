@@ -321,10 +321,10 @@ class FormFetcherImplTestBase : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   PasswordFormDigest form_digest_;
-  std::unique_ptr<FormFetcherImpl> form_fetcher_;
-  MockConsumer consumer_;
   scoped_refptr<MockPasswordStoreInterface> profile_mock_store_;
   scoped_refptr<MockPasswordStoreInterface> account_mock_store_;
+  std::unique_ptr<FormFetcherImpl> form_fetcher_;
+  MockConsumer consumer_;
   testing::NiceMock<MockSmartBubbleStatsStore> mock_smart_bubble_stats_store_;
   FakePasswordManagerClient client_;
 };
