@@ -576,15 +576,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AppsInstalledAtStartup" units="App Count"
-    expires_after="M114">
+    expires_after="2024-07-11">
   <owner>jhorwich@google.com</owner>
+  <owner>arc-core@google.com</owner>
   <summary>
     Total number of ARC apps installed on a device measured at startup. Note:
     This includes launchable apps that are installed by default, such as Play
     Store and Settings, as well as any vendor specific apps.
 
     Warning: this histogram was expired after M92 and brought back 2021-09-17;
-    expired after M99 and brought back 2022-12-07; data may be missing.
+    expired after M99 and brought back 2022-12-07, then expired after M114 and
+    brought back 2023-07-11; data may be missing.
   </summary>
 </histogram>
 
