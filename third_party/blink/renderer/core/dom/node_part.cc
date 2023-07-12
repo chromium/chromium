@@ -20,9 +20,8 @@ NodePart* NodePart::Create(PartRootUnion* root_union,
       *PartRoot::GetPartRootFromUnion(root_union), *node, init);
 }
 
-// TODO(crbug.com/1453291): Handle the init parameter.
-NodePart::NodePart(PartRoot& root, Node& node, const NodePartInit* init)
-    : Part(root), node_(node) {
+NodePart::NodePart(PartRoot& root, Node& node, const Vector<String> metadata)
+    : Part(root, metadata), node_(node) {
   node.AddDOMPart(*this);
 }
 
@@ -65,7 +64,7 @@ Part* NodePart::ClonePart(NodeCloningData& data) const {
   }
   Node* new_node = data.ClonedNodeFor(*node_);
   CHECK(new_node);
-  return MakeGarbageCollected<NodePart>(*new_part_root, *new_node);
+  return MakeGarbageCollected<NodePart>(*new_part_root, *new_node, metadata());
 }
 
 Document& NodePart::GetDocument() const {

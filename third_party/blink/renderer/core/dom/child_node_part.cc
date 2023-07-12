@@ -21,12 +21,11 @@ ChildNodePart* ChildNodePart::Create(PartRootUnion* root_union,
                                              init);
 }
 
-// TODO(crbug.com/1453291): Handle the init parameter.
 ChildNodePart::ChildNodePart(PartRoot& root,
                              Node& previous_sibling,
                              Node& next_sibling,
-                             const NodePartInit* init)
-    : Part(root),
+                             const Vector<String> metadata)
+    : Part(root, metadata),
       previous_sibling_(previous_sibling),
       next_sibling_(next_sibling) {
   if (previous_sibling.parentNode()) {
@@ -147,7 +146,7 @@ Part* ChildNodePart::ClonePart(NodeCloningData& data) const {
   Node* new_next = data.ClonedNodeFor(*next_sibling_);
   CHECK(new_previous && new_next);
   ChildNodePart* clone = MakeGarbageCollected<ChildNodePart>(
-      *new_part_root, *new_previous, *new_next);
+      *new_part_root, *new_previous, *new_next, metadata());
   data.ConnectPartRootToClone(*this, *clone);
   return clone;
 }

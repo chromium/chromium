@@ -26,7 +26,12 @@ class CORE_EXPORT NodePart : public Part {
                           Node* node,
                           const NodePartInit* init,
                           ExceptionState& exception_state);
-  NodePart(PartRoot& root, Node& node, const NodePartInit* init = nullptr);
+  NodePart(PartRoot& root, Node& node, const NodePartInit* init)
+      : NodePart(root,
+                 node,
+                 init && init->hasMetadata() ? init->metadata()
+                                             : Vector<String>()) {}
+  NodePart(PartRoot& root, Node& node, const Vector<String> metadata);
   NodePart(const NodePart&) = delete;
   ~NodePart() override = default;
 

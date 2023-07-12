@@ -42,22 +42,24 @@ function addCleanup(t, part) {
     assert_equals(parts.length,0,'getParts() should start out empty');
     assert_true(root.rootContainer instanceof (useTemplate ? DocumentFragment : Document));
 
-    const nodePart = addCleanup(t,new NodePart(root,target));
+    const nodePart = addCleanup(t,new NodePart(root,target,{metadata: ['foo']}));
     assert_true(nodePart instanceof NodePart);
     assert_equals(nodePart.node,target);
     assert_equals(nodePart.root,root);
+    assert_array_equals(nodePart.metadata,['foo']);
     assert_equals(root.getParts().length,1,'getParts() for the root should now have this nodePart');
     assert_equals(root.getParts()[0],nodePart);
     assert_equals(parts.length,0,'Return value of getParts() is not live');
 
     assert_throws_js(TypeError,() => new NodePart(nodePart,target.children[0]),'Constructing a Part with a NodePart as the PartRoot should throw');
 
-    const childNodePart = addCleanup(t,new ChildNodePart(root,target.children[0], target.children[2]));
+    const childNodePart = addCleanup(t,new ChildNodePart(root,target.children[0], target.children[2],{metadata:['bar','baz']}));
     assert_true(childNodePart instanceof ChildNodePart);
     assert_true(childNodePart instanceof Part);
     assert_equals(childNodePart.root,root);
     assert_equals(childNodePart.previousSibling,target.children[0]);
     assert_equals(childNodePart.nextSibling,target.children[2]);
+    assert_array_equals(childNodePart.metadata,['bar','baz']);
     assert_equals(childNodePart.getParts().length,0,'childNodePart.getParts() should start out empty');
     assert_equals(root.getParts().length,2);
     assert_equals(root.getParts()[1],childNodePart);
@@ -103,9 +105,9 @@ function addCleanup(t, part) {
     const root = doc.getPartRoot();
     const nodePart = addCleanup(t,new NodePart(root,target));
     const childNodePart = addCleanup(t,new ChildNodePart(root,target.children[0], target.children[2]));
-    const nodePart3 = addCleanup(t,new NodePart(childNodePart,target.children[1].firstChild));
-    const nodePart2 = addCleanup(t,new NodePart(childNodePart,target.children[1].firstChild));
-    const childNodePart2 = addCleanup(t,new ChildNodePart(childNodePart,target.children[1].firstElementChild,target.children[1].firstElementChild));
+    const nodePart3 = addCleanup(t,new NodePart(childNodePart,target.children[1].firstChild,{metadata: ['this is','part 3']}));
+    const nodePart2 = addCleanup(t,new NodePart(childNodePart,target.children[1].firstChild,{metadata: ['this','is part 2']}));
+    const childNodePart2 = addCleanup(t,new ChildNodePart(childNodePart,target.children[1].firstElementChild,target.children[1].firstElementChild,{metadata: ['childnodepart2']}));
     assert_array_equals(root.getParts(),[nodePart,childNodePart]);
     assert_array_equals(childNodePart.getParts(),[childNodePart2,nodePart3,nodePart2],'Parts on the same Node are returned in the order they were constructed');
     assert_array_equals(childNodePart2.getParts(),[]);
@@ -142,12 +144,11 @@ function addCleanup(t, part) {
     assert_not_equals(clonedChildContainer,target);
     assert_equals(clonedChildContainer.outerHTML,cloneRange(target,a,c).outerHTML);
     assert_equals(clonedChildNodePartRoot.getParts().length,3);
-    assert_true(clonedChildNodePartRoot.getParts()[0] instanceof ChildNodePart);
-    assert_equals(clonedChildNodePartRoot.getParts()[1].textContent,nodePart3.textContent);
-    assert_equals(clonedChildNodePartRoot.getParts()[2].textContent,nodePart3.textContent);
-    // TODO(crbug.com/1453291) Once metadata is added, use it to add metadata to nodePart2
-    // and nodePart3, and check that the cloned parts come back in the correct order,
-    // which is nodePart3, then nodePart2.
+    const clonedSubParts = clonedChildNodePartRoot.getParts();
+    assert_true(clonedSubParts[0] instanceof ChildNodePart);
+    assert_array_equals(clonedSubParts[0].metadata,childNodePart2.metadata,'metadata should be preserved, and...');
+    assert_array_equals(clonedSubParts[1].metadata,nodePart3.metadata,'parts should still be in construction order');
+    assert_array_equals(clonedSubParts[2].metadata,nodePart2.metadata);
   }, `Cloning (${description})`);
 
   ['Element','Text','Comment','CDATASection','ProcessingInstruction'].forEach(nodeType => {

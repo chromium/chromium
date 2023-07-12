@@ -36,12 +36,11 @@ class CORE_EXPORT Part : public ScriptWrappable {
   PartRootUnion* rootForBindings() const {
     return PartRoot::GetUnionFromPartRoot(root_);
   }
-  // TODO(1453291) Populate metadata_.
-  Vector<String>& metadata() { return metadata_; }
+  const Vector<String>& metadata() const { return metadata_; }
   virtual void disconnect();
 
  protected:
-  explicit Part(PartRoot& root);
+  Part(PartRoot& root, const Vector<String> metadata);
 
  private:
   Member<PartRoot> root_;

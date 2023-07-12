@@ -11,7 +11,8 @@
 
 namespace blink {
 
-Part::Part(PartRoot& root) : root_(root) {
+Part::Part(PartRoot& root, const Vector<String> metadata)
+    : root_(root), metadata_(metadata) {
   root.AddPart(*this);
 }
 
