@@ -367,14 +367,15 @@ if (window.testRunner) {
 
     var lastFrameTime = -1;
     function measureFrameTimeOnce() {
-        if (lastFrameTime != -1)
-          PerfTestRunner.addRunTestEndMarker();
         var now = PerfTestRunner.now();
         var result = lastFrameTime == -1 ? -1 : now - lastFrameTime;
         lastFrameTime = now;
         PerfTestRunner.addRunTestStartMarker();
 
         var returnValue = currentTest.run();
+        requestAnimationFrame(function() {
+            PerfTestRunner.addRunTestEndMarker();
+        });
         if (returnValue - 0 === returnValue) {
             if (returnValue < 0)
                 PerfTestRunner.log("runFunction returned a negative value: " + returnValue);
