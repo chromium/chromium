@@ -4,8 +4,14 @@
 
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 
+#include <string>
+
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/components/network/policy_util.h"
+#include "components/onc/onc_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -13,8 +19,10 @@ namespace ash {
 
 namespace {
 
-constexpr char kIccid1[] = "1234567890";
-constexpr char kIccid2[] = "0987654321";
+constexpr char kName0[] = "cellular0";
+constexpr char kName1[] = "cellular1";
+constexpr char kIccid0[] = "0000000000000000000";
+constexpr char kIccid1[] = "1111111111111111111";
 constexpr char kSmdpAddress[] = "LPA:1$SmdpAddress$ActivationCode";
 
 class FakeObserver : public ManagedCellularPrefHandler::Observer {
@@ -35,7 +43,11 @@ class FakeObserver : public ManagedCellularPrefHandler::Observer {
 
 class ManagedCellularPrefHandlerTest : public testing::Test {
  protected:
-  ManagedCellularPrefHandlerTest() = default;
+  ManagedCellularPrefHandlerTest(
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features) {
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
   ~ManagedCellularPrefHandlerTest() override = default;
 
   // testing::Test:
@@ -86,11 +98,38 @@ class ManagedCellularPrefHandlerTest : public testing::Test {
     return managed_cellular_pref_handler_->ContainsApnMigratedIccid(iccid);
   }
 
+  void ExpectESimMetadata(
+      const char* expected_iccid,
+      const char* expected_name,
+      const policy_util::SmdxActivationCode& expected_activation_code) {
+    const base::Value::Dict* esim_metadata =
+        managed_cellular_pref_handler_->GetESimMetadata(expected_iccid);
+    ASSERT_TRUE(esim_metadata);
+
+    const std::string* name =
+        esim_metadata->FindString(::onc::network_config::kName);
+    ASSERT_TRUE(name);
+    EXPECT_EQ(expected_name, *name);
+
+    const std::string* activation_code = esim_metadata->FindString(
+        expected_activation_code.type() ==
+                policy_util::SmdxActivationCode::Type::SMDP
+            ? ::onc::cellular::kSMDPAddress
+            : ::onc::cellular::kSMDSAddress);
+    ASSERT_TRUE(activation_code);
+    EXPECT_EQ(expected_activation_code.value(), *activation_code);
+  }
+
   int NumObserverEvents() { return observer_.change_count(); }
+
+  ManagedCellularPrefHandler* managed_cellular_pref_handler() {
+    return managed_cellular_pref_handler_.get();
+  }
 
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList feature_list_;
   NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/false};
   TestingPrefServiceSimple device_prefs_;
   FakeObserver observer_;
@@ -98,62 +137,204 @@ class ManagedCellularPrefHandlerTest : public testing::Test {
   std::unique_ptr<ManagedCellularPrefHandler> managed_cellular_pref_handler_;
 };
 
-TEST_F(ManagedCellularPrefHandlerTest, AddRemoveIccidSmdpPair) {
+class ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled
+    : public ManagedCellularPrefHandlerTest {
+ public:
+  ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled(
+      const ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled&) =
+      delete;
+  ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled& operator=(
+      const ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled&) =
+      delete;
+
+ protected:
+  ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled()
+      : ManagedCellularPrefHandlerTest(
+            /*enabled_features=*/{},
+            /*disabled_features=*/{ash::features::kSmdsSupportEuiccUpload}) {}
+  ~ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled() override =
+      default;
+};
+
+class ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled
+    : public ManagedCellularPrefHandlerTest {
+ public:
+  ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled(
+      const ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled&) =
+      delete;
+  ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled& operator=(
+      const ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled&) =
+      delete;
+
+ protected:
+  ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled()
+      : ManagedCellularPrefHandlerTest(
+            /*enabled_features=*/{ash::features::kSmdsSupportEuiccUpload},
+            /*disabled_features=*/{}) {}
+  ~ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled() override =
+      default;
+};
+
+TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled,
+       AddRemoveIccidSmdpPair) {
   Init();
   SetDevicePrefs();
 
   // Add a pair of ICCID - SMDP address pair to pref and verify that the correct
   // value can be retrieved.
-  AddIccidSmdpPair(kIccid1, kSmdpAddress);
+  AddIccidSmdpPair(kIccid0, kSmdpAddress);
   EXPECT_EQ(1, NumObserverEvents());
-  const std::string* smdp_address = GetSmdpAddressFromIccid(kIccid1);
+  const std::string* smdp_address = GetSmdpAddressFromIccid(kIccid0);
   EXPECT_TRUE(smdp_address);
   EXPECT_EQ(kSmdpAddress, *smdp_address);
-  EXPECT_FALSE(GetSmdpAddressFromIccid(kIccid2));
-  RemovePairForIccid(kIccid1);
+  EXPECT_FALSE(GetSmdpAddressFromIccid(kIccid1));
+  RemovePairForIccid(kIccid0);
   EXPECT_EQ(2, NumObserverEvents());
-  smdp_address = GetSmdpAddressFromIccid(kIccid1);
+  smdp_address = GetSmdpAddressFromIccid(kIccid0);
   EXPECT_FALSE(smdp_address);
 }
 
-TEST_F(ManagedCellularPrefHandlerTest, AddApnMigratedIccid) {
+TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled,
+       AddApnMigratedIccid) {
   Init();
   SetDevicePrefs();
 
-  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid1));
+  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid0));
 
   // Add APN migrated ICCIDs to pref and verify that the prefs store these
   // values.
-  AddApnMigratedIccid(kIccid1);
+  AddApnMigratedIccid(kIccid0);
   EXPECT_EQ(1, NumObserverEvents());
-  EXPECT_TRUE(ContainsApnMigratedIccid(kIccid1));
-  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid2));
+  EXPECT_TRUE(ContainsApnMigratedIccid(kIccid0));
+  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid1));
 
-  AddApnMigratedIccid(kIccid2);
+  AddApnMigratedIccid(kIccid1);
   EXPECT_EQ(2, NumObserverEvents());
+  EXPECT_TRUE(ContainsApnMigratedIccid(kIccid0));
   EXPECT_TRUE(ContainsApnMigratedIccid(kIccid1));
-  EXPECT_TRUE(ContainsApnMigratedIccid(kIccid2));
 }
 
-TEST_F(ManagedCellularPrefHandlerTest, NoDevicePrefSet) {
+TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled,
+       NoDevicePrefSet) {
   Init();
   SetDevicePrefs(/*set_to_null=*/true);
 
   // Verify that when there's no device prefs, no SMDP address can be
   // retrieved.
-  const std::string* smdp_address = GetSmdpAddressFromIccid(kIccid1);
+  const std::string* smdp_address = GetSmdpAddressFromIccid(kIccid0);
   EXPECT_FALSE(smdp_address);
-  AddIccidSmdpPair(kIccid1, kSmdpAddress);
+  AddIccidSmdpPair(kIccid0, kSmdpAddress);
   EXPECT_EQ(0, NumObserverEvents());
-  smdp_address = GetSmdpAddressFromIccid(kIccid1);
+  smdp_address = GetSmdpAddressFromIccid(kIccid0);
   EXPECT_FALSE(smdp_address);
 
   // Verify that when there's no device prefs, no APN migrated ICCIDs can be
   // retrieved.
-  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid1));
-  AddApnMigratedIccid(kIccid1);
+  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid0));
+  AddApnMigratedIccid(kIccid0);
   EXPECT_EQ(0, NumObserverEvents());
+  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid0));
+}
+
+TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled,
+       AddAndRemoveESimMetadata) {
+  Init();
+  SetDevicePrefs();
+
+  const policy_util::SmdxActivationCode smdp_activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+  const policy_util::SmdxActivationCode smds_activation_code(
+      policy_util::SmdxActivationCode::Type::SMDS,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+
+  EXPECT_EQ(0, NumObserverEvents());
+  EXPECT_FALSE(managed_cellular_pref_handler()->GetESimMetadata(kIccid0));
+
+  managed_cellular_pref_handler()->AddESimMetadata(kIccid0, kName0,
+                                                   smdp_activation_code);
+  EXPECT_EQ(1, NumObserverEvents());
+
+  ExpectESimMetadata(kIccid0, kName0, smdp_activation_code);
+
+  // When there are not any differences between the existing metadata and the
+  // metadata we are trying to add we don't notify observers.
+  managed_cellular_pref_handler()->AddESimMetadata(kIccid0, kName0,
+                                                   smdp_activation_code);
+  EXPECT_EQ(1, NumObserverEvents());
+
+  managed_cellular_pref_handler()->AddESimMetadata(kIccid0, kName1,
+                                                   smdp_activation_code);
+  EXPECT_EQ(2, NumObserverEvents());
+
+  ExpectESimMetadata(kIccid0, kName1, smdp_activation_code);
+
+  managed_cellular_pref_handler()->AddESimMetadata(kIccid0, kName1,
+                                                   smds_activation_code);
+  EXPECT_EQ(3, NumObserverEvents());
+
+  ExpectESimMetadata(kIccid0, kName1, smds_activation_code);
+
+  managed_cellular_pref_handler()->RemoveESimMetadata(kIccid0);
+  EXPECT_EQ(4, NumObserverEvents());
+
+  // When the metadata does not exist we should not notify observers.
+  managed_cellular_pref_handler()->RemoveESimMetadata(kIccid0);
+  EXPECT_EQ(4, NumObserverEvents());
+}
+
+TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled,
+       AddApnMigratedIccid) {
+  Init();
+  SetDevicePrefs();
+
+  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid0));
+
+  // Add APN migrated ICCIDs to pref and verify that the prefs store these
+  // values.
+  AddApnMigratedIccid(kIccid0);
+  EXPECT_EQ(1, NumObserverEvents());
+  EXPECT_TRUE(ContainsApnMigratedIccid(kIccid0));
   EXPECT_FALSE(ContainsApnMigratedIccid(kIccid1));
+
+  AddApnMigratedIccid(kIccid1);
+  EXPECT_EQ(2, NumObserverEvents());
+  EXPECT_TRUE(ContainsApnMigratedIccid(kIccid0));
+  EXPECT_TRUE(ContainsApnMigratedIccid(kIccid1));
+}
+
+TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled,
+       NoDevicePrefSet) {
+  Init();
+  SetDevicePrefs(/*set_to_null=*/true);
+
+  // Verify that metadata cannot be added, removed, or accessed when there are
+  // no device prefs.
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+
+  EXPECT_EQ(0, NumObserverEvents());
+
+  managed_cellular_pref_handler()->AddESimMetadata(kIccid0, kName0,
+                                                   activation_code);
+  managed_cellular_pref_handler()->RemoveESimMetadata(kIccid0);
+  EXPECT_EQ(0, NumObserverEvents());
+
+  EXPECT_FALSE(managed_cellular_pref_handler()->GetESimMetadata(kIccid0));
+
+  // Verify that APN migration information can be added or accessed when there
+  // are no device prefs.
+  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid0));
+  AddApnMigratedIccid(kIccid0);
+  EXPECT_EQ(0, NumObserverEvents());
+  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid0));
 }
 
 }  // namespace ash

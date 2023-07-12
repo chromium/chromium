@@ -4,9 +4,12 @@
 
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/policy_util.h"
+#include "components/onc/onc_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
@@ -15,6 +18,7 @@ namespace ash {
 // static
 void ManagedCellularPrefHandler::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(prefs::kManagedCellularESimMetadata);
   registry->RegisterDictionaryPref(prefs::kManagedCellularIccidSmdpPair);
   registry->RegisterDictionaryPref(prefs::kApnMigratedIccids);
 }
@@ -99,6 +103,80 @@ const std::string* ManagedCellularPrefHandler::GetSmdpAddressFromIccid(
   const base::Value::Dict& iccid_smdp_pairs =
       device_prefs_->GetDict(prefs::kManagedCellularIccidSmdpPair);
   return iccid_smdp_pairs.FindString(iccid);
+}
+
+void ManagedCellularPrefHandler::AddESimMetadata(
+    const std::string& iccid,
+    const std::string& name,
+    const policy_util::SmdxActivationCode& activation_code,
+    bool sync_stub_networks) {
+  DCHECK(ash::features::IsSmdsSupportEuiccUploadEnabled());
+
+  if (!device_prefs_) {
+    NET_LOG(ERROR) << "Device pref not available yet";
+    return;
+  }
+
+  base::Value::Dict esim_metadata;
+  esim_metadata.Set(::onc::network_config::kName, name);
+  esim_metadata.Set(
+      activation_code.type() == policy_util::SmdxActivationCode::Type::SMDP
+          ? ::onc::cellular::kSMDPAddress
+          : ::onc::cellular::kSMDSAddress,
+      activation_code.value());
+
+  const base::Value::Dict* existing_esim_metadata = GetESimMetadata(iccid);
+  if (existing_esim_metadata && *existing_esim_metadata == esim_metadata) {
+    return;
+  }
+
+  NET_LOG(EVENT) << "Adding eSIM metadata to device prefs, ICCID: " << iccid
+                 << ", name: " << name
+                 << ", activation code: " << activation_code.ToString();
+
+  ScopedDictPrefUpdate update(device_prefs_,
+                              prefs::kManagedCellularESimMetadata);
+  update->Set(iccid, std::move(esim_metadata));
+  if (sync_stub_networks) {
+    network_state_handler_->SyncStubCellularNetworks();
+  }
+  NotifyManagedCellularPrefChanged();
+}
+
+const base::Value::Dict* ManagedCellularPrefHandler::GetESimMetadata(
+    const std::string& iccid) {
+  DCHECK(ash::features::IsSmdsSupportEuiccUploadEnabled());
+
+  if (!device_prefs_) {
+    NET_LOG(ERROR) << "Device pref not available yet";
+    return nullptr;
+  }
+  const base::Value::Dict& esim_metadata =
+      device_prefs_->GetDict(prefs::kManagedCellularESimMetadata);
+  return esim_metadata.FindDict(iccid);
+}
+
+void ManagedCellularPrefHandler::RemoveESimMetadata(const std::string& iccid) {
+  DCHECK(ash::features::IsSmdsSupportEuiccUploadEnabled());
+
+  if (!device_prefs_) {
+    NET_LOG(ERROR) << "Device pref not available yet";
+    return;
+  }
+
+  const base::Value::Dict& esim_metadata =
+      device_prefs_->GetDict(prefs::kManagedCellularESimMetadata);
+  if (!esim_metadata.contains(iccid)) {
+    return;
+  }
+
+  NET_LOG(EVENT) << "Removing eSIM metadata from device prefs, ICCID: "
+                 << iccid;
+  ScopedDictPrefUpdate update(device_prefs_,
+                              prefs::kManagedCellularESimMetadata);
+  update->Remove(iccid);
+  network_state_handler_->SyncStubCellularNetworks();
+  NotifyManagedCellularPrefChanged();
 }
 
 void ManagedCellularPrefHandler::AddApnMigratedIccid(const std::string& iccid) {

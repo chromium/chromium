@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/ash/components/network/policy_util.h"
 #include "components/prefs/pref_service.h"
 
 class PrefService;
@@ -51,6 +52,21 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
   // Remove the ICCID and SMDP+ address pair from the device pref with given
   // |iccid|.
   void RemovePairWithIccid(const std::string& iccid);
+
+  // Persistes the eSIM metadata for a managed cellular network to device prefs.
+  // If |sync_stub_networks| is set true,
+  // NetworkStateHandler::SyncStubCellularNetworks() will be called.
+  void AddESimMetadata(const std::string& iccid,
+                       const std::string& name,
+                       const policy_util::SmdxActivationCode& activation_code,
+                       bool sync_stub_networks = true);
+
+  // Returns the persisted eSIM metadata that corresponds to ICCID |iccid|, if
+  // it exists, otherwise returns |nullptr|.
+  const base::Value::Dict* GetESimMetadata(const std::string& iccid);
+
+  // Removes the persisted eSIM metadata that corresponds to ICCID |iccid|.
+  void RemoveESimMetadata(const std::string& iccid);
 
   // Marks cellular network with iccid |iccid| as migrated to the APN revamp
   // feature. See (b/162365553).
