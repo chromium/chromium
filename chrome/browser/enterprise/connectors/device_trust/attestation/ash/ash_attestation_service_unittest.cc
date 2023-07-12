@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
@@ -52,6 +53,7 @@ constexpr char kEncodedChallenge[] =
     "NWxqRi6qgZm84q0ylm0ybs6TFjdgLvSViAIp0Z9p/An/"
     "u3W4CMboCswxIxNYRCGrIIVPElE3Yb4QS65mKrg=";
 
+constexpr char kTestUserEmail[] = "test@google.com";
 constexpr char kFakeResponse[] = "fake_response";
 constexpr char kDisplayName[] = "display-name";
 
@@ -98,22 +100,42 @@ ash::attestation::MockTpmChallengeKey* InjectMockChallengeKey() {
 
 class AshAttestationServiceTest : public testing::Test {
  protected:
-  AshAttestationServiceTest() = default;
-
-  void SetUp() override {
-    testing::Test::SetUp();
-
+  AshAttestationServiceTest() {
     ash::AttestationClient::InitializeFake();
-
     mock_challenge_key_ = InjectMockChallengeKey();
+    test_profile_.set_profile_name(kTestUserEmail);
     attestation_service_ =
         std::make_unique<AshAttestationService>(&test_profile_);
   }
+
+  ~AshAttestationServiceTest() override { ash::AttestationClient::Shutdown(); }
 
   base::Value::Dict CreateSignals() {
     base::Value::Dict signals;
     signals.Set(device_signals::names::kDisplayName, kDisplayName);
     return signals;
+  }
+
+  void SetDeviceManagement(bool is_managed) {
+    if (is_managed) {
+      StubInstallAttributes()->SetCloudManaged("test_domain", "test_device_id");
+    } else {
+      StubInstallAttributes()->SetConsumerOwned();
+    }
+  }
+
+  ash::StubInstallAttributes* StubInstallAttributes() {
+    return test_profile_.ScopedCrosSettingsTestHelper()->InstallAttributes();
+  }
+
+  void VerifyAttestationFlowSuccessful(
+      const AttestationResponse& attestation_response) {
+    auto challenge_response = attestation_response.challenge_response;
+    ASSERT_FALSE(challenge_response.empty());
+    EXPECT_EQ(attestation_response.result_code, DTAttestationResult::kSuccess);
+    auto parsed_value = ParseValueFromResponse(challenge_response);
+    ASSERT_TRUE(parsed_value.has_value());
+    EXPECT_EQ(kFakeResponse, parsed_value.value());
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -125,19 +147,8 @@ class AshAttestationServiceTest : public testing::Test {
   std::set<enterprise_connectors::DTCPolicyLevel> levels_;
 };
 
-TEST_F(AshAttestationServiceTest, BuildChallengeResponse_Success) {
-  base::RunLoop run_loop;
-  auto callback = base::BindLambdaForTesting(
-      [&](const AttestationResponse& attestation_response) {
-        auto challenge_response = attestation_response.challenge_response;
-        ASSERT_FALSE(challenge_response.empty());
-        EXPECT_EQ(attestation_response.result_code,
-                  DTAttestationResult::kSuccess);
-        auto parsed_value = ParseValueFromResponse(challenge_response);
-        ASSERT_TRUE(parsed_value.has_value());
-        EXPECT_EQ(kFakeResponse, parsed_value.value());
-        run_loop.Quit();
-      });
+TEST_F(AshAttestationServiceTest, BuildChallengeResponseDeviceManaged_Success) {
+  SetDeviceManagement(true);
 
   auto protoChallenge = GetSerializedSignedChallenge();
   EXPECT_CALL(*mock_challenge_key_,
@@ -152,9 +163,39 @@ TEST_F(AshAttestationServiceTest, BuildChallengeResponse_Success) {
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               kFakeResponse)));
 
+  base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      protoChallenge, CreateSignals(), levels_, std::move(callback));
-  run_loop.Run();
+      protoChallenge, CreateSignals(), levels_, future.GetCallback());
+
+  VerifyAttestationFlowSuccessful(future.Get());
+}
+
+TEST_F(AshAttestationServiceTest,
+       BuildChallengeResponseDeviceUnmanaged_Success) {
+  SetDeviceManagement(false);
+
+  auto protoChallenge = GetSerializedSignedChallenge();
+  EXPECT_CALL(
+      *mock_challenge_key_,
+      BuildResponse(
+          ::attestation::DEVICE_TRUST_CONNECTOR,
+          /*profile=*/&test_profile_, /*callback=*/_,
+          /*challenge=*/protoChallenge,
+          /*register_key=*/false,
+          /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+          /*key_name=*/
+          std::string(ash::attestation::kDeviceTrustConnectorKeyPrefix) +
+              kTestUserEmail,
+          /*signals=*/_))
+      .WillOnce(RunOnceCallback<2>(
+          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+              kFakeResponse)));
+
+  base::test::TestFuture<const AttestationResponse&> future;
+  attestation_service_->BuildChallengeResponseForVAChallenge(
+      protoChallenge, CreateSignals(), levels_, future.GetCallback());
+
+  VerifyAttestationFlowSuccessful(future.Get());
 }
 
 }  // namespace enterprise_connectors

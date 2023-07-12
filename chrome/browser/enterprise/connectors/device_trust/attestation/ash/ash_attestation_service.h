@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/strong_alias.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 
 class Profile;
@@ -30,6 +31,13 @@ class AshAttestationService : public AttestationService {
   explicit AshAttestationService(Profile* profile);
   ~AshAttestationService() override;
 
+  using Username = base::StrongAlias<class UsernameTag, std::string>;
+  using KeyName = base::StrongAlias<class UsernameTag, std::string>;
+
+  // Returns the DTC key name corresponding to the username. The key will be
+  // associated with a DeviceTrustConnectorUserCertificate.
+  static KeyName GetDeviceTrustConnectorUserKeyName(const Username& username);
+
   // AttestationService:
   void BuildChallengeResponseForVAChallenge(
       const std::string& serialized_signed_challenge,
@@ -40,8 +48,9 @@ class AshAttestationService : public AttestationService {
  private:
   // Runs the `callback` which resumes the navigation with the `result`
   // challenge response. In case the challenge response was not successfully
-  // built. An empty challenge response will be used. `tpm_key_challenger` is
-  // also forwarded to ensure the instance lives as long as the callback runs.
+  // built. An empty challenge response will be used. `tpm_key_challenger`
+  // is also forwarded to ensure the instance lives as long as the callback
+  // runs.
   void ReturnResult(
       std::unique_ptr<ash::attestation::TpmChallengeKeyWithTimeout>
           tpm_key_challenger,

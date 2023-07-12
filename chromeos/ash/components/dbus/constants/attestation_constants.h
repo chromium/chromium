@@ -106,6 +106,12 @@ extern const char kSoftBindKey[];
 COMPONENT_EXPORT(ASH_DBUS_CONSTANTS)
 extern const char kDeviceSetupKey[];
 
+// The key name prefix for the Device Trust Connector Key. This prefix must be
+// appended with an user identifier to form the final key name. This key should
+// always be stored as a DEVICE_KEY.
+COMPONENT_EXPORT(ASH_DBUS_CONSTANTS)
+extern const char kDeviceTrustConnectorKeyPrefix[];
+
 }  // namespace ash::attestation
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CONSTANTS_ATTESTATION_CONSTANTS_H_

@@ -20,6 +20,8 @@
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 
 namespace enterprise_connectors {
 
@@ -42,11 +44,47 @@ DTAttestationResult ToAttestationResult(TpmChallengeKeyResultCode code) {
   }
 }
 
+// Returns the VerifiedAccessFlow which should be used for attestation depending
+// on the current device context.
+::attestation::VerifiedAccessFlow GetVerifiedAccessFlow() {
+  if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
+    return ::attestation::ENTERPRISE_MACHINE;
+  }
+
+  return ::attestation::DEVICE_TRUST_CONNECTOR;
+}
+
+AshAttestationService::Username GetUserNameForKeyName(Profile* profile) {
+  if (!profile) {
+    return AshAttestationService::Username();
+  }
+
+  return AshAttestationService::Username(profile->GetProfileUserName());
+}
+
+// Returns the key name used for attestation. For ENTERPRISE_MACHINE the default
+// key is used. Otherwise the key name is determined based on the username.
+AshAttestationService::KeyName GetKeyName(
+    ::attestation::VerifiedAccessFlow flow_type,
+    const AshAttestationService::Username& username) {
+  if (flow_type == ::attestation::ENTERPRISE_MACHINE) {
+    return AshAttestationService::KeyName();
+  }
+  return AshAttestationService::GetDeviceTrustConnectorUserKeyName(username);
+}
+
 }  // namespace
 
 AshAttestationService::AshAttestationService(Profile* profile)
     : profile_(profile) {}
 AshAttestationService::~AshAttestationService() = default;
+
+AshAttestationService::KeyName
+AshAttestationService::GetDeviceTrustConnectorUserKeyName(
+    const Username& username) {
+  return KeyName(ash::attestation::kDeviceTrustConnectorKeyPrefix +
+                 username.value());
+}
 
 void AshAttestationService::BuildChallengeResponseForVAChallenge(
     const std::string& serialized_signed_challenge,
@@ -60,17 +98,25 @@ void AshAttestationService::BuildChallengeResponseForVAChallenge(
     return;
   }
 
+  ::attestation::VerifiedAccessFlow flow_type = GetVerifiedAccessFlow();
+  KeyName key_name = GetKeyName(flow_type, GetUserNameForKeyName(profile_));
+
+  // Using flow type DEVICE_TRUST_CONNECTOR for attestation is currently only
+  // supported inside a session.
+  CHECK(flow_type != ::attestation::DEVICE_TRUST_CONNECTOR ||
+        profile_ && profile_->IsRegularProfile());
+
   auto tpm_key_challenger =
       std::make_unique<ash::attestation::TpmChallengeKeyWithTimeout>();
   auto* tpm_key_challenger_ptr = tpm_key_challenger.get();
   tpm_key_challenger_ptr->BuildResponse(
-      base::Seconds(15), ::attestation::ENTERPRISE_MACHINE, profile_,
+      base::Seconds(15), flow_type, profile_,
       base::BindOnce(&AshAttestationService::ReturnResult,
                      weak_factory_.GetWeakPtr(), std::move(tpm_key_challenger),
                      std::move(callback)),
       serialized_signed_challenge, /*register_key=*/false,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name_for_spkac=*/std::string(),
+      /*key_name=*/key_name.value(),
       /*signals=*/signals_json);
 }
 
