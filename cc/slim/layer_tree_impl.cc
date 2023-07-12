@@ -95,16 +95,15 @@ void LayerTreeImpl::SetViewportRectAndScale(
     const gfx::Rect& device_viewport_rect,
     float device_scale_factor,
     const viz::LocalSurfaceId& local_surface_id) {
+  bool id_updated =
+      local_surface_id_allocator_.UpdateFromParent(local_surface_id);
   if (device_viewport_rect_ == device_viewport_rect &&
-      device_scale_factor_ == device_scale_factor &&
-      local_surface_id_ == local_surface_id) {
+      device_scale_factor_ == device_scale_factor && !id_updated) {
     return;
   }
-  if (local_surface_id_ != local_surface_id) {
-    local_surface_id_ = local_surface_id;
-    if (frame_sink_) {
-      frame_sink_->SetLocalSurfaceId(local_surface_id);
-    }
+  if (frame_sink_) {
+    frame_sink_->SetLocalSurfaceId(
+        local_surface_id_allocator_.GetCurrentLocalSurfaceId());
   }
 
   device_viewport_rect_ = device_viewport_rect;
@@ -235,8 +234,10 @@ void LayerTreeImpl::SetFrameSink(std::unique_ptr<FrameSink> sink) {
     return;
   }
   frame_sink_request_pending_ = false;
-  if (local_surface_id_.is_valid()) {
-    frame_sink_->SetLocalSurfaceId(local_surface_id_);
+  if (local_surface_id_allocator_.GetCurrentLocalSurfaceId().is_valid()) {
+    local_surface_id_allocator_.GenerateId();
+    frame_sink_->SetLocalSurfaceId(
+        local_surface_id_allocator_.GetCurrentLocalSurfaceId());
   }
   client_->DidInitializeLayerTreeFrameSink();
   ui_resource_manager_.RecreateUIResources();

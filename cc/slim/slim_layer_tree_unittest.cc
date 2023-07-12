@@ -372,6 +372,20 @@ TEST_F(SlimLayerTreeTest, DestroyTreeBeforeLayer) {
   EXPECT_EQ(surface_layer->layer_tree(), nullptr);
 }
 
+TEST_F(SlimLayerTreeTest, NewLocalSurfaceIdForNewSink) {
+  auto weak_frame_sink = SetupLayerTreeForDraw();
+  viz::LocalSurfaceId old_id = weak_frame_sink->GetCurrentLocalSurfaceId();
+
+  auto frame_sink = TestFrameSinkImpl::Create();
+  weak_frame_sink = frame_sink->GetWeakPtr();
+  layer_tree_->SetFrameSink(std::move(frame_sink));
+  EXPECT_TRUE(weak_frame_sink);
+
+  viz::LocalSurfaceId new_id = weak_frame_sink->GetCurrentLocalSurfaceId();
+  EXPECT_NE(old_id, new_id);
+  EXPECT_TRUE(new_id.IsNewerThan(old_id));
+}
+
 }  // namespace
 
 }  // namespace cc::slim
