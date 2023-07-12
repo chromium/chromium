@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "media/gpu/macros.h"
 #include "media/gpu/v4l2/test/upstream_pix_fmt.h"
 #include "media/video/h265_parser.h"
 
@@ -19,7 +20,8 @@ constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_HEVC_SLICE;
 H265Decoder::H265Decoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
                          gfx::Size display_resolution,
                          const base::MemoryMappedFile& data_stream)
-    : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl), display_resolution) {}
+    : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl), display_resolution),
+      data_stream_(data_stream) {}
 
 H265Decoder::~H265Decoder() = default;
 
@@ -67,11 +69,197 @@ std::unique_ptr<H265Decoder> H265Decoder::Create(
       new H265Decoder(std::move(v4l2_ioctl), coded_size.value(), stream));
 }
 
+bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool H265Decoder::PreprocessCurrentSlice() {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool H265Decoder::ProcessCurrentSlice() {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool H265Decoder::StartNewFrame(const H265SliceHeader* slice_hdr) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool H265Decoder::FinishPrevFrameIfPresent() {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+H265Decoder::DecodeResult H265Decoder::Decode() {
+  DCHECK(state_ != kError) << "Decoder in error state";
+
+  while (true) {
+    H265Parser::Result par_res;
+
+    if (!curr_nalu_) {
+      curr_nalu_ = std::make_unique<H265NALU>();
+      par_res = parser_->AdvanceToNextNALU(curr_nalu_.get());
+      if (par_res == H265Parser::kEOStream) {
+        curr_nalu_.reset();
+        CHECK(FinishPrevFrameIfPresent());
+        is_stream_over_ = true;
+        return kRanOutOfStreamData;
+      }
+
+      CHECK(par_res == H265Parser::kOk);
+      VLOGF(4) << "New NALU: " << static_cast<int>(curr_nalu_->nal_unit_type);
+    }
+
+    // 8.1.2 We only want nuh_layer_id of zero.
+    if (curr_nalu_->nuh_layer_id) {
+      VLOGF(4) << "Skipping NALU with nuh_layer_id="
+               << curr_nalu_->nuh_layer_id;
+      curr_nalu_.reset();
+      continue;
+    }
+
+    switch (curr_nalu_->nal_unit_type) {
+      case H265NALU::BLA_W_LP:  // fallthrough
+      case H265NALU::BLA_W_RADL:
+      case H265NALU::BLA_N_LP:
+      case H265NALU::IDR_W_RADL:
+      case H265NALU::IDR_N_LP:
+      case H265NALU::TRAIL_N:
+      case H265NALU::TRAIL_R:
+      case H265NALU::TSA_N:
+      case H265NALU::TSA_R:
+      case H265NALU::STSA_N:
+      case H265NALU::STSA_R:
+      case H265NALU::RADL_N:
+      case H265NALU::RADL_R:
+      case H265NALU::RASL_N:
+      case H265NALU::RASL_R:
+      case H265NALU::CRA_NUT:
+        if (!curr_slice_hdr_) {
+          curr_slice_hdr_ = std::make_unique<H265SliceHeader>();
+          par_res = parser_->ParseSliceHeader(
+              *curr_nalu_, curr_slice_hdr_.get(), last_slice_hdr_.get());
+          if (par_res == H265Parser::kMissingParameterSet) {
+            // We may still be able to recover if we skip until we find the
+            // SPS/PPS.
+            curr_slice_hdr_.reset();
+            last_slice_hdr_.reset();
+            break;
+          }
+
+          CHECK(par_res == H265Parser::kOk);
+          if (!curr_slice_hdr_->irap_pic && state_ == kAfterReset) {
+            // We can't resume from a non-IRAP picture.
+            curr_slice_hdr_.reset();
+            last_slice_hdr_.reset();
+            break;
+          }
+
+          state_ = kTryPreprocessCurrentSlice;
+          if (curr_slice_hdr_->irap_pic) {
+            bool need_new_buffers = false;
+            CHECK(ProcessPPS(curr_slice_hdr_->slice_pic_parameter_set_id,
+                             &need_new_buffers))
+                << "Processing PPS Unit Failed.";
+            // TODO(b/261127809): handle when |need_new_buffers| is true
+          }
+        }
+
+        if (state_ == kTryPreprocessCurrentSlice) {
+          CHECK(PreprocessCurrentSlice());
+          state_ = kEnsurePicture;
+        }
+
+        // TODO(b/261127809): implement change to create a picture after parsing
+        // PPS and SPS when |state_| = kEnsurePicture
+        if (state_ == kEnsurePicture) {
+          NOTIMPLEMENTED();
+        }
+
+        if (state_ == kTryNewFrame) {
+          CHECK(StartNewFrame(curr_slice_hdr_.get()));
+          state_ = kTryCurrentSlice;
+        }
+
+        DCHECK_EQ(state_, kTryCurrentSlice);
+        CHECK(ProcessCurrentSlice());
+        state_ = kDecoding;
+        last_slice_hdr_.swap(curr_slice_hdr_);
+        curr_slice_hdr_.reset();
+        break;
+      case H265NALU::SPS_NUT:
+        CHECK(FinishPrevFrameIfPresent());
+        int sps_id;
+        par_res = parser_->ParseSPS(&sps_id);
+        CHECK(par_res == H265Parser::kOk) << "Parser Failed to parse SPS.";
+
+        break;
+      case H265NALU::PPS_NUT:
+        CHECK(FinishPrevFrameIfPresent());
+        int pps_id;
+        par_res = parser_->ParsePPS(*curr_nalu_, &pps_id);
+        CHECK(par_res == H265Parser::kOk) << "Parser Failed to parse PPS.";
+
+        if (curr_pps_id_ == -1) {
+          bool need_new_buffers = false;
+          CHECK(ProcessPPS(pps_id, &need_new_buffers));
+
+          if (need_new_buffers) {
+            curr_nalu_.reset();
+            return kConfigChange;
+          }
+        }
+
+        break;
+      case H265NALU::EOS_NUT:
+        // TODO(b/261127809): identify first picture that follows an EOS NALU
+        [[fallthrough]];
+      case H265NALU::EOB_NUT:  // fallthrough
+      case H265NALU::AUD_NUT:
+      case H265NALU::RSV_NVCL41:
+      case H265NALU::RSV_NVCL42:
+      case H265NALU::RSV_NVCL43:
+      case H265NALU::RSV_NVCL44:
+      case H265NALU::UNSPEC48:
+      case H265NALU::UNSPEC49:
+      case H265NALU::UNSPEC50:
+      case H265NALU::UNSPEC51:
+      case H265NALU::UNSPEC52:
+      case H265NALU::UNSPEC53:
+      case H265NALU::UNSPEC54:
+      case H265NALU::UNSPEC55:
+        CHECK(FinishPrevFrameIfPresent());
+        break;
+      default:
+        VLOGF(4) << "Skipping NALU type: " << curr_nalu_->nal_unit_type;
+        break;
+    }
+
+    VLOGF(4) << "Finished with current NALU: "
+             << static_cast<int>(curr_nalu_->nal_unit_type);
+    curr_nalu_.reset();
+  }
+}
+
 VideoDecoder::Result H265Decoder::DecodeNextFrame(const int frame_number,
                                                   std::vector<uint8_t>& y_plane,
                                                   std::vector<uint8_t>& u_plane,
                                                   std::vector<uint8_t>& v_plane,
                                                   gfx::Size& size) {
+  if (!parser_) {
+    parser_ = std::make_unique<H265Parser>();
+    parser_->SetStream(data_stream_.data(), data_stream_.length());
+  }
+
+  // TODO(b/261127809): add a condition to check frames are ready for processing
+  while (!is_stream_over_) {
+    Decode();
+  }
+
   NOTIMPLEMENTED();
   return VideoDecoder::kOk;
 }
