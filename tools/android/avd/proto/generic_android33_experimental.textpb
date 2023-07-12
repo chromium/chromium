@@ -19,7 +19,7 @@ system_image_name: "system-images;android-33;google_apis;x86_64"
 
 avd_package {
   package_name: "experimental/hypan_at_google.com/chromium/third_party/android_sdk/public/avds/android-33/google_apis/x86_64"
-  version: "IdqVHVP53KsFvcMkww5Mlg9AWmU7CHVTVNRXEGmub3YC"
+  version: "BW3NJjhy_LE8qsh25Fv3GIXBwCPiA2lbOhFGmbjQ5UEC"
   dest_path: "generic_android33_experimental"
 }
 avd_name: "android_33_google_apis_x86_64"

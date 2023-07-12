@@ -19,7 +19,7 @@ system_image_name: "system-images;android-32;google_apis;x86_64"
 
 avd_package {
   package_name: "experimental/hypan_at_google.com/chromium/third_party/android_sdk/public/avds/android-32/google_apis/x86_64"
-  version: "Dr-SLZqcO8GK9Q2UYJwoVKhfuKBpecyvs5NyPi_NOaIC"
+  version: "sziFr67dR3wxnrwPUV4u-8_OFnwLCabc0rGi5_BJzJEC"
   dest_path: "generic_android32_foldable_experimental"
 }
 avd_name: "android_32_foldable_google_apis_x86_64"
