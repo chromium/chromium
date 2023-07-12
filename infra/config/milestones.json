@@ -9,11 +9,6 @@
         "project": "chromium-m109",
         "ref": "refs/branch-heads/5414"
     },
-    "110": {
-        "name": "m110",
-        "project": "chromium-m110",
-        "ref": "refs/branch-heads/5481"
-    },
     "112": {
         "name": "m112",
         "project": "chromium-m112",
