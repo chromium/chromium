@@ -124,6 +124,10 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   void SetVisible(bool visible);
   void Resize(const gfx::Size& new_size);
 
+  // Sets additional clip rect for the OutputSurface. DirectRenderer will not
+  // draw outside of this rect.
+  void SetOutputSurfaceClipRect(const gfx::Rect& clip_rect);
+
   // Sets the current SurfaceId to an invalid value. Additionally, the display
   // will fail to draw until SetLocalSurfaceId() is called.
   void InvalidateCurrentSurfaceId();

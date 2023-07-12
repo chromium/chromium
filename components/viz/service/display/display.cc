@@ -465,6 +465,10 @@ void Display::Resize(const gfx::Size& size) {
   damage_tracker_->DisplayResized();
 }
 
+void Display::SetOutputSurfaceClipRect(const gfx::Rect& clip_rect) {
+  renderer_->SetOutputSurfaceClipRect(clip_rect);
+}
+
 void Display::InvalidateCurrentSurfaceId() {
   current_surface_id_ = SurfaceId();
   // Force a gc as the display may not be visible (gc occurs after drawing,
