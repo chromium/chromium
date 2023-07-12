@@ -382,7 +382,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling catapult
   # and whatever else without interference from each other.
-  'catapult_revision': '2e5846afedf2254d5083223ac72ec31b4c84b5a8',
+  'catapult_revision': '2565a43987bb1560545de22042ad85d3d09a9db4',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
