@@ -539,8 +539,8 @@ void PersonalizationAppWallpaperProviderImpl::SelectDefaultImage(
   WallpaperControllerClientImpl* client = WallpaperControllerClientImpl::Get();
   DCHECK(client);
   client->RecordWallpaperSourceUMA(ash::WallpaperType::kDefault);
-  client->SetDefaultWallpaper(GetAccountId(profile_), /*show_wallpaper=*/true,
-                              std::move(callback));
+  WallpaperController::Get()->SetDefaultWallpaper(
+      GetAccountId(profile_), /*show_wallpaper=*/true, std::move(callback));
 }
 
 void PersonalizationAppWallpaperProviderImpl::SelectLocalImage(

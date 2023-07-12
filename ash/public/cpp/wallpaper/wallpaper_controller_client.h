@@ -28,12 +28,6 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
   // Opens the wallpaper picker window.
   virtual void OpenWallpaperPicker() = 0;
 
-  // Sets the default wallpaper and removes the file for the previous wallpaper.
-  virtual void SetDefaultWallpaper(
-      const AccountId& account_id,
-      bool show_wallpaper,
-      base::OnceCallback<void(bool success)> callback) = 0;
-
   // Downloads and sets a new random wallpaper from the collection of the
   // specified collection_id.
   using DailyWallpaperUrlFetchedCallback =

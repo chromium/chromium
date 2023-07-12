@@ -472,17 +472,6 @@ void WallpaperControllerClientImpl::OpenWallpaperPicker() {
                                params);
 }
 
-void WallpaperControllerClientImpl::SetDefaultWallpaper(
-    const AccountId& account_id,
-    bool show_wallpaper,
-    ash::WallpaperController::SetWallpaperCallback callback) {
-  if (!IsKnownUser(account_id))
-    return;
-
-  wallpaper_controller_->SetDefaultWallpaper(account_id, show_wallpaper,
-                                             std::move(callback));
-}
-
 void WallpaperControllerClientImpl::FetchDailyRefreshWallpaper(
     const std::string& collection_id,
     DailyWallpaperUrlFetchedCallback callback) {

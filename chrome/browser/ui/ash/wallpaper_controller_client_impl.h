@@ -66,10 +66,6 @@ class WallpaperControllerClientImpl
 
   // ash::WallpaperControllerClient:
   void OpenWallpaperPicker() override;
-  void SetDefaultWallpaper(
-      const AccountId& account_id,
-      bool show_wallpaper,
-      ash::WallpaperController::SetWallpaperCallback callback) override;
   void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) override;

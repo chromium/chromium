@@ -45,7 +45,6 @@ void TestWallpaperControllerClient::AddCollection(
 
 void TestWallpaperControllerClient::ResetCounts() {
   open_count_ = 0;
-  set_default_wallpaper_count_ = 0;
   fetch_daily_refresh_wallpaper_param_ = std::string();
   fetch_daily_refresh_info_fails_ = false;
   fake_files_ids_.clear();
@@ -55,14 +54,6 @@ void TestWallpaperControllerClient::ResetCounts() {
 // WallpaperControllerClient:
 void TestWallpaperControllerClient::OpenWallpaperPicker() {
   open_count_++;
-}
-
-void TestWallpaperControllerClient::SetDefaultWallpaper(
-    const AccountId& account_id,
-    bool show_wallpaper,
-    base::OnceCallback<void(bool success)> callback) {
-  set_default_wallpaper_count_++;
-  std::move(callback).Run(/*success=*/true);
 }
 
 void TestWallpaperControllerClient::FetchDailyRefreshWallpaper(
