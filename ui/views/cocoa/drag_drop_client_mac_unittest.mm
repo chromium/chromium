@@ -181,16 +181,15 @@ class DragDropClientMacTest : public WidgetTest {
 
   NSDragOperation DragUpdate(NSPasteboard* pasteboard) {
     DragDropClientMac* client = drag_drop_client();
-    dragging_info_.reset(
-        [[MockDraggingInfo alloc] initWithPasteboard:pasteboard]);
-    return client->DragUpdate(dragging_info_.get());
+    dragging_info_ = [[MockDraggingInfo alloc] initWithPasteboard:pasteboard];
+    return client->DragUpdate(dragging_info_);
   }
 
   NSDragOperation Drop() {
     DragDropClientMac* client = drag_drop_client();
-    DCHECK(dragging_info_.get());
-    NSDragOperation operation = client->Drop(dragging_info_.get());
-    dragging_info_.reset();
+    DCHECK(dragging_info_);
+    NSDragOperation operation = client->Drop(dragging_info_);
+    dragging_info_ = nil;
     return operation;
   }
 
@@ -232,7 +231,7 @@ class DragDropClientMacTest : public WidgetTest {
   raw_ptr<NativeWidgetMacNSWindowHost, DanglingUntriaged> ns_window_host_ =
       nullptr;
   raw_ptr<DragDropView, DanglingUntriaged> target_ = nullptr;
-  base::scoped_nsobject<MockDraggingInfo> dragging_info_;
+  MockDraggingInfo* __strong dragging_info_;
 };
 
 // Tests if the drag and drop target receives the dropped data.

@@ -388,10 +388,10 @@ bool IsBrowserProcess() {
 
   _updatingOcclusionStates = YES;
 
-  base::scoped_nsobject<NSArray<NSWindow*>> windowsFromFrontToBack(
-      [[[NSApplication sharedApplication] orderedWindows] copy]);
+  NSArray<NSWindow*>* windowsFromFrontToBack =
+      [[[NSApplication sharedApplication] orderedWindows] copy];
 
-  for (NSWindow* window in windowsFromFrontToBack.get()) {
+  for (NSWindow* window in windowsFromFrontToBack) {
     // The fullscreen transition causes spurious occlusion notifications.
     // See https://crbug.com/1081229 . Also, ignore windows that don't have
     // web contentses.

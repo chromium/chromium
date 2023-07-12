@@ -104,11 +104,11 @@ ScopedCrTrackingArea::~ScopedCrTrackingArea() {
 }
 
 void ScopedCrTrackingArea::reset(CrTrackingArea* tracking_area) {
-  tracking_area_.reset(tracking_area);
+  tracking_area_ = tracking_area;
 }
 
 CrTrackingArea* ScopedCrTrackingArea::get() const {
-  return tracking_area_.get();
+  return tracking_area_;
 }
 
 }  // namespace ui

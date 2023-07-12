@@ -8,7 +8,6 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/files/file_path.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/common/drop_data.h"

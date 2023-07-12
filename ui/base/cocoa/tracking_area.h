@@ -8,7 +8,10 @@
 #import <AppKit/AppKit.h>
 
 #include "base/component_export.h"
-#include "base/mac/scoped_nsobject.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 // The CrTrackingArea can be used in place of an NSTrackingArea to shut off
 // messaging to the |owner| at a specific point in time.
@@ -43,15 +46,14 @@ class COMPONENT_EXPORT(UI_BASE) ScopedCrTrackingArea {
 
   ~ScopedCrTrackingArea();
 
-  // This will call |scoped_nsobject<>::reset()| to take ownership of the new
-  // tracking area.  Note that -clearOwner is NOT called on the existing
-  // tracking area.
+  // This will take ownership of the new tracking area.  Note that -clearOwner
+  // is NOT called on the existing tracking area.
   void reset(CrTrackingArea* tracking_area = nil);
 
   CrTrackingArea* get() const;
 
  private:
-  base::scoped_nsobject<CrTrackingArea> tracking_area_;
+  CrTrackingArea* __strong tracking_area_;
 };
 
 }  // namespace ui

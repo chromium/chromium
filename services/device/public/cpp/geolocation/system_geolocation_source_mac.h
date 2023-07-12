@@ -5,10 +5,13 @@
 #ifndef SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_SYSTEM_GEOLOCATION_SOURCE_MAC_H_
 #define SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_SYSTEM_GEOLOCATION_SOURCE_MAC_H_
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/weak_ptr.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class GeolocationManagerDelegate;
 @class CLLocationManager;
@@ -46,8 +49,8 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceMac
  private:
   LocationSystemPermissionStatus GetSystemPermission() const;
 
-  base::scoped_nsobject<GeolocationManagerDelegate> delegate_;
-  base::scoped_nsobject<CLLocationManager> location_manager_;
+  GeolocationManagerDelegate* __strong delegate_;
+  CLLocationManager* __strong location_manager_;
   SEQUENCE_CHECKER(sequence_checker_);
   PermissionUpdateCallback permission_update_callback_;
   PositionUpdateCallback position_update_callback_;

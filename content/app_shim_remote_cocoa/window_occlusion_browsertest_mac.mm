@@ -478,10 +478,10 @@ class WindowOcclusionBrowserTestMac
   }
 
   void OrderWindowFront(NSWindow* window) {
-    base::scoped_nsobject<WebContentVisibilityUpdateCounter> watcher;
+    [[maybe_unused]] WebContentVisibilityUpdateCounter* watcher;
 
     if (!kEnhancedWindowOcclusionDetection.Get()) {
-      watcher.reset([[WebContentVisibilityUpdateCounter alloc] init]);
+      watcher = [[WebContentVisibilityUpdateCounter alloc] init];
     }
 
     [window orderWindow:NSWindowAbove relativeTo:0];
