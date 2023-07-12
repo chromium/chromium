@@ -488,7 +488,7 @@ void FileReader::Trace(Visitor* visitor) const {
   visitor->Trace(error_);
   visitor->Trace(loader_);
   visitor->Trace(result_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   FileReaderAccumulator::Trace(visitor);
 }

@@ -44,7 +44,7 @@ namespace blink {
 class LocalDOMWindow;
 
 class MODULES_EXPORT SpeechSynthesis final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public SpeechSynthesisBase,
       public Supplement<LocalDOMWindow>,
       public mojom::blink::SpeechSynthesisVoiceListObserver {

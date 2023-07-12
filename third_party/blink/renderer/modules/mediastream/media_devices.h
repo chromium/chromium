@@ -52,7 +52,7 @@ enum class EnumerateDevicesResult {
 };
 
 class MODULES_EXPORT MediaDevices final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<MediaDevices>,
       public Supplement<Navigator>,
       public ExecutionContextLifecycleObserver,

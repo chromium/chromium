@@ -61,7 +61,7 @@ void CrosWindowManagement::Trace(Visitor* visitor) const {
   visitor->Trace(windows_);
   visitor->Trace(screens_);
   Supplement<ExecutionContext>::Trace(visitor);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }

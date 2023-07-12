@@ -305,7 +305,7 @@ void AbortSignal::Trace(Visitor* visitor) const {
   visitor->Trace(abort_algorithms_);
   visitor->Trace(dependent_signal_algorithms_);
   visitor->Trace(composition_manager_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
 }
 
 AbortSignalCompositionManager* AbortSignal::GetCompositionManager(

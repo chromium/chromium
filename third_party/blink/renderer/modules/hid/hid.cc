@@ -122,7 +122,7 @@ const AtomicString& HID::InterfaceName() const {
 
 void HID::AddedEventListener(const AtomicString& event_type,
                              RegisteredEventListener& listener) {
-  EventTargetWithInlineData::AddedEventListener(event_type, listener);
+  EventTarget::AddedEventListener(event_type, listener);
 
   if (event_type != event_type_names::kConnect &&
       event_type != event_type_names::kDisconnect) {
@@ -391,7 +391,7 @@ void HID::Trace(Visitor* visitor) const {
   visitor->Trace(request_device_promises_);
   visitor->Trace(device_cache_);
   visitor->Trace(receiver_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   Supplement<NavigatorBase>::Trace(visitor);
 }
 

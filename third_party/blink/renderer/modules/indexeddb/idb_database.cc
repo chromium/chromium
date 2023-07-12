@@ -122,7 +122,7 @@ void IDBDatabase::Trace(Visitor* visitor) const {
   visitor->Trace(transactions_);
   visitor->Trace(event_queue_);
   visitor->Trace(callbacks_receiver_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

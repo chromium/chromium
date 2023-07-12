@@ -21,7 +21,7 @@ class BroadcastChannelTester;
 class ScriptValue;
 
 class MODULES_EXPORT BroadcastChannel final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<BroadcastChannel>,
       public ExecutionContextLifecycleObserver,
       public mojom::blink::BroadcastChannelClient {

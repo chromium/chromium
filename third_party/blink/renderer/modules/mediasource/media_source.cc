@@ -710,7 +710,7 @@ void MediaSource::Trace(Visitor* visitor) const {
   visitor->Trace(worker_media_source_handle_);
   visitor->Trace(source_buffers_);
   visitor->Trace(active_source_buffers_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

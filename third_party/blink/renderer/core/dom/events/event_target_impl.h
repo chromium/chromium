@@ -21,7 +21,7 @@ namespace blink {
 // increase the size of EventTarget and all of its subclasses with code
 // that are mostly unnecessary for them, resulting in a performance
 // decrease.
-class CORE_EXPORT EventTargetImpl final : public EventTargetWithInlineData,
+class CORE_EXPORT EventTargetImpl final : public EventTarget,
                                           public ExecutionContextClient {
  public:
   explicit EventTargetImpl(ScriptState*);

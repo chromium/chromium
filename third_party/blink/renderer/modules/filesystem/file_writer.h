@@ -49,7 +49,7 @@ class ExceptionState;
 class ExecutionContext;
 enum class FileErrorCode;
 
-class FileWriter final : public EventTargetWithInlineData,
+class FileWriter final : public EventTarget,
                          public FileWriterBase,
                          public ActiveScriptWrappable<FileWriter>,
                          public ExecutionContextLifecycleObserver {

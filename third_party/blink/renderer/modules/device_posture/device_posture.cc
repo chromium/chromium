@@ -65,7 +65,7 @@ void DevicePosture::EnsureServiceConnection() {
 
 void DevicePosture::AddedEventListener(const AtomicString& event_type,
                                        RegisteredEventListener& listener) {
-  EventTargetWithInlineData::AddedEventListener(event_type, listener);
+  EventTarget::AddedEventListener(event_type, listener);
 
   if (event_type != event_type_names::kChange)
     return;
@@ -88,7 +88,7 @@ const AtomicString& DevicePosture::InterfaceName() const {
 void DevicePosture::Trace(blink::Visitor* visitor) const {
   visitor->Trace(service_);
   visitor->Trace(receiver_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
 

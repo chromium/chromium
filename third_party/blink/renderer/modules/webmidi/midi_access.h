@@ -50,7 +50,7 @@ class MIDIInputMap;
 class MIDIOutput;
 class MIDIOutputMap;
 
-class MIDIAccess final : public EventTargetWithInlineData,
+class MIDIAccess final : public EventTarget,
                          public ActiveScriptWrappable<MIDIAccess>,
                          public ExecutionContextLifecycleObserver,
                          public MIDIDispatcher::Client {

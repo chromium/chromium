@@ -127,7 +127,7 @@ void CaptureController::FinalizeFocusDecision() {
 
 void CaptureController::Trace(Visitor* visitor) const {
   visitor->Trace(video_track_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
 }  // namespace blink

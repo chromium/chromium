@@ -986,7 +986,7 @@ void MediaStreamTrackImpl::Trace(Visitor* visitor) const {
   visitor->Trace(image_capture_);
   visitor->Trace(execution_context_);
   visitor->Trace(observers_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   MediaStreamTrack::Trace(visitor);
 }
 

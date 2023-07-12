@@ -53,7 +53,7 @@ class ExceptionState;
 class ResourceResponse;
 
 class MODULES_EXPORT EventSource final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ThreadableLoaderClient,
       public ActiveScriptWrappable<EventSource>,
       public ExecutionContextLifecycleObserver,

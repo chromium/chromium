@@ -144,7 +144,7 @@ int Screen::availWidth() const {
 }
 
 void Screen::Trace(Visitor* visitor) const {
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   Supplementable<Screen>::Trace(visitor);
 }

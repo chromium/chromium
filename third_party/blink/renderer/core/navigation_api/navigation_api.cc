@@ -929,8 +929,7 @@ const AtomicString& NavigationApi::InterfaceName() const {
 void NavigationApi::AddedEventListener(
     const AtomicString& event_type,
     RegisteredEventListener& registered_listener) {
-  EventTargetWithInlineData::AddedEventListener(event_type,
-                                                registered_listener);
+  EventTarget::AddedEventListener(event_type, registered_listener);
   LocalFrame* frame = window_->GetFrame();
   if (event_type != event_type_names::kNavigate || !frame) {
     return;
@@ -944,8 +943,7 @@ void NavigationApi::AddedEventListener(
 void NavigationApi::RemovedEventListener(
     const AtomicString& event_type,
     const RegisteredEventListener& registered_listener) {
-  EventTargetWithInlineData::RemovedEventListener(event_type,
-                                                  registered_listener);
+  EventTarget::RemovedEventListener(event_type, registered_listener);
   LocalFrame* frame = window_->GetFrame();
   if (event_type != event_type_names::kNavigate || !frame) {
     return;
@@ -957,7 +955,7 @@ void NavigationApi::RemovedEventListener(
 }
 
 void NavigationApi::Trace(Visitor* visitor) const {
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   visitor->Trace(window_);
   visitor->Trace(entries_);
   visitor->Trace(transition_);

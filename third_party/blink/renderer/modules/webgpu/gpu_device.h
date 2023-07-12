@@ -68,7 +68,7 @@ enum class GPUSingletonWarning {
   kCount,  // Must be last
 };
 
-class GPUDevice final : public EventTargetWithInlineData,
+class GPUDevice final : public EventTarget,
                         public ExecutionContextClient,
                         public DawnObject<WGPUDevice> {
   DEFINE_WRAPPERTYPEINFO();

@@ -39,7 +39,7 @@ namespace blink {
 
 class TextTrack;
 
-class CORE_EXPORT TextTrackList final : public EventTargetWithInlineData {
+class CORE_EXPORT TextTrackList final : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

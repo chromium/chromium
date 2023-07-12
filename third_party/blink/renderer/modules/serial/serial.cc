@@ -274,14 +274,14 @@ void Serial::Trace(Visitor* visitor) const {
   visitor->Trace(get_ports_promises_);
   visitor->Trace(request_port_promises_);
   visitor->Trace(port_cache_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 void Serial::AddedEventListener(const AtomicString& event_type,
                                 RegisteredEventListener& listener) {
-  EventTargetWithInlineData::AddedEventListener(event_type, listener);
+  EventTarget::AddedEventListener(event_type, listener);
 
   if (event_type != event_type_names::kConnect &&
       event_type != event_type_names::kDisconnect) {

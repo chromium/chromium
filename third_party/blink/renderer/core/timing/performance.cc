@@ -1322,7 +1322,7 @@ void Performance::Trace(Visitor* visitor) const {
   visitor->Trace(deliver_observations_timer_);
   visitor->Trace(resource_timing_buffer_full_timer_);
   visitor->Trace(background_tracing_helper_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
 }
 
 void Performance::SetClocksForTesting(const base::Clock* clock,

@@ -47,7 +47,7 @@ class ExceptionState;
 class RTCPeerConnectionHandler;
 
 class MODULES_EXPORT RTCDataChannel final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<RTCDataChannel>,
       public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();

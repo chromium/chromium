@@ -184,7 +184,7 @@ void StorageManager::Trace(Visitor* visitor) const {
   visitor->Trace(change_listener_receiver_);
   visitor->Trace(permission_service_);
   visitor->Trace(quota_host_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
@@ -212,16 +212,14 @@ void StorageManager::AddedEventListener(
     // This method will bind quota_host_.
     GetQuotaHost(execution_context);
   }
-  EventTargetWithInlineData::AddedEventListener(event_type,
-                                                registered_listener);
+  EventTarget::AddedEventListener(event_type, registered_listener);
   StartObserving();
 }
 
 void StorageManager::RemovedEventListener(
     const AtomicString& event_type,
     const RegisteredEventListener& registered_listener) {
-  EventTargetWithInlineData::RemovedEventListener(event_type,
-                                                  registered_listener);
+  EventTarget::RemovedEventListener(event_type, registered_listener);
   if (!HasEventListeners())
     StopObserving();
 }

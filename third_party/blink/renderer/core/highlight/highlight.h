@@ -20,8 +20,7 @@ namespace blink {
 using HighlightSetIterable = ValueSyncIterable<Highlight>;
 class HighlightRegistry;
 
-class CORE_EXPORT Highlight : public EventTargetWithInlineData,
-                              public HighlightSetIterable {
+class CORE_EXPORT Highlight : public EventTarget, public HighlightSetIterable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

@@ -45,7 +45,7 @@ namespace blink {
 
 class LocalDOMWindow;
 
-class CORE_EXPORT Screen : public EventTargetWithInlineData,
+class CORE_EXPORT Screen : public EventTarget,
                            public ExecutionContextClient,
                            public Supplementable<Screen> {
   DEFINE_WRAPPERTYPEINFO();
@@ -68,7 +68,7 @@ class CORE_EXPORT Screen : public EventTargetWithInlineData,
 
   void Trace(Visitor*) const override;
 
-  // EventTargetWithInlineData:
+  // EventTarget:
   const WTF::AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 

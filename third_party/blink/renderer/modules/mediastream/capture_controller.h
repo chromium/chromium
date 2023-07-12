@@ -17,7 +17,7 @@ namespace blink {
 
 class ExceptionState;
 
-class MODULES_EXPORT CaptureController final : public EventTargetWithInlineData,
+class MODULES_EXPORT CaptureController final : public EventTarget,
                                                public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 

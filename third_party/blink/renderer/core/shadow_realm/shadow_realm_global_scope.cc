@@ -19,7 +19,7 @@ ShadowRealmGlobalScope::ShadowRealmGlobalScope(
 
 void ShadowRealmGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(initiator_execution_context_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContext::Trace(visitor);
 }
 

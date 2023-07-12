@@ -462,7 +462,7 @@ ExecutionContext* TrustedTypePolicyFactory::GetExecutionContext() const {
 }
 
 void TrustedTypePolicyFactory::Trace(Visitor* visitor) const {
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(empty_html_);
   visitor->Trace(empty_script_);

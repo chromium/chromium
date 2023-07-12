@@ -168,7 +168,7 @@ void IDBRequest::Trace(Visitor* visitor) const {
   visitor->Trace(error_);
   visitor->Trace(event_queue_);
   visitor->Trace(pending_cursor_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

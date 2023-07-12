@@ -640,7 +640,7 @@ size_t OffscreenCanvas::GetMemoryUsage() const {
 void OffscreenCanvas::Trace(Visitor* visitor) const {
   visitor->Trace(context_);
   visitor->Trace(execution_context_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
 }
 
 }  // namespace blink

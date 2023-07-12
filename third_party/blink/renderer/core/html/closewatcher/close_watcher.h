@@ -21,8 +21,7 @@ class LocalDOMWindow;
 class KeyboardEvent;
 class HTMLDialogElement;
 
-class CloseWatcher final : public EventTargetWithInlineData,
-                           public ExecutionContextClient {
+class CloseWatcher final : public EventTarget, public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -53,7 +52,7 @@ class CloseWatcher final : public EventTargetWithInlineData,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(cancel, kCancel)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(close, kClose)
 
-  // EventTargetWithInlineData overrides:
+  // EventTarget overrides:
   const AtomicString& InterfaceName() const final;
   ExecutionContext* GetExecutionContext() const final {
     return ExecutionContextClient::GetExecutionContext();

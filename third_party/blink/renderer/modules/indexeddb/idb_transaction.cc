@@ -159,7 +159,7 @@ void IDBTransaction::Trace(Visitor* visitor) const {
   visitor->Trace(old_store_metadata_);
   visitor->Trace(deleted_indexes_);
   visitor->Trace(event_queue_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

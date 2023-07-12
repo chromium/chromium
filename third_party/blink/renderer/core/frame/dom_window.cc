@@ -945,7 +945,7 @@ void DOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(window_proxy_manager_);
   visitor->Trace(input_capabilities_);
   visitor->Trace(location_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
 }
 
 void DOMWindow::DisconnectCoopAccessMonitor(

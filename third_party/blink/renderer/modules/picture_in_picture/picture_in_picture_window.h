@@ -19,7 +19,7 @@ class ExecutionContext;
 // PictureInPictureController and is fundamentally just a simple proxy to get
 // information such as dimensions about the current Picture-in-Picture window.
 class PictureInPictureWindow
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<PictureInPictureWindow>,
       public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();

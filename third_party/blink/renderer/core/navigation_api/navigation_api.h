@@ -36,7 +36,7 @@ class NavigationTransition;
 class RegisteredEventListener;
 class SerializedScriptValue;
 
-class CORE_EXPORT NavigationApi final : public EventTargetWithInlineData {
+class CORE_EXPORT NavigationApi final : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -122,7 +122,7 @@ class CORE_EXPORT NavigationApi final : public EventTargetWithInlineData {
 
   int GetIndexFor(NavigationHistoryEntry*);
 
-  // EventTargetWithInlineData overrides:
+  // EventTarget overrides:
   const AtomicString& InterfaceName() const final;
   ExecutionContext* GetExecutionContext() const final { return window_; }
   void AddedEventListener(const AtomicString&, RegisteredEventListener&) final;

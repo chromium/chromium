@@ -31,7 +31,7 @@ enum class RTCDtlsTransportState {
 // Blink bindings for the RTCDtlsTransport JavaScript object.
 //
 class MODULES_EXPORT RTCDtlsTransport final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ExecutionContextClient,
       public DtlsTransportProxy::Delegate {
   DEFINE_WRAPPERTYPEINFO();

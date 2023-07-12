@@ -35,7 +35,7 @@ class V8EditContextInputMode;
 // advanced editing scenarios. For more information please refer
 // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/EditContext/explainer.md.
 
-class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
+class CORE_EXPORT EditContext final : public EventTarget,
                                       public ActiveScriptWrappable<EditContext>,
                                       public ExecutionContextClient,
                                       public WebInputMethodController,

@@ -2406,7 +2406,7 @@ void XRSession::Trace(Visitor* visitor) const {
   visitor->Trace(views_);
   visitor->Trace(frame_tracked_images_);
   visitor->Trace(image_scores_resolvers_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
 }
 
 }  // namespace blink

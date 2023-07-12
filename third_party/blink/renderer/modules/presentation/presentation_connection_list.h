@@ -17,7 +17,7 @@ namespace blink {
 // from which represents set of presentation connections in the set of
 // presentation controllers.
 class MODULES_EXPORT PresentationConnectionList final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 

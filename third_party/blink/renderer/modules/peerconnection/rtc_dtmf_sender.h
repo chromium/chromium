@@ -38,7 +38,7 @@ namespace blink {
 class ExceptionState;
 class RtcDtmfSenderHandler;
 
-class RTCDTMFSender final : public EventTargetWithInlineData,
+class RTCDTMFSender final : public EventTarget,
                             public RtcDtmfSenderHandler::Client,
                             public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();

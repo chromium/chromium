@@ -675,7 +675,7 @@ void RemotePlayback::Trace(Visitor* visitor) const {
   visitor->Trace(presentation_connection_receiver_);
   visitor->Trace(target_presentation_connection_);
   visitor->Trace(observers_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   RemotePlaybackController::Trace(visitor);
 }

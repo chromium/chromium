@@ -132,7 +132,7 @@ void MojoInterfaceInterceptor::stop() {
 }
 
 void MojoInterfaceInterceptor::Trace(Visitor* visitor) const {
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

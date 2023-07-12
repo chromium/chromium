@@ -29,7 +29,7 @@ class ServiceWorkerRegistration;
 // Represents an individual Background Fetch registration. Gives developers
 // access to its properties, options, and enables them to abort the fetch.
 class BackgroundFetchRegistration final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<BackgroundFetchRegistration>,
       public blink::mojom::blink::BackgroundFetchRegistrationObserver {
   DEFINE_WRAPPERTYPEINFO();
@@ -82,7 +82,7 @@ class BackgroundFetchRegistration final
   ScriptPromise abort(ScriptState* script_state,
                       ExceptionState& exception_state);
 
-  // EventTargetWithInlineData implementation.
+  // EventTarget implementation.
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 

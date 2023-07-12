@@ -37,7 +37,7 @@ class ScriptState;
 // class's "Interface required by CallbackPromiseAdapter" section and the
 // CallbackPromiseAdapter class comments.
 class BluetoothRemoteGATTCharacteristic final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<BluetoothRemoteGATTCharacteristic>,
       public ExecutionContextLifecycleObserver,
       public mojom::blink::WebBluetoothCharacteristicClient {

@@ -27,7 +27,7 @@ class XRLightProbeInit;
 class XRSession;
 class XRSpace;
 
-class XRLightProbe : public EventTargetWithInlineData {
+class XRLightProbe : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

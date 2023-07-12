@@ -27,7 +27,7 @@ namespace blink {
 class ExceptionState;
 
 class MODULES_EXPORT IdleDetector final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<IdleDetector>,
       public ExecutionContextClient,
       public mojom::blink::IdleMonitor {

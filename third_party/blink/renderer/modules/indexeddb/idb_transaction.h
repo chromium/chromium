@@ -65,7 +65,7 @@ class IDBRequestQueueItem;
 class ScriptState;
 
 class MODULES_EXPORT IDBTransaction final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<IDBTransaction>,
       public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();

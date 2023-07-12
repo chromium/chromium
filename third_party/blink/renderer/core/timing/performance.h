@@ -96,7 +96,7 @@ MergePerformanceEntryVectors(const PerformanceEntryVector& first_entry_vector,
                              const PerformanceEntryVector& second_entry_vector,
                              const AtomicString& maybe_name);
 
-class CORE_EXPORT Performance : public EventTargetWithInlineData {
+class CORE_EXPORT Performance : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

@@ -64,7 +64,7 @@ class ExecutionContext;
 class V8UnionStringOrStringSequence;
 
 class MODULES_EXPORT DOMWebSocket
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<DOMWebSocket>,
       public ExecutionContextLifecycleStateObserver,
       public WebSocketChannelClient {

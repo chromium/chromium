@@ -41,7 +41,7 @@ class V8RemotePlaybackAvailabilityCallback;
 //   initiate remote playback for a media element.
 // - A remote playback session is implemented as a PresentationConnection.
 class MODULES_EXPORT RemotePlayback final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ExecutionContextLifecycleObserver,
       public ActiveScriptWrappable<RemotePlayback>,
       public WebRemotePlaybackClient,

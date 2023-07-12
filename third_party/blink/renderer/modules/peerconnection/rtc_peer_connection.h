@@ -92,7 +92,7 @@ class V8UnionMediaStreamTrackOrString;
 class V8VoidFunction;
 
 class MODULES_EXPORT RTCPeerConnection final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public RTCPeerConnectionHandlerClient,
       public ActiveScriptWrappable<RTCPeerConnection>,
       public ExecutionContextLifecycleObserver,

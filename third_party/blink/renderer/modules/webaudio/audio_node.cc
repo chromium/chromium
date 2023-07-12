@@ -116,7 +116,7 @@ void AudioNode::Trace(Visitor* visitor) const {
   visitor->Trace(connected_nodes_);
   visitor->Trace(connected_params_);
   InspectorHelperMixin::Trace(visitor);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
 }
 
 void AudioNode::HandleChannelOptions(const AudioNodeOptions* options,

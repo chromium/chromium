@@ -85,7 +85,7 @@ class WorkerThread;
 // thread, it has a rendering graph locking mechanism.
 
 class MODULES_EXPORT BaseAudioContext
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<BaseAudioContext>,
       public ExecutionContextLifecycleStateObserver,
       public InspectorHelperMixin {

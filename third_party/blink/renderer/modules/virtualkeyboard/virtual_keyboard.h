@@ -23,7 +23,7 @@ class Navigator;
 // The VirtualKeyboard API provides control of the on-screen keyboard
 // to JS authors. The VirtualKeyboard object lives in the Navigator.
 // It is exposed to JS via a new attribute virtualKeyboard in the Navigator.
-class VirtualKeyboard final : public EventTargetWithInlineData,
+class VirtualKeyboard final : public EventTarget,
                               public Supplement<Navigator>,
                               public VirtualKeyboardOverlayChangedObserver {
   DEFINE_WRAPPERTYPEINFO();

@@ -48,7 +48,7 @@ class WorkerReportingProxy;
 class WorkerThread;
 
 class CORE_EXPORT WorkerOrWorkletGlobalScope
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ExecutionContext,
       public scheduler::WorkerScheduler::Delegate,
       public BackForwardCacheLoaderHelperImpl::Delegate {

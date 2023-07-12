@@ -65,7 +65,7 @@ class XRWebGLLayer;
 
 using XRSessionFeatureSet = HashSet<device::mojom::XRSessionFeature>;
 
-class XRSession final : public EventTargetWithInlineData,
+class XRSession final : public EventTarget,
                         public device::mojom::blink::XRSessionClient,
                         public ActiveScriptWrappable<XRSession> {
   DEFINE_WRAPPERTYPEINFO();

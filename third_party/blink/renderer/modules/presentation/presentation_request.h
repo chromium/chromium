@@ -22,7 +22,7 @@ class V8UnionPresentationSourceOrUSVString;
 // Implements the PresentationRequest interface from the Presentation API from
 // which websites can start or join presentation connections.
 class MODULES_EXPORT PresentationRequest final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<PresentationRequest>,
       public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();

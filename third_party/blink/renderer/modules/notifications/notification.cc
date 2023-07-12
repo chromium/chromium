@@ -528,7 +528,7 @@ void Notification::Trace(Visitor* visitor) const {
   visitor->Trace(prepare_show_timer_);
   visitor->Trace(loader_);
   visitor->Trace(listener_receiver_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

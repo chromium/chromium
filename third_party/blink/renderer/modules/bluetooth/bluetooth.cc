@@ -620,7 +620,7 @@ void Bluetooth::Trace(Visitor* visitor) const {
   visitor->Trace(device_instance_map_);
   visitor->Trace(client_receivers_);
   visitor->Trace(service_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   Supplement<Navigator>::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
 }

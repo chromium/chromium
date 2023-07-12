@@ -38,7 +38,7 @@ namespace blink {
 class SpeechSynthesis;
 
 class SpeechSynthesisUtterance final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ExecutionContextClient,
       public mojom::blink::SpeechSynthesisClient {
   DEFINE_WRAPPERTYPEINFO();

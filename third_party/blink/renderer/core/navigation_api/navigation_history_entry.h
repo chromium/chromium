@@ -17,9 +17,8 @@ class LocalDOMWindow;
 class ScriptValue;
 class SerializedScriptValue;
 
-class CORE_EXPORT NavigationHistoryEntry final
-    : public EventTargetWithInlineData,
-      public ExecutionContextClient {
+class CORE_EXPORT NavigationHistoryEntry final : public EventTarget,
+                                                 public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -45,7 +44,7 @@ class CORE_EXPORT NavigationHistoryEntry final
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(dispose, kDispose)
 
-  // EventTargetWithInlineData overrides:
+  // EventTarget overrides:
   const AtomicString& InterfaceName() const final;
   ExecutionContext* GetExecutionContext() const final {
     return ExecutionContextClient::GetExecutionContext();

@@ -270,7 +270,7 @@ void SpeechRecognition::Trace(Visitor* visitor) const {
   visitor->Trace(final_results_);
   visitor->Trace(receiver_);
   visitor->Trace(session_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
 }

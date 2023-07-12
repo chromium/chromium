@@ -42,7 +42,7 @@ struct BlinkTransferableMessage;
 // TODO(tkent): Rename DOMWindow to Window. The class was named as 'DOMWindow'
 // because WebKit already had KJS::Window.  We have no reasons to avoid
 // blink::Window now.
-class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
+class CORE_EXPORT DOMWindow : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

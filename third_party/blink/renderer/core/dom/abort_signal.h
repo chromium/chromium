@@ -25,7 +25,7 @@ class FollowAlgorithm;
 class ScriptState;
 
 // Implementation of https://dom.spec.whatwg.org/#interface-AbortSignal
-class CORE_EXPORT AbortSignal : public EventTargetWithInlineData,
+class CORE_EXPORT AbortSignal : public EventTarget,
                                 public LazyActiveScriptWrappable<AbortSignal> {
   DEFINE_WRAPPERTYPEINFO();
 

@@ -52,7 +52,7 @@ class ExecutionContext;
 class V8UnionArrayBufferOrString;
 enum class FileErrorCode;
 
-class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
+class CORE_EXPORT FileReader final : public EventTarget,
                                      public ActiveScriptWrappable<FileReader>,
                                      public ExecutionContextLifecycleObserver,
                                      public FileReaderAccumulator {

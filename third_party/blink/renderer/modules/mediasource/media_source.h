@@ -50,7 +50,7 @@ class WebSourceBuffer;
 // the srcObject of the media element. A MediaSourceAttachmentSupplement
 // encapsulates the linkage of that object URL or handle to a MediaSource
 // instance, and allows communication between the media element and the MSE API.
-class MediaSource final : public EventTargetWithInlineData,
+class MediaSource final : public EventTarget,
                           public ActiveScriptWrappable<MediaSource>,
                           public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();

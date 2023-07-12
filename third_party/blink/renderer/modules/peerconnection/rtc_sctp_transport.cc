@@ -162,7 +162,7 @@ ExecutionContext* RTCSctpTransport::GetExecutionContext() const {
 
 void RTCSctpTransport::Trace(Visitor* visitor) const {
   visitor->Trace(dtls_transport_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   SctpTransportProxy::Delegate::Trace(visitor);
 }

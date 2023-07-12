@@ -74,7 +74,7 @@ class MediaKeys;
 // as long as the MediaKeys object is alive.
 // The WebContentDecryptionModuleSession has the same lifetime as this object.
 class MediaKeySession final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<MediaKeySession>,
       public ExecutionContextLifecycleObserver,
       private WebContentDecryptionModuleSession::Client {

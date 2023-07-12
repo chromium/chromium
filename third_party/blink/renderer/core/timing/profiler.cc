@@ -51,7 +51,7 @@ Profiler* Profiler::Create(ScriptState* script_state,
 void Profiler::Trace(Visitor* visitor) const {
   visitor->Trace(profiler_group_);
   visitor->Trace(script_state_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
 }
 
 void Profiler::DisposeAsync() {

@@ -60,7 +60,7 @@ class PaintArtifactCompositor;
 class TreeScope;
 class TimelineRange;
 
-class CORE_EXPORT Animation : public EventTargetWithInlineData,
+class CORE_EXPORT Animation : public EventTarget,
                               public ActiveScriptWrappable<Animation>,
                               public ExecutionContextLifecycleObserver,
                               public CompositorAnimationDelegate,

@@ -150,7 +150,7 @@ enum class LinkHighlightCandidate {
 // A Node is a base class for all objects in the DOM tree.
 // The spec governing this interface can be found here:
 // https://dom.spec.whatwg.org/#interface-node
-class CORE_EXPORT Node : public EventTargetWithInlineData {
+class CORE_EXPORT Node : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
   friend class TreeScope;
   friend class TreeScopeAdopter;

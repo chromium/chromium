@@ -551,7 +551,7 @@ bool RTCDataChannel::HasPendingActivity() const {
 void RTCDataChannel::Trace(Visitor* visitor) const {
   visitor->Trace(scheduled_events_);
   visitor->Trace(scheduled_event_timer_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

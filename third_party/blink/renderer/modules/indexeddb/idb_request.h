@@ -65,7 +65,7 @@ class IDBValue;
 class V8UnionIDBCursorOrIDBIndexOrIDBObjectStore;
 class ScriptState;
 
-class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
+class MODULES_EXPORT IDBRequest : public EventTarget,
                                   public ActiveScriptWrappable<IDBRequest>,
                                   public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();

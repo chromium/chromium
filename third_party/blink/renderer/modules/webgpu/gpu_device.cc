@@ -698,7 +698,7 @@ void GPUDevice::Trace(Visitor* visitor) const {
   visitor->Trace(textures_with_mailbox_);
   visitor->Trace(mappable_buffers_);
   ExecutionContextClient::Trace(visitor);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
 }
 
 void GPUDevice::Dispose() {

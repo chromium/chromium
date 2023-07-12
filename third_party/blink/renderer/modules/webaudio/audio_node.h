@@ -65,7 +65,7 @@ class ExceptionState;
 // Be careful to avoid reference cycles. If an AudioHandler has a reference
 // cycle including the owner AudioNode, objects in the cycle are never
 // collected.
-class MODULES_EXPORT AudioNode : public EventTargetWithInlineData,
+class MODULES_EXPORT AudioNode : public EventTarget,
                                  public InspectorHelperMixin {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(AudioNode, Dispose);

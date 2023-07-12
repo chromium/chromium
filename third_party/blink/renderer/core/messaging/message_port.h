@@ -52,7 +52,7 @@ class ExecutionContext;
 class PostMessageOptions;
 class ScriptState;
 
-class CORE_EXPORT MessagePort : public EventTargetWithInlineData,
+class CORE_EXPORT MessagePort : public EventTarget,
                                 public mojo::MessageReceiver,
                                 public ActiveScriptWrappable<MessagePort>,
                                 public ExecutionContextLifecycleObserver {

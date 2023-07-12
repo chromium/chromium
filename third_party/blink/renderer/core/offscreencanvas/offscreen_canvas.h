@@ -36,7 +36,7 @@ typedef OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2Renderin
 class ScriptState;
 
 class CORE_EXPORT OffscreenCanvas final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ImageBitmapSource,
       public CanvasRenderingContextHost,
       public CanvasResourceDispatcherClient {

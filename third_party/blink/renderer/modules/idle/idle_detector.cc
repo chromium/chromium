@@ -316,7 +316,7 @@ void IdleDetector::Trace(Visitor* visitor) const {
   visitor->Trace(abort_handle_);
   visitor->Trace(resolver_);
   visitor->Trace(receiver_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   ActiveScriptWrappable::Trace(visitor);
 }

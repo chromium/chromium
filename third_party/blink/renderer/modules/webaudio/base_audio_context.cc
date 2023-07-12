@@ -867,7 +867,7 @@ void BaseAudioContext::Trace(Visitor* visitor) const {
   visitor->Trace(periodic_wave_triangle_);
   visitor->Trace(audio_worklet_);
   InspectorHelperMixin::Trace(visitor);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleStateObserver::Trace(visitor);
 }
 

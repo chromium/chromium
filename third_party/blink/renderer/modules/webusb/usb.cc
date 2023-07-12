@@ -374,7 +374,7 @@ void USB::OnServiceConnectionError() {
 
 void USB::AddedEventListener(const AtomicString& event_type,
                              RegisteredEventListener& listener) {
-  EventTargetWithInlineData::AddedEventListener(event_type, listener);
+  EventTarget::AddedEventListener(event_type, listener);
   if (event_type != event_type_names::kConnect &&
       event_type != event_type_names::kDisconnect) {
     return;
@@ -419,7 +419,7 @@ void USB::Trace(Visitor* visitor) const {
   visitor->Trace(get_permission_requests_);
   visitor->Trace(client_receiver_);
   visitor->Trace(device_cache_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

@@ -27,7 +27,7 @@ class Navigator;
 class ScriptPromise;
 class ScriptState;
 
-class Bluetooth final : public EventTargetWithInlineData,
+class Bluetooth final : public EventTarget,
                         public Supplement<Navigator>,
                         public PageVisibilityObserver,
                         public mojom::blink::WebBluetoothAdvertisementClient {

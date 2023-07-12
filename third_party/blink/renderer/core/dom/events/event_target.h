@@ -117,11 +117,9 @@ class CORE_EXPORT EventTargetData final
 
 // To make your class an EventTarget, follow these steps:
 // - Make your IDL interface inherit from EventTarget.
-// - Inherit from EventTargetWithInlineData (only in rare cases should you
-//   use EventTarget directly).
-// - In your class declaration, EventTargetWithInlineData must come first in
-//   the base class list. If your class is non-final, classes inheriting from
-//   your class need to come first, too.
+// - In your class declaration, EventTarget must come first in the base class
+//   list. If your class is non-final, your class must be the first base class
+//   for any derived classes as well.
 // - If you added an onfoo attribute, use DEFINE_ATTRIBUTE_EVENT_LISTENER(foo)
 //   in your class declaration. Add "attribute EventHandler onfoo;" to the IDL
 //   file.
@@ -130,8 +128,6 @@ class CORE_EXPORT EventTargetData final
 //   return ExecutionContextLifecycleObserver::executionContext (if you are an
 //   ExecutionContextLifecycleObserver)
 //   or the document you're in.
-// - Your trace() method will need to call EventTargetWithInlineData::trace
-//   depending on the base class of your class.
 class CORE_EXPORT EventTarget : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -373,12 +369,6 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   Member<EventTargetData> data_;
 
   friend class EventListenerIterator;
-};
-
-// Provide EventTarget with inlined EventTargetData for improved performance.
-class CORE_EXPORT EventTargetWithInlineData : public EventTarget {
- public:
-  ~EventTargetWithInlineData() override = default;
 };
 
 DISABLE_CFI_PERF

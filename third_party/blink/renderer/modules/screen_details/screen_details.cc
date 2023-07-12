@@ -54,7 +54,7 @@ void ScreenDetails::ContextDestroyed() {
 
 void ScreenDetails::Trace(Visitor* visitor) const {
   visitor->Trace(screens_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

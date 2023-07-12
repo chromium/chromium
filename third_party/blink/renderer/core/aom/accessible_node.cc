@@ -1232,7 +1232,7 @@ void AccessibleNode::Trace(Visitor* visitor) const {
   visitor->Trace(relation_list_properties_);
   visitor->Trace(children_);
   visitor->Trace(parent_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ElementRareDataField::Trace(visitor);
 }
 

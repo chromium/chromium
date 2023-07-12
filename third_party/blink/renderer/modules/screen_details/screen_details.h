@@ -21,7 +21,7 @@ class ScreenDetailed;
 // Interface exposing multi-screen information.
 // https://w3c.github.io/window-placement/
 class MODULES_EXPORT ScreenDetails final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -34,7 +34,7 @@ class MODULES_EXPORT ScreenDetails final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(screenschange, kScreenschange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(currentscreenchange, kCurrentscreenchange)
 
-  // EventTargetWithInlineData:
+  // EventTarget:
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 

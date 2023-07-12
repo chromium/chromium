@@ -19,7 +19,7 @@ namespace blink {
 class LocalDOMWindow;
 
 class MODULES_EXPORT DevicePosture
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ExecutionContextClient,
       public device::mojom::blink::DevicePostureProviderClient {
   DEFINE_WRAPPERTYPEINFO();

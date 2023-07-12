@@ -2283,7 +2283,7 @@ void SourceBuffer::Trace(Visitor* visitor) const {
   visitor->Trace(append_encoded_chunks_resolver_);
   visitor->Trace(audio_tracks_);
   visitor->Trace(video_tracks_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

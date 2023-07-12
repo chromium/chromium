@@ -1276,7 +1276,7 @@ void PaymentRequest::Trace(Visitor* visitor) const {
   visitor->Trace(client_receiver_);
   visitor->Trace(complete_timer_);
   visitor->Trace(update_payment_details_timer_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

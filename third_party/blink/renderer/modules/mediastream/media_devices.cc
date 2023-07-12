@@ -758,7 +758,7 @@ ExecutionContext* MediaDevices::GetExecutionContext() const {
 }
 
 void MediaDevices::RemoveAllEventListeners() {
-  EventTargetWithInlineData::RemoveAllEventListeners();
+  EventTarget::RemoveAllEventListeners();
   DCHECK(!HasEventListeners());
   StopObserving();
 }
@@ -766,16 +766,14 @@ void MediaDevices::RemoveAllEventListeners() {
 void MediaDevices::AddedEventListener(
     const AtomicString& event_type,
     RegisteredEventListener& registered_listener) {
-  EventTargetWithInlineData::AddedEventListener(event_type,
-                                                registered_listener);
+  EventTarget::AddedEventListener(event_type, registered_listener);
   StartObserving();
 }
 
 void MediaDevices::RemovedEventListener(
     const AtomicString& event_type,
     const RegisteredEventListener& registered_listener) {
-  EventTargetWithInlineData::RemovedEventListener(event_type,
-                                                  registered_listener);
+  EventTarget::RemovedEventListener(event_type, registered_listener);
   if (!HasEventListeners()) {
     StopObserving();
   }
@@ -1024,7 +1022,7 @@ void MediaDevices::Trace(Visitor* visitor) const {
   visitor->Trace(crop_id_resolvers_);
 #endif
   Supplement<Navigator>::Trace(visitor);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
