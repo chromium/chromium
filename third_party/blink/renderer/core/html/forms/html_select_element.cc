@@ -432,8 +432,8 @@ void HTMLSelectElement::AccessKeyAction(
   DispatchSimulatedClick(nullptr, creation_scope);
 }
 
-Element* HTMLSelectElement::namedItem(const AtomicString& name) {
-  return options()->namedItem(name);
+HTMLOptionElement* HTMLSelectElement::namedItem(const AtomicString& name) {
+  return To<HTMLOptionElement>(options()->namedItem(name));
 }
 
 HTMLOptionElement* HTMLSelectElement::item(unsigned index) {

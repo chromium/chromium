@@ -133,7 +133,7 @@ class CORE_EXPORT HTMLSelectElement final
 
   void SetOption(unsigned index, HTMLOptionElement*, ExceptionState&);
 
-  Element* namedItem(const AtomicString& name);
+  HTMLOptionElement* namedItem(const AtomicString& name);
   HTMLOptionElement* item(unsigned index);
 
   bool CanSelectAll() const;
