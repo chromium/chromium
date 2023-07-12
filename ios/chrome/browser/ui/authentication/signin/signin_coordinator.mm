@@ -197,46 +197,6 @@ using signin_metrics::PromoAction;
         accessPoint);
     return nil;
   }
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-  if (authenticationService->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
-    // For some reasons, Gaia might ask for the web sign-in while the user is
-    // already signed in. It might be a race conditions with a token already
-    // disabled on Gaia, and Chrome not aware of it yet?
-    // To avoid a crash (hitting CHECK() to sign-in while already being signed
-    // in), we need to skip the web sign-in dialog.
-    // Related to crbug.com/1308448.
-    RecordConsistencyPromoUserAction(
-        signin_metrics::AccountConsistencyPromoAction::
-            SUPPRESSED_ALREADY_SIGNED_IN,
-        accessPoint);
-    return nil;
-  }
-  switch (authenticationService->GetServiceStatus()) {
-    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
-    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
-    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
-    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
-      RecordConsistencyPromoUserAction(
-          signin_metrics::AccountConsistencyPromoAction::
-              SUPPRESSED_SIGNIN_NOT_ALLOWED,
-          accessPoint);
-      return nil;
-    case AuthenticationService::ServiceStatus::SigninAllowed:
-      break;
-  }
-  PrefService* userPrefService = browserState->GetPrefs();
-  const int currentDismissalCount =
-      userPrefService->GetInteger(prefs::kSigninWebSignDismissalCount);
-  if (accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN &&
-      currentDismissalCount >= kDefaultWebSignInDismissalCount) {
-    RecordConsistencyPromoUserAction(
-        signin_metrics::AccountConsistencyPromoAction::
-            SUPPRESSED_CONSECUTIVE_DISMISSALS,
-        accessPoint);
-    return nil;
-  }
   return [[ConsistencyPromoSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser

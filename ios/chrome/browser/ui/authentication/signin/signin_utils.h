@@ -25,6 +25,10 @@ base::TimeDelta GetWaitThresholdForCapabilities();
 bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
                                     const base::Version& current_version);
 
+// Returns true if the web sign-in dialog can be presented. If false, user
+// actions is recorded to track why the sign-in dialog was not presented.
+bool ShouldPresentWebSignin(ChromeBrowserState* browser_state);
+
 // This method should be called when sign-in starts from the upgrade promo.
 // It records in user defaults:
 //   + the Chromium current version.

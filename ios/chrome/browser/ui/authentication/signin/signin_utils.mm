@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -168,6 +169,53 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   NSArray<NSString*>* last_known_gaia_id_list =
       [defaults arrayForKey:kLastShownAccountGaiaIdVersionKey];
   return IsStrictSubset(last_known_gaia_id_list, identities);
+}
+
+bool ShouldPresentWebSignin(ChromeBrowserState* browser_state) {
+  AuthenticationService* authentication_service =
+      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+  if (authentication_service->HasPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    // For some reasons, Gaia might ask for the web sign-in while the user is
+    // already signed in. It might be a race conditions with a token already
+    // disabled on Gaia, and Chrome not aware of it yet?
+    // To avoid a crash (hitting CHECK() to sign-in while already being signed
+    // in), we need to skip the web sign-in dialog.
+    // Related to crbug.com/1308448.
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::
+            SUPPRESSED_ALREADY_SIGNED_IN,
+        signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+    return false;
+  }
+  signin_metrics::AccessPoint web_signin_access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
+  // Skip the bottom sheet sign-in dialog if the user cannot sign-in.
+  switch (authentication_service->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      RecordConsistencyPromoUserAction(
+          signin_metrics::AccountConsistencyPromoAction::
+              SUPPRESSED_SIGNIN_NOT_ALLOWED,
+          web_signin_access_point);
+      return false;
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+      break;
+  }
+  // Show the sign-in dialog less than `kSigninWebSignDismissalCount` times.
+  PrefService* user_pref_service = browser_state->GetPrefs();
+  const int current_dismissal_count =
+      user_pref_service->GetInteger(prefs::kSigninWebSignDismissalCount);
+  if (current_dismissal_count >= kDefaultWebSignInDismissalCount) {
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::
+            SUPPRESSED_CONSECUTIVE_DISMISSALS,
+        web_signin_access_point);
+    return false;
+  }
+  return true;
 }
 
 void RecordUpgradePromoSigninStarted(
