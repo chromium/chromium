@@ -28,6 +28,9 @@ constexpr char kPrepareForUpdateSecondarySharedSecretKey[] =
 SessionContext::SessionContext() {
   is_resume_after_update_ = g_browser_process->local_state()->GetBoolean(
       prefs::kShouldResumeQuickStartAfterReboot);
+  QS_LOG(INFO)
+      << "Going to fetch/generate session context. is_resume_after_update_: "
+      << is_resume_after_update_;
 
   if (is_resume_after_update_) {
     FetchPersistedSessionContext();
