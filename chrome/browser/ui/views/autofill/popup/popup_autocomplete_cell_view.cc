@@ -199,6 +199,7 @@ void PopupAutocompleteCellView::CreateDeleteButton() {
   // 3. The diameter needs to be the height - 2 * the desired margin.
   int radius = (cell_height - horizontal_margin * 2) / 2;
   InstallFixedSizeCircleHighlightPathGenerator(button.get(), radius);
+  button->SetPreferredSize(gfx::Size(radius * 2, radius * 2));
   button->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
   button->SetAccessibleRole(ax::mojom::Role::kMenuItem);
