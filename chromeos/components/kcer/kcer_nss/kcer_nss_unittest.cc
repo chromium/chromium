@@ -16,13 +16,13 @@
 #include "base/test/test_future.h"
 #include "chromeos/components/kcer/kcer.h"
 #include "chromeos/components/kcer/kcer_nss/kcer_token_impl_nss.h"
+#include "chromeos/components/kcer/kcer_nss/test_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/nss_util.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "crypto/secure_hash.h"
-#include "crypto/signature_verifier.h"
 #include "net/cert/pem.h"
 #include "net/test/cert_builder.h"
 #include "net/test/test_data_directory.h"
@@ -59,6 +59,13 @@ std::ostream& operator<<(std::ostream& stream, PublicKey val) {
 
 namespace {
 
+enum class TestKeyType {
+  kRsa,
+  kEcc,
+  kImportedRsa,
+  kImportedEcc,
+};
+
 constexpr char kPublicKeyBase64[] =
     "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArURIGgAq8joyzjFdUpzmOeDa5VgTC8"
     "n77sMCQsm01mwk+6NwHhCSyCfXoB9EuMcKynj9SZbCgArnsHcZiqBsKpU/VnBO/"
@@ -68,12 +75,16 @@ constexpr char kPublicKeyBase64[] =
     "eoy7MtXwSchI0e2Q8QdUneNp529Ee+pUQ5Uki1L2pE4Pnyj+j2i2x4wGFGdJgiBMSvtpvdPdF+"
     "NMfjdbVaDzTF3rcL3lNCxRb4xk3TMFXV7dQIDAQAB";
 
-std::string KeyTypeToStr(KeyType key_type) {
+std::string TestKeyTypeToStr(TestKeyType key_type) {
   switch (key_type) {
-    case KeyType::kRsa:
+    case TestKeyType::kRsa:
       return "kRsa";
-    case KeyType::kEcc:
+    case TestKeyType::kEcc:
       return "kEcc";
+    case TestKeyType::kImportedRsa:
+      return "kImportedRsa";
+    case TestKeyType::kImportedEcc:
+      return "kImportedEcc";
   }
 }
 
@@ -104,14 +115,6 @@ std::string ToString(const absl::optional<chaps::KeyPermissions>& val) {
                             val->key_usages().corporate());
 }
 
-bool operator==(const absl::optional<chaps::KeyPermissions>& a,
-                const absl::optional<chaps::KeyPermissions>& b) {
-  if (!a.has_value() || !b.has_value()) {
-    return (a.has_value() == b.has_value());
-  }
-  return (a->SerializeAsString() == b->SerializeAsString());
-}
-
 bool KeyInfoEquals(const KeyInfo& expected, const KeyInfo& actual) {
   if (expected.is_hardware_backed != actual.is_hardware_backed) {
     LOG(ERROR) << "ERROR: is_hardware_backed: expected: "
@@ -136,7 +139,7 @@ bool KeyInfoEquals(const KeyInfo& expected, const KeyInfo& actual) {
                << ", actual: " << actual.nickname.value_or("<empty>");
     return false;
   }
-  if (expected.key_permissions != actual.key_permissions) {
+  if (!KeyPermissionsEqual(expected.key_permissions, actual.key_permissions)) {
     LOG(ERROR) << "ERROR: key_permissions: expected: "
                << ToString(expected.key_permissions)
                << ", actual: " << ToString(actual.key_permissions);
@@ -169,80 +172,6 @@ absl::optional<std::vector<uint8_t>> ReadPemFileReturnDer(
   }
   return StrToBytes(tokenizer.data());
 }
-
-// Returns |hash| prefixed with DER-encoded PKCS#1 DigestInfo with
-// AlgorithmIdentifier=id-sha256.
-// This is useful for testing Kcer::SignRsaPkcs1Raw which only
-// appends PKCS#1 v1.5 padding before signing.
-std::vector<uint8_t> PrependSHA256DigestInfo(base::span<const uint8_t> hash) {
-  // DER-encoded PKCS#1 DigestInfo "prefix" with
-  // AlgorithmIdentifier=id-sha256.
-  // The encoding is taken from https://tools.ietf.org/html/rfc3447#page-43
-  const std::vector<uint8_t> kDigestInfoSha256DerData = {
-      0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
-      0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20};
-
-  std::vector<uint8_t> result;
-  result.reserve(kDigestInfoSha256DerData.size() + hash.size());
-
-  result.insert(result.end(), kDigestInfoSha256DerData.begin(),
-                kDigestInfoSha256DerData.end());
-  result.insert(result.end(), hash.begin(), hash.end());
-  return result;
-}
-
-// A helper class to work with tokens (that exist on the IO thread) from the UI
-// thread.
-class TokenHolder {
- public:
-  explicit TokenHolder(Token token, bool initialize) {
-    io_token_ = std::make_unique<internal::KcerTokenImplNss>(token);
-    io_token_->SetAttributeTranslationForTesting(/*is_enabled=*/true);
-    weak_ptr_ = io_token_->GetWeakPtr();
-    // After this point `io_token_` should only be used on the IO thread.
-
-    if (initialize) {
-      Initialize();
-    }
-  }
-
-  ~TokenHolder() {
-    weak_ptr_.reset();
-    IOTaskRunner()->DeleteSoon(FROM_HERE, std::move(io_token_));
-  }
-
-  void Initialize() {
-    CHECK(!is_initialized_);
-    is_initialized_ = true;
-
-    base::RunLoop run_loop;
-
-    IOTaskRunner()->PostTaskAndReply(
-        FROM_HERE,
-        base::BindOnce(
-            &internal::KcerTokenImplNss::Initialize, weak_ptr_,
-            crypto::ScopedPK11Slot(PK11_ReferenceSlot(nss_slot_.slot()))),
-        run_loop.QuitClosure());
-  }
-
-  void FailInitialization() {
-    base::RunLoop run_loop;
-
-    IOTaskRunner()->PostTaskAndReply(
-        FROM_HERE,
-        base::BindOnce(&internal::KcerTokenImplNss::Initialize, weak_ptr_,
-                       /*nss_slot=*/nullptr),
-        run_loop.QuitClosure());
-  }
-
-  base::WeakPtr<internal::KcerTokenImplNss> GetWeakPtr() { return weak_ptr_; }
-
- private:
-  base::WeakPtr<internal::KcerTokenImplNss> weak_ptr_;
-  std::unique_ptr<internal::KcerTokenImplNss> io_token_;
-  crypto::ScopedTestNSSDB nss_slot_;
-  bool is_initialized_ = false;
-};
 
 // A helper class for receiving notifications from Kcer.
 class NotificationsObserver {
@@ -698,51 +627,42 @@ TEST_F(KcerNssTest, SignRsa) {
 
   // Test kRsaPkcs1Sha1 signature.
   {
+    SigningScheme signing_scheme = SigningScheme::kRsaPkcs1Sha1;
     base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
-    kcer_->Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPkcs1Sha1,
-                data_to_sign, sign_waiter.GetCallback());
+    kcer_->Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+                sign_waiter.GetCallback());
     ASSERT_TRUE(sign_waiter.Get().has_value());
     const Signature& signature = sign_waiter.Get().value();
 
-    crypto::SignatureVerifier signature_verifier;
-    ASSERT_TRUE(signature_verifier.VerifyInit(
-        crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1,
-        signature.value(), public_key.GetSpki().value()));
-    signature_verifier.VerifyUpdate(data_to_sign.value());
-    EXPECT_TRUE(signature_verifier.VerifyFinal());
+    EXPECT_TRUE(VerifySignature(signing_scheme, public_key.GetSpki(),
+                                data_to_sign, signature));
   }
 
   // Test kRsaPkcs1Sha256 signature. Save signature to compare with it later.
   Signature rsa256_signature;
   {
+    SigningScheme signing_scheme = SigningScheme::kRsaPkcs1Sha256;
     base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
-    kcer_->Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPkcs1Sha256,
-                data_to_sign, sign_waiter.GetCallback());
+    kcer_->Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+                sign_waiter.GetCallback());
     ASSERT_TRUE(sign_waiter.Get().has_value());
     rsa256_signature = sign_waiter.Get().value();
 
-    crypto::SignatureVerifier signature_verifier;
-    ASSERT_TRUE(signature_verifier.VerifyInit(
-        crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-        rsa256_signature.value(), public_key.GetSpki().value()));
-    signature_verifier.VerifyUpdate(data_to_sign.value());
-    EXPECT_TRUE(signature_verifier.VerifyFinal());
+    EXPECT_TRUE(VerifySignature(signing_scheme, public_key.GetSpki(),
+                                data_to_sign, rsa256_signature));
   }
 
   // Test kRsaPssRsaeSha256 signature.
   {
+    SigningScheme signing_scheme = SigningScheme::kRsaPssRsaeSha256;
     base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
-    kcer_->Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPssRsaeSha256,
-                data_to_sign, sign_waiter.GetCallback());
+    kcer_->Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
+                sign_waiter.GetCallback());
     ASSERT_TRUE(sign_waiter.Get().has_value());
     const Signature& signature = sign_waiter.Get().value();
 
-    crypto::SignatureVerifier signature_verifier;
-    ASSERT_TRUE(signature_verifier.VerifyInit(
-        crypto::SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256,
-        signature.value(), public_key.GetSpki().value()));
-    signature_verifier.VerifyUpdate(data_to_sign.value());
-    EXPECT_TRUE(signature_verifier.VerifyFinal());
+    EXPECT_TRUE(VerifySignature(signing_scheme, public_key.GetSpki(),
+                                data_to_sign, signature));
   }
 
   // Test `Kcer::SignRsaPkcs1Raw()` (kRsaPkcs1Sha256, but for pre-hashed
@@ -765,12 +685,8 @@ TEST_F(KcerNssTest, SignRsa) {
     const Signature& signature = sign_waiter.Get().value();
 
     // Verify the signature.
-    crypto::SignatureVerifier signature_verifier;
-    ASSERT_TRUE(signature_verifier.VerifyInit(
-        crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-        signature.value(), public_key.GetSpki().value()));
-    signature_verifier.VerifyUpdate(data_to_sign.value());
-    EXPECT_TRUE(signature_verifier.VerifyFinal());
+    EXPECT_TRUE(VerifySignature(SigningScheme::kRsaPkcs1Sha256,
+                                public_key.GetSpki(), data_to_sign, signature));
     // Manual hashing + `SignRsaPkcs1Digest` should produce the same signature
     // as just `Sign`.
     EXPECT_EQ(signature, rsa256_signature);
@@ -796,19 +712,15 @@ TEST_F(KcerNssTest, SignEcc) {
 
   // Test kEcdsaSecp256r1Sha256 signature.
   {
+    SigningScheme signing_scheme = SigningScheme::kEcdsaSecp256r1Sha256;
     base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
-    kcer_->Sign(PrivateKeyHandle(public_key),
-                SigningScheme::kEcdsaSecp256r1Sha256, data_to_sign,
+    kcer_->Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
                 sign_waiter.GetCallback());
     ASSERT_TRUE(sign_waiter.Get().has_value());
     const Signature& signature = sign_waiter.Get().value();
 
-    crypto::SignatureVerifier signature_verifier;
-    ASSERT_TRUE(signature_verifier.VerifyInit(
-        crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-        signature.value(), public_key.GetSpki().value()));
-    signature_verifier.VerifyUpdate(data_to_sign.value());
-    EXPECT_TRUE(signature_verifier.VerifyFinal());
+    EXPECT_TRUE(VerifySignature(signing_scheme, public_key.GetSpki(),
+                                data_to_sign, signature));
   }
 
   EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
@@ -828,6 +740,39 @@ TEST_F(KcerNssTest, ImportCertWithoutKeyThenFail) {
   base::test::TestFuture<base::expected<void, Error>> import_waiter;
   kcer_->ImportCertFromBytes(Token::kUser, std::move(cert),
                              import_waiter.GetCallback());
+  ASSERT_FALSE(import_waiter.Get().has_value());
+  EXPECT_EQ(import_waiter.Get().error(), Error::kKeyNotFound);
+
+  // Double check that ListCerts doesn't find the cert.
+  base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
+                         base::flat_map<Token, Error>>
+      certs_waiter;
+  kcer_->ListCerts({Token::kUser}, certs_waiter.GetCallback());
+  EXPECT_TRUE(certs_waiter.Get<0>().empty());  // Cert list is empty.
+  EXPECT_TRUE(certs_waiter.Get<1>().empty());  // Error map is empty.
+  EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
+}
+
+// Test that a certificate can not be imported, if there's no key for it on
+// the token.
+TEST_F(KcerNssTest, ImportCertWithKeyOnDifferentTokenThenFail) {
+  InitializeKcer({Token::kUser, Token::kDevice});
+
+  // Generate new key on the user token.
+  base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
+  kcer_->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
+                       /*hardware_backed=*/true, generate_waiter.GetCallback());
+  ASSERT_TRUE(generate_waiter.Get().has_value());
+  const PublicKey& public_key = generate_waiter.Get().value();
+
+  std::unique_ptr<net::CertBuilder> issuer = MakeCertIssuer();
+  std::unique_ptr<net::CertBuilder> cert_builder =
+      MakeCertBuilder(issuer.get(), public_key.GetSpki().value());
+
+  // Import a cert for the key into the device token.
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportX509Cert(Token::kDevice, cert_builder->GetX509Certificate(),
+                        import_waiter.GetCallback());
   ASSERT_FALSE(import_waiter.Get().has_value());
   EXPECT_EQ(import_waiter.Get().error(), Error::kKeyNotFound);
 
@@ -996,12 +941,12 @@ TEST_F(KcerNssTest, GetKeyInfoGeneric) {
   {
     expected_key_info.cert_provisioning_profile_id = "cert_prov_id_123";
 
-    base::test::TestFuture<base::expected<void, Error>> set_permissions_waiter;
+    base::test::TestFuture<base::expected<void, Error>> set_cert_prov_id_waiter;
     kcer_->SetCertProvisioningProfileId(
         PrivateKeyHandle(public_key),
         expected_key_info.cert_provisioning_profile_id.value(),
-        set_permissions_waiter.GetCallback());
-    ASSERT_TRUE(set_permissions_waiter.Get().has_value());
+        set_cert_prov_id_waiter.GetCallback());
+    ASSERT_TRUE(set_cert_prov_id_waiter.Get().has_value());
   }
 
   {
@@ -1043,8 +988,17 @@ TEST_F(KcerNssTest, ImportCertForImportedKey) {
   kcer_->ImportCertFromBytes(Token::kUser, CertDer(std::move(cert.value())),
                              import_cert_waiter.GetCallback());
   EXPECT_TRUE(import_cert_waiter.Get().has_value());
-
   EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/1));
+
+  // List certs, make sure the new cert is listed.
+  base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
+                         base::flat_map<Token, Error>>
+      certs_waiter;
+  kcer_->ListCerts({Token::kUser}, certs_waiter.GetCallback());
+  EXPECT_TRUE(certs_waiter.Get<1>().empty());  // Error map is empty.
+  const auto& certs =
+      certs_waiter.Get<std::vector<scoped_refptr<const Cert>>>();
+  EXPECT_EQ(certs.size(), 1u);
 }
 
 // Test different ways to call DoesPrivateKeyExist() method and that it
@@ -1205,35 +1159,84 @@ TEST_F(KcerNssTest, RemoveKeyAndCertsWithManyCerts) {
 }
 
 class KcerNssAllKeyTypesTest : public KcerNssTest,
-                               public testing::WithParamInterface<KeyType> {
- public:
-  KeyType GetKeyType() { return GetParam(); }
+                               public testing::WithParamInterface<TestKeyType> {
+ protected:
+  TestKeyType GetKeyType() { return GetParam(); }
+
+  // Requires Kcer to be initialized.
+  absl::optional<PublicKey> CreateKey(Token token, TestKeyType key_type) {
+    base::test::TestFuture<base::expected<PublicKey, Error>> key_waiter;
+    switch (key_type) {
+      case TestKeyType::kRsa:
+        kcer_->GenerateRsaKey(token, /*modulus_length_bits=*/2048,
+                              /*hardware_backed=*/true,
+                              key_waiter.GetCallback());
+        key_can_be_listed_ = true;
+        key_type_ = KeyType::kRsa;
+        break;
+      case TestKeyType::kEcc:
+        kcer_->GenerateEcKey(token, EllipticCurve::kP256,
+                             /*hardware_backed=*/true,
+                             key_waiter.GetCallback());
+        key_can_be_listed_ = true;
+        key_type_ = KeyType::kEcc;
+        break;
+      case TestKeyType::kImportedRsa: {
+        absl::optional<std::vector<uint8_t>> key_to_import =
+            ReadPemFileReturnDer(
+                net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+        kcer_->ImportKey(token, Pkcs8PrivateKeyInfoDer(key_to_import.value()),
+                         key_waiter.GetCallback());
+        key_can_be_listed_ = false;
+        key_type_ = KeyType::kRsa;
+        break;
+      }
+      case TestKeyType::kImportedEcc: {
+        absl::optional<std::vector<uint8_t>> key_to_import =
+            ReadPemFileReturnDer(
+                net::GetTestCertsDirectory().AppendASCII("key_usage_p256.key"));
+        kcer_->ImportKey(token, Pkcs8PrivateKeyInfoDer(key_to_import.value()),
+                         key_waiter.GetCallback());
+        key_can_be_listed_ = false;
+        key_type_ = KeyType::kEcc;
+        break;
+      }
+    }
+    if (!key_waiter.Get().has_value()) {
+      return absl::nullopt;
+    }
+    return key_waiter.Take().value();
+  }
+
+  SigningScheme GetSuitableSigningScheme() {
+    switch (GetKeyType()) {
+      case TestKeyType::kRsa:
+      case TestKeyType::kImportedRsa:
+        return SigningScheme::kRsaPkcs1Sha256;
+      case TestKeyType::kEcc:
+      case TestKeyType::kImportedEcc:
+        return SigningScheme::kEcdsaSecp256r1Sha256;
+    }
+  }
+
+  // TODO(miersh): The implementation of ImportKey that uses NSS is not able to
+  // list imported keys (even though it can do other operations with them). This
+  // should be fixed in Kcer-without-NSS.
+  bool key_can_be_listed_ = false;
+  KeyType key_type_ = KeyType::kRsa;
 };
 
 // Test different ways to call DoesPrivateKeyExist() method and that it
 // returns correct results when Kcer has access to two tokens.
 TEST_P(KcerNssAllKeyTypesTest, DoesPrivateKeyExistTwoTokens) {
   InitializeKcer({Token::kUser, Token::kDevice});
-
-  base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  switch (GetKeyType()) {
-    case KeyType::kRsa:
-      kcer_->GenerateRsaKey(Token::kDevice, /*modulus_length_bits=*/2048,
-                            /*hardware_backed=*/true,
-                            generate_waiter.GetCallback());
-      break;
-    case KeyType::kEcc:
-      kcer_->GenerateEcKey(Token::kDevice, EllipticCurve::kP256,
-                           /*hardware_backed=*/true,
-                           generate_waiter.GetCallback());
-      break;
-  }
-  ASSERT_TRUE(generate_waiter.Get().has_value());
-  const PublicKey& public_key = generate_waiter.Get().value();
+  absl::optional<PublicKey> public_key =
+      CreateKey(Token::kDevice, GetKeyType());
+  ASSERT_TRUE(public_key.has_value());
 
   {
     base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
-    kcer_->DoesPrivateKeyExist(PrivateKeyHandle(public_key),
+    kcer_->DoesPrivateKeyExist(PrivateKeyHandle(public_key.value()),
                                does_exist_waiter.GetCallback());
     ASSERT_TRUE(does_exist_waiter.Get().has_value());
     EXPECT_EQ(does_exist_waiter.Get().value(), true);
@@ -1241,7 +1244,7 @@ TEST_P(KcerNssAllKeyTypesTest, DoesPrivateKeyExistTwoTokens) {
 
   {
     base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
-    kcer_->DoesPrivateKeyExist(PrivateKeyHandle(public_key.GetSpki()),
+    kcer_->DoesPrivateKeyExist(PrivateKeyHandle(public_key->GetSpki()),
                                does_exist_waiter.GetCallback());
     ASSERT_TRUE(does_exist_waiter.Get().has_value());
     EXPECT_EQ(does_exist_waiter.Get().value(), true);
@@ -1250,7 +1253,7 @@ TEST_P(KcerNssAllKeyTypesTest, DoesPrivateKeyExistTwoTokens) {
   {
     base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
     kcer_->DoesPrivateKeyExist(
-        PrivateKeyHandle(Token::kDevice, public_key.GetSpki()),
+        PrivateKeyHandle(Token::kDevice, public_key->GetSpki()),
         does_exist_waiter.GetCallback());
     ASSERT_TRUE(does_exist_waiter.Get().has_value());
     EXPECT_EQ(does_exist_waiter.Get().value(), true);
@@ -1259,7 +1262,7 @@ TEST_P(KcerNssAllKeyTypesTest, DoesPrivateKeyExistTwoTokens) {
   {
     base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
     kcer_->DoesPrivateKeyExist(
-        PrivateKeyHandle(Token::kUser, public_key.GetSpki()),
+        PrivateKeyHandle(Token::kUser, public_key->GetSpki()),
         does_exist_waiter.GetCallback());
     ASSERT_TRUE(does_exist_waiter.Get().has_value());
     EXPECT_EQ(does_exist_waiter.Get().value(), false);
@@ -1289,91 +1292,224 @@ TEST_P(KcerNssAllKeyTypesTest, DoesPrivateKeyExistTwoTokens) {
   EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
 }
 
-// TODO(https://crbug.com/1453782): Times out too often on memory sanitizer
-// bots.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_AllMethodsTogether DISABLED_AllMethodsTogether
-#else
-#define MAYBE_AllMethodsTogether AllMethodsTogether
-#endif
-// Test that all methods work together as expected. Simulate a potential
-// lifecycle of a key and related objects.
-TEST_P(KcerNssAllKeyTypesTest, MAYBE_AllMethodsTogether) {
+// Simulate a potential lifecycle of a key and related objects.
+TEST_P(KcerNssAllKeyTypesTest, KeyLifecycle) {
   InitializeKcer({Token::kUser, Token::kDevice});
 
-  // Generate new key.
-  base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  switch (GetKeyType()) {
-    case KeyType::kRsa:
-      kcer_->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
-                            /*hardware_backed=*/true,
-                            generate_waiter.GetCallback());
-      break;
-    case KeyType::kEcc:
-      kcer_->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
-                           /*hardware_backed=*/true,
-                           generate_waiter.GetCallback());
-      break;
-  }
-  ASSERT_TRUE(generate_waiter.Get().has_value());
-  const PublicKey& public_key = generate_waiter.Get().value();
+  // Check that the initialized tokens are returned as available.
+  EXPECT_EQ(kcer_->GetAvailableTokens(),
+            base::flat_set<Token>({Token::kUser, Token::kDevice}));
 
-  std::unique_ptr<net::CertBuilder> issuer = MakeCertIssuer();
-  std::unique_ptr<net::CertBuilder> cert_builder =
-      MakeCertBuilder(issuer.get(), public_key.GetSpki().value());
+  // Check that the information about both initialized tokens is available.
+  {
+    base::test::TestFuture<base::expected<TokenInfo, Error>>
+        get_token_info_waiter;
+    kcer_->GetTokenInfo(Token::kUser, get_token_info_waiter.GetCallback());
+    ASSERT_TRUE(get_token_info_waiter.Get().has_value());
+    const TokenInfo& token_info = get_token_info_waiter.Get().value();
+    EXPECT_THAT(token_info.pkcs11_id, testing::Lt(1000u));
+    EXPECT_THAT(token_info.token_name,
+                testing::StartsWith("NSS Application Slot"));
+    EXPECT_EQ(token_info.module_name, "NSS Internal PKCS #11 Module");
+    EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
+  }
+  {
+    base::test::TestFuture<base::expected<TokenInfo, Error>>
+        get_token_info_waiter;
+    kcer_->GetTokenInfo(Token::kDevice, get_token_info_waiter.GetCallback());
+    ASSERT_TRUE(get_token_info_waiter.Get().has_value());
+    const TokenInfo& token_info = get_token_info_waiter.Get().value();
+    EXPECT_THAT(token_info.pkcs11_id, testing::Lt(1000u));
+    EXPECT_THAT(token_info.token_name,
+                testing::StartsWith("NSS Application Slot"));
+    EXPECT_EQ(token_info.module_name, "NSS Internal PKCS #11 Module");
+    EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
+  }
+
+  // Add a new key.
+  absl::optional<PublicKey> public_key = CreateKey(Token::kUser, GetKeyType());
+  ASSERT_TRUE(public_key.has_value());
+
+  // Check that the key is listed.
+  if (key_can_be_listed_) {
+    base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
+        list_keys_waiter;
+    kcer_->ListKeys({Token::kUser}, list_keys_waiter.GetCallback());
+    ASSERT_TRUE(list_keys_waiter.Get<1>().empty());  // Error map is empty.
+    EXPECT_EQ(list_keys_waiter.Get<std::vector<PublicKey>>().size(), 1u);
+  }
+
+  // Check that the key exists.
+  {
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer_->DoesPrivateKeyExist(PrivateKeyHandle(public_key->GetSpki()),
+                               does_exist_waiter.GetCallback());
+    ASSERT_TRUE(does_exist_waiter.Get().has_value());
+    EXPECT_EQ(does_exist_waiter.Get().value(), true);
+  }
+
+  // Check that the key can sign data.
+  {
+    DataToSign data_to_sign({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+    SigningScheme signing_scheme = GetSuitableSigningScheme();
+    base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+    kcer_->Sign(PrivateKeyHandle(public_key.value()), signing_scheme,
+                data_to_sign, sign_waiter.GetCallback());
+    ASSERT_TRUE(sign_waiter.Get().has_value()) << sign_waiter.Get().error();
+
+    EXPECT_TRUE(VerifySignature(signing_scheme, public_key->GetSpki(),
+                                data_to_sign, sign_waiter.Get().value()));
+  }
+
+  // Check that the key can sign pre-hashed data.
+  if (key_type_ == KeyType::kRsa) {
+    DataToSign data_to_sign({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+    // A caller would need to hash the data themself before calling
+    // `SignRsaPkcs1Digest`, do that here.
+    auto hasher = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+    hasher->Update(data_to_sign->data(), data_to_sign->size());
+    std::vector<uint8_t> hash(hasher->GetHashLength());
+    hasher->Finish(hash.data(), hash.size());
+    DigestWithPrefix digest_with_prefix(PrependSHA256DigestInfo(hash));
+
+    // Generate the signature.
+    base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+    kcer_->SignRsaPkcs1Raw(PrivateKeyHandle(public_key.value()),
+                           std::move(digest_with_prefix),
+                           sign_waiter.GetCallback());
+    ASSERT_TRUE(sign_waiter.Get().has_value());
+    const Signature& signature = sign_waiter.Get().value();
+
+    // Verify the signature.
+    EXPECT_TRUE(VerifySignature(SigningScheme::kRsaPkcs1Sha256,
+                                public_key->GetSpki(), data_to_sign,
+                                signature));
+  }
 
   // Import a cert for the key.
-  base::test::TestFuture<base::expected<void, Error>> import_waiter;
-  kcer_->ImportX509Cert(Token::kUser, cert_builder->GetX509Certificate(),
-                        import_waiter.GetCallback());
-  EXPECT_TRUE(import_waiter.Get().has_value());
-  EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/1));
+  scoped_refptr<net::X509Certificate> x509_cert_1;
+  {
+    std::unique_ptr<net::CertBuilder> issuer = MakeCertIssuer();
+    std::unique_ptr<net::CertBuilder> cert_builder =
+        MakeCertBuilder(issuer.get(), public_key->GetSpki().value());
+    x509_cert_1 = cert_builder->GetX509Certificate();
+
+    base::test::TestFuture<base::expected<void, Error>> import_waiter;
+    kcer_->ImportX509Cert(Token::kUser, x509_cert_1,
+                          import_waiter.GetCallback());
+    EXPECT_TRUE(import_waiter.Get().has_value());
+    EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/1));
+  }
 
   // List certs, make sure the new cert is listed.
-  base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
-                         base::flat_map<Token, Error>>
-      certs_waiter;
-  kcer_->ListCerts({Token::kUser}, certs_waiter.GetCallback());
-  EXPECT_TRUE(certs_waiter.Get<1>().empty());  // Error map is empty.
-  const auto& certs =
-      certs_waiter.Get<std::vector<scoped_refptr<const Cert>>>();
-  ASSERT_EQ(certs.size(), 1u);
-  EXPECT_TRUE(certs.front()->GetX509Cert()->EqualsExcludingChain(
-      cert_builder->GetX509Certificate().get()));
+  scoped_refptr<const Cert> kcer_cert_1;
+  {
+    base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
+                           base::flat_map<Token, Error>>
+        certs_waiter;
+    kcer_->ListCerts({Token::kUser}, certs_waiter.GetCallback());
+    EXPECT_TRUE(certs_waiter.Get<1>().empty());  // Error map is empty.
+    const auto& certs =
+        certs_waiter.Get<std::vector<scoped_refptr<const Cert>>>();
+    ASSERT_EQ(certs.size(), 1u);
+    kcer_cert_1 = certs.front();
+    EXPECT_TRUE(
+        kcer_cert_1->GetX509Cert()->EqualsExcludingChain(x509_cert_1.get()));
+  }
 
   // Remove the cert.
-  base::test::TestFuture<base::expected<void, Error>> remove_cert_waiter;
-  kcer_->RemoveCert(certs.front(), remove_cert_waiter.GetCallback());
-  ASSERT_TRUE(remove_cert_waiter.Get().has_value());
-  EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/2));
+  {
+    base::test::TestFuture<base::expected<void, Error>> remove_cert_waiter;
+    kcer_->RemoveCert(kcer_cert_1, remove_cert_waiter.GetCallback());
+    ASSERT_TRUE(remove_cert_waiter.Get().has_value());
+    EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/2));
+    kcer_cert_1 = nullptr;
+  }
 
   // Check that the cert cannot be found anymore.
-  base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
-                         base::flat_map<Token, Error>>
-      certs_waiter_2;
-  kcer_->ListCerts({Token::kUser}, certs_waiter_2.GetCallback());
-  EXPECT_TRUE(certs_waiter_2.Get<1>().empty());  // Error map is empty.
-  ASSERT_EQ(certs_waiter_2.Get<std::vector<scoped_refptr<const Cert>>>().size(),
-            0u);
+  {
+    base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
+                           base::flat_map<Token, Error>>
+        certs_waiter;
+    kcer_->ListCerts({Token::kUser}, certs_waiter.GetCallback());
+    EXPECT_TRUE(certs_waiter.Get<1>().empty());  // Error map is empty.
+    ASSERT_EQ(certs_waiter.Get<std::vector<scoped_refptr<const Cert>>>().size(),
+              0u);
+  }
 
-  std::unique_ptr<net::CertBuilder> issuer_2 = MakeCertIssuer();
-  std::unique_ptr<net::CertBuilder> cert_builder_2 =
-      MakeCertBuilder(issuer_2.get(), public_key.GetSpki().value());
+  {
+    std::unique_ptr<net::CertBuilder> issuer = MakeCertIssuer();
+    std::unique_ptr<net::CertBuilder> cert_builder =
+        MakeCertBuilder(issuer.get(), public_key->GetSpki().value());
 
-  // Import another cert for the key to check that the key was not removed and
-  // is still usable.
-  base::test::TestFuture<base::expected<void, Error>> import_waiter_2;
-  kcer_->ImportX509Cert(Token::kUser, cert_builder_2->GetX509Certificate(),
-                        import_waiter_2.GetCallback());
-  EXPECT_TRUE(import_waiter_2.Get().has_value());
+    // Import another cert for the key to check that the key was not removed and
+    // is still usable.
+    CertDer cert_der(StrToBytes(cert_builder->GetDER()));
+    base::test::TestFuture<base::expected<void, Error>> import_waiter;
+    kcer_->ImportCertFromBytes(Token::kUser, std::move(cert_der),
+                               import_waiter.GetCallback());
+    EXPECT_TRUE(import_waiter.Get().has_value());
+    EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/3));
+  }
+
+  // Check that the cert can be found.
+  {
+    base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
+                           base::flat_map<Token, Error>>
+        certs_waiter_3;
+    kcer_->ListCerts({Token::kUser}, certs_waiter_3.GetCallback());
+    EXPECT_TRUE(certs_waiter_3.Get<1>().empty());  // Error map is empty.
+    ASSERT_EQ(
+        certs_waiter_3.Get<std::vector<scoped_refptr<const Cert>>>().size(),
+        1u);
+  }
+
+  if ((key_type_ == KeyType::kEcc) && NSS_VersionCheck("3.68") != PR_TRUE) {
+    // TODO(b/283925148): Old NSS crashes on an attempt to remove an ECC key.
+    // Most test running builders are up-to-date enough, but for the remaining
+    // few just skip the rest of the test.
+    return;
+  }
+
+  // Remove key and its certs.
+  {
+    base::test::TestFuture<base::expected<void, Error>> remove_waiter;
+    kcer_->RemoveKeyAndCerts(PrivateKeyHandle(public_key.value()),
+                             remove_waiter.GetCallback());
+    EXPECT_TRUE(remove_waiter.Get().has_value());
+    EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/4));
+  }
+
+  // Check that the cert cannot be found anymore.
+  {
+    base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
+                           base::flat_map<Token, Error>>
+        certs_waiter;
+    kcer_->ListCerts({Token::kUser}, certs_waiter.GetCallback());
+    EXPECT_TRUE(certs_waiter.Get<1>().empty());  // Error map is empty.
+    ASSERT_EQ(certs_waiter.Get<std::vector<scoped_refptr<const Cert>>>().size(),
+              0u);
+  }
+
+  // Check that the key is not listed anymore.
+  if (key_can_be_listed_) {
+    base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
+        list_keys_waiter;
+    kcer_->ListKeys({Token::kUser}, list_keys_waiter.GetCallback());
+    ASSERT_TRUE(list_keys_waiter.Get<1>().empty());  // Error map is empty.
+    EXPECT_EQ(list_keys_waiter.Get<std::vector<PublicKey>>().size(), 0u);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(AllKeyTypes,
                          KcerNssAllKeyTypesTest,
-                         testing::Values(KeyType::kRsa, KeyType::kEcc),
+                         testing::Values(TestKeyType::kRsa,
+                                         TestKeyType::kEcc,
+                                         TestKeyType::kImportedRsa,
+                                         TestKeyType::kImportedEcc),
                          // Make test names more readable:
                          [](const auto& info) {
-                           return KeyTypeToStr(info.param);
+                           return TestKeyTypeToStr(info.param);
                          });
 
 }  // namespace

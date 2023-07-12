@@ -85,6 +85,7 @@ enum class COMPONENT_EXPORT(KCER) Token {
   // Keys and certificates storage that belongs to the entire
   // device (some users might still not have access to it).
   kDevice,
+  kMaxValue = kDevice,
 };
 
 // Additional info related to a token.
