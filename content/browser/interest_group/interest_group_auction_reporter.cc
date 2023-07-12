@@ -271,6 +271,7 @@ double InterestGroupAuctionReporter::RoundStochasticallyToKBits(double value,
   }
 
   double norm_value = std::frexp(value, &value_exp);
+  // frexp() returns numbers in the range +-[0.5, 1)
 
   if (value_exp < std::numeric_limits<int8_t>::min()) {
     return std::copysign(0, value);
@@ -279,11 +280,32 @@ double InterestGroupAuctionReporter::RoundStochasticallyToKBits(double value,
     return std::copysign(std::numeric_limits<double>::infinity(), value);
   }
 
+  // Shift so we get k integer bits. Since we are in the range +-[0.5, 1) we
+  // multiply by 2**k to get to the range +-[2**(k-1), 2**k).
   double precision_scaled_value = std::ldexp(norm_value, k);
-  double noisy_scaled_value = precision_scaled_value + 0.5 * base::RandDouble();
-  double truncated_scaled_value = std::floor(noisy_scaled_value);
 
-  return std::ldexp(truncated_scaled_value, value_exp - k);
+  // Remove the fractional part.
+  double truncated_scaled_value = std::trunc(precision_scaled_value);
+
+  // Apply random noise based on truncated portion such that we increment with
+  // probability equal to the truncated portion.
+  double noised_truncated_scaled_value = truncated_scaled_value;
+  if (std::abs(precision_scaled_value - truncated_scaled_value) >
+      base::RandDouble()) {
+    noised_truncated_scaled_value =
+        truncated_scaled_value + std::copysign(1, precision_scaled_value);
+
+    // Handle overflow caused by the increment. Incrementing can only
+    // increase the absolute value, so only worry about the mantissa
+    // overflowing.
+    if (value_exp == std::numeric_limits<int8_t>::max() &&
+        std::abs(std::ldexp(noised_truncated_scaled_value, -k)) >= 1.0) {
+      DCHECK_EQ(1.0, std::abs(std::ldexp(noised_truncated_scaled_value, -k)));
+      return std::copysign(std::numeric_limits<double>::infinity(), value);
+    }
+  }
+
+  return std::ldexp(noised_truncated_scaled_value, value_exp - k);
 }
 
 void InterestGroupAuctionReporter::RequestSellerWorklet(

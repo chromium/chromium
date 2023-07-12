@@ -4,6 +4,7 @@
 
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 
+#include <limits>
 #include <map>
 #include <memory>
 #include <string>
@@ -1939,6 +1940,45 @@ TEST(InterestGroupAuctionReporterStochasticRounding, IsNonDeterministic) {
         InterestGroupAuctionReporter::RoundStochasticallyToKBits(kInput, 8);
     EXPECT_THAT(result, testing::AnyOf(0.298828125, 0.30078125));
     seen.insert(result);
+  }
+}
+
+TEST(InterestGroupAuctionReporterStochasticRounding, RoundsUpAndDown) {
+  const double inputs[] = {129.3, 129.8};
+  for (auto input : inputs) {
+    SCOPED_TRACE(input);
+    base::flat_set<double> seen;
+    while (seen.size() < 2) {
+      double result =
+          InterestGroupAuctionReporter::RoundStochasticallyToKBits(input, 8);
+      ASSERT_THAT(result, testing::AnyOf(129.0, 130.0));
+      seen.insert(result);
+    }
+  }
+}
+
+TEST(InterestGroupAuctionReporterStochasticRounding, HandlesOverflow) {
+  double max_value =
+      std::ldexp(0.998046875, std::numeric_limits<int8_t>::max());
+  double expected_value =
+      std::ldexp(0.99609375, std::numeric_limits<int8_t>::max());
+  const double inputs[] = {
+      max_value,
+      -max_value,
+  };
+  for (auto input : inputs) {
+    SCOPED_TRACE(input);
+    base::flat_set<double> seen;
+    while (seen.size() < 2) {
+      double result =
+          InterestGroupAuctionReporter::RoundStochasticallyToKBits(input, 8);
+      ASSERT_THAT(
+          result,
+          testing::AnyOf(
+              std::copysign(expected_value, input),
+              std::copysign(std::numeric_limits<double>::infinity(), input)));
+      seen.insert(result);
+    }
   }
 }
 
