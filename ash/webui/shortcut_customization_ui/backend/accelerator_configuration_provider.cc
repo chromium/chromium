@@ -196,9 +196,11 @@ bool IsAcceleratorHidden(AcceleratorActionId action_id,
 }
 
 mojom::StandardAcceleratorPropertiesPtr CreateStandardAcceleratorProps(
-    const ui::Accelerator& accelerator) {
+    const ui::Accelerator& accelerator,
+    absl::optional<ui::Accelerator> original_accelerator) {
   return mojom::StandardAcceleratorProperties::New(
-      accelerator, ash::GetKeyDisplay(accelerator.key_code()));
+      accelerator, ash::GetKeyDisplay(accelerator.key_code()),
+      original_accelerator);
 }
 
 mojom::AcceleratorLayoutInfoPtr LayoutInfoToMojom(
@@ -230,14 +232,16 @@ mojom::AcceleratorInfoPtr CreateStandardAcceleratorInfo(
     const ui::Accelerator& accelerator,
     bool locked,
     mojom::AcceleratorType type,
-    mojom::AcceleratorState state) {
+    mojom::AcceleratorState state,
+    absl::optional<ui::Accelerator> original_accelerator = absl::nullopt) {
   mojom::AcceleratorInfoPtr info_mojom = mojom::AcceleratorInfo::New();
   info_mojom->locked = locked;
   info_mojom->type = type;
   info_mojom->state = state;
   info_mojom->layout_properties =
       mojom::LayoutStyleProperties::NewStandardAccelerator(
-          CreateStandardAcceleratorProps(accelerator));
+          CreateStandardAcceleratorProps(accelerator,
+                                         std::move(original_accelerator)));
 
   return info_mojom;
 }
@@ -844,8 +848,17 @@ void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
   }
 
   for (const auto& accelerator_alias : accelerator_aliases) {
-    output.push_back(CreateStandardAcceleratorInfo(
-        accelerator_alias, locked, GetAcceleratorType(accelerator), state));
+    // If `accelerator_alias` is not the original accelerator add the original
+    // accelerator to the `AcceleratorInfo`. This allows the frontend to detect
+    // what is the real accelerator to configure.
+    if (accelerator_alias != accelerator) {
+      output.push_back(CreateStandardAcceleratorInfo(
+          accelerator_alias, locked, GetAcceleratorType(accelerator), state,
+          accelerator));
+    } else {
+      output.push_back(CreateStandardAcceleratorInfo(
+          accelerator_alias, locked, GetAcceleratorType(accelerator), state));
+    }
   }
 }
 

@@ -17,6 +17,16 @@ function createSanitizedAccelInfo(info: MojoAcceleratorInfo):
     keyCode: layoutProperties.standardAccelerator.accelerator.keyCode,
     modifiers: layoutProperties.standardAccelerator.accelerator.modifiers,
   };
+  const originalAccelerator =
+      layoutProperties.standardAccelerator?.originalAccelerator;
+  let sanitizedOriginalAccelerator: Accelerator|undefined = undefined;
+  if (originalAccelerator) {
+    sanitizedOriginalAccelerator = {
+      keyCode: originalAccelerator.keyCode,
+      modifiers: originalAccelerator.modifiers,
+    };
+  }
+
   return {
     locked,
     state,
@@ -26,6 +36,7 @@ function createSanitizedAccelInfo(info: MojoAcceleratorInfo):
         accelerator: sanitizedAccelerator,
         keyDisplay: mojoString16ToString(
             layoutProperties.standardAccelerator.keyDisplay),
+        originalAccelerator: sanitizedOriginalAccelerator,
       },
     },
   };

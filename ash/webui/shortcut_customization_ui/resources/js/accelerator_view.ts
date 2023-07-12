@@ -305,8 +305,13 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     }
 
     if (this.viewState === ViewState.EDIT && !isDisabledAccelerator) {
+      const originalAccelerator: Accelerator|undefined =
+          this.acceleratorInfo.layoutProperties.standardAccelerator
+              ?.originalAccelerator;
+      const acceleratorToEdit =
+          originalAccelerator || getAccelerator(this.acceleratorInfo);
       result = await this.shortcutProvider.replaceAccelerator(
-          this.source, this.action, getAccelerator(this.acceleratorInfo),
+          this.source, this.action, acceleratorToEdit,
           getAccelerator(pendingAccelInfo));
     }
     this.handleAcceleratorResultData(result!.result);

@@ -957,6 +957,71 @@ TEST_F(AcceleratorConfigurationProviderTest,
                                mojo_observer.config());
 }
 
+TEST_F(AcceleratorConfigurationProviderTest, AliasWithOriginalAccelerator) {
+  // Add a fake keyboard.
+  ui::KeyboardDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_USB,
+      /*name=*/"fake_Keyboard");
+  fake_keyboard.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, "");
+
+  // Disable TopRowKeysAreFKeys, which is enabled by default for external
+  // keyboards.
+  if (!features::IsInputDeviceSettingsSplitEnabled()) {
+    Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+        prefs::kSendFunctionKeys, false);
+    EXPECT_FALSE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
+  } else {
+    auto settings = Shell::Get()
+                        ->input_device_settings_controller()
+                        ->GetKeyboardSettings(fake_keyboard.id)
+                        ->Clone();
+    settings->top_row_are_fkeys = false;
+    Shell::Get()->input_device_settings_controller()->SetKeyboardSettings(
+        fake_keyboard.id, std::move(settings));
+  }
+
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
+
+  const AcceleratorData initial_test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_F1, ui::EF_ALT_DOWN,
+       AcceleratorAction::kToggleFullscreen},
+  };
+
+  Shell::Get()->ash_accelerator_configuration()->Initialize(initial_test_data);
+  base::RunLoop().RunUntilIdle();
+
+  const AcceleratorData expected_test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_BROWSER_BACK,
+       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN,
+       AcceleratorAction::kToggleFullscreen},
+  };
+
+  // Notified after instantiating the accelerators.
+  EXPECT_EQ(1, mojo_observer.num_times_notified());
+  // Verify observer received the correct accelerators.
+  ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh,
+                               expected_test_data, mojo_observer.config());
+
+  // Verify the generated accelerator infos.
+  const std::vector<mojom::AcceleratorInfoPtr>& accelerator_infos =
+      mojo::Clone(mojo_observer.config()
+                      .at(mojom::AcceleratorSource::kAsh)
+                      .at(AcceleratorAction::kToggleFullscreen));
+  EXPECT_EQ(1u, accelerator_infos.size());
+  // Verify that the generated alias accelerator has `original_accelerator`
+  // populated correctly.
+  absl::optional<ui::Accelerator> original_accelerator =
+      accelerator_infos[0]
+          ->layout_properties->get_standard_accelerator()
+          ->original_accelerator;
+  EXPECT_TRUE(original_accelerator.has_value());
+  EXPECT_EQ(ui::Accelerator(ui::VKEY_F1, ui::EF_ALT_DOWN),
+            original_accelerator.value());
+}
+
 TEST_F(AcceleratorConfigurationProviderTest, InputMethodChanged) {
   FakeAcceleratorsUpdatedMojoObserver mojo_observer;
   SetUpObserver(&mojo_observer);

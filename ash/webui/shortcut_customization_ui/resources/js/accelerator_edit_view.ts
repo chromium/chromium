@@ -178,8 +178,12 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
       return;
     }
 
+    // Check if the accelerator is an alias, if so use the original accelerator.
+    const originalAccelerator: Accelerator|undefined =
+        this.acceleratorInfo.layoutProperties.standardAccelerator
+            ?.originalAccelerator;
     const configResult = await this.shortcutProvider.removeAccelerator(
-        this.source, this.action, accelerator);
+        this.source, this.action, originalAccelerator || accelerator);
 
     if (configResult.result.result === AcceleratorConfigResult.kSuccess) {
       if (this.shortcutProvider instanceof FakeShortcutProvider) {
