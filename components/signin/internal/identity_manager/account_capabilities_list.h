@@ -38,6 +38,10 @@ ACCOUNT_CAPABILITY(kCanToggleAutoUpdatesName,
                    CAN_TOGGLE_AUTO_UPDATES_NAME,
                    "accountcapabilities/gu4dmlldmfya")
 
+ACCOUNT_CAPABILITY(kCanUseChromeIpProtectionName,
+                   CAN_USE_CHROME_IP_PROTECTION_NAME,
+                   "accountcapabilities/geydgnznmnqxa")
+
 ACCOUNT_CAPABILITY(kIsAllowedForMachineLearningCapabilityName,
                    IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME,
                    "accountcapabilities/g42tslldmfya")

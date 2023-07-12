@@ -83,6 +83,10 @@ signin::Tribool AccountCapabilities::can_toggle_auto_updates() const {
   return GetCapabilityByName(kCanToggleAutoUpdatesName);
 }
 
+signin::Tribool AccountCapabilities::can_use_chrome_ip_protection() const {
+  return GetCapabilityByName(kCanUseChromeIpProtectionName);
+}
+
 signin::Tribool AccountCapabilities::is_allowed_for_machine_learning() const {
   return GetCapabilityByName(kIsAllowedForMachineLearningCapabilityName);
 }

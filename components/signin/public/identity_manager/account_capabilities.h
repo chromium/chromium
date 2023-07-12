@@ -65,6 +65,9 @@ class AccountCapabilities {
   // Chrome can toggle auto updates with this capability.
   signin::Tribool can_toggle_auto_updates() const;
 
+  // The user account is able to use IP Protection.
+  signin::Tribool can_use_chrome_ip_protection() const;
+
   // Chrome can send user data to Google servers for machine learning purposes
   // with this capability.
   signin::Tribool is_allowed_for_machine_learning() const;

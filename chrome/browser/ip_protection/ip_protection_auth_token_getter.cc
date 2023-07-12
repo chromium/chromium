@@ -49,6 +49,21 @@ void IpProtectionAuthTokenGetter::RequestOAuthToken() {
     return;
   }
 
+  // If the user is not eligible, do not even try to fetch tokens. If unknown,
+  // fall back to trying anyway.
+  const CoreAccountId account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  CHECK(!account_id.empty());
+  const AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
+  if (!account_info.IsEmpty() &&
+      account_info.capabilities.can_use_chrome_ip_protection() ==
+          signin::Tribool::kFalse) {
+    TryGetAuthTokensComplete(
+        absl::nullopt, IpProtectionTryGetAuthTokensResult::kFailedNotEligible);
+    return;
+  }
+
   signin::ScopeSet scopes;
   scopes.insert(GaiaConstants::kIpProtectionAuthScope);
 

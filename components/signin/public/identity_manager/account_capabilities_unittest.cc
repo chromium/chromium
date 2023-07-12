@@ -85,6 +85,21 @@ TEST_F(AccountCapabilitiesTest, CanToggleAutoUpdates) {
   EXPECT_EQ(capabilities.can_toggle_auto_updates(), signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, CanUseChromeIpProtection) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_chrome_ip_protection(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_chrome_ip_protection(true);
+  EXPECT_EQ(capabilities.can_use_chrome_ip_protection(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_use_chrome_ip_protection(false);
+  EXPECT_EQ(capabilities.can_use_chrome_ip_protection(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, IsAllowedForMachineLearning) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.is_allowed_for_machine_learning(),
