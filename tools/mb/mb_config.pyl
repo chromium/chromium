@@ -918,8 +918,6 @@
       # cause them to produce different baselines than the release
       # waterfall bots, and run_web_tests.py can't handle that (by design).
       'linux-blink-rel': 'release_bot_blink_minimal_symbols_reclient',
-      'mac10.13-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
-      'mac10.14-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
       'mac10.15-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
       'mac11.0-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
       'mac11.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols_reclient',
