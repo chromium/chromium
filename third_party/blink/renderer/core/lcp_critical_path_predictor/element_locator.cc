@@ -91,6 +91,8 @@ namespace {
 
 // Set of element tag names that needs to run a "close a p element" step in
 // https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody
+// Do not modify this set outside TokenStreamMatcher::InitSets() to avoid race
+// conditions.
 HashSet<const StringImpl*>& ClosePElementSet() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<const StringImpl*>, set, ());
   return set;
@@ -100,6 +102,8 @@ HashSet<const StringImpl*>& ClosePElementSet() {
 // with the following spec text:
 // <spec>Insert an HTML element for the token. Immediately pop the current node
 // off the stack of open elements.</spec>
+// Do not modify this set outside TokenStreamMatcher::InitSets() to avoid race
+// conditions.
 HashSet<const StringImpl*>& ImmediatelyPopTheCurrentNodeTags() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<const StringImpl*>, set, ());
   return set;
