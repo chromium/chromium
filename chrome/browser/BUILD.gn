@@ -2512,7 +2512,7 @@ static_library("browser") {
     ]
 
     if (is_chromeos_ash) {
-      deps += [ "//chrome/browser/screen_ai:screen_ai_chromeos_installer" ]
+      deps += [ "//chrome/browser/screen_ai:screen_ai_dlc_installer" ]
     } else {
       sources += [
         "component_updater/screen_ai_component_installer.cc",

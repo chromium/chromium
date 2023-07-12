@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/screen_ai/screen_ai_chromeos_installer.h"
+#include "chrome/browser/screen_ai/screen_ai_dlc_installer.h"
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -38,7 +38,7 @@ void OnInstallCompleted(
       install_retries++ < kMaxInstallRetries) {
     VLOG(1) << "ScreenAI installation failed as DLC service is busy, retrying.";
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&screen_ai::chrome_os_installer::Install),
+        FROM_HERE, base::BindOnce(&screen_ai::dlc_installer::Install),
         retry_delay);
     retry_delay =
         base::Seconds(retry_delay.InSeconds() * retry_delay.InSeconds());
@@ -91,7 +91,7 @@ bool CheckIfDlcExists() {
 
 }  // namespace
 
-namespace screen_ai::chrome_os_installer {
+namespace screen_ai::dlc_installer {
 
 void Install() {
   screen_ai::ScreenAIInstallState::GetInstance()->SetState(
@@ -120,4 +120,4 @@ void ManageInstallation(PrefService* local_state) {
       }));
 }
 
-}  // namespace screen_ai::chrome_os_installer
+}  // namespace screen_ai::dlc_installer

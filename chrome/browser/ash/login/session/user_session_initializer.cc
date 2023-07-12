@@ -41,7 +41,7 @@
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
-#include "chrome/browser/screen_ai/screen_ai_chromeos_installer.h"
+#include "chrome/browser/screen_ai/screen_ai_dlc_installer.h"
 #include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/clipboard_image_model_factory_impl.h"
 #include "chrome/browser/ui/ash/glanceables/chrome_glanceables_delegate.h"
@@ -271,7 +271,7 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
   // created one per user in a multiprofile session.
   CalendarKeyedServiceFactory::GetInstance()->GetService(profile);
 
-  screen_ai::chrome_os_installer::ManageInstallation(
+  screen_ai::dlc_installer::ManageInstallation(
       g_browser_process->local_state());
 
   if (is_primary_user) {

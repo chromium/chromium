@@ -5,10 +5,10 @@
 import("//build/config/ui.gni")
 
 if (is_chromeos_ash) {
-  source_set("screen_ai_chromeos_installer") {
+  source_set("screen_ai_dlc_installer") {
     sources = [
-      "screen_ai_chromeos_installer.cc",
-      "screen_ai_chromeos_installer.h",
+      "screen_ai_dlc_installer.cc",
+      "screen_ai_dlc_installer.h",
     ]
 
     deps = [

@@ -10,7 +10,7 @@
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/screen_ai/screen_ai_chromeos_installer.h"
+#include "chrome/browser/screen_ai/screen_ai_dlc_installer.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/files/file_path.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -55,7 +55,7 @@ void ScreenAIDownloader::DownloadComponent() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  screen_ai::chrome_os_installer::Install();
+  screen_ai::dlc_installer::Install();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   MaybeTriggerDownloadInAsh();
 #else
