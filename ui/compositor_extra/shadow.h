@@ -19,6 +19,9 @@ class Layer;
 // Simple class that draws a drop shadow around content at given bounds.
 class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
  public:
+  // Mapping from elevation to key and ambient shadow colors.
+  using ElevationToColorsMap = base::flat_map<int, std::pair<SkColor, SkColor>>;
+
   Shadow();
 
   Shadow(const Shadow&) = delete;
@@ -39,6 +42,7 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
 
   const gfx::Rect& content_bounds() const { return content_bounds_; }
   int desired_elevation() const { return desired_elevation_; }
+  const ElevationToColorsMap& color_map() const { return color_map_; }
 
   // Moves and resizes the shadow layer to frame |content_bounds|.
   // This should be used to adjust the shadow's size and position (rather than
@@ -54,6 +58,9 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
 
   // Set shadow style.
   void SetShadowStyle(gfx::ShadowStyle style);
+
+  // Set customized key and ambient shadows color map for certain elevations.
+  void SetElevationToColorsMap(const ElevationToColorsMap& color_map);
 
   const gfx::ShadowDetails* details_for_testing() const { return details_; }
 
@@ -106,6 +113,9 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
 
   // The style of shadow. Use MD style by default.
   gfx::ShadowStyle style_ = gfx::ShadowStyle::kMaterialDesign;
+
+  // The customized key and ambient shadows color map for certain elevations.
+  ElevationToColorsMap color_map_;
 
   // The owner of the actual shadow layer corresponding to a cc::NinePatchLayer.
   ShadowLayerOwner shadow_layer_owner_;

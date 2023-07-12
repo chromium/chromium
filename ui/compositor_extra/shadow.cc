@@ -89,7 +89,12 @@ void Shadow::SetShadowStyle(gfx::ShadowStyle style) {
     return;
 
   style_ = style;
-  RecreateShadowLayer();
+  UpdateLayerBounds();
+}
+
+void Shadow::SetElevationToColorsMap(const ElevationToColorsMap& color_map) {
+  color_map_ = color_map;
+  UpdateLayerBounds();
 }
 
 void Shadow::OnImplicitAnimationsCompleted() {
@@ -143,8 +148,17 @@ void Shadow::UpdateLayerBounds() {
   const int size_adjusted_elevation =
       std::min((smaller_dimension - 2 * rounded_corner_radius_) / 4,
                static_cast<int>(desired_elevation_));
-  const auto& details = gfx::ShadowDetails::Get(size_adjusted_elevation,
-                                                rounded_corner_radius_, style_);
+
+  auto iter = color_map_.find(desired_elevation_);
+  const auto& details =
+      (iter == color_map_.end())
+          ? gfx::ShadowDetails::Get(size_adjusted_elevation,
+                                    rounded_corner_radius_, style_)
+          : gfx::ShadowDetails::Get(
+                size_adjusted_elevation, rounded_corner_radius_,
+                /*key_color=*/iter->second.first,
+                /*ambient_color=*/iter->second.second, style_);
+
   gfx::Insets blur_region = gfx::ShadowValue::GetBlurRegion(details.values) +
                             gfx::Insets(rounded_corner_radius_);
   // Update |shadow_layer()| if details changed and it has been updated in

@@ -9,7 +9,7 @@
 #include <tuple>
 #include <vector>
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/gfx_export.h"
@@ -19,6 +19,7 @@ namespace gfx {
 class Insets;
 
 class ShadowValue;
+
 typedef std::vector<ShadowValue> ShadowValues;
 
 // ShadowValue encapsulates parameters needed to define a shadow, including the
@@ -72,12 +73,22 @@ class GFX_EXPORT ShadowValue {
   // Makes ShadowValues for MD shadows. This style is deprecated.
   static ShadowValues MakeMdShadowValues(int elevation,
                                          SkColor color = SK_ColorBLACK);
+  // Makes ShadowValues for MD shadows with customized key and ambient colors.
+  static ShadowValues MakeMdShadowValues(int elevation,
+                                         SkColor key_shadow_color,
+                                         SkColor ambient_shadow_color);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Makes ShadowValues for Chrome OS UI components.
+#if BUILDFLAG(IS_CHROMEOS)
+  // Makes ShadowValues for Chrome OS UI components with default colors.
   static ShadowValues MakeChromeOSSystemUIShadowValues(
       int elevation,
       SkColor color = SK_ColorBLACK);
+  // Makes ShadowValues for chrome OS UI components with customized key and
+  // ambient colors.
+  static ShadowValues MakeChromeOSSystemUIShadowValues(
+      int elevation,
+      SkColor key_shadow_color,
+      SkColor ambient_shadow_color);
 #endif
 
  private:

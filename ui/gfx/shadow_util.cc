@@ -110,10 +110,27 @@ const ShadowDetails& ShadowDetails::Get(int elevation,
   switch (style) {
     case ShadowStyle::kMaterialDesign:
       return Get(corner_radius, ShadowValue::MakeMdShadowValues(elevation));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case ShadowStyle::kChromeOSSystemUI:
       return Get(corner_radius,
                  ShadowValue::MakeChromeOSSystemUIShadowValues(elevation));
+#endif
+  }
+}
+
+const ShadowDetails& ShadowDetails::Get(int elevation,
+                                        int radius,
+                                        SkColor key_color,
+                                        SkColor ambient_color,
+                                        ShadowStyle style) {
+  switch (style) {
+    case ShadowStyle::kMaterialDesign:
+      return Get(radius, ShadowValue::MakeMdShadowValues(elevation, key_color,
+                                                         ambient_color));
+#if BUILDFLAG(IS_CHROMEOS)
+    case ShadowStyle::kChromeOSSystemUI:
+      return Get(radius, ShadowValue::MakeChromeOSSystemUIShadowValues(
+                             elevation, key_color, ambient_color));
 #endif
   }
 }
