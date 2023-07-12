@@ -188,8 +188,7 @@ public class BookmarkFolderSelectActivity
         updateFolderList();
 
         View shadow = findViewById(R.id.shadow);
-        int listPaddingTop =
-                getResources().getDimensionPixelSize(R.dimen.bookmark_list_view_padding_top);
+        int listPaddingTop = getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
         mBookmarkIdsList.getViewTreeObserver().addOnScrollChangedListener(() -> {
             if (mBookmarkIdsList.getChildCount() < 1) return;
 
