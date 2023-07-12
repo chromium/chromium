@@ -62,7 +62,7 @@ GlanceablesListFooterView::GlanceablesListFooterView(
                                        views::MaximumFlexSizeRule::kUnbounded))
           .Build());
 
-  auto* const see_all_button =
+  see_all_button_ =
       AddChildView(views::Builder<views::LabelButton>()
                        .SetText(l10n_util::GetStringUTF16(
                            IDS_GLANCEABLES_LIST_FOOTER_ACTION_BUTTON_LABEL))
@@ -70,14 +70,15 @@ GlanceablesListFooterView::GlanceablesListFooterView(
                        .SetID(base::to_underlying(
                            GlanceablesViewId::kListFooterSeeAllButton))
                        .Build());
-  see_all_button->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
-  see_all_button->SetImageModel(
+  see_all_button_->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_RIGHT);
+  see_all_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
                                      cros_tokens::kCrosSysOnSurface,
                                      kSeeAllIconSize));
-  see_all_button->SetTextColorId(views::Button::STATE_NORMAL,
-                                 cros_tokens::kCrosSysOnSurface);
+  see_all_button_->SetTextColorId(views::Button::STATE_NORMAL,
+                                  cros_tokens::kCrosSysOnSurface);
 
   SetProperty(views::kMarginsKey,
               gfx::Insets::TLBR(kFooterVerticalSpacing, kFooterStartSpacing,

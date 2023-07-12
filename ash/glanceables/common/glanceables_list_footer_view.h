@@ -13,6 +13,7 @@
 
 namespace views {
 class Label;
+class LabelButton;
 }  // namespace views
 
 namespace ash {
@@ -34,8 +35,11 @@ class ASH_EXPORT GlanceablesListFooterView : public views::FlexLayoutView {
   // `total_items_count`   - total number of items returned from API.
   void UpdateItemsCount(size_t visible_items_count, size_t total_items_count);
 
+  views::LabelButton* see_all_button() const { return see_all_button_; }
+
  private:
-  raw_ptr<views::Label, ExperimentalAsh> items_count_label_ = nullptr;
+  raw_ptr<views::Label> items_count_label_ = nullptr;
+  raw_ptr<views::LabelButton> see_all_button_ = nullptr;
 };
 
 }  // namespace ash

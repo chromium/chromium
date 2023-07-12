@@ -4,10 +4,13 @@
 
 #include "ash/system/unified/date_tray.h"
 
+#include "ash/glanceables/common/glanceables_list_footer_view.h"
+#include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/glanceables/tasks/fake_glanceables_tasks_client.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -22,6 +25,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/combobox/combobox.h"
@@ -31,6 +35,20 @@
 
 namespace ash {
 
+namespace {
+
+class MockNewWindowDelegate
+    : public testing::NiceMock<ash::TestNewWindowDelegate> {
+ public:
+  // TestNewWindowDelegate:
+  MOCK_METHOD(void,
+              OpenUrl,
+              (const GURL& url, OpenUrlFrom from, Disposition disposition),
+              (override));
+};
+
+}  // namespace
+
 class DateTrayTest
     : public AshTestBase,
       public wm::ActivationChangeObserver,
@@ -39,6 +57,12 @@ class DateTrayTest
   DateTrayTest() {
     scoped_feature_list_.InitWithFeatureState(features::kGlanceablesV2,
                                               GetParam());
+
+    auto delegate = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_ = delegate.get();
+    window_delegate_provider_ =
+        std::make_unique<ash::TestNewWindowDelegateProvider>(
+            std::move(delegate));
   }
 
   DateTrayTest(const DateTrayTest&) = delete;
@@ -152,6 +176,8 @@ class DateTrayTest
     return fake_glanceables_tasks_client_.get();
   }
 
+  MockNewWindowDelegate* new_window_delegate() { return new_window_delegate_; }
+
  private:
   std::unique_ptr<views::Widget> widget_;
   AccountId account_id_ =
@@ -165,6 +191,10 @@ class DateTrayTest
   raw_ptr<UnifiedSystemTray, ExperimentalAsh> unified_system_tray_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<ash::TestNewWindowDelegateProvider> window_delegate_provider_;
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_ =
+      nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(GlanceablesV2, DateTrayTest, testing::Bool());
@@ -259,6 +289,24 @@ TEST_P(DateTrayTest, MarkTaskAsComplete) {
     ASSERT_EQ(1u, fake_glanceables_tasks_client()->completed_tasks().size());
     ASSERT_EQ("TaskListID1:TaskListItem1",
               fake_glanceables_tasks_client()->completed_tasks().front());
+  }
+}
+
+// Tests that tapping the tasks glanceable action button opens a browser page.
+TEST_P(DateTrayTest, ShowTasksWebUI) {
+  LeftClickOn(GetDateTray());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(IsBubbleShown());
+  EXPECT_TRUE(AreContentsViewShown());
+
+  if (!AreGlanceablesV2Enabled()) {
+    EXPECT_EQ(GetGlanceableTrayBubble(), nullptr);
+  } else {
+    const auto* const see_all_button = views::AsViewClass<views::LabelButton>(
+        GetGlanceableTrayBubble()->GetTasksView()->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton)));
+    EXPECT_CALL(*new_window_delegate(), OpenUrl).Times(1);
+    GestureTapOn(see_all_button);
   }
 }
 

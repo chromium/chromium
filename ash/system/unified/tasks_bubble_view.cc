@@ -11,6 +11,7 @@
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
@@ -36,6 +37,9 @@ constexpr int kGlanceablesFooterMargin = 12;
 constexpr int kGlanceableTaskVerticalMargin = 2;
 constexpr int kTasksIconRightPadding = 4;
 constexpr int kTasksIconViewSize = 32;
+
+constexpr char kTasksManagementPage[] =
+    "https://calendar.google.com/calendar/u/0/r/week?opentasks=1";
 
 }  // namespace
 
@@ -151,7 +155,10 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
 }
 
 void TasksBubbleView::ActionButtonPressed() {
-  // TODO(b:277268122): launch tasks web app.
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kTasksManagementPage),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void TasksBubbleView::SelectedTasksListChanged() {
