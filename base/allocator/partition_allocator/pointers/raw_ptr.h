@@ -159,21 +159,6 @@ struct TraitsToImpl;
 
 }  // namespace raw_ptr_traits
 
-template <typename T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
-class raw_ptr;
-
-}  // namespace base
-
-// This type is to be used internally, or in callbacks arguments when it is
-// known that they might receive dangling pointers. In any other cases, please
-// use one of:
-// - raw_ptr<T, DanglingUntriaged>
-// - raw_ptr<T, DisableDanglingPtrDetection>
-template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
-using MayBeDangling = base::raw_ptr<T, Traits | base::RawPtrTraits::kMayDangle>;
-
-namespace base {
-
 struct RawPtrGlobalSettings {
   static void EnableExperimentalAsh() {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -435,12 +420,13 @@ struct TraitsToImpl {
 // non-default move constructor/assignment. Thus, it's possible to get an error
 // where the pointer is not actually dangling, and have to work around the
 // compiler. We have not managed to construct such an example in Chromium yet.
-template <typename T, RawPtrTraits Traits>
+template <typename T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
 class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
  public:
   using Impl = typename raw_ptr_traits::TraitsToImpl<Traits>::Impl;
   // Needed to make gtest Pointee matcher work with raw_ptr.
   using element_type = T;
+  using DanglingType = raw_ptr<T, Traits | RawPtrTraits::kMayDangle>;
 
 #if !BUILDFLAG(USE_PARTITION_ALLOC)
   // See comment at top about `PA_RAW_PTR_CHECK()`.
@@ -804,9 +790,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // variable (or worse, a field)! It's meant to be used as a temporary, to be
   // passed into a cleanup & freeing function, and destructed at the end of the
   // statement.
-  PA_ALWAYS_INLINE constexpr MayBeDangling<T, Traits>
-  ExtractAsDangling() noexcept {
-    MayBeDangling<T, Traits> res(std::move(*this));
+  PA_ALWAYS_INLINE constexpr DanglingType ExtractAsDangling() noexcept {
+    DanglingType res(std::move(*this));
     // Not all implementation clear the source pointer on move. Furthermore,
     // even for implemtantions that do, cross-kind conversions (that add
     // kMayDangle) fall back to a copy, instead of move. So do it here just in
@@ -1092,6 +1077,14 @@ constexpr auto ExperimentalAsh = base::RawPtrTraits::kExperimentalAsh;
 //
 // This is not meant to be added manually. You can ignore this flag.
 constexpr auto LeakedDanglingUntriaged = base::RawPtrTraits::kMayDangle;
+
+// Public verson used in callbacks arguments when it is known that they might
+// receive dangling pointers. In any other cases, please
+// use one of:
+// - raw_ptr<T, DanglingUntriaged>
+// - raw_ptr<T, DisableDanglingPtrDetection>
+template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+using MayBeDangling = base::raw_ptr<T, Traits | base::RawPtrTraits::kMayDangle>;
 
 namespace std {
 
