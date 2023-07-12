@@ -12,11 +12,10 @@ MockAutocompleteProviderClient::MockAutocompleteProviderClient() {
   shared_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
-
-  remote_suggestions_service_ =
-      std::make_unique<RemoteSuggestionsService>(GetURLLoaderFactory());
   document_suggestions_service_ = std::make_unique<DocumentSuggestionsService>(
       /*identity_manager=*/nullptr, GetURLLoaderFactory());
+  remote_suggestions_service_ = std::make_unique<RemoteSuggestionsService>(
+      document_suggestions_service_.get(), GetURLLoaderFactory());
   omnibox_triggered_feature_service_ =
       std::make_unique<OmniboxTriggeredFeatureService>();
 }

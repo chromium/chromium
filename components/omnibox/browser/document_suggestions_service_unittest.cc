@@ -33,8 +33,11 @@ namespace {
 
 variations::VariationID kVariationID = 123;
 
+void OnDocumentSuggestionsRequestAvailable(network::ResourceRequest* request) {}
+
 void OnDocumentSuggestionsLoaderAvailable(
-    std::unique_ptr<network::SimpleURLLoader> loader) {}
+    std::unique_ptr<network::SimpleURLLoader> loader,
+    const std::string& request_body) {}
 
 void OnURLLoadComplete(const network::SimpleURLLoader* source,
                        std::unique_ptr<std::string> response_body) {}
@@ -88,7 +91,8 @@ TEST_F(DocumentSuggestionsServiceTest, VariationHeaders) {
       }));
 
   document_suggestions_service_->CreateDocumentSuggestionsRequest(
-      u"", false, base::BindOnce(OnDocumentSuggestionsLoaderAvailable),
+      u"", false, base::BindOnce(OnDocumentSuggestionsRequestAvailable),
+      base::BindOnce(OnDocumentSuggestionsLoaderAvailable),
       base::BindOnce(OnURLLoadComplete));
 
   base::RunLoop().RunUntilIdle();

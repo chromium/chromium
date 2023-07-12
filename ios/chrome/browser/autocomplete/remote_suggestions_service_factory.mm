@@ -36,6 +36,7 @@ RemoteSuggestionsServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<RemoteSuggestionsService>(
+      /*document_suggestions_service=*/nullptr,
       browser_state->GetSharedURLLoaderFactory());
 }
 

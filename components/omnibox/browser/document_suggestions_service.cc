@@ -85,6 +85,7 @@ DocumentSuggestionsService::~DocumentSuggestionsService() {}
 void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
     const std::u16string& query,
     bool is_incognito,
+    CreationCallback creation_callback,
     StartCallback start_callback,
     CompletionCallback completion_callback) {
   std::string endpoint = base::GetFieldTrialParamValueByFeature(
@@ -131,6 +132,8 @@ void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
       is_incognito ? variations::InIncognito::kYes
                    : variations::InIncognito::kNo,
       request.get());
+
+  std::move(creation_callback).Run(request.get());
 
   // Create and fetch an OAuth2 token.
   std::string scope = "https://www.googleapis.com/auth/cloud_search.query";
@@ -190,5 +193,5 @@ void DocumentSuggestionsService::StartDownloadAndTransferLoader(
       url_loader_factory_.get(),
       base::BindOnce(std::move(completion_callback), loader.get()));
 
-  std::move(start_callback).Run(std::move(loader));
+  std::move(start_callback).Run(std::move(loader), request_body);
 }

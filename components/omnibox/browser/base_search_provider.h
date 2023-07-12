@@ -231,7 +231,7 @@ class BaseSearchProvider : public AutocompleteProvider {
   // server to handle the results of the deletion. It will be called after the
   // deletion request completes.
   void OnDeletionComplete(const network::SimpleURLLoader* source,
-                          const bool response_received,
+                          const int response_code,
                           std::unique_ptr<std::string> response_body);
 
   raw_ptr<AutocompleteProviderClient> client_;

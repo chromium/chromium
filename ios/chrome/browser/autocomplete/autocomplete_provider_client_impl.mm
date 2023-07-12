@@ -137,12 +137,6 @@ AutocompleteProviderClientImpl::GetRemoteSuggestionsService(
       browser_state_, create_if_necessary);
 }
 
-DocumentSuggestionsService*
-AutocompleteProviderClientImpl::GetDocumentSuggestionsService(
-    bool create_if_necessary) const {
-  return nullptr;
-}
-
 ZeroSuggestCacheService*
 AutocompleteProviderClientImpl::GetZeroSuggestCacheService() {
   return ios::ZeroSuggestCacheServiceFactory::GetForBrowserState(

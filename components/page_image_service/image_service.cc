@@ -83,10 +83,10 @@ class ImageService::SuggestEntityImageURLFetcher {
 
  private:
   void OnURLLoadComplete(const network::SimpleURLLoader* source,
-                         const bool response_received,
+                         const int response_code,
                          std::unique_ptr<std::string> response_body) {
     DCHECK_EQ(loader_.get(), source);
-    if (!response_received) {
+    if (response_code != 200) {
       UmaHistogramEnumerationForClient(kBackendSuggestResultHistogramName,
                                        PageImageServiceResult::kResponseMissing,
                                        client_id_);

@@ -105,6 +105,7 @@ class DocumentProvider : public AutocompleteProvider {
 
   // Called when the network request for suggestions has completed.
   void OnURLLoadComplete(const network::SimpleURLLoader* source,
+                         const int response_code,
                          std::unique_ptr<std::string> response_body);
 
   // The function updates |matches_| with data parsed from |json_data|.

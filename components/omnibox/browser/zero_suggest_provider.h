@@ -113,7 +113,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   void OnURLLoadComplete(const AutocompleteInput& input,
                          const ResultType result_type,
                          const network::SimpleURLLoader* source,
-                         const bool response_received,
+                         const int response_code,
                          std::unique_ptr<std::string> response_body);
   // Called when the prefetch network request has completed.
   // `input` and `result_type` are bound to this callback. The former is the
@@ -122,7 +122,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   void OnPrefetchURLLoadComplete(const AutocompleteInput& input,
                                  const ResultType result_type,
                                  const network::SimpleURLLoader* source,
-                                 const bool response_received,
+                                 const int response_code,
                                  std::unique_ptr<std::string> response_body);
 
   // Returns an AutocompleteMatch for a navigational suggestion |navigation|.

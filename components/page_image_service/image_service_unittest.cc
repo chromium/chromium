@@ -80,6 +80,7 @@ class ImageServiceTest : public testing::Test {
 
     template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
     remote_suggestions_service_ = std::make_unique<RemoteSuggestionsService>(
+        /*document_suggestions_service=*/nullptr,
         test_url_loader_factory_.GetSafeWeakWrapper());
     test_opt_guide_ =
         std::make_unique<optimization_guide::ImageServiceTestOptGuide>();
@@ -435,6 +436,7 @@ class DisabledOptGuideImageServiceTest : public ImageServiceTest {
 
     template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
     remote_suggestions_service_ = std::make_unique<RemoteSuggestionsService>(
+        /*document_suggestions_service=*/nullptr,
         test_url_loader_factory_.GetSafeWeakWrapper());
     test_opt_guide_ =
         std::make_unique<optimization_guide::ImageServiceTestOptGuide>();

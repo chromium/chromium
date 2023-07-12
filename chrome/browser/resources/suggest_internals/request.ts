@@ -30,6 +30,11 @@ export class SuggestRequestElement extends PolymerElement {
     return {
       request: Object,
 
+      requestDataJson_: {
+        type: String,
+        computed: `computeRquestDataJson_(request.data)`,
+      },
+
       responseJson_: {
         type: String,
         computed: `computeResponseJson_(request.response)`,
@@ -38,13 +43,25 @@ export class SuggestRequestElement extends PolymerElement {
   }
 
   request: Request;
+  private requestDataJson_: string = '';
   private responseJson_: string = '';
+
+  private computeRquestDataJson_(): string {
+    try {
+      // Try to parse the request body, if any.
+      this.request.data['Request-Body'] =
+          JSON.parse(this.request.data['Request-Body']);
+    } finally {
+      // Pretty-print the parsed JSON.
+      return JSON.stringify(this.request.data, null, 2);
+    }
+  }
 
   private computeResponseJson_(): string {
     try {
       // Remove the magic XSSI guard prefix, if any, to get a valid JSON.
       const validJson = this.request.response.replace(')]}\'', '').trim();
-      // Try to parse and pretty-print the valid JSON.
+      // Try to parse the valid JSON.
       const parsedJson = JSON.parse(validJson);
       // Pretty-print the parsed JSON.
       return JSON.stringify(parsedJson, null, 2);
@@ -53,9 +70,8 @@ export class SuggestRequestElement extends PolymerElement {
     }
   }
 
-  private getRequestData_(): string {
-    const requestData = JSON.stringify(this.request.data, null, 2);
-    return requestData === '{}' ? '' : requestData;
+  private getRequestDataHtml_(): TrustedHTML {
+    return sanitizeInnerHtml(this.requestDataJson_);
   }
 
   private getRequestPath_(): string {
@@ -76,6 +92,8 @@ export class SuggestRequestElement extends PolymerElement {
     switch (this.request.status) {
       case RequestStatus.kHardcoded:
         return 'suggest:lock';
+      case RequestStatus.kCreated:
+        return 'cr:create';
       case RequestStatus.kSent:
         return 'cr:schedule';
       case RequestStatus.kSucceeded:
@@ -91,6 +109,8 @@ export class SuggestRequestElement extends PolymerElement {
     switch (this.request.status) {
       case RequestStatus.kHardcoded:
         return 'hardcoded';
+      case RequestStatus.kCreated:
+        return 'created';
       case RequestStatus.kSent:
         return 'pending';
       case RequestStatus.kSucceeded:
@@ -120,7 +140,7 @@ export class SuggestRequestElement extends PolymerElement {
   }
 
   private onCopyRequestClick_() {
-    navigator.clipboard.writeText(this.getRequestData_());
+    navigator.clipboard.writeText(this.requestDataJson_);
 
     this.dispatchEvent(new CustomEvent('show-toast', {
       bubbles: true,

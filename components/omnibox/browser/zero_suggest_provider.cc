@@ -569,14 +569,14 @@ void ZeroSuggestProvider::OnURLLoadComplete(
     const AutocompleteInput& input,
     const ResultType result_type,
     const network::SimpleURLLoader* source,
-    const bool response_received,
+    const int response_code,
     std::unique_ptr<std::string> response_body) {
   TRACE_EVENT0("omnibox", "ZeroSuggestProvider::OnURLLoadComplete");
 
   DCHECK(!done_);
   DCHECK_EQ(loader_.get(), source);
 
-  if (!response_received) {
+  if (response_code != 200) {
     loader_.reset();
     done_ = true;
     return;
@@ -620,13 +620,13 @@ void ZeroSuggestProvider::OnPrefetchURLLoadComplete(
     const AutocompleteInput& input,
     const ResultType result_type,
     const network::SimpleURLLoader* source,
-    const bool response_received,
+    const int response_code,
     std::unique_ptr<std::string> response_body) {
   TRACE_EVENT0("omnibox", "ZeroSuggestProvider::OnPrefetchURLLoadComplete");
 
   DCHECK_EQ(prefetch_loader_.get(), source);
 
-  if (response_received) {
+  if (response_code == 200) {
     LogEvent(Event::kRemoteResponseReceived, result_type, /*is_prefetch=*/true);
 
     SearchSuggestionParser::Results unused_results;

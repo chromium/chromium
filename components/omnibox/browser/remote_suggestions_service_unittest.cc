@@ -39,15 +39,20 @@ class TestObserver : public RemoteSuggestionsService::Observer {
   std::string response_body() { return response_body_; }
 
   // RemoteSuggestionsService::Observer:
-  void OnSuggestRequestStarting(
+  void OnSuggestRequestCreated(
       const base::UnguessableToken& request_id,
       const network::ResourceRequest* request) override {
     request_id_ = request_id;
     url_ = request->url;
   }
+  void OnSuggestRequestStarted(const base::UnguessableToken& request_id,
+                               network::SimpleURLLoader* loader,
+                               const std::string& request_body) override {
+    ASSERT_EQ(request_id_, request_id);
+  }
   void OnSuggestRequestCompleted(
       const base::UnguessableToken& request_id,
-      const bool response_received,
+      const int response_code,
       const std::unique_ptr<std::string>& response_body) override {
     // Verify the observer has been notified of this request.
     ASSERT_EQ(request_id_, request_id);
@@ -74,7 +79,7 @@ class RemoteSuggestionsServiceTest : public testing::Test {
   }
 
   void OnRequestComplete(const network::SimpleURLLoader* source,
-                         const bool response_received,
+                         const int response_code,
                          std::unique_ptr<std::string> response_body) {}
 
  protected:
@@ -91,7 +96,8 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies) {
         resource_request = request;
       }));
 
-  RemoteSuggestionsService service(GetUrlLoaderFactory());
+  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
+                                   GetUrlLoaderFactory());
   TemplateURLService template_url_service(nullptr, 0);
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
@@ -118,7 +124,8 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureBypassCache) {
         resource_request = request;
       }));
 
-  RemoteSuggestionsService service(GetUrlLoaderFactory());
+  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
+                                   GetUrlLoaderFactory());
   TemplateURLService template_url_service(nullptr, 0);
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
@@ -148,7 +155,8 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureObservers) {
       template_url_service.Add(
           std::make_unique<TemplateURL>(template_url_data)));
 
-  RemoteSuggestionsService service(GetUrlLoaderFactory());
+  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
+                                   GetUrlLoaderFactory());
 
   TestObserver observer(&service);
 

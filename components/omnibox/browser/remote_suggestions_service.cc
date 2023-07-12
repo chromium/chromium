@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "components/omnibox/browser/base_search_provider.h"
+#include "components/omnibox/browser/document_suggestions_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/load_flags.h"
@@ -31,8 +32,10 @@ void AddVariationHeaders(network::ResourceRequest* request) {
 }  // namespace
 
 RemoteSuggestionsService::RemoteSuggestionsService(
+    DocumentSuggestionsService* document_suggestions_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(url_loader_factory) {
+    : document_suggestions_service_(document_suggestions_service),
+      url_loader_factory_(url_loader_factory) {
   DCHECK(url_loader_factory);
 }
 
@@ -105,9 +108,9 @@ RemoteSuggestionsService::StartSuggestionsRequest(
   // Create a unique identifier for the request.
   const base::UnguessableToken request_id = base::UnguessableToken::Create();
 
-  // Notify the observers that the transfer is about to start.
+  // Notify the observers that request has been created.
   for (Observer& observer : observers_) {
-    observer.OnSuggestRequestStarting(request_id, request.get());
+    observer.OnSuggestRequestCreated(request_id, request.get());
   }
 
   // Make loader and start download.
@@ -118,6 +121,13 @@ RemoteSuggestionsService::StartSuggestionsRequest(
       base::BindOnce(&RemoteSuggestionsService::OnURLLoadComplete,
                      weak_ptr_factory_.GetWeakPtr(), request_id,
                      std::move(completion_callback), loader.get()));
+
+  // Notify the observers that the transfer started.
+  for (Observer& observer : observers_) {
+    observer.OnSuggestRequestStarted(request_id, loader.get(),
+                                     /*request_body*/ "");
+  }
+
   return loader;
 }
 
@@ -179,9 +189,9 @@ RemoteSuggestionsService::StartZeroPrefixSuggestionsRequest(
   // Create a unique identifier for the request.
   const base::UnguessableToken request_id = base::UnguessableToken::Create();
 
-  // Notify the observers that the transfer is about to start.
+  // Notify the observers that request has been created.
   for (Observer& observer : observers_) {
-    observer.OnSuggestRequestStarting(request_id, request.get());
+    observer.OnSuggestRequestCreated(request_id, request.get());
   }
 
   // Make loader and start download.
@@ -192,7 +202,40 @@ RemoteSuggestionsService::StartZeroPrefixSuggestionsRequest(
       base::BindOnce(&RemoteSuggestionsService::OnURLLoadComplete,
                      weak_ptr_factory_.GetWeakPtr(), request_id,
                      std::move(completion_callback), loader.get()));
+
+  // Notify the observers that the transfer started.
+  for (Observer& observer : observers_) {
+    observer.OnSuggestRequestStarted(request_id, loader.get(),
+                                     /*request_body*/ "");
+  }
+
   return loader;
+}
+
+void RemoteSuggestionsService::CreateDocumentSuggestionsRequest(
+    const std::u16string& query,
+    bool is_incognito,
+    DocumentStartCallback start_callback,
+    CompletionCallback completion_callback) {
+  // Create a unique identifier for the request.
+  const base::UnguessableToken request_id = base::UnguessableToken::Create();
+
+  document_suggestions_service_->CreateDocumentSuggestionsRequest(
+      query, is_incognito,
+      base::BindOnce(
+          &RemoteSuggestionsService::OnDocumentSuggestionsRequestAvailable,
+          weak_ptr_factory_.GetWeakPtr(), request_id),
+      base::BindOnce(
+          &RemoteSuggestionsService::OnDocumentSuggestionsLoaderAvailable,
+          weak_ptr_factory_.GetWeakPtr(), request_id,
+          std::move(start_callback)),
+      base::BindOnce(&RemoteSuggestionsService::OnURLLoadComplete,
+                     weak_ptr_factory_.GetWeakPtr(), request_id,
+                     std::move(completion_callback)));
+}
+
+void RemoteSuggestionsService::StopCreatingDocumentSuggestionsRequest() {
+  document_suggestions_service_->StopCreatingDocumentSuggestionsRequest();
 }
 
 std::unique_ptr<network::SimpleURLLoader>
@@ -245,9 +288,9 @@ RemoteSuggestionsService::StartDeletionRequest(
   // Create a unique identifier for the request.
   const base::UnguessableToken request_id = base::UnguessableToken::Create();
 
-  // Notify the observers that the transfer is about to start.
+  // Notify the observers that request has been created.
   for (Observer& observer : observers_) {
-    observer.OnSuggestRequestStarting(request_id, request.get());
+    observer.OnSuggestRequestCreated(request_id, request.get());
   }
 
   // Make loader and start download.
@@ -258,6 +301,13 @@ RemoteSuggestionsService::StartDeletionRequest(
       base::BindOnce(&RemoteSuggestionsService::OnURLLoadComplete,
                      weak_ptr_factory_.GetWeakPtr(), request_id,
                      std::move(completion_callback), loader.get()));
+
+  // Notify the observers that the transfer started.
+  for (Observer& observer : observers_) {
+    observer.OnSuggestRequestStarted(request_id, loader.get(),
+                                     /*request_body*/ "");
+  }
+
   return loader;
 }
 
@@ -274,22 +324,44 @@ void RemoteSuggestionsService::set_url_loader_factory_for_testing(
   url_loader_factory_ = std::move(url_loader_factory);
 }
 
+void RemoteSuggestionsService::OnDocumentSuggestionsRequestAvailable(
+    const base::UnguessableToken& request_id,
+    network::ResourceRequest* request) {
+  // Notify the observers that request has been created.
+  for (Observer& observer : observers_) {
+    observer.OnSuggestRequestCreated(request_id, request);
+  }
+}
+
+void RemoteSuggestionsService::OnDocumentSuggestionsLoaderAvailable(
+    const base::UnguessableToken& request_id,
+    DocumentStartCallback start_callback,
+    std::unique_ptr<network::SimpleURLLoader> loader,
+    const std::string& request_body) {
+  // Notify the observers that the transfer started.
+  for (Observer& observer : observers_) {
+    observer.OnSuggestRequestStarted(request_id, loader.get(), request_body);
+  }
+
+  std::move(start_callback).Run(std::move(loader));
+}
+
 void RemoteSuggestionsService::OnURLLoadComplete(
     const base::UnguessableToken& request_id,
     CompletionCallback completion_callback,
     const network::SimpleURLLoader* source,
     std::unique_ptr<std::string> response_body) {
-  const bool response_received =
-      response_body && source->NetError() == net::OK &&
-      source->ResponseInfo() && source->ResponseInfo()->headers &&
-      source->ResponseInfo()->headers->response_code() == 200;
+  const int response_code =
+      source->ResponseInfo() && source->ResponseInfo()->headers
+          ? source->ResponseInfo()->headers->response_code()
+          : 0;
 
   // Notify the observers that the transfer is done.
   for (Observer& observer : observers_) {
-    observer.OnSuggestRequestCompleted(request_id, response_received,
+    observer.OnSuggestRequestCompleted(request_id, response_code,
                                        response_body);
   }
 
   std::move(completion_callback)
-      .Run(source, response_received, std::move(response_body));
+      .Run(source, response_code, std::move(response_body));
 }

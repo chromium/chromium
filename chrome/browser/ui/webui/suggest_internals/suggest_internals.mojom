@@ -10,9 +10,10 @@ import "mojo/public/mojom/base/time.mojom";
 
 enum RequestStatus {
   kHardcoded = 0,
-  kSent = 1,
-  kSucceeded = 2,
-  kFailed = 3,
+  kCreated = 1,
+  kSent = 2,
+  kSucceeded = 3,
+  kFailed = 4,
 };
 
 // Represents a suggest request and its associated metadata and response.
@@ -51,8 +52,10 @@ interface PageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
-  // Notifies the page that a request has started.
-  OnSuggestRequestStarting(Request request);
+  // Notifies the page that the given request has been created.
+  OnSuggestRequestCreated(Request request);
+  // Notifies the page that the given request has started.
+  OnSuggestRequestStarted(Request request);
   // Notifies the page that the given request has completed.
   OnSuggestRequestCompleted(Request request);
 };

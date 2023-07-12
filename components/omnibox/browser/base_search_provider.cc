@@ -621,9 +621,9 @@ void BaseSearchProvider::DeleteMatchFromMatches(
 
 void BaseSearchProvider::OnDeletionComplete(
     const network::SimpleURLLoader* source,
-    const bool response_received,
+    const int response_code,
     std::unique_ptr<std::string> response_body) {
-  RecordDeletionResult(response_received);
+  RecordDeletionResult(response_code == 200);
   base::EraseIf(
       deletion_loaders_,
       [source](const std::unique_ptr<network::SimpleURLLoader>& loader) {
