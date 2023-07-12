@@ -14,7 +14,6 @@
 # limitations under the License.
 
 import pytest
-from anys import ANY_STR
 from syrupy.filters import props
 from test_helpers import execute_command, goto_url
 
@@ -158,8 +157,8 @@ def get_events(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_input_performActionsEmitsKeyboardEvents(websocket, context_id,
-                                                       html,
-                                                       activate_main_tab):
+                                                       html, activate_main_tab,
+                                                       snapshot):
     await goto_url(websocket, context_id, html(SCRIPT))
     await activate_main_tab()
     await reset_mouse(websocket, context_id)
@@ -185,68 +184,7 @@ async def test_input_performActionsEmitsKeyboardEvents(websocket, context_id,
 
     result = await get_events(websocket, context_id)
 
-    assert {
-        'type': 'success',
-        'result': {
-            'type': 'array',
-            'value': [{
-                'type': 'object',
-                'value': [['event', {
-                    'type': 'string',
-                    'value': 'keydown'
-                }], ['key', {
-                    'type': 'string',
-                    'value': 'a'
-                }], ['code', {
-                    'type': 'string',
-                    'value': 'KeyA'
-                }], ['charCode', {
-                    'type': 'number',
-                    'value': 0
-                }], ['keyCode', {
-                    'type': 'number',
-                    'value': 65
-                }]]
-            }, {
-                'type': 'object',
-                'value': [['event', {
-                    'type': 'string',
-                    'value': 'keypress'
-                }], ['key', {
-                    'type': 'string',
-                    'value': 'a'
-                }], ['code', {
-                    'type': 'string',
-                    'value': 'KeyA'
-                }], ['charCode', {
-                    'type': 'number',
-                    'value': 97
-                }], ['keyCode', {
-                    'type': 'number',
-                    'value': 97
-                }]]
-            }, {
-                'type': 'object',
-                'value': [['event', {
-                    'type': 'string',
-                    'value': 'keyup'
-                }], ['key', {
-                    'type': 'string',
-                    'value': 'a'
-                }], ['code', {
-                    'type': 'string',
-                    'value': 'KeyA'
-                }], ['charCode', {
-                    'type': 'number',
-                    'value': 0
-                }], ['keyCode', {
-                    'type': 'number',
-                    'value': 65
-                }]]
-            }],
-        },
-        'realm': ANY_STR
-    } == result
+    assert result == snapshot(exclude=props("realm"))
 
 
 @pytest.mark.skip(reason="TODO(jrandolf): flaky")
@@ -494,7 +432,8 @@ async def test_input_performActionsDoesNotCancelDraggingWithAlt(
 
 @pytest.mark.asyncio
 async def test_input_performActionsEmitsPointerEvents(websocket, context_id,
-                                                      html, activate_main_tab):
+                                                      html, activate_main_tab,
+                                                      snapshot):
     await goto_url(websocket, context_id, html(SCRIPT))
     await activate_main_tab()
     await reset_mouse(websocket, context_id)
@@ -524,68 +463,7 @@ async def test_input_performActionsEmitsPointerEvents(websocket, context_id,
 
     result = await get_events(websocket, context_id)
 
-    assert {
-        'type': 'success',
-        'result': {
-            'type': 'array',
-            'value': [{
-                'type': 'object',
-                'value': [['event', {
-                    'type': 'string',
-                    'value': 'mousedown'
-                }], ['button', {
-                    'type': 'number',
-                    'value': 0
-                }], ['buttons', {
-                    'type': 'number',
-                    'value': 1
-                }], ['clientX', {
-                    'type': 'number',
-                    'value': 0
-                }], ['clientY', {
-                    'type': 'number',
-                    'value': 0
-                }]]
-            }, {
-                'type': 'object',
-                'value': [['event', {
-                    'type': 'string',
-                    'value': 'mousemove'
-                }], ['button', {
-                    'type': 'number',
-                    'value': 0
-                }], ['buttons', {
-                    'type': 'number',
-                    'value': 1
-                }], ['clientX', {
-                    'type': 'number',
-                    'value': 1
-                }], ['clientY', {
-                    'type': 'number',
-                    'value': 1
-                }]]
-            }, {
-                'type': 'object',
-                'value': [['event', {
-                    'type': 'string',
-                    'value': 'mouseup'
-                }], ['button', {
-                    'type': 'number',
-                    'value': 0
-                }], ['buttons', {
-                    'type': 'number',
-                    'value': 0
-                }], ['clientX', {
-                    'type': 'number',
-                    'value': 1
-                }], ['clientY', {
-                    'type': 'number',
-                    'value': 1
-                }]]
-            }],
-        },
-        'realm': ANY_STR
-    } == result
+    assert result == snapshot(exclude=props("realm"))
 
 
 @pytest.mark.skip(reason="""
@@ -594,7 +472,8 @@ async def test_input_performActionsEmitsPointerEvents(websocket, context_id,
     """)
 @pytest.mark.asyncio
 async def test_input_performActionsEmitsWheelEvents(websocket, context_id,
-                                                    html, activate_main_tab):
+                                                    html, activate_main_tab,
+                                                    snapshot):
     await goto_url(websocket, context_id, html(SCRIPT))
     await activate_main_tab()
     await reset_mouse(websocket, context_id)
@@ -630,62 +509,4 @@ async def test_input_performActionsEmitsWheelEvents(websocket, context_id,
 
     result = await get_events(websocket, context_id)
 
-    assert {
-        'type': 'success',
-        'result': {
-            'type': 'array',
-            'value': [{
-                'type': 'object',
-                'value': [['event', {
-                    'type': 'string',
-                    'value': 'mousedown'
-                }], ['button', {
-                    'type': 'number',
-                    'value': 0
-                }], ['buttons', {
-                    'type': 'number',
-                    'value': 1
-                }], ['clientX', {
-                    'type': 'number',
-                    'value': 0
-                }], ['clientY', {
-                    'type': 'number',
-                    'value': 0
-                }]]
-            }, {
-                'type': 'object',
-                'value': [['event', {
-                    'type': 'string',
-                    'value': 'wheel'
-                }], ['deltaX', {
-                    'type': 'number',
-                    'value': 0
-                }], ['deltaY', {
-                    'type': 'number',
-                    'value': 10
-                }], ['deltaZ', {
-                    'type': 'number',
-                    'value': 0
-                }]]
-            }, {
-                'type': 'object',
-                'value': [['event', {
-                    'type': 'string',
-                    'value': 'mouseup'
-                }], ['button', {
-                    'type': 'number',
-                    'value': 0
-                }], ['buttons', {
-                    'type': 'number',
-                    'value': 0
-                }], ['clientX', {
-                    'type': 'number',
-                    'value': 0
-                }], ['clientY', {
-                    'type': 'number',
-                    'value': 0
-                }]]
-            }],
-        },
-        'realm': ANY_STR
-    } == result
+    assert result == snapshot(exclude=props("realm"))

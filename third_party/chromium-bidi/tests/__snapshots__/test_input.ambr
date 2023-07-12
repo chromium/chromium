@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: test_input_performActionsCancelsDragging
+# name: test_input_performActionsEmitsKeyboardEvents
   dict({
     'result': dict({
       'type': 'array',
@@ -11,35 +11,35 @@
               'event',
               dict({
                 'type': 'string',
-                'value': 'mousemove',
+                'value': 'keydown',
               }),
             ]),
             list([
-              'button',
+              'key',
+              dict({
+                'type': 'string',
+                'value': 'a',
+              }),
+            ]),
+            list([
+              'code',
+              dict({
+                'type': 'string',
+                'value': 'KeyA',
+              }),
+            ]),
+            list([
+              'charCode',
               dict({
                 'type': 'number',
                 'value': 0,
               }),
             ]),
             list([
-              'buttons',
+              'keyCode',
               dict({
                 'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 58,
+                'value': 65,
               }),
             ]),
           ]),
@@ -51,35 +51,35 @@
               'event',
               dict({
                 'type': 'string',
-                'value': 'mousedown',
+                'value': 'keypress',
               }),
             ]),
             list([
-              'button',
+              'key',
               dict({
-                'type': 'number',
-                'value': 0,
+                'type': 'string',
+                'value': 'a',
               }),
             ]),
             list([
-              'buttons',
+              'code',
               dict({
-                'type': 'number',
-                'value': 1,
+                'type': 'string',
+                'value': 'KeyA',
               }),
             ]),
             list([
-              'clientX',
+              'charCode',
               dict({
                 'type': 'number',
-                'value': 58,
+                'value': 97,
               }),
             ]),
             list([
-              'clientY',
+              'keyCode',
               dict({
                 'type': 'number',
-                'value': 58,
+                'value': 97,
               }),
             ]),
           ]),
@@ -91,275 +91,35 @@
               'event',
               dict({
                 'type': 'string',
-                'value': 'mousemove',
+                'value': 'keyup',
               }),
             ]),
             list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 1,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 158,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
+              'key',
               dict({
                 'type': 'string',
-                'value': 'dragstart',
+                'value': 'a',
               }),
             ]),
             list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 1,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
+              'code',
               dict({
                 'type': 'string',
-                'value': 'dragenter',
+                'value': 'KeyA',
               }),
             ]),
             list([
-              'button',
+              'charCode',
               dict({
                 'type': 'number',
                 'value': 0,
               }),
             ]),
             list([
-              'buttons',
+              'keyCode',
               dict({
                 'type': 'number',
-                'value': 1,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 158,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'dragover',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 1,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 158,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'dragleave',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 1,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 158,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'dragend',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 158,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'mousemove',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 1,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 59,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 159,
+                'value': 65,
               }),
             ]),
           ]),
@@ -369,51 +129,11 @@
     'type': 'success',
   })
 # ---
-# name: test_input_performActionsDoesNotCancelDraggingWithAlt
+# name: test_input_performActionsEmitsPointerEvents
   dict({
     'result': dict({
       'type': 'array',
       'value': list([
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'mousemove',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-          ]),
-        }),
         dict({
           'type': 'object',
           'value': list([
@@ -442,14 +162,14 @@
               'clientX',
               dict({
                 'type': 'number',
-                'value': 58,
+                'value': 0,
               }),
             ]),
             list([
               'clientY',
               dict({
                 'type': 'number',
-                'value': 58,
+                'value': 0,
               }),
             ]),
           ]),
@@ -482,14 +202,14 @@
               'clientX',
               dict({
                 'type': 'number',
-                'value': 58,
+                'value': 1,
               }),
             ]),
             list([
               'clientY',
               dict({
                 'type': 'number',
-                'value': 158,
+                'value': 1,
               }),
             ]),
           ]),
@@ -501,7 +221,7 @@
               'event',
               dict({
                 'type': 'string',
-                'value': 'dragstart',
+                'value': 'mouseup',
               }),
             ]),
             list([
@@ -513,513 +233,23 @@
             ]),
             list([
               'buttons',
+              dict({
+                'type': 'number',
+                'value': 0,
+              }),
+            ]),
+            list([
+              'clientX',
               dict({
                 'type': 'number',
                 'value': 1,
               }),
             ]),
             list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
               'clientY',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'dragenter',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
               dict({
                 'type': 'number',
                 'value': 1,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 158,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'dragover',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 1,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 158,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'dragover',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 1,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 59,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 159,
-              }),
-            ]),
-          ]),
-        }),
-      ]),
-    }),
-    'type': 'success',
-  })
-# ---
-# name: test_input_performActionsEmitsDragging
-  dict({
-    'result': dict({
-      'type': 'array',
-      'value': list([
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'mousemove',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'mousedown',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 1,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'mousemove',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 1,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 158,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'dragstart',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 1,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'dragenter',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 1,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 158,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'dragover',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 1,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 158,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'drop',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 1,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 158,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'dragend',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 58,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 158,
-              }),
-            ]),
-          ]),
-        }),
-        dict({
-          'type': 'object',
-          'value': list([
-            list([
-              'event',
-              dict({
-                'type': 'string',
-                'value': 'mousemove',
-              }),
-            ]),
-            list([
-              'button',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'buttons',
-              dict({
-                'type': 'number',
-                'value': 0,
-              }),
-            ]),
-            list([
-              'clientX',
-              dict({
-                'type': 'number',
-                'value': 59,
-              }),
-            ]),
-            list([
-              'clientY',
-              dict({
-                'type': 'number',
-                'value': 159,
               }),
             ]),
           ]),
