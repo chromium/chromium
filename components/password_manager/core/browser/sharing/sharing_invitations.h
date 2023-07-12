@@ -41,8 +41,11 @@ struct IncomingSharingInvitation {
   PasswordForm::Scheme scheme = PasswordForm::Scheme::kHtml;
   std::u16string display_name;
   GURL icon_url;
-  std::u16string sender_email;
+
+  // Invitation metadata:
   base::Time date_created;
+  std::u16string sender_email;
+  std::u16string sender_display_name;
 };
 
 PasswordForm IncomingSharingInvitationToPasswordForm(

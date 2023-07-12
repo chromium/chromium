@@ -27,8 +27,9 @@ bool operator==(const IncomingSharingInvitation& lhs,
       lhs.password_element == rhs.password_element &&
       lhs.signon_realm == rhs.signon_realm &&
       lhs.password_value == rhs.password_value &&
+      lhs.date_created == rhs.date_created &&
       lhs.sender_email == rhs.sender_email &&
-      lhs.date_created == rhs.date_created;
+      lhs.sender_display_name == rhs.sender_display_name;
 }
 
 std::ostream& operator<<(std::ostream& os,
@@ -45,8 +46,10 @@ std::ostream& operator<<(std::ostream& os,
             << "\nscheme: " << static_cast<int>(invitation.scheme)
             << "\ndisplay_name: " << invitation.display_name
             << "\nicon_url: " << invitation.icon_url
+            << "\ndate_created: " << invitation.date_created
             << "\nsender_email: " << invitation.sender_email
-            << "\ndate_created: " << invitation.date_created << "\n)\n";
+            << "\nsender_display_name: " << invitation.sender_display_name
+            << "\n)\n";
 }
 
 PasswordForm IncomingSharingInvitationToPasswordForm(
@@ -62,7 +65,10 @@ PasswordForm IncomingSharingInvitationToPasswordForm(
   form.display_name = invitation.display_name;
   form.date_created = base::Time::Now();
   form.type = PasswordForm::Type::kReceivedViaSharing;
-  // TODO(crbug.com/1448235): add the shared password metadata too.
+  form.sender_email = invitation.sender_email;
+  form.sender_name = invitation.sender_display_name;
+  form.date_received = base::Time::Now();
+  form.sharing_notification_displayed = false;
   // TODO(crbug.com/1448235): set the correct password type.
   return form;
 }

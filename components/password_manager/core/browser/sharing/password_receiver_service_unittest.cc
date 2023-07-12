@@ -17,9 +17,15 @@ namespace password_manager {
 
 namespace {
 
+using testing::AllOf;
+using testing::ElementsAre;
+using testing::Field;
+
 const std::string kUrl = "https://test.com";
 const std::u16string kUsername = u"username";
 const std::u16string kPassword = u"password";
+const std::u16string kSenderEmail = u"sender@example.com";
+const std::u16string kSenderName = u"Sender Name";
 
 IncomingSharingInvitation CreateIncomingSharingInvitation() {
   IncomingSharingInvitation invitation;
@@ -27,6 +33,8 @@ IncomingSharingInvitation CreateIncomingSharingInvitation() {
   invitation.signon_realm = invitation.url.spec();
   invitation.username_value = kUsername;
   invitation.password_value = kPassword;
+  invitation.sender_email = kSenderEmail;
+  invitation.sender_display_name = kSenderName;
   return invitation;
 }
 
@@ -95,12 +103,16 @@ TEST_F(PasswordReceiverServiceTest,
 
   RunUntilIdle();
 
-  PasswordForm stored_password =
-      IncomingSharingInvitationToPasswordForm(invitation);
-  stored_password.in_store = PasswordForm::Store::kProfileStore;
-  ASSERT_EQ(stored_password.type, PasswordForm::Type::kReceivedViaSharing);
-  EXPECT_THAT(password_store().stored_passwords().at(invitation.url.spec()),
-              testing::ElementsAre(stored_password));
+  EXPECT_THAT(
+      password_store().stored_passwords().at(invitation.url.spec()),
+      ElementsAre(AllOf(
+          Field(&PasswordForm::signon_realm, GURL(kUrl).spec()),
+          Field(&PasswordForm::username_value, kUsername),
+          Field(&PasswordForm::password_value, kPassword),
+          Field(&PasswordForm::type, PasswordForm::Type::kReceivedViaSharing),
+          Field(&PasswordForm::sender_email, kSenderEmail),
+          Field(&PasswordForm::sender_name, kSenderName),
+          Field(&PasswordForm::sharing_notification_displayed, false))));
 }
 
 TEST_F(PasswordReceiverServiceTest,
@@ -122,7 +134,7 @@ TEST_F(PasswordReceiverServiceTest,
   // The store should contain the `existing_password` and the
   // incoming invitation is ignored.
   EXPECT_THAT(password_store().stored_passwords().at(invitation.url.spec()),
-              testing::ElementsAre(existing_password));
+              ElementsAre(existing_password));
 }
 
 TEST_F(PasswordReceiverServiceTest,
@@ -139,7 +151,7 @@ TEST_F(PasswordReceiverServiceTest,
   RunUntilIdle();
 
   EXPECT_THAT(password_store().stored_passwords().at(invitation.url.spec()),
-              testing::ElementsAre(conflicting_password));
+              ElementsAre(conflicting_password));
 }
 
 }  // namespace password_manager
