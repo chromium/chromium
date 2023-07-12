@@ -49,6 +49,7 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
                absl::optional<OwnedWindowAnchor>());
   MOCK_METHOD0(OnMouseEnter, void());
   MOCK_METHOD1(OnImmersiveModeChanged, void(bool immersive));
+  MOCK_METHOD1(OnOverviewModeChanged, void(bool overview));
   MOCK_METHOD2(OnRotateFocus,
                bool(PlatformWindowDelegate::RotateDirection, bool));
 };

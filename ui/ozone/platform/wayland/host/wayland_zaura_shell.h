@@ -67,6 +67,8 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
                           struct zaura_shell* zaura_shell,
                           struct wl_surface* gained_active,
                           struct wl_surface* lost_active);
+  static void SetOverviewMode(void* data, struct zaura_shell* zaura_shell);
+  static void UnsetOverviewMode(void* data, struct zaura_shell* zaura_shell);
 
   wl::Object<zaura_shell> obj_;
   const raw_ptr<WaylandConnection> connection_;

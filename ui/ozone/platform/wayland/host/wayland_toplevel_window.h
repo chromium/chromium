@@ -109,7 +109,11 @@ class WaylandToplevelWindow : public WaylandWindow,
   void PropagateBufferScale(float new_scale) override;
   void OnRotateFocus(uint32_t serial, uint32_t direction, bool restart);
 
-  // WmDragHandler overrides:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnOverviewModeChanged(bool in_overview);
+#endif
+
+  // WmDragHandler:
   bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const override;
 
   // WmMoveResizeHandler

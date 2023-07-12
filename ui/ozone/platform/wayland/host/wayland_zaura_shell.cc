@@ -15,12 +15,14 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
+#include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace ui {
 
 namespace {
 constexpr uint32_t kMinVersion = 1;
-constexpr uint32_t kMaxVersion = 56;
+constexpr uint32_t kMaxVersion = 57;
 }
 
 // static
@@ -65,9 +67,10 @@ WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
   DCHECK(connection_);
 
   static constexpr zaura_shell_listener zaura_shell_listener = {
-      &OnLayoutMode, &OnBugFix, &OnDesksChanged, &OnDeskActivationChanged,
-      &OnActivated,
-  };
+      &OnLayoutMode,     &OnBugFix,
+      &OnDesksChanged,   &OnDeskActivationChanged,
+      &OnActivated,      &SetOverviewMode,
+      &UnsetOverviewMode};
   zaura_shell_add_listener(obj_.get(), &zaura_shell_listener, this);
   if (IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() &&
       zaura_shell_get_version(wl_object()) >=
@@ -109,14 +112,14 @@ void WaylandZAuraShell::OnLayoutMode(void* data,
     case ZAURA_SHELL_LAYOUT_MODE_WINDOWED:
       connection->set_tablet_layout_state(
           display::TabletState::kInClamshellMode);
-      // |screen| is null in some unit test suites or if it's called eariler
+      // `screen` is null in some unit test suites or if it's called earlier
       // than screen initialization.
       if (screen)
         screen->OnTabletStateChanged(display::TabletState::kInClamshellMode);
       return;
     case ZAURA_SHELL_LAYOUT_MODE_TABLET:
       connection->set_tablet_layout_state(display::TabletState::kInTabletMode);
-      // |screen| is null in some unit test suites or if it's called eariler
+      // `screen` is null in some unit test suites or if it's called earlier
       // than screen initialization.
       if (screen)
         screen->OnTabletStateChanged(display::TabletState::kInTabletMode);
@@ -160,4 +163,31 @@ void WaylandZAuraShell::OnActivated(void* data,
                                     struct zaura_shell* zaura_shell,
                                     wl_surface* gained_active,
                                     wl_surface* lost_active) {}
+
+// static
+void WaylandZAuraShell::SetOverviewMode(void* data,
+                                        struct zaura_shell* zaura_shell) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* self = static_cast<WaylandZAuraShell*>(data);
+  for (auto* window : self->connection_->window_manager()->GetAllWindows()) {
+    if (auto* toplevel_window = window->AsWaylandToplevelWindow()) {
+      toplevel_window->OnOverviewModeChanged(true);
+    }
+  }
+#endif
+}
+
+// static
+void WaylandZAuraShell::UnsetOverviewMode(void* data,
+                                          struct zaura_shell* zaura_shell) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* self = static_cast<WaylandZAuraShell*>(data);
+  for (auto* window : self->connection_->window_manager()->GetAllWindows()) {
+    if (auto* toplevel_window = window->AsWaylandToplevelWindow()) {
+      toplevel_window->OnOverviewModeChanged(false);
+    }
+  }
+#endif
+}
+
 }  // namespace ui

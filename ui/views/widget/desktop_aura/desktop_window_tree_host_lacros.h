@@ -65,6 +65,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
       ui::PlatformWindowState old_window_show_state,
       ui::PlatformWindowState new_window_show_state) override;
   void OnImmersiveModeChanged(bool enabled) override;
+  void OnOverviewModeChanged(bool in_overview) override;
   void OnTooltipShownOnServer(const std::u16string& text,
                               const gfx::Rect& bounds) override;
   void OnTooltipHiddenOnServer() override;

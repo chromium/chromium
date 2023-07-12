@@ -120,6 +120,11 @@ void DesktopWindowTreeHostLacros::OnImmersiveModeChanged(bool enabled) {
   GetContentWindow()->SetProperty(chromeos::kImmersiveIsActive, enabled);
 }
 
+void DesktopWindowTreeHostLacros::OnOverviewModeChanged(bool in_overview) {
+  GetContentWindow()->SetProperty(chromeos::kIsShowingInOverviewKey,
+                                  in_overview);
+}
+
 void DesktopWindowTreeHostLacros::OnTooltipShownOnServer(
     const std::u16string& text,
     const gfx::Rect& bounds) {
