@@ -18,6 +18,7 @@
 
 #include "base/auto_reset.h"
 #include "base/base_paths.h"
+#include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
@@ -26,6 +27,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -34,6 +36,7 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "components/fuchsia_component_support/dynamic_component_host.h"
+#include "fuchsia_web/common/string_util.h"
 #include "fuchsia_web/common/test/fit_adapter.h"
 #include "fuchsia_web/common/test/frame_for_test.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
@@ -42,6 +45,7 @@
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "fuchsia_web/common/test/url_request_rewrite_test_util.h"
 #include "fuchsia_web/runners/cast/cast_runner.h"
+#include "fuchsia_web/runners/cast/cast_runner_switches.h"
 #include "fuchsia_web/runners/cast/test/cast_runner_features.h"
 #include "fuchsia_web/runners/cast/test/cast_runner_launcher.h"
 #include "fuchsia_web/runners/cast/test/fake_api_bindings.h"
@@ -67,8 +71,7 @@ chromium::cast::ApplicationConfig CreateAppConfigWithTestData(
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path));
 
   provider.set_directory(base::OpenDirectoryHandle(
-      pkg_path.AppendASCII("fuchsia_web/runners/cast/testdata"),
-      {.readable = true}));
+      pkg_path.AppendASCII("fuchsia_web/runners/cast/testdata")));
   std::vector<fuchsia::web::ContentDirectoryProvider> providers;
   providers.emplace_back(std::move(provider));
 
@@ -416,7 +419,10 @@ class CastRunnerIntegrationTest : public testing::Test {
 
   ~CastRunnerIntegrationTest() override = default;
 
- protected:
+  CastRunnerIntegrationTest(const CastRunnerIntegrationTest&) = delete;
+  CastRunnerIntegrationTest& operator=(const CastRunnerIntegrationTest&) =
+      delete;
+
   // testing::Test overrides.
   void SetUp() override {
     static constexpr base::StringPiece kTestServerRoot(

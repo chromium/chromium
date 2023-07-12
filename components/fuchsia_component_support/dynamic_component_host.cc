@@ -16,6 +16,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 
 namespace fuchsia_component_support {
 

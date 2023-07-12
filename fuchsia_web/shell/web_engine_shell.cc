@@ -20,11 +20,14 @@
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/fuchsia_component_support/annotations_manager.h"
 #include "fuchsia_web/common/init_logging.h"
@@ -156,7 +159,7 @@ int main(int argc, char** argv) {
   base::FilePath pkg_path;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path);
   content_directory.set_directory(base::OpenDirectoryHandle(
-      pkg_path.AppendASCII("fuchsia_web/shell/data"), {.readable = true}));
+      pkg_path.AppendASCII("fuchsia_web/shell/data")));
   content_directory.set_name("shell-data");
   std::vector<fuchsia::web::ContentDirectoryProvider> content_directories;
   content_directories.emplace_back(std::move(content_directory));
@@ -189,7 +192,7 @@ int main(int argc, char** argv) {
   base::File::Error error;
   CHECK(base::CreateDirectoryAndGetError(cdm_data_path, &error)) << error;
   create_context_params.set_cdm_data_directory(
-      base::OpenDirectoryHandle(cdm_data_path, {.readable = true}));
+      base::OpenDirectoryHandle(cdm_data_path));
   CHECK(create_context_params.cdm_data_directory());
 
   base::RunLoop run_loop;
@@ -205,8 +208,8 @@ int main(int argc, char** argv) {
     // embedder application. By passing a handle to this process' service
     // directory to the ContextProvider, we are allowing the Context access to
     // the same set of services available to this application.
-    create_context_params.set_service_directory(base::OpenDirectoryHandle(
-        base::FilePath(base::kServiceDirectoryPath), {}));
+    create_context_params.set_service_directory(
+        base::OpenDirectoryHandle(base::FilePath(base::kServiceDirectoryPath)));
     web_context_provider = base::ComponentContextForProcess()
                                ->svc()
                                ->Connect<fuchsia::web::ContextProvider>();

@@ -21,23 +21,23 @@ class OpenDirectoryTest : public testing::Test {
 };
 
 TEST_F(OpenDirectoryTest, Open) {
-  fidl::InterfaceHandle dir = OpenDirectoryHandle(temp_dir.GetPath(), {});
+  auto dir = OpenDirectoryHandle(temp_dir.GetPath());
   ASSERT_TRUE(dir);
 }
 
 // OpenDirectoryHandle() should fail when opening a directory that doesn't
 // exist.
 TEST_F(OpenDirectoryTest, OpenNonExistent) {
-  fidl::InterfaceHandle dir =
-      OpenDirectoryHandle(temp_dir.GetPath().AppendASCII("non_existent"), {});
+  auto dir =
+      OpenDirectoryHandle(temp_dir.GetPath().AppendASCII("non_existent"));
   ASSERT_FALSE(dir);
 }
 
 // OpenDirectoryHandle() should open only directories.
 TEST_F(OpenDirectoryTest, OpenFile) {
-  FilePath file_path = temp_dir.GetPath().AppendASCII("test_file");
+  auto file_path = temp_dir.GetPath().AppendASCII("test_file");
   ASSERT_TRUE(WriteFile(file_path, "foo"));
-  fidl::InterfaceHandle dir = OpenDirectoryHandle(file_path, {});
+  auto dir = OpenDirectoryHandle(file_path);
   ASSERT_FALSE(dir);
 }
 

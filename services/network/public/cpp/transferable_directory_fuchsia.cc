@@ -26,8 +26,7 @@ fdio_ns_t* GetNamespace() {
 
 void TransferableDirectory::OpenForTransfer() {
   handle_ = mojo::PlatformHandle(
-      base::OpenDirectoryHandle(path_, {.readable = true, .writable = true})
-          .TakeChannel());
+      base::OpenWritableDirectoryHandle(path_).TakeChannel());
 }
 
 [[nodiscard]] base::OnceClosure TransferableDirectory::Mount() {

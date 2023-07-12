@@ -14,14 +14,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_FUCHSIA)
-#include <fuchsia/io/cpp/fidl.h>
-#include <lib/fdio/directory.h>
-#include <zircon/errors.h>
-
-#include "base/files/scoped_file.h"
-#endif
-
 namespace base {
 namespace {
 
@@ -163,40 +155,7 @@ FilePath FileEnumerator::Next() {
     root_path_ = root_path_.StripTrailingSeparators();
     pending_paths_.pop();
 
-#if BUILDFLAG(IS_FUCHSIA)
-    // Fuchsia directories can be enumerable without being readable; open
-    // without fuchsia.io/OpenFlags.RIGHT_READABLE to avoid spurious failures.
-    //
-    // TODO(https://crbug.com/1457942): Remove this workaround once opendir no
-    // longer requires READABLE.
-    ScopedFD fd;
-    if (zx_status_t status = fdio_open_fd(
-            root_path_.value().c_str(),
-            static_cast<uint32_t>(fuchsia::io::OpenFlags::DIRECTORY),
-            ScopedFD::Receiver(fd).get());
-        status != ZX_OK) {
-      if (error_policy_ == ErrorPolicy::IGNORE_ERRORS) {
-        continue;
-      }
-      auto status_to_file_error = [](zx_status_t status) {
-        switch (status) {
-          case ZX_ERR_NOT_FOUND:
-            return File::FILE_ERROR_NOT_FOUND;
-          case ZX_ERR_ACCESS_DENIED:
-            return File::FILE_ERROR_ACCESS_DENIED;
-          case ZX_ERR_NOT_DIR:
-            return File::FILE_ERROR_NOT_A_DIRECTORY;
-          default:
-            return File::FILE_ERROR_FAILED;
-        }
-      };
-      error_ = status_to_file_error(status);
-      return FilePath();
-    }
-    DIR* dir = fdopendir(fd.release());
-#else
     DIR* dir = opendir(root_path_.value().c_str());
-#endif
     if (!dir) {
       if (errno == 0 || error_policy_ == ErrorPolicy::IGNORE_ERRORS)
         continue;

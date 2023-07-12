@@ -11,10 +11,10 @@
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/files/file_enumerator.h"
-#include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/filtered_service_directory.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/run_loop.h"
 
 namespace base {
 
@@ -34,8 +34,7 @@ TestComponentContextForProcess::TestComponentContextForProcess(
     // Calling stat() in /svc is problematic; see https://fxbug.dev/100207. Tell
     // the enumerator not to recurse, to return both files and directories, and
     // to report only the names of entries.
-    base::FileEnumerator file_enum(base::FilePath(base::kServiceDirectoryPath),
-                                   /*recursive=*/false,
+    base::FileEnumerator file_enum(base::FilePath("/svc"), /*recursive=*/false,
                                    base::FileEnumerator::NAMES_ONLY);
     for (auto file = file_enum.Next(); !file.empty(); file = file_enum.Next()) {
       AddService(file.BaseName().value());

@@ -17,21 +17,19 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
-#elif BUILDFLAG(IS_POSIX)
-#include "base/memory/raw_ptr.h"
 #elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/fdio/spawn.h>
 #include <zircon/types.h>
-
-#include "base/fuchsia/file_utils.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -48,10 +46,6 @@ using MachPortsForRendezvous = std::map<uint32_t, MachRendezvousPort>;
 #if BUILDFLAG(IS_WIN)
 typedef std::vector<HANDLE> HandlesToInheritVector;
 #elif BUILDFLAG(IS_FUCHSIA)
-struct PathToClone {
-  base::FilePath path;
-  base::DirectoryHandleRights rights;
-};
 struct PathToTransfer {
   base::FilePath path;
   zx_handle_t handle;
@@ -281,7 +275,7 @@ struct BASE_EXPORT LaunchOptions {
   // depending on whether FDIO_SPAWN_CLONE_NAMESPACE is set.
   // Process launch will fail if `paths_to_clone` and `paths_to_transfer`
   // together contain conflicting paths (e.g. overlaps or duplicates).
-  std::vector<PathToClone> paths_to_clone;
+  std::vector<FilePath> paths_to_clone;
 
   // Specifies handles which will be installed as files or directories in the
   // child process' namespace.
