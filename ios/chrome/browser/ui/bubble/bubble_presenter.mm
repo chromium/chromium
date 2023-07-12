@@ -757,8 +757,8 @@ const CGFloat kBubblePresentationDelay = 1;
 
 #pragma mark - URLLoadingObserver
 
-- (void)tabWillLoadURL:(GURL)URL
-        transitionType:(ui::PageTransition)transitionType {
+- (void)tabDidLoadURL:(GURL)URL
+       transitionType:(ui::PageTransition)transitionType {
   web::WebState* currentWebState = _webStateList->GetActiveWebState();
   if (currentWebState &&
       ((transitionType & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) ||
@@ -767,7 +767,7 @@ const CGFloat kBubblePresentationDelay = 1;
   }
 }
 
-- (void)newTabWillLoadURL:(GURL)URL isUserInitiated:(BOOL)isUserInitiated {
+- (void)newTabDidLoadURL:(GURL)URL isUserInitiated:(BOOL)isUserInitiated {
   if (isUserInitiated) {
     [self presentTabGridToolbarItemBubble];
   }
