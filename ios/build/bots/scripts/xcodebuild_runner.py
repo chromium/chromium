@@ -184,6 +184,10 @@ class LaunchCommand(object):
         if self.cert_path:
           iossim_util.copy_trusted_certificate(self.cert_path, self.uuid)
 
+        # ideally this should be the last step before running tests, because
+        # it boots the simulator.
+        iossim_util.disable_simulator_keyboard_tutorial(self.udid)
+
       outdir_attempt = os.path.join(self.out_dir, 'attempt_%d' % attempt)
       cmd_list = self.egtests_app.command(outdir_attempt, 'id=%s' % self.udid,
                                           shards)

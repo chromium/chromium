@@ -377,6 +377,53 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     iossim_util.disable_hardware_keyboard('UDID')
     check_call_mock.assert_has_calls(check_calls[3:])
 
+  def test_disable_simulator_keyboard_tutorial(self, _, _2):
+    with mock.patch('iossim_util.boot_simulator_if_not_booted') \
+        as mock_boot_simulator:
+      # boots successfully
+      mock_boot_simulator.return_value = None
+
+      check_call_mock = mock.Mock()
+      self.mock(subprocess, 'check_call', check_call_mock)
+      udid = "1111111"
+      check_calls = [
+          mock.call([
+              'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
+              'com.apple.keyboard.preferences',
+              'DidShowContinuousPathIntroduction', '1'
+          ]),
+          mock.call([
+              'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
+              'com.apple.keyboard.preferences',
+              'KeyboardDidShowProductivityTutorial', '1'
+          ]),
+          mock.call([
+              'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
+              'com.apple.keyboard.preferences',
+              'DidShowGestureKeyboardIntroduction', '1'
+          ]),
+          mock.call([
+              'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
+              'com.apple.keyboard.preferences',
+              'UIKeyboardDidShowInternationalInfoIntroduction', '1'
+          ]),
+          mock.call([
+              'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
+              'com.apple.keyboard.preferences', 'KeyboardAutocorrection', '0'
+          ]),
+          mock.call([
+              'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
+              'com.apple.keyboard.preferences', 'KeyboardPrediction', '0'
+          ]),
+          mock.call([
+              'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
+              'com.apple.keyboard.preferences', 'KeyboardShowPredictionBar', '0'
+          ])
+      ]
+
+      iossim_util.disable_simulator_keyboard_tutorial(udid)
+      check_call_mock.assert_has_calls(check_calls)
+
 
 if __name__ == '__main__':
   unittest.main()

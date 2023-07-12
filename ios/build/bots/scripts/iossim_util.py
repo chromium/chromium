@@ -400,3 +400,52 @@ def disable_hardware_keyboard(udid: str) -> None:
   except json.JSONDecodeError as e:
     message = 'Unable to disable hardware keyboard. Error: %s' % e.msg
     LOGGER.error(message)
+
+
+def disable_simulator_keyboard_tutorial(udid):
+  """Disables keyboard tutorial for the given simulator.
+
+  Keyboard tutorial can cause flakes to EG tests as they are not expected.
+  Exceptions are caught and logged but do not interrupt program flow.
+
+  Args:
+    udid: (str) UDID of the simulator.
+  """
+  boot_simulator_if_not_booted(udid)
+
+  try:
+    subprocess.check_call([
+        'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
+        'com.apple.keyboard.preferences', 'DidShowContinuousPathIntroduction',
+        '1'
+    ])
+    subprocess.check_call([
+        'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
+        'com.apple.keyboard.preferences', 'KeyboardDidShowProductivityTutorial',
+        '1'
+    ])
+    subprocess.check_call([
+        'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
+        'com.apple.keyboard.preferences', 'DidShowGestureKeyboardIntroduction',
+        '1'
+    ])
+    subprocess.check_call([
+        'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
+        'com.apple.keyboard.preferences',
+        'UIKeyboardDidShowInternationalInfoIntroduction', '1'
+    ])
+    subprocess.check_call([
+        'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
+        'com.apple.keyboard.preferences', 'KeyboardAutocorrection', '0'
+    ])
+    subprocess.check_call([
+        'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
+        'com.apple.keyboard.preferences', 'KeyboardPrediction', '0'
+    ])
+    subprocess.check_call([
+        'xcrun', 'simctl', 'spawn', udid, 'defaults', 'write',
+        'com.apple.keyboard.preferences', 'KeyboardShowPredictionBar', '0'
+    ])
+  except subprocess.CalledProcessError as e:
+    message = 'Unable to disable keyboard tutorial: %s' % e.stderr
+    LOGGER.error(message)
