@@ -85,34 +85,26 @@
     position: relative;
   }
 
-  :host(:not([data-category='dismiss']):not([data-category='extra-button'])) {
+  :host(:not([data-category='dismiss']):not([data-category='extra-button']):not([data-category='cancel'])) {
     width: 36px;
   }
 
-  :host([data-category='dismiss']) #icon {
+  #dismiss,
+  #extra-button,
+  #cancel,
+  #icon {
     display: none;
   }
 
-  :host([data-category='extra-button']) #icon {
-    display: none;
-  }
-
-  #dismiss {
-    display: none;
-  }
-
-  #extra-button {
-    display: none;
-  }
-
-  :host([data-category='dismiss']) #dismiss {
-    display: inline-block;
-  }
-
-  :host([data-category='extra-button']) #extra-button {
+  :host([data-category='dismiss']) #dismiss,
+  :host([data-category='extra-button']) #extra-button,
+  :host([data-category='cancel']) #cancel,
+  :host([data-category='collapse']) #icon,
+  :host([data-category='expand']) #icon {
     display: inline-block;
   }
 </style>
 <cr-button id='dismiss'>$i18n{DRIVE_WELCOME_DISMISS}</cr-button>
 <cr-button id='extra-button'></cr-button>
+<cr-button id='cancel'>$i18n{CANCEL_LABEL}</cr-button>
 <cr-icon-button id='icon'></cr-icon-button>

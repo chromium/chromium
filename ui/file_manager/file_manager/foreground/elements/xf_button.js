@@ -51,9 +51,6 @@ export class PanelButton extends HTMLElement {
     const iconButton = this.shadowRoot.querySelector('cr-icon-button');
     if (name === 'data-category') {
       switch (newValue) {
-        case 'cancel':
-          iconButton.setAttribute('iron-icon', 'cr:clear');
-          break;
         case 'collapse':
         case 'expand':
           iconButton.setAttribute('iron-icon', 'cr:expand-less');
@@ -74,4 +71,4 @@ export class PanelButton extends HTMLElement {
 
 window.customElements.define('xf-button', PanelButton);
 
-//# sourceURL=//ui/file_manager/file_manager/foreground/elements/xf_button.js
+// # sourceURL=//ui/file_manager/file_manager/foreground/elements/xf_button.js
