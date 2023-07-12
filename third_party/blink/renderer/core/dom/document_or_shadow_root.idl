@@ -25,5 +25,5 @@ interface mixin DocumentOrShadowRoot {
     [MeasureAs=AdoptedStyleSheets] attribute ObservableArray<CSSStyleSheet> adoptedStyleSheets;
     // Picture-in-picture API
     // https://w3c.github.io/picture-in-picture/#documentorshadowroot-extension
-    [Measure] readonly attribute HTMLVideoElement? pictureInPictureElement;
+    [Measure] readonly attribute Element? pictureInPictureElement;
 };
