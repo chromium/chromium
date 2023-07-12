@@ -4,11 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -43,7 +39,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.HistoryActivity;
-import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.action.HistoryClustersAction;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
@@ -126,18 +121,6 @@ public class OmniboxActionsTest {
     }
 
     /**
-     * Click the n-th action.
-     *
-     * @param suggestionIndex the index of suggestion to click an action on.
-     * @param actionIndex the index of action to invoke.
-     */
-    private void clickOnAction(int suggestionIndex, int actionIndex) {
-        onView(withId(R.id.omnibox_suggestions_dropdown))
-                .perform(actionOnItemAtPosition(suggestionIndex,
-                        OmniboxTestUtils.actionOnOmniboxActionAtPosition(actionIndex, click())));
-    }
-
-    /**
      * Apply suggestions to the Omnibox.
      * Requires at least one of the suggestions to include at least one OmniboxAction.
      * Verifies that suggestions - and actions - are shown.
@@ -188,7 +171,7 @@ public class OmniboxActionsTest {
     public void
     testHistoryClustersAction() throws Exception {
         setSuggestions(createDummyHistoryClustersAction("query"));
-        clickOnAction(0, 0);
+        mOmniboxUtils.clickOnAction(0, 0);
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(sActivityTestRule.getActivity())) {
             CriteriaHelper.pollUiThread(() -> {
@@ -229,7 +212,7 @@ public class OmniboxActionsTest {
                 createDummyActionInSuggest(ActionInfo.ActionType.CALL),
                 createDummyActionInSuggest(ActionInfo.ActionType.DIRECTIONS));
 
-        clickOnAction(1, 0);
+        mOmniboxUtils.clickOnAction(1, 0);
 
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
@@ -247,7 +230,7 @@ public class OmniboxActionsTest {
                 createDummyActionInSuggest(ActionInfo.ActionType.CALL,
                         ActionInfo.ActionType.DIRECTIONS, ActionInfo.ActionType.REVIEWS));
 
-        clickOnAction(1, 2);
+        mOmniboxUtils.clickOnAction(1, 2);
 
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(

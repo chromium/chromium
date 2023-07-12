@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.util;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
@@ -589,5 +591,17 @@ public class OmniboxTestUtils {
             conn.setComposingRegion(composingRegionStart, composingRegionEnd);
             conn.setComposingText(composingText, /* newCursorPosition=*/0);
         });
+    }
+
+    /**
+     * Click the n-th action.
+     *
+     * @param suggestionIndex the index of suggestion to click an action on.
+     * @param actionIndex the index of action to invoke.
+     */
+    public void clickOnAction(int suggestionIndex, int actionIndex) {
+        onView(withId(R.id.omnibox_suggestions_dropdown))
+                .perform(actionOnItemAtPosition(suggestionIndex,
+                        OmniboxTestUtils.actionOnOmniboxActionAtPosition(actionIndex, click())));
     }
 }
