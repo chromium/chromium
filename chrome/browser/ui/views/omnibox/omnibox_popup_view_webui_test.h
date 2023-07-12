@@ -86,6 +86,10 @@ class OmniboxPopupViewWebUITest : public InProcessBrowserTest {
 
   void SetUp() override;
 
+  // This blocks until the view's underlying handler is ready to use.
+  // It is required before using the view which makes calls into the handler.
+  void WaitForHandler();
+
  private:
   OmniboxTriggeredFeatureService triggered_feature_service_;
   base::test::ScopedFeatureList feature_list_;
