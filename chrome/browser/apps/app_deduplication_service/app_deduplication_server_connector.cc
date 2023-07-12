@@ -94,9 +94,12 @@ void AppDeduplicationServerConnector::GetDeduplicateAppsFromServer(
   auto* loader_ptr = loader.get();
   loader_ptr->AttachStringForUpload(BuildRequestBody(device_info),
                                     "application/x-protobuf");
+  // Retry requests twice (so, three requests total) if requests fail due to
+  // network issues.
+  constexpr int kMaxRetries = 2;
   loader_ptr->SetRetryOptions(
-      3, network::SimpleURLLoader::RETRY_ON_5XX |
-             network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+      kMaxRetries, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+                       network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
   loader_ptr->DownloadToString(
       url_loader_factory.get(),
       base::BindOnce(
