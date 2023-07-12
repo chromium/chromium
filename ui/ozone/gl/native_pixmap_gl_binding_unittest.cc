@@ -44,9 +44,9 @@ bool SkipTest(GLDisplay* display) {
   return false;
 }
 
-class GLImageTest : public testing::Test {
+class NativePixmapGLBindingTest : public testing::Test {
  public:
-  GLImageTest() {
+  NativePixmapGLBindingTest() {
     client_native_pixmap_factory_ = ui::CreateClientNativePixmapFactoryOzone();
   }
 
@@ -107,7 +107,7 @@ class GLImageTest : public testing::Test {
   raw_ptr<GLDisplay> display_ = nullptr;
 };
 
-TEST_F(GLImageTest, MAYBE_Create) {
+TEST_F(NativePixmapGLBindingTest, MAYBE_Create) {
   if (SkipTest(this->display_)) {
     GTEST_SKIP() << "Skip because GL initialization failed";
   }
@@ -117,13 +117,11 @@ TEST_F(GLImageTest, MAYBE_Create) {
   const gfx::Size small_image_size(128, 128);
   const gfx::Size large_image_size(512, 512);
 
-  // Create a small solid color green image of preferred format. This must
-  // succeed in order for a GLImage to be conformant.
+  // Create a small solid color green image of preferred format.
   auto small_image = CreateSolidColorImage(small_image_size);
   ASSERT_TRUE(small_image);
 
-  // Create a large solid color green image of preferred format. This must
-  // succeed in order for a GLImage to be conformant.
+  // Create a large solid color green image of preferred format.
   auto large_image = CreateSolidColorImage(large_image_size);
   ASSERT_TRUE(large_image);
 }

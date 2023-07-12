@@ -5,7 +5,7 @@
 import("//testing/test.gni")
 
 test("ozone_gl_unittests") {
-  sources = [ "gl_image_ozone_native_pixmap_unittest.cc" ]
+  sources = [ "native_pixmap_gl_binding_unittest.cc" ]
 
   deps = [
     "//base/test:test_support",
