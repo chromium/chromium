@@ -10728,7 +10728,7 @@
             ],
             "experiments": [
                 {
-                    "name": "BothMouseDownAndMouseHover_20230524",
+                    "name": "BothMouseDownAndMouseHover_20230703",
                     "params": {
                         "prerender_bookmarkbar_on_mouse_hover_trigger": "true",
                         "prerender_bookmarkbar_on_mouse_pressed_trigger": "true",
@@ -10739,7 +10739,7 @@
                     ]
                 },
                 {
-                    "name": "OnlyMouseHover_20230524",
+                    "name": "OnlyMouseHover_20230703",
                     "params": {
                         "prerender_bookmarkbar_on_mouse_hover_trigger": "true",
                         "prerender_bookmarkbar_on_mouse_pressed_trigger": "false",
@@ -10750,7 +10750,7 @@
                     ]
                 },
                 {
-                    "name": "OnlyMouseDown_20230524",
+                    "name": "OnlyMouseDown_20230703",
                     "params": {
                         "prerender_bookmarkbar_on_mouse_hover_trigger": "false",
                         "prerender_bookmarkbar_on_mouse_pressed_trigger": "true"
