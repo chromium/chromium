@@ -1058,9 +1058,14 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   // importing/creating mailboxes (rather than one mailbox per plane). This is
   // true if either:
   // (1) We're importing a mailbox (i.e., `use_nv12_with_textures` is true) that
-  // was created with NV12 multiplane format
+  // was created with NV12 multiplane format.
   // (2) We're creating mailboxes and usage of MultiplanarSharedImage for
   // hardware video is enabled.
+  // Note: Externally-sampled images are readonly and hence we should never be
+  // creating VideoFrames with external sampling for this use case (and the
+  // creation flow of `frame` will not do so).
+  CHECK_NE(request_properties.frame->shared_image_format_type(),
+           media::SharedImageFormatType::kSharedImageFormatExternalSampler);
   bool use_multiplane_for_nv12 =
       use_nv12_with_textures
           ? (request_properties.frame->shared_image_format_type() ==
