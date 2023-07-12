@@ -223,7 +223,7 @@ public class TabGridThumbnailView extends ImageView {
     /**
      * @return whether the image drawable is a placeholder.
      */
-    boolean isPlaceholder() {
+    public boolean isPlaceholder() {
         if (TabUiFeatureUtilities.sThumbnailPlaceholder.isEnabled()) {
             // The drawable can only be null if we just removed the drawable and need to set the
             // mIconDrawable.
@@ -243,7 +243,7 @@ public class TabGridThumbnailView extends ImageView {
      * @param isIncognito Whether the thumbnail is on an incognito tab.
      * @param isSelected Whether the thumbnail is on a selected tab.
      */
-    void updateThumbnailPlaceholder(boolean isIncognito, boolean isSelected) {
+    public void updateThumbnailPlaceholder(boolean isIncognito, boolean isSelected) {
         // Step 1: Background color.
         mBackgroundDrawable.setColor(TabUiThemeProvider.getMiniThumbnailPlaceholderColor(
                 getContext(), isIncognito, isSelected));

@@ -81,6 +81,7 @@ public class SingleTabModuleViewBinderUnitTest {
         MockitoAnnotations.initMocks(this);
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mSingleTabModuleView = (SingleTabView) mActivity.getLayoutInflater().inflate(
                 R.layout.single_tab_module_layout, null);
         mActivity.setContentView(mSingleTabModuleView);

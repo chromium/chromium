@@ -37,9 +37,6 @@ android_library("public_java") {
     "java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java",
     "java/src/org/chromium/chrome/features/start_surface/StartSurfaceState.java",
     "java/src/org/chromium/chrome/features/start_surface/StartSurfaceUserData.java",
-    "java/src/org/chromium/chrome/features/tasks/SingleTabView.java",
-    "java/src/org/chromium/chrome/features/tasks/SingleTabViewBinder.java",
-    "java/src/org/chromium/chrome/features/tasks/SingleTabViewProperties.java",
   ]
 
   deps = [

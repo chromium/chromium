@@ -6,14 +6,17 @@ package org.chromium.chrome.features.tasks;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView;
 import org.chromium.chrome.start_surface.R;
 
 /** View of the tab on the single tab tab switcher. */
@@ -22,7 +25,7 @@ class SingleTabView extends LinearLayout {
     private ImageView mFavicon;
     private TextView mTitle;
     @Nullable
-    private ImageView mTabThumbnail;
+    private TabGridThumbnailView mTabThumbnail;
     @Nullable
     private TextView mUrl;
 
@@ -40,6 +43,10 @@ class SingleTabView extends LinearLayout {
         mTitle = findViewById(R.id.tab_title_view);
         mTabThumbnail = findViewById(R.id.tab_thumbnail);
         mUrl = findViewById(R.id.tab_url_view);
+
+        if (mTabThumbnail != null) {
+            mTabThumbnail.updateThumbnailPlaceholder(/*isIncognito=*/false, /*isSelected=*/false);
+        }
     }
 
     /**
@@ -55,6 +62,24 @@ class SingleTabView extends LinearLayout {
      * @param thumbnail The given Tab thumbnail {@link Bitmap}.
      */
     public void setTabThumbnail(Bitmap thumbnail) {
+        if (mTabThumbnail == null) return;
+
+        mTabThumbnail.setScaleType(ScaleType.MATRIX);
+        if (thumbnail == null || thumbnail.getWidth() <= 0 || thumbnail.getHeight() <= 0) {
+            mTabThumbnail.setImageMatrix(new Matrix());
+            return;
+        }
+
+        final int width = mTabThumbnail.getMeasuredWidth();
+        final int height = mTabThumbnail.getMeasuredHeight();
+        final float scale = Math.max(
+                (float) width / thumbnail.getWidth(), (float) height / thumbnail.getHeight());
+        final int xOffset = (int) (width - thumbnail.getWidth() * scale) / 2;
+
+        Matrix m = new Matrix();
+        m.setScale(scale, scale);
+        m.postTranslate(xOffset, 0);
+        mTabThumbnail.setImageMatrix(m);
         mTabThumbnail.setImageBitmap(thumbnail);
     }
 
