@@ -39,6 +39,7 @@ class WaitableEvent;
 
 namespace content {
 class BrowserContext;
+class StoragePartition;
 }
 
 namespace webrtc_event_logging {
@@ -69,6 +70,7 @@ class ChromeBrowsingDataRemoverDelegate
   GetOriginTypeMatcher() override;
   bool MayRemoveDownloadHistory() override;
   std::vector<std::string> GetDomainsForDeferredCookieDeletion(
+      content::StoragePartition* storage_partition,
       uint64_t remove_mask) override;
   void RemoveEmbedderData(
       const base::Time& delete_begin,

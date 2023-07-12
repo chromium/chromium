@@ -42,6 +42,7 @@ bool BrowsingDataRemoverDelegate::MayRemoveDownloadHistory() {
 
 std::vector<std::string>
 BrowsingDataRemoverDelegate::GetDomainsForDeferredCookieDeletion(
+    content::StoragePartition* storage_partition,
     uint64_t remove_mask) {
   return {};
 }

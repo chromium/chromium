@@ -40,6 +40,7 @@
 #include "content/public/browser/cookie_store_factory.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
@@ -305,6 +306,7 @@ class TestBrowsingDataRemoverDelegate
  public:
   // BrowsingDataRemoverDelegate:
   std::vector<std::string> GetDomainsForDeferredCookieDeletion(
+      StoragePartition* storage_partition,
       uint64_t remove_mask) override {
     return deferred_domains_;
   }
@@ -368,6 +370,12 @@ class BrowsingDataRemoverImplTest : public testing::Test {
   BrowsingDataRemoverImplTest() : browser_context_(new TestBrowserContext()) {
     remover_ = static_cast<BrowsingDataRemoverImpl*>(
         browser_context_->GetBrowsingDataRemover());
+
+    storage_partition_ =
+        std::make_unique<StoragePartitionRemovalTestStoragePartition>();
+    RegisterStoragePartition(
+        StoragePartitionConfig::CreateDefault(browser_context_.get()),
+        storage_partition_.get());
   }
 
   BrowsingDataRemoverImplTest(const BrowsingDataRemoverImplTest&) = delete;
@@ -388,20 +396,15 @@ class BrowsingDataRemoverImplTest : public testing::Test {
     RunAllTasksUntilIdle();
   }
 
+  void RegisterStoragePartition(const StoragePartitionConfig& config,
+                                StoragePartition* storage_partition) {
+    remover_->OverrideStoragePartitionForTesting(config, storage_partition);
+  }
+
   void BlockUntilBrowsingDataRemoved(const base::Time& delete_begin,
                                      const base::Time& delete_end,
                                      uint64_t remove_mask,
                                      bool include_protected_origins) {
-    auto new_storage_partition =
-        std::make_unique<StoragePartitionRemovalTestStoragePartition>();
-
-    if (network_context_override_) {
-      new_storage_partition->set_network_context(network_context_override_);
-    }
-
-    remover_->OverrideStoragePartitionForTesting(new_storage_partition.get());
-    storage_partition_ = std::move(new_storage_partition);
-
     uint64_t origin_type_mask =
         BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
     if (include_protected_origins)
@@ -422,16 +425,6 @@ class BrowsingDataRemoverImplTest : public testing::Test {
       const base::Time& delete_end,
       uint64_t remove_mask,
       std::unique_ptr<BrowsingDataFilterBuilder> filter_builder) {
-    auto new_storage_partition =
-        std::make_unique<StoragePartitionRemovalTestStoragePartition>();
-
-    if (network_context_override_) {
-      new_storage_partition->set_network_context(network_context_override_);
-    }
-
-    remover_->OverrideStoragePartitionForTesting(new_storage_partition.get());
-    storage_partition_ = std::move(new_storage_partition);
-
     BrowsingDataRemoverCompletionObserver completion_observer(remover_);
     remover_->RemoveWithFilterAndReply(
         delete_begin, delete_end, remove_mask,
@@ -483,6 +476,10 @@ class BrowsingDataRemoverImplTest : public testing::Test {
 
   void set_network_context_override(network::mojom::NetworkContext* context) {
     network_context_override_ = context;
+
+    if (network_context_override_) {
+      storage_partition_->set_network_context(network_context_override_);
+    }
   }
 
   bool Match(const GURL& origin,
@@ -1855,7 +1852,9 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveStorageBucketsAndReply) {
       BrowsingDataRemoverImpl remover =
           BrowsingDataRemoverImpl(&browser_context);
 
-      remover.OverrideStoragePartitionForTesting(&storage_partition);
+      remover.OverrideStoragePartitionForTesting(
+          StoragePartitionConfig::CreateDefault(&browser_context),
+          &storage_partition);
       remover.RemoveStorageBucketsAndReply(
           storage_key, buckets,
           base::BindOnce(&TestObserver::OnBrowsingDataRemoverDone,
@@ -1868,6 +1867,65 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveStorageBucketsAndReply) {
 
   TestObserver observer;
   observer.RemoveBuckets();
+}
+
+TEST_F(BrowsingDataRemoverImplTest, NonDefaultStoragePartitionInFilter) {
+  // Create a second StoragePartition.
+  auto non_default_storage_partition_config = StoragePartitionConfig::Create(
+      GetBrowserContext(), "domain", "name", /*in_memory=*/false);
+  auto non_default_storage_partition =
+      std::make_unique<StoragePartitionRemovalTestStoragePartition>();
+  RegisterStoragePartition(non_default_storage_partition_config,
+                           non_default_storage_partition.get());
+
+  std::unique_ptr<BrowsingDataFilterBuilder> builder(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kDelete));
+  const GURL kTestUrl("http://host1.com");
+  builder->AddRegisterableDomain(kTestUrl.host());
+  builder->SetStoragePartitionConfig(non_default_storage_partition_config);
+
+  // Remove the test origin.
+  BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
+                              BrowsingDataRemover::DATA_TYPE_SERVICE_WORKERS |
+                                  BrowsingDataRemover::DATA_TYPE_CACHE_STORAGE |
+                                  BrowsingDataRemover::DATA_TYPE_FILE_SYSTEMS |
+                                  BrowsingDataRemover::DATA_TYPE_INDEXED_DB |
+                                  BrowsingDataRemover::DATA_TYPE_WEB_SQL,
+                              std::move(builder));
+
+  EXPECT_EQ(BrowsingDataRemover::DATA_TYPE_SERVICE_WORKERS |
+                BrowsingDataRemover::DATA_TYPE_CACHE_STORAGE |
+                BrowsingDataRemover::DATA_TYPE_FILE_SYSTEMS |
+                BrowsingDataRemover::DATA_TYPE_INDEXED_DB |
+                BrowsingDataRemover::DATA_TYPE_WEB_SQL,
+            GetRemovalMask());
+  EXPECT_EQ(BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+            GetOriginTypeMask());
+
+  // Check that data wasn't removed from the default StoragePartition.
+  std::vector<StoragePartitionRemovalData> all_default_removal_data =
+      GetStoragePartitionRemovalDataListAndReset();
+  EXPECT_TRUE(all_default_removal_data.empty());
+
+  // Check that the data removal was performed on the correct StoragePartition.
+  std::vector<StoragePartitionRemovalData> all_removal_data =
+      non_default_storage_partition->GetStoragePartitionRemovalData();
+  EXPECT_EQ(1UL, all_removal_data.size());
+  StoragePartitionRemovalData removal_data = all_removal_data.back();
+  EXPECT_EQ(removal_data.remove_mask,
+            StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
+                StoragePartition::REMOVE_DATA_MASK_WEBSQL |
+                StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS |
+                StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE |
+                StoragePartition::REMOVE_DATA_MASK_INDEXEDDB);
+  EXPECT_EQ(removal_data.quota_storage_remove_mask,
+            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
+  ASSERT_TRUE(removal_data.filter_builder);
+  EXPECT_EQ(non_default_storage_partition_config,
+            removal_data.filter_builder->GetStoragePartitionConfig());
+
+  RegisterStoragePartition(non_default_storage_partition_config, nullptr);
 }
 
 class BrowsingDataRemoverImplSharedStorageTest

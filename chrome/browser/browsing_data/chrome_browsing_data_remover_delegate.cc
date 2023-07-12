@@ -284,12 +284,15 @@ bool ChromeBrowsingDataRemoverDelegate::MayRemoveDownloadHistory() {
 
 std::vector<std::string>
 ChromeBrowsingDataRemoverDelegate::GetDomainsForDeferredCookieDeletion(
+    content::StoragePartition* storage_partition,
     uint64_t remove_mask) {
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kEnablePasswordsAccountStorage)) {
     return {};
   }
-  if ((remove_mask & constants::DEFERRED_COOKIE_DELETION_DATA_TYPES) == 0) {
+  // The Google/Gaia cookies we care about live in the default StoragePartition.
+  if (!storage_partition->GetConfig().is_default() ||
+      (remove_mask & constants::DEFERRED_COOKIE_DELETION_DATA_TYPES) == 0) {
     return {};
   }
 

@@ -11,6 +11,9 @@
 
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/public/browser/storage_partition_config.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_deletion_info.h"
 #include "services/network/cookie_manager.h"
@@ -954,6 +957,24 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
       *cookie, net::CookieAccessParams{
                    net::CookieAccessSemantics::NONLEGACY, false,
                    net::CookieSamePartyStatus::kNoSamePartyEnforcement}));
+}
+
+TEST(BrowsingDataFilterBuilderImplTest, CopyAndEquality) {
+  BrowserTaskEnvironment task_environment;
+  TestBrowserContext browser_context;
+
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilderImpl::Mode::kPreserve);
+  builder.AddOrigin(url::Origin::Create(GURL("https://example.com")));
+  builder.AddRegisterableDomain(kGoogleDomain);
+  builder.SetStorageKey(
+      blink::StorageKey::CreateFromStringForTesting("https://foo.com"));
+  builder.SetCookiePartitionKeyCollection(net::CookiePartitionKeyCollection(
+      net::CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"))));
+  builder.SetStoragePartitionConfig(StoragePartitionConfig::Create(
+      &browser_context, "domain", "name", /*in_memory=*/false));
+
+  EXPECT_EQ(builder, *builder.Copy());
 }
 
 }  // namespace content

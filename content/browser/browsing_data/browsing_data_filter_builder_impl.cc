@@ -235,6 +235,16 @@ void BrowsingDataFilterBuilderImpl::SetPartitionedStateAllowedOnly(bool value) {
   partitioned_state_only_ = value;
 }
 
+void BrowsingDataFilterBuilderImpl::SetStoragePartitionConfig(
+    const StoragePartitionConfig& storage_partition_config) {
+  storage_partition_config_ = storage_partition_config;
+}
+
+absl::optional<StoragePartitionConfig>
+BrowsingDataFilterBuilderImpl::GetStoragePartitionConfig() {
+  return storage_partition_config_;
+}
+
 base::RepeatingCallback<bool(const GURL&)>
 BrowsingDataFilterBuilderImpl::BuildUrlFilter() {
   if (MatchesAllOriginsAndDomains())
@@ -341,6 +351,7 @@ BrowsingDataFilterBuilderImpl::Copy() {
       std::make_unique<BrowsingDataFilterBuilderImpl>(mode_);
   copy->origins_ = origins_;
   copy->domains_ = domains_;
+  copy->storage_partition_config_ = storage_partition_config_;
   return std::move(copy);
 }
 
@@ -352,7 +363,8 @@ bool BrowsingDataFilterBuilderImpl::IsEqual(
       static_cast<const BrowsingDataFilterBuilderImpl*>(&other);
 
   return origins_ == other_impl->origins_ && domains_ == other_impl->domains_ &&
-         mode_ == other_impl->mode_;
+         mode_ == other_impl->mode_ &&
+         storage_partition_config_ == other_impl->storage_partition_config_;
 }
 
 }  // namespace content

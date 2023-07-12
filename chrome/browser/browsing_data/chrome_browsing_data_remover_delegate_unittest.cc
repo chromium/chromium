@@ -3756,19 +3756,27 @@ TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
 
 TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
        GetDomainsForDeferredCookieDeletion) {
+  auto* storage_partition = GetProfile()->GetDefaultStoragePartition();
   auto* delegate = GetProfile()->GetBrowsingDataRemoverDelegate();
 
   auto domains = delegate->GetDomainsForDeferredCookieDeletion(
-      constants::DATA_TYPE_ACCOUNT_PASSWORDS);
+      storage_partition, constants::DATA_TYPE_ACCOUNT_PASSWORDS);
   EXPECT_EQ(domains.size(), 1u);
   EXPECT_EQ(domains[0], "google.com");
 
   domains = delegate->GetDomainsForDeferredCookieDeletion(
-      constants::DATA_TYPE_PASSWORDS);
+      storage_partition, constants::DATA_TYPE_PASSWORDS);
   EXPECT_EQ(domains.size(), 0u);
 
-  domains =
-      delegate->GetDomainsForDeferredCookieDeletion(constants::ALL_DATA_TYPES);
+  domains = delegate->GetDomainsForDeferredCookieDeletion(
+      storage_partition, constants::ALL_DATA_TYPES);
+  EXPECT_EQ(domains.size(), 0u);
+
+  content::StoragePartition* non_default_storage_partition =
+      GetProfile()->GetStoragePartition(content::StoragePartitionConfig::Create(
+          GetProfile(), "domain", /*partition_name=*/"", /*in_memory=*/false));
+  domains = delegate->GetDomainsForDeferredCookieDeletion(
+      non_default_storage_partition, constants::DATA_TYPE_ACCOUNT_PASSWORDS);
   EXPECT_EQ(domains.size(), 0u);
 }
 

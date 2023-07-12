@@ -27,6 +27,7 @@ bool MockBrowsingDataRemoverDelegate::MayRemoveDownloadHistory() {
 
 std::vector<std::string>
 MockBrowsingDataRemoverDelegate::GetDomainsForDeferredCookieDeletion(
+    StoragePartition* storage_partition,
     uint64_t remove_mask) {
   return {};
 }
