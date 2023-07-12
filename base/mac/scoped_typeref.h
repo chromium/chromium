@@ -50,7 +50,7 @@ struct ScopedTypeRefTraits;
 template<typename T, typename Traits = ScopedTypeRefTraits<T>>
 class ScopedTypeRef {
  public:
-  using element_type = __unsafe_unretained T;
+  using element_type = T;
 
   explicit constexpr ScopedTypeRef(
       element_type object = Traits::InvalidValue(),
@@ -118,13 +118,9 @@ class ScopedTypeRef {
     return object_ != that.object_;
   }
 
-  operator element_type() const __attribute__((ns_returns_not_retained)) {
-    return object_;
-  }
+  operator element_type() const { return object_; }
 
-  element_type get() const __attribute__((ns_returns_not_retained)) {
-    return object_;
-  }
+  element_type get() const { return object_; }
 
   void swap(ScopedTypeRef& that) {
     element_type temp = that.object_;
