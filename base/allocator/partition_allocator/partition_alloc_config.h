@@ -100,11 +100,13 @@ static_assert(sizeof(void*) != 8, "");
 // into the kernel only if there is contention. This requires platform support,
 // namely:
 // - On Linux, futex(2)
-// - On Windows, a fast userspace "try" operation which is available
-//   with SRWLock
+// - On Windows, a fast userspace "try" operation which is available with
+//   SRWLock
 // - On macOS, pthread_mutex_trylock() is fast by default starting with macOS
 //   10.14. Chromium targets an earlier version, so it cannot be known at
 //   compile-time. So we use something different.
+//   TODO(https://crbug.com/1459032): macOS 10.15 is now required; switch to
+//   better locking.
 // - Otherwise, on POSIX we assume that a fast userspace pthread_mutex_trylock()
 //   is available.
 //

@@ -108,15 +108,6 @@ void NameRegion(void* start, size_t length, PageTag page_tag) {
 // entitlement, returning whether MAP_JIT should be used to allocate regions
 // that will contain JIT-compiled executable code.
 bool UseMapJit() {
-  if (!base::mac::IsAtLeastOS10_14()) {
-    // MAP_JIT existed before macOS 10.14, but had somewhat different semantics.
-    // Only one MAP_JIT region was permitted per process, but calling code here
-    // will very likely require more than one such region. Since MAP_JIT is not
-    // strictly necessary to write code to a region and then execute it on these
-    // older OSes, don’t use it at all.
-    return false;
-  }
-
   // Until determining that the hardened runtime is enabled, early returns will
   // return true, so that MAP_JIT will be used. This is important on arm64,
   // which only allows pages to be simultaneously writable and executable when
@@ -192,10 +183,10 @@ uintptr_t SystemAllocPagesInternal(uintptr_t hint,
   int map_flags = MAP_ANONYMOUS | MAP_PRIVATE;
 
 #if BUILDFLAG(IS_APPLE)
-  // On macOS 10.14 and higher, executables that are code signed with the
-  // "runtime" option cannot execute writable memory by default. They can opt
-  // into this capability by specifying the "com.apple.security.cs.allow-jit"
-  // code signing entitlement and allocating the region with the MAP_JIT flag.
+  // On macOS, executables that are code signed with the "runtime" option cannot
+  // execute writable memory by default. They can opt into this capability by
+  // specifying the "com.apple.security.cs.allow-jit" code signing entitlement
+  // and allocating the region with the MAP_JIT flag.
   static const bool kUseMapJit = UseMapJit();
   if (accessibility.permissions ==
           PageAccessibilityConfiguration::kInaccessibleWillJitLater &&
