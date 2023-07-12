@@ -83,9 +83,7 @@ const CGFloat kSymbolSize = 22;
   [self.handler loadModel];
 
   TableViewModel* model = self.tableViewModel;
-  if (self.showMigrateToAccountSection &&
-      ![model hasSectionForSectionIdentifier:
-                  AutofillProfileDetailsSectionIdentifierMigrationToAccount]) {
+  if (self.showMigrateToAccountSection) {
     [model addSectionWithIdentifier:
                AutofillProfileDetailsSectionIdentifierMigrationToAccount];
     [model addItem:[self migrateToAccountRecommendationItem]

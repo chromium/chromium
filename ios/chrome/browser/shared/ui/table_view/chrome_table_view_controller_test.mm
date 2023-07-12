@@ -39,8 +39,7 @@ void ChromeTableViewControllerTest::TearDown() {
 void ChromeTableViewControllerTest::CreateController() {
   DCHECK(!controller_);
   controller_ = InstantiateController();
-  // Force the model to be loaded.
-  [controller_ loadModel];
+
   // Force the tableView to be built.
   EXPECT_TRUE([controller_ view]);
 }

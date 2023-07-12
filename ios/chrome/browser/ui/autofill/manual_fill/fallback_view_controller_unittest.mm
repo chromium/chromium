@@ -31,7 +31,10 @@ class FallbackViewControllerTest : public ChromeTableViewControllerTest {
   }
 
   ChromeTableViewController* InstantiateController() override {
-    return [[FallbackViewController alloc] init];
+    FallbackViewController* viewController =
+        [[FallbackViewController alloc] init];
+    [viewController loadModel];
+    return viewController;
   }
 };
 
