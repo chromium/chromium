@@ -107,6 +107,7 @@ class AffiliationsPrefetcherTest : public testing::Test,
 
   void TearDown() override {
     (static_cast<KeyedService*>(prefetcher()))->Shutdown();
+    prefetcher_.reset();
     if (password_store_) {
       DestroyPasswordStore();
     }

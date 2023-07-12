@@ -52,7 +52,7 @@ class AffiliationsPrefetcher : public KeyedService,
 
   void InitializeWithPasswordStores();
 
-  raw_ptr<AffiliationService, DanglingUntriaged> affiliation_service_ = nullptr;
+  const raw_ptr<AffiliationService> affiliation_service_ = nullptr;
 
   // Password stores registered via RegisterPasswordStore but aren't observed
   // yet.
