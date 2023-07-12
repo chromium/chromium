@@ -814,7 +814,8 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
     input.border_padding_for_replaced =
         physical_fragment.Borders() + physical_fragment.Padding();
     if (!box_->NeedsLayout()) {
-      box_->SetSelfNeedsLayoutForAvailableSpace(true);
+      box_->SetNeedsLayout(layout_invalidation_reason::kSizeChanged,
+                           kMarkOnlyThis);
     }
     box_->LayoutIfNeeded();
   }

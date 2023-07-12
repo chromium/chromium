@@ -1526,7 +1526,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool NeedsLayout() const {
     NOT_DESTROYED();
     return bitfields_.SelfNeedsLayoutForStyle() ||
-           bitfields_.SelfNeedsLayoutForAvailableSpace() ||
            bitfields_.NormalChildNeedsLayout() ||
            bitfields_.PosChildNeedsLayout() ||
            bitfields_.NeedsSimplifiedNormalFlowLayout();
@@ -1534,9 +1533,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   bool NeedsSimplifiedLayoutOnly() const {
     NOT_DESTROYED();
-    // We don't need to check |SelfNeedsLayoutForAvailableSpace| as an
-    // additional check will determine if we need to perform full layout based
-    // on the available space.
     return (bitfields_.PosChildNeedsLayout() ||
             bitfields_.NeedsSimplifiedNormalFlowLayout()) &&
            !bitfields_.SelfNeedsLayoutForStyle() &&
@@ -1545,18 +1541,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   bool SelfNeedsLayout() const {
     NOT_DESTROYED();
-    return bitfields_.SelfNeedsLayoutForStyle() ||
-           bitfields_.SelfNeedsLayoutForAvailableSpace();
-  }
-  bool SelfNeedsLayoutForStyle() const {
-    NOT_DESTROYED();
     return bitfields_.SelfNeedsLayoutForStyle();
   }
-  bool SelfNeedsLayoutForAvailableSpace() const {
-    NOT_DESTROYED();
-    return bitfields_.SelfNeedsLayoutForAvailableSpace();
-  }
-
   bool PosChildNeedsLayout() const {
     NOT_DESTROYED();
     return bitfields_.PosChildNeedsLayout();
@@ -2957,13 +2943,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   bool IsRelayoutBoundary() const;
 
-  void SetSelfNeedsLayoutForAvailableSpace(bool flag) {
-    NOT_DESTROYED();
-    bitfields_.SetSelfNeedsLayoutForAvailableSpace(flag);
-    if (flag)
-      MarkSelfPaintingLayerForVisualOverflowRecalc();
-  }
-
   PaintInvalidationReason FullPaintInvalidationReason() const {
     NOT_DESTROYED();
     return static_cast<PaintInvalidationReason>(
@@ -3908,7 +3887,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // of the memory constraints on layout objects.
     LayoutObjectBitfields(Node* node)
         : self_needs_layout_for_style_(false),
-          self_needs_layout_for_available_space_(false),
           normal_child_needs_layout_(false),
           pos_child_needs_layout_(false),
           needs_simplified_normal_flow_layout_(false),
@@ -3995,12 +3973,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // the line boxes again), the margins (due to block collapsing margins), the
     // positions, the height and the potential overflow.
     ADD_BOOLEAN_BITFIELD(self_needs_layout_for_style_, SelfNeedsLayoutForStyle);
-
-    // Similar to SelfNeedsLayoutForStyle; however, this is set when the
-    // available space (~parent height or width) changes, or the override size
-    // has changed. In some cases this allows skipping layouts.
-    ADD_BOOLEAN_BITFIELD(self_needs_layout_for_available_space_,
-                         SelfNeedsLayoutForAvailableSpace);
 
     // This boolean is set when a normal flow ('position' == static || relative)
     // child requires layout (but this object doesn't). Due to the nature of
@@ -4437,8 +4409,7 @@ inline void LayoutObject::SetNeedsLayout(
 #if DCHECK_IS_ON()
   DCHECK(!IsSetNeedsLayoutForbidden());
 #endif
-  bool already_needed_layout = bitfields_.SelfNeedsLayoutForStyle() ||
-                               bitfields_.SelfNeedsLayoutForAvailableSpace();
+  bool already_needed_layout = bitfields_.SelfNeedsLayoutForStyle();
   SetSelfNeedsLayoutForStyle(true);
   SetNeedsOverflowRecalc();
   SetTableColumnConstraintDirty(true);
@@ -4466,7 +4437,6 @@ inline void LayoutObject::ClearNeedsLayoutWithoutPaintInvalidation() {
 
   // Clear needsLayout flags.
   SetSelfNeedsLayoutForStyle(false);
-  SetSelfNeedsLayoutForAvailableSpace(false);
 
   if (!ChildLayoutBlockedByDisplayLock()) {
     SetPosChildNeedsLayout(false);

@@ -100,7 +100,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       (break_token && break_token->IsRepeated()))
     return nullptr;
 
-  if (SelfNeedsLayoutForStyle() || child_needs_layout_unless_locked ||
+  if (SelfNeedsLayout() || child_needs_layout_unless_locked ||
       NeedsSimplifiedNormalFlowLayout()) {
     if (!ChildrenInline()) {
       // Check if we only need "simplified" layout. We don't abort yet, as we
