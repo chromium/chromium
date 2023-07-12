@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -777,7 +778,7 @@ void AutocorrectManager::OnActivate(const std::string& engine_id) {
       // login screens, guest sessions, etc). Make sure we are only recording
       // this metric when a real user has logged into their profile.
       ProfileHelper::IsUserProfile(profile_) && profile_->IsRegularProfile() &&
-      !profile_->IsGuestSession()) {
+      !profile_->IsGuestSession() && !chromeos::IsKioskSession()) {
     SetPhysicalKeyboardAutocorrectAsEnabledByDefault(pref_service, engine_id);
   }
 }
