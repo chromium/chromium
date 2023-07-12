@@ -4,6 +4,7 @@ Revision: -
 License: BSD 3-clause
 License File: ../../LICENSE
 Security Critical: yes
+Shipped: yes
 
 This directory contains outputs of some tools that run during the chrome/win
 build and that exist only as closed-source Windows binaries and that are used
