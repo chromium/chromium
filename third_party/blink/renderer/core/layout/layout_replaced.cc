@@ -132,9 +132,10 @@ void LayoutReplaced::UpdateLayout() {
 
   ClearNeedsLayout();
 
-  if (ReplacedContentRectFrom(SizeFromNG(), BorderPaddingFromNG()) !=
-      old_content_rect)
+  if (ReplacedContentRectFrom(PhysicalContentBoxRectFromNG()) !=
+      old_content_rect) {
     SetShouldDoFullPaintInvalidation();
+  }
 }
 
 void LayoutReplaced::IntrinsicSizeChanged() {
@@ -228,8 +229,7 @@ absl::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
 }
 
 PhysicalRect LayoutReplaced::ComputeReplacedContentRect(
-    const PhysicalSize size,
-    const NGPhysicalBoxStrut& border_padding,
+    const PhysicalRect& base_content_rect,
     const PhysicalSize* overridden_intrinsic_size) const {
   // |intrinsic_size| provides the size of the embedded content rendered in the
   // replaced element. This is the reference size that object-view-box applies
@@ -266,7 +266,7 @@ PhysicalRect LayoutReplaced::ComputeReplacedContentRect(
   // If no view box override was applied, then we don't need to adjust the
   // view-box paint rect.
   if (!view_box) {
-    return ComputeObjectFitAndPositionRect(size, border_padding,
+    return ComputeObjectFitAndPositionRect(base_content_rect,
                                            overridden_intrinsic_size);
   }
 
@@ -274,7 +274,7 @@ PhysicalRect LayoutReplaced::ComputeReplacedContentRect(
   DCHECK(!view_box->IsEmpty());
   const PhysicalSize view_box_size(view_box->Width(), view_box->Height());
   const auto view_box_paint_rect =
-      ComputeObjectFitAndPositionRect(size, border_padding, &view_box_size);
+      ComputeObjectFitAndPositionRect(base_content_rect, &view_box_size);
   if (view_box_paint_rect.IsEmpty())
     return view_box_paint_rect;
 
@@ -298,17 +298,15 @@ PhysicalRect LayoutReplaced::ComputeReplacedContentRect(
 }
 
 PhysicalRect LayoutReplaced::ComputeObjectFitAndPositionRect(
-    const PhysicalSize size,
-    const NGPhysicalBoxStrut& border_padding,
+    const PhysicalRect& base_content_rect,
     const PhysicalSize* overridden_intrinsic_size) const {
   NOT_DESTROYED();
-  PhysicalRect content_rect = PhysicalContentBoxRectFrom(size, border_padding);
   EObjectFit object_fit = StyleRef().GetObjectFit();
 
   if (object_fit == EObjectFit::kFill &&
       StyleRef().ObjectPosition() ==
           ComputedStyleInitialValues::InitialObjectPosition()) {
-    return content_rect;
+    return base_content_rect;
   }
 
   // TODO(davve): intrinsicSize doubles as both intrinsic size and intrinsic
@@ -319,10 +317,10 @@ PhysicalRect LayoutReplaced::ComputeObjectFitAndPositionRect(
   PhysicalSize intrinsic_size(
       overridden_intrinsic_size ? *overridden_intrinsic_size : IntrinsicSize());
   if (intrinsic_size.IsEmpty())
-    return content_rect;
+    return base_content_rect;
 
   PhysicalSize scaled_intrinsic_size(intrinsic_size);
-  PhysicalRect final_rect = content_rect;
+  PhysicalRect final_rect = base_content_rect;
   switch (object_fit) {
     case EObjectFit::kScaleDown:
       // Srcset images have an intrinsic size depending on their destination,
@@ -353,10 +351,10 @@ PhysicalRect LayoutReplaced::ComputeObjectFitAndPositionRect(
 
   LayoutUnit x_offset =
       MinimumValueForLength(StyleRef().ObjectPosition().X(),
-                            content_rect.Width() - final_rect.Width());
+                            base_content_rect.Width() - final_rect.Width());
   LayoutUnit y_offset =
       MinimumValueForLength(StyleRef().ObjectPosition().Y(),
-                            content_rect.Height() - final_rect.Height());
+                            base_content_rect.Height() - final_rect.Height());
   final_rect.Move(PhysicalOffset(x_offset, y_offset));
 
   return final_rect;
@@ -366,18 +364,13 @@ PhysicalRect LayoutReplaced::ReplacedContentRect() const {
   NOT_DESTROYED();
   // This function should compute the result with old geometry even if a
   // BoxLayoutExtraInput exists.
-  return ReplacedContentRectFrom(
-      Size(), NGPhysicalBoxStrut(BorderTop() + PaddingTop(),
-                                 BorderRight() + PaddingRight(),
-                                 BorderBottom() + PaddingBottom(),
-                                 BorderLeft() + PaddingLeft()));
+  return ReplacedContentRectFrom(PhysicalContentBoxRect());
 }
 
 PhysicalRect LayoutReplaced::ReplacedContentRectFrom(
-    const PhysicalSize size,
-    const NGPhysicalBoxStrut& border_padding) const {
+    const PhysicalRect& base_content_rect) const {
   NOT_DESTROYED();
-  return ComputeReplacedContentRect(size, border_padding);
+  return ComputeReplacedContentRect(base_content_rect);
 }
 
 PhysicalSize LayoutReplaced::SizeFromNG() const {
@@ -398,13 +391,8 @@ NGPhysicalBoxStrut LayoutReplaced::BorderPaddingFromNG() const {
 
 PhysicalRect LayoutReplaced::PhysicalContentBoxRectFromNG() const {
   NOT_DESTROYED();
-  return PhysicalContentBoxRectFrom(SizeFromNG(), BorderPaddingFromNG());
-}
-
-PhysicalRect LayoutReplaced::PhysicalContentBoxRectFrom(
-    const PhysicalSize size,
-    const NGPhysicalBoxStrut& border_padding) const {
-  NOT_DESTROYED();
+  const PhysicalSize size = SizeFromNG();
+  const NGPhysicalBoxStrut border_padding = BorderPaddingFromNG();
   return PhysicalRect(
       border_padding.left, border_padding.top,
       (size.width - border_padding.HorizontalSum()).ClampNegativeToZero(),

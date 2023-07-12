@@ -42,8 +42,7 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
   static PhysicalSize DefaultSize();
 
   PhysicalRect ReplacedContentRectFrom(
-      const PhysicalSize size,
-      const NGPhysicalBoxStrut& border_padding) const final;
+      const PhysicalRect& base_content_rect) const final;
 
   bool SupportsAcceleratedRendering() const;
 

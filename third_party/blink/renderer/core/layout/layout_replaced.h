@@ -65,8 +65,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // no clipping.
   PhysicalRect ReplacedContentRect() const;
   virtual PhysicalRect ReplacedContentRectFrom(
-      const PhysicalSize size,
-      const NGPhysicalBoxStrut& border_padding) const;
+      const PhysicalRect& base_content_rect) const;
 
   // This is used by a few special elements, e.g. <video>, <iframe> to ensure
   // a persistent sizing under different subpixel offset, because these
@@ -163,8 +162,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // intrinsic size of the replaced contents, stretch to fit CSS content box
   // according to object-fit, object-position and object-view-box.
   PhysicalRect ComputeReplacedContentRect(
-      const PhysicalSize size,
-      const NGPhysicalBoxStrut& border_padding,
+      const PhysicalRect& base_content_rect,
       const PhysicalSize* overridden_intrinsic_size = nullptr) const;
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
@@ -197,11 +195,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // BoxLayoutExtraInput is associated to this box.
   NGPhysicalBoxStrut BorderPaddingFromNG() const;
 
-  // This returns a local rectangle excluding border_padding.
-  PhysicalRect PhysicalContentBoxRectFrom(
-      const PhysicalSize size,
-      const NGPhysicalBoxStrut& border_padding) const;
-
   // ReplacedPainter doesn't support CompositeBackgroundAttachmentFixed yet.
   bool ComputeCanCompositeBackgroundAttachmentFixed() const override {
     NOT_DESTROYED();
@@ -216,8 +209,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
       const PhysicalSize* overridden_intrinsic_size = nullptr) const;
 
   PhysicalRect ComputeObjectFitAndPositionRect(
-      const PhysicalSize size,
-      const NGPhysicalBoxStrut& border_padding,
+      const PhysicalRect& base_content_rect,
       const PhysicalSize* overridden_intrinsic_size) const;
 
   absl::optional<LayoutUnit> IntrinsicWidthOverride() const {
