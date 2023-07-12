@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/color_parser.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -138,15 +139,17 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     views::BubbleDialogDelegateView::CreateBubble(dialog_)->Show();
   }
 
-  void CreateSingleAccountPicker(bool show_back_button,
-                                 const content::IdentityRequestAccount& account,
-                                 const std::string& terms_of_service_url,
-                                 bool show_auto_reauthn_checkbox = false,
-                                 bool exclude_iframe = true) {
+  void CreateSingleAccountPicker(
+      bool show_back_button,
+      const content::IdentityRequestAccount& account,
+      const content::IdentityProviderMetadata& idp_metadata,
+      const std::string& terms_of_service_url,
+      bool show_auto_reauthn_checkbox = false,
+      bool exclude_iframe = true) {
     CreateAccountSelectionBubble(/*exclude_title=*/false, exclude_iframe,
                                  show_auto_reauthn_checkbox);
     IdentityProviderDisplayData idp_data(
-        kIdpETLDPlusOne, content::IdentityProviderMetadata(),
+        kIdpETLDPlusOne, idp_metadata,
         CreateTestClientMetadata(terms_of_service_url), {account},
         /*request_permission=*/true);
     dialog_->ShowSingleAccountConfirmDialog(
@@ -266,7 +269,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
         kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
     CreateSingleAccountPicker(
-        /*show_back_button=*/false, account, kTermsOfServiceUrl);
+        /*show_back_button=*/false, account,
+        content::IdentityProviderMetadata(), kTermsOfServiceUrl);
 
     std::vector<views::View*> children = dialog()->children();
     ASSERT_EQ(children.size(), 3u);
@@ -484,7 +488,8 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
   content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
       kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp);
   CreateSingleAccountPicker(
-      /*show_back_button=*/false, account, /*terms_of_service_url=*/"");
+      /*show_back_button=*/false, account, content::IdentityProviderMetadata(),
+      /*terms_of_service_url=*/"");
 
   std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
@@ -523,7 +528,8 @@ TEST_F(AccountSelectionBubbleViewTest, ReturningAccount) {
   content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
       kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
   CreateSingleAccountPicker(
-      /*show_back_button=*/false, account, /*terms_of_service_url=*/"");
+      /*show_back_button=*/false, account, content::IdentityProviderMetadata(),
+      /*terms_of_service_url=*/"");
 
   std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
@@ -545,6 +551,96 @@ TEST_F(AccountSelectionBubbleViewTest, ReturningAccount) {
   EXPECT_EQ(button->GetText(),
             base::UTF8ToUTF16("Continue as " + std::string(kGivenNameBase) +
                               kAccountSuffix));
+}
+
+TEST_F(AccountSelectionBubbleViewTest,
+       ContinueButtonWithProperBackgroundColor) {
+  const std::string kAccountSuffix = "suffix";
+  content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
+      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
+
+  CreateAccountSelectionBubble(/*exclude_title=*/false, /*exclude_iframe=*/true,
+                               /*show_auto_reauthn_checkbox=*/false);
+
+  // Set the dialog background color to white.
+  dialog()->set_color(SK_ColorWHITE);
+
+  const std::string kDarkBlue = "#1a73e8";
+  SkColor bg_color;
+  // A blue background sufficiently contracts with the dialog background.
+  content::ParseCssColorString(kDarkBlue, &bg_color);
+  content::IdentityProviderMetadata idp_metadata =
+      content::IdentityProviderMetadata();
+  idp_metadata.brand_background_color = SkColorSetA(bg_color, 0xff);
+
+  IdentityProviderDisplayData idp_data(
+      kIdpETLDPlusOne, idp_metadata,
+      CreateTestClientMetadata(/*terms_of_service_url=*/""), {account},
+      /*request_permission=*/true);
+
+  dialog()->ShowSingleAccountConfirmDialog(kTopFrameETLDPlusOne,
+                                           /*iframe_for_display=*/absl::nullopt,
+                                           account, idp_data,
+                                           /*show_back_button=*/false);
+
+  std::vector<views::View*> children = dialog()->children();
+  ASSERT_EQ(children.size(), 3u);
+
+  views::View* single_account_chooser = children[2];
+  std::vector<views::View*> chooser_children =
+      single_account_chooser->children();
+  ASSERT_EQ(chooser_children.size(), 2u);
+
+  views::MdTextButton* button =
+      static_cast<views::MdTextButton*>(chooser_children[1]);
+  ASSERT_TRUE(button);
+  EXPECT_EQ(*(button->GetBgColorOverride()), bg_color);
+}
+
+TEST_F(AccountSelectionBubbleViewTest,
+       ContinueButtonWithImproperBackgroundColor) {
+  const std::string kAccountSuffix = "suffix";
+  content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
+      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
+
+  CreateAccountSelectionBubble(/*exclude_title=*/false, /*exclude_iframe=*/true,
+                               /*show_auto_reauthn_checkbox=*/false);
+
+  // Set the dialog background color to white.
+  dialog()->set_color(SK_ColorWHITE);
+
+  const std::string kWhite = "#fff";
+  SkColor bg_color;
+  // By default a white button does not contrast with the dialog background so
+  // the specified color will be ignored.
+  content::ParseCssColorString(kWhite, &bg_color);
+  content::IdentityProviderMetadata idp_metadata =
+      content::IdentityProviderMetadata();
+  idp_metadata.brand_background_color = SkColorSetA(bg_color, 0xff);
+
+  IdentityProviderDisplayData idp_data(
+      kIdpETLDPlusOne, idp_metadata,
+      CreateTestClientMetadata(/*terms_of_service_url=*/""), {account},
+      /*request_permission=*/true);
+
+  dialog()->ShowSingleAccountConfirmDialog(kTopFrameETLDPlusOne,
+                                           /*iframe_for_display=*/absl::nullopt,
+                                           account, idp_data,
+                                           /*show_back_button=*/false);
+
+  std::vector<views::View*> children = dialog()->children();
+  ASSERT_EQ(children.size(), 3u);
+
+  views::View* single_account_chooser = children[2];
+  std::vector<views::View*> chooser_children =
+      single_account_chooser->children();
+  ASSERT_EQ(chooser_children.size(), 2u);
+
+  views::MdTextButton* button =
+      static_cast<views::MdTextButton*>(chooser_children[1]);
+  ASSERT_TRUE(button);
+  // The button color is not customized by the IDP.
+  EXPECT_FALSE(button->GetBgColorOverride());
 }
 
 TEST_F(AccountSelectionBubbleViewTest, Verifying) {
@@ -603,7 +699,8 @@ TEST_F(AccountSelectionBubbleViewTest, AutoReauthnCheckboxDisplayed) {
   content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
       {kAccountSuffix}, content::IdentityRequestAccount::LoginState::kSignUp);
   CreateSingleAccountPicker(
-      /*show_back_button=*/false, account, /*terms_of_service_url=*/"",
+      /*show_back_button=*/false, account, content::IdentityProviderMetadata(),
+      /*terms_of_service_url=*/"",
       /*show_auto_reauthn_checkbox=*/true);
 
   std::vector<views::View*> children = dialog()->children();
@@ -643,7 +740,8 @@ TEST_F(AccountSelectionBubbleViewTest, SuccessIframeSubtitleInHeader) {
   content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
       {kAccountSuffix}, content::IdentityRequestAccount::LoginState::kSignUp);
   CreateSingleAccountPicker(
-      /*show_back_button=*/false, account, /*terms_of_service_url=*/"",
+      /*show_back_button=*/false, account, content::IdentityProviderMetadata(),
+      /*terms_of_service_url=*/"",
       /*show_auto_reauthn_checkbox=*/false, /*exclude_iframe=*/false);
 
   std::vector<views::View*> children = dialog()->children();
