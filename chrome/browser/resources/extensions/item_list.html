@@ -14,12 +14,22 @@
     padding: 24px 60px 64px;
   }
 
+  #content-wrapper:has(extensions-review-panel) {
+    padding-top: 14px;
+  }
+
   .empty-list-message {
     color: #6e6e6e;
     font-size: 123%;  /* Should be 16px when 100% is 13px. */
     font-weight: 500;
     margin-top: 80px;
     text-align: center;
+  }
+
+  .extension-title-container {
+    font-size: 15px;
+    font-weight: 400;
+    margin: 0 0 16px 5px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -41,8 +51,14 @@
   }
 
   .items-container.review-panel-container :first-child {
+    max-width: var(--cr-toolbar-field-width);
     grid-column: 1 / -1;
-    padding-bottom: 20px;
+    padding-bottom: 48px;
+  }
+
+  extensions-review-panel {
+    margin: 0 auto;
+    width: 100%;
   }
 
   #checkup-container {
@@ -85,9 +101,10 @@
   <managed-footnote hidden="[[filter]]"></managed-footnote>
   <div id="content-wrapper" style="--max-columns: [[maxColumns_]];">
     <div class="items-container review-panel-container">
-      <template is="dom-if" if="[[showSafetyCheckReviewPanel_]]">
+      <template is="dom-if" if="[[showSafetyCheckReviewPanel_]]" restamp>
         <extensions-review-panel extensions="[[extensions]]" delegate="[[delegate]]">
         </extensions-review-panel>
+        <h2 class="extension-title-container">$i18n{safetyCheckAllExtensions}</h2>
       </template>
     </div>
     <div id="no-items" class="empty-list-message"

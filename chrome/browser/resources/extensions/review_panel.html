@@ -7,11 +7,12 @@
   .header-with-icon {
     align-items: center;
     display: flex;
-    padding: 15px 30px 15px 20px;
+    padding: 0 30px 15px 0px;
   }
 
   .header-with-icon h3 {
-    margin: 5px 0 5px 0;
+    margin: 5px 0 3px 0;
+    font-weight: 400;
   }
 
   /** TODO(crbug.com/1432194): Clean up the CSS with the shared styles added
@@ -67,7 +68,7 @@
   }
 
   .extension-row {
-    padding-inline-end: 10px;
+    padding-inline-end: 20px;
     padding-inline-start: 50px;
   }
 
@@ -81,11 +82,14 @@
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .bulk-action-button {
     margin-inline-start: auto;
+  }
+
+  .cr-row.first {
+    padding-left: 0px;
   }
 </style>
 <cr-expand-button class="cr-row first" no-hover

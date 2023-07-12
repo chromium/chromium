@@ -17,6 +17,7 @@ html {
   --extensions-card-height: 160px;
   --separator-gap: 9px;
   --sidebar-width: 256px;
+  --cr-toolbar-field-width: 680px;
 }
 
 @media (prefers-color-scheme: dark) {

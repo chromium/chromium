@@ -349,6 +349,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
     {"safetyCheckKeepExtension", IDS_EXTENSIONS_SC_KEEP_EXT},
     {"safetyCheckRemoveAll", IDS_EXTENSIONS_SC_REMOVE_ALL},
     {"safetyCheckAllDoneForNow", IDS_EXTENSIONS_SC_ALL_DONE_FOR_NOW},
+    {"safetyCheckAllExtensions", IDS_EXTENSIONS_SC_ALL_EXTENSIONS},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"manageKioskApp", IDS_EXTENSIONS_MANAGE_KIOSK_APP},
