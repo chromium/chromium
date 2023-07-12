@@ -247,8 +247,10 @@ int ChromeTypographyProvider::GetLineHeight(int context, int style) const {
 
 bool ChromeTypographyProvider::StyleAllowedForContext(int context,
                                                       int style) const {
-  if (context == CONTEXT_TAB_HOVER_CARD_TITLE)
-    return style == views::style::STYLE_PRIMARY;
+  if (context == CONTEXT_TAB_HOVER_CARD_TITLE) {
+    return style == views::style::STYLE_PRIMARY ||
+           style == views::style::STYLE_BODY_3_EMPHASIS;
+  }
 
   if (style == views::style::STYLE_EMPHASIZED ||
       style == views::style::STYLE_EMPHASIZED_SECONDARY) {
