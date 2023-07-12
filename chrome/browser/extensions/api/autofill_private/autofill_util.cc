@@ -93,7 +93,7 @@ autofill_private::AddressEntry ProfileToAddressEntry(
 
   // Add all address fields to the entry.
   address.guid = profile.guid();
-  address.full_names = GetList(profile, autofill::NAME_FULL);
+  address.full_name = GetStringFromProfile(profile, autofill::NAME_FULL);
   address.honorific =
       GetStringFromProfile(profile, autofill::NAME_HONORIFIC_PREFIX);
   address.company_name = GetStringFromProfile(profile, autofill::COMPANY_NAME);
@@ -111,8 +111,10 @@ autofill_private::AddressEntry ProfileToAddressEntry(
       GetStringFromProfile(profile, autofill::ADDRESS_HOME_SORTING_CODE);
   address.country_code =
       GetStringFromProfile(profile, autofill::ADDRESS_HOME_COUNTRY);
-  address.phone_numbers = GetList(profile, autofill::PHONE_HOME_WHOLE_NUMBER);
-  address.email_addresses = GetList(profile, autofill::EMAIL_ADDRESS);
+  address.phone_number =
+      GetStringFromProfile(profile, autofill::PHONE_HOME_WHOLE_NUMBER);
+  address.email_address =
+      GetStringFromProfile(profile, autofill::EMAIL_ADDRESS);
   address.language_code = profile.language_code();
 
   // Parse |label| so that it can be used to create address metadata.

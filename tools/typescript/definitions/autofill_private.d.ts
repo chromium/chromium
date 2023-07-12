@@ -48,7 +48,7 @@ declare global {
 
       export interface AddressEntry {
         guid?: string;
-        fullNames?: string[];
+        fullName?: string;
         honorific?: string;
         companyName?: string;
         addressLines?: string;
@@ -58,8 +58,8 @@ declare global {
         postalCode?: string;
         sortingCode?: string;
         countryCode?: string;
-        phoneNumbers?: string[];
-        emailAddresses?: string[];
+        phoneNumber?: string;
+        emailAddress?: string;
         languageCode?: string;
         metadata?: AutofillMetadata;
       }

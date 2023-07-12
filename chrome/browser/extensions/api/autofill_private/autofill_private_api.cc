@@ -122,35 +122,6 @@ base::Value::Dict AddressUiComponentAsValueMap(
   return info;
 }
 
-// Searches the |list| for the value at |index|.  If this value is present in
-// any of the rest of the list, then the item (at |index|) is removed. The
-// comparison of phone number values is done on normalized versions of the phone
-// number values.
-void RemoveDuplicatePhoneNumberAtIndex(size_t index,
-                                       const std::string& country_code,
-                                       base::Value::List& list) {
-  if (list.size() <= index) {
-    NOTREACHED() << "List should have a value at index " << index;
-    return;
-  }
-  const std::string& new_value = list[index].GetString();
-
-  bool is_duplicate = false;
-  std::string app_locale = g_browser_process->GetApplicationLocale();
-  for (size_t i = 0; i < list.size() && !is_duplicate; ++i) {
-    if (i == index)
-      continue;
-
-    const std::string& existing_value = list[i].GetString();
-    is_duplicate = autofill::i18n::PhoneNumbersMatch(
-        base::UTF8ToUTF16(new_value), base::UTF8ToUTF16(existing_value),
-        country_code, app_locale);
-  }
-
-  if (is_duplicate)
-    list.erase(list.begin() + index);
-}
-
 autofill::AutofillManager* GetAutofillManager(
     content::WebContents* web_contents) {
   if (!web_contents) {
@@ -244,14 +215,11 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
           ? *existing_profile
           : CreateNewAutofillProfile(personal_data, address->country_code);
 
-  if (address->full_names) {
-    std::string full_name;
-    if (!address->full_names->empty())
-      full_name = address->full_names->at(0);
+  if (address->full_name) {
     profile.SetInfoWithVerificationStatus(
         autofill::AutofillType(autofill::NAME_FULL),
-        base::UTF8ToUTF16(full_name), g_browser_process->GetApplicationLocale(),
-        kUserVerified);
+        base::UTF8ToUTF16(*address->full_name),
+        g_browser_process->GetApplicationLocale(), kUserVerified);
   }
 
   if (address->honorific) {
@@ -308,21 +276,16 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
         base::UTF8ToUTF16(*address->country_code), kUserVerified);
   }
 
-  if (address->phone_numbers) {
-    std::string phone;
-    if (!address->phone_numbers->empty())
-      phone = address->phone_numbers->at(0);
-    profile.SetRawInfoWithVerificationStatus(autofill::PHONE_HOME_WHOLE_NUMBER,
-                                             base::UTF8ToUTF16(phone),
-                                             kUserVerified);
+  if (address->phone_number) {
+    profile.SetRawInfoWithVerificationStatus(
+        autofill::PHONE_HOME_WHOLE_NUMBER,
+        base::UTF8ToUTF16(*address->phone_number), kUserVerified);
   }
 
-  if (address->email_addresses) {
-    std::string email;
-    if (!address->email_addresses->empty())
-      email = address->email_addresses->at(0);
+  if (address->email_address) {
     profile.SetRawInfoWithVerificationStatus(
-        autofill::EMAIL_ADDRESS, base::UTF8ToUTF16(email), kUserVerified);
+        autofill::EMAIL_ADDRESS, base::UTF8ToUTF16(*address->email_address),
+        kUserVerified);
   }
 
   if (address->language_code)
@@ -516,30 +479,6 @@ ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
   personal_data->RemoveByGUID(parameters->guid);
 
   return RespondNow(NoArguments());
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateValidatePhoneNumbersFunction
-
-ExtensionFunction::ResponseAction
-AutofillPrivateValidatePhoneNumbersFunction::Run() {
-  absl::optional<api::autofill_private::ValidatePhoneNumbers::Params>
-      parameters =
-          api::autofill_private::ValidatePhoneNumbers::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parameters);
-
-  api::autofill_private::ValidatePhoneParams& params = parameters->params;
-
-  // Extract the phone numbers into a base::Value::List.
-  base::Value::List phone_numbers;
-  for (auto phone_number : params.phone_numbers) {
-    phone_numbers.Append(phone_number);
-  }
-
-  RemoveDuplicatePhoneNumberAtIndex(params.index_of_new_number,
-                                    params.country_code, phone_numbers);
-
-  return RespondNow(WithArguments(std::move(phone_numbers)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

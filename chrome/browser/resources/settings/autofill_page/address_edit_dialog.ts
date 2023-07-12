@@ -117,8 +117,7 @@ export class SettingsAddressEditDialogElement extends
   private validationError_?: string;
   private countries_: CountryEntry[];
   private countryCode_: string|undefined;
-  private components_: Array<Array<uiComponents.AddressComponentUi<unknown>>> =
-      [];
+  private components_: uiComponents.AddressComponentUi[][] = [];
   private canSave_: boolean;
   private isAccountAddress_: boolean;
   private showHonorific_: boolean;
@@ -413,8 +412,7 @@ customElements.define(
 
 export const ADDRESS_FIELD_COMPONENT_UI: Record<
     chrome.autofillPrivate.AddressField,
-    typeof uiComponents.StringComponentUi|
-    typeof uiComponents.ArrayStringComponentUi> = {
+    typeof uiComponents.AddressComponentUi> = {
   [AddressField.HONORIFIC]: uiComponents.HonorificComponentUi,
   [AddressField.COMPANY_NAME]: uiComponents.CompanyNameComponentUi,
   [AddressField.FULL_NAME]: uiComponents.FullNamesComponentUi,

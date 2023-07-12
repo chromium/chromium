@@ -129,23 +129,6 @@ class AutofillPrivateRemoveEntryFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutofillPrivateValidatePhoneNumbersFunction : public ExtensionFunction {
- public:
-  AutofillPrivateValidatePhoneNumbersFunction() = default;
-  AutofillPrivateValidatePhoneNumbersFunction(
-      const AutofillPrivateValidatePhoneNumbersFunction&) = delete;
-  AutofillPrivateValidatePhoneNumbersFunction& operator=(
-      const AutofillPrivateValidatePhoneNumbersFunction&) = delete;
-  DECLARE_EXTENSION_FUNCTION("autofillPrivate.validatePhoneNumbers",
-                             AUTOFILLPRIVATE_VALIDATEPHONENUMBERS)
-
- protected:
-  ~AutofillPrivateValidatePhoneNumbersFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class AutofillPrivateMaskCreditCardFunction : public ExtensionFunction {
  public:
   AutofillPrivateMaskCreditCardFunction() = default;

@@ -36299,7 +36299,7 @@ Called by update_extension_histograms.py.-->
   <int value="1014" label="AUTOFILLPRIVATE_GETADDRESSCOMPONENTS"/>
   <int value="1015" label="AUTOFILLPRIVATE_SAVECREDITCARD"/>
   <int value="1016" label="AUTOFILLPRIVATE_REMOVEENTRY"/>
-  <int value="1017" label="AUTOFILLPRIVATE_VALIDATEPHONENUMBERS"/>
+  <int value="1017" label="DELETED_AUTOFILLPRIVATE_VALIDATEPHONENUMBERS"/>
   <int value="1018" label="AUTOFILLPRIVATE_MASKCREDITCARD"/>
   <int value="1019" label="INSTANCEID_GETID"/>
   <int value="1020" label="INSTANCEID_GETCREATIONTIME"/>

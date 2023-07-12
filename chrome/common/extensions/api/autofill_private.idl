@@ -79,7 +79,7 @@ namespace autofillPrivate {
     // Globally unique identifier for this entry.
     DOMString? guid;
 
-    DOMString[]? fullNames;
+    DOMString? fullName;
 
     // A honorific title added to the name. E.g. "Mr.", "Dr.", "Her Royal
     // Majesty".
@@ -121,9 +121,9 @@ namespace autofillPrivate {
     // autofill_country.cc for a list of valid codes.
     DOMString? countryCode;
 
-    DOMString[]? phoneNumbers;
+    DOMString? phoneNumber;
 
-    DOMString[]? emailAddresses;
+    DOMString? emailAddress;
 
     DOMString? languageCode;
 
@@ -224,26 +224,10 @@ namespace autofillPrivate {
     AutofillMetadata? metadata;
   };
 
-  // Parameters to be passed to validatePhoneNumbers().
-  dictionary ValidatePhoneParams {
-    // The phone numbers to validate.
-    DOMString[] phoneNumbers;
-
-    // The index into |phoneNumbers| at which the newly-added/edited phone
-    // number resides.
-    long indexOfNewNumber;
-
-    // A two-character string representing the address' country. See
-    // autofill_country.cc for a list of valid codes.
-    DOMString countryCode;
-  };
-
   callback GetAccountInfoCallback = void(optional AccountInfo accountInfo);
   callback GetCountryListCallback = void(CountryEntry[] countries);
   callback GetAddressComponentsCallback = void(AddressComponents components);
   callback GetAddressListCallback = void(AddressEntry[] entries);
-  callback ValidatePhoneNumbersCallback =
-      void(DOMString[] validatedPhoneNumbers);
   callback GetCreditCardListCallback = void(CreditCardEntry[] entries);
   callback GetIbanListCallback = void(IbanEntry[] entries);
   callback GetUpiIdListCallback = void(DOMString[] entries);
@@ -294,15 +278,6 @@ namespace autofillPrivate {
     // Removes the entry (address or credit card) with the given ID.
     // |guid|: ID of the entry to remove.
     static void removeEntry(DOMString guid);
-
-    // Validates a newly-added phone number and invokes the callback with a list
-    // of validated numbers. Note that if the newly-added number was invalid, it
-    // will not be returned in the list of valid numbers.
-    // |params|: The parameters to this function.
-    // |callback|: Callback which will be called with validated phone numbers.
-    [supportsPromises] static void validatePhoneNumbers(
-        ValidatePhoneParams params,
-        ValidatePhoneNumbersCallback callback);
 
     // Gets the list of credit cards.
     // |callback|: Callback which will be called with the list of credit cards.

@@ -20,8 +20,8 @@ function isValueNonEmpty(value: string|undefined): boolean {
  * The base class for data behind an address component. It exposes the `value`
  * property, which is how interface controls (e.g. input) communicate with it.
  */
-export abstract class AddressComponentUi<ValueT> {
-  protected readonly property: KeySubset<AddressEntry, ValueT>;
+export class AddressComponentUi {
+  protected readonly property: KeySubset<AddressEntry, string|undefined>;
 
   private readonly address_: AddressEntry;
   private readonly originalAddress_?: AddressEntry;
@@ -107,83 +107,55 @@ export abstract class AddressComponentUi<ValueT> {
   /**
    * Gets the value from the address that's associated with this component.
    */
-  protected abstract getValue(address: AddressEntry): string|undefined;
+  protected getValue(address: AddressEntry): string|undefined {
+    return address[this.property];
+  }
 
   /**
    * Sets the value in the address that's associated with this component.
    */
-  protected abstract setValue(value: string|undefined, address: AddressEntry):
-      void;
+  protected setValue(value: string|undefined, address: AddressEntry): void {
+    address[this.property] = value;
+  }
 
   private hasValue_(address = this.address_): boolean {
     return isValueNonEmpty(this.getValue(address));
   }
 }
 
-/**
- * Base class for address fields whose value is stored as
- * a simple string (optional) property.
- */
-export class StringComponentUi extends AddressComponentUi<string|undefined> {
-  protected getValue(address: AddressEntry): string|undefined {
-    return address[this.property];
-  }
-
-  protected setValue(value: string|undefined, address: AddressEntry): void {
-    address[this.property] = value;
-  }
-}
-
-/**
- * Base class for address fields whose value is stored as
- * a single valued string array (optional) property, for
- * historical reason, see crbug.com/497934 for details.
- */
-export class ArrayStringComponentUi extends
-    AddressComponentUi<string[]|undefined> {
-  protected getValue(address: AddressEntry): string|undefined {
-    const value = address[this.property];
-    return value ? value[0] : undefined;
-  }
-
-  protected setValue(value: string|undefined, address: AddressEntry): void {
-    address[this.property] = isValueNonEmpty(value) ? [value!] : [];
-  }
-}
-
-export class HonorificComponentUi extends StringComponentUi {
+export class HonorificComponentUi extends AddressComponentUi {
   protected override readonly property = 'honorific';
 }
-export class CompanyNameComponentUi extends StringComponentUi {
+export class CompanyNameComponentUi extends AddressComponentUi {
   protected override readonly property = 'companyName';
 }
-export class FullNamesComponentUi extends ArrayStringComponentUi {
-  protected override readonly property = 'fullNames';
+export class FullNamesComponentUi extends AddressComponentUi {
+  protected override readonly property = 'fullName';
 }
-export class AddressLinesComponentUi extends StringComponentUi {
+export class AddressLinesComponentUi extends AddressComponentUi {
   protected override readonly property = 'addressLines';
 }
-export class AddressLevel1ComponentUi extends StringComponentUi {
+export class AddressLevel1ComponentUi extends AddressComponentUi {
   protected override readonly property = 'addressLevel1';
 }
-export class AddressLevel2ComponentUi extends StringComponentUi {
+export class AddressLevel2ComponentUi extends AddressComponentUi {
   protected override readonly property = 'addressLevel2';
 }
-export class AddressLevel3ComponentUi extends StringComponentUi {
+export class AddressLevel3ComponentUi extends AddressComponentUi {
   protected override readonly property = 'addressLevel3';
 }
-export class PostalCodeComponentUi extends StringComponentUi {
+export class PostalCodeComponentUi extends AddressComponentUi {
   protected override readonly property = 'postalCode';
 }
-export class CountryCodeComponentUi extends StringComponentUi {
+export class CountryCodeComponentUi extends AddressComponentUi {
   protected override readonly property = 'countryCode';
 }
-export class SortingCodeComponentUi extends StringComponentUi {
+export class SortingCodeComponentUi extends AddressComponentUi {
   protected override readonly property = 'sortingCode';
 }
-export class PhoneComponentUi extends ArrayStringComponentUi {
-  protected override readonly property = 'phoneNumbers';
+export class PhoneComponentUi extends AddressComponentUi {
+  protected override readonly property = 'phoneNumber';
 }
-export class EmailComponentUi extends ArrayStringComponentUi {
-  protected override readonly property = 'emailAddresses';
+export class EmailComponentUi extends AddressComponentUi {
+  protected override readonly property = 'emailAddress';
 }

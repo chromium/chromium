@@ -120,15 +120,15 @@ export function createAddressEntry(): chrome.autofillPrivate.AddressEntry {
   const addressLines = patternMaker('xxxx Main St', 10);
   return {
     guid: makeGuid(),
-    fullNames: [fullName],
+    fullName: fullName,
     companyName: 'Google',
     addressLines: addressLines,
     addressLevel1: 'CA',
     addressLevel2: 'Venice',
     postalCode: patternMaker('xxxxx', 10),
     countryCode: 'US',
-    phoneNumbers: [patternMaker('(xxx) xxx-xxxx', 10)],
-    emailAddresses: [patternMaker('userxxxx@gmail.com', 16)],
+    phoneNumber: patternMaker('(xxx) xxx-xxxx', 10),
+    emailAddress: patternMaker('userxxxx@gmail.com', 16),
     languageCode: 'EN-US',
     metadata: {
       isLocal: true,
