@@ -140,7 +140,7 @@ export class LogManager {
           executionContextId: params.exceptionDetails.executionContextId,
         });
 
-        // Try all the best to get the exception text.
+        // Try the best to get the exception text.
         const textPromise = (async () => {
           if (!params.exceptionDetails.exception) {
             return params.exceptionDetails.text;

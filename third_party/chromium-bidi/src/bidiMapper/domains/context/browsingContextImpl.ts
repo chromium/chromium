@@ -464,7 +464,6 @@ export class BrowsingContextImpl {
           params.context.auxData.type === 'isolated'
             ? params.context.name
             : undefined,
-          this.#cdpTarget.cdpSessionId,
           this.#cdpTarget.cdpClient,
           this.#eventManager,
           this.#logger

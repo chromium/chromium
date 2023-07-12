@@ -16,6 +16,8 @@
  *
  */
 
+import {Protocol} from 'devtools-protocol';
+
 import {ChromiumBidi, Script} from '../../../protocol/protocol.js';
 import type {IEventManager} from '../events/EventManager.js';
 import {uuidv4} from '../../../utils/uuid';
@@ -127,7 +129,8 @@ export class ChannelProxy {
         expression: this.#createChannelProxyEvalStr(),
         contextId: realm.executionContextId,
         serializationOptions: {
-          serialization: 'idOnly',
+          serialization:
+            Protocol.Runtime.SerializationOptionsSerialization.IdOnly,
         },
       }
     );
@@ -156,7 +159,8 @@ export class ChannelProxy {
         arguments: [{objectId: channelHandle}],
         executionContextId: realm.executionContextId,
         serializationOptions: {
-          serialization: 'idOnly',
+          serialization:
+            Protocol.Runtime.SerializationOptionsSerialization.IdOnly,
         },
       }
     );
@@ -189,7 +193,8 @@ export class ChannelProxy {
           awaitPromise: true,
           executionContextId: realm.executionContextId,
           serializationOptions: {
-            serialization: 'deep',
+            serialization:
+              Protocol.Runtime.SerializationOptionsSerialization.Deep,
             ...(this.#properties.serializationOptions?.maxObjectDepth ===
               undefined ||
             this.#properties.serializationOptions.maxObjectDepth === null
@@ -260,7 +265,8 @@ export class ChannelProxy {
         executionContextId: realm.executionContextId,
         awaitPromise: true,
         serializationOptions: {
-          serialization: 'idOnly',
+          serialization:
+            Protocol.Runtime.SerializationOptionsSerialization.IdOnly,
         },
       }
     );

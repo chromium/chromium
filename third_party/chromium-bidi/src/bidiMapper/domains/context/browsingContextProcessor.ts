@@ -374,7 +374,7 @@ export class BrowsingContextProcessor {
     params: Script.EvaluateParameters
   ): Promise<Script.EvaluateResult> {
     const realm = await this.#getRealm(params.target);
-    return realm.scriptEvaluate(
+    return realm.evaluate(
       params.expression,
       params.awaitPromise,
       params.resultOwnership ?? Script.ResultOwnership.None,
@@ -394,7 +394,7 @@ export class BrowsingContextProcessor {
         browsingContextId: params.context,
         type: params.type,
       })
-      .map((realm: Realm) => realm.toBiDi());
+      .map((realm: Realm) => realm.realmInfo);
     return {realms};
   }
 
@@ -418,7 +418,9 @@ export class BrowsingContextProcessor {
     params: Script.DisownParameters
   ): Promise<EmptyResult> {
     const realm = await this.#getRealm(params.target);
-    await Promise.all(params.handles.map(async (h) => realm.disown(h)));
+    await Promise.all(
+      params.handles.map(async (handle) => realm.disown(handle))
+    );
     return {};
   }
 
