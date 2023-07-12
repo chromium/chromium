@@ -47,7 +47,6 @@ include_rules = [
   "+components/paint_preview/buildflags",
   "+components/password_manager/core/common",
   "+components/password_manager/services/csv_password",
-  "+components/password_manager/services/password_strength",
   "+components/payments/content/utility",
   "+components/safe_browsing/buildflags.h",
   "+components/services/language_detection",

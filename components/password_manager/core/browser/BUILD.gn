@@ -397,15 +397,6 @@ static_library("browser") {
     ]
   }
 
-  if (!is_android && !is_ios) {
-    sources += [
-      "password_strength_calculation.cc",
-      "password_strength_calculation.h",
-    ]
-    deps +=
-        [ "//components/password_manager/services/password_strength:service" ]
-  }
-
   if (!is_android) {
     sources += [
       "ui/reuse_check_utility.cc",
@@ -805,11 +796,7 @@ source_set("unit_tests") {
   ]
 
   if (!is_android && !is_ios) {
-    sources += [ "password_strength_calculation_unittest.cc" ]
-    deps += [
-      "//components/password_manager/services/password_strength:lib",
-      "//components/webauthn/core/browser:test_support",
-    ]
+    deps += [ "//components/webauthn/core/browser:test_support" ]
   }
 
   if (!is_android) {
