@@ -21,8 +21,13 @@ blink_core_sources_mathml = [
   "mathml_space_element.h",
   "mathml_token_element.cc",
   "mathml_token_element.h",
+  "mathml_table_cell_element.cc",
+  "mathml_table_cell_element.h",
   "mathml_under_over_element.cc",
   "mathml_under_over_element.h",
 ]
 
-blink_core_tests_mathml = [ "mathml_use_counters_test.cc" ]
+blink_core_tests_mathml = [
+  "mathml_table_cell_element_test.cc",
+  "mathml_use_counters_test.cc",
+]

@@ -2734,7 +2734,7 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
 
     // Always shrink-to-fit children within a <mtd> element.
     if (Node().GetDOMNode() &&
-        Node().GetDOMNode()->HasTagName(mathml_names::kMtdTag)) {
+        IsA<MathMLTableCellElement>(Node().GetDOMNode())) {
       builder.SetInlineAutoBehavior(NGAutoBehavior::kFitContent);
     }
 

@@ -9,6 +9,7 @@
   data: [
     "accent",
     "accentunder",
+    "columnspan",
     "definitionURL",
     "depth",
     "display",
@@ -26,6 +27,7 @@
     "maxsize",
     "minsize",
     "movablelimits",
+    "rowspan",
     "rspace",
     "scriptlevel",
     "stretchy",

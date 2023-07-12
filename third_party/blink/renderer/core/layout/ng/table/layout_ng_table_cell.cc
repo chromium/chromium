@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
+#include "third_party/blink/renderer/core/mathml/mathml_table_cell_element.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_table_cell_paint_invalidator.h"
 
 namespace blink {
@@ -223,6 +224,12 @@ unsigned LayoutNGTableCell::ParseColSpanFromDOM() const {
     DCHECK_GE(span, kMinColSpan);
     DCHECK_LE(span, kMaxColSpan);
     return span;
+  } else if (const auto* mathml_cell_element =
+                 DynamicTo<MathMLTableCellElement>(GetNode())) {
+    unsigned span = mathml_cell_element->colSpan();
+    DCHECK_GE(span, kMinColSpan);
+    DCHECK_LE(span, kMaxColSpan);
+    return span;
   }
   return kDefaultRowSpan;
 }
@@ -231,6 +238,12 @@ unsigned LayoutNGTableCell::ParseRowSpanFromDOM() const {
   NOT_DESTROYED();
   if (const auto* cell_element = DynamicTo<HTMLTableCellElement>(GetNode())) {
     unsigned span = cell_element->rowSpan();
+    DCHECK_GE(span, kMinRowSpan);
+    DCHECK_LE(span, kMaxRowSpan);
+    return span;
+  } else if (const auto* mathml_cell_element =
+                 DynamicTo<MathMLTableCellElement>(GetNode())) {
+    unsigned span = mathml_cell_element->rowSpan();
     DCHECK_GE(span, kMinRowSpan);
     DCHECK_LE(span, kMaxRowSpan);
     return span;
