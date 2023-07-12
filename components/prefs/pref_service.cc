@@ -427,7 +427,7 @@ void PrefService::SetDouble(const std::string& path, double value) {
   SetUserPrefValue(path, base::Value(value));
 }
 
-void PrefService::SetString(const std::string& path, const std::string& value) {
+void PrefService::SetString(const std::string& path, base::StringPiece value) {
   SetUserPrefValue(path, base::Value(value));
 }
 

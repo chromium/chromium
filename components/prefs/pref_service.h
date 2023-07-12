@@ -274,7 +274,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   void SetBoolean(const std::string& path, bool value);
   void SetInteger(const std::string& path, int value);
   void SetDouble(const std::string& path, double value);
-  void SetString(const std::string& path, const std::string& value);
+  void SetString(const std::string& path, base::StringPiece value);
   void SetDict(const std::string& path, base::Value::Dict dict);
   void SetList(const std::string& path, base::Value::List list);
   void SetFilePath(const std::string& path, const base::FilePath& value);
