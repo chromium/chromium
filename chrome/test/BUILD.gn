@@ -7022,6 +7022,7 @@ test("unit_tests") {
       "//components/navigation_interception:navigation_interception",
       "//components/offline_pages/core/request_header",
       "//components/offline_pages/task",
+      "//components/password_manager/content/browser:test_support",
       "//components/pref_registry",
       "//components/services/unzip:in_process",
       "//components/signin/core/browser",

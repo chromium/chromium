@@ -462,6 +462,7 @@ source_set("unit_tests") {
     "//components/device_reauth:test_support",
     "//components/messages/android:test_support",
     "//components/password_manager/content/browser",
+    "//components/password_manager/content/browser:test_support",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/features:password_features",

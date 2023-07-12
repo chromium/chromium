@@ -129,6 +129,7 @@
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller_autofill_delegate.h"
+#include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller_impl.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/password_credential_filler_impl.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
@@ -405,11 +406,23 @@ void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
     password_manager::PasswordManagerDriver* driver,
     autofill::mojom::SubmissionReadinessState submission_readiness,
     bool is_webauthn_form) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordSuggestionBottomSheetV2) &&
+      keyboard_replacing_surface_visibility_controller_ &&
+      !keyboard_replacing_surface_visibility_controller_->CanBeShown()) {
+    return;
+  }
+
+  content::RenderWidgetHost* render_widget_host =
+      static_cast<password_manager::ContentPasswordManagerDriver*>(driver)
+          ->render_frame_host()
+          ->GetRenderWidgetHost();
+
   if (GetOrCreateCredManController()->Show(
           GetWebAuthnCredManDelegateForDriver(driver),
           std::make_unique<password_manager::PasswordCredentialFillerImpl>(
               driver->AsWeakPtr(), submission_readiness),
-          is_webauthn_form)) {
+          render_widget_host, is_webauthn_form)) {
     return;
   }
   auto* webauthn_delegate = GetWebAuthnCredentialsDelegateForDriver(driver);
@@ -433,7 +446,8 @@ void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
           .GetCredentialStore(url::Origin::Create(
               driver->GetLastCommittedURL().DeprecatedGetOriginAsURL()))
           .GetCredentials(),
-      passkeys, std::move(ttf_controller_autofill_delegate));
+      passkeys, std::move(ttf_controller_autofill_delegate),
+      render_widget_host);
 }
 #endif
 
@@ -1250,7 +1264,8 @@ ChromePasswordManagerClient::GetOrCreatePasswordAccessory() {
 TouchToFillController*
 ChromePasswordManagerClient::GetOrCreateTouchToFillController() {
   if (!touch_to_fill_controller_) {
-    touch_to_fill_controller_ = std::make_unique<TouchToFillController>();
+    touch_to_fill_controller_ = std::make_unique<TouchToFillController>(
+        GetOrCreateKeyboardReplacingSurfaceVisibilityController());
   }
   return touch_to_fill_controller_.get();
 }
@@ -1259,9 +1274,20 @@ password_manager::CredManController*
 ChromePasswordManagerClient::GetOrCreateCredManController() {
   if (!cred_man_controller_) {
     cred_man_controller_ =
-        std::make_unique<password_manager::CredManController>();
+        std::make_unique<password_manager::CredManController>(
+            GetOrCreateKeyboardReplacingSurfaceVisibilityController());
   }
   return cred_man_controller_.get();
+}
+
+base::WeakPtr<password_manager::KeyboardReplacingSurfaceVisibilityController>
+ChromePasswordManagerClient::
+    GetOrCreateKeyboardReplacingSurfaceVisibilityController() {
+  if (!keyboard_replacing_surface_visibility_controller_) {
+    keyboard_replacing_surface_visibility_controller_ = std::make_unique<
+        password_manager::KeyboardReplacingSurfaceVisibilityControllerImpl>();
+  }
+  return keyboard_replacing_surface_visibility_controller_->AsWeakPtr();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -1407,6 +1433,10 @@ void ChromePasswordManagerClient::HideFillingUI() {
 
   if (cred_man_controller_) {
     cred_man_controller_.reset();
+  }
+
+  if (keyboard_replacing_surface_visibility_controller_) {
+    keyboard_replacing_surface_visibility_controller_->Reset();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

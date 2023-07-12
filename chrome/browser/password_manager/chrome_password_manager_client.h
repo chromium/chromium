@@ -82,6 +82,7 @@ class DeviceAuthenticator;
 namespace password_manager {
 class WebAuthnCredentialsDelegate;
 class CredManController;
+class KeyboardReplacingSurfaceVisibilityController;
 }
 
 namespace webauthn {
@@ -374,6 +375,9 @@ class ChromePasswordManagerClient
   void TryToShowLocalPasswordMigrationWarning();
 
   password_manager::CredManController* GetOrCreateCredManController();
+
+  base::WeakPtr<password_manager::KeyboardReplacingSurfaceVisibilityController>
+  GetOrCreateKeyboardReplacingSurfaceVisibilityController();
 #endif
 
   const raw_ptr<Profile> profile_;
@@ -392,6 +396,13 @@ class ChromePasswordManagerClient
 
   // Controller for Android Credential Manager API. Created on demand.
   std::unique_ptr<password_manager::CredManController> cred_man_controller_;
+
+  // Controller for CredMan and TouchToFill visibility. Both
+  // `TouchToFillController` and `CredManController` share the same instance to
+  // control their visibility state.
+  std::unique_ptr<
+      password_manager::KeyboardReplacingSurfaceVisibilityController>
+      keyboard_replacing_surface_visibility_controller_;
 
   std::unique_ptr<PasswordManagerErrorMessageDelegate>
       password_manager_error_message_delegate_;

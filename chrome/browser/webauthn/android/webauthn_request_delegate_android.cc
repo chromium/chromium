@@ -17,6 +17,7 @@
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller_webauthn_delegate.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
+#include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller_impl.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/strings/grit/components_strings.h"
@@ -91,13 +92,19 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
     return;
   }
 
+  if (!visibility_controller_) {
+    visibility_controller_ = std::make_unique<
+        password_manager::KeyboardReplacingSurfaceVisibilityControllerImpl>();
+  }
   if (!touch_to_fill_controller_) {
-    touch_to_fill_controller_ = std::make_unique<TouchToFillController>();
+    touch_to_fill_controller_ = std::make_unique<TouchToFillController>(
+        visibility_controller_->AsWeakPtr());
   }
   touch_to_fill_controller_->Show(
       std::vector<password_manager::UiCredential>(), display_credentials,
       std::make_unique<TouchToFillControllerWebAuthnDelegate>(
-          this, !hybrid_callback_.is_null()));
+          this, !hybrid_callback_.is_null()),
+      frame_host->GetRenderWidgetHost());
 }
 
 void WebAuthnRequestDelegateAndroid::CleanupWebAuthnRequest(

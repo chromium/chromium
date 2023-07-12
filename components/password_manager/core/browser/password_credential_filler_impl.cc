@@ -6,6 +6,7 @@
 
 #include <string>
 #include "base/check.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 
 namespace {
 
@@ -47,8 +48,11 @@ void PasswordCredentialFillerImpl::FillUsernameAndPassword(
     const std::u16string& username,
     const std::u16string& password) {
   CHECK(driver_);
+  if (!base::FeatureList::IsEnabled(
+          features::kPasswordSuggestionBottomSheetV2)) {
+    driver_->KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false));
+  }
 
-  driver_->KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false));
   driver_->FillSuggestion(username, password);
 
   trigger_submission_ &= !username.empty();
@@ -81,6 +85,11 @@ const GURL& PasswordCredentialFillerImpl::GetFrameUrl() const {
 }
 
 void PasswordCredentialFillerImpl::Dismiss(ToShowVirtualKeyboard should_show) {
+  // TODO(crbug/1462532): Remove this function once the feature is enabled.
+  if (base::FeatureList::IsEnabled(
+          features::kPasswordSuggestionBottomSheetV2)) {
+    return;
+  }
   // TODO(crbug/1434278): Avoid using KeyboardReplacingSurfaceClosed.
   driver_->KeyboardReplacingSurfaceClosed(should_show);
 }
