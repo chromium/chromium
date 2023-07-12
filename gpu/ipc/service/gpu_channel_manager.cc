@@ -485,7 +485,14 @@ GpuChannel* GpuChannelManager::EstablishChannel(
   // Remove existing GPU channel with same client id before creating
   // new GPU channel. if not, new SyncPointClientState in SyncPointManager
   // will be destroyed when existing GPU channel is destroyed.
-  RemoveChannel(client_id);
+  // We can't call RemoveChannel() because it will clear GpuDiskCache
+  // with the client id.
+  auto it = gpu_channels_.find(client_id);
+  if (it != gpu_channels_.end()) {
+    std::unique_ptr<GpuChannel> channel = std::move(it->second);
+    gpu_channels_.erase(it);
+    channel.reset();
+  }
 
   std::unique_ptr<GpuChannel> gpu_channel = GpuChannel::Create(
       this, channel_token, scheduler_, sync_point_manager_, share_group_,
