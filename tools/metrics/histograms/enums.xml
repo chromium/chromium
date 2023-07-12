@@ -65522,6 +65522,7 @@ from previous Chrome versions.
   <int value="863493664" label="LacrosMoveProfileMigration:disabled"/>
   <int value="863584992" label="ExtensionsFSPInServiceWorkers:enabled"/>
   <int value="864024033" label="IsolatePrerendersMustProbeOrigin:enabled"/>
+  <int value="865952257" label="CrOSLateBootBluetoothTelephony:disabled"/>
   <int value="866536801" label="PDFViewerUpdate:disabled"/>
   <int value="867512869" label="mark-non-secure-as"/>
   <int value="868009556" label="AutofillUpstream:enabled"/>
@@ -66672,6 +66673,7 @@ from previous Chrome versions.
   <int value="1464053185" label="EnableInputInDiagnosticsApp:disabled"/>
   <int value="1464610065" label="TabbedAppOverflowMenuRegroup:disabled"/>
   <int value="1465624446" label="disable-zero-copy"/>
+  <int value="1465747574" label="CrOSLateBootBluetoothTelephony:enabled"/>
   <int value="1466380480" label="enable-device-discovery-notifications"/>
   <int value="1466502102" label="DelayNavigation:disabled"/>
   <int value="1466687702" label="BookmarkIndexPaths:enabled"/>
