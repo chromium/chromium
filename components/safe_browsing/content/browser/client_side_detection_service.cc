@@ -163,9 +163,6 @@ void ClientSideDetectionService::OnPrefsUpdated() {
           if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
             client_side_phishing_model_optimization_guide_
                 ->SubscribeToImageEmbedderOptimizationGuide();
-            send_image_embedding_model_to_renderer_ = true;
-          } else {
-            send_image_embedding_model_to_renderer_ = false;
           }
         }
       }
@@ -565,7 +562,6 @@ void ClientSideDetectionService::SetPhishingModel(
           IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
           base::FeatureList::IsEnabled(
               kClientSideDetectionModelImageEmbedder) &&
-          ShouldSendImageEmbeddingModelToRenderer() &&
           HasImageEmbeddingModel()) {
         if (IsModelMetadataImageEmbeddingVersionMatching()) {
           base::UmaHistogramBoolean(
@@ -686,10 +682,6 @@ bool ClientSideDetectionService::IsSubscribedToImageEmbeddingModelUpdates() {
                ->IsSubscribedToImageEmbeddingModelUpdates();
   }
   return false;
-}
-
-bool ClientSideDetectionService::ShouldSendImageEmbeddingModelToRenderer() {
-  return send_image_embedding_model_to_renderer_;
 }
 
 // IN-TEST

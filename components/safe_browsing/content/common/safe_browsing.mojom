@@ -6,6 +6,7 @@ module safe_browsing.mojom;
 
 
 import "components/safe_browsing/core/common/safe_browsing_url_checker.mojom";
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
@@ -179,4 +180,34 @@ interface PhishingModelSetter {
 interface PhishingModelSetterTestObserver {
   // Called whenever the phishing model has changed.
   PhishingModelUpdated();
+};
+
+// Enum representing possible outcomes of the renderer-side image embedding
+// process. These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+enum PhishingImageEmbeddingResult {
+  // The feature collection succeeded.
+  kSuccess,
+  // The image embedder either did not exist, or was not ready.
+  kImageEmbedderNotReady,
+  // Another image embedding was requesting, cancelling this one.
+  kCancelled,
+  // last recorded transition was a forward/back in history. Since the
+  // image embedder previously ran on this URL, it did not run again.
+  kForwardBackTransition,
+  // the image embedder process failed
+  kFailed,
+};
+
+[EnableIf=full_safe_browsing]
+// Interface for starting image embedding. This is scoped to a
+// particular RenderFrame.
+interface PhishingImageEmbedderDetector {
+  // Tells the renderer to begin image embedding. This should only happen if the
+  // user is subscribed to ESB, and the verdict is phishy or LLAMA force trigger
+  // the CSPP ping. The return objects are Image Embedding process result and a
+  // ImageFeatureEmbedding object declared in csd.proto
+  StartImageEmbedding(url.mojom.Url url)
+    => (PhishingImageEmbeddingResult result,
+        mojo_base.mojom.ByteString image_embedding_request_proto);
 };

@@ -17806,6 +17806,17 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="21" label="Hash-prefix real-time experiment"/>
 </enum>
 
+<enum name="ClientSidePhishingImageEmbeddingResult">
+  <summary>
+    Enumerates the possible results from client side phishing image embedding
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Image embedder not ready"/>
+  <int value="2" label="Image embedding cancelled"/>
+  <int value="3" label="Forward/back transition"/>
+  <int value="4" label="Image embedding failed"/>
+</enum>
+
 <enum name="ClientSidePhishingResult">
   <summary>
     Enumerates the possible results from the client side phishing detector.
@@ -94394,6 +94405,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="NEW_PHISHING_SCORER"/>
 </enum>
 
+<enum name="SBClientPhishingCancelImageEmbeddingReason">
+  <int value="0" label="NAVIGATE_AWAY"/>
+  <int value="1" label="NAVIGATE_WITHIN_PAGE"/>
+  <int value="2" label="PAGE_RECAPTURED"/>
+  <int value="3" label="SHUTDOWN"/>
+  <int value="4" label="NEW_PHISHING_SCORER"/>
+</enum>
+
 <enum name="SBClientPhishingClientModelStatus">
   <int value="0" label="MODEL_SUCCESS"/>
   <int value="1" label="MODEL_NOT_CHANGED"/>
@@ -94497,6 +94516,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Page text not loaded"/>
   <int value="3" label="Url should not be classified"/>
   <int value="4" label="Phishing classifier was destructed"/>
+</enum>
+
+<enum name="SBPhishingImageEmbedderEvent">
+  <int value="0" label="Image embedding was requested to start"/>
+  <int value="1" label="Page text was captured"/>
+  <int value="2" label="Page text not loaded"/>
+  <int value="3" label="Url should not be used for image embedding"/>
+  <int value="4" label="Image embedder was destructed"/>
 </enum>
 
 <enum name="SBThreatType">

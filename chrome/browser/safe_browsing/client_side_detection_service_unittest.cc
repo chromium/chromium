@@ -630,11 +630,9 @@ TEST_P(ClientSideDetectionServiceTest,
 
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   EXPECT_TRUE(csd_service_->IsSubscribedToImageEmbeddingModelUpdates());
-  EXPECT_FALSE(csd_service_->ShouldSendImageEmbeddingModelToRenderer());
 
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   EXPECT_TRUE(csd_service_->IsSubscribedToImageEmbeddingModelUpdates());
-  EXPECT_TRUE(csd_service_->ShouldSendImageEmbeddingModelToRenderer());
 }
 
 }  // namespace safe_browsing

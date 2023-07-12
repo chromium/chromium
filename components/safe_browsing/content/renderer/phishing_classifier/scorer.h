@@ -72,12 +72,20 @@ class Scorer {
   virtual double ComputeScore(const FeatureMap& features) const = 0;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  // This method applies the TfLite visual model to the given bitmap. It
-  // asynchronously returns the list of scores for each category, in the same
-  // order as `tflite_thresholds()`.
+  // This method applies the TfLite visual model to the given bitmap for image
+  // classification. It asynchronously returns the list of scores for each
+  // category, in the same order as `tflite_thresholds()`.
   virtual void ApplyVisualTfLiteModel(
       const SkBitmap& bitmap,
       base::OnceCallback<void(std::vector<double>)> callback) const = 0;
+
+  // This method applies the TfLite visual model to the given bitmap for
+  // image embedding. It asynchronously returns an ImageFeatureEmbedding object
+  // which contains a vector of floats which is the feature vector result from
+  // the Image Embedder process.
+  virtual void ApplyVisualTfLiteModelImageEmbedding(
+      const SkBitmap& bitmap,
+      base::OnceCallback<void(ImageFeatureEmbedding)> callback) const = 0;
 #endif
 
   // Returns the version number of the loaded client model.
@@ -115,6 +123,9 @@ class Scorer {
   // Returns the version of the visual TFLite model.
   virtual int tflite_model_version() const = 0;
 
+  // Returns the image embedding model version.
+  virtual int image_embedding_tflite_model_version() const = 0;
+
   // Returns the thresholds configured for the visual TFLite model categories.
   virtual const google::protobuf::RepeatedPtrField<
       TfLiteModelMetadata::Threshold>&
@@ -139,6 +150,17 @@ class Scorer {
       std::string model_data,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(std::vector<double>)> callback);
+
+  // Apply the TfLite model to the bitmap. The ImageFeatureEmbedding object is
+  // returned by ruinning the `callback` provided by `callback_task_runner`.
+  // This is expected to be run on a helper thread.
+  static void ApplyImageEmbeddingTfLiteModelHelper(
+      const SkBitmap& bitmap,
+      int input_width,
+      int input_height,
+      const std::string& model_data,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(ImageFeatureEmbedding)> callback);
 
   base::MemoryMappedFile visual_tflite_model_;
   base::WeakPtrFactory<Scorer> weak_ptr_factory_{this};

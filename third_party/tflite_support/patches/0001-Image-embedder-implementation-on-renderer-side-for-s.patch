@@ -1,0 +1,35 @@
+From 5c85d1fac0110c03e2c38e1664be84f5ff2a671c Mon Sep 17 00:00:00 2001
+From: Seung Jae Lim <andysjlim@chromium.org>
+Date: Wed, 14 Jun 2023 16:10:21 +0000
+Subject: [PATCH] Image embedder implementation on renderer side for second
+ half after implementation of OptimizationGuide service to poll the model
+
+---
+ .../tensorflow_lite_support/cc/task/vision/image_embedder.h   | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_embedder.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_embedder.h
+index 93e2455eebd19..a46e13b72c219 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_embedder.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_embedder.h
+@@ -20,7 +20,7 @@ limitations under the License.
+ 
+ #include "absl/status/status.h"  // from @com_google_absl
+ #include "tensorflow/lite/core/api/op_resolver.h"
+-#include "tensorflow/lite/core/shims/cc/kernels/register.h"
++#include "tensorflow/lite/core/kernels/register.h"
+ #include "tensorflow_lite_support/cc/port/integral_types.h"
+ #include "tensorflow_lite_support/cc/port/statusor.h"
+ #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
+@@ -70,7 +70,7 @@ class ImageEmbedder
+   CreateFromOptions(
+       const ImageEmbedderOptions& options,
+       std::unique_ptr<tflite::OpResolver> resolver =
+-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
++          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
+ 
+   // Performs actual feature vector extraction on the provided FrameBuffer.
+   //
+-- 
+2.41.0.162.gfafddb0af9-goog
+

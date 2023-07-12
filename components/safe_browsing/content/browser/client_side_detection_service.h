@@ -309,16 +309,6 @@ class ClientSideDetectionService
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Used to note whether the model update should follow with sending the image
-  // embedding model to renderer, because removing the observer from
-  // OptimizationGuide service does not remove the observer instantaneously,
-  // making a user quick resubscription scenario fail a DCHECK in their service.
-  // We will always update the model on the disc if the user has subscribed to
-  // image embedding model once in their current session, but the state of this
-  // boolean value indicate whether the model updates will be sent to the
-  // renderer or not.
-  bool send_image_embedding_model_to_renderer_ = false;
-
   // Used to asynchronously call the callbacks for
   // SendClientReportPhishingRequest.
   base::WeakPtrFactory<ClientSideDetectionService> weak_factory_{this};

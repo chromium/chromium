@@ -30,6 +30,7 @@ class PageTextAgent;
 
 namespace safe_browsing {
 class PhishingClassifierDelegate;
+class PhishingImageEmbedderDelegate;
 }
 
 namespace translate {
@@ -148,6 +149,8 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   optimization_guide::PageTextAgent* page_text_agent_;
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::PhishingClassifierDelegate* phishing_classifier_ = nullptr;
+  safe_browsing::PhishingImageEmbedderDelegate* phishing_image_embedder_ =
+      nullptr;
 #endif
 
   // Owned by ChromeContentRendererClient and outlive us.

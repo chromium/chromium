@@ -167,6 +167,33 @@ void FlatBufferModelScorer::ApplyVisualTfLiteModel(
     std::move(callback).Run(std::vector<double>());
   }
 }
+
+void FlatBufferModelScorer::ApplyVisualTfLiteModelImageEmbedding(
+    const SkBitmap& bitmap,
+    base::OnceCallback<void(ImageFeatureEmbedding)> callback) const {
+  DCHECK(content::RenderThread::IsMainThread());
+  if (image_embedding_model_.IsValid() &&
+      flatbuffer_model_->img_embedding_metadata()) {
+    base::Time start_post_task_time = base::Time::Now();
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(
+            &ApplyImageEmbeddingTfLiteModelHelper, bitmap,
+            flatbuffer_model_->img_embedding_metadata()->input_width(),
+            flatbuffer_model_->img_embedding_metadata()->input_height(),
+            std::string(
+                reinterpret_cast<const char*>(image_embedding_model_.data()),
+                image_embedding_model_.length()),
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            std::move(callback)));  // Change the function so that it can take
+                                    // in image feature embedding callback.
+    base::UmaHistogramTimes(
+        "SBClientPhishing.ImageEmbeddingModelLoadTime.FlatbufferScorer",
+        base::Time::Now() - start_post_task_time);
+  } else {
+    std::move(callback).Run(ImageFeatureEmbedding());
+  }
+}
 #endif
 
 int FlatBufferModelScorer::model_version() const {
@@ -235,6 +262,10 @@ int FlatBufferModelScorer::tflite_model_version() const {
 const google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>&
 FlatBufferModelScorer::tflite_thresholds() const {
   return thresholds_;
+}
+
+int FlatBufferModelScorer::image_embedding_tflite_model_version() const {
+  return flatbuffer_model_->img_embedding_metadata()->version();
 }
 
 }  // namespace safe_browsing

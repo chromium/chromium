@@ -113,6 +113,11 @@ void ProtobufModelScorer::ApplyVisualTfLiteModel(
     std::move(callback).Run(std::vector<double>());
   }
 }
+void ProtobufModelScorer::ApplyVisualTfLiteModelImageEmbedding(
+    const SkBitmap& bitmap,
+    base::OnceCallback<void(ImageFeatureEmbedding)> callback) const {
+  NOTREACHED();
+}
 #endif
 
 int ProtobufModelScorer::model_version() const {
@@ -179,6 +184,10 @@ float ProtobufModelScorer::threshold_probability() const {
 
 int ProtobufModelScorer::tflite_model_version() const {
   return model_.tflite_metadata().model_version();
+}
+
+int ProtobufModelScorer::image_embedding_tflite_model_version() const {
+  return model_.img_embedding_metadata().model_version();
 }
 
 const google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>&

@@ -128,6 +128,14 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   void PhishingDetectionDone(mojom::PhishingDetectorResult result,
                              const std::string& verdict);
 
+  // |verdict| is an encoded ClientPhishingRequest protocol message, |result| is
+  // the outcome of the renderer image embedding. The verdict is passed into
+  // this function after the renderer classification is finished.
+  void PhishingImageEmbeddingDone(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      mojom::PhishingImageEmbeddingResult result,
+      const std::string& image_feature_embedding_string);
+
   // Callback that is called when the server ping back is
   // done. Display an interstitial if |is_phishing| is true.
   // Otherwise, we do nothing. Called in UI thread. |is_from_cache| indicates
@@ -215,6 +223,10 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
 
   // The remote for the currently active phishing classification.
   mojo::AssociatedRemote<mojom::PhishingDetector> phishing_detector_;
+
+  // The remote for the currently active phishing image embedder.
+  mojo::AssociatedRemote<mojom::PhishingImageEmbedderDetector>
+      phishing_image_embedder_;
 
   base::WeakPtrFactory<ClientSideDetectionHost> weak_factory_{this};
 };

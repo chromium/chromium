@@ -614,6 +614,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.CancelImageEmbeddingReason"
+    enum="SBClientPhishingCancelImageEmbeddingReason"
+    expires_after="2024-07-05">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The counts for various reasons why an in-progress phishing image embedding
+    was canceled.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.ClassificationStart" enum="BooleanHit"
     expires_after="2023-11-12">
   <owner>drubery@chromium.org</owner>
@@ -666,6 +677,27 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the status when we create a FlatBuffer scorer object for the
     client-side phishing detection classifier.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.ImageEmbedder.Event"
+    enum="SBPhishingClassifierEvent" expires_after="2023-11-12">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records events in the phishing image embedder including reasons that
+    prevents image embedding process to complete on the renderer side.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.ImageEmbeddingModelLoadTime.FlatbufferScorer"
+    units="ms" expires_after="2024-05-11">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records how long it takes the Flatbuffer scorer to load the TfLite model
+    file from the memory mapped file into a string. This blocks the main thread,
+    so we need to ensure it is small.
   </summary>
 </histogram>
 

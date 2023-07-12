@@ -59,6 +59,10 @@ class FlatBufferModelScorer : public Scorer {
   void ApplyVisualTfLiteModel(
       const SkBitmap& bitmap,
       base::OnceCallback<void(std::vector<double>)> callback) const override;
+
+  void ApplyVisualTfLiteModelImageEmbedding(
+      const SkBitmap& bitmap,
+      base::OnceCallback<void(ImageFeatureEmbedding)> callback) const override;
 #endif
 
   int model_version() const override;
@@ -69,6 +73,7 @@ class FlatBufferModelScorer : public Scorer {
   size_t shingle_size() const override;
   float threshold_probability() const override;
   int tflite_model_version() const override;
+  int image_embedding_tflite_model_version() const override;
   const google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>&
   tflite_thresholds() const override;
   base::RepeatingCallback<bool(uint32_t)> find_page_word_callback()
