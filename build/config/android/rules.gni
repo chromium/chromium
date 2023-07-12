@@ -4941,9 +4941,9 @@ if (enable_java_templates && is_android) {
       _module_target = _module.module_target
       _module_build_config = _module.build_config
       _module_build_config_target = _module.build_config_target
-      _module_target_name = get_label_info(_module_target, "name")
 
       if (!_proguard_enabled) {
+        _module_target_name = get_label_info(_module_target, "name")
         _dex_target = "${_module_target_name}__final_dex"
         _dex_path = "$target_out_dir/$_module_target_name/$_module_target_name.mergeddex.jar"
         dex(_dex_target) {
@@ -4968,6 +4968,7 @@ if (enable_java_templates && is_android) {
           _proguard_enabled && defined(invoker.baseline_profile_path) &&
           enable_baseline_profiles
       if (_use_baseline_profile) {
+        _module_target_name = get_label_info(_module_target, "name")
         _binary_profile_target =
             "${_module_target_name}__binary_baseline_profile"
         _binary_baseline_profile_path = "$target_out_dir/$_module_target_name/$_module_target_name.baseline.prof"
