@@ -355,6 +355,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      raw_ref(network::features::kCompressionDictionaryTransport)},
     {"CompressionDictionaryTransportBackend",
      raw_ref(network::features::kCompressionDictionaryTransportBackend)},
+    {"Database", raw_ref(blink::features::kWebSQLAccess), kSetOnlyIfOverridden},
     {"Fledge", raw_ref(blink::features::kFledge), kSetOnlyIfOverridden},
     {"Fledge", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
      kSetOnlyIfOverridden},

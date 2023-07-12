@@ -127,7 +127,6 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
   blink::Initialize(this, &binders, main_thread_scheduler_.get());
   g_test_platform = this;
   blink::SetWebTestMode(true);
-  blink::WebRuntimeFeatures::EnableDatabase(true);
   blink::WebRuntimeFeatures::EnableNotifications(true);
   blink::WebRuntimeFeatures::EnableTouchEventFeatureDetection(true);
 

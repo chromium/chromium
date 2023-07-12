@@ -67,7 +67,7 @@ Database* DOMWindowWebDatabase::openDatabase(
   Database* database = nullptr;
   DatabaseManager& db_manager = DatabaseManager::Manager();
   DatabaseError error = DatabaseError::kNone;
-  if (RuntimeEnabledFeatures::DatabaseEnabled() &&
+  if (RuntimeEnabledFeatures::DatabaseEnabled(window.GetExecutionContext()) &&
       window.GetSecurityOrigin()->CanAccessDatabase()) {
     if (window.GetSecurityOrigin()->IsLocal())
       UseCounter::Count(window, WebFeature::kFileAccessedDatabase);

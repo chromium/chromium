@@ -4260,6 +4260,15 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
       prefs->GetBoolean(prefs::kWebXRImmersiveArEnabled);
 #endif
 
+  // Only set `databases_enabled` if disabled. Otherwise check blink::feature
+  // settings for Origin Trial and Chrome flag settings, or prefs setting
+  // for Enterprise Policy.
+  web_prefs->databases_enabled =
+      !web_prefs->databases_enabled
+          ? false
+          : (base::FeatureList::IsEnabled(blink::features::kWebSQLAccess) ||
+             prefs->GetBoolean(storage::kWebSQLAccess));
+
 #if BUILDFLAG(IS_FUCHSIA)
   // Disable WebSQL support since it is being removed from the web platform
   // and does not work. See crbug.com/1317431.
