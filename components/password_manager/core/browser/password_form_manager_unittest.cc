@@ -1046,7 +1046,6 @@ TEST_P(PasswordFormManagerTest, SavePSLToAlreadySaved) {
   EXPECT_TRUE(
       form_manager_->ProvisionallySave(submitted_form, &driver_, nullptr));
   EXPECT_TRUE(form_manager_->IsNewLogin());
-  EXPECT_TRUE(form_manager_->IsPendingCredentialsPublicSuffixMatch());
 
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
   PasswordForm saved_form;

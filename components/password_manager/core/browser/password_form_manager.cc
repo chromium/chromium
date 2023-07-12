@@ -518,10 +518,6 @@ FormFetcher* PasswordFormManager::GetFormFetcher() {
   return form_fetcher_;
 }
 
-bool PasswordFormManager::IsPendingCredentialsPublicSuffixMatch() const {
-  return password_save_manager_->GetPendingCredentials().is_public_suffix_match;
-}
-
 void PasswordFormManager::PresaveGeneratedPassword(
     const FormData& form_data,
     const std::u16string& generated_password) {

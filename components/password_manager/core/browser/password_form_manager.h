@@ -175,7 +175,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   bool IsNewLogin() const;
   FormFetcher* GetFormFetcher();
-  bool IsPendingCredentialsPublicSuffixMatch() const;
   void PresaveGeneratedPassword(const autofill::FormData& form_data,
                                 const std::u16string& generated_password);
   void PasswordNoLongerGenerated();

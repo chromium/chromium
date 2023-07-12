@@ -30,6 +30,7 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
@@ -109,13 +110,29 @@ bool ShouldPromptUserToSavePassword(const PasswordFormManager& manager) {
     return true;
   }
 
-  // User successfully signed-in with PSL match credentials. These credentials
-  // should be automatically saved in order to be autofilled on next login.
-  if (manager.IsPendingCredentialsPublicSuffixMatch())
+  if (manager.HasGeneratedPassword()) {
     return false;
+  }
 
-  if (manager.HasGeneratedPassword())
-    return false;
+  switch (
+      password_manager_util::GetMatchType(manager.GetPendingCredentials())) {
+    case password_manager_util::GetLoginMatchType::kExact:
+      break;
+    case password_manager_util::GetLoginMatchType::kAffiliated:
+      // User successfully signed-in with affiliated web credentials. These
+      // credentials should be automatically saved in order to be autofilled on
+      // next login.
+      if (!IsValidAndroidFacetURI(
+              manager.GetPendingCredentials().signon_realm)) {
+        return false;
+      }
+      break;
+    case password_manager_util::GetLoginMatchType::kPSL:
+      // User successfully signed-in with PSL match credentials. These
+      // credentials should be automatically saved in order to be autofilled on
+      // next login.
+      return false;
+  }
 
   return manager.IsNewLogin();
 }

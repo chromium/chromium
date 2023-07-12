@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/credential_manager_logger.h"
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
@@ -19,6 +20,9 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 
 namespace password_manager {
+
+using password_manager_util::GetLoginMatchType;
+using password_manager_util::GetMatchType;
 
 namespace {
 
@@ -232,14 +236,16 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
   const PasswordForm& form = form_manager_->GetPendingCredentials();
   DCHECK(client_->IsSavingAndFillingEnabled(form.url));
 
-  if (form_manager_->IsPendingCredentialsPublicSuffixMatch()) {
-    // Having a credential with a PSL match implies there is no credential with
-    // an exactly matching origin and username. In order to avoid showing a save
-    // bubble to the user Save() is called directly.
+  GetLoginMatchType match_type = GetMatchType(form);
+  // Having PSL or affiliated web match implies there is no credential with an
+  // exactly matching origin and username. In order to avoid showing a save
+  // bubble to the user Save() is called directly.
+  if (match_type == GetLoginMatchType::kPSL ||
+      (match_type == GetLoginMatchType::kAffiliated &&
+       !IsValidAndroidFacetURI(form.signon_realm))) {
     form_manager_->Save();
     return;
   }
-
   if (!form.federation_origin.opaque()) {
     // If this is a federated credential, check it against the federated matches
     // produced by the PasswordFormManager. If a match is found, update it and
