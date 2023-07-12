@@ -706,6 +706,7 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
      "ReadingListEnableSyncTransportModeUponSignIn,"
      "ConsistencyNewAccountInterface,"
      "AutofillAccountProfileStorage,"
+     "FeedBottomSyncStringRemoval,"
      "SyncEnableHistoryDataType"},
 };
 
