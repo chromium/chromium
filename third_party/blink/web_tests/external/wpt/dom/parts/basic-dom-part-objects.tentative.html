@@ -86,6 +86,19 @@ function addCleanup(t, part) {
     assert_array_equals(root.getParts(),[nodePartBefore,nodePart]);
   }, `Basic imperative DOM Parts object construction (${description})`);
 
+  function cloneRange(parent,previousSibling,nextSibling) {
+    const clone = parent.cloneNode(false);
+    let node = previousSibling;
+    while (node) {
+      clone.appendChild(node.cloneNode(true));
+      if (node == nextSibling) {
+        break;
+      }
+      node = node.nextSibling;
+    }
+    return clone;
+  }
+
   test((t) => {
     const root = doc.getPartRoot();
     const nodePart = addCleanup(t,new NodePart(root,target));
@@ -120,6 +133,21 @@ function addCleanup(t, part) {
     assert_not_equals(newChildNodePart.nextSibling,c,'Node references should not point to original nodes');
     assert_equals(newChildNodePart.nextSibling.id,'c');
     assert_equals(newChildNodePart.getParts().length,childNodePart.getParts().length);
+
+    // Test cloning of ChildNodeParts.
+    const clonedChildNodePartRoot = childNodePart.clone();
+    const clonedChildContainer = clonedChildNodePartRoot.rootContainer;
+    assert_true(clonedChildNodePartRoot instanceof ChildNodePart);
+    assert_true(clonedChildContainer instanceof Element);
+    assert_not_equals(clonedChildContainer,target);
+    assert_equals(clonedChildContainer.outerHTML,cloneRange(target,a,c).outerHTML);
+    assert_equals(clonedChildNodePartRoot.getParts().length,3);
+    assert_true(clonedChildNodePartRoot.getParts()[0] instanceof ChildNodePart);
+    assert_equals(clonedChildNodePartRoot.getParts()[1].textContent,nodePart3.textContent);
+    assert_equals(clonedChildNodePartRoot.getParts()[2].textContent,nodePart3.textContent);
+    // TODO(crbug.com/1453291) Once metadata is added, use it to add metadata to nodePart2
+    // and nodePart3, and check that the cloned parts come back in the correct order,
+    // which is nodePart3, then nodePart2.
   }, `Cloning (${description})`);
 
   ['Element','Text','Comment','CDATASection','ProcessingInstruction'].forEach(nodeType => {

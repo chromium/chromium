@@ -23,7 +23,7 @@ void DocumentPartRoot::Trace(Visitor* visitor) const {
   PartRoot::Trace(visitor);
 }
 
-PartRootUnion* DocumentPartRoot::clone() const {
+PartRootUnion* DocumentPartRoot::clone(ExceptionState&) const {
   NodeCloningData data{CloneOption::kIncludeDescendants,
                        CloneOption::kPreserveDOMParts};
   Node* clone = rootContainer()->Clone(rootContainer()->GetDocument(), data);

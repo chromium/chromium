@@ -34,7 +34,7 @@ class CORE_EXPORT NodePart : public Part {
   void disconnect() override;
   bool IsValid() const override;
   Node* NodeToSortBy() const override;
-  void Clone(NodeCloningData&) const override;
+  Part* ClonePart(NodeCloningData&) const override;
   Document& GetDocument() const override;
 
   // NodePart API

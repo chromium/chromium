@@ -7,7 +7,11 @@
 namespace blink {
 
 NodeCloningData::~NodeCloningData() {
-  if (!Has(CloneOption::kPreserveDOMParts)) {
+  Finalize();
+}
+
+void NodeCloningData::Finalize() {
+  if (!Has(CloneOption::kPreserveDOMParts) || finalized_) {
     return;
   }
   CHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
@@ -17,11 +21,13 @@ NodeCloningData::~NodeCloningData() {
       continue;
     }
     CHECK(part->root());
-    part->Clone(*this);
+    part->ClonePart(*this);
   }
+  finalized_ = true;
 }
 
 void NodeCloningData::ConnectNodeToClone(const Node& node, Node& clone) {
+  CHECK(!finalized_);
   DCHECK(!cloned_node_map_.Contains(&node));
   cloned_node_map_.Set(&node, clone);
 }
@@ -36,6 +42,7 @@ Node* NodeCloningData::ClonedNodeFor(const Node& node) const {
 
 void NodeCloningData::ConnectPartRootToClone(const PartRoot& part_root,
                                              PartRoot& clone) {
+  CHECK(!finalized_);
   DCHECK(!cloned_part_root_map_.Contains(&part_root) ||
          cloned_part_root_map_.at(&part_root) == &clone);
   cloned_part_root_map_.Set(&part_root, clone);
@@ -50,6 +57,7 @@ PartRoot* NodeCloningData::ClonedPartRootFor(const PartRoot& part_root) const {
 }
 
 void NodeCloningData::QueueForCloning(const Part& to_clone) {
+  CHECK(!finalized_);
   part_queue_.insert(&to_clone);
 }
 

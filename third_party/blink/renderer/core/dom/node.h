@@ -72,6 +72,7 @@ class LayoutObject;
 class MathMLQualifiedName;
 class MutationObserver;
 class MutationObserverRegistration;
+class NodeCloningData;
 class NodeList;
 class NodeListsNodeData;
 class NodeRareData;
@@ -92,7 +93,6 @@ class V8UnionNodeOrStringOrTrustedScript;
 class V8UnionStringOrTrustedScript;
 class WebPluginContainerImpl;
 
-struct NodeCloningData;
 struct PhysicalRect;
 
 const int kElementNamespaceTypeShift = 5;

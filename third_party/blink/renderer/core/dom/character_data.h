@@ -33,7 +33,7 @@
 namespace blink {
 
 class ExceptionState;
-struct NodeCloningData;
+class NodeCloningData;
 
 class CORE_EXPORT CharacterData : public Node {
   DEFINE_WRAPPERTYPEINFO();

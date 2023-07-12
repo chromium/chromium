@@ -30,7 +30,7 @@ enum class CloneOption {
 using CloneOptionSet =
     base::EnumSet<CloneOption, CloneOption::kMinValue, CloneOption::kMaxValue>;
 
-struct CORE_EXPORT NodeCloningData final {
+class CORE_EXPORT NodeCloningData final {
   STACK_ALLOCATED();
 
  public:
@@ -49,12 +49,17 @@ struct CORE_EXPORT NodeCloningData final {
   PartRoot* ClonedPartRootFor(const PartRoot& part_root) const;
   void QueueForCloning(const Part& to_clone);
 
+  // Finalizes the Clone() operation, including cloning any DOM Parts found in
+  // the tree.
+  void Finalize();
+
  private:
   CloneOptionSet clone_options_;
   HeapHashMap<WeakMember<const Node>, WeakMember<Node>> cloned_node_map_;
   HeapHashMap<WeakMember<const PartRoot>, WeakMember<PartRoot>>
       cloned_part_root_map_;
   HeapLinkedHashSet<Member<const Part>> part_queue_;
+  bool finalized_{false};
 };
 
 }  // namespace blink

@@ -31,7 +31,7 @@ class CORE_EXPORT DocumentPartRoot : public ScriptWrappable, public PartRoot {
   void Trace(Visitor*) const override;
 
   // PartRoot API
-  PartRootUnion* clone() const;
+  PartRootUnion* clone(ExceptionState&) const;
   ContainerNode* rootContainer() const override { return root_container_; }
 
  protected:

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/dom/child_node_part.h"
 
+#include "third_party/blink/renderer/core/dom/document_fragment.h"
+#include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 
 namespace blink {
@@ -39,8 +41,8 @@ void ChildNodePart::disconnect() {
     CHECK(!previous_sibling_ && !next_sibling_);
     return;
   }
-  if (previous_sibling_->parentNode()) {
-    previous_sibling_->parentNode()->RemoveDOMPart(*this);
+  if (parentElement()) {
+    parentElement()->RemoveDOMPart(*this);
   }
   previous_sibling_->RemoveDOMPart(*this);
   next_sibling_->RemoveDOMPart(*this);
@@ -49,12 +51,42 @@ void ChildNodePart::disconnect() {
   Part::disconnect();
 }
 
-PartRootUnion* ChildNodePart::clone() const {
-  // TODO(crbug.com/1453291) Implement ChildNodePart cloning.
-  // NodeCloningData data{CloneOption::kIncludeChildren,
-  //                      CloneOption::kPreserveDOMParts};
-  // Node* clone = rootContainer()->Clone(GetDocument(), data);
-  return nullptr;
+PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) const {
+  // Since we're only cloning a part of the tree, not including this
+  // ChildNodePart's `root`, we use a temporary DocumentFragment and its
+  // PartRoot during the clone.
+  if (!IsValid()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "This ChildNodePart is not in a valid state. It must have "
+        "previous_sibling before next_sibling, and both with the same parent.");
+    return nullptr;
+  }
+  auto* fragment =
+      To<DocumentFragment>(DocumentFragment::Create(GetDocument()));
+  NodeCloningData data{CloneOption::kPreserveDOMParts};
+  data.ConnectPartRootToClone(*root(), fragment->getPartRoot());
+  ContainerNode* new_parent =
+      To<ContainerNode>(parentElement()->Clone(GetDocument(), data));
+  fragment->appendChild(new_parent, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+  data.Put(CloneOption::kIncludeDescendants);
+  Node* node = previous_sibling_;
+  while (true) {
+    new_parent->appendChild(node->Clone(GetDocument(), data), exception_state);
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
+    if (node == next_sibling_) {
+      break;
+    }
+    node = node->nextSibling();
+    CHECK(node) << "IsValid should detect invalid siblings";
+  }
+  data.Finalize();
+  return PartRoot::GetUnionFromPartRoot(data.ClonedPartRootFor(*this));
 }
 
 void ChildNodePart::Trace(Visitor* visitor) const {
@@ -76,7 +108,7 @@ bool ChildNodePart::IsValid() const {
   if (!previous_sibling_ || !next_sibling_) {
     return false;
   }
-  ContainerNode* parent = previous_sibling_->parentNode();
+  ContainerNode* parent = parentElement();
   if (!parent) {
     return false;
   }
@@ -94,23 +126,30 @@ bool ChildNodePart::IsValid() const {
 }
 
 Node* ChildNodePart::NodeToSortBy() const {
-  return previous_sibling_->parentNode();
+  return parentElement();
 }
 
 ContainerNode* ChildNodePart::rootContainer() const {
-  CHECK(IsValid());
-  return previous_sibling_->parentNode();
+  return IsValid() ? parentElement() : nullptr;
 }
 
-void ChildNodePart::Clone(NodeCloningData& data) const {
+Part* ChildNodePart::ClonePart(NodeCloningData& data) const {
   CHECK(IsValid());
   PartRoot* new_part_root = data.ClonedPartRootFor(*root());
+  // TODO(crbug.com/1453291) Eventually it should *not* be possible to construct
+  // Parts that get cloned without their PartRoots. But as-is, that can happen
+  // if, for example, a ChildNodePart contains child Nodes that are part of
+  // other ChildNodeParts or NodeParts whose `root` is not this ChildNodePart.
+  if (!new_part_root) {
+    return nullptr;
+  }
   Node* new_previous = data.ClonedNodeFor(*previous_sibling_);
   Node* new_next = data.ClonedNodeFor(*next_sibling_);
-  CHECK(new_part_root && new_previous && new_next);
-  data.ConnectPartRootToClone(
-      *this, *MakeGarbageCollected<ChildNodePart>(*new_part_root, *new_previous,
-                                                  *new_next));
+  CHECK(new_previous && new_next);
+  ChildNodePart* clone = MakeGarbageCollected<ChildNodePart>(
+      *new_part_root, *new_previous, *new_next);
+  data.ConnectPartRootToClone(*this, *clone);
+  return clone;
 }
 
 Document& ChildNodePart::GetDocument() const {

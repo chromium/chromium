@@ -53,12 +53,19 @@ Node* NodePart::NodeToSortBy() const {
   return node_;
 }
 
-void NodePart::Clone(NodeCloningData& data) const {
+Part* NodePart::ClonePart(NodeCloningData& data) const {
   CHECK(IsValid());
   PartRoot* new_part_root = data.ClonedPartRootFor(*root());
+  // TODO(crbug.com/1453291) Eventually it should *not* be possible to construct
+  // Parts that get cloned without their PartRoots. But as-is, that can happen
+  // if, for example, a ChildNodePart contains child Nodes that are part of
+  // other ChildNodeParts or NodeParts whose `root` is not this ChildNodePart.
+  if (!new_part_root) {
+    return nullptr;
+  }
   Node* new_node = data.ClonedNodeFor(*node_);
-  CHECK(new_part_root && new_node);
-  MakeGarbageCollected<NodePart>(*new_part_root, *new_node);
+  CHECK(new_node);
+  return MakeGarbageCollected<NodePart>(*new_part_root, *new_node);
 }
 
 Document& NodePart::GetDocument() const {
