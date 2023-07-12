@@ -5,9 +5,11 @@
 package org.chromium.chrome.test.util;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -21,8 +23,13 @@ import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.test.espresso.Espresso;
+import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.ViewAssertion;
+import androidx.test.espresso.action.TypeTextAction;
+import androidx.test.espresso.action.ViewActions;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
@@ -45,7 +52,6 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
-import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -75,10 +81,10 @@ public class OmniboxTestUtils {
      * This class can be chained with {@link
      * androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition}.
      */
-    private static class ActionOnOmniobxActionAtPosition implements ViewAction {
+    private static class ActionOnOmniboxActionAtPosition implements ViewAction {
         private final ViewAction mAction;
 
-        public ActionOnOmniobxActionAtPosition(int position, ViewAction action) {
+        public ActionOnOmniboxActionAtPosition(int position, ViewAction action) {
             mAction = actionOnItemAtPosition(position, action);
         }
 
@@ -99,14 +105,26 @@ public class OmniboxTestUtils {
     }
 
     /**
-     * Create a ViewAction that can be executed on a Suggestion with Action Chips.
-     *
-     * @param position the index of an {@link
-     *         org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxAction},
-     * @param action the action to perform.
+     * Verifies the focus state (and presence of the soft keyboard) of supplied view.
      */
-    public static ViewAction actionOnOmniboxActionAtPosition(int position, ViewAction action) {
-        return new ActionOnOmniobxActionAtPosition(position, action);
+    private static class IsFocusedWithSoftKeyboard implements ViewAssertion {
+        private final boolean mWantFocused;
+
+        public IsFocusedWithSoftKeyboard(boolean wantFocused) {
+            mWantFocused = wantFocused;
+        }
+
+        @Override
+        public void check(View v, NoMatchingViewException e) {
+            if (e != null) throw e;
+            assertTrue("View should be shown.", v.isShown());
+            assertTrue("View should be focusable.", v.isFocusable());
+            assertEquals("View should have expected focus state.", v.hasFocus(), mWantFocused);
+            InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(
+                    Context.INPUT_METHOD_SERVICE);
+            assertEquals(
+                    "View should have expected keyboard state.", imm.isActive(v), mWantFocused);
+        }
     }
 
     /**
@@ -182,14 +200,7 @@ public class OmniboxTestUtils {
      * @param active Whether the Omnibox is expected to have focus or not.
      */
     public void checkFocus(boolean active) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    "unexpected Omnibox focus state", mUrlBar.hasFocus(), Matchers.is(active));
-            InputMethodManager imm = (InputMethodManager) mUrlBar.getContext().getSystemService(
-                    Context.INPUT_METHOD_SERVICE);
-            Criteria.checkThat("Keyboard did not reach expected state", imm.isActive(mUrlBar),
-                    Matchers.is(active));
-        });
+        onView(withId(R.id.url_bar)).check(new IsFocusedWithSoftKeyboard(active));
     }
 
     /**
@@ -209,10 +220,11 @@ public class OmniboxTestUtils {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat("Omnibox not shown.", mUrlBar.isShown(), Matchers.is(true));
             Criteria.checkThat("Omnibox not focusable.", mUrlBar.isFocusable(), Matchers.is(true));
+            if (!mUrlBar.hasFocus()) {
+                mUrlBar.requestFocus();
+            }
+            Criteria.checkThat("Omnibox is focused.", mUrlBar.hasFocus(), Matchers.is(true));
         });
-
-        TestThreadUtils.runOnUiThreadBlockingNoException(() -> mUrlBar.requestFocus());
-        waitAnimationsComplete();
         checkFocus(true);
     }
 
@@ -221,7 +233,10 @@ public class OmniboxTestUtils {
      * Expects the Omnibox to be focused before the call.
      */
     public void clearFocus() {
-        sendKey(KeyEvent.KEYCODE_BACK);
+        if (getFocus()) {
+            Espresso.closeSoftKeyboard();
+            Espresso.pressBack();
+        }
         checkFocus(false);
     }
 
@@ -386,23 +401,20 @@ public class OmniboxTestUtils {
      *         button/enter key).
      */
     public void typeText(String text, boolean execute) {
-        checkFocus(true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> KeyUtils.typeTextIntoView(mInstrumentation, mUrlBar, text));
-
+        onView(withId(R.id.url_bar)).perform(new TypeTextAction(text, /*tapToFocus=*/false));
         if (execute) sendKey(KeyEvent.KEYCODE_ENTER);
     }
 
     /**
-     * Send key event to the Omnibox.
+     * Send key events to the Omnibox.
      * Requires that the Omnibox is focused.
      *
-     * @param keyCode The Key code to send to the Omnibox.
+     * @param keyCodes The sequence of key codes to send.
      */
-    public void sendKey(final int keyCode) {
-        checkFocus(true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> KeyUtils.singleKeyEventView(mInstrumentation, mUrlBar, keyCode));
+    public void sendKey(int... keyCodes) {
+        for (int keyCode : keyCodes) {
+            onView(withId(R.id.url_bar)).perform(ViewActions.pressKey(keyCode));
+        }
     }
 
     /**
@@ -588,8 +600,8 @@ public class OmniboxTestUtils {
         checkFocus(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             InputConnection conn = mUrlBar.getInputConnection();
-            conn.setComposingRegion(composingRegionStart, composingRegionEnd);
             conn.setComposingText(composingText, /* newCursorPosition=*/0);
+            conn.setComposingRegion(composingRegionStart, composingRegionEnd);
         });
     }
 
@@ -602,6 +614,6 @@ public class OmniboxTestUtils {
     public void clickOnAction(int suggestionIndex, int actionIndex) {
         onView(withId(R.id.omnibox_suggestions_dropdown))
                 .perform(actionOnItemAtPosition(suggestionIndex,
-                        OmniboxTestUtils.actionOnOmniboxActionAtPosition(actionIndex, click())));
+                        new ActionOnOmniboxActionAtPosition(actionIndex, ViewActions.click())));
     }
 }

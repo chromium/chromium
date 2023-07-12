@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
@@ -303,10 +300,9 @@ public class OmniboxPedalsTest {
     public void testPedalsStartedOnTabEnterKeyStroke() throws Exception {
         setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY));
 
-        onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
-        onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_TAB));
+        mOmniboxUtils.sendKey(KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_TAB);
         clickOnPedalToSettings(() -> {
-            onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
+            mOmniboxUtils.sendKey(KeyEvent.KEYCODE_ENTER);
         }, AccessibilitySettings.class);
 
         verify(mOmniboxActionJni, times(1))
