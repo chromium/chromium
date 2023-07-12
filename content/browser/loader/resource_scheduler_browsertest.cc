@@ -55,8 +55,8 @@ IN_PROC_BROWSER_TEST_F(ResourceSchedulerBrowserTest,
   EXPECT_EQ(9, EvalJs(browser, "getResourceNumber()"));
 }
 
-// The following test doesn't work on Android.
-#if !BUILDFLAG(IS_ANDROID)
+// The following test doesn't work on Android or iOS.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 class VisibilityAwareResourceSchedulerBrowserTest : public ContentBrowserTest {
  public:
   // TODO(https://crbug.com/1457817): Avoid relying on this histogram to test
