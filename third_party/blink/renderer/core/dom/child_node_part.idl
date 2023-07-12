@@ -11,5 +11,5 @@ interface ChildNodePart : Part {
   readonly attribute Node previousSibling;
   readonly attribute Node nextSibling;
   readonly attribute FrozenArray<Node> children;
-  void replaceChildren((Node or DOMString)... nodes);
+  [RaisesException] void replaceChildren((Node or DOMString or TrustedScript)... nodes);
 };

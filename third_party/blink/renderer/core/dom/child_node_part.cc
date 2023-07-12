@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
@@ -88,6 +89,41 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) const {
   return PartRoot::GetUnionFromPartRoot(data.ClonedPartRootFor(*this));
 }
 
+HeapVector<Member<Node>> ChildNodePart::children() const {
+  HeapVector<Member<Node>> child_list;
+  Node* node = previous_sibling_->nextSibling();
+  while (node && node != next_sibling_) {
+    child_list.push_back(node);
+    node = node->nextSibling();
+  }
+  if (!node) {
+    // Invalid part.
+    child_list.clear();
+  }
+  return child_list;
+}
+
+void ChildNodePart::replaceChildren(
+    const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
+    ExceptionState& exception_state) {
+  if (!IsValid()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "This ChildNodePart is not in a valid state. It must have "
+        "previous_sibling before next_sibling, and both with the same parent.");
+    return;
+  }
+  // Remove existing children, leaving endpoints.
+  Node* node = previous_sibling_->nextSibling();
+  while (node != next_sibling_) {
+    Node* remove = node;
+    node = node->nextSibling();
+    remove->remove();
+  }
+  // Insert new contents.
+  next_sibling_->before(nodes, exception_state);
+}
+
 void ChildNodePart::Trace(Visitor* visitor) const {
   visitor->Trace(previous_sibling_);
   visitor->Trace(next_sibling_);
@@ -99,7 +135,7 @@ void ChildNodePart::Trace(Visitor* visitor) const {
 //  1. The base |Part| is valid (it has a |root|).
 //  2. previous_sibling_ and next_sibling_ are non-null.
 //  3. previous_sibling_ and next_sibling_ have the same (non-null) parent.
-//  4. previous_sibling_ does not come after next_sibling_ in the tree.
+//  4. previous_sibling_ comes strictly before next_sibling_ in the tree.
 bool ChildNodePart::IsValid() const {
   if (!Part::IsValid()) {
     return false;
@@ -114,13 +150,16 @@ bool ChildNodePart::IsValid() const {
   if (next_sibling_->parentNode() != parent) {
     return false;
   }
+  if (previous_sibling_ == next_sibling_) {
+    return false;
+  }
   Node* left = previous_sibling_;
-  while (left) {
+  do {
+    left = left->nextSibling();
     if (left == next_sibling_) {
       return true;
     }
-    left = left->nextSibling();
-  }
+  } while (left);
   return false;
 }
 

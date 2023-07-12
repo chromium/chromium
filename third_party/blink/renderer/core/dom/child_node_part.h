@@ -57,18 +57,15 @@ class CORE_EXPORT ChildNodePart : public Part, public PartRoot {
   void disconnect() override;
   PartRootUnion* clone(ExceptionState& exception_state) const;
   ContainerNode* rootContainer() const override;
-
   ContainerNode* parentElement() const {
     return previous_sibling_->parentElement();
   }
   Node* previousSibling() const { return previous_sibling_; }
   Node* nextSibling() const { return next_sibling_; }
-  // TODO(crbug.com/1453291) Implement this method.
-  HeapVector<Member<Node>> children() const {
-    return HeapVector<Member<Node>>();
-  }
-  // TODO(crbug.com/1453291) Implement this method.
-  void replaceChildren(const HeapVector<Member<V8UnionNodeOrString>>& nodes) {}
+  HeapVector<Member<Node>> children() const;
+  void replaceChildren(
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
+      ExceptionState& exception_state);
 
  protected:
   const PartRoot* GetParentPartRoot() const override {

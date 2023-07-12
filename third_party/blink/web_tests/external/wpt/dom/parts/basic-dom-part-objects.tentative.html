@@ -7,12 +7,10 @@
 <template id=template>
   <div id=target style="display:none">
     Imperative test element
-    <span id=a>A</span>
-    <span id=b>B
-      <span id=sub>B-sub</span>
-    </span>
-    <span id=c>C</span>
-  </div>
+    <span id=a>A</span><span id=b>B
+      <span id=sub>B-sub1</span>
+      <span id=sub>B-sub2</span>
+    </span><span id=c>C</span></div>
 </template>
 
 <div style="display:none">
@@ -107,7 +105,7 @@ function addCleanup(t, part) {
     const childNodePart = addCleanup(t,new ChildNodePart(root,target.children[0], target.children[2]));
     const nodePart3 = addCleanup(t,new NodePart(childNodePart,target.children[1].firstChild,{metadata: ['this is','part 3']}));
     const nodePart2 = addCleanup(t,new NodePart(childNodePart,target.children[1].firstChild,{metadata: ['this','is part 2']}));
-    const childNodePart2 = addCleanup(t,new ChildNodePart(childNodePart,target.children[1].firstElementChild,target.children[1].firstElementChild,{metadata: ['childnodepart2']}));
+    const childNodePart2 = addCleanup(t,new ChildNodePart(childNodePart,target.children[1].firstElementChild,target.children[1].firstElementChild.nextSibling,{metadata: ['childnodepart2']}));
     assert_array_equals(root.getParts(),[nodePart,childNodePart]);
     assert_array_equals(childNodePart.getParts(),[childNodePart2,nodePart3,nodePart2],'Parts on the same Node are returned in the order they were constructed');
     assert_array_equals(childNodePart2.getParts(),[]);
@@ -225,4 +223,31 @@ test((t) => {
   document.body.appendChild(target); // Restore
   assert_array_equals(root.getParts(),[childPartAC]);
 }, 'DOM mutation support');
+
+
+test((t) => {
+  const root = document.getPartRoot();
+  assert_equals(root.getParts().length,0,'Test harness check: tests should clean up parts');
+  const target = document.querySelector('#target');
+  const a = document.querySelector('#a');
+  const b = document.querySelector('#b');
+  const c = document.querySelector('#c');
+  const otherNode = document.createElement('div');
+
+  const childPartAA = addCleanup(t,new ChildNodePart(root,a,a));
+  const childPartAB = addCleanup(t,new ChildNodePart(root,a,b));
+  const childPartAC = addCleanup(t,new ChildNodePart(root,a,c));
+  assert_throws_dom('InvalidStateError',() => childPartAA.replaceChildren(otherNode),'Can\'t replace children if part is invalid');
+  assert_array_equals(childPartAA.children,[],'Invalid parts should return empty children');
+  assert_array_equals(childPartAB.children,[],'Children should not include endpoints');
+  assert_array_equals(childPartAC.children,[b],'Children should not include endpoints');
+  childPartAB.replaceChildren(otherNode);
+  assert_array_equals(childPartAB.children,[otherNode],'Replacechildren should work');
+  assert_array_equals(childPartAC.children,[otherNode,b],'replaceChildren should leave endpoints alone');
+  childPartAC.replaceChildren(otherNode);
+  assert_array_equals(childPartAC.children,[otherNode],'Replacechildren with existing children should work');
+  assert_array_equals(childPartAB.children,[]);
+  childPartAC.replaceChildren(b);
+  assert_array_equals(target.children,[a,b,c]);
+}, 'ChildNodePart children manipulation');
 </script>
