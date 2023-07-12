@@ -8,8 +8,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome_os
 items:
 - caption: Allow a Kiosk Web App to open another browser window
   value: true
@@ -22,5 +20,7 @@ schema:
   type: boolean
 supported_chrome_os_management:
 - google_cloud
+supported_on:
+- chrome_os:116-
 tags: []
 type: main
