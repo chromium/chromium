@@ -7,6 +7,9 @@
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 
+BoundSessionTestCookieManager::BoundSessionTestCookieManager() = default;
+BoundSessionTestCookieManager::~BoundSessionTestCookieManager() = default;
+
 // static
 net::CanonicalCookie BoundSessionTestCookieManager::CreateCookie(
     const GURL& url,
@@ -43,4 +46,23 @@ void BoundSessionTestCookieManager::GetCookieList(
     const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
     GetCookieListCallback callback) {
   std::move(callback).Run({{cookie_, net::CookieAccessResult()}}, {});
+}
+
+void BoundSessionTestCookieManager::AddCookieChangeListener(
+    const GURL& url,
+    const absl::optional<std::string>& name,
+    mojo::PendingRemote<network::mojom::CookieChangeListener> listener) {
+  mojo::Remote<network::mojom::CookieChangeListener> listener_remote(
+      std::move(listener));
+  // In the context of bound session credentials we always pass a cookie name.
+  CHECK(name.has_value());
+  cookie_to_listener_.insert({*name, std::move(listener_remote)});
+}
+
+void BoundSessionTestCookieManager::DispatchCookieChange(
+    const net::CookieChangeInfo& change) {
+  if (!cookie_to_listener_.contains(change.cookie.Name())) {
+    return;
+  }
+  cookie_to_listener_[change.cookie.Name()]->OnCookieChange(change);
 }

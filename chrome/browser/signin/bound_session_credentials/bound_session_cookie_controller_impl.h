@@ -54,10 +54,12 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
 
   std::unique_ptr<BoundSessionRefreshCookieFetcher> CreateRefreshCookieFetcher()
       const;
+  void CreateBoundCookiesObservers();
 
   bool IsCookieFresh();
   void MaybeRefreshCookie();
-  void SetCookieExpirationTimeAndNotify(base::Time expiration_time);
+  void SetCookieExpirationTimeAndNotify(const std::string& cookie_name,
+                                        base::Time expiration_time);
   void OnCookieRefreshFetched(BoundSessionRefreshCookieFetcher::Result result);
   void MaybeScheduleCookieRotation();
   void ResumeBlockedRequests();
@@ -70,7 +72,8 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
   }
 
   const raw_ptr<SigninClient> client_;
-  std::unique_ptr<BoundSessionCookieObserver> cookie_observer_;
+  std::vector<std::unique_ptr<BoundSessionCookieObserver>>
+      bound_cookies_observers_;
   std::unique_ptr<BoundSessionRefreshCookieFetcher> refresh_cookie_fetcher_;
   std::vector<base::OnceClosure> resume_blocked_requests_;
   // Used to schedule preemptive cookie refresh.

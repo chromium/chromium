@@ -67,7 +67,7 @@ class TestCookieManager : public network::mojom::CookieManager {
       const std::vector<::ContentSettingPatternSource>& top_level_settings,
       SetAllStorageAccessSettingsCallback callback) override {}
 
-  void DispatchCookieChange(const net::CookieChangeInfo& change);
+  virtual void DispatchCookieChange(const net::CookieChangeInfo& change);
 
  private:
   // List of observers receiving cookie change notifications.

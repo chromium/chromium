@@ -20,7 +20,8 @@ class BoundSessionCookieObserver : public network::mojom::CookieChangeListener {
  public:
   // Returns the expected expiration date of the observed cookie or
   // `base::Time()` if the cookie was removed.
-  using CookieExpirationDateUpdate = base::RepeatingCallback<void(base::Time)>;
+  using CookieExpirationDateUpdate =
+      base::RepeatingCallback<void(const std::string&, base::Time)>;
 
   // `client_` must outlive `this`.
   BoundSessionCookieObserver(SigninClient* client,

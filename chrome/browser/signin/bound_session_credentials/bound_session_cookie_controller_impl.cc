@@ -31,13 +31,7 @@ BoundSessionCookieControllerImpl::~BoundSessionCookieControllerImpl() {
 }
 
 void BoundSessionCookieControllerImpl::Initialize() {
-  // `base::Unretained(this)` is safe because `this` owns
-  // `cookie_observer_`.
-  cookie_observer_ = std::make_unique<BoundSessionCookieObserver>(
-      client_, url_, cookie_name(),
-      base::BindRepeating(
-          &BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify,
-          base::Unretained(this)));
+  CreateBoundCookiesObservers();
   MaybeRefreshCookie();
 }
 
@@ -54,22 +48,39 @@ void BoundSessionCookieControllerImpl::OnRequestBlockedOnCookie(
 }
 
 void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
+    const std::string& cookie_name,
     base::Time expiration_time) {
   const base::TimeDelta kCookieExpirationThreshold = base::Seconds(15);
   if (!expiration_time.is_null()) {
     expiration_time -= kCookieExpirationThreshold;
   }
 
-  if (cookie_expiration_time() == expiration_time) {
+  auto it = bound_cookies_info_.find(cookie_name);
+  CHECK(it != bound_cookies_info_.end());
+  if (it->second == expiration_time) {
     return;
   }
 
-  bound_cookies_info_.begin()->second = expiration_time;
+  it->second = expiration_time;
   if (IsCookieFresh()) {
     ResumeBlockedRequests();
   }
   delegate_->OnCookieExpirationDateChanged();
   MaybeScheduleCookieRotation();
+}
+
+void BoundSessionCookieControllerImpl::CreateBoundCookiesObservers() {
+  for (const auto& [cookie_name, _] : bound_cookies_info_) {
+    // `base::Unretained(this)` is safe because `this` owns
+    // `cookie_observer_`.
+    std::unique_ptr<BoundSessionCookieObserver> cookie_observer =
+        std::make_unique<BoundSessionCookieObserver>(
+            client_, url_, cookie_name,
+            base::BindRepeating(&BoundSessionCookieControllerImpl::
+                                    SetCookieExpirationTimeAndNotify,
+                                base::Unretained(this)));
+    bound_cookies_observers_.push_back(std::move(cookie_observer));
+  }
 }
 
 std::unique_ptr<BoundSessionRefreshCookieFetcher>

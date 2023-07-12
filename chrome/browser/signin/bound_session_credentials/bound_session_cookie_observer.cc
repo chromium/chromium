@@ -60,7 +60,8 @@ void BoundSessionCookieObserver::OnGetCookieList(
       GetCookie(cookie_list, cookie_name_);
   DCHECK(!GetCookie(excluded_cookies, cookie_name_).has_value())
       << "BSC cookie should not be excluded!";
-  callback_.Run(cookie.has_value() ? cookie->ExpiryDate() : base::Time());
+  callback_.Run(cookie_name_,
+                cookie.has_value() ? cookie->ExpiryDate() : base::Time());
 }
 
 void BoundSessionCookieObserver::OnCookieChange(
@@ -70,7 +71,7 @@ void BoundSessionCookieObserver::OnCookieChange(
   switch (change.cause) {
     // The cookie was inserted.
     case net::CookieChangeCause::INSERTED:
-      callback_.Run(change.cookie.ExpiryDate());
+      callback_.Run(cookie_name_, change.cookie.ExpiryDate());
       break;
 
     // The cookie was automatically removed due to an insert operation that
@@ -90,14 +91,14 @@ void BoundSessionCookieObserver::OnCookieChange(
     // The cookie was overwritten with an already-expired expiration date.
     case net::CookieChangeCause::EXPIRED_OVERWRITE:
       DCHECK(net::CookieChangeCauseIsDeletion(change.cause));
-      callback_.Run(base::Time());
+      callback_.Run(cookie_name_, base::Time());
       break;
 
     // The cookie was automatically removed as it expired.
     case net::CookieChangeCause::EXPIRED:
       DCHECK(net::CookieChangeCauseIsDeletion(change.cause));
       DCHECK(change.cookie.ExpiryDate() < base::Time::Now());
-      callback_.Run(change.cookie.ExpiryDate());
+      callback_.Run(cookie_name_, change.cookie.ExpiryDate());
   }
 }
 
