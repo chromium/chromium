@@ -70,9 +70,7 @@ const char StubGuestView::Type[] = "stubguestview";
 
 class GuestViewManagerTest : public content::RenderViewHostTestHarness {
  public:
-  GuestViewManagerTest() {
-    GuestViewManager::set_factory_for_testing(&factory_);
-  }
+  GuestViewManagerTest() = default;
 
   GuestViewManagerTest(const GuestViewManagerTest&) = delete;
   GuestViewManagerTest& operator=(const GuestViewManagerTest&) = delete;
@@ -80,9 +78,8 @@ class GuestViewManagerTest : public content::RenderViewHostTestHarness {
   ~GuestViewManagerTest() override = default;
 
   TestGuestViewManager* CreateManager() {
-    return static_cast<TestGuestViewManager*>(
-        GuestViewManager::CreateWithDelegate(
-            browser_context(), std::make_unique<GuestViewManagerDelegate>()));
+    return factory_.GetOrCreateTestGuestViewManager(
+        browser_context(), std::make_unique<GuestViewManagerDelegate>());
   }
 
   std::unique_ptr<WebContents> CreateWebContents() {

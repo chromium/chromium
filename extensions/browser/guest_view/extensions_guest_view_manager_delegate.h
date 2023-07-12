@@ -7,10 +7,6 @@
 
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 
-namespace content {
-class BrowserContext;
-}  // namespace content
-
 namespace extensions {
 
 // ExtensionsGuestViewManagerDelegate implements GuestViewManager functionality
@@ -18,7 +14,7 @@ namespace extensions {
 class ExtensionsGuestViewManagerDelegate
     : public guest_view::GuestViewManagerDelegate {
  public:
-  explicit ExtensionsGuestViewManagerDelegate(content::BrowserContext* context);
+  ExtensionsGuestViewManagerDelegate();
   ~ExtensionsGuestViewManagerDelegate() override;
 
   // GuestViewManagerDelegate implementation.

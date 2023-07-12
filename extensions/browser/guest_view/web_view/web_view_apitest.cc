@@ -224,9 +224,7 @@ class RenderWidgetHostVisibilityObserver
 
 namespace extensions {
 
-WebViewAPITest::WebViewAPITest() {
-  GuestViewManager::set_factory_for_testing(&factory_);
-}
+WebViewAPITest::WebViewAPITest() = default;
 
 void WebViewAPITest::LaunchApp(const std::string& app_location) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -347,18 +345,8 @@ content::WebContents* WebViewAPITest::GetEmbedderWebContents() {
 TestGuestViewManager* WebViewAPITest::GetGuestViewManager() {
   content::BrowserContext* context =
       ShellContentBrowserClient::Get()->GetBrowserContext();
-  TestGuestViewManager* manager = static_cast<TestGuestViewManager*>(
-      TestGuestViewManager::FromBrowserContext(context));
-  // Test code may access the TestGuestViewManager before it would be created
-  // during creation of the first guest.
-  if (!manager) {
-    manager =
-        static_cast<TestGuestViewManager*>(GuestViewManager::CreateWithDelegate(
-            context,
-            ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-                context)));
-  }
-  return manager;
+  return factory_.GetOrCreateTestGuestViewManager(
+      context, ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
 }
 
 void WebViewDPIAPITest::SetUp() {

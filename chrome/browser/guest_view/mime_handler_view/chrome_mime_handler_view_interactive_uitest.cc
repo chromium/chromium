@@ -36,9 +36,7 @@ namespace extensions {
 
 class ChromeMimeHandlerViewInteractiveUITest : public ExtensionApiTest {
  public:
-  ChromeMimeHandlerViewInteractiveUITest() {
-    GuestViewManager::set_factory_for_testing(&factory_);
-  }
+  ChromeMimeHandlerViewInteractiveUITest() = default;
 
   ~ChromeMimeHandlerViewInteractiveUITest() override = default;
 
@@ -50,22 +48,10 @@ class ChromeMimeHandlerViewInteractiveUITest : public ExtensionApiTest {
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
 
-  // TODO(paulmeyer): This function is implemented over and over by the
-  // different GuestView test classes. It really needs to be refactored out to
-  // some kind of GuestViewTest base class.
   TestGuestViewManager* GetGuestViewManager() {
-    TestGuestViewManager* manager = static_cast<TestGuestViewManager*>(
-        TestGuestViewManager::FromBrowserContext(browser()->profile()));
-    // Test code may access the TestGuestViewManager before it would be created
-    // during creation of the first guest.
-    if (!manager) {
-      manager = static_cast<TestGuestViewManager*>(
-          GuestViewManager::CreateWithDelegate(
-              browser()->profile(),
-              ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-                  browser()->profile())));
-    }
-    return manager;
+    return factory_.GetOrCreateTestGuestViewManager(
+        browser()->profile(),
+        ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 
   const Extension* LoadTestExtension() {

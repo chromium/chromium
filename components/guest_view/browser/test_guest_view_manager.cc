@@ -224,9 +224,29 @@ void TestGuestViewManager::ViewGarbageCollected(int embedder_process_id,
 }
 
 // Test factory for creating test instances of GuestViewManager.
-TestGuestViewManagerFactory::TestGuestViewManagerFactory() = default;
+TestGuestViewManagerFactory::TestGuestViewManagerFactory() {
+  GuestViewManager::set_factory_for_testing(this);
+}
 
-TestGuestViewManagerFactory::~TestGuestViewManagerFactory() = default;
+TestGuestViewManagerFactory::~TestGuestViewManagerFactory() {
+  GuestViewManager::set_factory_for_testing(nullptr);
+}
+
+TestGuestViewManager*
+TestGuestViewManagerFactory::GetOrCreateTestGuestViewManager(
+    content::BrowserContext* context,
+    std::unique_ptr<GuestViewManagerDelegate> delegate) {
+  GuestViewManager* manager = GuestViewManager::FromBrowserContext(context);
+
+  // Test code may access the TestGuestViewManager before it would be created
+  // during creation of the first guest.
+  if (!manager) {
+    manager =
+        GuestViewManager::CreateWithDelegate(context, std::move(delegate));
+  }
+
+  return static_cast<TestGuestViewManager*>(manager);
+}
 
 std::unique_ptr<GuestViewManager>
 TestGuestViewManagerFactory::CreateGuestViewManager(

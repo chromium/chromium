@@ -40,9 +40,7 @@ using guest_view::TestGuestViewManagerFactory;
 
 class AppViewTest : public extensions::PlatformAppBrowserTest {
  public:
-  AppViewTest() {
-    GuestViewManager::set_factory_for_testing(&factory_);
-  }
+  AppViewTest() = default;
   AppViewTest(const AppViewTest&) = delete;
   AppViewTest& operator=(const AppViewTest&) = delete;
 
@@ -116,12 +114,9 @@ class AppViewTest : public extensions::PlatformAppBrowserTest {
  private:
   void SetUpOnMainThread() override {
     extensions::PlatformAppBrowserTest::SetUpOnMainThread();
-    test_guest_view_manager_ = static_cast<guest_view::TestGuestViewManager*>(
-        guest_view::GuestViewManager::CreateWithDelegate(
-            browser()->profile(),
-            std::unique_ptr<guest_view::GuestViewManagerDelegate>(
-                ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-                    browser()->profile()))));
+    test_guest_view_manager_ = factory_.GetOrCreateTestGuestViewManager(
+        browser()->profile(),
+        ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 
   TestGuestViewManagerFactory factory_;

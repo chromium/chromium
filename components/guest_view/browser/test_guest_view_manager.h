@@ -143,6 +143,10 @@ class TestGuestViewManagerFactory : public GuestViewManagerFactory {
 
   ~TestGuestViewManagerFactory() override;
 
+  TestGuestViewManager* GetOrCreateTestGuestViewManager(
+      content::BrowserContext* context,
+      std::unique_ptr<GuestViewManagerDelegate> delegate);
+
   std::unique_ptr<GuestViewManager> CreateGuestViewManager(
       content::BrowserContext* context,
       std::unique_ptr<GuestViewManagerDelegate> delegate) override;

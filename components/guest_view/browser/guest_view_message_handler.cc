@@ -30,7 +30,7 @@ GuestViewManager* GuestViewMessageHandler::GetOrCreateGuestViewManager() {
   auto* manager = GuestViewManager::FromBrowserContext(browser_context);
   if (!manager) {
     manager = GuestViewManager::CreateWithDelegate(
-        browser_context, CreateGuestViewManagerDelegate(browser_context));
+        browser_context, CreateGuestViewManagerDelegate());
   }
   return manager;
 }
@@ -46,8 +46,7 @@ GuestViewManager* GuestViewMessageHandler::GetGuestViewManagerOrKill() {
 }
 
 std::unique_ptr<GuestViewManagerDelegate>
-GuestViewMessageHandler::CreateGuestViewManagerDelegate(
-    content::BrowserContext* context) const {
+GuestViewMessageHandler::CreateGuestViewManagerDelegate() const {
   return std::make_unique<GuestViewManagerDelegate>();
 }
 

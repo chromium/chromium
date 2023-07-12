@@ -3648,16 +3648,6 @@ class LaunchWebAuthFlowFunctionTestWithWebAuthFlowInBrowserTabParam
         features::kWebAuthFlowInBrowserTab, use_tab_feature_enabled());
   }
 
-  void SetUp() override {
-    GuestViewManager::set_factory_for_testing(&factory_);
-    LaunchWebAuthFlowFunctionTest::SetUp();
-  }
-
-  void TearDown() override {
-    LaunchWebAuthFlowFunctionTest::TearDown();
-    GuestViewManager::set_factory_for_testing(nullptr);
-  }
-
  protected:
   bool use_tab_feature_enabled() { return GetParam(); }
 
@@ -3678,18 +3668,9 @@ class LaunchWebAuthFlowFunctionTestWithWebAuthFlowInBrowserTabParam
   base::test::ScopedFeatureList scoped_feature_list_;
 
   TestGuestViewManager* GetGuestViewManager() {
-    TestGuestViewManager* manager = static_cast<TestGuestViewManager*>(
-        TestGuestViewManager::FromBrowserContext(browser()->profile()));
-    // Test code may access the TestGuestViewManager before it would be created
-    // during creation of the first guest.
-    if (!manager) {
-      manager = static_cast<TestGuestViewManager*>(
-          GuestViewManager::CreateWithDelegate(
-              browser()->profile(),
-              ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-                  browser()->profile())));
-    }
-    return manager;
+    return factory_.GetOrCreateTestGuestViewManager(
+        browser()->profile(),
+        ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 };
 

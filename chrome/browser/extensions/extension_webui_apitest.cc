@@ -90,13 +90,10 @@ class ExtensionWebUIEmbeddedOptionsTest : public ExtensionWebUITest {
  public:
   void SetUpOnMainThread() override {
     ExtensionWebUITest::SetUpOnMainThread();
-    guest_view::GuestViewManager::set_factory_for_testing(
-        &test_guest_view_manager_factory_);
-    test_guest_view_manager_ = static_cast<guest_view::TestGuestViewManager*>(
-        guest_view::GuestViewManager::CreateWithDelegate(
+    test_guest_view_manager_ =
+        test_guest_view_manager_factory_.GetOrCreateTestGuestViewManager(
             browser()->profile(),
-            ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-                browser()->profile())));
+            ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 
  protected:

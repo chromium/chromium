@@ -813,23 +813,12 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
   }
 
   TestGuestViewManager* GetGuestViewManager() {
-    TestGuestViewManager* manager = static_cast<TestGuestViewManager*>(
-        TestGuestViewManager::FromBrowserContext(browser()->profile()));
-    // Test code may access the TestGuestViewManager before it would be created
-    // during creation of the first guest.
-    if (!manager) {
-      manager = static_cast<TestGuestViewManager*>(
-          GuestViewManager::CreateWithDelegate(
-              browser()->profile(),
-              ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-                  browser()->profile())));
-    }
-    return manager;
+    return factory_.GetOrCreateTestGuestViewManager(
+        browser()->profile(),
+        ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 
-  WebViewTest() : guest_view_(nullptr), embedder_web_contents_(nullptr) {
-    GuestViewManager::set_factory_for_testing(&factory_);
-  }
+  WebViewTest() = default;
 
   ~WebViewTest() override = default;
 
@@ -852,8 +841,9 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
 
   TestGuestViewManagerFactory factory_;
   // Note that these are only set if you launch app using LoadAppWithGuest().
-  raw_ptr<guest_view::GuestViewBase, DanglingAcrossTasks> guest_view_;
-  raw_ptr<content::WebContents, DanglingAcrossTasks> embedder_web_contents_;
+  raw_ptr<guest_view::GuestViewBase, DanglingAcrossTasks> guest_view_ = nullptr;
+  raw_ptr<content::WebContents, DanglingAcrossTasks> embedder_web_contents_ =
+      nullptr;
 };
 
 // The following test suites are created to group tests based on specific

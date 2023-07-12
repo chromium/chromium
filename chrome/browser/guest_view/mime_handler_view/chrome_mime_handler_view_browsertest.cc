@@ -71,11 +71,9 @@ using guest_view::TestGuestViewManagerFactory;
 
 class ChromeMimeHandlerViewTest : public extensions::ExtensionApiTest {
  public:
-  ChromeMimeHandlerViewTest() {
-    GuestViewManager::set_factory_for_testing(&factory_);
-  }
+  ChromeMimeHandlerViewTest() = default;
 
-  ~ChromeMimeHandlerViewTest() override {}
+  ~ChromeMimeHandlerViewTest() override = default;
 
   void SetUpOnMainThread() override {
     extensions::ExtensionApiTest::SetUpOnMainThread();
@@ -90,22 +88,9 @@ class ChromeMimeHandlerViewTest : public extensions::ExtensionApiTest {
 
  protected:
   TestGuestViewManager* GetGuestViewManager() {
-    TestGuestViewManager* manager = static_cast<TestGuestViewManager*>(
-        TestGuestViewManager::FromBrowserContext(browser()->profile()));
-    // TestGuestViewManager::DeprecatedWaitForSingleGuestCreated can and will
-    // get called before a guest is created. Since GuestViewManager is usually
-    // not created until the first guest is created, this means that |manager|
-    // will be nullptr if trying to use the manager to wait for the first guest.
-    // Because of this, the manager must be created here if it does not already
-    // exist.
-    if (!manager) {
-      manager = static_cast<TestGuestViewManager*>(
-          GuestViewManager::CreateWithDelegate(
-              browser()->profile(),
-              ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-                  browser()->profile())));
-    }
-    return manager;
+    return factory_.GetOrCreateTestGuestViewManager(
+        browser()->profile(),
+        ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 
   const extensions::Extension* LoadTestExtension() {

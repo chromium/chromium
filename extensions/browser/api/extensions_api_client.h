@@ -136,7 +136,7 @@ class ExtensionsAPIClient {
 
   // Returns a delegate for GuestViewManagerDelegate.
   virtual std::unique_ptr<guest_view::GuestViewManagerDelegate>
-  CreateGuestViewManagerDelegate(content::BrowserContext* context) const;
+  CreateGuestViewManagerDelegate() const;
 
   // Creates a delegate for MimeHandlerViewGuest.
   virtual std::unique_ptr<MimeHandlerViewGuestDelegate>

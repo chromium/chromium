@@ -141,9 +141,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
         embedder_web_contents_(nullptr),
         corner_(gfx::Point()),
         mouse_click_result_(false),
-        first_click_(true) {
-    GuestViewManager::set_factory_for_testing(&factory_);
-  }
+        first_click_(true) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     extensions::PlatformAppBrowserTest::SetUpCommandLine(command_line);
@@ -158,18 +156,9 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
   }
 
   TestGuestViewManager* GetGuestViewManager() {
-    TestGuestViewManager* manager = static_cast<TestGuestViewManager*>(
-        TestGuestViewManager::FromBrowserContext(browser()->profile()));
-    // Test code may access the TestGuestViewManager before it would be created
-    // during creation of the first guest.
-    if (!manager) {
-      manager = static_cast<TestGuestViewManager*>(
-          GuestViewManager::CreateWithDelegate(
-              browser()->profile(),
-              ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-                  browser()->profile())));
-    }
-    return manager;
+    return factory_.GetOrCreateTestGuestViewManager(
+        browser()->profile(),
+        ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 
   void MoveMouseInsideWindowWithListener(gfx::Point point,

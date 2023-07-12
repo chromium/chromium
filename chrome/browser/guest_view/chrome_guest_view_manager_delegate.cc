@@ -15,9 +15,7 @@
 
 namespace extensions {
 
-ChromeGuestViewManagerDelegate::ChromeGuestViewManagerDelegate(
-    content::BrowserContext* context)
-    : ExtensionsGuestViewManagerDelegate(context) {}
+ChromeGuestViewManagerDelegate::ChromeGuestViewManagerDelegate() = default;
 
 ChromeGuestViewManagerDelegate::~ChromeGuestViewManagerDelegate() = default;
 

@@ -39,9 +39,8 @@ using guest_view::GuestViewManager;
 
 namespace extensions {
 
-// TODO(mcnee): `context` is no longer used and could be removed.
-ExtensionsGuestViewManagerDelegate::ExtensionsGuestViewManagerDelegate(
-    content::BrowserContext* context) {}
+ExtensionsGuestViewManagerDelegate::ExtensionsGuestViewManagerDelegate() =
+    default;
 
 ExtensionsGuestViewManagerDelegate::~ExtensionsGuestViewManagerDelegate() =
     default;

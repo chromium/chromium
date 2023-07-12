@@ -43,9 +43,8 @@ void ExtensionsGuestView::CreateForExtensions(
 }
 
 std::unique_ptr<guest_view::GuestViewManagerDelegate>
-ExtensionsGuestView::CreateGuestViewManagerDelegate(
-    content::BrowserContext* context) const {
-  return ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(context);
+ExtensionsGuestView::CreateGuestViewManagerDelegate() const {
+  return ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate();
 }
 
 void ExtensionsGuestView::ReadyToCreateMimeHandlerView(int32_t render_frame_id,

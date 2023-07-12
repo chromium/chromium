@@ -297,9 +297,8 @@ ChromeExtensionsAPIClient::CreateExtensionOptionsGuestDelegate(
 }
 
 std::unique_ptr<guest_view::GuestViewManagerDelegate>
-ChromeExtensionsAPIClient::CreateGuestViewManagerDelegate(
-    content::BrowserContext* context) const {
-  return std::make_unique<ChromeGuestViewManagerDelegate>(context);
+ChromeExtensionsAPIClient::CreateGuestViewManagerDelegate() const {
+  return std::make_unique<ChromeGuestViewManagerDelegate>();
 }
 
 std::unique_ptr<MimeHandlerViewGuestDelegate>

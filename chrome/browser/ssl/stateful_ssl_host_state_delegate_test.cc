@@ -957,9 +957,7 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
 class StatefulSSLHostStateDelegateExtensionTest
     : public extensions::ExtensionBrowserTest {
  public:
-  StatefulSSLHostStateDelegateExtensionTest() {
-    guest_view::GuestViewManager::set_factory_for_testing(&factory_);
-  }
+  StatefulSSLHostStateDelegateExtensionTest() = default;
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {

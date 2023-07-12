@@ -50,8 +50,7 @@ ExtensionFunction::ResponseAction GuestViewInternalCreateGuestFunction::Run() {
   if (!guest_view_manager) {
     guest_view_manager = GuestViewManager::CreateWithDelegate(
         browser_context(),
-        ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-            browser_context()));
+        ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 
   if (!render_frame_host()) {

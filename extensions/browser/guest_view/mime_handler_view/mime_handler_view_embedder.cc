@@ -185,8 +185,7 @@ void MimeHandlerViewEmbedder::CreateMimeHandlerViewGuest(
   if (!manager) {
     manager = guest_view::GuestViewManager::CreateWithDelegate(
         browser_context,
-        ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-            browser_context));
+        ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
   CHECK(render_frame_host_);
   base::Value::Dict create_params;
