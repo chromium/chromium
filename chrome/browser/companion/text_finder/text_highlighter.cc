@@ -17,6 +17,7 @@ TextHighlighter::TextHighlighter(
     const std::string& text_directive,
     const mojo::Remote<blink::mojom::AnnotationAgentContainer>& agent_container)
     : text_directive_(text_directive), receiver_(this) {
+  DCHECK(!text_directive.empty());
   InitializeAndBindToAnnotationAgent(agent_container);
 }
 
