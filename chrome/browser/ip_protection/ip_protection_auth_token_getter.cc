@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ip_protection/ip_protection_auth_token_getter.h"
 #include <functional>
 #include <optional>
 
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ip_protection/ip_protection_auth_token_getter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -43,7 +44,8 @@ void IpProtectionAuthTokenGetter::TryGetAuthTokens(
 void IpProtectionAuthTokenGetter::RequestOAuthToken() {
   if (!identity_manager_ ||
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    std::move(try_get_auth_token_callback_).Run(absl::nullopt);
+    TryGetAuthTokensComplete(
+        absl::nullopt, IpProtectionTryGetAuthTokensResult::kFailedNoAccount);
     return;
   }
 
@@ -57,6 +59,7 @@ void IpProtectionAuthTokenGetter::RequestOAuthToken() {
   // Create the OAuth token fetcher and call `OnRequestOAuthTokenCompleted()`
   // when complete. base::Unretained() is safe since `this` owns
   // `access_token_fetcher_`
+  start_time_ = base::TimeTicks::Now();
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           /*consumer_name=*/"IpProtectionService", identity_manager_, scopes,
@@ -74,16 +77,21 @@ void IpProtectionAuthTokenGetter::OnRequestOAuthTokenCompleted(
   // If we fail to get an OAuth token don't attempt to fetch from Phosphor as
   // the request is guaranteed to fail.
   if (error.state() != GoogleServiceAuthError::NONE) {
-    std::move(try_get_auth_token_callback_).Run(absl::nullopt);
+    TryGetAuthTokensComplete(
+        absl::nullopt, IpProtectionTryGetAuthTokensResult::kFailedOAuthToken);
     return;
   }
 
+  const base::TimeTicks current_time = base::TimeTicks::Now();
+  base::UmaHistogramTimes("NetworkService.IpProtection.OAuthTokenFetchTime",
+                          current_time - start_time_);
   FetchBlindSignedToken(access_token_info);
 }
 
 void IpProtectionAuthTokenGetter::FetchBlindSignedToken(
     signin::AccessTokenInfo access_token_info) {
   DCHECK(bsa_);
+  start_time_ = base::TimeTicks::Now();
   bsa_->GetTokens(
       access_token_info.token, batch_size_,
       [this](absl::StatusOr<absl::Span<quiche::BlindSignToken>> tokens) {
@@ -93,13 +101,39 @@ void IpProtectionAuthTokenGetter::FetchBlindSignedToken(
 
 void IpProtectionAuthTokenGetter::OnFetchBlindSignedTokenCompleted(
     absl::StatusOr<absl::Span<quiche::BlindSignToken>> tokens) {
-  if (!tokens.ok() || tokens.value().size() == 0) {
-    std::move(try_get_auth_token_callback_).Run(absl::nullopt);
+  if (!tokens.ok()) {
+    // Apply the canonical mapping from abseil status to HTTP status.
+    IpProtectionTryGetAuthTokensResult result;
+    switch (tokens.status().code()) {
+      case absl::StatusCode::kInvalidArgument:
+        result = IpProtectionTryGetAuthTokensResult::kFailedBSA400;
+        break;
+      case absl::StatusCode::kUnauthenticated:
+        result = IpProtectionTryGetAuthTokensResult::kFailedBSA401;
+        break;
+      case absl::StatusCode::kPermissionDenied:
+        result = IpProtectionTryGetAuthTokensResult::kFailedBSA403;
+        break;
+      default:
+        result = IpProtectionTryGetAuthTokensResult::kFailedBSAOther;
+        break;
+    }
+    TryGetAuthTokensComplete(absl::nullopt, result);
     return;
   }
 
-  std::vector<network::mojom::BlindSignedAuthTokenPtr> result;
-  std::transform(tokens->begin(), tokens->end(), std::back_inserter(result),
+  if (tokens.value().size() == 0) {
+    TryGetAuthTokensComplete(
+        absl::nullopt, IpProtectionTryGetAuthTokensResult::kFailedBSAOther);
+    return;
+  }
+
+  const base::TimeTicks current_time = base::TimeTicks::Now();
+  base::UmaHistogramTimes("NetworkService.IpProtection.TokenBatchRequestTime",
+                          current_time - start_time_);
+
+  std::vector<network::mojom::BlindSignedAuthTokenPtr> bsa_tokens;
+  std::transform(tokens->begin(), tokens->end(), std::back_inserter(bsa_tokens),
                  [](quiche::BlindSignToken bsa_token) {
                    base::Time expiration = base::Time::FromTimeT(
                        absl::ToTimeT(bsa_token.expiration));
@@ -107,7 +141,17 @@ void IpProtectionAuthTokenGetter::OnFetchBlindSignedTokenCompleted(
                        bsa_token.token, expiration);
                  });
 
-  std::move(try_get_auth_token_callback_).Run(std::move(result));
+  TryGetAuthTokensComplete(absl::make_optional(std::move(bsa_tokens)),
+                           IpProtectionTryGetAuthTokensResult::kSuccess);
+}
+
+void IpProtectionAuthTokenGetter::TryGetAuthTokensComplete(
+    absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
+        bsa_tokens,
+    IpProtectionTryGetAuthTokensResult result) {
+  base::UmaHistogramEnumeration(
+      "NetworkService.IpProtection.TryGetAuthTokensResult", result);
+  std::move(try_get_auth_token_callback_).Run(std::move(bsa_tokens));
 }
 
 void IpProtectionAuthTokenGetter::Shutdown() {

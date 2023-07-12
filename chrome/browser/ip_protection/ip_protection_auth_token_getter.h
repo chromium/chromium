@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ip_protection/ip_protection_auth_token_getter_factory.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -24,6 +25,30 @@ class Profile;
 namespace quiche {
 class BlindSignAuth;
 }  // namespace quiche
+
+// The result of a fetch of tokens from the IP Protection auth token server.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class IpProtectionTryGetAuthTokensResult {
+  // The request was successful and resulted in new tokens.
+  kSuccess = 0,
+  // No primary account is set.
+  kFailedNoAccount = 1,
+  // Chrome determined the primary account is not eligible.
+  kFailedNotEligible = 2,
+  // There was a failure fetching an OAuth token for the primary account.
+  kFailedOAuthToken = 3,
+  // There was a failure in BSA with the given status code.
+  kFailedBSA400 = 4,
+  kFailedBSA401 = 5,
+  kFailedBSA403 = 6,
+
+  // Any other issue calling BSA.
+  kFailedBSAOther = 7,
+
+  kMaxValue = kFailedBSAOther,
+};
 
 // Fetches IP protection tokens on demand for the network service.
 //
@@ -77,6 +102,13 @@ class IpProtectionAuthTokenGetter
   // nullptr after `Shutdown()` is called.
   raw_ptr<signin::IdentityManager> identity_manager_;
 
+  // Finish a call to `TryGetAuthTokens()` by recording the result and invoking
+  // its callback.
+  void TryGetAuthTokensComplete(
+      absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
+          bsa_tokens,
+      IpProtectionTryGetAuthTokensResult result);
+
   // The BlindSignAuth implementation used to fetch blind-signed auth tokens.
   std::unique_ptr<quiche::BlindSignAuth> blind_sign_auth_;
 
@@ -93,6 +125,9 @@ class IpProtectionAuthTokenGetter
 
   // The callback for the executing `TryGetAuthTokens()` call.
   TryGetAuthTokensCallback try_get_auth_token_callback_;
+
+  // Time that the current operation began, for measurement.
+  base::TimeTicks start_time_;
 };
 
 #endif  // CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_AUTH_TOKEN_GETTER_H_

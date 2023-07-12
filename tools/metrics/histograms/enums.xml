@@ -55818,6 +55818,17 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="9" label="print-quality"/>
 </enum>
 
+<enum name="IpProtectionTokenBatchRequestResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed - No Account"/>
+  <int value="2" label="Failed - Not Eligible"/>
+  <int value="3" label="Failed - OAuth Token"/>
+  <int value="4" label="Failed - BSA Error 400"/>
+  <int value="5" label="Failed - BSA Error 401"/>
+  <int value="6" label="Failed - BSA Error 403"/>
+  <int value="7" label="Failed - BSA Error Other"/>
+</enum>
+
 <enum name="IppVersion">
   <int value="0" label="Error">Failed to parse version</int>
   <int value="1" label="Unknown">Version value not recognized</int>
