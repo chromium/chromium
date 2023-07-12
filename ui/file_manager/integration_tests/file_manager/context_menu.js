@@ -229,7 +229,7 @@ testcase.checkCopyEnabledForReadOnlyDocument = () => {
  * document is selected.
  */
 testcase.checkCopyDisabledForStrictReadOnlyDocument = () => {
-  return checkContextMenu('copy', 'Read-Only Doc.gdoc', true);
+  return checkContextMenu('copy', 'Read-Only (Strict) Doc.gdoc', false);
 };
 
 /**
