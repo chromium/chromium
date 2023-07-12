@@ -50,6 +50,11 @@
 namespace media {
 
 namespace {
+
+BASE_FEATURE(kMediaFoundationZeroCopyEncoding,
+             "MediaFoundationZeroCopyEncoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr uint32_t kDefaultGOPLength = 3000;
 constexpr uint32_t kDefaultTargetBitrate = 5000000u;
 constexpr size_t kMaxFrameRateNumerator = 30;
@@ -1539,7 +1544,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     hr = PerformD3DScaling(input_texture.Get());
     RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D video processing", hr);
     sample_texture = scaled_d3d11_texture_;
-  } else {
+  } else if (!base::FeatureList::IsEnabled(kMediaFoundationZeroCopyEncoding)) {
     // Even though no scaling is needed we still need to copy the texture to
     // avoid concurrent usage causing glitches (https://crbug.com/1462315). This
     // is preferred over holding a keyed mutex for the duration of the encode
@@ -1548,6 +1553,24 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     hr = PerformD3DCopy(input_texture.Get());
     RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D texture copy", hr);
     sample_texture = copied_d3d11_texture_;
+  } else {
+    DCHECK(base::FeatureList::IsEnabled(kMediaFoundationZeroCopyEncoding));
+    // Use the input texture directly (zero-copy). A keyed mutex is acquired to
+    // avoid glitches (https://crbug.com/1462315), but we release it
+    // immediately because holding on to it for the duration of the encode
+    // operation could block other users of the texture. Not holding the mutex
+    // could theoretically cause issues such as the texture not being bound but
+    // in practise we've been unable to reproduce issues with this path.
+    absl::optional<gpu::DXGIScopedReleaseKeyedMutex> release_keyed_mutex;
+    Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
+    hr = input_texture->QueryInterface(IID_PPV_ARGS(&keyed_mutex));
+    if (SUCCEEDED(hr)) {
+      constexpr int kMaxSyncTimeMs = 100;
+      hr = keyed_mutex->AcquireSync(0, kMaxSyncTimeMs);
+      RETURN_ON_HR_FAILURE(hr, "Failed to acquire keyed mutex", hr);
+      release_keyed_mutex.emplace(std::move(keyed_mutex), 0);
+    }
+    sample_texture = input_texture;
   }
 
   ComMFMediaBuffer input_buffer;
