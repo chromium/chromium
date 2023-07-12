@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Seadme seaded</translation>
 <translation id="2084809735218147718">Tänamisviibe</translation>
 <translation id="2088690981887365033">VPN-võrk</translation>
+<translation id="209653272837065803">Failide sünkroonimise jätkamiseks pole piisavalt salvestusruumi</translation>
 <translation id="2111134541987263231">Lülitage sisse valik <ph name="BEGIN_BOLD" />Luba inkognito režiimis<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> üksust kustutatakse ja te ei saa neid taastada.</translation>
 <translation id="2122305276694332719">Automaatne ühendamine peidetud võrguga võimaldab teistel näha teie seadet ja teatud võrguseadeid, seepärast ei soovita me seda kasutada.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">hiina (lihtsustatud)</translation>
 <translation id="22085916256174561">korea</translation>
 <translation id="2208919847696382164">Installi Linuxiga</translation>
+<translation id="2215692307449050019">Aku hakkab tühjaks saama. Failide sünkroonimine jätkub, kui olete toiteallikaga ühendatud.</translation>
 <translation id="2225536596944493418">Kas soovite <ph name="NUMBER_OF_ITEMS" /> üksust kindlasti kustutada?</translation>
 <translation id="2230062665678605299">Kausta „<ph name="FOLDER_NAME" />” ei saa luua. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Inimene kohviga</translation>
+<translation id="2247561763838186830">Teid on välja logitud</translation>
 <translation id="2251368349685848079">Taasta prügikastist</translation>
 <translation id="2278133026967558505">Failidele pääsevad juurde kõik veebisaidid ja URL-id</translation>
 <translation id="2282155092769082568">Automaatse konfigureerimise URL:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Seda failitüüpi ei toetata. Külastage Chrome'i veebipoodi, et leida rakendus, mis avaks seda tüüpi faili.</translation>
 <translation id="2326539130272988168">bulgaaria</translation>
 <translation id="2337715497728194187">Jaga Bruschettaga</translation>
+<translation id="233822363739146957">Kõigi failide sünkroonimiseks pole piisavalt salvestusruumi</translation>
 <translation id="23721837607121582">Mobiiliprofiili allalaadimine, võrk <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Lülita loendivaatele</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> kausta jagati Linuxiga</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Viga Linuxi rakenduse installimisel</translation>
 <translation id="2802583107108007218">Lisateave nende piirangute kohta</translation>
 <translation id="2803375539583399270">Sisestage PIN-kood</translation>
+<translation id="2819519502129272135">Failide sünkroonimine on välja lülitatud</translation>
 <translation id="2820957248982571256">Skannimine …</translation>
 <translation id="2830077785865012357">hiina, zhuyin</translation>
 <translation id="2843806747483486897">Muuda vaikeseadeid ...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Filter on lähtestatud.</translation>
 <translation id="4603392156942865207">Fail <ph name="FILE_NAME" /> kopeeritakse kausta <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Esitaja</translation>
+<translation id="4635373743001040938">Salvestusruumi oli äärmiselt vähe. Failide sünkroonimine on välja lülitatud.</translation>
 <translation id="4642769377300286600">Mobiiliprofiili installimine, võrk <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">tšehhi, QWERTY-klaviatuuriga</translation>
 <translation id="4656777537938206294">Muutke failid võrguühenduseta kättesaadavaks</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">Üksusega Parallels Desktop jagatakse 1 kausta</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> on taastatud</translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Failide sünkroonimise seadistamist ei saanud lõpetada</translation>
 <translation id="4973523518332075481">Kasutage nime, milles on kuni <ph name="MAX_LENGTH" /> tähemärki</translation>
 <translation id="4973970068702235170">Pakkumine nurjus, ootamatu viga: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">jaapani</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">saksa (Belgia)</translation>
 <translation id="7339898014177206373">Uus aken</translation>
 <translation id="7343393116438664539">vietnami, Telex</translation>
+<translation id="7347346221088620549">Krüpteeritud fail</translation>
 <translation id="7357762654218998920">Seda tüüpi faili ei toetata. <ph name="BEGIN_LINK_HELP" />Vaadake lisateavet<ph name="END_LINK_HELP" /> Chrome OS-is failide avamise kohta.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> üksuse kopeerimine …</translation>
 <translation id="7375951387215729722">Failide loend on sorditud veeru <ph name="COLUMN_NAME" /> alusel kahanevas järjestuses.</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">islandi</translation>
 <translation id="863903787380594467">Vale PIN-kood. Teil on veel <ph name="RETRIES" /> katset.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
+<translation id="8656407365183407932">Teie võrguvälised failid tuli eemaldada</translation>
 <translation id="8656768832129462377">Ära kontrolli</translation>
 <translation id="8688591111840995413">Sobimatu parool</translation>
 <translation id="8698464937041809063">Google joonistus</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">hiina (traditsiooniline), Pinyin</translation>
 <translation id="8998871447376656508">Teie Google Drive'is pole üleslaadimise lõpuleviimiseks piisavalt vaba ruumi.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, võrku haldab teie administraator, üksikasjad</translation>
+<translation id="9007990314804111233">Logige sisse oma Microsofti kontole</translation>
 <translation id="9017798300203431059">Vene foneetiline</translation>
 <translation id="9034924485347205037">Linuxi failid</translation>
 <translation id="9035012421917565900">Üksusi ei saa sihtkohta „<ph name="DESTINATION_NAME" />” tagasi teisaldada, seega ei saa te seda toimingut tagasi võtta.</translation>

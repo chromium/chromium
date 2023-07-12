@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ຫົວຂໍ້, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ມີຄຸນສົມບັດໃໝ່, ກະລຸນາໃຊ້ລູກສອນຂຶ້ນເພື່ອສຶກສາເພີ່ມເຕີມ.</translation>
 <translation id="1059913517121127803">ບໍ່ສາມາດເລີ່ມສະແກນໄດ້</translation>
+<translation id="1062823486781306604"><ph name="INDEX" /> ຈາກ <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ກວດເຫັນ Firewall</translation>
 <translation id="1075811647922107217">ຂະຫນາດຫນ້າ</translation>
@@ -540,6 +541,7 @@
 <translation id="5257811368506016604">ເປີດການນຳໃຊ້ໂໝດສີແຈ້ງ</translation>
 <translation id="5264277876637023664">ດຳເນີນການທົດສອບ CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN ຖືກປິດການນຳໃຊ້.</translation>
 <translation id="5275828089655680674">ເປີດສິ່ງທີ່ເຮັດປະຈຳຄືນໃໝ່</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">ສີຂອງແສງພື້ນຫຼັງ</translation>
@@ -604,6 +606,7 @@
 <translation id="5832805196449965646">ເພີ່ມບຸກຄົນ</translation>
 <translation id="583281660410589416">ບໍ່​ຮູ້ຈັກ</translation>
 <translation id="5843706793424741864">ຟາເຣນຮາຍ</translation>
+<translation id="584953448295717128">ລະບົບຈະກວດຫາ APN ໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="5849570051105887917">ລະຫັດຜູ້ໃຫ້ບໍລິການ Home</translation>
 <translation id="5859603669299126575">ອະລະບໍ້າແກເລີຣີສິນລະປະ</translation>
 <translation id="5860033963881614850">ປິດ</translation>
@@ -883,6 +886,7 @@
 <translation id="80398733265834479">ເປີດການນຳໃຊ້ໂໝດປັບສີອັດຕະໂນມັດ</translation>
 <translation id="8041089156583427627">ສົ່ງຄຳຕິຊົມ</translation>
 <translation id="8045012663542226664">ປິດສຽງໄມໂຄຣໂຟນ</translation>
+<translation id="8067126283828232460">ເຊື່ອມຕໍ່ APN ແລ້ວ.</translation>
 <translation id="8075838845814659848">ການສາກທີ່ເຫຼືອ</translation>
 <translation id="8076492880354921740">ແຖບ</translation>
 <translation id="8082366717211101304">ບໍ່ສາມາດລະບຸ DNS ຈາກແອັບ Android ໄດ້</translation>
@@ -1029,6 +1033,7 @@
 <translation id="9111102763498581341">ປົດລັອກ</translation>
 <translation id="9122602430962285795">ເພື່ອເຊື່ອມຕໍ່ຄືນໃໝ່, ໃຫ້ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
 <translation id="9126720536733509015">ບັນທຶກຫຼາຍໜ້າເປັນ PDF ດຽວ</translation>
+<translation id="9133104754938025929">ພາບພັກໜ້າຈໍຈະເຮັດວຽກໃນລະຫວ່າງທີ່ສາກເທົ່ານັ້ນເພື່ອປະຢັດແບັດເຕີຣີ.</translation>
 <translation id="9137526406337347448">ການບໍລິການ Google</translation>
 <translation id="9138630967333032450">Shift ຊ້າຍ</translation>
 <translation id="9143347780818904997">ເປັນເວລາ <ph name="MINUTES" /> ນາທີ</translation>

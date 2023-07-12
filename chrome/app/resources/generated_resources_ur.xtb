@@ -140,6 +140,7 @@
 <translation id="1110965959145884739">منتخب کریں کہ کون سی زبانیں اس آلہ پر انسٹال کی جائیں۔ ڈسک اسپیس محفوظ کرنے کے لیے زبان کی فائلیں صارفین کے درمیان اشتراک کی جاتی ہیں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">پس منظر ٹیب بلوٹوتھ استعمال کر رہا ہے</translation>
 <translation id="1112998165730922436">کاسٹ کرنا موقوف ہے</translation>
+<translation id="1113807501859230251">‏اپنے <ph name="DEVICE_TYPE" /> سے Bruschetta کو ہٹائیں؟ اس سے ورچوئل مشین میں موجود سبھی ایپس اور ڈیٹا حذف ہو جائیں گے!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">ہیرا</translation>
 <translation id="1114427165525619358">‏اس آلے پر اور آپ کے Google اکاؤنٹ میں پاس ورڈز</translation>
@@ -811,6 +812,7 @@
 <translation id="1647408325348388858">اس ویب ایپ میں <ph name="FILE_NAME" /> کھولیں اور اس میں ترمیم کریں؟</translation>
 <translation id="1648528859488547844">‏مقام کا تعین کرنے کے لیے Wi‑Fi یا موبائل نیٹ ورکس کا استعمال کریں</translation>
 <translation id="164936512206786300">بلوٹوتھ آلہ کا جوڑا ختم کریں</translation>
+<translation id="1650801028905250434">‏'میری ڈرائیو' میں موجود آپ کی فائلیں آپ کے Chromebook سے خودکار طور پر مطابقت پذیر ہو جائیں گی تاکہ آپ انٹرنیٹ کنکشن کے بغیر ان تک رسائی حاصل کر سکیں۔ آپ اسے ترتیبات &gt; فائلز میں کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
 <translation id="1651008383952180276">آپ کو وہی پاس فریز دوبار درج کرنا ہوگا</translation>
 <translation id="1651609627703324721">‏یہ ٹیب ایک ہیڈ سیٹ پر VR مواد پیش کر رہا ہے</translation>
 <translation id="1652326691684645429">قریبی آلات کے ساتھ اشتراک فعال کریں</translation>
@@ -1554,6 +1556,7 @@
 <translation id="2263679799334060788">‏آپ کے تاثرات سے ہمیں Google Cast کو بہتر بنانے میں مدد ملتی ہے اور یہ قابل ستائش ہے۔ کاسٹ سے متعلق مسائل کو حل کرنے کیلئے براہ کرم <ph name="BEGIN_LINK" /> مرکز امداد<ph name="END_LINK" /> سے رجوع کریں۔</translation>
 <translation id="2266957463645820432">‏IPP اوور USB (IPPUSB)‎</translation>
 <translation id="2268130516524549846">بلوٹوتھ غیر فعال کر دیا گیا</translation>
+<translation id="2268182915828370037">فائل کی مطابقت پذیری آف کریں؟</translation>
 <translation id="2269895253281481171">اگر یہ کبھی خطرے میں ہو تو آپ کو مطلع کیا جائے گا</translation>
 <translation id="2270450558902169558">ڈومین میں موجود کسی بھی آلہ کے ساتھ ڈیٹا کا تبادلہ کریں: <ph name="DOMAIN" /></translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />انسٹالیشن <ph name="BEGIN_BOLD" />آپ کی ہارڈ ڈرائیو کو مکمل طور پر مٹا دے گی<ph name="END_BOLD" />۔ یقینی بنائیں کہ آپ کے ڈیٹا کا بیک اپ لیا جا چکا ہے۔<ph name="END_PARAGRAPH1" />
@@ -2106,6 +2109,7 @@
 <translation id="2714393097308983682">‏‫Google Play اسٹور</translation>
 <translation id="2715640894224696481">سیکیورٹی کلید کی درخواست</translation>
 <translation id="2715751256863167692">‏یہ اپ گریڈ آپ کے Chromebook کو ری سیٹ کرتا ہے اور موجودہ صارف ڈیٹا کو ہٹاتا ہے۔</translation>
+<translation id="2715934493766003251">فائل کی مطابقت پذیری آن ہونے پر اسٹوریج کو صاف نہیں کیا جا سکتا</translation>
 <translation id="2716986496990888774">یہ ترتیب والد/والدہ کے زیر انتظام ہے۔</translation>
 <translation id="271749239614426244">کرسر کی چھوٹی حرکت کو نظر انداز کریں</translation>
 <translation id="2718395828230677721">نائٹ لائٹ</translation>
@@ -2253,6 +2257,7 @@
 <translation id="2817435998497102771">اپنا وال پیپر اور اسٹائل سیٹ کریں</translation>
 <translation id="2818476747334107629">پرنٹر کی تفصیلات</translation>
 <translation id="2819167288942847344">ایپ کو غلط طریقے سے کام کرنے سے روکنے کیلئے فون، ٹیبلیٹ یا سائز تبدیل کرنے والی ونڈوز کیلئے پہلے سے ترتیب شدہ سائز استعمال کریں</translation>
+<translation id="2819519502129272135">فائل کی مطابقت پذیری آف کی گئی</translation>
 <translation id="2820957248982571256">اسکین ہو رہا ہے…</translation>
 <translation id="2822634587701817431">سکیڑیں / پھیلائیں</translation>
 <translation id="2822910719211888134">‏Linux کا بیک اپ لینے کے دوران خرابی</translation>
@@ -2721,6 +2726,7 @@
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - نیٹ ورک کی خرابی</translation>
 <translation id="3248902735035392926">حفاظتی معاملات۔ کچھ وقت نکالیں اور ابھی <ph name="BEGIN_LINK" />اپنی ایکسٹینشنز کو چیک کریں<ph name="END_LINK" /></translation>
 <translation id="3249323165366527554">جب آپ کے <ph name="EMAIL" /> کا پاس ورڈ <ph name="GOOGLE_PASSWORD_MANAGER" /> میں خودکار طور پر محفوظ ہو جائے تو سائن اپ کریں اور نسبتًا تیزی سے سائن ان کریں۔</translation>
+<translation id="3251119461199395237">فائل کی مطابقت پذیری</translation>
 <translation id="3251714896659475029">‏<ph name="SUPERVISED_USER_NAME" /> کو "Ok Google" کے ساتھ Google اسسٹنٹ تک رسائی حاصل کرنے دیں</translation>
 <translation id="3251759466064201842">&lt;سرٹیفکیٹ کا حصہ نہیں ہے&gt;</translation>
 <translation id="325238099842880997">بچوں کو گھر میں کھیلنے، دریافت کرنے اور اسکول کا کام کرنے میں مدد کے لئے ڈیجیٹل گراؤنڈ رولز سیٹ کریں</translation>
@@ -3098,6 +3104,7 @@
 <translation id="3567284462585300767">اپنے آس پاس کے لوگوں سے فائلیں وصول کرنے اور قبول کرنے کے لیے، مرئی بنیں</translation>
 <translation id="356738834800832239">آپ کا پاس ورڈ محفوظ ہو گیا ہے</translation>
 <translation id="3569382839528428029">کیا آپ چاہتے ہیں کہ <ph name="APP_NAME" /> آپ کی اسکرین کا اشتراک کرے؟</translation>
+<translation id="3569614820047645079">‏میری ڈرائیو میں موجود آپ کی فائلز خودکار طور پر آپ کے Chromebook سے مطابقت پذیر ہوتی ہیں تاکہ آپ انٹرنیٹ کنکشن کے بغیر ان تک رسائی حاصل کر سکیں۔</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> مندرجہ ذیل فائلز اور فولڈرز کو دیکھ سکتا ہے</translation>
 <translation id="3571734092741541777">ترتیب دیں</translation>
 <translation id="3575121482199441727">اس سائٹ کے لیے اجازت دیں</translation>
@@ -3530,6 +3537,7 @@
 <translation id="3916233823027929090">سیکیورٹی چیکس مکمل ہو چکے ہیں</translation>
 <translation id="3916445069167113093">اس قسم کی فائل سے آپ کے کمپیوٹر کو نقصان پہنچ سکتا ہے۔ کیا آپ <ph name="FILE_NAME" /> کو بہر صورت رکھنا چاہتے ہیں؟</translation>
 <translation id="3917184139185490151">‏آپ کا کمپیوٹر ایک محفوظ ماڈیول سیکیورٹی پر مشتمل ہے، جو سیکیورٹی کی کئی اہم خصوصیات کو ChromeOS میں لاگو کرنے کیلئے استعمال ہوتا ہے۔ مزید جاننے کیلئے Chromebook کا مرکز امداد ملاحظہ کریں: https://support.google.com/chromebook/?p=sm</translation>
+<translation id="3917644013202553949">آپ کی فائلز کو مطابقت پذیر بنانے کے لیے کافی اسٹوریج نہیں ہے۔ جگہ خالی کرنے کی کوشش کریں۔</translation>
 <translation id="3918972485393593704">‏Google کو تفصیلات کی اطلاع دیں</translation>
 <translation id="3919145445993746351">اپنے سبھی کمپیوٹرز پر اپنی ایکسٹینشنز حاصل کرنے کے لیے، مطابقت پذیری کو آن کریں</translation>
 <translation id="3919229493046408863">آلات کے قریب ہونے پر اطلاع کو آف کریں</translation>
@@ -3841,6 +3849,7 @@
 <translation id="4184803915913850597">‏HID آلہ (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> تلاش</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> کو ترتیب دیا جا رہا ہے…</translation>
+<translation id="4190492351494485814">‏ابتدائی سیٹ اپ کے لیے، آپ کو انٹرنیٹ سے منسلک ہونے کی ضرورت ہے تاکہ فائلز آپ کے Chromebook سے مطابقت پذیر ہو سکیں</translation>
 <translation id="4190828427319282529">کی بورڈ کے فوکس کو نمایاں کریں</translation>
 <translation id="4193251682249731404">‏معتبر CA</translation>
 <translation id="4193575319002689239">کارڈز دکھائیں</translation>
@@ -4033,6 +4042,7 @@
 <translation id="4361745360460842907">ٹیب کے بطور کھولیں</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> آپ کے <ph name="DEVICE_TYPE" /> پر ڈیفالٹ اکاؤنٹ ہے</translation>
 <translation id="4363215264289239958">‏Bruschetta ایپس</translation>
+<translation id="4363262124589131906">‏میری ڈرائیو میں موجود نئی فائلز اس Chromebook میں خودکار طور پر مطابقت پذیر ہونا بند ہو جائیں گی</translation>
 <translation id="4363771538994847871">کوئی کاسٹ منزل نہیں ملی۔ مدد درکار ہے؟</translation>
 <translation id="4364327530094270451">خربوزہ</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ایک ونڈو کا اشتراک کر رہی ہے۔</translation>
@@ -4219,6 +4229,7 @@
 <translation id="4515872537870654449">‏سروس کیلئے Dell سے رابطہ کریں۔ پنکھے کے کام نہ کرنے کی صورت میں ڈاک بند ہو جائے گا۔</translation>
 <translation id="4518840066030486079">شفٹ کلید موڈ اسٹائل</translation>
 <translation id="4519331665958994620">سائٹس آپ کا کیمرا استعمال کرنے کیلئے پوچھ سکتی ہیں</translation>
+<translation id="4519605771716872386">فائل کی مطابقت پذیری آن ہے</translation>
 <translation id="4519935350946509010">کنکشن میں خرابی ہے۔</translation>
 <translation id="4520385623207007473">زیر استعمال کوکیز</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> کی جانب سے نامعلوم آلات</translation>
@@ -4456,6 +4467,7 @@
 <translation id="4715631922189108923">صارف نام میں ترمیم کریں</translation>
 <translation id="47158868804223727">گروپ کے نام کو پھیلانے یا سکیڑنے کے لیے اس پر کلک کریں</translation>
 <translation id="4716483597559580346">‏Powerwash برائے اضافی سیکیورٹی</translation>
+<translation id="4716715661140829720">اسٹوریج کی کافی جگہ نہیں ہے</translation>
 <translation id="471759229191973607">تھیم تبدیل کریں</translation>
 <translation id="4718046540206070045">ایک براؤزر سے زیادہ</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> کے لیے پاس ورڈ</translation>
@@ -4508,6 +4520,7 @@
 <translation id="4763757134413542119">‏<ph name="USER_EMAIL" /> ایک درست Google for Education اکاؤنٹ نہیں ہے۔ اپنے منتظم سے رابطہ کریں۔ اگر آپ منتظم ہیں تو آپ درج ذیل لنک کو ملاحظہ کر کے اپنی تنظیم سیٹ اپ کر سکتے ہیں: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{یہ آلہ 1 ماہ کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}other{یہ آلہ {MONTHS} ماہ کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}}</translation>
 <translation id="4765582662863429759">‏Android پیغامات کو آپ کے فون سے آپ کے Chromebook پر متنی پیغامت بھیجنے کی اجازت دیتی ہے</translation>
+<translation id="476563889641554689">لینز کے ساتھ تلاش کرنے کے لیے ایک علاقہ منتخب کریں</translation>
 <translation id="4766598565665644999">سبھی ایکسٹینشنز <ph name="HOST" /> کو پڑھ اور تبدیل کر سکتی ہیں</translation>
 <translation id="4767427586072640478">غیر فعال ایکسٹینشنز کے بارے میں مزید جانیں۔</translation>
 <translation id="4768332406694066911">آپ کی شناخت کرنے والی ان تنظیموں کی جانب سے آپ کے پاس سرٹیفیکیٹس ہیں</translation>
@@ -4566,6 +4579,7 @@
 <translation id="481574578487123132">لنک کردہ آلات</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />، تفصیلات</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 بُک مارک حذف کیا گیا}other{{COUNT} بُک مارکس حذف کئے گئے}}</translation>
+<translation id="481689174647911539">‏یہ فائل وائرس یا مالویئر ہو سکتی ہے۔<ph name="LINE_BREAK" />آپ اسے Google محفوظ براؤزنگ پر بھیج سکتے ہیں تاکہ یہ چیک کر سکیں کہ آیا یہ غیر محفوظ ہے۔ اسکینز میں عام طور پر چند سیکنڈ لگتے ہیں۔</translation>
 <translation id="4816900689218414104">فون یا ٹیبلیٹ پر پاس کی تخلیق کریں</translation>
 <translation id="4819323978093861656">{0,plural, =0{ابھی بند ہو رہا ہے۔}=1{بند ہو رہا ہے: 1 سیکنڈ}other{بند ہو رہا ہے: # سیکنڈ}}</translation>
 <translation id="4819607494758673676">‏Google اسسٹنٹ کی اطلاعات</translation>
@@ -4720,7 +4734,6 @@
 <translation id="4940364377601827259">محفوظ کرنے کے لیے <ph name="PRINTER_COUNT" /> پرنٹرز دستیاب ہیں۔</translation>
 <translation id="4940448324259979830">یہ اکاؤنٹ <ph name="PROFILE_NAME" /> کے زیر انتظام ہے</translation>
 <translation id="4940845626435830013">ڈسک کا سائز ریزرو کریں</translation>
-<translation id="4941074198479265146">‏سائٹس عام طور پر موسیقی بنانے اور ترمیم کرنے کی خصوصیات کے لیے MIDI آلات سے منسلک ہوتی ہیں</translation>
 <translation id="4941243352516004658">آپ کے کارٹ میں <ph name="MERCHANT_NAME" />، <ph name="MERCHANT_DOMAIN" /> کی جانب سے <ph name="DISCOUNT_TEXT" /> پر <ph name="PRODUCT_ITEM_COUNT" /> آئٹمز، <ph name="RELATIVE_TIME" /> پہلے دیکھے گئے</translation>
 <translation id="4941246025622441835">انٹرپرائز مینیجمنٹ کیلئے آلہ کا اندراج کرتے وقت اس آلہ کی درخواست استعمال کریں:</translation>
 <translation id="4941627891654116707">فونٹ سائز</translation>
@@ -4985,12 +4998,14 @@
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" کا جدید ترین ورژن غیر فعال کر دیا گیا ہے کیونکہ اس کیلئے مزید اجازتیں مطلوب ہیں۔</translation>
 <translation id="5185500136143151980">انٹرنیٹ نہیں ہے</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190577235024772869"><ph name="USED_SPACE" /> استعمال کر کے</translation>
 <translation id="5190926251776387065">پورٹ فعال کریں</translation>
 <translation id="5190959794678983197">مائیکروفون نہیں ہے</translation>
 <translation id="5191094172448199359">‏آپ کے درج کردہ PINs مماثل نہیں ہیں</translation>
 <translation id="5191251636205085390">ان نئی ٹیکنالوجیز کے بارے میں جانیں اور کنٹرول کریں جن کا مقصد فریق ثالث کے کوکیز کو تبدیل کرنا ہے</translation>
 <translation id="519185197579575131">‏QT کا استعمال کریں</translation>
 <translation id="5192062846343383368">‏اپنی نگرانی کی ترتیبات دیکھنے کیلئے، Family Link ایپ کھولیں</translation>
+<translation id="5193978546360574373">‏اس سے اس Chromebook پر Google Drive تک رسائی ہٹ جائے گی، بشمول کسی بھی فائل تک رسائی جو آف لائن دستیاب کرائی گئی ہے</translation>
 <translation id="5193988420012215838">آپ کے کلپ بورڈ پر کاپی کر دیا گیا</translation>
 <translation id="5194256020863090856">یہ صرف پوشیدگی ونڈوز کو متاثر کرتا ہے</translation>
 <translation id="5195074424945754995">‏ان اصولوں سے مماثل URLs براؤزر سوئچ کو متحرک نہیں کریں گے اور <ph name="BROWSER_NAME" /> میں یا <ph name="ALTERNATIVE_BROWSER_NAME" /> میں کھل سکتے ہیں۔</translation>
@@ -5073,6 +5088,7 @@
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> کے لیے مزید کارروائیاں</translation>
 <translation id="5268373933383932086">آپ کا صفحہ، آپ کا طریقہ</translation>
 <translation id="5269977353971873915">پرنٹ ناکام ہوگیا</translation>
+<translation id="5271578170655641944">‏Google Drive تک رسائی کو ہٹائیں؟</translation>
 <translation id="5273806377963980154">‏سائٹ کا URL ترمیم کریں</translation>
 <translation id="5273966423195882879">تھیم پر مبنی رنگ</translation>
 <translation id="5275084684151588738">صارف کی لغات</translation>
@@ -6334,6 +6350,7 @@
 <translation id="6345878117466430440">بطور پڑھا ہوا مارک کریں</translation>
 <translation id="6346952829206698721">کلپ بورڈ سے پیسٹ کریں</translation>
 <translation id="6347010704471250799">اطلاع دکھائیں</translation>
+<translation id="6348805481186204412">آف لائن اسٹوریج</translation>
 <translation id="634887995541211148">‏اپنے آلے پر Bruschetta چلائیں۔</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> انسٹال کریں</translation>
 <translation id="6354918092619878358">‏SECG elliptic curve secp256r1 (المعروف ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -6518,6 +6535,7 @@
 <translation id="6513247462497316522">‏اگر آپ کسی دوسرے نیٹ ورک سے منسلک نہیں ہیں تو Google Chrome موبائل ڈیٹا کا استعمال کرے گا۔</translation>
 <translation id="6514010653036109809">دستیاب آلہ:</translation>
 <translation id="6514565641373682518">اس صفحہ نے آپ کے ماؤس کرسر کو غیر فعال کر دیا ہے۔</translation>
+<translation id="6517420300299531857">‏میری ڈرائیو میں موجود آپ کی فائلز خودکار طور پر آپ کے Chromebook سے مطابقت پذیر ہوتی ہیں تاکہ آپ انٹرنیٹ کنکشن کے بغیر ان تک رسائی حاصل کر سکیں۔ اس میں تقریباً <ph name="REQUIRED_SPACE" /> کا استعمال ہوگا۔ فی الحال آپ کے پاس <ph name="FREE_SPACE_AVAILABLE" /> دستیاب ہے۔</translation>
 <translation id="6517709704288360414">ہو سکتا ہے کہ آپ کا آلہ اب ٹھیک سے کام نہ کرے اور آپ کو سیکیورٹی اور کارکردگی کے مسائل کا سامنا کرنا پڑے۔ اگر آپ کو کوئی مسئلہ درپیش ہے تو اپ ڈیٹس کو آف کرنے سے آپ کے قانونی دعوے کرنے کے حق پر بھی اثر پڑ سکتا ہے۔</translation>
 <translation id="6518014396551869914">تصویر &amp;کاپی کریں</translation>
 <translation id="6518133107902771759">توثیق کریں</translation>
@@ -6777,6 +6795,7 @@
 <translation id="6736243959894955139">پتہ</translation>
 <translation id="6737393581255281855">ڈسپلے کردہ ڈیٹا کو صاف کریں؟</translation>
 <translation id="6737663862851963468">‏Kerberos ٹکٹ ہٹائیں</translation>
+<translation id="6737931010859480781">یہ ایپ آپ کے آلے پر پہلے سے انسٹال ہے</translation>
 <translation id="6738180164164974883">فریق ثالث کی کوکیز سیٹ کرنے کی اجازت دیں</translation>
 <translation id="6738430949033571771">اکاؤنٹ کی توثیق کی جا رہی ہے...</translation>
 <translation id="6739923123728562974">ڈیسک ٹاپ شارٹ کٹ دکھائیں</translation>
@@ -7252,6 +7271,7 @@
 <translation id="7124712201233930202">آپ کی تنظیم کی پالیسیوں کی تعمیل نہیں ہوتی ہے</translation>
 <translation id="7125029162161377569">رازداری سینڈ باکس کے ٹرائلز کے ساتھ، سائٹس آپ کی کم معلومات کا استعمال کر کے وہی براؤزنگ تجربہ فراہم کر سکتی ہیں۔ اس کا مطلب ہے کہ آپ کے لیے زیادہ رازداری اور کم کراس سائٹ ٹریکنگ۔ نئے ٹرائلز کے تیار ہوتے ہی ہم انہیں شامل کر دیں گے۔</translation>
 <translation id="7125148293026877011">‏Crostini حذف کریں</translation>
+<translation id="7125932261198019860">‏یقینی بنائیں کہ آپ کا پرنٹر اسی Wi-Fi نیٹ ورک سے منسلک ہے جس سے آپ کا Chromebook منسلک ہے یا USB کیبل استعمال کریں۔ <ph name="LINK_BEGIN" />موافقت کے بارے میں مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">ڈاؤن لوڈ کی سرگزشت</translation>
 <translation id="7128151990937044829">اطلاع مسدود ہونے پر ایڈریس بار میں ایک انڈیکیٹر دکھائیں</translation>
 <translation id="7131040479572660648"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> اور <ph name="WEBSITE_3" /> پر اپنا ڈیٹا پڑھیں</translation>
@@ -7445,6 +7465,7 @@
 <translation id="7307129035224081534">موقوف ہو گیا</translation>
 <translation id="7308643132139167865">ویب سائٹ کی زبانیں</translation>
 <translation id="7310598146671372464">‏لاگ ان کرنا ناکام ہو گیا۔ سرور متعین Kerberos مرموز کاری کی اقسام کو سپورٹ نہیں کرتا ہے۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
+<translation id="7311005168897771689">‏آف لائن ہونے پر اپنی Google Drive فائلز تک رسائی حاصل کریں</translation>
 <translation id="7311244614769792472">کوئی نتیجہ نہیں ملا</translation>
 <translation id="7312210124139670355">‏آپ کا منتظم آپ کی eSIM کو ری سیٹ کر رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="7317831949569936035">اسکول میں اندراج</translation>
@@ -8470,6 +8491,7 @@
 <translation id="8138217203226449454">کیا آپ کا مطلب اپنے تلاش فراہم کنندہ کو تبدیل کرنا ہے؟</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> کا اسٹیٹس</translation>
 <translation id="8139447493436036221">‏Google Drive فائلز</translation>
+<translation id="8139643636835015859">اس سے آپ کی آف لائن فائلز کے ذریعے استعمال کردہ <ph name="OFFLINE_STORAGE_SIZE" /> جگہ ہٹ جائے گی۔ کچھ فائلز اب بھی آف لائن دستیاب رہیں گی۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />، <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141418916163800697">آپ فون ہب کی ترتیبات میں مزید خصوصیات سیٹ اپ کر سکتے ہیں</translation>
 <translation id="8141584439523427891">اب متبادل براؤزر میں کھل رہا ہے</translation>
@@ -8561,6 +8583,7 @@
 <translation id="821119981794423735">‏<ph name="USER_EMAIL" /> کے لیے Google پاس ورڈ مینیجر میں پاس ورڈز درآمد کرنے کے لیے، ایک CSV فائل منتخب کریں</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ڈاؤن لوڈ پیش رفت میں ہے}other{ڈاؤن لوڈز پیش رفت میں ہیں}}</translation>
 <translation id="8212601853154459483">یہ پروفائل <ph name="PROFILE_MANAGER" /> کے زیر انتظام ہے اور <ph name="USER_EMAIL_ADDRESS" /> اکاؤنٹ کے لیے آپ کو علیحدہ پروفائل تخلیق کرنے کی ضرورت ہے۔</translation>
+<translation id="8212792694174629011">‏کوئی بھی پروفائل نہیں ملی۔ اپنے آلے کے کیمرے کا استعمال کرتے ہوئے QR کوڈ کو اسکین کرنے کی کوشش کریں یا اپنے کیریئر کی طرف سے فراہم کردہ فعالیت کا کوڈ درج کریں۔</translation>
 <translation id="8214489666383623925">فائل کھولیں…</translation>
 <translation id="8215129063232901118">اپنے <ph name="DEVICE_TYPE" /> سے اپنے فون کی اہلیتوں تک رسائی حاصل کریں</translation>
 <translation id="8217212468862726597">پوائنٹر کو نمایاں کریں</translation>
@@ -9104,6 +9127,7 @@
 <translation id="8680251145628383637">‏اپنے سبھی آلات پر اپنے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات حاصل کرنے کیلئے سائن ان کریں۔ آپ اپنی Google سروسز میں خود بخود سائن ان بھی ہو جائیں گے۔</translation>
 <translation id="8681886425883659911">اشتہارات دخل انداز یا گمراہ کن اشتہارات دکھانے کے لیے جانی جانے والی سائٹس پر مسدود ہیں</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> منسلک اور تیار ہے</translation>
+<translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> کے بطور سائن ان کردہ</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> منسوخ کریں</translation>
 <translation id="8688672835843460752">دستیاب</translation>
 <translation id="8689998525144040851">100</translation>

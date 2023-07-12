@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Құрылғы параметрлері</translation>
 <translation id="2084809735218147718">Рақмет деп ымдап жатқан адам</translation>
 <translation id="2088690981887365033">VPN желісі</translation>
+<translation id="209653272837065803">Файлдарды синхрондауды жалғастыру үшін жад көлемі жеткіліксіз.</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Инкогнито режимінде рұқсат беру<ph name="END_BOLD" /> мүмкіндігін қосу</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> элемент жойылады және оларды қалпына келтіре алмайсыз.</translation>
 <translation id="2122305276694332719">Жасырын желіге автоматты түрде қосылсаңыз, басқалар сіздің құрылғыңызды және кейбір желілік параметрлеріңізді көре алады. Сондықтан жасырын желіге автоматты түрде қосылмағаныңыз жөн.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Жеңілдетілген қытай тілі</translation>
 <translation id="22085916256174561">Корей</translation>
 <translation id="2208919847696382164">Linux арқылы ойнату</translation>
+<translation id="2215692307449050019">Батарея заряды аз. Сіз қуатқа қосылған кезде, файлды синхрондау жалғасады.</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> элементті жойғыңыз келе ме?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" қалтасын жасау мүмкін емес. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Кофе ұстаған адам</translation>
+<translation id="2247561763838186830">Сіз аккаунттан шықтыңыз</translation>
 <translation id="2251368349685848079">Себеттен қалпына келтіру</translation>
 <translation id="2278133026967558505">Барлық веб-сайт және URL мекенжайы арқылы файлды пайдалану</translation>
 <translation id="2282155092769082568">Автоматты конфигурациялау URL мекенжайы:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Бұл файл түріне қолдау көрсетілмеген. Бұл файл түрін ашатын қолданбаны табу үшін Chrome веб-дүкеніне кіріңіз.</translation>
 <translation id="2326539130272988168">Болгар</translation>
 <translation id="2337715497728194187">Bruschetta-мен бөлісу</translation>
+<translation id="233822363739146957">Барлық файлды синхрондау үшін жад көлемі жеткіліксіз.</translation>
 <translation id="23721837607121582">Мобильдік профильді жүктеп алу, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" /> желісі</translation>
 <translation id="2377319039870049694">Тізім көрінісіне ауысу</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> қалта Linux жүйесімен бөлісілген</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Linux қолданбасын орнату кезінде қате кетті</translation>
 <translation id="2802583107108007218">Шектеулер туралы толық ақпарат алыңыз.</translation>
 <translation id="2803375539583399270">PIN кодын енгізіңіз</translation>
+<translation id="2819519502129272135">Файлды синхрондау өшірулі</translation>
 <translation id="2820957248982571256">Іздеуде...</translation>
 <translation id="2830077785865012357">Қытай (чжуинь)</translation>
 <translation id="2843806747483486897">Әдепкі параметрді өзгерту…</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Сүзгі бастапқы күйге қайтарылды.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> қалтасына көшірілуде.</translation>
 <translation id="4631887759990505102">Орындаушы</translation>
+<translation id="4635373743001040938">Жад көлемі өте аз болды. Файлды синхрондау өшірілді.</translation>
 <translation id="4642769377300286600">Мобильдік профиль, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_PROVIDER_NAME" /> провайдерінің <ph name="NETWORK_NAME" /> желісі орнатылуда</translation>
 <translation id="4646813851450205600">Чех (QWERTY пернетақтасымен)</translation>
 <translation id="4656777537938206294">Файлдарды офлайн режимде қолжетімді ету</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">Parallels Desktop арқылы 1 қалта бөлісіледі.</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> қалпына келтірілді</translation>
 <translation id="4969785127455456148">Альбом</translation>
+<translation id="4972330214479971536">Файлды синхрондауды реттеу аяқталмады</translation>
 <translation id="4973523518332075481">Атау <ph name="MAX_LENGTH" /> таңбадан аспауы керек</translation>
 <translation id="4973970068702235170">Қысылмады. Күтпеген қате шықты: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Жапон</translation>
@@ -806,6 +813,7 @@
 <translation id="7309413087278791451">Неміс (Бельгия)</translation>
 <translation id="7339898014177206373">Жаңа терезе</translation>
 <translation id="7343393116438664539">Вьетнам (телекс)</translation>
+<translation id="7347346221088620549">Шифрланған файл</translation>
 <translation id="7357762654218998920">Мұндай файл түріне қолдау көрсетілмейді. ChromeOS жүйесінде файлдарды ашу туралы <ph name="BEGIN_LINK_HELP" />толығырақ ақпарат алыңыз<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> элемент көшірілуде…</translation>
 <translation id="7375951387215729722">Файлдар тізімі <ph name="COLUMN_NAME" /> бойынша кему ретімен сұрыпталды.</translation>
@@ -992,6 +1000,7 @@
 <translation id="8609695766746872526">Исланд</translation>
 <translation id="863903787380594467">PIN коды дұрыс емес. <ph name="RETRIES" /> әрекет қалды.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – ұяшық</translation>
+<translation id="8656407365183407932">Офлайн файлдарыңыз өшірілуі керек</translation>
 <translation id="8656768832129462377">Тексермеу</translation>
 <translation id="8688591111840995413">Құпия сөз дұрыс емес</translation>
 <translation id="8698464937041809063">Google суреті</translation>
@@ -1027,6 +1036,7 @@
 <translation id="8997962250644902079">Қытай (дәстүрлі, пиньинь)</translation>
 <translation id="8998871447376656508">Жүктеп салуды аяқтау үшін Google Drive-та орын жеткіліксіз.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімшіңіз басқарады, мәліметтер</translation>
+<translation id="9007990314804111233">Microsoft аккаунтыңызға кіріңіз.</translation>
 <translation id="9017798300203431059">Орыс фонетикалық</translation>
 <translation id="9034924485347205037">Linux файлдары</translation>
 <translation id="9035012421917565900">Файлдар "<ph name="DESTINATION_NAME" />" қалтасына қайта көшірілмейді, сондықтан бұл қадамды кері қайтару мүмкін емес.</translation>

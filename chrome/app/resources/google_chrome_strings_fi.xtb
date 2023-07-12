@@ -313,7 +313,6 @@
 <translation id="7036251913954633326">Jos haluat käyttää tiliä vain tämän kerran, voit käyttää Chrome-selaimen <ph name="GUEST_LINK_BEGIN" />vierastilaa<ph name="GUEST_LINK_END" />. Jos haluat lisätä tilin jollekulle toiselle, <ph name="LINK_BEGIN" />lisää uusi henkilö<ph name="LINK_END" /> <ph name="DEVICE_TYPE" />‑laitteelle.
 
 Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit ylläpitää Google-tilejä <ph name="SETTINGS_LINK_BEGIN" />asetuksissa<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7062128746136194023">Vanhempasi ovat laittaneet Chromen sivustojen, sovellusten ja laajennusten käyttöluvat pois päältä. Lisäämistä (<ph name="EXTENSION_TYPE_PARAMETER" />) ei sallita.</translation>
 <translation id="7071827361006050863">Selausdata poistetaan pian Chromesta</translation>
 <translation id="7085332316435785646">Valitse, käytetäänkö Chrome-historiaa personoituun kokemukseen Google-palveluissa</translation>
 <translation id="7088681679121566888">Chrome on ajan tasalla</translation>
@@ -376,7 +375,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8255190535488645436">Google Chrome käyttää kameraasi ja mikrofoniasi.</translation>
 <translation id="8270775718612349140">Chromen hallinnoimat varmenteet</translation>
 <translation id="8286862437124483331">Google Chrome yrittää näyttää salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
-<translation id="828798499196665338">Vanhempasi ovat laittaneet Chromen sivustojen, sovellusten ja laajennusten käyttöluvat pois päältä. Käyttöönottoa (<ph name="EXTENSION_TYPE_PARAMETER" />) ei sallita.</translation>
 <translation id="8290100596633877290">Hups! Google Chrome kaatui. Käynnistetäänkö uudelleen?</translation>
 <translation id="829923460755755423">Lisää pikakuvake Google Salasanoihin</translation>
 <translation id="8342675569599923794">Tämä tiedosto on vaarallinen, joten Chrome on estänyt sen.</translation>

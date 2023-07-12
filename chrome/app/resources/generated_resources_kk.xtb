@@ -140,6 +140,7 @@
 <translation id="1110965959145884739">Осы құрылғыға орнатылатын тілдерді таңдаңыз. Диск жадын үнемдеу үшін тілдік файлдар пайдаланушыларға қолжетімді болады. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Фондық қойынды Bluetooth функциясын қолдануда</translation>
 <translation id="1112998165730922436">Трансляциялау кідіртілді</translation>
+<translation id="1113807501859230251"><ph name="DEVICE_TYPE" /> құрылғысынан Bruschetta-ны өшіру керек пе? Бұл виртуалдық машинадағы барлық қолданба мен деректерді жояды!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Diamond</translation>
 <translation id="1114427165525619358">Осы құрылғыдағы және Google аккаунтындағы құпия сөздер</translation>
@@ -1550,6 +1551,7 @@
 <translation id="2263679799334060788">Пікіріңіз Google Cast мүмкіндігін жақсартуға көмектеседі әрі біз үшін өте маңызды. Google Cast ақауларын жою үшін <ph name="BEGIN_LINK" />Анықтамалық орталыққа<ph name="END_LINK" /> жүгініңіз.</translation>
 <translation id="2266957463645820432">USB арқылы IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth өшірілген</translation>
+<translation id="2268182915828370037">Файлды синхрондауды өшіру керек пе?</translation>
 <translation id="2269895253281481171">Қауіп төнген жағдайда, сізге хабарландыру жіберіледі</translation>
 <translation id="2270450558902169558">Деректерді <ph name="DOMAIN" /> доменіндегі кез келген құрылғымен айырбастау</translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />Орнату процесі <ph name="BEGIN_BOLD" />қатты дискіні толық тазартады<ph name="END_BOLD" />. Деректеріңіздің сақтық көшірмесі жасалғанына көз жеткізіңіз.<ph name="END_PARAGRAPH1" />
@@ -2101,6 +2103,7 @@
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2715640894224696481">Қауіпсіздік кілтін сұрау</translation>
 <translation id="2715751256863167692">Бұл жаңартуда Chromebook құрылғысы бастапқы күйіне қайтарылып, ағымдағы пайдаланушы деректері өшіріледі.</translation>
+<translation id="2715934493766003251">Файлды синхрондау қосулы кезде жадты тазалау мүмкін емес</translation>
 <translation id="2716986496990888774">Бұл параметрді ата-ана басқарады.</translation>
 <translation id="271749239614426244">Курсордың аздаған қозғалысын елемеу</translation>
 <translation id="2718395828230677721">Түнгі жарық</translation>
@@ -2248,6 +2251,7 @@
 <translation id="2817435998497102771">Тұсқағаз бен стильді реттеу</translation>
 <translation id="2818476747334107629">Принтер мәліметтері</translation>
 <translation id="2819167288942847344">Қолданба дұрыс жұмыс істеуі үшін, телефон, планшет немесе өлшемін өзгертуге болатын терезелердің әдепкі параметрлерін қолдану</translation>
+<translation id="2819519502129272135">Файлды синхрондау өшірулі</translation>
 <translation id="2820957248982571256">Іздеуде...</translation>
 <translation id="2822634587701817431">Кішірейту/Жаю</translation>
 <translation id="2822910719211888134">Linux сақтық көшірмесін жасау кезінде қате шықты.</translation>
@@ -2716,6 +2720,7 @@
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – желі қатесі</translation>
 <translation id="3248902735035392926">Қауіпсіздік маңызды. Сәл уақытыңызды бөліп, <ph name="BEGIN_LINK" />кеңейтімдерді тексеріңіз<ph name="END_LINK" />.</translation>
 <translation id="3249323165366527554">Құпия сөзіңіз <ph name="EMAIL" /> аккаунты үшін <ph name="GOOGLE_PASSWORD_MANAGER" /> қызметіне автоматты түрде сақталған кезде, тіркеліп, жылдамырақ кіріңіз.</translation>
+<translation id="3251119461199395237">Файлды синхрондау</translation>
 <translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> Google Assistant-ке "Ok Google" деу арқылы кіруге рұқсат беру</translation>
 <translation id="3251759466064201842">&lt;Сертификаттың бөлігі емес&gt;</translation>
 <translation id="325238099842880997">Балалардың ойнауына, желіні шарлауына және оқу жұмыстарына көмектесу үшін цифрлық құрылғыларды пайдаланудың негізгі ережелерін белгілеңіз.</translation>
@@ -3093,6 +3098,7 @@
 <translation id="3567284462585300767">Маңайдағы пайдаланушылардан файлдар алу үшін құрылғыны көрінетін етіңіз.</translation>
 <translation id="356738834800832239">Құпия сөзіңіз сақталды</translation>
 <translation id="3569382839528428029"><ph name="APP_NAME" /> қолданбасы экраныңызды бөлісуін қалайсыз ба?</translation>
+<translation id="3569614820047645079">Жеке Drive ішіндегі файлдарыңыз Chromebook-қа автоматты түрде синхрондалады, осылайша оларды интернет байланысынсыз пайдалана аласыз.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> келесі файлдар мен қалталарды көре алады.</translation>
 <translation id="3571734092741541777">Орнату</translation>
 <translation id="3575121482199441727">Осы сайт үшін рұқсат ету</translation>
@@ -3525,6 +3531,7 @@
 <translation id="3916233823027929090">Қауіпсіздік тексерісі жасалды.</translation>
 <translation id="3916445069167113093">Файлдың бұл түрі компьютеріңізге зиян келтіруі мүмкін. Бәрібір <ph name="FILE_NAME" /> сақтауды қалайсыз ба?</translation>
 <translation id="3917184139185490151">Компьютерде қауіпсіздік модулі бар, ол ChromeOS жүйесінде көптеген маңызды қауіпсіздік функцияларын ендіру үшін пайдаланылады. Толығырақ ақпарат алу үшін Chromebook Анықтамалық орталығына кіріңіз: https://support.google.com/chromebook/?p=sm</translation>
+<translation id="3917644013202553949">Файлдарыңызды синхрондау үшін жад жеткіліксіз. Орын босатып көріңіз.</translation>
 <translation id="3918972485393593704">Толық мәліметтерді Google қызметіне беріңіз</translation>
 <translation id="3919145445993746351">Барлық компьютерде кеңейтімдер орнатылуы үшін, синхрондауды іске қосыңыз.</translation>
 <translation id="3919229493046408863">Маңайда құрылғылар пайда болғанда хабарландыруды өшіру</translation>
@@ -3836,6 +3843,7 @@
 <translation id="4184803915913850597">HID құрылғысы (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Search</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> орнатылуда...</translation>
+<translation id="4190492351494485814">Бастапқы орнату үшін интернетке қосылуыңыз керек, сонда файлдарды Chromebook құрылғыңызбен синхрондай аласыз.</translation>
 <translation id="4190828427319282529">Пернетақта фокусын ерекшелеу</translation>
 <translation id="4193251682249731404">Сенімді сертификаттау органы</translation>
 <translation id="4193575319002689239">Карталарды көрсету</translation>
@@ -4028,6 +4036,7 @@
 <translation id="4361745360460842907">Қойынды етіп ашу</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> – <ph name="DEVICE_TYPE" /> құрылғыңыздағы әдепкі аккаунт.</translation>
 <translation id="4363215264289239958">Bruschetta қолданбалары</translation>
+<translation id="4363262124589131906">Жеке Drive ішіндегі жаңа файлдар осы Chromebook құрылғысымен автоматты түрде синхрондауды тоқтатады.</translation>
 <translation id="4363771538994847871">Cast үшін белгіленген орын табылмады. Көмек қажет пе?</translation>
 <translation id="4364327530094270451">Қауын</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> терезені бөлісуде.</translation>
@@ -4451,6 +4460,7 @@
 <translation id="4715631922189108923">Пайдаланушы атын өзгерту</translation>
 <translation id="47158868804223727">Топты жаю немесе жию үшін оның атауын басыңыз.</translation>
 <translation id="4716483597559580346">Қосымша қауіпсіздік үшін Powerwash функциясын қолдану</translation>
+<translation id="4716715661140829720">Жад көлемі жеткіліксіз</translation>
 <translation id="471759229191973607">Тақырыпты өзгерту</translation>
 <translation id="4718046540206070045">Браузерден артық</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> құпия сөзі</translation>
@@ -4503,6 +4513,7 @@
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> жарамды Google for Education аккаунты емес. Әкімшіңізге хабарласыңыз. Егер сіз әкімші болсаңыз, келесі сілтемеге өтіп ұйымыңызды реттей аласыз: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Бұл құрылғы 1 ай сақталады және келесіде кодсыз қосыла аласыз. Оны әкімші орнатады.}other{Бұл құрылғы {MONTHS} ай сақталады және келесіде кодсыз қосыла аласыз. Оны әкімші орнатады.}}</translation>
 <translation id="4765582662863429759">Android Messages қолданбасына хабарларды телефоннан Chromebook құрылғысына жіберуге мүмкіндік береді</translation>
+<translation id="476563889641554689">Lens көмегімен іздейтін аумақты таңдаңыз</translation>
 <translation id="4766598565665644999">Барлық кеңейтім <ph name="HOST" /> сайтын оқып, өзгерте алады.</translation>
 <translation id="4767427586072640478">Өшірулі кеңейтімдер туралы толық ақпарат алыңыз.</translation>
 <translation id="4768332406694066911">Осы ұйымдардан алынған және сізді анықтайтын сертификаттар бар</translation>
@@ -4561,6 +4572,7 @@
 <translation id="481574578487123132">Байланыстырылған құрылғылар</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, мәліметтер</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 бетбелгі жойылды.}other{{COUNT} бетбелгі жойылды.}}</translation>
+<translation id="481689174647911539">Бұл файл вирус немесе зиянды бағдарлама болуы мүмкін.<ph name="LINE_BREAK" />Қауіпсіз емес екенін тексеру үшін оны Google Safe Browsing жүйесіне жіберуге болады. Сканерлеу жұмыстары әдетте бірнеше секундқа созылады.</translation>
 <translation id="4816900689218414104">Телефонда немесе планшетте кіру кілтін жасау</translation>
 <translation id="4819323978093861656">{0,plural, =0{Қазір жабылады.}=1{1 секундтан кейін жабылады.}other{# секундтан кейін жабылады.}}</translation>
 <translation id="4819607494758673676">Google Assistant хабарландырулары</translation>
@@ -4715,7 +4727,6 @@
 <translation id="4940364377601827259"><ph name="PRINTER_COUNT" /> принтерді сақтауға болады.</translation>
 <translation id="4940448324259979830"><ph name="PROFILE_NAME" /> осы аккаунтты басқарады</translation>
 <translation id="4940845626435830013">Дискіде орынды сақтау</translation>
-<translation id="4941074198479265146">Сайттар әдетте музыка жасауға және өңдеуге арналған функциялар үшін MIDI құрылғыларына қосылады.</translation>
 <translation id="4941243352516004658"><ph name="RELATIVE_TIME" /> көрген <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) дүкенінде себетіңіздегі <ph name="PRODUCT_ITEM_COUNT" /> элементке <ph name="DISCOUNT_TEXT" /></translation>
 <translation id="4941246025622441835">Кәсіпорын басқару үшін құрылғыны тіркеу кезінде осы құрылғы сұрауын пайдаланыңыз:</translation>
 <translation id="4941627891654116707">Қаріп өлшемі</translation>
@@ -4980,12 +4991,14 @@
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" ең жаңа нұсқасы өшірілді, себебі ол қосымша рұқсаттарды талап етеді.</translation>
 <translation id="5185500136143151980">Интернет жоқ</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190577235024772869"><ph name="USED_SPACE" /> пайдаланылып жатыр</translation>
 <translation id="5190926251776387065">Портты іске қосу</translation>
 <translation id="5190959794678983197">Микрофон жоқ</translation>
 <translation id="5191094172448199359">Енгізген PIN кодтарыңыз сәйкес келмейді.</translation>
 <translation id="5191251636205085390">Үшінші тарап cookie файлдарын ауыстыруға арналған жаңа технологиялар туралы ақпарат алыңыз және оларды басқарыңыз.</translation>
 <translation id="519185197579575131">QT тақырыбын пайдалану</translation>
 <translation id="5192062846343383368">Қадағалау параметрлерін көру үшін Family Link қолданбасын ашыңыз.</translation>
+<translation id="5193978546360574373">Бұл осы Chromebook құрылғысындағы Google Drive қызметін пайдалану рұқсатын, оның ішінде офлайн режимде қолжетімді болған файлдарды пайдалану рұқсатын өшіреді.</translation>
 <translation id="5193988420012215838">Буферге көшірілді.</translation>
 <translation id="5194256020863090856">Бұл тек инкогнито терезелеріне әсер етеді.</translation>
 <translation id="5195074424945754995">Осы ережелерге сай келетін URL мекенжайлары үшін браузер ауыстырылмайды және оларды <ph name="BROWSER_NAME" /> немесе <ph name="ALTERNATIVE_BROWSER_NAME" />браузерінде ашуға болады.</translation>
@@ -5068,6 +5081,7 @@
 <translation id="526622169288322445">"<ph name="ADDRESS_SUMMARY" />" бойынша қосымша әрекеттер</translation>
 <translation id="5268373933383932086">Бет те сіздікі, таңдау да сіздікі</translation>
 <translation id="5269977353971873915">Басып шығару сәтсіз аяқталды</translation>
+<translation id="5271578170655641944">Google Drive қызметін пайдалану рұқсатын өшіру керек пе?</translation>
 <translation id="5273806377963980154">Сайттың URL мекенжайын өңдеу</translation>
 <translation id="5273966423195882879">Тақырыпқа негізделген түс</translation>
 <translation id="5275084684151588738">Пайдаланушы сөздіктері</translation>
@@ -6327,6 +6341,7 @@
 <translation id="6345878117466430440">Оқылды деп белгілеу</translation>
 <translation id="6346952829206698721">Буферден қою</translation>
 <translation id="6347010704471250799">Хабарландыруды көрсету</translation>
+<translation id="6348805481186204412">Офлайн жад көлемі</translation>
 <translation id="634887995541211148">Құрылғыңызда Bruschetta-ны іске қосыңыз.</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> қолданбасын орнату</translation>
 <translation id="6354918092619878358">SECG эллипстік қисық сызығы secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -6511,6 +6526,7 @@
 <translation id="6513247462497316522">Басқа желіге қосылмаған болсаңыз, Google Chrome ұялы деректерді пайдаланады.</translation>
 <translation id="6514010653036109809">Қолжетімді құрылғы:</translation>
 <translation id="6514565641373682518">Бұл бет тінтуір жүгіргісін өшірді.</translation>
+<translation id="6517420300299531857">Жеке Drive ішіндегі файлдарыңыз Chromebook-қа автоматты түрде синхрондалады, осылайша оларды интернет байланысынсыз пайдалана аласыз. Бұл шамамен <ph name="REQUIRED_SPACE" /> пайдаланады. Қазір сізге <ph name="FREE_SPACE_AVAILABLE" /> қолжетімді.</translation>
 <translation id="6517709704288360414">Құрылғыңыз дұрыс жұмыс істемей, өнімділікке және қауіпсіздікке қатысты ақаулар пайда болуы мүмкін. Жаңартуларды өшірсеңіз, ақаулар пайда болған жағдайда құқықтық шағым жібере алмауыңыз мүмкін.</translation>
 <translation id="6518014396551869914">Кескінді көшіру</translation>
 <translation id="6518133107902771759">Растау</translation>
@@ -6770,6 +6786,7 @@
 <translation id="6736243959894955139">Мекенжай</translation>
 <translation id="6737393581255281855">Көрсетілген деректі өшіру керек пе?</translation>
 <translation id="6737663862851963468">Kerberos билетін өшіру</translation>
+<translation id="6737931010859480781">Бұл қолданба құрылғыңызға алдын ала орнатылған.</translation>
 <translation id="6738180164164974883">Үшінші тарап cookie файлдарын орнатуға рұқсат ету</translation>
 <translation id="6738430949033571771">Аккаунт расталуда...</translation>
 <translation id="6739923123728562974">Жұмыс үстелі таңбашасын көрсету</translation>
@@ -8462,6 +8479,7 @@
 <translation id="8138217203226449454">Іздеу провайдерін өзгерткіңіз келе ме?</translation>
 <translation id="8138997515734480534">"<ph name="VM_NAME" />" күйі</translation>
 <translation id="8139447493436036221">Google Drive файлдары</translation>
+<translation id="8139643636835015859">Бұл офлайн файлдарыңыз пайдаланатын <ph name="OFFLINE_STORAGE_SIZE" /> орынды өшіреді. Кейбір файлдар офлайн режимде әлі де қолжетімді болады. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141418916163800697">Phone Hub параметрлерінен басқа да функцияларды реттей аласыз.</translation>
 <translation id="8141584439523427891">Балама браузер ашылуда.</translation>
@@ -8553,6 +8571,7 @@
 <translation id="821119981794423735">Құпия сөздерді <ph name="USER_EMAIL" /> аккаунтына арналған Google Құпия сөз менеджеріне импорттау үшін CSV файлын таңдаңыз.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Файл жүктеп алынуда}other{Файлдар жүктеп алынуда}}</translation>
 <translation id="8212601853154459483">Бұл профильді <ph name="PROFILE_MANAGER" /> басқарады, ол сізден <ph name="USER_EMAIL_ADDRESS" /> аккаунты үшін жеке профиль жасауды талап етеді.</translation>
+<translation id="8212792694174629011">Ешбір профиль табылмады. Құрылғының камерасымен QR кодын сканерлеп немесе оператор берген белсендіру кодын енгізіп көріңіз.</translation>
 <translation id="8214489666383623925">Файлды ашу…</translation>
 <translation id="8215129063232901118">Телефоныңыздың мүмкіндіктерін <ph name="DEVICE_TYPE" /> құрылғысынан пайдалану</translation>
 <translation id="8217212468862726597">Меңзерді бөлектеу</translation>
@@ -9096,6 +9115,7 @@
 <translation id="8680251145628383637">Барлық құрылғыларыңызда бетбелгілерді, журналды, құпия сөздерді және басқа параметрлерді алу үшін жүйеге кіріңіз. Сонымен қатар Google қызметтеріне автоматты түрде кіресіз.</translation>
 <translation id="8681886425883659911">Мазалайтын немесе жалған ақпаратты жарнамаларды көрсететіні белгілі сайттарда жарнамалар блокталған</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> жалғанды және дайын.</translation>
+<translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> ретінде кірдіңіз</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> файлынан бас тарту</translation>
 <translation id="8688672835843460752">Қолжетімді</translation>
 <translation id="8689998525144040851">100</translation>

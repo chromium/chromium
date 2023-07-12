@@ -880,7 +880,6 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="1768225118528727376">Het recht voor vensterbeheer toestaan voor deze sites</translation>
 <translation id="1770071413238151235">12-uurs klok</translation>
 <translation id="1771024053220392089">Ondersteuning voor oudere browsers uitzetten</translation>
-<translation id="1781225230395284182">Annuleringsdialoogvenster tonen wanneer beforeunload-gebeurtenis .preventDefault() wordt aangeroepen.</translation>
 <translation id="1781356041596378058">Met dit beleid wordt ook de toegang tot de ontwikkelaarsopties van Android beheerd. Als je dit beleid instelt op 'True', hebben gebruikers geen toegang tot ontwikkelaarsopties. Als je dit beleid instelt op 'False' of niet instelt, hebben gebruikers toegang tot ontwikkelaarsopties door zeven keer op het buildnummer te tikken in de app Instellingen van Android.</translation>
 <translation id="1787790976045065845">Dit beleid is alleen van kracht als het beleid <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> is ingesteld op <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> of <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> en een gebruiker die verificatie via een smartcard uitvoert, die smartcard verwijdert. Dit beleid geeft dan aan hoelang (in seconden) een melding wordt getoond waarin de gebruiker wordt geïnformeerd over de komende actie. Deze melding blokkeert het scherm. De actie wordt pas uitgevoerd nadat de melding is verlopen. De gebruiker kan voorkomen dat de actie wordt uitgevoerd door de smartcard terug te plaatsen voordat de melding verloopt. Als dit beleid is ingesteld op nul, wordt er geen melding getoond en wordt de actie meteen uitgevoerd.</translation>
 <translation id="1793346220873697538">Afdrukken met pincode standaard uitzetten</translation>
@@ -1996,7 +1995,6 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 <translation id="2787774054174244402">Als je het beleid instelt op 'True', kunnen gebruikers niets naar externe opslagapparaten schrijven.
 
       Als je 'ExternalStorageReadOnly' instelt op 'False' of niet instelt, kunnen gebruikers bestanden voor externe opslagapparaten met schrijffunctie maken en wijzigen, tenzij de externe opslag is geblokkeerd. (Je kunt externe opslag blokkeren door 'ExternalStorageDisable' in te stellen op 'True'.)</translation>
-<translation id="2788443040242264100">Het annuleringsdialoogvenster niet tonen als beforeunload-gebeurtenis .prevent.Default() wordt aangeroepen.</translation>
 <translation id="2789742777235177478">Beperken hoelang een gebruiker die via GAIA zonder SAML is geverifieerd offline kan inloggen op het vergrendelscherm</translation>
 <translation id="2796714419743648316">Toelatingslijst voor tijdslimieten per app</translation>
 <translation id="2801065672151277034">Instellingen voor certificaatbeheer</translation>
@@ -6076,7 +6074,6 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
       Opmerking: Als de huidige invoermethode niet wordt ondersteund, wordt de invoermethode overgeschakeld naar het hardwaretoetsenbord (indien toegestaan) of het eerste geldige item in deze lijst. Ongeldige of niet-ondersteunde methoden worden genegeerd.</translation>
 <translation id="6483115462650732746">Zwevend toegankelijkheidsmenu tonen in de kioskmodus</translation>
-<translation id="6485036313708130232">Het nieuwe gedrag beheren voor een beforeunload-gebeurtenis met een bevestigingsdialoogvenster voor annuleren als preventDefault wordt aangeroepen</translation>
 <translation id="6489084406497912050">Bepaalt of gebruikers Kerberos-accounts mogen toevoegen.
 
           Als je dit beleid toepast of niet instelt, mogen gebruikers Kerberos-accounts toevoegen via de instellingen voor Kerberos-accounts op de pagina Kerberos-instellingen. Gebruikers hebben het volledige beheer over accounts die ze hebben toegevoegd en kunnen deze aanpassen of verwijderen.
@@ -7385,13 +7382,6 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 <translation id="7613115815080726221">De tijdsduur zonder gebruikersinvoer waarna de actie voor inactiviteit wordt ondernomen (in milliseconden)</translation>
 <translation id="7614663184588396421">Lijst met uitgezette protocolschema's</translation>
 <translation id="7616631530432070402">3DES cipher suites worden aangezet in TLS</translation>
-<translation id="7617710923960807616">Met dit beleid kun je bepalen of het bevestigingsdialoogvenster wordt getoond als een pagina preventDefault aanroept voor een beforeunload-gebeurtenis. In het verleden werden deze dialoogvensters niet getoond in <ph name="PRODUCT_NAME" />, maar het standaardgedrag wordt gewijzigd. Dit beleid is een tijdelijke ontsnappingsroute, bedoeld voor bedrijven waarvan de websites niet meer werken vanwege het nieuwe gedrag en waarbij het even kan duren voordat ze worden gecorrigeerd.
-
-Als je dit beleid toepast, wordt het bevestigingsdialoogvenster voor annuleren getoond als een pagina preventDefault aanroept voor een beforeunload-gebeurtenis.
-
-Als je dit beleid niet toepast, wordt er geen bevestigingsdialoogvenster voor annuleren getoond als een pagina preventDefault aanroept voor een beforeunload-gebeurtenis.
-
-Als je dit beleid niet instelt, wordt het standaardgedrag gebruikt volgens het functie-uitrolplan van <ph name="PRODUCT_NAME" />.</translation>
 <translation id="761788785484453836">Site-isolatie vereisen voor alle websites</translation>
 <translation id="7620869951155758729">Dit beleid specificeert de configuratie die wordt gebruikt om de toegangscode voor ouders te genereren en te verifiëren.
 

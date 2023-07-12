@@ -320,7 +320,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="7036251913954633326">ඔබට මෙම ගිණුම එක් වරක් පමණක් භාවිත කිරීමට අවශ්‍ය නම්, ඔබට Chrome බ්‍රවුසරයේ <ph name="GUEST_LINK_BEGIN" />ආගන්තුක ප්‍රකාරය<ph name="GUEST_LINK_END" /> භාවිත කළ හැකිය. ඔබට වෙනත් යම් කෙනෙකු සඳහා ගිණුමක් එක් කිරීමට අවශ්‍ය නම්, ඔබගේ <ph name="DEVICE_TYPE" /> වෙත <ph name="LINK_BEGIN" />නව පුද්ගලයකු එක් කරන්න<ph name="LINK_END" />.
 
 ඔබ දැනටමත් වෙබ් අඩවි සහ යෙදුම් සඳහා ලබා දී ඇති අවසර මෙම ගිණුමට අදාළ විය හැකිය. ඔබට ඔබගේ Google ගිණුම් <ph name="SETTINGS_LINK_BEGIN" />සැකසීම්<ph name="SETTINGS_LINK_END" /> තුළ කළමනාකරණය කිරීමට හැකිය.</translation>
-<translation id="7062128746136194023">ඔබේ මාපිය Chrome සඳහා "වෙබ් අඩවි, යෙදුම් සහ දිගු සඳහා වන අවසර" අක්‍රිය කර ඇත. මෙම <ph name="EXTENSION_TYPE_PARAMETER" /> එක් කිරීමට අවසර නැත.</translation>
 <translation id="7071827361006050863">Chrome ඉක්මනින් බ්‍රවුස් කිරීමේ දත්ත මකනු ඇත</translation>
 <translation id="7085332316435785646">Google සේවාවල වඩාත් පුද්ගලිකකරණය කළ අත්දැකීම් සඳහා Chrome ඉතිහාසය ඇතුළත් කළ යුතුද යන්න තෝරන්න</translation>
 <translation id="7088681679121566888">Chrome යාවත්කාලීනයි</translation>
@@ -383,7 +382,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8255190535488645436">Google Chrome ඔබේ කැමරාව හා මයික්‍රෆෝනය භාවිත කරයි.</translation>
 <translation id="8270775718612349140">Chrome විසින් කළමනාකරණය කරන සහතික</translation>
 <translation id="8286862437124483331">Google Chrome විසින් මුරපද පෙන්වීමට උත්සහ කරයි. එයට ඉඩදීම සඳහා Windows මුරපදය යොදන්න.</translation>
-<translation id="828798499196665338">ඔබේ මාපිය Chrome සඳහා "වෙබ් අඩවි, යෙදුම් සහ දිගු සඳහා වන අවසර" අක්‍රිය කර ඇත. මෙම <ph name="EXTENSION_TYPE_PARAMETER" /> සබල කිරීමට අවසර නැත.</translation>
 <translation id="8290100596633877290">කණගාටුයි! Google ක්‍රෝම් බිඳ වැටී ඇත. නැවත ආරම්භ කරන්නද?</translation>
 <translation id="829923460755755423">Google මුරපද කළමනාකරු වෙත කෙටිමඟක් එක් කරන්න</translation>
 <translation id="8342675569599923794">මෙම ගොනුව අනතුරුදායකයි, එනිසා Chrome එය අවහිර කර ඇත.</translation>

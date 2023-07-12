@@ -248,6 +248,7 @@
 <translation id="5430073640787465221">Датотека подешавања је оштећена или неважећа.
 
 Google Chrome не може да врати подешавања.</translation>
+<translation id="5521146392841465297">Chrome вам препоручује да прегледате овај додатак.</translation>
 <translation id="5524761631371622910">Док пробни периоди трају и ако вас је Chrome насумично поставио у активни пробни период, историја прегледања утиче на огласе које видите и интересовања процењена у наставку. Ради заштите приватности Chrome брише интересовања сваког месеца чим постану доступна.</translation>
 <translation id="5530733413481476019">Убрзајте Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -321,7 +322,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7036251913954633326">Ако желите да користите овај налог само једном, можете да користите <ph name="GUEST_LINK_BEGIN" />режим госта<ph name="GUEST_LINK_END" /> у Chrome прегледачу. Ако желите да додате налог за неког другог, <ph name="LINK_BEGIN" />додајте нову особу<ph name="LINK_END" /> на уређај <ph name="DEVICE_TYPE" />.
 
 Дозволе које сте већ дали веб-сајтовима и апликацијама могу да важе за овај налог. Google налозима можете да управљате у <ph name="SETTINGS_LINK_BEGIN" />Подешавањима<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7062128746136194023">Родитељ је искључио „Дозволе за сајтове, апликације и додатке“ за Chrome. Додавање ове ставке (<ph name="EXTENSION_TYPE_PARAMETER" />) није дозвољено.</translation>
 <translation id="7071827361006050863">Chrome ће ускоро избрисати податке прегледања</translation>
 <translation id="7085332316435785646">Одаберите да ли ћете уврстити историју Chrome-а ради персонализованијих доживљаја у Google услугама</translation>
 <translation id="7088681679121566888">Chrome је ажуриран</translation>
@@ -384,7 +384,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8255190535488645436">Google Chrome користи камеру и микрофон.</translation>
 <translation id="8270775718612349140">Сертификати којима управља Chrome</translation>
 <translation id="8286862437124483331">Google Chrome покушава да прикаже лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
-<translation id="828798499196665338">Родитељ је искључио „Дозволе за сајтове, апликације и додатке“ за Chrome. Омогућавање ове ставке (<ph name="EXTENSION_TYPE_PARAMETER" />) није дозвољено.</translation>
 <translation id="8290100596633877290">Опа! Google Chrome је отказао. Желите ли да га одмах поново покренете?</translation>
 <translation id="829923460755755423">Додајте пречицу у Google менаџер лозинки</translation>
 <translation id="8342675569599923794">Ова датотека је опасна, па ју је Chrome блокирао.</translation>

@@ -35,7 +35,6 @@
 <translation id="2695886661449553974">Chrome no ha pogut cercar actualitzacions. Torna-ho a provar més tard.</translation>
 <translation id="2732745070297234559">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
 <translation id="2736805085127235148">En aquests moments, les notificacions de Chrome estan desactivades a la configuració del dispositiu.</translation>
-<translation id="2754286486056173475">Crea esdeveniments del calendari a Chrome</translation>
 <translation id="2767464022270041271">No hi ha cap contrasenya desada. El gestor de contrasenyes de Google pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="2840432500933227975">Obre la configuració de Chrome a iOS, toca Aplicació de navegador predeterminada i selecciona Chrome.</translation>
 <translation id="2869959624320573933">Inicia la sessió a Chrome</translation>
@@ -51,7 +50,6 @@
 <translation id="3522659714780527202">Per veure les pestanyes des de tots els llocs on facis servir Chrome, activa la sincronització</translation>
 <translation id="3533694711092285624">No hi ha cap contrasenya desada. Chrome pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="3594076341410558780">Amaga "Treu el màxim profit de Chrome"</translation>
-<translation id="3611867725106943284">Toca Mostra amb Google Maps a Chrome</translation>
 <translation id="3655656110921623717">Això vol dir que Chrome sol·licitarà el lloc web per a mòbils cada vegada.</translation>
 <translation id="3720541637541300822">Bloqueja les pestanyes d'incògnit després de tancar Chrome</translation>
 <translation id="3827545470516145620">Tindràs protecció de seguretat estàndard en aquest dispositiu</translation>
@@ -60,6 +58,7 @@
 <translation id="3984746313391923992">La teva organització requereix que mantinguis la sessió tancada a Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome no té accés als vostres vídeos o fotos. Permeteu-li l'accés a iOS, a Configuració &gt; Privadesa &gt; Fotos.</translation>
 <translation id="4064699917955374540">Per utilitzar i desar les dades de Chrome al teu Compte de Google, verifica la teva identitat.</translation>
+<translation id="4093042601582616698">Vols establir Chrome com a navegador predeterminat?</translation>
 <translation id="417201473131094001">No s'admeten a Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> ha utilitzat Chrome en aquest dispositiu i hi ha deixat adreces d'interès, contrasenyes i altres opcions de configuració.</translation>
 <translation id="424864128008805179">Vols tancar la sessió de Chrome?</translation>
@@ -104,7 +103,6 @@
 <translation id="6676840375528380067">Vols esborrar les dades de Chrome del dispositiu?</translation>
 <translation id="6709398533399187136">La teva contrasenya ha quedat exposada en una violació de les dades. El gestor de contrasenyes de Google recomana que la canviïs ara.</translation>
 <translation id="6822673484890854830">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar més tard.</translation>
-<translation id="6896070677477855330">Activa l'opció Bloqueja les pestanyes d'incògnit després de tancar Chrome.</translation>
 <translation id="6964931465519938134">Ara pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="6975725306479268850">Tria Chrome a Emplenament automàtic</translation>
 <translation id="7059914902409643750">Personalitza Chrome</translation>
@@ -147,7 +145,6 @@
 <translation id="8765470054473112089">Quan escrius a la barra d'adreces o al quadre de cerca, Chrome envia el que escrius al teu motor de cerca predeterminat per obtenir millors suggeriments. Aquesta opció està desactivada en el mode d'incògnit.</translation>
 <translation id="8772179140489533211">Mostra sol·licituds per iniciar la sessió a Chrome.</translation>
 <translation id="8788269841521769222">No caldrà que recordis aquesta contrasenya. Es desarà al gestor de contrasenyes de Google per a <ph name="EMAIL" /></translation>
-<translation id="880967149107462122">Ves a la configuració de Chrome</translation>
 <translation id="8857676124663337448">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
 <translation id="8897749957032330183">Les contrasenyes es desen al gestor de contrasenyes de Google en aquest dispositiu.</translation>
 <translation id="8969290730818637510">Quan aquesta opció està activada:

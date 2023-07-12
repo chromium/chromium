@@ -321,7 +321,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="7036251913954633326">Бул аккаунтту бир жолу гана колдонгону жатсаңыз, Chrome серепчисинен <ph name="GUEST_LINK_BEGIN" />Конок режимине<ph name="GUEST_LINK_END" /> өтүңүз. Эгер кимдир бирөөнүн аккаунтун кошкуңуз келсе, <ph name="DEVICE_TYPE" /> түзмөгүңүзгө <ph name="LINK_BEGIN" />жаңы кишини кошуңуз<ph name="LINK_END" />.
 
 Вебсайттарга жана колдонмолорго берилген уруксаттар ушул аккаунтка карата колдонулушу мүмкүн. Google аккаунттарыңызды <ph name="SETTINGS_LINK_BEGIN" />Параметрлерден<ph name="SETTINGS_LINK_END" /> башкара аласыз.</translation>
-<translation id="7062128746136194023">Ата-энеңиз Chrome үчүн "Сайттарга, колдонмолорго жана кеңейтүүлөргө уруксаттарды" өчүрүп койгон. Бул <ph name="EXTENSION_TYPE_PARAMETER" /> кеңейтүүсүн кошууга болбойт.</translation>
 <translation id="7071827361006050863">Chrome серептөө дайындарын жакында өчүрөт</translation>
 <translation id="7085332316435785646">Chrome таржымалын Google кызматтарын жекелештирүү үчүн колдонуп же колдонбоону тандаңыз</translation>
 <translation id="7088681679121566888">Chrome жаңыртылды</translation>
@@ -384,7 +383,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="8255190535488645436">Google Chrome камераңыз менен микрофонуңузду колдонуп жатат.</translation>
 <translation id="8270775718612349140">Chrome башкарган тастыктамалар</translation>
 <translation id="8286862437124483331">Google Chrome сырсөздөрдү көрсөткөнгө аракет кылып жатат. Ага уруксат берүү үчүн Windows сырсөзүңүздү териңиз.</translation>
-<translation id="828798499196665338">Ата-энеңиз Chrome үчүн "Сайттарга, колдонмолорго жана кеңейтүүлөргө уруксаттарды" өчүрүп койгон. Бул <ph name="EXTENSION_TYPE_PARAMETER" /> кеңейтүүсүн иштетүүгө болбойт.</translation>
 <translation id="8290100596633877290">Мына с-с-сага! Google Chrome кыйрады. Кайра жүктөйлүбү эми?</translation>
 <translation id="829923460755755423">Google'дун Сырсөздөрдү башкаргыч кызматына ыкчам баскыч кошуу</translation>
 <translation id="8342675569599923794">Бул файл кооптуу, ошондуктан Chrome аны бөгөттөп койду.</translation>

@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> нити, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Доступна је нова функција. Користите тастер са стрелицом нагоре да бисте сазнали више.</translation>
 <translation id="1059913517121127803">Покретање скенирања није успело</translation>
+<translation id="1062823486781306604"><ph name="INDEX" />. од <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Откривен је заштитни зид</translation>
 <translation id="1075811647922107217">Величина странице</translation>
@@ -169,6 +170,7 @@
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2163937499206714165">Укључите тамни режим</translation>
 <translation id="2180197493692062006">Дошло је до грешке. Пробајте да поново отворите апликацију.</translation>
+<translation id="2189104374785738357">Измените детаље назива приступне тачке</translation>
 <translation id="2209788852729124853">Ресетуј бројаче саобраћаја</translation>
 <translation id="2212733584906323460">Разрешавање имена</translation>
 <translation id="2217935453350629363">Тренутна брзина</translation>
@@ -540,6 +542,7 @@
 <translation id="5257811368506016604">Омогућите режим светле боје</translation>
 <translation id="5264277876637023664">Покрени тест процесора</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">Назив приступне тачке је онемогућен.</translation>
 <translation id="5275828089655680674">Поново покрени рутине</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">боја позадинског осветљења</translation>
@@ -604,6 +607,7 @@
 <translation id="5832805196449965646">Додај особу</translation>
 <translation id="583281660410589416">Непознато</translation>
 <translation id="5843706793424741864">Фаренхајт</translation>
+<translation id="584953448295717128">Назив приступне тачке се аутоматски открива.</translation>
 <translation id="5849570051105887917">Кôд добављача за Home</translation>
 <translation id="5859603669299126575">Албум ликовне галерије</translation>
 <translation id="5860033963881614850">Искључено</translation>
@@ -882,6 +886,7 @@
 <translation id="80398733265834479">Омогућите режим аутоподешавања боја</translation>
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
 <translation id="8045012663542226664">Искључивање звука микрофона</translation>
+<translation id="8067126283828232460">Назив приступне тачке је повезан.</translation>
 <translation id="8075838845814659848">Преостали ниво напуњености батерије</translation>
 <translation id="8076492880354921740">Картице</translation>
 <translation id="8082366717211101304">DNS не може да се разреши из Android апликација</translation>
@@ -1028,6 +1033,7 @@
 <translation id="9111102763498581341">Откључај</translation>
 <translation id="9122602430962285795">Да бисте се поново повезали, идите у Подешавања</translation>
 <translation id="9126720536733509015">Сачувајте више страница у један PDF документ</translation>
+<translation id="9133104754938025929">Да би се сачувала батерија, чувар екрана функционише само током пуњења.</translation>
 <translation id="9137526406337347448">Google услуге</translation>
 <translation id="9138630967333032450">Леви тастер shift</translation>
 <translation id="9143347780818904997">на <ph name="MINUTES" /> минута</translation>

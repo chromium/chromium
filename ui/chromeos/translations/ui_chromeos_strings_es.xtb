@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Configuración del dispositivo</translation>
 <translation id="2084809735218147718">"Gracias" en lengua de signos</translation>
 <translation id="2088690981887365033">Red VPN</translation>
+<translation id="209653272837065803">No queda suficiente espacio de almacenamiento para seguir sincronizando archivos</translation>
 <translation id="2111134541987263231">Activa la opción <ph name="BEGIN_BOLD" />Permitir en incógnito<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementos se eliminarán y no podrás restaurarlos.</translation>
 <translation id="2122305276694332719">Conectarse automáticamente a una red oculta permite que otros usuarios vean tu dispositivo y parte de tu configuración de red, por lo que no es recomendable.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Chino simplificado</translation>
 <translation id="22085916256174561">Coreano</translation>
 <translation id="2208919847696382164">Instalar con Linux</translation>
+<translation id="2215692307449050019">El nivel de batería es bajo. La sincronización de archivos se reanudará cuando el dispositivo se conecte a la corriente.</translation>
 <translation id="2225536596944493418">¿Seguro que quieres eliminar estos <ph name="NUMBER_OF_ITEMS" /> elementos?</translation>
 <translation id="2230062665678605299">No se puede crear la carpeta "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Persona con un café</translation>
+<translation id="2247561763838186830">Se ha cerrado la sesión</translation>
 <translation id="2251368349685848079">Restaurar de la papelera</translation>
 <translation id="2278133026967558505">Acceso a los archivos mediante todos los sitios web y URLs</translation>
 <translation id="2282155092769082568">URL de configuración automática:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">No se admite este tipo de archivo. Accede a Chrome Web Store para buscar una aplicación que pueda abrir este tipo de archivo.</translation>
 <translation id="2326539130272988168">Búlgaro</translation>
 <translation id="2337715497728194187">Compartir con Bruschetta</translation>
+<translation id="233822363739146957">No hay suficiente espacio de almacenamiento para sincronizar todos tus archivos</translation>
 <translation id="23721837607121582">Descargar perfil móvil, red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Cambiar a vista de lista</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> carpetas compartidas con Linux</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Error al instalar la aplicación de Linux</translation>
 <translation id="2802583107108007218">Más información sobre estas restricciones</translation>
 <translation id="2803375539583399270">Introducir PIN</translation>
+<translation id="2819519502129272135">Sincronización de archivos desactivada</translation>
 <translation id="2820957248982571256">Buscando...</translation>
 <translation id="2830077785865012357">Chino (zhuyin)</translation>
 <translation id="2843806747483486897">Cambiar acción predeterminada...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">El filtro se ha restablecido.</translation>
 <translation id="4603392156942865207">Copiando <ph name="FILE_NAME" /> en <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artista</translation>
+<translation id="4635373743001040938">Quedaba muy poco espacio de almacenamiento. Se ha desactivado la sincronización de archivos.</translation>
 <translation id="4642769377300286600">Instalando perfil móvil, red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Checo con teclado Qwerty</translation>
 <translation id="4656777537938206294">Hacer que los archivos estén disponibles sin conexión</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">1 carpeta compartida con Parallels Desktop</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> restaurado</translation>
 <translation id="4969785127455456148">Álbum</translation>
+<translation id="4972330214479971536">No se ha podido terminar de configurar la sincronización de archivos</translation>
 <translation id="4973523518332075481">Utiliza un nombre que tenga <ph name="MAX_LENGTH" /> caracteres como máximo</translation>
 <translation id="4973970068702235170">Error al comprimir; error inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japonés</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">Alemán (Bélgica)</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7343393116438664539">Vietnamita (Télex)</translation>
+<translation id="7347346221088620549">Archivo cifrado</translation>
 <translation id="7357762654218998920">Este tipo de archivo no es compatible. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /> sobre cómo abrir archivos en ChromeOS</translation>
 <translation id="7359359531237882347">Se están copiando <ph name="NUMBER_OF_ITEMS" /> elementos...</translation>
 <translation id="7375951387215729722">Lista de archivos ordenados por <ph name="COLUMN_NAME" /> en orden descendente.</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">Islandés</translation>
 <translation id="863903787380594467">PIN incorrecto. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> (puerto)</translation>
+<translation id="8656407365183407932">Se han tenido que eliminar tus archivos sin conexión</translation>
 <translation id="8656768832129462377">No comprobar</translation>
 <translation id="8688591111840995413">Contraseña incorrecta</translation>
 <translation id="8698464937041809063">Dibujo de Google</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">Chino tradicional (pinyin)</translation>
 <translation id="8998871447376656508">No tienes suficiente espacio libre en Google Drive para completar la subida.</translation>
 <translation id="9003940392834790328">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, gestionada por el administrador, detalles</translation>
+<translation id="9007990314804111233">Inicia sesión en tu cuenta de Microsoft</translation>
 <translation id="9017798300203431059">Ruso fonético</translation>
 <translation id="9034924485347205037">Archivos de Linux</translation>
 <translation id="9035012421917565900">Estos elementos no se pueden volver a mover a "<ph name="DESTINATION_NAME" />", por lo que no podrás deshacer esta acción.</translation>

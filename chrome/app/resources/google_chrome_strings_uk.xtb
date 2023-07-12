@@ -313,7 +313,6 @@
 <translation id="7036251913954633326">Якщо ви хочете скористатися цим обліковим записом лише один раз, увімкніть <ph name="GUEST_LINK_BEGIN" />режим гостя<ph name="GUEST_LINK_END" /> в обліковому записі Chrome. Якщо ви хочете додати обліковий запис для іншого користувача, <ph name="LINK_BEGIN" />зробіть це<ph name="LINK_END" /> на пристрої <ph name="DEVICE_TYPE" />.
 
 Дозволи, надані веб-сайтам і додаткам, можуть діяти для цього облікового запису. Ви можете керувати своїми обліковими записами Google у <ph name="SETTINGS_LINK_BEGIN" />Налаштуваннях<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7062128746136194023">Хтось із твоїх батьків вимкнув "Дозволи для сайтів, додатків і розширень" у Chrome. Додавати це <ph name="EXTENSION_TYPE_PARAMETER" /> заборонено.</translation>
 <translation id="7071827361006050863">Незабаром Chrome видалить дані веб-перегляду</translation>
 <translation id="7085332316435785646">Укажіть, чи включати історію Chrome, щоб ми краще персоналізували роботу сервісів Google</translation>
 <translation id="7088681679121566888">Chrome оновлено</translation>
@@ -376,7 +375,6 @@
 <translation id="8255190535488645436">Google Chrome використовує вашу камеру та мікрофон.</translation>
 <translation id="8270775718612349140">Сертифікати, якими керує Chrome</translation>
 <translation id="8286862437124483331">Google Chrome намагається показати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
-<translation id="828798499196665338">Хтось із твоїх батьків вимкнув "Дозволи для сайтів, додатків і розширень" у Chrome. Вмикати це <ph name="EXTENSION_TYPE_PARAMETER" /> заборонено.</translation>
 <translation id="8290100596633877290">Відбулося аварійне завершення роботи Google Chrome. Перезапустити зараз?</translation>
 <translation id="829923460755755423">Додайте ярлик Google Менеджера паролів</translation>
 <translation id="8342675569599923794">Цей файл небезпечний, тому Chrome заблокував його.</translation>

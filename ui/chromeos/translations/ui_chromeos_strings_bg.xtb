@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Настройки на устройството</translation>
 <translation id="2084809735218147718">Благодарност</translation>
 <translation id="2088690981887365033">VPN мрежа</translation>
+<translation id="209653272837065803">Няма достатъчно място в хранилището, за да продължат да се синхронизират файловете</translation>
 <translation id="2111134541987263231">Включете опцията <ph name="BEGIN_BOLD" />Да се разреши в режим „инкогнито“<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> елемента ще бъдат изтрити и няма да можете да ги възстановите.</translation>
 <translation id="2122305276694332719">Автоматичното свързване със скрита мрежа дава възможност на другите хора да виждат устройството ви и някои мрежови настройки и не се препоръчва.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">опростен китайски</translation>
 <translation id="22085916256174561">Корейски</translation>
 <translation id="2208919847696382164">Инсталиране с Linux</translation>
+<translation id="2215692307449050019">Батерията е изтощена. Синхронизирането на файловете ще се възобнови, когато включите устройството в захранването.</translation>
 <translation id="2225536596944493418">Наистина ли искате да изтриете <ph name="NUMBER_OF_ITEMS" /> елемента?</translation>
 <translation id="2230062665678605299">Не можем да създадем папката „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Човек с кафе</translation>
+<translation id="2247561763838186830">Излязохте от профила си</translation>
 <translation id="2251368349685848079">Възстановяване от кошчето</translation>
 <translation id="2278133026967558505">Достъп до файла от всички уебсайтове и URL адреси</translation>
 <translation id="2282155092769082568">URL адрес за автоматично конфигуриране:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Този файлов тип не се поддържа. Моля, посетете уеб магазина на Chrome, за да намерите приложение, което може да отвори съответния тип.</translation>
 <translation id="2326539130272988168">Български</translation>
 <translation id="2337715497728194187">Споделяне с Bruschetta</translation>
+<translation id="233822363739146957">Няма достатъчно място в хранилището, за да се синхронизират всичките ви файлове</translation>
 <translation id="23721837607121582">Изтегляне на мобилния потребителски профил, мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Превключване към списъчен изглед</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> папки са споделени с Linux</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Грешка при инсталирането на приложението за Linux</translation>
 <translation id="2802583107108007218">Научете повече за тези ограничения</translation>
 <translation id="2803375539583399270">Въведете ПИН кодa</translation>
+<translation id="2819519502129272135">Синхронизирането на файловете е изключено</translation>
 <translation id="2820957248982571256">Сканира се...</translation>
 <translation id="2830077785865012357">Китайски (джуин)</translation>
 <translation id="2843806747483486897">Промяна на действието по подразбиране...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Филтърът е нулиран.</translation>
 <translation id="4603392156942865207">„<ph name="FILE_NAME" />“ се копира в(ъв) „<ph name="FOLDER_NAME" />“</translation>
 <translation id="4631887759990505102">Изпълнител</translation>
+<translation id="4635373743001040938">Мястото в хранилището бе изключително малко. Синхронизирането на файловете бе изключено.</translation>
 <translation id="4642769377300286600">Мобилният потребителски профил се инсталира, мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Чешки с клавиатура QWERTY</translation>
 <translation id="4656777537938206294">Осигуряване на офлайн достъп до файловете</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">1 папка е споделена с Parallels Desktop</translation>
 <translation id="496656650103537022">Възстановихте „<ph name="FILE_NAME" />“</translation>
 <translation id="4969785127455456148">Албум</translation>
+<translation id="4972330214479971536">Настройването на функцията за синхронизиране на файловете не завърши</translation>
 <translation id="4973523518332075481">Използвайте име с дължина най-много <ph name="MAX_LENGTH" /> знака</translation>
 <translation id="4973970068702235170">Компресирането не бе успешно. Възникна неочаквана грешка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Японски</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">Немски (Белгия)</translation>
 <translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="7343393116438664539">Виетнамски (телекс)</translation>
+<translation id="7347346221088620549">Шифрован файл</translation>
 <translation id="7357762654218998920">Този файлов тип не се поддържа. <ph name="BEGIN_LINK_HELP" />Научете повече<ph name="END_LINK_HELP" /> за отварянето на файлове в Chrome OS.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> елемента се копират...</translation>
 <translation id="7375951387215729722">Списъкът с файлове е сортиран в низходящ ред по <ph name="COLUMN_NAME" />.</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">Исландски</translation>
 <translation id="863903787380594467">Неправилен ПИН код. Остават ви <ph name="RETRIES" /> опита.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Порт</translation>
+<translation id="8656407365183407932">Офлайн файловете ви трябваше да бъдат премахнати</translation>
 <translation id="8656768832129462377">Без проверка</translation>
 <translation id="8688591111840995413">Неправилна парола</translation>
 <translation id="8698464937041809063">Рисунка в Google</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">Китайски (традиционен, пинин)</translation>
 <translation id="8998871447376656508">Няма достатъчно свободно място в Google Диск за завършване на качването.</translation>
 <translation id="9003940392834790328">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, управлява се от администратора ви, подробности</translation>
+<translation id="9007990314804111233">Влезте в профила си в Microsoft</translation>
 <translation id="9017798300203431059">Руска фонетична клавиатура</translation>
 <translation id="9034924485347205037">Файлове за Linux</translation>
 <translation id="9035012421917565900">Елементите не могат да бъдат върнати в/ъв „<ph name="DESTINATION_NAME" />“, така че няма да можете да отмените това действие.</translation>

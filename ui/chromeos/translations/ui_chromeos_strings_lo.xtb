@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">ການຕັ້ງຄ່າອຸປະກອນ</translation>
 <translation id="2084809735218147718">ຄົນຂຽນຄຳວ່າຂອບໃຈ</translation>
 <translation id="2088690981887365033">ເຄືອຂ່າຍ VPN</translation>
+<translation id="209653272837065803">ມີພື້ນທີ່ຈັດເກັບຂໍ້ມູນບໍ່ພຽງພໍທີ່ຈະຊິ້ງໄຟລ໌ຕໍ່</translation>
 <translation id="2111134541987263231">ເປີດ <ph name="BEGIN_BOLD" />ອະນຸຍາດໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ລາຍການຈະຖືກລຶບອອກ ແລະ ທ່ານຈະບໍ່ສາມາດກູ້ຄືນພວກມັນໄດ້.</translation>
 <translation id="2122305276694332719">ການເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍທີ່ເຊື່ອງໄວ້ໂດຍອັດຕະໂນມັດອະນຸຍາດໃຫ້ຄົນອື່ນເຫັນອຸປະກອນຂອງທ່ານ ແລະ ບາງການຕັ້ງຄ່າເຄືອຂ່າຍ ແລະ ບໍ່ແນະນຳໃຫ້ເຊື່ອມຕໍ່.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">ພາສາຈີນຕົວຫຍໍ້</translation>
 <translation id="22085916256174561">ພາສາເກົາຫຼີ</translation>
 <translation id="2208919847696382164">ຕິດຕັ້ງດ້ວຍ Linux</translation>
+<translation id="2215692307449050019">ແບັດເຕີຣີເຫຼືອໜ້ອຍ. ການຊິ້ງໄຟລ໌ຈະສືບຕໍ່ເມື່ອທ່ານເຊື່ອມຕໍ່ກັບແຫຼ່ງຈ່າຍໄຟ.</translation>
 <translation id="2225536596944493418">ທ່ານ​ແນ່​ໃຈບໍ່ວ່​າ ​ທ່ານ​ຕ້ອງ​ການ​ລຶບ <ph name="NUMBER_OF_ITEMS" /> ລາຍ​ການ​?</translation>
 <translation id="2230062665678605299">ບໍ່​ສາ​ມາດ​​ສ້າງ​ໂຟລເດີ "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /> ໄດ້</translation>
 <translation id="2239068707900391003">ຄົນກັບກາເຟ</translation>
+<translation id="2247561763838186830">ທ່ານອອກຈາກລະບົບແລ້ວ</translation>
 <translation id="2251368349685848079">ກູ້ຄືນຈາກຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="2278133026967558505">ສິດເຂົ້າເຖິງໄຟລ໌ຈາກເວັບໄຊ ແລະ URL ທັງໝົດ</translation>
 <translation id="2282155092769082568">URL ການກຳນົດຄ່າອັດໂນມັດ:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">ປະເພດໄຟລ໌ນີ້ບໍ່ຖືກຮອງຮັບ. ກະລຸນາເຂົ້າໄປເບິ່ງ Chrome Web Store ເພື່ອຊອກຫາແອັບທີ່ສາມາດເປີດໄຟລ໌ປະເພດນີ້ໄດ້.</translation>
 <translation id="2326539130272988168">ບັງກາຣຽນ</translation>
 <translation id="2337715497728194187">ແບ່ງປັນກັບ Bruschetta</translation>
+<translation id="233822363739146957">ມີພື້ນທີ່ຈັດເກັບຂໍ້ມູນບໍ່ພຽງພໍທີ່ຈະຊິ້ງໄຟລ໌ທັງໝົດຂອງທ່ານ</translation>
 <translation id="23721837607121582">ດາວໂຫຼດໂປຣໄຟລ໌ມືຖື, ເຄືອຂ່າຍ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ປ່ຽນເປັນມຸມມອງລາຍຊື່</translation>
 <translation id="2377590462528165447">ແບ່ງປັນ <ph name="NUMBER_OF_ITEMS" /> ໂຟນເດີກັບ Linux ແລ້ວ</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">ເກີດຜິດພາດໃນການຕິດຕັ້ງແອັບພລິເຄຊັນ Linux</translation>
 <translation id="2802583107108007218">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຂໍ້ຈຳກັດເຫຼົ່ານີ້</translation>
 <translation id="2803375539583399270">ປ້ອນ PIN</translation>
+<translation id="2819519502129272135">ການຊິ້ງໄຟລ໌ປິດຢູ່</translation>
 <translation id="2820957248982571256">ກຳລັງສະແກນ…</translation>
 <translation id="2830077785865012357">ພາສາຈີນຊູອິນ</translation>
 <translation id="2843806747483486897">ປ່ຽນມາດຕະຖານ...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">ຣີເຊັດຕົວກັ່ນຕອງແລ້ວ.</translation>
 <translation id="4603392156942865207">ກຳລັງສຳເນົາ <ph name="FILE_NAME" /> ໄວ້ໃນ <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">ສິລະປິນ</translation>
+<translation id="4635373743001040938">ພື້ນທີ່ຈັດເກັບຂໍ້ມູນເຫຼືອໜ້ອຍຫຼາຍ. ປິດການຊິ້ງໄຟລ໌ແລ້ວ.</translation>
 <translation id="4642769377300286600">ກຳລັງຕິດຕັ້ງໂປຣໄຟລ໌ມືຖື, ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">ພາສາເຊັກທີ່ໃຊ້ແປ້ນພິມ Qwerty</translation>
 <translation id="4656777537938206294">ເຮັດໃຫ້ໄຟລ໌ສາມາດໃຊ້ໄດ້ອອບລາຍ</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">ແບ່ງປັນ 1 ໂຟນເດີກັບ Parallels Desktop ແລ້ວ</translation>
 <translation id="496656650103537022">ກູ້ຄືນ <ph name="FILE_NAME" /> ແລ້ວ</translation>
 <translation id="4969785127455456148">ອະ​ລະ​ບໍ້າ</translation>
+<translation id="4972330214479971536">ຕັ້ງຄ່າການຊິ້ງໄຟລ໌ບໍ່ສຳເລັດ</translation>
 <translation id="4973523518332075481">ໃຊ້ຊື່ທີ່ມີຕົວອັກສອນ <ph name="MAX_LENGTH" /> ຕົວລົງມາ</translation>
 <translation id="4973970068702235170">ການຊິບບໍ່ສຳເລັດ, ເກີດຄວາມຜິດພາດທີ່ບໍ່ຄາດຄິດ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">ພາສາຍີ່ປຸ່ນ</translation>
@@ -806,6 +813,7 @@
 <translation id="7309413087278791451">ເຢຍລະມັນ (ເບວຢຽມ)</translation>
 <translation id="7339898014177206373">ໜ້າ​ຕ່າງໃໝ່</translation>
 <translation id="7343393116438664539">ພາສາຫວຽດເທເລັກ</translation>
+<translation id="7347346221088620549">ໄຟລ໌ທີ່ເຂົ້າລະຫັດໄວ້</translation>
 <translation id="7357762654218998920">ບໍ່ຮອງຮັບໄຟລ໌ປະເພດນີ້. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /> ກ່ຽວກັບການເປີດໄຟລ໌ຢູ່ ChromeOS.</translation>
 <translation id="7359359531237882347">ກຳລັງສຳເນົາ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
 <translation id="7375951387215729722">ລາຍການໄຟລ໌ທີ່ຮຽງລຳດັບຕາມ <ph name="COLUMN_NAME" /> ແຕ່ໃຫຍ່ຫານ້ອຍ.</translation>
@@ -992,6 +1000,7 @@
 <translation id="8609695766746872526">ພາສາໄອແລນດິກ</translation>
 <translation id="863903787380594467">PIN ບໍ່ຖືກຕ້ອງ. ທ່ານລອງໄດ້ອີກ <ph name="RETRIES" /> ເທື່ອ.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ຜອດ</translation>
+<translation id="8656407365183407932">ຕ້ອງລຶບໄຟລ໌ອອບລາຍຂອງທ່ານອອກ</translation>
 <translation id="8656768832129462377">ຢ່າກວດເບິ່ງ</translation>
 <translation id="8688591111840995413">ລະ​ຫັດ​ຜ່ານ​ທີ່​ບໍ່​ດີ</translation>
 <translation id="8698464937041809063">ການແຕ້ມຮູບ Google</translation>
@@ -1027,6 +1036,7 @@
 <translation id="8997962250644902079">ພາສາຈີນ (ຕົວຫຍໍ້) ພິນອິນ</translation>
 <translation id="8998871447376656508">ພື້ນທີ່ຫວ່າງບໍ່ພຽງພໍຢູ່ໃນ Google Drive ຂອງທ່ານເພື່ອສຳເລັດການອັບໂຫຼດ.</translation>
 <translation id="9003940392834790328">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ລາຍລະອຽດ</translation>
+<translation id="9007990314804111233">ເຂົ້າສູ່ລະບົບບັນຊີ Microsoft ຂອງທ່ານ</translation>
 <translation id="9017798300203431059">ການ​ອອກສຽງພາ​ສາ​ລັດ​ເຊຍ</translation>
 <translation id="9034924485347205037">ໄຟລ໌ Linux</translation>
 <translation id="9035012421917565900">ບໍ່ສາມາດຍ້າຍລາຍການນີ້ກັບຄືນຫາ '<ph name="DESTINATION_NAME" />' ໄດ້, ສະນັ້ນ ທ່ານຈະບໍ່ສາມາດລົບລ້າງການກະທຳນີ້ໄດ້.</translation>

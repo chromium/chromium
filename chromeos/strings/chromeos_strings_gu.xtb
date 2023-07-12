@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> થ્રેડ, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">નવી સુવિધા ઉપલબ્ધ છે, વધુ જાણવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
 <translation id="1059913517121127803">સ્કૅન કરવાનું શરૂ કરી શક્યા નથી</translation>
+<translation id="1062823486781306604"><ph name="COUNT" />માંથી <ph name="INDEX" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ફાયરવૉલ હોવાની જાણકારી મળી</translation>
 <translation id="1075811647922107217">પેજનું કદ</translation>
@@ -540,6 +541,7 @@
 <translation id="5257811368506016604">આછા રંગવાળો મોડ ચાલુ કરો</translation>
 <translation id="5264277876637023664">CPUનું પરીક્ષણ ચાલુ કરો</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN બંધ કરેલું છે.</translation>
 <translation id="5275828089655680674">રૂટિન ફરીથી ચલાવો</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">બૅકલાઇટનો રંગ</translation>
@@ -604,6 +606,7 @@
 <translation id="5832805196449965646">વ્યક્તિ ઉમેરો</translation>
 <translation id="583281660410589416">અજ્ઞાત</translation>
 <translation id="5843706793424741864">ફેરનહીટ</translation>
+<translation id="584953448295717128">APN ઑટોમૅટિક રીતે શોધાયું છે.</translation>
 <translation id="5849570051105887917">હોમ પ્રદાતાનો કોડ</translation>
 <translation id="5859603669299126575">આર્ટ ગૅલરી આલ્બમ</translation>
 <translation id="5860033963881614850">બંધ</translation>
@@ -882,6 +885,7 @@
 <translation id="80398733265834479">ઑટો કલર મોડ ચાલુ કરો</translation>
 <translation id="8041089156583427627">પ્રતિસાદ મોકલો</translation>
 <translation id="8045012663542226664">માઇક્રોફોનને મ્યૂટ કરવાની કી</translation>
+<translation id="8067126283828232460">APN કનેક્ટેડ છે.</translation>
 <translation id="8075838845814659848">બાકી રહેલું બૅટરી ચાર્જિંગ</translation>
 <translation id="8076492880354921740">ટૅબ્સ</translation>
 <translation id="8082366717211101304">Android ઍપથી DNSનું નિરાકરણ કરી શકતા નથી</translation>
@@ -1028,6 +1032,7 @@
 <translation id="9111102763498581341">અનલોક કરો</translation>
 <translation id="9122602430962285795">ફરીથી કનેક્ટ કરવા માટે, સેટિંગમાં જાઓ</translation>
 <translation id="9126720536733509015">એક PDFમાં એકથી વધુ પેજ સાચવો</translation>
+<translation id="9133104754938025929">બૅટરીનું સંરક્ષણ કરવા માટે, સ્ક્રીન સેવર ફક્ત ચાર્જિંગના સમયે જ કામ કરે છે.</translation>
 <translation id="9137526406337347448">Google સેવાઓ</translation>
 <translation id="9138630967333032450">ડાબી Shift કી</translation>
 <translation id="9143347780818904997"><ph name="MINUTES" /> મિનિટ માટે</translation>

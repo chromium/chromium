@@ -142,6 +142,7 @@
 <translation id="1110965959145884739">زبان‌هایی را که می‌خواهید در این دستگاه نصب شود انتخاب کنید. به‌منظور صرفه‌جویی در فضای دیسک، فایل‌های زبان میان کاربران به‌اشتراک گذاشته می‌شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">برگه پس‌زمینه درحال استفاده از بلوتوث است</translation>
 <translation id="1112998165730922436">پخش محتوا موقتاً متوقف شد</translation>
+<translation id="1113807501859230251">‏Bruschetta از <ph name="DEVICE_TYPE" /> برداشته شود؟ با این کار، همه برنامه‌ها و داده‌های موجود در ماشین مجازی حذف می‌شود!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">الماسی</translation>
 <translation id="1114427165525619358">‏گذرواژه‌های ذخیره‌شده در این دستگاه و در «حساب Google» شما</translation>
@@ -1565,6 +1566,7 @@
     مرکز راهنمایی<ph name="END_LINK" /> مراجعه کنید.</translation>
 <translation id="2266957463645820432">‏IPP ازطریق USB ‏(IPPUSB)</translation>
 <translation id="2268130516524549846">بلوتوث غیرفعال است</translation>
+<translation id="2268182915828370037">همگام‌سازی فایل خاموش شود؟</translation>
 <translation id="2269895253281481171">اگر درمعرض خطر باشد به شما اطلاع‌رسانی می‌شود</translation>
 <translation id="2270450558902169558">تبادل داده با هر دستگاهی در دامنه <ph name="DOMAIN" /></translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />در روند نصب <ph name="BEGIN_BOLD" />کل داده‌های دیسک سخت پاک خواهد شد<ph name="END_BOLD" />. حتماً از داده‌هایتان پشتیبان‌گیری کنید.<ph name="END_PARAGRAPH1" />
@@ -2116,6 +2118,7 @@
 <translation id="2714393097308983682">‏فروشگاه Google Play</translation>
 <translation id="2715640894224696481">درخواست کلید امنیتی</translation>
 <translation id="2715751256863167692">‏این ارتقا Chromebook را بازنشانی می‌کند و داده‌های کاربر کنونی را برمی‌دارد.</translation>
+<translation id="2715934493766003251">وقتی همگام‌سازی فایل روشن باشد، نمی‌توان فضای ذخیره‌سازی را پاک کرد</translation>
 <translation id="2716986496990888774">این تنظیم توسط والدین مدیریت می‌شود.</translation>
 <translation id="271749239614426244">نادیده گرفتن حرکات جزئی نشانگر</translation>
 <translation id="2718395828230677721">نور شب</translation>
@@ -2263,6 +2266,7 @@
 <translation id="2817435998497102771">تنظیم کاغذدیواری و سبک</translation>
 <translation id="2818476747334107629">جزئیات چاپگر</translation>
 <translation id="2819167288942847344">برای جلوگیری از عملکرد نادرست برنامه، از اندازه‌های پیش‌تنظیم‌شده مخصوص تلفن، رایانه لوحی، یا پنجره‌های با قابلیت تغییر اندازه استفاده می‌شود</translation>
+<translation id="2819519502129272135">همگام‌سازی فایل خاموش است</translation>
 <translation id="2820957248982571256">درحال اسکن کردن…</translation>
 <translation id="2822634587701817431">کوچک کردن / بزرگ کردن</translation>
 <translation id="2822910719211888134">‏خطا هنگام پشتیبان‌گیری Linux</translation>
@@ -2731,6 +2735,7 @@
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - خطای شبکه</translation>
 <translation id="3248902735035392926">امنیت اهمیت دارد. اکنون چند لحظه برای<ph name="BEGIN_LINK" />بررسی افزونه‌هایتان<ph name="END_LINK" /> وقت بگذارید</translation>
 <translation id="3249323165366527554">با ذخیره کردن خودکار گذرواژه در <ph name="GOOGLE_PASSWORD_MANAGER" /> برای <ph name="EMAIL" />، سریع‌تر ثبت‌نام کنید و به سیستم وارد شوید.</translation>
+<translation id="3251119461199395237">همگام‌سازی فایل</translation>
 <translation id="3251714896659475029">‏به <ph name="SUPERVISED_USER_NAME" /> اجازه دهید با گفتن «Ok Google» به «دستیار Google» دسترسی پیدا کند</translation>
 <translation id="3251759466064201842">&lt;جزئی از گواهی نیست&gt;</translation>
 <translation id="325238099842880997">تنظیم قوانین پایه دیجیتال برای کمک به فرزندان در زمینه بازی، کاوش، و انجام تکالیف مدرسه در خانه</translation>
@@ -3108,6 +3113,7 @@
 <translation id="3567284462585300767">برای دریافت و پذیرفتن فایل‌های افرادی که در اطرافتان هستند، نمایان شوید</translation>
 <translation id="356738834800832239">گذرواژه شما ذخیره شد</translation>
 <translation id="3569382839528428029">آیا می‌خواهید <ph name="APP_NAME" /> صفحه شما را به اشتراک بگذارد؟</translation>
+<translation id="3569614820047645079">‏فایل‌های شما در My Drive به‌طور خودکار با Chromebook همگام‌سازی می‌شود تا بتوانید بدون اتصال اینترنت به آن‌ها دسترسی داشته باشید.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> می‌تواند فایل‌ها و پوشه‌های زیر را مشاهده کند</translation>
 <translation id="3571734092741541777">تنظیم</translation>
 <translation id="3575121482199441727">مجاز برای این سایت</translation>
@@ -3540,6 +3546,7 @@
 <translation id="3916233823027929090">بررسی‌های امنیتی انجام شدند</translation>
 <translation id="3916445069167113093">این نوع فایل می‌تواند به رایانهٔ شما آسیب برساند. آیا با این وجود می‌خواهید <ph name="FILE_NAME" /> را نگه دارید؟</translation>
 <translation id="3917184139185490151">‏رایانه شما پودمان امنیتی‌ای دارد که از آن برای اجرای بسیاری از ویژگی‌های امنیتی مهم در ChromeOS استفاده می‌شود. برای کسب اطلاعات بیشتر از «مرکز راهنمایی Chromebook» دیدن کنید: https://support.google.com/chromebook/?p=sm</translation>
+<translation id="3917644013202553949">فضای ذخیره‌سازی کافی برای همگام‌سازی فایل‌ها وجود ندارد. فضای موردنیاز را آزاد کنید.</translation>
 <translation id="3918972485393593704">‏گزارش جزئیات به Google</translation>
 <translation id="3919145445993746351">برای دریافت افزونه‌ها در همه رایانه‌هایتان، همگام‌سازی را روشن کنید</translation>
 <translation id="3919229493046408863">خاموش کردن اعلان وقتی دستگاه‌ها دراطراف هستند</translation>
@@ -3851,6 +3858,7 @@
 <translation id="4184803915913850597">‏دستگاه HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - جستجوی <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="4187424053537113647">درحال راه‌اندازی<ph name="APP_NAME" />...</translation>
+<translation id="4190492351494485814">‏برای راه‌اندازی اولیه، باید به اینترنت متصل شوید تا فایل‌ها با Chromebook همگام‌سازی شوند.</translation>
 <translation id="4190828427319282529">برجسته کردن کانون صفحه‌کلید</translation>
 <translation id="4193251682249731404">مرجع صدور گواهینامه مورداعتماد</translation>
 <translation id="4193575319002689239">نمایش کارت‌ها</translation>
@@ -4043,6 +4051,7 @@
 <translation id="4361745360460842907">باز کردن به‌عنوان برگه</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> حساب پیش‌فرض در <ph name="DEVICE_TYPE" /> شما است</translation>
 <translation id="4363215264289239958">‏برنامه‌های Bruschetta</translation>
+<translation id="4363262124589131906">‏فایل‌های جدید در My Drive دیگر به‌طور خودکار با این Chromebook همگام‌سازی نخواهند شد</translation>
 <translation id="4363771538994847871">هیچ مقصدی برای پخش محتوا پیدا نشد. نیاز به راهنمایی دارید؟</translation>
 <translation id="4364327530094270451">خربزه</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> در حال اشتراک‌گذاری یک پنجره است.</translation>
@@ -4467,6 +4476,7 @@
 <translation id="4715631922189108923">ویرایش نام کاربری</translation>
 <translation id="47158868804223727">روی نام گروه کلیک کنید تا گسترده یا جمع شود</translation>
 <translation id="4716483597559580346">‏Powerwash برای امنیت بیشتر</translation>
+<translation id="4716715661140829720">فضای ذخیره‌سازی کافی موجود نیست</translation>
 <translation id="471759229191973607">تغییر زمینه</translation>
 <translation id="4718046540206070045">بیش‌از یک مرورگر</translation>
 <translation id="4722735765955348426">گذرواژه <ph name="USERNAME" /></translation>
@@ -4519,6 +4529,7 @@
 <translation id="4763757134413542119">‏<ph name="USER_EMAIL" /> حساب Google for Education معتبری نیست. با سرپرست تماس بگیرید. اگر سرپرست هستید، می‌توانید با رفتن به نشانی زیر، سازمانتان را راه‌اندازی کنید: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{این دستگاه به‌مدت یک ماه ذخیره خواهد شد و دفعه بعد می‌توانید بدون کد متصل شوید. سرپرستتان این مورد را تنظیم کرده است.}one{این دستگاه به‌مدت {MONTHS} ماه ذخیره خواهد شد و دفعه بعد می‌توانید بدون کد متصل شوید. سرپرستتان این مورد را تنظیم کرده است.}other{این دستگاه به‌مدت {MONTHS} ماه ذخیره خواهد شد و دفعه بعد می‌توانید بدون کد متصل شوید. سرپرستتان این مورد را تنظیم کرده است.}}</translation>
 <translation id="4765582662863429759">‏به «پیام‌های Android» اجازه دهید پیام‌های متنی را از تلفن در Chromebook بازپخش کند</translation>
+<translation id="476563889641554689">ناحیه‌ای را برای جستجو با «لنز» انتخاب کنید</translation>
 <translation id="4766598565665644999">همه افزونه‌ها می‌توانند <ph name="HOST" /> را بخوانند و تغییر دهند</translation>
 <translation id="4767427586072640478">درباره افزونه‌های غیرفعال بیشتر بدانید.</translation>
 <translation id="4768332406694066911">گواهی‌هایی از این سازمان‌ها دارید که هویت شما را شناسایی می‌کنند</translation>
@@ -4577,6 +4588,7 @@
 <translation id="481574578487123132">دستگاه‌های پیوندشده</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />، جزئیات</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{۱ نشانک حذف شد}one{{COUNT} نشانک حذف شد}other{{COUNT} نشانک حذف شد}}</translation>
+<translation id="481689174647911539">‏این فایل ممکن است ویروس یا بدافزار باشد.<ph name="LINE_BREAK" />می‌توانید آن را برای «مرور ایمن Google» ارسال کنید تا بررسی کند که ایمن است یا نه. اسکن معمولاً چند ثانیه طول می‌کشد.</translation>
 <translation id="4816900689218414104">گذرکلیدی در تلفن یا رایانه لوحی ایجاد کنید</translation>
 <translation id="4819323978093861656">{0,plural, =0{اکنون بسته می‌شود.}=1{یک ثانیه دیگر بسته می‌شود}one{# ثانیه دیگر بسته می‌شود}other{# ثانیه دیگر بسته می‌شود}}</translation>
 <translation id="4819607494758673676">‏اعلان‌های «دستیار Google»</translation>
@@ -4731,7 +4743,6 @@
 <translation id="4940364377601827259"><ph name="PRINTER_COUNT" /> چاپگر برای ذخیره در دسترس است.</translation>
 <translation id="4940448324259979830"><ph name="PROFILE_NAME" /> این حساب را مدیریت می‌کند</translation>
 <translation id="4940845626435830013">اختصاص حجم دیسک</translation>
-<translation id="4941074198479265146">‏سایت‌ها معمولاً برای ارائه ویژگی‌های مربوط به ایجاد و ویرایش موسیقی به دستگاه‌های MIDI متصل می‌شوند</translation>
 <translation id="4941243352516004658"><ph name="PRODUCT_ITEM_COUNT" /> محصول موجود در سبد خرید شما با <ph name="DISCOUNT_TEXT" /> از <ph name="MERCHANT_NAME" />، <ph name="MERCHANT_DOMAIN" />، زمان مشاهده: <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">هنگام ثبت‌نام دستگاه برای مدیریت سازمانی، از این درخواست دستگاه استفاده کنید:</translation>
 <translation id="4941627891654116707">اندازه قلم</translation>
@@ -4996,12 +5007,14 @@
 <translation id="5185386675596372454">جدیدترین نسخه از "<ph name="EXTENSION_NAME" />" غیر فعال شده است زیرا به مجوزهای بیشتری نیاز دارد.</translation>
 <translation id="5185500136143151980">اتصال اینترنت وجود ندارد</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190577235024772869">درحال استفاده از <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">فعال کردن درگاه</translation>
 <translation id="5190959794678983197">میکروفن متصل نیست</translation>
 <translation id="5191094172448199359">پین‌هایی که وارد کردید مطابقت ندارند</translation>
 <translation id="5191251636205085390">با فناوری‌های جدیدی که قرار است جایگزین کوکی‌های شخص ثالث شود آشنا شوید و آن‌ها را کنترل کنید</translation>
 <translation id="519185197579575131">‏استفاده از QT</translation>
 <translation id="5192062846343383368">‏برای مشاهده تنظیمات نظارت، برنامه Family Link را باز کنید</translation>
+<translation id="5193978546360574373">‏با این کار، دسترسی به Google Drive در این Chromebook، ازجمله دسترسی به فایل‌هایی که به‌صورت آفلاین دردسترس قرار گرفته‌اند برداشته می‌شود</translation>
 <translation id="5193988420012215838">در بریده‌دان کپی شد</translation>
 <translation id="5194256020863090856">این امر فقط بر پنجره‌های ناشناس تأثیر می‌گذارد</translation>
 <translation id="5195074424945754995">نشانی‌های وبی که با این قوانین مطابقت دارند باعث تغییر مرورگر نمی‌شوند و هم در <ph name="BROWSER_NAME" /> و هم در <ph name="ALTERNATIVE_BROWSER_NAME" /> می‌توانند باز شوند.</translation>
@@ -5084,6 +5097,7 @@
 <translation id="526622169288322445">کنش‌های بیشتر برای <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5268373933383932086">صفحه شما، روش شما</translation>
 <translation id="5269977353971873915">چاپ نشد</translation>
+<translation id="5271578170655641944">‏دسترسی به Google Drive برداشته شود؟</translation>
 <translation id="5273806377963980154">ویرایش نشانی وب سایت</translation>
 <translation id="5273966423195882879">رنگ براساس زمینه</translation>
 <translation id="5275084684151588738">فرهنگ‌های لغت کاربر</translation>
@@ -6259,7 +6273,7 @@
 <translation id="6266532094411434237">درحال اتصال به <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">انتخاب گواهی برای راستی‌آزمایی خودتان در <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">باز کردن با <ph name="APP" /></translation>
-<translation id="6270309713620950855">بی‌صدا کردن یادآوری خودکار</translation>
+<translation id="6270309713620950855">تذکر میکروفون خاموش</translation>
 <translation id="6270391203985052864">سایت‌ها می‌توانند برای ارسال اعلان درخواست دهند</translation>
 <translation id="6270486800167535228">افزونه سنجاق شده است. برای دیدن گزینه‌های بیشتر انتخاب کنید</translation>
 <translation id="6270770586500173387">ارسال <ph name="BEGIN_LINK1" />اطلاعات برنامه و سیستم<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />معیارها<ph name="END_LINK2" /></translation>
@@ -6346,6 +6360,7 @@
 <translation id="6345878117466430440">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
 <translation id="6346952829206698721">جای‌گذاری از بریده‌دان</translation>
 <translation id="6347010704471250799">نمایش اعلان</translation>
+<translation id="6348805481186204412">فضای ذخیره‌سازی آفلاین</translation>
 <translation id="634887995541211148">‏اجرای Bruschetta در دستگاهتان.</translation>
 <translation id="6349101878882523185">نصب <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">‏منحنی بیضوی SECG مدل secp256r1 (به‌نام ANSI X9.62 prime256v1، ‏NIST P-256)</translation>
@@ -6530,6 +6545,7 @@
 <translation id="6513247462497316522">‏اگر به شبکه دیگری وصل نباشید Google Chrome از داده‌های تلفن همراه استفاده خواهد کرد.</translation>
 <translation id="6514010653036109809">دستگاه دردسترس:</translation>
 <translation id="6514565641373682518">این صفحه مکان‌نمای ماوس شما را غیرفعال کرد.</translation>
+<translation id="6517420300299531857">‏فایل‌های شما در My Drive به‌طور خودکار با Chromebook همگام‌سازی می‌شود تا بتوانید بدون اتصال اینترنت به آن‌ها دسترسی داشته باشید. حدود <ph name="REQUIRED_SPACE" /> استفاده خواهد شد. درحال‌حاضر <ph name="FREE_SPACE_AVAILABLE" /> دردسترس دارید.</translation>
 <translation id="6517709704288360414">ممکن است دستگاهتان دیگر به‌درستی کار نکند، و ممکن است با مشکلات کاربردی و امنیتی مواجه شوید. خاموش کردن به‌روزرسانی‌ها می‌تواند بر حق شما در مطرح کردن دعوی‌های حقوقی درصورت بروز مشکلات تأثیر بگذارد.</translation>
 <translation id="6518014396551869914">&amp;کپی تصویر</translation>
 <translation id="6518133107902771759">تأیید</translation>
@@ -6791,6 +6807,7 @@
 <translation id="6736243959894955139">آدرس</translation>
 <translation id="6737393581255281855">داده‌های نشان‌داده‌شده پاک شود؟</translation>
 <translation id="6737663862851963468">‏حذف کردن بلیت Kerberos</translation>
+<translation id="6737931010859480781">این برنامه ازقبل روی دستگاهتان نصب شده است</translation>
 <translation id="6738180164164974883">مجاز کردن تنظیم کوکی‌های شخص ثالث</translation>
 <translation id="6738430949033571771">درحال تأیید حساب…</translation>
 <translation id="6739923123728562974">نمایش میان‌بر میز کار</translation>
@@ -8484,6 +8501,7 @@
 <translation id="8138217203226449454">آیا می‌خواستید ارائه‌دهنده جستجو را تغییر دهید؟</translation>
 <translation id="8138997515734480534">وضعیت <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">‏فایل‌های Google Drive</translation>
+<translation id="8139643636835015859">با این کار، <ph name="OFFLINE_STORAGE_SIZE" /> از فضای استفاده‌شده توسط فایل‌های آفلاین برداشته می‌شود. بعضی‌از فایل‌ها همچنان به‌صورت آفلاین دردسترس خواهند بود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />،<ph name="SECOND_DEVICE" /></translation>
 <translation id="8141418916163800697">می‌توانید در تنظیمات «مرکز کنترل تلفن»، ویژگی‌های بیشتری را راه‌اندازی کنید</translation>
 <translation id="8141584439523427891">اکنون باز کردن در مرورگر جایگزین</translation>
@@ -8575,6 +8593,7 @@
 <translation id="821119981794423735">‏برای وارد کردن گذرواژه‌های <ph name="USER_EMAIL" /> در «مدیر گذرواژه Google»، فایل CSV موردنظر را انتخاب کنید</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{بارگیری درحال انجام است}one{بارگیری درحال انجام است}other{بارگیری درحال انجام است}}</translation>
 <translation id="8212601853154459483">این نمایه را <ph name="PROFILE_MANAGER" /> مدیریت می‌کند و شما باید نمایه جداگانه‌ای برای حساب <ph name="USER_EMAIL_ADDRESS" /> ایجاد کنید</translation>
+<translation id="8212792694174629011">هیچ نمایه‌ای پیدا نشد. رمزینه پاسخ‌سریع را بااستفاده از دوربین دستگاه اسکن کنید یا کد فعال‌سازی ارائه‌شده توسط شرکت مخابراتی‌تان را وارد کنید.</translation>
 <translation id="8214489666383623925">باز کردن فایل...</translation>
 <translation id="8215129063232901118">دسترسی به قابلیت‌های تلفنتان از <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">برجسته کردن اشاره‌گر</translation>
@@ -9118,6 +9137,7 @@
 <translation id="8680251145628383637">‏برای دریافت نشانک‌ها، سابقه، گذرواژه‌ها و تنظیمات دیگرتان را در همه دستگاه‌هایتان، به سیستم وارد شوید. همچنین به‌صورت خودکار به سیستم خدمات Google خود نیز وارد می‌شوید.</translation>
 <translation id="8681886425883659911">آگهی‌های نمایش‌داده‌شده در سایت‌هایی که طبق تشخیص ما آگهی‌های مزاحم یا گمراه‌کننده نمایش می‌دهند مسدود می‌شود.</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> متصل و آماده است</translation>
+<translation id="8686142379631285985">با <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> به سیستم وارد شده‌اید.</translation>
 <translation id="8687103160920393343">لغو <ph name="FILE_NAME" /></translation>
 <translation id="8688672835843460752">دردسترس</translation>
 <translation id="8689998525144040851">۱۰۰</translation>

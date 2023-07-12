@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">పరికర సెట్టింగ్‌లు</translation>
 <translation id="2084809735218147718">సంజ్ఞ ద్వారా థ్యాంక్ యు చెబుతున్న వ్యక్తి</translation>
 <translation id="2088690981887365033">VPN నెట్‌వర్క్</translation>
+<translation id="209653272837065803">ఫైళ్లను సింక్ చేయడాన్ని కొనసాగించడానికి తగినంత స్టోరేజ్ స్పేస్ లేదు</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />అజ్ఞాత మోడ్‌లో అనుమతించండి<ph name="END_BOLD" /> ఆప్షన్‌ను ఆన్ చేయండి</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లు తొలగించబడతాయి, మీరు వాటిని రీస్టోర్ చేయలేరు.</translation>
 <translation id="2122305276694332719">దాచబడిన నెట్‌వర్క్‌కు ఆటోమేటిక్‌గా కనెక్ట్ చేయడం వలన మీ పరికరాన్ని, కొన్ని నెట్‌వర్క్‌ల సెట్టింగ్‌లను ఇతరులు చూడగలుగుతారు, కనుక ఇది సిఫార్సు చేయబడదు.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">సరళీకృత చైనీస్</translation>
 <translation id="22085916256174561">కొరియన్</translation>
 <translation id="2208919847696382164">Linuxతో ఇన్‌స్టాల్ చేయండి</translation>
+<translation id="2215692307449050019">బ్యాటరీ తక్కువగా ఉంది. మీరు పవర్‌కు కనెక్ట్ చేసినప్పుడు ఫైల్ సింక్ చేయడం మళ్లీ ప్రారంభమవుతుంది.</translation>
 <translation id="2225536596944493418">మీరు <ph name="NUMBER_OF_ITEMS" /> అంశాలను ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ఫోల్డర్‌ను క్రియేట్ చేయడం సాధ్యపడలేదు. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">కాఫీని పట్టుకుని ఉన్న వ్యక్తి</translation>
+<translation id="2247561763838186830">మీరు లాగ్ అవుట్ చేయబడ్డారు</translation>
 <translation id="2251368349685848079">ట్రాష్ నుండి రీస్టోర్ చేయండి</translation>
 <translation id="2278133026967558505">అన్ని వెబ్‌సైట్‌లు, URLలకు ఫైల్ యాక్సెస్‌ను ఇవ్వండి</translation>
 <translation id="2282155092769082568">ఆటోకాన్ఫిగరేషన్ URL:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">ఈ ఫైల్ రకానికి మద్దతు లేదు. దయచేసి ఈ రకమైన ఫైల్‌ను తెరవగల యాప్‌ను కనుగొనడానికి Chrome వెబ్ స్టోర్‌ను సందర్శించండి.</translation>
 <translation id="2326539130272988168">బల్గేరియన్</translation>
 <translation id="2337715497728194187">Bruschettaతో షేర్ చేయండి</translation>
+<translation id="233822363739146957">మీ అన్ని ఫైళ్లను సింక్ చేయడానికి తగినంత స్టోరేజ్ స్పేస్ లేదు</translation>
 <translation id="23721837607121582"><ph name="NETWORK_NAME" />, <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="2377319039870049694">లిస్ట్‌ వీక్షణకు మార్చు</translation>
 <translation id="2377590462528165447">Linuxతో <ph name="NUMBER_OF_ITEMS" /> ఫోల్డర్‌లు షేర్ చేయబడ్డాయి</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Linux అప్లికేషన్‌ను ఇన్‌స్టాల్ చేయడంలో ఎర్రర్</translation>
 <translation id="2802583107108007218">ఈ పరిమితుల గురించి మరింత తెలుసుకోండి</translation>
 <translation id="2803375539583399270">PINను నమోదు చేయండి</translation>
+<translation id="2819519502129272135">ఫైల్ సింక్ ఆఫ్ చేయబడింది</translation>
 <translation id="2820957248982571256">స్కాన్ చేస్తోంది...</translation>
 <translation id="2830077785865012357">చైనీస్ జుయిన్</translation>
 <translation id="2843806747483486897">డిఫాల్ట్‌ను మార్చు...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">ఫిల్టర్ రీసెట్ చేయబడింది.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" />ను <ph name="FOLDER_NAME" />కు కాపీ చేస్తోంది</translation>
 <translation id="4631887759990505102">చిత్రకారుడు</translation>
+<translation id="4635373743001040938">స్టోరేజ్ స్పేస్ చాలా తక్కువగా ఉంది. ఫైల్ సింక్ ఆఫ్ చేయబడింది.</translation>
 <translation id="4642769377300286600"><ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> నుండి <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను ఇన్‌స్టాల్ చేస్తోంది</translation>
 <translation id="4646813851450205600">Qwerty కీబోర్డ్‌తో చెక్(Czech)</translation>
 <translation id="4656777537938206294">ఫైళ్లను ఆఫ్‌లైన్‌లో అందుబాటులో ఉంచండి</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">Parallels Desktopతో 1 ఫోల్డర్ షేర్ చేయబడింది</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> రీస్టోర్ చేయబడింది</translation>
 <translation id="4969785127455456148">ఆల్బమ్</translation>
+<translation id="4972330214479971536">ఫైల్ సింక్‌ను సెటప్ చేయడం పూర్తి చేయడం సాధ్యపడలేదు</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> లేదా అంతకంటే తక్కువ అక్షరాలు ఉన్న పేరుని ఉపయోగించండి</translation>
 <translation id="4973970068702235170">జిప్ చేయడం విఫలమైంది, అనుకోని ఎర్రర్: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">జపనీస్</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">జర్మన్ (బెల్జియం)</translation>
 <translation id="7339898014177206373">కొత్త విండో</translation>
 <translation id="7343393116438664539">వియత్నామీస్ టెలెక్స్</translation>
+<translation id="7347346221088620549">ఎన్‌క్రిప్ట్ చేసిన ఫైల్</translation>
 <translation id="7357762654218998920">ఈ ఫైల్ రకం సపోర్ట్ చేయదు. ChromeOSలో ఫైల్స్‌ను తెరవడం గురించి <ph name="BEGIN_LINK_HELP" />మరింత తెలుసుకోండి<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> అంశాలను కాపీ చేస్తోంది...</translation>
 <translation id="7375951387215729722">ఫైల్ లిస్ట్‌ <ph name="COLUMN_NAME" /> ప్రకారం అవరోహణ క్రమంలో వర్గీకరించబడింది.</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">ఐస్‌లాండిక్</translation>
 <translation id="863903787380594467">పిన్ తప్పు. మీకు <ph name="RETRIES" /> ప్రయత్నాలు మిగిలి ఉన్నాయి.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - పోర్ట్</translation>
+<translation id="8656407365183407932">మీ ఆఫ్‌లైన్ ఫైళ్లను తీసివేయాలి</translation>
 <translation id="8656768832129462377">తనిఖీ చేయవద్దు</translation>
 <translation id="8688591111840995413">పాస్‌వర్డ్ చెల్లదు</translation>
 <translation id="8698464937041809063">Google డ్రాయింగ్</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">చైనీస్ (సాంప్రదాయ) పిన్యిన్</translation>
 <translation id="8998871447376656508">అప్‌లోడ్‌ను పూర్తి చేయడానికి మీ Google Driveలో తగినంత ఖాళీ స్థలం లేదు.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది, వివరాలు</translation>
+<translation id="9007990314804111233">మీ Microsoft ఖాతాకు సైన్ ఇన్ చేయండి</translation>
 <translation id="9017798300203431059">రష్యన్ ఫోనెటిక్</translation>
 <translation id="9034924485347205037">Linux ఫైళ్లు</translation>
 <translation id="9035012421917565900">ఈ అంశాలను '<ph name="DESTINATION_NAME" />'లోకి తిరిగి తరలించడం సాధ్యపడదు. కాబట్టి మీరు ఈ చర్యను రద్దు చేయలేరు.</translation>

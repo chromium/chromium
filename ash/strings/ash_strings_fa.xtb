@@ -185,6 +185,7 @@
 <translation id="1770726142253415363">به ردیف <ph name="ROW_NUMBER" />، ستون <ph name="COLUMN_NUMBER" /> منتقل شد.</translation>
 <translation id="1771761307086386028">پیمایش به راست</translation>
 <translation id="1774796056689732716">تقویم، <ph name="CURRENT_MONTH_YEAR" />، درحال‌حاضر <ph name="DATE" /> انتخاب شده است.</translation>
+<translation id="1775598828170459419">نمایش <ph name="NUM_SHOWN_ITEMS" /> از <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="1787955149152357925">خاموش</translation>
 <translation id="181103072419391116">قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>
 <translation id="1815245884418711390">روشن/خاموش کردن «نقطه اتصال». نقطه اتصال خاموش است.</translation>
@@ -1053,7 +1054,7 @@
 <translation id="5578188167649348993">حافظه</translation>
 <translation id="5580000943347215299">کتابخانه</translation>
 <translation id="558849140439112033">برای انتخاب ناحیه گرفتن عکس، بکشید</translation>
-<translation id="5590609058453685222">«تذکر میکروفون خاموش» فعال است. اگر هنگام بی‌صدا بودن صحبت کنید به شما اطلاع داده می‌شود.</translation>
+<translation id="5590609058453685222">«تذکر میکروفون خاموش» روشن است. اگر هنگام بی‌صدا بودن صحبت کنید به شما اطلاع داده می‌شود.</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />، <ph name="DATE" /></translation>
 <translation id="5600837773213129531">‏برای غیرفعال کردن بازخورد گفتاری، Ctrl + Alt + Z را فشار دهید.</translation>
@@ -1491,7 +1492,7 @@
 <translation id="7579778809502851308">ضبط صفحه‌نمایش</translation>
 <translation id="7593891976182323525">‏جستجو یا Shift</translation>
 <translation id="7600875258240007829">دیدن همه اعلان‌ها</translation>
-<translation id="7601417191446344542">سقلمه بی‌صدا کردن روشن شود؟</translation>
+<translation id="7601417191446344542">«تذکر میکروفون خاموش» روشن شود؟</translation>
 <translation id="7607002721634913082">متوقف</translation>
 <translation id="7609951632080598826">نمای «تقویم» ،<ph name="DATE" />، <ph name="TIME" /></translation>
 <translation id="7611213136657090146">دوربین دوباره متصل شد.</translation>

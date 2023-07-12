@@ -815,6 +815,7 @@
 <translation id="1647408325348388858">ਕੀ ਇਸ ਵੈੱਬ ਐਪ ਵਿੱਚ <ph name="FILE_NAME" /> ਨੂੰ ਖੋਲ੍ਹਣਾ ਅਤੇ ਸੰਪਾਦਿਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1648528859488547844">ਟਿਕਾਣੇ ਦਾ ਪਤਾ ਲਗਾਉਣ ਲਈ ਵਾਈ‑ਫਾਈ ਜਾਂ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਵਰਤੋ</translation>
 <translation id="164936512206786300">ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ ਦਾ ਜੋੜਾਬੱਧ ਹਟਾਓ</translation>
+<translation id="1650801028905250434">'ਮੇਰੀ ਡਰਾਈਵ' ਵਿੱਚ ਮੌਜੂਦ ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤੁਹਾਡੇ Chromebook ਨਾਲ ਸਿੰਕ ਹੋ ਜਾਣਗੀਆਂ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਤੱਕ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੇ ਬਿਨਾਂ ਪਹੁੰਚ ਕਰ ਸਕੋ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ &gt; Files ਵਿੱਚ ਜਾ ਕੇ ਕਦੇ ਵੀ ਇਸਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1651008383952180276">ਤੁਹਾਡੇ ਵੱਲੋਂ ਇੱਕੋ ਪਾਸਫਰੇਜ਼ ਦੋ ਵਾਰ ਦਾਖਲ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="1651609627703324721">ਇਹ ਟੈਬ ਕਿਸੇ ਹੈੱਡਸੈੱਟ ਵਿੱਚ VR ਸਮੱਗਰੀ ਨੂੰ ਪੇਸ਼ ਕਰ ਰਹੀ ਹੈ</translation>
 <translation id="1652326691684645429">ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਚਾਲੂ ਕਰੋ</translation>
@@ -4233,6 +4234,7 @@
 <translation id="4515872537870654449">ਸੇਵਾ ਲਈ Dell ਨੂੰ ਸੰਪਰਕ ਕਰੋ। ਇਹ ਡੌਕ, ਪੱਖੇ ਦੇ ਕੰਮ ਨਾ ਕਰਨ 'ਤੇ ਬੰਦ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="4518840066030486079">Shift ਕੁੰਜੀ ਮੋਡ ਸਟਾਈਲ</translation>
 <translation id="4519331665958994620">ਸਾਈਟਾਂ ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤਣ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
+<translation id="4519605771716872386">ਫ਼ਾਈਲ ਸਿੰਕ ਚਾਲੂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4519935350946509010">ਕਨੈਕਸ਼ਨ ਵਿੱਚ ਗੜਬੜ।</translation>
 <translation id="4520385623207007473">ਵਰਤੀਆਂ ਜਾ ਰਹੀਆਂ ਕੁਕੀਜ਼</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> ਵੱਲੋਂ ਅਗਿਆਤ ਡਿਵਾਈਸਾਂ</translation>
@@ -4734,7 +4736,6 @@
 <translation id="4940364377601827259">ਰੱਖਿਅਤ ਕਰਨ ਲਈ <ph name="PRINTER_COUNT" /> ਪ੍ਰਿੰਟਰ ਉਪਲਬਧ ਹਨ।</translation>
 <translation id="4940448324259979830">ਇਸ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="PROFILE_NAME" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="4940845626435830013">ਡਿਸਕ ਦਾ ਆਕਾਰ ਰਾਖਵਾਂ ਕਰੋ</translation>
-<translation id="4941074198479265146">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਸੰਗੀਤ ਬਣਾਉਣ ਅਤੇ ਸੰਪਾਦਿਤ ਕਰਨ ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ MIDI ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਦੀਆਂ ਹਨ</translation>
 <translation id="4941243352516004658">ਤੁਹਾਡੇ ਕਾਰਡ ਵਿੱਚ ਮੌਜੂਦ <ph name="PRODUCT_ITEM_COUNT" /> ਆਈਟਮਾਂ ਲਈ <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> 'ਤੇ <ph name="DISCOUNT_TEXT" /> ਮਿਲ ਰਹੀ ਹੈ, <ph name="RELATIVE_TIME" /> ਪਹਿਲਾਂ ਦੇਖਿਆ ਗਿਆ</translation>
 <translation id="4941246025622441835">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਪ੍ਰਬੰਧਨ ਲਈ ਡੀਵਾਈਸ ਨੂੰ ਦਰਜ ਕਰਦੇ ਸਮੇਂ ਇਹ ਡੀਵਾਈਸ ਬੇਨਤੀ ਵਰਤੋ।</translation>
 <translation id="4941627891654116707">ਫੌਂਟ ਆਕਾਰ</translation>
@@ -7270,6 +7271,7 @@
 <translation id="7124712201233930202">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਨੀਤੀਆਂ ਦਾ ਪਾਲਣ ਨਹੀਂ ਕਰਦਾ</translation>
 <translation id="7125029162161377569">ਪ੍ਰਾਈਵੇਸੀ ਸੈਂਡਬਾਕਸ ਪਰਖਾਂ ਨਾਲ, ਸਾਈਟਾਂ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਦੀ ਘੱਟ ਵਰਤੋਂ ਕਰ ਕੇ ਓਹੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਅਨੁਭਵ ਪ੍ਰਦਾਨ ਕਰ ਸਕਦੀਆਂ ਹਨ। ਇਸਦਾ ਮਤਲਬ ਹੈ ਕਿ ਤੁਹਾਡੇ ਲਈ ਜ਼ਿਆਦਾ ਪਰਦੇਦਾਰੀ ਅਤੇ ਘੱਟ ਕ੍ਰਾਸ-ਸਾਈਟ ਟਰੈਕਿੰਗ। ਅਸੀਂ ਨਵੀਆਂ ਪਰਖਾਂ ਸ਼ਾਮਲ ਕਰਾਂਗੇ ਕਿਉਂਕਿ ਉਹ ਜਾਂਚ ਲਈ ਤਿਆਰ ਹਨ।</translation>
 <translation id="7125148293026877011">Crostini ਮਿਟਾਓ</translation>
+<translation id="7125932261198019860">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਪ੍ਰਿੰਟਰ ਉਸੇ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਹੈ ਜਿਸ ਨਾਲ ਤੁਹਾਡੀ Chromebook ਕਨੈਕਟ ਹੈ ਜਾਂ USB ਕੇਬਲ ਦੀ ਵਰਤੋਂ ਕਰੋ। <ph name="LINK_BEGIN" />ਅਨੁਰੂਪਤਾ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">ਡਾਊਨਲੋਡ ਇਤਿਹਾਸ</translation>
 <translation id="7128151990937044829">ਸੂਚਨਾ ਬਲਾਕ ਹੋਣ 'ਤੇ ਪਤਾ ਬਾਰ ਵਿੱਚ ਸੂਚਕ ਦਿਖਾਓ</translation>
 <translation id="7131040479572660648"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, ਅਤੇ <ph name="WEBSITE_3" /> ਤੇ ਆਪਣਾ ਡਾਟਾ ਪੜ੍ਹੋ</translation>
@@ -7463,6 +7465,7 @@
 <translation id="7307129035224081534">ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="7308643132139167865">ਵੈੱਬਸਾਈਟ ਦੀਆਂ ਭਾਸ਼ਾਵਾਂ</translation>
 <translation id="7310598146671372464">ਲੌਗਇਨ ਕਰਨ ਵਿੱਚ ਅਸਫਲ ਰਿਹਾ। ਸਰਵਰ ਨਿਰਧਾਰਤ Kerberos ਇਨਕ੍ਰਿਪਸ਼ਨ ਦੀਆਂ ਕਿਸਮਾਂ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
+<translation id="7311005168897771689">ਆਫ਼ਲਾਈਨ ਹੋਣ 'ਤੇ, ਆਪਣੀਆਂ Google Drive ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰੋ</translation>
 <translation id="7311244614769792472">ਕੋਈ ਨਤੀਜਾ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="7312210124139670355">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਡੇ ਈ-ਸਿਮ ਨੂੰ ਰੀਸੈੱਟ ਕਰ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="7317831949569936035">ਸਕੂਲ ਵਿੱਚ ਦਾਖਲੇ ਦੀ ਪ੍ਰਕਿਰਿਆ</translation>

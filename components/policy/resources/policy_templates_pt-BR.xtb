@@ -886,7 +886,6 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
 <translation id="1768225118528727376">Permitir o gerenciamento de janelas nesses sites</translation>
 <translation id="1770071413238151235">Formato de relógio de 12 horas</translation>
 <translation id="1771024053220392089">Desativar o Suporte a navegadores legados</translation>
-<translation id="1781225230395284182">Mostrar a caixa de diálogo de cancelamento quando o event.preventDefault() do beforeunload for chamado.</translation>
 <translation id="1781356041596378058">Esta política também controla o acesso às Opções do desenvolvedor Android. Se você configurar essa política como true, os usuários não poderão acessar as Opções do desenvolvedor. Se configurá-la como false ou deixá-la sem definição, os usuários poderão acessar as Opções do desenvolvedor tocado sete vezes no número da versão no app Config. do Android.</translation>
 <translation id="1787790976045065845">Esta política só terá efeito quando a <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> estiver definida como <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> ou <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> e um usuário que faz a autenticação por um cartão inteligente remover o cartão. Esta política especificará por quantos segundos uma notificação que informa o usuário sobre a ação futura será exibida. Essa notificação bloqueia a tela, e a ação só acontecerá depois que a notificação expirar. O usuário pode evitar o acontecimento da ação reinserindo o cartão inteligente antes que a notificação expire. Se esta política for definida como zero, nenhuma notificação será exibida e a ação acontecerá imediatamente.</translation>
 <translation id="1793346220873697538">Desativar impressão com PIN como padrão</translation>
@@ -2019,7 +2018,6 @@ Observação: a omissão de um campo significa que todos os valores correspondem
 <translation id="2787774054174244402">Definir a política como verdadeira evita que os usuários gravem em dispositivos de armazenamento externo.
 
       A não ser que o armazenamento externo seja bloqueado, se você definir a política ExternalStorageReadOnly como falsa ou deixá-la sem definição, os usuários poderão criar e modificar arquivos de dispositivos de armazenamento externo fisicamente graváveis. É possível bloquear o armazenamento externo definindo a ExternalStorageDisable como verdadeira.</translation>
-<translation id="2788443040242264100">Não mostrar a caixa de diálogo de cancelamento quando o event.preventDefault() do beforeunload for chamado.</translation>
 <translation id="2789742777235177478">Limitar o tempo em que um usuário autenticado por GAIA sem SAML pode fazer login off-line na tela de bloqueio</translation>
 <translation id="2796714419743648316">Lista de permissões com limites de tempo por app</translation>
 <translation id="2801065672151277034">Configurações de gerenciamento do certificado</translation>
@@ -6277,7 +6275,6 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 
       Observação: se não houver suporte para o método de entrada atual, ele vai ser alternado para o layout de teclado de hardware (se permitido) ou para a primeira entrada válida da lista. Métodos de entrada sem suporte ou inválidos são ignorados.</translation>
 <translation id="6483115462650732746">Mostrar o menu flutuante de acessibilidade no modo quiosque</translation>
-<translation id="6485036313708130232">Controlar o novo comportamento para um evento beforeunload mostrando a caixa de diálogo com a confirmação de cancelamento quando preventDefault for chamado</translation>
 <translation id="6489084406497912050">Controla se os usuários podem adicionar contas do Kerberos.
 
           Se esta política for ativada ou não for definida, os usuários poderão adicionar contas do Kerberos pela página de configurações de contas dele. Os usuários terão controle total das contas que adicionaram e poderão modificá-las ou removê-las.
@@ -7613,13 +7610,6 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="7613115815080726221">O tempo, em milissegundos, sem entrada do usuário após o qual a ação de inatividade é tomada.</translation>
 <translation id="7614663184588396421">Lista dos esquemas de protocolo desativados</translation>
 <translation id="7616631530432070402">Os pacotes de criptografia 3DES serão ativados em TLS</translation>
-<translation id="7617710923960807616">Esta política permite controlar se a caixa de diálogo de confirmação será mostrada quando uma página chamar preventDefault para o evento beforeunload. Antes, o <ph name="PRODUCT_NAME" /> não mostrava essas caixas de diálogo, mas o comportamento padrão está mudando. Esta política é uma solução temporária, destinada às empresas com sites que foram corrompidos pelo novo comportamento e que precisam de algum tempo até serem corrigidos.
-
-Se a política estiver ativada, a caixa de diálogo com a confirmação de cancelamento será mostrada quando uma página chamar preventDefault para o evento beforeunload.
-
-Se estiver desativada, nenhuma caixa de diálogo com a confirmação de cancelamento será mostrada quando uma página chamar preventDefault para o evento beforeunload.
-
-Se ela for deixada sem definição, o comportamento padrão será usado, de acordo com o plano de lançamento de recursos do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="761788785484453836">Exigir o isolamento de todos os sites</translation>
 <translation id="7620869951155758729">Esta política especifica a configuração que é usada para gerar e verificar o código de acesso do familiar responsável.
 

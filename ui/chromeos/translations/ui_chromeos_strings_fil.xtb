@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Mga setting ng device</translation>
 <translation id="2084809735218147718">Sumesenyas ng salamat</translation>
 <translation id="2088690981887365033">VPN network</translation>
+<translation id="209653272837065803">Walang sapat na storage space para maituloy ang pag-sync ng mga file</translation>
 <translation id="2111134541987263231">I-on ang <ph name="BEGIN_BOLD" />Payagan sa Incognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> (na) item ang ide-delete at hindi mo mare-restore ang mga ito.</translation>
 <translation id="2122305276694332719">Ang awtomatikong pagkonekta sa nakatagong network ay nagbibigay-daan sa ibang tao na makita ang iyong device at ibang setting ng network, at hindi ito inirerekomenda.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Simplified Chinese</translation>
 <translation id="22085916256174561">Korean</translation>
 <translation id="2208919847696382164">I-install gamit ang Linux</translation>
+<translation id="2215692307449050019">Paubos na ang baterya. Magpapatuloy ang pag-sync ng file kapag nakakonekta sa kuryente ang device mo.</translation>
 <translation id="2225536596944493418">Sigurado ka bang gusto mong i-delete ang <ph name="NUMBER_OF_ITEMS" /> (na) item?</translation>
 <translation id="2230062665678605299">Hindi malikha ang folder na "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Taong may kape</translation>
+<translation id="2247561763838186830">Na-log out ka</translation>
 <translation id="2251368349685848079">I-restore mula sa trash</translation>
 <translation id="2278133026967558505">Access sa file ng lahat ng website at URL</translation>
 <translation id="2282155092769082568">Autoconfiguration URL:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Hindi sinusuportahan ang uri ng file na ito. Pakibisita ang Chrome Web Store upang makahanap ng app na makakapagbukas ng ganitong uri ng file.</translation>
 <translation id="2326539130272988168">Bulgarian</translation>
 <translation id="2337715497728194187">I-share sa Bruschetta</translation>
+<translation id="233822363739146957">Walang sapat na storage space para ma-sync ang lahat ng iyong file</translation>
 <translation id="23721837607121582">I-download ang mobile profile, Network <ph name="NETWORK_INDEX" /> ng <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Lumipat sa list view</translation>
 <translation id="2377590462528165447">Nagbahagi ng <ph name="NUMBER_OF_ITEMS" /> (na) folder sa Linux</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Nagkaroon ng error sa pag-install ng Linux application</translation>
 <translation id="2802583107108007218">Matuto pa tungkol sa mga paghihigpit na ito</translation>
 <translation id="2803375539583399270">Ilagay ang PIN</translation>
+<translation id="2819519502129272135">Naka-off ang pag-sync ng file</translation>
 <translation id="2820957248982571256">Nagsa-scan...</translation>
 <translation id="2830077785865012357">Chinese Zhuyin</translation>
 <translation id="2843806747483486897">Baguhin ang default...</translation>
@@ -420,6 +425,7 @@
 <translation id="4432921877815220091">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, I-activate pagkatapos ng pag-set up ng device, Pinapamahalaan ng iyong Administrator</translation>
 <translation id="4439427728133035643">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Kumonekta</translation>
 <translation id="4442424173763614572">Nabigo ang paghahanap sa DNS</translation>
+<translation id="4445896958353114391">Nagsi-sync ng mga file</translation>
 <translation id="4462159676511157176">Custom na mga server ng pangalan</translation>
 <translation id="4465725236958772856">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Pinapamahalaan ng iyong Administrator, Kumonekta</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
@@ -441,6 +447,7 @@
 <translation id="4599600860674643278">Na-reset ang filter.</translation>
 <translation id="4603392156942865207">Kinokopya ang <ph name="FILE_NAME" /> sa <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artist</translation>
+<translation id="4635373743001040938">Napakakaunti ng storage space. Na-off ang pag-sync ng file.</translation>
 <translation id="4642769377300286600">Ini-install ang profile ng mobile, Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Czech na may Qwerty keyboard</translation>
 <translation id="4656777537938206294">Gawing available offline ang mga file</translation>
@@ -494,6 +501,7 @@
 <translation id="4961158930123534723">1 folder ang ibinahagi sa Parallels Desktop</translation>
 <translation id="496656650103537022">Naibalik ang <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Hindi matapos ang pag-set up ng pag-sync ng file</translation>
 <translation id="4973523518332075481">Gumamit ng pangalang may <ph name="MAX_LENGTH" /> (na) character o mas kaunti</translation>
 <translation id="4973970068702235170">Hindi na-zip, nagkaroon ng hindi inaasahang error: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japanese</translation>
@@ -517,6 +525,7 @@
 <translation id="5102922915594634436">Pamahalaan ang mga naka-sync na folder</translation>
 <translation id="5109254780565519649">Nagka-error. Posibleng hindi na-restore ang ilang item.</translation>
 <translation id="5110329002213341433">English (Canada)</translation>
+<translation id="5119780910075847424">Naka-pause ang pag-sync</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5129662217315786329">Polish</translation>
 <translation id="5144820558584035333">Hangul 3 Set (390)</translation>
@@ -800,6 +809,7 @@
 <translation id="7256405249507348194">Hindi nakikilalang error: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Mga available na serbisyo</translation>
 <translation id="7291818353625820805">Gustong maulit ang mga key? I-off ang mga accent mark sa Mga Setting ng Keyboard</translation>
+<translation id="729236380049459563">Naka-on ang pag-sync ng file</translation>
 <translation id="7292816689782057017">Pinaghihigpitan ng patakaran ng administrator ang pag-save sa ilang lokasyon.</translation>
 <translation id="7294063083760278948">Telugu Transliteration</translation>
 <translation id="7295662345261934369">Ibahagi sa iba</translation>
@@ -807,6 +817,7 @@
 <translation id="7309413087278791451">German (Belgium)</translation>
 <translation id="7339898014177206373">Bagong window</translation>
 <translation id="7343393116438664539">Vietnamese Telex</translation>
+<translation id="7347346221088620549">Naka-encrypt na file</translation>
 <translation id="7357762654218998920">Hindi sinusuportahan ang ganitong uri ng file. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /> tungkol sa pagbubukas ng mga file sa ChromeOS.</translation>
 <translation id="7359359531237882347">Kinokopya ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
 <translation id="7375951387215729722">Nakabukud-bukod ang listahan ng file ayon sa <ph name="COLUMN_NAME" /> sa pababang pagkakasunud-sunod.</translation>
@@ -912,6 +923,7 @@
 <translation id="8087576439476816834">I-download, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Ibinahagi sa akin</translation>
 <translation id="8116072619078571545">Tubig na may yelo</translation>
+<translation id="8124093710070495550">Isyu sa pag-sync</translation>
 <translation id="8128733386027980860">English (UK) na may Dvorak keyboard</translation>
 <translation id="8137331602592933310">Ibinahagi sa iyo ang "<ph name="FILENAME" />." Hindi mo ito matatanggal dahil hindi mo ito pagmamay-ari.</translation>
 <translation id="8138705869659070104">I-activate matapos ang setup</translation>
@@ -993,6 +1005,7 @@
 <translation id="8609695766746872526">Icelandic</translation>
 <translation id="863903787380594467">Mali ang PIN. Mayroon ka na lang <ph name="RETRIES" /> (na) natitirang pagsubok.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>
+<translation id="8656407365183407932">Kinailangang alisin ang iyong mga offline na file</translation>
 <translation id="8656768832129462377">Huwag suriin</translation>
 <translation id="8688591111840995413">Hindi magandang password</translation>
 <translation id="8698464937041809063">Drawing ng Google</translation>
@@ -1028,6 +1041,7 @@
 <translation id="8997962250644902079">Chinese (Traditional) Pinyin</translation>
 <translation id="8998871447376656508">Walang sapat na bakanteng espasyo sa iyong Google Drive para makumpleto ang pag-upload.</translation>
 <translation id="9003940392834790328">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Pinapamahalaan ng iyong Administrator, Mga Detalye</translation>
+<translation id="9007990314804111233">Mag-sign in sa iyong Microsoft account</translation>
 <translation id="9017798300203431059">Russian phonetic</translation>
 <translation id="9034924485347205037">Mga Linux file</translation>
 <translation id="9035012421917565900">Hindi na maibabalik ang mga item sa '<ph name="DESTINATION_NAME" />,' kaya hindi mo maa-undo ang pagkilos na ito.</translation>

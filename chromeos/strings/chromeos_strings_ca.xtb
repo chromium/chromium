@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Hi ha una nova funció disponible. Fes servir la tecla de fletxa amunt per obtenir més informació.</translation>
 <translation id="1059913517121127803">No s'ha pogut iniciar l'escaneig</translation>
+<translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">S'ha detectat un tallafoc</translation>
 <translation id="1075811647922107217">Mida de la pàgina</translation>
@@ -540,6 +541,7 @@
 <translation id="5257811368506016604">Activa el mode de color clar</translation>
 <translation id="5264277876637023664">Executa la prova de CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">L'APN està desactivat.</translation>
 <translation id="5275828089655680674">Torna a executar les rutines</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">color de la retroil·luminació</translation>
@@ -604,6 +606,7 @@
 <translation id="5832805196449965646">Afegeix una persona</translation>
 <translation id="583281660410589416">Desconegut</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
+<translation id="584953448295717128">L'APN es detecta automàticament.</translation>
 <translation id="5849570051105887917">Codi del proveïdor domèstic</translation>
 <translation id="5859603669299126575">Àlbum de la galeria d'art</translation>
 <translation id="5860033963881614850">Desactivat</translation>
@@ -882,6 +885,7 @@
 <translation id="80398733265834479">Activa el mode de color automàtic</translation>
 <translation id="8041089156583427627">Envia suggeriments</translation>
 <translation id="8045012663542226664">Silenci del micròfon</translation>
+<translation id="8067126283828232460">L'APN està connectat.</translation>
 <translation id="8075838845814659848">Càrrega restant</translation>
 <translation id="8076492880354921740">Pestanyes</translation>
 <translation id="8082366717211101304">No es pot resoldre el DNS des d'aplicacions d'Android</translation>
@@ -1028,6 +1032,7 @@
 <translation id="9111102763498581341">Desbloqueja</translation>
 <translation id="9122602430962285795">Per tornar-te a connectar, ves a Configuració</translation>
 <translation id="9126720536733509015">Desa múltiples pàgines en un PDF</translation>
+<translation id="9133104754938025929">Per estalviar bateria, l'estalvi de pantalla només funciona durant la càrrega.</translation>
 <translation id="9137526406337347448">Serveis de Google</translation>
 <translation id="9138630967333032450">Maj esquerra</translation>
 <translation id="9143347780818904997">durant <ph name="MINUTES" /> minuts</translation>

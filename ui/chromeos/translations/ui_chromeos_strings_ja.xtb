@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">デバイス設定</translation>
 <translation id="2084809735218147718">ありがとうとサインする</translation>
 <translation id="2088690981887365033">VPN ネットワーク</translation>
+<translation id="209653272837065803">空き容量が不足しているため、ファイルの同期を続行できません</translation>
 <translation id="2111134541987263231">[<ph name="BEGIN_BOLD" />シークレット モードでの実行を許可する<ph name="END_BOLD" />] をオンにする</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムが削除され、復元できなくなります。</translation>
 <translation id="2122305276694332719">非公開ネットワークに自動接続すると、お使いのデバイスと一部のネットワーク設定が他のユーザーに公開されます。そのためこの設定はおすすめしません。</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">中国語（簡体字）</translation>
 <translation id="22085916256174561">韓国語</translation>
 <translation id="2208919847696382164">Linux でのインストール</translation>
+<translation id="2215692307449050019">電池残量が少なくなっています。電源に接続すると、ファイルの同期が再開されます。</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを削除してもよろしいですか？</translation>
 <translation id="2230062665678605299">フォルダ「<ph name="FOLDER_NAME" />」を作成することができません。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">コーヒーを持っている人</translation>
+<translation id="2247561763838186830">ログアウトしました</translation>
 <translation id="2251368349685848079">ゴミ箱から復元</translation>
 <translation id="2278133026967558505">すべてのウェブサイトと URL によるファイル アクセス</translation>
 <translation id="2282155092769082568">自動設定 URL:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">このファイル形式はサポートされていません。Chrome ウェブストアにアクセスして、この形式のファイルを開くことができるアプリをお探しください。</translation>
 <translation id="2326539130272988168">ブルガリア語</translation>
 <translation id="2337715497728194187">Bruschetta と共有</translation>
+<translation id="233822363739146957">空き容量が不足しているため、すべてのファイルを同期できません</translation>
 <translation id="23721837607121582">モバイル プロファイルのダウンロード - <ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">リスト表示に切り替え</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> 個のフォルダが Linux と共有されています</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Linux アプリケーションのインストール中にエラーが発生しました</translation>
 <translation id="2802583107108007218">これらの制限の詳細</translation>
 <translation id="2803375539583399270">PIN を入力</translation>
+<translation id="2819519502129272135">ファイルの同期がオフになっています</translation>
 <translation id="2820957248982571256">スキャンしています…</translation>
 <translation id="2830077785865012357">中国語（注音）</translation>
 <translation id="2843806747483486897">デフォルトを変更...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">フィルタがリセットされました。</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> を <ph name="FOLDER_NAME" /> にコピーしています</translation>
 <translation id="4631887759990505102">アーティスト</translation>
+<translation id="4635373743001040938">空き容量がごくわずかとなっため、ファイルの同期はオフになりました。</translation>
 <translation id="4642769377300286600">モバイル プロファイルのインストール中 - <ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">チェコ語（QWERTY）キーボード</translation>
 <translation id="4656777537938206294">ファイルへのオフライン アクセスの有効化</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">1 個のフォルダが Parallels Desktop と共有されています</translation>
 <translation id="496656650103537022">「<ph name="FILE_NAME" />」を復元しました</translation>
 <translation id="4969785127455456148">アルバム</translation>
+<translation id="4972330214479971536">ファイルの同期の設定を完了できませんでした</translation>
 <translation id="4973523518332075481">名前は <ph name="MAX_LENGTH" /> 文字以内で指定してください</translation>
 <translation id="4973970068702235170">圧縮できませんでした。予期しないエラー: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">日本語</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">ドイツ語（ベルギー）</translation>
 <translation id="7339898014177206373">新しいウィンドウ</translation>
 <translation id="7343393116438664539">ベトナム語（テレックス）</translation>
+<translation id="7347346221088620549">暗号化されたファイル</translation>
 <translation id="7357762654218998920">このファイル形式はサポートされていません。Chrome OS でファイルを開く方法については、<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムをコピーしています...</translation>
 <translation id="7375951387215729722">ファイルの一覧は <ph name="COLUMN_NAME" /> の降順で並べ替えられています。</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">アイスランド語</translation>
 <translation id="863903787380594467">PIN が正しくありません。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ポート</translation>
+<translation id="8656407365183407932">オフライン ファイルを削除する必要があります</translation>
 <translation id="8656768832129462377">確認しない</translation>
 <translation id="8688591111840995413">不正なパスワード</translation>
 <translation id="8698464937041809063">Google 図形描画</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">中国語（繁体）（ピンイン）</translation>
 <translation id="8998871447376656508">Google ドライブに十分な空き容量がないため、アップロードを完了できません。</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、詳細</translation>
+<translation id="9007990314804111233">Microsoft アカウントにログインする</translation>
 <translation id="9017798300203431059">ロシア語（表音）</translation>
 <translation id="9034924485347205037">Linux ファイル</translation>
 <translation id="9035012421917565900">この操作は元に戻せません（これらのアイテムを「<ph name="DESTINATION_NAME" />」に戻すことはできません）。</translation>

@@ -320,7 +320,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7036251913954633326">如果您只想使用此帳戶一次，可以在 Chrome 瀏覽器中使用<ph name="GUEST_LINK_BEGIN" />訪客模式<ph name="GUEST_LINK_END" />。如要新增其他人的帳戶，請<ph name="LINK_BEGIN" />新增使用者<ph name="LINK_END" />至您的 <ph name="DEVICE_TYPE" />。
 
 您已向網站和應用程式授予的權限，可能會套用到此帳戶。您可在「<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />」中管理 Google 帳戶。</translation>
-<translation id="7062128746136194023">您的家長已停用 Chrome 的「網站、應用程式和擴充程式權限」設定，因此您無法新增此<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="7071827361006050863">Chrome 即將刪除瀏覽資料</translation>
 <translation id="7085332316435785646">選擇是否包含 Chrome 記錄，以便在 Google 服務中享有更個人化的體驗</translation>
 <translation id="7088681679121566888">Chrome 目前是最新版本</translation>
@@ -383,7 +382,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8255190535488645436">Google Chrome 正在使用您的相機和麥克風。</translation>
 <translation id="8270775718612349140">由 Chrome 管理的憑證</translation>
 <translation id="8286862437124483331">Google Chrome 正在嘗試顯示密碼。如果您同意，請輸入您的 Windows 密碼。</translation>
-<translation id="828798499196665338">您的家長已停用 Chrome 的「網站、應用程式和擴充程式權限」設定，因此您無法啟用此<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="8290100596633877290">真糟糕！Google Chrome 當機了，要立即重新啟動嗎？</translation>
 <translation id="829923460755755423">新增「Google 密碼管理工具」的捷徑</translation>
 <translation id="8342675569599923794">此檔案不安全，因此 Chrome 已封鎖此檔案。</translation>

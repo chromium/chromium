@@ -239,6 +239,7 @@
 <translation id="5394833366792865639">Del en Chrome-fane</translation>
 <translation id="5412485296464121825">Nettsteder kan lagre informasjon om interessene dine i Chrome. Hvis du for eksempel besøker et nettsted for å kjøpe maratonsko, kan det hende nettstedet definerer interessen din som maratonløp. Hvis du senere besøker et annet nettsted for å melde deg på et løp, kan dette nettstedet vise deg en annonse for løpesko basert på interessene dine.</translation>
 <translation id="5430073640787465221">Innstillingsfilen er skadet eller ugyldig. Google Chrome kan ikke gjenopprette innstillingene dine.</translation>
+<translation id="5521146392841465297">Chrome anbefaler at du går gjennom denne utvidelsen.</translation>
 <translation id="5524761631371622910">Når prøveprosjekter er påslått, og hvis Chrome har plassert deg tilfeldig i et aktivt prøveprosjekt, påvirker nettleserloggen din annonsene du ser, og interessene som er anslått nedenfor. For å beskytte personvernet ditt sletter Chrome interessene dine på rullerende basis hver måned.</translation>
 <translation id="5530733413481476019">Gjør Chrome raskere</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-Inn)</translation>
@@ -312,7 +313,6 @@
 <translation id="7036251913954633326">Hvis du vil bruke denne kontoen kun én gang, kan du bruke <ph name="GUEST_LINK_BEGIN" />gjestemodus<ph name="GUEST_LINK_END" /> i Chrome-nettleseren. Hvis du vil legge til en konto for noen andre, kan du <ph name="LINK_BEGIN" />legge til en ny person<ph name="LINK_END" /> på <ph name="DEVICE_TYPE" />.
 
 Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne kontoen. Du kan administrere Google-kontoene dine i <ph name="SETTINGS_LINK_BEGIN" />innstillingene<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7062128746136194023">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chrome. Du har ikke tillatelse til å legge til denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7071827361006050863">Chrome sletter snart nettlesingsdata</translation>
 <translation id="7085332316435785646">Velg om Chrome-loggen skal inkluderes for å gi opplevelser i Google-tjenester mer personlig preg</translation>
 <translation id="7088681679121566888">Chrome er oppdatert</translation>
@@ -375,7 +375,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8255190535488645436">Google Chrome bruker kameraet og mikrofonen din.</translation>
 <translation id="8270775718612349140">Sertifikater administreres av Chrome</translation>
 <translation id="8286862437124483331">Google Chrome forsøker å vise passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
-<translation id="828798499196665338">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chrome. Du har ikke tillatelse til å slå på denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Google Chrome har krasjet. Vil du starte på nytt nå?</translation>
 <translation id="829923460755755423">Legg til en snarvei i Google Passordlagring</translation>
 <translation id="8342675569599923794">Denne filen er farlig, så Chrome har blokkert den.</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="ro">
 <translation id="1026101648481255140">Reia instalarea</translation>
 <translation id="1029669172902658969">Relansează pentru a actualiza sistemul de operare &amp;Chromium</translation>
+<translation id="1040916596585577953">Chromium îți recomandă să examinezi această extensie</translation>
 <translation id="1065672644894730302">Preferințele dvs. nu pot fi citite. Este posibil ca unele funcții să nu fie disponibile, iar modificările aduse preferințelor nu vor fi salvate.</translation>
 <translation id="1098170124587656448">Chromium te protejează împotriva încălcării securității datelor, a extensiilor necorespunzătoare și nu numai</translation>
 <translation id="1104942323762546749">Chromium vrea să îți exporte parolele. Pentru a permite asta, introdu parola pentru Windows.</translation>
@@ -276,7 +277,6 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
 <translation id="6734291798041940871">Chromium este instalat deja pentru toți utilizatorii de pe computerul tău.</translation>
 <translation id="673636774878526923">Pentru a accesa informațiile din Chromium pe toate dispozitivele, conectează-te, apoi activează sincronizarea.</translation>
 <translation id="67706546131546258">Chromium îți recomandă să scanezi acest fișier, deoarece ar putea fi periculos.</translation>
-<translation id="6774082503108938489">Părintele tău a dezactivat opțiunea „Permisiuni pentru site-uri, aplicații și extensii” în Chromium. Activarea acestei <ph name="EXTENSION_TYPE_PARAMETER" /> nu este permisă.</translation>
 <translation id="6779406956731413166">Sistemul de operare Chromium este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar.</translation>
 <translation id="6847869444787758381">Chromium te anunță dacă parolele tale sunt compromise</translation>
 <translation id="6852530923436401894">Chromium a blocat fișierul deoarece conține programe malware</translation>
@@ -363,7 +363,6 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8463672209299734063">Opțional: contribuie la îmbunătățirea funcțiilor și a performanței sistemului de operare Chromium, trimițând automat la Google date de diagnosticare și de utilizare.</translation>
 <translation id="8493179195440786826">Chromium nu este actualizat</translation>
 <translation id="8550334526674375523">Acest profil de serviciu este complet separat de profilul tău personal.</translation>
-<translation id="8558383651099478961">Părintele tău a dezactivat opțiunea „Permisiuni pentru site-uri, aplicații și extensii” în Chromium. Adăugarea acestei <ph name="EXTENSION_TYPE_PARAMETER" /> nu este permisă.</translation>
 <translation id="8568283329061645092">Chromium poate să îți verifice parolele atunci când te conectezi folosind Contul Google</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cum folosim aceste date:<ph name="END_BOLD" /> site-urile pot stoca informații în Chromium despre interesele tale. De exemplu, dacă accesezi un site ca să cumperi pantofi pentru un maraton, site-ul poate defini interesul tău drept maraton. Mai târziu, dacă accesezi alt site ca să te înscrii într-o cursă, acel site îți poate afișa un anunț pentru pantofi de alergare pe baza intereselor tale.</translation>

@@ -185,6 +185,7 @@
 <translation id="1770726142253415363">قطار <ph name="ROW_NUMBER" /> کالم <ph name="COLUMN_NUMBER" /> میں منتقل کر دیا گیا۔</translation>
 <translation id="1771761307086386028">دائیں اسکرول کریں</translation>
 <translation id="1774796056689732716">کیلنڈر، <ph name="CURRENT_MONTH_YEAR" />، فی الحال <ph name="DATE" /> کو منتخب کیا گیا ہے۔</translation>
+<translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" /> میں سے <ph name="NUM_SHOWN_ITEMS" /> دکھائے جا رہے ہیں</translation>
 <translation id="1787955149152357925">آف</translation>
 <translation id="181103072419391116">سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="1815245884418711390">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ آف ہے۔</translation>

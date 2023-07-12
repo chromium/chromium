@@ -321,7 +321,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7036251913954633326">Хэрэв та энэ бүртгэлийг зөвхөн нэг удаа ашиглахыг хүсвэл Chrome хөтчид <ph name="GUEST_LINK_BEGIN" />Зочны горимыг<ph name="GUEST_LINK_END" /> ашиглах боломжтой. Хэрэв та өөр хэн нэгний бүртгэлийг нэмэхийг хүсвэл өөрийн <ph name="DEVICE_TYPE" /> дээр <ph name="LINK_BEGIN" />шинэ хүн нэмнэ үү<ph name="LINK_END" />.
 
 Таны вебсайтууд болон аппуудад аль хэдийн өгсөн зөвшөөрөл нь энэ бүртгэлд хэрэгжиж болзошгүй. Та Google Бүртгэлүүдээ <ph name="SETTINGS_LINK_BEGIN" />Тохиргоо<ph name="SETTINGS_LINK_END" /> хэсэгт удирдах боломжтой.</translation>
-<translation id="7062128746136194023">Таны эцэг эх Chrome-н "Сайтууд, аппууд болон өргөтгөлүүдийн зөвшөөрөл"-ийг унтраасан байна. Энэ <ph name="EXTENSION_TYPE_PARAMETER" />-г нэмэхийг зөвшөөрдөггүй.</translation>
 <translation id="7071827361006050863">Chrome удахгүй интернэтээр үзсэн өгөгдлийг устгана</translation>
 <translation id="7085332316435785646">Google-н үйлчилгээнүүдэд илүү хувийн болгосон туршлага авахын тулд Chrome-н түүхийг багтаах эсэхээ сонгоно уу</translation>
 <translation id="7088681679121566888">Chrome шинэчлэгдсэн байна</translation>
@@ -384,7 +383,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8255190535488645436">Google Chrome нь таны камер болон микрофоныг ашиглаж байна.</translation>
 <translation id="8270775718612349140">Chrome-н удирддаг гэрчилгээ</translation>
 <translation id="8286862437124483331">Google Chrome нь нууц үгийг харуулахыг оролдож байна. Үүнийг зөвшөөрөхийн тулд Windows-ийн нууц үгээ бичиж оруулна уу.</translation>
-<translation id="828798499196665338">Таны эцэг эх Chrome-н "Сайтууд, аппууд болон өргөтгөлүүдийн зөвшөөрөл"-ийг унтраасан байна. Энэ <ph name="EXTENSION_TYPE_PARAMETER" />-г идэвхжүүлэхийг зөвшөөрдөггүй.</translation>
 <translation id="8290100596633877290">Өө! Google Chrome гэмтсэн байна. Дахин эхлүүлэх үү?</translation>
 <translation id="829923460755755423">Google Password Manager-т товчлол нэмэх</translation>
 <translation id="8342675569599923794">Энэ файл аюултай тул Chrome блоклосон байна.</translation>

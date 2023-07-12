@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（スレッド数 <ph name="THREAD_COUNT" />、<ph name="CPU_MAX_CLOCK_SPEED" /> GHz）</translation>
 <translation id="1047773237499189053">新しい機能があります。上矢印キーで詳細を確認できます。</translation>
 <translation id="1059913517121127803">スキャンを開始できませんでした</translation>
+<translation id="1062823486781306604"><ph name="INDEX" />/<ph name="COUNT" />、<ph name="NAME" />。</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ファイアウォールが検出されました</translation>
 <translation id="1075811647922107217">ページサイズ</translation>
@@ -540,6 +541,7 @@
 <translation id="5257811368506016604">ライトカラー モードを有効にする</translation>
 <translation id="5264277876637023664">CPU テストを実行</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN は無効になっています。</translation>
 <translation id="5275828089655680674">ルーティンを再実行</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">バックライトの色</translation>
@@ -604,6 +606,7 @@
 <translation id="5832805196449965646">ユーザーを追加</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5843706793424741864">華氏</translation>
+<translation id="584953448295717128">APN は自動的に検出されます。</translation>
 <translation id="5849570051105887917">ホーム プロバイダのコード</translation>
 <translation id="5859603669299126575">アート ギャラリーのアルバム</translation>
 <translation id="5860033963881614850">OFF</translation>
@@ -882,6 +885,7 @@
 <translation id="80398733265834479">自動カラー モードを有効にする</translation>
 <translation id="8041089156583427627">フィードバックを送信</translation>
 <translation id="8045012663542226664">マイクのミュート</translation>
+<translation id="8067126283828232460">APN に接続しました。</translation>
 <translation id="8075838845814659848">バッテリー残量</translation>
 <translation id="8076492880354921740">タブ</translation>
 <translation id="8082366717211101304">Android アプリから DNS を解決できません</translation>
@@ -1028,6 +1032,7 @@
 <translation id="9111102763498581341">ロック解除</translation>
 <translation id="9122602430962285795">再接続するには　[設定] に移動します</translation>
 <translation id="9126720536733509015">複数のページを保存して 1 つの PDF にまとめる</translation>
+<translation id="9133104754938025929">バッテリーを節約するため、スクリーン セーバーは充電中のみ有効になります。</translation>
 <translation id="9137526406337347448">Google サービス</translation>
 <translation id="9138630967333032450">左シフト</translation>
 <translation id="9143347780818904997"><ph name="MINUTES" /> 分間</translation>

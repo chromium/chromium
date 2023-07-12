@@ -35,7 +35,6 @@
 <translation id="2695886661449553974">Chrome ei saanud värskendusi otsida. Proovige hiljem uuesti.</translation>
 <translation id="2732745070297234559">Chrome'il ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>
 <translation id="2736805085127235148">Chrome’i märguanded on praegu teie seadme seadetes välja lülitatud.</translation>
-<translation id="2754286486056173475">Chrome’is kalendrisündmuste loomine</translation>
 <translation id="2767464022270041271">Salvestatud paroole ei ole. Google'i paroolihaldur saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="2840432500933227975">Avage iOS-is Chrome'i seaded, seejärel puudutage valikut „Brauseri vaike-APP” ja valige Chrome.</translation>
 <translation id="2869959624320573933">Logige Chromeʼi sisse</translation>
@@ -51,7 +50,6 @@
 <translation id="3522659714780527202">Selleks et näha vahelehti kõikjalt, kus Chrome'i kasutate, lülitage sisse sünkroonimine</translation>
 <translation id="3533694711092285624">Salvestatud paroole ei ole. Chrome saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="3594076341410558780">Valiku „Kasutage Chrome'i parimal moel” peitmine</translation>
-<translation id="3611867725106943284">Puudutage valikut „Kuva Google Mapsi abil Chrome'is“</translation>
 <translation id="3655656110921623717">See tähendab, et Chrome taotleb iga kord mobiilisaiti.</translation>
 <translation id="3720541637541300822">Chrome'i sulgemisel inkognito vahelehtede lukustamine</translation>
 <translation id="3827545470516145620">Saate selles seadmes standardse turvakaitse</translation>
@@ -60,6 +58,7 @@
 <translation id="3984746313391923992">Teie organisatsioon nõuab, et jääksite Chrome'ist väljalogituks.</translation>
 <translation id="3988789688219830639">Google Chrome'il pole juurdepääsu fotodele ega videotele. Lubage iOS-is juurdep. valikutega Seaded &gt; Privaatsus &gt; Fotod.</translation>
 <translation id="4064699917955374540">Chrome’i andmete kasutamiseks ja salvestamiseks oma Google’i kontol kinnitage, et see olete teie.</translation>
+<translation id="4093042601582616698">Kas soovite Chrome'i vaikebrauseriks määrata?</translation>
 <translation id="417201473131094001">Ei toetata versioonis Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> kasutas Chrome'i ning jättis järjehoidjad, paroolid ja muud seaded sellesse seadmesse.</translation>
 <translation id="424864128008805179">Kas logida Chrome'ist välja?</translation>
@@ -104,7 +103,6 @@
 <translation id="6676840375528380067">Kas kustutada sellest seadmest Chrome'i andmed?</translation>
 <translation id="6709398533399187136">Teie parool oli andmetega seotud rikkumise käigus avalikustatud. Google'i paroolihaldur soovitab teil kohe seda parooli muuta.</translation>
 <translation id="6822673484890854830">Chrome'il ei õnnestunud kõiki paroole kontrollida. Proovige hiljem uuesti.</translation>
-<translation id="6896070677477855330">Lülitage sisse valik „Chrome’i sulgemisel inkognito vahelehtede lukustamine“.</translation>
 <translation id="6964931465519938134">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="6975725306479268850">Valige automaattäite jaoks Chrome</translation>
 <translation id="7059914902409643750">Isikupärastage Chrome'i</translation>
@@ -147,7 +145,6 @@
 <translation id="8765470054473112089">Kui sisestate teksti aadressiribale või otsingukasti, saadab Chrome teie sisestatud teksti teie vaikeotsingumootorisse, et saada paremaid soovitusi. See on inkognito režiimis välja lülitatud.</translation>
 <translation id="8772179140489533211">Kuvatakse viibad Chrome'i sisselogimiseks.</translation>
 <translation id="8788269841521769222">Te ei pea seda parooli meelde jätma. See salvestatakse konto <ph name="EMAIL" /> Google'i paroolihaldurisse.</translation>
-<translation id="880967149107462122">Chrome’i seadete avamine</translation>
 <translation id="8857676124663337448">Google'i paroolihalduril ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>
 <translation id="8897749957032330183">Paroolid salvestatakse selles seadmes Google'i paroolihaldurisse.</translation>
 <translation id="8969290730818637510">Kui see on sisse lülitatud

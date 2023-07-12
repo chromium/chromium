@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">ഉപകരണ ക്രമീകരണം</translation>
 <translation id="2084809735218147718">നന്ദി അറിയിക്കുന്ന വ്യക്തി</translation>
 <translation id="2088690981887365033">VPN നെറ്റ്‍വർക്ക്</translation>
+<translation id="209653272837065803">നിങ്ങളുടെ എല്ലാ ഫയലുകളും സമന്വയിപ്പിക്കുന്നത് തുടരാൻ ആവശ്യമായ സ്‌റ്റോറേജ് സ്‌പെയ്‌സ് ഇല്ല</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />അദൃശ്യ മോഡിൽ അനുവദിക്കുക<ph name="END_BOLD" /> ഓണാക്കുക</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ഇല്ലാതാക്കും, നിങ്ങൾക്ക് അവ പുനഃസ്ഥാപിക്കാനാകില്ല.</translation>
 <translation id="2122305276694332719">മറച്ച നെറ്റ്‌വർക്കിലേക്ക് സ്വയമേവ കണക്‌റ്റ് ചെയ്യുന്നതിലൂടെ നിങ്ങളുടെ ഉപകരണവും ചില നെറ്റ്‌വർക്ക് ക്രമീകരണവും കാണാൻ മറ്റുള്ളവരെ അനുവദിക്കുന്നതിനാൽ അത് ശുപാർശചെയ്യുന്നില്ല.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">(ലളിതമാക്കിയ ചൈനീസ്)</translation>
 <translation id="22085916256174561">കൊറിയൻ</translation>
 <translation id="2208919847696382164">Linux ഉപയോഗിച്ച് ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
+<translation id="2215692307449050019">ബാറ്ററി ചാർജ് കുറവാണ്. വൈദ്യുതിയിലേക്ക് കണക്‌റ്റ് ചെയ്യുമ്പോൾ ഫയൽ സമന്വയിപ്പിക്കൽ പുനരാരംഭിക്കും.</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ഇല്ലാതാക്കണമെന്ന് ഉറപ്പാണോ?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ഫോൾഡർ സൃഷ്‌ടിക്കാനാവില്ല. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">കോഫി പിടിച്ചിരിക്കുന്ന വ്യക്തി</translation>
+<translation id="2247561763838186830">നിങ്ങൾ ലോഗൗട്ട് ചെയ്തു</translation>
 <translation id="2251368349685848079">ട്രാഷിൽ നിന്നും പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="2278133026967558505">എല്ലാ വെബ്സൈറ്റുകൾക്കും URL-കൾക്കും ഫയൽ ആക്‌സസ് ചെയ്യാം</translation>
 <translation id="2282155092769082568">സ്വയമേവ കോൺഫിഗറേഷൻ URL:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">ഈ ഫയൽ തരം പിന്തുണയ്‌ക്കുന്നില്ല. ഈ ഫയൽ തരം തുറക്കാൻ കഴിയുന്ന ഒരു ആപ്പ് കണ്ടെത്തുന്നതിന് ഒരു Chrome വെബ് സ്റ്റോർ കണ്ടെത്തുക.</translation>
 <translation id="2326539130272988168">ബൾഗേറിയൻ</translation>
 <translation id="2337715497728194187">Bruschetta-യുമായി പങ്കിടുക</translation>
+<translation id="233822363739146957">നിങ്ങളുടെ എല്ലാ ഫയലുകളും സമന്വയിപ്പിക്കാൻ ആവശ്യമായ സ്‌റ്റോറേജ് സ്‌പെയ്‌സ് ഇല്ല</translation>
 <translation id="23721837607121582">മൊബൈൽ പ്രൊഫൈൽ ഡൗൺലോഡ് ചെയ്യുക, <ph name="NETWORK_COUNT" /> എണ്ണത്തിൽ <ph name="NETWORK_INDEX" />-ാമത്തെ നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ലിസ്റ്റ് കാഴ്‌ചയിലേക്ക് മാറുക</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ഫോൾഡറുകൾ Linux ഉപയോഗിച്ച് പങ്കിട്ടു</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Linux ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുന്നതിൽ പിഴവ്</translation>
 <translation id="2802583107108007218">ഈ നിയന്ത്രണങ്ങളെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="2803375539583399270">പിൻ നൽകുക</translation>
+<translation id="2819519502129272135">ഫയൽ സമന്വയിപ്പിക്കൽ ഓഫാക്കി</translation>
 <translation id="2820957248982571256">സ്‌കാൻ ചെയ്യുന്നു...</translation>
 <translation id="2830077785865012357">ചൈനീസ് സുയിൻ</translation>
 <translation id="2843806747483486897">ഡിഫോൾട്ട് മാറ്റുക...</translation>
@@ -442,6 +447,7 @@
 <translation id="4599600860674643278">ഫിൽട്ടർ റീസെറ്റ് ചെയ്തു.</translation>
 <translation id="4603392156942865207"><ph name="FOLDER_NAME" /> ഫോൾഡറിലേക്ക് <ph name="FILE_NAME" /> പകർത്തുന്നു</translation>
 <translation id="4631887759990505102">ആര്‍ട്ടിസ്റ്റ്</translation>
+<translation id="4635373743001040938">സ്‌റ്റോറേജ് സ്‌പെയ്‌സ് വളരെ കുറവായിരുന്നു. ഫയൽ സമന്വയിപ്പിക്കൽ ഓഫാക്കി.</translation>
 <translation id="4642769377300286600">മൊബെെൽ പ്രൊഫെെൽ ഇൻസ്‌റ്റാൾ ചെയ്യുന്നു, <ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" />-ാമത്തെ നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Qwerty കീബോർഡ് ഉള്ള ചെക്ക്</translation>
 <translation id="4656777537938206294">ഫയലുകൾ ഓഫ്‌ലൈനിൽ ലഭ്യമാക്കുക</translation>
@@ -495,6 +501,7 @@
 <translation id="4961158930123534723">Parallels Desktop ഉപയോഗിച്ച് ഒരു ഫോൾഡർ പങ്കിട്ടു</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="4969785127455456148">ആല്‍‌ബം</translation>
+<translation id="4972330214479971536">ഫയൽ സമന്വയിപ്പിക്കൽ സജ്ജീകരിക്കുന്നത് പൂർത്തിയാക്കാനായില്ല</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> പ്രതീകങ്ങളോ അതിൽ കുറവോ ഉള്ള ഒരു പേര് ഉപയോഗിക്കുക</translation>
 <translation id="4973970068702235170">അപ്രതീക്ഷിത പിശക് കാരണം സിപ്പ് ചെയ്യൽ പരാജയപ്പെട്ടു: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">ജാപ്പനീസ്</translation>
@@ -810,6 +817,7 @@
 <translation id="7309413087278791451">ജർമ്മൻ (ബെൽജിയം)</translation>
 <translation id="7339898014177206373">പുതിയ വിന്‍ഡോ</translation>
 <translation id="7343393116438664539">വിയറ്റ്നാമീസ് ടെലക്‌സ്</translation>
+<translation id="7347346221088620549">എന്‍ക്രിപ്റ്റ് ചെയ്‌ത ഫയൽ</translation>
 <translation id="7357762654218998920">ഈ ഫയൽ തരം പിന്തുണയ്ക്കുന്നില്ല. ChromeOS-ൽ ഫയലുകൾ തുറക്കുന്നതിനെ കുറിച്ച് <ph name="BEGIN_LINK_HELP" />കൂടുതലറിയുക<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ പകർത്തുന്നു...</translation>
 <translation id="7375951387215729722">അവരോഹണ ക്രമത്തിൽ <ph name="COLUMN_NAME" /> അടുക്കിയ ഫയൽ ലിസ്‌റ്റ്.</translation>
@@ -997,6 +1005,7 @@
 <translation id="8609695766746872526">ഐസ്‌ലാന്‍ഡിക്</translation>
 <translation id="863903787380594467">പിൻ തെറ്റാണ്. നിങ്ങൾക്ക് <ph name="RETRIES" /> ശ്രമങ്ങൾ കൂടി ബാക്കിയുണ്ട്.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - പോർട്ട്</translation>
+<translation id="8656407365183407932">നിങ്ങളുടെ ഓഫ്‌ലൈൻ ഫയലുകൾ നീക്കം ചെയ്യേണ്ടി വന്നു</translation>
 <translation id="8656768832129462377">പരിശോധിക്കരുത്</translation>
 <translation id="8688591111840995413">പാസ്‌വേഡ് മോശമാണ്</translation>
 <translation id="8698464937041809063">Google ഡ്രോയിംഗ്</translation>
@@ -1032,6 +1041,7 @@
 <translation id="8997962250644902079">ചൈനീസ് (പരമ്പരാഗതം) പിൻയിൻ</translation>
 <translation id="8998871447376656508">അപ്‌ലോഡ് ചെയ്യൽ പൂർത്തിയാക്കാൻ നിങ്ങളുടെ Google Drive-ൽ ആവശ്യമായ ഇടമില്ല.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്, വിശദാംശങ്ങൾ</translation>
+<translation id="9007990314804111233">നിങ്ങളുടെ Microsoft അക്കൗണ്ടിലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="9017798300203431059">റഷ്യൻ സ്വരസൂചകം</translation>
 <translation id="9034924485347205037">Linux ഫയലുകൾ</translation>
 <translation id="9035012421917565900">ഇനങ്ങൾ '<ph name="DESTINATION_NAME" />' എന്നതിലേക്ക് തിരികെ നീക്കാൻ കഴിയാത്തതിനാൽ, ഈ പ്രവൃത്തി നിങ്ങൾക്ക് പഴയപടിയാക്കാനാവില്ല.</translation>

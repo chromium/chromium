@@ -276,7 +276,6 @@
 <translation id="6734291798041940871">已为您计算机上的所有用户都安装 Chromium。</translation>
 <translation id="673636774878526923">如需在您的所有设备上访问自己的 Chromium 信息，请登录您的帐号，然后开启同步功能。</translation>
 <translation id="67706546131546258">Chromium 建议您扫描此文件，因为它可能包含危险因素。</translation>
-<translation id="6774082503108938489">您的家长已为 Chromium 停用“网站、应用和扩展程序的权限”。因此，您无法启用该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="6779406956731413166">Chromium 操作系统是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="6847869444787758381">Chromium 会让您知道您的密码是否曾被泄露</translation>
 <translation id="6852530923436401894">Chromium 屏蔽了此文件，因为它包含恶意软件</translation>
@@ -363,7 +362,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8463672209299734063">可选：自动向 Google 发送诊断数据和使用情况数据，协助改进 Chromium 操作系统的功能和性能。</translation>
 <translation id="8493179195440786826">Chromium版本太旧</translation>
 <translation id="8550334526674375523">此工作资料与您的个人资料是完全分开的。</translation>
-<translation id="8558383651099478961">您的家长已为 Chromium 停用“网站、应用和扩展程序的权限”。因此，您无法添加该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="8568283329061645092">您需要先登录 Google 帐号才能使用 Chromium 的密码检查功能。</translation>
 <translation id="8586442755830160949">版权所有<ph name="YEAR" /> The Chromium Authors。保留所有权利。</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />我们会如何使用这些数据<ph name="END_BOLD" />：网站可以将您的兴趣信息存储在 Chromium 中。例如，如果您访问某个网站购买马拉松跑鞋，系统可能会根据该网站推测您对跑马拉松感兴趣。之后，如果您访问其他网站报名参加比赛，相应网站就可以根据您的兴趣向您展示跑鞋广告。</translation>

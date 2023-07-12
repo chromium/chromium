@@ -223,6 +223,7 @@ Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph
 
       Se il criterio è impostato su false o non viene configurato, le pagine web possono usare l'API WebGL e i plug-in possono usare l'API Pepper 3D, ma le impostazioni predefinite del browser potrebbero comunque richiedere argomenti della riga di comando per usare queste API.</translation>
 <translation id="1198458955128279215">Utilizza il comportamento predefinito del piano di implementazione delle funzionalità.</translation>
+<translation id="119943715168319757">Impostazioni MIDI</translation>
 <translation id="1202216683470826356">Mostra schede nella pagina Nuova scheda</translation>
 <translation id="120314092766637918">Se questo criterio viene attivato o se non viene configurato, la protezione contro il phishing lato client verrà controllata da <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> per <ph name="PRODUCT_NAME" />. Se <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> è impostato su <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> o <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />, la protezione dal phishing lato client esegue un modello locale per verificare se si tratta di una pagina come phishing. Se il modello ritiene che la pagina sia di phishing, <ph name="PRODUCT_NAME" /> invia a Google una richiesta di esito finale.
 Se questo criterio viene disattivato, la protezione contro il phishing lato client non esegue alcuna protezione e non invia dati a Google per esiti.</translation>
@@ -875,7 +876,6 @@ Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le ist
 <translation id="1768225118528727376">Concedi l'autorizzazione per la gestione delle finestre su questi siti</translation>
 <translation id="1770071413238151235">Formato dell'orologio di 12 ore</translation>
 <translation id="1771024053220392089">Disattiva Supporto dei browser precedenti</translation>
-<translation id="1781225230395284182">Mostra la finestra di dialogo di annullamento prima dell'unload della chiamata di event.preventDefault().</translation>
 <translation id="1781356041596378058">Questa norma controlla anche l'accesso alle Opzioni sviluppatore di Android. Se la norma viene impostata su true, gli utenti non possono accedere alle Opzioni sviluppatore. Se la norma viene impostata su false o non viene impostata, gli utenti possono accedere alle Opzioni sviluppatore toccando sette volte il numero di build nell'app Impostazioni di Android.</translation>
 <translation id="1787790976045065845">Questo criterio viene applicato soltanto se il criterio <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> è impostato su <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> o <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> e un utente che effettua l'autenticazione tramite smart card rimuove quest'ultima. Consente inoltre di specificare per quanti secondi viene visualizzata una notifica che informa l'utente dell'azione imminente. Questa notifica blocca lo schermo. L'azione viene compiuta soltanto allo scadere della notifica. L'utente può impedire l'azione inserendo di nuovo la smart card prima della scadenza della notifica. Se questo criterio viene impostato su 0, non viene visualizzata alcuna notifica e l'azione viene compiuta immediatamente.</translation>
 <translation id="1793346220873697538">Disattiva la stampa PIN per impostazione predefinita</translation>
@@ -1993,7 +1993,6 @@ Nota: l'omissione di un campo implica la corrispondenza di tutti i valori per il
 <translation id="2787774054174244402">L'impostazione del criterio su True impedisce agli utenti di scrivere su dispositivi di archiviazione esterni.
 
       A meno che lo spazio di archiviazione esterno non sia bloccato, se imposti ExternalStorageReadOnly su False o non lo imposti, gli utenti possono creare e modificare i file dei dispositivi di archiviazione esterni fisicamente scrivibili. Puoi bloccare lo spazio di archiviazione esterno impostando ExternalStorageDisable su True.</translation>
-<translation id="2788443040242264100">Non mostrare la finestra di dialogo di annullamento prima dell'unload della chiamata di event.preventDefault().</translation>
 <translation id="2789742777235177478">Limita il tempo per cui un utente autenticato tramite GAIA senza SAML può accedere offline nella schermata di blocco</translation>
 <translation id="2796714419743648316">Lista consentita limiti di utilizzo per app</translation>
 <translation id="2801065672151277034">Impostazioni di gestione dei certificati</translation>
@@ -2595,6 +2594,7 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 <translation id="3278042410658310805">Disattiva la funzione di lettura vocale nella schermata di accesso e consenti all'utente di attivarla temporaneamente</translation>
 <translation id="328347261792478720">Per impostazione predefinita, nel browser vengono mostrati consigli di contenuti multimediali personalizzati in base agli interessi dell'utente. Se questo criterio viene impostato su Disattivato, questi consigli vengono nascosti all'utente. Se il criterio viene impostato su Attivato o se non viene configurato, i consigli di contenuti multimediali vengono mostrati all'utente.</translation>
 <translation id="3284094172359247914">Controlla l'utilizzo dell'API WebUSB</translation>
+<translation id="3284658508278342293">Consenti l'autorizzazione MIDI su questi siti</translation>
 <translation id="3286159327013237833">Attiva i clic automatici nella schermata di accesso</translation>
 <translation id="3288595667065905535">Canale di rilascio</translation>
 <translation id="3294430356898755483">La configurazione del criterio consente agli amministratori di impostare un elenco di stampanti per i loro utenti. La selezione della stampante viene effettuata la prima volta che gli utenti provano a stampare.
@@ -3053,6 +3053,11 @@ Dalla versione 114 in poi, il criterio <ph name="DOH_SALT_POLICY_NAME" /> è fac
 
       Se viene configurato, gli utenti non possono modificarlo. Se non viene configurato, il riavvio tramite CA viene disattivato e gli utenti non possono modificare questa impostazione.</translation>
 <translation id="3660562134618097814">Trasferisci i cookie dell'IdP SAML durante l'accesso</translation>
+<translation id="3661897198667953320">Consente di impostare un elenco di pattern URL per i siti, che specifica i siti a cui l'autorizzazione MIDI viene negata automaticamente. In questo modo, i siti non potranno utilizzare dispositivi MIDI come strumenti e controller musicali.
+
+Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti. Questo criterio ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.
+
+Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_MIDI_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti l'autorizzazione seguirà le impostazioni predefinite del browser e consentirà agli utenti di scegliere se concedere o meno l'autorizzazione per ciascun sito.</translation>
 <translation id="3665437376055221832">Richiedi la selezione da parte dell'utente quando nessun certificato corrisponde alla selezione automatica.</translation>
 <translation id="3671773704245936868">Disattiva l'evidenziazione dell'elemento attivo tramite tastiera</translation>
 <translation id="3674010627788940405">Le intestazioni delle richieste CORS senza caratteri jolly non sono supportate.</translation>
@@ -4254,6 +4259,7 @@ Questo criterio non avrà alcun effetto se il criterio <ph name="DEVICE_SCREENSA
 <translation id="4735099388031364207">Se il criterio viene impostato su Attivato, l'attestazione da remoto è consentita per il dispositivo. Un certificato viene generato e caricato automaticamente sul Server di gestione del dispositivo.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, non viene generato alcun certificato e le chiamate a <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> non vengono eseguite correttamente.</translation>
+<translation id="473613500147803115">Blocca l'autorizzazione MIDI su questi siti</translation>
 <translation id="473673197014866318">Questo criterio consente di stabilire le impostazioni di gestione delle estensioni per <ph name="PRODUCT_NAME" />, incluse quelle controllate da criteri relativi alle estensioni esistenti. Il criterio prevale su tutti i criteri precedenti che potrebbero essere stati impostati.
 
 Questo criterio consente di mappare un ID estensione o un URL di aggiornamento soltanto alla relativa impostazione specifica. È possibile impostare una configurazione predefinita per l'ID speciale <ph name="DEFAULT_SCOPE" />, che verrà applicata a tutte le estensioni senza una configurazione personalizzata in questo criterio. Con un URL di aggiornamento, la configurazione verrà applicata alle estensioni con l'esatto URL di aggiornamento indicato nel file manifest dell'estensione (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Se il flag "override_update_url" viene impostato su true, l'estensione verrà installata e aggiornata usando l'URL di aggiornamento ("update") specificato nel criterio <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o nel campo "update_url" di questo criterio. Il flag "override_update_url" viene ignorato se il valore "update_url" è un URL del Chrome Web Store.
@@ -4568,6 +4574,11 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 
       Se il criterio viene impostato su true o non viene impostato, gli utenti possono personalizzare lo sfondo della pagina Nuova scheda.</translation>
 <translation id="5076953589932162038">Impostazioni First-Party Sets</translation>
+<translation id="507742683193937417">Consente di impostare un elenco di pattern URL per i siti, che specifica i siti a cui l'autorizzazione MIDI viene concessa automaticamente. I siti potranno usare dispositivi MIDI come controller e strumenti musicali.
+
+Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti. Questo criterio ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.
+
+Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_MIDI_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti l'autorizzazione seguirà le impostazioni predefinite del browser e consentirà agli utenti di scegliere se concedere o meno l'autorizzazione per ciascun sito.</translation>
 <translation id="5078623750797048009">Attiva annotazioni PDF</translation>
 <translation id="5081204761483900654">Sessioni Ospite gestite limitate</translation>
 <translation id="5082296146261894974">Consente agli utenti di fare clic sulla notifica di Phone Hub per avviare l'applicazione Eche.</translation>
@@ -4855,6 +4866,7 @@ Nota: questo criterio non viene applicato agli upgrade a HSTS.</translation>
       Se la proprietà <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> viene definita in una richiesta <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, tutte le schermate vengono acquisite automaticamente senza chiedere esplicitamente l'autorizzazione dell'utente.
       Se il criterio non viene configurato, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> non è disponibile per alcuna applicazione web.
 Per migliorare la privacy, a partire dalla versione 116 di <ph name="PRODUCT_NAME" />, questo criterio non supporterà più l'aggiornamento dinamico. Pertanto, l'utente potrà assicurarsi che dopo l'accesso le altre pagine non saranno in grado di acquisire le schermate, se non era già stato consentito all'inizio della sessione.</translation>
+<translation id="5354891932736553743">Impostazione di autorizzazione MIDI predefinita</translation>
 <translation id="5361167871898066799">Controlla la funzionalità di correzione automatica sulla tastiera fisica</translation>
 <translation id="5361708558735884308">La configurazione del criterio consente di fornire l'accesso agli URL elencati, sotto forma di eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Leggi la descrizione del criterio per conoscere il formato delle voci di questo elenco. Ad esempio, se imposti il criterio <ph name="URL_BLOCKLIST_POLICY_NAME" /> su *, tutte le richieste verranno bloccate e puoi utilizzare questo criterio per consentire l'accesso a un elenco limitato di URL. Utilizzalo per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici utilizzando il formato specificato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Il filtro più specifico consente di determinare se un URL è bloccato o consentito. Il criterio <ph name="URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza sul criterio <ph name="URL_BLOCKLIST_POLICY_NAME" />. Per questo criterio è possibile definire al massimo 1000 voci.
 
@@ -6139,7 +6151,6 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
 
       Nota: se il metodo di immissione corrente non è supportato, il criterio passa automaticamente al layout della tastiera hardware (se consentito) o alla prima voce valida in questo elenco. I metodi non supportati o non validi vengono ignorati.</translation>
 <translation id="6483115462650732746">Mostra il menu Accessibilità mobile in modalità kiosk</translation>
-<translation id="6485036313708130232">Gestisci il nuovo comportamento prima dell'unload che mostra la finestra di dialogo di conferma dell'annullamento quando viene richiamato il valore preventDefault.</translation>
 <translation id="6489084406497912050">Consente di stabilire se gli utenti possono o meno aggiungere account Kerberos.
 
           Se questo criterio viene attivato o se non viene configurato, gli utenti possono aggiungere account Kerberos tramite le impostazioni relative agli account Kerberos nella pagina di impostazioni Kerberos. Gli utenti hanno il controllo completo degli account che hanno aggiunto e possono modificarli o rimuoverli.
@@ -6539,6 +6550,7 @@ Il criterio verrà rimosso da <ph name="PRODUCT_NAME" /> in futuro.</translation
 <translation id="6794083666143216172">Consenti alle origini di richiedere gli attributi dei dispositivi</translation>
 <translation id="6795485990775913659">Consenti la stampa solo senza PIN</translation>
 <translation id="6796215185873669533">Usa per impostazione predefinita le impostazioni del browser per la versione della stringa user agent.</translation>
+<translation id="6800111968763383631">Nega l'autorizzazione MIDI su tutti i siti per impostazione predefinita</translation>
 <translation id="6800181452282128474">Non inviare query a Quirks Server</translation>
 <translation id="68031099365512050">Viene segnalato lo stato dell'audio</translation>
 <translation id="680356860463873420">Non consentire agli utenti di utilizzare PluginVm</translation>
@@ -6898,6 +6910,7 @@ Se il criterio viene impostato, l'elenco dei valori predefiniti viene esteso con
 
       Se il criterio è impostato su False o non è configurato, le informazioni non vengono segnalate.
       Se è impostato su True, le informazioni sulla ventola del dispositivo vengono segnalate.</translation>
+<translation id="7096708978256135543">Chiedi ogni volta che un sito vuole ottenere l'autorizzazione MIDI</translation>
 <translation id="7098400392308393199">La protezione dei download in tempo reale è controllata dal criterio <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /></translation>
 <translation id="710003290625031750">Descrizione estesa dello schema:</translation>
 <translation id="7101550508196914704">Non mostrare la scorciatoia applicazioni nella barra dei Preferiti</translation>
@@ -7450,13 +7463,6 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
 <translation id="7613115815080726221">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale viene compiuta l'azione stabilita per l'inattività.</translation>
 <translation id="7614663184588396421">Elenco degli schemi di protocollo disabilitati</translation>
 <translation id="7616631530432070402">Le suite di crittografia 3DES saranno attivate in TLS</translation>
-<translation id="7617710923960807616">Questo criterio consente di controllare se viene mostrata una finestra di dialogo di conferma quando una pagina chiama preventDefault prima dell'unload. In passato, <ph name="PRODUCT_NAME" /> non mostrava queste finestre di dialogo, ma il comportamento predefinito è in fase di modifica. Questo criterio è un'alternativa temporanea, destinata alle aziende i cui siti web si sono rotti a causa del nuovo comportamento e che hanno bisogno di un po' di tempo per essere risolte.
-
-Se questo criterio viene attivato, la finestra di dialogo di conferma dell'annullamento viene visualizzata quando una pagina chiama preventDefault prima dell'unload.
-
-Se questo criterio viene disattivato, non viene mostrata alcuna finestra di dialogo di conferma dell'annullamento quando una pagina chiama preventDefault prima dell'unload.
-
-Se questo criterio non viene configurato, verrà utilizzato il comportamento predefinito, in base al piano di implementazione delle funzionalità di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="761788785484453836">Richiedi l'isolamento dei siti per tutti i siti web</translation>
 <translation id="7620869951155758729">Questa norma consente di specificare la configurazione utilizzata per generare e verificare il codice di accesso genitori.
 
@@ -7849,6 +7855,11 @@ Sulle istanze di <ph name="MS_WIN_NAME" /> è possibile forzare l'installazione 
 Sulle istanze di <ph name="MAC_OS_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è gestita tramite MDM, aggiunta a un dominio tramite MCX o registrata in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Nota: questo criterio non viene applicato alla modalità di navigazione in incognito. Scopri di più sull'hosting delle estensioni (https://developer.chrome.com/extensions/hosting).</translation>
+<translation id="798452960161141151">Impostando il criterio su <ph name="BLOCK_MIDI_POLICY_NAME" /> (valore 2) si blocca automaticamente l'utilizzo di dispositivi MIDI come strumenti musicali e controller.
+
+Impostando il criterio su <ph name="ASK_MIDI_POLICY_NAME" /> (valore 3), l'utente verrà avvisato quando un sito intende utilizzare dispositivi MIDI.
+
+Se il criterio non viene configurato, si applica il criterio <ph name="ASK_MIDI_POLICY_NAME" />, ma gli utenti possono cambiare l'impostazione.</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7986473886676689183">Attiva la generazione di report Android</translation>
 <translation id="7990280274626154329">Attiva <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>

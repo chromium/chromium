@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Enhedsindstillinger</translation>
 <translation id="2084809735218147718">Siger tak på tegnsprog</translation>
 <translation id="2088690981887365033">VPN-netværk</translation>
+<translation id="209653272837065803">Der er ikke nok lagerplads til at fortsætte filsynkroniseringen</translation>
 <translation id="2111134541987263231">Aktivér <ph name="BEGIN_BOLD" />Tillad i inkognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementer slettes, og du kan ikke gendanne dem.</translation>
 <translation id="2122305276694332719">Vi anbefaler, at du ikke tillader automatisk forbindelse til skjulte netværk, da det gør det muligt for andre at se din enhed og visse netværksindstillinger.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Kinesisk (forenklet)</translation>
 <translation id="22085916256174561">Koreansk</translation>
 <translation id="2208919847696382164">Installer med Linux</translation>
+<translation id="2215692307449050019">Batteriniveauet er lavt. Filsynkroniseringen genoptages, når enheden er tilsluttet en strømkilde.</translation>
 <translation id="2225536596944493418">Er du sikker på, at du vil slette <ph name="NUMBER_OF_ITEMS" /> elementer?</translation>
 <translation id="2230062665678605299">Mappen "<ph name="FOLDER_NAME" />" kunne ikke oprettes. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Person med kaffe</translation>
+<translation id="2247561763838186830">Du er blevet logget ud</translation>
 <translation id="2251368349685848079">Gendan fra papirkurven</translation>
 <translation id="2278133026967558505">Filadgang for alle websites og webadresser</translation>
 <translation id="2282155092769082568">Webadresse til automatisk konfiguration:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Denne filtype understøttes ikke. Gå til Chrome Webshop for at finde en app, der kan åbne denne filtype.</translation>
 <translation id="2326539130272988168">Bulgarsk</translation>
 <translation id="2337715497728194187">Del med Bruschetta</translation>
+<translation id="233822363739146957">Der er ikke nok lagerplads til at synkronisere alle dine filer</translation>
 <translation id="23721837607121582">Download mobilprofil. Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Skift til listevisning</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mapper er delt med Linux</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Der opstod en fejl ved installation af Linux-appen</translation>
 <translation id="2802583107108007218">Få flere oplysninger om disse begrænsninger</translation>
 <translation id="2803375539583399270">Angiv pinkode</translation>
+<translation id="2819519502129272135">Filsynkronisering er deaktiveret</translation>
 <translation id="2820957248982571256">Scanner…</translation>
 <translation id="2830077785865012357">Kinesisk zhuyin</translation>
 <translation id="2843806747483486897">Skift standardindstillinger...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Filteret er nulstillet.</translation>
 <translation id="4603392156942865207">Kopierer <ph name="FILE_NAME" /> til <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Kunstner</translation>
+<translation id="4635373743001040938">Der var meget lidt lagerplads. Filsynkronisering er blevet deaktiveret.</translation>
 <translation id="4642769377300286600">Mobilprofil installeres. Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Tjekkisk med Qwerty-tastatur</translation>
 <translation id="4656777537938206294">Gør filer tilgængelige offline</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">1 mappe blev delt med Parallels Desktop</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> er gendannet</translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Konfigurationen af filsynkronisering kunne ikke gennemføres</translation>
 <translation id="4973523518332075481">Brug et navn med højst <ph name="MAX_LENGTH" /> tegn</translation>
 <translation id="4973970068702235170">Komprimering mislykkedes. Der opstod en uventet fejl: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japansk</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">Tysk (Belgien)</translation>
 <translation id="7339898014177206373">Nyt vindue</translation>
 <translation id="7343393116438664539">Vietnamesisk telex</translation>
+<translation id="7347346221088620549">Krypteret fil</translation>
 <translation id="7357762654218998920">Denne filtype understøttes ikke. <ph name="BEGIN_LINK_HELP" />Få flere oplysninger<ph name="END_LINK_HELP" /> om, hvordan du åbner filer i ChromeOS.</translation>
 <translation id="7359359531237882347">Kopierer <ph name="NUMBER_OF_ITEMS" /> elementer...</translation>
 <translation id="7375951387215729722">Listen med filer er sorteret efter <ph name="COLUMN_NAME" /> i faldende rækkefølge.</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">Islandsk</translation>
 <translation id="863903787380594467">Forkert pinkode. Du har <ph name="RETRIES" /> forsøg tilbage.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
+<translation id="8656407365183407932">Det var nødvendigt at fjerne dine offlinefiler</translation>
 <translation id="8656768832129462377">Undlad at kontrollere</translation>
 <translation id="8688591111840995413">Forkert adgangskode</translation>
 <translation id="8698464937041809063">Google-tegning</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">Kinesisk (traditionelt) pinyin</translation>
 <translation id="8998871447376656508">Der er ikke nok ledig plads i Google Drev til at gennemføre uploaden.</translation>
 <translation id="9003940392834790328">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, administreret af din administrator, oplysninger</translation>
+<translation id="9007990314804111233">Log ind på din Microsoft-konto</translation>
 <translation id="9017798300203431059">Russisk (fonetisk)</translation>
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9035012421917565900">Elementerne kan ikke flyttes tilbage til "<ph name="DESTINATION_NAME" />", så du kan ikke fortryde denne handling.</translation>

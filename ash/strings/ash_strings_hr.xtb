@@ -185,6 +185,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1770726142253415363">Premješteno u redak <ph name="ROW_NUMBER" />, stupac <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Pomicanje udesno</translation>
 <translation id="1774796056689732716">Kalendar, <ph name="CURRENT_MONTH_YEAR" />, trenutačno je odabran datum <ph name="DATE" />.</translation>
+<translation id="1775598828170459419">Prikazuje se <ph name="NUM_SHOWN_ITEMS" /> od <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="1787955149152357925">Isključeno</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
 <translation id="1815245884418711390">Prebacite žarišnu točku. Žarišna je točka isključena.</translation>
@@ -1491,7 +1492,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7579778809502851308">Snimka zaslona</translation>
 <translation id="7593891976182323525">Pretraživanje ili Shift</translation>
 <translation id="7600875258240007829">Pogledajte sve obavijesti</translation>
-<translation id="7601417191446344542">Želite li uključiti podsjećanje na isključen zvuk?</translation>
+<translation id="7601417191446344542">Želite li uključiti podsjećanje na isključeni mikrofon?</translation>
 <translation id="7607002721634913082">Pauzirano</translation>
 <translation id="7609951632080598826">Prikaz kalendara, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera je ponovo povezana.</translation>

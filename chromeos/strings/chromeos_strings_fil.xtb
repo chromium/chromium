@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> (na) thread, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">May available na bagong feature, gamitin ang Pataas na arrow key para matuto pa.</translation>
 <translation id="1059913517121127803">Hindi masimulan ang pag-scan</translation>
+<translation id="1062823486781306604"><ph name="INDEX" /> sa <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">May na-detect na firewall</translation>
 <translation id="1075811647922107217">Laki ng page</translation>
@@ -169,6 +170,7 @@
 <translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">I-on ang dark mode</translation>
 <translation id="2180197493692062006">Nagkaproblema. Subukang buksan ulit ang app.</translation>
+<translation id="2189104374785738357">I-edit ang mga detalye ng APN</translation>
 <translation id="2209788852729124853">I-reset ang Mga Traffic Counter</translation>
 <translation id="2212733584906323460">Name Resolution</translation>
 <translation id="2217935453350629363">Kasalukuyang bilis</translation>
@@ -540,6 +542,7 @@
 <translation id="5257811368506016604">I-enable ang light color mode</translation>
 <translation id="5264277876637023664">Patakbuhin ang pagsusuri sa CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">Naka-disable ang APN.</translation>
 <translation id="5275828089655680674">Patakbuhin Ulit ang Mga Routine</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">kulay ng backlight</translation>
@@ -604,6 +607,7 @@
 <translation id="5832805196449965646">Magdagdag ng Tao</translation>
 <translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
+<translation id="584953448295717128">Awtomatikong na-detect ang APN.</translation>
 <translation id="5849570051105887917">Home provider code</translation>
 <translation id="5859603669299126575">Album sa art gallery</translation>
 <translation id="5860033963881614850">Naka-off</translation>
@@ -882,6 +886,7 @@
 <translation id="80398733265834479">I-enable ang auto color mode</translation>
 <translation id="8041089156583427627">Magpadala ng Feedback</translation>
 <translation id="8045012663542226664">Pang-mute ng mikropono</translation>
+<translation id="8067126283828232460">Nakakonekta ang APN.</translation>
 <translation id="8075838845814659848">Natitirang pag-charge</translation>
 <translation id="8076492880354921740">Mga Tab</translation>
 <translation id="8082366717211101304">Hindi ma-resolve ang DNS mula sa mga Android app</translation>
@@ -1028,6 +1033,7 @@
 <translation id="9111102763498581341">I-unlock</translation>
 <translation id="9122602430962285795">Para kumonekta ulit, pumunta sa Mga Setting</translation>
 <translation id="9126720536733509015">Mag-save ng maraming pahina sa iisang PDF</translation>
+<translation id="9133104754938025929">Para makatipid sa baterya, gumagana lang ang screen saver habang nagcha-charge.</translation>
 <translation id="9137526406337347448">Mga Serbisyo ng Google</translation>
 <translation id="9138630967333032450">Kaliwang shift</translation>
 <translation id="9143347780818904997">nang <ph name="MINUTES" /> (na) minuto</translation>

@@ -321,7 +321,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7036251913954633326">જો તમે માત્ર એક વાર જ આ એકાઉન્ટનો ઉપયોગ કરવા માગતા હો, તો તમે Chrome બ્રાઉઝરમાં <ph name="GUEST_LINK_BEGIN" />અતિથિ મોડ<ph name="GUEST_LINK_END" />નો ઉપયોગ કરી શકો છો. જો તમે કોઈ બીજી વ્યક્તિ માટે એકાઉન્ટ ઉમેરવા માગતા હો, તો તમારા <ph name="DEVICE_TYPE" />માં <ph name="LINK_BEGIN" />નવી વ્યક્તિ ઉમેરો<ph name="LINK_END" />.
 
 તમે વેબસાઇટ અને ઍપને પહેલેથી જે પરવાનગીઓ આપી છે, તે આ એકાઉન્ટ પર લાગુ થઈ શકે છે. તમે <ph name="SETTINGS_LINK_BEGIN" />સેટિંગ<ph name="SETTINGS_LINK_END" />માં જઈને તમારા Google એકાઉન્ટ મેનેજ કરી શકો છો.</translation>
-<translation id="7062128746136194023">તમારા માતાપિતાએ Chrome માટે "સાઇટ, ઍપ અને એક્સ્ટેન્શન માટેની પરવાનગીઓ" બંધ કરી છે. આ <ph name="EXTENSION_TYPE_PARAMETER" /> ઉમેરવાની મંજૂરી નથી.</translation>
 <translation id="7071827361006050863">Chrome ટૂંક સમયમાં જ બ્રાઉઝિંગ ડેટા ડિલીટ કરશે</translation>
 <translation id="7085332316435785646">Googleની સેવાઓમાં વધુ મનગમતા બનાવેલા અનુભવો આપવા માટે, Chrome ઇતિહાસ શામેલ કરવો કે નહીં, તે પસંદ કરો</translation>
 <translation id="7088681679121566888">Chrome અપ ટૂ ડેટ છે</translation>
@@ -384,7 +383,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8255190535488645436">Google Chrome તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરી રહ્યું છે.</translation>
 <translation id="8270775718612349140">Chrome દ્વારા મેનેજ કરાતા પ્રમાણપત્રો</translation>
 <translation id="8286862437124483331">Google Chrome પાસવર્ડ્સ બતાવવાનો પ્રયાસ કરી રહ્યું છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
-<translation id="828798499196665338">તમારા માતાપિતાએ Chrome માટે "સાઇટ, ઍપ અને એક્સ્ટેન્શન માટેની પરવાનગીઓ" બંધ કરી છે. આ <ph name="EXTENSION_TYPE_PARAMETER" /> ચાલુ કરવાની મંજૂરી નથી.</translation>
 <translation id="8290100596633877290">ઓહ! Google Chrome ક્રેશ થઈ ગયું. હમણાં ફરીથી લોંચ કરીએ?</translation>
 <translation id="829923460755755423">Google Password Manager માટે કોઈ શૉર્ટકટ ઉમેરો</translation>
 <translation id="8342675569599923794">આ ફાઇલ જોખમી છે, તેથી Chrome એ તેને અવરોધિત કરેલ છે.</translation>

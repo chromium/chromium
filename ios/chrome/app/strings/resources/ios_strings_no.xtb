@@ -42,7 +42,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1207113853726624428">Nytt søk</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Skjul for øyeblikket</translation>
-<translation id="121048537318175637">Skriv inn en oppgave i adressefeltet, for eksempel «tøm loggen» eller «rediger passord».</translation>
 <translation id="1219674500290482172">Kan ikke koble til Internett.</translation>
 <translation id="1226238226094914652">Passord på alle enhetene dine</translation>
 <translation id="122699739164161391">Lukk alle faner</translation>
@@ -92,7 +91,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1492417797159476138">Du har allerede lagret dette brukernavnet for dette nettstedet</translation>
 <translation id="1497590942294823549">Meny → Passordlagring</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" />-kontoen din slettes ikke</translation>
-<translation id="1501820324067650154">For å se rutealternativer, trykk på «Få veibeskrivelse»</translation>
 <translation id="1506063256525392513">Dette gjør at du kan ta og laste opp bilder samt skanne QR-koder</translation>
 <translation id="1509486075633541495">Logg på nettstedet</translation>
 <translation id="1509960214886564027">Det kan hende at funksjoner på mange nettsteder slutter å fungere</translation>
@@ -194,7 +192,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="2155145621546387786">Del Chrome</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2178545675770638239">Velg passord</translation>
-<translation id="2215566625617766058">Snarveier i multifunksjonsfeltet som gir rask tilgang til nyttige innstillinger og handlinger.</translation>
 <translation id="2218443599109088993">Zoom ut</translation>
 <translation id="2230173723195178503">Nettsiden er lastet inn</translation>
 <translation id="2239626343334228536">Sletter nettlesingsdata …</translation>
@@ -294,7 +291,6 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2786701870377699570">Søk etter faner på synkroniserte enheter</translation>
 <translation id="2797029671965852011">Vis loggen</translation>
 <translation id="2800683595868705743">Avslutt fanevelgeren</translation>
-<translation id="2803192464408568808">Fullfør oppgaven din</translation>
 <translation id="2815198996063984598">2. Trykk på Standard nettleserapp.</translation>
 <translation id="2818821771744632548">Du ble logget av kontoen din, <ph name="USER_NAME" />, som en del av tilbakestillingen av iPhone. For å logge på igjen, trykk på «Fortsett» nedenfor.</translation>
 <translation id="2822917246944009066">Fanen er festet</translation>
@@ -386,9 +382,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3311748811247479259">Av</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Informasjon om nettstedet</translation>
-<translation id="3340938510625667914">Chrome-handlinger</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bokmerket er lagret i «{title}» i kontoen din, {email}}other{Bokmerkene er lagret i «{title}» i kontoen din, {email}}}</translation>
-<translation id="3358769087921185505">Utfør et langt trykk på en dato</translation>
 <translation id="3371831930909698441">Oversetter er tilgjengelig. Du finner alternativer på nedre del av skjermen.</translation>
 <translation id="3377063233124932127">Nå finner du blant annet de lagrede bokmerkene og passordene dine øverst.</translation>
 <translation id="3393920035788932672">Tillat forgrunnsvinduer</translation>
@@ -436,7 +430,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3609785682760573515">Synkroniserer …</translation>
 <translation id="3631443864840848029">Sørg for at du lagrer det nåværende passordet ditt for dette nettstedet.</translation>
 <translation id="3638472932233958418">Last inn nettsider på forhånd</translation>
-<translation id="3656645960301737801">Fullfør aktiviteten og lagre</translation>
 <translation id="3661160521073045932">En konfigurasjonsprofil er tilgjengelig</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="368329460027487650">Logget av. Åpner alternativer for pålogging.</translation>
@@ -693,7 +686,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="536067926684072644">Vis bokmerker</translation>
 <translation id="5360976571138293719">For flere innstillinger knyttet til personvern, sikkerhet og datainnsamling, se <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Her finner du nettsteder du følger</translation>
-<translation id="538635840076594180">Trykk på «Personvern og sikkerhet».</translation>
 <translation id="5388358297987318779">Åpne bildet</translation>
 <translation id="5407969256130905701">Forkast endringer</translation>
 <translation id="5414763847370083940">Du får varsler hvis prisen settes ned på noe nettsted.</translation>
@@ -1017,7 +1009,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7189598951263744875">Del</translation>
 <translation id="7192050974311852563">Start loggføring</translation>
 <translation id="7203585745079012652">Svar med tale</translation>
-<translation id="7203792184900422187">Trykk på Personvern og sikkerhet</translation>
 <translation id="7207023858769244910">Synkroniser for å få innhold basert på interessene dine.</translation>
 <translation id="721597782417389033">Ugyldig kallenavn på kortet</translation>
 <translation id="7221173315674413369">Utforsk nye funksjoner og tips i Nyheter</translation>
@@ -1231,7 +1222,6 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="8534481786647257214">Google+-innlegget er fullført.</translation>
 <translation id="8548878600947630424">Finn på siden</translation>
 <translation id="8556590991644167667">{count,plural, =1{Du avviste {count} advarsel}other{Du avviste {count} advarsler}}</translation>
-<translation id="8557690929085431655">Du kan velge å åpne innkommende nettadresser fra andre apper i inkognitomodus.</translation>
 <translation id="8558480467877843976">Nå kan du bruke Chrome når du blar gjennom eller trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="8580411965900177618">Nei takk</translation>
 <translation id="8588404856427128947">Av</translation>
@@ -1264,7 +1254,6 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="8775144690796719618">Ugyldig nettadresse</translation>
 <translation id="8780076847684176174">{count,plural, =1{Gå gjennom fanen …}other{Gå gjennom alle faner …}}</translation>
 <translation id="8787968206789828143">Søk på nettet</translation>
-<translation id="8790746396522455357">Slå på åpning av linker i inkognitomodus</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8803639129939845298">Sikker</translation>
 <translation id="8806823403540278281">Organisasjonen din krever at du surfer privat. Faner lagres ikke i inkognitomodus.
@@ -1289,10 +1278,8 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="891282356902782456">Dette passordet er bare lagret på denne enheten. For å bruke det på andre enheter må du lagre det i Google-kontoen din, <ph name="EMAIL" />.</translation>
 <translation id="891658175948553296">Marker tekst på nettsteder</translation>
 <translation id="8917490105272468696">Ja, den er grei</translation>
-<translation id="8926984231484284953">Bruk adresser på nettsider for å få lokal informasjon og veibeskrivelser.</translation>
 <translation id="8928133177108699615">Datamaskin</translation>
 <translation id="8934982071228289624">For å lagre dette passordet i kontoen din må du først angi en adgangskode på enheten din.</translation>
-<translation id="8940809892068499052">Åpne inkognitofaner fra andre apper</translation>
 <translation id="894191600409472540">Lag sterke passord</translation>
 <translation id="8952559610785099500">Legg til et passord</translation>
 <translation id="8953046091948372197">Her finner du passordene dine</translation>
@@ -1342,7 +1329,6 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Søk etter faner…</translation>
 <translation id="9223358826628549784">Programstopprapporten er sendt.</translation>
-<translation id="937964924361024518">Velg Google- eller Apple-kalenderen</translation>
 <translation id="941747855997058526">Velg passord…</translation>
 <translation id="948048872540558976">Åpne en ny fane</translation>
 <translation id="952704832371081537">Avbryt</translation>

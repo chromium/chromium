@@ -142,6 +142,7 @@
 <translation id="1110965959145884739">ഈ ഉപകരണത്തിൽ ഇൻസ്റ്റാൾ ചെയ്യേണ്ട ഭാഷകൾ തിരഞ്ഞെടുക്കുക. ഡിസ്‌ക് സ്പെയ്‌സ് ലാഭിക്കാൻ, ഭാഷാ ഫയലുകൾ ഉപയോക്താക്കൾക്കിടയിൽ പങ്കിടും. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">പശ്ചാത്തല ടാബ് bluetooth ഉപയോഗിക്കുന്നു</translation>
 <translation id="1112998165730922436">കാസ്റ്റ് ചെയ്യുന്നത് താൽക്കാലികമായി നിർത്തി</translation>
+<translation id="1113807501859230251">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിന്ന് Bruschetta നീക്കം ചെയ്യണോ? ഇത് വെർച്വൽ മെഷീനിലെ എല്ലാ ആപ്പുകളും ഡാറ്റയും ഇല്ലാതാക്കും!</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">ഡയമണ്ട്</translation>
 <translation id="1114427165525619358">ഈ ഉപകരണത്തിലും നിങ്ങളുടെ Google അക്കൗണ്ടിലുമുള്ള പാസ്‌വേഡുകൾ</translation>
@@ -1553,6 +1554,7 @@
 <translation id="2263679799334060788">Google Cast മെച്ചപ്പെടുത്താൻ നിങ്ങളുടെ ഫീഡ്‌ബാക്ക്, ഞങ്ങളെ സഹായിക്കുന്നു. ഇത് അഭിനന്ദനാർഹമാണ്. കാസ്‌റ്റിലെ പ്രശ്‌ന പരിഹാരത്തിന്, <ph name="BEGIN_LINK" /> സഹായകേന്ദ്രം<ph name="END_LINK" /> സന്ദർശിക്കുക.</translation>
 <translation id="2266957463645820432">USB (IPPUSB) വഴി IPP</translation>
 <translation id="2268130516524549846">Bluetooth അപ്രാപ്‌തമാക്കി</translation>
+<translation id="2268182915828370037">ഫയൽ സമന്വയിപ്പിക്കൽ ഓഫാക്കണോ?</translation>
 <translation id="2269895253281481171">ഇത് എപ്പോഴെങ്കിലും അപകടത്തിലാകുമ്പോൾ നിങ്ങളെ അറിയിക്കും</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> എന്ന ഡൊമെയ്‌നിലുള്ള ഏത് ഉപകരണം ഉപയോഗിച്ചും ഡാറ്റ എക്‌സ്‌ചേഞ്ച് ചെയ്യുക</translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />ഇൻസ്റ്റാൾ ചെയ്യുന്നത് <ph name="BEGIN_BOLD" />നിങ്ങളുടെ ഹാർഡ് ഡ്രൈവ് മുഴുവനായും മായ്ക്കും<ph name="END_BOLD" />. നിങ്ങളുടെ ഡാറ്റ ബാക്കപ്പെടുത്തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.<ph name="END_PARAGRAPH1" />
@@ -2104,6 +2106,7 @@
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2715640894224696481">സുരക്ഷാ കീ അഭ്യർത്ഥന</translation>
 <translation id="2715751256863167692">ഈ അപ്‍ഗ്രേഡ്, നിങ്ങളുടെ Chromebook-നെ പുനഃസജ്ജീകരിച്ച് നിലവിലെ ഉപയോക്തൃ ഡാറ്റ നീക്കുന്നു.</translation>
+<translation id="2715934493766003251">ഫയൽ സമന്വയപ്പിക്കൽ ഓണായിരിക്കുമ്പോൾ സ്റ്റോറേജിൽ ഇടം സൃഷ്ടിക്കാനാകില്ല</translation>
 <translation id="2716986496990888774">ഈ ക്രമീകരണം മാനേജ് ചെയ്യുന്നത് ഒരു രക്ഷിതാവാണ്.</translation>
 <translation id="271749239614426244">കഴ്‌സറിന്റെ നേരിയ ചലനം അവഗണിക്കുക</translation>
 <translation id="2718395828230677721">നൈറ്റ് ലൈറ്റ്</translation>
@@ -2251,6 +2254,7 @@
 <translation id="2817435998497102771">നിങ്ങളുടെ വാൾപേപ്പറും സ്റ്റൈലും സജ്ജീകരിക്കുക</translation>
 <translation id="2818476747334107629">പ്രിന്റർ വിശദാംശങ്ങൾ</translation>
 <translation id="2819167288942847344">ആപ്പ് അസ്വാഭാവികമായി പ്രവർത്തിക്കുന്നത് തടയാൻ ഫോണിനും ടാബ്‌ലെറ്റിനും വലുപ്പം മാറ്റാവുന്ന വിൻഡോകൾക്കുമുള്ള പ്രീസെറ്റുകൾ ഉപയോഗിക്കുക</translation>
+<translation id="2819519502129272135">ഫയൽ സമന്വയിപ്പിക്കൽ ഓഫാക്കി</translation>
 <translation id="2820957248982571256">സ്‌കാൻ ചെയ്യുന്നു...</translation>
 <translation id="2822634587701817431">ചുരുക്കുക / വികസിപ്പിക്കുക</translation>
 <translation id="2822910719211888134">Linux-ൽ നിന്ന് ബാക്കപ്പെടുക്കുമ്പോൾ പിശകുണ്ടായി</translation>
@@ -2719,6 +2723,7 @@
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - നെറ്റ്‌വർക്ക് പിശക്</translation>
 <translation id="3248902735035392926">സുരക്ഷ പ്രധാനമാണ്. അൽപ്പസമയം ചെലവഴിച്ച് <ph name="BEGIN_LINK" />നിങ്ങളുടെ വിപുലീകരണങ്ങൾ ഇപ്പോൾ തന്നെ പരിശോധിക്കുക<ph name="END_LINK" /></translation>
 <translation id="3249323165366527554"><ph name="EMAIL" /> -നുള്ള <ph name="GOOGLE_PASSWORD_MANAGER" /> എന്നതിൽ നിങ്ങളുടെ പാസ്‍വേഡ് സ്വയമേവ സംരക്ഷിച്ചിട്ടുണ്ടെങ്കിൽ, സൈൻ അപ്പ് ചെയ്ത് വേഗത്തിൽ സൈൻ ഇൻ ചെയ്യുക.</translation>
+<translation id="3251119461199395237">ഫയൽ സമന്വയിപ്പിക്കൽ</translation>
 <translation id="3251714896659475029">"Ok Google" എന്ന് പറഞ്ഞ് Google Assistant ആക്സസ് ചെയ്യാൻ <ph name="SUPERVISED_USER_NAME" /> എന്ന കുട്ടിയെ അനുവദിക്കുക</translation>
 <translation id="3251759466064201842">&lt;സര്‍‌ട്ടിഫിക്കറ്റിന്‍റെ ഭാഗമല്ല&gt;</translation>
 <translation id="325238099842880997">നിങ്ങളുടെ കുട്ടികളെ കളിക്കാനും അടുത്തറിയാനും സ്‌കൂൾ വർക്ക് വീട്ടിൽ ചെയ്യാനും സഹായിക്കുന്നതിന് ഡിജിറ്റൽ അടിസ്ഥാന നിയമങ്ങൾ സജ്ജീകരിക്കുക</translation>
@@ -3096,6 +3101,7 @@
 <translation id="3567284462585300767">നിങ്ങൾക്ക് ചുറ്റുമുള്ള ആളുകളിൽ നിന്ന് ഫയലുകൾ സ്വീകരിക്കാനും അംഗീകരിക്കാനും നിങ്ങളുടെ ഉപകരണം ദൃശ്യമാക്കുക</translation>
 <translation id="356738834800832239">നിങ്ങളുടെ പാസ്‍വേഡ് സംരക്ഷിച്ചു</translation>
 <translation id="3569382839528428029"><ph name="APP_NAME" /> എന്നതിനെ നിങ്ങളുടെ സ്‌ക്രീൻ പങ്കിടുന്നതിന് അനുവദിക്കാൻ താൽപ്പര്യമുണ്ടോ?</translation>
+<translation id="3569614820047645079">എന്റെ ഡ്രൈവിലെ ഫയലുകൾ നിങ്ങളുടെ Chromebook-ലേക്ക് സ്വയമേവ സമന്വയിപ്പിക്കും, അതുവഴി ഇന്റർനെറ്റ് കണക്ഷനില്ലാതെ തന്നെ നിങ്ങൾക്ക് അവ ആക്സസ് ചെയ്യാനാകും.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" />-ന് ചുവടെയുള്ള ഫയലുകളും ഫോൾഡറുകളും കാണാനാവും</translation>
 <translation id="3571734092741541777">സജ്ജീകരിക്കുക</translation>
 <translation id="3575121482199441727">ഈ സൈറ്റിന് അനുവദിക്കുക</translation>
@@ -3528,6 +3534,7 @@
 <translation id="3916233823027929090">സുരക്ഷാപരിശോധനകൾ പൂർത്തിയാക്കി</translation>
 <translation id="3916445069167113093">നിങ്ങളുടെ കമ്പ്യൂട്ടറിനെ ഇത്തരത്തിലുള്ള ഫയൽ ദ്രോഹിച്ചേക്കാം. <ph name="FILE_NAME" /> എന്നത് എന്തായാലും സൂക്ഷിക്കണമെന്നത് തീർച്ചയാണോ?</translation>
 <translation id="3917184139185490151">ChromeOS-ലെ നിർണ്ണായകമായ നിരവധി ഫീച്ചറുകൾ നടപ്പാക്കാൻ ഉപയോഗിക്കുന്ന സുരക്ഷാ മൊഡ്യൂൾ നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ ഉണ്ട്. കൂടുതലറിയാൻ, Chromebook സഹായകേന്ദ്രം സന്ദർശിക്കുക: https://support.google.com/chromebook/?p=sm</translation>
+<translation id="3917644013202553949">നിങ്ങളുടെ ഫയലുകൾ സമന്വയിപ്പിക്കാൻ ആവശ്യമായ സ്‌റ്റോറേജ് ഇല്ല. ഇടം സൃഷ്ടിക്കാൻ ശ്രമിക്കുക.</translation>
 <translation id="3918972485393593704">വിശദാംശങ്ങൾ Google-ന് റിപ്പോർട്ട് ചെയ്യുക</translation>
 <translation id="3919145445993746351">എല്ലാ കമ്പ്യൂട്ടറുകളിലും നിങ്ങളുടെ വിപുലീകരണങ്ങൾ ലഭിക്കാൻ, സമന്വയം ഓണാക്കുക</translation>
 <translation id="3919229493046408863">ഉപകരണങ്ങൾ സമീപത്തുള്ളപ്പോൾ അറിയിപ്പ് ഓഫാക്കുക</translation>
@@ -3838,6 +3845,7 @@
 <translation id="4184803915913850597">HID ഉപകരണം (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> തിരയൽ</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> സജ്ജീകരിക്കുന്നു...</translation>
+<translation id="4190492351494485814">പ്രാരംഭ സജ്ജീകരണത്തിന് നിങ്ങൾ ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യേണ്ടതുണ്ട്, അതുവഴി ഫയലുകൾ നിങ്ങളുടെ Chromebook സമന്വയിപ്പിക്കാനാകും</translation>
 <translation id="4190828427319282529">കീബോർഡ് ഫോക്കസ് ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="4193251682249731404">വിശ്വസ്‌ത CA</translation>
 <translation id="4193575319002689239">കാർഡുകൾ കാണിക്കുക</translation>
@@ -4030,6 +4038,7 @@
 <translation id="4361745360460842907">ടാബായി തുറക്കുക</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> എന്നതാണ് നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിന്റെ ഡിഫോൾട്ട് അക്കൗണ്ട്</translation>
 <translation id="4363215264289239958">Bruschetta ആപ്പുകൾ</translation>
+<translation id="4363262124589131906">എന്റെ ഡ്രൈവിലെ പുതിയ ഫയലുകൾ ഈ Chromebook-ലേക്ക് സ്വയമേവ സമന്വയിപ്പിക്കുന്നത് നിർത്തും</translation>
 <translation id="4363771538994847871">കാസ്‌റ്റ് ചെയ്യാനുള്ള ലക്ഷ്യസ്ഥാനങ്ങളൊന്നും കണ്ടെത്തിയില്ല. സഹായം ആവശ്യമാണോ?</translation>
 <translation id="4364327530094270451">മത്തങ്ങ</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" />, ഒരു വിൻഡോ പങ്കിടുന്നു.</translation>
@@ -4454,6 +4463,7 @@
 <translation id="4715631922189108923">ഉപയോക്തൃനാമം എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="47158868804223727">വികസിപ്പിക്കാനോ ചുരുക്കാനോ ഗ്രൂപ്പിന്റെ പേരിൽ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="4716483597559580346">അധിക സുരക്ഷയ്‌ക്ക് വേണ്ടി Powerwash</translation>
+<translation id="4716715661140829720">ആവശ്യമായ സ്‌റ്റോറേജ് സ്‌പെയ്‌സ് ഇല്ല</translation>
 <translation id="471759229191973607">തീം മാറ്റുക</translation>
 <translation id="4718046540206070045">ഒരു ബ്രൗസർ മാത്രമല്ല</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> എന്നതിനുള്ള പാസ്‌വേഡ്</translation>
@@ -4506,6 +4516,7 @@
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> ഒരു സാധുവായ Google for Education അക്കൗണ്ട് അല്ല. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക. നിങ്ങൾ അഡ്‌മിൻ ആണെങ്കിൽ, ഇത് സന്ദർശിച്ച് നിങ്ങളുടെ സ്ഥാപനം സജ്ജീകരിക്കാനാകും: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{ഈ ഉപകരണം 1 മാസം വരെ സംരക്ഷിക്കും, അടുത്ത തവണ നിങ്ങൾക്ക് ഒരു കോഡ് ഇല്ലാതെ തന്നെ കണക്‌റ്റ് ചെയ്യാം. ഇത് നിങ്ങളുടെ അഡ്‌മിൻ സജ്ജീകരിച്ചതാണ്.}other{ഈ ഉപകരണം {MONTHS} മാസം വരെ സംരക്ഷിക്കും, അടുത്ത തവണ നിങ്ങൾക്ക് ഒരു കോഡ് ഇല്ലാതെ തന്നെ കണക്‌റ്റ് ചെയ്യാം. ഇത് നിങ്ങളുടെ അഡ്‌മിൻ സജ്ജീകരിച്ചതാണ്.}}</translation>
 <translation id="4765582662863429759">ഫോണിൽ നിന്ന് Chromebook-ലേക്ക് ടെക്‌സ്‌റ്റുകൾ കൈമാറാൻ Android മെസേജിനെ അനുവദിക്കുന്നു</translation>
+<translation id="476563889641554689">Lens ഉപയോഗിച്ച് തിരയാൻ ഒരു ഏരിയ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4766598565665644999">എല്ലാ വിപുലീകരണങ്ങൾക്കും <ph name="HOST" /> വായിക്കാനും മാറ്റാനും കഴിയും</translation>
 <translation id="4767427586072640478">പ്രവർത്തനരഹിതമാക്കിയ വിപുലീകരണങ്ങളെ കുറിച്ച് കൂടുതലറിയുക.</translation>
 <translation id="4768332406694066911">നിങ്ങള്‍‌ക്ക് ഈ ഓര്‍‌ഗനൈസേഷനുകളില്‍‌ നിന്ന് നിങ്ങളെ തിരിച്ചറിയുന്ന സര്‍‌ട്ടിഫിക്കറ്റുകളുണ്ട്</translation>
@@ -4564,6 +4575,7 @@
 <translation id="481574578487123132">ലിങ്ക് ചെയ്‌ത ഉപകരണങ്ങൾ</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, വിശദാംശങ്ങൾ</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{ഒരു ബുക്ക്‌മാർക്ക് ഇല്ലാതാക്കി}other{{COUNT} ബുക്ക്‌മാർക്കുകൾ ഇല്ലാതാക്കി}}</translation>
+<translation id="481689174647911539">ഈ ഫയൽ ഒരു വൈറസോ മാൽവെയറോ ആകാം.<ph name="LINE_BREAK" />സുരക്ഷിതമല്ലാത്ത ഫയലാണോ എന്ന് പരിശോധിക്കാൻ നിങ്ങൾക്ക് അത് Google സുരക്ഷിത ബ്രൗസിംഗിലേക്ക് അയയ്ക്കാം. സ്‌കാൻ ചെയ്യാൻ സാധരണഗതിയിൽ കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="4816900689218414104">ഒരു ഫോണിലോ ടാബ്‌ലെറ്റിലോ പാസ്‌കീ സൃഷ്‌ടിക്കുക</translation>
 <translation id="4819323978093861656">{0,plural, =0{ഇപ്പോൾ അടയ്‌ക്കും.}=1{ഒരു സെക്കൻഡിൽ അടയ്‌ക്കും}other{# സെക്കൻഡിൽ അടയ്‌ക്കും}}</translation>
 <translation id="4819607494758673676">Google Assistant അറിയിപ്പുകൾ</translation>
@@ -4718,7 +4730,6 @@
 <translation id="4940364377601827259">സംരക്ഷിക്കുന്നതിനായി <ph name="PRINTER_COUNT" /> പ്രിന്ററുകൾ ലഭ്യമാണ്.</translation>
 <translation id="4940448324259979830">ഈ അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="PROFILE_NAME" /> ആണ്</translation>
 <translation id="4940845626435830013">ഡിസ്ക്കിൽ ഇടം നീക്കി വയ്ക്കുക</translation>
-<translation id="4941074198479265146">സംഗീതം സൃഷ്‌ടിക്കുന്നതിനും എഡിറ്റ് ചെയ്യുന്നതിനുമുള്ള ഫീച്ചറുകൾക്ക്, സൈറ്റുകൾ സാധാരണയായി MIDI ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യാറുണ്ട്</translation>
 <translation id="4941243352516004658"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />-ൽ നിന്നുള്ള നിങ്ങളുടെ കാർട്ടിലെ <ph name="PRODUCT_ITEM_COUNT" /> ഇനങ്ങൾക്ക് <ph name="DISCOUNT_TEXT" />, <ph name="RELATIVE_TIME" /> സന്ദർശിച്ചു</translation>
 <translation id="4941246025622441835">ഉപകരണ എന്റർപ്രൈസ് മാനേജ്‍മെന്റിനായി എൻറോൾ ചെയ്യുമ്പോൾ ഈ ഉപകരണ അഭ്യർത്ഥന ഉപയോഗിക്കുക:</translation>
 <translation id="4941627891654116707">ഫോണ്ട് വലുപ്പം</translation>
@@ -4983,12 +4994,14 @@
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" എന്നതിന്റെ ഏറ്റവും പുതിയ പതിപ്പിന് കൂടുതൽ അനുമതികൾ ആവശ്യമുള്ളതുകൊണ്ട് അത് പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="5185500136143151980">ഇന്റർനെറ്റ് ഇല്ല</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190577235024772869"><ph name="USED_SPACE" /> ഉപയോഗിക്കുന്നു</translation>
 <translation id="5190926251776387065">പോർട്ട് സജീവമാക്കുക</translation>
 <translation id="5190959794678983197">മൈക്രോഫോൺ ഇല്ല</translation>
 <translation id="5191094172448199359">നിങ്ങൾ നൽകിയ പിൻ നമ്പറുകൾ പൊരുത്തപ്പെടുന്നില്ല</translation>
 <translation id="5191251636205085390">മൂന്നാം കക്ഷി കുക്കികൾക്ക് പകരം നിലവിൽ വരാൻ പോകുന്ന പുതിയ സാങ്കേതികവിദ്യകളെക്കുറിച്ച് അറിയുകയും അവയെ നിയന്ത്രിക്കുകയും ചെയ്യുക</translation>
 <translation id="519185197579575131">QT ഉപയോഗിക്കുക</translation>
 <translation id="5192062846343383368">നിങ്ങളുടെ മേൽനോട്ട ക്രമീകരണം കാണാൻ Family Link ആപ്പ് തുറക്കുക</translation>
+<translation id="5193978546360574373">ഓഫ്‌ലൈനിൽ ലഭ്യമാക്കിയിരിക്കുന്ന എല്ലാ ഫയലുകളിലേക്കുമുള്ള ആക്‌സസ് ഉൾപ്പെടെ, ഈ Chromebook-ൽ നിന്ന് Google Drive-ലേക്കുള്ള ആക്‌സസ് ഇത് നീക്കം ചെയ്യും</translation>
 <translation id="5193988420012215838">നിങ്ങളുടെ ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</translation>
 <translation id="5194256020863090856">ഇത് അദൃശ്യ വിൻഡോകളെ മാത്രമേ ബാധിക്കൂ</translation>
 <translation id="5195074424945754995">ഈ നിയമങ്ങളുമായി പൊരുത്തപ്പെടുന്ന URL-കൾ ഒരു ബ്രൗസർ സ്വിച്ച് ട്രിഗർ ചെയ്യില്ല, അവ <ph name="BROWSER_NAME" /> അല്ലെങ്കിൽ <ph name="ALTERNATIVE_BROWSER_NAME" /> എന്ന ബ്രൗസറിൽ തുറക്കാം.</translation>
@@ -5071,6 +5084,7 @@
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> എന്നയാൾക്കുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
 <translation id="5268373933383932086">നിങ്ങളുടെ പേജ്, നിങ്ങളുടെ രീതി</translation>
 <translation id="5269977353971873915">പ്രിന്‍റ് ചെയ്യൽ പരാജയപ്പെട്ടു</translation>
+<translation id="5271578170655641944">Google Drive ആക്‌സസ് നീക്കം ചെയ്യണോ?</translation>
 <translation id="5273806377963980154">സെെറ്റ് URL എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="5273966423195882879">തീമിനെ അടിസ്ഥാനമാക്കിയുള്ള നിറം</translation>
 <translation id="5275084684151588738">ഉപയോക്തൃ നിഘണ്ടുകൾ</translation>
@@ -6335,6 +6349,7 @@
 <translation id="6345878117466430440">വായിച്ചതായി അടയാളപ്പെടുത്തുക</translation>
 <translation id="6346952829206698721">ക്ലിപ്പ്‌ബോർഡിൽ നിന്ന് ഒട്ടിക്കുക</translation>
 <translation id="6347010704471250799">അറിയിപ്പ് കാണിക്കുക</translation>
+<translation id="6348805481186204412">ഓഫ്‌ലൈൻ സ്‌റ്റോറേജ്</translation>
 <translation id="634887995541211148">നിങ്ങളുടെ ഉപകരണത്തിൽ Bruschetta റൺ ചെയ്യുക.</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="6354918092619878358">SECG എലിപ്‌റ്റിക്‌ കർവ്‌ secp256r1 (ANSI X9.62 prime256v1, NIST P-256 എന്നും അറിയപ്പെടുന്നു)</translation>
@@ -6519,6 +6534,7 @@
 <translation id="6513247462497316522">മറ്റൊരു നെറ്റ്‌വർക്കിൽ കണക്‌റ്റ് ചെയ്‌തിട്ടില്ലെങ്കിൽ Google Chrome മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കും.</translation>
 <translation id="6514010653036109809">ലഭ്യമായ ഉപകരണം:</translation>
 <translation id="6514565641373682518">ഈ പേജ് നിങ്ങളുടെ മൗസ് കഴ്‌സർ അപ്രാപ്‌തമാക്കി.</translation>
+<translation id="6517420300299531857">എന്റെ ഡ്രൈവിലെ ഫയലുകൾ നിങ്ങളുടെ Chromebook-ലേക്ക് സ്വയമേവ സമന്വയിപ്പിക്കും, അതുവഴി ഇന്റർനെറ്റ് കണക്ഷനില്ലാതെ തന്നെ നിങ്ങൾക്ക് അവ ആക്സസ് ചെയ്യാനാകും. ഇത് ഏതാണ്ട് <ph name="REQUIRED_SPACE" /> ഉപയോഗിക്കും. നിലവിൽ നിങ്ങൾക്ക് <ph name="FREE_SPACE_AVAILABLE" /> ലഭ്യമാണ്.</translation>
 <translation id="6517709704288360414">നിങ്ങളുടെ ഉപകരണം ഇനി ശരിയായി പ്രവർത്തിച്ചേക്കില്ല, സുരക്ഷയും പ്രകടനവുമായി ബന്ധപ്പെട്ട പ്രശ്നങ്ങൾ നിങ്ങൾ നേരിട്ടേക്കാം. അപ്ഡേറ്റുകൾ ഓഫാക്കുന്നത്, എന്തെങ്കിലും പ്രശ്‌നങ്ങൾ നേരിട്ടാൽ നിയമപരമായ അവകാശവാദം ഉന്നയിക്കുന്നതിനുള്ള നിങ്ങളുടെ അവകാശത്തെയും ബാധിച്ചേക്കാം.</translation>
 <translation id="6518014396551869914">ചിത്രം പകർത്തു&amp;ക</translation>
 <translation id="6518133107902771759">സ്ഥിരീകരിക്കുക</translation>
@@ -6778,6 +6794,7 @@
 <translation id="6736243959894955139">വിലാസം</translation>
 <translation id="6737393581255281855">കാണിച്ചിരിക്കുന്ന ഡാറ്റ മായ്ക്കണോ?</translation>
 <translation id="6737663862851963468">Kerberos ടിക്കറ്റ് നീക്കം ചെയ്യുക</translation>
+<translation id="6737931010859480781">ഈ ആപ്പ് നിങ്ങളുടെ ഉപകരണത്തിൽ മുൻകൂറായി ഇൻസ്റ്റാൾ ചെയ്തിട്ടുണ്ട്</translation>
 <translation id="6738180164164974883">മൂന്നാം കക്ഷി കുക്കികൾ സജ്ജീകരിക്കാൻ അനുവദിക്കുക</translation>
 <translation id="6738430949033571771">അക്കൗണ്ട് പരിശോധിച്ചുറപ്പിക്കുന്നു...</translation>
 <translation id="6739923123728562974">ഡെസ്‌ക്‌ടോപ്പ് കുറുക്കുവഴി കാണിക്കുക</translation>
@@ -8473,6 +8490,7 @@
 <translation id="8138217203226449454">നിങ്ങളുടെ തിരയൽ ദാതാവിനെ മാറ്റാനാണോ നിങ്ങൾ ഉദ്ദേശിച്ചത്?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> നില</translation>
 <translation id="8139447493436036221">Google Drive ഫയലുകൾ</translation>
+<translation id="8139643636835015859">ഇത് നിങ്ങളുടെ ഓഫ്‌ലൈൻ ഫയലുകൾ ഉപയോഗിക്കുന്ന <ph name="OFFLINE_STORAGE_SIZE" /> ഇടം നീക്കം ചെയ്യും. ചില ഫയലുകൾ ഇപ്പോഴും ഓഫ്‌ലൈനിൽ ലഭ്യമാകും. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141418916163800697">ഫോൺ ഹബ് ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് കൂടുതൽ ഫീച്ചറുകൾ സജ്ജീകരിക്കാം</translation>
 <translation id="8141584439523427891">ഇപ്പോൾ മറ്റൊരു ബ്രൗസറിൽ തുറക്കുന്നു</translation>
@@ -8564,6 +8582,7 @@
 <translation id="821119981794423735"><ph name="USER_EMAIL" /> എന്നതിനുള്ള Google Password Manager-ലേക്ക് പാസ്‍വേഡുകൾ ഇമ്പോർട്ട് ചെയ്യാൻ, ഒരു CSV ഫയൽ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ഡൗൺലോഡ് പുരോഗമിക്കുന്നു}other{ഡൗൺലോഡുകൾ പുരോഗമിക്കുന്നു}}</translation>
 <translation id="8212601853154459483">ഈ പ്രൊഫെെൽ മാനേജ് ചെയ്യുന്നത് <ph name="PROFILE_MANAGER" /> ആണ്, <ph name="USER_EMAIL_ADDRESS" /> അക്കൗണ്ടിന് മറ്റൊരു പ്രൊഫെെൽ വേണമെന്ന് അവർ നിങ്ങളോട് ആവശ്യപ്പെടുന്നു</translation>
+<translation id="8212792694174629011">പ്രൊഫൈലുകളൊന്നും കണ്ടെത്തിയില്ല. ഉപകരണത്തിന്റെ ക്യാമറ ഉപയോഗിച്ച് QR കോഡ് സ്കാൻ ചെയ്യാൻ ശ്രമിക്കുകയോ നിങ്ങളുടെ സേവനദാതാവ് നൽകിയ സജീവമാക്കൽ കോഡ് നൽകുകയോ ചെയ്യുക.</translation>
 <translation id="8214489666383623925">ഫയല്‍ തുറക്കുക...</translation>
 <translation id="8215129063232901118"><ph name="DEVICE_TYPE" /> എന്നതിൽ നിന്ന് നിങ്ങളുടെ ഫോണിന്റെ ശേഷികൾ ആക്സസ് ചെയ്യുക</translation>
 <translation id="8217212468862726597">ഹൈലൈറ്റ് പോയിന്റർ</translation>
@@ -9107,6 +9126,7 @@
 <translation id="8680251145628383637">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ, മറ്റ് ക്രമീകരണം എന്നിവ ലഭിക്കാൻ സൈൻ ഇൻ ചെയ്യുക. നിങ്ങളുടെ Google സേവനങ്ങളിലേക്ക് സ്വയമേവ നിങ്ങൾ സൈൻ ഇൻ ആകുന്നതുമാണ്.</translation>
 <translation id="8681886425883659911">തടസ്സമുണ്ടാക്കുന്നതോ തെറ്റിദ്ധരിപ്പിക്കുന്നതോ ആയ പരസ്യങ്ങൾ കാണിക്കുന്ന സൈറ്റുകളിൽ പരസ്യങ്ങൾ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> കണക്‌റ്റ് ചെയ്‌ത് തയ്യാറാണ്</translation>
+<translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> ആയി സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> റദ്ദാക്കുക</translation>
 <translation id="8688672835843460752">ലഭ്യമാണ്</translation>
 <translation id="8689998525144040851">100</translation>

@@ -815,6 +815,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1647408325348388858">Open and edit <ph name="FILE_NAME" /> in this web app?</translation>
 <translation id="1648528859488547844">Use Wi-Fi or mobile networks to determine location</translation>
 <translation id="164936512206786300">Unpair Bluetooth device</translation>
+<translation id="1650801028905250434">Your files in My Drive will sync to your Chromebook automatically, so you can access them without an Internet connection. You can change this at any time in Settings &gt; Files.</translation>
 <translation id="1651008383952180276">You must enter the same passphrase twice</translation>
 <translation id="1651609627703324721">This tab is presenting VR content to a headset</translation>
 <translation id="1652326691684645429">Enable Nearby Share</translation>
@@ -4242,6 +4243,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4515872537870654449">Contact Dell for service. The dock will shut down if the fan isn't working.</translation>
 <translation id="4518840066030486079">Shift key mode style</translation>
 <translation id="4519331665958994620">Sites can ask to use your camera</translation>
+<translation id="4519605771716872386">File sync turned on</translation>
 <translation id="4519935350946509010">Connection error.</translation>
 <translation id="4520385623207007473">Cookies in use</translation>
 <translation id="452039078290142656">unknown devices from <ph name="VENDOR_NAME" /></translation>
@@ -4746,7 +4748,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4940364377601827259">There are <ph name="PRINTER_COUNT" /> printers available to save.</translation>
 <translation id="4940448324259979830">This account is managed by <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Reserve disk size</translation>
-<translation id="4941074198479265146">Sites usually connect to MIDI devices for features for creating and editing music</translation>
 <translation id="4941243352516004658"><ph name="PRODUCT_ITEM_COUNT" /> items in your basket <ph name="DISCOUNT_TEXT" /> from <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, viewed <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Use this device requisition when enrolling the device for enterprise management:</translation>
 <translation id="4941627891654116707">Font size</translation>
@@ -7285,6 +7286,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7124712201233930202">Your organisation's policies aren't met</translation>
 <translation id="7125029162161377569">With Privacy Sandbox trials, sites can deliver the same browsing experience using less of your info. That means more privacy for you and less cross-site tracking. We'll add new trials as they're ready to test.</translation>
 <translation id="7125148293026877011">Delete Crostini</translation>
+<translation id="7125932261198019860">Make sure that your printer is connected to the same Wi-Fi network as your Chromebook or use a USB cable. <ph name="LINK_BEGIN" />Learn more about compatibility<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Download history</translation>
 <translation id="7128151990937044829">Show an indicator in the address bar when notifications are blocked</translation>
 <translation id="7131040479572660648">Read your data on <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> and <ph name="WEBSITE_3" /></translation>
@@ -7478,6 +7480,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7307129035224081534">Paused</translation>
 <translation id="7308643132139167865">Website languages</translation>
 <translation id="7310598146671372464">Failed to log in. The server does not support specified Kerberos encryption types. Please contact your administrator.</translation>
+<translation id="7311005168897771689">Access your Google Drive files when you're offline</translation>
 <translation id="7311244614769792472">No results found</translation>
 <translation id="7312210124139670355">Your administrator is resetting your eSIM. This may take a few minutes.</translation>
 <translation id="7317831949569936035">School enrolment</translation>

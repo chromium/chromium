@@ -3,6 +3,7 @@
 <translationbundle lang="fil">
 <translation id="1026101648481255140">Ituloy ang Pag-install</translation>
 <translation id="1029669172902658969">Ilunsad ulit para ma-update ang &amp;ChromiumOS</translation>
+<translation id="1040916596585577953">Inirerekomenda ng Chromium na suriin mo ang extension na ito</translation>
 <translation id="1065672644894730302">Hindi mabasa ang iyong mga kagustuhan.
 
 Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago sa mga kagustuhan.</translation>
@@ -278,7 +279,6 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="6734291798041940871">Naka-install na ang Chromium para sa lahat ng user sa iyong computer.</translation>
 <translation id="673636774878526923">Para ma-access ang iyong mga bagay sa Chromium sa lahat ng device mo, mag-sign in, at pagkatapos ay i-on ang pag-sync.</translation>
 <translation id="67706546131546258">Inirerekomenda ng Chromium na i-scan ang file na ito dahil posibleng mapanganib ito.</translation>
-<translation id="6774082503108938489">Na-off ng iyong magulang ang "Mga pahintulot para sa mga site, app, at extension" para sa Chromium. Hindi pinapayagan ang pag-enable sa <ph name="EXTENSION_TYPE_PARAMETER" /> na ito.</translation>
 <translation id="6779406956731413166">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang ChromiumOS.</translation>
 <translation id="6847869444787758381">Ipinapaalam sa iyo ng Chromium kung nakompromiso ang mga password mo</translation>
 <translation id="6852530923436401894">Na-block ng Chromium ang file na ito dahil mayroon itong malware</translation>
@@ -366,7 +366,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8463672209299734063">Opsyonal: Tumulong na pahusayin ang mga feature at performance ng ChromiumOS sa pamamagitan ng awtomatikong pagpapadala sa Google ng data ng diagnostic at paggamit.</translation>
 <translation id="8493179195440786826">Luma na ang Chromium</translation>
 <translation id="8550334526674375523">Ang profile sa trabaho na ito ay ganap na hiwalay sa iyong personal na profile.</translation>
-<translation id="8558383651099478961">Na-off ng iyong magulang ang "Mga pahintulot para sa mga site, app, at extension" para sa Chromium. Hindi pinapayagang idagdag ang <ph name="EXTENSION_TYPE_PARAMETER" /> na ito.</translation>
 <translation id="8568283329061645092">Masusuri ng Chromium ang iyong mga password kapag nag-sign in ka sa Google Account mo</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ang Mga May-akda ng Chromium. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Paano namin ginagamit ang data na ito:<ph name="END_BOLD" /> Puwedeng mag-store ang mga site sa Chromium tungkol sa iyong mga interes. Halimbawa, kung bibisita ka sa isang site para bumili ng mga sapatos para sa isang marathon, posibleng tukuyin ng site ang iyong interes bilang pagtakbo sa mga marathon. Sa ibang pagkakataon, kung bibisita ka sa ibang site para magparehistro para sa isang karera, puwedeng magpakita sa iyo ang site na iyon ng ad para sa running shoes batay sa mga interes mo.</translation>

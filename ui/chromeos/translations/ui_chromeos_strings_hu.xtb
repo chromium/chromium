@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Eszközbeállítások</translation>
 <translation id="2084809735218147718">A köszönet jelét mutató ember</translation>
 <translation id="2088690981887365033">VPN-hálózat</translation>
+<translation id="209653272837065803">Nincs elég tárhely a fájlok szinkronizálásának folytatásához</translation>
 <translation id="2111134541987263231">Kapcsolja be az <ph name="BEGIN_BOLD" />Engedélyezés inkognitó módban<ph name="END_BOLD" /> beállítást.</translation>
 <translation id="2114191879048183086">A rendszer töröl <ph name="NUMBER_OF_ITEMS" /> fájlt, a visszaállításuk nem lehetséges.</translation>
 <translation id="2122305276694332719">A rejtett hálózatra való automatikus csatlakozás láthatóvá teszi mások számára az eszközt és bizonyos hálózati beállításokat, ezért nem ajánlott a használata.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Egyszerűsített kínai</translation>
 <translation id="22085916256174561">koreai</translation>
 <translation id="2208919847696382164">Telepítés Linux segítségével</translation>
+<translation id="2215692307449050019">Az akkumulátor töltöttsége alacsony. A fájlszinkronizálás folytatódik, amint az eszköz áramforráshoz csatlakozik.</translation>
 <translation id="2225536596944493418">Biztosan törli ezt a(z) <ph name="NUMBER_OF_ITEMS" /> elemet?</translation>
 <translation id="2230062665678605299">Nem sikerült létrehozni a(z) "<ph name="FOLDER_NAME" />" könyvtárat. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Ember kávéval</translation>
+<translation id="2247561763838186830">Kijelentkeztette a rendszer</translation>
 <translation id="2251368349685848079">Visszaállítás a kukából</translation>
 <translation id="2278133026967558505">Fájlhozzáférés minden webhely és URL számára</translation>
 <translation id="2282155092769082568">URL automatikus konfigurációja:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Ez a fájltípus nem támogatott. Kérjük, látogasson el a Chrome Internetes áruházba olyan alkalmazás kereséséhez, amely meg tudja nyitni ezt a fájltípust.</translation>
 <translation id="2326539130272988168">bolgár</translation>
 <translation id="2337715497728194187">Megosztás a Bruschettával</translation>
+<translation id="233822363739146957">Nincs elég tárhely az összes fájl szinkronizálásához</translation>
 <translation id="23721837607121582">Mobilprofil letöltése, <ph name="NETWORK_COUNT" />/<ph name="NETWORK_INDEX" />. hálózat, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Váltás listanézetre</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mappa megosztva a Linux rendszerrel</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Hiba történt a Linux-alkalmazás telepítése során</translation>
 <translation id="2802583107108007218">További információ ezekről a korlátozásokról</translation>
 <translation id="2803375539583399270">PIN-kód megadása</translation>
+<translation id="2819519502129272135">Fájlszinkronizálás kikapcsolva</translation>
 <translation id="2820957248982571256">Keresés…</translation>
 <translation id="2830077785865012357">kínai zujin</translation>
 <translation id="2843806747483486897">Alapértelmezés módosítása...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Szűrő visszaállítva.</translation>
 <translation id="4603392156942865207">A(z) <ph name="FILE_NAME" /> másolása ide: <ph name="FOLDER_NAME" />…</translation>
 <translation id="4631887759990505102">Előadó</translation>
+<translation id="4635373743001040938">Rendkívül kevés volt a rendelkezésre álló tárhely. A rendzser kikapcsolta a fájlszinkronizálást.</translation>
 <translation id="4642769377300286600">Mobilprofil telepítése, <ph name="NETWORK_COUNT" />/<ph name="NETWORK_INDEX" />. hálózat, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">cseh, Qwerty-billentyűzettel</translation>
 <translation id="4656777537938206294">Hozzáférés a fájlokhoz offline</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">1 mappa megosztva a Parallels Desktoppal</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> visszaállítva</translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Nem sikerült befejezni a fájlszinkronizálás beállítását</translation>
 <translation id="4973523518332075481">Olyan nevet adjon meg, amely legfeljebb <ph name="MAX_LENGTH" /> karakter hosszú</translation>
 <translation id="4973970068702235170">A tömörítés váratlan hiba miatt nem sikerült: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japán</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">német (Belgium)</translation>
 <translation id="7339898014177206373">Új ablak</translation>
 <translation id="7343393116438664539">vietnámi telex</translation>
+<translation id="7347346221088620549">Titkosított fájl</translation>
 <translation id="7357762654218998920">Ez a fájltípus nem támogatott. <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" /> a fájlok ChromeOS-en való megnyitásáról.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> elem másolása…</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> szerint rendezett, csökkenő sorrendben lévő fájllista.</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">izlandi</translation>
 <translation id="863903787380594467">Helytelen PIN-kód. <ph name="RETRIES" /> próbálkozási lehetősége maradt.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
+<translation id="8656407365183407932">Az offline fájlokat el kellett távolítani</translation>
 <translation id="8656768832129462377">Ne ellenőrizze</translation>
 <translation id="8688591111840995413">Helytelen jelszó</translation>
 <translation id="8698464937041809063">Google-rajz</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">kínai (hagyományos) pinjin</translation>
 <translation id="8998871447376656508">Nincs elég szabad tárhelye a Google Drive-on a feltöltés befejezéséhez.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, a rendszergazdája kezeli, részletek</translation>
+<translation id="9007990314804111233">Jelentkezzen be Microsoft-fiókjába</translation>
 <translation id="9017798300203431059">orosz fonetikus</translation>
 <translation id="9034924485347205037">Linux-fájlok</translation>
 <translation id="9035012421917565900">Az elemek nem helyezhetők vissza ide: „<ph name="DESTINATION_NAME" />”. Nem tudja visszavonni a műveletet.</translation>

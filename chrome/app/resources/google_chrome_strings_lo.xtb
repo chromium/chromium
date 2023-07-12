@@ -321,7 +321,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7036251913954633326">ຫາກທ່ານຕ້ອງການໃຊ້ບັນຊີນີ້ແບບເທື່ອດຽວເທົ່ານັ້ນ, ທ່ານສາມາດໃຊ້ <ph name="GUEST_LINK_BEGIN" />ໂໝດແຂກ<ph name="GUEST_LINK_END" /> ໃນໂປຣແກຣມທ່ອງເວັບ Chrome ໄດ້. ຫາກທ່ານຕ້ອງການເພີ່ມບັນຊີໃຫ້ຄົນອື່ນ, ກະລຸນາ <ph name="LINK_BEGIN" />ເພີ່ມຄົນໃໝ່<ph name="LINK_END" /> ໃສ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ.
 
 ການອະນຸຍາດທີ່ທ່ານໄດ້ມອບໃຫ້ເວັບໄຊ ແລະ ແອັບຕ່າງໆໄປກ່ອນແລ້ວອາດມີຜົນກັບບັນຊີນີ້ນຳ. ທ່ານສາມາດຈັດການບັນຊີ Google ຂອງທ່ານໄດ້ໃນ <ph name="SETTINGS_LINK_BEGIN" />ການຕັ້ງຄ່າ<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7062128746136194023">ພໍ່ແມ່ຂອງທ່ານໄດ້ປິດ "ການອະນຸຍາດສຳລັບເວັບໄຊ, ແອັບ ແລະ ສ່ວນຂະຫຍາຍ" ສຳລັບ Chrome ແລ້ວ. ການເພີ່ມ <ph name="EXTENSION_TYPE_PARAMETER" /> ນີ້ບໍ່ໄດ້ຮັບອະນຸຍາດ.</translation>
 <translation id="7071827361006050863">Chrome ຈະລຶບຂໍ້ມູນການທ່ອງເວັບໃນໄວໆນີ້</translation>
 <translation id="7085332316435785646">ເລືອກວ່າຈະໃຫ້ຮວມປະຫວັດ Chrome ສຳລັບປະສົບການທີ່ປັບແຕ່ງສ່ວນຕົວໃນບໍລິການ Google ຫຼືບໍ່</translation>
 <translation id="7088681679121566888">Chrome ໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
@@ -384,7 +383,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8255190535488645436">Google Chrome ກໍາລັງໃຊ້​ກ້ອງ​ຖ່າຍ​ຮູບ​ ແລະໄມໂຄຣໂຟນຂອງ​ທ່ານ​.</translation>
 <translation id="8270775718612349140">ໃບຮັບຮອງທີ່ຈັດການໂດຍ Chrome</translation>
 <translation id="8286862437124483331">Google Chrome ກໍາລັງພະຍາຍາມສະແດງລະຫັດຜ່ານ. ພິມລະຫັດຜ່ານ Windows ຂອງທ່ານ ເພື່ອອະນຸຍາດອັນນີ້.</translation>
-<translation id="828798499196665338">ພໍ່ແມ່ຂອງທ່ານໄດ້ປິດ "ການອະນຸຍາດສຳລັບເວັບໄຊ, ແອັບ ແລະ ສ່ວນຂະຫຍາຍ" ສຳລັບ Chrome ແລ້ວ. ການເປີດການນຳໃຊ້ <ph name="EXTENSION_TYPE_PARAMETER" /> ນີ້ບໍ່ໄດ້ຮັບອະນຸຍາດ.</translation>
 <translation id="8290100596633877290">ໂຮ້! Google Chrome ​ເກີດ​ຂັດຂ້ອງ. ເປີດໃຊ້ໃໝ່ດຽວນີ້ບໍ?</translation>
 <translation id="829923460755755423">ເພີ່ມທາງລັດໃນຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="8342675569599923794">ໄຟລ໌ນີ້ເປັນອັນຕະລາຍ, ສະນັ້ນ Chrome ໄດ້ບລັອກມັນໄວ້ແລ້ວ.</translation>

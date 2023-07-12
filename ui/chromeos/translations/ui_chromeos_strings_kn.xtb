@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">ಸಾಧನ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="2084809735218147718">ಧನ್ಯವಾದಗಳು ಎಂದು ಹಸ್ತಾಕ್ಷರ ಮಾಡುತ್ತಿರುವ ವ್ಯಕ್ತಿ</translation>
 <translation id="2088690981887365033">VPN ನೆಟ್‌ವರ್ಕ್</translation>
+<translation id="209653272837065803">ಫೈಲ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡುವುದನ್ನು ಮುಂದುವರಿಸಲು ನೀವು ಸಾಕಷ್ಟು ಸಂಗ್ರಹಣೆಯನ್ನು ಹೊಂದಿಲ್ಲ</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಅನುಮತಿಸಿ<ph name="END_BOLD" /> ಎಂಬುದನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ಅವುಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="2122305276694332719">ಮರೆ ಮಾಡಿರುವ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸಂಪರ್ಕಗೊಳ್ಳುವುದರಿಂದ ಇತರರು ನಿಮ್ಮ ಸಾಧನ ಮತ್ತು ಕೆಲವು ನೆಟ್‌ವರ್ಕ್‌ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನೋಡಲು ಅನುಮತಿಸುತ್ತದೆ, ಆದ್ದರಿಂದ ಇದನ್ನು ಬಳಸಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">ಸರಳೀಕೃತ ಚೈನೀಸ್</translation>
 <translation id="22085916256174561">ಕೊರಿಯನ್</translation>
 <translation id="2208919847696382164">Linux ಸಹಾಯದಿಂದ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
+<translation id="2215692307449050019">ಬ್ಯಾಟರಿ ಮಟ್ಟ ಕಡಿಮೆ ಇದೆ. ನೀವು ವಿದ್ಯುತ್‌ಗೆ ಕನೆಕ್ಟ್ ಆದಾಗ ಫೈಲ್ ಸಿಂಕ್ ಮಾಡುವಿಕೆ ಪುನರಾರಂಭಗೊಳ್ಳುತ್ತದೆ.</translation>
 <translation id="2225536596944493418">ನೀವು ಖಂಡಿತವಾಗಿಯೂ <ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ಫೋಲ್ಡರ್ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">ಕಾಫಿ ಕುಡಿಯುತ್ತಿರುವ ವ್ಯಕ್ತಿ</translation>
+<translation id="2247561763838186830">ನೀವು ಲಾಗ್ ಔಟ್ ಮಾಡಿದ್ದೀರಿ</translation>
 <translation id="2251368349685848079">ಅನುಪಯುಕ್ತದಿಂದ ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="2278133026967558505">ಎಲ್ಲಾ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಹಾಗೂ URL ಗಳಿಂದ ಫೈಲ್ ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಿ</translation>
 <translation id="2282155092769082568">ಸ್ವಯಂ ಕಾನ್ಫಿಗರೇಶನ್ URL:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">ಈ ಫೈಲ್ ಪ್ರಕಾರವು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ದಯವಿಟ್ಟು ಈ ಪ್ರಕಾರ ಫೈಲ್ ತೆರೆಯಬಹುದಾದ ಅಪ್ಲಿಕೇಶನ್ ಹುಡುಕಲು Chrome ವೆಬ್ ಸ್ಟೋರ್‌‌ಗೆ ಭೇಟಿ ನೀಡಿ.</translation>
 <translation id="2326539130272988168">ಬಲ್ಗೇರಿಯನ್</translation>
 <translation id="2337715497728194187">Bruschetta ಮೂಲಕ ಹಂಚಿಕೊಳ್ಳಿ</translation>
+<translation id="233822363739146957">ನಿಮ್ಮ ಎಲ್ಲಾ ಫೈಲ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲು ಸಾಕಷ್ಟು ಸಂಗ್ರಹಣೆ ಸ್ಥಳವಿಲ್ಲ</translation>
 <translation id="23721837607121582">ಮೊಬೈಲ್ ಪ್ರೊಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ, ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ಪಟ್ಟಿ ವೀಕ್ಷಣೆಗೆ ಬದಲಾಯಿಸಿ</translation>
 <translation id="2377590462528165447">Linux ನೊಂದಿಗೆ <ph name="NUMBER_OF_ITEMS" /> ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Linux ಅಪ್ಲಿಕೇಶನ್‌ ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡುವಲ್ಲಿ ದೋಷ ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="2802583107108007218">ಈ ನಿರ್ಬಂಧಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="2803375539583399270">ಪಿನ್ ನಮೂದಿಸಿ</translation>
+<translation id="2819519502129272135">ಫೈಲ್ ಸಿಂಕ್ ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2820957248982571256">ಸ್ಕ್ಯಾನ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="2830077785865012357">ಚೈನೀಸ್ ಜುಯೆನ್</translation>
 <translation id="2843806747483486897">ಡಿಫಾಲ್ಟ್‌ ಅನ್ನು ಬದಲಾಯಿಸಿ...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">ಫಿಲ್ಟರ್ ಅನ್ನು ರೀಸೆಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> ಅನ್ನು <ph name="FOLDER_NAME" /> ಗೆ ನಕಲಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4631887759990505102">ಕಲೆಗಾರ</translation>
+<translation id="4635373743001040938">ಸಂಗ್ರಹಣೆಯ ಸ್ಥಳವು ಅತ್ಯಂತ ಕಡಿಮೆಯಾಗಿತ್ತು. ಫೈಲ್ ಸಿಂಕ್ ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="4642769377300286600">ಮೊಬೈಲ್ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ, ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Qwerty ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಝೆಕ್</translation>
 <translation id="4656777537938206294">ಫೈಲ್‌ಗಳನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಾಗುವಂತೆ ಮಾಡಿ</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">Parallels Desktop ಮೂಲಕ 1 ಫೋಲ್ಡರ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="4969785127455456148">ಆಲ್ಬಮ್</translation>
+<translation id="4972330214479971536">ಫೈಲ್ ಸಿಂಕ್ ಸೆಟಪ್ ಮಾಡುವುದನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> ಅಕ್ಷರಗಳು ಅಥವಾ ಕಡಿಮೆ ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿರುವ ಹೆಸರನ್ನು ಬಳಸಿ</translation>
 <translation id="4973970068702235170">ಝಿಪ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ, ಅನಿರೀಕ್ಷಿತ ದೋಷ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">ಜಪಾನೀಸ್</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">ಜರ್ಮನ್ (ಬೆಲ್ಜಿಯಂ)</translation>
 <translation id="7339898014177206373">ಹೊಸ ವಿಂಡೊ</translation>
 <translation id="7343393116438664539">ವಿಯೆಟ್ನಾಮೀಸ್ ಟೆಲೆಕ್ಸ್</translation>
+<translation id="7347346221088620549">ಎನ್‌ಕ್ರಿಪ್ಟೆಡ್ ಫೈಲ್</translation>
 <translation id="7357762654218998920">ಈ ಫೈಲ್ ಪ್ರಕಾರ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ. ChromeOS ನಲ್ಲಿ ಫೈಲ್‌ನಲ್ಲಿ ತೆರೆಯುವ ಕುರಿತು <ph name="BEGIN_LINK_HELP" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ನಕಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7375951387215729722">ಫೈಲ್ ಪಟ್ಟಿಯನ್ನು <ph name="COLUMN_NAME" /> ಪ್ರಕಾರವಾಗಿ ಮೇಲಿನಿಂದ ಕೆಳಗೆ ಕ್ರಮದಲ್ಲಿ ವಿಂಗಡಿಸಲಾಗಿದೆ.</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">ಐಸ್‌ಲ್ಯಾಂಡಿಕ್</translation>
 <translation id="863903787380594467">ತಪ್ಪಾದ ಪಿನ್. ನೀವು <ph name="RETRIES" /> ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನಗಳನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ಪೋರ್ಟ್</translation>
+<translation id="8656407365183407932">ನಿಮ್ಮ ಆಫ್‌ಲೈನ್ ಫೈಲ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಬೇಕಾಗಿದೆ</translation>
 <translation id="8656768832129462377">ಪರಿಶೀಲಿಸಬೇಡ</translation>
 <translation id="8688591111840995413">ತಪ್ಪಾದ ಪಾಸ್‍ವರ್ಡ್</translation>
 <translation id="8698464937041809063">Google ರೇಖಾಚಿತ್ರ</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">ಚೈನೀಸ್ (ಸಾಂಪ್ರದಾಯಿಕ) ಪಿನ್‌ಯಿನ್</translation>
 <translation id="8998871447376656508">ನಿಮ್ಮ Google Drive ನಲ್ಲಿ ಅಪ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಳಿಸಲು ಸಾಕಾಗುವಷ್ಟು ಮುಕ್ತ ಸ್ಥಳಾವಕಾಶವಿಲ್ಲ.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ, ವಿವರಗಳು</translation>
+<translation id="9007990314804111233">ನಿಮ್ಮ Microsoft ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="9017798300203431059">ರಷ್ಯನ್ ಫೋನೆಟಿಕ್</translation>
 <translation id="9034924485347205037">Linux ಫೈಲ್‌ಗಳು</translation>
 <translation id="9035012421917565900">ಐಟಂಗಳನ್ನು '<ph name="DESTINATION_NAME" />' ಗೆ ಮರಳಿ ಹಿಂತಿರುಗಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ, ಆದ್ದರಿಂದ ನಿಮಗೆ ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಪಡಿಸಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>

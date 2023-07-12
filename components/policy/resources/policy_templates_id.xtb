@@ -889,7 +889,6 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 <translation id="1768225118528727376">Memberikan izin Pengelolaan Jendela di situs ini</translation>
 <translation id="1770071413238151235">Format jam 12 jam</translation>
 <translation id="1771024053220392089">Nonaktifkan Dukungan Browser Lama</translation>
-<translation id="1781225230395284182">Tampilkan dialog pembatalan saat beforeunload event.preventDefault() dipanggil.</translation>
 <translation id="1781356041596378058">Kebijakan ini juga mengontrol akses ke Opsi Developer Android. Jika Anda menyetel kebijakan ini ke true, pengguna tidak dapat mengakses Opsi Developer. Jika Anda menyetel kebijakan ini ke false atau tidak menyetel kebijakan ini, pengguna dapat mengakses Opsi Developer dengan mengetuk tujuh kali nomor versi di aplikasi setelan Android.</translation>
 <translation id="1787790976045065845">Kebijakan ini hanya berlaku jika kebijakan <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> disetel ke <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> atau <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />, dan pengguna yang melakukan autentikasi melalui smart card menghapus smart card tersebut. Kemudian, kebijakan ini menentukan berapa detik notifikasi yang memberi tahu pengguna tentang tindakan mendatang akan ditampilkan. Notifikasi ini memblokir layar. Tindakan hanya akan dilakukan setelah notifikasi ini berakhir. Pengguna dapat mencegah tindakan terjadi dengan memasukkan kembali smart card sebelum notifikasi berakhir. Jika kebijakan ini disetel ke nol, tidak akan ada notifikasi yang ditampilkan dan tindakan akan segera dilakukan.</translation>
 <translation id="1793346220873697538">Nonaktifkan pencetakan PIN secara default</translation>
@@ -2022,7 +2021,6 @@ Catatan: Jika nilai suatu kolom tidak ditetapkan, semua nilai akan cocok untuk k
 <translation id="2787774054174244402">Jika kebijakan ditetapkan ke Benar (True), pengguna tidak akan dapat menulis ke perangkat penyimpanan eksternal.
 
       Jika ExternalStorageReadOnly ditetapkan ke Salah (False) atau tidak ditetapkan, pengguna dapat membuat dan memodifikasi file perangkat penyimpanan eksternal yang dapat ditulis secara fisik, kecuali penyimpanan eksternal diblokir. (Anda dapat memblokir penyimpanan eksternal dengan menetapkan ExternalStorageDisable ke Benar (True).)</translation>
-<translation id="2788443040242264100">Jangan tampilkan dialog pembatalan saat beforeunload event.preventDefault() dipanggil.</translation>
 <translation id="2789742777235177478">Membatasi waktu bagi pengguna yang diautentikasi melalui GAIA tanpa SAML untuk dapat login secara offline di layar kunci</translation>
 <translation id="2796714419743648316">Daftar yang Diizinkan terkait Batas Waktu per Aplikasi</translation>
 <translation id="2801065672151277034">Setelan pengelolaan sertifikat</translation>
@@ -6294,7 +6292,6 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 
       Catatan: Jika metode input saat ini tidak didukung, metode akan beralih ke tata letak keyboard hardware (jika diizinkan) atau entri pertama yang valid dalam daftar ini. Metode yang tidak valid atau tidak didukung akan diabaikan.</translation>
 <translation id="6483115462650732746">Tampilkan menu aksesibilitas mengambang dalam mode kios</translation>
-<translation id="6485036313708130232">Mengontrol perilaku baru untuk peristiwa beforeunload yang menampilkan dialog konfirmasi pembatalan saat preventDefault dipanggil</translation>
 <translation id="6489084406497912050">Mengontrol apakah pengguna dapat menambahkan akun Kerberos.
 
           Jika kebijakan ini diaktifkan atau tidak disetel, pengguna dapat menambahkan akun Kerberos melalui Setelan akun Kerberos di halaman setelan Kerberos. Pengguna dapat sepenuhnya mengontrol akun yang mereka tambahkan serta dapat memodifikasi atau menghapusnya.
@@ -7635,13 +7632,6 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 <translation id="7613115815080726221">Durasi waktu tanpa input pengguna sebelum tindakan tidak ada aktivitas dilakukan, dalam milidetik.</translation>
 <translation id="7614663184588396421">Daftar skema protokol yang dinonaktifkan</translation>
 <translation id="7616631530432070402">Cipher suite 3DES akan diaktifkan di TLS</translation>
-<translation id="7617710923960807616">Kebijakan ini memungkinkan kontrol apakah dialog konfirmasi ditampilkan saat halaman memanggil preventDefault untuk peristiwa beforeunload. Sebelumnya, <ph name="PRODUCT_NAME" /> tidak menampilkan dialog ini, tetapi perilaku default sedang diubah. Kebijakan ini adalah solusi sementara, yang ditujukan untuk perusahaan yang situsnya rusak karena perilaku baru dan yang memerlukan waktu sebelum diperbaiki.
-
-Jika kebijakan ini disetel ke aktif, dialog konfirmasi pembatalan akan ditampilkan saat halaman memanggil preventDefault untuk peristiwa beforeunload.
-
-Jika kebijakan ini disetel ke nonaktif, tidak ada dialog konfirmasi pembatalan yang ditampilkan saat halaman memanggil preventDefault untuk peristiwa beforeunload.
-
-Jika kebijakan ini tidak disetel, perilaku default akan digunakan, sesuai dengan rencana peluncuran fitur <ph name="PRODUCT_NAME" />.</translation>
 <translation id="761788785484453836">Wajibkan isolasi situs untuk semua situs</translation>
 <translation id="7620869951155758729">Kebijakan ini menetapkan konfigurasi yang digunakan untuk membuat dan memverifikasi Kode Akses Orang Tua.
 
@@ -9435,6 +9425,16 @@ Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan mengumpulkan dan m
 <translation id="9220314833408124365">Gunakan kebijakan perujuk default untuk no-referrer-when-downgrade</translation>
 <translation id="9221827710437832530">Izinkan akses geolokasi di layar login.</translation>
 <translation id="922540222991413931">Konfigurasi sumber pemasangan skrip pengguna, aplikasi, dan ekstensi</translation>
+<translation id="922656089385303086">Kebijakan ini tidak digunakan lagi dan akan dihapus di versi 130. Sebagai gantinya, gunakan <ph name="URL_KEYED_METRICS_ALLOWED_POLICY_NAME" />.
+
+Jika kebijakan disetel ke Aktif berarti pengumpulan data anonim yang menyertakan URL, yang mengirimkan informasi URL halaman yang dikunjungi oleh pengguna kepada Google untuk meningkatkan (kualitas) penelusuran dan penjelajahan, akan selalu aktif.
+
+Jika kebijakan disetel ke Nonaktif, pengumpulan data anonim yang menyertakan URL tidak diaktifkan.
+
+Jika kebijakan ini tidak disetel, pengguna akan dapat mengubah setelan ini secara manual.
+
+Di <ph name="PRODUCT_OS_NAME" /> Kiosk, kebijakan ini tidak menawarkan opsi "Izinkan pengguna untuk memutuskan". Jika kebijakan ini tidak disetel untuk <ph name="PRODUCT_OS_NAME" />Kiosk, pengumpulan data anonim yang menyertakan URL akan selalu aktif.
+Jika kebijakan disetel untuk <ph name="PRODUCT_OS_NAME" /> Kiosk, kebijakan ini akan mengaktifkan pengumpulan metrik yang menyertakan URL untuk aplikasi kios.</translation>
 <translation id="924557436754151212">Impor sandi yang disimpan dari browser default saat pertama kali dijalankan</translation>
 <translation id="926104720905645793">Kebijakan ini mengontrol pelaporan cloud <ph name="PRODUCT_NAME" /> yang mengupload informasi tentang operasi browser ke <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 

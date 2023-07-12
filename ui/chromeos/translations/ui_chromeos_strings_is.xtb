@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Stillingar tækis</translation>
 <translation id="2084809735218147718">Skrifar „takk“</translation>
 <translation id="2088690981887365033">VPN-net</translation>
+<translation id="209653272837065803">Þú ert ekki með nægt geymslurými til að halda áfram að samstilla skrár</translation>
 <translation id="2111134541987263231">Kveiktu á <ph name="BEGIN_BOLD" />Leyfa í huliðsstillingu<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> atriðum verður eytt og þú munt ekki geta endurheimt þau.</translation>
 <translation id="2122305276694332719">Ef tengt er sjálfkrafa við falið netkerfi geta aðrir séð tækið þitt og sumar netstillingar, og því er það ekki ráðlagt.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Kínverska (einfölduð)</translation>
 <translation id="22085916256174561">Kóreska</translation>
 <translation id="2208919847696382164">Setja upp með Linux</translation>
+<translation id="2215692307449050019">Rafhlaðan er að tæmast. Samstilling skráa hefst aftur þegar þú tengist við rafmagn.</translation>
 <translation id="2225536596944493418">Ertu viss um að þú viljir eyða <ph name="NUMBER_OF_ITEMS" /> atriðum?</translation>
 <translation id="2230062665678605299">Ekki er hægt að búa til möppuna „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Einstaklingur með kaffi</translation>
+<translation id="2247561763838186830">Þú varst skráð(ur) út</translation>
 <translation id="2251368349685848079">Endurheimta úr rusli</translation>
 <translation id="2278133026967558505">Aðgangur að skrám í gegnum öll vefsvæði og vefslóðir</translation>
 <translation id="2282155092769082568">Sjálfvirk stilling vefslóðar:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Þessi skráargerð er ekki studd. Farðu í vefverslun Chrome til að finna forrit sem getur opnað þessa skráargerð.</translation>
 <translation id="2326539130272988168">Búlgarska</translation>
 <translation id="2337715497728194187">Deila með Bruschetta</translation>
+<translation id="233822363739146957">Þú ert ekki með nægt geymslurými til að samstilla allar skrárnar þínar</translation>
 <translation id="23721837607121582">Sækja snjallprófíl, netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Skipta yfir í listayfirlit</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> möppum deilt með Linux</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Villa við uppsetningu Linux-forrits</translation>
 <translation id="2802583107108007218">Nánar um þessar takmarkanir</translation>
 <translation id="2803375539583399270">Sláðu inn PIN-númer</translation>
+<translation id="2819519502129272135">Slökkt á samstillingu skráa</translation>
 <translation id="2820957248982571256">Leitar...</translation>
 <translation id="2830077785865012357">Kínverska Zhuyin</translation>
 <translation id="2843806747483486897">Breyta sjálfgefinni aðgerð...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Sían var endurstillt.</translation>
 <translation id="4603392156942865207">Afritar <ph name="FILE_NAME" /> í <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Flytjandi</translation>
+<translation id="4635373743001040938">Geymslurými var mjög takmarkað. Slökkt var á samstillingu skráa.</translation>
 <translation id="4642769377300286600">Setur upp snjallprófíl, netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Tékkneska með Qwerty-lyklaborði</translation>
 <translation id="4656777537938206294">Gera skrár aðgengilegar án nettengingar</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">1 möppu deilt með Parallels Desktop</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> endurheimt</translation>
 <translation id="4969785127455456148">Plata</translation>
+<translation id="4972330214479971536">Ekki tókst að ljúka við uppsetningu á samstillingu skráa</translation>
 <translation id="4973523518332075481">Notaðu nafn sem er <ph name="MAX_LENGTH" /> stafir eða styttra</translation>
 <translation id="4973970068702235170">Zip-þjöppun mistókst, óvænt villa: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japanska</translation>
@@ -806,6 +813,7 @@
 <translation id="7309413087278791451">Þýska (Belgía)</translation>
 <translation id="7339898014177206373">Nýr gluggi</translation>
 <translation id="7343393116438664539">Víetnamska Telex</translation>
+<translation id="7347346221088620549">Dulkóðuð skrá</translation>
 <translation id="7357762654218998920">Þessi skráargerð er ekki studd. <ph name="BEGIN_LINK_HELP" />Nánar<ph name="END_LINK_HELP" /> um að opna skrár í ChromeOS.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> atriði afrituð...</translation>
 <translation id="7375951387215729722">Skráalista raðað eftir <ph name="COLUMN_NAME" /> í lækkandi röð.</translation>
@@ -992,6 +1000,7 @@
 <translation id="8609695766746872526">Íslenska</translation>
 <translation id="863903787380594467">Rangt PIN-númer. <ph name="RETRIES" /> tilraunir eru eftir.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – gátt</translation>
+<translation id="8656407365183407932">Fjarlægja þurfti skrárnar þínar sem eru ekki á netinu</translation>
 <translation id="8656768832129462377">Ekki athuga</translation>
 <translation id="8688591111840995413">Rangt aðgangsorð</translation>
 <translation id="8698464937041809063">Google teikning</translation>
@@ -1027,6 +1036,7 @@
 <translation id="8997962250644902079">Kínverska (hefðbundin) Pinyin</translation>
 <translation id="8998871447376656508">Ekki er nægt pláss á Google Drive til að ljúka við upphleðsluna.</translation>
 <translation id="9003940392834790328">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, stjórnað af kerfisstjóra, upplýsingar</translation>
+<translation id="9007990314804111233">Skráðu þig inn á Microsoft-reikninginn þinn</translation>
 <translation id="9017798300203431059">Rússneskt hljóðritunarlyklaborð</translation>
 <translation id="9034924485347205037">Linux-skrár</translation>
 <translation id="9035012421917565900">Ekki er hægt að færa atriðin aftur í „<ph name="DESTINATION_NAME" />“, þannig að þú verður ófær um að afturkalla þessa aðgerð.</translation>

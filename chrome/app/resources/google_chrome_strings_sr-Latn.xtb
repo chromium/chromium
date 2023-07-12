@@ -248,6 +248,7 @@ Neke funkcije su možda nedostupne. Navedite drugi direktorijum profila ili kori
 <translation id="5430073640787465221">Datoteka podešavanja je oštećena ili nevažeća.
 
 Google Chrome ne može da vrati podešavanja.</translation>
+<translation id="5521146392841465297">Chrome vam preporučuje da pregledate ovaj dodatak.</translation>
 <translation id="5524761631371622910">Dok probni periodi traju i ako vas je Chrome nasumično postavio u aktivni probni period, istorija pregledanja utiče na oglase koje vidite i interesovanja procenjena u nastavku. Radi zaštite privatnosti Chrome briše interesovanja svakog meseca čim postanu dostupna.</translation>
 <translation id="5530733413481476019">Ubrzajte Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -321,7 +322,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7036251913954633326">Ako želite da koristite ovaj nalog samo jednom, možete da koristite <ph name="GUEST_LINK_BEGIN" />režim gosta<ph name="GUEST_LINK_END" /> u Chrome pregledaču. Ako želite da dodate nalog za nekog drugog, <ph name="LINK_BEGIN" />dodajte novu osobu<ph name="LINK_END" /> na uređaj <ph name="DEVICE_TYPE" />.
 
 Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj nalog. Google nalozima možete da upravljate u <ph name="SETTINGS_LINK_BEGIN" />Podešavanjima<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7062128746136194023">Roditelj je isključio „Dozvole za sajtove, aplikacije i dodatke“ za Chrome. Dodavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>
 <translation id="7071827361006050863">Chrome će uskoro izbrisati podatke pregledanja</translation>
 <translation id="7085332316435785646">Odaberite da li ćete uvrstiti istoriju Chrome-a radi personalizovanijih doživljaja u Google uslugama</translation>
 <translation id="7088681679121566888">Chrome je ažuriran</translation>
@@ -384,7 +384,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="8255190535488645436">Google Chrome koristi kameru i mikrofon.</translation>
 <translation id="8270775718612349140">Sertifikati kojima upravlja Chrome</translation>
 <translation id="8286862437124483331">Google Chrome pokušava da prikaže lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
-<translation id="828798499196665338">Roditelj je isključio „Dozvole za sajtove, aplikacije i dodatke“ za Chrome. Omogućavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>
 <translation id="8290100596633877290">Opa! Google Chrome je otkazao. Želite li da ga odmah ponovo pokrenete?</translation>
 <translation id="829923460755755423">Dodajte prečicu u Google menadžer lozinki</translation>
 <translation id="8342675569599923794">Ova datoteka je opasna, pa ju je Chrome blokirao.</translation>

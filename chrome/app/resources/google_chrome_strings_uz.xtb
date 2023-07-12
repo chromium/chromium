@@ -318,7 +318,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7036251913954633326">Bu hisobdan bir marta foydalanish uchun Chrome brauzerida <ph name="GUEST_LINK_BEGIN" />Mehmon rejimidan<ph name="GUEST_LINK_END" /> foydalanishingiz mumkin. Biror kishi uchun hisob qoʻshmoqchi boʻlsangiz, <ph name="LINK_BEGIN" />yangi shaxsni<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> qurilmasiga qoʻshing.
 
 Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google hisoblarini <ph name="SETTINGS_LINK_BEGIN" />Sozlamalar<ph name="SETTINGS_LINK_END" /> orqali boshqarish mumkin.</translation>
-<translation id="7062128746136194023">Chromedagi “Sayt, ilova va kengaytmalarga ruxsat” ota-onangiz tomonidan faolsizlantirilgan. <ph name="EXTENSION_TYPE_PARAMETER" /> kiritilishi taqiqlangan.</translation>
 <translation id="7071827361006050863">Chrome tez orada brauzer maʼlumotlarini oʻchirib tashlaydi</translation>
 <translation id="7085332316435785646">Kerak boʻlsa, Chrome tarixi yanada moslashtirilgan Google xizmatlarida ishlatilishini tanlang</translation>
 <translation id="7088681679121566888">Chrome eng oxirgi versiyada</translation>
@@ -381,7 +380,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8255190535488645436">Google Chrome kamera va mikrofoningizdan foydalanmoqda.</translation>
 <translation id="8270775718612349140">Chrome boshqaradigan sertifikatlar</translation>
 <translation id="8286862437124483331">Google Chrome parollarni ko‘rsatishga urinmoqda. Ruxsat berish uchun Windows platformasidagi parolingizni kiriting.</translation>
-<translation id="828798499196665338">Chromedagi “Sayt, ilova va kengaytmalarga ruxsat” ota-onangiz tomonidan faolsizlantirilgan. Bu <ph name="EXTENSION_TYPE_PARAMETER" /> yoqilishi taqiqlangan.</translation>
 <translation id="8290100596633877290">Google Chrome ishdan chiqdi. Qaytadan ishga tushirilsinmi?</translation>
 <translation id="829923460755755423">Google Parollar menejeri uchun yorliq kiriting</translation>
 <translation id="8342675569599923794">Bu fayl zararli edi va u Chrome tomonidan bloklandi.</translation>

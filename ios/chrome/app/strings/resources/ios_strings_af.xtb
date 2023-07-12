@@ -42,7 +42,6 @@
 <translation id="1207113853726624428">Nuwe soektog</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Versteek vir eers</translation>
-<translation id="121048537318175637">Voer ’n taak, soos “vee my geskiedenis uit” of “wysig wagwoorde”, op die adresbalk in.</translation>
 <translation id="1219674500290482172">Kon nie aan die internet koppel nie.</translation>
 <translation id="1226238226094914652">Wagwoorde op al jou toestelle</translation>
 <translation id="122699739164161391">Maak alle oortjies toe</translation>
@@ -92,7 +91,6 @@
 <translation id="1492417797159476138">Jy het hierdie gebruikernaam reeds vir hierdie werf gestoor</translation>
 <translation id="1497590942294823549">Kieslys → Wagwoordbestuuder</translation>
 <translation id="1498283581832036924">Jou <ph name="WEBSITE" />-rekening sal nie uitgevee word nie.</translation>
-<translation id="1501820324067650154">Tik op “Kry rigtingaanwysings” vir roete-opsies</translation>
 <translation id="1506063256525392513">Dit maak dit vir jou moontlik om foto's te neem en op te laai, asook om QR-kodes te skandeer.</translation>
 <translation id="1509486075633541495">Meld by webwerf aan</translation>
 <translation id="1509960214886564027">Kenmerke op baie werwe kan breek</translation>
@@ -194,7 +192,6 @@
 <translation id="2155145621546387786">Deel Chrome</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2178545675770638239">Kies wagwoord</translation>
-<translation id="2215566625617766058">Kortpaaie in die omniboks wat vinnige toegang tot nuttige instellings en handelinge moontlik maak.</translation>
 <translation id="2218443599109088993">Zoem uit</translation>
 <translation id="2230173723195178503">Webblad is gelaai</translation>
 <translation id="2239626343334228536">Vee blaaierdata uit …</translation>
@@ -294,7 +291,6 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="2786701870377699570">Soek oortjies op gesinkroniseerde toestelle</translation>
 <translation id="2797029671965852011">Wys geskiedenis</translation>
 <translation id="2800683595868705743">Verlaat oortjiewisselaar</translation>
-<translation id="2803192464408568808">Voltooi jou taak</translation>
 <translation id="2815198996063984598">2. Tik op Verstekblaaierprogram.</translation>
 <translation id="2818821771744632548">Jy is as deel van jou iPhone-terugstelling uit jou rekening, <ph name="USER_NAME" />, afgemeld. Tik op “Gaan voort” hier onder om weer aan te meld.</translation>
 <translation id="2822917246944009066">Oortjie is vasgespeld</translation>
@@ -386,9 +382,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3311748811247479259">Af</translation>
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Werfinligting</translation>
-<translation id="3340938510625667914">Chrome-handelinge</translation>
 <translation id="3344485292736684439">{count,plural, =1{Boekmerk is gestoor in “{title}” in jou rekening, {email}}other{Boekmerke is gestoor in “{title}” in jou rekening, {email}}}</translation>
-<translation id="3358769087921185505">Langdruk op ’n datum</translation>
 <translation id="3371831930909698441">Vertaal is beskikbaar. Opsies is naby die onderkant van die skerm beskikbaar.</translation>
 <translation id="3377063233124932127">Jou gestoorde boekmerke, wagwoorde en meer is nou aan die bokant.</translation>
 <translation id="3393920035788932672">Opspringers word toegelaat</translation>
@@ -436,7 +430,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3609785682760573515">Sinkroniseer tans …</translation>
 <translation id="3631443864840848029">Maak seker jy stoor jou huidige wagwoord vir hierdie werf.</translation>
 <translation id="3638472932233958418">Laai webbladsye vooraf</translation>
-<translation id="3656645960301737801">Voltooi die geleentheid en stoor</translation>
 <translation id="3661160521073045932">Opstellingprofiel is beskikbaar</translation>
 <translation id="3670030362669914947">Nommer</translation>
 <translation id="368329460027487650">Afgemeld. Maak opsies oop om aan te meld.</translation>
@@ -525,6 +518,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4272631900155121838">Aktiveer die kamera in instellings om 'n QR-kode te skandeer</translation>
 <translation id="4277990410970811858">Veiligblaai</translation>
 <translation id="4281844954008187215">Diensbepalings</translation>
+<translation id="4286718549648564014">Adres is na jou rekening <ph name="USER_EMAIL" /> toe geskuif</translation>
 <translation id="4293080268407233932">Soek</translation>
 <translation id="4302248187517737842">Geen gebruikernaam nie ••••••••</translation>
 <translation id="4304713468139749426">Wagwoordbestuurder</translation>
@@ -692,7 +686,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="536067926684072644">Wys boekmerke</translation>
 <translation id="5360976571138293719">Raadpleeg <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer instellings wat verband hou met privaatheid, sekuriteit en data-insameling.</translation>
 <translation id="5386314158584363703">Jy sal die werwe wat jy volg, hier vind</translation>
-<translation id="538635840076594180">Tik op “Privaatheid en sekuriteit”.</translation>
 <translation id="5388358297987318779">Maak prent oop</translation>
 <translation id="5407969256130905701">Gooi veranderinge weg</translation>
 <translation id="5414763847370083940">Jy sal ’n opletberig kry as die prys op enige werf daal.</translation>
@@ -1016,7 +1009,6 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7189598951263744875">Deel …</translation>
 <translation id="7192050974311852563">Begin aanteken</translation>
 <translation id="7203585745079012652">Praat antwoorde terug</translation>
-<translation id="7203792184900422187">Tik op privaatheid en sekuriteit</translation>
 <translation id="7207023858769244910">Sinkroniseer om inhoud gegrond op jou belangstellings te kry.</translation>
 <translation id="721597782417389033">Ongeldige kaartbynaam</translation>
 <translation id="7221173315674413369">Verken nuwe kenmerke en wenke in Wat's nuut</translation>
@@ -1184,6 +1176,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8264966119170358612">Sommige van jou gestoorde wagwoorde is blootgestel in ’n nie-Google-dataskending. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Jy is as deel van jou iPad-terugstelling uit jou rekening, <ph name="USER_NAME" />, afgemeld. Tik op “Gaan voort” hier onder om weer aan te meld.</translation>
 <translation id="8271720166617117963">Aanvaar en meld aan</translation>
+<translation id="8273982424131314219">Jy sal inligting in <ph name="URL" /> invul</translation>
 <translation id="8278938988428169257">Voer ’n woord of frase in</translation>
 <translation id="8281781826761538115">Verstek – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Slaan oor</translation>
@@ -1229,8 +1222,8 @@ Jou data is op <ph name="TIME" /> met jou wagfrase geënkripteer. Voer dit in om
 <translation id="8534481786647257214">Google+-plasing is voltooi.</translation>
 <translation id="8548878600947630424">Vind in bladsy …</translation>
 <translation id="8556590991644167667">{count,plural, =1{Jy het {count} waarskuwing toegemaak}other{Jy het {count} waarskuwings toegemaak}}</translation>
-<translation id="8557690929085431655">Jy kan kies om inkomende URL’e van ander apps af in Incognitomodus oop te maak.</translation>
 <translation id="8558480467877843976">Jy kan Chrome nou enige tyd gebruik wanneer jy blaai of op skakels in boodskappe, dokumente en ander programme tik.</translation>
+<translation id="8580411965900177618">Nee, dankie</translation>
 <translation id="8588404856427128947">Af</translation>
 <translation id="8591976964826315682">Blokkeer derdepartywebkoekies in incognito</translation>
 <translation id="8605219856220328675">Maak oortjie toe.</translation>
@@ -1261,13 +1254,13 @@ Jou data is op <ph name="TIME" /> met jou wagfrase geënkripteer. Voer dit in om
 <translation id="8775144690796719618">Ongeldige URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{Gaan die oortjie na …}other{Gaan alle oortjies na …}}</translation>
 <translation id="8787968206789828143">Soek op web</translation>
-<translation id="8790746396522455357">Wissel oop skakels in Incognito</translation>
 <translation id="8792626944327216835">mikrofoon</translation>
 <translation id="8803639129939845298">Veilig</translation>
 <translation id="8806823403540278281">Jou organisasie vereis dat jy privaat blaai. Oortjies word nie in Incognitomodus gestoor nie.
 <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Verstekwerfaansig</translation>
 <translation id="8820817407110198400">Boekmerke</translation>
+<translation id="8825562130641217944">Kry jou boekmerke, wagwoorde en meer.</translation>
 <translation id="882557203579758546">Soek op bladsy …</translation>
 <translation id="8840513115188359703">Jy sal nie uit jou Google-rekening afgemeld word nie.</translation>
 <translation id="8843129975935593190">Jou organisasie beperk wat jy kan sinkroniseer.</translation>
@@ -1285,10 +1278,8 @@ Jou data is op <ph name="TIME" /> met jou wagfrase geënkripteer. Voer dit in om
 <translation id="891282356902782456">Hierdie wagwoord word net op hierdie toestel gestoor. Stoor dit in jou Google-rekening, <ph name="EMAIL" />, om dit op jou ander toestelle te gebruik.</translation>
 <translation id="891658175948553296">Merk teks op ’n werf</translation>
 <translation id="8917490105272468696">Ja, ek is in</translation>
-<translation id="8926984231484284953">Gebruik adresse op webbladsye om plaaslike inligting en rigtingaanwysings te kry.</translation>
 <translation id="8928133177108699615">Rekenaar</translation>
 <translation id="8934982071228289624">Om hierdie wagwoord in jou rekening te stoor, moet jy eers ’n wagkode op jou toestel stel.</translation>
-<translation id="8940809892068499052">Maak Incognito-oortjies uit ander apps oop</translation>
 <translation id="894191600409472540">Skep sterk wagwoorde</translation>
 <translation id="8952559610785099500">Voeg wagwoord by</translation>
 <translation id="8953046091948372197">Jy sal jou wagwoorde hier kry</translation>
@@ -1338,7 +1329,6 @@ Jou data is op <ph name="TIME" /> met jou wagfrase geënkripteer. Voer dit in om
 <translation id="9203116392574189331">Oorgee</translation>
 <translation id="9219154867334666734">Soek oortjies …</translation>
 <translation id="9223358826628549784">Omvalverslag is gestuur.</translation>
-<translation id="937964924361024518">Kies Google Kalender of Apple Calendar</translation>
 <translation id="941747855997058526">Kies wagwoord …</translation>
 <translation id="948048872540558976">Skep nuwe oortjie</translation>
 <translation id="952704832371081537">Kanselleer</translation>

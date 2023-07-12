@@ -2236,7 +2236,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2798347533012571708">Жаңыртып туруу</translation>
 <translation id="2799223571221894425">Кайра ишке киргизүү</translation>
 <translation id="2800309299477632167">Баскычтардын ыңгайлаштырылган жайгашуусу</translation>
-<translation id="2800760947029405028">Сүрөттү жүктөп берүү</translation>
+<translation id="2800760947029405028">Сүрөт жүктөп берүү</translation>
 <translation id="2801954693771979815">Экрандын өлчөмү</translation>
 <translation id="2802557211515765772">Башкарылган принтерлер жок.</translation>
 <translation id="2803313416453193357">Куржунду ачуу</translation>
@@ -4746,7 +4746,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4940364377601827259">Сактоо үчүн <ph name="PRINTER_COUNT" /> принтер жеткиликтүү.</translation>
 <translation id="4940448324259979830">Бул аккаунтту <ph name="PROFILE_NAME" /> башкарат</translation>
 <translation id="4940845626435830013">Бир калыптагы диск өлчөмүн калтыруу</translation>
-<translation id="4941074198479265146">Сайттар адатта музыканы түзүү жана түзөтүү үчүн, MIDI түзмөктөрүнө туташат</translation>
 <translation id="4941243352516004658">Себеттеги <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> товарларынын ичинен <ph name="PRODUCT_ITEM_COUNT" /> <ph name="DISCOUNT_TEXT" />, <ph name="RELATIVE_TIME" /> көрүлдү</translation>
 <translation id="4941246025622441835">Түзмөктү ишкана башкаруусуна каттап жатканда ушул түзмөк өтүнмөсүн колдонуңуз:</translation>
 <translation id="4941627891654116707">Арип өлчөмү</translation>

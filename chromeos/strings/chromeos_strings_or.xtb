@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />ଟି ଥ୍ରେଡ୍, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ନୂଆ ଫିଚର୍ ଉପଲବ୍ଧ ଅଛି, ଅଧିକ ଜାଣିବାକୁ ଅପ୍ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1059913517121127803">ସ୍କାନିଂ ଆରମ୍ଭ କରାଯାଇପାରିଲା ନାହିଁ</translation>
+<translation id="1062823486781306604"><ph name="COUNT" />ଟିରୁ <ph name="INDEX" />, <ph name="NAME" />।</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ଫାୟାରୱାଲ୍ ଥିବାର ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="1075811647922107217">ପୃଷ୍ଠାର ଆକାର</translation>
@@ -540,6 +541,7 @@
 <translation id="5257811368506016604">ଲାଇଟ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="5264277876637023664">CPU ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APNକୁ ଅକ୍ଷମ କରାଯାଇଛି।</translation>
 <translation id="5275828089655680674">ରୁଟିନଗୁଡ଼ିକୁ ପୁଣି ଚଲାନ୍ତୁ</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">ବେକଲାଇଟ ରଙ୍ଗ</translation>
@@ -604,6 +606,7 @@
 <translation id="5832805196449965646">ଲୋକଙ୍କୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="583281660410589416">ଅଜ୍ଞାତ</translation>
 <translation id="5843706793424741864">ଫାରେନହାଇଟ୍</translation>
+<translation id="584953448295717128">APN ସ୍ୱତଃ ଚିହ୍ନଟ ହୋଇଛି।</translation>
 <translation id="5849570051105887917">ମୂଳ ପ୍ରଦାତା କୋଡ୍‍</translation>
 <translation id="5859603669299126575">ଆର୍ଟ ଗ୍ୟାଲେରୀ ଆଲବମ</translation>
 <translation id="5860033963881614850">ବନ୍ଦ ଅଛି</translation>
@@ -882,6 +885,7 @@
 <translation id="80398733265834479">ଅଟୋ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="8041089156583427627">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="8045012663542226664">ମାଇକ୍ରୋଫୋନ ମ୍ୟୁଟ</translation>
+<translation id="8067126283828232460">APNକୁ କନେକ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="8075838845814659848">ବାକି ଥିବା ଚାର୍ଜ</translation>
 <translation id="8076492880354921740">ଟାବ୍</translation>
 <translation id="8082366717211101304">Android ଆପଗୁଡ଼ିକରୁ DNSର ସମାଧାନ କରାଯାଇପାରିବ ନାହିଁ</translation>
@@ -1028,6 +1032,7 @@
 <translation id="9111102763498581341">ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="9122602430962285795">ପୁଣି ସଂଯୋଗ କରିବାକୁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="9126720536733509015">ଗୋଟିଏ PDFରେ ଏକାଧିକ ପୃଷ୍ଠା ସେଭ୍ କରନ୍ତୁ</translation>
+<translation id="9133104754938025929">ବେଟେରୀ ସଂରକ୍ଷଣ କରିବା ପାଇଁ ସ୍କ୍ରିନ ସେଭର କେବଳ ଚାର୍ଜ ହେଉଥିବା ସମୟରେ କାର୍ଯ୍ୟ କରେ।</translation>
 <translation id="9137526406337347448">Google ସେବାଗୁଡ଼ିକ</translation>
 <translation id="9138630967333032450">ବାମପଟ Shift</translation>
 <translation id="9143347780818904997"><ph name="MINUTES" /> ମିନିଟ ପାଇଁ</translation>

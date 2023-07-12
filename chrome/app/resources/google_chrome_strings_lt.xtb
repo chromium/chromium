@@ -321,7 +321,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7036251913954633326">Jei norite šią paskyrą naudoti tik vieną kartą, galite naudoti <ph name="GUEST_LINK_BEGIN" />svečio režimą<ph name="GUEST_LINK_END" /> naršyklėje „Chrome“. Jei norite pridėti paskyrą kitam asmeniui, <ph name="LINK_BEGIN" />pridėkite naują asmenį<ph name="LINK_END" /> prie „<ph name="DEVICE_TYPE" />“.
 
 Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taikomi šiai paskyrai. Galite tvarkyti „Google“ paskyras skiltyje <ph name="SETTINGS_LINK_BEGIN" />„Nustatymai“<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7062128746136194023">Jūsų tėvai išjungė svetainių, programų ir plėtinių leidimus sistemoje „Chrome“. Neleidžiama pridėti šio <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7071827361006050863">„Chrome“ netrukus ištrins naršymo duomenis</translation>
 <translation id="7085332316435785646">Pasirinkite, ar įtraukti „Chrome“ istoriją, kad būtų teikiamos labiau suasmenintos funkcijos „Google“ paslaugose</translation>
 <translation id="7088681679121566888">„Chrome“ atnaujinta</translation>
@@ -384,7 +383,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8255190535488645436">„Google Chrome“ naudoja jūsų fotoaparatą ir mikrofoną.</translation>
 <translation id="8270775718612349140">Sertifikatai, kuriuos tvarko „Chrome“</translation>
 <translation id="8286862437124483331">„Google Chrome“ bando rodyti slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
-<translation id="828798499196665338">Jūsų tėvai išjungė svetainių, programų ir plėtinių leidimus sistemoje „Chrome“. Neleidžiama įgalinti šio <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Oi! „Google Chrome“ užstrigo. Paleisti iš naujo dabar?</translation>
 <translation id="829923460755755423">Pridėkite šaukinį prie „Google“ slaptažodžių tvarkyklės</translation>
 <translation id="8342675569599923794">Šis failas pavojingas, todėl „Chrome“ jį užblokavo.</translation>

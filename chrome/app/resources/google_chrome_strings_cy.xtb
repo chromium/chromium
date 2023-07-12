@@ -321,7 +321,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="7036251913954633326">Os hoffech ddefnyddio'r cyfrif hwn unwaith yn unig, gallwch ddefnyddio'r <ph name="GUEST_LINK_BEGIN" />modd Gwestai<ph name="GUEST_LINK_END" /> yn y porwr Chrome. Os hoffech ychwanegu cyfrif ar gyfer rhywun arall, <ph name="LINK_BEGIN" />ychwanegwch berson newydd<ph name="LINK_END" /> at eich <ph name="DEVICE_TYPE" />.
 
 Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn berthnasol i'r cyfrif hwn. Gallwch reoli'ch Cyfrifon Google yn y <ph name="SETTINGS_LINK_BEGIN" />Gosodiadau<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7062128746136194023">Mae dy riant wedi diffodd "Caniatadau ar gyfer gwefannau, apiau ac estyniadau" ar gyfer Chrome. Ni chaniateir ychwanegu'r <ph name="EXTENSION_TYPE_PARAMETER" /> hwn.</translation>
 <translation id="7071827361006050863">Bydd Chrome yn dileu data pori yn fuan</translation>
 <translation id="7085332316435785646">Dewiswch a ddylid cynnwys hanes Chrome i gael profiadau mwy personol yng ngwasanaethau Google</translation>
 <translation id="7088681679121566888">Mae Chrome yn gyfoes</translation>
@@ -384,7 +383,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8255190535488645436">Mae Google Chrome yn defnyddio'ch camera a'ch meicroffon.</translation>
 <translation id="8270775718612349140">Tystysgrifau a reolir gan Chrome</translation>
 <translation id="8286862437124483331">Mae Google Chrome yn ceisio dangos cyfrineiriau. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
-<translation id="828798499196665338">Mae dy riant wedi diffodd "Caniatadau ar gyfer gwefannau, apiau ac estyniadau" ar gyfer Chrome. Ni chaniateir galluogi'r <ph name="EXTENSION_TYPE_PARAMETER" /> hwn.</translation>
 <translation id="8290100596633877290">Whoa! Mae Google Chrome wedi torri. Ail-lansio nawr?</translation>
 <translation id="829923460755755423">Ychwanegu llwybr byr at y Rheolwr Cyfrineiriau Google</translation>
 <translation id="8342675569599923794">Mae'r ffeil hon yn beryglus, felly mae Chrome wedi ei rhwystro.</translation>

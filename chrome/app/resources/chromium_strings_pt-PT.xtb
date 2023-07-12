@@ -276,7 +276,6 @@ Algumas funcionalidades podem não estar disponíveis. Especifique um diretório
 <translation id="6734291798041940871">O Chromium já está instalado para todos os utilizadores no seu computador.</translation>
 <translation id="673636774878526923">Para aceder aos seus itens do Chromium em todos os seus dispositivos, inicie sessão e, em seguida, ative a sincronização.</translation>
 <translation id="67706546131546258">O Chromium recomenda que analise este ficheiro porque pode ser perigoso.</translation>
-<translation id="6774082503108938489">O teu pai/mãe desativou as "Autorizações para sites, apps e extensões" para o Chromium. Não é permitido ativar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="6779406956731413166">A criação do ChromiumOS foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="6847869444787758381">O Chromium indica-lhe se as suas palavras-passe forem comprometidas.</translation>
 <translation id="6852530923436401894">O Chromium bloqueou este ficheiro porque tem software malicioso</translation>
@@ -364,7 +363,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8463672209299734063">Opcional: ajudar a melhorar as funcionalidades e o desempenho do ChromiumOS ao enviar automaticamente dados de diagnóstico e utilização para a Google.</translation>
 <translation id="8493179195440786826">O Chromium Está Desatualizado</translation>
 <translation id="8550334526674375523">Este perfil de trabalho está completamente separado do seu perfil pessoal.</translation>
-<translation id="8558383651099478961">O teu pai/mãe desativou as "Autorizações para sites, apps e extensões" para o Chromium. Não é permitido adicionar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8568283329061645092">O Chromium pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Os autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Como usamos estes dados:<ph name="END_BOLD" /> os sites podem armazenar informações no Chromium sobre os seus interesses. Por exemplo, se visitar um site para comprar ténis para uma maratona, o site pode definir "correr maratonas" como o seu interesse. Posteriormente, se visitar um site diferente para se inscrever numa corrida, esse site pode mostrar-lhe um anúncio de ténis de corrida com base nos seus interesses.</translation>

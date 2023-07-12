@@ -275,7 +275,6 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="6734291798041940871">Chromium jest już zainstalowany dla wszystkich użytkowników tego komputera.</translation>
 <translation id="673636774878526923">Aby mieć dostęp do danych z Chromium na wszystkich swoich urządzeniach, zaloguj się i włącz synchronizację.</translation>
 <translation id="67706546131546258">Chromium zaleca przeskanowanie tego pliku, bo może on być niebezpieczny.</translation>
-<translation id="6774082503108938489">Rodzic wyłączył „Uprawnienia stron, aplikacji i rozszerzeń” dla Chromium. Włączenie elementu <ph name="EXTENSION_TYPE_PARAMETER" /> jest niedozwolone.</translation>
 <translation id="6779406956731413166">Opracowanie systemu operacyjnego Chromium było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6847869444787758381">Chromium poinformuje Cię, jeśli Twoje hasła dostaną się w niepowołane ręce</translation>
 <translation id="6852530923436401894">Ten plik został zablokowany przez Chromium, bo zawiera złośliwe oprogramowanie</translation>
@@ -362,7 +361,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8463672209299734063">Opcjonalnie: pomóż ulepszyć funkcje i działanie systemu operacyjnego Chromium, automatycznie wysyłając do Google dane diagnostyczne i dane o korzystaniu.</translation>
 <translation id="8493179195440786826">Chromium jest nieaktualny</translation>
 <translation id="8550334526674375523">Ten profil służbowy jest całkowicie oddzielony od Twojego profilu osobistego.</translation>
-<translation id="8558383651099478961">Rodzic wyłączył „Uprawnienia stron, aplikacji i rozszerzeń” dla Chromium. Dodanie elementu <ph name="EXTENSION_TYPE_PARAMETER" /> jest niedozwolone.</translation>
 <translation id="8568283329061645092">Chromium może sprawdzić Twoje hasła, gdy zalogujesz się na swoje konto Google</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Jak używamy tych danych:<ph name="END_BOLD" /> w Chromium witryny mogą przechowywać informacje o Twoich zainteresowaniach Na przykład jeśli odwiedzasz stronę internetową, żeby kupić buty na maraton, strona może zidentyfikować bieganie w maratonach jako Twoje zainteresowanie. Jeśli później odwiedzisz inną witrynę, żeby zapisać się na jakiś bieg, witryna ta może wyświetlić reklamę butów do biegania na podstawie Twoich zainteresowań.</translation>

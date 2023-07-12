@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">Пошукавыя запыты, прапанаваныя на падставе змесціва апошняй укладкі</translation>
 <translation id="2241634353105152135">Толькі адзін раз</translation>
 <translation id="2253414712144136228">Выдаліць: <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Файлы cookie заблакіраваны на 1 сайце}one{Файлы cookie заблакіраваны на # сайце}few{Файлы cookie заблакіраваны на # сайтах}many{Файлы cookie заблакіраваны на # сайтах}other{Файлы cookie заблакіраваны на # сайта}}</translation>
 <translation id="228293613124499805">Большасць сайтаў, якія вы наведваеце, хутчэй за ўсё, захоўваюць на вашай прыладзе такія даныя, як звесткі пра параметры, якія вы выбіраеце, або інфармацыя, якую вы абагулілі з сайтам. Часцей за ўсё гэта робіцца, каб вам было зручней працаваць з сайтам. Мы рэкамендуем пакінуць гэту наладу ўключанай.</translation>
 <translation id="2289270750774289114">Пытацца, калі сайт спрабуе выявіць прылады Bluetooth паблізу (рэкамендуецца)</translation>
 <translation id="2315043854645842844">Аперацыйная сістэма не падтрымлівае выбар сертыфіката кліента.</translation>
@@ -383,6 +384,7 @@
 <translation id="8068648041423924542">Не ўдаецца выбраць сертыфікат.</translation>
 <translation id="8077120325605624147">Любы наведаны вамі сайт будзе паказваць вам рэкламу</translation>
 <translation id="8087000398470557479">Змесціва з <ph name="DOMAIN_NAME" />, пастаўшчык – Google.</translation>
+<translation id="8088603949666785339"><ph name="BANNER_TITLE" />: іншыя дзеянні</translation>
 <translation id="8116925261070264013">Без гуку</translation>
 <translation id="813082847718468539">Прагляд звестак пра сайт</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
@@ -429,6 +431,7 @@
 <translation id="8719283222052720129">Уключыце для праграмы "<ph name="APP_NAME" />" дазвол у <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Паўтарыць спробу</translation>
 <translation id="8730621377337864115">Гатова</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Файлы cookie дазволены на 1 сайце}one{Файлы cookie дазволены на # сайце}few{Файлы cookie дазволены на # сайтах}many{Файлы cookie дазволены на # сайтах}other{Файлы cookie дазволены на # сайта}}</translation>
 <translation id="8737217482364735741">Будуць выдалены файлы cookie і даныя, захаваныя сайтам <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Выберыце відарыс</translation>
 <translation id="8801436777607969138">Блакіраванне JavaScript для канкрэтнага сайта.</translation>

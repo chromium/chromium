@@ -321,7 +321,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7036251913954633326">이 계정을 한 번만 사용하려면 Chrome 브라우저에서 <ph name="GUEST_LINK_BEGIN" />게스트 모드<ph name="GUEST_LINK_END" />를 사용하세요. 다른 사용자를 위해 계정을 추가하려면 <ph name="DEVICE_TYPE" />에 <ph name="LINK_BEGIN" />새 사용자를 추가<ph name="LINK_END" />하세요.
 
 이 계정에는 웹사이트와 앱에 이미 부여한 권한이 적용될 수 있습니다. <ph name="SETTINGS_LINK_BEGIN" />설정<ph name="SETTINGS_LINK_END" />에서 Google 계정을 관리할 수 있습니다.</translation>
-<translation id="7062128746136194023">부모님이 Chrome의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지하셨습니다. 이 <ph name="EXTENSION_TYPE_PARAMETER" /> 추가가 허용되지 않습니다.</translation>
 <translation id="7071827361006050863">Chrome에서 곧 인터넷 사용 기록을 삭제합니다</translation>
 <translation id="7085332316435785646">보다 맞춤설정된 Google 서비스 환경을 사용하기 위해 Chrome 방문 기록을 포함할지 선택하세요.</translation>
 <translation id="7088681679121566888">Chrome이 최신 버전입니다.</translation>
@@ -384,7 +383,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8255190535488645436">Chrome에서 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="8270775718612349140">Chrome이 관리하는 인증서</translation>
 <translation id="8286862437124483331">Chrome에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
-<translation id="828798499196665338">부모님이 Chrome의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지하셨습니다. 이 <ph name="EXTENSION_TYPE_PARAMETER" /> 사용은 허용되지 않습니다.</translation>
 <translation id="8290100596633877290">Chrome이 다운되었습니다. 다시 시작하시겠습니까?</translation>
 <translation id="829923460755755423">Google 비밀번호 관리자에 바로가기 추가</translation>
 <translation id="8342675569599923794">이 파일은 위험하므로 Chrome에서 차단했습니다.</translation>

@@ -312,7 +312,6 @@
 <translation id="7036251913954633326">如果只想使用此帐号一次，您可在 Chrome 浏览器中使用<ph name="GUEST_LINK_BEGIN" />访客模式<ph name="GUEST_LINK_END" />。如果想添加他人的帐号，请向您的 <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />添加新用户<ph name="LINK_END" />。
 
 您已向网站和应用授予的权限可能会应用于此帐号。您可在<ph name="SETTINGS_LINK_BEGIN" />设置<ph name="SETTINGS_LINK_END" />部分中管理您的 Google 帐号。</translation>
-<translation id="7062128746136194023">您的家长已为 Chrome 停用“网站、应用和扩展程序的权限”。因此，您无法添加该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="7071827361006050863">Chrome 即将删除浏览数据</translation>
 <translation id="7085332316435785646">选择是否要包含 Chrome 历史记录以便在各款 Google 服务中获享更个性化的体验</translation>
 <translation id="7088681679121566888">Chrome 已是最新版本</translation>
@@ -375,7 +374,6 @@
 <translation id="8255190535488645436">Google Chrome 正在使用您的摄像头和麦克风。</translation>
 <translation id="8270775718612349140">由 Chrome 管理的证书</translation>
 <translation id="8286862437124483331">Google Chrome正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
-<translation id="828798499196665338">您的家长已为 Chrome 停用“网站、应用和扩展程序的权限”。因此，您无法启用该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="8290100596633877290">哎呀！Google Chrome 浏览器崩溃了。是否立即重新启动？</translation>
 <translation id="829923460755755423">为 Google 密码管理工具添加快捷方式</translation>
 <translation id="8342675569599923794">此文件存在危险，因此 Chrome 已将其拦截。</translation>

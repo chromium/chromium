@@ -319,7 +319,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7036251913954633326">Ak chcete použiť tento účet iba raz, môžete v prehliadači Chrome použiť <ph name="GUEST_LINK_BEGIN" />režim pre hostí<ph name="GUEST_LINK_END" />. Ak chcete pridať účet niekoho iného, pridajte do svojho zariadenia <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />novú osobu<ph name="LINK_END" />.
 
 Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať na tento účet. Účty Google môžete spravovať v <ph name="SETTINGS_LINK_BEGIN" />Nastaveniach<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7062128746136194023">Tvoj rodič vypol „Povolenia pre weby, aplikácie a rozšírenia“ v Chrome. Pridanie tohto rozšírenia (<ph name="EXTENSION_TYPE_PARAMETER" />) nie je povolené.</translation>
 <translation id="7071827361006050863">Chrome čoskoro odstráni dáta prehliadania</translation>
 <translation id="7085332316435785646">Vyberte, či sa má zahrnúť história Chromu na zaistenie prispôsobenejšieho prostredia v službách Googlu</translation>
 <translation id="7088681679121566888">Chrome je aktuálny</translation>
@@ -382,7 +381,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="8255190535488645436">Google Chrome používa vašu kameru a mikrofón.</translation>
 <translation id="8270775718612349140">Certifikáty, ktoré spravuje Chrome</translation>
 <translation id="8286862437124483331">Prehliadač Google Chrome sa pokúša zobraziť heslá. Ak to chcete povoliť, zadajte svoje heslo systému Windows.</translation>
-<translation id="828798499196665338">Tvoj rodič vypol „Povolenia pre weby, aplikácie a rozšírenia“ v Chrome. Povolenie tohto rozšírenia (<ph name="EXTENSION_TYPE_PARAMETER" />) je zakázané.</translation>
 <translation id="8290100596633877290">Google Chrome zlyhal. Chcete ho spustiť znova?</translation>
 <translation id="829923460755755423">Pridajte odkaz na Správcu hesiel Google</translation>
 <translation id="8342675569599923794">Tento súbor je nebezpečný, a preto ho Chrome zablokoval.</translation>

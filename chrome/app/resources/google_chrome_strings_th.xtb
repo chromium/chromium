@@ -312,7 +312,6 @@
 <translation id="7036251913954633326">หากต้องการใช้บัญชีนี้เพียงครั้งเดียว คุณสามารถใช้<ph name="GUEST_LINK_BEGIN" />โหมดผู้มาเยือน<ph name="GUEST_LINK_END" />ในเบราว์เซอร์ Chrome ได้ หากต้องการเพิ่มบัญชีสำหรับผู้อื่น ให้<ph name="LINK_BEGIN" />เพิ่มบุคคลใหม่<ph name="LINK_END" />ลงใน <ph name="DEVICE_TYPE" />
 
 สิทธิ์ที่คุณให้กับเว็บไซต์และแอปต่างๆ ไว้แล้วอาจมีผลกับบัญชีนี้ คุณจัดการบัญชี Google ใน<ph name="SETTINGS_LINK_BEGIN" />การตั้งค่า<ph name="SETTINGS_LINK_END" />ได้</translation>
-<translation id="7062128746136194023">ผู้ปกครองได้ปิด "สิทธิ์สำหรับเว็บไซต์ แอป และส่วนขยาย" ใน Chrome ไม่อนุญาตให้เพิ่ม<ph name="EXTENSION_TYPE_PARAMETER" />นี้</translation>
 <translation id="7071827361006050863">Chrome จะลบข้อมูลการท่องเว็บเร็วๆ นี้</translation>
 <translation id="7085332316435785646">เลือกว่าจะรวมประวัติการเข้าชม Chrome เพื่อรับประสบการณ์ที่ปรับเปลี่ยนในแบบของคุณมากขึ้นในบริการของ Google หรือไม่</translation>
 <translation id="7088681679121566888">Chrome เป็นเวอร์ชันล่าสุดแล้ว</translation>
@@ -375,7 +374,6 @@
 <translation id="8255190535488645436">Google Chrome ใช้กล้องและไมโครโฟนของคุณอยู่</translation>
 <translation id="8270775718612349140">ใบรับรองที่จัดการโดย Chrome</translation>
 <translation id="8286862437124483331">Google Chrome กำลังพยายามแสดงรหัสผ่าน พิมพ์รหัสผ่าน Windows ของคุณเพื่อแสดงรหัสผ่าน</translation>
-<translation id="828798499196665338">ผู้ปกครองได้ปิด "สิทธิ์สำหรับเว็บไซต์ แอป และส่วนขยาย" ใน Chrome ไม่อนุญาตให้เปิดใช้<ph name="EXTENSION_TYPE_PARAMETER" />นี้</translation>
 <translation id="8290100596633877290">อ๊ะ! Google Chrome ขัดข้อง เปิดใหม่ตอนนี้หรือไม่</translation>
 <translation id="829923460755755423">เพิ่มทางลัดในเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="8342675569599923794">ไฟล์นี้อันตราย Chrome จึงบล็อกไว้</translation>

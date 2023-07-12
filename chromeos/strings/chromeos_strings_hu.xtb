@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> szál, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Új funkciók állnak rendelkezésre. További információért használja a felfelé mutató nyilat.</translation>
 <translation id="1059913517121127803">Nem sikerült elindítani a szkennelést</translation>
+<translation id="1062823486781306604"><ph name="COUNT" />/<ph name="INDEX" />. APN, APN neve: <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Tűzfal észlelve</translation>
 <translation id="1075811647922107217">Oldal mérete</translation>
@@ -540,6 +541,7 @@
 <translation id="5257811368506016604">Világos szín mód engedélyezése</translation>
 <translation id="5264277876637023664">CPU-teszt futtatása</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">Az APN le van tiltva.</translation>
 <translation id="5275828089655680674">Rutinok újrafuttatása</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">háttérvilágítás színe</translation>
@@ -604,6 +606,7 @@
 <translation id="5832805196449965646">Személy hozzáadása</translation>
 <translation id="583281660410589416">Ismeretlen</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
+<translation id="584953448295717128">A rendszer automatikusan észlelt APN-t.</translation>
 <translation id="5849570051105887917">Otthoni szolgáltató kódja</translation>
 <translation id="5859603669299126575">Művészeti album</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
@@ -882,6 +885,7 @@
 <translation id="80398733265834479">Automatikus szín mód engedélyezése</translation>
 <translation id="8041089156583427627">Visszajelzés küldése</translation>
 <translation id="8045012663542226664">Mikrofon némítása</translation>
+<translation id="8067126283828232460">Az APN csatlakoztatva van.</translation>
 <translation id="8075838845814659848">Töltöttségi szint</translation>
 <translation id="8076492880354921740">Lapok</translation>
 <translation id="8082366717211101304">Nem sikerült feloldani a DNS-t androidos alkalmazásokról</translation>
@@ -1028,6 +1032,7 @@
 <translation id="9111102763498581341">Feloldás</translation>
 <translation id="9122602430962285795">Az újracsatlakozáshoz nyissa meg a Beállításokat.</translation>
 <translation id="9126720536733509015">Több oldal mentése egy PDF-be</translation>
+<translation id="9133104754938025929">Az akkumulátor kímélése érdekében a képernyőkímélő csak töltés közben működik.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Bal oldali Shift</translation>
 <translation id="9143347780818904997"><ph name="MINUTES" /> percig</translation>

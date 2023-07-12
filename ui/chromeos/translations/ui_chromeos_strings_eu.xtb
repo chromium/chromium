@@ -130,6 +130,7 @@
 <translation id="2084108471225856927">Gailuaren ezarpenak</translation>
 <translation id="2084809735218147718">"Eskerrik asko" hitzekin sinatzen</translation>
 <translation id="2088690981887365033">VPN sarea</translation>
+<translation id="209653272837065803">Ez dago fitxategiak sinkronizatzen jarraitzeko behar adina toki biltegian</translation>
 <translation id="2111134541987263231">Aktibatu <ph name="BEGIN_BOLD" />Baimendu ezkutuko moduan<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementu ezabatuko dira, eta ezingo dituzu leheneratu.</translation>
 <translation id="2122305276694332719">Automatikoki konektatzen bazara ezkutuko sare batera, zure gailua eta sarearen zenbait ezarpen ikusi ahalko dituzte besteek, eta hori ez da komeni.</translation>
@@ -146,9 +147,11 @@
 <translation id="2198315389084035571">Idazkera txinatar sinplifikatua</translation>
 <translation id="22085916256174561">Korearra</translation>
 <translation id="2208919847696382164">Instalatu Linux-ekin</translation>
+<translation id="2215692307449050019">Bateria agortzen ari da. Korrontera konektatzen zarenean berrekingo zaio fitxategiak sinkronizatzeari.</translation>
 <translation id="2225536596944493418">Ziur <ph name="NUMBER_OF_ITEMS" /> elementu ezabatu nahi dituzula?</translation>
 <translation id="2230062665678605299">Ezin  izan da sortu "<ph name="FOLDER_NAME" />" fitxategia. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Kafe-kikara bati eusten ari dion pertsona</translation>
+<translation id="2247561763838186830">Amaitu egin da saioa</translation>
 <translation id="2251368349685848079">Leheneratu zaborrontzitik</translation>
 <translation id="2278133026967558505">Webgune eta URL guztiek atzi dezakete fitxategia</translation>
 <translation id="2282155092769082568">Konfigurazio automatikoaren URLa:</translation>
@@ -163,6 +166,7 @@
 <translation id="2325650632570794183">Ez dira mota horretako fitxategiak onartzen. Horrelako fitxategiak ireki ditzaketen aplikazioak aurkitzeko, zoaz Chrome Web Store dendara.</translation>
 <translation id="2326539130272988168">Bulgariarra</translation>
 <translation id="2337715497728194187">Partekatu Bruschetta-rekin</translation>
+<translation id="233822363739146957">Ez dago fitxategi guztiak sinkronizatzeko behar adina toki biltegian</translation>
 <translation id="23721837607121582">Deskargatu mugikorreko profila, <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" /> sare, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Aldatu zerrenda-ikuspegira</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> karpeta partekatu dira Linux-ekin</translation>
@@ -215,6 +219,7 @@
 <translation id="2782104745158847185">Errore bat gertatu da Linux aplikazioa instalatzean</translation>
 <translation id="2802583107108007218">Lortu murriztapen horiei buruzko informazio gehiago</translation>
 <translation id="2803375539583399270">Idatzi PINa</translation>
+<translation id="2819519502129272135">Fitxategiak sinkronizatzeko aukera desaktibatuta dago</translation>
 <translation id="2820957248982571256">Bilatzen…</translation>
 <translation id="2830077785865012357">Txinatarra (zhuyin-a)</translation>
 <translation id="2843806747483486897">Aldatu ekintza lehenetsia…</translation>
@@ -439,6 +444,7 @@
 <translation id="4599600860674643278">Berrezarri da iragazkia.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> karpetan kopiatzen</translation>
 <translation id="4631887759990505102">Artista</translation>
+<translation id="4635373743001040938">Oso toki gutxi duzu biltegian. Fitxategiak sinkronizatzeko aukera desaktibatu egin da.</translation>
 <translation id="4642769377300286600">Mugikorreko profila instalatzen, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Txekiarra, QWERTY teklatuarekin</translation>
 <translation id="4656777537938206294">Jarri fitxategiak konexiorik gabe erabilgarri</translation>
@@ -492,6 +498,7 @@
 <translation id="4961158930123534723">Karpeta bat partekatu da Parallels Desktop aplikazioarekin</translation>
 <translation id="496656650103537022">Leheneratu da <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Albuma</translation>
+<translation id="4972330214479971536">Ezin izan da amaitu konfiguratzen fitxategiak sinkronizatzeko aukera</translation>
 <translation id="4973523518332075481">Erabili <ph name="MAX_LENGTH" /> karaktere edo gutxiago dituen izen bat</translation>
 <translation id="4973970068702235170">Ezin izan da konprimatu ustekabeko errore hau gertatu delako: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japoniarra</translation>
@@ -802,6 +809,7 @@
 <translation id="7309413087278791451">Alemana (Belgika)</translation>
 <translation id="7339898014177206373">Leiho berria</translation>
 <translation id="7343393116438664539">Vietnamdarra (telex)</translation>
+<translation id="7347346221088620549">Fitxategi enkriptatua</translation>
 <translation id="7357762654218998920">Fitxategi mota hau ez da bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> elementu kopiatzen…</translation>
 <translation id="7375951387215729722">"<ph name="COLUMN_NAME" />" zutabearen arabera ageri da fitxategien zerrenda, beherantz ordenatuta.</translation>
@@ -985,6 +993,7 @@
 <translation id="8609695766746872526">Islandiarra</translation>
 <translation id="863903787380594467">PINa okerra da. <ph name="RETRIES" /> saiakera gelditzen zaizkizu.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Ataka</translation>
+<translation id="8656407365183407932">Kendu egin behar izan ditugu konexiorik gabe erabilgarri zenituen fitxategiak</translation>
 <translation id="8656768832129462377">Ez egiaztatu</translation>
 <translation id="8688591111840995413">Pasahitz okerra</translation>
 <translation id="8698464937041809063">Google-ko marrazkia</translation>
@@ -1020,6 +1029,7 @@
 <translation id="8997962250644902079">Txinatarra (tradizionala, pinyin)</translation>
 <translation id="8998871447376656508">Ez dago kargatzen amaitzeko behar adina toki librerik Google Drive-n.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua. Xehetasunak.</translation>
+<translation id="9007990314804111233">Hasi saioa Microsoft-eko kontuan</translation>
 <translation id="9017798300203431059">Fonetika errusiarra</translation>
 <translation id="9034924485347205037">Linux fitxategiak</translation>
 <translation id="9035012421917565900">Ezin dira eraman berriro elementuak "<ph name="DESTINATION_NAME" />" unitatera; beraz, ezin izango duzu desegin ekintza.</translation>

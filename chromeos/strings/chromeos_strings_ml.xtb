@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ത്രെഡുകൾ, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">പുതിയ ഫീച്ചർ ലഭ്യമാണ്, കൂടുതലറിയാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാളം കീ ഉപയോഗിക്കുക.</translation>
 <translation id="1059913517121127803">സ്‌കാൻ ചെയ്യൽ ആരംഭിക്കാനായില്ല</translation>
+<translation id="1062823486781306604"><ph name="COUNT" />-ൽ <ph name="INDEX" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ഫയര്‍വാള്‍ കണ്ടെത്തി</translation>
 <translation id="1075811647922107217">പേജിന്റെ വലുപ്പം</translation>
@@ -541,6 +542,7 @@
 <translation id="5257811368506016604">ലൈറ്റ് കളർ മോഡ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="5264277876637023664">CPU ടെസ്‌റ്റ് റണ്‍ ചെയ്യുക</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="5275828089655680674">ദിനചര്യകൾ വീണ്ടും റൺ ചെയ്യുക</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">ബാക്ക്‌ലൈറ്റിന്റെ നിറം</translation>
@@ -605,6 +607,7 @@
 <translation id="5832805196449965646">വ്യക്തിയെ ചേർക്കുക</translation>
 <translation id="583281660410589416">അജ്ഞാതം</translation>
 <translation id="5843706793424741864">ഫാരൻഹീറ്റ്</translation>
+<translation id="584953448295717128">APN സ്വയമേവ കണ്ടെത്തി.</translation>
 <translation id="5849570051105887917">ഹോം ദാതാവിന്റെ കോഡ്</translation>
 <translation id="5859603669299126575">ആര്‍ട്ട് ഗ്യാലറി ആൽബം</translation>
 <translation id="5860033963881614850">ഓഫാക്കുക</translation>
@@ -883,6 +886,7 @@
 <translation id="80398733265834479">സ്വയം നിറം ക്രമീകരിക്കൽ മോഡ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="8041089156583427627">ഫീഡ്ബാക്ക് അയയ്ക്കുക</translation>
 <translation id="8045012663542226664">മൈക്രോഫോൺ മ്യൂട്ട് ചെയ്യൽ</translation>
+<translation id="8067126283828232460">APN കണക്റ്റ് ചെയ്തു.</translation>
 <translation id="8075838845814659848">ശേഷിക്കുന്ന ചാർജ്</translation>
 <translation id="8076492880354921740">ടാബുകള്‍‌</translation>
 <translation id="8082366717211101304">Android ആപ്പുകളിൽ നിന്ന് DNS പരിഹരിക്കാനാകില്ല</translation>
@@ -1029,6 +1033,7 @@
 <translation id="9111102763498581341">അണ്‍ലോക്ക് ചെയ്യുക</translation>
 <translation id="9122602430962285795">വീണ്ടും കണക്റ്റ് ചെയ്യാൻ, ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="9126720536733509015">ഒരു PDF-ൽ ഒന്നിലധികം പേജുകൾ സംരക്ഷിക്കുക</translation>
+<translation id="9133104754938025929">ബാറ്ററി ലാഭിക്കാൻ, ചാർജ് ചെയ്യുമ്പോൾ മാത്രമേ സ്ക്രീൻ സേവർ പ്രവർത്തിക്കൂ.</translation>
 <translation id="9137526406337347448">Google സേവനങ്ങൾ</translation>
 <translation id="9138630967333032450">ഇടത് Shift കീ</translation>
 <translation id="9143347780818904997"><ph name="MINUTES" /> മിനിറ്റ് നേരത്തേക്ക്</translation>

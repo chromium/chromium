@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Төхөөрөмжийн тохиргоонууд</translation>
 <translation id="2084809735218147718">Баярлалаа гэж дохионы хэлээр хэлж байна</translation>
 <translation id="2088690981887365033">VPN сүлжээ</translation>
+<translation id="209653272837065803">Файлуудыг үргэлжлүүлэн синк хийхэд хангалттай хадгалах сангийн зай байхгүй байна</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Нууцлалтай горимд зөвшөөрөхийг<ph name="END_BOLD" /> асаана уу</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> зүйлийг устгах бөгөөд та тэдгээрийг сэргээх боломжгүй болно.</translation>
 <translation id="2122305276694332719">Нуусан сүлжээнд автоматаар холбогдсоноор бусдад таны төхөөрөмж болон зарим сүлжээний тохиргоог харахыг зөвшөөрөх бөгөөд үүнийг зөвлөдөггүй.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Хялбаршуулсан Хятад хэл</translation>
 <translation id="22085916256174561">Солонгос</translation>
 <translation id="2208919847696382164">Linux-р суулгах</translation>
+<translation id="2215692307449050019">Батарей бага байна. Таныг тэжээлд холбогдсон үед файлыг үргэлжлүүлэн синк хийнэ.</translation>
 <translation id="2225536596944493418">Та <ph name="NUMBER_OF_ITEMS" /> зүйлийг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" /> ". <ph name="ERROR_MESSAGE" /> хавтас үүсгэх боломжгүй байна</translation>
 <translation id="2239068707900391003">Кофетой хүн</translation>
+<translation id="2247561763838186830">Таныг гаргасан</translation>
 <translation id="2251368349685848079">Хогийн савнаас сэргээх</translation>
 <translation id="2278133026967558505">Бүх вебсайт болон URL файлд хандах боломжтой</translation>
 <translation id="2282155092769082568">Автоматаар тохируулах URL:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Энэ төрлийн файлыг дэмжихгүй байна. Chrome Web Store-т нэвтрэн энэ төрлийн файл нээж чадахуйц программыг татан авна уу.</translation>
 <translation id="2326539130272988168">Болгар</translation>
 <translation id="2337715497728194187">Bruschetta-тай хуваалцах</translation>
+<translation id="233822363739146957">Таны бүх файлыг синк хийхэд хангалттай хадгалах сангийн зай байхгүй байна</translation>
 <translation id="23721837607121582">Мобайл профайл татах, <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" /> сүлжээ, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Жагсаалтаар харах горим руу сэлгэх</translation>
 <translation id="2377590462528165447">Linux-тэй <ph name="NUMBER_OF_ITEMS" /> фолдер хуваалцсан байна</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Linux аппыг суулгахад алдаа гарлаа</translation>
 <translation id="2802583107108007218">Эдгээр хязгаарлалтын талаар нэмэлт мэдээлэл авах</translation>
 <translation id="2803375539583399270">ПИН оруулна уу</translation>
+<translation id="2819519502129272135">Файлын синкийг унтраасан</translation>
 <translation id="2820957248982571256">Шалгаж байна...</translation>
 <translation id="2830077785865012357">Хятад жуинь</translation>
 <translation id="2843806747483486897">Анхдагч тохиргоог өөрчлөх ...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Шүүлтүүрийг шинэчилсэн.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" />-г <ph name="FOLDER_NAME" /> руу хуулж байна</translation>
 <translation id="4631887759990505102">Уран бүтээлч</translation>
+<translation id="4635373743001040938">Хадгалах сангийн зай маш бага байсан. Файлын синкийг унтраасан.</translation>
 <translation id="4642769377300286600">Мобайл профайлыг суулгаж байна, Сүлжээ <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Qwerty гартай чех</translation>
 <translation id="4656777537938206294">Файлуудыг офлайн үед ашиглах боломжтой болгох</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">1 фолдерыг Parallels Desktop-тай хуваалцсан</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" />-г сэргээсэн</translation>
 <translation id="4969785127455456148">Цомог</translation>
+<translation id="4972330214479971536">Файлын синкийг тохируулж дуусгаж чадсангүй</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> эсвэл үүнээс бага тэмдэгттэй нэр ашиглана уу</translation>
 <translation id="4973970068702235170">Дараах санамсаргүй алдаа гарсан тул zip хийж чадсангүй: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Япон</translation>
@@ -804,6 +811,7 @@
 <translation id="7309413087278791451">Герман (Бельги)</translation>
 <translation id="7339898014177206373">Шинэ цонх</translation>
 <translation id="7343393116438664539">Вьетнам телекс</translation>
+<translation id="7347346221088620549">Шифрлэгдсэн файл</translation>
 <translation id="7357762654218998920">Энэ файлын төрлийг дэмждэггүй. ChromeOS дээр файл нээх талаар <ph name="BEGIN_LINK_HELP" />нэмэлт мэдээлэл авна уу<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> зүйлийг хуулж байна...</translation>
 <translation id="7375951387215729722">Файлын жагсаалтыг <ph name="COLUMN_NAME" />-н дагуу буурах дарааллаар эрэмбэлсэн.</translation>
@@ -990,6 +998,7 @@
 <translation id="8609695766746872526">Исланд</translation>
 <translation id="863903787380594467">ПИН буруу байна. Танд <ph name="RETRIES" /> оролдлого үлдлээ.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Порт</translation>
+<translation id="8656407365183407932">Таны офлайн файлуудыг хасах шаардлагатай байсан</translation>
 <translation id="8656768832129462377">Шалгах хэрэггүй</translation>
 <translation id="8688591111840995413">Муу нууц үг</translation>
 <translation id="8698464937041809063">Google-ийн зураг</translation>
@@ -1025,6 +1034,7 @@
 <translation id="8997962250644902079">Хятад (уламжлалт) пиньинь</translation>
 <translation id="8998871447376656508">Таны Google Драйвт байршуулалтыг дуусгах хангалттай сул зай байхгүй байна.</translation>
 <translation id="9003940392834790328">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, таны администратор удирддаг, дэлгэрэнгүй мэдээлэл</translation>
+<translation id="9007990314804111233">Microsoft бүртгэлдээ нэвтрээрэй</translation>
 <translation id="9017798300203431059">Орос хэлний авиа зүй</translation>
 <translation id="9034924485347205037">Linux-н файл</translation>
 <translation id="9035012421917565900">Зүйлийг буцааж '<ph name="DESTINATION_NAME" />' руу зөөх боломжгүй тул та энэ үйлдлийг буцаах боломжгүй.</translation>

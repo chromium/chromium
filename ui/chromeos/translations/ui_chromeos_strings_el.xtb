@@ -433,6 +433,7 @@
 <translation id="4432921877815220091">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Ενεργοποίηση μετά τη ρύθμιση της συσκευής, Διαχειριζόμενο από τον διαχειριστή σας</translation>
 <translation id="4439427728133035643">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Σύνδεση</translation>
 <translation id="4442424173763614572">Η αναζήτηση DNS απέτυχε</translation>
+<translation id="4445896958353114391">Γίνεται συγχρονισμός αρχείων</translation>
 <translation id="4462159676511157176">Προσαρμοσμένοι διακομιστές ονομάτων</translation>
 <translation id="4465725236958772856">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Διαχειριζόμενο από τον διαχειριστή σας, Σύνδεση</translation>
 <translation id="4470564870223067757">Σύνολο Χανγκίλ 2</translation>
@@ -535,6 +536,7 @@
 <translation id="5102922915594634436">Διαχείριση συγχρονισμένων φακέλων</translation>
 <translation id="5109254780565519649">Παρουσιάστηκε σφάλμα. Ενδέχεται να μην έγινε επαναφορά ορισμένων στοιχείων.</translation>
 <translation id="5110329002213341433">Αγγλικά (Καναδά)</translation>
+<translation id="5119780910075847424">Ο συγχρονισμός τέθηκε σε παύση</translation>
 <translation id="5123433949759960244">Μπάλα μπάσκετ</translation>
 <translation id="5129662217315786329">Πολωνικά
 </translation>
@@ -821,6 +823,7 @@
 <translation id="7256405249507348194">Μη αναγνωρίσιμο σφάλμα: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Διαθέσιμες υπηρεσίες</translation>
 <translation id="7291818353625820805">Θέλετε να επαναλαμβάνεται το πάτημα των πλήκτρων; Απενεργοποίηση σημαδιών τονισμού στις Ρυθμίσεις πληκτρολογίου</translation>
+<translation id="729236380049459563">Ο συγχρονισμός αρχείων είναι ενεργός</translation>
 <translation id="7292816689782057017">Η πολιτική διαχειριστή περιορίζει την αποθήκευση σε ορισμένες τοποθεσίες.</translation>
 <translation id="7294063083760278948">Μεταγραφή σε Τελούγκου</translation>
 <translation id="7295662345261934369">Κοινοποίηση σε άλλα άτομα</translation>
@@ -938,6 +941,7 @@
 <translation id="8087576439476816834">Λήψη του προφίλ <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Κοινόχρηστο με εμένα</translation>
 <translation id="8116072619078571545">Παγωμένο νερό</translation>
+<translation id="8124093710070495550">Πρόβλημα συγχρονισμού</translation>
 <translation id="8128733386027980860">Αγγλικά (ΗΠΑ) με πληκτρολόγιο Dvorak</translation>
 <translation id="8137331602592933310">Το "<ph name="FILENAME" />" έχει χρησιμοποιηθεί από κοινού με εσάς. Δεν μπορείτε να το διαγράψετε, επειδή δεν σας ανήκει.</translation>
 <translation id="8138705869659070104">Ενεργοποίηση μετά τη ρύθμιση της συσκευής</translation>

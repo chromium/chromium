@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Postavke uređaja</translation>
 <translation id="2084809735218147718">Zahvaljuje vam pjesmom</translation>
 <translation id="2088690981887365033">VPN mreža</translation>
+<translation id="209653272837065803">Nema dovoljno prostora za pohranu da bi se datoteke nastavile sinkronizirati</translation>
 <translation id="2111134541987263231">Uključite opciju <ph name="BEGIN_BOLD" />Dopusti u anonimnom načinu<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Izbrisat će se više stavki (<ph name="NUMBER_OF_ITEMS" />) i nećete ih moći vratiti.</translation>
 <translation id="2122305276694332719">Automatsko povezivanje sa skrivenom mrežom omogućuje drugima da vide vaš uređaj i neke mrežne postavke i stoga se ne preporučuje.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">pojednostavnjeni kineski</translation>
 <translation id="22085916256174561">korejski</translation>
 <translation id="2208919847696382164">Instaliranje uz Linux</translation>
+<translation id="2215692307449050019">Baterija je slaba. Sinkronizacija datoteka će se nastaviti kad se uređaj priključi na napajanje.</translation>
 <translation id="2225536596944493418">Jeste li sigurni da želite izbrisati te stavke (njih <ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Nije moguće izraditi mapu "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Osoba drži šalicu kave</translation>
+<translation id="2247561763838186830">Odjavljeni ste</translation>
 <translation id="2251368349685848079">Vrati iz otpada</translation>
 <translation id="2278133026967558505">Pristup datoteci za sve web-lokacije i URL-ove</translation>
 <translation id="2282155092769082568">URL za automatsku konfiguraciju:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Ta vrsta datoteke nije podržana. Posjetite Chrome web-trgovinu da biste pronašli aplikaciju koja može otvoriti tu vrstu datoteke.</translation>
 <translation id="2326539130272988168">bugarski</translation>
 <translation id="2337715497728194187">Podijeli s Bruschettom</translation>
+<translation id="233822363739146957">Nema dovoljno prostora za pohranu da bi se sinkronizirale sve datoteke</translation>
 <translation id="23721837607121582">Preuzmi mobilni profil, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Prebaci na prikaz popisa</translation>
 <translation id="2377590462528165447">S Linuxom se dijeli sljedeći broj mapa: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Pogreška pri instaliranju Linux aplikacije</translation>
 <translation id="2802583107108007218">Saznajte više o tim ograničenjima</translation>
 <translation id="2803375539583399270">Unesite PIN</translation>
+<translation id="2819519502129272135">Sinkronizacija datoteka je isključena</translation>
 <translation id="2820957248982571256">Traženje...</translation>
 <translation id="2830077785865012357">kineski zhuyin</translation>
 <translation id="2843806747483486897">Promijeni zadano...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Filtar je poništen.</translation>
 <translation id="4603392156942865207">Kopiranje datoteke <ph name="FILE_NAME" /> u mapu <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Izvođač</translation>
+<translation id="4635373743001040938">Prostora za pohranu bilo je vrlo malo. Sinkronizacija datoteka je isključena.</translation>
 <translation id="4642769377300286600">Instalira se mobilni profil, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">češki s QWERTY tipkovnicom</translation>
 <translation id="4656777537938206294">Učinite datoteke dostupnima izvanmrežno</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">S Parallels Desktopom dijeli se jedna mapa</translation>
 <translation id="496656650103537022">Vraćeno: <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Postavljanje sinkronizacije datoteka nije uspjelo</translation>
 <translation id="4973523518332075481">Broj znakova u nazivu može biti najviše <ph name="MAX_LENGTH" /></translation>
 <translation id="4973970068702235170">Komprimiranje nije uspjelo, neočekivana pogreška: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japanski</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">njemački (Belgija)</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7343393116438664539">vijetnamski teleks</translation>
+<translation id="7347346221088620549">Šifrirana datoteka</translation>
 <translation id="7357762654218998920">Ta vrsta datoteke nije podržana. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju datoteka u Chrome OS-u.</translation>
 <translation id="7359359531237882347">Kopiranje stavki (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7375951387215729722">Popis datoteka razvrstan prema "<ph name="COLUMN_NAME" />", silaznim redoslijedom.</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">islandski</translation>
 <translation id="863903787380594467">Netočan PIN. Preostao vam je sljedeći broj pokušaja: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – priključak</translation>
+<translation id="8656407365183407932">Vaše offline datoteke trebale su se ukloniti</translation>
 <translation id="8656768832129462377">Nemoj provjeravati</translation>
 <translation id="8688591111840995413">Pogrešna zaporka</translation>
 <translation id="8698464937041809063">Googleov crtež</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">kineski (tradicionalni) pinyin</translation>
 <translation id="8998871447376656508">Nema dovoljno slobodnog prostora na Google disku da biste dovršili prijenos.</translation>
 <translation id="9003940392834790328">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja administrator, pojedinosti</translation>
+<translation id="9007990314804111233">Prijavite se na Microsoft račun</translation>
 <translation id="9017798300203431059">ruska (fonetska)</translation>
 <translation id="9034924485347205037">Linux datoteke</translation>
 <translation id="9035012421917565900">Te se stavke ne mogu vratiti na odredište "<ph name="DESTINATION_NAME" />", tako da nećete moći poništiti tu radnju.</translation>

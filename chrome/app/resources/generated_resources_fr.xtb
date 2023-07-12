@@ -140,6 +140,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1110965959145884739">Sélectionnez les langues à installer sur cet appareil. Les fichiers de langue sont partagés entre les utilisateurs pour libérer de l'espace disque. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Le Bluetooth est utilisé par un onglet d'arrière-plan</translation>
 <translation id="1112998165730922436">La diffusion est suspendue</translation>
+<translation id="1113807501859230251">Supprimer Bruschetta de votre <ph name="DEVICE_TYPE" /> ? Cela supprimera toutes les applis et données de la machine virtuelle.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MODEL" /> <ph name="PRINTER_MANUFACTURER" /> (USB)</translation>
 <translation id="1114202307280046356">Diamant</translation>
 <translation id="1114427165525619358">Mots de passe sur cet appareil et dans votre compte Google</translation>
@@ -1554,6 +1555,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2263679799334060788">Nous vous remercions de vos commentaires, qui vont nous aider à améliorer Google Cast. Pour obtenir de l'aide concernant les problèmes liés à Cast, veuillez consulter le <ph name="BEGIN_LINK" />Centre d'aide<ph name="END_LINK" />.</translation>
 <translation id="2266957463645820432">IPP sur USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth désactivé</translation>
+<translation id="2268182915828370037">Désactiver la synchronisation des fichiers ?</translation>
 <translation id="2269895253281481171">Vous recevrez une notification si jamais il présente un risque</translation>
 <translation id="2270450558902169558">Échanger des données avec n'importe quel appareil dans le domaine suivant : "<ph name="DOMAIN" />"</translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />L'installation <ph name="BEGIN_BOLD" />effacera tout votre disque dur<ph name="END_BOLD" />. Vérifiez que vos données sont sauvegardées.<ph name="END_PARAGRAPH1" />
@@ -2105,6 +2107,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2715640894224696481">requête de clé de sécurité</translation>
 <translation id="2715751256863167692">Cette mise à niveau entraîne la réinitialisation de votre Chromebook et la suppression des informations sur l'utilisateur actuelles.</translation>
+<translation id="2715934493766003251">Impossible de libérer de l'espace de stockage lorsque la synchronisation des fichiers est activée</translation>
 <translation id="2716986496990888774">Ce paramètre est géré par un parent.</translation>
 <translation id="271749239614426244">Ignorer les mouvements mineurs du curseur</translation>
 <translation id="2718395828230677721">Écl. nocturne</translation>
@@ -2252,6 +2255,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2817435998497102771">Définir votre fond d'écran et style</translation>
 <translation id="2818476747334107629">Détails de l'imprimante</translation>
 <translation id="2819167288942847344">Utilisez des préréglages pour votre téléphone/tablette, ou des fenêtres redimensionnables pour éviter tout comportement anormal de l'appli.</translation>
+<translation id="2819519502129272135">Synchronisation des fichiers désactivée</translation>
 <translation id="2820957248982571256">Recherche…</translation>
 <translation id="2822634587701817431">Réduire/Développer</translation>
 <translation id="2822910719211888134">Erreur lors de la sauvegarde de Linux</translation>
@@ -2720,6 +2724,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Erreur réseau</translation>
 <translation id="3248902735035392926">La sécurité est essentielle. Prenez quelques instants pour <ph name="BEGIN_LINK" />vérifier vos extensions dès maintenant<ph name="END_LINK" /></translation>
 <translation id="3249323165366527554">Inscrivez-vous et connectez-vous plus rapidement en enregistrant automatiquement votre mot de passe dans le <ph name="GOOGLE_PASSWORD_MANAGER" /> pour <ph name="EMAIL" />.</translation>
+<translation id="3251119461199395237">Synchronisation des fichiers</translation>
 <translation id="3251714896659475029">Autoriser <ph name="SUPERVISED_USER_NAME" /> à accéder à l'Assistant Google en disant “Hey Google”</translation>
 <translation id="3251759466064201842">&lt;Ne fait pas partie du certificat&gt;</translation>
 <translation id="325238099842880997">Établissez des règles de base concernant l'utilisation des appareils numériques pour aider vos enfants à jouer, à explorer et à faire leurs devoirs à la maison</translation>
@@ -3097,6 +3102,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3567284462585300767">Vous devez être visible pour recevoir et accepter des fichiers de personnes à proximité</translation>
 <translation id="356738834800832239">Votre mot de passe est enregistré</translation>
 <translation id="3569382839528428029">Voulez-vous que l'application <ph name="APP_NAME" /> partage votre écran ?</translation>
+<translation id="3569614820047645079">Les fichiers dans Mon Drive sont automatiquement synchronisés sur votre Chromebook afin que vous puissiez y accéder sans connexion Internet.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> peut accéder aux fichiers et dossiers suivants :</translation>
 <translation id="3571734092741541777">Configurer</translation>
 <translation id="3575121482199441727">Autoriser pour ce site</translation>
@@ -3529,6 +3535,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3916233823027929090">Contrôles de sécurité terminés</translation>
 <translation id="3916445069167113093">Ce type de fichier risque d'endommager votre ordinateur. Voulez-vous vraiment enregistrer <ph name="FILE_NAME" /> ?</translation>
 <translation id="3917184139185490151">Votre ordinateur contient un module sécurisé qui permet de mettre en œuvre de nombreuses fonctionnalités de sécurité critiques dans Chrome OS. Consultez le centre d'aide Chromebook pour en savoir plus : https://support.google.com/chromebook/?p=sm.</translation>
+<translation id="3917644013202553949">Espace de stockage insuffisant pour synchroniser vos fichiers. Essayez de libérer de l'espace.</translation>
 <translation id="3918972485393593704">Envoyer les informations à Google</translation>
 <translation id="3919145445993746351">Pour synchroniser vos extensions sur tous vos ordinateurs, activez la synchronisation</translation>
 <translation id="3919229493046408863">Désactiver la notification en cas d'appareils à proximité</translation>
@@ -3840,6 +3847,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4184803915913850597">Appareil HID (<ph name="VENDOR_ID" /> : <ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - Recherche <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="4187424053537113647">Configuration de <ph name="APP_NAME" />…</translation>
+<translation id="4190492351494485814">Pour la configuration initiale, vous devez vous connecter à Internet afin que les fichiers puissent être synchronisés avec votre Chromebook</translation>
 <translation id="4190828427319282529">Mettre en surbrillance l'objet sélectionné au clavier</translation>
 <translation id="4193251682249731404">Certificat d'autorité fiable</translation>
 <translation id="4193575319002689239">Afficher les fiches</translation>
@@ -4032,6 +4040,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4361745360460842907">Ouvrir dans un onglet</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> est le compte par défaut sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4363215264289239958">Applis Bruschetta</translation>
+<translation id="4363262124589131906">Les nouveaux fichiers de Mon Drive ne se synchroniseront plus automatiquement avec ce Chromebook</translation>
 <translation id="4363771538994847871">Aucune destination Cast trouvée. Besoin d'aide?</translation>
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> partage une fenêtre.</translation>
@@ -4455,6 +4464,7 @@ Ces signaux peuvent inclure des informations sur votre navigateur, votre OS, vot
 <translation id="4715631922189108923">Modifier le nom d'utilisateur</translation>
 <translation id="47158868804223727">Cliquez sur le nom du groupe pour le développer ou le réduire</translation>
 <translation id="4716483597559580346">Powerwash pour plus de sécurité</translation>
+<translation id="4716715661140829720">Espace de stockage insuffisant</translation>
 <translation id="471759229191973607">Modifier le thème</translation>
 <translation id="4718046540206070045">Bien plus qu'un navigateur</translation>
 <translation id="4722735765955348426">Mot de passe associé à <ph name="USERNAME" /></translation>
@@ -4507,6 +4517,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> n'est pas un compte Google for Education valide. Contactez votre administrateur. Si vous avez ce rôle, vous pouvez configurer votre organisation sur g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Pendant 1 mois, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}one{Pendant {MONTHS} mois, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}other{Pendant {MONTHS} mois, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}}</translation>
 <translation id="4765582662863429759">Autorise Android Messages à transmettre les SMS de votre téléphone à votre Chromebook</translation>
+<translation id="476563889641554689">Sélectionnez une zone sur laquelle rechercher avec Lens</translation>
 <translation id="4766598565665644999">Toutes les extensions peuvent lire et modifier <ph name="HOST" /></translation>
 <translation id="4767427586072640478">En savoir plus sur les extensions désactivées.</translation>
 <translation id="4768332406694066911">Certains certificats provenant de ces organisations vous identifient.</translation>
@@ -4565,6 +4576,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="481574578487123132">Appareils associés</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, détails</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 favori supprimé}one{{COUNT} favori supprimé}other{{COUNT} favoris supprimés}}</translation>
+<translation id="481689174647911539">Ce fichier est peut-être un virus ou un logiciel malveillant.<ph name="LINE_BREAK" />Vous pouvez l'envoyer à la navigation sécurisée Google pour vérifier s'il est dangereux. Les analyses prennent généralement quelques secondes.</translation>
 <translation id="4816900689218414104">Créer une clé d'accès sur un téléphone ou une tablette</translation>
 <translation id="4819323978093861656">{0,plural, =0{Fermeture maintenant.}=1{Fermeture dans : 1 seconde}one{Fermeture dans : # seconde}other{Fermeture dans : # secondes}}</translation>
 <translation id="4819607494758673676">Notifications de l'Assistant Google</translation>
@@ -4719,7 +4731,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4940364377601827259"><ph name="PRINTER_COUNT" /> imprimantes peuvent être enregistrées.</translation>
 <translation id="4940448324259979830">Compte géré par <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Conserver la taille du disque</translation>
-<translation id="4941074198479265146">Les sites se connectent généralement aux appareils MIDI pour proposer des fonctionnalités de création et d'édition de musique</translation>
 <translation id="4941243352516004658"><ph name="PRODUCT_ITEM_COUNT" /> articles dans votre panier <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) avec <ph name="DISCOUNT_TEXT" /> consulté <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Utiliser cette réquisition pour l'enregistrement de l'appareil dans le cadre de la gestion d'entreprise :</translation>
 <translation id="4941627891654116707">Taille de police</translation>
@@ -4984,12 +4995,14 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5185386675596372454">La nouvelle version de "<ph name="EXTENSION_NAME" />" a été désactivée, car elle nécessite davantage d'autorisations.</translation>
 <translation id="5185500136143151980">Aucun accès à Internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190577235024772869"><ph name="USED_SPACE" /> utilisé(s)</translation>
 <translation id="5190926251776387065">Activer le port</translation>
 <translation id="5190959794678983197">Aucun micro</translation>
 <translation id="5191094172448199359">Les codes saisis ne correspondent pas</translation>
 <translation id="5191251636205085390">Découvrez et contrôlez les nouvelles technologies qui visent à remplacer les cookies tiers</translation>
 <translation id="519185197579575131">Utiliser QT</translation>
 <translation id="5192062846343383368">Ouvrez l'application Family Link pour accéder aux paramètres de supervision</translation>
+<translation id="5193978546360574373">Cela supprimera l'accès à Google Drive sur ce Chromebook, y compris aux fichiers pour lesquels l'accès hors connexion a été activé</translation>
 <translation id="5193988420012215838">Copié dans le presse-papiers</translation>
 <translation id="5194256020863090856">Cela ne concerne que les fenêtres de navigation privée</translation>
 <translation id="5195074424945754995">Les URL qui suivent ces règles ne déclencheront pas un changement de navigateur et peuvent être ouvertes dans <ph name="BROWSER_NAME" /> ou <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
@@ -5072,6 +5085,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="526622169288322445">Plus d'actions pour <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5268373933383932086">Votre page personnalisée</translation>
 <translation id="5269977353971873915">Échec de l'impression</translation>
+<translation id="5271578170655641944">Supprimer l'accès à Google Drive ?</translation>
 <translation id="5273806377963980154">Modifier l'URL du site</translation>
 <translation id="5273966423195882879">Couleur basée sur le thème</translation>
 <translation id="5275084684151588738">Dictionnaires personnels</translation>
@@ -6335,6 +6349,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6345878117466430440">Marquer comme lu</translation>
 <translation id="6346952829206698721">Coller depuis le presse-papiers</translation>
 <translation id="6347010704471250799">Afficher les notifications</translation>
+<translation id="6348805481186204412">Stockage hors connexion</translation>
 <translation id="634887995541211148">Exécutez Bruschetta sur votre appareil.</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">Courbe elliptique SECG secp256r1 (également appelée "ANSI X9.62 prime256v1, NIST P-256")</translation>
@@ -6519,6 +6534,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6513247462497316522">Si vous n'êtes connecté à aucun autre réseau, Google Chrome va utiliser un service Internet mobile.</translation>
 <translation id="6514010653036109809">Appareil disponible :</translation>
 <translation id="6514565641373682518">Cette page a désactivé le curseur de votre souris.</translation>
+<translation id="6517420300299531857">Les fichiers dans Mon Drive sont automatiquement synchronisés sur votre Chromebook afin que vous puissiez y accéder sans connexion Internet. Cela utilisera environ <ph name="REQUIRED_SPACE" />. Vous disposez actuellement de <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Votre appareil risque de ne plus fonctionner correctement, et vous pouvez rencontrer des problèmes de sécurité et de performances. Cette désactivation peut aussi impacter votre droit de déposer des réclamations légales en cas de problèmes.</translation>
 <translation id="6518014396551869914">Cop&amp;ier l'image</translation>
 <translation id="6518133107902771759">Valider</translation>
@@ -6780,6 +6796,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6737393581255281855">Effacer les données affichées ?</translation>
 <translation id="6737663862851963468">Supprimer un ticket Kerberos</translation>
+<translation id="6737931010859480781">Cette appli est préinstallée sur votre appareil</translation>
 <translation id="6738180164164974883">Autoriser à placer des cookies tiers</translation>
 <translation id="6738430949033571771">Validation du compte…</translation>
 <translation id="6739923123728562974">Afficher le raccourci sur le Bureau</translation>
@@ -8474,6 +8491,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8138217203226449454">Vouliez-vous modifier votre moteur de recherche ?</translation>
 <translation id="8138997515734480534">État de <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Fichiers Google Drive</translation>
+<translation id="8139643636835015859">Cela supprimera <ph name="OFFLINE_STORAGE_SIZE" /> d'espace de stockage utilisé par vos fichiers hors connexion. Certains fichiers seront toujours disponibles hors connexion. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141418916163800697">Vous pouvez configurer d'autres fonctionnalités dans les paramètres de Phone Hub</translation>
 <translation id="8141584439523427891">Ouverture dans le navigateur secondaire…</translation>
@@ -8565,6 +8583,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="821119981794423735">Pour importer des mots de passe dans le Gestionnaire de mots de passe de Google pour <ph name="USER_EMAIL" />, sélectionnez un fichier CSV</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Téléchargement en cours}one{Téléchargement en cours}other{Téléchargements en cours}}</translation>
 <translation id="8212601853154459483">Ce profil est géré par <ph name="PROFILE_MANAGER" />. Vous devez créer un profil distinct pour le compte <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="8212792694174629011">Aucun profil n'a été trouvé. Essayez de scanner le code QR avec l'appareil photo de votre mobile ou saisissez le code d'activation fourni par votre opérateur.</translation>
 <translation id="8214489666383623925">Ouvrir le fichier...</translation>
 <translation id="8215129063232901118">Accédez aux fonctionnalités de votre téléphone depuis votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Mettre le pointeur en surbrillance</translation>
@@ -9108,6 +9127,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8680251145628383637">Connectez-vous pour retrouver vos favoris, votre historique, vos mots de passe et d'autres paramètres sur tous vos appareils. De plus, vous serez automatiquement connecté à vos services Google.</translation>
 <translation id="8681886425883659911">Les annonces sont bloquées sur les sites connus pour afficher des annonces intrusives ou trompeuses</translation>
 <translation id="8682730193597992579">L'imprimante <ph name="PRINTER_NAME" /> est connectée et prête</translation>
+<translation id="8686142379631285985">Connecté en tant que <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Annuler le téléchargement de <ph name="FILE_NAME" /></translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="8689998525144040851">100</translation>

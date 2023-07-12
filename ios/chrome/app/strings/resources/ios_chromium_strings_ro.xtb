@@ -60,7 +60,6 @@
 <translation id="452436063477828504">Asigură-te că poți folosi oricând datele Chromium din Contul Google</translation>
 <translation id="4555020257205549924">Când această funcție este activată, Chromium se va oferi să traducă paginile scrise în alte limbi utilizând Google Traducere. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Acum poți folosi Chromium oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
-<translation id="4625550158881452646">Creează evenimente în Calendar în Chromium</translation>
 <translation id="4633738821577273991">Obține și Navigare sigură îmbunătățită pentru acest profil Chromium</translation>
 <translation id="4654936625574199632">Pentru a contribui la îmbunătățirea aplicației, Chromium trimite la Google statistici de utilizare și rapoarte de blocare. <ph name="BEGIN_LINK" />Gestionează<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activează scanerul din Chromium</translation>
@@ -71,7 +70,6 @@
 <translation id="4999538639245140991">Deoarece te deconectezi de la un cont gestionat de <ph name="SIGNOUT_MANAGED_DOMAIN" />, datele tale Chromium de pe acest dispozitiv vor fi șterse. Datele tale vor rămâne în Contul Google.</translation>
 <translation id="5048795749726991615">Pentru a accesa cu ușurință parolele salvate în alte aplicații, folosește Chromium pentru completare automată</translation>
 <translation id="5171868502429358653">Conectează-te la Chromium</translation>
-<translation id="5224044903258607400">Atinge Vezi pe Google Maps în Chromium</translation>
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
 <translation id="5308226104666789935">Chromium nu poate căuta actualizări.</translation>
 <translation id="5396916991083608703">Setezi Chromium ca browser prestabilit?</translation>
@@ -82,7 +80,6 @@
 <translation id="5688047395118852662">Acest card afișează sugestii privind modul în care poți profita la maximum de Chromium.</translation>
 <translation id="5700709190537129682">Chromium nu îți poate verifica parolele</translation>
 <translation id="5777187867430702742">Pagină Chromium</translation>
-<translation id="5925698807555796756">Activează Blochează filele incognito când închizi Chromium.</translation>
 <translation id="5945387852661427312">Te conectezi cu un cont gestionat de <ph name="DOMAIN" /> și acorzi administratorului acestuia controlul asupra datelor Chromium. Datele vor fi asociate definitiv acestui cont. Dacă te deconectezi de la Chromium, datele vor fi șterse de pe acest dispozitiv, dar vor rămâne stocate în Contul Google.</translation>
 <translation id="5983312940147103417">Contribuie la îmbunătățirea Chromium</translation>
 <translation id="6062449165341879460">Organizația ta <ph name="DOMAIN" /> va avea acces la datele Chromium, marcajele, istoricul, parolele și alte setări pe care le stochezi în acest cont. Când te deconectezi, datele vor fi șterse de pe acest dispozitiv.  Însă vor rămâne stocate în Contul Google administrat și vor fi disponibile pentru organizația ta. În plus, organizația ta poate să seteze politici privind utilizatorii specifice contului, care pot să modifice comportamentul browserului Chromium.</translation>
@@ -127,7 +124,6 @@
 <translation id="7980860476903281594">Chromium trimite locația ta către site-urile pe care le permiți.</translation>
 <translation id="8013573822802650211">Conectează-te pe toate dispozitivele ca să vezi toate filele tale deschise în Chromium</translation>
 <translation id="8073677936375100957">Ștergi datele tale Chromium de pe dispozitiv?</translation>
-<translation id="8164086860209325020">Accesează setările Chromium</translation>
 <translation id="8235427517854598594">Setezi Chromium ca browser prestabilit?</translation>
 <translation id="8240981428553046115">Chromium nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>
 <translation id="8409374867500149834">Ai cea mai puternică securitate Chromium împotriva site-urilor dăunătoare</translation>

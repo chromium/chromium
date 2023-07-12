@@ -3,6 +3,7 @@
 <translationbundle lang="no">
 <translation id="1026101648481255140">Fortsett installasjonen</translation>
 <translation id="1029669172902658969">Start på nytt for å oppdatere &amp;ChromiumOS</translation>
+<translation id="1040916596585577953">Chromium anbefaler at du går gjennom denne utvidelsen</translation>
 <translation id="1065672644894730302">Kan ikke lese innstillingene. Enkelte funksjoner kan være utilgjengelige, og endringer av innstillingene blir ikke lagret.</translation>
 <translation id="1098170124587656448">Chromium kan beskytte deg mot databrudd, ondsinnede utvidelser med mer</translation>
 <translation id="1104942323762546749">Chromium forsøker å eksportere passordene dine. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
@@ -276,7 +277,6 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="6734291798041940871">Chromium er allerede installert for alle brukerne på datamaskinen din.</translation>
 <translation id="673636774878526923">For å få tilgang til Chromium-tingene dine på alle enhetene dine, logg på og slå på synkronisering.</translation>
 <translation id="67706546131546258">Chromium anbefaler å skanne denne filen ettersom den kan være farlig.</translation>
-<translation id="6774082503108938489">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chromium. Du har ikke tillatelse til å slå på denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="6779406956731413166">ChromiumOS er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6847869444787758381">Med Chromium får du beskjed hvis passordene dine noensinne utsettes for sikkerhetsbrudd</translation>
 <translation id="6852530923436401894">Chromium har blokkert denne filen fordi den inneholder skadelig programvare</translation>
@@ -363,7 +363,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8463672209299734063">Valgfritt: Bidra til å gjøre funksjonene og ytelsen til ChromiumOS bedre ved å sende diagnostikk og bruksdata automatisk til Google.</translation>
 <translation id="8493179195440786826">Chromium er utdatert</translation>
 <translation id="8550334526674375523">Denne jobbprofilen er helt separat fra den personlige profilen din.</translation>
-<translation id="8558383651099478961">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chromium. Du har ikke tillatelse til å legge til denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8568283329061645092">Chromium kan sjekke passordene dine når du logger på med Google-kontoen din</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Slik bruker vi disse dataene:<ph name="END_BOLD" /> Nettsteder kan lagre informasjon om interessene dine i Chromium. Hvis du for eksempel besøker et nettsted for å kjøpe maratonsko, kan det hende nettstedet definerer interessen din som maratonløp. Hvis du senere besøker et annet nettsted for å melde deg på et løp, kan dette nettstedet vise deg en annonse for løpesko basert på interessene dine.</translation>

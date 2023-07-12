@@ -4715,7 +4715,6 @@
 <translation id="4940364377601827259">सुरक्षित गर्नका लागि <ph name="PRINTER_COUNT" /> प्रिन्टरहरू उपलब्ध छन्।</translation>
 <translation id="4940448324259979830"><ph name="PROFILE_NAME" /> ले यो खाता व्यवस्थापन गर्छ</translation>
 <translation id="4940845626435830013">डिस्कको आकार रिजर्भ गर्नुहोस्</translation>
-<translation id="4941074198479265146">साइटहरूले संगीत सिर्जना तथा सम्पादन गर्ने सुविधाहरू प्रदान गर्न सामान्यतया MIDI यन्त्रमा कनेक्ट गर्छन्</translation>
 <translation id="4941243352516004658">तपाईंको कार्ट <ph name="DISCOUNT_TEXT" /> मा भएका <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> का <ph name="PRODUCT_ITEM_COUNT" /> वटा वस्तुहरू <ph name="RELATIVE_TIME" /> हेरिए</translation>
 <translation id="4941246025622441835">यन्त्रलाई उद्योग व्यवस्थापनको लागि भर्ति गर्दा यस यन्त्र आवश्यकता प्रयोग गर्नुहोस्।</translation>
 <translation id="4941627891654116707">फन्टको आकार</translation>
@@ -6242,7 +6241,7 @@
 <translation id="6266532094411434237"><ph name="DEVICE" /> मा कनेक्ट गरिँदै छ</translation>
 <translation id="6267166720438879315">तपाइँ आफैलाई <ph name="HOST_NAME" /> मा प्रमाणीकरण गर्नको लागि एक प्रमाणपत्र चयन गर्नुहोस्</translation>
 <translation id="6268252012308737255"><ph name="APP" /> मार्फत खोल्नुहोस्</translation>
-<translation id="6270309713620950855">रिमाइन्डर म्युट गरियोस्</translation>
+<translation id="6270309713620950855">म्युट नज</translation>
 <translation id="6270391203985052864">साइटहरूले सूचनाहरू पठाउनका निम्ति अनुमति माग्न सक्छन्।</translation>
 <translation id="6270486800167535228">एक्स्टेन्सन पिन गरियो। थप विकल्पहरू हेर्न यो चयन गर्नुहोस्</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />सिस्टम तथा एपसम्बन्धी जानकारी<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />मेट्रिक्स<ph name="END_LINK2" /> पठाउनुहोस्</translation>

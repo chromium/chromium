@@ -35,7 +35,6 @@
 <translation id="2695886661449553974">A Chrome nem tudott frissítéseket keresni. Próbálja újra később.</translation>
 <translation id="2732745070297234559">A Chrome nem tudta ellenőrizni az összes jelszót. Próbálkozzon újra holnap.</translation>
 <translation id="2736805085127235148">A Chrome-értesítések jelenleg ki vannak kapcsolva az eszköz beállításaiban.</translation>
-<translation id="2754286486056173475">Naptáresemények létrehozása a Chrome-ban</translation>
 <translation id="2767464022270041271">Nincsenek mentett jelszavak. A Google Jelszókezelő képes a jelszavak ellenőrzésére, amikor Ön menti őket.</translation>
 <translation id="2840432500933227975">Nyissa meg a Chrome beállításait iOS rendszeren, majd koppintson az „Alapértelmezett böngészőalkalmazás” elemre, és válassza ki a Chrome-ot.</translation>
 <translation id="2869959624320573933">Bejelentkezés a Chrome-ba</translation>
@@ -51,7 +50,6 @@
 <translation id="3522659714780527202">Kapcsolja be a szinkronizálást, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chrome-ot használja.</translation>
 <translation id="3533694711092285624">Nincsenek mentett jelszavak. A Chrome képes a jelszavak ellenőrzésére, amikor Ön menti őket.</translation>
 <translation id="3594076341410558780">„Hozza ki a legtöbbet a Chrome-ból”</translation>
-<translation id="3611867725106943284">Koppintson a „Megtekintés a Google Térképpel a Chrome-ban” lehetőségre.</translation>
 <translation id="3655656110921623717">Ez azt jelenti, hogy a Chrome mindig a mobilwebhelyet kéri majd.</translation>
 <translation id="3720541637541300822">Inkognitó lapok zárolása a Chrome bezárásakor</translation>
 <translation id="3827545470516145620">Normál biztonsági védelemben részesül ezen az eszközön</translation>
@@ -60,6 +58,7 @@
 <translation id="3984746313391923992">Szervezete nem engedélyezi, hogy bejelentkezzen a Chrome-ba.</translation>
 <translation id="3988789688219830639">A Google Chrome nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
 <translation id="4064699917955374540">Ha Chrome-adatokat szeretne használni és tárolni Google-fiókjában, igazolja személyazonosságát.</translation>
+<translation id="4093042601582616698">A Chrome legyen az alapértelmezett böngésző?</translation>
 <translation id="417201473131094001">A Chrome Canary nem támogatja</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> felhasználó használta Chrome-ot, és könyvjelzőket, jelszavakat, valamint egyéb beállításokat hagyott az eszközön.</translation>
 <translation id="424864128008805179">Kijelentkezés a Chrome-ból</translation>
@@ -104,7 +103,6 @@
 <translation id="6676840375528380067">Törli Chrome-adatait az eszközről?</translation>
 <translation id="6709398533399187136">Jelszava adatvédelmi incidens során nyilvánosságra került. A Google Jelszókezelő a jelszó haladéktalan módosítását javasolja.</translation>
 <translation id="6822673484890854830">A Chrome nem tudta ellenőrizni az összes jelszót. Próbálja újra később.</translation>
-<translation id="6896070677477855330">Kapcsolja be az „Inkognitó lapok zárolása a Chrome bezárásakor” beállítást.</translation>
 <translation id="6964931465519938134">Mostantól bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre koppint.</translation>
 <translation id="6975725306479268850">A Chrome kiválasztása az automatikus kitöltéshez</translation>
 <translation id="7059914902409643750">Tegye személyessé a Chrome-ot</translation>
@@ -147,7 +145,6 @@
 <translation id="8765470054473112089">Amikor Ön beír valamit a címsávba vagy a keresőmezőbe, a Chrome a beírt szöveget elküldi az alapértelmezett keresőmotornak, hogy jobb javaslatokat biztosítson. Inkognitóban ki van kapcsolva ez a funkció.</translation>
 <translation id="8772179140489533211">Értesítéseket jelenít meg a Chrome-ba való bejelentkezéshez</translation>
 <translation id="8788269841521769222">Nem kell emlékeznie erre a jelszóra. Elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Google Jelszókezelőbe.</translation>
-<translation id="880967149107462122">Lépjen a Chrome beállításaihoz.</translation>
 <translation id="8857676124663337448">A Google Jelszókezelő nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap.</translation>
 <translation id="8897749957032330183">A jelszavakat ezen az eszközön menti a rendszer a Google Jelszókezelőbe.</translation>
 <translation id="8969290730818637510">Ha be van kapcsolva:

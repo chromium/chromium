@@ -876,7 +876,6 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="1768225118528727376">Berechtigung für die Fensterverwaltung auf diesen Websites zulassen</translation>
 <translation id="1770071413238151235">12-Stunden-Format</translation>
 <translation id="1771024053220392089">Unterstützung älterer Browser deaktivieren</translation>
-<translation id="1781225230395284182">Dialogfeld „Abbrechen“ beim Aufrufen von „beforeunload event.preventDefault()“ anzeigen.</translation>
 <translation id="1781356041596378058">Diese Richtlinie steuert zudem den Zugriff auf Android-Entwickleroptionen. Wenn du diese Richtlinie auf "true" setzt, können Nutzer nicht auf die Entwickleroptionen zugreifen. Wenn du diese Richtlinie auf "false" setzt oder nicht konfigurierst, können Nutzer auf die Entwickleroptionen zugreifen, indem sie siebenmal auf die Build-Nummer in der Android-App "Einstellungen" tippen.</translation>
 <translation id="1787790976045065845">Diese Richtlinie ist nur dann wirksam, wenn die Richtlinie „<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" />“ auf „<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />“ oder „<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />“ eingestellt ist und ein Nutzer, der sich mit einer Smartcard authentifiziert hat, diese entfernt. Dann legt diese Richtlinie fest, wie viele Sekunden lang eine Benachrichtigung angezeigt wird, die den Nutzer über bevorstehende Aktionen informiert. Diese Benachrichtigung blockiert den Bildschirm. Die Aktion beginnt erst nach dem Ablauf der Benachrichtigung. Der Nutzer kann die Aktion unterbinden, wenn die Smartcard vor dem Ablauf der Benachrichtigung wieder eingeführt wird. Wenn für diese Richtlinie „0“ konfiguriert ist, wird keine Benachrichtigung angezeigt und die Aktion sofort ausgeführt.</translation>
 <translation id="1793346220873697538">PIN-Druckmodus standardmäßig deaktivieren</translation>
@@ -1984,7 +1983,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2787774054174244402">Wenn die Richtlinie auf "True" festgelegt ist, können Nutzer nicht auf externe Speichergeräte schreiben.
 
       Sofern der externe Speicher nicht blockiert ist und du "ExternalStorageReadOnly" auf "False" setzt oder keinen Wert festlegst, können Nutzer Dateien auf physisch beschreibbaren externen Speichergeräten erstellen und ändern. Du kannst externen Speicher dadurch blockieren, dass du "ExternalStorageDisable" auf "True" setzt.</translation>
-<translation id="2788443040242264100">Dialogfeld „Abbrechen“ beim Aufrufen von „beforeunload event.preventDefault()“ nicht anzeigen.</translation>
 <translation id="2789742777235177478">Zeit beschränken, während der sich ein über GAIA ohne SAML authentifizierter Nutzer offline auf dem Sperrbildschirm anmelden kann</translation>
 <translation id="2796714419743648316">Zulassungsliste für App-Zeitbeschränkungen</translation>
 <translation id="2801065672151277034">Zertifikatverwaltungseinstellungen</translation>
@@ -6082,7 +6080,6 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
       Hinweis: Falls die aktuelle Eingabemethode nicht unterstützt wird, wird die Eingabemethode auf das Hardware-Tastaturlayout (falls zulässig) oder den ersten gültigen Eintrag in dieser Liste eingestellt. Alle ungültigen oder nicht unterstützten Eingabemethoden in der Liste werden ignoriert.</translation>
 <translation id="6483115462650732746">Unverankertes Menü für Bedienungshilfen im Kioskmodus anzeigen</translation>
-<translation id="6485036313708130232">Neues Verhalten des Ereignisses „beforeunload“ festlegen, das ein Dialogfeld zum Bestätigen des Abbruchs anzeigt, wenn „preventDefault“ aufgerufen wird</translation>
 <translation id="6489084406497912050">Damit wird festgelegt, ob Nutzer Kerberos-Konten hinzufügen können.
 
           Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer Kerberos-Konten über die Kontoeinstellungen von Kerberos auf der Kerberos-Einstellungsseite hinzufügen. Die Nutzer haben die vollständige Kontrolle über Konten, die sie hinzufügen, und können diese ändern oder entfernen.
@@ -7388,13 +7385,6 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="7613115815080726221">Zeitraum ohne Nutzereingabe, nach dem das Gerät in den Inaktivitätsmodus wechselt, angegeben in Millisekunden.</translation>
 <translation id="7614663184588396421">Liste der deaktivierten Protokollschemas</translation>
 <translation id="7616631530432070402">Cipher Suites von 3DES werden in TLS aktiviert</translation>
-<translation id="7617710923960807616">Mit dieser Richtlinie wird festgelegt, ob das Bestätigungsdialogfeld angezeigt wird, wenn eine Seite „preventDefault“ für das „beforeunload“-Ereignis aufruft. In der Vergangenheit wurden diese Dialogfelder bei <ph name="PRODUCT_NAME" /> nicht angezeigt, aber das Standardverhalten wird geändert. Diese Richtlinie ist eine vorübergehende Notlösung und für Unternehmen gedacht, deren Websites aufgrund des neuen Verhaltens nicht mehr richtig funktionieren und die für die Behebung eine gewisse Vorlaufzeit benötigen.
-
-Wenn die Richtlinie aktiviert ist, wird das Dialogfeld zum Bestätigen des Abbruchs angezeigt, wenn eine Seite „preventDefault“ für das „beforeunload“-Ereignis aufruft.
-
-Ist die Richtlinie hingegen deaktiviert, dann wird kein Dialogfeld zum Bestätigen des Abbruchs angezeigt, wenn eine Seite „preventDefault“ für das „beforeunload“-Ereignis aufruft.
-
-Wenn diese Richtlinie nicht konfiguriert ist, wird gemäß dem Roll-out-Plan für <ph name="PRODUCT_NAME" />-Funktionen die Standardeinstellung verwendet.</translation>
 <translation id="761788785484453836">Website-Isolierung für alle Websites erzwingen</translation>
 <translation id="7620869951155758729">Anhand der in dieser Richtlinie angegebenen Konfiguration werden Elternzugangscodes generiert und überprüft.
 

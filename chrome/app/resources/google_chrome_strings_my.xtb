@@ -321,7 +321,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="7036251913954633326">ဤအကောင့်ကို တစ်ကြိမ်သာအသုံးပြုလိုပါက Chrome ဘရောင်ဇာတွင် <ph name="GUEST_LINK_BEGIN" />ဧည့်သည်မုဒ်<ph name="GUEST_LINK_END" /> သုံးနိုင်သည်။ အခြားတစ်ယောက်အတွက် အကောင့်ထည့်လိုပါက သင်၏ <ph name="DEVICE_TYPE" /> တွင် <ph name="LINK_BEGIN" />ပုဂ္ဂိုလ်အသစ်ကို ထည့်နိုင်သည်<ph name="LINK_END" />။
 
 ဝဘ်ဆိုက်နှင့် အက်ပ်များကို ပေးထားသော ခွင့်ပြုချက်များက ဤအကောင့်တွင် အကျုံးဝင်နိုင်သည်။ <ph name="SETTINGS_LINK_BEGIN" />ဆက်တင်များ<ph name="SETTINGS_LINK_END" /> တွင် သင်၏ Google Account များကို စီမံနိုင်သည်။</translation>
-<translation id="7062128746136194023">Chrome အတွက် "ဝဘ်ဆိုက်၊ အက်ပ်နှင့် နောက်ဆက်တွဲ ခွင့်ပြုချက်များ" ကို သင့်မိဘက ပိတ်လိုက်သည်။ ဤ <ph name="EXTENSION_TYPE_PARAMETER" /> ထည့်ခြင်းကို ခွင့်မပြုပါ။</translation>
 <translation id="7071827361006050863">Chrome သည် ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို မကြာမီဖျက်ပါမည်</translation>
 <translation id="7085332316435785646">Google ဝန်ဆောင်မှုများရှိ ပုဂ္ဂိုလ်ရေးသီးသန့် အတွေ့အကြုံများ ပိုရရှိရန်အတွက် Chrome မှတ်တမ်းကို ထည့်၊ မထည့် ရွေးနိုင်သည်</translation>
 <translation id="7088681679121566888">Chrome က အပ်ဒိတ်ဖြစ်နေပြီ</translation>
@@ -384,7 +383,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8255190535488645436">Google Chrome က သင့်ကင်မရာနှင့် မိုက်ကရိုဖုန်းကို သုံးနေသည်။</translation>
 <translation id="8270775718612349140">Chrome မှစီမံထားသည့် အသိအမှတ်ပြုလက်မှတ်များ</translation>
 <translation id="8286862437124483331">Google Chrome သည် စကားဝှက်ကို ပြပေးရန် ကြိုးစာနေသည်။ ၎င်းကို ခွင့်ပြုရန် သင်၏ Windows စကားဝှက်ကို ရိုက်ထည့်ပါ။</translation>
-<translation id="828798499196665338">Chrome အတွက် "ဝဘ်ဆိုက်၊ အက်ပ်နှင့် နောက်ဆက်တွဲ ခွင့်ပြုချက်များ" ကို သင့်မိဘက ပိတ်လိုက်သည်။ ဤ <ph name="EXTENSION_TYPE_PARAMETER" /> ဖွင့်ခြင်းကို ခွင့်မပြုပါ။</translation>
 <translation id="8290100596633877290">ဝါး! Google Chrome ပျက်သွားပြီ။ ယခုပြန်စတင်မလား?</translation>
 <translation id="829923460755755423">Google Password Manager သို့ ဖြတ်လမ်းလင့်ခ် ထည့်နိုင်သည်</translation>
 <translation id="8342675569599923794">ဤဖိုင်သည် အန္တရာယ်ရှိပါသည်။ ထို့ကြောင့် Chrome သည် ၎င်းကို ပိတ်ဆို့ထားပါသည်။</translation>

@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">裝置設定</translation>
 <translation id="2084809735218147718">寫感謝詞的人</translation>
 <translation id="2088690981887365033">VPN 網絡</translation>
+<translation id="209653272837065803">儲存空間不足，無法繼續同步檔案</translation>
 <translation id="2111134541987263231">開啟「允許在無痕模式中執行」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">系統將刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目，而且無法還原。</translation>
 <translation id="2122305276694332719">自動連線至隱藏網絡會讓其他人可查看您的裝置和部分網絡設定，建議您不要啟用此設定。</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">簡體中文</translation>
 <translation id="22085916256174561">韓文</translation>
 <translation id="2208919847696382164">透過 Linux 安裝</translation>
+<translation id="2215692307449050019">電量不足，系統會在連接電源後繼續同步檔案。</translation>
 <translation id="2225536596944493418">您確定要刪除<ph name="NUMBER_OF_ITEMS" /> 個項目嗎？</translation>
 <translation id="2230062665678605299">無法建立資料夾「<ph name="FOLDER_NAME" />」。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">喝咖啡的人</translation>
+<translation id="2247561763838186830">你已登出</translation>
 <translation id="2251368349685848079">從垃圾桶還原</translation>
 <translation id="2278133026967558505">所有網站和網址都能存取檔案</translation>
 <translation id="2282155092769082568">自動設定網址：</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">系統不支援這個檔案類型。請前往 Chrome 網上應用程式商店，尋找是否有可開啟這類檔案的應用程式。</translation>
 <translation id="2326539130272988168">保加利亞文</translation>
 <translation id="2337715497728194187">與 Bruschetta 共用</translation>
+<translation id="233822363739146957">儲存空間不足，無法同步所有檔案</translation>
 <translation id="23721837607121582">下載流動裝置設定檔，<ph name="NETWORK_COUNT" /> 個網絡之中嘅第 <ph name="NETWORK_INDEX" /> 個，<ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">切換至清單檢視</translation>
 <translation id="2377590462528165447">已與 Linux 共用 <ph name="NUMBER_OF_ITEMS" /> 個資料夾</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">安裝 Linux 應用程式時發生錯誤</translation>
 <translation id="2802583107108007218">進一步了解呢啲限制</translation>
 <translation id="2803375539583399270">請輸入 PIN</translation>
+<translation id="2819519502129272135">檔案同步功能已關閉</translation>
 <translation id="2820957248982571256">正在掃瞄…</translation>
 <translation id="2830077785865012357">中文 (注音)</translation>
 <translation id="2843806747483486897">變更預設值…</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">重設咗篩選器。</translation>
 <translation id="4603392156942865207">正在將 <ph name="FILE_NAME" /> 複製到「<ph name="FOLDER_NAME" />」</translation>
 <translation id="4631887759990505102">藝術家</translation>
+<translation id="4635373743001040938">儲存空間嚴重不足，因此系統已關閉檔案同步功能。</translation>
 <translation id="4642769377300286600">安裝緊流動裝置設定檔，<ph name="NETWORK_COUNT" /> 個網絡之中嘅第 <ph name="NETWORK_INDEX" /> 個，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">捷克文，QWERTY 鍵盤</translation>
 <translation id="4656777537938206294">將檔案設定為可離線使用</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">已與 Parallels Desktop 共用 1 個資料夾</translation>
 <translation id="496656650103537022">已還原「<ph name="FILE_NAME" />」</translation>
 <translation id="4969785127455456148">專輯</translation>
+<translation id="4972330214479971536">無法完成檔案同步設定</translation>
 <translation id="4973523518332075481">請使用不多於 <ph name="MAX_LENGTH" /> 個字元的名稱</translation>
 <translation id="4973970068702235170">壓縮失敗，發生未預期的錯誤：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">日文</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">德文 (比利時)</translation>
 <translation id="7339898014177206373">新視窗</translation>
 <translation id="7343393116438664539">越南文 (Telex)</translation>
+<translation id="7347346221088620549">已加密的檔案</translation>
 <translation id="7357762654218998920">不支援此檔案類型。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome OS 中開啟檔案。</translation>
 <translation id="7359359531237882347">正在複製 <ph name="NUMBER_OF_ITEMS" />個項目…</translation>
 <translation id="7375951387215729722">已經按 <ph name="COLUMN_NAME" /> 遞減排列檔案清單。</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">冰島文</translation>
 <translation id="863903787380594467">PIN 不正確。您還可嘗試 <ph name="RETRIES" /> 次。</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 連接埠</translation>
+<translation id="8656407365183407932">必須移除離線檔案</translation>
 <translation id="8656768832129462377">不檢查</translation>
 <translation id="8688591111840995413">密碼錯誤</translation>
 <translation id="8698464937041809063">Google 繪圖</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">繁體中文 (拼音)</translation>
 <translation id="8998871447376656508">您的「Google 雲端硬碟」沒有足夠空間，無法完成上載。</translation>
 <translation id="9003940392834790328">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，由管理員管理，詳情</translation>
+<translation id="9007990314804111233">登入 Microsoft 帳戶</translation>
 <translation id="9017798300203431059">俄文 (拼音)</translation>
 <translation id="9034924485347205037">Linux 檔案</translation>
 <translation id="9035012421917565900">這些項目無法移回「<ph name="DESTINATION_NAME" />」，因此無法復原此操作。</translation>

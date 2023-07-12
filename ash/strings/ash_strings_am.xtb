@@ -185,6 +185,7 @@
 <translation id="1770726142253415363">ወደ <ph name="ROW_NUMBER" /> ረድፍ፣ <ph name="COLUMN_NUMBER" /> አምድ ተንቀሳቅሷል።</translation>
 <translation id="1771761307086386028">ወደ ቀኝ ይሸብልሉ</translation>
 <translation id="1774796056689732716">ቀን መቁጠሪያ፣ <ph name="CURRENT_MONTH_YEAR" />፣ በአሁኑ ጊዜ <ph name="DATE" /> ተመርጧል።</translation>
+<translation id="1775598828170459419">ከ<ph name="NUM_TOTAL_ITEMS" /> <ph name="NUM_SHOWN_ITEMS" /> በማሳየት ላይ</translation>
 <translation id="1787955149152357925">አጥፋ</translation>
 <translation id="181103072419391116">የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ በየእርስዎ አስተዳዳሪ የሚተዳደር</translation>
 <translation id="1815245884418711390">መገናኛ ነጥብ ቀያይር። መገናኛ ነጥብ ጠፍቷል።</translation>

@@ -890,7 +890,6 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 <translation id="1768225118528727376">Otorgar el permiso de Administración de ventanas a estos sitios</translation>
 <translation id="1770071413238151235">Formato de reloj de 12 horas</translation>
 <translation id="1771024053220392089">Inhabilitar la Compatibilidad con navegadores heredados</translation>
-<translation id="1781225230395284182">Mostrar el diálogo de cancelación cuando se llama a beforeunload event.preventDefault()</translation>
 <translation id="1781356041596378058">Esta política también controla el acceso a las Opciones para programador de Android. Si habilitas esta política, los usuarios no podrán acceder a las Opciones para programador. Si estableces esta política como falsa o no la estableces, los usuarios podrán acceder a las Opciones para programador al presionar siete veces el número de compilación en la app de Configuración de Android.</translation>
 <translation id="1787790976045065845">Esta política solo tiene efecto cuando se establece la política <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> como <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> o <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />, y un usuario que se autentica mediante una tarjeta inteligente quita esa tarjeta. Luego, esta política especifica el tiempo (expresado en segundos) durante el cual se muestra una notificación con la que se informa al usuario sobre la acción inminente. Esta notificación bloquea la pantalla. La acción ocurrirá solo cuando caduque esta notificación. El usuario puede impedir que ocurra la acción reinsertando la tarjeta inteligente antes de que caduque la notificación. Si estableces esta política en cero, no se mostrará ninguna notificación y la acción ocurrirá de forma inmediata.</translation>
 <translation id="1793346220873697538">Desactiva la impresión con PIN de forma predeterminada</translation>
@@ -2020,7 +2019,6 @@ Nota: Si se omite un campo, todos los valores coincidirán con ese campo en part
 <translation id="2787774054174244402">Si estableces la política como verdadera, los usuarios no tendrán permiso de escritura en los dispositivos de almacenamiento externo.
 
       A menos que esté bloqueado el almacenamiento externo, si estableces ExternalStorageReadOnly como falsa o no la estableces, los usuarios podrán crear y modificar archivos de dispositivos de almacenamiento externo que permitan la escritura de forma física. (Para bloquear el almacenamiento externo, establece ExternalStorageDisable como verdadera).</translation>
-<translation id="2788443040242264100">No mostrar el diálogo de cancelación cuando se llama a beforeunload event.preventDefault()</translation>
 <translation id="2789742777235177478">Limita el tiempo durante el cual un usuario que se autenticó mediante GAIA sin SAML puede acceder sin conexión a través de la pantalla de bloqueo</translation>
 <translation id="2796714419743648316">Lista de límites de tiempo por app permitidos</translation>
 <translation id="2801065672151277034">Configuración de la administración de certificados</translation>
@@ -6286,7 +6284,6 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
       Nota: Si el método de entrada actual no es compatible, este cambiará al diseño de teclado del hardware (si se permite) o a la primera entrada válida de la lista. Se ignorarán los métodos no válidos o no compatibles.</translation>
 <translation id="6483115462650732746">Mostrar el menú de accesibilidad flotante en el modo kiosco</translation>
-<translation id="6485036313708130232">Controlar el comportamiento nuevo del evento beforeunload, en el que se muestra el diálogo para confirmar la cancelación, cuando se llama a preventDefault</translation>
 <translation id="6489084406497912050">Determina si los usuarios pueden agregar cuentas de Kerberos.
 
           Si inhabilitas esta política o no la estableces, los usuarios podrán agregar cuentas de Kerberos mediante la configuración de las cuentas de Kerberos en la página de configuración de Kerberos. Los usuarios tendrán control total de las cuentas que agregan y podrán modificarlas o quitarlas.
@@ -7625,13 +7622,6 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="7613115815080726221">El período sin intervención del usuario después del cual se toma una acción de inactividad (en milisegundos).</translation>
 <translation id="7614663184588396421">Lista de los esquemas de protocolo inhabilitados</translation>
 <translation id="7616631530432070402">Se habilitarán los conjuntos de algoritmos de cifrado 3DES en TLS</translation>
-<translation id="7617710923960807616">Esta política permite controlar si se muestra el diálogo de confirmación cuando una página llama a preventDefault para un evento beforeunload. Hasta ahora, <ph name="PRODUCT_NAME" /> no mostraba estos diálogos, pero se está modificando el comportamiento predeterminado. Esta política es una solución temporal para las empresas cuyos sitios web no funcionan debido al nuevo comportamiento y que necesitan tiempo para solucionar los problemas.
-
-Si habilitas esta política, se mostrará el diálogo para confirmar la cancelación cuando una página llame a preventDefault para un evento beforeunload.
-
-Si la inhabilitas, no se mostrará ningún diálogo para confirmar la cancelación cuando una página llame a preventDefault para un evento beforeunload.
-
-Si no estableces esta política, se usará el comportamiento predeterminado, de acuerdo con el plan de lanzamiento de funciones de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="761788785484453836">Solicitar el aislamiento de sitios para todos los sitios web</translation>
 <translation id="7620869951155758729">Esta política especifica la configuración que se usa para generar y verificar el código de acceso parental.
 

@@ -140,6 +140,7 @@
 <translation id="1110965959145884739">Одаберите које језике ћете инсталирати на овом уређају. Корисници могу да деле фајлове за језике да би уштедели простор на диску. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Картица у позадини користи Bluetooth</translation>
 <translation id="1112998165730922436">Пребацивање је паузирано</translation>
+<translation id="1113807501859230251">Желите да уклоните Bruschetta-у са уређаја <ph name="DEVICE_TYPE" />? Тиме ћете избрисати све апликације и податке на виртуелној машини.</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Дијамант</translation>
 <translation id="1114427165525619358">Лозинке на овом уређају и на вашем Google налогу</translation>
@@ -810,6 +811,7 @@
 <translation id="1647408325348388858">Желите да отворите и измените фајл <ph name="FILE_NAME" /> у овој веб-апликацији?</translation>
 <translation id="1648528859488547844">Користи Wi‑Fi или мобилне мреже за одређивање локације</translation>
 <translation id="164936512206786300">Опозовите упраривање Bluetooth уређаја</translation>
+<translation id="1650801028905250434">Фајлови на Мом диску ће се аутоматски синхронизовати са Chromebook-ом, па можете да им приступате без интернет везе. Ово можете да промените у сваком тренутку у Подешавањима &gt; Фајлови.</translation>
 <translation id="1651008383952180276">Двапут треба да унесете исту приступну фразу</translation>
 <translation id="1651609627703324721">ВР садржај ове картице се приказује преко хедсета</translation>
 <translation id="1652326691684645429">Омогући Дељење у близини</translation>
@@ -1552,6 +1554,7 @@
 <translation id="2263679799334060788">Повратне информације нам помажу да побољшамо Google Cast и захвални смо вам на њима. Да бисте решили проблеме са пребацивањем, посетите <ph name="BEGIN_LINK" />центар за помоћ<ph name="END_LINK" />.</translation>
 <translation id="2266957463645820432">IPP преко USB-а (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth је онемогућен</translation>
+<translation id="2268182915828370037">Желите да искључите синхронизацију фајлова?</translation>
 <translation id="2269895253281481171">Добићете обавештење ако икада буде угрожена</translation>
 <translation id="2270450558902169558">Размена података са било којим уређајем на домену <ph name="DOMAIN" /></translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />Инсталација <ph name="BEGIN_BOLD" />ће обрисати комплетне податке са хард-диска<ph name="END_BOLD" />. Проверите да ли сте направили резервне копије података.<ph name="END_PARAGRAPH1" />
@@ -2103,6 +2106,7 @@
 <translation id="2714393097308983682">Google Play продавница</translation>
 <translation id="2715640894224696481">Захтев за безбедносни кључ</translation>
 <translation id="2715751256863167692">Овом надоградњом Chromebook се ресетује и уклањају се актуелни подаци корисника.</translation>
+<translation id="2715934493766003251">Меморијски простор не може да се очисти док је синхронизација фајлова укључена</translation>
 <translation id="2716986496990888774">Овим подешавањем управља родитељ.</translation>
 <translation id="271749239614426244">Занемарите мање покрете курсора</translation>
 <translation id="2718395828230677721">Ноћно светло</translation>
@@ -2250,6 +2254,7 @@
 <translation id="2817435998497102771">Подеси позадину и стил</translation>
 <translation id="2818476747334107629">Детаљи о штампачу</translation>
 <translation id="2819167288942847344">Користите унапред одређена подешавања за телефон, таблет или прозоре за које може да се мења величина да бисте спречили да апликација не ради правилно</translation>
+<translation id="2819519502129272135">Синхронизација фајлова је искључена</translation>
 <translation id="2820957248982571256">Скенира се...</translation>
 <translation id="2822634587701817431">Скупи/прошири</translation>
 <translation id="2822910719211888134">Грешка при прављењу резервне копије Linux-а</translation>
@@ -2718,6 +2723,7 @@
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – грешка на мрежи</translation>
 <translation id="3248902735035392926">Безбедност је важна. Одвојите мало времена и <ph name="BEGIN_LINK" />проверите додатке<ph name="END_LINK" /></translation>
 <translation id="3249323165366527554">Региструјте се и пријављујте брже када се лозинка аутоматски сачува у алатки <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
+<translation id="3251119461199395237">Синхронизација фајлова</translation>
 <translation id="3251714896659475029">Дозволите да <ph name="SUPERVISED_USER_NAME" /> приступа Google помоћнику помоћу фразе „Хеј Google“</translation>
 <translation id="3251759466064201842">&lt;Није део сертификата&gt;</translation>
 <translation id="325238099842880997">Подесите основна правила у дигиталном свету да бисте помогли деци да се играју, истражују и обављају школске задатке код куће</translation>
@@ -3095,6 +3101,7 @@
 <translation id="3567284462585300767">Да бисте примали и прихватали фајлове од људи у близини, постаните видљиви</translation>
 <translation id="356738834800832239">Лозинка је сачувана</translation>
 <translation id="3569382839528428029">Да ли желите да <ph name="APP_NAME" /> дели екран?</translation>
+<translation id="3569614820047645079">Фајлови на Мом диску се аутоматски синхронизују са Chromebook-ом, па можете да им приступате без интернет везе.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> може да прегледа датотеке и директоријуме у наставку</translation>
 <translation id="3571734092741541777">Подеси</translation>
 <translation id="3575121482199441727">Дозволи за овај сајт</translation>
@@ -3527,6 +3534,7 @@
 <translation id="3916233823027929090">Безбедносне провере су готове</translation>
 <translation id="3916445069167113093">Овај тип датотеке може да нашкоди рачунару. Да ли ипак желите да задржите датотеку <ph name="FILE_NAME" />?</translation>
 <translation id="3917184139185490151">Рачунар садржи безбедносни модул, који се користи за примену многих изузетно важних безбедносних функција у Chrome ОС-у. Посетите центар за помоћ за Chromebook да бисте сазнали више: https://support.google.com/chromebook/?p=sm</translation>
+<translation id="3917644013202553949">Нема довољно меморијског простора за синхронизацију фајлова. Ослободите простор.</translation>
 <translation id="3918972485393593704">Шаљи детаље Google-у</translation>
 <translation id="3919145445993746351">Да би вам додаци били доступни на свим рачунарима, укључите синхронизацију</translation>
 <translation id="3919229493046408863">Искључите обавештења када су уређаји у близини</translation>
@@ -3838,6 +3846,7 @@
 <translation id="4184803915913850597">HID уређај (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> претрага</translation>
 <translation id="4187424053537113647">Подешава се <ph name="APP_NAME" />…</translation>
+<translation id="4190492351494485814">За почетно подешавање треба да се повежете на интернет да би фајлови могли да се синхронизују са Chromebook-ом</translation>
 <translation id="4190828427319282529">Истицање фокуса тастатуре</translation>
 <translation id="4193251682249731404">Поуздани ауторитет за издавање сертификата</translation>
 <translation id="4193575319002689239">Прикажи картице</translation>
@@ -4030,6 +4039,7 @@
 <translation id="4361745360460842907">Отвори као картицу</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> је подразумевани налог за ваш <ph name="DEVICE_TYPE" /></translation>
 <translation id="4363215264289239958">Апликације Bruschetta</translation>
+<translation id="4363262124589131906">Нови фајлови у Мом диску ће аутоматски престати да се синхронизују са овим Chromebook-ом</translation>
 <translation id="4363771538994847871">Нема пронађених одредишта за пребацивање. Да ли вам треба помоћ?</translation>
 <translation id="4364327530094270451">Диња</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> дели прозор.</translation>
@@ -4216,6 +4226,7 @@
 <translation id="4515872537870654449">Обратите се Dell-у за услугу. Базна станица ће се искључити ако вентилатор не ради.</translation>
 <translation id="4518840066030486079">Режим стила тастера Shift</translation>
 <translation id="4519331665958994620">Сајтови могу да траже да користе камеру</translation>
+<translation id="4519605771716872386">Синхронизација фајлова је укључена</translation>
 <translation id="4519935350946509010">Грешка при повезивању.</translation>
 <translation id="4520385623207007473">Колачићи у употреби</translation>
 <translation id="452039078290142656">непознати уређаји продавца <ph name="VENDOR_NAME" /></translation>
@@ -4453,6 +4464,7 @@
 <translation id="4715631922189108923">Измени корисничко име</translation>
 <translation id="47158868804223727">Кликните на назив групе да бисте је проширили или скупили</translation>
 <translation id="4716483597559580346">Powerwash ради веће безбедности</translation>
+<translation id="4716715661140829720">Нема довољно меморијског простора</translation>
 <translation id="471759229191973607">Промени тему</translation>
 <translation id="4718046540206070045">Више од прегледача</translation>
 <translation id="4722735765955348426">Лозинка за <ph name="USERNAME" /></translation>
@@ -4505,6 +4517,7 @@
 <translation id="4763757134413542119"><ph name="USER_EMAIL" /> није важећи Google for Education налог. Обратите се администратору. Ако сте администратор, можете да подесите организацију тако што ћете посетити: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Овај уређај ће бити сачуван 1 месец и можете да се повежете без кода следећи пут. То је подесио администратор.}one{Овај уређај ће бити сачуван {MONTHS} месец и можете да се повежете без кода следећи пут. То је подесио администратор.}few{Овај уређај ће бити сачуван {MONTHS} месеца и можете да се повежете без кода следећи пут. То је подесио администратор.}other{Овај уређај ће бити сачуван {MONTHS} месеци и можете да се повежете без кода следећи пут. То је подесио администратор.}}</translation>
 <translation id="4765582662863429759">Дозвољава да Android Messages преноси SMS-ове са телефона на Chromebook</translation>
+<translation id="476563889641554689">Изаберите област за претрагу помоћу Објектива</translation>
 <translation id="4766598565665644999">Сви додаци могу да читају и мењају <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Сазнајте више о онемогућеним додацима.</translation>
 <translation id="4768332406694066911">Имате сертификате следећих организација који вас идентификују</translation>
@@ -4563,6 +4576,7 @@
 <translation id="481574578487123132">Повезани уређаји</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, детаљи</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 обележивач је избрисан}one{{COUNT} обележивач је избрисан}few{{COUNT} обележивача су избрисана}other{{COUNT} обележивача је избрисано}}</translation>
+<translation id="481689174647911539">Овај фајл је можда вирус или малвер.<ph name="LINE_BREAK" />Можете да га пошаљете Google безбедном прегледању да бисте проверили да ли је безбедан. Скенирање обично траје неколико секунди.</translation>
 <translation id="4816900689218414104">Направите приступни кôд на телефону или таблету</translation>
 <translation id="4819323978093861656">{0,plural, =0{Затвара се одмах.}=1{Затвара се за 1 секунду}one{Затвара се за # секунду}few{Затвара се за # секунде}other{Затвара се за # секунди}}</translation>
 <translation id="4819607494758673676">Обавештења Google помоћника</translation>
@@ -4717,7 +4731,6 @@
 <translation id="4940364377601827259">Доступних штампача за чување: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="4940448324259979830">Овим налогом управља <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Резервиши величину диска</translation>
-<translation id="4941074198479265146">Сајтови се обично повезују са MIDI уређајима за потребе функција које служе за прављење и измену музичких фајлова</translation>
 <translation id="4941243352516004658">Артикли у корпи (<ph name="PRODUCT_ITEM_COUNT" />) уз <ph name="DISCOUNT_TEXT" /> код продавца <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прегледани су <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Користи овај захтев за уређај при регистрацији уређаја за управљање предузећем:</translation>
 <translation id="4941627891654116707">Величина фонта</translation>
@@ -4982,12 +4995,14 @@
 <translation id="5185386675596372454">Најновија верзија додатка „<ph name="EXTENSION_NAME" />“ је онемогућена јер захтева још дозвола.</translation>
 <translation id="5185500136143151980">Нема интернета</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5190577235024772869">Користи се <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Активирај порт</translation>
 <translation id="5190959794678983197">Нема микрофона</translation>
 <translation id="5191094172448199359">Унети PIN-ови се не подударају</translation>
 <translation id="5191251636205085390">Сазнајте више о новим технологијама чији је циљ да замене колачиће трећих страна и управљајте њима</translation>
 <translation id="519185197579575131">Користи QT</translation>
 <translation id="5192062846343383368">Отворите апликацију Family Link да бисте видели подешавања надзора</translation>
+<translation id="5193978546360574373">Ово ће уклонити приступ Google диску на овом Chromebook-у, укључујући приступ свим фајловима који су постали доступни офлајн</translation>
 <translation id="5193988420012215838">Копирано је у привремену меморију</translation>
 <translation id="5194256020863090856">Ово утиче само на прозоре без архивирања</translation>
 <translation id="5195074424945754995">URL-ови који се подударају са овим правилима неће покренути промену прегледача и могу да се отварају или у прегледачу <ph name="BROWSER_NAME" /> или у прегледачу <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
@@ -5070,6 +5085,7 @@
 <translation id="526622169288322445">Још радњи за <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5268373933383932086">Ваша страница, ваш начин</translation>
 <translation id="5269977353971873915">Штампање није успело</translation>
+<translation id="5271578170655641944">Желите да уклоните приступ Google диску?</translation>
 <translation id="5273806377963980154">Измените URL сајта</translation>
 <translation id="5273966423195882879">Боја је заснована на теми</translation>
 <translation id="5275084684151588738">Кориснички речници</translation>
@@ -6332,6 +6348,7 @@
 <translation id="6345878117466430440">Означи као прочитано</translation>
 <translation id="6346952829206698721">Налепи из меморије</translation>
 <translation id="6347010704471250799">Прикажи обавештење</translation>
+<translation id="6348805481186204412">Офлајн меморијски простор</translation>
 <translation id="634887995541211148">Покрените виртуелну машину Bruschetta на уређају.</translation>
 <translation id="6349101878882523185">Инсталирајте <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">Елиптична крива SECG secp256r1 (такође позната као ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -6516,6 +6533,7 @@
 <translation id="6513247462497316522">Google Chrome ће користити мобилне податке ако нисте повезани са другом мрежом.</translation>
 <translation id="6514010653036109809">Доступан уређај:</translation>
 <translation id="6514565641373682518">Ова страница је онемогућила курсор.</translation>
+<translation id="6517420300299531857">Фајлови на Мом диску се аутоматски синхронизују са Chromebook-ом, па можете да им приступате без интернет везе. То ће заузети око <ph name="REQUIRED_SPACE" />. Тренутно вам је доступно <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Уређај можда више неће радити како треба, а ви ћете можда имати проблема са безбедношћу и перформансама. Искључивање ажурирања може да утиче и на ваше право на правне тужбе ако наиђете на проблеме.</translation>
 <translation id="6518014396551869914">Коп&amp;ирај слику</translation>
 <translation id="6518133107902771759">Верификуј</translation>
@@ -6779,6 +6797,7 @@
 <translation id="6736243959894955139">Адреса</translation>
 <translation id="6737393581255281855">Желите да обришете приказане податке?</translation>
 <translation id="6737663862851963468">Уклоните Kerberos тикет</translation>
+<translation id="6737931010859480781">Ова апликација је унапред инсталирана на уређају</translation>
 <translation id="6738180164164974883">Дозволи подешавање колачића треће стране</translation>
 <translation id="6738430949033571771">Верификује се налог…</translation>
 <translation id="6739923123728562974">Прикажи пречицу на радној површини</translation>
@@ -7254,6 +7273,7 @@
 <translation id="7124712201233930202">Смернице организације нису испоштоване</translation>
 <translation id="7125029162161377569">Уз пробе Заштићеног окружења приватности сајтови могу да пруже исти доживљај прегледања користећи мање информација. То значи више приватности за вас и мање праћења на више сајтова. Додаћемо нове пробе када постану доступне за тестирање.</translation>
 <translation id="7125148293026877011">Избришите Crostini</translation>
+<translation id="7125932261198019860">Уверите се да је штампач повезан на исту WiFi мрежу као и Chromebook или користите USB кабл. <ph name="LINK_BEGIN" />Сазнајте више о компатибилности<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Историја преузимања</translation>
 <translation id="7128151990937044829">Приказуј индикатор на траци за адресу када су обавештења блокирана</translation>
 <translation id="7131040479572660648">Читање ваших података на <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> и <ph name="WEBSITE_3" /></translation>
@@ -7447,6 +7467,7 @@
 <translation id="7307129035224081534">Паузирано</translation>
 <translation id="7308643132139167865">Језици веб-сајтова</translation>
 <translation id="7310598146671372464">Пријављивање није успело. Сервер не подржава наведене Kerberos типове шифровања. Контактирајте администратора.</translation>
+<translation id="7311005168897771689">Лако приступајте фајловима на Google диску када сте офлајн</translation>
 <translation id="7311244614769792472">Није пронађен ниједан резултат</translation>
 <translation id="7312210124139670355">Администратор ресетује eSIM. То може да потраје неколико минута.</translation>
 <translation id="7317831949569936035">Регистрација за школу</translation>
@@ -8473,6 +8494,7 @@
 <translation id="8138217203226449454">Да ли сте намерно променили добављача претраге?</translation>
 <translation id="8138997515734480534">Статус виртуелне машине <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Фајлови на Google диску</translation>
+<translation id="8139643636835015859">Овим ћете уклонити <ph name="OFFLINE_STORAGE_SIZE" /> простора који користе офлајн фајлови. Неки фајлови ће и даље бити доступни офлајн. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141418916163800697">Можете да подесите још функција у подешавањима Phone Hub-а</translation>
 <translation id="8141584439523427891">Сада се отвара у алтернативном прегледачу</translation>
@@ -8564,6 +8586,7 @@
 <translation id="821119981794423735">Да бисте увезли лозинке у Google менаџер лозинки за <ph name="USER_EMAIL" />, изаберите CSV фајл</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Преузимање је у току}one{Преузимања су у току}few{Преузимања су у току}other{Преузимања су у току}}</translation>
 <translation id="8212601853154459483">Овим профилом управља <ph name="PROFILE_MANAGER" /> и захтева да направите посебан профил за налог <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="8212792694174629011">Није пронађен ниједан профил. Пробајте да скенирате QR кôд помоћу камере уређаја или унесите активациони кôд који сте добили од мобилног оператера.</translation>
 <translation id="8214489666383623925">Отвори датотеку...</translation>
 <translation id="8215129063232901118">Приступајте могућностима телефона са уређаја <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Показивач за истицање</translation>
@@ -9107,6 +9130,7 @@
 <translation id="8680251145628383637">Пријавите се да би вам обележивачи, историја, лозинке и друга подешавања били доступни на свим уређајима. Аутоматски ћете бити пријављени и на Google услуге.</translation>
 <translation id="8681886425883659911">Огласи су блокирани на сајтовима за које је познато да приказују огласе који ометају активности или обмањујуће огласе</translation>
 <translation id="8682730193597992579">Штампач <ph name="PRINTER_NAME" /> је повезан и спреман</translation>
+<translation id="8686142379631285985">Пријављени сте као <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Откажите фајл <ph name="FILE_NAME" /></translation>
 <translation id="8688672835843460752">Доступно</translation>
 <translation id="8689998525144040851">100</translation>

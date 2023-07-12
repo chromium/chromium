@@ -42,7 +42,6 @@
 <translation id="1207113853726624428">Шинэ хайлт</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Одоо нуух</translation>
-<translation id="121048537318175637">Хаяг оруулах хэсэгт “миний түүхийг арилгах” эсвэл “нууц үгнүүдийг засах” зэрэг ажлууд оруулна уу.</translation>
 <translation id="1219674500290482172">Интернэтэд холбогдох боломжгүй байна.</translation>
 <translation id="1226238226094914652">Таны бүх төхөөрөмж дээрх нууц үгнүүд</translation>
 <translation id="122699739164161391">Бүх табыг хаах</translation>
@@ -92,7 +91,6 @@
 <translation id="1492417797159476138">Та энэ сайтад аль хэдийн энэ хэрэглэгчийн нэрийг хадгалсан байна</translation>
 <translation id="1497590942294823549">Цэс → Нууц үгний менежер</translation>
 <translation id="1498283581832036924">Таны <ph name="WEBSITE" />-н бүртгэлийг устгахгүй.</translation>
-<translation id="1501820324067650154">Маршрутын сонголтыг харах бол “Чиглэл авах”-ыг товшино уу</translation>
 <translation id="1506063256525392513">Энэ нь танд зураг авах болон байршуулах мөн QR кодыг скан хийх боломжийг олгоно</translation>
 <translation id="1509486075633541495">Веб сайтад нэвтрэх</translation>
 <translation id="1509960214886564027">Олон сайтын онцлогууд ажиллахгүй байж болзошгүй</translation>
@@ -194,7 +192,6 @@
 <translation id="2155145621546387786">Chrome-г хуваалцах</translation>
 <translation id="2175927920773552910">QR код</translation>
 <translation id="2178545675770638239">Нууц үг сонгоно уу</translation>
-<translation id="2215566625617766058">Хэрэгтэй тохиргоо болон үйлдлүүдийн шуурхай хандалтыг идэвхжүүлдэг Omnibox-н товчлолууд.</translation>
 <translation id="2218443599109088993">Жижигрүүлэх</translation>
 <translation id="2230173723195178503">Веб хуудсыг ачаалласан</translation>
 <translation id="2239626343334228536">Хөтчийн өгөгдлийг устгаж байна...</translation>
@@ -294,7 +291,6 @@
 <translation id="2786701870377699570">Синк хийсэн төхөөрөмжүүд дээрх табуудаас хайх</translation>
 <translation id="2797029671965852011">Түүх харуулах</translation>
 <translation id="2800683595868705743">Цонх шилжигчээс гарах</translation>
-<translation id="2803192464408568808">Ажлаа дуусгана уу</translation>
 <translation id="2815198996063984598">2. Өгөгдмөл хөтчийн аппыг товшино уу</translation>
 <translation id="2818821771744632548">Таны iPhone-г шинэчлэх явцад таныг <ph name="USER_NAME" /> бүртгэлээс тань гаргасан. Буцаж нэвтрэхийн тулд доорх "Үргэлжлүүлэх"-ийг товшино уу.</translation>
 <translation id="2822917246944009066">Табыг бэхэлсэн</translation>
@@ -386,9 +382,7 @@
 <translation id="3311748811247479259">Унтраалттай байна</translation>
 <translation id="3324193307694657476">Хаяг 2</translation>
 <translation id="3328801116991980348">Сайтын мэдээлэл</translation>
-<translation id="3340938510625667914">Chrome-н үйлдлүүд</translation>
 <translation id="3344485292736684439">{count,plural, =1{Хавчуургыг таны {email} бүртгэлийн "{title}"-д хадгалсан}other{Хавчуургуудыг таны {email} бүртгэлийн "{title}"-д хадгалсан}}</translation>
-<translation id="3358769087921185505">Огноог удаан дарна уу</translation>
 <translation id="3371831930909698441">Орчуулах боломжтой байна. Дэлгэцийн доод хэсгийн ойролцоо сонголт хийх боломжтой.</translation>
 <translation id="3377063233124932127">Одоо таны хадгалсан хавчуурга, нууц үг болон бусад зүйл дээд талд байна.</translation>
 <translation id="3393920035788932672">Мэдээллийн цонх харуулахыг зөвшөөрсөн</translation>
@@ -436,7 +430,6 @@
 <translation id="3609785682760573515">Sync хийж байна ...</translation>
 <translation id="3631443864840848029">Та энэ сайтын одоогийн нууц үгийг хадгалж байгаа эсэхээ шалгана уу.</translation>
 <translation id="3638472932233958418">Веб хуудсуудыг урьдчилан ачаалах</translation>
-<translation id="3656645960301737801">Үйл явдлыг дуусгаад хадгална уу</translation>
 <translation id="3661160521073045932">Тохируулгын профайл боломжтой</translation>
 <translation id="3670030362669914947">Тоо</translation>
 <translation id="368329460027487650">Гарсан. Нэвтрэх сонголтуудыг нээнэ.</translation>
@@ -525,6 +518,7 @@
 <translation id="4272631900155121838">QR кодыг скан хийхийн тулд камерыг тохиргоо хэсэгт идэвхжүүлнэ үү</translation>
 <translation id="4277990410970811858">Аюулгүй үзэх</translation>
 <translation id="4281844954008187215">Үйлчилгээний нөхцөл</translation>
+<translation id="4286718549648564014">Хаягийг таны <ph name="USER_EMAIL" /> бүртгэл рүү зөөсөн</translation>
 <translation id="4293080268407233932">Хайх</translation>
 <translation id="4302248187517737842">Ямар ч хэрэглэгчийн нэр байхгүй ••••••••</translation>
 <translation id="4304713468139749426">Нууц үгний менежер</translation>
@@ -692,7 +686,6 @@
 <translation id="536067926684072644">Хавчуурга харуулах</translation>
 <translation id="5360976571138293719">Нууцлал, аюулгүй байдал болон өгөгдлийн цуглуулгатай холбоотой бусад тохиргоог <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүдээс<ph name="END_LINK" /> харна уу.</translation>
 <translation id="5386314158584363703">Та дагадаг сайтуудаа эндээс олно</translation>
-<translation id="538635840076594180">“Нууцлал болон аюулгүй байдал”-ыг товшино уу.</translation>
 <translation id="5388358297987318779">Зургийг нээх</translation>
 <translation id="5407969256130905701">Өөрчлөлтийг болих</translation>
 <translation id="5414763847370083940">Аль нэг сайтад үнэ буурсан тохиолдолд та сэрэмжлүүлэг авна.</translation>
@@ -1016,7 +1009,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7189598951263744875">Хуваалцах...</translation>
 <translation id="7192050974311852563">Лог хийж эхлэх</translation>
 <translation id="7203585745079012652">Хариултыг буцааж хэлэх</translation>
-<translation id="7203792184900422187">Нууцлал болон аюулгүй байдлыг товшино уу</translation>
 <translation id="7207023858769244910">Таны сонирхолд тулгуурласан контент авахын тулд синк хийнэ үү.</translation>
 <translation id="721597782417389033">Картын буруу хоч</translation>
 <translation id="7221173315674413369">"Шинэ юм юу байна" хэсэгт шинэ онцлогууд болон зөвлөгөөнүүдийг судлаарай</translation>
@@ -1184,6 +1176,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8264966119170358612">Таны хадгалсан зарим нууц үг Google-н бус өгөгдлийн зөрчилд өртсөн байна. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Таны iPad-г шинэчлэх явцад таныг <ph name="USER_NAME" /> бүртгэлээс тань гаргасан. Буцаж нэвтрэхийн тулд доорх "Үргэлжлүүлэх"-ийг товшино уу.</translation>
 <translation id="8271720166617117963">Зөвшөөрөөд, нэвтрэх</translation>
+<translation id="8273982424131314219">Та мэдээллийг <ph name="URL" />-д бөглөнө</translation>
 <translation id="8278938988428169257">Үг эсвэл өгүүлбэр оруулна уу</translation>
 <translation id="8281781826761538115">Өгөгдмөл - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Алгасах</translation>
@@ -1229,8 +1222,8 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8534481786647257214">Google+ пост дууссан.</translation>
 <translation id="8548878600947630424">Хуудаснаас олох...</translation>
 <translation id="8556590991644167667">{count,plural, =1{Та {count} сануулгыг үл хэрэгссэн}other{Та {count} сануулгыг үл хэрэгссэн}}</translation>
-<translation id="8557690929085431655">Та Нууцлалын горимд бусад аппаас ирж буй URL-уудыг нээхээр сонгож болно.</translation>
 <translation id="8558480467877843976">Та одоо мессеж, документ болон бусад апп дахь холбоосыг үзэх эсвэл товшихын тулд Chrome-г хүссэн үедээ ашиглах боломжтой.</translation>
+<translation id="8580411965900177618">Үгүй, баярлалаа</translation>
 <translation id="8588404856427128947">Унтраах</translation>
 <translation id="8591976964826315682">Нууцлалтай горимд гуравдагч талын күүкиг блоклох</translation>
 <translation id="8605219856220328675">Цонхыг хаах.</translation>
@@ -1261,13 +1254,13 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8775144690796719618">Хүчингүй URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{Табыг шалгах...}other{Бүх табыг шалгах...}}</translation>
 <translation id="8787968206789828143">Веб дээр хайх</translation>
-<translation id="8790746396522455357">Нууцлалтай табд холбооснуудыг нээхийг асаана уу/унтраана уу</translation>
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8803639129939845298">Аюулгүй</translation>
 <translation id="8806823403540278281">Танай байгууллага танаас нууцлалтайгаар үзэхийг шаардаж байна. Нууцлалын горимд табуудыг хадгалдаггүй.
 <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Сайтын өгөгдмөл харагдах байдал</translation>
 <translation id="8820817407110198400">Хавчуургууд</translation>
+<translation id="8825562130641217944">Хавчуурга, нууц үг болон бусад зүйлээ авна уу.</translation>
 <translation id="882557203579758546">Хуудаснаас олох…</translation>
 <translation id="8840513115188359703">Таныг Google Бүртгэлээс гаргахгүй.</translation>
 <translation id="8843129975935593190">Танай байгууллага таны юу синк хийж болохыг хязгаарлана.</translation>
@@ -1285,10 +1278,8 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="891282356902782456">Энэ нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Үүнийг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="EMAIL" /> Google Бүртгэлдээ хадгална уу.</translation>
 <translation id="891658175948553296">Сайт дээрх текстийг тодруулна уу</translation>
 <translation id="8917490105272468696">Тийм, би зөвшөөрч байна</translation>
-<translation id="8926984231484284953">Орон нутгийн мэдээлэл болон чиглэл авахад веб хуудасны хаягуудыг ашиглана уу.</translation>
 <translation id="8928133177108699615">Компьютер</translation>
 <translation id="8934982071228289624">Энэ нууц үгийг бүртгэлдээ хадгалахын тулд та эхлээд төхөөрөмждөө нууц код тохируулах ёстой.</translation>
-<translation id="8940809892068499052">Бусад аппаас нууцлалтай табууд нээх</translation>
 <translation id="894191600409472540">Сайн нууц үгнүүд үүсгэнэ үү</translation>
 <translation id="8952559610785099500">Нууц үг нэмэх</translation>
 <translation id="8953046091948372197">Та нууц үгнүүдээ эндээс олно</translation>
@@ -1338,7 +1329,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Табуудаас хайх…</translation>
 <translation id="9223358826628549784">Алдаа ослын тайланг илгээсэн байна.</translation>
-<translation id="937964924361024518">Google эсвэл Apple Календарь сонгоно уу</translation>
 <translation id="941747855997058526">Нууц үг сонгох...</translation>
 <translation id="948048872540558976">Шинэ таб үүсгэх</translation>
 <translation id="952704832371081537">Цуцлах</translation>

@@ -185,6 +185,7 @@
 <translation id="1770726142253415363">ଧାଡ଼ି <ph name="ROW_NUMBER" />, ସ୍ତମ୍ଭ <ph name="COLUMN_NUMBER" />କୁ ମୁଭ କରାଯାଇଛି।</translation>
 <translation id="1771761307086386028">ଡାହାଣକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="1774796056689732716">କ୍ୟାଲେଣ୍ଡର, <ph name="CURRENT_MONTH_YEAR" />, ବର୍ତ୍ତମାନ <ph name="DATE" />କୁ ଚୟନ କରାଯାଇଛି।</translation>
+<translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />ଟିରୁ <ph name="NUM_SHOWN_ITEMS" />ଟି ଦେଖାଉଛି</translation>
 <translation id="1787955149152357925">ବନ୍ଦ ଅଛି</translation>
 <translation id="181103072419391116">ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="1815245884418711390">ହଟସ୍ପଟକୁ ଟୋଗଲ କରନ୍ତୁ। ହଟସ୍ପଟ ବନ୍ଦ ଅଛି।</translation>
@@ -1491,7 +1492,7 @@
 <translation id="7579778809502851308">ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍</translation>
 <translation id="7593891976182323525">Search କିମ୍ବା Shift</translation>
 <translation id="7600875258240007829">ସମସ୍ତ ବିଜ୍ଞପ୍ତି ଦେଖନ୍ତୁ</translation>
-<translation id="7601417191446344542">'ନଜକୁ ମ୍ୟୁଟ କରନ୍ତୁ'କୁ ଚାଲୁ କରିବେ?</translation>
+<translation id="7601417191446344542">ମ୍ୟୁଟ ନଜକୁ ଚାଲୁ କରିବେ?</translation>
 <translation id="7607002721634913082">ଅଚଳିତ</translation>
 <translation id="7609951632080598826">କ୍ୟାଲେଣ୍ଡର ଭ୍ୟୁ, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">କ୍ୟାମେରା ପୁଣି କନେକ୍ଟ ହୋଇଛି।</translation>

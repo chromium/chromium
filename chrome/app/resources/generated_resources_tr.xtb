@@ -812,6 +812,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1647408325348388858"><ph name="FILE_NAME" /> dosyasını bu web uygulamasında açıp düzenlemek istiyor musunuz?</translation>
 <translation id="1648528859488547844">Konum için kablosuz veya mobil ağlar kullanılır</translation>
 <translation id="164936512206786300">Bluetooth cihazı ile eşlemeyi kaldır</translation>
+<translation id="1650801028905250434">Drive'ım bölümündeki dosyalarınız Chromebook'unuzla otomatik olarak senkronize edildiği için bu dosyalara internet bağlantısı olmadan erişebilirsiniz. Bu tercihinizi istediğiniz zaman Ayarlar &gt; Dosyalar'dan değiştirebilirsiniz.</translation>
 <translation id="1651008383952180276">Aynı parolayı iki kez girmelisiniz</translation>
 <translation id="1651609627703324721">Bu sekme bir başlığa VR içeriği sunuyor</translation>
 <translation id="1652326691684645429">Yakındakilerle Paylaş'ı etkinleştir</translation>
@@ -4224,6 +4225,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4515872537870654449">Servis için Dell ile iletişime geçin. Fan çalışmıyorsa yuva kapanır.</translation>
 <translation id="4518840066030486079">Üst Karakter Tuşu Mod Stili</translation>
 <translation id="4519331665958994620">Siteler kameranızı kullanmak isteyebilir</translation>
+<translation id="4519605771716872386">Dosya senkronizasyonu açık</translation>
 <translation id="4519935350946509010">Bağlantı hatası.</translation>
 <translation id="4520385623207007473">Kullanımdaki çerezler</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> tedarikçisinin bilinmeyen cihazları</translation>
@@ -4728,7 +4730,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4940364377601827259">Kaydedilebilecek <ph name="PRINTER_COUNT" /> yazıcı var.</translation>
 <translation id="4940448324259979830">Bu hesap <ph name="PROFILE_NAME" /> tarafından yönetilmektedir</translation>
 <translation id="4940845626435830013">Disk boyutu ayır</translation>
-<translation id="4941074198479265146">Müzik üretme ve düzenleme özelliklerinin kullanılması için siteler genellikle MIDI cihazlarına bağlanır</translation>
 <translation id="4941243352516004658">Alışveriş sepetinizdeki <ph name="PRODUCT_ITEM_COUNT" /> ürün için <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) adlı satıcıda <ph name="DISCOUNT_TEXT" /> mevcut. Görüntüleme zamanı: <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Cihazın kurumsal yönetim için kaydını yaparken şu cihaz talebini kullan:</translation>
 <translation id="4941627891654116707">Yazı tipi boyutu</translation>
@@ -7268,6 +7269,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7124712201233930202">Kuruluşunuzun politikalarına uyulmadı.</translation>
 <translation id="7125029162161377569">Siteler, Özel Korumalı Alan denemeleriyle daha az kişisel bilgi kullanarak aynı tarama deneyimini sunabilir. Bu da gizliliğinizin artması ve siteler arası izlemenin azalması anlamına gelir. Test etmeye hazır hale geldikçe yeni denemeler eklemeye devam edeceğiz.</translation>
 <translation id="7125148293026877011">Crostini'yi sil</translation>
+<translation id="7125932261198019860">Yazıcınızın Chromebook'unuzla aynı kablosuz ağa bağlı olduğundan emin olun veya USB kablosu kullanın. <ph name="LINK_BEGIN" />Uyumluluk hakkında daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
 <translation id="7127980134843952133">İndirme geçmişi</translation>
 <translation id="7128151990937044829">Bildirimler engellendiğinde adres çubuğunda bir gösterge göster</translation>
 <translation id="7131040479572660648"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ve <ph name="WEBSITE_3" /> sitelerindeki verilerinize erişme</translation>
@@ -7461,6 +7463,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7307129035224081534">Duraklatıldı</translation>
 <translation id="7308643132139167865">Web sitesi dilleri</translation>
 <translation id="7310598146671372464">Giriş yapılamadı. Sunucu belirtilen Kerberos şifreleme türlerini desteklemiyor. Lütfen yöneticinizle iletişim kurun.</translation>
+<translation id="7311005168897771689">İnternete bağlı değilken Google Drive dosyalarınıza kolayca erişin</translation>
 <translation id="7311244614769792472">Sonuç bulunamadı</translation>
 <translation id="7312210124139670355">Yöneticiniz eSIM'inizi sıfırlıyor. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="7317831949569936035">Okula kayıt</translation>

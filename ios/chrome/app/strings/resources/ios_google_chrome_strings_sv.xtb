@@ -35,7 +35,6 @@
 <translation id="2695886661449553974">Chrome kunde inte söka efter uppdateringar. Försök igen senare.</translation>
 <translation id="2732745070297234559">Chrome kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
 <translation id="2736805085127235148">Chrome-aviseringar är i nuläget inaktiverade i enhetsinställningarna.</translation>
-<translation id="2754286486056173475">Skapa kalenderhändelser i Chrome</translation>
 <translation id="2767464022270041271">Inga sparade lösenord. Google Lösenordshantering kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="2840432500933227975">Öppna Chrome-inställningarna i iOS, tryck på Standardwebbläsarapp och välj Chrome.</translation>
 <translation id="2869959624320573933">Logga in i Chrome</translation>
@@ -51,7 +50,6 @@
 <translation id="3522659714780527202">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>
 <translation id="3533694711092285624">Det finns inga sparade lösenord. Chrome kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="3594076341410558780">Dölj Få ut mesta möjliga av Chrome</translation>
-<translation id="3611867725106943284">Tryck på View with Google Maps on Chrome (visa med Google Maps i Chrome)</translation>
 <translation id="3655656110921623717">Detta betyder att mobilversionen av webbplatsen begärs varje gång i Chrome.</translation>
 <translation id="3720541637541300822">Lås inkognitoflikar när du stänger Chrome</translation>
 <translation id="3827545470516145620">Du har standardsäkerhetsskydd på den här enheten</translation>
@@ -104,7 +102,6 @@
 <translation id="6676840375528380067">Vill du rensa din data i Chrome från den här enheten?</translation>
 <translation id="6709398533399187136">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas av Google Lösenordshantering att byta lösenord nu.</translation>
 <translation id="6822673484890854830">Chrome kunde inte kontrollera alla lösenord. Försök igen senare.</translation>
-<translation id="6896070677477855330">Aktivera Lås inkognitoflikar när du stänger Chrome.</translation>
 <translation id="6964931465519938134">Nu kan du använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="6975725306479268850">Välj Chrome för Autofyll</translation>
 <translation id="7059914902409643750">Anpassa Chrome</translation>
@@ -147,7 +144,6 @@
 <translation id="8765470054473112089">När du skriver i adressfältet eller sökrutan skickar Chrome det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="8772179140489533211">Visar meddelanden om att logga in i Chrome.</translation>
 <translation id="8788269841521769222">Du behöver inte komma ihåg det här lösenordet. Det sparas med Google Lösenordshantering för <ph name="EMAIL" /></translation>
-<translation id="880967149107462122">Öppna inställningarna för Chrome</translation>
 <translation id="8857676124663337448">Google Lösenordshantering kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
 <translation id="8897749957032330183">Lösenorden sparas med Google Lösenordshantering på den här enheten.</translation>
 <translation id="8969290730818637510">När detta är aktiverat:

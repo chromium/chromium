@@ -4733,7 +4733,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4940364377601827259">Saqlash uchun <ph name="PRINTER_COUNT" /> ta printer topildi.</translation>
 <translation id="4940448324259979830">Bu hisob <ph name="PROFILE_NAME" /> domenida boshqariladi</translation>
 <translation id="4940845626435830013">Diskda joy zaxiralash</translation>
-<translation id="4941074198479265146">Saytlar odatda musiqa yaratish va tahrirlash kabi maqsadlarda MIDI qurilmalarga ulanadi</translation>
 <translation id="4941243352516004658"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> xarid savatchasida <ph name="PRODUCT_ITEM_COUNT" /> ta mahsulot (<ph name="DISCOUNT_TEXT" />) bor, koʻrilgan vaqti: <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Qurilmani korporativ boshqaruvda ro‘yxatdan o‘tkazishda quyidagi talablar qo‘llansin:</translation>
 <translation id="4941627891654116707">Shrift hajmi</translation>

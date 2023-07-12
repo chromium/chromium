@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Laiteasetukset</translation>
 <translation id="2084809735218147718">Kiitos viittomakielellä</translation>
 <translation id="2088690981887365033">VPN-verkko</translation>
+<translation id="209653272837065803">Tallennustila ei riitä tiedostojen synkronointiin</translation>
 <translation id="2111134541987263231">Laita päälle <ph name="BEGIN_BOLD" />Salli incognito-tilassa<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> kohdetta poistetaan, eikä niitä voi palauttaa.</translation>
 <translation id="2122305276694332719">Automaattinen yhdistäminen piilotettuihin verkkoihin antaa muiden nähdä laitteesi ja joitain verkkoasetuksia. Sitä ei suositella.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">yksinkertaistettu kiina</translation>
 <translation id="22085916256174561">korea</translation>
 <translation id="2208919847696382164">Asenna Linux-versio</translation>
+<translation id="2215692307449050019">Akkuvirta on vähissä. Tiedostojen synkronointia jatketaan, kun olet yhdistettynä virtalähteeseen.</translation>
 <translation id="2225536596944493418">Haluatko varmasti poistaa <ph name="NUMBER_OF_ITEMS" /> kohdetta?</translation>
 <translation id="2230062665678605299">Kansiota <ph name="FOLDER_NAME" /> ei voi luoda. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Henkilö ja kahvikuppi</translation>
+<translation id="2247561763838186830">Sinut on kirjattu ulos</translation>
 <translation id="2251368349685848079">Palauta roskakorista</translation>
 <translation id="2278133026967558505">Pääsy tiedostoon kaikilta sivustoilta ja kaikista URL-osoitteista</translation>
 <translation id="2282155092769082568">Automaattisen määrityksen URL-osoite:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Tätä tiedostotyyppiä ei tueta. Etsi tämäntyyppisiä tiedostoja avaava sovellus Chrome Web Storesta.</translation>
 <translation id="2326539130272988168">bulgaria</translation>
 <translation id="2337715497728194187">Jaa Bruschettalle</translation>
+<translation id="233822363739146957">Tallennustila ei riitä kaikkien tiedostojen synkronointiin</translation>
 <translation id="23721837607121582">Lataa mobiiliprofiili, verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Vaihda luettelonäkymään</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> kansiota jaettu Linuxille</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Virhe Linux-sovelluksen asennuksessa</translation>
 <translation id="2802583107108007218">Lue lisää näistä rajoituksista</translation>
 <translation id="2803375539583399270">Lisää PIN-koodi</translation>
+<translation id="2819519502129272135">Tiedostojen synkronointi on pois päältä</translation>
 <translation id="2820957248982571256">Etsitään…</translation>
 <translation id="2830077785865012357">kiina (zhuyin)</translation>
 <translation id="2843806747483486897">Muuta oletusta...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Suodatin on nollattu.</translation>
 <translation id="4603392156942865207">Kopioidaan <ph name="FILE_NAME" /> kansioon <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Esittäjä</translation>
+<translation id="4635373743001040938">Tallennustila oli erittäin vähissä. Tiedostojen synkronointi on laitettu pois päältä.</translation>
 <translation id="4642769377300286600">Asennetaan mobiiliprofiilia, verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">tšekki, qwerty-näppäimistö</translation>
 <translation id="4656777537938206294">Muuta tiedostot käytettäviksi ilman verkkoyhteyttä</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">1 kansio jaettu Parallels Desktopille</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> palautettu</translation>
 <translation id="4969785127455456148">Albumi</translation>
+<translation id="4972330214479971536">Tiedostojen synkronoinnin käyttöönottoa ei voitu suorittaa loppuun</translation>
 <translation id="4973523518332075481">Käytä nimeä, jonka pituus on enintään <ph name="MAX_LENGTH" /> merkkiä.</translation>
 <translation id="4973970068702235170">Pakkaus epäonnistui odottamattoman virheen vuoksi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japani</translation>
@@ -807,6 +814,7 @@
 <translation id="7309413087278791451">saksa (Belgia)</translation>
 <translation id="7339898014177206373">Uusi ikkuna</translation>
 <translation id="7343393116438664539">vietnam (telex)</translation>
+<translation id="7347346221088620549">Salattu tiedosto</translation>
 <translation id="7357762654218998920">Tätä tiedostotyyppiä ei tueta. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /> tiedostojen avaamisesta Chrome-käyttöjärjestelmällä.</translation>
 <translation id="7359359531237882347">Kopioidaan <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
 <translation id="7375951387215729722">Tiedostoluettelo lajiteltu laskevassa järjestyksessä (<ph name="COLUMN_NAME" />).</translation>
@@ -993,6 +1001,7 @@
 <translation id="8609695766746872526">islanti</translation>
 <translation id="863903787380594467">Väärä PIN-koodi. Sinulla on <ph name="RETRIES" /> yritystä jäljellä.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – portti</translation>
+<translation id="8656407365183407932">Offline-tiedostot oli poistettava</translation>
 <translation id="8656768832129462377">Älä tarkista</translation>
 <translation id="8688591111840995413">Virheellinen salasana</translation>
 <translation id="8698464937041809063">Google-piirros</translation>
@@ -1028,6 +1037,7 @@
 <translation id="8997962250644902079">kiina (perinteinen, pinyin)</translation>
 <translation id="8998871447376656508">Google Drivessasi ei ole tarpeeksi tilaa latausta varten.</translation>
 <translation id="9003940392834790328">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan hallinnoima, lisätietoja</translation>
+<translation id="9007990314804111233">Kirjaudu Microsoft-tilillesi</translation>
 <translation id="9017798300203431059">venäjä, foneettinen</translation>
 <translation id="9034924485347205037">Linux-tiedostot</translation>
 <translation id="9035012421917565900">Kohteita ei voi siirtää takaisin paikkaan <ph name="DESTINATION_NAME" />, joten tätä toimintoa ei voi kumota.</translation>

@@ -35,7 +35,6 @@
 <translation id="2695886661449553974">Chrome non puido buscar actualizacións. Téntao máis tarde.</translation>
 <translation id="2732745070297234559">Chrome non puido comprobar todos os contrasinais. Téntao de novo mañá.</translation>
 <translation id="2736805085127235148">As notificacións de Chrome están desactivadas actualmente na configuración do dispositivo.</translation>
-<translation id="2754286486056173475">Crear eventos do calendario en Chrome</translation>
 <translation id="2767464022270041271">Non hai contrasinais gardados. O xestor de contrasinais de Google poderá comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="2840432500933227975">Abre a configuración de Chrome en iOS, toca Default Browser App (Aplicación de navegador predeterminada) e selecciona Chrome.</translation>
 <translation id="2869959624320573933">Inicia sesión en Chrome</translation>
@@ -51,7 +50,6 @@
 <translation id="3522659714780527202">Para ver as túas pestanas desde calquera dispositivo no que utilices Chrome, activa a sincronización</translation>
 <translation id="3533694711092285624">Non hai contrasinais gardados. Chrome pode comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="3594076341410558780">Ocultar a mensaxe Tirar o máximo proveito de Chrome</translation>
-<translation id="3611867725106943284">Toca Ver con Google Maps en Chrome</translation>
 <translation id="3655656110921623717">En consecuencia, Chrome sempre solicitará abrir o sitio para móbiles.</translation>
 <translation id="3720541637541300822">Bloquear pestanas do modo de incógnito ao pechar Chrome</translation>
 <translation id="3827545470516145620">Contas con protección de seguranza estándar neste dispositivo</translation>
@@ -60,6 +58,7 @@
 <translation id="3984746313391923992">A túa organización require que manteñas a sesión pechada en Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome non ten acceso ás túas fotos nin aos teus vídeos. Activa o acceso en Configuración de iOS &gt; Privacidade &gt; Fotos.</translation>
 <translation id="4064699917955374540">Para usar e gardar os datos de Chrome na túa Conta de Google, verifica a túa identidade.</translation>
+<translation id="4093042601582616698">Queres que Chrome sexa o teu navegador predeterminado?</translation>
 <translation id="417201473131094001">Non compatible en Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> estivo usando Chrome e deixou os marcadores, os contrasinais e outras opcións de configuración neste dispositivo.</translation>
 <translation id="424864128008805179">Queres pechar sesión en Chrome?</translation>
@@ -104,7 +103,6 @@
 <translation id="6676840375528380067">Queres borrar os teus datos de Chrome deste dispositivo?</translation>
 <translation id="6709398533399187136">O teu contrasinal púxose en risco debido a unha violación da seguranza dos datos. O xestor de contrasinais de Google recomenda que o cambies de inmediato.</translation>
 <translation id="6822673484890854830">Chrome non puido comprobar todos os contrasinais. Téntao de novo máis tarde.</translation>
-<translation id="6896070677477855330">Activa Bloquear pestanas do modo de incógnito ao pechar Chrome.</translation>
 <translation id="6964931465519938134">Xa podes utilizar Chrome sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
 <translation id="6975725306479268850">Escolle Chrome para autocompletar</translation>
 <translation id="7059914902409643750">Personaliza Chrome</translation>
@@ -147,7 +145,6 @@
 <translation id="8765470054473112089">Cando escribes algo na barra de enderezos ou na caixa de busca, Chrome envíallo ao motor de busca predeterminado para obter mellores suxestións. Esta opción está desactivada no modo de incógnito.</translation>
 <translation id="8772179140489533211">Mostra solicitudes para iniciar sesión en Chrome.</translation>
 <translation id="8788269841521769222">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais de Google para <ph name="EMAIL" /></translation>
-<translation id="880967149107462122">Vai á configuración de Chrome</translation>
 <translation id="8857676124663337448">O xestor de contrasinais de Google non puido comprobar todos os contrasinais. Téntao de novo mañá.</translation>
 <translation id="8897749957032330183">Os contrasinais gárdanse no xestor de contrasinais de Google neste dispositivo.</translation>
 <translation id="8969290730818637510">Cando esta opción está activada:

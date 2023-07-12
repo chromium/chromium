@@ -815,6 +815,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1647408325348388858">Mở và chỉnh sửa <ph name="FILE_NAME" /> trong ứng dụng web này?</translation>
 <translation id="1648528859488547844">Sử dụng Wi‑Fi hoặc mạng di động để xác định vị trí</translation>
 <translation id="164936512206786300">Hủy ghép nối thiết bị Bluetooth</translation>
+<translation id="1650801028905250434">Các tệp trong Drive của tôi sẽ tự động đồng bộ hoá với Chromebook để bạn có thể truy cập các tệp này mà không cần kết nối Internet. Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào trong phần Cài đặt &gt; Tệp.</translation>
 <translation id="1651008383952180276">Bạn phải nhập cùng một cụm mật khẩu hai lần</translation>
 <translation id="1651609627703324721">Thẻ này đang trình bày nội dung Thực tế ảo đến một tai nghe.</translation>
 <translation id="1652326691684645429">Bật tính năng Chia sẻ lân cận</translation>
@@ -4242,6 +4243,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4515872537870654449">Hãy liên hệ với Dell để được bảo dưỡng. Đế sạc sẽ tắt nếu quạt không hoạt động.</translation>
 <translation id="4518840066030486079">Kiểu chế độ phím Shift</translation>
 <translation id="4519331665958994620">Các trang web có thể yêu cầu sử dụng máy ảnh của bạn</translation>
+<translation id="4519605771716872386">Tính năng đồng bộ hoá tệp đã bật</translation>
 <translation id="4519935350946509010">Lỗi kết nối.</translation>
 <translation id="4520385623207007473">Các cookie đang được sử dụng</translation>
 <translation id="452039078290142656">thiết bị không xác định từ <ph name="VENDOR_NAME" /></translation>
@@ -4746,7 +4748,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4940364377601827259">Hiện có <ph name="PRINTER_COUNT" /> máy in để bạn lưu.</translation>
 <translation id="4940448324259979830">Tài khoản này do <ph name="PROFILE_NAME" /> quản lý</translation>
 <translation id="4940845626435830013">Dự trữ kích thước ổ đĩa</translation>
-<translation id="4941074198479265146">Các trang web thường kết nối với thiết bị MIDI để áp dụng những tính năng như tạo và chỉnh sửa nhạc</translation>
 <translation id="4941243352516004658"><ph name="PRODUCT_ITEM_COUNT" /> mặt hàng trong giỏ hàng <ph name="DISCOUNT_TEXT" /> từ <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, đã xem <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Sử dụng yêu cầu thiết bị này khi đăng ký thiết bị để quản lý doanh nghiệp:</translation>
 <translation id="4941627891654116707">Cỡ chữ</translation>
@@ -7285,6 +7286,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7124712201233930202">Tệp tải xuống không đáp ứng các chính sách của tổ chức</translation>
 <translation id="7125029162161377569">Nhờ bản dùng thử Hộp cát về quyền riêng tư, các trang web có thể đem đến trải nghiệm duyệt web như trước nhưng dùng ít thông tin của bạn hơn. Việc này có thể giúp quyền riêng tư của bạn được bảo vệ hiệu quả hơn cũng như giảm bớt hoạt động theo dõi qua nhiều trang web. Chúng tôi sẽ thêm các bản dùng thử mới khi những bản dùng thử đó sẵn sàng cho quá trình thử nghiệm.</translation>
 <translation id="7125148293026877011">Xóa Crostini</translation>
+<translation id="7125932261198019860">Đảm bảo máy in kết nối với cùng một mạng Wi-Fi như Chromebook. Nếu không, hãy sử dụng cáp USB. <ph name="LINK_BEGIN" />Tìm hiểu thêm về khả năng tương thích<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Lịch sử tải xuống</translation>
 <translation id="7128151990937044829">Hiển thị một chỉ báo trên thanh địa chỉ khi thông báo bị chặn</translation>
 <translation id="7131040479572660648">Đọc dữ liệu của bạn trên <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> và <ph name="WEBSITE_3" /></translation>
@@ -7478,6 +7480,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7307129035224081534">Đã tạm dừng</translation>
 <translation id="7308643132139167865">Ngôn ngữ cho trang web</translation>
 <translation id="7310598146671372464">Không đăng nhập được. Máy chủ không hỗ trợ loại mã hóa Kerberos đã chỉ định. Vui lòng liên hệ với quản trị viên của bạn.</translation>
+<translation id="7311005168897771689">Truy cập các tệp trên Google Drive khi bạn không kết nối mạng</translation>
 <translation id="7311244614769792472">Không tìm thấy kết quả nào</translation>
 <translation id="7312210124139670355">Quản trị viên đang đặt lại eSIM của bạn. Quá trình này có thể mất vài phút.</translation>
 <translation id="7317831949569936035">Đăng ký học</translation>

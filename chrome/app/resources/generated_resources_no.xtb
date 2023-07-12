@@ -812,6 +812,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1647408325348388858">Vil du åpne og redigere <ph name="FILE_NAME" /> i denne nettappen?</translation>
 <translation id="1648528859488547844">Bruk Wifi eller mobilnettverk til å fastslå posisjonen</translation>
 <translation id="164936512206786300">Koble fra Bluetooth-enheten</translation>
+<translation id="1650801028905250434">Filene dine i Min disk synkroniseres automatisk med Chromebooken, slik at du har tilgang til dem uten internettilkobling. Du kan når som helst endre dette i Innstillinger &gt; Filer.</translation>
 <translation id="1651008383952180276">Du må skrive inn den samme passordfrasen to ganger</translation>
 <translation id="1651609627703324721">Denne fanen sender VR-innhold til VR-briller</translation>
 <translation id="1652326691684645429">Slå på nærdeling</translation>
@@ -4234,6 +4235,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4515872537870654449">Kontakt Dell for service. Dokken slår seg av hvis viften ikke virker.</translation>
 <translation id="4518840066030486079">Type modus for Shift-tast</translation>
 <translation id="4519331665958994620">Nettsteder kan be om å få bruke kameraet ditt</translation>
+<translation id="4519605771716872386">Filsynkronisering er slått på</translation>
 <translation id="4519935350946509010">Tilkoblingsfeil.</translation>
 <translation id="4520385623207007473">Informasjonskapsler i bruk</translation>
 <translation id="452039078290142656">ukjente enheter fra <ph name="VENDOR_NAME" /></translation>
@@ -4738,7 +4740,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4940364377601827259"><ph name="PRINTER_COUNT" /> skrivere er tilgjengelige for lagring.</translation>
 <translation id="4940448324259979830">Denne kontoen administreres av <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Reservér diskstørrelse</translation>
-<translation id="4941074198479265146">Nettsteder kobler vanligvis til MIDI-enheter for å kunne tilby funksjoner knyttet til musikkomponering og -redigering</translation>
 <translation id="4941243352516004658"><ph name="PRODUCT_ITEM_COUNT" /> varer i handlekurven med <ph name="DISCOUNT_TEXT" /> fra <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, sett <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Bruk denne enhetsrekvisisjonen når du registrerer enheten for bedriftsadministrering.</translation>
 <translation id="4941627891654116707">Skriftstørrelse</translation>
@@ -7276,6 +7277,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7124712201233930202">Organisasjonens regler er ikke oppfylt</translation>
 <translation id="7125029162161377569">Med Privacy Sandbox-prøveprosjekter kan nettsteder bruke mindre av informasjonen din og likevel gi deg den samme nettlesingsopplevelsen. Det betyr at du får sterkere personvern og mindre sporing på tvers av nettsteder. Vi legger til nye prøveprosjekter etter hvert som de er klare for utprøving.</translation>
 <translation id="7125148293026877011">Slett Crostini</translation>
+<translation id="7125932261198019860">Sørg for at skriveren er koblet til det samme wifi-nettverket som Chromebooken, eller bruk en USB-kabel. <ph name="LINK_BEGIN" />Finn ut mer om kompatibilitet<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Nedlastingslogg</translation>
 <translation id="7128151990937044829">Vis en indikator i adressefeltet når varsler blokkeres</translation>
 <translation id="7131040479572660648">Lesing av dataene dine på <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> og <ph name="WEBSITE_3" /></translation>
@@ -7469,6 +7471,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7307129035224081534">Satt på pause</translation>
 <translation id="7308643132139167865">Nettstedsspråk</translation>
 <translation id="7310598146671372464">Kan ikke logge på. Tjeneren støtter ikke de angitte Kerberos-krypteringstypene. Ta kontakt med administratoren din.</translation>
+<translation id="7311005168897771689">Få tilgang til Google Disk-filene dine når du er uten nett</translation>
 <translation id="7311244614769792472">Fant ingen resultater</translation>
 <translation id="7312210124139670355">Administratoren holder på å tilbakestille eSIM-kortet ditt. Dette kan ta noen minutter.</translation>
 <translation id="7317831949569936035">Skoleregistrering</translation>

@@ -131,6 +131,7 @@
 <translation id="2084108471225856927">Axustes do dispositivo</translation>
 <translation id="2084809735218147718">Signo de agradecemento</translation>
 <translation id="2088690981887365033">Rede VPN</translation>
+<translation id="209653272837065803">Non hai suficiente espazo de almacenamento para continuar coa sincronización de ficheiros</translation>
 <translation id="2111134541987263231">Activa <ph name="BEGIN_BOLD" />Permitir no modo de incógnito<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Eliminaranse <ph name="NUMBER_OF_ITEMS" /> elementos e non poderás restablecelos.</translation>
 <translation id="2122305276694332719">Ao conectarte automaticamente a unha rede oculta, outros usuarios poden ver o teu dispositivo e parte da configuración de rede. Por iso esta opción non é recomendable.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Chinés simplificado</translation>
 <translation id="22085916256174561">Coreano</translation>
 <translation id="2208919847696382164">Instalar con Linux</translation>
+<translation id="2215692307449050019">Queda pouca batería. Retomarase a sincronización de ficheiros cando conectes o dispositivo á corrente.</translation>
 <translation id="2225536596944493418">Seguro que queres eliminar <ph name="NUMBER_OF_ITEMS" /> elementos?</translation>
 <translation id="2230062665678605299">Non se puido crear o cartafol "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Persoa con café</translation>
+<translation id="2247561763838186830">Pechouse a túa sesión</translation>
 <translation id="2251368349685848079">Restaurar desde a papeleira</translation>
 <translation id="2278133026967558505">Acceso aos ficheiros por parte de todos os URL e sitios web</translation>
 <translation id="2282155092769082568">URL de configuración automática:</translation>
@@ -164,6 +167,7 @@
 <translation id="2325650632570794183">Este tipo de ficheiro non é compatible. Visita a Chrome Web Store para atopar unha aplicación que poida abrir este tipo de ficheiro.</translation>
 <translation id="2326539130272988168">Búlgaro</translation>
 <translation id="2337715497728194187">Compartir con Bruschetta</translation>
+<translation id="233822363739146957">Non hai suficiente espazo de almacenamento para sincronizar todos os ficheiros</translation>
 <translation id="23721837607121582">Descargar perfil para móbiles, rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Cambiar á vista de lista</translation>
 <translation id="2377590462528165447">Compartíronse <ph name="NUMBER_OF_ITEMS" /> cartafoles con Linux</translation>
@@ -217,6 +221,7 @@
 <translation id="2782104745158847185">Produciuse un erro ao instalar a aplicación Linux</translation>
 <translation id="2802583107108007218">Máis información sobre estas restricións</translation>
 <translation id="2803375539583399270">Introduce o PIN</translation>
+<translation id="2819519502129272135">A sincronización de ficheiros está desactivada</translation>
 <translation id="2820957248982571256">Buscando…</translation>
 <translation id="2830077785865012357">Chinés (zhuyin)</translation>
 <translation id="2843806747483486897">Cambiar acción predeterminada...</translation>
@@ -441,6 +446,7 @@
 <translation id="4599600860674643278">Restableceuse o filtro.</translation>
 <translation id="4603392156942865207">Copiando <ph name="FILE_NAME" /> en <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artista</translation>
+<translation id="4635373743001040938">Tes moi pouco espazo de almacenamento. Desactivouse a sincronización de ficheiros.</translation>
 <translation id="4642769377300286600">Instalando perfil para móbiles, rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Checo con teclado QWERTY</translation>
 <translation id="4656777537938206294">Activa o acceso sen conexión a estes ficheiros</translation>
@@ -494,6 +500,7 @@
 <translation id="4961158930123534723">Compartiuse 1 cartafol con Parallels Desktop</translation>
 <translation id="496656650103537022">Restaurouse <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Álbum</translation>
+<translation id="4972330214479971536">Non se puido terminar de configurar a sincronización de ficheiros</translation>
 <translation id="4973523518332075481">Utiliza un nome de <ph name="MAX_LENGTH" /> caracteres ou menos</translation>
 <translation id="4973970068702235170">Non se puido realizar a operación de comprimir debido a un erro inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Xaponés</translation>
@@ -806,6 +813,7 @@
 <translation id="7309413087278791451">Alemán (Bélxica)</translation>
 <translation id="7339898014177206373">Nova ventá</translation>
 <translation id="7343393116438664539">Vietnamita (télex)</translation>
+<translation id="7347346221088620549">Ficheiro encriptado</translation>
 <translation id="7357762654218998920">Este tipo de ficheiro non é compatible. Obtén <ph name="BEGIN_LINK_HELP" />máis información<ph name="END_LINK_HELP" /> sobre como abrir ficheiros en Chrome OS.</translation>
 <translation id="7359359531237882347">Copiando <ph name="NUMBER_OF_ITEMS" /> elementos…</translation>
 <translation id="7375951387215729722">A lista de ficheiros está en orde descendente segundo os datos da columna <ph name="COLUMN_NAME" />.</translation>
@@ -992,6 +1000,7 @@
 <translation id="8609695766746872526">Islandés</translation>
 <translation id="863903787380594467">O PIN é incorrecto. Quédanche <ph name="RETRIES" /> intentos.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" />: porto</translation>
+<translation id="8656407365183407932">O teus ficheiros sen conexión tiveron que quitarse</translation>
 <translation id="8656768832129462377">Non comprobar</translation>
 <translation id="8688591111840995413">Contrasinal incorrecto</translation>
 <translation id="8698464937041809063">Debuxo de Google</translation>
@@ -1027,6 +1036,7 @@
 <translation id="8997962250644902079">Chinés tradicional (Pinyin)</translation>
 <translation id="8998871447376656508">Non tes suficiente espazo libre en Google Drive para completar a carga.</translation>
 <translation id="9003940392834790328">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, xestionada polo teu administrador, detalles</translation>
+<translation id="9007990314804111233">Inicia sesión na túa conta de Microsoft</translation>
 <translation id="9017798300203431059">Ruso fonético</translation>
 <translation id="9034924485347205037">Ficheiros de Linux</translation>
 <translation id="9035012421917565900">Os elementos non se poden transferir de novo a "<ph name="DESTINATION_NAME" />", así que non poderás desfacer esta acción.</translation>

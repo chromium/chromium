@@ -320,7 +320,6 @@
 <translation id="7036251913954633326">Калі вам трэба ўвайсці ў гэты ўліковы запіс адзін раз, можна выкарыстаць <ph name="GUEST_LINK_BEGIN" />Гасцявы рэжым<ph name="GUEST_LINK_END" /> браўзера Chrome. Калі вы хочаце дадаць уліковы запіс для каго-небудзь яшчэ, <ph name="LINK_BEGIN" />дадайце новага карыстальніка<ph name="LINK_END" /> на прыладу <ph name="DEVICE_TYPE" />.
 
 Дазволы, якія вы ўжо далі вэб-сайтам і праграмам, могуць дзейнічаць для гэтага ўліковага запісу. Кіраваць Уліковымі запісамі Google можна ў <ph name="SETTINGS_LINK_BEGIN" />Наладах<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7062128746136194023">Бацькі выключылі "Дазволы для сайтаў, праграм і пашырэнняў" для Chrome. Дадаванне гэтага элемента (<ph name="EXTENSION_TYPE_PARAMETER" />) забаронена.</translation>
 <translation id="7071827361006050863">Даныя пра работу ў Chrome хутка будуць выдалены</translation>
 <translation id="7085332316435785646">Выберыце, ці выкарыстоўваць гісторыю Chrome для персаналізацыі сэрвісаў Google</translation>
 <translation id="7088681679121566888">Chrome не патрабуе абнаўлення</translation>
@@ -383,7 +382,6 @@
 <translation id="8255190535488645436">Google Chrome выкарыстоўвае вашу камеру і мікрафон.</translation>
 <translation id="8270775718612349140">Сертыфікаты, якімі кіруе Chrome</translation>
 <translation id="8286862437124483331">Google Chrome спрабуе паказаць паролі. Каб дазволіць гэта, увядзіце пароль Windows.</translation>
-<translation id="828798499196665338">Бацькі выключылі "Дазволы для сайтаў, праграм і пашырэнняў" для Chrome. Уключэнне гэтага элемента (<ph name="EXTENSION_TYPE_PARAMETER" />) забаронена.</translation>
 <translation id="8290100596633877290">Памылка! Збой браўзера Google Chrome. Перазапусціць яго?</translation>
 <translation id="829923460755755423">Як дадаць ярлык на Менеджар пароляў Google</translation>
 <translation id="8342675569599923794">Файл небяспечны, таму Chrome заблакіраваў яго.</translation>

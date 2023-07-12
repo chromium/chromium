@@ -3,6 +3,7 @@
 <translationbundle lang="bs">
 <translation id="1026101648481255140">Nastavi instalaciju</translation>
 <translation id="1029669172902658969">Ponovo pokrenite da ažurirate &amp;ChromiumOS</translation>
+<translation id="1040916596585577953">Chromium vam preporučuje da pregledate ovu ekstenziju</translation>
 <translation id="1065672644894730302">Nije moguće sačuvati vaše postavke.
 
 Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.</translation>
@@ -252,7 +253,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6333502561965082103">U toku je druga radnja u Chromiumu. Pokušajte ponovo kasnije.</translation>
 <translation id="6334986366598267305">Sada je lakše koristiti Chromium s vašim Google računom i na dijeljenim računarima.</translation>
 <translation id="6373523479360886564">Jeste li sigurni da želite deinstalirati Chromium?</translation>
-<translation id="6375219077595103062">Dodajte prečicu za Upravitelja lozinki</translation>
+<translation id="6375219077595103062">Dodajte prečicu za Upravitelj lozinki</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Kako koristimo ove podatke:<ph name="END_BOLD" /> Chromium može procijeniti vaša interesovanja. Kasnije, web lokacija koju ste posjetili može zatražiti od Chromiuma da pogleda vaša interesovanja radi personalizacije oglasa koje vidite.</translation>
 <translation id="6403826409255603130">Chromium je novi preglednik koji pokreće web stranice i aplikacije brzinom svjetlosti. On je brz, stabilan i jednostavan za upotrebu. Krećite se internetom u sigurnijem okruženju, zaštićeni od zlonamjernih softvera i krađe identiteta zahvaljujući elementima koji su ugrađeni u Chromium.</translation>
 <translation id="6442900851116057561">Ponovo pokrenite ChromiumOS</translation>
@@ -278,7 +279,6 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="6734291798041940871">Chromium je već instaliran za sve korisnike na računaru.</translation>
 <translation id="673636774878526923">Prijavite se, a zatim uključite sinhronizaciju da pristupite svojim Chromium stvarima na svim svojim uređajima.</translation>
 <translation id="67706546131546258">Chromium preporučuje skeniranje ovog fajla jer bi mogao biti opasan.</translation>
-<translation id="6774082503108938489">Tvoj roditelj je isključio "Odobrenja za web lokacije, aplikacije i ekstenzije" za Chromium. Omogućavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>
 <translation id="6779406956731413166">ChromiumOS omogućava dodatni <ph name="BEGIN_LINK_CROS_OSS" />softver otvorenog koda<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6847869444787758381">Chromium vas obavještava ako sigurnost vaših lozinki bude ugrožena</translation>
 <translation id="6852530923436401894">Chromium je blokirao ovaj fajl jer sadržava zlonamjerni softver</translation>
@@ -366,7 +366,6 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="8463672209299734063">Nije obavezno: Pomozite nam da poboljšamo funkcije i performanse ChromiumOS-a automatskim slanjem podataka o dijagnostici i korištenju Googleu.</translation>
 <translation id="8493179195440786826">Chromium nije ažuriran</translation>
 <translation id="8550334526674375523">Ovaj radni profil je u potpunosti odvojen od vašeg ličnog profila.</translation>
-<translation id="8558383651099478961">Tvoj roditelj je isključio "Odobrenja za web lokacije, aplikacije i ekstenzije" za Chromium. Dodavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>
 <translation id="8568283329061645092">Chromium može provjeravati vaše lozinke kada se prijavljujete putem Google računa</translation>
 <translation id="8586442755830160949">Autorska prava <ph name="YEAR" /> Autori Chromiuma. Sva prava zadržana.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Kako koristimo ove podatke:<ph name="END_BOLD" /> Web lokacije mogu pohranjivati informacije o vašim interesovanjima u Chromiumu. Naprimjer, ako posjetite web lokaciju da kupite obuću za maraton, ta web lokacija može definirati vaše interesovanje za trčanje maratona. Kasnije, kada posjetite drugu web lokaciju da se registrirate za utrku, ta web lokacija vam može prikazati oglas koji prikazuje obuću za trčanje, na osnovu vaših interesovanja.</translation>

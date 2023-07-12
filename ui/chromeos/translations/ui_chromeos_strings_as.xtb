@@ -425,6 +425,7 @@
 <translation id="4432921877815220091"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, ডিভাইচ ছেট আপ কৰাৰ পাছত সক্ৰিয় কৰক, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সংযোগ কৰক</translation>
 <translation id="4442424173763614572">DNS বিচাৰিব পৰা নগ'ল</translation>
+<translation id="4445896958353114391">ফাইলসমূহ ছিংক কৰি থকা হৈছে</translation>
 <translation id="4462159676511157176">কাষ্টম নাম ছার্ভাৰ</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="4470564870223067757">হাংগুল ২ ছেট</translation>
@@ -524,6 +525,7 @@
 <translation id="5102922915594634436">ছিংক কৰা ফ’ল্ডাৰ পৰিচালনা কৰক</translation>
 <translation id="5109254780565519649">কিবা আসোঁৱাহ হৈছে। কিছুমান বস্তু পুনঃস্থাপন কৰা নহ’ব পাৰে।</translation>
 <translation id="5110329002213341433">ইংৰাজী (কানাডা)</translation>
+<translation id="5119780910075847424">ছিংক পজ কৰা হৈছে</translation>
 <translation id="5123433949759960244">বাস্কেটবল</translation>
 <translation id="5129662217315786329">প’লিশ্ব</translation>
 <translation id="5144820558584035333">হাংগুল ৩ ছেট (৩৯০)</translation>
@@ -806,6 +808,7 @@
 <translation id="7256405249507348194">চিনাক্ত কৰিব নোৱাৰা আসোঁৱাহ: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">উপলব্ধ সেৱাসমূহ</translation>
 <translation id="7291818353625820805">কীসমূহ পুনৰাবৃত্তি হোৱাটো বিচাৰেনে? কীব’ৰ্ডৰ ছেটিঙত উচ্চাৰণ চিহ্নসমূহ অফ কৰক</translation>
+<translation id="729236380049459563">ফাইল ছিংক কৰাৰ সুবিধাটো অন কৰা আছে</translation>
 <translation id="7292816689782057017">প্ৰশাসকৰ নীতিয়ে কিছুমান অৱস্থানত ছেভ কৰাটো সীমিত কৰে।</translation>
 <translation id="7294063083760278948">তেলুগু লিপ্যন্তৰণ</translation>
 <translation id="7295662345261934369">আনৰ সৈতে শ্বেয়াৰ কৰক</translation>
@@ -919,6 +922,7 @@
 <translation id="8087576439476816834">ডাউনল’ড কৰক, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">মোৰ লগত শ্বেয়াৰ কৰা ফাইল</translation>
 <translation id="8116072619078571545">বৰফৰ সৈতে পানী</translation>
+<translation id="8124093710070495550">ছিংক সম্পৰ্কীয় সমস্যা</translation>
 <translation id="8128733386027980860">Dvorak কীব’ৰ্ডৰ সৈতে ইংৰাজী (যুক্তৰাজ্য)</translation>
 <translation id="8137331602592933310">আপোনাৰ সৈতে "<ph name="FILENAME" />" শ্বেয়াৰ কৰা হৈছে। আপুনি ইয়াৰ গৰাকী নহয় বাবে আপুনি এইটো মচিব নোৱাৰে।</translation>
 <translation id="8138705869659070104">ডিভাইচ ছেটআপ কৰাৰ পাছত সক্ৰিয় কৰক</translation>

@@ -981,7 +981,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6324997754869598316">(Erreur <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Partager via <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Chiffrement</translation>
-<translation id="6340910702212418132">Gestionnaire de mots de passe : <ph name="BEGIN_NEW" />Nouveautés<ph name="END_NEW" /></translation>
+<translation id="6340910702212418132">Gestionnaire de mots de passe<ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="6341580099087024258">Demander où enregistrer les fichiers</translation>
 <translation id="6342069812937806050">À l'instant</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> de plus}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> de plus}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> de plus}}</translation>
@@ -1362,7 +1362,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8130309322784422030">Les infos de connexion enregistrées sont peut-être obsolètes</translation>
 <translation id="813082847718468539">Afficher des informations à propos du site</translation>
 <translation id="8137562778192957619">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe de Google.</translation>
-<translation id="8156139159503939589">Quelles langues comprenez-vous ?</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fichiers restants</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">1 jour restant</translation>

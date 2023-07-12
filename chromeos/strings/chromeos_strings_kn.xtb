@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ಥ್ರೆಡ್‌ಗಳು, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ಹೊಸ ಫೀಚರ್ ಲಭ್ಯವಿದೆ, ಇನ್ನಷ್ಟು ತಿಳಿಯಲು ಅಪ್ ಆ್ಯರೋ ಕೀ ಬಳಸಿ.</translation>
 <translation id="1059913517121127803">ಸ್ಕ್ಯಾನ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
+<translation id="1062823486781306604"><ph name="COUNT" /> ರಲ್ಲಿ <ph name="INDEX" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ಫೈರ್‌ವಾಲ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="1075811647922107217">ಪುಟದ ಗಾತ್ರ</translation>
@@ -540,6 +541,7 @@
 <translation id="5257811368506016604">ತಿಳಿ ಬಣ್ಣದ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5264277876637023664">CPU ಪರೀಕ್ಷೆಯನ್ನು ರನ್ ಮಾಡಿ</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="5275828089655680674">ದಿನಚರಿಗಳನ್ನು ಪುನಃ ರನ್ ಮಾಡಿ</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">ಬ್ಯಾಕ್‌ಲೈಟ್ ಬಣ್ಣ</translation>
@@ -604,6 +606,7 @@
 <translation id="5832805196449965646">ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸು</translation>
 <translation id="583281660410589416">ಅಪರಿಚಿತ</translation>
 <translation id="5843706793424741864">ಫ್ಯಾರನ್‌ಹೀಟ್</translation>
+<translation id="584953448295717128">APN ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪತ್ತೆ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="5849570051105887917">ಹೋಮ್ ಪೂರೈಕೆದಾರರ ಕೋಡ್</translation>
 <translation id="5859603669299126575">ಆರ್ಟ್ ಗ್ಯಾಲರಿ ಆಲ್ಬಮ್</translation>
 <translation id="5860033963881614850">ಆಫ್</translation>
@@ -882,6 +885,7 @@
 <translation id="80398733265834479">ಸ್ವಯಂಚಾಲಿತ ಬಣ್ಣದ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="8041089156583427627">ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ</translation>
 <translation id="8045012663542226664">ಮೈಕ್ರೊಫೋನ್‌ ಮ್ಯೂಟ್ ಕೀ</translation>
+<translation id="8067126283828232460">APN ಕನೆಕ್ಟ್ ಆಗಿದೆ.</translation>
 <translation id="8075838845814659848">ಉಳಿದಿರುವ ಚಾರ್ಜ್</translation>
 <translation id="8076492880354921740">ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="8082366717211101304">Android ಆ್ಯಪ್‌ಗಳ ಮೂಲಕ DNS ಅನ್ನು ಬಗೆಹರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
@@ -1028,6 +1032,7 @@
 <translation id="9111102763498581341">ಅನ್‌ಲಾಕ್</translation>
 <translation id="9122602430962285795">ಮರುಕನೆಕ್ಟ್ ಮಾಡಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="9126720536733509015">ಒಂದೇ PDF ನಲ್ಲಿ ಹಲವಾರು ಪುಟಗಳನ್ನು ಉಳಿಸಿ</translation>
+<translation id="9133104754938025929">ಬ್ಯಾಟರಿಯನ್ನು ಉಳಿಸಲು, ಚಾರ್ಜ್ ಮಾಡುವಾಗ ಮಾತ್ರ ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.</translation>
 <translation id="9137526406337347448">Google ಸೇವೆಗಳು</translation>
 <translation id="9138630967333032450">ಎಡ Shift ಕೀ</translation>
 <translation id="9143347780818904997"><ph name="MINUTES" /> ನಿಮಿಷಗಳಿಗಾಗಿ</translation>

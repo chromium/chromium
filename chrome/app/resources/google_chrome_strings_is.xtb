@@ -320,7 +320,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7036251913954633326">Ef þú vilt aðeins nota þennan reikning einu sinni geturðu notað <ph name="GUEST_LINK_BEGIN" />gestastillingu<ph name="GUEST_LINK_END" /> í Chrome vafra. Ef þú vilt bæta við reikningi fyrir einhvern annan skaltu <ph name="LINK_BEGIN" />bæta við nýjum einstaklingi<ph name="LINK_END" /> í <ph name="DEVICE_TYPE" />.
 
 Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á þessum reikningi. Þú getur haft umsjón með Google reikningunum þínum í <ph name="SETTINGS_LINK_BEGIN" />stillingum<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7062128746136194023">Foreldrar þínir hafa slökkt á „Heimildum fyrir vefsvæði, forrit og viðbætur" fyrir Chrome. Ekki er leyfilegt að bæta við þessu <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7071827361006050863">Chrome mun bráðlega eyða vefskoðunargögnum</translation>
 <translation id="7085332316435785646">Veldu hvort að Chrome ferill eigi að fylgja með til að fá sérsniðnari upplifun í Google þjónustum</translation>
 <translation id="7088681679121566888">Chrome er uppfærður</translation>
@@ -383,7 +382,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8255190535488645436">Google Chrome er að nota myndavélina þína og hljóðnema.</translation>
 <translation id="8270775718612349140">Vottorð sem Chrome stjórnar</translation>
 <translation id="8286862437124483331">Google Chrome er að reyna að sýna aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að heimila þetta.</translation>
-<translation id="828798499196665338">Foreldrar þínir hafa slökkt á „Heimildum fyrir vefsvæði, forrit og viðbætur" fyrir Chrome. Ekki er leyfilegt að kveikja á þessu <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Vóts! Google Chrome hrundi. Endurræsa núna?</translation>
 <translation id="829923460755755423">Bæta flýtileið við Google-aðgangsorðastjórnun</translation>
 <translation id="8342675569599923794">Þessi skrá er hættuleg og þess vegna útilokaði Chrome hana.</translation>

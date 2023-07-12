@@ -9,6 +9,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (počet vláken: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">K dispozici je nová funkce, další informace zobrazíte šipkou nahoru.</translation>
 <translation id="1059913517121127803">Skenování se nepodařilo zahájit</translation>
+<translation id="1062823486781306604"><ph name="INDEX" /> z <ph name="COUNT" />, <ph name="NAME" /></translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Byl zjištěn Firewall</translation>
 <translation id="1075811647922107217">Velikost stránky</translation>
@@ -169,6 +170,7 @@
 <translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">Zapnout tmavý režim</translation>
 <translation id="2180197493692062006">Došlo k chybě. Zkuste aplikaci otevřít znovu.</translation>
+<translation id="2189104374785738357">Úprava podrobností o APN</translation>
 <translation id="2209788852729124853">Resetovat počítadla návštěvnosti</translation>
 <translation id="2212733584906323460">Rozlišení názvu</translation>
 <translation id="2217935453350629363">Aktuální rychlost</translation>
@@ -185,6 +187,7 @@
 <translation id="2307344026739914387">Použít aktuální dvojici klíčů</translation>
 <translation id="2320295602967756579">Aktivovat světlý motiv</translation>
 <translation id="2323506179655536734">PŘESKOČENO</translation>
+<translation id="2324354238778375592">Plovoucí</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Chcete-li objevit okolní zařízení, zapněte Bluetooth</translation>
 <translation id="2346474577291266260">Vynikající (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -333,6 +336,7 @@
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Načítání...</translation>
 <translation id="3708186454126126312">Dříve připojeno</translation>
+<translation id="3715651196924935218">Zrušit plovoucí</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (recenze: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nepřipojeno</translation>
 <translation id="3749289110408117711">Název souboru</translation>
@@ -389,6 +393,7 @@
 <translation id="4147897805161313378">Fotky Google</translation>
 <translation id="4150201353443180367">Displej</translation>
 <translation id="4155551848414053977">Zkontrolujte, zda je skener zapnutý a dostupný v síti nebo přes přímé připojení.</translation>
+<translation id="4159238217853743776">Částečné</translation>
 <translation id="4159784952369912983">Nachová</translation>
 <translation id="4170180284036919717">Pořídit fotku</translation>
 <translation id="4170700058716978431">NEZDAŘILO SE</translation>
@@ -498,6 +503,7 @@
 <translation id="4930320165497208503">Pokud chcete nastavit nebo aktualizovat připojení, přejděte do sekce <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4950314376641394653">Firmware zařízení <ph name="DEVICE_NAME" /> byl aktualizován na verzi <ph name="VERSION" /></translation>
+<translation id="4969079779290789265">Rozdělit</translation>
 <translation id="4972592110715526173">změna režimu</translation>
 <translation id="498186245079027698">Zkontrolujte skener a zkuste to znovu. Zkontrolujte, zda máte dostatek místního úložného prostoru k ukládání naskenovaných souborů.</translation>
 <translation id="4985509611418653372">Spustit</translation>
@@ -517,6 +523,7 @@
 <translation id="5088172560898466307">Název hostitele serveru</translation>
 <translation id="5089810972385038852">Stát/kraj</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">Maximalizovat</translation>
 <translation id="5142961317498132443">Ověření</translation>
 <translation id="5154917547274118687">Paměť</translation>
 <translation id="5160857336552977725">Přihlaste se do zařízení <ph name="DEVICE_TYPE" /></translation>
@@ -529,11 +536,13 @@
 <translation id="5222676887888702881">Odhlásit se</translation>
 <translation id="522307662484862935">Nezahrnovat e‑mailovou adresu</translation>
 <translation id="5227902338748591677">Plán tmavého motivu</translation>
+<translation id="5229344016299762883">Zrušit maximalizaci</translation>
 <translation id="5234764350956374838">Zavřít</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Zapnout režim světlých barev</translation>
 <translation id="5264277876637023664">Spustit test procesoru</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">APN je zakázán.</translation>
 <translation id="5275828089655680674">Znovu spustit sledy činností</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">barva podsvícení</translation>
@@ -598,6 +607,7 @@
 <translation id="5832805196449965646">Přidat uživatele</translation>
 <translation id="583281660410589416">Neznámé</translation>
 <translation id="5843706793424741864">Stupně Fahrenheita</translation>
+<translation id="584953448295717128">APN je detekován automaticky.</translation>
 <translation id="5849570051105887917">Kód domácího poskytovatele</translation>
 <translation id="5859603669299126575">Album galerie umění</translation>
 <translation id="5860033963881614850">Vypnuto</translation>
@@ -706,6 +716,7 @@
 <translation id="6566314079205407217">Skenování několika stránek</translation>
 <translation id="6574762126505704998">Vyplnit</translation>
 <translation id="6575134580692778371">Není konfigurováno</translation>
+<translation id="6576005492601044801">vlevo</translation>
 <translation id="6579509898032828423">Použít tuto fotku</translation>
 <translation id="6596816719288285829">IP adresa</translation>
 <translation id="6599673642868607614">Děkujeme vám za zpětnou vazbu. Vaše zpětná vazba nám pomáhá vylepšovat Chromebooky a náš tým se jí bude věnovat. Vzhledem k velkému počtu hlášení vám nebudeme moci odpovědět.</translation>
@@ -810,6 +821,7 @@
 <translation id="7497215489070763236">Certifikát CA serveru</translation>
 <translation id="7501957181231305652">nebo</translation>
 <translation id="7502658306369382406">Adresa IPv6</translation>
+<translation id="7513770521371759388">dole</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Obsah nápovědy není k dispozici</translation>
 <translation id="7535791657097741517">Zapnout světlý motiv</translation>
@@ -874,6 +886,7 @@
 <translation id="80398733265834479">Zapnout režim automatických barev</translation>
 <translation id="8041089156583427627">Odeslat svůj názor</translation>
 <translation id="8045012663542226664">Ztlumení mikrofonu</translation>
+<translation id="8067126283828232460">APN je připojen.</translation>
 <translation id="8075838845814659848">Zbývající kapacita</translation>
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8082366717211101304">Z aplikací pro Android nelze přeložit záznamy DNS</translation>
@@ -946,6 +959,7 @@
 <translation id="8655295600908251630">Kanál</translation>
 <translation id="8655828773034788261">Sdílet adresu URL:</translation>
 <translation id="8660881923941176839">libry</translation>
+<translation id="8670574982334489519">vpravo</translation>
 <translation id="8675354002693747642">Předem sdílený klíč</translation>
 <translation id="8677859815076891398">Žádná alba. Vytvořte album ve <ph name="LINK_BEGIN" />Fotkách Google<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tuto funkci můžete spravovat šipkami doleva nebo doprava.</translation>
@@ -991,6 +1005,7 @@
 <translation id="8936793075252196307">IP adresa klienta</translation>
 <translation id="8944651180182756621">Barva Spouštěče</translation>
 <translation id="894617464444543719">Zařízení je telefon.</translation>
+<translation id="8950424402482976779">nahoře</translation>
 <translation id="8968751544471797276">Rychlost nabíjení</translation>
 <translation id="8970109610781093811">Spustit znovu</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -1018,6 +1033,7 @@
 <translation id="9111102763498581341">Odemknout</translation>
 <translation id="9122602430962285795">Pokud se chcete znovu připojit, přejděte do Nastavení</translation>
 <translation id="9126720536733509015">Uložit více stránek do jednoho PDF</translation>
+<translation id="9133104754938025929">Aby se šetřila baterie, funguje spořič obrazovky pouze při nabíjení.</translation>
 <translation id="9137526406337347448">Služby Google</translation>
 <translation id="9138630967333032450">Levý Shift</translation>
 <translation id="9143347780818904997"><ph name="MINUTES" /> min</translation>

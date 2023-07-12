@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Дыск зараз недаступны. Як толькі доступ адновіцца, запампоўванне пачнецца аўтаматычна.</translation>
 <translation id="1307931752636661898">Не ўдалося праглядзець файлы Linux</translation>
 <translation id="1313405956111467313">Аўтаматычная канфігурацыя проксі-сервера</translation>
+<translation id="134645005685694099">У сховішчы прылады недастаткова месца для сінхранізацыі файлаў. Новыя файлы больш не будуць сінхранізавацца аўтаматычна.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Файл або папка непрыдатныя да выкарыстання.</translation>
 <translation id="1363028406613469049">Трэк</translation>
@@ -180,6 +181,7 @@
 <translation id="2464089476039395325">Проксі-сервер HTTP</translation>
 <translation id="2467267713099745100">Тып сеткі – <ph name="NETWORK_TYPE" />, выключана</translation>
 <translation id="2468402215065996499">Тамагочы</translation>
+<translation id="2468470447085858632">Сінхранізацыя файлаў дазваляе атрымліваць доступ да файлаў Google Дыска ў пазасеткавым рэжыме</translation>
 <translation id="2470939964922472929">Занадта шмат разоў быў уведзены няправільны PIN-код. Каб наладзіць новы PIN-код, увядзіце 8-значны PUK-код, атрыманы ад аператара.</translation>
 <translation id="2500392669976258912">Гуджараці (фанетычная раскладка)</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -602,6 +604,7 @@
 <translation id="5720028165859493293">Файл "<ph name="FILE_NAME" />" перамешчаны ў сметніцу</translation>
 <translation id="5724172041621205163">Тайская (раскладка Pattachote)</translation>
 <translation id="57383366388012121">Мінулы месяц</translation>
+<translation id="575175778971367197">Зараз сінхранізаваць гэты файл нельга</translation>
 <translation id="5756666464756035725">Венгерская QWERTY</translation>
 <translation id="5760252553414789727">Выбрана элементаў: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Нямецкая (Швейцарыя)</translation>
@@ -704,6 +707,7 @@
 <translation id="6558280019477628686">Адбылася памылка. Некаторыя элементы маглі не выдаліцца.</translation>
 <translation id="656398493051028875">Ідзе выдаленне файла "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Спасылка на Google Дыск</translation>
+<translation id="6588648400954570689">Налады сінхранізацыі файлаў</translation>
 <translation id="6594855146910089723">Гэта папка абагулена з Linux і Parallels Desktop</translation>
 <translation id="6607272825297743757">Інфармацыя пра файл</translation>
 <translation id="6609332149380188670">Абагулена папак з Parallels Desktop: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -828,6 +832,7 @@
 <translation id="7547811415869834682">Галандская</translation>
 <translation id="7551643184018910560">Замацаваць на паліцы</translation>
 <translation id="7553492409867692754">Даць праграмам Linux доступ да файлаў у папцы "<ph name="FOLDER_NAME" />"</translation>
+<translation id="7555339735447658365">Вы зараз па-за сеткай. Сінхранізацыя файлаў узновіцца, калі вы падключыцеся да інтэрнэту.</translation>
 <translation id="7589661784326793847">Пачакайце</translation>
 <translation id="7592775719802218421">Ідзе адкрыццё пазасеткавага доступу да файла "<ph name="FILE_NAME" />"</translation>
 <translation id="7600126690270271294">Сербская</translation>
@@ -870,6 +875,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Памылка наладжвання сеткі</translation>
+<translation id="7832093238954689746">Сінхранізацыя файлаў завершана. Файлы ў раздзеле "Мой Дыск" даступныя па-за сеткай.</translation>
 <translation id="7839804798877833423">Каб атрымаць гэтыя файлы, будзе выкарыстана прыкладна <ph name="FILE_SIZE" /> мабільнага трафіка.</translation>
 <translation id="7846076177841592234">Скасаваць выбар</translation>
 <translation id="7853966320808728790">Французская раскладка клавіятуры BÉPO</translation>
@@ -918,6 +924,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Мадэль прылады</translation>
 <translation id="8223479393428528563">Каб захаваць гэтыя файлы для выкарыстання ў аўтаномным рэжыме, падключыцеся зноў да інтэрнэту, націсніце правай кнопкай мышы на патрэбныя файлы і выберыце параметр <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Паказаць стан сховішча</translation>
 <translation id="8249296373107784235">Скасаваць</translation>
 <translation id="8250690786522693009">Лацініца</translation>
 <translation id="8250920743982581267">Дакументы</translation>

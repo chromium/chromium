@@ -185,6 +185,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1770726142253415363">Siirretty riville <ph name="ROW_NUMBER" />, sarakkeeseen <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Vieritä oikealle</translation>
 <translation id="1774796056689732716">Kalenteri, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> on valittuna</translation>
+<translation id="1775598828170459419">Näytetään <ph name="NUM_SHOWN_ITEMS" />/<ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="1787955149152357925">Pois päältä</translation>
 <translation id="181103072419391116">Signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="1815245884418711390">Laita hotspot päälle tai pois päältä. Hotspot on pois päältä.</translation>

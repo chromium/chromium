@@ -814,6 +814,7 @@
 <translation id="1647408325348388858">هل تريد فتح الملف <ph name="FILE_NAME" /> وتعديله في تطبيق الويب هذا؟</translation>
 <translation id="1648528859488547844">‏استخدام شبكة Wi‑Fi أو شبكات الجوَّال لتحديد الموقع الجغرافي</translation>
 <translation id="164936512206786300">إلغاء الإقران بجهاز عبر بلوتوث</translation>
+<translation id="1650801028905250434">‏ستتم مزامنة ملفاتك في مجلد "ملفاتي" مع Chromebook تلقائيًا لتتمكّن من الوصول إليها بدون اتصال بالإنترنت. يمكنك تغيير هذا الخيار متى شئت من خلال الإعدادات &gt; ملفات.</translation>
 <translation id="1651008383952180276">يجب إدخال عبارة المرور نفسها مرتين</translation>
 <translation id="1651609627703324721">تعرض علامة التبويب هذه محتوى واقع افتراضي على سماعة رأس.</translation>
 <translation id="1652326691684645429">تفعيل ميزة "المشاركة عن قرب"</translation>
@@ -4220,6 +4221,7 @@
 <translation id="4515872537870654449">‏يُرجي التواصل مع فريق دعم Dell للحصول على الخدمة. ستتوقف محطة الإرساء عن العمل في حال توقفت مروحة التبريد عن العمل.</translation>
 <translation id="4518840066030486079">‏نمط وضع استخدام مفتاح Shift</translation>
 <translation id="4519331665958994620">السماح للمواقع الإلكترونية بطلب استخدام الكاميرا</translation>
+<translation id="4519605771716872386">تم تفعيل مزامنة الملفات.</translation>
 <translation id="4519935350946509010">خطأ في الاتصال.</translation>
 <translation id="4520385623207007473">ملفات تعريف الارتباط قيد الاستخدام</translation>
 <translation id="452039078290142656">أجهزة غير معروفة من <ph name="VENDOR_NAME" /></translation>
@@ -4721,7 +4723,6 @@
 <translation id="4940364377601827259">تتوفّر <ph name="PRINTER_COUNT" /> طابعة للحفظ.</translation>
 <translation id="4940448324259979830">تتم إدارة هذا الحساب من قِبل <ph name="PROFILE_NAME" />.</translation>
 <translation id="4940845626435830013">حجز حجم القرص</translation>
-<translation id="4941074198479265146">‏تتّصل المواقع الإلكترونية عادةً بأجهزة MIDI لتتيح ميزات إنشاء الموسيقى وتعديلها.</translation>
 <translation id="4941243352516004658">‫<ph name="PRODUCT_ITEM_COUNT" /> سلعة في سلة التسوّق متوفّرة بخصم ‫<ph name="DISCOUNT_TEXT" /> من "<ph name="MERCHANT_NAME" />" على <ph name="MERCHANT_DOMAIN" />، تم الاطّلاع عليها <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">استخدام طلب الجهاز عند تسجيل الجهاز في إدارة المؤسسات:</translation>
 <translation id="4941627891654116707">حجم الخط</translation>
@@ -5759,7 +5760,7 @@
 <translation id="5857693745746757503">‏يمكنك توفير 50 دولار أمريكي أو أكثر عند شراء جهاز Chromebook جديد اليوم.</translation>
 <translation id="5858490737742085133">Terminal</translation>
 <translation id="585979798156957858">‏مفتاح Meta الخارجي</translation>
-<translation id="5860033963881614850">غير مفعّل</translation>
+<translation id="5860033963881614850">غير مفعّلة</translation>
 <translation id="5860254591544742609">إظهار شريط العناوين</translation>
 <translation id="5860491529813859533">تفعيل</translation>
 <translation id="5860494867054883682">جارٍ تحديث جهازك إلى قناة <ph name="CHANNEL_NAME" /> (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -7262,6 +7263,7 @@
 <translation id="7124712201233930202">لا يستوفي الملف متطلبات سياسات مؤسستك.</translation>
 <translation id="7125029162161377569">باستخدام الإصدارات التجريبية من "مبادرة حماية الخصوصية"، يمكن للمواقع الإلكترونية تقديم تجربة التصفّح ذاتها باستخدام قدر أقل من معلوماتك، ما يعني توفير المزيد من الخصوصية لك وتقليل مشاركة معلومات التتبّع بين المواقع الإلكترونية. سنضيف إصدارات تجريبية جديدة عندما تصبح جاهزة للاختبار.</translation>
 <translation id="7125148293026877011">‏حذف نظام التشغيل Crostini</translation>
+<translation id="7125932261198019860">‏تأكَّد من اتصال الطابعة وجهاز Chromebook بشبكة Wi-Fi نفسها أو استخدِم كابل USB. <ph name="LINK_BEGIN" />مزيد من المعلومات حول التوافق<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">سجل التنزيل</translation>
 <translation id="7128151990937044829">عرض مؤشر في شريط العناوين عند حظر الإشعارات</translation>
 <translation id="7131040479572660648">قراءة بياناتك على <ph name="WEBSITE_1" />، <ph name="WEBSITE_2" /> و<ph name="WEBSITE_3" /></translation>
@@ -7456,6 +7458,7 @@
 <translation id="7307129035224081534">متوقف مؤقتًا</translation>
 <translation id="7308643132139167865">لغات المواقع الإلكترونية</translation>
 <translation id="7310598146671372464">‏تعذّر تسجيل الدخول لأن الخادم لا يدعم أنواع ترميز Kerberos المحدَّدة. يُرجى الاتصال بمشرفك.</translation>
+<translation id="7311005168897771689">‏الوصول إلى ملفات Google Drive بلا إنترنت</translation>
 <translation id="7311244614769792472">لم يتم العثور على نتائج.</translation>
 <translation id="7312210124139670355">‏المشرف يعيد ضبط شريحة eSIM حاليًا. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="7317831949569936035">تسجيل الجهاز ضمن المؤسسة التعليمية</translation>

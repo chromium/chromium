@@ -35,7 +35,6 @@
 <translation id="2695886661449553974">Chrome でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="2732745070297234559">Chrome ですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
 <translation id="2736805085127235148">現在、デバイスの設定で Chrome の通知がオフになっています。</translation>
-<translation id="2754286486056173475">Chrome でカレンダーの予定を作成</translation>
 <translation id="2767464022270041271">保存されているパスワードがありません。パスワードを保存すると、Google パスワード マネージャーで確認できるようになります。</translation>
 <translation id="2840432500933227975">iOS で Chrome の設定を開き、[デフォルトのブラウザアプリ] をタップして [Chrome] を選択します。</translation>
 <translation id="2869959624320573933">Chrome へのログイン</translation>
@@ -51,7 +50,6 @@
 <translation id="3522659714780527202">どのデバイスからでも Chrome で自分のタブにアクセスするには、同期をオンにしてください</translation>
 <translation id="3533694711092285624">保存されているパスワードがありません。パスワードを保存すると Chrome で確認できるようになります。</translation>
 <translation id="3594076341410558780">「Chrome を最大限に活用」を非表示にする</translation>
-<translation id="3611867725106943284">[Chrome で Google マップを使用して表示] をタップします</translation>
 <translation id="3655656110921623717">Chrome は毎回モバイルサイトをリクエストします。</translation>
 <translation id="3720541637541300822">Chrome を終了するときにシークレット タブをロックする</translation>
 <translation id="3827545470516145620">このデバイスは標準のセキュリティ機能で保護されます</translation>
@@ -60,6 +58,7 @@
 <translation id="3984746313391923992">組織が Chrome にログインしないように求めています。</translation>
 <translation id="3988789688219830639">Google Chrome で写真または動画にアクセスできません。iOS の [設定] &gt; [プライバシー] &gt; [写真] でアクセスを有効にしてください。</translation>
 <translation id="4064699917955374540">Google アカウントで Chrome のデータを使用して保存するには、本人確認を行ってください。</translation>
+<translation id="4093042601582616698">Chrome をデフォルトのブラウザに設定しますか？</translation>
 <translation id="417201473131094001">Chrome Canary ではサポートされていません</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> は Chrome を使用しており、ブックマークやパスワードなどの設定がこのデバイスに残っています。</translation>
 <translation id="424864128008805179">Chrome からログアウトしますか？</translation>
@@ -104,7 +103,6 @@
 <translation id="6676840375528380067">Chrome データをこのデバイスから削除しますか？</translation>
 <translation id="6709398533399187136">データ侵害によってパスワードが漏洩しました。Google パスワード マネージャーでは、このパスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="6822673484890854830">Chrome ですべてのパスワードを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
-<translation id="6896070677477855330">[Chrome を終了するときにシークレット タブをロックする] をオンにします。</translation>
 <translation id="6964931465519938134">メッセージ、ドキュメント、他のアプリでタップしたリンクが常に Chrome で開かれるようになります。</translation>
 <translation id="6975725306479268850">自動入力で Chrome を選択する</translation>
 <translation id="7059914902409643750">Chrome を独自にカスタマイズ</translation>
@@ -147,7 +145,6 @@
 <translation id="8765470054473112089">Chrome でアドレスバーや検索ボックスに入力を始めると、入力内容がデフォルトの検索エンジンに送信され、より関連性の高い検索候補が表示されます。シークレット モードの場合、この設定はオフになっています。</translation>
 <translation id="8772179140489533211">Chrome へのログインを促すメッセージが表示されます。</translation>
 <translation id="8788269841521769222">このパスワードを覚えておく必要はありません。パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます</translation>
-<translation id="880967149107462122">Chrome 設定に移動します</translation>
 <translation id="8857676124663337448">Google パスワード マネージャーですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
 <translation id="8897749957032330183">パスワードは、このデバイスの Google パスワード マネージャーに保存されます。</translation>
 <translation id="8969290730818637510">オンにした場合:

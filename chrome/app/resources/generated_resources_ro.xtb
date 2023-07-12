@@ -813,6 +813,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1647408325348388858">Deschizi și editezi <ph name="FILE_NAME" /> în această aplicație web?</translation>
 <translation id="1648528859488547844">Folosește Wi-Fi sau rețelele mobile pentru detectarea locației</translation>
 <translation id="164936512206786300">Anulează asocierea dispozitivului Bluetooth</translation>
+<translation id="1650801028905250434">Fișierele din Contul meu Drive se vor sincroniza automat cu Chromebookul, ca să le poți accesa fără conexiune la internet. Poți modifica oricând opțiunea în Setări &gt; Fișiere.</translation>
 <translation id="1651008383952180276">Trebuie să introduci aceeași expresie de acces de două ori</translation>
 <translation id="1651609627703324721">Această filă prezintă conținut RV unui set de căști-microfon</translation>
 <translation id="1652326691684645429">Activează Trimiterea în apropiere</translation>
@@ -4227,6 +4228,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4515872537870654449">Contactează Dell pentru service. Dispozitivul de andocare se va închide dacă ventilatorul nu funcționează.</translation>
 <translation id="4518840066030486079">Stilul modului pentru tasta Shift</translation>
 <translation id="4519331665958994620">Site-urile pot solicita permisiunea de a folosi camera</translation>
+<translation id="4519605771716872386">Sincronizarea fișierelor este activată</translation>
 <translation id="4519935350946509010">Eroare de conexiune.</translation>
 <translation id="4520385623207007473">Cookie-uri utilizate</translation>
 <translation id="452039078290142656">dispozitive necunoscute de la <ph name="VENDOR_NAME" /></translation>
@@ -4731,7 +4733,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4940364377601827259">Există <ph name="PRINTER_COUNT" /> imprimante de salvat.</translation>
 <translation id="4940448324259979830">Acest cont este gestionat de <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Rezervă o dimensiune a discului</translation>
-<translation id="4941074198479265146">Site-urile se conectează de obicei la dispozitive MIDI pentru funcții cum ar fi crearea și editarea muzicii</translation>
 <translation id="4941243352516004658"><ph name="PRODUCT_ITEM_COUNT" /> articole din coșul de cumpărături cu <ph name="DISCOUNT_TEXT" /> de la <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, văzute <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Utilizați această solicitare pentru dispozitiv la înscrierea dispozitivului pentru gestionarea la nivel de întreprindere:</translation>
 <translation id="4941627891654116707">Dimensiunea fontului</translation>
@@ -7272,6 +7273,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7124712201233930202">Nu sunt respectate politicile organizației</translation>
 <translation id="7125029162161377569">Cu versiunile de încercare Privacy Sandbox, site-urile pot oferi aceeași experiență de navigare, folosind mai puține date despre tine. Aceasta înseamnă confidențialitate sporită și reducerea urmăririi pe mai multe site-uri. Vom adăuga versiuni de încercare noi atunci când sunt gata pentru testare.</translation>
 <translation id="7125148293026877011">Șterge Crostini</translation>
+<translation id="7125932261198019860">Asigură-te că imprimanta este conectată la aceeași rețea Wi-Fi ca Chromebookul sau folosește un cablu USB. <ph name="LINK_BEGIN" />Află mai multe despre compatibilitate<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Istoricul descărcărilor</translation>
 <translation id="7128151990937044829">Afișează un indicator în bara de adrese când sunt blocate notificările</translation>
 <translation id="7131040479572660648">Citește datele de pe <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> și <ph name="WEBSITE_3" /></translation>
@@ -7465,6 +7467,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7307129035224081534">Întreruptă</translation>
 <translation id="7308643132139167865">Limbi pentru site-uri</translation>
 <translation id="7310598146671372464">Conectarea nu a reușit. Serverul nu acceptă tipurile de criptare Kerberos specificate. Contactează administratorul.</translation>
+<translation id="7311005168897771689">Accesează fișierele din Google Drive când ești offline</translation>
 <translation id="7311244614769792472">Niciun rezultat</translation>
 <translation id="7312210124139670355">Administratorul îți resetează cardul eSIM Poate dura câteva minute.</translation>
 <translation id="7317831949569936035">Înscriere la școală</translation>
