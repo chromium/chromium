@@ -59,7 +59,7 @@ public class VariationsSeedFetcher {
                             + "      'state of field trials in Chrome. These field trials '"
                             + "      'typically configure either A/B experiments, or launched '"
                             + "      'features – oftentimes, critical security features.'"
-                            + "  trigger: 'This request is made once, on Chrome\'s first run, to '"
+                            + "  trigger: 'This request is made once, on Chrome\\'s first run, to '"
                             + "           'determine the initial state Chrome should be in.'"
                             + "  data: 'None.'"
                             + "  destination: GOOGLE_OWNED_SERVICE"
