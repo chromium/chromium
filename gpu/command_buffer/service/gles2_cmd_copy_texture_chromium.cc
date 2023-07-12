@@ -44,6 +44,7 @@ enum {
   S_FORMAT_RGBA8,
   S_FORMAT_BGRA_EXT,
   S_FORMAT_BGRA8_EXT,
+  S_FORMAT_RGB_YCRCB_420_CHROMIUM,
   S_FORMAT_RGB_YCBCR_420V_CHROMIUM,
   S_FORMAT_RGB_YCBCR_422_CHROMIUM,
   S_FORMAT_COMPRESSED,
@@ -175,6 +176,9 @@ ShaderId GetFragmentShaderId(unsigned glslVersion,
       break;
     case GL_BGRA8_EXT:
       sourceFormatIndex = S_FORMAT_BGRA8_EXT;
+      break;
+    case GL_RGB_YCRCB_420_CHROMIUM:
+      sourceFormatIndex = S_FORMAT_RGB_YCRCB_420_CHROMIUM;
       break;
     case GL_RGB_YCBCR_420V_CHROMIUM:
       sourceFormatIndex = S_FORMAT_RGB_YCBCR_420V_CHROMIUM;
