@@ -8933,6 +8933,11 @@ TEST_F(TouchIdAuthenticatorImplTest, OptionalUv) {
     auto options = GetTestPublicKeyCredentialCreationOptions();
     options->authenticator_selection->authenticator_attachment =
         device::AuthenticatorAttachment::kPlatform;
+    // Set rk to required. On platform authenticators Chrome should not
+    // universally require UV to make make a resident/discoverable credential,
+    // like it would on a security key.
+    options->authenticator_selection->resident_key =
+        device::ResidentKeyRequirement::kRequired;
     options->authenticator_selection->user_verification_requirement = uv;
     bool requires_uv = uv == device::UserVerificationRequirement::kRequired;
     if (requires_uv) {

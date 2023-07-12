@@ -1035,11 +1035,16 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     request->large_blob_key = want_large_blob;
   }
 
-  if (request->resident_key_required || auth_options.always_uv) {
-    request->user_verification = UserVerificationRequirement::kRequired;
-  } else {
-    request->user_verification = options_.user_verification;
-  }
+  // "Upgrade" uv to `required` for discoverable credentials on non-platform
+  // authenticators, and on security keys that have the `alwaysUv` config
+  // enabled.
+  const bool upgrade_uv = (request->resident_key_required &&
+                           authenticator->AuthenticatorTransport() !=
+                               FidoTransportProtocol::kInternal) ||
+                          auth_options.always_uv;
+  request->user_verification = upgrade_uv
+                                   ? UserVerificationRequirement::kRequired
+                                   : options_.user_verification;
 
   if (options_.cred_protect_request &&
       authenticator->Options().supports_cred_protect) {
