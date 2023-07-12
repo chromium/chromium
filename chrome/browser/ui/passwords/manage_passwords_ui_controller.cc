@@ -269,39 +269,43 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
         federated_matches) {
   // To change to managed state only when the managed state is more important
   // for the user that the current state.
-  if (passwords_data_.state() == password_manager::ui::INACTIVE_STATE ||
-      passwords_data_.state() == password_manager::ui::MANAGE_STATE) {
-    ClearPopUpFlagForBubble();
-    passwords_data_.OnPasswordAutofilled(password_forms, origin,
-                                         federated_matches);
-    // Don't close the existing bubble. Update the icon later.
-    if (bubble_status_ == BubbleStatus::SHOWN) {
-      bubble_status_ = BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
-    }
-    if (bubble_status_ != BubbleStatus::SHOWN_PENDING_ICON_UPDATE) {
-      UpdateBubbleAndIconVisibility();
-    }
-
-    if (GetState() == password_manager::ui::MANAGE_STATE) {
-      if (Browser* browser =
-              chrome::FindBrowserWithWebContents(web_contents())) {
-        if (browser->tab_strip_model()->GetActiveWebContents() ==
-            web_contents()) {
-          const bool has_non_empty_note =
-              !base::ranges::all_of(GetCurrentForms(), &std::u16string::empty,
-                                    &password_manager::PasswordForm::
-                                        GetNoteWithEmptyUniqueDisplayName);
-          if (has_non_empty_note &&
-              browser->window()->MaybeShowFeaturePromo(
-                  feature_engagement::
-                      kIPHPasswordsManagementBubbleDuringSigninFeature)) {
-            return;
-          }
-          MaybeShowPasswordManagerShortcutIPH(browser);
-        }
-      }
-    }
+  if (passwords_data_.state() != password_manager::ui::INACTIVE_STATE &&
+      passwords_data_.state() != password_manager::ui::MANAGE_STATE) {
+    return;
   }
+  ClearPopUpFlagForBubble();
+  passwords_data_.OnPasswordAutofilled(password_forms, origin,
+                                       federated_matches);
+  // Don't close the existing bubble. Update the icon later.
+  if (bubble_status_ == BubbleStatus::SHOWN) {
+    bubble_status_ = BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
+  }
+  if (bubble_status_ != BubbleStatus::SHOWN_PENDING_ICON_UPDATE) {
+    UpdateBubbleAndIconVisibility();
+  }
+
+  if (GetState() != password_manager::ui::MANAGE_STATE) {
+    return;
+  }
+  // There nothing to do if this controller is not attached to currently active
+  // tab.
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  if (!browser) {
+    return;
+  }
+  if (browser->tab_strip_model()->GetActiveWebContents() != web_contents()) {
+    return;
+  }
+  const bool has_non_empty_note = !base::ranges::all_of(
+      GetCurrentForms(), &std::u16string::empty,
+      &password_manager::PasswordForm::GetNoteWithEmptyUniqueDisplayName);
+  if (has_non_empty_note &&
+      browser->window()->MaybeShowFeaturePromo(
+          feature_engagement::
+              kIPHPasswordsManagementBubbleDuringSigninFeature)) {
+    return;
+  }
+  MaybeShowPasswordManagerShortcutIPH(browser);
 }
 
 void ManagePasswordsUIController::OnCredentialLeak(
