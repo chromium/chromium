@@ -656,19 +656,8 @@ void InspectorCacheStorageAgent::requestCacheNames(
     }
     security_origin =
         SecurityOrigin::CreateFromUrlOrigin(key->origin())->ToString();
-
-    if (!security_origin.StartsWith("http")) {
-      callback->sendFailure(ProtocolResponse::InvalidParams(
-          "Storage key corresponds to invalid origin"));
-      return;
-    }
   } else {
     security_origin = maybe_security_origin.fromJust();
-    if (!security_origin.StartsWith("http")) {
-      callback->sendFailure(
-          ProtocolResponse::InvalidParams("Invalid security origin"));
-      return;
-    }
     scoped_refptr<SecurityOrigin> sec_origin =
         SecurityOrigin::CreateFromString(security_origin);
     // Cache Storage API is restricted to trustworthy origins.
