@@ -1601,6 +1601,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSPasswordAuthOnEntryName,
      flag_descriptions::kIOSPasswordAuthOnEntryDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordAuthOnEntry)},
+    {"tab-resumption", flag_descriptions::kTabResumptionName,
+     flag_descriptions::kTabResumptionDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabResumption)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

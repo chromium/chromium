@@ -1084,6 +1084,11 @@ const char kTabPickupThresholdDescription[] =
     "When enabled, an infobar will be displayed when the latest tab used from "
     "another device is yougner than the threshold.";
 
+const char kTabResumptionName[] = "Enable Tab Resumption";
+const char kTabResumptionDescription[] =
+    "When enabled, offer users with a quick shortcut to resume the last synced "
+    "tab from another device.";
+
 const char kUseLoadSimulatedRequestForOfflinePageName[] =
     "Use loadSimulatedRequest:responseHTMLString: when displaying offline "
     "pages";

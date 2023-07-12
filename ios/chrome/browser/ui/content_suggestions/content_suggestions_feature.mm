@@ -28,6 +28,10 @@ BASE_FEATURE(kHideContentSuggestionsTiles,
              "HideContentSuggestionsTiles",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabResumption,
+             "TabResumption",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kMagicStackMostVisitedModuleParam[] = "MagicStackMostVisitedModule";
 
 const char kReducedSpaceParam[] = "ReducedNTPTopSpace";

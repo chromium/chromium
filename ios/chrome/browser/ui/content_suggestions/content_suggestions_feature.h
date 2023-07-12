@@ -22,6 +22,9 @@ BASE_DECLARE_FEATURE(kMagicStack);
 // Feature that hides the Content Suggestions tiles.
 BASE_DECLARE_FEATURE(kHideContentSuggestionsTiles);
 
+// Feature that enables tab resumption.
+BASE_DECLARE_FEATURE(kTabResumption);
+
 // A parameter to indicate whether the Most Visited Tiles should be in the Magic
 // Stack.
 extern const char kMagicStackMostVisitedModuleParam[];

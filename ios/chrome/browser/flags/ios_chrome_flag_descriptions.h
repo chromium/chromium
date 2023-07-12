@@ -941,6 +941,10 @@ extern const char kTabInactivityThresholdDescription[];
 extern const char kTabPickupThresholdName[];
 extern const char kTabPickupThresholdDescription[];
 
+// Title and description for the flag to enable tab resumption.
+extern const char kTabResumptionName[];
+extern const char kTabResumptionDescription[];
+
 // Title and description for the flag to enable using the
 // loadSimulatedRequest:responseHTMLString: API for displaying error pages in
 // CRWWKNavigationHandler.
