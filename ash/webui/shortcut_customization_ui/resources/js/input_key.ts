@@ -13,9 +13,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './input_key.html.js';
-
-const META_KEY = 'meta';
-const LWIN_KEY = 'Meta';
+import {LWIN_KEY, META_KEY} from './shortcut_utils.js';
 
 /**
  * Refers to the state of an 'input-key' item.

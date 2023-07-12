@@ -20,7 +20,7 @@ import {getShortcutProvider} from './mojo_interface_provider.js';
 import {mojoString16ToString} from './mojo_utils.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCustomizationDisabled, isFunctionKey, isStandardAcceleratorInfo, keyCodeToModifier} from './shortcut_utils.js';
+import {createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCustomizationDisabled, isFunctionKey, isStandardAcceleratorInfo, keyCodeToModifier, LWIN_KEY, META_KEY} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
   $: {
@@ -568,11 +568,21 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   }
 
   private getAriaLabel(): string {
-    const keyOrIcon =
+    let keyOrIcon =
         this.acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay;
-    return getModifiersForAcceleratorInfo(this.acceleratorInfo)
-        .join(' ')
-        .concat(` ${this.getAriaKeyDisplay(keyOrIcon)}`);
+    const metaKeyAriaLabel = this.lookupManager.getHasLauncherButton() ?
+        this.i18n('iconLabelOpenLauncher') :
+        this.i18n('iconLabelOpenSearch');
+    // LWIN_KEY is not a modifier, but it is displayed as a meta icon.
+    keyOrIcon = keyOrIcon === LWIN_KEY ? metaKeyAriaLabel : keyOrIcon;
+    const modifiers =
+        getModifiersForAcceleratorInfo(this.acceleratorInfo)
+            .map(
+                // Update modifiers if it includes META_KEY.
+                modifier =>
+                    modifier === META_KEY ? metaKeyAriaLabel : modifier);
+
+    return [...modifiers, this.getAriaKeyDisplay(keyOrIcon)].join(' ');
   }
 
   private getAriaKeyDisplay(keyOrIcon: string): string {

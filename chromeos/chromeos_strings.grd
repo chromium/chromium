@@ -4246,11 +4246,13 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MODE_CHANGE" desc="The text read aloud by the screen reader describing the keyboard icon 'mode change'.">
           mode change
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_LAUNCHER" desc="The text read aloud by the screen reader describing the keyboard icon 'open launcher'.">
-          open launcher
+        <!-- TODO(b/286268215): Translate this string -->
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_LAUNCHER" desc="The text read aloud by the screen reader describing the keyboard icon 'meta launcher'." translateable="false">
+          meta launcher
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_SEARCH" desc="The text read aloud by the screen reader describing the keyboard icon 'open search'.">
-          open search
+        <!-- TODO(b/286268215): Translate this string -->
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_SEARCH" desc="The text read aloud by the screen reader describing the keyboard icon 'meta search'." translateable="false">
+          meta search
         </message>
         <!-- TODO(b/286268215): Translate this string -->
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_POWER" desc="The text read aloud by the screen reader describing the keyboard icon 'power'." translateable="false">

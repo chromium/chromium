@@ -500,7 +500,7 @@ suite('acceleratorViewTest', function() {
     await flushTasks();
 
     const acceleratorInfo = createStandardAcceleratorInfo(
-        Modifier.SHIFT | Modifier.ALT,
+        Modifier.SHIFT | Modifier.ALT | Modifier.COMMAND,
         /*key=*/ 220,
         /*keyDisplay=*/ 'LaunchApplication1');
     viewElement.acceleratorInfo = acceleratorInfo;
@@ -511,6 +511,28 @@ suite('acceleratorViewTest', function() {
     const viewContainer =
         viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
     // The icon name is 'overview' in keyToIconNameMap.
-    assertEquals('alt shift overview', viewContainer.ariaLabel);
+    const regex = /^meta (search|launcher) alt shift overview$/;
+    assertTrue(!!viewContainer.ariaLabel);
+    assertTrue(regex.test(viewContainer.ariaLabel));
+  });
+
+  test('GetAriaLabelsWithLwinKey', async () => {
+    viewElement = initAcceleratorViewElement();
+    await flushTasks();
+    // Open/close launcher -> Lwin key.
+    const acceleratorInfo = createStandardAcceleratorInfo(
+        Modifier.NONE,
+        /*key=*/ 224,
+        /*keyDisplay=*/ 'Meta');
+    viewElement.acceleratorInfo = acceleratorInfo;
+    viewElement.source = AcceleratorSource.kAsh;
+    viewElement.action = 1;
+    await flush();
+
+    const viewContainer =
+        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
+    const regex = /^meta (search|launcher)$/;
+    assertTrue(!!viewContainer.ariaLabel);
+    assertTrue(regex.test(viewContainer.ariaLabel));
   });
 });

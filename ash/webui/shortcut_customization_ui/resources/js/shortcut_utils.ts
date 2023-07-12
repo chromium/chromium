@@ -245,6 +245,8 @@ export function getModifiersForAcceleratorInfo(
 }
 
 export const SHORTCUTS_APP_URL = 'chrome://shortcut-customization';
+export const META_KEY = 'meta';
+export const LWIN_KEY = 'Meta';
 
 export const getURLForSearchResult = (searchResult: MojoSearchResult): URL => {
   const url = new URL(SHORTCUTS_APP_URL);
