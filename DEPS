@@ -284,8 +284,6 @@ vars = {
   # reclient CIPD package version
   'reclient_version': 're_client_version:0.109.0.927890d-gomaip',
 
-  # Fetch siso CIPD package
-  'checkout_siso': False,
   # siso CIPD package version.
   'siso_version': 'git_revision:06bae0e9d7265e972358b23f77d9867930061db0',
 
@@ -1702,7 +1700,6 @@ deps = {
       }
     ],
     'dep_type': 'cipd',
-    'condition': 'checkout_siso',
   },
   'src/third_party/objenesis': {
       'packages': [
@@ -5608,11 +5605,10 @@ hooks = [
                '--hook',
                ],
   },
-  # Configure Siso
+  # Configure Siso for developer builds.
   {
     'name': 'configure_siso',
     'pattern': '.',
-    'condition': 'checkout_siso',
     'action': ['python3',
                'src/build/config/siso/configure_siso.py',
                '--rbe_instance',
