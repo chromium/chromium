@@ -3766,7 +3766,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Lacros.Launch.ModeAndSource"
-    enum="LacrosLaunchModeAndSource" expires_after="2023-12-24">
+    enum="LacrosLaunchModeAndSource" expires_after="2024-07-12">
   <owner>skuhne@chromium.org</owner>
   <owner>lacros-team@google.com</owner>
   <summary>
@@ -3780,7 +3780,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Lacros.Launch.ModeAndSource.Daily"
-    enum="LacrosLaunchModeAndSource" expires_after="2023-07-12">
+    enum="LacrosLaunchModeAndSource" expires_after="2024-07-12">
   <owner>skuhne@chromium.org</owner>
   <owner>lacros-team@google.com</owner>
   <summary>
