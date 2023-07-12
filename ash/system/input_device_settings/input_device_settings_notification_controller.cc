@@ -76,6 +76,15 @@ std::string GetRightClickNotificationId(
   }
 }
 
+// We only display notifications for active user sessions (signed-in/guest with
+// desktop ready). Also do not show notifications in signin or lock screen.
+bool IsActiveUserSession() {
+  const auto* session_controller = Shell::Get()->session_controller();
+  return session_controller->GetSessionState() ==
+             session_manager::SessionState::ACTIVE &&
+         !session_controller->IsUserSessionBlocked();
+}
+
 }  // namespace
 
 InputDeviceSettingsNotificationController::
@@ -93,6 +102,10 @@ void InputDeviceSettingsNotificationController::
         SimulateRightClickModifier blocked_modifier,
         SimulateRightClickModifier active_modifier) {
   CHECK_NE(blocked_modifier, SimulateRightClickModifier::kNone);
+  if (!IsActiveUserSession()) {
+    return;
+  }
+
   auto on_click_handler =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating([]() {

@@ -76,4 +76,14 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
       "right_click_rewrite_disabled_by_setting"));
 }
 
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       NotificationOnlyShownForActiveUserSessions) {
+  GetSessionControllerClient()->LockScreen();
+
+  controller()->NotifyRightClickRewriteBlockedBySetting(
+      ui::mojom::SimulateRightClickModifier::kAlt,
+      ui::mojom::SimulateRightClickModifier::kSearch);
+  EXPECT_EQ(message_center()->NotificationCount(), 0u);
+}
+
 }  // namespace ash
