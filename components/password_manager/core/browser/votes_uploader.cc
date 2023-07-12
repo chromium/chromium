@@ -164,8 +164,17 @@ bool IsAddingUsernameToExistingMatch(
   if (credentials.username_value.empty())
     return false;
   const PasswordForm* match = FindFormByUsername(matches, std::u16string());
-  return match && !match->is_public_suffix_match &&
-         match->password_value == credentials.password_value;
+
+  if (!match) {
+    return false;
+  }
+
+  if (password_manager_util::GetMatchType(*match) ==
+      password_manager_util::GetLoginMatchType::kPSL) {
+    return false;
+  }
+
+  return match->password_value == credentials.password_value;
 }
 
 // Returns a uniformly distributed random symbol from the set of random symbols
