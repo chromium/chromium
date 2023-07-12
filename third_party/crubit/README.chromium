@@ -5,7 +5,9 @@ Version: 0
 Date: See the comments next to the `crubit_revision` in the //DEPS file
 Revision: See `crubit_revision` in the //DEPS file
 License: Apache 2.0
+License File: LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 
