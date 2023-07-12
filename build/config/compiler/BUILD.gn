@@ -2571,11 +2571,17 @@ config("symbols") {
       if (use_dwarf5) {
         cflags += [ "-gdwarf-5" ]
         rustflags += [ "-Zdwarf-version=5" ]
-      } else if (!is_apple) {
+      } else {
         # Recent clang versions default to DWARF5 on Linux, and Android is about
-        # to switch. TODO: Adopt that in controlled way.
-        # Apple platforms still default to 4, so the flag is not needed there.
-        cflags += [ "-gdwarf-4" ]
+        # to switch. TODO: Adopt that in controlled way. For now, keep DWARF4.
+        # Apple platforms still default to 4 in clang, so they don't need the
+        # cflags.
+        if (!is_apple) {
+          cflags += [ "-gdwarf-4" ]
+        }
+
+        # On Apple, rustc defaults to DWARF2 so it needs to be told how to
+        # match clang.
         rustflags += [ "-Zdwarf-version=4" ]
       }
     }
