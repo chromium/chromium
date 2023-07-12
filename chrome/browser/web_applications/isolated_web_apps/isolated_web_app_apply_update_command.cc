@@ -302,8 +302,15 @@ void IsolatedWebAppApplyUpdateCommand::ReportFailure(base::StringPiece message,
 
 void IsolatedWebAppApplyUpdateCommand::CleanupUpdateInfoOnFailure(
     base::OnceClosure next_step_callback) {
-  std::unique_ptr<WebAppRegistryUpdate> update =
-      lock_->sync_bridge().BeginUpdate();
+  ScopedRegistryUpdate update(
+      &lock_->sync_bridge(),
+      // We don't really care whether committing the update succeeds or fails.
+      // However, we want to wait for the write of the database to disk, so that
+      // a potential crash during that write happens before the
+      // to-be-implemented cleanup system for no longer referenced Web Bundles
+      // kicks in.
+      base::IgnoreArgs<bool>(std::move(next_step_callback)));
+
   WebApp* web_app = update->UpdateApp(url_info_.app_id());
 
   // This command might fail because the app is no longer installed, or because
@@ -312,22 +319,12 @@ void IsolatedWebAppApplyUpdateCommand::CleanupUpdateInfoOnFailure(
   // pending update info for us to delete.
   if (!web_app || !web_app->isolation_data().has_value() ||
       !web_app->isolation_data()->pending_update_info().has_value()) {
-    std::move(next_step_callback).Run();
     return;
   }
 
   WebApp::IsolationData updated_isolation_data = *web_app->isolation_data();
   updated_isolation_data.SetPendingUpdateInfo(absl::nullopt);
   web_app->SetIsolationData(std::move(updated_isolation_data));
-
-  lock_->sync_bridge().CommitUpdate(
-      std::move(update),
-      // We don't really care whether committing the update succeeds or fails.
-      // However, we want to wait for the write of the database to disk, so that
-      // a potential crash during that write happens before the
-      // to-be-implemented cleanup system for no longer referenced Web Bundles
-      // kicks in.
-      base::IgnoreArgs<bool>(std::move(next_step_callback)));
 }
 
 void IsolatedWebAppApplyUpdateCommand::ReportSuccess() {

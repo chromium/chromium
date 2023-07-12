@@ -245,8 +245,10 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::
 void IsolatedWebAppUpdatePrepareAndStoreCommand::Finalize(
     WebAppInstallInfo info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::unique_ptr<WebAppRegistryUpdate> update =
-      lock_->sync_bridge().BeginUpdate();
+  ScopedRegistryUpdate update(
+      &lock_->sync_bridge(),
+      base::BindOnce(&IsolatedWebAppUpdatePrepareAndStoreCommand::OnFinalized,
+                     weak_factory_.GetWeakPtr()));
 
   WebApp* app_to_update = update->UpdateApp(url_info_.app_id());
   CHECK(app_to_update);
@@ -255,11 +257,6 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::Finalize(
       *app_to_update->isolation_data();
   updated_isolation_data.SetPendingUpdateInfo(update_info_);
   app_to_update->SetIsolationData(std::move(updated_isolation_data));
-
-  lock_->sync_bridge().CommitUpdate(
-      std::move(update),
-      base::BindOnce(&IsolatedWebAppUpdatePrepareAndStoreCommand::OnFinalized,
-                     weak_factory_.GetWeakPtr()));
 }
 
 void IsolatedWebAppUpdatePrepareAndStoreCommand::OnFinalized(bool success) {
