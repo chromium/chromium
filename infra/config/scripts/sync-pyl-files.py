@@ -10,9 +10,10 @@ should be run to sync them to //testing/buildbot. The script can be run
 with the --check flag to indicate whether any files are out-of-date.
 
 The *.pyl files need to be present in //testing/buildbot for multiple
-reasons: * //testing/buildbot is mirrored into a separate repo that
-angle has as
-  a dep to avoid having to repeat the definitions.
+reasons:
+* The angle repo uses the *.pyl files in //testing/buildbot via a repo
+  that mirrors //testing so that the definitions do not need to be kept
+  in sync.
 * pinpoint builds revisions not at head, so until all revisions in scope
   for pinpoint contain
   //infra/config/generated/testing/gn_isolate_map.pyl, the config
