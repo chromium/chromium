@@ -17,7 +17,7 @@ import multiprocessing
 import os
 import re
 import subprocess
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from gpu_tests import gpu_integration_test
 
@@ -65,13 +65,21 @@ def ParseArgs() -> argparse.Namespace:
   parser.add_argument('--num-samples',
                       default=10,
                       type=int,
-                      help='The number of samplers per builder to use.')
+                      help='The number of samples per builder to use.')
+  parser.add_argument('--shard-max-threshold',
+                      type=int,
+                      help='Omit showing results if the max shard time for a '
+                      'step is less than the specified number of seconds. '
+                      'Useful for finding problematic configurations if the '
+                      'goal is to have shard times under some limit.')
 
   args = parser.parse_args()
   args.suites = args.suites or test_suites
 
   if args.num_samples <= 0:
     parser.error('--num-samples must be a positive integer.')
+  if args.shard_max_threshold and args.shard_max_threshold < 0:
+    parser.error('--shard-max-threshold must be a non-negative integer.')
 
   return args
 
@@ -265,7 +273,8 @@ def _OutputBuilderInformation(builders_to_steps: Dict[str,
                                                       Dict[str,
                                                            List[Tuple[int,
                                                                       int]]]],
-                              num_samples: int) -> None:
+                              num_samples: int,
+                              shard_max_threshold: Optional[int]) -> None:
   """Print out collected runtime information.
 
   Args:
@@ -283,18 +292,22 @@ def _OutputBuilderInformation(builders_to_steps: Dict[str,
         This dict contains all the collected shard runtime information for
         every relevant test step on every queried builder.
     num_samples: An int containing the number of builds used from each builder.
+    shard_max_threshold: An int for a max shard time in seconds. If a step's max
+        shard time is under this value, the stats for the step will not be
+        output. If None, all stats will be output regardless of max shard time.
   """
-  def _OutputListStats(l):
+  def _OutputListStats(l, output_lines):
     # Here and lower down when we do the shard calculations, we can potentially
     # understate the values since we aren't guaranteed to get |num_samples|
     # datapoints if a test is new or recently renamed. However, this should be
     # quite rare, and the script can simply be run again in the near future to
     # work around this.
-    print('      Average per build %f' % (float(sum(l)) / num_samples))
-    print('      Average per shard %f' % (float(sum(l)) / len(l)))
-    print('      Median per shard %d' % l[len(l) // 2])
-    print('      Min shard %d' % l[0])
-    print('      Max shard %d' % l[-1])
+    output_lines.append('      Average per build %f' %
+                        (float(sum(l)) / num_samples))
+    output_lines.append('      Average per shard %f' % (float(sum(l)) / len(l)))
+    output_lines.append('      Median per shard %d' % l[len(l) // 2])
+    output_lines.append('      Min shard %d' % l[0])
+    output_lines.append('      Max shard %d' % l[-1])
 
   # Re-create the mapping now with sorted keys so that builder output is
   # consistent.
@@ -303,18 +316,25 @@ def _OutputBuilderInformation(builders_to_steps: Dict[str,
       for k in sorted(list(builders_to_steps.keys()))
   }
   for builder, steps_to_times in builders_to_steps.items():
-    print(builder)
+    output_lines = [builder]
     for step, times in steps_to_times.items():
       runtimes = [t[0] for t in times]
       overheads = [t[1] for t in times]
       runtimes.sort()
       overheads.sort()
-      print('  %s (~%d shards)' %
-            (step, math.ceil(float(len(runtimes)) / num_samples)))
-      print('    Runtime')
-      _OutputListStats(runtimes)
-      print('    Overhead')
-      _OutputListStats(overheads)
+      # Skip any steps that are under the requested max shard time.
+      if shard_max_threshold is not None and runtimes[-1] < shard_max_threshold:
+        continue
+      output_lines.append('  %s (~%d shards)' %
+                          (step, math.ceil(float(len(runtimes)) / num_samples)))
+      output_lines.append('    Runtime')
+      _OutputListStats(runtimes, output_lines)
+      output_lines.append('    Overhead')
+      _OutputListStats(overheads, output_lines)
+
+    if len(output_lines) == 1:
+      output_lines.append('  No steps over requested max shard time.')
+    print('\n'.join(output_lines))
 
 
 def main() -> None:
@@ -343,4 +363,5 @@ def main() -> None:
   for bt in builder_times:
     builders_to_steps.update(bt)
 
-  _OutputBuilderInformation(builders_to_steps, args.num_samples)
+  _OutputBuilderInformation(builders_to_steps, args.num_samples,
+                            args.shard_max_threshold)
