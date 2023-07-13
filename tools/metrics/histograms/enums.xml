@@ -61609,6 +61609,7 @@ from previous Chrome versions.
   <int value="-1174267639" label="ClientLoFi:disabled"/>
   <int value="-1173823468" label="FullUserAgent:enabled"/>
   <int value="-1173361620" label="CCTModulePostMessage:disabled"/>
+  <int value="-1173283620" label="MouseAndTrackpadDropdownMenu:disabled"/>
   <int value="-1172572865" label="NTPShowGoogleGInOmnibox:enabled"/>
   <int value="-1172204005" label="enable-offline-auto-reload-visible-only"/>
   <int value="-1170286604" label="Commander:disabled"/>
@@ -67777,6 +67778,7 @@ from previous Chrome versions.
       label="enable-manual-fallback-for-password-saving:enabled"/>
   <int value="2002113900" label="AdaptiveButtonInTopToolbar:disabled"/>
   <int value="2002573873" label="ChromeHomeMenuItemsExpandSheet:enabled"/>
+  <int value="2002724184" label="MouseAndTrackpadDropdownMenu:enabled"/>
   <int value="2003568209" label="TouchpadAndWheelScrollLatching:disabled"/>
   <int value="2003811018" label="enable-touch-support-for-screen-magnifier"/>
   <int value="2004483175" label="multi-instance-merge-tabs"/>

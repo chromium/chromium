@@ -2331,6 +2331,9 @@ extern const char kMessagesForAndroidStackingAnimationDescription[];
 extern const char kMobilePWAInstallPromptMlName[];
 extern const char kMobilePWAInstallPromptMlDescription[];
 
+extern const char kMouseAndTrackpadDropdownMenuName[];
+extern const char kMouseAndTrackpadDropdownMenuDescription[];
+
 extern const char kNetworkServiceInProcessName[];
 extern const char kNetworkServiceInProcessDescription[];
 

@@ -5372,6 +5372,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "mouse-and-trackpad-dropdown-menu",
+    "owners": [ "wbjacksonjr" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "multi-zone-rgb-keyboard",
     "owners": [ "jasontt", "assistive-eng@google.com"],
     "expiry_milestone": 120

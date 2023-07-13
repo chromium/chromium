@@ -3981,6 +3981,12 @@ const char kMobilePWAInstallPromptMlDescription[] =
     "When enabled, will use ML result to decide whether mobile PWA install "
     "prompt should be shown.";
 
+const char kMouseAndTrackpadDropdownMenuName[] =
+    "Android Mouse & Trackpad Drop-down Text Selection Menu";
+const char kMouseAndTrackpadDropdownMenuDescription[] =
+    "When enabled, shows a dropdown menu for mouse and trackpad secondary "
+    "clicks (i.e. right click) with respect to text selection.";
+
 const char kNetworkServiceInProcessName[] =
     "Run the network service on the browser process";
 const char kNetworkServiceInProcessDescription[] =

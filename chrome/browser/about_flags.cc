@@ -10578,6 +10578,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    {"mouse-and-trackpad-dropdown-menu",
+     flag_descriptions::kMouseAndTrackpadDropdownMenuName,
+     flag_descriptions::kMouseAndTrackpadDropdownMenuDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kMouseAndTrackpadDropdownMenu)},
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
     {"autofill-enable-payments-android-bottom-sheet",
      flag_descriptions::kAutofillEnablePaymentsAndroidBottomSheetName,
      flag_descriptions::kAutofillEnablePaymentsAndroidBottomSheetDescription,

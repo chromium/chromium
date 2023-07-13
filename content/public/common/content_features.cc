@@ -1503,6 +1503,12 @@ BASE_FEATURE(kReduceGpuPriorityOnBackground,
              "ReduceGpuPriorityOnBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, shows a dropdown menu for mouse and trackpad secondary
+// clicks (i.e. right click) with respect to text selection.
+BASE_FEATURE(kMouseAndTrackpadDropdownMenu,
+             "MouseAndTrackpadDropdownMenu",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Allows the use of an experimental feature to drop any AccessibilityEvents
 // that are not relevant to currently enabled accessibility services.
 BASE_FEATURE(kOnDemandAccessibilityEvents,
