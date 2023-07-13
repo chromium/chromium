@@ -4,13 +4,13 @@
 
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 
-#include <cstddef>
-#include <map>
 #include <string>
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -26,67 +26,108 @@ const char kTelemetryExtensionManufacturerOverrideForTesting[] =
 const char kTelemetryExtensionPwaOriginOverrideForTesting[] =
     "telemetry-extension-pwa-origin-override-for-testing";
 
+// Overrides |iwa_id| field of the ChromeOSSystemExtensionInfo structure.
+// Used for development/testing.
+const char kTelemetryExtensionIwaIdOverrideForTesting[] =
+    "telemetry-extension-iwa-id-override-for-testing";
+
 }  // namespace switches
 
 namespace {
 
-using ChromeOSSystemExtensionInfos =
-    std::map<std::string, const ChromeOSSystemExtensionInfo>;
+using ChromeOSSystemExtensionInfoMap =
+    base::fixed_flat_map<std::string, ChromeOSSystemExtensionInfo, 3>;
 
-const ChromeOSSystemExtensionInfos& getMap() {
-  static const ChromeOSSystemExtensionInfos kExtensionIdToExtensionInfoMap{
-      {/*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
-       {/*manufacturers=*/{"HP", "ASUS"},
-        /*pwa_origin=*/"*://googlechromelabs.github.io/*"}},
-      {/*extension_id=*/"alnedpmllcfpgldkagbfbjkloonjlfjb",
-       {/*manufacturers=*/{"HP"},
-        /*pwa_origin=*/"https://hpcs-appschr.hpcloud.hp.com/*"}},
-      {/*extension_id=*/"hdnhcpcfohaeangjpkcjkgmgmjanbmeo",
-       {/*manufacturers=*/{"ASUS"},
-        /*pwa_origin=*/"https://dlcdnccls.asus.com/*"}}};
+ChromeOSSystemExtensionInfoMap ConstructMap() {
+  ChromeOSSystemExtensionInfoMap map =
+      base::MakeFixedFlatMap<std::string, ChromeOSSystemExtensionInfo>({
+          {/*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
+           {
+               /*manufacturers=*/{"HP", "ASUS"},
+               /*pwa_origin=*/"*://googlechromelabs.github.io/*",
+               /*iwa_id=*/absl::nullopt,
+           }},
+          {/*extension_id=*/"alnedpmllcfpgldkagbfbjkloonjlfjb",
+           {
+               /*manufacturers=*/{"HP"},
+               /*pwa_origin=*/"https://hpcs-appschr.hpcloud.hp.com/*",
+               /*iwa_id=*/absl::nullopt,
+           }},
+          {/*extension_id=*/"hdnhcpcfohaeangjpkcjkgmgmjanbmeo",
+           {
+               /*manufacturers=*/{"ASUS"},
+               /*pwa_origin=*/"https://dlcdnccls.asus.com/*",
+               /*iwa_id=*/absl::nullopt,
+           }},
+      });
 
-  return kExtensionIdToExtensionInfoMap;
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          switches::kTelemetryExtensionPwaOriginOverrideForTesting)) {
+    auto pwa_origin = command_line->GetSwitchValueASCII(
+        switches::kTelemetryExtensionPwaOriginOverrideForTesting);
+    for (auto& it : map) {
+      it.second.pwa_origin = pwa_origin;
+    }
+  }
+
+  if (command_line->HasSwitch(
+          switches::kTelemetryExtensionManufacturerOverrideForTesting)) {
+    auto manufacturer = command_line->GetSwitchValueASCII(
+        switches::kTelemetryExtensionManufacturerOverrideForTesting);
+    for (auto& it : map) {
+      it.second.manufacturers = {manufacturer};
+    }
+  }
+
+  if (command_line->HasSwitch(
+          switches::kTelemetryExtensionIwaIdOverrideForTesting)) {
+    auto iwa_id = command_line->GetSwitchValueASCII(
+        switches::kTelemetryExtensionIwaIdOverrideForTesting);
+    for (auto& it : map) {
+      it.second.iwa_id = iwa_id;
+    }
+  }
+
+  return map;
+}
+
+ChromeOSSystemExtensionInfoMap*& GetMap() {
+  static ChromeOSSystemExtensionInfoMap* g_map =
+      new ChromeOSSystemExtensionInfoMap{ConstructMap()};
+  return g_map;
 }
 
 }  // namespace
 
 ChromeOSSystemExtensionInfo::ChromeOSSystemExtensionInfo(
-    base::flat_set<std::string> manufacturers,
-    const std::string& pwa_origin)
-    : manufacturers(std::move(manufacturers)), pwa_origin(pwa_origin) {}
+    const base::flat_set<std::string>& manufacturers,
+    const absl::optional<std::string>& pwa_origin,
+    const absl::optional<std::string>& iwa_id)
+    : manufacturers(manufacturers), pwa_origin(pwa_origin), iwa_id(iwa_id) {}
+
 ChromeOSSystemExtensionInfo::ChromeOSSystemExtensionInfo(
-    const ChromeOSSystemExtensionInfo& other) = default;
+    const ChromeOSSystemExtensionInfo&) = default;
+
+ChromeOSSystemExtensionInfo& ChromeOSSystemExtensionInfo::operator=(
+    const ChromeOSSystemExtensionInfo&) = default;
+
 ChromeOSSystemExtensionInfo::~ChromeOSSystemExtensionInfo() = default;
 
-size_t GetChromeOSSystemExtensionInfosSize() {
-  return getMap().size();
-}
-
-ChromeOSSystemExtensionInfo GetChromeOSExtensionInfoForId(
+const ChromeOSSystemExtensionInfo& GetChromeOSExtensionInfoById(
     const std::string& id) {
   CHECK(IsChromeOSSystemExtension(id));
-
-  auto info = getMap().at(id);
-
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(
-          switches::kTelemetryExtensionPwaOriginOverrideForTesting)) {
-    info.pwa_origin = command_line->GetSwitchValueASCII(
-        switches::kTelemetryExtensionPwaOriginOverrideForTesting);
-  }
-
-  if (command_line->HasSwitch(
-          switches::kTelemetryExtensionManufacturerOverrideForTesting)) {
-    info.manufacturers = {command_line->GetSwitchValueASCII(
-        switches::kTelemetryExtensionManufacturerOverrideForTesting)};
-  }
-
-  return info;
+  return GetMap()->at(id);
 }
 
 bool IsChromeOSSystemExtension(const std::string& id) {
-  const auto& extension_info_map = getMap();
-  return extension_info_map.find(id) != extension_info_map.end();
+  return GetMap()->find(id) != GetMap()->end();
+}
+
+void ReinitializeChromeOSSystemExtensionInfoMapForTesting() {
+  ChromeOSSystemExtensionInfoMap*& map = GetMap();
+  delete map;
+  map = new ChromeOSSystemExtensionInfoMap{ConstructMap()};
 }
 
 }  // namespace chromeos

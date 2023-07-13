@@ -157,8 +157,8 @@ class ApiGuardDelegateImplBase : public ApiGuardDelegate {
 
   void VerifyManufacturer(const extensions::Extension* extension,
                           CanAccessApiCallback callback) {
-    const auto extension_info = GetChromeOSExtensionInfoForId(extension->id());
-    const auto expected_manufacturers = extension_info.manufacturers;
+    const auto& extension_info = GetChromeOSExtensionInfoById(extension->id());
+    const auto& expected_manufacturers = extension_info.manufacturers;
 
     // We can expect VerifyManufacturer() to be called at most once for the
     // lifetime of the ApiGuardDelegateImpl because CanAccessApi() can be called

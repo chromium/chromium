@@ -39,7 +39,7 @@ bool VerifyExternallyConnectableDefinition(extensions::Extension* extension) {
   if (!matches_list || matches_list->size() != 1)
     return false;
 
-  const auto& extension_info = GetChromeOSExtensionInfoForId(extension->id());
+  const auto& extension_info = GetChromeOSExtensionInfoById(extension->id());
 
   // Verifies allowlisted origins.
   return matches_list->front().GetString() == extension_info.pwa_origin;

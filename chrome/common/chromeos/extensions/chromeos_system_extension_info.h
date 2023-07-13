@@ -5,10 +5,10 @@
 #ifndef CHROME_COMMON_CHROMEOS_EXTENSIONS_CHROMEOS_SYSTEM_EXTENSION_INFO_H_
 #define CHROME_COMMON_CHROMEOS_EXTENSIONS_CHROMEOS_SYSTEM_EXTENSION_INFO_H_
 
-#include <cstddef>
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -16,23 +16,36 @@ namespace switches {
 
 extern const char kTelemetryExtensionManufacturerOverrideForTesting[];
 extern const char kTelemetryExtensionPwaOriginOverrideForTesting[];
+extern const char kTelemetryExtensionIwaIdOverrideForTesting[];
 
 }  // namespace switches
 
+// Information related to a ChromeOS system extension.
 struct ChromeOSSystemExtensionInfo {
-  ChromeOSSystemExtensionInfo(base::flat_set<std::string> manufacturers,
-                              const std::string& pwa_origin);
-  ChromeOSSystemExtensionInfo(const ChromeOSSystemExtensionInfo& other);
+  ChromeOSSystemExtensionInfo(const base::flat_set<std::string>& manufacturers,
+                              const absl::optional<std::string>& pwa_origin,
+                              const absl::optional<std::string>& iwa_id);
+  ChromeOSSystemExtensionInfo(const ChromeOSSystemExtensionInfo&);
+  ChromeOSSystemExtensionInfo& operator=(const ChromeOSSystemExtensionInfo&);
   ~ChromeOSSystemExtensionInfo();
 
+  // The extension is allowed on devices from these manufacturers.
   base::flat_set<std::string> manufacturers;
-  std::string pwa_origin;
+  // The connected pwa origin. |nullopt| if no connected pwa.
+  absl::optional<std::string> pwa_origin;
+  // The connected iwa id. |nullopt| if no connected iwa.
+  absl::optional<std::string> iwa_id;
 };
 
-size_t GetChromeOSSystemExtensionInfosSize();
-ChromeOSSystemExtensionInfo GetChromeOSExtensionInfoForId(
-    const std::string& id);
+// Check if |id| is a ChromeOS system extension id.
 bool IsChromeOSSystemExtension(const std::string& id);
+
+// Get the information of a ChromeOS system extension by id.
+const ChromeOSSystemExtensionInfo& GetChromeOSExtensionInfoById(
+    const std::string& id);
+
+// Export for testing.
+void ReinitializeChromeOSSystemExtensionInfoMapForTesting();
 
 }  // namespace chromeos
 

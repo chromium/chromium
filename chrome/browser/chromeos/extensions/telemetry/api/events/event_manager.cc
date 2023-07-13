@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_manager.h"
 
+#include <string>
+
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
@@ -41,7 +43,11 @@ bool IsPwaOpenForExtensionId(extensions::ExtensionId extension_id,
   if (!IsChromeOSSystemExtension(extension_id)) {
     return false;
   }
-  auto related_pwa = GetChromeOSExtensionInfoForId(extension_id).pwa_origin;
+  const auto& info = GetChromeOSExtensionInfoById(extension_id);
+  if (!info.pwa_origin.has_value()) {
+    return false;
+  }
+  std::string related_pwa = info.pwa_origin.value();
 
   Profile* profile = Profile::FromBrowserContext(context);
   for (auto* target_browser : *BrowserList::GetInstance()) {
@@ -121,7 +127,9 @@ void EventManager::OnTabStripModelChanged(
   }
 
   for (auto& [extension_id, open] : open_pwas_) {
-    auto related_pwa = GetChromeOSExtensionInfoForId(extension_id).pwa_origin;
+    const auto& info = GetChromeOSExtensionInfoById(extension_id);
+    CHECK(info.pwa_origin.has_value());
+    std::string related_pwa = info.pwa_origin.value();
     if (change.type() == TabStripModelChange::kRemoved) {
       for (auto& removed_tab : change.GetRemove()->contents) {
         if (IsRelatedPwaUrl(related_pwa,
