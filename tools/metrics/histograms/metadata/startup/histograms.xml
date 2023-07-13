@@ -836,17 +836,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.StartupTaskRunner.AsyncTaskQueueTime" units="ms"
-    expires_after="2022-11-13">
-  <owner>blundell@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    Measures the amount of time that tasks added to StartupTaskRunner were
-    queued before running. Logged every time that a task is run asynchronously
-    with a valid queue time in StartupTaskRunner.
-  </summary>
-</histogram>
-
 <histogram name="Startup.Temperature" enum="StartupTemperature"
     expires_after="2023-11-12">
 <!-- expires-after: Diagnosis metric for changes in StartupTemperature suffix.
