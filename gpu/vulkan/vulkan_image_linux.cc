@@ -11,6 +11,15 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 
+namespace {
+
+constexpr bool VkFormatNeedsYcbcrSampler(VkFormat format) {
+  return format == VK_FORMAT_G8_B8R8_2PLANE_420_UNORM ||
+         format == VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
+}
+
+}  // namespace
+
 namespace gpu {
 
 //  static
@@ -46,16 +55,14 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
   queue_family_index_ = queue_family_index;
   auto& native_pixmap_handle = gmb_handle.native_pixmap_handle;
 
-  // XXX This is the memory plane count, not the format plane count.  It does
-  // not give us the information we need.
-  if (native_pixmap_handle.planes.size() == 2) {
+  if (VkFormatNeedsYcbcrSampler(format)) {
     ycbcr_info_ = VulkanYCbCrInfo(
         /*image_format=*/format,
         /*external_format=*/0,
-        /*suggested_ycbcr_model=*/native_pixmap_handle.planes.size(),
-        /*suggested_ycbcr_range=*/1,
-        /*suggested_xchroma_offset=*/0,
-        /*suggested_ychroma_offset=*/0,
+        /*suggested_ycbcr_model=*/VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709,
+        /*suggested_ycbcr_range=*/VK_SAMPLER_YCBCR_RANGE_ITU_NARROW,
+        /*suggested_xchroma_offset=*/VK_CHROMA_LOCATION_COSITED_EVEN,
+        /*suggested_ychroma_offset=*/VK_CHROMA_LOCATION_COSITED_EVEN,
         // The same flags that VaapiVideoDecoderUses to create the texture.
         /*format_features=*/VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT |
             VK_FORMAT_FEATURE_TRANSFER_DST_BIT |
