@@ -32,6 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/origin.h"
@@ -1027,6 +1028,55 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupOwners) {
   EXPECT_THAT(origins, UnorderedElementsAreArray(remaining_origins_expected));
 }
 
+TEST_F(InterestGroupStorageTest, ExpiredGroupsNotReturned) {
+  const char kName1[] = "name1";
+  const char kName2[] = "name2";
+  const char kName3[] = "name3";
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://owner.test"));
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  const base::TimeDelta kDelta = base::Seconds(1);
+
+  base::Time start = base::Time::Now();
+  base::Time later = start + kDelta;
+  base::Time even_later = later + kDelta;
+
+  // Already expired when joined.
+  storage->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(kOrigin, kName1).SetExpiry(start).Build(),
+      kOrigin.GetURL());
+
+  // Expires when time reaches `later`.
+  storage->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(kOrigin, kName2).SetExpiry(later).Build(),
+      kOrigin.GetURL());
+
+  // Expires when time reaches `even_later`.
+  storage->JoinInterestGroup(blink::TestInterestGroupBuilder(kOrigin, kName3)
+                                 .SetExpiry(even_later)
+                                 .Build(),
+                             kOrigin.GetURL());
+
+  // All but the first group, which is already expired, should be retrieved.
+  auto interest_groups = storage->GetInterestGroupsForOwner(kOrigin);
+  ASSERT_EQ(2u, interest_groups.size());
+  EXPECT_THAT(
+      (std::vector<std::string>{interest_groups[0].interest_group.name,
+                                interest_groups[1].interest_group.name}),
+      testing::UnorderedElementsAre(kName2, kName3));
+
+  // Wait until `later`. The second group should expire.
+  task_environment().FastForwardBy(kDelta);
+  interest_groups = storage->GetInterestGroupsForOwner(kOrigin);
+  ASSERT_EQ(1u, interest_groups.size());
+  ASSERT_EQ(interest_groups[0].interest_group.name, kName3);
+
+  // Wait until `even_later`. All three interest groups should now be expired.
+  task_environment().FastForwardBy(kDelta);
+  interest_groups = storage->GetInterestGroupsForOwner(kOrigin);
+  EXPECT_EQ(0u, interest_groups.size());
+}
+
 TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
   base::HistogramTester histograms;
 
@@ -1046,9 +1096,10 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
 
   storage->JoinInterestGroup(NewInterestGroup(keep_origin, "keep"),
                              keep_origin.GetURL());
-  for (const auto& origin : test_origins)
+  for (const auto& origin : test_origins) {
     storage->JoinInterestGroup(NewInterestGroup(origin, "discard"),
                                origin.GetURL());
+  }
 
   std::vector<url::Origin> origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(3u, origins.size());
@@ -1059,14 +1110,14 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
   base::Time next_maintenance_time =
       base::Time::Now() + InterestGroupStorage::kIdlePeriod;
 
-  //  Maintenance should not have run yet as we are not idle.
+  // Maintenance should not have run yet as we are not idle.
   EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
             original_maintenance_time);
 
   task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod -
                                    base::Seconds(1));
 
-  //  Maintenance should not have run yet as we are not idle.
+  // Maintenance should not have run yet as we are not idle.
   EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
             original_maintenance_time);
 
@@ -1094,7 +1145,7 @@ TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
   interest_groups = storage->GetInterestGroupsForOwner(keep_origin);
   EXPECT_EQ(2u, interest_groups.size());
 
-  //  Maintenance should not have run since we have not been idle.
+  // Maintenance should not have run since we have not been idle.
   EXPECT_EQ(storage->GetLastMaintenanceTimeForTesting(),
             original_maintenance_time);
 

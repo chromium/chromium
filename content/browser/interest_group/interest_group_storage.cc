@@ -1287,7 +1287,7 @@ bool DoJoinInterestGroup(sql::Database& db,
             "next_update_after,"
             "owner,"
             "joining_origin,"
-           "exact_join_time,"
+            "exact_join_time,"
             "name,"
             "priority,"
             "enable_bidding_signals_prioritization,"
@@ -1435,8 +1435,9 @@ bool DoUpdateInterestGroup(sql::Database& db,
   }
 
   // (Optimization) Don't do anything for expired interest groups.
-  if (stored_group.expiry < now)
+  if (stored_group.expiry <= now) {
     return false;
+  }
   if (update.priority)
     stored_group.priority = *update.priority;
   if (update.enable_bidding_signals_prioritization) {
@@ -1703,7 +1704,7 @@ absl::optional<std::vector<url::Origin>> DoGetAllInterestGroupOwners(
   sql::Statement load(db.GetCachedStatement(SQL_FROM_HERE,
                                             "SELECT DISTINCT owner "
                                             "FROM interest_groups "
-                                            "WHERE expiration>=? "
+                                            "WHERE expiration>? "
                                             "ORDER BY expiration DESC"));
   if (!load.is_valid()) {
     DLOG(ERROR) << "LoadAllInterestGroups SQL statement did not compile: "
@@ -1727,7 +1728,7 @@ absl::optional<std::vector<url::Origin>> DoGetAllInterestGroupJoiningOrigins(
   sql::Statement load(db.GetCachedStatement(SQL_FROM_HERE,
                                             "SELECT DISTINCT joining_origin "
                                             "FROM interest_groups "
-                                            "WHERE expiration>=?"));
+                                            "WHERE expiration>?"));
   if (!load.is_valid()) {
     DLOG(ERROR)
         << "LoadAllInterestGroupJoiningOrigins SQL statement did not compile: "
@@ -1757,7 +1758,7 @@ bool DoRemoveInterestGroupsMatchingOwnerAndJoiner(sql::Database& db,
       SQL_FROM_HERE,
       "SELECT name "
       "FROM interest_groups "
-      "WHERE owner=? AND joining_origin=? AND expiration>=?"));
+      "WHERE owner=? AND joining_origin=? AND expiration>?"));
 
   if (!load.is_valid())
     return false;
@@ -1787,7 +1788,7 @@ DoGetAllInterestGroupOwnerJoinerPairs(sql::Database& db,
       db.GetCachedStatement(SQL_FROM_HERE,
                             "SELECT DISTINCT owner,joining_origin "
                             "FROM interest_groups "
-                            "WHERE expiration>=?"));
+                            "WHERE expiration>?"));
   if (!load.is_valid()) {
     DLOG(ERROR) << "LoadAllInterestGroupOwnerJoinerPairs SQL statement did not "
                    "compile: "
@@ -1932,7 +1933,7 @@ absl::optional<std::vector<std::string>> DoGetInterestGroupNamesForOwner(
     db.GetCachedStatement(SQL_FROM_HERE,
     "SELECT name "
     "FROM interest_groups "
-    "WHERE owner=? AND expiration>=? AND ?>=next_update_after "
+    "WHERE owner=? AND expiration>? AND ?>=next_update_after "
     "ORDER BY expiration DESC"));
   // clang-format on
 
@@ -2073,7 +2074,7 @@ DoGetInterestGroupNamesForJoiningOrigin(sql::Database& db,
       db.GetCachedStatement(SQL_FROM_HERE,
         "SELECT owner,name "
         "FROM interest_groups "
-        "WHERE joining_origin = ? AND expiration >=?"));
+        "WHERE joining_origin=? AND expiration>?"));
   // clang-format on
 
   if (!load.is_valid()) {
@@ -2295,7 +2296,7 @@ bool ClearExpiredInterestGroups(sql::Database& db,
       db.GetCachedStatement(SQL_FROM_HERE,
                             "SELECT owner, name "
                             "FROM interest_groups "
-                            "WHERE expiration <= ?"));
+                            "WHERE expiration<=?"));
   if (!expired_interest_group.is_valid()) {
     DLOG(ERROR) << "ClearExpiredInterestGroups SQL statement did not compile.";
     return false;
