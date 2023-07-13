@@ -5,6 +5,7 @@
 #include "chrome/renderer/companion/visual_search/visual_search_eligibility.h"
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <string>
 #include <vector>
@@ -24,6 +25,29 @@ bool SortDesc(const std::pair<std::string, double>& p1,
               const std::pair<std::string, double>& p2) {
   return p1.second >= p2.second;
 }
+bool SortAsc(const std::pair<std::string, double>& p1,
+             const std::pair<std::string, double>& p2) {
+  return p1.second < p2.second;
+}
+
+double ComputeDistanceToViewPortCenter(const Rect& onpage_image_rect,
+                                       float viewport_width,
+                                       float viewport_height) {
+  const double viewport_ctr_x = viewport_width / 2;
+  const double viewport_ctr_y = viewport_height / 2;
+
+  const double image_ctr_x = onpage_image_rect.x() +
+                             static_cast<double>(onpage_image_rect.width()) / 2;
+  const double image_ctr_y =
+      onpage_image_rect.y() +
+      static_cast<double>(onpage_image_rect.height()) / 2;
+
+  const double x_diff = image_ctr_x - viewport_ctr_x;
+  const double y_diff = image_ctr_y - viewport_ctr_y;
+
+  return sqrt(x_diff * x_diff + y_diff * y_diff);
+}
+
 }  // namespace
 
 EligibilityModule::EligibilityModule(const EligibilitySpec& spec)
@@ -60,6 +84,7 @@ EligibilityModule::RunFirstPassEligibilityAndCacheFeatureValues(
                                             image);
     ComputeFeaturesForOrOfThresholdingRules(spec_.post_renormalization_rules(),
                                             image);
+    ComputeFeaturesForSortingClauses(image);
   }
 
   return eligible_images;
@@ -93,19 +118,18 @@ EligibilityModule::RunSecondPassPostClassificationEligibility(
     }
   }
   RenormalizeForThirdPass();
-  std::vector<std::pair<std::string, double>> eligible_image_ids_with_scores;
+  std::vector<std::pair<std::string, double>> images_with_feature_values;
   for (const std::string& image_id : eligible_after_second_pass_) {
     if (IsEligible(spec_.post_renormalization_rules(), image_id)) {
-      eligible_image_ids_with_scores.push_back(
-          std::make_pair(image_id, shopping_classifier_scores.at(image_id)));
+      images_with_feature_values.emplace_back(image_id, 0.0);
     }
   }
-  std::sort(eligible_image_ids_with_scores.begin(),
-            eligible_image_ids_with_scores.end(), SortDesc);
+
+  SortImages(&images_with_feature_values);
 
   std::vector<std::string> eligible_image_ids;
-  eligible_image_ids.reserve(eligible_image_ids_with_scores.size());
-  for (auto& id_score_pair : eligible_image_ids_with_scores) {
+  eligible_image_ids.reserve(images_with_feature_values.size());
+  for (auto& id_score_pair : images_with_feature_values) {
     eligible_image_ids.push_back(std::move(id_score_pair.first));
   }
   return eligible_image_ids;
@@ -221,8 +245,19 @@ void EligibilityModule::ComputeFeaturesForOrOfThresholdingRules(
       const auto feature_name = thresholding_rule.feature_name();
       if (feature_name != FeatureLibrary::SHOPPING_CLASSIFIER_SCORE &&
           feature_name != FeatureLibrary::SENS_CLASSIFIER_SCORE) {
-        GetImageFeatureValue(thresholding_rule.feature_name(), image);
+        GetImageFeatureValue(feature_name, image);
       }
+    }
+  }
+}
+
+void EligibilityModule::ComputeFeaturesForSortingClauses(
+    const SingleImageGeometryFeatures& image) {
+  for (const auto& sorting_clause : spec_.sorting_clauses()) {
+    const auto feature_name = sorting_clause.feature_name();
+    if (feature_name != FeatureLibrary::SHOPPING_CLASSIFIER_SCORE &&
+        feature_name != FeatureLibrary::SENS_CLASSIFIER_SCORE) {
+      GetImageFeatureValue(feature_name, image);
     }
   }
 }
@@ -331,6 +366,10 @@ double EligibilityModule::GetImageFeatureValue(
       break;
     case FeatureLibrary::IMAGE_ONPAGE_WIDTH:
       feature_value = static_cast<double>(image.onpage_rect.width());
+      break;
+    case FeatureLibrary::IMAGE_DISTANCE_TO_VIEWPORT_CENTER:
+      feature_value = ComputeDistanceToViewPortCenter(
+          image.onpage_rect, viewport_width_, viewport_height_);
       break;
     case FeatureLibrary::IMAGE_LEVEL_UNSPECIFIED:
     case FeatureLibrary::SHOPPING_CLASSIFIER_SCORE:
@@ -455,6 +494,28 @@ void EligibilityModule::RenormalizeForThirdPass() {
                   feature_name, FeatureLibrary::BY_MAX_VALUE, {}, true);
         }
       }
+    }
+  }
+}
+
+void EligibilityModule::SortImages(
+    std::vector<std::pair<std::string, double>>* images_with_feature_values) {
+  for (const auto& sorting_clause : spec_.sorting_clauses()) {
+    // For each sorting clause, populate with the feature name that it sorts by
+    // and then sort.
+    for (auto& pair : *images_with_feature_values) {
+      pair.second =
+          RetrieveImageFeatureOrDie(sorting_clause.feature_name(), pair.first);
+    }
+    if (sorting_clause.sorting_order() == FeatureLibrary::SORT_ASCENDING) {
+      std::stable_sort(images_with_feature_values->begin(),
+                       images_with_feature_values->end(), SortAsc);
+    } else if (sorting_clause.sorting_order() ==
+               FeatureLibrary::SORT_DESCENDING) {
+      std::stable_sort(images_with_feature_values->begin(),
+                       images_with_feature_values->end(), SortDesc);
+    } else {
+      NOTREACHED();
     }
   }
 }

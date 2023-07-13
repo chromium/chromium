@@ -42,6 +42,17 @@ TEST(EligibilityModuleTest, E2eExample) {
   rules->set_normalizing_op(FeatureLibrary::BY_MAX_VALUE);
   rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(0.999);
+  auto* sorting_clause = spec.add_sorting_clauses();
+  // Add a clause for feature that is not mentioned in the other rules
+  // to make sure it'll be found.
+  sorting_clause->set_feature_name(
+      FeatureLibrary::IMAGE_DISTANCE_TO_VIEWPORT_CENTER);
+  sorting_clause->set_sorting_order(FeatureLibrary::SORT_ASCENDING);
+  // Add a clause to sort by shoppy score. Should not affect final order
+  // because the two images in the end have identical scores.
+  sorting_clause = spec.add_sorting_clauses();
+  sorting_clause->set_feature_name(FeatureLibrary::SHOPPING_CLASSIFIER_SCORE);
+  sorting_clause->set_sorting_order(FeatureLibrary::SORT_ASCENDING);
 
   EligibilityModule module(spec);
   SizeF viewport_size(100.0, 50.0);
@@ -51,6 +62,12 @@ TEST(EligibilityModuleTest, E2eExample) {
   image1.image_identifier = "image1";
   image1.onpage_rect = Rect(0, 0, 5, 10);
   images.push_back(std::move(image1));
+  // Identical to image1, except that it is closer to the center of the
+  // viewport.
+  SingleImageGeometryFeatures image1a;
+  image1a.image_identifier = "image1a";
+  image1a.onpage_rect = Rect(45, 25, 5, 10);
+  images.push_back(std::move(image1a));
   SingleImageGeometryFeatures image2;
   image2.image_identifier = "image2";
   image2.onpage_rect = Rect(0, 0, 15, 3);
@@ -82,29 +99,28 @@ TEST(EligibilityModuleTest, E2eExample) {
   const std::vector<std::string> simple_pruning_image_ids =
       module.RunFirstPassEligibilityAndCacheFeatureValues(viewport_size,
                                                           images);
-  ASSERT_EQ(simple_pruning_image_ids.size(), 5U);
+  ASSERT_EQ(simple_pruning_image_ids.size(), 6U);
   EXPECT_EQ(simple_pruning_image_ids.at(0), "image1");
-  EXPECT_EQ(simple_pruning_image_ids.at(1), "image3");
-  EXPECT_EQ(simple_pruning_image_ids.at(2), "image4");
-  EXPECT_EQ(simple_pruning_image_ids.at(3), "image5");
-  EXPECT_EQ(simple_pruning_image_ids.at(4), "image6");
+  EXPECT_EQ(simple_pruning_image_ids.at(1), "image1a");
+  EXPECT_EQ(simple_pruning_image_ids.at(2), "image3");
+  EXPECT_EQ(simple_pruning_image_ids.at(3), "image4");
+  EXPECT_EQ(simple_pruning_image_ids.at(4), "image5");
+  EXPECT_EQ(simple_pruning_image_ids.at(5), "image6");
 
-  const base::flat_map<std::string, double> shopping_scores = {{"image1", 0.7},
-                                                               {"image3", 0.5},
-                                                               {"image4", 0.7},
-                                                               {"image5", 0.0},
-                                                               {"image6", 0.7}};
-  const base::flat_map<std::string, double> sens_scores = {{"image1", 0.4},
-                                                           {"image3", 0.4},
-                                                           {"image4", 0.8},
-                                                           {"image5", 0.0},
-                                                           {"image6", 0.4}};
+  const base::flat_map<std::string, double> shopping_scores = {
+      {"image1", 0.75}, {"image1a", 0.75}, {"image3", 0.5},
+      {"image4", 0.7},  {"image5", 0.0},   {"image6", 0.7}};
+  const base::flat_map<std::string, double> sens_scores = {
+      {"image1", 0.4}, {"image1a", 0.4}, {"image3", 0.4},
+      {"image4", 0.8}, {"image5", 0.0},  {"image6", 0.4}};
   const std::vector<std::string> second_pass_eligible_image_ids =
       module.RunSecondPassPostClassificationEligibility(shopping_scores,
                                                         sens_scores);
 
-  ASSERT_EQ(second_pass_eligible_image_ids.size(), 1U);
-  EXPECT_EQ(second_pass_eligible_image_ids.at(0), "image1");
+  // First we have the image that's closer to the center.
+  ASSERT_EQ(second_pass_eligible_image_ids.size(), 2U);
+  EXPECT_EQ(second_pass_eligible_image_ids.at(0), "image1a");
+  EXPECT_EQ(second_pass_eligible_image_ids.at(1), "image1");
   const base::flat_map<std::string, double> image1_features_after_third =
       module.GetDebugFeatureValuesForImage("image1");
   EXPECT_THAT(image1_features_after_third,
@@ -305,6 +321,9 @@ TEST(EligibilityModuleTest, TestReuseModuleBetweenImageSets) {
   rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
   rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(100);
+  auto* sorting_clause = spec.add_sorting_clauses();
+  sorting_clause->set_feature_name(FeatureLibrary::SHOPPING_CLASSIFIER_SCORE);
+  sorting_clause->set_sorting_order(FeatureLibrary::SORT_DESCENDING);
 
   EligibilityModule module(spec);
   SizeF viewport_size(100.0, 50.0);
@@ -408,6 +427,10 @@ TEST(EligibilityModuleTest, TestImageFeatureComputation) {
   // The spec doesn't matter here. Just make an empty one.
   const EligibilitySpec spec;
   EligibilityModule module(spec);
+  SizeF viewport_size(6.0, 6.0);
+  // Run this with empty everything for the purpose of setting the
+  // viewport size (needed for computing the distance to center).
+  module.RunFirstPassEligibilityAndCacheFeatureValues(viewport_size, {});
   SingleImageGeometryFeatures image;
   image.image_identifier = "image";
   image.original_image_size = Size(10, 20);
@@ -437,6 +460,14 @@ TEST(EligibilityModuleTest, TestImageFeatureComputation) {
   EXPECT_EQ(
       module.GetImageFeatureValue(FeatureLibrary::IMAGE_ORIGINAL_WIDTH, image),
       10);
+  // Make an image where it is easy to manually compute the distance to the
+  // viewport center.
+  SingleImageGeometryFeatures image2;
+  image2.image_identifier = "image2";
+  image2.onpage_rect = Rect(2, 2, 2, 4);
+  EXPECT_EQ(module.GetImageFeatureValue(
+                FeatureLibrary::IMAGE_DISTANCE_TO_VIEWPORT_CENTER, image2),
+            1);
 
   // These should now be cached.
   EXPECT_EQ(module.RetrieveImageFeatureOrDie(
@@ -463,6 +494,9 @@ TEST(EligibilityModuleTest, TestImageFeatureComputation) {
   EXPECT_EQ(module.RetrieveImageFeatureOrDie(
                 FeatureLibrary::IMAGE_ORIGINAL_WIDTH, "image"),
             10);
+  EXPECT_EQ(module.RetrieveImageFeatureOrDie(
+                FeatureLibrary::IMAGE_DISTANCE_TO_VIEWPORT_CENTER, "image2"),
+            1);
 }
 
 TEST(EligibilityModuleTest, TestPageFeatureComputation) {
