@@ -149,7 +149,7 @@ class FetcherImpl final : public ProtoFetcher<Response> {
 
   FetcherImpl(IdentityManager& identity_manager,
               scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-              const std::string& payload,
+              StringPiece payload,
               const FetcherConfig& fetcher_config,
               Callback callback)
       : fetcher_(LaunchFetcher(identity_manager,
@@ -250,7 +250,6 @@ class FetcherImpl final : public ProtoFetcher<Response> {
   // Returns payload when it's eligible for the request type.
   absl::optional<std::string> GetRequestPayload() const {
     if (config_.method == FetcherConfig::Method::kGet) {
-      CHECK(payload_.empty()) << "Unexpected payload in GET request";
       return absl::nullopt;
     }
     return payload_;
