@@ -219,6 +219,8 @@ ConsentLevel DiceAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
   // the consent level (e.g. cloud-managed profiles). In these cases, the dice
   // account reconcilor delegate should never remove the primary account
   // regardless of the consent.
+  // TODO(https://crbug.com.1464264): Migrate away from `ConsentLevel::kSync`
+  // on desktop platforms.
   return signin_client_->IsClearPrimaryAccountAllowed(
              identity_manager_->HasPrimaryAccount(ConsentLevel::kSync))
              ? ConsentLevel::kSync

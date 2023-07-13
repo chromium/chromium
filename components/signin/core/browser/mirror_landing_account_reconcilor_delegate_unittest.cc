@@ -141,6 +141,8 @@ TEST_F(MirrorLandingAccountReconcilorDelegateTest,
 
 // Tests that delete cookies in syncing profile does nothing.
 TEST_F(MirrorLandingAccountReconcilorDelegateTest, DeleteCookieSyncingProfile) {
+  // TODO(https://crbug.com.1464523): Migrate away from `ConsentLevel::kSync` on
+  // Lacros.
   AddPrimaryAndSecondaryAccounts(identity_test_env(), ConsentLevel::kSync);
 
   CreateMirrorLandingAccountReconcilorDelegate(/*is_main_profile=*/false)
