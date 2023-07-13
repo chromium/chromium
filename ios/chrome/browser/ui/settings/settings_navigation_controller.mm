@@ -613,6 +613,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.settingsNavigationDelegate = nil;
   self.snackbarCommandsHandler = nil;
   self.currentPresentedViewController = nil;
+  self.presentationController.delegate = nil;
   _browser = nil;
 }
 
