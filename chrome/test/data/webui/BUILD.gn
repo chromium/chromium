@@ -27,6 +27,7 @@ source_set("browser_tests") {
   sources = [
     # TODO(crbug.com/1457360): List more '*_browsertest.cc' files below, as they
     # are migrated from old js2gtest '*_browsertest.js' files.
+    "access_code_cast/access_code_cast_browsertest.cc",
     "bookmarks/bookmarks_browsertest.cc",
     "cr_components/cr_components_browsertest.cc",
     "cr_elements/cr_elements_browsertest.cc",
@@ -55,6 +56,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/test:test_support",
     "//components/bookmarks/browser:browser",
     "//components/bookmarks/managed:managed",
@@ -293,7 +295,6 @@ if (include_js_tests) {
   js2gtest("browser_tests_js_mojo_webui") {
     test_type = "mojo_webui"
     sources = [
-      "access_code_cast/access_code_cast_browsertest.js",
       "downloads/downloads_browsertest.js",
       "engagement/site_engagement_browsertest.js",
       "location_internals/location_internals_browsertest.js",
