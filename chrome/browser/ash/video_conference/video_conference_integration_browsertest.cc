@@ -305,7 +305,7 @@ class VideoConferenceIntegrationTest
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    ,  // Empty to simplify gtest output
+    All,
     VideoConferenceIntegrationTest,
     ::testing::Values(std::make_tuple<bool, bool>(false, false),
                       std::make_tuple<bool, bool>(true, false),

@@ -38,7 +38,8 @@ class VideoConferenceUkmHelper {
   // class will then record it and update the capturing duration of the media
   // device.
   void RegisterCapturingUpdate(VideoConferenceMediaType device,
-                               bool is_capturing);
+                               bool is_capturing,
+                               VideoConferenceWebAppState& state);
 
  private:
   friend class FakeVideoConferenceUkmHelper;
