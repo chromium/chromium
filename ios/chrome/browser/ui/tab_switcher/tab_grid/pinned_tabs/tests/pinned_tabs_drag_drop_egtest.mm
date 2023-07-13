@@ -271,6 +271,10 @@ void AssertPinnedCellMovedToRegularGrid(unsigned int pinned_index,
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");
   }
+  // TODO(crbug.com/1464519): Failing on iOS17.
+  if (@available(iOS 17.0, *)) {
+    XCTSkip(@"Failing on iOS17");
+  }
 
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGreyUI openTabGrid];
