@@ -18,7 +18,7 @@ UserBypassWebContentsObserver::UserBypassWebContentsObserver(
           *web_contents) {
   Profile* profile = Profile::FromBrowserContext(
       content::WebContentsObserver::web_contents()->GetBrowserContext());
-  cookie_settings_ = CookieSettingsFactory::GetForProfile(profile).get();
+  cookie_settings_ = CookieSettingsFactory::GetForProfile(profile);
 }
 
 UserBypassWebContentsObserver::~UserBypassWebContentsObserver() = default;
