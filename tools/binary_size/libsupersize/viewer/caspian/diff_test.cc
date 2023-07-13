@@ -311,5 +311,50 @@ TEST_F(DiffTest, TestChangedPathsChangedParams) {
   EXPECT_EQ(0, SumOfSymbolSizes(diff));
 }
 
+TEST_F(DiffTest, TestChangedPathsStringLiterals) {
+  // Ensure that path changes are not matched when params also change.
+  size_info1_->raw_symbols[0].full_name_ = kStringLiteralName;
+  size_info1_->raw_symbols[0].name_ = kStringLiteralName;
+  size_info2_->raw_symbols[0].full_name_ = kStringLiteralName;
+  size_info2_->raw_symbols[0].name_ = kStringLiteralName;
+  size_info2_->raw_symbols[0].object_path_ = "asdf";
+  DeltaSizeInfo diff = Diff(size_info1_.get(), size_info2_.get(),
+                            &removed_sources_, &added_sources_);
+
+  DeltaSizeInfo::Results expected_counts{5, 0, 1, 1};
+  EXPECT_EQ(expected_counts, diff.CountsByDiffStatus());
+  EXPECT_EQ(0, SumOfSymbolSizes(diff));
+}
+
+TEST_F(DiffTest, TestChangedPathsNamedStringLiteralsSameSize) {
+  // Ensure that path changes are not matched when params also change.
+  size_info1_->raw_symbols[0].full_name_ = "\"asdf...\"";
+  size_info1_->raw_symbols[0].name_ = "\"asdf...\"";
+  size_info2_->raw_symbols[0].full_name_ = "\"asdf...\"";
+  size_info2_->raw_symbols[0].name_ = "\"asdf...\"";
+  size_info2_->raw_symbols[0].object_path_ = "asdf";
+  DeltaSizeInfo diff = Diff(size_info1_.get(), size_info2_.get(),
+                            &removed_sources_, &added_sources_);
+
+  DeltaSizeInfo::Results expected_counts{6, 0, 0, 0};
+  EXPECT_EQ(expected_counts, diff.CountsByDiffStatus());
+}
+
+TEST_F(DiffTest, TestChangedPathsNamedStringLiteralsDifferentSize) {
+  // Ensure that path changes are not matched when params also change.
+  size_info1_->raw_symbols[0].full_name_ = "\"asdf...\"";
+  size_info1_->raw_symbols[0].name_ = "\"asdf...\"";
+  size_info2_->raw_symbols[0].full_name_ = "\"asdf...\"";
+  size_info2_->raw_symbols[0].name_ = "\"asdf...\"";
+  size_info2_->raw_symbols[0].object_path_ = "asdf";
+  size_info2_->raw_symbols[0].size_ += 10;
+  DeltaSizeInfo diff = Diff(size_info1_.get(), size_info2_.get(),
+                            &removed_sources_, &added_sources_);
+
+  DeltaSizeInfo::Results expected_counts{5, 0, 1, 1};
+  EXPECT_EQ(expected_counts, diff.CountsByDiffStatus());
+  EXPECT_EQ(10, SumOfSymbolSizes(diff));
+}
+
 }  // namespace
 }  // namespace caspian

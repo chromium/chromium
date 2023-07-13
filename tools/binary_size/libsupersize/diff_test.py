@@ -231,6 +231,28 @@ class DiffTest(unittest.TestCase):
     self.assertEqual((0, 1, 1), d.raw_symbols.CountsByDiffStatus()[1:])
     self.assertEqual(0, d.raw_symbols.size)
 
+  def testChangedPaths_NamedStringLiteralsSameSize(self):
+    # Ensure that named string literals are matched up with same size.
+    size_info1 = _CreateSizeInfo()
+    size_info1.raw_symbols[0].full_name = '"asdf..."'
+    size_info2 = _CreateSizeInfo()
+    size_info2.raw_symbols[0].full_name = '"asdf..."'
+    size_info2.raw_symbols[0].object_path = 'asdf'
+    d = diff.Diff(size_info1, size_info2)
+    self.assertEqual((0, 0, 0), d.raw_symbols.CountsByDiffStatus()[1:])
+
+  def testChangedPaths_NamedStringLiteralsDifferentSize(self):
+    # Ensure that named string literals are matched up with same size.
+    size_info1 = _CreateSizeInfo()
+    size_info1.raw_symbols[0].full_name = '"asdf..."'
+    size_info2 = _CreateSizeInfo()
+    size_info2.raw_symbols[0].full_name = '"asdf..."'
+    size_info2.raw_symbols[0].object_path = 'asdf'
+    size_info2.raw_symbols[0].size += 10
+    d = diff.Diff(size_info1, size_info2)
+    self.assertEqual((0, 1, 1), d.raw_symbols.CountsByDiffStatus()[1:])
+    self.assertEqual(10, d.raw_symbols.size)
+
   def testChangedPaths_Java(self):
     # Ensure that Java symbols are matched up.
     size_info1 = _CreateSizeInfo()

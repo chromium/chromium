@@ -53,6 +53,10 @@ def _Key3(s):
 
 # Match on full name, but without path (to account for file moves).
 def _Key4(s):
+  # For string literals that contain a prefix of the string in the name, allow
+  # matching up via name + size.
+  if s.full_name.startswith('"'):
+    return s.container_name, s.section, s.full_name, s.size_without_padding
   if not s.IsNameUnique():
     return None
   return s.container_name, s.section, s.full_name

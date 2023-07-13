@@ -24,6 +24,8 @@
 
 namespace caspian {
 
+constexpr char kStringLiteralName[] = "string literal";
+
 enum class ArtifactType : char {
   kSymbol = '\0',
   kDirectory = 'D',
@@ -157,7 +159,8 @@ class BaseSymbol {
 
   bool IsStringLiteral() const {
     std::string_view full_name = FullName();
-    return !full_name.empty() && full_name[0] == '"';
+    return !full_name.empty() &&
+           (full_name[0] == '"' || full_name == kStringLiteralName);
   }
 
   bool IsGeneratedSource() const {
