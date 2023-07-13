@@ -10,6 +10,7 @@ __KNOWN_CONFIG_OPTIONS = [
     "remote_all",
     "remote_android",
     "remote_nasm",
+    "remote_proto",
     "rewrapper_to_reproxy",
 ]
 

@@ -10,6 +10,7 @@ load("./config.star", "config")
 load("./mojo.star", "mojo")
 load("./nacl_linux.star", "nacl")
 load("./nasm_linux.star", "nasm")
+load("./proto_linux.star", "proto")
 load("./remote_exec_wrapper.star", "remote_exec_wrapper")
 load("./rewrapper_to_reproxy.star", "rewrapper_to_reproxy")
 load("./android.star", "android")
@@ -20,6 +21,7 @@ __filegroups.update(clang.filegroups)
 __filegroups.update(mojo.filegroups)
 __filegroups.update(nacl.filegroups)
 __filegroups.update(nasm.filegroups)
+__filegroups.update(proto.filegroups)
 
 __handlers = {}
 __handlers.update(android.handlers)
@@ -27,6 +29,7 @@ __handlers.update(clang.handlers)
 __handlers.update(mojo.handlers)
 __handlers.update(nacl.handlers)
 __handlers.update(nasm.handlers)
+__handlers.update(proto.handlers)
 __handlers.update(remote_exec_wrapper.handlers)
 __handlers.update(rewrapper_to_reproxy.handlers)
 
@@ -82,6 +85,7 @@ def __step_config(ctx, step_config):
         step_config = mojo.step_config(ctx, step_config)
         step_config = nacl.step_config(ctx, step_config)
         step_config = nasm.step_config(ctx, step_config)
+        step_config = proto.step_config(ctx, step_config)
 
     return step_config
 
