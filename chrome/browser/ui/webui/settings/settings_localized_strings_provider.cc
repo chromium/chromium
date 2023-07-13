@@ -1428,6 +1428,20 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       l10n_util::GetPluralStringFUTF16(
           IDS_SETTINGS_PASSWORDS_TIMED_OUT_DESCRIPTION,
           syncer::kPasswordNotesAuthValidity.Get().InMinutes()));
+
+  html_source->AddBoolean(
+      "autofillAccountProfileStorage",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAccountProfileStorage));
+
+  html_source->AddBoolean(
+      "syncEnableContactInfoDataType",
+      base::FeatureList::IsEnabled(syncer::kSyncEnableContactInfoDataType));
+
+  html_source->AddBoolean(
+      "syncEnableContactInfoDataTypeInTransportMode",
+      base::FeatureList::IsEnabled(
+          syncer::kSyncEnableContactInfoDataTypeInTransportMode));
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
