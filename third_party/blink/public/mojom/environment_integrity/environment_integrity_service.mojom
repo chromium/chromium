@@ -4,10 +4,20 @@
 
 module blink.mojom;
 
+enum EnvironmentIntegrityResponseCode {
+  kSuccess,
+  kInternalError,
+  kTimeout,
+};
+
 // Interface that renderers can use to connect to the browser's Environment
 // Integrity implementation, which acts as the receiver for this interface.
 interface EnvironmentIntegrityService {
-  // TODO(crbug.com/1439945) Take in a content_binding string and return an
-  // Environment Integrity token as a byte array.
-  GetEnvironmentIntegrity() => ();
+  // Attempt to get an environment integrity token for the given content
+  // binding. The content binding should be a SHA-256 digest of the content
+  // binding string passed in from client javascript code, concatenated with
+  // the eTLD+1 of the frame, and will be passed on unaltered to the attester.
+  // It will be part of the input to signing the resulting token.
+  GetEnvironmentIntegrity(array<uint8, 32> content_binding)
+    => (EnvironmentIntegrityResponseCode response_code, array<uint8> token);
 };

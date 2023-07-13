@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -57,7 +58,9 @@ class MODULES_EXPORT NavigatorEnvironmentIntegrity final
 #if BUILDFLAG(IS_ANDROID)
  private:
   void ResolveEnvironmentIntegrity(
-      ScriptPromiseResolverWithTracker<EnvironmentIntegrityResult>* resolver);
+      ScriptPromiseResolverWithTracker<EnvironmentIntegrityResult>* resolver,
+      mojom::blink::EnvironmentIntegrityResponseCode response_code,
+      const Vector<uint8_t>& token);
 
   HeapMojoRemote<mojom::blink::EnvironmentIntegrityService>
       remote_environment_integrity_service_;
