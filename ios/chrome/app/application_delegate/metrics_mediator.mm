@@ -361,8 +361,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
   [MetricKitSubscriber createExtendedLaunchTask];
 }
 
-+ (void)logStartupDuration:(id<StartupInformation>)startupInformation
-     connectionInformation:(id<ConnectionInformation>)connectionInformation {
++ (void)logStartupDuration:(id<StartupInformation>)startupInformation {
   if (![startupInformation isColdStart])
     return;
 

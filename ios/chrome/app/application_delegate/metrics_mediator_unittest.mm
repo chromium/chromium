@@ -269,7 +269,7 @@ TEST_F(MetricsMediatorNoFixtureTest, logDateInUserDefaultsTest) {
   EXPECT_NE(nil, lastAppClose);
 }
 
-// Tests that +logStartupDuration:connectionInformation: calls
+// Tests that +logStartupDuration: calls
 // +endExtendedLaunchTask on cold start.
 TEST_F(MetricsMediatorNoFixtureTest, endExtendedLaunchTaskOnColdStart) {
   id startupInformation =
@@ -289,36 +289,25 @@ TEST_F(MetricsMediatorNoFixtureTest, endExtendedLaunchTaskOnColdStart) {
     [invocation setReturnValue:(void*)&time];
   }] firstSceneConnectionTime];
 
-  id connectionInformation =
-      [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
-  id startupParameters =
-      [OCMockObject mockForClass:[AppStartupParameters class]];
-  [[[connectionInformation stub] andReturn:startupParameters]
-      startupParameters];
-
   id metricKitSubscriber =
       [OCMockObject mockForClass:[MetricKitSubscriber class]];
   [[metricKitSubscriber expect] endExtendedLaunchTask];
 
-  [MetricsMediator logStartupDuration:startupInformation
-                connectionInformation:connectionInformation];
+  [MetricsMediator logStartupDuration:startupInformation];
   EXPECT_OCMOCK_VERIFY(metricKitSubscriber);
 }
 
-// Tests that +logStartupDuration:connectionInformation: does not call
+// Tests that +logStartupDuration: does not call
 // +endExtendedLaunchTask on warm start.
 TEST_F(MetricsMediatorNoFixtureTest, endExtendedLaunchTaskOnWarmStart) {
   id startupInformation =
       [OCMockObject mockForProtocol:@protocol(StartupInformation)];
   [[[startupInformation stub] andReturnValue:@NO] isColdStart];
-  id connectionInformation =
-      [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
 
   id metricKitSubscriber =
       [OCMockObject mockForClass:[MetricKitSubscriber class]];
   [[metricKitSubscriber reject] endExtendedLaunchTask];
 
-  [MetricsMediator logStartupDuration:startupInformation
-                connectionInformation:connectionInformation];
+  [MetricsMediator logStartupDuration:startupInformation];
   EXPECT_OCMOCK_VERIFY(metricKitSubscriber);
 }

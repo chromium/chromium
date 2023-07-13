@@ -221,7 +221,7 @@ TEST_F(AppMetricsAppStateAgentTest, logStartupDuration) {
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
 
   [[metricsMediator expect] createStartupTrackingTask];
-  [[metricsMediator expect] logStartupDuration:nil connectionInformation:nil];
+  [[metricsMediator expect] logStartupDuration:nil];
   [metricsMediator setExpectationOrderMatters:YES];
 
   SceneState* sceneA = [[SceneState alloc] initWithAppState:app_state_];
@@ -259,7 +259,7 @@ TEST_F(AppMetricsAppStateAgentTest, logStartupDurationWhenSafeMode) {
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
 
   [[metricsMediator reject] createStartupTrackingTask];
-  [[metricsMediator reject] logStartupDuration:nil connectionInformation:nil];
+  [[metricsMediator reject] logStartupDuration:nil];
 
   app_state_.initStageForTesting = GetMaximalInitStageThatDontAllowLogging();
 

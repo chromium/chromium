@@ -103,8 +103,7 @@
   if (level >= SceneActivationLevelForegroundActive) {
     if (!self.firstSceneHasActivated) {
       self.firstSceneHasActivated = YES;
-      [MetricsMediator logStartupDuration:self.appState.startupInformation
-                    connectionInformation:sceneState.controller];
+      [MetricsMediator logStartupDuration:self.appState.startupInformation];
       if (ios::provider::IsPrimesSupported()) {
         ios::provider::PrimesAppReady();
       }
