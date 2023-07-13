@@ -19,7 +19,6 @@
 #include "media/base/video_codecs.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_encode_accelerator.h"
-#include "third_party/webrtc/common_video/include/bitrate_adjuster.h"
 #include "ui/gfx/color_space.h"
 
 namespace media {
@@ -62,10 +61,6 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   struct BitstreamBufferRef;
 
   ~VTVideoEncodeAccelerator() override;
-
-  // Helper functions to set bitrate.
-  void SetAdjustedConstantBitrate(uint32_t bitrate);
-  void SetVariableBitrate(const Bitrate& bitrate);
 
   // Compression session callback function to handle compressed frames.
   static void CompressionCallback(void* encoder_opaque,
@@ -112,6 +107,8 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
 
   void NotifyErrorStatus(EncoderStatus status);
 
+  base::TimeDelta AssignMonotonicTimestamp();
+
   base::ScopedCFTypeRef<VTCompressionSessionRef> compression_session_;
 
   gfx::Size input_visible_size_;
@@ -122,13 +119,6 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   VideoCodec codec_ = VideoCodec::kH264;
 
   media::Bitrate bitrate_;
-
-  // Bitrate adjuster is used only for constant bitrate mode. In variable
-  // bitrate mode no adjustments are needed.
-  // Bitrate adjuster used to fix VideoToolbox's inconsistent bitrate issues.
-  webrtc::BitrateAdjuster bitrate_adjuster_;
-  uint32_t target_bitrate_ = 0;       // User for CBR only
-  uint32_t encoder_set_bitrate_ = 0;  // User for CBR only
 
   // If True, the encoder fails initialization if setting of session's property
   // kVTCompressionPropertyKey_MaxFrameDelayCount returns an error.
@@ -164,6 +154,9 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   // Color space of the first frame sent to Encode().
   absl::optional<gfx::ColorSpace> encoder_color_space_;
   bool can_set_encoder_color_space_ = true;
+
+  // Monotonically-growing timestamp that will be assigned to the next frame
+  base::TimeDelta next_timestamp_;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.
