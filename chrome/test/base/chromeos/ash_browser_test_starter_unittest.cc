@@ -25,8 +25,7 @@ class AshBrowserTestStarterTest : public testing::Test {
   }
 };
 
-// TODO(crbug.com/1459001) Re-enable test.
-TEST_F(AshBrowserTestStarterTest, DISABLED_TestLacrosLogFolder) {
+TEST_F(AshBrowserTestStarterTest, TestLacrosLogFolder) {
   base::FilePath summary_path;
   base::ScopedTempDir scoped_summary_dir;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -50,8 +49,7 @@ TEST_F(AshBrowserTestStarterTest, DISABLED_TestLacrosLogFolder) {
   EXPECT_EQ(user_data_dir, expected_user_data_dir);
 }
 
-// TODO(crbug.com/1459001) Re-enable test.
-TEST_F(AshBrowserTestStarterTest, DISABLED_TestLacrosLogFolderWithOneRetry) {
+TEST_F(AshBrowserTestStarterTest, TestLacrosLogFolderWithOneRetry) {
   base::FilePath summary_path;
   base::ScopedTempDir scoped_summary_dir;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -77,8 +75,7 @@ TEST_F(AshBrowserTestStarterTest, DISABLED_TestLacrosLogFolderWithOneRetry) {
   EXPECT_EQ(user_data_dir, expected_user_data_dir);
 }
 
-// TODO(crbug.com/1459001) Re-enable test.
-TEST_F(AshBrowserTestStarterTest, DISABLED_TestLacrosLogFolderWithTwoRetry) {
+TEST_F(AshBrowserTestStarterTest, TestLacrosLogFolderWithTwoRetry) {
   base::FilePath summary_path;
   base::ScopedTempDir scoped_summary_dir;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
