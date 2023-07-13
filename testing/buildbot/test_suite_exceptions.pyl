@@ -3061,23 +3061,6 @@
       },
     },
   },
-  'monochrome_public_test_ar_apk': {
-    'modifications': {
-      # We need to match the Playstore version as well because AR tests fail on
-      # old versions of the Playstore.
-      'Oreo Phone Tester': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'device_os': 'OPR3.170623.008',
-              'device_type': 'marlin',
-              'os': 'Android',
-            },
-          ],
-        },
-      },
-    },
-  },
   'nacl_loader_unittests': {
     'remove_from': [
       'ToTMacASan',  # The mac asan tot bot sets enable_nacl=false
