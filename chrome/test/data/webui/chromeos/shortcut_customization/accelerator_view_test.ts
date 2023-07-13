@@ -136,13 +136,13 @@ suite('acceleratorViewTest', function() {
 
     provider.setFakeReplaceAcceleratorResult(fakeResult);
 
-    // Simulate Ctrl + Alt + e.
+    // Simulate Ctrl.
     viewElement.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'e',
-      keyCode: 69,
-      code: 'KeyE',
+      key: 'Control',
+      keyCode: 17,
+      code: 'Control',
       ctrlKey: true,
-      altKey: true,
+      altKey: false,
       shiftKey: false,
       metaKey: false,
     }));
@@ -150,11 +150,10 @@ suite('acceleratorViewTest', function() {
     await flush();
 
     assertEquals(KeyInputState.MODIFIER_SELECTED, ctrlKey.keyState);
-    assertEquals(KeyInputState.MODIFIER_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, altKey.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
-    assertEquals(KeyInputState.ALPHANUMERIC_SELECTED, pendingKey.keyState);
-    assertEquals('e', pendingKey.key);
+    assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
 
     // Release Ctrl, expect it to not be selected.
     viewElement.dispatchEvent(new KeyboardEvent('keyup', {
@@ -175,9 +174,23 @@ suite('acceleratorViewTest', function() {
     pendingKey = getInputKey('#pendingKey');
 
     assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
-    assertEquals(KeyInputState.MODIFIER_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, altKey.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
+
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'e',
+      keyCode: 69,
+      code: 'KeyE',
+      ctrlKey: false,
+      altKey: false,
+      shiftKey: false,
+      metaKey: false,
+    }));
+    await flush();
+    pendingKey = getInputKey('#pendingKey');
+
     assertEquals(KeyInputState.ALPHANUMERIC_SELECTED, pendingKey.keyState);
     assertEquals('e', pendingKey.key);
 
@@ -200,7 +213,7 @@ suite('acceleratorViewTest', function() {
     pendingKey = getInputKey('#pendingKey');
 
     assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
-    assertEquals(KeyInputState.MODIFIER_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, altKey.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);

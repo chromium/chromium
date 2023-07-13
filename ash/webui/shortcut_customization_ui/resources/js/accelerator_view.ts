@@ -40,6 +40,11 @@ export enum ViewState {
   EDIT,
 }
 
+// This delay should match the animation timing in `input_key.html`. Matching
+// the delay allows the user to see the full animation before requesting a
+// change to the backend.
+const kAnimationTimeoutMs: number = 300;
+
 /**
  * @fileoverview
  * 'accelerator-view' is wrapper component for an accelerator. It maintains both
@@ -206,25 +211,33 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       return;
     }
 
-    this.viewState = ViewState.VIEW;
-    this.statusMessage = '';
-    this.hasError = false;
     this.isCapturing = false;
-    this.pendingAcceleratorInfo = createEmptyAcceleratorInfo();
-
     this.dispatchEvent(new CustomEvent('accelerator-capturing-ended', {
       bubbles: true,
       composed: true,
     }));
 
     await this.shortcutProvider.preventProcessingAccelerators(false);
+
+    setTimeout(() => {
+      this.viewState = ViewState.VIEW;
+      this.statusMessage = '';
+      this.hasError = false;
+      this.pendingAcceleratorInfo = createEmptyAcceleratorInfo();
+    }, kAnimationTimeoutMs);
   }
 
   private onKeyDown(e: KeyboardEvent): void {
+    if (!this.isCapturing) {
+      return;
+    }
     this.handleKey(e);
   }
 
   private onKeyUp(e: KeyboardEvent): void {
+    if (!this.isCapturing || this.hasError) {
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
     const pendingAccelerator = this.pendingAcceleratorInfo.layoutProperties
@@ -365,7 +378,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         return;
       }
       case AcceleratorConfigResult.kSuccess: {
-        this.pendingAcceleratorInfo = createEmptyAcceleratorInfo();
         this.fireUpdateEvent();
         return;
       }
@@ -529,14 +541,16 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       }));
     }
 
-    this.dispatchEvent(new CustomEvent('request-update-accelerator', {
-      bubbles: true,
-      composed: true,
-      detail: {source: this.source, action: this.action},
-    }));
-
     // Always end input capturing if an update event was fired.
     this.endCapture();
+
+    setTimeout(() => {
+      this.dispatchEvent(new CustomEvent('request-update-accelerator', {
+        bubbles: true,
+        composed: true,
+        detail: {source: this.source, action: this.action},
+      }));
+    }, kAnimationTimeoutMs);
   }
 
   private shouldShowLockIcon(): boolean {

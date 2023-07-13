@@ -50,6 +50,7 @@
     background-color: var(--key-modifier-selected-bg-color);
     border: none;
     box-shadow: 0 1px 1px var(--key-modifier-selected-shadow-color);
+    transition: all 300ms ease-in-out;
   }
 
   :host([key-state='modifier-selected']:not([key='meta']):not([key='Meta'])) .key-container {
@@ -66,6 +67,7 @@
     background-color: var(--cros-switch-knob-color-inactive);
     border: none;
     box-shadow: 0 1px 1px var(--cros-bg-color-dropped-elevation-1);
+    transition: all 300ms ease-in-out;
   }
 
   :host([key-state='alpha-numeric-selected'][has-icon]) .key-container {
