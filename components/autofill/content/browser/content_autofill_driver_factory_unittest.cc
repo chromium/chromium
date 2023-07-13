@@ -384,36 +384,24 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
   EXPECT_EQ(factory_test_api().num_drivers(), use_bfcache() ? 2u : 1u);
 }
 
-// Fixture for testing that Autofill is enabled in fenced frames unless
-// AutofillEnableWithinFencedFrame is enabled. The bool parameter
-// enables/disables that feature.
+// Fixture for testing that Autofill is enabled in fenced frames.
 class ContentAutofillDriverFactoryTest_FencedFrames
-    : public ContentAutofillDriverFactoryTest,
-      public ::testing::WithParamInterface<bool> {
+    : public ContentAutofillDriverFactoryTest {
  public:
   ContentAutofillDriverFactoryTest_FencedFrames() {
-    std::vector<base::test::FeatureRefAndParams> enabled;
-    std::vector<base::test::FeatureRef> disabled;
-    enabled.push_back(
-        {blink::features::kFencedFrames, {{"implementation_type", "mparch"}}});
-    if (autofill_enabled_in_fencedframe()) {
-      enabled.push_back({blink::features::kFencedFramesAPIChanges, {}});
-      enabled.push_back({features::kAutofillEnableWithinFencedFrame, {}});
-    } else {
-      disabled.push_back(features::kAutofillEnableWithinFencedFrame);
-    }
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+    std::vector<base::test::FeatureRefAndParams> enabled{
+        {blink::features::kFencedFrames, {{"implementation_type", "mparch"}}},
+        {blink::features::kFencedFramesAPIChanges, {}}};
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled, {});
   }
 
   ~ContentAutofillDriverFactoryTest_FencedFrames() override = default;
-
-  bool autofill_enabled_in_fencedframe() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(ContentAutofillDriverFactoryTest_FencedFrames,
+TEST_F(ContentAutofillDriverFactoryTest_FencedFrames,
        DisableAutofillWithinFencedFrame) {
   NavigateMainFrame("http://test.org");
   content::RenderFrameHost* fenced_frame_root =
@@ -422,18 +410,9 @@ TEST_P(ContentAutofillDriverFactoryTest_FencedFrames,
       content::RenderFrameHostTester::For(fenced_frame_root)
           ->AppendChild("iframe");
   EXPECT_NE(nullptr, factory_->DriverForFrame(main_rfh()));
-  if (autofill_enabled_in_fencedframe()) {
-    EXPECT_NE(nullptr, factory_->DriverForFrame(fenced_frame_root));
-    EXPECT_NE(nullptr, factory_->DriverForFrame(fenced_frame_subframe));
-  } else {
-    EXPECT_EQ(nullptr, factory_->DriverForFrame(fenced_frame_root));
-    EXPECT_EQ(nullptr, factory_->DriverForFrame(fenced_frame_subframe));
-  }
+  EXPECT_NE(nullptr, factory_->DriverForFrame(fenced_frame_root));
+  EXPECT_NE(nullptr, factory_->DriverForFrame(fenced_frame_subframe));
 }
-
-INSTANTIATE_TEST_SUITE_P(ContentAutofillDriverFactoryTest,
-                         ContentAutofillDriverFactoryTest_FencedFrames,
-                         testing::Bool());
 
 struct AgentSetupParam {
   version_info::Channel channel;

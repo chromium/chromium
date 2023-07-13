@@ -296,16 +296,6 @@ BASE_FEATURE(kAutofillEnableSupportForPhoneNumberTrunkTypes,
              "AutofillEnableSupportForPhoneNumberTrunkTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables autofill to function within a FencedFrame, and is enabled by
-// default as part of FencedFramesAPIChanges blink experiment.
-// This flag can be used via Finch to disable Autofill in the
-// FencedFramesAPIChanges blink experiment without affecting the other
-// features included in the experiment.
-// TODO(crbug.com/1294378): Remove once launched.
-BASE_FEATURE(kAutofillEnableWithinFencedFrame,
-             "AutofillEnableWithinFencedFrame",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether or not all datalist shall be extracted into FormFieldData.
 // This feature is enabled in both WebView and WebLayer where all datalists
 // instead of only the focused one shall be extracted and sent to Android

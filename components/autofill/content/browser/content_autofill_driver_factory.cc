@@ -108,10 +108,7 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
   // Within fenced frames and their descendants, Password Manager should for now
   // be disabled (crbug.com/1294378).
   if (render_frame_host->IsNestedWithinFencedFrame() &&
-      !(base::FeatureList::IsEnabled(
-            features::kAutofillEnableWithinFencedFrame) &&
-        base::FeatureList::IsEnabled(
-            blink::features::kFencedFramesAPIChanges))) {
+      !base::FeatureList::IsEnabled(blink::features::kFencedFramesAPIChanges)) {
     return nullptr;
   }
 

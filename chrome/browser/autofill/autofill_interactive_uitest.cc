@@ -3042,13 +3042,9 @@ class AutofillInteractiveFencedFrameTest
       enabled.push_back({blink::features::kBrowsingTopics, {}});
       enabled.push_back({blink::features::kBrowsingTopicsXHR, {}});
       enabled.push_back({blink::features::kFencedFramesAPIChanges, {}});
-      enabled.push_back({features::kAutofillEnableWithinFencedFrame, {}});
       scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
       fenced_frame_test_helper_ =
           std::make_unique<content::test::FencedFrameTestHelper>();
-    } else {
-      disabled.push_back(features::kAutofillEnableWithinFencedFrame);
-      scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
     }
   }
   ~AutofillInteractiveFencedFrameTest() override = default;
@@ -3074,6 +3070,7 @@ class AutofillInteractiveFencedFrameTest
         return cross_frame;
       }
       case FrameType::kFencedFrame: {
+        // Creates a <fencedframe> element in the renderer.
         content::RenderFrameHost* cross_frame =
             fenced_frame_test_helper_->CreateFencedFrame(
                 primary_main_frame_host(), frame_url);
