@@ -97,8 +97,7 @@ bool Permission::IsPermissionEnabled() const {
 
 std::string Permission::ToString() const {
   std::stringstream out;
-  out << " permission type: " << EnumToString(permission_type);
-  out << " value: " << std::endl;
+  out << " permission type: " << EnumToString(permission_type) << std::endl;
   if (value) {
     if (absl::holds_alternative<bool>(value->value)) {
       out << " bool_value: "
@@ -107,9 +106,10 @@ std::string Permission::ToString() const {
       out << " tristate_value: "
           << EnumToString(absl::get<TriState>(value->value));
     }
+    out << std::endl;
   }
   if (details.has_value()) {
-    out << "details: " << details.value() << std::endl;
+    out << " details: " << details.value() << std::endl;
   }
   out << " is_managed: " << (is_managed ? "true" : "false") << std::endl;
   return out.str();
