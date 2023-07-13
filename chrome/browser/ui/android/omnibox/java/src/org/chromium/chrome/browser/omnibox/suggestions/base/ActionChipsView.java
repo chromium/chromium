@@ -42,18 +42,20 @@ public class ActionChipsView extends RecyclerView {
         setMinimumHeight(getResources().getDimensionPixelSize(
                 R.dimen.omnibox_action_chips_container_height));
 
+        final @Px int actionChipSpacing =
+                getResources().getDimensionPixelSize(R.dimen.omnibox_action_chip_spacing);
+
         boolean showModernizedSuggestionsList =
                 OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
         setPaddingRelative(getResources().getDimensionPixelSize(showModernizedSuggestionsList
                                            ? R.dimen.omnibox_suggestion_icon_area_size_modern
-                                           : R.dimen.omnibox_suggestion_icon_area_size),
+                                           : R.dimen.omnibox_suggestion_icon_area_size)
+                        - actionChipSpacing / 2,
                 0, 0,
                 getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_padding));
         // Permit Actions to scroll through the padding area (I know, right?).
         setClipToPadding(false);
 
-        final @Px int actionChipSpacing =
-                getResources().getDimensionPixelSize(R.dimen.omnibox_action_chip_spacing);
         addItemDecoration(new ItemDecoration() {
             @Override
             public void getItemOffsets(
