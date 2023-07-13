@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -413,7 +412,14 @@ CreateWebMouseEvent(const std::string& event_type,
     }
     wheel_event->delta_x = static_cast<float>(-delta_x.fromJust());
     wheel_event->delta_y = static_cast<float>(-delta_y.fromJust());
+    if (wheel_event->delta_x != 0.0f) {
+      wheel_event->wheel_ticks_x = wheel_event->delta_x > 0.0f ? 1.0f : -1.0f;
+    }
+    if (wheel_event->delta_y != 0.0f) {
+      wheel_event->wheel_ticks_y = wheel_event->delta_y > 0.0f ? 1.0f : -1.0f;
+    }
     wheel_event->phase = blink::WebMouseWheelEvent::kPhaseBegan;
+    wheel_event->delta_units = ui::ScrollGranularity::kScrollByPrecisePixel;
     wheel_event->dispatch_type = blink::WebInputEvent::DispatchType::kBlocking;
     mouse_event = std::move(wheel_event);
   } else {
@@ -644,6 +650,8 @@ class InputHandler::InputInjector
     // Send a synthetic wheel event with phaseEnded to finish scrolling.
     wheel_event->delta_x = 0;
     wheel_event->delta_y = 0;
+    wheel_event->wheel_ticks_x = 0;
+    wheel_event->wheel_ticks_y = 0;
     wheel_event->phase = blink::WebMouseWheelEvent::kPhaseEnded;
     wheel_event->dispatch_type =
         blink::WebInputEvent::DispatchType::kEventNonBlocking;
