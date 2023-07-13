@@ -299,6 +299,7 @@ test("display_unittests") {
       "manager/touch_device_manager_unittest.cc",
       "manager/touch_transform_controller_unittest.cc",
       "manager/update_display_configuration_task_unittest.cc",
+      "manager/util/display_manager_test_util_unittest.cc",
       "manager/util/display_manager_util_unittest.cc",
     ]
 

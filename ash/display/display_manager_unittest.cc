@@ -58,6 +58,7 @@
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/manager/test/touch_device_manager_test_api.h"
+#include "ui/display/manager/util/display_manager_test_util.h"
 #include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -80,7 +81,7 @@ using base::StringPrintf;
 namespace {
 
 std::string ToDisplayName(int64_t id) {
-  return "x-" + base::NumberToString(id);
+  return base::StringPrintf("Display-%d", static_cast<int>(id));
 }
 
 }  // namespace
@@ -1702,9 +1703,9 @@ TEST_F(DisplayManagerTest, TestNativeDisplaysChanged) {
   // Test display name.
   EXPECT_EQ(ToDisplayName(internal_display_id),
             display_manager()->GetDisplayNameForId(internal_display_id));
-  EXPECT_EQ("x-10", display_manager()->GetDisplayNameForId(10));
-  EXPECT_EQ("x-11", display_manager()->GetDisplayNameForId(11));
-  EXPECT_EQ("x-12", display_manager()->GetDisplayNameForId(12));
+  EXPECT_EQ("Display-10", display_manager()->GetDisplayNameForId(10));
+  EXPECT_EQ("Display-11", display_manager()->GetDisplayNameForId(11));
+  EXPECT_EQ("Display-12", display_manager()->GetDisplayNameForId(12));
   // Default name for the id that doesn't exist.
   EXPECT_EQ("Display 100", display_manager()->GetDisplayNameForId(100));
 
@@ -1759,7 +1760,7 @@ TEST_F(DisplayManagerTest, DisplayAddRemoveAtTheSameTime) {
       display_manager()->GetDisplayInfo(secondary_id);
 
   // An id which is different from primary and secondary.
-  const int64_t third_id = display::GetNextSynthesizedDisplayId(secondary_id);
+  const int64_t third_id = display::SynthesizeDisplayIdFromSeed(secondary_id);
 
   display::ManagedDisplayInfo third_info =
       display::CreateDisplayInfo(third_id, gfx::Rect(0, 0, 600, 500));
@@ -1842,12 +1843,9 @@ TEST_F(DisplayManagerTest, DontRememberBestResolution) {
   display::ManagedDisplayInfo native_display_info =
       display::CreateDisplayInfo(display_id, gfx::Rect(0, 0, 1000, 500));
   display::ManagedDisplayInfo::ManagedDisplayModeList display_modes;
-  display_modes.push_back(
-      display::ManagedDisplayMode(gfx::Size(1000, 500), 58.0f, false, true));
-  display_modes.push_back(
-      display::ManagedDisplayMode(gfx::Size(800, 300), 59.0f, false, false));
-  display_modes.push_back(
-      display::ManagedDisplayMode(gfx::Size(400, 500), 60.0f, false, false));
+  display_modes.emplace_back(gfx::Size(1000, 500), 58.0f, false, true);
+  display_modes.emplace_back(gfx::Size(800, 300), 59.0f, false, false);
+  display_modes.emplace_back(gfx::Size(400, 500), 60.0f, false, false);
 
   native_display_info.SetManagedDisplayModes(display_modes);
 
@@ -1913,12 +1911,9 @@ TEST_F(DisplayManagerTest, ResolutionFallback) {
   display::ManagedDisplayInfo native_display_info =
       display::CreateDisplayInfo(display_id, gfx::Rect(0, 0, 1000, 500));
   display::ManagedDisplayInfo::ManagedDisplayModeList display_modes;
-  display_modes.push_back(
-      display::ManagedDisplayMode(gfx::Size(1000, 500), 60.0f, false, true));
-  display_modes.push_back(
-      display::ManagedDisplayMode(gfx::Size(800, 300), 59.0f, false, false));
-  display_modes.push_back(
-      display::ManagedDisplayMode(gfx::Size(400, 500), 60.0f, false, false));
+  display_modes.emplace_back(gfx::Size(1000, 500), 60.0f, false, true);
+  display_modes.emplace_back(gfx::Size(800, 300), 59.0f, false, false);
+  display_modes.emplace_back(gfx::Size(400, 500), 60.0f, false, false);
 
   native_display_info.SetManagedDisplayModes(display_modes);
 
@@ -2622,7 +2617,7 @@ TEST_F(DisplayManagerTest, UnifiedDesktopBasic) {
             display_manager_test.GetSecondaryDisplay().size());
   EXPECT_EQ(gfx::Size(500, 300),
             display_manager()
-                ->GetDisplayForId(display::GetNextSynthesizedDisplayId(
+                ->GetDisplayForId(display::SynthesizeDisplayIdFromSeed(
                     display_manager_test.GetSecondaryDisplay().id()))
                 .size());
 }

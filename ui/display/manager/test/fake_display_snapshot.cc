@@ -17,7 +17,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/re2/src/re2/re2.h"
-#include "ui/display/util/display_util.h"
+#include "ui/display/display_features.h"
+#include "ui/display/manager/util/display_manager_test_util.h"
 
 using base::StringPiece;
 
@@ -149,6 +150,20 @@ std::unique_ptr<FakeDisplaySnapshot> Builder::Build() {
   if (modes_.empty() || id_ == kInvalidDisplayId) {
     NOTREACHED() << "Display modes or display ID missing";
     return nullptr;
+  }
+
+  const int64_t alternate_id = ProduceAlternativeSchemeIdForId(id_);
+  if (features::IsEdidBasedDisplayIdsEnabled()) {
+    edid_display_id_ = id_;
+    connector_index_ = GetNextSynthesizedEdidDisplayConnectorIndex();
+
+    port_display_id_ = alternate_id;
+  } else {
+    port_display_id_ = id_;
+    // Output index is stored in the first 8 bits.
+    connector_index_ = id_ & 0xFF;
+
+    edid_display_id_ = alternate_id;
   }
 
   // Add a name if none is provided.
