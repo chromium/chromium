@@ -4,6 +4,7 @@
 
 #include "media/capture/video/linux/v4l2_capture_delegate_gpu_helper.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -99,6 +100,8 @@ int V4L2CaptureDelegateGpuHelper::OnIncomingCapturedData(
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     int frame_feedback_id) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "V4L2CaptureDelegateGpuHelper::OnIncomingCapturedData");
   if (!client) {
     return -1;
   }

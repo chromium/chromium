@@ -434,11 +434,12 @@ bool UtilityProcessHost::StartProcess() {
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX)
+    // Pass `kVideoCaptureUseGpuMemoryBuffer` flag to video capture service only
+    // when the video capture use GPU memory buffer enabled and NV12 GPU memory
+    // buffer supported.
     if (metrics_name_ == video_capture::mojom::VideoCaptureService::Name_) {
-      if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kDisableVideoCaptureUseGpuMemoryBuffer) &&
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kVideoCaptureUseGpuMemoryBuffer)) {
+      if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled() &&
+          GpuDataManagerImpl::GetInstance()->IsGpuMemoryBufferNV12Supported()) {
         cmd_line->AppendSwitch(switches::kVideoCaptureUseGpuMemoryBuffer);
       }
     }

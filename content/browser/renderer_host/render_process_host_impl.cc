@@ -3513,6 +3513,16 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
         base::NumberToString(
             base::TimeTicks::UnixEpoch().since_origin().InMicroseconds()));
   }
+
+#if BUILDFLAG(IS_LINUX)
+  // Append `kDisableVideoCaptureUseGpuMemoryBuffer` flag if there is no support
+  // for NV12 GPU memory buffer.
+  if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled() &&
+      !GpuDataManagerImpl::GetInstance()->IsGpuMemoryBufferNV12Supported()) {
+    command_line->AppendSwitch(
+        switches::kDisableVideoCaptureUseGpuMemoryBuffer);
+  }
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(

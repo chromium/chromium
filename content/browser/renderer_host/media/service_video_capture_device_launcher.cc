@@ -25,6 +25,10 @@
 #include "media/base/media_switches.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "content/browser/gpu/gpu_data_manager_impl.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -144,8 +148,8 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   new_params.power_line_frequency =
       media::VideoCaptureDevice::GetPowerLineFrequency(params);
 
-  // GpuMemoryBuffer-based VideoCapture buffer works only on the Chrome OS
-  // and Windows VideoCaptureDevice implementations.
+  // GpuMemoryBuffer-based VideoCapture buffer works only on the Chrome OS,
+  // Windows and Linux VideoCaptureDevice implementations.
 #if BUILDFLAG(IS_WIN)
   if (media::IsMediaFoundationD3D11VideoCaptureEnabled() &&
       params.requested_format.pixel_format == media::PIXEL_FORMAT_NV12) {
@@ -160,7 +164,12 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   }
 #else
   if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
-    new_params.buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
+#if BUILDFLAG(IS_LINUX)
+    // On Linux, additionally check whether the NV12 GPU memory buffer is
+    // supported.
+    if (GpuDataManagerImpl::GetInstance()->IsGpuMemoryBufferNV12Supported())
+#endif
+      new_params.buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
   }
 #endif
 
