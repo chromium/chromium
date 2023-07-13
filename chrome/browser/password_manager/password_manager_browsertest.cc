@@ -31,6 +31,7 @@
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_handler_test_utils.h"
@@ -3968,6 +3969,27 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   SubmitInjectedPasswordForm(WebContents(), frame, submit_url);
   EXPECT_TRUE(frame->IsRenderFrameLive());
   EXPECT_TRUE(prompt_observer.IsSavePromptAvailable());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+                       ShowPasswordManagerNoBrowser) {
+  // Create a WebContent without tab helpers so it has no associated browser.
+  std::unique_ptr<content::WebContents> new_web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+
+  // Verify that there is no browser.
+  ASSERT_FALSE(chrome::FindBrowserWithWebContents(new_web_contents.get()));
+
+  // Create ChromePasswordManagerClient for newly created web_contents.
+  ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
+      new_web_contents.get(), /*autofill_client=*/nullptr);
+
+  ChromePasswordManagerClient* client =
+      ChromePasswordManagerClient::FromWebContents(new_web_contents.get());
+  ASSERT_TRUE(client);
+  ASSERT_NO_FATAL_FAILURE(client->NavigateToManagePasswordsPage(
+      password_manager::ManagePasswordsReferrer::kPasswordsGoogleWebsite));
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

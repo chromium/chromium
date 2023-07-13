@@ -947,8 +947,11 @@ void ChromePasswordManagerClient::NavigateToManagePasswordsPage(
   password_manager_launcher::ShowPasswordSettings(web_contents(), referrer,
                                                   /*manage_passkeys=*/false);
 #else
-  ::NavigateToManagePasswordsPage(
-      chrome::FindBrowserWithWebContents(web_contents()), referrer);
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  if (!browser) {
+    browser = chrome::FindLastActive();
+  }
+  ::NavigateToManagePasswordsPage(browser, referrer);
 #endif
 }
 
