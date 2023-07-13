@@ -526089,11 +526089,811 @@
          }
         ]
        ],
-       "location-properties-smoke-test.html": [
-        "1d1c1136a6dc9263a964218d6c50408176b7f83f",
+       "location-properties-smoke-test.window.js": [
+        "45b61d07f5f58a7dfc8fb399052d506e93972ced",
         [
-         null,
-         {}
+         "html/browsers/origin/cross-origin-objects/location-properties-smoke-test.window.html?assign",
+         {
+          "script_metadata": [
+           [
+            "variant",
+            "?assign"
+           ],
+           [
+            "variant",
+            "?customproperty"
+           ],
+           [
+            "variant",
+            "?hash"
+           ],
+           [
+            "variant",
+            "?host"
+           ],
+           [
+            "variant",
+            "?hostname"
+           ],
+           [
+            "variant",
+            "?pathname"
+           ],
+           [
+            "variant",
+            "?port"
+           ],
+           [
+            "variant",
+            "?protocol"
+           ],
+           [
+            "variant",
+            "?reload"
+           ],
+           [
+            "variant",
+            "?search"
+           ],
+           [
+            "variant",
+            "?toString"
+           ],
+           [
+            "variant",
+            "?valueOf"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/cross-origin-objects/location-properties-smoke-test.window.html?customproperty",
+         {
+          "script_metadata": [
+           [
+            "variant",
+            "?assign"
+           ],
+           [
+            "variant",
+            "?customproperty"
+           ],
+           [
+            "variant",
+            "?hash"
+           ],
+           [
+            "variant",
+            "?host"
+           ],
+           [
+            "variant",
+            "?hostname"
+           ],
+           [
+            "variant",
+            "?pathname"
+           ],
+           [
+            "variant",
+            "?port"
+           ],
+           [
+            "variant",
+            "?protocol"
+           ],
+           [
+            "variant",
+            "?reload"
+           ],
+           [
+            "variant",
+            "?search"
+           ],
+           [
+            "variant",
+            "?toString"
+           ],
+           [
+            "variant",
+            "?valueOf"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/cross-origin-objects/location-properties-smoke-test.window.html?hash",
+         {
+          "script_metadata": [
+           [
+            "variant",
+            "?assign"
+           ],
+           [
+            "variant",
+            "?customproperty"
+           ],
+           [
+            "variant",
+            "?hash"
+           ],
+           [
+            "variant",
+            "?host"
+           ],
+           [
+            "variant",
+            "?hostname"
+           ],
+           [
+            "variant",
+            "?pathname"
+           ],
+           [
+            "variant",
+            "?port"
+           ],
+           [
+            "variant",
+            "?protocol"
+           ],
+           [
+            "variant",
+            "?reload"
+           ],
+           [
+            "variant",
+            "?search"
+           ],
+           [
+            "variant",
+            "?toString"
+           ],
+           [
+            "variant",
+            "?valueOf"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/cross-origin-objects/location-properties-smoke-test.window.html?host",
+         {
+          "script_metadata": [
+           [
+            "variant",
+            "?assign"
+           ],
+           [
+            "variant",
+            "?customproperty"
+           ],
+           [
+            "variant",
+            "?hash"
+           ],
+           [
+            "variant",
+            "?host"
+           ],
+           [
+            "variant",
+            "?hostname"
+           ],
+           [
+            "variant",
+            "?pathname"
+           ],
+           [
+            "variant",
+            "?port"
+           ],
+           [
+            "variant",
+            "?protocol"
+           ],
+           [
+            "variant",
+            "?reload"
+           ],
+           [
+            "variant",
+            "?search"
+           ],
+           [
+            "variant",
+            "?toString"
+           ],
+           [
+            "variant",
+            "?valueOf"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/cross-origin-objects/location-properties-smoke-test.window.html?hostname",
+         {
+          "script_metadata": [
+           [
+            "variant",
+            "?assign"
+           ],
+           [
+            "variant",
+            "?customproperty"
+           ],
+           [
+            "variant",
+            "?hash"
+           ],
+           [
+            "variant",
+            "?host"
+           ],
+           [
+            "variant",
+            "?hostname"
+           ],
+           [
+            "variant",
+            "?pathname"
+           ],
+           [
+            "variant",
+            "?port"
+           ],
+           [
+            "variant",
+            "?protocol"
+           ],
+           [
+            "variant",
+            "?reload"
+           ],
+           [
+            "variant",
+            "?search"
+           ],
+           [
+            "variant",
+            "?toString"
+           ],
+           [
+            "variant",
+            "?valueOf"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/cross-origin-objects/location-properties-smoke-test.window.html?pathname",
+         {
+          "script_metadata": [
+           [
+            "variant",
+            "?assign"
+           ],
+           [
+            "variant",
+            "?customproperty"
+           ],
+           [
+            "variant",
+            "?hash"
+           ],
+           [
+            "variant",
+            "?host"
+           ],
+           [
+            "variant",
+            "?hostname"
+           ],
+           [
+            "variant",
+            "?pathname"
+           ],
+           [
+            "variant",
+            "?port"
+           ],
+           [
+            "variant",
+            "?protocol"
+           ],
+           [
+            "variant",
+            "?reload"
+           ],
+           [
+            "variant",
+            "?search"
+           ],
+           [
+            "variant",
+            "?toString"
+           ],
+           [
+            "variant",
+            "?valueOf"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/cross-origin-objects/location-properties-smoke-test.window.html?port",
+         {
+          "script_metadata": [
+           [
+            "variant",
+            "?assign"
+           ],
+           [
+            "variant",
+            "?customproperty"
+           ],
+           [
+            "variant",
+            "?hash"
+           ],
+           [
+            "variant",
+            "?host"
+           ],
+           [
+            "variant",
+            "?hostname"
+           ],
+           [
+            "variant",
+            "?pathname"
+           ],
+           [
+            "variant",
+            "?port"
+           ],
+           [
+            "variant",
+            "?protocol"
+           ],
+           [
+            "variant",
+            "?reload"
+           ],
+           [
+            "variant",
+            "?search"
+           ],
+           [
+            "variant",
+            "?toString"
+           ],
+           [
+            "variant",
+            "?valueOf"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/cross-origin-objects/location-properties-smoke-test.window.html?protocol",
+         {
+          "script_metadata": [
+           [
+            "variant",
+            "?assign"
+           ],
+           [
+            "variant",
+            "?customproperty"
+           ],
+           [
+            "variant",
+            "?hash"
+           ],
+           [
+            "variant",
+            "?host"
+           ],
+           [
+            "variant",
+            "?hostname"
+           ],
+           [
+            "variant",
+            "?pathname"
+           ],
+           [
+            "variant",
+            "?port"
+           ],
+           [
+            "variant",
+            "?protocol"
+           ],
+           [
+            "variant",
+            "?reload"
+           ],
+           [
+            "variant",
+            "?search"
+           ],
+           [
+            "variant",
+            "?toString"
+           ],
+           [
+            "variant",
+            "?valueOf"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/cross-origin-objects/location-properties-smoke-test.window.html?reload",
+         {
+          "script_metadata": [
+           [
+            "variant",
+            "?assign"
+           ],
+           [
+            "variant",
+            "?customproperty"
+           ],
+           [
+            "variant",
+            "?hash"
+           ],
+           [
+            "variant",
+            "?host"
+           ],
+           [
+            "variant",
+            "?hostname"
+           ],
+           [
+            "variant",
+            "?pathname"
+           ],
+           [
+            "variant",
+            "?port"
+           ],
+           [
+            "variant",
+            "?protocol"
+           ],
+           [
+            "variant",
+            "?reload"
+           ],
+           [
+            "variant",
+            "?search"
+           ],
+           [
+            "variant",
+            "?toString"
+           ],
+           [
+            "variant",
+            "?valueOf"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/cross-origin-objects/location-properties-smoke-test.window.html?search",
+         {
+          "script_metadata": [
+           [
+            "variant",
+            "?assign"
+           ],
+           [
+            "variant",
+            "?customproperty"
+           ],
+           [
+            "variant",
+            "?hash"
+           ],
+           [
+            "variant",
+            "?host"
+           ],
+           [
+            "variant",
+            "?hostname"
+           ],
+           [
+            "variant",
+            "?pathname"
+           ],
+           [
+            "variant",
+            "?port"
+           ],
+           [
+            "variant",
+            "?protocol"
+           ],
+           [
+            "variant",
+            "?reload"
+           ],
+           [
+            "variant",
+            "?search"
+           ],
+           [
+            "variant",
+            "?toString"
+           ],
+           [
+            "variant",
+            "?valueOf"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/cross-origin-objects/location-properties-smoke-test.window.html?toString",
+         {
+          "script_metadata": [
+           [
+            "variant",
+            "?assign"
+           ],
+           [
+            "variant",
+            "?customproperty"
+           ],
+           [
+            "variant",
+            "?hash"
+           ],
+           [
+            "variant",
+            "?host"
+           ],
+           [
+            "variant",
+            "?hostname"
+           ],
+           [
+            "variant",
+            "?pathname"
+           ],
+           [
+            "variant",
+            "?port"
+           ],
+           [
+            "variant",
+            "?protocol"
+           ],
+           [
+            "variant",
+            "?reload"
+           ],
+           [
+            "variant",
+            "?search"
+           ],
+           [
+            "variant",
+            "?toString"
+           ],
+           [
+            "variant",
+            "?valueOf"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/cross-origin-objects/location-properties-smoke-test.window.html?valueOf",
+         {
+          "script_metadata": [
+           [
+            "variant",
+            "?assign"
+           ],
+           [
+            "variant",
+            "?customproperty"
+           ],
+           [
+            "variant",
+            "?hash"
+           ],
+           [
+            "variant",
+            "?host"
+           ],
+           [
+            "variant",
+            "?hostname"
+           ],
+           [
+            "variant",
+            "?pathname"
+           ],
+           [
+            "variant",
+            "?port"
+           ],
+           [
+            "variant",
+            "?protocol"
+           ],
+           [
+            "variant",
+            "?reload"
+           ],
+           [
+            "variant",
+            "?search"
+           ],
+           [
+            "variant",
+            "?toString"
+           ],
+           [
+            "variant",
+            "?valueOf"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ]
+          ]
+         }
         ]
        ],
        "window-location-and-location-href-cross-realm-set.html": [
@@ -586895,24 +587695,24 @@
     },
     "ordering-and-transition": {
      "anchor-download-intercept-reject.html": [
-      "4869cedd2528e7d930925a14fc7ef5cd77e77681",
+      "bd7d968fb1ff4ebfc157ec64b8a23997d4bcb13c",
       [
-       null,
+       "navigation-api/ordering-and-transition/anchor-download-intercept-reject.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/anchor-download-intercept-reject.html?currententrychange",
+       "navigation-api/ordering-and-transition/anchor-download-intercept-reject.html?no-currententrychange",
        {}
       ]
      ],
      "anchor-download-intercept.html": [
-      "23326c827b7a272f61e875a180c1134fc8bdb660",
+      "38478e3c9a843983da70a90a573a108c64eaa880",
       [
-       null,
+       "navigation-api/ordering-and-transition/anchor-download-intercept.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/anchor-download-intercept.html?currententrychange",
+       "navigation-api/ordering-and-transition/anchor-download-intercept.html?no-currententrychange",
        {}
       ]
      ],
@@ -586924,35 +587724,35 @@
       ]
      ],
      "back-same-document-intercept-reject.html": [
-      "c0d4f550271371bbf496e50419b5cb1de25d3800",
+      "d1f15428f10adca6bef5996f7fc59e2df43bab8c",
       [
-       null,
+       "navigation-api/ordering-and-transition/back-same-document-intercept-reject.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/back-same-document-intercept-reject.html?currententrychange",
+       "navigation-api/ordering-and-transition/back-same-document-intercept-reject.html?no-currententrychange",
        {}
       ]
      ],
      "back-same-document-intercept.html": [
-      "7bd248bc9c5a77cbea9cb9494ebb45768b85eece",
+      "f66e1dfba8f1549c4373f24e7dab1d0f7be6d76d",
       [
-       null,
+       "navigation-api/ordering-and-transition/back-same-document-intercept.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/back-same-document-intercept.html?currententrychange",
+       "navigation-api/ordering-and-transition/back-same-document-intercept.html?no-currententrychange",
        {}
       ]
      ],
      "back-same-document.html": [
-      "76c3e99311ed3e792446d9b250d0bef48dbd2847",
+      "12b6a2aee938733fbb519f7a0bdeb24def79cfdd",
       [
-       null,
+       "navigation-api/ordering-and-transition/back-same-document.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/back-same-document.html?currententrychange",
+       "navigation-api/ordering-and-transition/back-same-document.html?no-currententrychange",
        {}
       ]
      ],
@@ -586971,13 +587771,13 @@
       ]
      ],
      "intercept-async.html": [
-      "f2ca0969506bb4323514c334986794cbc17815b7",
+      "d402340b068837ab29807f5d2b083565034e1e8c",
       [
-       null,
+       "navigation-api/ordering-and-transition/intercept-async.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/intercept-async.html?currententrychange",
+       "navigation-api/ordering-and-transition/intercept-async.html?no-currententrychange",
        {}
       ]
      ],
@@ -586989,46 +587789,46 @@
       ]
      ],
      "location-href-double-intercept.html": [
-      "36ae5ce4ab52b48a937bd01325371edddb366804",
+      "cc8b95b1b4d8ee2be89d9825e394cc17e59399f1",
       [
-       null,
+       "navigation-api/ordering-and-transition/location-href-double-intercept.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/location-href-double-intercept.html?currententrychange",
+       "navigation-api/ordering-and-transition/location-href-double-intercept.html?no-currententrychange",
        {}
       ]
      ],
      "location-href-intercept-reentrant.html": [
-      "3fabf52bfbab2b0bd9e5223879be3e70fa43a04b",
+      "8a5082148e77775629af391b4954314b4072a152",
       [
-       null,
+       "navigation-api/ordering-and-transition/location-href-intercept-reentrant.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/location-href-intercept-reentrant.html?currententrychange",
+       "navigation-api/ordering-and-transition/location-href-intercept-reentrant.html?no-currententrychange",
        {}
       ]
      ],
      "location-href-intercept-reject.html": [
-      "b4aeb726b3b59c73ea33bdf19755afabee1730c6",
+      "59b3d4884fb6f0f400cc40612c504169cd0b2987",
       [
-       null,
+       "navigation-api/ordering-and-transition/location-href-intercept-reject.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/location-href-intercept-reject.html?currententrychange",
+       "navigation-api/ordering-and-transition/location-href-intercept-reject.html?no-currententrychange",
        {}
       ]
      ],
      "location-href-intercept.html": [
-      "bb861d37ae54a5e75937deb550f624031538a54e",
+      "75f1d3d1d0286b96e97793e7eb03534ae95f5ff0",
       [
-       null,
+       "navigation-api/ordering-and-transition/location-href-intercept.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/location-href-intercept.html?currententrychange",
+       "navigation-api/ordering-and-transition/location-href-intercept.html?no-currententrychange",
        {}
       ]
      ],
@@ -587047,13 +587847,13 @@
       ]
      ],
      "navigate-commit-after-transition-intercept.html": [
-      "70a840e69239bc0a16a59a46f37b926dfad749a4",
+      "16c8796d6f45ce94f594280339596464e60b49cf",
       [
-       null,
+       "navigation-api/ordering-and-transition/navigate-commit-after-transition-intercept.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/navigate-commit-after-transition-intercept.html?currententrychange",
+       "navigation-api/ordering-and-transition/navigate-commit-after-transition-intercept.html?no-currententrychange",
        {}
       ]
      ],
@@ -587072,79 +587872,79 @@
       ]
      ],
      "navigate-double-intercept.html": [
-      "6ce67b9af644aeaad32a7be7f376f2eae61ba933",
+      "8baea7bf1ea00ccfa919cb178c12ce8deb16ad5d",
       [
-       null,
+       "navigation-api/ordering-and-transition/navigate-double-intercept.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/navigate-double-intercept.html?currententrychange",
+       "navigation-api/ordering-and-transition/navigate-double-intercept.html?no-currententrychange",
        {}
       ]
      ],
      "navigate-in-transition-finished.html": [
-      "9251cfe049d30ef3e73a2b25f4558bce7ed2066c",
+      "6f8b667ce314dae6c7ae06965dbf5369ca5d0a06",
       [
-       null,
+       "navigation-api/ordering-and-transition/navigate-in-transition-finished.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/navigate-in-transition-finished.html?currententrychange",
+       "navigation-api/ordering-and-transition/navigate-in-transition-finished.html?no-currententrychange",
        {}
       ]
      ],
      "navigate-intercept-stop.html": [
-      "5d126a8c2ff9b94a2de9f91be9ec3486f8c88e4a",
+      "189475d5de1edabd6d33032885b2f4aa9fdd1811",
       [
-       null,
+       "navigation-api/ordering-and-transition/navigate-intercept-stop.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/navigate-intercept-stop.html?currententrychange",
+       "navigation-api/ordering-and-transition/navigate-intercept-stop.html?no-currententrychange",
        {}
       ]
      ],
      "navigate-intercept.html": [
-      "f76f20bf85efae043115c968942af465b1435887",
+      "cdbd8f6ef668432b939477260c5f9b0ced1b80d0",
       [
-       null,
+       "navigation-api/ordering-and-transition/navigate-intercept.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/navigate-intercept.html?currententrychange",
+       "navigation-api/ordering-and-transition/navigate-intercept.html?no-currententrychange",
        {}
       ]
      ],
      "navigate-same-document-intercept-reentrant.html": [
-      "86f4e06731353659436ac90e1de6987238f884d7",
+      "0106e997c9fdc4f408fef6c77046ee877f7da4df",
       [
-       null,
+       "navigation-api/ordering-and-transition/navigate-same-document-intercept-reentrant.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/navigate-same-document-intercept-reentrant.html?currententrychange",
+       "navigation-api/ordering-and-transition/navigate-same-document-intercept-reentrant.html?no-currententrychange",
        {}
       ]
      ],
      "navigate-same-document-intercept-reject.html": [
-      "88c668e0e99e83b075233379ebab4b16b85a1935",
+      "6713edca2d9234ae7e90c04540ffe96894273a14",
       [
-       null,
+       "navigation-api/ordering-and-transition/navigate-same-document-intercept-reject.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/navigate-same-document-intercept-reject.html?currententrychange",
+       "navigation-api/ordering-and-transition/navigate-same-document-intercept-reject.html?no-currententrychange",
        {}
       ]
      ],
      "navigate-same-document.html": [
-      "589e1105e65a74655e218181835b20c83ac83fd2",
+      "fc506cef8bf481bee89b8cfd4f78843b95459305",
       [
-       null,
+       "navigation-api/ordering-and-transition/navigate-same-document.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/navigate-same-document.html?currententrychange",
+       "navigation-api/ordering-and-transition/navigate-same-document.html?no-currententrychange",
        {}
       ]
      ],
@@ -587156,24 +587956,24 @@
       ]
      ],
      "reload-intercept-reject.html": [
-      "334d2108ecdc26542e896261df9915ad08abd66b",
+      "7394ce4d17a06887d2c8281ad777e2c8fb8125ad",
       [
-       null,
+       "navigation-api/ordering-and-transition/reload-intercept-reject.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/reload-intercept-reject.html?currententrychange",
+       "navigation-api/ordering-and-transition/reload-intercept-reject.html?no-currententrychange",
        {}
       ]
      ],
      "reload-intercept.html": [
-      "8d4160a4d959f910423e840968163e787e205852",
+      "18ff6191c0d05078c097333f9a360d37f6bcdee6",
       [
-       null,
+       "navigation-api/ordering-and-transition/reload-intercept.html?currententrychange",
        {}
       ],
       [
-       "navigation-api/ordering-and-transition/reload-intercept.html?currententrychange",
+       "navigation-api/ordering-and-transition/reload-intercept.html?no-currententrychange",
        {}
       ]
      ],
@@ -688718,15 +689518,6 @@
        ]
       },
       "element_clear": {
-       "clear.py": [
-        "9b0d7f2133f7686603449897c659c7e4220ec746",
-        [
-         null,
-         {
-          "timeout": "long"
-         }
-        ]
-       ],
        "user_prompts.py": [
         "7a8564a684a7edc5d1af0812b3353f2f5ccba629",
         [
@@ -688768,13 +689559,6 @@
        ],
        "file_upload.py": [
         "73832d0f85ae683ee2d1f54e9c0b7e3e432e9afd",
-        [
-         null,
-         {}
-        ]
-       ],
-       "interactability.py": [
-        "d55860c8746f33ba86468fbfc9952363f01e7110",
         [
          null,
          {}
@@ -689020,13 +689804,6 @@
        ]
       },
       "find_element": {
-       "find.py": [
-        "50de92554bcb29659d5a5b842ef12a485a0cde3a",
-        [
-         null,
-         {}
-        ]
-       ],
        "user_prompts.py": [
         "ada8e8ebee33a6ce9fcfb4871093ce1eef1d1dae",
         [
@@ -689038,13 +689815,6 @@
        ]
       },
       "find_element_from_element": {
-       "find.py": [
-        "102704cd8e318c69f51a762d3eda2b125eed23ae",
-        [
-         null,
-         {}
-        ]
-       ],
        "user_prompts.py": [
         "0537a786189c41420f50e6c3b747482c331fdaa3",
         [
@@ -689074,13 +689844,6 @@
        ]
       },
       "find_elements": {
-       "find.py": [
-        "0d9ce21186c9a6963018d4dc819038749758ff47",
-        [
-         null,
-         {}
-        ]
-       ],
        "user_prompts.py": [
         "f9a45e527515fc7448162a86dca69d3f95e76491",
         [
@@ -689092,13 +689855,6 @@
        ]
       },
       "find_elements_from_element": {
-       "find.py": [
-        "fc898bc95afecd71535bca0f23d375a1c3738299",
-        [
-         null,
-         {}
-        ]
-       ],
        "user_prompts.py": [
         "467bec09a1bd61346b3df2fa5b0b8c16e02fe975",
         [
@@ -689655,13 +690411,6 @@
          }
         ]
        ],
-       "invalid_capabilities.py": [
-        "be397edcf0f263f381d4901e4064c18d65eae29d",
-        [
-         null,
-         {}
-        ]
-       ],
        "merge.py": [
         "857d289fcaf054492e17ba730c6f530d55fe2640",
         [
@@ -689680,13 +690429,6 @@
        ],
        "platform_name.py": [
         "54fe4743bed44e75d6771ede5d4b7bf2f267bb95",
-        [
-         null,
-         {}
-        ]
-       ],
-       "response.py": [
-        "43a8d57931143f9cf2b5cb0946f982b003afd85c",
         [
          null,
          {}
@@ -689971,15 +690713,6 @@
          {
           "timeout": "long"
          }
-        ]
-       ]
-      },
-      "send_alert_text": {
-       "send.py": [
-        "df218c803bb0a4f558c8bc1547dc3982af01216b",
-        [
-         null,
-         {}
         ]
        ]
       },
