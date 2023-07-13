@@ -4242,9 +4242,6 @@ crbug.com/1008483 virtual/backface-visibility-interop/external/wpt/css/css-trans
 # SwANGLE issues
 crbug.com/1204234 css3/blending/background-blend-mode-single-accelerated-element.html [ Failure ]
 
-# Upcoming DevTools change
-crbug.com/1006759 http/tests/devtools/profiler/heap-snapshot-loader.js [ Failure Pass ]
-
 # Temporarily disabled to land changes in DevTools, multiple dependent CLs
 # [1] https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/2049183
 # [2] https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/2119670

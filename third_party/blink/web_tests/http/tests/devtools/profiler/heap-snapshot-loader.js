@@ -14,30 +14,37 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
   var partSize = sourceStringified.length >> 3;
 
   async function injectMockProfile(callback) {
-    var dispatcher = TestRunner.mainTarget._dispatchers['HeapProfiler']._dispatchers[0];
+    var heapProfilerModel = TestRunner.mainTarget.model(SDK.HeapProfilerModel);
     var panel = UI.panels.heap_profiler;
-    panel._reset();
+    panel.reset();
 
     var profileType = Profiler.ProfileTypeRegistry.instance.heapSnapshotProfileType;
 
     TestRunner.override(TestRunner.HeapProfilerAgent, 'invoke_takeHeapSnapshot', takeHeapSnapshotMock);
     function takeHeapSnapshotMock(reportProgress) {
       if (reportProgress) {
-        profileType._reportHeapSnapshotProgress({data: {done: 50, total: 100, finished: false}});
-        profileType._reportHeapSnapshotProgress({data: {done: 100, total: 100, finished: true}});
+        profileType.reportHeapSnapshotProgress(
+            {data: {done: 50, total: 100, finished: false}});
+        profileType.reportHeapSnapshotProgress(
+            {data: {done: 100, total: 100, finished: true}});
       }
-      for (var i = 0, l = sourceStringified.length; i < l; i += partSize)
-        dispatcher.addHeapSnapshotChunk(sourceStringified.slice(i, i + partSize));
+      for (var i = 0, l = sourceStringified.length; i < l; i += partSize) {
+        heapProfilerModel.addHeapSnapshotChunk(
+            sourceStringified.slice(i, i + partSize));
+      }
       return Promise.resolve();
     }
 
     function tempFileReady() {
       callback(this);
     }
-    TestRunner.addSniffer(Profiler.HeapProfileHeader.prototype, '_didWriteToTempFile', tempFileReady);
-    if (!UI.context.flavor(SDK.HeapProfilerModel))
+    TestRunner.addSniffer(
+        Profiler.HeapProfileHeader.prototype, 'didWriteToTempFile',
+        tempFileReady);
+    if (!UI.context.flavor(SDK.HeapProfilerModel)) {
       await new Promise(resolve => UI.context.addFlavorChangeListener(SDK.HeapProfilerModel, resolve));
-    profileType._takeHeapSnapshot();
+    }
+    profileType.takeHeapSnapshot();
   }
 
   Common.console.log = function(message) {
@@ -50,14 +57,15 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
         var savedSnapshotData;
         function saveMock(url, data) {
           savedSnapshotData = data;
-          setTimeout(() => Workspace.fileManager._savedURL({data: {url: url}}), 0);
+          setTimeout(
+              () => Workspace.fileManager.savedURL({data: {url: url}}), 0);
         }
         TestRunner.override(InspectorFrontendHost, 'save', saveMock);
 
         var oldAppend = InspectorFrontendHost.append;
         InspectorFrontendHost.append = function appendMock(url, data) {
           savedSnapshotData += data;
-          Workspace.fileManager._appendedToURL({data: url});
+          Workspace.fileManager.appendedToURL({data: url});
         };
         function closeMock(url) {
           TestRunner.assertEquals(sourceStringified, savedSnapshotData, 'Saved snapshot data');
@@ -73,33 +81,11 @@ import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
 
     function heapSnapshotLoadFromFileTest(next) {
       var panel = UI.panels.heap_profiler;
-
-      var fileMock = {name: 'mock.heapsnapshot', size: sourceStringified.length};
-
-      Bindings.ChunkedFileReader = class {
-        constructor() {
-        }
-
-        read(receiver) {
-          receiver.write(sourceStringified);
-          receiver.close();
-          return Promise.resolve(true);
-        }
-
-        loadedSize() {
-          return fileMock.size;
-        }
-
-        fileSize() {
-          return fileMock.size;
-        }
-
-        fileName() {
-          return fileMock.name;
-        }
-      };
-      TestRunner.addSniffer(Profiler.HeapProfileHeader.prototype, '_snapshotReceived', next);
-      panel._loadFromFile(fileMock);
+      var file = new File(
+          [sourceStringified], 'mock.heapsnapshot', {type: 'text/plain'});
+      TestRunner.addSniffer(
+          Profiler.HeapProfileHeader.prototype, 'snapshotReceived', next);
+      panel.loadFromFile(file);
     },
 
     function heapSnapshotRejectToSaveToFileTest(next) {
