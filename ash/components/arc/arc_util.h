@@ -132,6 +132,9 @@ bool IsUreadaheadDisabled();
 // session.
 bool IsHostUreadaheadGeneration();
 
+// Returns true if ARC is using dev caches for arccachesetup service.
+bool IsArcUseDevCaches();
+
 // Returns mode of operation for ureadahead during the ARCVM boot flow.
 // Valid modes are readahead, generate, or disabled.
 ArcVmUreadaheadMode GetArcVmUreadaheadMode();

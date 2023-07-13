@@ -355,6 +355,16 @@ TEST_F(ArcUtilTest, HostUreadaheadGenerationSet) {
   EXPECT_FALSE(IsUreadaheadDisabled());
 }
 
+TEST_F(ArcUtilTest, UseDevCachesDefault) {
+  EXPECT_FALSE(IsArcUseDevCaches());
+}
+
+TEST_F(ArcUtilTest, UseDevCachesSet) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--arc-use-dev-caches"});
+  EXPECT_TRUE(IsArcUseDevCaches());
+}
+
 // TODO(hidehiko): Add test for IsArcKioskMode().
 // It depends on UserManager, but a utility to inject fake instance is
 // available only in chrome/. To use it in components/, refactoring is needed.
