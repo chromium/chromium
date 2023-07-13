@@ -120,8 +120,8 @@ bool AddChildScreen::HandleAccelerator(LoginAcceleratorAction action) {
 
 void AddChildScreen::UpdateState(NetworkError::ErrorReason reason) {
   NetworkStateInformer::State state = network_state_informer_->state();
-  const bool is_online = NetworkStateInformer::IsOnline(state, reason);
-  if (!is_online) {
+  if (state != NetworkStateInformer::ONLINE ||
+      reason == NetworkError::ERROR_REASON_LOADING_TIMEOUT) {
     error_screen_visible_ = true;
     error_screen_->SetParentScreen(AddChildScreenView::kScreenId);
     error_screen_->ShowNetworkErrorMessage(state, reason);

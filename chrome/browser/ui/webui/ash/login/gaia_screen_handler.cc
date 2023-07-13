@@ -1424,14 +1424,14 @@ void GaiaScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
   }
   connecting_callback_.Cancel();
 
-  const bool is_online = NetworkStateInformer::IsOnline(state, reason);
   const bool is_gaia_loading_timeout =
       (reason == NetworkError::ERROR_REASON_LOADING_TIMEOUT);
   const bool is_gaia_error =
       frame_error() != net::OK && frame_error() != net::ERR_NETWORK_CHANGED;
   const bool error_screen_should_overlay = IsGaiaVisible();
   const bool from_not_online_to_online_transition =
-      is_online && last_network_state_ != NetworkStateInformer::ONLINE;
+      state == NetworkStateInformer::ONLINE &&
+      last_network_state_ != NetworkStateInformer::ONLINE;
   last_network_state_ = state;
   proxy_auth_dialog_need_reload_ =
       (reason == NetworkError::ERROR_REASON_NETWORK_STATE_CHANGED) &&
@@ -1446,7 +1446,7 @@ void GaiaScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
     return;
   }
 
-  if (!NetworkStateInformer::IsBehindCaptivePortal(state)) {
+  if (state != NetworkStateInformer::CAPTIVE_PORTAL) {
     error_screen_->HideCaptivePortal();
   }
 
@@ -1487,7 +1487,8 @@ void GaiaScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
     reload_gaia = true;
   }
 
-  if (!is_online || is_gaia_loading_timeout || is_gaia_error) {
+  if (state != NetworkStateInformer::ONLINE || is_gaia_loading_timeout ||
+      is_gaia_error) {
     if (GetCurrentScreen() != ErrorScreenView::kScreenId) {
       error_screen_->SetParentScreen(GaiaView::kScreenId);
       error_screen_->SetHideCallback(base::BindOnce(

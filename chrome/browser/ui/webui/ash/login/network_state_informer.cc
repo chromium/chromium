@@ -124,20 +124,6 @@ std::string NetworkStateInformer::GetNetworkName(
 }
 
 // static
-bool NetworkStateInformer::IsOnline(State state,
-                                    NetworkError::ErrorReason reason) {
-  if (reason == NetworkError::ERROR_REASON_LOADING_TIMEOUT) {
-    return false;
-  }
-  return state == NetworkStateInformer::ONLINE;
-}
-
-// static
-bool NetworkStateInformer::IsBehindCaptivePortal(State state) {
-  return state == NetworkStateInformer::CAPTIVE_PORTAL;
-}
-
-// static
 bool NetworkStateInformer::IsProxyError(State state,
                                         NetworkError::ErrorReason reason) {
   return state == NetworkStateInformer::PROXY_AUTH_REQUIRED ||

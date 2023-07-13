@@ -873,7 +873,7 @@ void EnrollmentScreen::SetupAndShowOfflineMessage(
     NetworkError::ErrorReason reason) {
   const std::string network_path = network_state_informer_->network_path();
   const bool is_behind_captive_portal =
-      NetworkStateInformer::IsBehindCaptivePortal(state);
+      state == NetworkStateInformer::CAPTIVE_PORTAL;
   const bool is_proxy_error = NetworkStateInformer::IsProxyError(state, reason);
   const bool is_frame_error = reason == NetworkError::ERROR_REASON_FRAME_ERROR;
 

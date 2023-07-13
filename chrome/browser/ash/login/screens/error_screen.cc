@@ -217,7 +217,7 @@ void ErrorScreen::ShowNetworkErrorMessage(NetworkStateInformer::State state,
       NetworkStateInformer::GetNetworkName(network_path);
 
   const bool is_behind_captive_portal =
-      NetworkStateInformer::IsBehindCaptivePortal(state);
+      state == NetworkStateInformer::CAPTIVE_PORTAL;
   const bool is_proxy_error = NetworkStateInformer::IsProxyError(state, reason);
   const bool is_loading_timeout =
       (reason == NetworkError::ERROR_REASON_LOADING_TIMEOUT);
