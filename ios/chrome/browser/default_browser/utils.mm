@@ -80,9 +80,9 @@ NSString* const kUserHasInteractedWithFirstRunPromo =
 NSString* const kUserInteractedWithNonModalPromoCount =
     @"userInteractedWithNonModalPromoCount";
 
-// Key in storage containing an int indicating the number of times a
+// Key in storage containing an int indicating the number of times a fullscreen
 // promo has been displayed.
-NSString* const kDisplayedPromoCount = @"displayedPromoCount";
+NSString* const kDisplayedFullscreenPromoCount = @"displayedPromoCount";
 
 // TODO(crbug.com/1445218): Remove in M116+.
 // Key in storage containing an NSDate indicating the last time a user
@@ -359,6 +359,38 @@ bool HasRecordedEventForKeyMoreThanDelay(NSString* key, base::TimeDelta delay) {
   return base::Time::Now() - time > delay;
 }
 
+// Returns true if there exists a recorded interaction with a non-modal promo
+// more recent than the last recorded interaction with a fullscreen promo.
+bool IsLastNonModalMoreRecentThanLastFullscreen() {
+  NSDate* last_non_modal_interaction = GetObjectFromStorageForKey<NSDate>(
+      kLastTimeUserInteractedWithNonModalPromo);
+  if (!last_non_modal_interaction) {
+    return false;
+  }
+
+  NSDate* last_fullscreen_interaction = GetObjectFromStorageForKey<NSDate>(
+      kLastTimeUserInteractedWithFullscreenPromo);
+  if (!last_fullscreen_interaction) {
+    return true;
+  }
+
+  NSComparisonResult comparison_result =
+      [last_non_modal_interaction compare:last_fullscreen_interaction];
+
+  return comparison_result == NSOrderedDescending;
+}
+
+// Copy the NSDate object in NSUserDefaults from the origin key to the
+// destination key. Does nothing if the origin key is empty.
+void CopyNSDateFromKeyToKey(NSString* originKey, NSString* destinationKey) {
+  NSDate* origin_date = GetObjectFromStorageForKey<NSDate>(originKey);
+  if (!origin_date) {
+    return;
+  }
+
+  SetObjectIntoStorageForKey(destinationKey, origin_date);
+}
+
 // Returns number of events logged for key occuring less than `delay` in the
 // past.
 int NumRecordedEventForKeyLessThanDelay(NSString* key, base::TimeDelta delay) {
@@ -371,28 +403,31 @@ BOOL HasUserInteractedWithFirstRunPromoBefore() {
   return number.boolValue;
 }
 
-// Returns the number of time a default browser promo has been displayed.
-NSInteger DisplayedPromoCount() {
-  NSNumber* number = GetObjectFromStorageForKey<NSNumber>(kDisplayedPromoCount);
+// Returns the number of times a fullscreen default browser promo has been
+// displayed.
+NSInteger DisplayedFullscreenPromoCount() {
+  NSNumber* number =
+      GetObjectFromStorageForKey<NSNumber>(kDisplayedFullscreenPromoCount);
   return number.integerValue;
 }
 
-// Computes cool down between promos.
+// Computes cooldown between fullscreen promos.
 base::TimeDelta ComputeCooldown() {
   // `true` if the user is in the short delay group experiment and tap on the
   // "No thanks" button in first run default browser screen. Short cool down
   // should be set only one time, so after the first run promo there is a short
   // cool down before the next promo and after it goes back to normal.
-  if (DisplayedPromoCount() < 2 && HasUserInteractedWithFirstRunPromoBefore()) {
+  if (DisplayedFullscreenPromoCount() < 2 &&
+      HasUserInteractedWithFirstRunPromoBefore()) {
     return kPromosShortCoolDown;
   }
   return kFullscreenPromoCoolDown;
 }
 
-// Returns number of days since user last intereacted with one of the promos.
+// Returns number of days since user last interacted with one of the promos.
 int NumDaysSincePromoInteraction() {
-  NSDate* timestamp =
-      GetObjectFromStorageForKey<NSDate>(kLastTimeUserInteractedWithPromo);
+  NSDate* timestamp = GetObjectFromStorageForKey<NSDate>(
+      kLastTimeUserInteractedWithFullscreenPromo);
 
   if (timestamp == nil) {
     return 0;
@@ -434,7 +469,9 @@ void StoreCurrentTimestampForKey(NSString* key) {
 
 }  // namespace
 
-NSString* const kLastTimeUserInteractedWithPromo =
+NSString* const kLastTimeUserInteractedWithNonModalPromo =
+    @"lastTimeUserInteractedWithNonModalPromo";
+NSString* const kLastTimeUserInteractedWithFullscreenPromo =
     @"lastTimeUserInteractedWithFullscreenPromo";
 NSString* const kAllTimestampsAppLaunchColdStart =
     @"AllTimestampsAppLaunchColdStart";
@@ -588,6 +625,11 @@ bool IsDefaultBrowserVideoPromoHalfscreenEnabled() {
       false);
 }
 
+bool IsNonModalDefaultBrowserPromoCooldownRefactorEnabled() {
+  return base::FeatureList::IsEnabled(
+      kNonModalDefaultBrowserPromoCooldownRefactor);
+}
+
 bool HasUserInteractedWithFullscreenPromoBefore() {
   NSNumber* number = GetObjectFromStorageForKey<NSNumber>(
       kUserHasInteractedWithFullscreenPromo);
@@ -606,10 +648,10 @@ NSInteger UserInteractionWithNonModalPromoCount() {
   return number.integerValue;
 }
 
-void LogDefaultBrowserPromoDisplayed() {
-  const NSInteger displayed_promo_count = DisplayedPromoCount();
+void LogFullscreenDefaultBrowserPromoDisplayed() {
+  const NSInteger displayed_promo_count = DisplayedFullscreenPromoCount();
   NSDictionary<NSString*, NSObject*>* update = @{
-    kDisplayedPromoCount : @(displayed_promo_count + 1),
+    kDisplayedFullscreenPromoCount : @(displayed_promo_count + 1),
   };
 
   UpdateStorageWithDictionary(update);
@@ -618,7 +660,7 @@ void LogDefaultBrowserPromoDisplayed() {
 void LogUserInteractionWithFullscreenPromo() {
   NSDictionary<NSString*, NSObject*>* update = @{
     kUserHasInteractedWithFullscreenPromo : @YES,
-    kLastTimeUserInteractedWithPromo : [NSDate date],
+    kLastTimeUserInteractedWithFullscreenPromo : [NSDate date],
   };
 
   UpdateStorageWithDictionary(update);
@@ -627,26 +669,34 @@ void LogUserInteractionWithFullscreenPromo() {
 void LogUserInteractionWithTailoredFullscreenPromo() {
   UpdateStorageWithDictionary(@{
     kUserHasInteractedWithTailoredFullscreenPromo : @YES,
-    kLastTimeUserInteractedWithPromo : [NSDate date],
+    kLastTimeUserInteractedWithFullscreenPromo : [NSDate date],
   });
 }
 
 void LogUserInteractionWithNonModalPromo() {
   const NSInteger interaction_count = UserInteractionWithNonModalPromoCount();
-  const NSInteger displayed_promo_count = DisplayedPromoCount();
-  UpdateStorageWithDictionary(@{
-    kLastTimeUserInteractedWithPromo : [NSDate date],
-    kUserInteractedWithNonModalPromoCount : @(interaction_count + 1),
-    kDisplayedPromoCount : @(displayed_promo_count + 1),
-  });
+
+  if (IsNonModalDefaultBrowserPromoCooldownRefactorEnabled()) {
+    UpdateStorageWithDictionary(@{
+      kLastTimeUserInteractedWithNonModalPromo : [NSDate date],
+      kUserInteractedWithNonModalPromoCount : @(interaction_count + 1),
+    });
+  } else {
+    const NSInteger displayed_promo_count = DisplayedFullscreenPromoCount();
+    UpdateStorageWithDictionary(@{
+      kLastTimeUserInteractedWithFullscreenPromo : [NSDate date],
+      kUserInteractedWithNonModalPromoCount : @(interaction_count + 1),
+      kDisplayedFullscreenPromoCount : @(displayed_promo_count + 1),
+    });
+  }
 }
 
 void LogUserInteractionWithFirstRunPromo(BOOL openedSettings) {
-  const NSInteger displayed_promo_count = DisplayedPromoCount();
+  const NSInteger displayed_promo_count = DisplayedFullscreenPromoCount();
   UpdateStorageWithDictionary(@{
     kUserHasInteractedWithFirstRunPromo : @YES,
-    kLastTimeUserInteractedWithPromo : [NSDate date],
-    kDisplayedPromoCount : @(displayed_promo_count + 1),
+    kLastTimeUserInteractedWithFullscreenPromo : [NSDate date],
+    kDisplayedFullscreenPromoCount : @(displayed_promo_count + 1),
   });
 }
 
@@ -740,9 +790,37 @@ DefaultPromoType MostRecentInterestDefaultPromoType(
   return most_recent_event_type;
 }
 
-bool UserInPromoCooldown() {
-  return HasRecordedEventForKeyLessThanDelay(kLastTimeUserInteractedWithPromo,
-                                             ComputeCooldown());
+bool UserInFullscreenPromoCooldown() {
+  // Sets the last fullscreen promo interaction to the same value as the last
+  // non-modal promo interaction if the latter is more recent. This is
+  // to allow a smooth transition back from the cooldown period separation
+  // between the two promo types, if a rollback is needed.
+  if (!IsNonModalDefaultBrowserPromoCooldownRefactorEnabled() &&
+      IsLastNonModalMoreRecentThanLastFullscreen()) {
+    CopyNSDateFromKeyToKey(kLastTimeUserInteractedWithNonModalPromo,
+                           kLastTimeUserInteractedWithFullscreenPromo);
+  }
+
+  return HasRecordedEventForKeyLessThanDelay(
+      kLastTimeUserInteractedWithFullscreenPromo, ComputeCooldown());
+}
+
+bool UserInNonModalPromoCooldown() {
+  NSDate* last_interaction = GetObjectFromStorageForKey<NSDate>(
+      kLastTimeUserInteractedWithNonModalPromo);
+
+  // Sets the last non-modal promo interaction to the same value as last
+  // fullscreen promo interaction if no non-modal interaction is found. This is
+  // to allow a smooth transition to the cooldown period separation between the
+  // two promo types.
+  if (!last_interaction) {
+    CopyNSDateFromKeyToKey(kLastTimeUserInteractedWithFullscreenPromo,
+                           kLastTimeUserInteractedWithNonModalPromo);
+  }
+
+  return HasRecordedEventForKeyLessThanDelay(
+      kLastTimeUserInteractedWithNonModalPromo,
+      base::Days(kNonModalDefaultBrowserPromoCooldownRefactorParam.Get()));
 }
 
 // Visible for testing.
@@ -757,12 +835,13 @@ const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting() {
     kLastSignificantUserEventStaySafe,
     kLastSignificantUserEventMadeForIOS,
     kLastSignificantUserEventAllTabs,
-    kLastTimeUserInteractedWithPromo,
+    kLastTimeUserInteractedWithFullscreenPromo,
+    kLastTimeUserInteractedWithNonModalPromo,
     kUserHasInteractedWithFullscreenPromo,
     kUserHasInteractedWithTailoredFullscreenPromo,
     kUserHasInteractedWithFirstRunPromo,
     kUserInteractedWithNonModalPromoCount,
-    kDisplayedPromoCount,
+    kDisplayedFullscreenPromoCount,
     kRemindMeLaterPromoActionInteraction,
     // clang-format on
   ];
@@ -819,9 +898,10 @@ bool ShouldRegisterPromoWithPromoManager(bool is_signed_in,
   // Consider showing the default browser promo if (1) the user has not seen a
   // default browser promo too recently, (2) the user is eligible for either the
   // tailored or generic default browser promo.
-  return !UserInPromoCooldown() && (IsTailoredPromoEligibleUser(is_signed_in) ||
-                                    IsGeneralPromoEligibleUser(is_signed_in) ||
-                                    IsVideoPromoEligibleUser(tracker));
+  return !UserInFullscreenPromoCooldown() &&
+         (IsTailoredPromoEligibleUser(is_signed_in) ||
+          IsGeneralPromoEligibleUser(is_signed_in) ||
+          IsVideoPromoEligibleUser(tracker));
 }
 
 bool IsTailoredPromoEligibleUser(bool is_signed_in) {
@@ -971,7 +1051,7 @@ PromoStatistics* CalculatePromoStatistics() {
   }
 
   PromoStatistics* promo_stats = [[PromoStatistics alloc] init];
-  promo_stats.promoDisplayCount = DisplayedPromoCount();
+  promo_stats.promoDisplayCount = DisplayedFullscreenPromoCount();
   promo_stats.numDaysSinceLastPromo = NumDaysSincePromoInteraction();
   promo_stats.chromeColdStartCount = NumRecordedEventForKeyLessThanDelay(
       kAllTimestampsAppLaunchColdStart,

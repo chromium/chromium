@@ -148,12 +148,13 @@
 
   if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
     // `CalculatePromoStatistics` should be called before
-    // `LogDefaultBrowserPromoDisplayed` which will modify storage data.
+    // `LogFullscreenDefaultBrowserPromoDisplayed` which will modify storage
+    // data.
     self.promoStats = CalculatePromoStatistics();
     RecordPromoStatsToUMAForAppear(self.promoStats);
   }
 
-  LogDefaultBrowserPromoDisplayed();
+  LogFullscreenDefaultBrowserPromoDisplayed();
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   LogToFETDefaultBrowserPromoShown(

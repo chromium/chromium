@@ -100,14 +100,122 @@ TEST_F(DefaultBrowserUtilsTest, MostRecentInterestDefaultPromoType) {
   EXPECT_EQ(type, DefaultPromoTypeMadeForIOS);
 }
 
-// Tests cool down between promos.
-TEST_F(DefaultBrowserUtilsTest, PromoCoolDown) {
+// Tests cooldown between fullscreen promos with cooldown refactor disabled and
+// no recent non-modal promo interaction.
+TEST_F(DefaultBrowserUtilsTest, FullscreenPromoCoolDownRefactorDisabled) {
+  feature_list_.InitWithFeatures(
+      {/*enabled=*/},
+      {/*disabled=*/kNonModalDefaultBrowserPromoCooldownRefactor});
+
+  EXPECT_FALSE(UserInFullscreenPromoCooldown());
+
   LogUserInteractionWithFullscreenPromo();
-  EXPECT_TRUE(UserInPromoCooldown());
+  EXPECT_TRUE(UserInFullscreenPromoCooldown());
 
   ClearDefaultBrowserPromoData();
   LogUserInteractionWithTailoredFullscreenPromo();
-  EXPECT_TRUE(UserInPromoCooldown());
+  EXPECT_TRUE(UserInFullscreenPromoCooldown());
+}
+
+// Tests cooldown between fullscreen promos with cooldown refactor disabled and
+// a more recent non-modal promo interaction.
+TEST_F(DefaultBrowserUtilsTest,
+       FullscreenPromoCoolDownRefactorDisabledRecentNonModalInteraction) {
+  feature_list_.InitWithFeatures(
+      {/*enabled=*/},
+      {/*disabled=*/kNonModalDefaultBrowserPromoCooldownRefactor});
+
+  EXPECT_FALSE(UserInFullscreenPromoCooldown());
+
+  LogUserInteractionWithNonModalPromo();
+  EXPECT_TRUE(UserInFullscreenPromoCooldown());
+
+  ClearDefaultBrowserPromoData();
+  LogUserInteractionWithTailoredFullscreenPromo();
+  LogUserInteractionWithNonModalPromo();
+  EXPECT_TRUE(UserInFullscreenPromoCooldown());
+}
+
+// Tests cooldown between non-modal promos with a prior non-modal promo
+// interaction.
+TEST_F(DefaultBrowserUtilsTest, NonModalPromoCoolDownWithPriorInteraction) {
+  EXPECT_FALSE(UserInNonModalPromoCooldown());
+
+  SetObjectInStorageForKey(kLastTimeUserInteractedWithNonModalPromo,
+                           [NSDate date]);
+
+  EXPECT_TRUE(UserInNonModalPromoCooldown());
+}
+
+// Tests cooldown between non-modal promos without a prior non-modal promo
+// interaction, but with a fullscreen promo interaction.
+TEST_F(DefaultBrowserUtilsTest, NonModalPromoCoolDownWithoutPriorInteraction) {
+  EXPECT_FALSE(UserInNonModalPromoCooldown());
+
+  SetObjectInStorageForKey(kLastTimeUserInteractedWithFullscreenPromo,
+                           [NSDate date]);
+
+  EXPECT_TRUE(UserInNonModalPromoCooldown());
+}
+
+// Tests logging user interactions with a non-modal promo with cooldown refactor
+// enabled.
+TEST_F(DefaultBrowserUtilsTest,
+       LogNonModalUserInteractionCooldownRefactorEnabled) {
+  feature_list_.InitWithFeatures(
+      {/*enabled=*/kNonModalDefaultBrowserPromoCooldownRefactor},
+      {/*disabled=*/});
+
+  EXPECT_FALSE(UserInNonModalPromoCooldown());
+
+  LogUserInteractionWithNonModalPromo();
+  EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 1);
+  EXPECT_TRUE(UserInNonModalPromoCooldown());
+  EXPECT_FALSE(UserInFullscreenPromoCooldown());
+
+  LogUserInteractionWithNonModalPromo();
+  EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 2);
+  EXPECT_TRUE(UserInNonModalPromoCooldown());
+  EXPECT_FALSE(UserInFullscreenPromoCooldown());
+}
+
+// Tests logging user interactions with a non-modal promo with cooldown refactor
+// disabled.
+TEST_F(DefaultBrowserUtilsTest,
+       LogNonModalUserInteractionCooldownRefactorDisabled) {
+  feature_list_.InitWithFeatures(
+      {/*enabled=*/},
+      {/*disabled=*/kNonModalDefaultBrowserPromoCooldownRefactor});
+
+  EXPECT_FALSE(UserInNonModalPromoCooldown());
+
+  LogUserInteractionWithNonModalPromo();
+  EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 1);
+  EXPECT_TRUE(UserInNonModalPromoCooldown());
+  EXPECT_TRUE(UserInFullscreenPromoCooldown());
+
+  LogUserInteractionWithNonModalPromo();
+  EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 2);
+  EXPECT_TRUE(UserInNonModalPromoCooldown());
+  EXPECT_TRUE(UserInFullscreenPromoCooldown());
+}
+
+// Tests that the cooldown refactor flag is enabled.
+TEST_F(DefaultBrowserUtilsTest, CooldownRefactorFlagEnabled) {
+  feature_list_.InitWithFeatures(
+      {/*enabled=*/kNonModalDefaultBrowserPromoCooldownRefactor},
+      {/*disabled=*/});
+
+  EXPECT_TRUE(IsNonModalDefaultBrowserPromoCooldownRefactorEnabled());
+}
+
+// Tests that the cooldown refactor flag is disabled.
+TEST_F(DefaultBrowserUtilsTest, CooldownRefactorFlagDisabled) {
+  feature_list_.InitWithFeatures(
+      {/*enabled=*/},
+      {/*disabled=*/kNonModalDefaultBrowserPromoCooldownRefactor});
+
+  EXPECT_FALSE(IsNonModalDefaultBrowserPromoCooldownRefactorEnabled());
 }
 
 // Tests no 2 tailored promos are not shown.
@@ -234,7 +342,7 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_FlagDisabled) {
     EXPECT_EQ(0, promo_stats.chromeIndirectStartCount);
   }
 
-  LogDefaultBrowserPromoDisplayed();
+  LogFullscreenDefaultBrowserPromoDisplayed();
   LogUserInteractionWithFullscreenPromo();
   LogBrowserLaunched(true);
   LogBrowserLaunched(false);
@@ -263,9 +371,10 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_FlagEnabled) {
   NSTimeInterval secondsPerDay = 24 * 60 * 60;
   NSDate* yesterday =
       [[NSDate alloc] initWithTimeIntervalSinceNow:-secondsPerDay];
-  SetObjectInStorageForKey(kLastTimeUserInteractedWithPromo, yesterday);
+  SetObjectInStorageForKey(kLastTimeUserInteractedWithFullscreenPromo,
+                           yesterday);
 
-  LogDefaultBrowserPromoDisplayed();
+  LogFullscreenDefaultBrowserPromoDisplayed();
 
   {
     PromoStatistics* promo_stats = CalculatePromoStatistics();
@@ -273,7 +382,7 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_FlagEnabled) {
     EXPECT_EQ(1, promo_stats.numDaysSinceLastPromo);
   }
 
-  LogDefaultBrowserPromoDisplayed();
+  LogFullscreenDefaultBrowserPromoDisplayed();
   LogUserInteractionWithFullscreenPromo();
 
   {

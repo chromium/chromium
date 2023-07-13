@@ -52,7 +52,13 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
     return false;
   }
 
-  if (UserInPromoCooldown()) {
+  if (IsNonModalDefaultBrowserPromoCooldownRefactorEnabled() &&
+      UserInNonModalPromoCooldown()) {
+    return false;
+  }
+
+  if (!IsNonModalDefaultBrowserPromoCooldownRefactorEnabled() &&
+      UserInFullscreenPromoCooldown()) {
     return false;
   }
 

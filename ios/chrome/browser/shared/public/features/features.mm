@@ -57,6 +57,15 @@ BASE_FEATURE(kIOSBrowserEditMenuMetrics,
              "IOSBrowserEditMenuMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNonModalDefaultBrowserPromoCooldownRefactor,
+             "NonModalDefaultBrowserPromoCooldownRefactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int>
+    kNonModalDefaultBrowserPromoCooldownRefactorParam{
+        &kNonModalDefaultBrowserPromoCooldownRefactor,
+        /*name=*/"cooldown-days", /*default_value=*/14};
+
 BASE_FEATURE(kDefaultBrowserRefactoringPromoManager,
              "DefaultBrowserRefactoringPromoManager",
              base::FEATURE_DISABLED_BY_DEFAULT);

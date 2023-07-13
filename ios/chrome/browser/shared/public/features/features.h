@@ -50,6 +50,16 @@ BASE_DECLARE_FEATURE(kDefaultBrowserIntentsShowSettings);
 // Feature flag to log metrics for the edit menu.
 BASE_DECLARE_FEATURE(kIOSBrowserEditMenuMetrics);
 
+// Feature flag to enable the non-modal DB promo cooldown refactor separating
+// the cooldown periods for full screen and non-modal promos, as well as
+// Finchable cooldown period for non-modal promos.
+BASE_DECLARE_FEATURE(kNonModalDefaultBrowserPromoCooldownRefactor);
+
+// The default param value for the non-modal promo cooldown period, in days,
+// overridable through Finch.
+extern const base::FeatureParam<int>
+    kNonModalDefaultBrowserPromoCooldownRefactorParam;
+
 // Feature flag that allows full screen default browser promos to be added to
 // the promo manager.
 BASE_DECLARE_FEATURE(kDefaultBrowserRefactoringPromoManager);

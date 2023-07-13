@@ -1163,7 +1163,7 @@ void InjectNTP(Browser* browser) {
       !HasUserInteractedWithTailoredFullscreenPromoBefore() &&
       (isMadeForIOSPromoEligible || isAllTabsPromoEligible ||
        isStaySafePromoEligible);
-  if (isTailoredPromoEligibleUser && !UserInPromoCooldown()) {
+  if (isTailoredPromoEligibleUser && !UserInFullscreenPromoCooldown()) {
     self.sceneState.appState.shouldShowDefaultBrowserPromo = YES;
     self.sceneState.appState.defaultBrowserPromoTypeToShow =
         MostRecentInterestDefaultPromoType(!isSignedIn);
@@ -1175,7 +1175,7 @@ void InjectNTP(Browser* browser) {
   if (!HasUserInteractedWithFullscreenPromoBefore() &&
       (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
        isSignedIn) &&
-      !UserInPromoCooldown()) {
+      !UserInFullscreenPromoCooldown()) {
     self.sceneState.appState.shouldShowDefaultBrowserPromo = YES;
     self.sceneState.appState.defaultBrowserPromoTypeToShow =
         DefaultPromoTypeGeneral;
