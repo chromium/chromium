@@ -86,12 +86,12 @@ DeviceInfoSyncClientImpl::GetInterestedDataTypes() const {
       ->GetInterestedDataTypes();
 }
 
-absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo
 DeviceInfoSyncClientImpl::GetPhoneAsASecurityKeyInfo() const {
 #if BUILDFLAG(IS_ANDROID)
   return webauthn::authenticator::GetSyncDataIfRegistered();
 #else
-  return absl::nullopt;
+  return syncer::DeviceInfo::PhoneAsASecurityKeyInfo::NoSupport();
 #endif
 }
 

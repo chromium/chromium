@@ -55,10 +55,20 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
     local_device_info_->set_interested_data_types(*interested_data_types);
   }
 
-  absl::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info =
+  DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo paask_status =
       sync_client_->GetPhoneAsASecurityKeyInfo();
-  if (paask_info) {
-    local_device_info_->set_paask_info(std::move(*paask_info));
+  if (absl::get_if<DeviceInfo::PhoneAsASecurityKeyInfo::NotReady>(
+          &paask_status)) {
+    // `sync_client_` will call `RefreshLocalDeviceInfo` when it's ready.
+  } else if (absl::get_if<DeviceInfo::PhoneAsASecurityKeyInfo::NoSupport>(
+                 &paask_status)) {
+    local_device_info_->set_paask_info(absl::nullopt);
+  } else if (DeviceInfo::PhoneAsASecurityKeyInfo* info =
+                 absl::get_if<DeviceInfo::PhoneAsASecurityKeyInfo>(
+                     &paask_status)) {
+    local_device_info_->set_paask_info(std::move(*info));
+  } else {
+    NOTREACHED_NORETURN();
   }
 
   // This check is required to ensure user's who toggle UMA have their

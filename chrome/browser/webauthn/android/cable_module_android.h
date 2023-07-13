@@ -20,11 +20,10 @@ namespace authenticator {
 // dropped.)
 void RegisterForCloudMessages();
 
-// GetSyncDataIfRegistered returns a structure containing values to advertise in
-// Sync that will let other Chrome instances contact this device to perform
-// security key transactions, or it returns |nullopt| if that information is
-// not yet ready.
-absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+// GetSyncDataIfRegistered returns a structure containing values to advertise
+// in Sync that will let other Chrome instances contact this device to perform
+// security key transactions.
+syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo
 GetSyncDataIfRegistered();
 
 // RegisterLocalState registers prefs with the local-state represented by

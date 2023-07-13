@@ -270,7 +270,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kRootSecretPrefName, std::string());
 }
 
-absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo
 GetSyncDataIfRegistered() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
@@ -280,7 +280,7 @@ GetSyncDataIfRegistered() {
     // |state| will signal to Sync that something changed and this
     // function will be called again.
     state->SignalSyncWhenReady();
-    return absl::nullopt;
+    return syncer::DeviceInfo::PhoneAsASecurityKeyInfo::NotReady();
   }
 
   if (state->prelink_play_services() && state->link_data_from_play_services()) {
@@ -295,7 +295,7 @@ GetSyncDataIfRegistered() {
   }
 
   if (!state->device_supports_cable()) {
-    return absl::nullopt;
+    return syncer::DeviceInfo::PhoneAsASecurityKeyInfo::NoSupport();
   }
 
   syncer::DeviceInfo::PhoneAsASecurityKeyInfo paask_info;
