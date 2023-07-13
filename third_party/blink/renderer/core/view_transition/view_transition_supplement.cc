@@ -95,7 +95,8 @@ ViewTransition* ViewTransitionSupplement::startViewTransition(
     // Set the parent task ID if we're not in an extension task (as extensions
     // are not currently supported in TaskAttributionTracker).
     if (tracker && script_state->World().IsMainWorld()) {
-      callback->SetParentTask(tracker->RunningTask(script_state));
+      auto id = tracker->RunningTaskAttributionId(script_state);
+      callback->SetParentTaskId(id);
     }
   }
   return supplement->StartTransition(script_state, document, callback,

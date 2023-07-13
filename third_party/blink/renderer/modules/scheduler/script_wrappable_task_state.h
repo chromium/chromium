@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_SCRIPT_WRAPPABLE_TASK_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_SCRIPT_WRAPPABLE_TASK_STATE_H_
 
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 
 namespace blink {
 class DOMTaskSignal;
@@ -28,17 +28,19 @@ class MODULES_EXPORT ScriptWrappableTaskState final : public ScriptWrappable {
   // preserved embedder data.
   static void SetCurrent(ScriptState*, ScriptWrappableTaskState*);
 
-  ScriptWrappableTaskState(scheduler::TaskAttributionInfo* task,
+  ScriptWrappableTaskState(scheduler::TaskAttributionId id,
                            DOMTaskSignal* signal);
 
-  scheduler::TaskAttributionInfo* GetTask() const { return task_.Get(); }
+  scheduler::TaskAttributionId GetTaskAttributionId() const {
+    return task_attribution_id_;
+  }
 
   DOMTaskSignal* GetSignal() { return signal_; }
 
   void Trace(Visitor*) const override;
 
  private:
-  const Member<scheduler::TaskAttributionInfo> task_;
+  const scheduler::TaskAttributionId task_attribution_id_;
   const Member<DOMTaskSignal> signal_;
 };
 

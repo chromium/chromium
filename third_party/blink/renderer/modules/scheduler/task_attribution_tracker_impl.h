@@ -10,9 +10,9 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
-#include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 class DOMTaskSignal;
@@ -36,7 +36,8 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
  public:
   TaskAttributionTrackerImpl();
 
-  TaskAttributionInfo* RunningTask(ScriptState*) const override;
+  absl::optional<TaskAttributionId> RunningTaskAttributionId(
+      ScriptState*) const override;
 
   AncestorStatus IsAncestor(ScriptState*, TaskAttributionId parent_id) override;
   AncestorStatus HasAncestorInSet(
@@ -45,9 +46,19 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
 
   std::unique_ptr<TaskScope> CreateTaskScope(
       ScriptState* script_state,
-      TaskAttributionInfo* parent_task,
+      absl::optional<TaskAttributionId> parent_task_id,
       TaskScopeType type,
       DOMTaskSignal* task_signal = nullptr) override;
+
+  // The vector size limits the amount of tasks we keep track of. Setting this
+  // value too small can result in calls to `IsAncestor` returning an `Unknown`
+  // ancestor status. If this happens a lot in realistic scenarios, we'd need to
+  // increase this value (at the expense of memory dedicated to task tracking).
+  static constexpr size_t kVectorSize = 1024;
+
+  void SetRunningTaskAttributionId(absl::optional<TaskAttributionId> id) {
+    running_task_id_ = id;
+  }
 
   void TaskScopeCompleted(ScriptState*, TaskAttributionId);
 
@@ -65,11 +76,6 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
       observers_.erase(it);
     }
   }
-
-  void AddSameDocumentNavigationTask(TaskAttributionInfo* task) override;
-  void ResetSameDocumentNavigationTasks() override;
-  TaskAttributionInfo* FindSameDocumentNavigationTaskRemovingItAndPreviousTasks(
-      TaskAttributionId) override;
 
  protected:
   // Saves the given `ScriptWrappableTaskState` as the current continuation
@@ -108,7 +114,7 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
     TaskScopeImpl(ScriptState*,
                   TaskAttributionTrackerImpl*,
                   TaskAttributionId scope_task_id,
-                  TaskAttributionInfo* running_task,
+                  absl::optional<TaskAttributionId> running_task_id,
                   ScriptWrappableTaskState* continuation_task_state,
                   TaskScopeType,
                   absl::optional<TaskAttributionId> parent_task_id);
@@ -117,8 +123,8 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
     TaskScopeImpl& operator=(const TaskScopeImpl&) = delete;
 
     TaskAttributionId GetTaskId() const { return scope_task_id_; }
-    TaskAttributionInfo* RunningTaskToBeRestored() const {
-      return running_task_to_be_restored_.Get();
+    absl::optional<TaskAttributionId> RunningTaskIdToBeRestored() const {
+      return running_task_id_to_be_restored_;
     }
 
     ScriptWrappableTaskState* ContinuationTaskStateToBeRestored() const {
@@ -130,23 +136,36 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
    private:
     TaskAttributionTrackerImpl* task_tracker_;
     TaskAttributionId scope_task_id_;
-    Persistent<TaskAttributionInfo> running_task_to_be_restored_;
+    absl::optional<TaskAttributionId> running_task_id_to_be_restored_;
     Persistent<ScriptWrappableTaskState> continuation_state_to_be_restored_;
     Persistent<ScriptState> script_state_;
   };
 
   void TaskScopeCompleted(const TaskScopeImpl&);
+  TaskAttributionIdPair& GetTaskAttributionIdPairFromTaskContainer(
+      TaskAttributionId);
+  void InsertTaskAttributionIdPair(
+      TaskAttributionId task_id,
+      absl::optional<TaskAttributionId> parent_task_id);
 
   TaskAttributionId next_task_id_;
-  Persistent<TaskAttributionInfo> running_task_ = nullptr;
+  absl::optional<TaskAttributionId> running_task_id_;
+
+  // The task container is a vector of optional TaskAttributionIdPairs where its
+  // indexes are TaskAttributionId hashes, and its values are the TaskId of the
+  // parent task for the TaskAttributionId that is resulted in the index. We're
+  // using this vector as a circular array, where in order to find if task A is
+  // an ancestor of task B, we look up the value at B's taskAttributionId hash
+  // position, get its parent, and repeat that process until we either find A in
+  // the ancestor chain, get no parent task (indicating that a task has no
+  // parent, so wasn't initiated by another JS task), or reach a parent that
+  // doesn't have the current ID its child though it should have, which
+  // indicates that the parent was overwritten by a newer task, indicating that
+  // we went "full circle".
+  WTF::Vector<TaskAttributionIdPair> task_container_ =
+      WTF::Vector<TaskAttributionIdPair>(kVectorSize);
 
   WTF::HashSet<WeakPersistent<TaskAttributionTracker::Observer>> observers_;
-
-  // A queue of TaskAttributionInfo objects representing tasks that initiated a
-  // same-document navigation that was sent to the browser side. They are kept
-  // here to ensure the relevant object remains alive (and hence properly
-  // tracked through task attribution).
-  WTF::Deque<Persistent<TaskAttributionInfo>> same_document_navigation_tasks_;
 };
 
 }  // namespace blink::scheduler

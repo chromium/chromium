@@ -167,7 +167,7 @@ void PendingScript::ExecuteScriptBlock() {
     if (auto* tracker =
             ThreadScheduler::Current()->GetTaskAttributionTracker()) {
       task_attribution_scope = tracker->CreateTaskScope(
-          script_state, /*parent_task=*/nullptr,
+          script_state, absl::nullopt,
           scheduler::TaskAttributionTracker::TaskScopeType::kScriptExecution);
     }
   }

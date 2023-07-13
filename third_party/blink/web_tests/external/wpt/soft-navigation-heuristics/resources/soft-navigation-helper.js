@@ -21,11 +21,10 @@ const testSoftNavigation =
       const pushUrl = readValue(options.pushUrl, true);
       const eventType = readValue(options.eventType, "click");
       const expectLCP = options.validate != 'no-lcp';
-      const eventPrepWork = options.eventPrepWork;
       promise_test(async t => {
         await waitInitialLCP();
         const preClickLcp = await getLcpEntries();
-        setEvent(t, link, pushState, addContent, pushUrl, eventType, eventPrepWork);
+        setEvent(t, link, pushState, addContent, pushUrl, eventType);
         for (let i = 0; i < clicks; ++i) {
           const firstClick = (i === 0);
           let paint_entries_promise =
@@ -136,12 +135,9 @@ const click = link => {
   }
 }
 
-const setEvent = (t, button, pushState, addContent, pushUrl, eventType, prepWork) => {
+const setEvent = (t, button, pushState, addContent, pushUrl, eventType) => {
   const eventObject = (eventType == "click") ? button : window;
   eventObject.addEventListener(eventType, async e => {
-    if (prepWork &&!prepWork(t)) {
-      return;
-    }
     timestamps[counter]["eventStart"] = performance.now();
     // Jump through a task, to ensure task tracking is working properly.
     await new Promise(r => t.step_timeout(r, 0));

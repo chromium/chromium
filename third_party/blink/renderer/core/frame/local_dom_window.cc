@@ -173,7 +173,7 @@ void SetCurrentTaskAsCallbackParent(
   ScriptState* script_state = callback->CallbackRelevantScriptState();
   auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
   if (tracker && script_state->World().IsMainWorld()) {
-    callback->SetParentTask(tracker->RunningTask(script_state));
+    callback->SetParentTaskId(tracker->RunningTaskAttributionId(script_state));
   }
 }
 
@@ -936,19 +936,20 @@ void LocalDOMWindow::EnqueueHashchangeEvent(const String& old_url,
 
 void LocalDOMWindow::DispatchPopstateEvent(
     scoped_refptr<SerializedScriptValue> state_object,
-    scheduler::TaskAttributionInfo* parent_task) {
+    absl::optional<scheduler::TaskAttributionId>
+        soft_navigation_heuristics_task_id) {
   DCHECK(GetFrame());
   // This unique_ptr maintains the TaskScope alive for the lifetime of the
   // method.
   std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
-  CHECK(ThreadScheduler::Current());
-  auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
-  if (parent_task) {
+  if (soft_navigation_heuristics_task_id) {
     ScriptState* script_state = ToScriptStateForMainWorld(GetFrame());
+    DCHECK(ThreadScheduler::Current());
+    auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
     if (script_state && tracker) {
       task_attribution_scope = tracker->CreateTaskScope(
-          script_state, parent_task,
+          script_state, soft_navigation_heuristics_task_id,
           scheduler::TaskAttributionTracker::TaskScopeType::kPopState);
     }
   }

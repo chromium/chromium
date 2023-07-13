@@ -78,7 +78,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t data_size) {
           *g_page_holder->GetFrame().DomWindow());
       // Let the other end of the pipe close itself.
       blink::MessagePortDescriptorPair pipe;
-      port->Entangle(pipe.TakePort0(), nullptr);
+      port->Entangle(pipe.TakePort0());
       return port;
     });
     options.message_ports = message_ports;

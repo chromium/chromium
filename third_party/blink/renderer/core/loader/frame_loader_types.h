@@ -60,8 +60,6 @@ enum class CancelNavigationReason {
   // The navigation was dropped, e.g. due to a 204, 205, or Content-Disposition:
   // attachment.
   kDropped,
-  // Navigate event is fired.
-  kNavigateEvent,
   // Anything else (including error cases that don't drop the navigation).
   kOther
 };

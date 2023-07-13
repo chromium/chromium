@@ -914,7 +914,7 @@ MessagePort* MakeMessagePort(ExecutionContext* execution_context,
   auto* port = MakeGarbageCollected<MessagePort>(*execution_context);
   blink::MessagePortDescriptorPair pipe;
   ::MojoHandle unowned_handle = pipe.port0().handle().get().value();
-  port->Entangle(pipe.TakePort0(), nullptr);
+  port->Entangle(pipe.TakePort0());
   EXPECT_TRUE(port->IsEntangled());
   EXPECT_EQ(unowned_handle, port->EntangledHandleForTesting());
   if (unowned_handle_out)

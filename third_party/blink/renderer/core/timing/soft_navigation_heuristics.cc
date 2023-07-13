@@ -142,7 +142,8 @@ void SoftNavigationHeuristics::SameDocumentNavigationStarted(
   auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
   // If we have no current task when the navigation is started, there's no need
   // to run a descendent check.
-  bool run_descendent_check = tracker && tracker->RunningTask(script_state);
+  bool run_descendent_check =
+      tracker && tracker->RunningTaskAttributionId(script_state);
 
   url_ = String();
   if (!SetFlagIfDescendantAndCheck(script_state, FlagType::kURLChange,

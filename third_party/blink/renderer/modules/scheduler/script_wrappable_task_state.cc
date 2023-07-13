@@ -15,13 +15,12 @@
 namespace blink {
 
 ScriptWrappableTaskState::ScriptWrappableTaskState(
-    scheduler::TaskAttributionInfo* task,
+    scheduler::TaskAttributionId id,
     DOMTaskSignal* signal)
-    : task_(task), signal_(signal) {}
+    : task_attribution_id_(id), signal_(signal) {}
 
 void ScriptWrappableTaskState::Trace(Visitor* visitor) const {
   visitor->Trace(signal_);
-  visitor->Trace(task_);
   ScriptWrappable::Trace(visitor);
 }
 

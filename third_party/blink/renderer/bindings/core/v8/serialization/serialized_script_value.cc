@@ -451,10 +451,7 @@ MessagePort* SerializedScriptValue::AddStreamChannel(
   auto* local_port = MakeGarbageCollected<MessagePort>(*execution_context);
 
   // 4. Entangle port1 and port2.
-  // As these ports are only meant to transfer streams, we don't care about Task
-  // Attribution for them, and hence can pass a nullptr as the MessagePort*
-  // here.
-  local_port->Entangle(pipe.TakePort0(), nullptr);
+  local_port->Entangle(pipe.TakePort0());
 
   // 9. Set dataHolder.[[port]] to ! StructuredSerializeWithTransfer(port2,
   //    « port2 »).

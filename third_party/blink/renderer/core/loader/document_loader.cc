@@ -151,7 +151,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -923,7 +922,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   std::unique_ptr<SoftNavigationEventScope> soft_navigation_event_scope;
   SoftNavigationHeuristics* heuristics = nullptr;
   ScriptState* script_state = nullptr;
-  if (frame_->IsOutermostMainFrame()) {
+  if (frame_->IsMainFrame()) {
     script_state = ToScriptStateForMainWorld(frame_);
     if (script_state) {
       CHECK(frame_->DomWindow());
@@ -937,24 +936,6 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
                                                        script_state);
         heuristics->SameDocumentNavigationStarted(script_state);
       }
-    }
-  }
-
-  scheduler::TaskAttributionInfo* parent_task = nullptr;
-  if (heuristics && soft_navigation_heuristics_task_id) {
-    // if `heuristics` exists it means we're in an outermost main frame, and in
-    // the main world.
-
-    CHECK(ThreadScheduler::Current());
-    if (auto* tracker =
-            ThreadScheduler::Current()->GetTaskAttributionTracker()) {
-      // Get the TaskId from tracker. We're passing that to dispatchEvent
-      // further down, but regardless, we want to get it and previous tasks out
-      // of the tracker's task queue, to enable them to get garbage collected if
-      // needed, even if popstate is never called.
-      parent_task =
-          tracker->FindSameDocumentNavigationTaskRemovingItAndPreviousTasks(
-              soft_navigation_heuristics_task_id.value());
     }
   }
 
@@ -972,13 +953,11 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       scoped_refptr<SerializedScriptValue> state_object =
           history_item ? history_item->StateObject()
                        : SerializedScriptValue::NullValue();
-      frame_->DomWindow()->DispatchPopstateEvent(std::move(state_object),
-                                                 parent_task);
+      frame_->DomWindow()->DispatchPopstateEvent(
+          std::move(state_object), soft_navigation_heuristics_task_id);
     }
   }
   if (heuristics) {
-    // if `heuristics` exists it means we're in an outermost main frame, and in
-    // the main world.
     CHECK(script_state);
     heuristics->SameDocumentNavigationCommitted(script_state, new_url);
   }
@@ -2465,13 +2444,6 @@ void DocumentLoader::CommitNavigation() {
 
   LocalDOMWindow* previous_window = frame_->DomWindow();
   InitializeWindow(owner_document);
-
-  // Previous same-document navigation tasks are not relevant once a
-  // cross-document navigation has happened.
-  CHECK(ThreadScheduler::Current());
-  if (auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker()) {
-    tracker->ResetSameDocumentNavigationTasks();
-  }
 
   MaybeStartLoadingBodyInBackground(body_loader_.get(), frame_, url_,
                                     response_);

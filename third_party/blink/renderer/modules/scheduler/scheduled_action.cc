@@ -64,7 +64,8 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
     arguments_ = arguments;
     auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
     if (tracker && script_state->World().IsMainWorld()) {
-      function_->SetParentTask(tracker->RunningTask(script_state));
+      function_->SetParentTaskId(
+          tracker->RunningTaskAttributionId(script_state));
     }
   } else {
     UseCounter::Count(target, WebFeature::kScheduledActionIgnored);
@@ -83,7 +84,7 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
     code_ = handler;
     auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
     if (tracker && script_state->World().IsMainWorld()) {
-      code_parent_task_ = tracker->RunningTask(script_state);
+      code_parent_task_id_ = tracker->RunningTaskAttributionId(script_state);
     }
   } else {
     UseCounter::Count(target, WebFeature::kScheduledActionIgnored);
@@ -159,7 +160,7 @@ void ScheduledAction::Execute(ExecutionContext* context) {
   auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
   if (tracker && script_state->World().IsMainWorld()) {
     task_attribution_scope = tracker->CreateTaskScope(
-        script_state, code_parent_task_,
+        script_state, code_parent_task_id_,
         scheduler::TaskAttributionTracker::TaskScopeType::kScheduledAction);
   }
 
@@ -178,7 +179,6 @@ void ScheduledAction::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(function_);
   visitor->Trace(arguments_);
-  visitor->Trace(code_parent_task_);
 }
 
 CallbackFunctionBase* ScheduledAction::CallbackFunction() {

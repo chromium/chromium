@@ -19,8 +19,6 @@ class ScriptState;
 
 namespace blink::scheduler {
 
-class TaskAttributionInfo;
-
 // This public interface enables platform/ and core/ callers to create a task
 // scope on the one hand, and check on the ID of the currently running task as
 // well as its ancestry on the other.
@@ -66,12 +64,13 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // Create a new task scope.
   virtual std::unique_ptr<TaskScope> CreateTaskScope(
       ScriptState*,
-      TaskAttributionInfo* parent_task,
+      absl::optional<TaskAttributionId> parent_task_id,
       TaskScopeType type,
       DOMTaskSignal* signal = nullptr) = 0;
 
   // Get the ID of the currently running task.
-  virtual TaskAttributionInfo* RunningTask(ScriptState*) const = 0;
+  virtual absl::optional<TaskAttributionId> RunningTaskAttributionId(
+      ScriptState*) const = 0;
 
   // Check for ancestry of the currently running task against an input
   // |parentId|.
@@ -85,14 +84,6 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   virtual void RegisterObserver(Observer* observer) = 0;
   // Unregister the observer.
   virtual void UnregisterObserver(Observer* observer) = 0;
-
-  // Setter and getter for a pointer to a pending same-document navigation task,
-  // to ensure the task's lifetime.
-  virtual void AddSameDocumentNavigationTask(TaskAttributionInfo* task) = 0;
-  virtual void ResetSameDocumentNavigationTasks() = 0;
-  virtual TaskAttributionInfo*
-      FindSameDocumentNavigationTaskRemovingItAndPreviousTasks(
-          TaskAttributionId) = 0;
 };
 
 }  // namespace blink::scheduler
