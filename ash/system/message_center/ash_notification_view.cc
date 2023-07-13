@@ -1448,7 +1448,8 @@ void AshNotificationView::OnThemeChanged() {
           notification_id()));
 
   if (inline_reply()) {
-    if (chromeos::features::IsJellyEnabled()) {
+    // For unittests, `GetColorProvider()` could be nullptr.
+    if (chromeos::features::IsJellyEnabled() && GetColorProvider()) {
       inline_reply()->textfield()->SetTextColor(
           GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
       inline_reply()->textfield()->set_placeholder_text_color(
