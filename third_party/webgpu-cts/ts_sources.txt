@@ -517,6 +517,7 @@ src/webgpu/shader/validation/expression/call/builtin/acosh.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/asin.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/asinh.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/atan.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/atan2.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/atanh.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/atomics.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/bitcast.spec.ts
