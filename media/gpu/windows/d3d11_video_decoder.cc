@@ -163,6 +163,9 @@ bool D3D11VideoDecoder::InitializeAcceleratedDecoder(
     std::unique_ptr<D3DVideoDecoderWrapper> video_decoder_wrapper) {
   TRACE_EVENT0("gpu", "D3D11VideoDecoder::InitializeAcceleratedDecoder");
 
+  // Clear callback in case this is a codec change.
+  set_accelerator_decoder_wrapper_cb_.Reset();
+
   profile_ = config.profile();
   if (config.codec() == VideoCodec::kVP9) {
     accelerated_video_decoder_ = std::make_unique<VP9Decoder>(

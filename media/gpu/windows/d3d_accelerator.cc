@@ -13,9 +13,8 @@ D3DAccelerator::D3DAccelerator(D3D11VideoDecoderClient* client,
     : client_(client), media_log_(media_log) {
   DCHECK(client);
   DCHECK(media_log_);
-  client->SetDecoderWrapperCB(
-      base::BindRepeating(&D3DAccelerator::SetVideoDecoderWrapper,
-                          base::UnsafeDanglingUntriaged(this)));
+  client->SetDecoderWrapperCB(base::BindRepeating(
+      &D3DAccelerator::SetVideoDecoderWrapper, base::Unretained(this)));
 }
 
 D3DAccelerator::~D3DAccelerator() = default;
