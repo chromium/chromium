@@ -170,6 +170,11 @@ void AppServer::Uninitialize() {
   } else {
     MaybeUninstall();
   }
+
+  // Because this instance is leaky when running on Windows, the following
+  // references must be reset to destroy the objects, otherwise `Prefs` leaks.
+  prefs_ = nullptr;
+  config_ = nullptr;
 }
 
 void AppServer::MaybeUninstall() {

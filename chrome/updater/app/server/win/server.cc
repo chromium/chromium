@@ -21,6 +21,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -243,7 +244,9 @@ scoped_refptr<ComServerApp> AppServerSingletonInstance() {
 }
 
 ComServerApp::ComServerApp() = default;
-ComServerApp::~ComServerApp() = default;
+ComServerApp::~ComServerApp() {
+  NOTREACHED();  // The instance of this class is a leaky singleton.
+}
 
 void ComServerApp::Stop() {
   VLOG(2) << __func__ << ": COM server is shutting down.";
