@@ -1113,24 +1113,6 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.SignedInAccountsViewImpression" enum="BooleanShown"
-    expires_after="2024-04-01">
-  <owner>jlebel@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Track the number of times the view that displays the accounts that are
-    signed is shown. This view only exists on iOS and is shown every time the
-    application enters forground iff the accounts changed while it was in
-    background. Only bucket &quot;Shown&quot; is being recorded (this histogram
-    is a counter).
-
-    This histogram was added following crbug.com/1006717 (stable regression)
-    where the signed-in accounts view was repeatedly shown for a set of users.
-    It is used as a counter to monitor that there are no bumps in its timeline.
-  </summary>
-</histogram>
-
 <histogram name="Signin.SignIn.Completed" enum="SigninAccessPoint"
     expires_after="2023-12-19">
   <owner>bsazonov@chromium.org</owner>
