@@ -5,6 +5,7 @@ Revision: d8f32464ac97d5551c8db19de916170ae87cfa90
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 MDFInternationalization assists in internationalizing your iOS app or
