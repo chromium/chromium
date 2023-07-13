@@ -48,8 +48,6 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   void SetSelectedTypes(bool sync_everything,
                         UserSelectableTypeSet types) override;
   void SetSelectedType(UserSelectableType type, bool is_type_on) override;
-  bool IsPaymentsIntegrationEnabled() const override;
-  void SetPaymentsIntegrationEnabled(bool enabled) override;
   void KeepAccountSettingsPrefsOnlyForUsers(
       const std::vector<signin::GaiaIdHash>& available_gaia_ids) override;
 #if BUILDFLAG(IS_IOS)

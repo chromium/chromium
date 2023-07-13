@@ -566,21 +566,6 @@ TEST_F(SyncUserSettingsImplTest, ShouldClearPassphrasePromptMuteUponUpgrade) {
       sync_user_settings->IsPassphrasePromptMutedForCurrentProductVersion());
 }
 
-TEST_F(SyncUserSettingsImplTest, IsPaymentsIntegrationEnabled) {
-  sync_prefs_->SetPaymentsIntegrationEnabled(true);
-
-  EXPECT_FALSE(MakeSyncUserSettings(GetUserTypes(),
-                                    SyncPrefs::SyncAccountState::kNotSignedIn)
-                   ->IsPaymentsIntegrationEnabled());
-  EXPECT_TRUE(
-      MakeSyncUserSettings(GetUserTypes(),
-                           SyncPrefs::SyncAccountState::kSignedInNotSyncing)
-          ->IsPaymentsIntegrationEnabled());
-  EXPECT_TRUE(MakeSyncUserSettings(GetUserTypes(),
-                                   SyncPrefs::SyncAccountState::kSyncing)
-                  ->IsPaymentsIntegrationEnabled());
-}
-
 }  // namespace
 
 }  // namespace syncer

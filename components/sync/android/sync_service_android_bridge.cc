@@ -195,17 +195,6 @@ void SyncServiceAndroidBridge::SetSelectedTypes(
       sync_everything, user_selectable_types);
 }
 
-jboolean SyncServiceAndroidBridge::IsPaymentsIntegrationEnabled(JNIEnv* env) {
-  return native_sync_service_->GetUserSettings()
-      ->IsPaymentsIntegrationEnabled();
-}
-
-void SyncServiceAndroidBridge::SetPaymentsIntegrationEnabled(JNIEnv* env,
-                                                             jboolean enabled) {
-  native_sync_service_->GetUserSettings()->SetPaymentsIntegrationEnabled(
-      enabled);
-}
-
 jboolean SyncServiceAndroidBridge::IsCustomPassphraseAllowed(JNIEnv* env) {
   return native_sync_service_->GetUserSettings()->IsCustomPassphraseAllowed();
 }

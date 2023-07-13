@@ -141,17 +141,6 @@ public abstract class SyncService {
     public abstract void setSyncRequested();
 
     /**
-     * @return Whether the Payments integration feature is enabled.
-     */
-    public abstract boolean isPaymentsIntegrationEnabled();
-
-    /**
-     * Enables or disables the Payments integration.
-     * @param enable True to enable Payments integration.
-     */
-    public abstract void setPaymentsIntegrationEnabled(boolean enable);
-
-    /**
      * Instances of this class keep sync paused until {@link #close} is called. Use
      * {@link SyncService#getSetupInProgressHandle} to create. Please note that
      * {@link #close} should be called on every instance of this class.

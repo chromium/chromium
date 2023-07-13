@@ -69,6 +69,8 @@ void TestSyncUserSettings::SetSelectedTypes(bool sync_everything,
   } else {
     selected_types_ = types;
   }
+
+  service_->FirePaymentsIntegrationEnabledChanged();
 }
 
 void TestSyncUserSettings::SetSelectedType(UserSelectableType type,
@@ -78,18 +80,7 @@ void TestSyncUserSettings::SetSelectedType(UserSelectableType type,
   } else {
     selected_types_.Remove(type);
   }
-}
 
-bool TestSyncUserSettings::IsPaymentsIntegrationEnabled() const {
-  return is_payments_integration_enabled_;
-}
-
-void TestSyncUserSettings::SetPaymentsIntegrationEnabled(bool enabled) {
-  if (is_payments_integration_enabled_ == enabled) {
-    return;
-  }
-
-  is_payments_integration_enabled_ = enabled;
   service_->FirePaymentsIntegrationEnabledChanged();
 }
 

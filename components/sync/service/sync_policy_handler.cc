@@ -24,6 +24,12 @@ void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
       GetUserSelectableTypeFromString(type_name);
   if (type.has_value()) {
     syncer::SyncPrefs::SetTypeDisabledByPolicy(prefs, *type);
+
+    // The autofill policy also controls payments.
+    if (*type == UserSelectableType::kAutofill) {
+      syncer::SyncPrefs::SetTypeDisabledByPolicy(prefs,
+                                                 UserSelectableType::kPayments);
+    }
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

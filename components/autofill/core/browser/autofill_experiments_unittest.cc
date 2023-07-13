@@ -146,7 +146,8 @@ TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_SyncDoesNotHaveAutofillProfileActiveType) {
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kAutofill});
+      /*types=*/{syncer::UserSelectableType::kAutofill,
+                 syncer::UserSelectableType::kPayments});
   sync_service_.SetFailedDataTypes({syncer::AUTOFILL_PROFILE});
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
@@ -175,22 +176,9 @@ TEST_F(AutofillExperimentsTest,
       autofill_metrics::CardUploadEnabled::kUsingExplicitSyncPassphrase, 1);
 }
 
-TEST_F(AutofillExperimentsTest,
-       IsCardUploadEnabled_AutofillWalletImportEnabledPrefIsDisabled) {
-  sync_service_.GetUserSettings()->SetPaymentsIntegrationEnabled(false);
-  // When payments integration is disabled via prefs, the sync datatype
-  // AUTOFILL_WALLET_DATA becomes inactive due to the logic in
-  // AutofillWalletModelTypeController::GetPreconditionState(). To
-  // achieve similar behavior, this test mimics a failure for
-  // AUTOFILL_WALLET_DATA, which is sufficient to avoid listing the datatype as
-  // active.
-  // TODO(crbug.com/1459963): Simplify test once payment methods are represented
-  // with their own syncer::UserSelectableType enum value.
-  sync_service_.SetFailedDataTypes(
-      syncer::ModelTypeSet({syncer::AUTOFILL_WALLET_DATA}));
-  ASSERT_FALSE(
-      sync_service_.GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA));
-
+TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_PaymentsTypeNotSelected) {
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
@@ -241,7 +229,8 @@ TEST_F(
 
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kAutofill});
+      /*types=*/{syncer::UserSelectableType::kAutofill,
+                 syncer::UserSelectableType::kPayments});
   sync_service_.SetFailedDataTypes({syncer::AUTOFILL_PROFILE});
 
   EXPECT_TRUE(IsCreditCardUploadEnabled(

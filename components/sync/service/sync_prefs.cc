@@ -97,9 +97,6 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::internal::kSyncAppsEnabledByOs, false);
 #endif
 
-  registry->RegisterBooleanPref(prefs::internal::kAutofillWalletImportEnabled,
-                                true);
-
   registry->RegisterIntegerPref(kSyncToSigninMigrationState, kNotMigrated);
 
   // The encryption bootstrap token represents a user-entered passphrase.
@@ -273,7 +270,10 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypes(
 bool SyncPrefs::IsTypeManagedByPolicy(UserSelectableType type) const {
   const char* pref_name = GetPrefNameForType(type);
   CHECK(pref_name);
-  return pref_service_->IsManagedPreference(pref_name);
+  // TODO(crbug.com/1298010): Consider more general-purpose alternatives such as
+  // IsUserModifiablePreference().
+  return pref_service_->IsManagedPreference(pref_name) ||
+         pref_service_->IsPreferenceManagedByCustodian(pref_name);
 }
 
 void SyncPrefs::SetSelectedTypes(bool keep_everything_synced,
@@ -289,11 +289,10 @@ void SyncPrefs::SetSelectedTypes(bool keep_everything_synced,
     pref_service_->SetBoolean(pref_name, selected_types.Has(type));
   }
 
-  // Note that payments integration is controlled via
-  // SetPaymentsIntegrationEnabled(), hence it cannot have changed here.
+  // Payments integration might have changed, so report as true.
   for (SyncPrefObserver& observer : sync_pref_observers_) {
     observer.OnPreferredDataTypesPrefChange(
-        /*payments_integration_enabled_changed=*/false);
+        /*payments_integration_enabled_changed=*/true);
   }
 }
 
@@ -311,29 +310,10 @@ void SyncPrefs::SetSelectedTypeForAccount(
     account_settings->Set(GetPrefNameForType(type), is_type_on);
   }
 
-  // Note that payments integration is controlled via
-  // SetPaymentsIntegrationEnabled(), hence it cannot have changed here.
   for (SyncPrefObserver& observer : sync_pref_observers_) {
     observer.OnPreferredDataTypesPrefChange(
-        /*payments_integration_enabled_changed=*/false);
-  }
-}
-
-bool SyncPrefs::IsPaymentsIntegrationEnabled() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pref_service_->GetBoolean(
-      prefs::internal::kAutofillWalletImportEnabled);
-}
-
-void SyncPrefs::SetPaymentsIntegrationEnabled(bool enabled) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  pref_service_->SetBoolean(prefs::internal::kAutofillWalletImportEnabled,
-                            enabled);
-
-  for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnPreferredDataTypesPrefChange(
-        /*payments_integration_enabled_changed=*/true);
+        /*payments_integration_enabled_changed=*/
+        type == UserSelectableType::kPayments);
   }
 }
 
@@ -529,6 +509,8 @@ const char* SyncPrefs::GetPrefNameForType(UserSelectableType type) {
       return prefs::internal::kSyncTabs;
     case UserSelectableType::kSavedTabGroups:
       return prefs::internal::kSyncSavedTabGroups;
+    case UserSelectableType::kPayments:
+      return prefs::internal::kAutofillWalletImportEnabled;
   }
   NOTREACHED();
   return nullptr;
@@ -561,14 +543,18 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
       return base::FeatureList::IsEnabled(
           password_manager::features::kEnablePasswordsAccountStorage);
     case UserSelectableType::kAutofill:
-      // Always supported, since AUTOFILL_WALLET_DATA (which is supported in
-      // transport mode everywhere) is covered by UserSelectableType::kAutofill.
+      // Note that this logic may lead to kPayments being treated as supported
+      // (or even selected) while kAutofill isn't. This goes against the general
+      // practice that kPayments depends on kAutofill (when it comes to user
+      // choice).
+      // TODO(crbug.com/1435431): Update comment once the decoupling is removed.
+      return base::FeatureList::IsEnabled(kSyncEnableContactInfoDataType) &&
+             base::FeatureList::IsEnabled(
+                 kSyncEnableContactInfoDataTypeInTransportMode);
+    case UserSelectableType::kPayments:
+      // Always supported, since AUTOFILL_WALLET_DATA is supported in
+      // transport mode everywhere.
       return true;
-      // TODO(crbug.com/1435431): Once "Payments" is decoupled from "Autofill",
-      // check that the addresses type (CONTACT_INFO) is supported:
-      // return base::FeatureList::IsEnabled(kSyncEnableContactInfoDataType) &&
-      //        base::FeatureList::IsEnabled(
-      //            kSyncEnableContactInfoDataTypeInTransportMode);
     case UserSelectableType::kHistory:
     case UserSelectableType::kTabs:
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
@@ -627,6 +613,9 @@ void SyncPrefs::ClearPassphrasePromptMutedProductVersion() {
 void SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
     SyncAccountState account_state,
     signin::GaiaIdHash gaia_id_hash) {
+  // TODO(crbug.com/1459963): Consider a prefereces data migration to avoid the
+  // historic name in kAutofillWalletImportEnabled.
+
   if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
     // Ensure that the migration runs again when the feature gets enabled.
     pref_service_->ClearPref(kSyncToSigninMigrationState);

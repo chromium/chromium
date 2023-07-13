@@ -316,14 +316,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /*
-     * Sets payments integration to |enabled|.
-     */
-    public void setPaymentsIntegrationEnabled(final boolean enabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mSyncService.setPaymentsIntegrationEnabled(enabled));
-    }
-
-    /*
      * Disables the Sync data type in USER_SELECTABLE_TYPES.
      */
     public void disableDataType(final int userSelectableType) {

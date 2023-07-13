@@ -248,12 +248,13 @@ TEST_F(SyncPrefsTest, DefaultSelectedTypesInTransportMode) {
       /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
   // Based on the feature flags set above, Bookmarks, ReadingList, Passwords,
-  // and Autofill are supported and enabled by default.
+  // Autofill and Payments are supported and enabled by default.
   // Preferences, History, and Tabs are not supported without
   // kReplaceSyncPromosWithSignInPromos.
   UserSelectableTypeSet expected_types{
       UserSelectableType::kBookmarks, UserSelectableType::kReadingList,
-      UserSelectableType::kPasswords, UserSelectableType::kAutofill};
+      UserSelectableType::kPasswords, UserSelectableType::kAutofill,
+      UserSelectableType::kPayments};
 
 #if BUILDFLAG(IS_IOS)
   // On iOS, Bookmarks and Reading list require a dedicated opt-in.
@@ -286,12 +287,12 @@ TEST_F(SyncPrefsTest, DefaultSelectedTypesForAccountInTransportMode) {
       /*disabled_features=*/{});
 
   // Based on the feature flags set above, Bookmarks, ReadingList, Passwords,
-  // Autofill, and Preferences are supported and enabled by default.
+  // Autofill, Payments and Preferences are supported and enabled by default.
   // (History and Tabs are also supported, but require a separate opt-in.)
   UserSelectableTypeSet expected_types{
       UserSelectableType::kBookmarks, UserSelectableType::kReadingList,
       UserSelectableType::kPasswords, UserSelectableType::kAutofill,
-      UserSelectableType::kPreferences};
+      UserSelectableType::kPayments,  UserSelectableType::kPreferences};
   EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
             expected_types);
 }
@@ -422,29 +423,6 @@ TEST_F(SyncPrefsTest,
   // kPasswords should still be disabled.
   EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
                    .Has(UserSelectableType::kPasswords));
-}
-
-TEST_F(SyncPrefsTest, PaymentsIntegrationEnabled) {
-  StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
-  sync_prefs_->AddSyncPrefObserver(&mock_sync_pref_observer);
-
-  // It should be enabled by default.
-  EXPECT_TRUE(sync_prefs_->IsPaymentsIntegrationEnabled());
-
-  // Set it to false and verify.
-  EXPECT_CALL(mock_sync_pref_observer,
-              OnPreferredDataTypesPrefChange(
-                  /*payments_integration_enabled_changed=*/true));
-  sync_prefs_->SetPaymentsIntegrationEnabled(false);
-  EXPECT_FALSE(sync_prefs_->IsPaymentsIntegrationEnabled());
-  testing::Mock::VerifyAndClearExpectations(&mock_sync_pref_observer);
-
-  // Set it back to true and verify.
-  EXPECT_CALL(mock_sync_pref_observer,
-              OnPreferredDataTypesPrefChange(
-                  /*payments_integration_enabled_changed=*/true));
-  sync_prefs_->SetPaymentsIntegrationEnabled(true);
-  EXPECT_TRUE(sync_prefs_->IsPaymentsIntegrationEnabled());
 }
 
 TEST_F(SyncPrefsTest, KeepAccountSettingsPrefsOnlyForUsers) {

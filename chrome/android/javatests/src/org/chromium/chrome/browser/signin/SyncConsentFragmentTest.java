@@ -93,9 +93,9 @@ public class SyncConsentFragmentTest {
     // TODO(https://crbug.com/1414078): Use ALL_SELECTABLE_TYPES defined in {@link SyncServiceImpl}
     // here.
     private static final Set<Integer> ALL_CLANK_SYNCABLE_DATA_TYPES = Set.of(
-            UserSelectableType.AUTOFILL, UserSelectableType.BOOKMARKS, UserSelectableType.PASSWORDS,
-            UserSelectableType.PREFERENCES, UserSelectableType.TABS, UserSelectableType.HISTORY,
-            UserSelectableType.READING_LIST);
+            UserSelectableType.AUTOFILL, UserSelectableType.PAYMENTS, UserSelectableType.BOOKMARKS,
+            UserSelectableType.PASSWORDS, UserSelectableType.PREFERENCES, UserSelectableType.TABS,
+            UserSelectableType.HISTORY, UserSelectableType.READING_LIST);
     private static final Set<Integer> HISTORY_SYNC_DATA_TYPES =
             Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS);
 

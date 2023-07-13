@@ -63,6 +63,8 @@ bool RecordSyncSetupDataTypesImpl(syncer::SyncUserSettings* sync_settings) {
                           syncer::UserSelectableType::kPasswords);
   sync_types.emplace_back(SyncDataType::kAutofill,
                           syncer::UserSelectableType::kAutofill);
+  sync_types.emplace_back(SyncDataType::kPayments,
+                          syncer::UserSelectableType::kPayments);
 #if !BUILDFLAG(IS_ANDROID)
   sync_types.emplace_back(SyncDataType::kApps,
                           syncer::UserSelectableType::kApps);
@@ -79,10 +81,6 @@ bool RecordSyncSetupDataTypesImpl(syncer::SyncUserSettings* sync_settings) {
     }
   }
 
-  if (!sync_settings->IsPaymentsIntegrationEnabled()) {
-    RecordSyncDataTypeSample(SyncDataType::kPayments);
-    metric_recorded = true;
-  }
   return metric_recorded;
 }
 

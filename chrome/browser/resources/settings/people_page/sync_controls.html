@@ -228,23 +228,25 @@
             aria-labelledby="autofillCheckboxLabel">
         </cr-toggle>
       </div>
-
-      <div class="list-item" hidden="[[!syncPrefs.autofillRegistered]]">
-        <!-- The Payments integration checkbox is a special case in many
-             ways. It's visible only if autofill is registered. It's
-             disabled and unchecked if autofill is unchecked.-->
+      <div class="list-item"
+           hidden="[[shouldPaymentsCheckboxBeHidden_(
+               syncPrefs.paymentsRegistered,
+               syncPrefs.autofillRegistered)]]">
+        <!-- The Payments integration checkbox is coupled with the autofill
+             checkbox: it gets disabled and unchecked if autofill is
+             unchecked.-->
         <div>
-          $i18n{enablePaymentsIntegrationCheckboxLabel}
+          $i18n{paymentsCheckboxLabel}
         </div>
         <cr-policy-indicator indicator-type="userPolicy"
-            hidden="[[!syncPrefs.autofillManaged]]">
+            hidden="[[!syncPrefs.paymentsManaged]]">
         </cr-policy-indicator>
-        <cr-toggle checked="{{syncPrefs.paymentsIntegrationEnabled}}"
+        <cr-toggle checked="{{syncPrefs.paymentsSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disablePaymentsCheckbox_(
                 syncPrefs.syncAllDataTypes, syncPrefs.autofillSynced,
-                syncPrefs.autofillManaged)]]"
-            aria-label="$i18n{enablePaymentsIntegrationCheckboxLabel}">
+                syncPrefs.autofillManaged, syncPrefs.paymentsManaged)]]"
+            aria-label="$i18n{paymentsCheckboxLabel}">
         </cr-toggle>
       </div>
 

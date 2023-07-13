@@ -420,7 +420,8 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   BOOL autocompleteWalletEnabled =
       isAutofillOn && self.shouldSyncDataItemEnabled;
   BOOL autocompleteWalletOn =
-      _syncService->GetUserSettings()->IsPaymentsIntegrationEnabled();
+      _syncService->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kPayments);
   BOOL needsUpdate = (syncSwitchItem.enabled != autocompleteWalletEnabled) ||
                      (syncSwitchItem.on != autocompleteWalletOn);
   syncSwitchItem.enabled = autocompleteWalletEnabled;
@@ -703,6 +704,9 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
       textStringID = IDS_SYNC_DATATYPE_AUTOFILL;
       accessibilityIdentifier = kSyncAutofillIdentifier;
       break;
+    case syncer::UserSelectableType::kPayments:
+      // TODO(crbug.com/1459963): Unify the code with other datatypes.
+      NOTREACHED_NORETURN();
     case syncer::UserSelectableType::kPreferences:
       itemType = SettingsDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_PREFERENCES;
@@ -892,7 +896,11 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
           // When sync everything is turned on, the autocomplete wallet
           // should be turned on. This code can be removed once
           // crbug.com/937234 is fixed.
-          _syncService->GetUserSettings()->SetPaymentsIntegrationEnabled(true);
+          // TODO(crbug.com/1459963): Consider removing this, since
+          // SetSyncEverythingEnabled() should be sufficient to enable
+          // UserSelectableType::kPayments.
+          _syncService->GetUserSettings()->SetSelectedType(
+              syncer::UserSelectableType::kPayments, true);
         }
         break;
       case HistoryDataTypeItemType: {
@@ -933,8 +941,10 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
           // should be updated too. Autocomplete wallet should not be enabled
           // when auto fill data type disabled. This behaviour not be
           // implemented in the UI code. This code can be removed once
-          // crbug.com/937234 is fixed.
-          _syncService->GetUserSettings()->SetPaymentsIntegrationEnabled(value);
+          // either of crbug.com/937234 (move logic to infra layers) or
+          // crbug.com/1435431 (remove the coupling) is fixed.
+          _syncService->GetUserSettings()->SetSelectedType(
+              syncer::UserSelectableType::kPayments, value);
         }
         break;
       }
@@ -943,7 +953,8 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
                                                     kAutofill]) {
           break;
         }
-        _syncService->GetUserSettings()->SetPaymentsIntegrationEnabled(value);
+        _syncService->GetUserSettings()->SetSelectedType(
+            syncer::UserSelectableType::kPayments, value);
         break;
       case SignOutAndTurnOffSyncItemType:
       case ManageGoogleAccountItemType:

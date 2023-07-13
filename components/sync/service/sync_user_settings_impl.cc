@@ -162,16 +162,6 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
   }
 }
 
-bool SyncUserSettingsImpl::IsPaymentsIntegrationEnabled() const {
-  return sync_account_state_for_prefs_callback_.Run() !=
-             SyncPrefs::SyncAccountState::kNotSignedIn &&
-         prefs_->IsPaymentsIntegrationEnabled();
-}
-
-void SyncUserSettingsImpl::SetPaymentsIntegrationEnabled(bool enabled) {
-  prefs_->SetPaymentsIntegrationEnabled(enabled);
-}
-
 void SyncUserSettingsImpl::KeepAccountSettingsPrefsOnlyForUsers(
     const std::vector<signin::GaiaIdHash>& available_gaia_ids) {
   prefs_->KeepAccountSettingsPrefsOnlyForUsers(available_gaia_ids);

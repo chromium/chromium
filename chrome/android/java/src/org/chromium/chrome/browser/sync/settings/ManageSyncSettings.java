@@ -375,12 +375,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
      */
     private void updateSyncStateFromSelectedTypes() {
         mSyncService.setSelectedTypes(mSyncEverything.isChecked(), getUserSelectedTypes());
-        // Note: mSyncPaymentsIntegration should be checked if mSyncEverything is checked, but if
-        // mSyncEverything was just enabled, then that state may not have propagated to
-        // mSyncPaymentsIntegration yet. See crbug.com/972863.
-        mSyncService.setPaymentsIntegrationEnabled(mSyncEverything.isChecked()
-                || (mSyncPaymentsIntegration.isChecked()
-                        && mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked()));
 
         // Some calls to setSelectedTypes don't trigger syncStateChanged, so schedule update here.
         PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateSyncPreferences);
@@ -434,10 +428,18 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     }
 
     private Set<Integer> getUserSelectedTypes() {
-        return mSyncTypePreferencesMap.keySet()
-                .stream()
-                .filter(type -> mSyncTypePreferencesMap.get(type).isChecked())
-                .collect(Collectors.toSet());
+        Set<Integer> types = mSyncTypePreferencesMap.keySet()
+                                     .stream()
+                                     .filter(type -> mSyncTypePreferencesMap.get(type).isChecked())
+                                     .collect(Collectors.toSet());
+        // TODO(crbug.com/1459963): mSyncPaymentsIntegration.isChecked should be listed in
+        // mSyncTypePreferencesMap to avoid special-casing here.
+        if (mSyncEverything.isChecked()
+                || (mSyncPaymentsIntegration.isChecked()
+                        && mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked())) {
+            types.add(UserSelectableType.PAYMENTS);
+        }
+        return types;
     }
 
     private void displayPassphraseTypeDialog() {
@@ -614,7 +616,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         // Payments integration requires AUTOFILL user selectable type.
         mSyncPaymentsIntegration.setChecked(
                 mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked()
-                && mSyncService.isPaymentsIntegrationEnabled());
+                && selectedSyncTypes.contains(UserSelectableType.PAYMENTS));
         mSyncPaymentsIntegration.setEnabled(!syncEverything
                 && mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked()
                 && !Profile.getLastUsedRegularProfile().isChild());

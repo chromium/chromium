@@ -99,15 +99,13 @@ struct SyncConfigInfo {
 
   bool sync_everything;
   syncer::UserSelectableTypeSet selected_types;
-  bool payments_integration_enabled;
 };
 
 bool IsSyncSubpage(const GURL& current_url) {
   return current_url == chrome::GetSettingsUrl(chrome::kSyncSetupSubPage);
 }
 
-SyncConfigInfo::SyncConfigInfo()
-    : sync_everything(false), payments_integration_enabled(false) {}
+SyncConfigInfo::SyncConfigInfo() : sync_everything(false) {}
 
 SyncConfigInfo::~SyncConfigInfo() {}
 
@@ -125,15 +123,6 @@ bool GetConfiguration(const std::string& json, SyncConfigInfo* config) {
     return false;
   }
   config->sync_everything = *sync_everything;
-
-  absl::optional<bool> payments_integration_enabled =
-      root.FindBool("paymentsIntegrationEnabled");
-  if (!payments_integration_enabled.has_value()) {
-    DLOG(ERROR) << "GetConfiguration() not passed a paymentsIntegrationEnabled "
-                << "value";
-    return false;
-  }
-  config->payments_integration_enabled = *payments_integration_enabled;
 
   for (syncer::UserSelectableType type : syncer::UserSelectableTypeSet::All()) {
     std::string key_name =
@@ -423,9 +412,6 @@ void PeopleHandler::HandleSetDatatypes(const base::Value::List& args) {
   // on Chrome OS).
   configuration.selected_types.RetainAll(
       service->GetUserSettings()->GetRegisteredSelectableTypes());
-
-  service->GetUserSettings()->SetPaymentsIntegrationEnabled(
-      configuration.payments_integration_enabled);
 
   service->GetUserSettings()->SetSelectedTypes(configuration.sync_everything,
                                                configuration.selected_types);
@@ -984,7 +970,6 @@ void PeopleHandler::PushSyncPrefs() {
   //   syncAllDataTypes: true if the user wants to sync everything
   //   <data_type>Registered: true if the associated data type is supported
   //   <data_type>Synced: true if the user wants to sync that specific data type
-  //   paymentsIntegrationEnabled: true if the user wants Payments integration
   //   customPassphraseAllowed: true if sync allows setting a custom passphrase
   //                            to encrypt data.
   //   encryptAllData: true if user wants to encrypt all data (not just
@@ -1013,8 +998,6 @@ void PeopleHandler::PushSyncPrefs() {
              sync_user_settings->IsTypeManagedByPolicy(type));
   }
   args.Set("syncAllDataTypes", sync_user_settings->IsSyncEverythingEnabled());
-  args.Set("paymentsIntegrationEnabled",
-           sync_user_settings->IsPaymentsIntegrationEnabled());
   args.Set("encryptAllData", sync_user_settings->IsEncryptEverythingEnabled());
   args.Set("customPassphraseAllowed",
            sync_user_settings->IsCustomPassphraseAllowed());

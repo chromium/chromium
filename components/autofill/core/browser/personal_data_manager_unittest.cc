@@ -1517,9 +1517,6 @@ TEST_F(PersonalDataManagerTest, KeepExistingLocalDataOnSignIn) {
       identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSync));
   sync_service_.SetHasSyncConsent(true);
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kAutofill});
   EXPECT_EQ(AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled,
             personal_data_->GetSyncSigninState());
   ASSERT_TRUE(TurnOnSyncFeature());
@@ -1977,7 +1974,8 @@ TEST_F(PersonalDataManagerMockTest, GetAutofillOffers_WalletImportDisabled) {
 
   ASSERT_EQ(2U, personal_data_->GetAutofillOffers().size());
 
-  sync_service.GetUserSettings()->SetPaymentsIntegrationEnabled(false);
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
 
   // Should return neither of them as the wallet import pref is disabled.
   EXPECT_EQ(0U, personal_data_->GetAutofillOffers().size());
@@ -2044,7 +2042,8 @@ TEST_F(PersonalDataManagerMockTest,
                         GURL("http://www.example.com"))
                     .size());
 
-  sync_service.GetUserSettings()->SetPaymentsIntegrationEnabled(false);
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
 
   // Should not return the offer as the wallet import pref is disabled.
   EXPECT_EQ(0U, personal_data_
@@ -4897,15 +4896,19 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   EXPECT_EQ(2U, personal_data_->GetServerCreditCards().size());
 
   // Stop Wallet sync.
+  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged());
+  // TODO(crbug.com/1459963): Avoid this expectation as it isn't directly
+  // relevant to the test.
+  EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks());
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/syncer::UserSelectableTypeSet());
 
   // Check that server cards are unavailable.
-  EXPECT_EQ(3U, personal_data_->GetCreditCards().size());
+  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
   EXPECT_EQ(1U, personal_data_->GetCreditCardsToSuggest().size());
   EXPECT_EQ(1U, personal_data_->GetLocalCreditCards().size());
-  EXPECT_EQ(2U, personal_data_->GetServerCreditCards().size());
+  EXPECT_EQ(0U, personal_data_->GetServerCreditCards().size());
 }
 
 // Make sure that the opt in is necessary to show server cards if the
@@ -5478,7 +5481,8 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, GetSyncSigninState) {
   ASSERT_FALSE(sync_service_.HasSyncConsent());
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kAutofill});
+      /*types=*/{syncer::UserSelectableType::kAutofill,
+                 syncer::UserSelectableType::kPayments});
 
   EXPECT_EQ(AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled,
             personal_data_->GetSyncSigninState());
@@ -5487,8 +5491,15 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, GetSyncSigninState) {
   // wallet data active.
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet());
+      /*types=*/syncer::UserSelectableTypeSet(
+          {syncer::UserSelectableType::kAutofill}));
+  EXPECT_EQ(AutofillSyncSigninState::kSignedIn,
+            personal_data_->GetSyncSigninState());
 
+  // Nothing should change if |kAutofill| is also removed.
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
   EXPECT_EQ(AutofillSyncSigninState::kSignedIn,
             personal_data_->GetSyncSigninState());
 
@@ -5542,7 +5553,8 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
 
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kAutofill});
+      /*types=*/{syncer::UserSelectableType::kAutofill,
+                 syncer::UserSelectableType::kPayments});
   // Make sure there are no opt-ins recorded yet.
   ASSERT_FALSE(prefs::IsUserOptedInWalletSyncTransport(prefs_.get(),
                                                        active_info.account_id));

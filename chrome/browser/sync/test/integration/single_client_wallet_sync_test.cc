@@ -802,11 +802,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnDisableWalletSync) {
   ASSERT_EQ(1U, GetServerCardsMetadata(0).size());
   ASSERT_EQ(1U, GetServerAddressesMetadata(0).size());
 
-  // Turn off autofill sync, the data & metadata should be gone.
+  // Turn off payments sync, the data & metadata should be gone.
   ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kAutofill));
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
 
   WaitForNumberOfCards(0, pdm);
+
+  // Server profiles require waiting for a little longer. This is because
+  // WaitForNumberOfCards() completes synchronously upon disabling payments, as
+  // IsAutofillWalletImportEnabled() becomes false instantly.
+  WaitForNumberOfServerProfiles(0, pdm);
 
   EXPECT_EQ(0uL, pdm->GetServerProfiles().size());
   EXPECT_EQ(0uL, pdm->GetCreditCards().size());
@@ -839,7 +844,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
 
   // Turn off the wallet autofill pref, the data & metadata should be gone as a
   // side effect of the wallet model type controller noticing.
-  GetSyncService(0)->GetUserSettings()->SetPaymentsIntegrationEnabled(false);
+  GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, /*types=*/{});
 
   // It's not sufficient to wait for 0 cards (as in other tests) because
   // switching off the pref makes PDM (synchronously) return 0 cards (without
@@ -1367,8 +1373,11 @@ IN_PROC_BROWSER_TEST_F(
   std::unique_ptr<syncer::SyncSetupInProgressHandle> setup_handle =
       GetSyncService(0)->GetSetupInProgressHandle();
 
+  // TODO(crbug.com/1435431): kAutofill is used here to mimic what the UI does,
+  // but could be removed once the coupling is relaxed.
   GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false, {syncer::UserSelectableType::kAutofill});
+      /*sync_everything=*/false, {syncer::UserSelectableType::kAutofill,
+                                  syncer::UserSelectableType::kPayments});
 
   // Once the user finishes the setup, the newly selected data types will
   // actually get configured.

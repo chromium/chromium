@@ -143,8 +143,9 @@ export class SettingsSyncControlsElement extends
     this.syncPrefs = syncPrefs;
 
     // If autofill is not registered or synced, force Payments integration off.
+    // TODO(crbug.com/1435431): Remove this coupling.
     if (!this.syncPrefs.autofillRegistered || !this.syncPrefs.autofillSynced) {
-      this.set('syncPrefs.paymentsIntegrationEnabled', false);
+      this.set('syncPrefs.paymentsSynced', false);
     }
   }
 
@@ -216,16 +217,24 @@ export class SettingsSyncControlsElement extends
    * Handler for when the autofill data type checkbox is changed.
    */
   private onAutofillDataTypeChanged_() {
-    this.set(
-        'syncPrefs.paymentsIntegrationEnabled', this.syncPrefs!.autofillSynced);
+    // TODO(crbug.com/1435431): Remove this coupling.
+    this.set('syncPrefs.paymentsSynced', this.syncPrefs!.autofillSynced);
 
     this.onSingleSyncDataTypeChanged_();
   }
 
+  // TODO(crbug.com/1435431): Remove this coupling.
+  private shouldPaymentsCheckboxBeHidden_(
+      paymentsRegistered: boolean, autofillRegistered: boolean): boolean {
+    return !paymentsRegistered || !autofillRegistered;
+  }
+
+  // TODO(crbug.com/1435431): Remove this coupling.
   private disablePaymentsCheckbox_(
       syncAllDataTypes: boolean, autofillSynced: boolean,
-      autofillManaged: boolean): boolean {
-    return syncAllDataTypes || !autofillSynced || autofillManaged;
+      autofillManaged: boolean, paymentsManaged: boolean): boolean {
+    return syncAllDataTypes || !autofillSynced || autofillManaged ||
+        paymentsManaged;
   }
 
   private disableTypeCheckBox_(

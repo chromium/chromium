@@ -669,7 +669,8 @@ void PersonalDataManager::OnSyncPaymentsIntegrationEnabledChanged(
     syncer::SyncService* sync_service) {
   DCHECK_EQ(sync_service_, sync_service);
 
-  if (!sync_service_->GetUserSettings()->IsPaymentsIntegrationEnabled()) {
+  if (!sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kPayments)) {
     // Re-mask all server cards when the user turns off wallet card
     // integration.
     ResetFullServerCards();
@@ -1668,7 +1669,8 @@ bool PersonalDataManager::IsAutofillWalletImportEnabled() const {
     return false;
   }
 
-  return sync_service_->GetUserSettings()->IsPaymentsIntegrationEnabled();
+  return sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPayments);
 }
 
 bool PersonalDataManager::ShouldSuggestServerCards() const {

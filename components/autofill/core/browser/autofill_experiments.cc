@@ -135,11 +135,6 @@ bool IsCreditCardUploadEnabled(const syncer::SyncService* sync_service,
     return false;
   }
 
-  // If syncer::AUTOFILL_WALLET_DATA is active, payments integration must be
-  // enabled due to the logic in
-  // AutofillWalletModelTypeController::GetPreconditionState().
-  CHECK(sync_service->GetUserSettings()->IsPaymentsIntegrationEnabled());
-
   if (sync_service->IsSyncFeatureActive()) {
     if (!sync_service->GetActiveDataTypes().Has(syncer::AUTOFILL_PROFILE)) {
       // In full sync mode, we only allow card upload when addresses are also

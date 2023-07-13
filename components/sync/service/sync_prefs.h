@@ -104,7 +104,10 @@ class SyncPrefs {
   UserSelectableTypeSet GetSelectedTypesForAccount(
       const signin::GaiaIdHash& gaia_id_hash) const;
 
-  // Returns whether `type` is "managed" i.e. controlled by enterprise policy.
+  // Returns whether `type` is "managed" i.e. controlled by enterprise policy
+  // or a custodian (i.e. parent/guardian of a child account).
+  // TODO(crbug.com/1298010): Rename this function to convey that is includes
+  // more than just enterprise policies.
   bool IsTypeManagedByPolicy(UserSelectableType type) const;
 
   // Sets the selection state for all |registered_types| and "keep everything
@@ -131,11 +134,6 @@ class SyncPrefs {
   // passed-in |available_gaia_ids|.
   void KeepAccountSettingsPrefsOnlyForUsers(
       const std::vector<signin::GaiaIdHash>& available_gaia_ids);
-
-  // For historic reasons, payments is not listed as UserSelectableType
-  // and uses a separate API.
-  bool IsPaymentsIntegrationEnabled() const;
-  void SetPaymentsIntegrationEnabled(bool enabled);
 
 #if BUILDFLAG(IS_IOS)
   // Sets the opt-in for bookmarks & reading list in transport mode.

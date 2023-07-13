@@ -62,48 +62,50 @@ export enum StatusAction {
  * PeopleHandler::PushSyncPrefs() for more details.
  */
 export interface SyncPrefs {
+  appsManaged: boolean;
   appsRegistered: boolean;
   appsSynced: boolean;
-  appsManaged: boolean;
+  autofillManaged: boolean;
   autofillRegistered: boolean;
   autofillSynced: boolean;
-  autofillManaged: boolean;
+  bookmarksManaged: boolean;
   bookmarksRegistered: boolean;
   bookmarksSynced: boolean;
-  bookmarksManaged: boolean;
   customPassphraseAllowed: boolean;
   encryptAllData: boolean;
+  extensionsManaged: boolean;
   extensionsRegistered: boolean;
   extensionsSynced: boolean;
-  extensionsManaged: boolean;
   passphraseRequired: boolean;
+  passwordsManaged: boolean;
   passwordsRegistered: boolean;
   passwordsSynced: boolean;
-  passwordsManaged: boolean;
-  paymentsIntegrationEnabled: boolean;
+  paymentsManaged: boolean;
+  paymentsRegistered: boolean;
+  paymentsSynced: boolean;
+  preferencesManaged: boolean;
   preferencesRegistered: boolean;
   preferencesSynced: boolean;
-  preferencesManaged: boolean;
+  readingListManaged: boolean;
   readingListRegistered: boolean;
   readingListSynced: boolean;
-  readingListManaged: boolean;
+  savedTabGroupsManaged: boolean;
   savedTabGroupsRegistered: boolean;
   savedTabGroupsSynced: boolean;
-  savedTabGroupsManaged: boolean;
   syncAllDataTypes: boolean;
+  tabsManaged: boolean;
   tabsRegistered: boolean;
   tabsSynced: boolean;
-  tabsManaged: boolean;
+  themesManaged: boolean;
   themesRegistered: boolean;
   themesSynced: boolean;
-  themesManaged: boolean;
   trustedVaultKeysRequired: boolean;
+  typedUrlsManaged: boolean;
   typedUrlsRegistered: boolean;
   typedUrlsSynced: boolean;
-  typedUrlsManaged: boolean;
+  wifiConfigurationsManaged: boolean;
   wifiConfigurationsRegistered: boolean;
   wifiConfigurationsSynced: boolean;
-  wifiConfigurationsManaged: boolean;
   explicitPassphraseTime?: string;
 }
 
@@ -118,7 +120,7 @@ export const syncPrefsIndividualDataTypes: string[] = [
   'extensionsSynced',
   'readingListSynced',
   'passwordsSynced',
-  'paymentsIntegrationEnabled',
+  'paymentsSynced',
   'preferencesSynced',
   'savedTabGroupsSynced',
   'tabsSynced',
