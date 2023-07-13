@@ -37,6 +37,7 @@ group("resources") {
     "notification_tester:resources",
     "password_change:resources",
     "remote_maintenance_curtain:resources",
+    "sensor_info:resources",
     "supervision:resources",
     "vc_tray_tester:resources",
   ]

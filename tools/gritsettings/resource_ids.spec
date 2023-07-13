@@ -164,6 +164,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [2540],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/sensor_info/resources.grd": {
+    "META": {"sizes": {"includes": [50]}},
+    "includes": [2550],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/supervision/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2560],
