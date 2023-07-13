@@ -972,7 +972,6 @@ void LoginAuthUserView::UpdateForUser(const LoginUserInfo& user) {
     return;
   }
   DeleteRemoveAccountDialog();
-  ShowRemoveAccountDialog();
 }
 
 void LoginAuthUserView::SetFingerprintState(FingerprintState state) {
