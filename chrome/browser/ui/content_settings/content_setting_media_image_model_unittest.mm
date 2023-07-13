@@ -6,7 +6,6 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#include "base/mac/mac_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
@@ -88,9 +87,6 @@ class ContentSettingMediaImageModelTest
 };
 
 TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
-  if (!base::mac::IsAtLeastOS10_14())
-    return;
-
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),
       std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
