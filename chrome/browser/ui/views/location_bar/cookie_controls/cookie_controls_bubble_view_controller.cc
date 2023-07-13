@@ -14,6 +14,8 @@
 #include "components/favicon/core/favicon_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -47,6 +49,17 @@ std::u16string GetSubjectUrlName(content::WebContents* web_contents) {
              kUrlIdentityOptions)
       .name;
 }
+
+const gfx::VectorIcon& GetToggleIcon(bool enabled) {
+  if (enabled) {
+    return features::IsChromeRefresh2023() ? views::kEyeRefreshIcon
+                                           : views::kEyeIcon;
+  } else {
+    return features::IsChromeRefresh2023() ? views::kEyeCrossedRefreshIcon
+                                           : views::kEyeCrossedIcon;
+  }
+}
+
 }  // namespace
 
 CookieControlsBubbleViewController::CookieControlsBubbleViewController(
@@ -61,14 +74,49 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
   bubble_view_->InitReloadingView(InitReloadingView(web_contents));
 
   FetchFaviconFrom(web_contents);
-  SetFeedbackButtonPressedCallback();
+  SetButtonPressedCallbacks();
 
-  bubble_view_->ShowReloadingView();
+  bubble_view_->ShowContentView();
 }
 
 void CookieControlsBubbleViewController::OnFaviconFetched(
     const favicon_base::FaviconImageResult& result) const {
   bubble_view_->UpdateFaviconImage(result.image, kFaviconID);
+}
+
+void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
+    base::Time expiration) {
+  bool is_permanent_exception =
+      getDaysToExpiration(expiration) == 0 || expiration == base::Time();
+  bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
+      IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE));
+  bubble_view_->content_view()->UpdateContentLabels(
+      is_permanent_exception
+          ? l10n_util::GetStringUTF16(
+                IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_TITLE)
+          : l10n_util::GetPluralStringFUTF16(
+                IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE,
+                getDaysToExpiration(expiration)),
+      l10n_util::GetStringUTF16(
+          is_permanent_exception
+              ? IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION
+              : IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY));
+  bubble_view_->content_view()->SetFeedbackSectionVisibility(true);
+  bubble_view_->content_view()->SetToggleIsOn(true);
+  bubble_view_->content_view()->SetToggleIcon(GetToggleIcon(true));
+}
+
+void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
+  bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
+      IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE));
+  bubble_view_->content_view()->UpdateContentLabels(
+      l10n_util::GetStringUTF16(
+          IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
+      l10n_util::GetStringUTF16(
+          IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY));
+  bubble_view_->content_view()->SetFeedbackSectionVisibility(false);
+  bubble_view_->content_view()->SetToggleIsOn(false);
+  bubble_view_->content_view()->SetToggleIcon(GetToggleIcon(false));
 }
 
 CookieControlsBubbleViewController::~CookieControlsBubbleViewController() =
@@ -80,33 +128,11 @@ void CookieControlsBubbleViewController::OnStatusChanged(
     base::Time expiration) {
   switch (status) {
     case CookieControlsStatus::kEnabled:
-      bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
-          IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE));
-      bubble_view_->content_view()->UpdateContentLabels(
-          l10n_util::GetStringUTF16(
-              IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
-          l10n_util::GetStringUTF16(
-              IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY));
-      bubble_view_->content_view()->SetFeedbackSectionVisibility(false);
+      ApplyThirdPartyCookiesBlockedState();
       break;
-    case CookieControlsStatus::kDisabledForSite: {
-      bool is_permanent_exception =
-          getDaysToExpiration(expiration) == 0 || expiration == base::Time();
-      bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
-          IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE));
-      bubble_view_->content_view()->UpdateContentLabels(
-          is_permanent_exception
-              ? l10n_util::GetStringUTF16(
-                    IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_TITLE)
-              : l10n_util::GetPluralStringFUTF16(
-                    IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE,
-                    getDaysToExpiration(expiration)),
-          l10n_util::GetStringUTF16(
-              is_permanent_exception
-                  ? IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION
-                  : IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY));
-      bubble_view_->content_view()->SetFeedbackSectionVisibility(true);
-    } break;
+    case CookieControlsStatus::kDisabledForSite:
+      ApplyThirdPartyCookiesAllowedState(expiration);
+      break;
     case CookieControlsStatus::kDisabled:
     case CookieControlsStatus::kUninitialized:
       NOTREACHED();
@@ -128,12 +154,22 @@ void CookieControlsBubbleViewController::OnBreakageConfidenceLevelChanged(
   // TODO(1446230): Implement OnBreakageConfidenceLevelChanged.
 }
 
-void CookieControlsBubbleViewController::SetFeedbackButtonPressedCallback() {
+void CookieControlsBubbleViewController::SetButtonPressedCallbacks() {
+  toggle_button_callback_ =
+      bubble_view_->content_view()->RegisterToggleButtonPressedCallback(
+          base::BindRepeating(
+              &CookieControlsBubbleViewController::OnToggleButtonPressed,
+              base::Unretained(this)));
+
   feedback_button_callback_ =
       bubble_view_->content_view()->RegisterFeedbackButtonPressedCallback(
           base::BindRepeating(
               &CookieControlsBubbleViewController::OnFeedbackButtonPressed,
               base::Unretained(this)));
+}
+
+void CookieControlsBubbleViewController::OnToggleButtonPressed(bool new_value) {
+  controller_->OnCookieBlockingEnabledForSite(!new_value);
 }
 
 void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {

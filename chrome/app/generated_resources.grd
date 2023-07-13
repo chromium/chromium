@@ -3744,6 +3744,9 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_RELOADING_LABEL" translateable="false" desc="">
         Reloading <ph name="DOMAIN">$1<ex>example.com</ex></ph>...
       </message>
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_THIRD_PARTY_COOKIES_LABEL" translateable="false" desc="">
+        Third-party cookies
+      </message>
 
 
       <!-- Win certificate selector dialog strings.  -->

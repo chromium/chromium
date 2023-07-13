@@ -41,10 +41,14 @@ class CookieControlsBubbleViewController
       CookieControlsBreakageConfidenceLevel level) override;
 
  private:
-  void SetFeedbackButtonPressedCallback();
+  void SetButtonPressedCallbacks();
+  void OnToggleButtonPressed(bool new_value);
   void OnFeedbackButtonPressed();
 
   void OnFaviconFetched(const favicon_base::FaviconImageResult& result) const;
+
+  void ApplyThirdPartyCookiesAllowedState(base::Time expiration);
+  void ApplyThirdPartyCookiesBlockedState();
 
   [[nodiscard]] std::unique_ptr<views::View> InitReloadingView(
       content::WebContents* web_contents);
@@ -59,6 +63,7 @@ class CookieControlsBubbleViewController
   // Used for favicon loading tasks.
   base::CancelableTaskTracker cancelable_task_tracker_;
 
+  base::CallbackListSubscription toggle_button_callback_;
   base::CallbackListSubscription feedback_button_callback_;
   base::WeakPtr<content_settings::CookieControlsController> controller_;
   base::ScopedObservation<content_settings::CookieControlsController,

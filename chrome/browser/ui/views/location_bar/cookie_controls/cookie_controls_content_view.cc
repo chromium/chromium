@@ -7,11 +7,13 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
@@ -40,14 +42,17 @@ std::unique_ptr<views::View> CreateSeparator() {
 
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView, kTitle);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView, kDescription);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView, kToggleButton);
+
 CookieControlsContentView::CookieControlsContentView() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
   AddChildView(CreateSeparator());
-
   AddContentLabels();
-
+  AddToggleRow();
   AddFeedbackSection();
 }
 
@@ -68,17 +73,52 @@ void CookieControlsContentView::AddContentLabels() {
   title_->SetTextStyle(views::style::STYLE_PRIMARY);
   title_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   title_->SetMultiLine(true);
+  title_->SetProperty(views::kElementIdentifierKey, kTitle);
 
   description_ = label_wrapper->AddChildView(std::make_unique<views::Label>());
   description_->SetTextContext(views::style::CONTEXT_LABEL);
   description_->SetTextStyle(views::style::STYLE_SECONDARY);
   description_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   description_->SetMultiLine(true);
+  description_->SetProperty(views::kElementIdentifierKey, kDescription);
+}
+
+void CookieControlsContentView::SetToggleIsOn(bool is_on) {
+  toggle_button_->AnimateIsOn(is_on);
+}
+
+void CookieControlsContentView::SetToggleIcon(const gfx::VectorIcon& icon) {
+  toggle_row_->SetIcon(
+      ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kDefaultIconSize));
 }
 
 void CookieControlsContentView::SetFeedbackSectionVisibility(bool visible) {
   feedback_section_->SetVisible(visible);
   PreferredSizeChanged();
+}
+
+void CookieControlsContentView::AddToggleRow() {
+  toggle_row_ = AddChildView(std::make_unique<RichControlsContainerView>());
+  toggle_row_->SetTitle(l10n_util::GetStringUTF16(
+      IDS_COOKIE_CONTROLS_BUBBLE_THIRD_PARTY_COOKIES_LABEL));
+
+  // TODO (crbug.com/1446230): Use plural string and update label based on
+  // actual blocked sites.
+  toggle_row_->AddSecondaryLabel(u"17 sites blocked");
+
+  // TODO(crbug.com/1446230): Handle managed states
+  toggle_button_ = toggle_row_->AddControl(
+      std::make_unique<views::ToggleButton>(base::BindRepeating(
+          &CookieControlsContentView::NotifyToggleButtonPressedCallback,
+          base::Unretained(this))));
+  toggle_button_->SetPreferredSize(
+      gfx::Size(toggle_button_->GetPreferredSize().width(),
+                toggle_row_->GetFirstLineHeight()));
+
+  // TODO(crbug.com/1446230)): Use correct tooltip.
+  toggle_button_->SetAccessibleName(u"Accesibility label");
+  toggle_button_->SetVisible(true);
+  toggle_button_->SetProperty(views::kElementIdentifierKey, kToggleButton);
 }
 
 void CookieControlsContentView::AddFeedbackSection() {
@@ -119,9 +159,19 @@ void CookieControlsContentView::UpdateContentLabels(
 CookieControlsContentView::~CookieControlsContentView() = default;
 
 base::CallbackListSubscription
+CookieControlsContentView::RegisterToggleButtonPressedCallback(
+    base::RepeatingCallback<void(bool)> callback) {
+  return toggle_button_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
 CookieControlsContentView::RegisterFeedbackButtonPressedCallback(
     base::RepeatingClosureList::CallbackType callback) {
   return feedback_button_callback_list_.Add(std::move(callback));
+}
+
+void CookieControlsContentView::NotifyToggleButtonPressedCallback() {
+  toggle_button_callback_list_.Notify(toggle_button_->GetIsOn());
 }
 
 void CookieControlsContentView::NotifyFeedbackButtonPressedCallback() {
