@@ -45,7 +45,8 @@
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/ash/ash_attestation_policy_observer.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_service_impl.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -142,8 +143,13 @@ KeyedService* DeviceTrustServiceFactory::BuildServiceInstanceFor(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<AshAttestationServiceImpl> ash_attestation_service =
+      std::make_unique<AshAttestationServiceImpl>(profile);
+  dt_connector_service->AddObserver(
+      std::make_unique<AshAttestationPolicyObserver>(
+          ash_attestation_service->GetWeakPtr()));
   std::unique_ptr<AttestationService> attestation_service =
-      std::make_unique<AshAttestationService>(profile);
+      std::move(ash_attestation_service);
 #else
   DeviceTrustKeyManager* key_manager = nullptr;
   policy::CloudPolicyStore* browser_cloud_policy_store = nullptr;

@@ -4748,6 +4748,8 @@ static_library("browser") {
       "enterprise/connectors/analysis/file_transfer_analysis_delegate.h",
       "enterprise/connectors/analysis/source_destination_matcher_ash.cc",
       "enterprise/connectors/analysis/source_destination_matcher_ash.h",
+      "enterprise/connectors/device_trust/ash/ash_attestation_policy_observer.cc",
+      "enterprise/connectors/device_trust/ash/ash_attestation_policy_observer.h",
       "enterprise/connectors/device_trust/signals/ash/ash_signals_filterer.cc",
       "enterprise/connectors/device_trust/signals/ash/ash_signals_filterer.h",
       "enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator.cc",

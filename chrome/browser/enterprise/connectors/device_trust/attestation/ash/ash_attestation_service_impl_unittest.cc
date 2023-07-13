@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_service_impl.h"
 
 #include <memory>
 
@@ -16,8 +16,10 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
+#include "chrome/browser/ash/attestation/mock_tpm_challenge_key_subtle.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
+#include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -86,6 +88,16 @@ absl::optional<std::string> ParseValueFromResponse(
   return decoded_response_value;
 }
 
+ash::attestation::MockTpmChallengeKeySubtle* InjectMockChallengeKeySubtle() {
+  auto mock_challenge_key_subtle =
+      std::make_unique<ash::attestation::MockTpmChallengeKeySubtle>();
+  ash::attestation::MockTpmChallengeKeySubtle* challenge_key_subtle_ptr =
+      mock_challenge_key_subtle.get();
+  ash::attestation::TpmChallengeKeySubtleFactory::SetForTesting(
+      std::move(mock_challenge_key_subtle));
+  return challenge_key_subtle_ptr;
+}
+
 ash::attestation::MockTpmChallengeKey* InjectMockChallengeKey() {
   auto mock_challenge_key =
       std::make_unique<ash::attestation::MockTpmChallengeKey>();
@@ -98,17 +110,19 @@ ash::attestation::MockTpmChallengeKey* InjectMockChallengeKey() {
 
 }  // namespace
 
-class AshAttestationServiceTest : public testing::Test {
+class AshAttestationServiceImplTest : public testing::Test {
  protected:
-  AshAttestationServiceTest() {
+  AshAttestationServiceImplTest() {
     ash::AttestationClient::InitializeFake();
+    mock_challenge_key_subtle_ = InjectMockChallengeKeySubtle();
     mock_challenge_key_ = InjectMockChallengeKey();
     test_profile_.set_profile_name(kTestUserEmail);
-    attestation_service_ =
-        std::make_unique<AshAttestationService>(&test_profile_);
   }
 
-  ~AshAttestationServiceTest() override { ash::AttestationClient::Shutdown(); }
+  ~AshAttestationServiceImplTest() override {
+    ash::attestation::TpmChallengeKeySubtleFactory::Create();
+    ash::AttestationClient::Shutdown();
+  }
 
   base::Value::Dict CreateSignals() {
     base::Value::Dict signals;
@@ -139,16 +153,21 @@ class AshAttestationServiceTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<AshAttestationService> attestation_service_;
 
   TestingProfile test_profile_;
+  raw_ptr<ash::attestation::MockTpmChallengeKeySubtle, ExperimentalAsh>
+      mock_challenge_key_subtle_;
   raw_ptr<ash::attestation::MockTpmChallengeKey, ExperimentalAsh>
       mock_challenge_key_;
   std::set<enterprise_connectors::DTCPolicyLevel> levels_;
 };
 
-TEST_F(AshAttestationServiceTest, BuildChallengeResponseDeviceManaged_Success) {
+TEST_F(AshAttestationServiceImplTest,
+       BuildChallengeResponse_DeviceManagedSuccess) {
   SetDeviceManagement(true);
+
+  auto attestation_service =
+      std::make_unique<AshAttestationServiceImpl>(&test_profile_);
 
   auto protoChallenge = GetSerializedSignedChallenge();
   EXPECT_CALL(*mock_challenge_key_,
@@ -164,15 +183,18 @@ TEST_F(AshAttestationServiceTest, BuildChallengeResponseDeviceManaged_Success) {
               kFakeResponse)));
 
   base::test::TestFuture<const AttestationResponse&> future;
-  attestation_service_->BuildChallengeResponseForVAChallenge(
+  attestation_service->BuildChallengeResponseForVAChallenge(
       protoChallenge, CreateSignals(), levels_, future.GetCallback());
 
   VerifyAttestationFlowSuccessful(future.Get());
 }
 
-TEST_F(AshAttestationServiceTest,
-       BuildChallengeResponseDeviceUnmanaged_Success) {
+TEST_F(AshAttestationServiceImplTest,
+       BuildChallengeResponse_DeviceUnmanagedSuccess) {
   SetDeviceManagement(false);
+
+  auto attestation_service =
+      std::make_unique<AshAttestationServiceImpl>(&test_profile_);
 
   auto protoChallenge = GetSerializedSignedChallenge();
   EXPECT_CALL(
@@ -192,10 +214,40 @@ TEST_F(AshAttestationServiceTest,
               kFakeResponse)));
 
   base::test::TestFuture<const AttestationResponse&> future;
-  attestation_service_->BuildChallengeResponseForVAChallenge(
+  attestation_service->BuildChallengeResponseForVAChallenge(
       protoChallenge, CreateSignals(), levels_, future.GetCallback());
 
   VerifyAttestationFlowSuccessful(future.Get());
+}
+
+TEST_F(AshAttestationServiceImplTest, TryPrepareKey_DeviceManagedSkip) {
+  SetDeviceManagement(true);
+
+  EXPECT_CALL(*mock_challenge_key_subtle_,
+              StartPrepareKeyStep(_, _, _, _, _, _, _))
+      .Times(0);
+
+  auto attestation_service =
+      std::make_unique<AshAttestationServiceImpl>(&test_profile_);
+  attestation_service->TryPrepareKey();
+}
+
+TEST_F(AshAttestationServiceImplTest, TryPrepareKey_DeviceUnmanagedSuccess) {
+  SetDeviceManagement(false);
+
+  EXPECT_CALL(
+      *mock_challenge_key_subtle_,
+      StartPrepareKeyStep(
+          ::attestation::DEVICE_TRUST_CONNECTOR, false,
+          ::attestation::KEY_TYPE_RSA,
+          std::string(ash::attestation::kDeviceTrustConnectorKeyPrefix) +
+              kTestUserEmail,
+          &test_profile_, _, _))
+      .Times(1);
+
+  auto attestation_service =
+      std::make_unique<AshAttestationServiceImpl>(&test_profile_);
+  attestation_service->TryPrepareKey();
 }
 
 }  // namespace enterprise_connectors

@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_service_impl.h"
 
 #include <memory>
 #include <string>
@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
+#include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
@@ -54,39 +55,80 @@ DTAttestationResult ToAttestationResult(TpmChallengeKeyResultCode code) {
   return ::attestation::DEVICE_TRUST_CONNECTOR;
 }
 
-AshAttestationService::Username GetUserNameForKeyName(Profile* profile) {
+AshAttestationServiceImpl::Username GetUserNameForKeyName(Profile* profile) {
   if (!profile) {
-    return AshAttestationService::Username();
+    return AshAttestationServiceImpl::Username();
   }
 
-  return AshAttestationService::Username(profile->GetProfileUserName());
+  return AshAttestationServiceImpl::Username(profile->GetProfileUserName());
 }
 
 // Returns the key name used for attestation. For ENTERPRISE_MACHINE the default
 // key is used. Otherwise the key name is determined based on the username.
-AshAttestationService::KeyName GetKeyName(
+AshAttestationServiceImpl::KeyName GetKeyName(
     ::attestation::VerifiedAccessFlow flow_type,
-    const AshAttestationService::Username& username) {
+    const AshAttestationServiceImpl::Username& username) {
   if (flow_type == ::attestation::ENTERPRISE_MACHINE) {
-    return AshAttestationService::KeyName();
+    return AshAttestationServiceImpl::KeyName();
   }
-  return AshAttestationService::GetDeviceTrustConnectorUserKeyName(username);
+  return AshAttestationServiceImpl::GetDeviceTrustConnectorUserKeyName(
+      username);
 }
 
 }  // namespace
 
-AshAttestationService::AshAttestationService(Profile* profile)
+AshAttestationServiceImpl::AshAttestationServiceImpl(Profile* profile)
     : profile_(profile) {}
-AshAttestationService::~AshAttestationService() = default;
+AshAttestationServiceImpl::~AshAttestationServiceImpl() = default;
 
-AshAttestationService::KeyName
-AshAttestationService::GetDeviceTrustConnectorUserKeyName(
+AshAttestationServiceImpl::KeyName
+AshAttestationServiceImpl::GetDeviceTrustConnectorUserKeyName(
     const Username& username) {
   return KeyName(ash::attestation::kDeviceTrustConnectorKeyPrefix +
                  username.value());
 }
 
-void AshAttestationService::BuildChallengeResponseForVAChallenge(
+base::WeakPtr<AshAttestationServiceImpl>
+AshAttestationServiceImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+void AshAttestationServiceImpl::TryPrepareKey() {
+  ::attestation::VerifiedAccessFlow flow_type = GetVerifiedAccessFlow();
+
+  if (flow_type == ::attestation::ENTERPRISE_MACHINE) {
+    // Enterprise machine keys don't need to be prepared since they are uploaded
+    // to DMServer after enrollment.
+    return;
+  }
+
+  KeyName key_name =
+      AshAttestationServiceImpl::GetDeviceTrustConnectorUserKeyName(
+          GetUserNameForKeyName(profile_));
+
+  auto tpm_key_challenge_subtle =
+      ash::attestation::TpmChallengeKeySubtleFactory::Create();
+  auto* tpm_key_challenge_subtle_ptr = tpm_key_challenge_subtle.get();
+  tpm_key_challenge_subtle_ptr->StartPrepareKeyStep(
+      flow_type, /*register_key=*/false,
+      /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+      /*key_name_for_spkac=*/key_name.value(), profile_,
+      base::BindOnce(&AshAttestationServiceImpl::KeyPrepareCallback,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(tpm_key_challenge_subtle)),
+      absl::nullopt);
+}
+
+void AshAttestationServiceImpl::KeyPrepareCallback(
+    std::unique_ptr<ash::attestation::TpmChallengeKeySubtle> tpm_key_challenger,
+    const ash::attestation::TpmChallengeKeyResult& result) {
+  if (!result.IsSuccess()) {
+    LOG(ERROR) << "Key preparation failed with error: "
+               << result.GetErrorMessage();
+  }
+}
+
+void AshAttestationServiceImpl::BuildChallengeResponseForVAChallenge(
     const std::string& serialized_signed_challenge,
     base::Value::Dict signals,
     const std::set<DTCPolicyLevel>& levels,
@@ -111,7 +153,7 @@ void AshAttestationService::BuildChallengeResponseForVAChallenge(
   auto* tpm_key_challenger_ptr = tpm_key_challenger.get();
   tpm_key_challenger_ptr->BuildResponse(
       base::Seconds(15), flow_type, profile_,
-      base::BindOnce(&AshAttestationService::ReturnResult,
+      base::BindOnce(&AshAttestationServiceImpl::ReturnResult,
                      weak_factory_.GetWeakPtr(), std::move(tpm_key_challenger),
                      std::move(callback)),
       serialized_signed_challenge, /*register_key=*/false,
@@ -120,7 +162,7 @@ void AshAttestationService::BuildChallengeResponseForVAChallenge(
       /*signals=*/signals_json);
 }
 
-void AshAttestationService::ReturnResult(
+void AshAttestationServiceImpl::ReturnResult(
     std::unique_ptr<ash::attestation::TpmChallengeKeyWithTimeout>
         tpm_key_challenger,
     AttestationCallback callback,
