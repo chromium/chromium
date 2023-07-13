@@ -50,6 +50,7 @@
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state.h"
@@ -350,31 +351,6 @@ class SplitViewControllerTest : public AshTestBase {
   }
   std::vector<std::string> trace_names_;
   base::HistogramTester histograms_;
-};
-
-class TestWindowStateDelegate : public WindowStateDelegate {
- public:
-  TestWindowStateDelegate() = default;
-
-  TestWindowStateDelegate(const TestWindowStateDelegate&) = delete;
-  TestWindowStateDelegate& operator=(const TestWindowStateDelegate&) = delete;
-
-  ~TestWindowStateDelegate() override = default;
-
-  // WindowStateDelegate:
-  std::unique_ptr<PresentationTimeRecorder> OnDragStarted(
-      int component) override {
-    drag_in_progress_ = true;
-    return nullptr;
-  }
-  void OnDragFinished(bool cancel, const gfx::PointF& location) override {
-    drag_in_progress_ = false;
-  }
-
-  bool drag_in_progress() { return drag_in_progress_; }
-
- private:
-  bool drag_in_progress_ = false;
 };
 
 // Tests the basic functionalities.
@@ -2353,8 +2329,8 @@ TEST_F(SplitViewControllerTest, ExitTabletModeDuringResizeCompletesDrags) {
   auto* w2_state = WindowState::Get(window2.get());
 
   // Setup delegates
-  auto* window_state_delegate1 = new TestWindowStateDelegate();
-  auto* window_state_delegate2 = new TestWindowStateDelegate();
+  auto* window_state_delegate1 = new FakeWindowStateDelegate();
+  auto* window_state_delegate2 = new FakeWindowStateDelegate();
   w1_state->SetDelegate(base::WrapUnique(window_state_delegate1));
   w2_state->SetDelegate(base::WrapUnique(window_state_delegate2));
 
@@ -2399,7 +2375,7 @@ TEST_F(SplitViewControllerTest,
   auto* w1_state = WindowState::Get(window1.get());
 
   // Setup delegate
-  auto* window_state_delegate1 = new TestWindowStateDelegate();
+  auto* window_state_delegate1 = new FakeWindowStateDelegate();
   w1_state->SetDelegate(base::WrapUnique(window_state_delegate1));
 
   // Set up window.
@@ -2443,8 +2419,8 @@ TEST_F(SplitViewControllerTest,
   auto* w2_state = WindowState::Get(window2.get());
 
   // Setup delegates
-  auto* window_state_delegate1 = new TestWindowStateDelegate();
-  auto* window_state_delegate2 = new TestWindowStateDelegate();
+  auto* window_state_delegate1 = new FakeWindowStateDelegate();
+  auto* window_state_delegate2 = new FakeWindowStateDelegate();
   w1_state->SetDelegate(base::WrapUnique(window_state_delegate1));
   w2_state->SetDelegate(base::WrapUnique(window_state_delegate2));
 

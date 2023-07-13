@@ -25,6 +25,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
@@ -140,29 +141,6 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
   }
 };
 
-class TestWindowStateDelegate : public WindowStateDelegate {
- public:
-  TestWindowStateDelegate() = default;
-  TestWindowStateDelegate(const TestWindowStateDelegate&) = delete;
-  TestWindowStateDelegate& operator=(const TestWindowStateDelegate&) = delete;
-  ~TestWindowStateDelegate() override = default;
-
-  // WindowStateDelegate:
-  std::unique_ptr<PresentationTimeRecorder> OnDragStarted(
-      int component) override {
-    drag_in_progress_ = true;
-    return nullptr;
-  }
-  void OnDragFinished(bool cancel, const gfx::PointF& location) override {
-    drag_in_progress_ = false;
-  }
-
-  bool drag_in_progress() const { return drag_in_progress_; }
-
- private:
-  bool drag_in_progress_ = false;
-};
-
 }  // namespace
 
 class ClientControlledStateTest : public AshTestBase {
@@ -200,7 +178,7 @@ class ClientControlledStateTest : public AshTestBase {
     auto state = std::make_unique<ClientControlledState>(std::move(delegate));
     state_ = state.get();
     window_state->SetStateObject(std::move(state));
-    auto window_state_delegate = std::make_unique<TestWindowStateDelegate>();
+    auto window_state_delegate = std::make_unique<FakeWindowStateDelegate>();
     window_state_delegate_ = window_state_delegate.get();
     window_state->SetDelegate(std::move(window_state_delegate));
     widget_->Show();
@@ -222,7 +200,7 @@ class ClientControlledStateTest : public AshTestBase {
   ScreenPinningController* GetScreenPinningController() {
     return Shell::Get()->screen_pinning_controller();
   }
-  TestWindowStateDelegate* window_state_delegate() {
+  FakeWindowStateDelegate* window_state_delegate() {
     return window_state_delegate_;
   }
 
@@ -243,7 +221,7 @@ class ClientControlledStateTest : public AshTestBase {
       nullptr;
   raw_ptr<TestWidgetDelegate, ExperimentalAsh> widget_delegate_ =
       nullptr;  // owned by itself.
-  raw_ptr<TestWindowStateDelegate, ExperimentalAsh> window_state_delegate_ =
+  raw_ptr<FakeWindowStateDelegate, ExperimentalAsh> window_state_delegate_ =
       nullptr;
   std::unique_ptr<views::Widget> widget_;
   base::test::ScopedFeatureList scoped_feature_list_;

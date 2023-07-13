@@ -46,6 +46,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -2267,37 +2268,6 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
             default_container()->children()[0]->bounds());
 }
 
-namespace {
-
-class TestState : public WindowState::State {
- public:
-  TestState() = default;
-
-  TestState(const TestState&) = delete;
-  TestState& operator=(const TestState&) = delete;
-
-  ~TestState() override = default;
-
-  // WindowState::State overrides:
-  void OnWMEvent(WindowState* window_state, const WMEvent* event) override {
-    if (event->type() == WM_EVENT_SYSTEM_UI_AREA_CHANGED)
-      num_system_ui_area_changes_++;
-  }
-  WindowStateType GetType() const override { return WindowStateType::kNormal; }
-  void AttachState(WindowState* window_state,
-                   WindowState::State* previous_state) override {}
-  void DetachState(WindowState* window_state) override {}
-
-  int num_system_ui_area_changes() const { return num_system_ui_area_changes_; }
-
-  void reset_num_system_ui_area_changes() { num_system_ui_area_changes_ = 0; }
-
- private:
-  int num_system_ui_area_changes_ = 0;
-};
-
-}  // namespace
-
 class WorkspaceLayoutManagerSystemUiAreaTest : public AshTestBase {
  public:
   WorkspaceLayoutManagerSystemUiAreaTest() = default;
@@ -2316,9 +2286,10 @@ class WorkspaceLayoutManagerSystemUiAreaTest : public AshTestBase {
 
     window_ = CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100));
     WindowState* window_state = WindowState::Get(window_);
-    test_state_ = new TestState();
-    window_state->SetStateObject(
-        std::unique_ptr<WindowState::State>(test_state_));
+    auto test_state =
+        std::make_unique<FakeWindowState>(WindowStateType::kNormal);
+    test_state_ = test_state.get();
+    window_state->SetStateObject(std::move(test_state));
   }
 
   void TearDown() override {
@@ -2328,11 +2299,11 @@ class WorkspaceLayoutManagerSystemUiAreaTest : public AshTestBase {
 
  protected:
   aura::Window* window() { return window_; }
-  TestState* test_state() { return test_state_; }
+  FakeWindowState* test_state() { return test_state_; }
 
  private:
   raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
-  raw_ptr<TestState, ExperimentalAsh> test_state_ = nullptr;
+  raw_ptr<FakeWindowState, ExperimentalAsh> test_state_ = nullptr;
 };
 
 // Expect that showing and hiding the unified system tray triggers a system ui

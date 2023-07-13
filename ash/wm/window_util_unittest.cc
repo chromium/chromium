@@ -7,6 +7,7 @@
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
@@ -28,58 +29,6 @@ std::string GetAdjustedBounds(const gfx::Rect& visible,
   AdjustBoundsToEnsureMinimumWindowVisibility(visible, &to_be_adjusted);
   return to_be_adjusted.ToString();
 }
-
-class FakeWindowState : public WindowState::State {
- public:
-  FakeWindowState() = default;
-
-  FakeWindowState(const FakeWindowState&) = delete;
-  FakeWindowState& operator=(const FakeWindowState&) = delete;
-
-  ~FakeWindowState() override = default;
-
-  // WindowState::State overrides:
-  void OnWMEvent(WindowState* window_state, const WMEvent* event) override {
-    if (event->type() == WM_EVENT_MINIMIZE)
-      was_visible_on_minimize_ = window_state->window()->IsVisible();
-  }
-  chromeos::WindowStateType GetType() const override {
-    return chromeos::WindowStateType::kNormal;
-  }
-  void AttachState(WindowState* window_state,
-                   WindowState::State* previous_state) override {}
-  void DetachState(WindowState* window_state) override {}
-
-  bool was_visible_on_minimize() { return was_visible_on_minimize_; }
-
- private:
-  bool was_visible_on_minimize_ = true;
-};
-
-class FakeWindowStateDelegate : public WindowStateDelegate {
- public:
-  FakeWindowStateDelegate() = default;
-
-  FakeWindowStateDelegate(const FakeWindowStateDelegate&) = delete;
-  FakeWindowStateDelegate& operator=(const FakeWindowStateDelegate&) = delete;
-
-  // WindowStateDelegate overrides:
-  bool ToggleFullscreen(WindowState* window_state) override { return false; }
-  void ToggleLockedFullscreen(WindowState* window_state) override {
-    toggle_locked_fullscreen_count_++;
-  }
-  std::unique_ptr<PresentationTimeRecorder> OnDragStarted(
-      int component) override {
-    return nullptr;
-  }
-
-  int toggle_locked_fullscreen_count() {
-    return toggle_locked_fullscreen_count_;
-  }
-
- private:
-  int toggle_locked_fullscreen_count_ = 0;
-};
 
 }  // namespace
 
@@ -282,7 +231,7 @@ TEST_F(WindowUtilTest, EnsureTransientRoots) {
 TEST_F(WindowUtilTest,
        MinimizeAndHideWithoutAnimationMinimizesArcWindowsBeforeHiding) {
   auto window = CreateTestWindow();
-  auto* state = new FakeWindowState();
+  auto* state = new FakeWindowState(chromeos::WindowStateType::kNormal);
   WindowState::Get(window.get())
       ->SetStateObject(std::unique_ptr<WindowState::State>(state));
 

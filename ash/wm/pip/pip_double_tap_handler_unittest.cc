@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/test/test_non_client_frame_view_ash.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -30,42 +31,6 @@ constexpr gfx::SizeF kWindowAspectRatio(3.f, 2.f);
 // Max and default size of the PiP window preserving the aspect ratio.
 constexpr gfx::Size kExpectedPipMaxSize(600, 400);
 constexpr gfx::Size kExpectedPipDefaultSize(200, 133);
-
-// TODO(sammiequon): Move this to a shared location.
-class MockWindowState : public WindowState::State {
- public:
-  explicit MockWindowState(WindowStateType initial_state_type)
-      : state_type_(initial_state_type) {}
-
-  MockWindowState(const MockWindowState&) = delete;
-  MockWindowState& operator=(const MockWindowState&) = delete;
-
-  ~MockWindowState() override = default;
-
-  // WindowState::State overrides:
-  void OnWMEvent(WindowState* window_state, const WMEvent* event) override {
-    if (event->IsBoundsEvent()) {
-      if (event->type() == WM_EVENT_SET_BOUNDS) {
-        const auto* set_bounds_event =
-            static_cast<const SetBoundsWMEvent*>(event);
-        last_bounds_ = set_bounds_event->requested_bounds();
-      }
-    }
-  }
-
-  void AttachState(WindowState* window_state,
-                   WindowState::State* previous_state) override {}
-
-  void DetachState(WindowState* window_state) override {}
-
-  WindowStateType GetType() const override { return state_type_; }
-
-  const gfx::Rect& last_bounds() const { return last_bounds_; }
-
- private:
-  WindowStateType state_type_;
-  gfx::Rect last_bounds_;
-};
 
 }  // namespace
 
@@ -93,18 +58,16 @@ class PipDoubleTapHandlerTest : public AshTestBase,
     custom_frame->SetMaximumSize(kMaxWindowSize);
     custom_frame->SetMinimumSize(kMinWindowSize);
 
-    auto* window_mock_state = new MockWindowState(window_state_type);
     WindowState::Get(window.get())
-        ->SetStateObject(
-            std::unique_ptr<WindowState::State>(window_mock_state));
+        ->SetStateObject(std::make_unique<FakeWindowState>(window_state_type));
     window->SetProperty(aura::client::kAspectRatio, kWindowAspectRatio);
     return window;
   }
 
-  gfx::Rect GetMockWindowStateLastBounds(WindowState* window_state) {
-    return static_cast<MockWindowState*>(
+  gfx::Rect GetFakeWindowStateLastBounds(WindowState* window_state) {
+    return static_cast<FakeWindowState*>(
                WindowState::TestApi::GetStateImpl(window_state))
-        ->last_bounds();
+        ->last_requested_bounds();
   }
 
   void DoubleTapWindowCenter(aura::Window* window) {
@@ -131,7 +94,7 @@ TEST_P(PipDoubleTapHandlerTest, TestSingleClick) {
   for (WindowStateType state_type :
        {WindowStateType::kNormal, WindowStateType::kPip}) {
     std::ostringstream stream;
-    stream << "Testing state:" << state_type;
+    stream << "Testing state: " << state_type;
     SCOPED_TRACE(stream.str());
 
     auto window =
@@ -169,7 +132,7 @@ TEST_P(PipDoubleTapHandlerTest, TestDoubleClickAtMaxSize) {
   auto* window_state = WindowState::Get(window.get());
 
   EXPECT_TRUE(window_state->bounds_changed_by_user());
-  EXPECT_EQ(GetMockWindowStateLastBounds(window_state),
+  EXPECT_EQ(GetFakeWindowStateLastBounds(window_state),
             gfx::Rect(kExpectedPipDefaultSize));
 }
 
@@ -182,7 +145,7 @@ TEST_P(PipDoubleTapHandlerTest, TestDoubleClickAtNonMaxSize) {
 
   EXPECT_TRUE(window_state->bounds_changed_by_user());
   // Expect it to go to max size on the first double-click/tap.
-  EXPECT_EQ(GetMockWindowStateLastBounds(window_state),
+  EXPECT_EQ(GetFakeWindowStateLastBounds(window_state),
             gfx::Rect(kExpectedPipMaxSize));
 
   window =
@@ -193,7 +156,7 @@ TEST_P(PipDoubleTapHandlerTest, TestDoubleClickAtNonMaxSize) {
   // user-defined size.
   DoubleTapWindowCenter(window.get());
   EXPECT_TRUE(window_state->bounds_changed_by_user());
-  EXPECT_EQ(GetMockWindowStateLastBounds(window_state), gfx::Rect(300, 300));
+  EXPECT_EQ(GetFakeWindowStateLastBounds(window_state), gfx::Rect(300, 300));
 }
 
 // Assume true is for mouse clicks and false is for gesture taps.
