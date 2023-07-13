@@ -1276,6 +1276,7 @@ def build_perf_builder(description_html, **kwargs):
         # rely on the builder dimension for the bot selection.
         builderless = False,
         cores = None,
+        siso_enabled = True,
         siso_enable_cloud_profiler = True,
         siso_enable_cloud_trace = True,
         siso_project = siso.project.DEFAULT_UNTRUSTED,

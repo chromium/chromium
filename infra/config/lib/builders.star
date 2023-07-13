@@ -401,6 +401,7 @@ defaults = args.defaults(
     reclient_cache_silo = None,
     reclient_ensure_verified = None,
     reclient_disable_bq_upload = None,
+    siso_enabled = None,
     siso_configs = None,
     siso_project = None,
     siso_enable_cloud_profiler = None,
@@ -469,6 +470,7 @@ def builder(
         reclient_cache_silo = None,
         reclient_ensure_verified = None,
         reclient_disable_bq_upload = None,
+        siso_enabled = args.DEFAULT,
         siso_configs = args.DEFAULT,
         siso_project = args.DEFAULT,
         siso_enable_cloud_profiler = args.DEFAULT,
@@ -653,6 +655,8 @@ def builder(
             effect if reclient_instance is not set.
         reclient_disable_bq_upload: If True, rbe_metrics will not be uploaded to
             BigQuery after each build
+        siso_enabled: If True, $build/siso properties will be set, and Siso will
+            be used at compile step.
         siso_configs: a list of siso configs to enable. available values are defined in
             //build/config/siso/config.star.
         siso_project: a string indicating the GCP project hosting the RBE
@@ -824,15 +828,15 @@ def builder(
     if reclient != None:
         properties["$build/reclient"] = reclient
 
-    siso = {
-        "configs": defaults.get_value("siso_configs", siso_configs),
-        "enable_cloud_profiler": defaults.get_value("siso_enable_cloud_profiler", siso_enable_cloud_profiler),
-        "enable_cloud_trace": defaults.get_value("siso_enable_cloud_trace", siso_enable_cloud_trace),
-        "experiments": defaults.get_value("siso_experiments", siso_experiments),
-        "project": defaults.get_value("siso_project", siso_project),
-    }
-    if siso["project"]:
-        properties["$build/siso"] = siso
+    siso_project = defaults.get_value("siso_project", siso_project)
+    if defaults.get_value("siso_enabled", siso_enabled) and siso_project:
+        properties["$build/siso"] = {
+            "configs": defaults.get_value("siso_configs", siso_configs),
+            "enable_cloud_profiler": defaults.get_value("siso_enable_cloud_profiler", siso_enable_cloud_profiler),
+            "enable_cloud_trace": defaults.get_value("siso_enable_cloud_trace", siso_enable_cloud_trace),
+            "experiments": defaults.get_value("siso_experiments", siso_experiments),
+            "project": siso_project,
+        }
 
     kwargs = dict(kwargs)
     if bucket != args.COMPUTE:
