@@ -2768,6 +2768,9 @@ extern const char kEnableReaderModeDescription[];
 extern const char kHappinessTrackingSurveysForDesktopDemoName[];
 extern const char kHappinessTrackingSurveysForDesktopDemoDescription[];
 
+extern const char kHatsWebUIName[];
+extern const char kHatsWebUIDescription[];
+
 extern const char kLayoutExtractionName[];
 extern const char kLayoutExtractionDescription[];
 

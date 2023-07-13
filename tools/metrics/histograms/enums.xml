@@ -60337,6 +60337,7 @@ from previous Chrome versions.
       label="AutofillEnableRankingFormulaCreditCards:enabled"/>
   <int value="-1821336389" label="DiscardedTabTreatment:enabled"/>
   <int value="-1821058653" label="enable-delay-agnostic-aec"/>
+  <int value="-1820157610" label="HaTSWebUI:enabled"/>
   <int value="-1819497481" label="TouchTextEditingRedesign:disabled"/>
   <int value="-1818994562" label="ScanningAppJelly:enabled"/>
   <int value="-1818947212" label="OutOfBlinkCors:disabled"/>
@@ -65270,6 +65271,7 @@ from previous Chrome versions.
   <int value="717591093" label="UrlLoaderSyncClient:disabled"/>
   <int value="717827121" label="ChromeSharingHub:disabled"/>
   <int value="717913871" label="PeripheralCustomization:disabled"/>
+  <int value="718276461" label="HaTSWebUI:disabled"/>
   <int value="719267310"
       label="KeepAliveRendererForKeepaliveRequests:disabled"/>
   <int value="719614898" label="LensEnableRegionSearchOnPdfViewer:enabled"/>

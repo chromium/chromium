@@ -4504,6 +4504,13 @@
     "expiry_milestone": 123
   },
   {
+    "name": "hats-webui",
+    "owners": [
+      "//chrome/browser/ui/hats/OWNERS"
+    ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "heavy-ad-privacy-mitigations",
     "owners": [ "johnidel", "jkarlin" ],
     "expiry_milestone": 123
