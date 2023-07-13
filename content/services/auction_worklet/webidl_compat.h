@@ -6,7 +6,9 @@
 #define CONTENT_SERVICES_AUCTION_WORKLET_WEBIDL_COMPAT_H_
 
 #include <string>
+#include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -22,8 +24,17 @@ class TryCatch;
 
 namespace auction_worklet {
 
+// Helps distinguish between double and unrestricted double in IDL.
+struct CONTENT_EXPORT UnrestrictedDouble {
+  double number;
+};
+
 class CONTENT_EXPORT DictConverter {
  public:
+  // This should be bigger than the biggest Sequence<> the users of this need to
+  // handle, which is currently blink::kMaxAdAuctionAdComponents.
+  static const size_t kSequenceLengthLimit = 21;
+
   // Prepares to convert `value` to a WebIDL dictionary. You should follow this
   // by calling appropriate Get... methods for all the fields in lexicographic
   // order. Unlike gin, this does type conversions.
@@ -38,9 +49,12 @@ class CONTENT_EXPORT DictConverter {
   //
   // Output types <T> correspond to the following WebIDL types:
   //  double to double.
+  //  UnrestrictedDouble to unrestricted double.
   //  bool to boolean.
   //  std::string to DOMString.
   //  v8::Local<v8::Value> to any.
+  //
+  // Sequences are handled specially, via GetOptionalSequence.
   //
   // Since these conversions may loop infinitely, a `time_limit_scope` must
   // exist during its operation, and one with non-null time limit.
@@ -93,15 +107,33 @@ class CONTENT_EXPORT DictConverter {
     return Convert(field, val, out.value());
   }
 
+  // Gets an optional sequence field `field`. If the field exists,
+  // `exists_callback` will be called, and then entries will be provided
+  // one-by-one to `item_callback` (0 to kSequenceLengthLimit times).
+  // `item_callback` is expected to typecheck its input and return true/false as
+  // appropriate.
+  //
+  // TODO(morlovich): add a method to propagate exceptions from within callbacks
+  // used by `GetOptionalSequence`.
+  bool GetOptionalSequence(
+      base::StringPiece field,
+      base::OnceClosure exists_callback,
+      base::RepeatingCallback<bool(v8::Local<v8::Value>)> item_callback);
+
   const std::string& ErrorMessage() { return failure_message_; }
 
-  // TODO(morlovich): Accessor for the exception object.
+  // This is non-empty only when an exception specifically got thrown by
+  // something invoked during conversion; not for any errors synthesized here.
+  v8::MaybeLocal<v8::Value> FailureException() { return failure_exception_; }
 
  private:
   // This can mark failure.
   v8::Local<v8::Value> GetMember(base::StringPiece field);
 
   // These mark failure as it happens.
+  bool Convert(base::StringPiece field,
+               v8::Local<v8::Value> value,
+               UnrestrictedDouble& out);
   bool Convert(base::StringPiece field,
                v8::Local<v8::Value> value,
                double& out);
@@ -113,8 +145,17 @@ class CONTENT_EXPORT DictConverter {
                v8::Local<v8::Value> value,
                v8::Local<v8::Value>& out);
 
+  bool ConvertSequence(
+      base::StringPiece field,
+      v8::Local<v8::Value> value,
+      base::RepeatingCallback<bool(v8::Local<v8::Value>)> item_callback);
+
   void MarkFailed(base::StringPiece fail_message);
   void MarkFailedWithException(const v8::TryCatch& catcher);
+
+  void MarkFailedWithExceptionOrMessage(const v8::TryCatch& catcher,
+                                        base::StringPiece fail_message);
+  void MarkFailedIter(base::StringPiece field, const v8::TryCatch& catcher);
 
   raw_ptr<AuctionV8Helper> v8_helper_;
   std::string error_prefix_;

@@ -1022,7 +1022,7 @@ void SellerWorklet::V8State::ScoreAd(
     DictConverter convert_score_ad(
         v8_helper_.get(), time_limit_scope,
         base::StrCat({v8_helper_->FormatScriptName(unbound_worklet_script),
-                      " scoreAd() return:"}),
+                      " scoreAd() return: "}),
         score_ad_result);
     if (!convert_score_ad.GetOptional("ad", result_idl.ad) ||
         !convert_score_ad.GetOptional("allowComponentAuction",

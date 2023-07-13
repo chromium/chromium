@@ -1083,7 +1083,8 @@ BidderWorklet::V8State::GenerateSingleBid(
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
   context_recycler->set_bid_bindings()->ReInitialize(
-      start, browser_signal_top_level_seller_origin != nullptr,
+      start, total_timeout.get(),
+      browser_signal_top_level_seller_origin != nullptr,
       &bidder_worklet_non_shared_params, expected_buyer_currency,
       should_exclude_ad_due_to_kanon, should_exclude_component_ad_due_to_kanon);
 
@@ -1237,10 +1238,11 @@ BidderWorklet::V8State::GenerateSingleBid(
                           base::TimeTicks::Now() - start);
 
   if (got_return_value) {
+    v8::MaybeLocal<v8::Value> ignore_exception;  // only need the message.
     context_recycler->set_bid_bindings()->SetBid(
         generate_bid_result,
         base::StrCat({script_source_url_.spec(), " generateBid() "}),
-        errors_out);
+        ignore_exception, errors_out);
   }
 
   if (!context_recycler->set_bid_bindings()->has_bid()) {
