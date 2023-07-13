@@ -56,13 +56,13 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
   constructor() {
     super([
       'dialogClose',
+      'doPrint',
       'getInitialSettings',
       'getPrinters',
       'getPreview',
       'getPrinterCapabilities',
       'hidePreview',
       'managePrinters',
-      'print',
       'saveAppState',
       'showSystemDialog',
     ]);
@@ -168,8 +168,8 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
         Promise.reject();
   }
 
-  print(printTicket: string) {
-    this.methodCalled('print', printTicket);
+  doPrint(printTicket: string) {
+    this.methodCalled('doPrint', printTicket);
     return Promise.resolve(undefined);
   }
 

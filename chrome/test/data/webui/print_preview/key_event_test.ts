@@ -73,14 +73,14 @@ suite(key_event_test.suiteName, function() {
 
   // Tests that the enter key triggers a call to print.
   test(key_event_test.TestNames.EnterTriggersPrint, function() {
-    const whenPrintCalled = nativeLayer.whenCalled('print');
+    const whenPrintCalled = nativeLayer.whenCalled('doPrint');
     keyEventOn(page, 'keydown', 0, [], 'Enter');
     return whenPrintCalled;
   });
 
   // Tests that the numpad enter key triggers a call to print.
   test(key_event_test.TestNames.NumpadEnterTriggersPrint, function() {
-    const whenPrintCalled = nativeLayer.whenCalled('print');
+    const whenPrintCalled = nativeLayer.whenCalled('doPrint');
     keyEventOn(page, 'keydown', 0, [], 'Enter');
     return whenPrintCalled;
   });
@@ -88,7 +88,7 @@ suite(key_event_test.suiteName, function() {
   // Tests that the enter key triggers a call to print if an input is the
   // source of the event.
   test(key_event_test.TestNames.EnterOnInputTriggersPrint, function() {
-    const whenPrintCalled = nativeLayer.whenCalled('print');
+    const whenPrintCalled = nativeLayer.whenCalled('doPrint');
     keyEventOn(
         page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
             .querySelector('print-preview-copies-settings')!.shadowRoot!
@@ -109,7 +109,7 @@ suite(key_event_test.suiteName, function() {
                 .querySelector<HTMLSelectElement>('.md-select')!,
             'keydown', 0, [], 'Enter');
         return whenKeyEventFired.then(
-            () => assertEquals(0, nativeLayer.getCallCount('print')));
+            () => assertEquals(0, nativeLayer.getCallCount('doPrint')));
       });
 
   // Tests that the enter key does not trigger a call to print if the event
@@ -127,7 +127,7 @@ suite(key_event_test.suiteName, function() {
     keyEventOn(button, 'keydown', 0, [], 'Enter');
     await whenKeyEventFired;
     await flushTasks();
-    assertEquals(0, nativeLayer.getCallCount('print'));
+    assertEquals(0, nativeLayer.getCallCount('doPrint'));
   });
 
   // Tests that the enter key does not trigger a call to print if the event
@@ -145,7 +145,7 @@ suite(key_event_test.suiteName, function() {
                 .shadowRoot!.querySelector('cr-checkbox')!,
             'keydown', 0, [], 'Enter');
         return whenKeyEventFired.then(
-            () => assertEquals(0, nativeLayer.getCallCount('print')));
+            () => assertEquals(0, nativeLayer.getCallCount('doPrint')));
       });
 
   // Tests that escape closes the dialog only on Mac.
@@ -181,7 +181,7 @@ suite(key_event_test.suiteName, function() {
           // event does not trigger a crash.
           promise = Promise.resolve();
         } else if (isWindows) {
-          promise = nativeLayer.whenCalled('print').then((printTicket) => {
+          promise = nativeLayer.whenCalled('doPrint').then((printTicket) => {
             assertTrue(JSON.parse(printTicket).showSystemDialog);
           });
         } else {

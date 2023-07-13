@@ -429,15 +429,15 @@ class TestPrintPreviewHandlerForContentAnalysis
   bool print_called_after_scan() const { return print_called_after_scan_; }
 
  private:
-  void FinishHandlePrint(UserActionBuckets user_action,
-                         base::Value::Dict settings,
-                         scoped_refptr<base::RefCountedMemory> data,
-                         const std::string& callback_id) override {
+  void FinishHandleDoPrint(UserActionBuckets user_action,
+                           base::Value::Dict settings,
+                           scoped_refptr<base::RefCountedMemory> data,
+                           const std::string& callback_id) override {
     ASSERT_EQ(base::StringPiece(data->front_as<const char>(), data->size()),
               kTestData);
     print_called_after_scan_ = true;
-    PrintPreviewHandler::FinishHandlePrint(user_action, std::move(settings),
-                                           data, callback_id);
+    PrintPreviewHandler::FinishHandleDoPrint(user_action, std::move(settings),
+                                             data, callback_id);
   }
 
   bool print_called_after_scan_ = false;
@@ -1319,7 +1319,7 @@ TEST_F(PrintPreviewHandlerTest, Print) {
     std::string json;
     base::JSONWriter::Write(print_ticket, &json);
     print_args.Append(json);
-    handler()->HandlePrint(print_args);
+    handler()->HandleDoPrint(print_args);
 
     CheckHistograms(histograms, type);
 
@@ -1637,7 +1637,7 @@ TEST_P(ContentAnalysisPrintPreviewHandlerTest, LocalScanBeforePrinting) {
   base::JSONWriter::Write(print_ticket, &json);
   print_args.Append(json);
 
-  handler()->HandlePrint(print_args);
+  handler()->HandleDoPrint(print_args);
   WaitForScan();
 
   auto* print_preview_handler =

@@ -434,8 +434,8 @@ void PrintPreviewHandler::RegisterMessages() {
       "getPreview", base::BindRepeating(&PrintPreviewHandler::HandleGetPreview,
                                         base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "print", base::BindRepeating(&PrintPreviewHandler::HandlePrint,
-                                   base::Unretained(this)));
+      "doPrint", base::BindRepeating(&PrintPreviewHandler::HandleDoPrint,
+                                     base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getPrinterCapabilities",
       base::BindRepeating(&PrintPreviewHandler::HandleGetPrinterCapabilities,
@@ -704,7 +704,7 @@ void PrintPreviewHandler::HandleGetPreview(const base::Value::List& args) {
   last_preview_settings_ = std::move(settings);
 }
 
-void PrintPreviewHandler::HandlePrint(const base::Value::List& args) {
+void PrintPreviewHandler::HandleDoPrint(const base::Value::List& args) {
   CHECK(args[0].is_string());
   const std::string& callback_id = args[0].GetString();
   CHECK(!callback_id.empty());
@@ -760,7 +760,7 @@ void PrintPreviewHandler::HandlePrint(const base::Value::List& args) {
       std::move(hide_preview));
 
 #else
-  FinishHandlePrint(user_action, std::move(settings), data, callback_id);
+  FinishHandleDoPrint(user_action, std::move(settings), data, callback_id);
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 }
 
@@ -772,7 +772,7 @@ void PrintPreviewHandler::OnVerdictByEnterprisePolicy(
     const std::string& callback_id,
     bool allowed) {
   if (allowed) {
-    FinishHandlePrint(user_action, std::move(settings), data, callback_id);
+    FinishHandleDoPrint(user_action, std::move(settings), data, callback_id);
   } else {
     OnPrintResult(callback_id, base::Value("NOT_ALLOWED"));
   }
@@ -783,7 +783,7 @@ void PrintPreviewHandler::OnHidePreviewDialog() {
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
-void PrintPreviewHandler::FinishHandlePrint(
+void PrintPreviewHandler::FinishHandleDoPrint(
     UserActionBuckets user_action,
     base::Value::Dict settings,
     scoped_refptr<base::RefCountedMemory> data,

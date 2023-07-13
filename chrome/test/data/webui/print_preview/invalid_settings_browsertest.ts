@@ -169,7 +169,7 @@ suite(invalid_settings_browsertest.suiteName, function() {
               assertEquals(State.READY, page.state);
               printButton.click();
               // This should result in a call to print.
-              return nativeLayer.whenCalled('print');
+              return nativeLayer.whenCalled('doPrint');
             })
             .then(
                 /**

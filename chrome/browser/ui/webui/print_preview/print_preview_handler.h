@@ -123,10 +123,10 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
 
   // Initiates print after any content analysis checks have been passed
   // successfully.
-  virtual void FinishHandlePrint(UserActionBuckets user_action,
-                                 base::Value::Dict settings,
-                                 scoped_refptr<base::RefCountedMemory> data,
-                                 const std::string& callback_id);
+  virtual void FinishHandleDoPrint(UserActionBuckets user_action,
+                                   base::Value::Dict settings,
+                                   scoped_refptr<base::RefCountedMemory> data,
+                                   const std::string& callback_id);
 
  private:
   friend class PrintPreviewPdfGeneratedBrowserTest;
@@ -181,7 +181,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
 
   // Gets the job settings from Web UI and initiate printing. First element of
   // |args| is a job settings JSON string.
-  void HandlePrint(const base::Value::List& args);
+  void HandleDoPrint(const base::Value::List& args);
 
   // Handles the request to hide the preview dialog for printing.
   // |args| is unused.
@@ -269,8 +269,8 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   // Called when enterprise policy returns a verdict.
-  // Calls FinishHandlePrint if it's allowed else calls OnPrintResult to report
-  // print not allowed.
+  // Calls FinishHandleDoPrint() if it's allowed or calls OnPrintResult() to
+  // report print not allowed.
   void OnVerdictByEnterprisePolicy(UserActionBuckets user_action,
                                    base::Value::Dict settings,
                                    scoped_refptr<base::RefCountedMemory> data,

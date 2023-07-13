@@ -85,7 +85,7 @@ suite(system_dialog_browsertest.suiteName, function() {
         assertFalse(link.hidden);
         link.click();
         // Should result in a print call and dialog should close.
-        return nativeLayer.whenCalled('print').then((printTicket: string) => {
+        return nativeLayer.whenCalled('doPrint').then((printTicket: string) => {
           assertTrue(JSON.parse(printTicket)[printTicketKey]);
           return nativeLayer.whenCalled('dialogClose');
         });
