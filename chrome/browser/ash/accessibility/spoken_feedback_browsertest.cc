@@ -81,10 +81,7 @@ const double kExpectedPhoneticSpeechAndHintDelayMS = 1000;
 }  // namespace
 
 LoggedInSpokenFeedbackTest::LoggedInSpokenFeedbackTest()
-    : animation_mode_(ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
-  scoped_feature_list_.InitAndDisableFeature(
-      ::features::kAccessibilityDeprecateChromeVoxTabs);
-}
+    : animation_mode_(ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
 
 LoggedInSpokenFeedbackTest::~LoggedInSpokenFeedbackTest() = default;
 
@@ -539,50 +536,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, FocusShelf) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateTabsMenu) {
-  EnableChromeVox();
-
-  // Open two tabs, titled "Hello" and "World".
-  sm_.Call([this]() {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(R"(data:text/html;charset=utf-8,
-            <title>Hello</title>
-            <button autofocus>Hello webpage</button>
-            <a target="_blank" href="https://google.com">Open world</a>)")));
-  });
-  sm_.ExpectSpeech("Hello webpage");
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Open world");
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-
-  // Open the tabs menu.
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_OEM_PERIOD); });
-  sm_.ExpectSpeech("Search the menus");
-  sm_.Call([this]() {
-    SendKeyPress(ui::VKEY_RIGHT);
-    SendKeyPress(ui::VKEY_RIGHT);
-    SendKeyPress(ui::VKEY_RIGHT);
-  });
-  sm_.ExpectSpeech("Tabs Menu");
-  sm_.ExpectSpeech("Hello");
-
-  // Navigate down to the active tab.
-  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
-  sm_.ExpectSpeech("google.com (active)");
-
-  // Navigate back up to "Hello".
-  sm_.Call([this]() { SendKeyPress(ui::VKEY_UP); });
-  sm_.ExpectSpeech("Hello");
-
-  // Select that tab and expect to return to the webpage.
-  sm_.Call([this]() { SendKeyPress(ui::VKEY_SPACE); });
-  sm_.ExpectSpeech("Open world");
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_LEFT); });
-  sm_.ExpectSpeech("Hello webpage");
-
-  sm_.Replay();
-}
-
 // Verifies that pressing right arrow button with search button should move
 // focus to the next ShelfItem instead of the last one
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShelfIconFocusForward) {
@@ -916,7 +869,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateChromeVoxMenu) {
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_OEM_PERIOD); });
   sm_.ExpectSpeech("Search the menus");
   sm_.Call([this]() {
-    SendKeyPress(ui::VKEY_RIGHT);
     SendKeyPress(ui::VKEY_RIGHT);
     SendKeyPress(ui::VKEY_RIGHT);
     SendKeyPress(ui::VKEY_RIGHT);
@@ -2160,50 +2112,6 @@ IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, DISABLED_LoginAsNewUser) {
     ASSERT_EQ(AccessibilityManager::Get()->profile(),
               ProfileManager::GetActiveUserProfile());
   });
-  sm_.Replay();
-}
-
-class DeprecateTabsSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
- public:
-  DeprecateTabsSpokenFeedbackTest() = default;
-  DeprecateTabsSpokenFeedbackTest(const DeprecateTabsSpokenFeedbackTest&) =
-      delete;
-  DeprecateTabsSpokenFeedbackTest& operator=(
-      const DeprecateTabsSpokenFeedbackTest&) = delete;
-  ~DeprecateTabsSpokenFeedbackTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ::features::kAccessibilityDeprecateChromeVoxTabs};
-};
-
-// Matches NavigateTabsMenu test.
-IN_PROC_BROWSER_TEST_F(DeprecateTabsSpokenFeedbackTest, NoTabsMenu) {
-  EnableChromeVox();
-
-  // Open two tabs, titled "Hello" and "World".
-  sm_.Call([this]() {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(R"(data:text/html;charset=utf-8,
-            <title>Hello</title>
-            <button autofocus>Hello webpage</button>
-            <a target="_blank" href="https://google.com">Open world</a>)")));
-  });
-  sm_.ExpectSpeech("Hello webpage");
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Open world");
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-
-  // Move to where the tabs menu was (see SpokenFeedbackTest.NavigateTabsMenu).
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_OEM_PERIOD); });
-  sm_.ExpectSpeech("Search the menus");
-  sm_.Call([this]() {
-    SendKeyPress(ui::VKEY_RIGHT);
-    SendKeyPress(ui::VKEY_RIGHT);
-    SendKeyPress(ui::VKEY_RIGHT);
-  });
-  sm_.ExpectNextSpeechIsNot("Tabs Menu");
-
   sm_.Replay();
 }
 

@@ -257,17 +257,6 @@ BackgroundBridge.PanelBackground = {
   },
 
   /**
-   * @param {number} windowId
-   * @param {number} tabId
-   * @return {!Promise}
-   */
-  async focusTab(windowId, tabId) {
-    return BridgeHelper.sendMessage(
-        BridgeConstants.PanelBackground.TARGET,
-        BridgeConstants.PanelBackground.Action.FOCUS_TAB, windowId, tabId);
-  },
-
-  /**
    * @return {!Promise<{
    *     standardActions: !Array<!chrome.automation.ActionType>,
    *     customActions: !Array<!chrome.automation.CustomAction>
@@ -277,13 +266,6 @@ BackgroundBridge.PanelBackground = {
     return BridgeHelper.sendMessage(
         BridgeConstants.PanelBackground.TARGET,
         BridgeConstants.PanelBackground.Action.GET_ACTIONS_FOR_CURRENT_NODE);
-  },
-
-  /** @return {!Promise<!Array<!PanelTabMenuItemData>>} */
-  async getTabMenuData() {
-    return BridgeHelper.sendMessage(
-        BridgeConstants.PanelBackground.TARGET,
-        BridgeConstants.PanelBackground.Action.GET_TAB_MENU_DATA);
   },
 
   /**

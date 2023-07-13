@@ -16,11 +16,6 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
   }
 
   /** @override */
-  get featureList() {
-    return {enabled: ['features::kAccessibilityDeprecateChromeVoxTabs']};
-  }
-
-  /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
 

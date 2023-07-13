@@ -234,7 +234,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": [ "googleTtsLanguagePacks", "dictationContextChecking", "chromevoxTabsDeprecation", "chromevoxSettingsMigration"],
+        "enum": [ "googleTtsLanguagePacks", "dictationContextChecking", "chromevoxSettingsMigration"],
         "description": "Subset of accessibility features."
       },
       {

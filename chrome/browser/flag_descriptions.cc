@@ -1090,12 +1090,6 @@ const char kExperimentalAccessibilityColorEnhancementSettingsDescription[] =
     "This option enables the experimental Accessibility color enhancement "
     "settings found in the OS Accessibility settings.";
 
-const char kAccessibilityDeprecateChromeVoxTabsName[] =
-    "This option enables the ChromeVox tabs menu deprecation";
-const char kAccessibilityDeprecateChromeVoxTabsDescription[] =
-    "Enabling this option will remove the ChromeVox tabs menu from the "
-    "ChromeVox menus.";
-
 const char kAccessibilityChromeVoxPageMigrationName[] =
     "ChromeVox Page Migration";
 const char kAccessibilityChromeVoxPageMigrationDescription[] =

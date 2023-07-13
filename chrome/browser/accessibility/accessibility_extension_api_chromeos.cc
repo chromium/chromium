@@ -263,10 +263,6 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
           IsExperimentalAccessibilityDictationContextCheckingEnabled();
       break;
     case accessibility_private::AccessibilityFeature::
-        ACCESSIBILITY_FEATURE_CHROMEVOXTABSDEPRECATION:
-      enabled = ::features::IsAccessibilityDeprecateChromeVoxTabsEnabled();
-      break;
-    case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_CHROMEVOXSETTINGSMIGRATION:
       enabled = ::features::IsAccessibilityChromeVoxPageMigrationEnabled();
       break;
