@@ -23,11 +23,13 @@
     <output filename="components_locale_settings_en-US.pak" type="data_package" lang="en" />
     <output filename="components_locale_settings_es.pak" type="data_package" lang="es" />
     <if expr="is_ios">
-      <!-- iOS uses es-MX for es-419 -->
-      <output filename="components_locale_settings_es-MX.pak" type="data_package" lang="es-419" />
-    </if>
-    <if expr="not is_ios">
-      <output filename="components_locale_settings_es-419.pak" type="data_package" lang="es-419" />
+      <then>
+        <!-- iOS uses es-MX for es-419 -->
+        <output filename="components_locale_settings_es-MX.pak" type="data_package" lang="es-419" />
+      </then>
+      <else>
+        <output filename="components_locale_settings_es-419.pak" type="data_package" lang="es-419" />
+      </else>
     </if>
     <output filename="components_locale_settings_et.pak" type="data_package" lang="et" />
     <output filename="components_locale_settings_eu.pak" type="data_package" lang="eu" />
@@ -70,11 +72,13 @@
     <output filename="components_locale_settings_pa.pak" type="data_package" lang="pa" />
     <output filename="components_locale_settings_pl.pak" type="data_package" lang="pl" />
     <if expr="is_ios">
-      <!-- iOS uses pt for pt-BR -->
-      <output filename="components_locale_settings_pt.pak" type="data_package" lang="pt-BR" />
-    </if>
-    <if expr="not is_ios">
-      <output filename="components_locale_settings_pt-BR.pak" type="data_package" lang="pt-BR" />
+      <then>
+        <!-- iOS uses pt for pt-BR -->
+        <output filename="components_locale_settings_pt.pak" type="data_package" lang="pt-BR" />
+      </then>
+      <else>
+        <output filename="components_locale_settings_pt-BR.pak" type="data_package" lang="pt-BR" />
+      </else>
     </if>
     <output filename="components_locale_settings_pt-PT.pak" type="data_package" lang="pt-PT" />
     <output filename="components_locale_settings_or.pak" type="data_package" lang="or" />
