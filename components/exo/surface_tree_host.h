@@ -171,7 +171,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   // Update the host window's size to cover sufaces that must be visible and
   // not clipped.
-  virtual void UpdateHostWindowBounds();
+  void UpdateHostWindowBounds();
 
   bool client_submits_surfaces_in_pixel_coordinates() const {
     return client_submits_surfaces_in_pixel_coordinates_;

@@ -1980,7 +1980,7 @@ void ShellSurfaceBase::CommitWidget() {
   // type (e.g. caption height).
   UpdateFrameType();
   UpdateWidgetBounds();
-  SurfaceTreeHost::UpdateHostWindowBounds();
+  UpdateHostWindowBounds();
   gfx::Rect bounds = geometry_;
   if (!bounds.IsEmpty() && !widget_->GetNativeWindow()->GetProperty(
                                aura::client::kUseWindowBoundsForShadow)) {
