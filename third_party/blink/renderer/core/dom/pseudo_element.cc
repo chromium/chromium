@@ -307,7 +307,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
           StyleContainmentScope* scope =
               tree.FindOrCreateEnclosingScopeForElement(*this);
           scope->AttachQuote(*To<LayoutQuote>(child));
-          tree.UpdateOutermostDirtyScope(scope);
+          tree.UpdateOutermostQuotesDirtyScope(scope);
         }
       } else {
         child->Destroy();
