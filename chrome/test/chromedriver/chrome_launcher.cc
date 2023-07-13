@@ -173,11 +173,7 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
   switches.SetFromSwitches(capabilities.switches);
   if (!switches.HasSwitch("remote-debugging-port") &&
       !switches.HasSwitch("remote-debugging-pipe")) {
-    if (PipeBuilder::PlatformIsSupported()) {
-      switches.SetSwitch("remote-debugging-pipe");
-    } else {
-      switches.SetSwitch("remote-debugging-port", "0");
-    }
+    switches.SetSwitch("remote-debugging-port", "0");
   }
   if (capabilities.exclude_switches.count("user-data-dir") > 0) {
     LOG(WARNING) << "excluding user-data-dir switch is not supported";
