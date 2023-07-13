@@ -23,11 +23,12 @@ class UpdateNotificationTest : public BrowserWithTestWindowTest,
  public:
   UpdateNotificationTest() : BrowserWithTestWindowTest(Browser::TYPE_NORMAL) {
     if (IsUpdateNotificationEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kFeatureManagementUpdateNotification);
+      scoped_feature_list_.InitWithFeatures(
+          {features::kFeatureManagementUpdateNotification,
+           features::kUpdateNotification},
+          {});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kFeatureManagementUpdateNotification);
+      scoped_feature_list_.InitAndDisableFeature(features::kUpdateNotification);
     }
   }
   ~UpdateNotificationTest() override = default;

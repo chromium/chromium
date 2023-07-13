@@ -954,6 +954,9 @@ BASE_FEATURE(kFeatureManagement16Desks,
 BASE_FEATURE(kFeatureManagementUpdateNotification,
              "FeatureManagementUpdateNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUpdateNotification,
+             "UpdateNotification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows borealis on certain boards whose features are determined by
 // FeatureManagement. This feature does not apply to all boards, and does not
@@ -2657,7 +2660,8 @@ bool Is16DesksEnabled() {
 }
 
 bool IsUpdateNotificationEnabled() {
-  return base::FeatureList::IsEnabled(kFeatureManagementUpdateNotification);
+  return base::FeatureList::IsEnabled(kFeatureManagementUpdateNotification) &&
+         base::FeatureList::IsEnabled(kUpdateNotification);
 }
 
 bool IsAdaptiveChargingEnabled() {
