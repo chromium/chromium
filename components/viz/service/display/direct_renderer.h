@@ -79,6 +79,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
 
   bool use_partial_swap() const { return use_partial_swap_; }
 
+  void SetOutputSurfaceClipRect(const gfx::Rect& clip_rect);
   void SetVisible(bool visible);
   void ReallocatedFrameBuffers();
   void DecideRenderPassAllocationsForFrame(
@@ -435,6 +436,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // to prevent use of uninitialized values. The size in these parameters
   // may be larger than the `device_viewport_size_` that users see.
   absl::optional<OutputSurface::ReshapeParams> reshape_params_;
+
+  // If present additionally restricts drawing to the OutputSurface. WebView
+  // gets this rect from the HWUI.
+  absl::optional<gfx::Rect> output_surface_clip_rect_;
   gfx::Size device_viewport_size_;
   gfx::OverlayTransform reshape_display_transform_ =
       gfx::OVERLAY_TRANSFORM_INVALID;

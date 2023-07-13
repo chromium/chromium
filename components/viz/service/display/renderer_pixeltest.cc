@@ -945,6 +945,33 @@ TEST_P(RendererPixelTest, SimpleGreenRect) {
                                  cc::AlphaDiscardingExactPixelComparator()));
 }
 
+TEST_P(RendererPixelTest, OutputSurfaceClipRect) {
+  gfx::Rect rect(device_viewport_size_);
+
+  auto draw_frame = [&](base::FilePath::StringPieceType path, SkColor4f color) {
+    AggregatedRenderPassId id{1};
+    auto pass = CreateTestRootRenderPass(id, rect);
+
+    SharedQuadState* shared_state = CreateTestSharedQuadState(
+        gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
+
+    auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+    color_quad->SetNew(shared_state, rect, rect, color, false);
+
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+
+    EXPECT_TRUE(RunPixelTest(&pass_list, base::FilePath(path),
+                             cc::AlphaDiscardingExactPixelComparator()));
+  };
+
+  draw_frame(FILE_PATH_LITERAL("green.png"), SkColors::kGreen);
+
+  renderer_->SetOutputSurfaceClipRect(gfx::Rect(150, 150, 50, 50));
+
+  draw_frame(FILE_PATH_LITERAL("green_with_blue_corner.png"), SkColors::kBlue);
+}
+
 TEST_P(RendererPixelTest, SimpleGreenRectNonRootRenderPass) {
   gfx::Rect rect(this->device_viewport_size_);
   gfx::Rect small_rect(100, 100);

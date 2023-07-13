@@ -167,6 +167,10 @@ const DrawQuad* DirectRenderer::CanPassBeDrawnDirectly(
   return nullptr;
 }
 
+void DirectRenderer::SetOutputSurfaceClipRect(const gfx::Rect& clip_rect) {
+  output_surface_clip_rect_ = clip_rect;
+}
+
 void DirectRenderer::SetVisible(bool visible) {
   DCHECK(initialized_);
   if (visible_ == visible)
@@ -700,6 +704,10 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
   if (use_partial_swap_) {
     render_pass_scissor_in_draw_space.Intersect(
         ComputeScissorRectForRenderPass(current_frame()->current_render_pass));
+  }
+
+  if (is_root_render_pass && output_surface_clip_rect_) {
+    render_pass_scissor_in_draw_space.Intersect(*output_surface_clip_rect_);
   }
 
   const bool render_pass_is_clipped =
