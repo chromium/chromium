@@ -942,6 +942,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // must be placed after UserManager initialization.
   MagnificationManager::Initialize();
 
+  g_browser_process->platform_part()->InitializeAshProxyMonitor();
+
   // Has to be initialized before |assistant_delegate_|;
   image_downloader_ = std::make_unique<ImageDownloaderImpl>();
 
@@ -1653,6 +1655,10 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // is destroyed inside ChromeBrowserMainPartsLinux::PostMainMessageLoopRun().
   browser_manager_.reset();
   crosapi_manager_.reset();
+
+  // The `AshProxyMonitor` instance needs to outlive the `crosapi_manager_`
+  // because crosapi depends on it.
+  g_browser_process->platform_part()->ShutdownAshProxyMonitor();
 
   // Destroy classes that may have ash observers or dependencies.
   arc_kiosk_app_manager_.reset();

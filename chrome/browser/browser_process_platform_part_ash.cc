@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
+#include "chrome/browser/ash/net/ash_proxy_monitor.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -177,6 +178,16 @@ void BrowserProcessPlatformPart::InitializeSchedulerConfigurationManager() {
 
 void BrowserProcessPlatformPart::ShutdownSchedulerConfigurationManager() {
   scheduler_configuration_manager_.reset();
+}
+
+void BrowserProcessPlatformPart::InitializeAshProxyMonitor() {
+  DCHECK(!ash_proxy_monitor_);
+  ash_proxy_monitor_ = std::make_unique<ash::AshProxyMonitor>(
+      g_browser_process->local_state(), g_browser_process->profile_manager());
+}
+
+void BrowserProcessPlatformPart::ShutdownAshProxyMonitor() {
+  ash_proxy_monitor_.reset();
 }
 
 void BrowserProcessPlatformPart::InitializePrimaryProfileServices(

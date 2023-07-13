@@ -98,7 +98,9 @@ interface NetworkSettingsObserver {
 // Implemented by Ash-Chrome.
 [Stable, Uuid="e8916037-b993-454a-96ef-20f269cace54"]
 interface NetworkSettingsService {
-    // Add an Ash network settings service observer.
+    // Adds an Ash network settings service observer.
+    // If a proxy is configured in Ash, the observer will be notified of the
+    // current proxy configuration as part of this call.
     AddNetworkSettingsObserver@0(
         pending_remote<NetworkSettingsObserver> observer);
     // Used by the Lacros browser to forward proxy configurations set via

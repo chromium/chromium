@@ -7,152 +7,83 @@
 #include <stdint.h>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_is_test.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/network_settings_translation.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/ash/components/network/network_state.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/ash/components/network/onc/network_onc_utils.h"
-#include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/user_manager/user_manager.h"
 
 namespace {
 
-const char kPrefExtensionNameKey[] = "extension_name_key";
-const char kPrefExtensionIdKey[] = "extension_id_key";
-const char kPrefExtensionCanDisabledKey[] = "can_be_disabled_key";
-
-// Returns the preference service of the primary user session profile, or
-// nullptr if no user session has started.
-PrefService* GetPrimaryLoggedInUserProfilePrefs() {
-  // Check login state first.
-  if (!user_manager::UserManager::IsInitialized() ||
-      !user_manager::UserManager::Get()->IsUserLoggedIn()) {
+// Returns the extension metadata (as a crosapi object) for the extension which
+// is controlling the proxy in the Lacros primary profile. If the proxy is not
+// controlled by an extension, returns the null pointer.
+crosapi::mojom::ExtensionControllingProxyPtr GetExtensionPtr(
+    const ash::AshProxyMonitor* ash_proxy_monitor) {
+  if (!ash_proxy_monitor ||
+      !ash_proxy_monitor->GetLacrosExtensionControllingTheProxy()) {
     return nullptr;
   }
-
-  auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user) {
-    return nullptr;
-  }
-
-  auto* profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(primary_user));
-  if (!profile) {
-    return nullptr;
-  }
-  return profile->GetPrefs();
+  absl::optional<ash::AshProxyMonitor::ExtensionMetadata> extension_metadata =
+      ash_proxy_monitor->GetLacrosExtensionControllingTheProxy();
+  crosapi::mojom::ExtensionControllingProxyPtr extension =
+      crosapi::mojom::ExtensionControllingProxy::New();
+  extension->name = extension_metadata->name;
+  extension->id = extension_metadata->id;
+  extension->can_be_disabled = extension_metadata->can_be_disabled;
+  return extension;
 }
 
 }  // namespace
 namespace crosapi {
 
-NetworkSettingsServiceAsh::NetworkSettingsServiceAsh(PrefService* local_state)
-    : local_state_(local_state),
-      profile_manager_(g_browser_process->profile_manager()) {
-  if (profile_manager_) {
-    profile_manager_->AddObserver(this);
-  }
-  // Uninitialized in unit_tests.
-  if (ash::NetworkHandler::IsInitialized()) {
-    network_state_handler_observer_.Observe(
-        ash::NetworkHandler::Get()->network_state_handler());
+NetworkSettingsServiceAsh::NetworkSettingsServiceAsh(
+    ash::AshProxyMonitor* ash_proxy_monitor)
+    : ash_proxy_monitor_(ash_proxy_monitor) {
+  // Missing in unit tests.
+  if (ash_proxy_monitor_) {
+    ash_proxy_monitor_observation_.Observe(ash_proxy_monitor_);
+  } else {
+    CHECK_IS_TEST();
   }
   observers_.set_disconnect_handler(base::BindRepeating(
       &NetworkSettingsServiceAsh::OnDisconnect, base::Unretained(this)));
 }
 
-NetworkSettingsServiceAsh::~NetworkSettingsServiceAsh() {
-  if (profile_manager_) {
-    profile_manager_->RemoveObserver(this);
-  }
-}
+NetworkSettingsServiceAsh::~NetworkSettingsServiceAsh() = default;
 
 void NetworkSettingsServiceAsh::BindReceiver(
     mojo::PendingReceiver<mojom::NetworkSettingsService> pending_receiver) {
   receivers_.Add(this, std::move(pending_receiver));
 }
 
-void NetworkSettingsServiceAsh::DefaultNetworkChanged(
-    const ash::NetworkState* network) {
-  if (!network) {
-    cached_wpad_url_ = GURL();
-    return;
-  }
-  cached_wpad_url_ = network->GetWebProxyAutoDiscoveryUrl();
-  DetermineEffectiveProxy();
-}
-
-// static
-void NetworkSettingsServiceAsh::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(
-      ash::prefs::kLacrosProxyControllingExtension);
-}
-
-void NetworkSettingsServiceAsh::SendProxyConfigToObservers() {
-  if (!cached_proxy_config_) {
-    LOG(ERROR) << "No proxy configuration to forward";
-    return;
-  }
-  for (const auto& obs : observers_) {
-    obs->OnProxyChanged(cached_proxy_config_.Clone());
-  }
-}
-
-// Note that the this will update the value of the kProxy preference in the user
-// store (in Lacros, the extension set proxy is stored in the extension store).
-// Long term, we should deprecate propagating Lacros extension set proxies in
-// Ash in favor of system extensions.
 void NetworkSettingsServiceAsh::SetExtensionProxy(
     crosapi::mojom::ProxyConfigPtr proxy_config) {
-  DCHECK(proxy_config)
-      << "Received SetExtensionProxy request with missing proxy configuration.";
-  PrefService* pref_service = GetPrimaryLoggedInUserProfilePrefs();
-  DCHECK(pref_service);
-
-  extension_controlling_proxy_.reset();
-
   if (!proxy_config->extension) {
     LOG(ERROR)
         << "Received extension proxy configuration without extension data";
     return;
   }
-
-  extension_controlling_proxy_ = proxy_config->extension.Clone();
-
   // Required to display the extension which is controlling the proxy in the OS
   // Settings > Network > Proxy window.
-  base::Value::Dict proxy_extension =
-      base::Value::Dict()
-          .Set(kPrefExtensionNameKey, proxy_config->extension->name)
-          .Set(kPrefExtensionIdKey, proxy_config->extension->id)
-          .Set(kPrefExtensionCanDisabledKey,
-               proxy_config->extension->can_be_disabled);
-
-  pref_service->SetDict(ash::prefs::kLacrosProxyControllingExtension,
-                        std::move(proxy_extension));
-
-  DetermineEffectiveProxy();
+  ash_proxy_monitor_->SetLacrosExtensionControllingProxyInfo(
+      proxy_config->extension->name, proxy_config->extension->id,
+      proxy_config->extension->can_be_disabled);
 }
 
 void NetworkSettingsServiceAsh::ClearExtensionProxy() {
-  extension_controlling_proxy_.reset();
-  ClearProxyPrefFromUserStore();
+  ash_proxy_monitor_->ClearLacrosExtensionControllingProxyInfo();
 }
 
 void NetworkSettingsServiceAsh::AddNetworkSettingsObserver(
     mojo::PendingRemote<mojom::NetworkSettingsObserver> observer) {
-  StartTrackingPrefChanges();
   mojo::Remote<mojom::NetworkSettingsObserver> remote(std::move(observer));
   if (cached_proxy_config_) {
     remote->OnProxyChanged(cached_proxy_config_.Clone());
@@ -160,82 +91,25 @@ void NetworkSettingsServiceAsh::AddNetworkSettingsObserver(
   observers_.Add(std::move(remote));
 }
 
-void NetworkSettingsServiceAsh::StartTrackingPrefChanges() {
-  if (profile_prefs_registrar_)
-    return;  // already listening to pref changes
+void NetworkSettingsServiceAsh::OnProxyChanged() {
+  crosapi::mojom::ProxyConfigPtr new_proxy_config =
+      ProxyConfigToCrosapiProxy(ash_proxy_monitor_->GetLatestProxyConfig(),
+                                ash_proxy_monitor_->GetLatestWpadUrl());
+  new_proxy_config->extension = GetExtensionPtr(ash_proxy_monitor_);
 
-  PrefService* pref_service = GetPrimaryLoggedInUserProfilePrefs();
-  DCHECK(pref_service) << "Pref service for primary profile is not initialized";
-  profile_prefs_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  profile_prefs_registrar_->Init(pref_service);
-  profile_prefs_registrar_->Add(
-      proxy_config::prefs::kProxy,
-      base::BindRepeating(&NetworkSettingsServiceAsh::OnPrefChanged,
-                          base::Unretained(this)));
-}
-
-void NetworkSettingsServiceAsh::OnPrefChanged() {
-  ClearProxyPrefFromUserStore();
-
-  DetermineEffectiveProxy();
-}
-
-void NetworkSettingsServiceAsh::ClearProxyPrefFromUserStore() {
-  PrefService* pref_service = GetPrimaryLoggedInUserProfilePrefs();
-  DCHECK(pref_service);
-  pref_service->ClearPref(ash::prefs::kLacrosProxyControllingExtension);
-  pref_service->ClearPref(proxy_config::prefs::kProxy);
-}
-
-void NetworkSettingsServiceAsh::DetermineEffectiveProxy() {
-  PrefService* pref_service = GetPrimaryLoggedInUserProfilePrefs();
-  if (!pref_service)
+  // Proxy config has not changed.
+  if (cached_proxy_config_ && new_proxy_config->Equals(*cached_proxy_config_)) {
     return;
-  crosapi::mojom::ProxyConfigPtr new_proxy_config = ProxyConfigToCrosapiProxy(
-      ash::ProxyConfigServiceImpl::GetActiveProxyConfigDictionary(pref_service,
-                                                                  local_state_)
-          .get(),
-      cached_wpad_url_);
-
-  const PrefService::Preference* pref =
-      pref_service->FindPreference(proxy_config::prefs::kProxy);
-  if (pref && pref->IsStandaloneBrowserControlled()) {
-    new_proxy_config->extension = extension_controlling_proxy_.Clone();
   }
 
-  // Trigger a proxy settings sync to Lacros if the proxy configuration changes.
-  if (!cached_proxy_config_ ||
-      !new_proxy_config->Equals(*cached_proxy_config_)) {
-    cached_proxy_config_ = std::move(new_proxy_config);
-    SendProxyConfigToObservers();
+  cached_proxy_config_ = std::move(new_proxy_config);
+  for (const auto& obs : observers_) {
+    obs->OnProxyChanged(cached_proxy_config_.Clone());
   }
 }
 
 void NetworkSettingsServiceAsh::OnDisconnect(mojo::RemoteSetElementId mojo_id) {
   observers_.Remove(mojo_id);
-  if (!observers_.empty())
-    return;
-  // Stop observing proxy pref.
-  profile_prefs_registrar_.reset();
-}
-
-void NetworkSettingsServiceAsh::OnProfileAdded(Profile* profile) {
-  if (!ash::ProfileHelper::IsPrimaryProfile(profile) ||
-      !GetPrimaryLoggedInUserProfilePrefs()) {
-    // Primary profile pref store not available.
-    return;
-  }
-  if (!crosapi::browser_util::IsLacrosEnabled()) {
-    ClearExtensionProxy();
-  }
-}
-
-void NetworkSettingsServiceAsh::OnProfileManagerDestroying() {
-  profile_prefs_registrar_.reset();
-  if (!profile_manager_)
-    return;
-  profile_manager_->RemoveObserver(this);
-  profile_manager_ = nullptr;
 }
 
 }  // namespace crosapi

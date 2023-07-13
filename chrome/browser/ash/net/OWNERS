@@ -4,3 +4,6 @@ per-file onc_utils*=emaxx@chromium.org
 per-file proxy_config_handler*=emaxx@chromium.org
 per-file system_proxy_manager*=pmarko@chromium.org
 per-file system_proxy_manager*=acostinas@google.com
+per-file ash_proxy_monitor*=pmarko@chromium.org
+per-file ash_proxy_monitor*=acostinas@google.com
+per-file ash_proxy_monitor*=srad@google.com

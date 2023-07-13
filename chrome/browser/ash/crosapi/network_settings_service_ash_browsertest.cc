@@ -7,6 +7,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/repeating_test_future.h"
 #include "chrome/browser/ash/crosapi/network_settings_translation.h"
+#include "chrome/browser/ash/net/ash_proxy_monitor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -115,19 +116,23 @@ class NetworkSettingsServiceAshTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     SetupNetworkEnvironment();
-    network_service_ash_ = std::make_unique<NetworkSettingsServiceAsh>(
-        g_browser_process->local_state());
+    ash_proxy_monitor_ = std::make_unique<ash::AshProxyMonitor>(
+        g_browser_process->local_state(), g_browser_process->profile_manager());
+    network_service_ash_ =
+        std::make_unique<NetworkSettingsServiceAsh>(ash_proxy_monitor_.get());
     mojo::Remote<mojom::NetworkSettingsService> network_service_ash_remote;
     network_service_ash_->BindReceiver(
         network_service_ash_remote.BindNewPipeAndPassReceiver());
     observer_ = std::make_unique<TestObserver>();
     network_service_ash_remote->AddNetworkSettingsObserver(
         observer_->receiver_.BindNewPipeAndPassRemote());
+    ash_proxy_monitor_->SetProfileForTesting(browser()->profile());
   }
 
   void TearDownOnMainThread() override {
     observer_.reset();
     network_service_ash_.reset();
+    ash_proxy_monitor_.reset();
   }
 
   void SetupNetworkEnvironment() {
@@ -164,6 +169,7 @@ class NetworkSettingsServiceAshTest : public InProcessBrowserTest {
   }
 
   policy::MockConfigurationPolicyProvider provider_;
+  std::unique_ptr<ash::AshProxyMonitor> ash_proxy_monitor_;
   std::unique_ptr<NetworkSettingsServiceAsh> network_service_ash_;
   std::unique_ptr<TestObserver> observer_;
 };
@@ -305,12 +311,7 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
       browser()->profile()->GetPrefs()->GetDict(proxy_config::prefs::kProxy);
   EXPECT_EQ(proxy_pref, ProxyConfigDictionary::CreateAutoDetect());
 
-  // The kLacrosProxyControllingExtension pref which is used to display the
-  // extension controlling the proxy should also be reset.
-  const base::Value::Dict& extension_proxy_pref =
-      browser()->profile()->GetPrefs()->GetDict(
-          ash::prefs::kLacrosProxyControllingExtension);
-  EXPECT_TRUE(extension_proxy_pref.empty());
+  EXPECT_FALSE(ash_proxy_monitor_->IsLacrosExtensionControllingProxy());
 
   result = observer_->WaitForProxyConfig();
   EXPECT_TRUE(result->extension.is_null());
@@ -368,6 +369,7 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
   if (result->extension.is_null()) {
     result = observer_->WaitForProxyConfig();
   }
+
   ASSERT_TRUE(result);
   EXPECT_TRUE(result->proxy_settings->is_pac());
   ASSERT_FALSE(result->extension.is_null());
@@ -378,9 +380,12 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
   browser()->profile()->GetPrefs()->RemoveStandaloneBrowserPref(
       proxy_config::prefs::kProxy);
 
-  result = observer_->WaitForProxyConfig();
-  ASSERT_TRUE(result);
-  EXPECT_TRUE(result->proxy_settings->is_manual());
+  // Wait for the update which clear the proxy extension metadata and sets the
+  // proxy value to manual, as specified by the ONC policy.
+  if (!result->proxy_settings->is_manual()) {
+    result = observer_->WaitForProxyConfig();
+  }
+
   EXPECT_TRUE(result->extension.is_null());
 }
 
@@ -399,6 +404,11 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
   SetOncPolicy(kONCPolicyWifi0Proxy, policy::POLICY_SCOPE_USER);
 
   auto result = observer_->WaitForProxyConfig();
+  // The first update may have been triggered by the pref change via the Prefs
+  // service. Wait for update which sets the extension metadata.
+  if (result->extension.is_null()) {
+    result = observer_->WaitForProxyConfig();
+  }
   EXPECT_TRUE(observer_->AreAllProxyUpdatesRead());
 
   // Expect that the PAC proxy set by the extension is still active.

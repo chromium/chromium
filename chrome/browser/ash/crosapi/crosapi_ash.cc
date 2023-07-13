@@ -251,7 +251,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
       networking_private_ash_(std::make_unique<NetworkingPrivateAsh>()),
       network_settings_service_ash_(std::make_unique<NetworkSettingsServiceAsh>(
-          g_browser_process->local_state())),
+          g_browser_process->platform_part()->ash_proxy_monitor())),
       parent_access_ash_(std::make_unique<ParentAccessAsh>()),
       payment_app_instance_ash_(std::make_unique<PaymentAppInstanceAsh>()),
       policy_service_ash_(std::make_unique<PolicyServiceAsh>()),

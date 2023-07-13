@@ -4173,6 +4173,7 @@ if (!is_android) {
         "../browser/ash/login/users/wallpaper_policy_browsertest.cc",
         "../browser/ash/login/webview_login_browsertest.cc",
         "../browser/ash/login/wizard_controller_browsertest.cc",
+        "../browser/ash/net/ash_proxy_monitor_browsertest.cc",
         "../browser/ash/net/device_event_log_error_browsertest.cc",
         "../browser/ash/net/network_portal_detector_impl_browsertest.cc",
         "../browser/ash/net/rollback_network_config/fake_rollback_network_config.cc",

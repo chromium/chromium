@@ -2051,6 +2051,8 @@ source_set("ash") {
     "nearby/quick_start_connectivity_service_factory.h",
     "net/apn_migrator.cc",
     "net/apn_migrator.h",
+    "net/ash_proxy_monitor.cc",
+    "net/ash_proxy_monitor.h",
     "net/bluetooth_pref_state_observer.cc",
     "net/bluetooth_pref_state_observer.h",
     "net/client_cert_filter.cc",
