@@ -89,6 +89,11 @@ class ExecutionService {
   // Executes daily maintenance and collection tasks.
   void RunDailyTasks(bool is_startup);
 
+  void set_training_data_collector_for_testing(
+      std::unique_ptr<TrainingDataCollector> collector) {
+    training_data_collector_ = std::move(collector);
+  }
+
  private:
   raw_ptr<StorageService> storage_service_{};
 
