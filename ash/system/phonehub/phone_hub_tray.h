@@ -157,6 +157,11 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   views::View* GetPhoneStatusView();
 
+  // Checks if nudge should be shown based on user login time.
+  bool IsInsideUnlockWindow();
+
+  bool IsInPhoneHubNudgeExperimentGroup();
+
   // Icon of the tray. Unowned.
   raw_ptr<views::ImageButton, ExperimentalAsh> icon_;
 
@@ -192,6 +197,8 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_ =
       nullptr;
+
+  base::Time last_unlocked_timestamp_;
 
   base::ScopedObservation<PhoneHubUiController, PhoneHubUiController::Observer>
       observed_phone_hub_ui_controller_{this};

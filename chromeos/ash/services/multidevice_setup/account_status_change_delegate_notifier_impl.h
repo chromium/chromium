@@ -13,6 +13,7 @@
 #include "chromeos/ash/services/multidevice_setup/host_status_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -35,7 +36,8 @@ class HostDeviceTimestampManager;
 class AccountStatusChangeDelegateNotifierImpl
     : public AccountStatusChangeDelegateNotifier,
       public HostStatusProvider::Observer,
-      public OobeCompletionTracker::Observer {
+      public OobeCompletionTracker::Observer,
+      public session_manager::SessionManagerObserver {
  public:
   class Factory {
    public:
@@ -83,6 +85,9 @@ class AccountStatusChangeDelegateNotifierImpl
   static const char
       kVerifiedHostDeviceIdFromMostRecentHostStatusUpdatePrefName[];
 
+  //   static const char kMultiDeviceShowSetupNotificationNextUnlock[];
+  static const char kMultiDeviceLastSessionStartTime[];
+
   AccountStatusChangeDelegateNotifierImpl(
       HostStatusProvider* host_status_provider,
       PrefService* pref_service,
@@ -99,6 +104,13 @@ class AccountStatusChangeDelegateNotifierImpl
 
   // OobeCompletionTracker::Observer:
   void OnOobeCompleted() override;
+
+  // SessionManagerObserver::
+  void OnSessionStateChanged() override;
+
+  void UpdateSessionStartTimeIfEligible();
+
+  bool IsInPhoneHubNotificationExperimentGroup();
 
   void CheckForMultiDeviceEvents(
       const HostStatusProvider::HostStatusWithDevice& host_status_with_device);

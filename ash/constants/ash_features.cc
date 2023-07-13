@@ -1900,6 +1900,24 @@ BASE_FEATURE(kPhoneHubNudge,
              "PhoneHubNudge",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<
+    PhoneHubNotifierParam>::Option phone_hub_notifier_options[] = {
+    {PhoneHubNotifierParam::kNotificationWithTextA, "notification_with_text_A"},
+    {PhoneHubNotifierParam::kNotificationWithTextB, "notification_with_text_B"},
+    {PhoneHubNotifierParam::kNudgeWithTextA, "nudge_with_text_A"},
+    {PhoneHubNotifierParam::kNudgeWithTextB, "nudge_with_text_B"},
+};
+const base::FeatureParam<PhoneHubNotifierParam> kPhoneHubNotifierParam{
+    &kPhoneHubNudge, "notifier_type", PhoneHubNotifierParam::kNudgeWithTextA,
+    &phone_hub_notifier_options};
+
+// Determines up to how many minutes into user session multdevice setup
+// notification can be shown.
+const base::FeatureParam<base::TimeDelta>
+    kMultiDeviceSetupNotificationTimeLimit{
+        &kPhoneHubNudge, "MultiDeviceSetupNotificationTimitLimit",
+        base::Minutes(5)};
+
 BASE_FEATURE(kPhoneHubPingOnBubbleOpen,
              "PhoneHubPingOnBubbleOpen",
              base::FEATURE_ENABLED_BY_DEFAULT);
