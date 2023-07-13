@@ -62,6 +62,18 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
                        weak_ptr_factory_.GetWeakPtr(), request_id));
   }
 
+  void SendResponseAckIPC(ScriptContext* context,
+                          const base::Uuid& request_uuid) override {
+    CHECK(!context->IsForServiceWorker());
+    CHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
+
+    content::RenderFrame* frame = context->GetRenderFrame();
+    CHECK(frame);
+
+    ExtensionFrameHelper::Get(frame)->GetLocalFrameHost()->ResponseAck(
+        request_uuid);
+  }
+
   mojom::EventListenerParamPtr GetEventListenerParam(ScriptContext* context) {
     return !context->GetExtensionID().empty()
                ? mojom::EventListenerParam::NewExtensionId(
@@ -330,6 +342,15 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     params->service_worker_version_id = service_worker_version_id_;
 
     dispatcher_->RequestWorker(std::move(params));
+  }
+
+  void SendResponseAckIPC(ScriptContext* context,
+                          const base::Uuid& request_uuid) override {
+    CHECK(!context->GetRenderFrame());
+    CHECK(context->IsForServiceWorker());
+    CHECK_NE(kMainThreadId, content::WorkerThread::GetCurrentId());
+
+    dispatcher_->SendResponseAck(request_uuid);
   }
 
   void SendAddUnfilteredEventListenerIPC(

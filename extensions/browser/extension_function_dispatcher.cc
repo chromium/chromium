@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
@@ -724,27 +725,23 @@ ExtensionFunctionDispatcher::GetVisibleWebContents() const {
       GetAssociatedWebContents();
 }
 
-void ExtensionFunctionDispatcher::AddWorkerResponseTarget(
-    ExtensionFunction* func) {
-  DCHECK(func->is_from_service_worker());
-  worker_response_targets_.insert(func);
+void ExtensionFunctionDispatcher::AddResponseTarget(ExtensionFunction* func) {
+  response_targets_.insert(func);
 }
 
-void ExtensionFunctionDispatcher::ProcessServiceWorkerResponse(
-    const base::Uuid& request_uuid,
-    int64_t service_worker_version_id) {
-  for (auto it = worker_response_targets_.begin();
-       it != worker_response_targets_.end(); ++it) {
-    ExtensionFunction* func = *it;
-    if (func->request_uuid() == request_uuid &&
-        func->service_worker_version_id() == service_worker_version_id) {
-      // Calling this may cause the instance to delete itself, so no
-      // referencing it after this!
-      func->OnServiceWorkerAck();
-      worker_response_targets_.erase(it);
-      break;
-    }
+void ExtensionFunctionDispatcher::ProcessResponseAck(
+    const base::Uuid& request_uuid) {
+  auto iter = base::ranges::find_if(
+      response_targets_, [request_uuid](ExtensionFunction* function) {
+        return function->request_uuid() == request_uuid;
+      });
+  if (iter == response_targets_.end()) {
+    return;
   }
+  // Calling this may cause the instance to delete itself, so no
+  // referencing it after this!
+  (*iter)->OnResponseAck();
+  response_targets_.erase(iter);
 }
 
 // static

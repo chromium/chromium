@@ -46,6 +46,7 @@ class ExtensionFrameHost : public mojom::LocalFrameHost {
                           GetAppInstallStateCallback callback) override;
   void Request(mojom::RequestParamsPtr params,
                RequestCallback callback) override;
+  void ResponseAck(const base::Uuid& request_uuid) override;
   void WatchedPageChange(
       const std::vector<std::string>& css_selectors) override;
   void DetailedConsoleMessageAdded(

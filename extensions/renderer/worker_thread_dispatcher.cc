@@ -574,16 +574,14 @@ void WorkerThreadDispatcher::RequestWorker(mojom::RequestParamsPtr params) {
       std::move(params)));
 }
 
-void WorkerThreadDispatcher::WorkerResponseAck(
-    const base::Uuid& request_uuid,
-    int64_t service_worker_version_id) {
+void WorkerThreadDispatcher::SendResponseAck(const base::Uuid& request_uuid) {
   PostTaskToIOThread(base::BindOnce(
-      [](const base::Uuid& request_uuid, int64_t service_worker_version_id) {
+      [](const base::Uuid& request_uuid) {
         WorkerThreadDispatcher::Get()
             ->GetServiceWorkerHostOnIO()
-            ->WorkerResponseAck(request_uuid, service_worker_version_id);
+            ->WorkerResponseAck(request_uuid);
       },
-      request_uuid, service_worker_version_id));
+      request_uuid));
 }
 
 void WorkerThreadDispatcher::RemoveWorkerData(

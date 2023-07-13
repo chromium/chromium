@@ -5,18 +5,19 @@
 #include "chrome/renderer/extensions/api/page_capture_custom_bindings.h"
 
 #include "base/functional/bind.h"
-#include "base/strings/utf_string_conversions.h"
-#include "content/public/renderer/render_frame.h"
-#include "extensions/common/extension_messages.h"
+#include "base/uuid.h"
+#include "extensions/renderer/ipc_message_sender.h"
 #include "extensions/renderer/script_context.h"
-#include "extensions/renderer/worker_thread_dispatcher.h"
 #include "third_party/blink/public/web/web_blob.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
 
-PageCaptureCustomBindings::PageCaptureCustomBindings(ScriptContext* context)
-    : ObjectBackedNativeHandler(context) {}
+PageCaptureCustomBindings::PageCaptureCustomBindings(
+    ScriptContext* context,
+    IPCMessageSender* ipc_message_sender)
+    : ObjectBackedNativeHandler(context),
+      ipc_message_sender_(ipc_message_sender) {}
 
 void PageCaptureCustomBindings::AddRoutes() {
   RouteHandlerFunction(
@@ -52,14 +53,7 @@ void PageCaptureCustomBindings::SendResponseAck(
   base::Uuid uuid = base::Uuid::ParseLowercase(request_uuid_str);
   CHECK(uuid.is_valid());
 
-  content::RenderFrame* render_frame = context()->GetRenderFrame();
-  if (render_frame) {
-    render_frame->Send(new ExtensionHostMsg_ResponseAck(
-        render_frame->GetRoutingID(), uuid.AsLowercaseString()));
-  } else if (context()->IsForServiceWorker()) {
-    WorkerThreadDispatcher::Get()->WorkerResponseAck(
-        uuid, context()->service_worker_version_id());
-  }
+  ipc_message_sender_->SendResponseAckIPC(context(), uuid);
 }
 
 }  // namespace extensions

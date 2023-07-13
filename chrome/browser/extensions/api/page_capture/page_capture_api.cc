@@ -19,9 +19,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/mhtml_generation_params.h"
-#include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 using content::BrowserThread;
@@ -117,40 +115,7 @@ bool PageCaptureSaveAsMHTMLFunction::CanCaptureCurrentPage(std::string* error) {
   return can_capture_page;
 }
 
-bool PageCaptureSaveAsMHTMLFunction::OnMessageReceived(
-    const IPC::Message& message) {
-  if (message.type() != ExtensionHostMsg_ResponseAck::ID)
-    return false;
-
-  // TODO(https://crbug.com/1463777): Align this and the worker-based handling
-  // to avoid this bespoke message handling.
-
-  std::string uuid_str;
-  base::PickleIterator iter(message);
-  if (!iter.ReadString(&uuid_str)) {
-    NOTREACHED() << "malformed extension message";
-    return true;
-  }
-
-  base::Uuid uuid = base::Uuid::ParseLowercase(uuid_str);
-  if (!uuid.is_valid()) {
-    NOTREACHED() << "malformed extension message";
-    return true;
-  }
-
-  if (uuid != request_uuid()) {
-    return false;
-  }
-
-  // The extension process has processed the response and has created a
-  // reference to the blob, it is safe for us to go away.
-  Release();  // Balanced in Run()
-
-  return true;
-}
-
-void PageCaptureSaveAsMHTMLFunction::OnServiceWorkerAck() {
-  DCHECK(is_from_service_worker());
+void PageCaptureSaveAsMHTMLFunction::OnResponseAck() {
   // The extension process has processed the response and has created a
   // reference to the blob, it is safe for us to go away.
   // This instance may be deleted after this call, so no code goes after
@@ -259,8 +224,7 @@ void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int file_size) {
   // renderer has it's reference, so we can release ours.
   // TODO(crbug.com/1050887): Potential memory leak here.
   AddRef();  // Balanced in either OnMessageReceived()
-  if (is_from_service_worker())
-    AddWorkerResponseTarget();
+  AddResponseTarget();
 
   Respond(WithArguments(std::move(response)));
 }

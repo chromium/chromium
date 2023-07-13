@@ -344,11 +344,6 @@ IPC_MESSAGE_ROUTED2(ExtensionHostMsg_ContentScriptsExecuting,
                     ExecutingScriptsMap,
                     GURL /* url of the _topmost_ frame */)
 
-// Optional Ack message sent to the browser to notify that the response to a
-// function has been processed.
-IPC_MESSAGE_ROUTED1(ExtensionHostMsg_ResponseAck,
-                    std::string /* request_uuid */)
-
 // Informs the browser to increment the keepalive count for the lazy background
 // page, keeping it alive.
 IPC_MESSAGE_ROUTED0(ExtensionHostMsg_IncrementLazyKeepaliveCount)

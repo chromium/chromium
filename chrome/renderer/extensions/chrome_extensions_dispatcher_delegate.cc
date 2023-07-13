@@ -95,8 +95,8 @@ void ChromeExtensionsDispatcherDelegate::RegisterNativeHandlers(
       std::unique_ptr<NativeHandler>(
           new extensions::MediaGalleriesCustomBindings(context)));
   module_system->RegisterNativeHandler(
-      "page_capture", std::unique_ptr<NativeHandler>(
-                          new extensions::PageCaptureCustomBindings(context)));
+      "page_capture", std::make_unique<extensions::PageCaptureCustomBindings>(
+                          context, bindings_system->GetIPCMessageSender()));
 
   // The following are native handlers that are defined in //extensions, but
   // are only used for APIs defined in Chrome.

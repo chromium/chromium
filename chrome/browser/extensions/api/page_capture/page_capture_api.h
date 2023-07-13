@@ -39,13 +39,11 @@ class PageCaptureSaveAsMHTMLFunction : public ExtensionFunction {
   };
   static void SetTestDelegate(TestDelegate* delegate);
 
-  // ExtensionFunction:
-  void OnServiceWorkerAck() override;
-
  private:
+  // ExtensionFunction:
   ~PageCaptureSaveAsMHTMLFunction() override;
   ResponseAction Run() override;
-  bool OnMessageReceived(const IPC::Message& message) override;
+  void OnResponseAck() override;
 
   // Returns whether or not the extension has permission to capture the current
   // page. Sets |*error| to an error value on failure.

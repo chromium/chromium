@@ -46,6 +46,12 @@ void ExtensionFrameHost::Request(mojom::RequestParamsPtr params,
       ->Dispatch(std::move(params), *render_frame_host, std::move(callback));
 }
 
+void ExtensionFrameHost::ResponseAck(const base::Uuid& request_uuid) {
+  ExtensionWebContentsObserver::GetForWebContents(web_contents_)
+      ->dispatcher()
+      ->ProcessResponseAck(request_uuid);
+}
+
 void ExtensionFrameHost::WatchedPageChange(
     const std::vector<std::string>& css_selectors) {}
 

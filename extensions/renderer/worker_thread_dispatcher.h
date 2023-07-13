@@ -93,8 +93,7 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
                       int64_t service_worker_version_id);
 
   void RequestWorker(mojom::RequestParamsPtr params);
-  void WorkerResponseAck(const base::Uuid& request_uuid,
-                         int64_t service_worker_version_id);
+  void SendResponseAck(const base::Uuid& request_uuid);
 
   // content::RenderThreadObserver:
   bool OnControlMessageReceived(const IPC::Message& message) override;

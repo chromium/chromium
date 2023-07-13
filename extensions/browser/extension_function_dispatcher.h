@@ -104,11 +104,10 @@ class ExtensionFunctionDispatcher {
 
   // Adds a function object to the set of objects waiting for
   // responses from the renderer.
-  void AddWorkerResponseTarget(ExtensionFunction* func);
+  void AddResponseTarget(ExtensionFunction* func);
 
-  // Processes a Service Worker response from a renderer.
-  void ProcessServiceWorkerResponse(const base::Uuid& request_uuid,
-                                    int64_t service_worker_version_id);
+  // Processes a response ack from a renderer.
+  void ProcessResponseAck(const base::Uuid& request_uuid);
 
   base::WeakPtr<ExtensionFunctionDispatcher> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -174,7 +173,7 @@ class ExtensionFunctionDispatcher {
   // The set of ExtensionFunction instances waiting for responses from
   // the renderer. These are removed once the response is processed.
   // The lifetimes of the instances are managed by the instances themselves.
-  std::set<ExtensionFunction*> worker_response_targets_;
+  std::set<ExtensionFunction*> response_targets_;
 
   base::WeakPtrFactory<ExtensionFunctionDispatcher> weak_ptr_factory_{this};
 };

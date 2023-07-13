@@ -15,6 +15,10 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 
+namespace base {
+class Uuid;
+}
+
 namespace extensions {
 
 enum class ChannelType;
@@ -39,6 +43,11 @@ class IPCMessageSender {
   // Sends a request message to the browser.
   virtual void SendRequestIPC(ScriptContext* context,
                               mojom::RequestParamsPtr params) = 0;
+
+  // Sends an "ack" back to the browser that the response to an API request was
+  // received.
+  virtual void SendResponseAckIPC(ScriptContext* context,
+                                  const base::Uuid& request_uuid) = 0;
 
   // Sends a message to add/remove an unfiltered listener.
   virtual void SendAddUnfilteredEventListenerIPC(
