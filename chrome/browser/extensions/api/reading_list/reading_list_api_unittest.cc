@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#include "chrome/browser/extensions/api/reading_list/reading_list_api_constants.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_test_utils.h"
 #include "components/version_info/channel.h"
@@ -87,12 +89,13 @@ TEST_F(ReadingListApiUnitTest, AddUniqueURL) {
   ReadingListModel* reading_list_model =
       ReadingListModelFactory::GetForBrowserContext(profile());
 
+  // Add the entry.
   api_test_utils::RunFunction(function.get(), kArgs, profile(),
                               api_test_utils::FunctionMode::kNone);
 
   EXPECT_EQ(reading_list_model->size(), 1u);
 
-  // verify the features of the entry.
+  // Verify the features of the entry.
   GURL url = GURL("https://www.example.com");
   auto entry = reading_list_model->GetEntryByURL(url);
   EXPECT_EQ(entry->URL(), url);
@@ -115,12 +118,13 @@ TEST_F(ReadingListApiUnitTest, AddDuplicateURL) {
   ReadingListModel* reading_list_model =
       ReadingListModelFactory::GetForBrowserContext(profile());
 
+  // Add the entry.
   api_test_utils::RunFunction(function.get(), kArgs, profile(),
                               api_test_utils::FunctionMode::kNone);
 
   EXPECT_EQ(reading_list_model->size(), 1u);
 
-  // verify the features of the entry.
+  // Verify the features of the entry.
   GURL url = GURL("https://www.example.com");
   auto entry = reading_list_model->GetEntryByURL(url);
   EXPECT_EQ(entry->URL(), url);
@@ -132,7 +136,7 @@ TEST_F(ReadingListApiUnitTest, AddDuplicateURL) {
   function->set_extension(extension);
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function.get(), kArgs, profile(), api_test_utils::FunctionMode::kNone);
-  EXPECT_EQ(error, "Duplicate URL");
+  EXPECT_EQ(error, reading_list_api_constants::kDuplicateURLError);
 
   // Review that the URL added earlier still exists and there is only 1 entry in
   // the Reading List.
@@ -141,6 +145,54 @@ TEST_F(ReadingListApiUnitTest, AddDuplicateURL) {
   EXPECT_EQ(entry->URL(), url);
   EXPECT_EQ(entry->Title(), "example of title");
   EXPECT_FALSE(entry->IsRead());
+}
+
+// Test that it is possible to remove a URL.
+TEST_F(ReadingListApiUnitTest, RemoveURL) {
+  scoped_refptr<const Extension> extension = CreateReadingListExtension();
+
+  ReadingListModel* reading_list_model =
+      ReadingListModelFactory::GetForBrowserContext(profile());
+
+  ReadingListLoadObserver(reading_list_model).Wait();
+
+  reading_list_model->AddOrReplaceEntry(
+      GURL("https://www.example.com"), "example of title",
+      reading_list::EntrySource::ADDED_VIA_CURRENT_APP, base::TimeDelta());
+
+  // Verify that the entry has been added.
+  EXPECT_EQ(reading_list_model->size(), 1u);
+
+  // Remove the URL that was added before.
+  auto remove_function = base::MakeRefCounted<ReadingListRemoveEntryFunction>();
+  remove_function->set_extension(extension);
+  static constexpr char kArgs[] =
+      R"([{
+          "url": "https://www.example.com"
+        }])";
+  api_test_utils::RunFunction(remove_function.get(), kArgs, profile(),
+                              api_test_utils::FunctionMode::kNone);
+
+  // Verify the size of the reading list model.
+  EXPECT_EQ(reading_list_model->size(), 0u);
+}
+
+// Test that trying to remove a URL that is not in the Reading List, generates
+// an error.
+TEST_F(ReadingListApiUnitTest, RemoveNonExistentURL) {
+  scoped_refptr<const Extension> extension = CreateReadingListExtension();
+
+  static constexpr char kArgs[] =
+      R"([{
+          "url": "https://www.example.com"
+        }])";
+  auto function = base::MakeRefCounted<ReadingListRemoveEntryFunction>();
+  function->set_extension(extension);
+
+  // Remove the entry.
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), kArgs, profile(), api_test_utils::FunctionMode::kNone);
+  EXPECT_EQ(error, reading_list_api_constants::kURLNotFoundError);
 }
 
 }  // namespace extensions
