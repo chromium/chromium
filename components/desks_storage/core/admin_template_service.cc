@@ -146,11 +146,4 @@ void AdminTemplateService::DeskModelLoaded() {
   UpdateModelWithPolicy(data_manager_.get(), pref_service_);
 }
 
-// Noops, we're not interested in these events.
-void AdminTemplateService::OnDeskModelDestroying() {}
-void AdminTemplateService::EntriesAddedOrUpdatedRemotely(
-    const std::vector<const ash::DeskTemplate*>& new_entries) {}
-void AdminTemplateService::EntriesRemovedRemotely(
-    const std::vector<base::Uuid>& uuids) {}
-
 }  // namespace desks_storage

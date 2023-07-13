@@ -42,10 +42,6 @@ class AdminTemplateService : public KeyedService,
 
   // DeskModelObserver
   void DeskModelLoaded() override;
-  void OnDeskModelDestroying() override;
-  void EntriesAddedOrUpdatedRemotely(
-      const std::vector<const ash::DeskTemplate*>& new_entries) override;
-  void EntriesRemovedRemotely(const std::vector<base::Uuid>& uuids) override;
 
  private:
   // Storage backend.
