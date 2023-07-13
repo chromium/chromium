@@ -18,7 +18,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -46,7 +45,8 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
         mButton = (Button) rootView.findViewById(R.id.button_primary);
         mButton.setEnabled(false);
 
-        assert TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+        assert getPageDelegate().getProfileSupplier().get() != null;
+        assert TemplateUrlServiceFactory.getForProfile(getPageDelegate().getProfileSupplier().get())
                 .isLoaded();
         mSearchEnginePromoDialogType = LocaleManager.getInstance().getSearchEnginePromoShowType();
         if (mSearchEnginePromoDialogType != SearchEnginePromoType.DONT_SHOW) {

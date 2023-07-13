@@ -220,6 +220,15 @@ public class SigninFirstRunFragmentTest {
         when(mFirstRunPageDelegateMock.getChildAccountStatusSupplier())
                 .thenReturn(mChildAccountStatusListenerMock);
         when(mFirstRunPageDelegateMock.isLaunchedFromCct()).thenReturn(false);
+
+        OneshotSupplierImpl<Profile> profileSupplier =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                    OneshotSupplierImpl<Profile> supplier = new OneshotSupplierImpl<>();
+                    supplier.set(Profile.getLastUsedRegularProfile());
+                    return supplier;
+                });
+        when(mFirstRunPageDelegateMock.getProfileSupplier()).thenReturn(profileSupplier);
+
         mActivityTestRule.launchActivity(null);
         mFragment = new CustomSigninFirstRunFragment();
         mFragment.setPageDelegate(mFirstRunPageDelegateMock);

@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.policy.PolicyService;
@@ -63,6 +64,7 @@ public abstract class FirstRunActivityBase
     private boolean mNativeInitialized;
 
     private final FirstRunAppRestrictionInfo mFirstRunAppRestrictionInfo;
+    private final OneshotSupplierImpl<Profile> mProfileSupplier;
     private final OneshotSupplierImpl<PolicyService> mPolicyServiceSupplier;
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>() {
@@ -78,6 +80,7 @@ public abstract class FirstRunActivityBase
 
     public FirstRunActivityBase() {
         mFirstRunAppRestrictionInfo = FirstRunAppRestrictionInfo.takeMaybeInitialized();
+        mProfileSupplier = new OneshotSupplierImpl<>();
         mPolicyServiceSupplier = new OneshotSupplierImpl<>();
         mPolicyLoadListener = sPolicyLoadListenerFactory == null
                 ? new PolicyLoadListener(mFirstRunAppRestrictionInfo, mPolicyServiceSupplier)
@@ -149,6 +152,7 @@ public abstract class FirstRunActivityBase
         mNativeInitializedTime = SystemClock.elapsedRealtime();
         RecordHistogram.recordTimesHistogram(
                 "MobileFre.NativeInitialized", mNativeInitializedTime - mStartTime);
+        mProfileSupplier.set(Profile.getLastUsedRegularProfile());
         mPolicyServiceSupplier.set(PolicyServiceFactory.getGlobalPolicyService());
     }
 
@@ -227,6 +231,11 @@ public abstract class FirstRunActivityBase
         if (!mNativeInitialized) return;
 
         assert mNativeInitializedTime != 0;
+    }
+
+    /** @return The supplier that provides the Profile (when available). */
+    public OneshotSupplier<Profile> getProfileSupplier() {
+        return mProfileSupplier;
     }
 
     /**

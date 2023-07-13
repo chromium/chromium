@@ -17,7 +17,6 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -193,7 +192,7 @@ public class SigninFirstRunMediator
         if (hasPolicies) {
             isSigninDisabledByPolicy =
                     IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getSigninManager(mDelegate.getProfileSupplier().get())
                             .isSigninDisabledByPolicy();
             isMetricsReportingDisabledByPolicy =
                     !mPrivacyPreferencesManager.isUsageAndCrashReportingPermittedByPolicy();
@@ -304,7 +303,7 @@ public class SigninFirstRunMediator
         @Nullable
         CoreAccountInfo signedInAccount =
                 IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .getIdentityManager(mDelegate.getProfileSupplier().get())
                         .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (signedInAccount != null && signedInAccount.getEmail().equals(mSelectedAccountEmail)) {
             mDelegate.advanceToNextPage();
@@ -312,7 +311,7 @@ public class SigninFirstRunMediator
         }
         mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, true);
         final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
+                mDelegate.getProfileSupplier().get());
         signinManager.signin(
                 getSelectedAccount(), SigninAccessPoint.START_PAGE, new SignInCallback() {
                     @Override
@@ -357,7 +356,7 @@ public class SigninFirstRunMediator
         mDelegate.acceptTermsOfService(mAllowMetricsAndCrashUploading);
         SigninPreferencesManager.getInstance().temporarilySuppressNewTabPagePromos();
         if (IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .getIdentityManager(mDelegate.getProfileSupplier().get())
                         .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, true);
             SignOutCallback signOutCallback = () -> {
@@ -369,7 +368,7 @@ public class SigninFirstRunMediator
                 mDelegate.advanceToNextPage();
             };
             IdentityServicesProvider.get()
-                    .getSigninManager(Profile.getLastUsedRegularProfile())
+                    .getSigninManager(mDelegate.getProfileSupplier().get())
                     .signOut(SignoutReason.ABORT_SIGNIN, signOutCallback,
                             /* forceWipeUserData= */ false);
         } else {

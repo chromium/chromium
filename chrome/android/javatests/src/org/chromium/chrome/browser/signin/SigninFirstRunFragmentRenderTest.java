@@ -143,16 +143,21 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
     @Before
     public void setUp() {
-        Profile.setLastUsedProfileForTesting(mProfileMock);
+        OneshotSupplierImpl<Profile> profileSupplier =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                    OneshotSupplierImpl<Profile> supplier = new OneshotSupplierImpl<>();
+                    supplier.set(mProfileMock);
+                    return supplier;
+                });
+        when(mFirstRunPageDelegateMock.getProfileSupplier()).thenReturn(profileSupplier);
+
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            when(IdentityServicesProvider.get().getSigninManager(
-                         Profile.getLastUsedRegularProfile()))
+            when(IdentityServicesProvider.get().getSigninManager(mProfileMock))
                     .thenReturn(mSigninManagerMock);
-            when(IdentityServicesProvider.get().getIdentityManager(
-                         Profile.getLastUsedRegularProfile()))
+            when(IdentityServicesProvider.get().getIdentityManager(mProfileMock))
                     .thenReturn(mIdentityManagerMock);
         });
         SigninCheckerProvider.setForTests(mSigninCheckerMock);

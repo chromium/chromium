@@ -24,13 +24,12 @@ public final class ForcedSigninProcessor {
      * If forced signin is required by policy, check that Google Play Services is available, and
      * show a non-cancelable dialog otherwise.
      * @param activity The activity for which to show the dialog.
+     * @param profile The currently used Profile.
      */
     // TODO(bauerb): Once external dependencies reliably use policy to force sign-in,
     // consider removing the child account.
-    public static void checkCanSignIn(final Activity activity) {
-        if (IdentityServicesProvider.get()
-                        .getSigninManager(Profile.getLastUsedRegularProfile())
-                        .isForceSigninEnabled()) {
+    public static void checkCanSignIn(final Activity activity, Profile profile) {
+        if (IdentityServicesProvider.get().getSigninManager(profile).isForceSigninEnabled()) {
             ExternalAuthUtils.getInstance().canUseGooglePlayServices(
                     new UserRecoverableErrorHandler.ModalDialog(activity, false));
         }

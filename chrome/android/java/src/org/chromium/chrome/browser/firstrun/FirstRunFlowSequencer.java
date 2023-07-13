@@ -17,6 +17,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.IntentHandler;
@@ -55,6 +56,12 @@ public abstract class FirstRunFlowSequencer  {
      */
     @VisibleForTesting
     public static class FirstRunFlowSequencerDelegate {
+        private final OneshotSupplier<Profile> mProfileSupplier;
+
+        public FirstRunFlowSequencerDelegate(OneshotSupplier<Profile> profileSupplier) {
+            mProfileSupplier = profileSupplier;
+        }
+
         /** Returns true if the sync consent promo page should be shown. */
         boolean shouldShowSyncConsentPage(
                 Activity activity, List<Account> accounts, boolean isChild) {
@@ -62,9 +69,9 @@ public abstract class FirstRunFlowSequencer  {
                 // Always show the sync consent page for child account.
                 return true;
             }
+            assert mProfileSupplier.get() != null;
             final IdentityManager identityManager =
-                    IdentityServicesProvider.get().getIdentityManager(
-                            Profile.getLastUsedRegularProfile());
+                    IdentityServicesProvider.get().getIdentityManager(mProfileSupplier.get());
             if (identityManager.hasPrimaryAccount(ConsentLevel.SYNC) || !isSyncAllowed()) {
                 // No need to show the sync consent page if users already consented to sync or
                 // if sync is not allowed.
@@ -86,11 +93,17 @@ public abstract class FirstRunFlowSequencer  {
         /** @return true if Sync is allowed for the current user. */
         @VisibleForTesting
         protected boolean isSyncAllowed() {
-            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                    Profile.getLastUsedRegularProfile());
+            SigninManager signinManager =
+                    IdentityServicesProvider.get().getSigninManager(mProfileSupplier.get());
             return FirstRunUtils.canAllowSync() && !signinManager.isSigninDisabledByPolicy()
                     && signinManager.isSigninSupported(/*requireUpdatedPlayServices=*/false);
         }
+    }
+
+    /** Factory that provides Delegate instances for testing. */
+    public interface DelegateFactoryForTesting {
+        /** Build a test delegate for the given test. */
+        FirstRunFlowSequencerDelegate buildFactory(OneshotSupplier<Profile> profileSupplier);
     }
 
     private final Activity mActivity;
@@ -100,8 +113,8 @@ public abstract class FirstRunFlowSequencer  {
      */
     private FirstRunFlowSequencerDelegate mDelegate;
 
-    /** If not null, overrides {@code mDelegate} for this object during tests. */
-    private static FirstRunFlowSequencerDelegate sDelegateForTesting;
+    /** If not null, creates {@code mDelegate} for this object during tests. */
+    private static DelegateFactoryForTesting sDelegateFactoryForTesting;
 
     private boolean mIsFlowKnown;
     private Boolean mIsChild;
@@ -115,12 +128,13 @@ public abstract class FirstRunFlowSequencer  {
      */
     public abstract void onFlowIsKnown(Bundle freProperties);
 
-    public FirstRunFlowSequencer(
-            Activity activity, OneshotSupplier<Boolean> childAccountStatusSupplier) {
+    public FirstRunFlowSequencer(Activity activity, OneshotSupplier<Profile> profileSupplier,
+            OneshotSupplier<Boolean> childAccountStatusSupplier) {
         mActivity = activity;
 
-        mDelegate = sDelegateForTesting != null ? sDelegateForTesting
-                                                : new FirstRunFlowSequencerDelegate();
+        mDelegate = sDelegateFactoryForTesting != null
+                ? sDelegateFactoryForTesting.buildFactory(profileSupplier)
+                : new FirstRunFlowSequencerDelegate(profileSupplier);
 
         childAccountStatusSupplier.onAvailable(this::setChildAccountStatus);
     }
@@ -294,9 +308,10 @@ public abstract class FirstRunFlowSequencer  {
         return true;
     }
 
-    /** Defines an alternative delegate for testing. Must be reset on {@code tearDown}. */
+    /** Allows specifying an alternative delegate for testing. */
     @VisibleForTesting
-    public static void setDelegateForTesting(FirstRunFlowSequencerDelegate delegate) {
-        sDelegateForTesting = delegate;
+    public static void setDelegateFactoryForTesting(DelegateFactoryForTesting factory) {
+        sDelegateFactoryForTesting = factory;
+        ResettersForTesting.register(() -> sDelegateFactoryForTesting = null);
     }
 }

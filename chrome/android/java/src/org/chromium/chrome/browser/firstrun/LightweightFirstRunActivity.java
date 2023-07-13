@@ -78,7 +78,8 @@ public class LightweightFirstRunActivity
 
         setFinishOnTouchOutside(true);
 
-        mFirstRunFlowSequencer = new FirstRunFlowSequencer(this, getChildAccountStatusSupplier()) {
+        mFirstRunFlowSequencer = new FirstRunFlowSequencer(
+                this, getProfileSupplier(), getChildAccountStatusSupplier()) {
             @Override
             public void onFlowIsKnown(Bundle freProperties) {
                 if (freProperties == null) {

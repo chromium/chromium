@@ -1333,7 +1333,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         DeferredStartupHandler.getInstance().addDeferredTask(() -> {
             if (isActivityFinishingOrDestroyed()) return;
-            ForcedSigninProcessor.checkCanSignIn(ChromeActivity.this);
+            ForcedSigninProcessor.checkCanSignIn(
+                    ChromeActivity.this, Profile.getLastUsedRegularProfile());
         });
 
         // GSA connection is not needed on low-end devices because Icing is disabled.

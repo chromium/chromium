@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.firstrun.SkipTosDialogPolicyListener;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunCoordinator;
@@ -191,6 +192,11 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     @Override
     public void showInfoPage(@StringRes int url) {
         getPageDelegate().showInfoPage(url);
+    }
+
+    @Override
+    public OneshotSupplier<Profile> getProfileSupplier() {
+        return getPageDelegate().getProfileSupplier();
     }
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
