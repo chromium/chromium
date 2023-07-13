@@ -69,6 +69,9 @@ class FakeVideoSourceProvider
       mojo::PendingRemote<video_capture::mojom::DevicesChangedObserver>
           observer,
       bool raise_event_if_virtual_devices_already_present) override {}
+  void RegisterDevicesChangedObserver(
+      mojo::PendingRemote<video_capture::mojom::DevicesChangedObserver>
+          observer) override {}
   void Close(CloseCallback callback) override {}
 
  private:

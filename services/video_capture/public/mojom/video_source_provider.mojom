@@ -10,7 +10,9 @@ import "services/video_capture/public/mojom/producer.mojom";
 import "services/video_capture/public/mojom/video_source.mojom";
 import "services/video_capture/public/mojom/virtual_device.mojom";
 
-// Provides access to a set of video sources.
+// Provides access to a set of video sources. Some of the methods are specific
+// to virtual devices that are used to simulate video capture devices, eg. for
+// tests.
 interface VideoSourceProvider {
   GetSourceInfos() => (array<media.mojom.VideoCaptureDeviceInfo> source_infos);
 
@@ -19,7 +21,7 @@ interface VideoSourceProvider {
   // are supposed to get access to only a particular source.
   GetVideoSource(string source_id, pending_receiver<VideoSource> stream);
 
-  // Creates a new virtual capture device, which will be exposed
+  // Creates a new virtual (non-physical) capture device, which will be exposed
   // using the given |device_info|. The returned |virtual_device| is to
   // be used by the caller to subsequently push video frames. These frames will
   // appear to clients of the device as if they were produced by the device.
@@ -35,20 +37,24 @@ interface VideoSourceProvider {
       pending_remote<Producer> producer,
       pending_receiver<SharedMemoryVirtualDevice> virtual_device_receiver);
 
-  // Similar to AddSharedMemoryVirtualDevice() but for virtual devices that
-  // are fed with textures (via MailboxHolders) allocated by the caller instead
-  // of shared memory buffers provided by the service on demand.
+  // Similar to AddSharedMemoryVirtualDevice() but for virtual (non-physical)
+  // devices that are fed with textures (via MailboxHolders) allocated by the
+  // caller instead of shared memory buffers provided by the service on demand.
   AddTextureVirtualDevice(
       media.mojom.VideoCaptureDeviceInfo device_info,
       pending_receiver<TextureVirtualDevice> virtual_device_receiver);
 
-  // Registered observers will get notified whenever a virtual device is added
-  // or removed. Note: Changes to non-virtual devices are currently being
-  // monitored outside the video capture service, and therefore the service
-  // does not offer such monitoring.
+  // Registered observers will get notified whenever a virtual (non-physical)
+  // device is added or removed.
   RegisterVirtualDevicesChangedObserver(
       pending_remote<DevicesChangedObserver> observer,
       bool raise_event_if_virtual_devices_already_present);
+
+  // Registered observers will get notified whenever a device is added
+  // or removed. Observers will be notified for both physical and virtual
+  // devices.
+  RegisterDevicesChangedObserver(
+      pending_remote<DevicesChangedObserver> observer);
 
   // Closes the connection and allows clients to wait until the disconnect has
   // arrived at the service.

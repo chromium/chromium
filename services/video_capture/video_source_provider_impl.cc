@@ -75,6 +75,14 @@ void VideoSourceProviderImpl::RegisterVirtualDevicesChangedObserver(
       std::move(observer), raise_event_if_virtual_devices_already_present);
 }
 
+void VideoSourceProviderImpl::RegisterDevicesChangedObserver(
+    mojo::PendingRemote<mojom::DevicesChangedObserver> observer) {
+  if (!devices_changed_notifier_) {
+    devices_changed_notifier_.emplace();
+  }
+  devices_changed_notifier_->RegisterObserver(std::move(observer));
+}
+
 void VideoSourceProviderImpl::Close(CloseCallback callback) {
   closed_but_not_yet_disconnected_client_count_++;
   // |callback must be run before OnClientDisconnectedOrClosed(), because if the
