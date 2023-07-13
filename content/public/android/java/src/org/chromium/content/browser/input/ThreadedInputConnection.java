@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.input;
 
+import static org.chromium.content.browser.input.StylusGestureConverter.createGestureData;
+
 import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,9 +20,12 @@ import android.view.inputmethod.CompletionInfo;
 import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.ExtractedTextRequest;
+import android.view.inputmethod.HandwritingGesture;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.SurroundingText;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -28,9 +33,14 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.blink.mojom.StylusWritingGestureData;
+import org.chromium.blink_public.common.BlinkFeatures;
+import org.chromium.content_public.browser.ContentFeatureMap;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.IntConsumer;
 
 /**
  * An implementation of {@link InputConnection} to communicate with external input method
@@ -735,6 +745,25 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
             }
         });
         return true;
+    }
+
+    @Override
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void performHandwritingGesture(@NonNull HandwritingGesture gesture,
+            @Nullable Executor executor, @Nullable IntConsumer consumer) {
+        if (!ContentFeatureMap.isEnabled(BlinkFeatures.STYLUS_RICH_GESTURES)) {
+            return;
+        }
+        StylusWritingGestureData gestureData = createGestureData(gesture);
+        if (gestureData == null) {
+            executor.execute(() -> consumer.accept(HANDWRITING_GESTURE_RESULT_UNSUPPORTED));
+            return;
+        }
+        // Callback should be run on the UI thread.
+        PostTask.postTask(TaskTraits.UI_USER_BLOCKING, () -> {
+            OngoingGesture ongoingGesture = new OngoingGesture(gestureData, executor, consumer);
+            mImeAdapter.handleGesture(ongoingGesture);
+        });
     }
 
     /**

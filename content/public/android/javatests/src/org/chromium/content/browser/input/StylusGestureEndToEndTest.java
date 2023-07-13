@@ -12,16 +12,15 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
 import static org.chromium.content.browser.input.StylusTestHelper.FALLBACK_TEXT;
-import static org.chromium.content.browser.input.StylusTestHelper.TARGET_PACKAGE;
-import static org.chromium.content.browser.input.StylusTestHelper.getBuilderForClass;
-import static org.chromium.content.browser.input.StylusTestHelper.getMethodsForClass;
 import static org.chromium.content.browser.input.StylusTestHelper.toScreenRectF;
 
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.os.Build;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -41,6 +40,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -50,13 +50,19 @@ import java.util.concurrent.TimeoutException;
  * area of text, simulates a handwriting gesture object over that area and asserts that the correct
  * change has been made to the page.
  */
+// TODO(crbug.com/1463982): This test continues to use reflection as using the U APIs directly
+//  causes a NoClassDefFoundError on some builders.
 @RunWith(ContentJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({"enable-features=StylusRichGestures"})
-@MinAndroidSdkLevel(34)
+@MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 public class StylusGestureEndToEndTest {
     @Rule
     public ImeActivityTestRule mRule = new ImeActivityTestRule();
+
+    private static final int GRANULARITY_WORD = 1;
+    private static final String TARGET_PACKAGE = "android.view.inputmethod.";
 
     private InputConnection mWrappedInputConnection;
 
@@ -88,7 +94,7 @@ public class StylusGestureEndToEndTest {
         Class builderClass = getBuilderForClass(Class.forName(TARGET_PACKAGE + "SelectGesture"));
         Map<String, Method> builderMethods = getMethodsForClass(builderClass);
         Object builder = builderClass.newInstance();
-        builderMethods.get("setGranularity").invoke(builder, StylusGestureHandler.GRANULARITY_WORD);
+        builderMethods.get("setGranularity").invoke(builder, GRANULARITY_WORD);
         builderMethods.get("setSelectionArea").invoke(builder, gestureRect);
         builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
         Object gesture = builderMethods.get("build").invoke(builder);
@@ -162,7 +168,7 @@ public class StylusGestureEndToEndTest {
         Class builderClass = getBuilderForClass(Class.forName(TARGET_PACKAGE + "DeleteGesture"));
         Map<String, Method> builderMethods = getMethodsForClass(builderClass);
         Object builder = builderClass.newInstance();
-        builderMethods.get("setGranularity").invoke(builder, StylusGestureHandler.GRANULARITY_WORD);
+        builderMethods.get("setGranularity").invoke(builder, GRANULARITY_WORD);
         builderMethods.get("setDeletionArea").invoke(builder, gestureRect);
         builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
         Object gesture = builderMethods.get("build").invoke(builder);
@@ -300,7 +306,7 @@ public class StylusGestureEndToEndTest {
                 getBuilderForClass(Class.forName(TARGET_PACKAGE + "SelectRangeGesture"));
         Map<String, Method> builderMethods = getMethodsForClass(builderClass);
         Object builder = builderClass.newInstance();
-        builderMethods.get("setGranularity").invoke(builder, StylusGestureHandler.GRANULARITY_WORD);
+        builderMethods.get("setGranularity").invoke(builder, GRANULARITY_WORD);
         builderMethods.get("setSelectionStartArea").invoke(builder, startRect);
         builderMethods.get("setSelectionEndArea").invoke(builder, endRect);
         builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
@@ -346,7 +352,7 @@ public class StylusGestureEndToEndTest {
                 getBuilderForClass(Class.forName(TARGET_PACKAGE + "DeleteRangeGesture"));
         Map<String, Method> builderMethods = getMethodsForClass(builderClass);
         Object builder = builderClass.newInstance();
-        builderMethods.get("setGranularity").invoke(builder, StylusGestureHandler.GRANULARITY_WORD);
+        builderMethods.get("setGranularity").invoke(builder, GRANULARITY_WORD);
         builderMethods.get("setDeletionStartArea").invoke(builder, startRect);
         builderMethods.get("setDeletionEndArea").invoke(builder, endRect);
         builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
@@ -426,5 +432,27 @@ public class StylusGestureEndToEndTest {
      */
     private String runJavaScript(String code) throws TimeoutException {
         return JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code);
+    }
+
+    private static Map<String, Method> getMethodsForClass(Class<?> className) {
+        Map<String, Method> methodMap = new HashMap<>();
+        for (Method method : className.getDeclaredMethods()) {
+            methodMap.put(method.getName(), method);
+        }
+        return methodMap;
+    }
+
+    private static Class<?> getBuilderForClass(Class<?> className) throws ClassNotFoundException {
+        Class builderClass = null;
+        for (Class innerClass : className.getDeclaredClasses()) {
+            if (innerClass.getName().endsWith("Builder")) {
+                builderClass = innerClass;
+            }
+        }
+        if (builderClass == null) {
+            throw new ClassNotFoundException(
+                    String.format("Could not find inner builder class for %s", className));
+        }
+        return builderClass;
     }
 }

@@ -11,38 +11,11 @@ import android.graphics.RectF;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Helper class containing helper methods and constants to be used in stylus gesture tests.
  */
 class StylusTestHelper {
-    static final String TARGET_PACKAGE = "android.view.inputmethod.";
     static final String FALLBACK_TEXT = "this gesture failed";
-
-    static Map<String, Method> getMethodsForClass(Class<?> className) {
-        Map<String, Method> methodMap = new HashMap<>();
-        for (Method method : className.getDeclaredMethods()) {
-            methodMap.put(method.getName(), method);
-        }
-        return methodMap;
-    }
-
-    static Class<?> getBuilderForClass(Class<?> className) throws ClassNotFoundException {
-        Class builderClass = null;
-        for (Class innerClass : className.getDeclaredClasses()) {
-            if (innerClass.getName().endsWith("Builder")) {
-                builderClass = innerClass;
-            }
-        }
-        if (builderClass == null) {
-            throw new ClassNotFoundException(
-                    String.format("Could not find inner builder class for %s", className));
-        }
-        return builderClass;
-    }
 
     static org.chromium.gfx.mojom.Rect createMojoRect(int x, int y, int width, int height) {
         org.chromium.gfx.mojom.Rect rect = new org.chromium.gfx.mojom.Rect();
