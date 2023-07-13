@@ -490,8 +490,8 @@ ScriptValue XMLHttpRequest::response(ScriptState* script_state,
       if (exception_state.HadException()) {
         return ScriptValue();
       }
-      return ScriptValue(isolate,
-                         ToV8Traits<Document>::ToV8(script_state, document));
+      return ScriptValue(isolate, ToV8Traits<IDLNullable<Document>>::ToV8(
+                                      script_state, document));
     }
     case kResponseTypeBlob:
       return ScriptValue(isolate,
