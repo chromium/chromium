@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS Test circle with negative easing on clip-path
+PASS Test ellipse with negative easing on clip-path
+PASS Test inset with negative easing on clip-path
+FAIL Test inset and xywh on clip-path assert_equals: The equivalent inset at 50% expected "inset(10px calc(50% - 105px) calc(50% - 50px) 15px round 10px)" but got "inset(10px round 20px)"
+Harness: the test ran to completion.
+

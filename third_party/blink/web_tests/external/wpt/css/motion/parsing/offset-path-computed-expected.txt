@@ -43,11 +43,11 @@ PASS Property offset-path value 'ellipse(closest-side closest-side at 10% 20%)'
 PASS Property offset-path value 'ellipse(farthest-side 4% at bottom left)'
 PASS Property offset-path value 'polygon(1% 2%)'
 PASS Property offset-path value 'polygon(1px 2px, 3% 4%)'
-FAIL Property offset-path value 'xywh(0 1% 2px 3em)' assert_equals: expected "xywh(0px 1% 2px 48px)" but got "rect(0px 1% 2px 48px)"
-FAIL Property offset-path value 'xywh(0px 1% 2px 3em round 0)' assert_equals: expected "xywh(0px 1% 2px 48px)" but got "rect(0px 1% 2px 48px)"
-FAIL Property offset-path value 'xywh(0px 1% 2px 3em round 0 1px)' assert_equals: expected "xywh(0px 1% 2px 48px round 0px 1px)" but got "rect(0px 1% 2px 48px round 0px 1px)"
-FAIL Property offset-path value 'xywh(0px 1% 2px 3% round 0px 1px 2em)' assert_equals: expected "xywh(0px 1% 2px 3% round 0px 1px 32px)" but got "rect(0px 1% 2px 3% round 0px 1px 32px)"
-FAIL Property offset-path value 'xywh(0px 1% 2px 3% round 0px 1px 2% 3px)' assert_equals: expected "xywh(0px 1% 2px 3% round 0px 1px 2% 3px)" but got "rect(0px 1% 2px 3% round 0px 1px 2% 3px)"
+FAIL Property offset-path value 'xywh(0 1% 2px 3em)' assert_equals: expected "inset(1% calc(100% - 2px) calc(99% - 48px) 0px)" but got "rect(0px 1% 2px 48px)"
+FAIL Property offset-path value 'xywh(0px 1% 2px 3em round 0)' assert_equals: expected "inset(1% calc(100% - 2px) calc(99% - 48px) 0px)" but got "rect(0px 1% 2px 48px)"
+FAIL Property offset-path value 'xywh(0px 1% 2px 3em round 0 1px)' assert_equals: expected "inset(1% calc(100% - 2px) calc(99% - 48px) 0px round 0px 1px)" but got "rect(0px 1% 2px 48px round 0px 1px)"
+FAIL Property offset-path value 'xywh(0px 1% 2px 3% round 0px 1px 2em)' assert_equals: expected "inset(1% calc(100% - 2px) 96% 0px round 0px 1px 32px)" but got "rect(0px 1% 2px 3% round 0px 1px 32px)"
+FAIL Property offset-path value 'xywh(0px 1% 2px 3% round 0px 1px 2% 3px)' assert_equals: expected "inset(1% calc(100% - 2px) 96% 0px round 0px 1px 2% 3px)" but got "rect(0px 1% 2px 3% round 0px 1px 2% 3px)"
 PASS Property offset-path value 'content-box'
 PASS Property offset-path value 'border-box'
 PASS Property offset-path value 'view-box'
