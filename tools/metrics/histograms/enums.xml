@@ -81335,6 +81335,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="14"
       label="Opened automatically / Offering to enable biometric
              authentication before filling"/>
+  <int value="15"
+      label="Opened automatically / Confirming biometric authentication
+             before filling is enabled"/>
 </enum>
 
 <enum name="PasswordBubbleFollowupType">
