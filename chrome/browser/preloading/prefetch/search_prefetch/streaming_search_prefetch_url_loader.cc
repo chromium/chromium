@@ -622,7 +622,7 @@ void StreamingSearchPrefetchURLLoader::OnTransferSizeUpdated(
 
 void StreamingSearchPrefetchURLLoader::OnDataAvailable(const void* data,
                                                        size_t num_bytes) {
-  body_content_.append(std::string(static_cast<const char*>(data), num_bytes));
+  body_content_.append(static_cast<const char*>(data), num_bytes);
   bytes_of_raw_data_to_transfer_ += num_bytes;
 
   if (forwarding_client_) {
