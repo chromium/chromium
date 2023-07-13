@@ -185,17 +185,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
           ->GetViewByID(VIEW_ID_OMNIBOX)
           ->GetBoundsInScreen();
 
-  // TODO(crbug.com/1453711) Investigate why chromeOS is miscalculating the
-  //   focus ring position in tests only. Visually, when running chromium, it
-  //   looks right; the focus ring is centered in the omnibox for both branded
-  //   and unbranded builds. But when running tests, the focus ring is 1px
-  //   higher than what it should be according to the code and visually for
-  //   unbranded builds.
-#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_EQ(bounds.CenterPoint().y(), omnibox_bounds.CenterPoint().y() - 1);
-#else
   EXPECT_EQ(bounds.CenterPoint().y(), omnibox_bounds.CenterPoint().y());
-#endif
 
   // On the left edge of the omnibox.
   EXPECT_LT(bounds.x(), omnibox_bounds.x());

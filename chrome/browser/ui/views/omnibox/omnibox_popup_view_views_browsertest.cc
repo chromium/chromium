@@ -162,8 +162,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, PopupAlignment) {
   EXPECT_EQ(popup_rect.right(), alignment_rect.right());
 }
 
+// TODO(crbug.com/1464282): Bug in chromeOS using the off-white background.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ThemeIntegration DISABLED_ThemeIntegration
+#else
+#define MAYBE_ThemeIntegration ThemeIntegration
+#endif
 // Integration test for omnibox popup theming in regular.
-IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegration) {
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, MAYBE_ThemeIntegration) {
   ThemeService* theme_service =
       ThemeServiceFactory::GetForProfile(browser()->profile());
   UseDefaultTheme();
@@ -195,7 +201,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegration) {
   }
 
   // Same in the non-incognito browser.
-  if (features::IsChromeRefresh2023()) {
+  if (features::GetChromeRefresh2023Level() ==
+          features::ChromeRefresh2023Level::kLevel2 ||
+      base::FeatureList::IsEnabled(omnibox::kExpandedStateColors)) {
     // TODO(khalidpeer): Delete this clause once CR23 colors are supported on
     //   themed clients. Currently themed clients fall back to pre-CR23 colors.
     EXPECT_NE(selection_color_light, GetSelectedColor(browser()));
@@ -215,8 +223,16 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegration) {
 #endif  // BUILDFLAG(IS_LINUX)
 }
 
+// TODO(crbug.com/1464282): Bug in chromeOS using the wrong colors default in
+//   dark mode.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ThemeIntegrationInIncognito DISABLED_ThemeIntegrationInIncognito
+#else
+#define MAYBE_ThemeIntegrationInIncognito ThemeIntegrationInIncognito
+#endif
 // Integration test for omnibox popup theming in Incognito.
-IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegrationInIncognito) {
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
+                       MAYBE_ThemeIntegrationInIncognito) {
   ThemeService* theme_service =
       ThemeServiceFactory::GetForProfile(browser()->profile());
   UseDefaultTheme();

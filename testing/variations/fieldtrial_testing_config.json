@@ -9132,17 +9132,17 @@
             "experiments": [
                 {
                     "name": "enabled",
-                    "params": {
-                        "OmniboxFontSizeNonTouchUI ": "12"
-                    },
                     "enable_features": [
                         "Cr2023ActionChips",
                         "Cr2023ActionChipsIcons",
+                        "OmniboxExpandedStateColors",
                         "OmniboxExpandedStateHeight",
                         "OmniboxExpandedStateShape",
+                        "OmniboxExpandedStateSuggestIcons",
                         "OmniboxSteadyStateBackgroundColor",
+                        "OmniboxSteadyStateHeight",
                         "OmniboxSteadyStateTextColor",
-                        "OmniboxSteadyStateTextStyle"
+                        "OmniboxSuggestionHoverFillShape"
                     ]
                 }
             ]
