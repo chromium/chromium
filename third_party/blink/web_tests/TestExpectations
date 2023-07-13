@@ -5632,7 +5632,6 @@ crbug.com/1367113 paint/images/animated-gif-last-frame-crash.html [ Crash Failur
 # Sheriff 2022-09-26
 crbug.com/1166098 [ Linux ] external/wpt/css/css-scroll-snap/snap-after-initial-layout/scroll-snap-initial-layout-000.html [ Failure Pass ]
 crbug.com/1166098 [ Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-initial-layout/scroll-snap-initial-layout-000.html [ Failure Pass ]
-crbug.com/1367514 http/tests/images/document-policy-oversized-images-resize.php [ Failure Pass ]
 crbug.com/1367067 [ Linux ] external/wpt/preload/preload-dynamic-csp.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2022-09-29
@@ -6580,3 +6579,4 @@ crbug.com/1463964 virtual/coop-restrict-properties/external/wpt/html/cross-origi
 
 # Sheriff 2023-07-13
 crbug.com/1404855 virtual/gpu-rasterization/images/ycbcr-with-cmyk-color-profile.html [ Failure Pass ]
+crbug.com/1367514 http/tests/images/document-policy-oversized-images-resize.php [ Failure Pass Timeout ]
