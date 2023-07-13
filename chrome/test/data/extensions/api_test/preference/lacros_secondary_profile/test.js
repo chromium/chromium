@@ -1,37 +1,23 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Preferences API test for extension controlled prefs where the underlying
-// feature lives in ash. These tests make use of the crosapi to set the value
-// in ash. Thus, they run as lacros_chrome_browsertests.
+// Preferences API test for extension controlled prefs where the main profile
+// controls the underlying feature in ash, but secondary profile can still set
+// the preference in the browser instance.
 // Run with lacros_chrome_browsertests_run_in_series \
-//     --gtest_filter=ExtensionPreferenceLacrosBrowserTest.Lacros
+//     --gtest_filter=ExtensionPreferenceLacrosBrowserTest.SecondaryProfilePrefs
 // Based on the "standard" extension test.
 
 // The collection of preferences to test, split into objects with a "root"
 // (the root object they preferences are exposed on) and a dictionary of
 // preference name -> default value.
-var preferencesToTest = [
-  {
-    root: chrome.accessibilityFeatures,
-    preferences: {
-      spokenFeedback: false,
-    }
-  },
-  {
-    root: chrome.privacy.websites,
-    preferences: {
-      protectedContentEnabled: true,
-    }
-  },
-  {
-    root: chrome.proxy,
-    preferences: {
-      settings: {mode: 'system'},
-    }
+var preferencesToTest = [{
+  root: chrome.proxy,
+  preferences: {
+    settings: {mode: 'system'},
   }
-];
+}];
 
 function expect(expected, message) {
   return chrome.test.callbackPass(function(value) {
@@ -41,29 +27,31 @@ function expect(expected, message) {
 
 // Verifies that the preference has the expected default value.
 function expectDefault(prefName, defaultValue) {
-  return expect({
-    value: defaultValue,
-    levelOfControl: 'controllable_by_this_extension'
-  }, '`' + prefName + '` is expected to be the default, which is ' +
-     defaultValue);
+  return expect(
+      {value: defaultValue, levelOfControl: 'controllable_by_this_extension'},
+      '`' + prefName + '` is expected to be the default, which is ' +
+          defaultValue);
 }
 
 // Verifies that the preference is properly controlled by the extension.
 function expectControlled(prefName, newValue) {
-  return expect({
-    value: newValue,
-    levelOfControl: 'controlled_by_this_extension',
-  }, '`' + prefName + '` is expected to be controlled by this extension.');
+  return expect(
+      {
+        value: newValue,
+        levelOfControl: 'controlled_by_this_extension',
+      },
+      '`' + prefName + '` is expected to be controlled by this extension.');
 }
 
-// Tests getting the preference value (which should be uncontrolled and at its
+// Tests getting the preference value (which should be uncontrolled and have the
 // default value).
 function prefGetter(prefName, defaultValue) {
   this[prefName].get({}, expectDefault(prefName, defaultValue));
 }
 
-// Tests setting the preference value. For boolean prefs, it sets the new to the
-// inverse of the default, so that it should be controlled by this extension.
+// Tests setting the preference value. For boolean prefs, it sets the new value
+// to the inverse of the default, so that it should be controlled by this
+// extension.
 function prefSetter(prefName, defaultValue) {
   let newValue;
   if (prefName == 'settings') {
@@ -104,22 +92,6 @@ chrome.test.sendMessage('ready', function(message) {
               preferenceSet.root, key, preferenceSet.preferences[key]);
         }
       }
-    },
-    function clearGlobals() {
-      for (let preferenceSet of preferencesToTest) {
-        for (let key in preferenceSet.preferences) {
-          prefClearer.call(
-              preferenceSet.root, key, preferenceSet.preferences[key]);
-        }
-      }
-    },
-    function resetGlobals() {
-      for (let preferenceSet of preferencesToTest) {
-        for (let key in preferenceSet.preferences) {
-          prefSetter.call(
-              preferenceSet.root, key, preferenceSet.preferences[key]);
-        }
-      }
-    },
+    }
   ]);
 });

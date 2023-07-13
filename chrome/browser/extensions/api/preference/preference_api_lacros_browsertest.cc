@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -16,14 +17,18 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/crosapi/mojom/prefs.mojom-shared.h"
 #include "chromeos/crosapi/mojom/prefs.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
+#include "chromeos/lacros/crosapi_pref_observer.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/lacros/lacros_test_helper.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
+#include "components/proxy_config/proxy_config_dictionary.h"
+#include "components/proxy_config/proxy_config_pref_names.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
@@ -61,6 +66,13 @@ class ExtensionPreferenceApiLacrosBrowserTest
     EXPECT_TRUE(pref->IsExtensionControlled());
     EXPECT_TRUE(
         prefs->GetBoolean(prefs::kLacrosAccessibilitySpokenFeedbackEnabled));
+
+    const PrefService::Preference* proxy_pref =
+        prefs->FindPreference(proxy_config::prefs::kProxy);
+    ASSERT_TRUE(proxy_pref);
+    EXPECT_TRUE(proxy_pref->IsExtensionControlled());
+    EXPECT_EQ(ProxyConfigDictionary::CreateDirect(),
+              proxy_pref->GetValue()->GetDict());
   }
 
   void CheckPreferencesCleared() {
@@ -71,6 +83,29 @@ class ExtensionPreferenceApiLacrosBrowserTest
     EXPECT_FALSE(pref->IsExtensionControlled());
     EXPECT_FALSE(
         prefs->GetBoolean(prefs::kLacrosAccessibilitySpokenFeedbackEnabled));
+
+    const PrefService::Preference* proxy_pref =
+        prefs->FindPreference(proxy_config::prefs::kProxy);
+    ASSERT_TRUE(proxy_pref);
+    EXPECT_FALSE(proxy_pref->IsExtensionControlled());
+    EXPECT_EQ(ProxyConfigDictionary::CreateSystem(),
+              proxy_pref->GetValue()->GetDict());
+  }
+
+  void SetUp() override {
+    // When the test changes the value of
+    // chrome.accessibilityFeatures.autoclick in Ash, the pref value change is
+    // observed by AccessibilityController and will trigger popping up a dialog
+    // in Ash with the prompt about confirmation of disabling autoclick. The
+    // dialog is not closed when the test is torn down in Lacros, and will
+    // affect other tests running after it if the test runs with shared Ash.
+    // Therefore, we start a unique Ash to run with this test suite to avoid
+    // the test isolation issue.
+    StartUniqueAshChrome(
+        {}, {}, {},
+        "crbug.com/1435317 Switch to shared ash when autoclick disable "
+        "confirmation dialog issue is fixed");
+    ExtensionApiTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -110,6 +145,13 @@ class ExtensionPreferenceApiLacrosBrowserTest
       return false;
     }
     return true;
+  }
+
+  bool IsLacrosServiceSyncingProxyPref() {
+    static constexpr int kMinVersionProxyPolicy = 4;
+    const int version = chromeos::LacrosService::Get()
+                            ->GetInterfaceVersion<crosapi::mojom::Prefs>();
+    return version >= kMinVersionProxyPolicy;
   }
 
   bool DoesAshSupportObservers() {
@@ -169,7 +211,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
       crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
       &out_value);
   EXPECT_TRUE(out_value.value().GetBool());
-
+  if (IsLacrosServiceSyncingProxyPref()) {
+    async_waiter.GetPref(crosapi::mojom::PrefPath::kProxy, &out_value);
+    EXPECT_EQ(out_value.value().GetDict(),
+              ProxyConfigDictionary::CreateDirect());
+  }
   // The settings should not be reset when the extension is reloaded.
   {
     ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
@@ -195,6 +241,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
         crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
         &out_value);
     EXPECT_FALSE(out_value.value().GetBool());
+
+    if (IsLacrosServiceSyncingProxyPref()) {
+      async_waiter.GetPref(crosapi::mojom::PrefPath::kProxy, &out_value);
+      EXPECT_EQ(out_value.value().GetDict(),
+                ProxyConfigDictionary::CreateSystem());
+    }
   }
 
   {
@@ -297,6 +349,146 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest,
   EXPECT_TRUE(
       RunExtensionTest("preference/onchange", {}, {.allow_in_incognito = true}))
       << message_;
+}
+
+base::Value::Dict GetAshProxyPrefValue() {
+  absl::optional<::base::Value> out_value;
+  crosapi::mojom::PrefsAsyncWaiter async_waiter(
+      chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>().get());
+  async_waiter.GetPref(crosapi::mojom::PrefPath::kProxy, &out_value);
+  return out_value.value().GetDict().Clone();
+}
+
+scoped_refptr<const extensions::Extension> InstallExtensionForProfile(
+    Profile* profile,
+    const base::FilePath& path) {
+  extensions::ResultCatcher catcher;
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ChromeTestExtensionLoader(profile).LoadExtension(path);
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+  // Run the tests.
+  listener.Reply("run test");
+  EXPECT_TRUE(catcher.GetNextResult());
+  return extension;
+}
+
+void ExpectThatProxyIsControlledByExtension(Profile* profile) {
+  const PrefService::Preference* pref =
+      profile->GetPrefs()->FindPreference(proxy_config::prefs::kProxy);
+  EXPECT_TRUE(pref->IsExtensionControlled());
+  EXPECT_EQ(ProxyConfigDictionary::CreateDirect(), pref->GetValue()->GetDict());
+}
+
+void ExpectThatProxyHasDefaultValue(Profile* profile) {
+  const PrefService::Preference* pref =
+      profile->GetPrefs()->FindPreference(proxy_config::prefs::kProxy);
+  EXPECT_FALSE(pref->IsExtensionControlled());
+  EXPECT_EQ(ProxyConfigDictionary::CreateSystem(), pref->GetValue()->GetDict());
+}
+
+// Secondary profiles should apply extension set proxy at browser level, but not
+// in Ash.
+IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest,
+                       SecondaryProfilePrefs) {
+  if (!IsServiceAvailable()) {
+    return;
+  }
+  if (!IsLacrosServiceSyncingProxyPref()) {
+    GTEST_SKIP() << "Skipping test because the current version of Ash does not "
+                    "support getting the proxy preference from a Lacros "
+                    "extension via the preferences service";
+  }
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath path_profile =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  Profile& secondary_profile =
+      profiles::testing::CreateProfileSync(profile_manager, path_profile);
+  scoped_refptr<const extensions::Extension> extension =
+      InstallExtensionForProfile(
+          &secondary_profile,
+          test_data_dir_.AppendASCII("preference/lacros_secondary_profile"));
+  // Verify that the proxy is set by the extension for the secondary profile.
+  ExpectThatProxyIsControlledByExtension(&secondary_profile);
+  // The proxy should not be set in the primary profile and Ash.
+  ExpectThatProxyHasDefaultValue(profile());
+  EXPECT_EQ(GetAshProxyPrefValue(), ProxyConfigDictionary::CreateSystem());
+}
+
+// Clearing an extension set proxy in a secondary profile should not clear the
+// extension set proxy in the primary profile and Ash (if the primary profile
+// has an extension which controls the proxy). The test setup:
+// - Create a secondary profile;
+// - Install an extension which controls the proxy pref in the primary profile;
+// - Install an extension which controls the proxy pref in the secondary
+// profile;
+// - Verify that both profiles have extension controlled proxy prefs;
+// - Uninstall the proxy controlling extension in the secondary profile;
+// - Verify that the secondary profile does not have an extension set proxy;
+// - Verify that the primary profile and Ash still have an extension set proxy.
+// This test can be extended to other prefs for which the primary profile
+// controls the value in Ash but secondary profiles only control the pref
+// value at browser level.
+IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest,
+                       SecondaryProfilePrefsClearPref) {
+  if (!IsServiceAvailable()) {
+    return;
+  }
+  if (!IsLacrosServiceSyncingProxyPref()) {
+    GTEST_SKIP() << "Skipping test because the current version of Ash does not "
+                    "support getting the proxy preference from a Lacros "
+                    "extension via the preferences service";
+  }
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath path_profile =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  Profile& secondary_profile =
+      profiles::testing::CreateProfileSync(profile_manager, path_profile);
+
+  scoped_refptr<const extensions::Extension> extension_primary =
+      InstallExtensionForProfile(
+          profile(),
+          test_data_dir_.AppendASCII("preference/lacros_secondary_profile"));
+
+  scoped_refptr<const extensions::Extension> extension_secondary =
+      InstallExtensionForProfile(
+          &secondary_profile,
+          test_data_dir_.AppendASCII("preference/lacros_secondary_profile"));
+
+  ExpectThatProxyIsControlledByExtension(&secondary_profile);
+  ExpectThatProxyIsControlledByExtension(profile());
+
+  // Uninstall the extension in the secondary profile and test that Ash is still
+  // returning the pref set by the extension running in the Lacros primary
+  // profile.
+  {
+    extensions::TestExtensionRegistryObserver observer(
+        extensions::ExtensionRegistry::Get(&secondary_profile),
+        extension_secondary->id());
+    auto* service_ = extensions::ExtensionSystem::Get(&secondary_profile)
+                         ->extension_service();
+    service_->UninstallExtension(extension_secondary->id(),
+                                 extensions::UNINSTALL_REASON_FOR_TESTING,
+                                 NULL);
+    observer.WaitForExtensionUninstalled();
+  }
+
+  ExpectThatProxyHasDefaultValue(&secondary_profile);
+  ExpectThatProxyIsControlledByExtension(profile());
+  EXPECT_EQ(GetAshProxyPrefValue(), ProxyConfigDictionary::CreateDirect());
+
+  // Uninstall the extension in the primary profile.
+  {
+    extensions::TestExtensionRegistryObserver observer(
+        extensions::ExtensionRegistry::Get(profile()), extension_primary->id());
+    auto* service_ =
+        extensions::ExtensionSystem::Get(profile())->extension_service();
+    service_->UninstallExtension(extension_primary->id(),
+                                 extensions::UNINSTALL_REASON_FOR_TESTING,
+                                 NULL);
+    observer.WaitForExtensionUninstalled();
+  }
+  EXPECT_EQ(GetAshProxyPrefValue(), ProxyConfigDictionary::CreateSystem());
 }
 
 // An implementation of the `crosapi::mojom::Prefs` mojo service which returns

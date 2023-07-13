@@ -117,6 +117,8 @@ enum PrefPath {
   [MinVersion=12] kAccessToGetAllScreensMediaInSessionAllowedForUrls = 40,
   // M117: pref::kAccessibilityPdfOcrAlwaysActive (local_state)
   [MinVersion=13] kAccessibilityPdfOcrAlwaysActive = 41,
+  // M117 proxy_config::prefs::kProxy (profile)
+  [MinVersion=14] kProxy = 42,
 };
 
 // Information about who or what is controlling a particular pref. This is used
@@ -152,7 +154,7 @@ interface PrefObserver {
 };
 
 // Interface for prefs. Implemented by ash-chrome.
-// Next version: 4
+// Next version: 5
 // Next method id: 5
 [Stable, Uuid="815df607-0596-46f7-9ed9-14683b4826a3"]
 interface Prefs {
@@ -162,7 +164,7 @@ interface Prefs {
 
   // Gets the specified ash pref. Additionally returns the control state of the
   // pref.
-  [MinVersion=3]
+  [MinVersion=4]
   GetExtensionPrefWithControl@3(PrefPath path) => (
     mojo_base.mojom.Value? value, PrefControlState control);
 

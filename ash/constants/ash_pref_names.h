@@ -1004,6 +1004,10 @@ inline constexpr char kPowerQuickDimEnabled[] = "power.quick_dim_enabled";
 // lock to happen if the user is detected to be absent.
 inline constexpr char kPowerQuickLockDelay[] = "power.quick_lock_delay.ms";
 
+// Copy of the `proxy_config::prefs::kProxy` definition; available at compile
+// time.
+inline constexpr char kProxy[] = "proxy";
+
 // Boolean controlling whether the settings is enabled. This pref is intended to
 // be set only by policy not by user.
 inline constexpr char kOsSettingsEnabled[] = "os_settings_enabled";

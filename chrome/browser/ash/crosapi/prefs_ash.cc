@@ -24,6 +24,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/user_manager/user_manager.h"
 
 namespace crosapi {
@@ -109,7 +110,8 @@ base::StringPiece GetExtensionPrefNameForPref(mojom::PrefPath path) {
            {mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled,
             ash::prefs::kAccessibilityVirtualKeyboardEnabled},
            {mojom::PrefPath::kProtectedContentDefault,
-            prefs::kProtectedContentDefault}});
+            prefs::kProtectedContentDefault},
+           {mojom::PrefPath::kProxy, ash::prefs::kProxy}});
   auto* pref_name = kExtensionPrefPathToName.find(path);
   DCHECK(pref_name != kExtensionPrefPathToName.end());
   return pref_name->second;
@@ -338,7 +340,8 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kAccessibilityStickyKeysEnabled:
     case mojom::PrefPath::kAccessibilitySwitchAccessEnabled:
     case mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled:
-    case mojom::PrefPath::kProtectedContentDefault: {
+    case mojom::PrefPath::kProtectedContentDefault:
+    case mojom::PrefPath::kProxy: {
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
         return absl::nullopt;

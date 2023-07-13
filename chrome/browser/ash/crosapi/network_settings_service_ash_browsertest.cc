@@ -200,6 +200,8 @@ class NetworkSettingsServiceAshExtensionTest
   // Lacros to Ash.
   void SendExtensionProxyConfig(base::Value::Dict proxy_dict,
                                 bool can_be_disabled) {
+    browser()->profile()->GetPrefs()->SetStandaloneBrowserPref(
+        proxy_config::prefs::kProxy, base::Value(proxy_dict.Clone()));
     ProxyConfigDictionary proxy_config_dict(std::move(proxy_dict));
     auto proxy_config =
         crosapi::ProxyConfigToCrosapiProxy(&proxy_config_dict,
@@ -264,6 +266,8 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
             true);
 
   network_service_ash_->ClearExtensionProxy();
+  browser()->profile()->GetPrefs()->RemoveStandaloneBrowserPref(
+      proxy_config::prefs::kProxy);
 
   result = observer_->WaitForProxyConfig();
   ASSERT_FALSE(result.is_null());
@@ -359,6 +363,11 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
                            /*can_be_disabled=*/true);
 
   result = observer_->WaitForProxyConfig();
+  // The first update may have been triggered by the pref change via the Prefs
+  // service. Wait for update which contains the extension metadata.
+  if (result->extension.is_null()) {
+    result = observer_->WaitForProxyConfig();
+  }
   ASSERT_TRUE(result);
   EXPECT_TRUE(result->proxy_settings->is_pac());
   ASSERT_FALSE(result->extension.is_null());
@@ -366,6 +375,8 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
   EXPECT_EQ(result->extension->id, kExtensionId);
 
   network_service_ash_->ClearExtensionProxy();
+  browser()->profile()->GetPrefs()->RemoveStandaloneBrowserPref(
+      proxy_config::prefs::kProxy);
 
   result = observer_->WaitForProxyConfig();
   ASSERT_TRUE(result);

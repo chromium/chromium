@@ -82,6 +82,37 @@ constexpr char kIncognitoSpecific[] = "incognitoSpecific";
 constexpr char kLevelOfControl[] = "levelOfControl";
 constexpr char kValue[] = "value";
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Returns true if the get, set or clear requests for the preference associated
+// with `pref_path` should only be applied at browser level. Returns false if
+// the requests should be forwarded to Ash.
+// All preferences explicitly added to`crosapi::mojom::PrefPath` should be
+// handled by Ash. The only exception is the `crosapi::mojom::PrefPath::kProxy`
+// pref which, for secondary profiles only, is applied at browser scope.
+bool IsBrowserScopePrefOperation(crosapi::mojom::PrefPath pref_path,
+                                 Profile* profile) {
+  if (pref_path == crosapi::mojom::PrefPath::kUnknown) {
+    return true;
+  }
+  if (pref_path == crosapi::mojom::PrefPath::kProxy) {
+    if (!profile->IsMainProfile()) {
+      return true;
+    }
+    // TODO(acostinas,b/267719988) If the current version of Ash does not
+    // support syncing the proxy pref via the Prefs mojo service, the proxy pref
+    // can be set at browser scope only and it will be synced with Ash via the
+    // NetworkSettingsService mojo API.
+    static constexpr int kMinVersionProxyPref = 4;
+    const int version = chromeos::LacrosService::Get()
+                            ->GetInterfaceVersion<crosapi::mojom::Prefs>();
+    if (version < kMinVersionProxyPref) {
+      return true;
+    }
+  }
+  return false;
+}
+#endif
+
 // Transform the thirdPartyCookiesAllowed extension api to CookieControlsMode
 // enum values.
 class CookieControlsModeTransformer : public PrefTransformerInterface {
@@ -217,7 +248,7 @@ PreferenceEventRouter::PreferenceEventRouter(Profile* profile)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     crosapi::mojom::PrefPath pref_path =
         PrefMapping::GetInstance()->GetPrefPathForPrefName(pref.browser_pref);
-    if (pref_path != crosapi::mojom::PrefPath::kUnknown &&
+    if (!IsBrowserScopePrefOperation(pref_path, profile) &&
         ash_supports_crosapi_observers) {
       // Extension-controlled pref with the real value to watch in ash.
       // This base::Unretained() is safe because PreferenceEventRouter owns
@@ -608,7 +639,7 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
   cached_browser_pref_ = browser_pref;
   crosapi::mojom::PrefPath pref_path =
       PrefMapping::GetInstance()->GetPrefPathForPrefName(cached_browser_pref_);
-  if (pref_path != crosapi::mojom::PrefPath::kUnknown) {
+  if (!IsBrowserScopePrefOperation(pref_path, profile)) {
     // Exclude chrome.privacy.website.protectedContentID (mapped to
     // kProtectedContentDefault) from secondary profile access
     // (crbug.com/1450718).
@@ -784,7 +815,7 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
   crosapi::mojom::PrefPath pref_path =
       PrefMapping::GetInstance()->GetPrefPathForPrefName(browser_pref);
   chromeos::LacrosService* lacros_service;
-  if (pref_path != crosapi::mojom::PrefPath::kUnknown) {
+  if (!IsBrowserScopePrefOperation(pref_path, profile)) {
     if (!profile->IsMainProfile()) {
       return RespondNow(Error(kPrimaryProfileOnlyErrorMessage, pref_key));
     }
@@ -887,7 +918,7 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
   prefs_helper->SetExtensionControlledPref(extension_id(), browser_pref, scope,
                                            browser_pref_value->Clone());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (pref_path != crosapi::mojom::PrefPath::kUnknown &&
+  if (!IsBrowserScopePrefOperation(pref_path, profile) &&
       prefs_helper->DoesExtensionControlPref(extension_id(), browser_pref,
                                              nullptr)) {
     lacros_service->GetRemote<crosapi::mojom::Prefs>()->SetPref(
@@ -951,8 +982,8 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
   crosapi::mojom::PrefPath pref_path =
       PrefMapping::GetInstance()->GetPrefPathForPrefName(browser_pref);
   chromeos::LacrosService* lacros_service;
-  if (pref_path != crosapi::mojom::PrefPath::kUnknown) {
-    Profile* profile = Profile::FromBrowserContext(browser_context());
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  if (!IsBrowserScopePrefOperation(pref_path, profile)) {
     if (!profile->IsMainProfile()) {
       return RespondNow(Error(kPrimaryProfileOnlyErrorMessage, pref_key));
     }
@@ -1002,14 +1033,13 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
         extension_id(), prefs::kSafeBrowsingEnhanced, scope);
   }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (pref_path != crosapi::mojom::PrefPath::kUnknown &&
+  if (!IsBrowserScopePrefOperation(pref_path, profile) &&
       did_just_control_pref) {
     // This is an ash pref and we need to update ash because the extension that
     // just cleared the pref used to control it. Now, either another extension
     // of lower precedence controls the pref (in which case we update the pref
     // to that value), or no other extension has set the pref (in which case
     // we can clear the value set by extensions in ash).
-    Profile* profile = Profile::FromBrowserContext(browser_context());
     PrefService* pref_service =
         extensions::preference_helpers::GetProfilePrefService(profile,
                                                               incognito);

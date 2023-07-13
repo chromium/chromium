@@ -142,13 +142,11 @@ void NetworkSettingsServiceAsh::SetExtensionProxy(
   pref_service->SetDict(ash::prefs::kLacrosProxyControllingExtension,
                         std::move(proxy_extension));
 
-  pref_service->SetDict(proxy_config::prefs::kProxy,
-                        CrosapiProxyToProxyConfig(std::move(proxy_config))
-                            .GetDictionary()
-                            .Clone());
+  DetermineEffectiveProxy();
 }
 
 void NetworkSettingsServiceAsh::ClearExtensionProxy() {
+  extension_controlling_proxy_.reset();
   ClearProxyPrefFromUserStore();
 }
 
@@ -177,30 +175,12 @@ void NetworkSettingsServiceAsh::StartTrackingPrefChanges() {
 }
 
 void NetworkSettingsServiceAsh::OnPrefChanged() {
-  PrefService* pref_service = GetPrimaryLoggedInUserProfilePrefs();
-  DCHECK(pref_service);
+  ClearProxyPrefFromUserStore();
 
-  const PrefService::Preference* pref =
-      pref_service->FindPreference(proxy_config::prefs::kProxy);
-
-  if (pref && pref->IsManaged()) {
-    // If the kProxy pref is set via a user policy, it is stored in the managed
-    // store and has priority over the extension set proxy from Lacros (which in
-    // Ash is stored in the user store). Removing the preference from the user
-    // store will ensure that, if the extension gets removed from Lacros while
-    // the proxy policy is active, the user doesn't get stuck with the old proxy
-    // value from the user store.
-    // Note that clearing the proxy pref from the user store will not affect the
-    // value of the proxy pref set by the policy in the managed store, nor will
-    // it affect the value of the proxy pref set by the Lacros extension in the
-    // Lacros extension store.
-    ClearProxyPrefFromUserStore();
-  }
   DetermineEffectiveProxy();
 }
 
 void NetworkSettingsServiceAsh::ClearProxyPrefFromUserStore() {
-  extension_controlling_proxy_.reset();
   PrefService* pref_service = GetPrimaryLoggedInUserProfilePrefs();
   DCHECK(pref_service);
   pref_service->ClearPref(ash::prefs::kLacrosProxyControllingExtension);
@@ -217,7 +197,11 @@ void NetworkSettingsServiceAsh::DetermineEffectiveProxy() {
           .get(),
       cached_wpad_url_);
 
-  new_proxy_config->extension = extension_controlling_proxy_.Clone();
+  const PrefService::Preference* pref =
+      pref_service->FindPreference(proxy_config::prefs::kProxy);
+  if (pref && pref->IsStandaloneBrowserControlled()) {
+    new_proxy_config->extension = extension_controlling_proxy_.Clone();
+  }
 
   // Trigger a proxy settings sync to Lacros if the proxy configuration changes.
   if (!cached_proxy_config_ ||
