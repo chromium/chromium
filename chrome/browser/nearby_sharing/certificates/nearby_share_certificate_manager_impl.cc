@@ -79,7 +79,11 @@ size_t NumPrivateCertificates() {
 }
 
 size_t NumExpectedPrivateCertificates() {
-  return kVisibilities.size() * NumPrivateCertificates();
+  if (features::IsSelfShareEnabled()) {
+    return kVisibilities.size() * NumPrivateCertificates();
+  }
+
+  return (kVisibilities.size() - 1) * NumPrivateCertificates();
 }
 
 absl::optional<std::string> GetBluetoothMacAddress(
@@ -524,7 +528,7 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
         << num_certificates -
                num_valid_certs
                    [nearby_share::mojom::Visibility::kSelectedContacts]
-        << " selected-contacts visibility, and"
+        << " selected-contacts visibility, and "
         << num_certificates -
                num_valid_certs[nearby_share::mojom::Visibility::kYourDevices]
         << " your-devices private certificates.";

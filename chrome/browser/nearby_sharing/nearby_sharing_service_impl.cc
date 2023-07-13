@@ -277,6 +277,15 @@ class TransferUpdateDecorator : public TransferUpdateCallback {
   Callback callback_;
 };
 
+bool isVisibleForAdvertising(Visibility visibility) {
+  if (visibility == Visibility::kYourDevices &&
+      features::IsSelfShareEnabled()) {
+    return true;
+  }
+  return visibility == Visibility::kAllContacts ||
+         visibility == Visibility::kSelectedContacts;
+}
+
 }  // namespace
 
 NearbySharingServiceImpl::NearbySharingServiceImpl(
@@ -1396,8 +1405,7 @@ NearbySharingServiceImpl::GetReceiveCallbacksFromState(
 }
 
 bool NearbySharingServiceImpl::IsVisibleInBackground(Visibility visibility) {
-  return visibility == Visibility::kAllContacts ||
-         visibility == Visibility::kSelectedContacts;
+  return isVisibleForAdvertising(visibility);
 }
 
 const absl::optional<std::vector<uint8_t>>
@@ -1407,8 +1415,7 @@ NearbySharingServiceImpl::CreateEndpointInfo(
   std::vector<uint8_t> encrypted_key;
 
   nearby_share::mojom::Visibility visibility = settings_.GetVisibility();
-  if (visibility == Visibility::kAllContacts ||
-      visibility == Visibility::kSelectedContacts) {
+  if (isVisibleForAdvertising(visibility)) {
     absl::optional<NearbyShareEncryptedMetadataKey> encrypted_metadata_key =
         certificate_manager_->EncryptPrivateCertificateMetadataKey(visibility);
     if (encrypted_metadata_key) {
