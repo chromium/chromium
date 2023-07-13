@@ -158,6 +158,10 @@
   cr-button {
     border-radius: 18px;
   }
+
+  cr-button.prefix-icon {
+    padding-inline: 12px 16px;
+  }
 </style>
 
 <template is="dom-if" if="[[!canAddPrinter]]">
@@ -287,7 +291,7 @@
           hidden="[[!isPrinterSettingsRevampEnabled_]]">
         <div id="addPrinterSectionRevampContainer"
             class="layout horizontal center custom-list-item-top">
-          <cr-button on-click="onAddPrinterClick_"
+          <cr-button class="prefix-icon" on-click="onAddPrinterClick_"
               disabled="[[!addPrinterButtonActive_(canAddPrinter,
                   prefs.native_printing.user_native_printers_allowed.value)]]"
               deep-link-focus-id$="[[Setting.kAddPrinter]]">
