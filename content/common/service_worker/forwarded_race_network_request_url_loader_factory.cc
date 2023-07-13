@@ -26,10 +26,18 @@ void ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::
   CHECK_EQ(url_, resource_request.url);
   bool result = mojo::FusePipes(std::move(client_receiver_), std::move(client));
   CHECK(result);
+  result = mojo::FusePipes(std::move(receiver), std::move(loader_));
+  CHECK(result);
 }
 
 void ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
   receiver_.Bind(std::move(receiver));
+}
+
+mojo::PendingReceiver<network::mojom::URLLoader>
+ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::
+    InitURLLoaderNewPipeAndPassReceiver() {
+  return loader_.InitWithNewPipeAndPassReceiver();
 }
 }  // namespace content
