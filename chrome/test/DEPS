@@ -65,6 +65,7 @@ include_rules = [
   "+components/profile_metrics",
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/core/browser/db",
+  "+components/search",
   "+components/search_engines",
   "+components/security_interstitials/content",
   "+components/services/language_detection/public/cpp",
