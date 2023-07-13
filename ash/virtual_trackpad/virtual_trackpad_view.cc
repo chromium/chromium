@@ -8,7 +8,10 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/wm/window_util.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_targeter.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -27,6 +30,9 @@
 namespace ash {
 
 namespace {
+
+// Amount to multiply each scroll event by. Makes the feature easier to use.
+constexpr int kScrollMultiplier = 3;
 
 // The number of fingers for the fake scroll events.
 constexpr int kDefaultFingers = 3;
@@ -169,17 +175,24 @@ class TrackpadInternalSurfaceView : public views::View {
   void GenerateScrollEvent(ui::EventType type, const ui::MouseEvent& event) {
     CHECK(scroll_data_);
 
+    // `event.location_f()` is the position of the current mouse event while
+    // `scroll_data_->current_location` is the position of the last mouse event.
     const gfx::Vector2dF distance =
-        scroll_data_->current_location - event.location_f();
+        event.location_f() - scroll_data_->current_location;
     if (type == ui::ET_SCROLL_FLING_CANCEL) {
       CHECK_EQ(gfx::Vector2dF(), distance);
     }
 
+    // Mimic the true behavior of scroll events by initially flipping the value
+    // of vertical scroll offsets before they get sent further up the chain.
+    const int y_multiplier =
+        kScrollMultiplier * (window_util::IsNaturalScrollOn() ? 1 : -1);
     const gfx::PointF location = event.location_f();
     const gfx::PointF root_location = event.root_location_f();
     ui::ScrollEvent scroll_event(
         type, location, root_location, ui::EventTimeForNow(), /*flags=*/0,
-        distance.x(), distance.y(), /*x_offset_ordinal=*/0,
+        distance.x() * kScrollMultiplier, distance.y() * y_multiplier,
+        /*x_offset_ordinal=*/0,
         /*y_offset_ordinal=*/0, fingers_);
     auto* host = GetWidget()->GetNativeWindow()->GetRootWindow()->GetHost();
     CHECK(host);
@@ -276,6 +289,15 @@ void VirtualTrackpadView::Toggle() {
   // The widget is owned by its native widget.
   g_fake_trackpad_widget = new views::Widget(std::move(params));
   g_fake_trackpad_widget->Show();
+
+  // Used to extend bounds on the virtual trackpad window for resizing. Note
+  // that we cannot use
+  // `window_util::InstallResizeHandleWindowTargeterForWindow` since the virtual
+  // trackpad window is not a toplevel window.
+  auto targeter = std::make_unique<aura::WindowTargeter>();
+  targeter->SetInsets(gfx::Insets(-chromeos::kResizeOutsideBoundsSize));
+  g_fake_trackpad_widget->GetNativeWindow()->SetEventTargeter(
+      std::move(targeter));
 }
 
 void VirtualTrackpadView::Layout() {

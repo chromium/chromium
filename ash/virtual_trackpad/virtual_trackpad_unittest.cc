@@ -5,6 +5,7 @@
 #include "ash/virtual_trackpad/virtual_trackpad_view.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
@@ -46,10 +47,15 @@ class VirtualTrackpadTest : public AshTestBase {
     DCHECK(widget);
     // Get contents view through the delegate because we set the contents view
     // through the delegate. The reasoning is explained in `Toggle()`.
-    return static_cast<VirtualTrackpadView*>(
-               widget->widget_delegate()->GetContentsView())
-        ->GetTrackpadViewForTesting()
-        ->GetBoundsInScreen();
+    gfx::Rect bounds = static_cast<VirtualTrackpadView*>(
+                           widget->widget_delegate()->GetContentsView())
+                           ->GetTrackpadViewForTesting()
+                           ->GetBoundsInScreen();
+
+    // Inset by a bit to ensure we don't click on the edges.
+    bounds.Inset(3);
+
+    return bounds;
   }
 
   void ClickFourFingerButton() {
@@ -78,17 +84,40 @@ TEST_F(VirtualTrackpadTest, ToggleShowHide) {
   EXPECT_FALSE(GetWidget());
 }
 
+class VirtualTrackpadTestReverseScroll
+    : public VirtualTrackpadTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  VirtualTrackpadTestReverseScroll() = default;
+  VirtualTrackpadTestReverseScroll(const VirtualTrackpadTestReverseScroll&) =
+      delete;
+  VirtualTrackpadTestReverseScroll& operator=(
+      const VirtualTrackpadTestReverseScroll&) = delete;
+  ~VirtualTrackpadTestReverseScroll() override = default;
+
+  void SetUp() override { VirtualTrackpadTest::SetUp(); }
+
+  void SetNaturalScroll(bool enabled) {
+    PrefService* pref =
+        Shell::Get()->session_controller()->GetActivePrefService();
+    pref->SetBoolean(prefs::kTouchpadEnabled, true);
+    pref->SetBoolean(prefs::kNaturalScroll, enabled);
+  }
+};
+
 // Tests that using the virtual trackpad allows us to enter and exit overview.
-TEST_F(VirtualTrackpadTest, SwipeToToggleOverview) {
+// Also tests this with reverse scrolling enabled.
+TEST_P(VirtualTrackpadTestReverseScroll, SwipeToToggleOverview) {
   ToggleVirtualTrackpad();
 
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  EXPECT_FALSE(overview_controller->InOverviewSession());
+  // Toggle natural scrolling. Behavior should stay the same.
+  SetNaturalScroll(/*enabled=*/GetParam());
 
-  // Get the virtual trackpad bounds so we can use the mouse to generate scroll
-  // events. Inset by a bit to ensure we don't click on the edges.
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  ASSERT_FALSE(overview_controller->InOverviewSession());
+
+  // Get the trackpad bounds so we can use the mouse to generate scroll events.
   gfx::Rect trackpad_bounds = GetVirtualTrackpadBoundsInScreen();
-  trackpad_bounds.Inset(3);
 
   // Swipe up to enter overview. There should be no items in overview as the
   // virtual trackpad window is excluded from overview.
@@ -104,32 +133,44 @@ TEST_F(VirtualTrackpadTest, SwipeToToggleOverview) {
 }
 
 // Tests that using the virtual trackpad allows us to choose four fingers and
-// swipe to an adjacent desk.
-TEST_F(VirtualTrackpadTest, SwipeToSwitchDesks) {
+// swipe to an adjacent desk. Also tests this with reverse scrolling enabled.
+TEST_P(VirtualTrackpadTestReverseScroll, SwipeToSwitchDesks) {
   DesksController* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
-  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
+  desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  desks_controller->ActivateDesk(desks_controller->GetDeskAtIndex(1),
+                                 DesksSwitchSource::kUserSwitch);
+  ASSERT_EQ(1, desks_controller->GetActiveDeskIndex());
 
   ToggleVirtualTrackpad();
 
-  // Get the virtual trackpad bounds so we can use the mouse to generate scroll
-  // events. Inset by a bit to ensure we don't click on the edges.
+  // Toggle natural scrolling.
+  SetNaturalScroll(/*enabled=*/GetParam());
+
+  // Get the trackpad bounds so we can use the mouse to generate scroll events.
   gfx::Rect trackpad_bounds = GetVirtualTrackpadBoundsInScreen();
-  trackpad_bounds.Inset(3);
 
   // Try swiping across the virtual trackpad. The desk doesn't change as the
   // generated swipe is the default three fingers.
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(trackpad_bounds.right_center());
   event_generator->DragMouseTo(trackpad_bounds.left_center());
-  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
+  ASSERT_EQ(1, desks_controller->GetActiveDeskIndex());
 
   // Click on the button which will make generated swipes be four fingers.
   // Swiping across the virtual trackpad will now change the desk.
   ClickFourFingerButton();
   event_generator->MoveMouseTo(trackpad_bounds.right_center());
   event_generator->DragMouseTo(trackpad_bounds.left_center());
-  EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
+
+  // Natural scroll should flip the behavior of scrolls.
+  bool natural_scroll_enabled = GetParam();
+  EXPECT_EQ(natural_scroll_enabled ? 2 : 0,
+            desks_controller->GetActiveDeskIndex());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         VirtualTrackpadTestReverseScroll,
+                         ::testing::Bool());
 
 }  // namespace ash
