@@ -165,9 +165,7 @@ bool SwapGoogleUpdate(UpdaterScope scope,
 }
 
 // Uninstall the GoogleUpdate services, run values, scheduled tasks, and files.
-bool UninstallGoogleUpdate(UpdaterScope scope,
-                           const base::FilePath& temp_path,
-                           HKEY root) {
+bool UninstallGoogleUpdate(UpdaterScope scope) {
   VLOG(2) << __func__;
 
   if (IsSystemInstall(scope)) {
@@ -384,10 +382,11 @@ bool ComServerApp::SwapInNewVersion() {
     return false;
   }
 
-  LOG_IF(ERROR, UninstallGoogleUpdate(updater_scope(), temp_dir->GetPath(),
-                                      UpdaterScopeToHKeyRoot(updater_scope())));
+  VLOG_IF(1, !UninstallGoogleUpdate(updater_scope()))
+      << "UninstallGoogleUpdate() failed.";
   if (!IsSystemInstall(updater_scope())) {
-    LOG_IF(ERROR, DeleteLegacyEntriesPerUser());
+    VLOG_IF(1, !DeleteLegacyEntriesPerUser())
+        << "DeleteLegacyEntriesPerUser() failed.";
   }
 
   return true;
