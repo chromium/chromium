@@ -544,6 +544,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "video_conference_camera_framing_off.icon",
     "video_conference_camera_framing_on.icon",
     "video_conference_camera_muted.icon",
+    "video_conference_linux_app_warning.icon",
     "video_conference_live_caption_off.icon",
     "video_conference_live_caption_on.icon",
     "video_conference_microphone_muted.icon",

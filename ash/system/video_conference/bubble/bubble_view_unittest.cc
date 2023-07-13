@@ -28,6 +28,9 @@
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-shared.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 
 namespace ash::video_conference {
 
@@ -109,6 +112,16 @@ class SnackNationForever : public VcEffectsDelegate {
   void OnEffectControlActivated(VcEffectId effect_id,
                                 absl::optional<int> state) override {}
 };
+
+crosapi::mojom::VideoConferenceMediaAppInfoPtr CreateFakeMediaApp(
+    const crosapi::mojom::VideoConferenceAppType app_type) {
+  return crosapi::mojom::VideoConferenceMediaAppInfo::New(
+      base::UnguessableToken::Create(),
+      /*last_activity_time=*/base::Time::Now(), /*is_capturing_camera=*/true,
+      /*is_capturing_microphone=*/true, /*is_capturing_screen=*/false,
+      u"Test App Name",
+      /*url=*/GURL(), app_type);
+}
 
 }  // namespace
 
@@ -197,6 +210,11 @@ class BubbleViewTest : public AshTestBase {
   views::View* toggle_effect_button() {
     return bubble_view()->GetViewByID(
         video_conference::BubbleViewID::kToggleEffectsButton);
+  }
+
+  views::View* linux_app_warning_view() {
+    return bubble_view()->GetViewByID(
+        video_conference::BubbleViewID::kLinuxAppWarningView);
   }
 
   ash::fake_video_conference::OfficeBunnyEffect* office_bunny() {
@@ -413,6 +431,34 @@ TEST_F(BubbleViewTest, InvalidEffectState) {
   // Click to open the bubble, a single set-value effect view is NOT present.
   LeftClickOn(toggle_bubble_button());
   EXPECT_FALSE(single_set_value_effect_view());
+}
+
+TEST_F(BubbleViewTest, LinuxAppWarningView) {
+  controller()->ClearMediaApps();
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kChromeApp));
+
+  // Click to open the bubble, the linux app warning view is NOT present.
+  LeftClickOn(toggle_bubble_button());
+  EXPECT_FALSE(linux_app_warning_view());
+
+  // Close the bubble.
+  LeftClickOn(toggle_bubble_button());
+
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kCrostiniVm));
+
+  // When there's a linux app alongside a non-linux app, the linux app warning
+  // view is present only when there's effect(s) available.
+  LeftClickOn(toggle_bubble_button());
+  EXPECT_FALSE(linux_app_warning_view());
+
+  LeftClickOn(toggle_bubble_button());
+
+  controller()->effects_manager().RegisterDelegate(office_bunny());
+  LeftClickOn(toggle_bubble_button());
+  ASSERT_TRUE(linux_app_warning_view());
+  EXPECT_TRUE(linux_app_warning_view()->GetVisible());
 }
 
 // The four `bool` params are as follows, if 'true':
