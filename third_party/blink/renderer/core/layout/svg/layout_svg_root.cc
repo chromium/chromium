@@ -117,8 +117,9 @@ bool LayoutSVGRoot::IsEmbeddedThroughSVGImage() const {
 
 bool LayoutSVGRoot::IsEmbeddedThroughFrameContainingSVGDocument() const {
   NOT_DESTROYED();
-  if (!GetNode())
+  if (!IsDocumentElement() || !GetNode()) {
     return false;
+  }
 
   LocalFrame* frame = GetNode()->GetDocument().GetFrame();
   if (!frame || !frame->GetDocument()->IsSVGDocument())
