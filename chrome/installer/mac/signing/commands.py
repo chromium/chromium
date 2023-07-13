@@ -95,19 +95,6 @@ def run_command_output(args, **kwargs):
     return subprocess.check_output(args, **kwargs)
 
 
-def run_password_command_output(args, password, **kwargs):
-    """Runs a command that expects a password on stdin. This function feeds
-    |password| to that command and returns the output like
-    run_command_output().
-    """
-    assert 'stdin' not in kwargs
-    return run_command_output(
-        args,
-        start_new_session=True,
-        input=(password + '\n').encode('utf8'),
-        **kwargs)
-
-
 def lenient_run_command_output(args, **kwargs):
     """Runs a command, being fairly tolerant of errors.
 
