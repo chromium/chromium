@@ -181,7 +181,7 @@ def android_gn_gen(is_release, target_cpu, out_dir):
   # Ideally we would call `mb_py gen` directly, but we need to filter out the
   # use_remoteexec arg, as that cannot be used in a local environment.
   gn_args = subprocess.check_output([
-      'python', mb_script, 'lookup', '-m', group_name, '-b', builder_name
+      'python3', mb_script, 'lookup', '-m', group_name, '-b', builder_name
   ]).decode('utf-8').strip()
   gn_args = filter_gn_args(gn_args.split("\n"))
   return gn(out_dir, ' '.join(gn_args))
