@@ -397,9 +397,6 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
     bool is_animated_scroll = ShouldAnimateScroll(*scroll_state);
     compositor_delegate_->DidScrollContent(scroll_node.element_id,
                                            is_animated_scroll);
-  } else {
-    overscroll_delta_for_main_thread_ +=
-        gfx::Vector2dF(scroll_state->delta_x(), scroll_state->delta_y());
   }
 
   SetNeedsCommit();
@@ -1865,6 +1862,7 @@ void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
                                        scroll_state->is_direct_manipulation());
     }
   }
+  overscroll_delta_for_main_thread_ += delta - applied_delta;
 
   // If the layer wasn't able to move, try the next one in the hierarchy.
   bool scrolled = std::abs(applied_delta.x()) > kEpsilon;

@@ -5360,7 +5360,6 @@ crbug.com/1311456 [ Fuchsia ] tables/mozilla/core/bloomberg.html [ Crash Failure
 
 # Sheriff 2022-04-05
 crbug.com/1313282 inspector-protocol/input/dispatchMouseEvent.js [ Failure Pass Timeout ]
-crbug.com/1194945 external/wpt/dom/events/scrolling/overscroll-event-fired-to-scrolled-element.html [ Failure Pass ]
 crbug.com/1244896 fast/mediacapturefromelement/CanvasCaptureMediaStream-set-size-too-large.html [ Failure Pass Timeout ]
 
 # Sheriff 2022-04-07
@@ -6334,7 +6333,6 @@ crbug.com/1430986 http/tests/inspector-protocol/tracing/page-load-metrics.js [ F
 # Sheriff 2023-04-06
 crbug.com/1362106 [ Linux ] media/video-source-error-no-candidate.html [ Failure Pass ]
 crbug.com/1362106 [ Linux ] media/video-source.html [ Failure Pass ]
-crbug.com/1430215 external/wpt/dom/events/scrolling/overscroll-deltas.html [ Failure Pass ]
 crbug.com/1431085 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-source-media.html [ Failure Pass ]
 
 # Sheriff 2023-04-07
