@@ -142,6 +142,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -1059,6 +1060,15 @@ void MetricsService::CloseCurrentLog(
         log_histogram_writer.get();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
+        // CONTINUE_ON_SHUTDOWN because the work done is only useful once the
+        // reply task is run (and there are no side effects). So, no need to
+        // block shutdown since the reply task won't be run anyway.
+        // NOTE: If attempting to change the USER_BLOCKING priority, do a study
+        // on the impact first since it might affect the number of logs being
+        // uploaded (which might have secondary effects, e.g. on metrics that
+        // rely on number of logs uploaded).
+        {base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(&MetricsService::SnapshotUnloggedSamplesAndFinalizeLog,
                        log_histogram_writer_ptr, std::move(current_log),
                        /*truncate_events=*/true, std::move(close_time),
