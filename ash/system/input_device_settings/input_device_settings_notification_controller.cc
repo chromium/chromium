@@ -18,6 +18,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -37,6 +38,22 @@ namespace {
 
 using SimulateRightClickModifier = ui::mojom::SimulateRightClickModifier;
 using SixPackShortcutModifier = ui::mojom::SixPackShortcutModifier;
+
+constexpr auto kSixPackKeyToPrefName =
+    base::MakeFixedFlatMap<ui::KeyboardCode, const char*>({
+        {ui::KeyboardCode::VKEY_DELETE,
+         {prefs::kSixPackKeyDeleteNotificationsRemaining}},
+        {ui::KeyboardCode::VKEY_HOME,
+         {prefs::kSixPackKeyHomeNotificationsRemaining}},
+        {ui::KeyboardCode::VKEY_PRIOR,
+         {prefs::kSixPackKeyPageUpNotificationsRemaining}},
+        {ui::KeyboardCode::VKEY_END,
+         {prefs::kSixPackKeyEndNotificationsRemaining}},
+        {ui::KeyboardCode::VKEY_NEXT,
+         {prefs::kSixPackKeyPageDownNotificationsRemaining}},
+        {ui::KeyboardCode::VKEY_INSERT,
+         {prefs::kSixPackKeyInsertNotificationsRemaining}},
+    });
 
 const char kNotifierId[] = "input_device_settings_controller";
 const char kAltRightClickRewriteNotificationId[] =
@@ -110,9 +127,9 @@ bool IsActiveUserSession() {
 
 // If the user has reached the settings page through the notification, do
 // not show any more new notifications.
-void StopShowingRightClickNotification() {
+void StopShowingNotification(const char* pref_name) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
-      prefs::kRemapToRightClickNotificationsRemaining, 0);
+      pref_name, 0);
 }
 
 bool ShouldShowSixPackKeyNotification() {
@@ -187,9 +204,28 @@ InputDeviceSettingsNotificationController::
 
 void InputDeviceSettingsNotificationController::RegisterProfilePrefs(
     PrefRegistrySimple* pref_registry) {
-  // We'll show the remap to right click notification a total of three times.
+  // We'll show the remap to right click and Six Pack keys notifications a
+  // total of three times each.
   pref_registry->RegisterIntegerPref(
       prefs::kRemapToRightClickNotificationsRemaining, 3,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterIntegerPref(
+      prefs::kSixPackKeyDeleteNotificationsRemaining, 3,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterIntegerPref(
+      prefs::kSixPackKeyHomeNotificationsRemaining, 3,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterIntegerPref(
+      prefs::kSixPackKeyEndNotificationsRemaining, 3,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterIntegerPref(
+      prefs::kSixPackKeyPageUpNotificationsRemaining, 3,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterIntegerPref(
+      prefs::kSixPackKeyPageDownNotificationsRemaining, 3,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterIntegerPref(
+      prefs::kSixPackKeyInsertNotificationsRemaining, 3,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
@@ -224,7 +260,8 @@ void InputDeviceSettingsNotificationController::
                   ->system_tray_model()
                   ->client()
                   ->ShowTouchpadSettings();
-              StopShowingRightClickNotification();
+              StopShowingNotification(
+                  prefs::kRemapToRightClickNotificationsRemaining);
             }
           }));
   auto notification = CreateSystemNotificationPtr(
@@ -256,16 +293,30 @@ void InputDeviceSettingsNotificationController::
   }
   CHECK_NE(blocked_modifier, SixPackShortcutModifier::kNone);
   CHECK(ui::KeyboardCapability::IsSixPackKey(key_code));
+
+  auto* it = kSixPackKeyToPrefName.find(key_code);
+  CHECK(it != kSixPackKeyToPrefName.end());
+  const char* pref = it->second;
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  CHECK(prefs);
+  int num_notifications_remaining = prefs->GetInteger(pref);
+  if (num_notifications_remaining == 0) {
+    return;
+  }
+  prefs->SetInteger(pref, num_notifications_remaining - 1);
+
   auto on_click_handler =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
-              [](int device_id) {
+              [](int device_id, const char* pref_name) {
                 Shell::Get()
                     ->system_tray_model()
                     ->client()
                     ->ShowRemapKeysSubpage(device_id);
+                StopShowingNotification(pref_name);
               },
-              device_id));
+              device_id, pref));
   auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       GetSixPackNotificationId(key_code, device_id),

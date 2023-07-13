@@ -16,11 +16,10 @@ namespace ash {
 
 namespace {
 
-int GetPrefNotificationCount() {
+int GetPrefNotificationCount(const char* pref_name) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
-  return prefs->GetInteger(
-      ash::prefs::kRemapToRightClickNotificationsRemaining);
+  return prefs->GetInteger(pref_name);
 }
 
 class TestMessageCenter : public message_center::FakeMessageCenter {
@@ -118,44 +117,99 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
 }
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,
-       NotificationShownAtMostThreeTimes) {
-  EXPECT_EQ(3, GetPrefNotificationCount());
+       SixPackKeyNotificationShownAtMostThreeTimes) {
+  EXPECT_EQ(3, GetPrefNotificationCount(
+                   prefs::kSixPackKeyDeleteNotificationsRemaining));
+
+  controller()->NotifySixPackRewriteBlockedBySetting(
+      ui::VKEY_DELETE, ui::mojom::SixPackShortcutModifier::kAlt,
+      ui::mojom::SixPackShortcutModifier::kSearch,
+      /*device_id=*/1);
+  EXPECT_EQ(1u, message_center()->NotificationCount());
+  EXPECT_EQ(2, GetPrefNotificationCount(
+                   prefs::kSixPackKeyDeleteNotificationsRemaining));
+
+  controller()->NotifySixPackRewriteBlockedBySetting(
+      ui::VKEY_DELETE, ui::mojom::SixPackShortcutModifier::kAlt,
+      ui::mojom::SixPackShortcutModifier::kSearch,
+      /*device_id=*/1);
+  EXPECT_EQ(1, GetPrefNotificationCount(
+                   prefs::kSixPackKeyDeleteNotificationsRemaining));
+
+  controller()->NotifySixPackRewriteBlockedBySetting(
+      ui::VKEY_DELETE, ui::mojom::SixPackShortcutModifier::kAlt,
+      ui::mojom::SixPackShortcutModifier::kSearch,
+      /*device_id=*/1);
+  EXPECT_EQ(0, GetPrefNotificationCount(
+                   prefs::kSixPackKeyDeleteNotificationsRemaining));
+
+  message_center()->RemoveAllNotifications(
+      false, message_center::MessageCenter::RemoveType::ALL);
+  controller()->NotifySixPackRewriteBlockedBySetting(
+      ui::VKEY_DELETE, ui::mojom::SixPackShortcutModifier::kAlt,
+      ui::mojom::SixPackShortcutModifier::kSearch,
+      /*device_id=*/1);
+  EXPECT_EQ(0u, message_center()->NotificationCount());
+
+  // Only the delete notification pref should have changed.
+  EXPECT_EQ(
+      3, GetPrefNotificationCount(prefs::kSixPackKeyEndNotificationsRemaining));
+  EXPECT_EQ(3, GetPrefNotificationCount(
+                   prefs::kSixPackKeyHomeNotificationsRemaining));
+  EXPECT_EQ(3, GetPrefNotificationCount(
+                   prefs::kSixPackKeyInsertNotificationsRemaining));
+  EXPECT_EQ(3, GetPrefNotificationCount(
+                   prefs::kSixPackKeyPageUpNotificationsRemaining));
+  EXPECT_EQ(3, GetPrefNotificationCount(
+                   prefs::kSixPackKeyPageDownNotificationsRemaining));
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       RightClickNotificationShownAtMostThreeTimes) {
+  EXPECT_EQ(3, GetPrefNotificationCount(
+                   prefs::kRemapToRightClickNotificationsRemaining));
 
   controller()->NotifyRightClickRewriteBlockedBySetting(
       ui::mojom::SimulateRightClickModifier::kAlt,
       ui::mojom::SimulateRightClickModifier::kSearch);
   EXPECT_EQ(1u, message_center()->NotificationCount());
-  EXPECT_EQ(2, GetPrefNotificationCount());
+  EXPECT_EQ(2, GetPrefNotificationCount(
+                   prefs::kRemapToRightClickNotificationsRemaining));
 
   controller()->NotifyRightClickRewriteBlockedBySetting(
       ui::mojom::SimulateRightClickModifier::kSearch,
       ui::mojom::SimulateRightClickModifier::kAlt);
   EXPECT_EQ(2u, message_center()->NotificationCount());
-  EXPECT_EQ(1, GetPrefNotificationCount());
+  EXPECT_EQ(1, GetPrefNotificationCount(
+                   prefs::kRemapToRightClickNotificationsRemaining));
 
   controller()->NotifyRightClickRewriteBlockedBySetting(
       ui::mojom::SimulateRightClickModifier::kAlt,
       ui::mojom::SimulateRightClickModifier::kNone);
   EXPECT_EQ(3u, message_center()->NotificationCount());
-  EXPECT_EQ(0, GetPrefNotificationCount());
+  EXPECT_EQ(0, GetPrefNotificationCount(
+                   prefs::kRemapToRightClickNotificationsRemaining));
 
   controller()->NotifyRightClickRewriteBlockedBySetting(
       ui::mojom::SimulateRightClickModifier::kAlt,
       ui::mojom::SimulateRightClickModifier::kSearch);
   EXPECT_EQ(3u, message_center()->NotificationCount());
-  EXPECT_EQ(0, GetPrefNotificationCount());
+  EXPECT_EQ(0, GetPrefNotificationCount(
+                   prefs::kRemapToRightClickNotificationsRemaining));
 }
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,
        StopShowingNotificationIfUserClicksOnIt) {
-  EXPECT_EQ(3, GetPrefNotificationCount());
+  EXPECT_EQ(3, GetPrefNotificationCount(
+                   prefs::kRemapToRightClickNotificationsRemaining));
 
   controller()->NotifyRightClickRewriteBlockedBySetting(
       ui::mojom::SimulateRightClickModifier::kAlt,
       ui::mojom::SimulateRightClickModifier::kSearch);
   message_center()->ClickOnNotification(
       "alt_right_click_rewrite_blocked_by_setting");
-  EXPECT_EQ(0, GetPrefNotificationCount());
+  EXPECT_EQ(0, GetPrefNotificationCount(
+                   prefs::kRemapToRightClickNotificationsRemaining));
 }
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,

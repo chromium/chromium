@@ -1690,6 +1690,54 @@ inline constexpr char kGlanceablesEnabled[] = "ash.glanceables_enabled";
 inline constexpr char kRemapToRightClickNotificationsRemaining[] =
     "ash.settings.remap_to_right_click_notifications_remaining";
 
+// An integer pref that tracks how many times (3) we'll show the user a
+// notification when an incoming key event would have been remapped to the
+// Delete "six pack" key but either the user's setting is inconsistent with the
+// matched modifier key or using a key combination to simulate the Delete key
+// action is disabled.
+inline constexpr char kSixPackKeyDeleteNotificationsRemaining[] =
+    "ash.settings.delete_six_pack_key_notifications_remaining";
+
+// An integer pref that tracks how many times (3) we'll show the user a
+// notification when an incoming key event would have been remapped to the
+// Home "six pack" key but either the user's setting is inconsistent with the
+// matched modifier key or using a key combination to simulate the Home key
+// action is disabled.
+inline constexpr char kSixPackKeyHomeNotificationsRemaining[] =
+    "ash.settings.home_six_pack_key_notifications_remaining";
+
+// An integer pref that tracks how many times (3) we'll show the user a
+// notification when an incoming key event would have been remapped to the
+// End "six pack" key but either the user's setting is inconsistent with the
+// matched modifier key or using a key combination to simulate the End key
+// action is disabled.
+inline constexpr char kSixPackKeyEndNotificationsRemaining[] =
+    "ash.settings.end_six_pack_key_notifications_remaining";
+
+// An integer pref that tracks how many times (3) we'll show the user a
+// notification when an incoming key event would have been remapped to the
+// Page Up "six pack" key but either the user's setting is inconsistent with the
+// matched modifier key or using a key combination to simulate the Page Up key
+// action is disabled.
+inline constexpr char kSixPackKeyPageUpNotificationsRemaining[] =
+    "ash.settings.page_up_six_pack_key_notifications_remaining";
+
+// An integer pref that tracks how many times (3) we'll show the user a
+// notification when an incoming key event would have been remapped to the
+// Page Down "six pack" key but either the user's setting is inconsistent with
+// the the matched modifier key or using a key combination to simulate the Page
+// Down key action is disabled.
+inline constexpr char kSixPackKeyPageDownNotificationsRemaining[] =
+    "ash.settings.page_down_six_pack_key_notifications_remaining";
+
+// An integer pref that tracks how many times (3) we'll show the user a
+// notification when an incoming key event would have been remapped to the
+// Insert "six pack" key but either the user's setting is inconsistent with the
+// matched modifier key or using a key combination to simulate the Insert key
+// action is disabled.
+inline constexpr char kSixPackKeyInsertNotificationsRemaining[] =
+    "ash.settings.insert_six_pack_key_notifications_remaining";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 
