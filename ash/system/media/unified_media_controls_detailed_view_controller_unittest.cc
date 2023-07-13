@@ -74,8 +74,8 @@ TEST_F(UnifiedMediaControlsDetailedViewControllerTest,
 
   // We should get a MediaNotificationProvider::GetMediaNotificationListView
   // call when creating the detailed view.
-  EXPECT_CALL(*provider(),
-              GetMediaNotificationListView(_, /*should_clip_height=*/false, _));
+  EXPECT_CALL(*provider(), GetMediaNotificationListView(
+                               _, /*should_clip_height=*/false, _, _));
   system_tray_controller()->OnMediaControlsViewClicked();
   EXPECT_NE(system_tray_controller()->detailed_view_controller(), nullptr);
 

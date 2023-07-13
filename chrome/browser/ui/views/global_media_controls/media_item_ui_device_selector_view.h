@@ -63,6 +63,7 @@ class MediaItemUIDeviceSelectorView
       bool has_audio_output,
       global_media_controls::GlobalMediaControlsEntryPoint entry_point,
       bool show_expand_button = true,
+      bool show_devices = false,
       absl::optional<media_message_center::MediaColorTheme> media_color_theme =
           absl::nullopt);
   ~MediaItemUIDeviceSelectorView() override;

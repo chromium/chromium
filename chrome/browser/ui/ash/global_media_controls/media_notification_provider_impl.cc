@@ -110,15 +110,17 @@ std::unique_ptr<views::View>
 MediaNotificationProviderImpl::GetMediaNotificationListView(
     int separator_thickness,
     bool should_clip_height,
-    const std::string& item_id) {
+    const std::string& item_id,
+    const std::string& show_devices_for_item_id) {
   CHECK(item_manager_);
   CHECK(color_theme_);
-  auto notification_list_view =
+  auto media_item_ui_list_view =
       std::make_unique<global_media_controls::MediaItemUIListView>(
           global_media_controls::MediaItemUIListView::SeparatorStyle(
               color_theme_->separator_color, separator_thickness),
           should_clip_height);
-  active_session_view_ = notification_list_view->GetWeakPtr();
+  media_item_ui_list_view_ = media_item_ui_list_view->GetWeakPtr();
+  show_devices_for_item_id_ = show_devices_for_item_id;
   if (item_id.empty()) {
     entry_point_ =
         global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray;
@@ -130,7 +132,7 @@ MediaNotificationProviderImpl::GetMediaNotificationListView(
   }
   base::UmaHistogramEnumeration("Media.GlobalMediaControls.EntryPoint",
                                 entry_point_);
-  return notification_list_view;
+  return media_item_ui_list_view;
 }
 
 void MediaNotificationProviderImpl::OnBubbleClosing() {
@@ -193,10 +195,11 @@ std::unique_ptr<global_media_controls::MediaItemUIDeviceSelector>
 MediaNotificationProviderImpl::BuildDeviceSelectorView(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
-    global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
+    global_media_controls::GlobalMediaControlsEntryPoint entry_point,
+    bool show_devices) {
   return BuildDeviceSelector(id, item, GetDeviceService(item),
                              &device_selector_delegate_, GetProfile(),
-                             entry_point, media_color_theme_);
+                             entry_point, show_devices, media_color_theme_);
 }
 
 std::unique_ptr<global_media_controls::MediaItemUIFooter>
@@ -210,19 +213,21 @@ global_media_controls::MediaItemUI*
 MediaNotificationProviderImpl::ShowMediaItem(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
-  if (!active_session_view_) {
+  if (!media_item_ui_list_view_) {
     return nullptr;
   }
 
+  bool show_devices =
+      (!show_devices_for_item_id_.empty() && (id == show_devices_for_item_id_));
   auto item_ui = std::make_unique<global_media_controls::MediaItemUIView>(
       id, item, BuildFooterView(item, entry_point_),
-      BuildDeviceSelectorView(id, item, entry_point_), color_theme_,
-      media_color_theme_,
+      BuildDeviceSelectorView(id, item, entry_point_, show_devices),
+      color_theme_, media_color_theme_,
       global_media_controls::MediaDisplayPage::kQuickSettingsMediaDetailedView);
   auto* item_ui_ptr = item_ui.get();
   item_ui_observer_set_.Observe(id, item_ui_ptr);
 
-  active_session_view_->ShowItem(id, std::move(item_ui));
+  media_item_ui_list_view_->ShowItem(id, std::move(item_ui));
   for (auto& observer : observers_) {
     observer.OnNotificationListViewSizeChanged();
   }
@@ -230,10 +235,10 @@ MediaNotificationProviderImpl::ShowMediaItem(
 }
 
 void MediaNotificationProviderImpl::HideMediaItem(const std::string& id) {
-  if (!active_session_view_) {
+  if (!media_item_ui_list_view_) {
     return;
   }
-  active_session_view_->HideItem(id);
+  media_item_ui_list_view_->HideItem(id);
   for (auto& observer : observers_) {
     observer.OnNotificationListViewSizeChanged();
   }

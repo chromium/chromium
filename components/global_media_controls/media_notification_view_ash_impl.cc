@@ -443,8 +443,8 @@ void MediaNotificationViewAshImpl::StartCastingButtonPressed() {
   // Clicking the button on the quick settings media view should redirect the
   // user to the quick settings media detailed view and open the device selector
   // view there instead.
-  // TODO(crbug.com/1442056): implement rather than just return.
   if (media_display_page_ == MediaDisplayPage::kQuickSettingsMediaView) {
+    container_->OnShowCastingDevicesRequested();
     return;
   }
 

@@ -187,9 +187,9 @@ TEST_F(MediaNotificationProviderImplTest, NotificationListTest) {
   SimulateShowNotification(id_1);
   SimulateShowNotification(id_2);
   provider_->SetColorTheme(media_message_center::NotificationTheme());
-  std::unique_ptr<views::View> view =
-      provider_->GetMediaNotificationListView(1, /*should_clip_height=*/true,
-                                              /*item_id=*/"");
+  std::unique_ptr<views::View> view = provider_->GetMediaNotificationListView(
+      1, /*should_clip_height=*/true, /*item_id=*/"",
+      /*show_devices_for_item_id=*/"");
 
   auto* notification_list_view =
       static_cast<global_media_controls::MediaItemUIListView*>(view.get());
@@ -226,7 +226,8 @@ TEST_F(MediaNotificationProviderImplTest, DontUseDeletedListView) {
 
   // Create a list view with that item.
   std::unique_ptr<views::View> view = provider_->GetMediaNotificationListView(
-      1, /*should_clip_height=*/true, /*item_id=*/"");
+      1, /*should_clip_height=*/true, /*item_id=*/"",
+      /*show_devices_for_item_id=*/"");
 
   // Delete the list view.
   view.reset();
@@ -270,7 +271,8 @@ class CastStartStopMediaNotificationProviderImplTest
     // We must initialize the list view before we can show individual media
     // items.
     list_view_ = provider_->GetMediaNotificationListView(
-        1, /*should_clip_height=*/true, /*item_id=*/"");
+        1, /*should_clip_height=*/true, /*item_id=*/"",
+        /*show_devices_for_item_id=*/"");
   }
 
   raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;

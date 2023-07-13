@@ -306,6 +306,12 @@ void MediaItemUIView::OnHeaderClicked() {
   ContainerClicked();
 }
 
+void MediaItemUIView::OnShowCastingDevicesRequested() {
+  for (auto& observer : observers_) {
+    observer.OnMediaItemUIShowDevices(id_);
+  }
+}
+
 void MediaItemUIView::OnDeviceSelectorViewSizeChanged() {
   OnSizeChanged();
 }

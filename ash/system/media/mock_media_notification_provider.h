@@ -25,7 +25,7 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
   // MediaNotificationProvider:
   MOCK_METHOD((std::unique_ptr<views::View>),
               GetMediaNotificationListView,
-              (int, bool, const std::string&));
+              (int, bool, const std::string&, const std::string&));
   MOCK_METHOD(void, OnBubbleClosing, ());
   MOCK_METHOD(global_media_controls::MediaItemManager*,
               GetMediaItemManager,
@@ -41,8 +41,8 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
   BuildDeviceSelectorView(
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
-      global_media_controls::GlobalMediaControlsEntryPoint entry_point)
-      override;
+      global_media_controls::GlobalMediaControlsEntryPoint entry_point,
+      bool show_devices) override;
   std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooterView(
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
       global_media_controls::GlobalMediaControlsEntryPoint entry_point)

@@ -58,6 +58,7 @@ std::unique_ptr<MediaItemUIDeviceSelectorView> BuildDeviceSelector(
     MediaItemUIDeviceSelectorDelegate* selector_delegate,
     Profile* profile,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point,
+    bool show_devices = false,
     absl::optional<media_message_center::MediaColorTheme> media_color_theme =
         absl::nullopt);
 

@@ -112,6 +112,11 @@ void QuickSettingsMediaViewController::OnMediaItemUIDestroyed(
   media_item_ui_observer_set_.StopObserving(id);
 }
 
+void QuickSettingsMediaViewController::OnMediaItemUIShowDevices(
+    const std::string& id) {
+  tray_controller_->ShowMediaControlsDetailedView(id);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // QuickSettingsMediaViewController implementations:
 

@@ -119,6 +119,7 @@ std::unique_ptr<MediaItemUIDeviceSelectorView> BuildDeviceSelector(
     MediaItemUIDeviceSelectorDelegate* selector_delegate,
     Profile* profile,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point,
+    bool show_devices,
     absl::optional<media_message_center::MediaColorTheme> media_color_theme) {
   if (!device_service || !selector_delegate || !profile ||
       !ShouldShowDeviceSelectorView(id, item, profile)) {
@@ -147,7 +148,7 @@ std::unique_ptr<MediaItemUIDeviceSelectorView> BuildDeviceSelector(
   return std::make_unique<MediaItemUIDeviceSelectorView>(
       id, selector_delegate, std::move(host), std::move(client_receiver),
       /* has_audio_output */ is_local_media_session, entry_point,
-      show_expand_button, media_color_theme);
+      show_expand_button, show_devices, media_color_theme);
 }
 
 std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(

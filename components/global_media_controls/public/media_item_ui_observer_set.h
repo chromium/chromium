@@ -33,6 +33,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIObserverSet
   void OnMediaItemUIClicked(const std::string& id) override;
   void OnMediaItemUIDismissed(const std::string& id) override;
   void OnMediaItemUIDestroyed(const std::string& id) override;
+  void OnMediaItemUIShowDevices(const std::string& id) override;
 
  private:
   const raw_ptr<MediaItemUIObserver> owner_;

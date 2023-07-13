@@ -47,6 +47,11 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationContainer {
   // Called when the header row is clicked.
   virtual void OnHeaderClicked() = 0;
 
+  // Called when the start casting button is clicked on the quick settings media
+  // view to request showing device list using device selector view in the quick
+  // settings media detailed view.
+  virtual void OnShowCastingDevicesRequested() {}
+
  protected:
   virtual ~MediaNotificationContainer() = default;
 };

@@ -59,6 +59,7 @@ class ASH_EXPORT QuickSettingsMediaViewController
   // global_media_controls::MediaItemUIObserver:
   void OnMediaItemUIClicked(const std::string& id) override;
   void OnMediaItemUIDestroyed(const std::string& id) override;
+  void OnMediaItemUIShowDevices(const std::string& id) override;
 
   std::unique_ptr<views::View> CreateView();
 

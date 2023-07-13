@@ -97,6 +97,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
                        SkColor foreground_disabled,
                        SkColor background) override;
   void OnHeaderClicked() override;
+  void OnShowCastingDevicesRequested() override;
 
   // views::SlideOutControllerDelegate:
   ui::Layer* GetSlideOutLayer() override;

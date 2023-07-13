@@ -138,7 +138,8 @@ class ASH_EXPORT UnifiedSystemTrayController
   // Show the detailed view of notifier settings. Called from the view.
   void ShowNotifierSettingsView();
   // Show the detailed view of media controls. Called from the view.
-  void ShowMediaControlsDetailedView();
+  void ShowMediaControlsDetailedView(
+      const std::string& show_devices_for_item_id = "");
   // Show the detailed view of Calendar. Called from the view.
   void ShowCalendarView(calendar_metrics::CalendarViewShowSource show_source,
                         calendar_metrics::CalendarEventSource event_source);

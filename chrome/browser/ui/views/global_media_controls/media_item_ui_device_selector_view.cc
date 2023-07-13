@@ -144,6 +144,7 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
     bool has_audio_output,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point,
     bool show_expand_button,
+    bool show_devices,
     absl::optional<media_message_center::MediaColorTheme> media_color_theme)
     : item_id_(item_id),
       delegate_(delegate),
@@ -166,7 +167,8 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
   device_entry_views_container_->SetVisible(false);
 
   if (entry_point_ ==
-      global_media_controls::GlobalMediaControlsEntryPoint::kPresentation) {
+          global_media_controls::GlobalMediaControlsEntryPoint::kPresentation ||
+      show_devices) {
     ShowDevices();
   }
   SetBackground(views::CreateSolidBackground(background_color_));

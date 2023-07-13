@@ -559,9 +559,10 @@ void UnifiedSystemTrayController::ShowCalendarView(
   }
 }
 
-void UnifiedSystemTrayController::ShowMediaControlsDetailedView() {
-  ShowDetailedView(
-      std::make_unique<UnifiedMediaControlsDetailedViewController>(this));
+void UnifiedSystemTrayController::ShowMediaControlsDetailedView(
+    const std::string& show_devices_for_item_id) {
+  ShowDetailedView(std::make_unique<UnifiedMediaControlsDetailedViewController>(
+      this, show_devices_for_item_id));
 }
 
 void UnifiedSystemTrayController::TransitionToMainView(bool restore_focus) {
