@@ -102,6 +102,9 @@ constexpr char kNote[] = "note";
 - (void)onAllPasswordsDeleted {
 }
 
+- (void)onShareButtonPressed {
+}
+
 @end
 
 // Test class that conforms to PasswordDetailsViewControllerDelegate in order

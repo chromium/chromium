@@ -62,6 +62,9 @@ typedef NS_ENUM(NSInteger, PasscodeDialogReason) {
 // Called when all passwords were deleted, in order to close the view.
 - (void)onAllPasswordsDeleted;
 
+// Called when share button is pressed by the user.
+- (void)onShareButtonPressed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_HANDLER_H_

@@ -366,6 +366,10 @@
   }
 }
 
+- (void)onShareButtonPressed {
+  // TODO(crbug.com/1463882): Implement sharing logic.
+}
+
 #pragma mark - PasswordDetailsMediatorDelegate
 
 - (void)showDismissWarningDialogWithPasswordDetails:(PasswordDetails*)password {

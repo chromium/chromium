@@ -87,6 +87,11 @@ bool IsPasswordNotesWithBackupEnabled() {
   return base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup);
 }
 
+bool IsSendingPasswordsEnabled() {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kSendPasswords);
+}
+
 // Size of the symbols.
 const CGFloat kSymbolSize = 15;
 const CGFloat kRecommendationSymbolSize = 22;
@@ -236,6 +241,17 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
   self.tableView.accessibilityIdentifier = kPasswordDetailsViewControllerId;
   self.tableView.allowsSelectionDuringEditing = YES;
+  if (IsSendingPasswordsEnabled()) {
+    UIBarButtonItem* shareButton = [[UIBarButtonItem alloc]
+        initWithImage:DefaultSymbolWithPointSize(kShareSymbol,
+                                                 kSymbolActionPointSize)
+                style:UIBarButtonItemStylePlain
+               target:self
+               action:@selector(onShareButtonPressed)];
+    self.navigationItem.rightBarButtonItems =
+        @[ self.navigationItem.rightBarButtonItem, shareButton ];
+  }
+
   [self setOrExtendAuthValidityTimer];
 }
 
@@ -1330,6 +1346,11 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
                             selector:@selector(authValidityTimerFired:)
                             userInfo:nil
                              repeats:NO];
+}
+
+- (void)onShareButtonPressed {
+  CHECK(self.handler);
+  [self.handler onShareButtonPressed];
 }
 
 #pragma mark - AutofillEditTableViewController
